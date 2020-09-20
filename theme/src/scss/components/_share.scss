@@ -1,0 +1,122 @@
+// -----------------------------------------------------------------------------
+// _share.scss
+// This file contains all styles related to the share component.
+// -----------------------------------------------------------------------------
+
+.share {
+	$self: &;
+
+	position: relative;
+	display: flex;
+	align-items: center;
+	flex-direction: row-reverse;
+	border-radius: 500px;
+	overflow: hidden;
+
+	// Item
+	// =========================================================================
+
+	&-item {
+		display: inline-flex;
+		margin-right: 10px;
+		padding: 0;
+
+		&:first-child {
+			margin-right: 0;
+		}
+
+		&:not(#{$self}-btn) {
+			display: block;
+			opacity: 0;
+			transition: opacity 100ms ease;
+			pointer-events: none !important;
+			z-index: 9999;
+		}
+
+		&:nth-child(2) {
+			transition-delay: 200ms;
+		}
+
+		&:nth-child(3) {
+			transition-delay: 100ms;
+		}
+
+		&:nth-child(4) {
+			transition-delay: 0ms;
+		}
+	}
+
+	// Button
+	// =========================================================================
+
+	&-btn {
+		transition: transform 200ms;
+
+		&:hover {
+
+			& ~ #{$self}-share-item {
+				opacity: 1;
+			}
+		}
+	}
+
+	// Background
+	// =========================================================================
+
+	&:before {
+		//content: '';
+		//position: absolute;
+		//display: block;
+		//width: 100%;
+		//height: 100%;
+		//background-color: $primary;
+		//border-radius: 500px;
+		//z-index: 1;
+		//transform: scaleX(0);
+		//transform-origin: right;
+		//transition: transform 400ms ease;
+		//will-change: transform;
+	}
+
+	// Active
+	// =========================================================================
+
+	&-active {
+
+		&:before {
+			transform: scaleX(1);
+		}
+
+		#{$self}-btn {
+			transform: rotate(45deg);
+		}
+
+		#{$self}-item {
+			opacity: 1;
+
+			&:nth-child(2) {
+				transition-delay: 0ms;
+			}
+
+			&:nth-child(3) {
+				transition-delay: 100ms;
+			}
+
+			&:nth-child(4) {
+				transition-delay: 200ms;
+			}
+		}
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+	}
+}

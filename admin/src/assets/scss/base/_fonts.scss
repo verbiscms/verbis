@@ -1,0 +1,57 @@
+// -----------------------------------------------------------------------------
+// _fonts.scss
+// This file contains all @font-face declarations, if any.
+// -----------------------------------------------------------------------------
+
+// Inter
+// =========================================================================
+
+@font-face {
+	font-family: 'Inter';
+	src: url('#{$font-path}Inter-Light.woff2') format('woff2'),
+	url('#{$font-path}Inter-Light.woff') format('woff'),
+	url('#{$font-path}Inter-Light.ttf') format('truetype');
+	font-weight: 300;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Inter';
+	src: url('#{$font-path}Inter-Regular.woff2') format('woff2'),
+	url('#{$font-path}Inter-Regular.woff') format('woff'),
+	url('#{$font-path}Inter-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Inter';
+	src: url('#{$font-path}Inter-Medium.woff2') format('woff2'),
+	url('#{$font-path}Inter-Medium.woff') format('woff'),
+	url('#{$font-path}Inter-Medium.ttf') format('truetype');
+	font-weight: 500;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Inter';
+	src: url('#{$font-path}Inter-SemiBold.woff2') format('woff2'),
+	url('#{$font-path}Inter-SemiBold.woff') format('woff'),
+	url('#{$font-path}Inter-SemiBold.ttf') format('truetype');
+	font-weight: 600;
+	font-style: normal;
+	font-display: swap;
+}
+
+@font-face {
+	font-family: 'Inter';
+	src: url('#{$font-path}Inter-Bold.woff2') format('woff2'),
+	url('#{$font-path}Inter-Bold.woff') format('woff'),
+	url('#{$font-path}Inter-Bold.ttf') format('truetype');
+	font-weight: bold;
+	font-style: normal;
+	font-display: swap;
+}

@@ -1,0 +1,116 @@
+// -----------------------------------------------------------------------------
+// _auth.scss
+// This file contains styles that are specific to the global sections.
+// -----------------------------------------------------------------------------
+
+.auth {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-width: 100vw;
+	min-height: 100vh;
+
+	// Props
+	// =========================================================================
+
+	&-row {
+		justify-content: center;
+		margin-top: -10vh;
+	}
+
+	// Logo
+	// =========================================================================
+
+	&-logo {
+		display: block;
+		width: 100%;
+		max-width: 120px;
+		height: auto;
+		margin: 0 auto 40px auto;
+
+		img {
+			width: 100%;
+		}
+	}
+
+	// Text
+	// =========================================================================
+
+	&-text {
+		margin-bottom: 2.2rem;
+
+		h2 {
+			line-height: 1;
+			margin-bottom: 10px;
+		}
+
+		p {
+			margin-bottom: 0;
+			text-align: center;
+		}
+	}
+
+	// Card
+	// =========================================================================
+
+	&-card {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		background-color: $white;
+		width: 100%;
+		margin: 0 auto;
+		padding: 26px 20px;
+		box-shadow: 0 0 15px rgba($black, 0.08);
+		border-radius: 20px;
+
+		&-cont {
+			width: 100%;
+			max-width: 320px;
+		}
+	}
+
+	// Button
+	// =========================================================================
+
+	&-btn-cont {
+		display: flex;
+		justify-content: center;
+		margin-top: 2.2rem;
+	}
+
+	// Link
+	// =========================================================================
+
+	&-link {
+		display: block;
+		text-align: right;
+		margin-top: -5px;
+		margin-bottom: 0;
+	}
+
+	// Mobile
+	// =========================================================================
+
+	@include media-mob {
+
+		&-logo {
+			max-width: 140px;
+		}
+
+		&-card {
+			max-width: 535px;
+			padding: 40px 20px;
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+
+		&-logo {
+			max-width: 160px;
+		}
+	}
+}

@@ -1,0 +1,141 @@
+//_type.scss
+//
+//Unresponsive & Responsive classes for text including general font styles
+// ==========================================================================
+
+//Text Styles
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-weight: 500;
+	line-height: 1.6em;
+}
+
+h1 {
+	font-size: $h1-font-size;
+	margin: ($h1-font-size / 7.5) 0;
+}
+
+h2 {
+	font-size: $h2-font-size;
+	margin: ($h2-font-size / 7.5) 0;
+}
+
+h3 {
+	font-size: $h3-font-size;
+	margin: ($h3-font-size / 7.5) 0;
+}
+
+h4 {
+	font-size: $h4-font-size;
+	margin: ($h4-font-size / 7.5) 0;
+}
+
+h5 {
+	font-size: $h5-font-size;
+	margin: ($h5-font-size / 7.5) 0;
+}
+
+h6 {
+	font-size: $h6-font-size;
+	margin: ($h6-font-size / 7.5) 0;
+}
+
+p {
+	font-size: $paragraph-font-size;
+	margin: 0 0 1rem;
+	font-weight: 300;
+}
+
+.lead {
+	font-size: $lead-font-size;
+	font-weight: 300;
+}
+
+em {
+	font-style: italic;
+}
+
+strong {
+	font-weight: 900;
+}
+
+small {
+	font-size: $small-font-size;
+}
+
+//Utility
+.t-decoration-none {
+	text-decoration: none !important;
+}
+
+.t-normal {
+	font-weight: normal !important;
+}
+
+.t-bold {
+	font-weight: 900 !important;
+}
+
+.t-light {
+	font-weight: 300 !important;
+}
+
+.t-italic {
+	font-style: italic !important;
+}
+
+.t-uppercase {
+	text-transform: uppercase !important;
+}
+
+.t-lowercase {
+	text-transform: lowercase !important;
+}
+
+.t-initial {
+	text-transform: initial !important;
+}
+
+.t-nowrap {
+	white-space: nowrap !important;
+}
+
+//Responsive Text
+@if $type-enable-responsive-text {
+	$range: $grid-breakpoint-hd - $grid-breakpoint-mob !default;
+	$point-size: $range / $responsive-text-points !default;
+
+	.t-responsive {
+		@for $i from 1 through $responsive-text-points {
+			@media only screen and (min-width: 360 + ($i * $point-size * 1px)) {
+				font-size: 1.2rem * (1 + (0.02 * $i));
+			}
+		}
+
+		@media only screen and (max-width: 360px) {
+			font-size: 1.2rem;
+		}
+	}
+}
+
+//Responsive Classes
+@each $modifier, $breakpoint in $grid-properties {
+	@include create-mediaquery($breakpoint) {
+		.t#{$modifier}-center {
+			text-align: center !important;
+		}
+		.t#{$modifier}-left {
+			text-align: left !important;
+		}
+		.t#{$modifier}-right {
+			text-align: right !important;
+		}
+		.t#{$modifier}-justify {
+			text-align: justify !important;
+		}
+	}
+}

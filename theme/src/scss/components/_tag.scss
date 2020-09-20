@@ -1,0 +1,25 @@
+// -----------------------------------------------------------------------------
+// _tag.scss
+// This file contains all styles related to the tag component.
+// -----------------------------------------------------------------------------
+
+// Variables
+$tag-padding: 3px 10px;
+
+.tag {
+	display: inline-flex;
+	align-items: center;
+	padding: $tag-padding;
+	background-color: $grey;
+	color: rgba($off-black, 0.8);
+	border-radius: 500px;
+	@include px-to-rem(12);
+	text-transform: uppercase;
+	font-weight: bold;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	height: auto;
+	margin-right: 5px;
+	user-select: none;
+}
