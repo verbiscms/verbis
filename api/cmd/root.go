@@ -16,13 +16,13 @@ limitations under the License.
 package cmd
 
 import (
-	"cms/api/cache"
-	"cms/api/config"
-	"cms/api/cron"
-	"cms/api/database"
-	"cms/api/environment"
-	"cms/api/helpers/logger"
-	"cms/api/models"
+	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/cron"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/logger"
+	"github.com/ainsleyclark/verbis/api/models"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

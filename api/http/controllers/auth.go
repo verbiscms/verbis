@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"cms/api/config"
-	"cms/api/models"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

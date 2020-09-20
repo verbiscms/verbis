@@ -1,10 +1,10 @@
 package models
 
 import (
-	"cms/api/cache"
-	"cms/api/domain"
-	"cms/api/helpers"
-	"cms/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/helpers"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"

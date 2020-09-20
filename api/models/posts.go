@@ -1,8 +1,8 @@
 package models
 
 import (
-	"cms/api/domain"
-	"cms/api/http"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/http"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"

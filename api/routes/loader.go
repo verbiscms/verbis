@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"cms/api/http/controllers"
-	"cms/api/http/middleware"
-	"cms/api/models"
-	"cms/api/server"
+	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/middleware"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/server"
 )
 
 // Load all of the routes groups specified in the package

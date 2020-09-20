@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"cms/api/config"
-	"cms/api/http/controllers"
-	"cms/api/server"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/server"
 )
 
 // Vue (SPA) routes

@@ -1,8 +1,8 @@
 package logger
 
 import (
-	"cms/api/environment"
-	"cms/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	log "github.com/sirupsen/logrus"
 	"os"
 )

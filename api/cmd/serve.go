@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"cms/api/http/controllers"
-	"cms/api/routes"
-	"cms/api/server"
+	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/routes"
+	"github.com/ainsleyclark/verbis/api/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

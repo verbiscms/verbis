@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"cms/api/http/controllers"
-	"cms/api/http/middleware"
-	"cms/api/models"
-	"cms/api/server"
+	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/middleware"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/server"
 )
 
 func api(s *server.Server, c *controllers.Controller, m *models.Store) {

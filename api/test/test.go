@@ -1,7 +1,7 @@
 package test
 
 import (
-	"cms/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"

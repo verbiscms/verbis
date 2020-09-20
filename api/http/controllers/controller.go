@@ -1,11 +1,11 @@
 package controllers
 
 import (
-	"cms/api/config"
-	"cms/api/helpers/vaidation"
-	"cms/api/http"
-	"cms/api/models"
-	"cms/api/server"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/helpers/vaidation"
+	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/server"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"

@@ -1,8 +1,8 @@
 package seeds
 
 import (
-	"cms/api"
-	"cms/api/domain"
+	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/domain"
 )
 
 func (s *Seeder) runOptions() error {

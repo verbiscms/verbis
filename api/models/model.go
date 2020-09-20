@@ -1,7 +1,7 @@
 package models
 
 import (
-	"cms/api/database"
+	"github.com/ainsleyclark/verbis/api/database"
 	_ "github.com/go-sql-driver/mysql"
 )
 

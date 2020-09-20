@@ -1,7 +1,7 @@
 package models
 
 import (
-	"cms/api/domain"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"encoding/json"
 
 	//"encoding/json"
