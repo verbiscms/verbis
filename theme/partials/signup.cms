@@ -1,0 +1,28 @@
+<!-- =====================
+     Sign up
+     ===================== -->
+<section class="section wave wave-yellow wave-center wave-margin-neg-bottom">
+    <div class="wave-cont">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-tab-10 col-desk-5">
+                    <h2 class="heading-1">We exist to help you sleep better.</h2>
+                    <div class="text-cont">
+                        <p class="lead">Sign up to an email list for sleep tips and tricks</p>
+                    </div>
+                    <form action="" class="form">
+                        <div class="form-input-cont form-input-cont-submit">
+                            <input type="text" name="email" class="form-input" placeholder="Email Address">
+                            <span class="form-message">Wrong email</span>
+                            <button class="btn btn-large btn-arrow btn-blue form-send">
+                                <span>Sign up</span>
+                                <span class="btn-spinner"></span>
+                            </button>
+                        </div>
+                        <span class="form-success-message">Thanks! Please check your email.</span>
+                    </form>
+                </div><!-- /Col -->
+            </div><!-- /Row -->
+        </div><!-- /Container -->
+    </div><!-- /Wave Cont -->
+</section>

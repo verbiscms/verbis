@@ -1,0 +1,5 @@
+{{ define "content" }}
+
+This is the 404 page.
+
+{{ end }}

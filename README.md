@@ -1,2 +1,0 @@
-# Verbis
-A Verbis CMS

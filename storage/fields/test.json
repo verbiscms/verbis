@@ -1,0 +1,28 @@
+{
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc34",
+	"title": "Resource Options",
+	"fields": [
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5745",
+			"label": "Title",
+			"name": "title",
+			"type": "text",
+			"instructions": "Add a title for the the resource page.",
+			"required": false,
+			"conditional_logic": 0,
+			"default_value": "",
+			"placeholder": "",
+			"maxlength": "",
+			"rows": 4
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "category",
+				"operator": "==",
+				"value": "1"
+			}
+		]
+	]
+}

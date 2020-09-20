@@ -1,0 +1,40 @@
+<!-- =====================
+    Footer
+    ===================== -->
+<footer class="footer">
+    <div class="container">
+        <div class="row footer-main">
+            <div class="col-8 col-tab-4 col-desk-3">
+                <figure class="footer-logo">
+                    <img src="/assets/images/logo-footer.svg" alt="How to Sleep Logo">
+                </figure>
+            </div><!-- /Col -->
+            <div class="col-12 col-tab-3 col-desk-2 offset-desk-1">
+                <nav class="footer-nav">
+                    <ul>
+                        <li><a href="/#about">About</a></li>
+                        <li><a href="">Guides</a></li>
+                        <li><a href="">Sign-up</a></li>
+                    </ul>
+                </nav>
+            </div><!-- /Col -->
+            <div class="col-12 col-tab-3 col-desk-2">
+                <nav class="footer-nav">
+                    <ul>
+                        <li><span class="modal-btn" data-modal="#termsModal" data-html="terms.cms">Terms & Conditions</span></li>
+                        <li><span class="modal-btn" data-modal="#termsModal" data-html="privacy.cms">Privacy Policy</span></li>
+                        <li><span class="modal-btn" data-modal="#termsModal" data-html="security.cms">IT Security Policy</span></li>
+                    </ul>
+                </nav>
+            </div><!-- /Col -->
+            <div class="col-12 col-tab-10 col-desk-4">
+                <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod</p>
+            </div>
+        </div><!-- /Row -->
+        <div class="row footer-sub">
+            <div class="col-12 col-tab-10 col-desk-12">
+                <p>© 2020 Reddico Digital Ltd is a registered company in England and Wales. Company Number 12478392. VAT Number: GB 343939180.</p>
+            </div><!-- /Col -->
+        </div><!-- /Row -->
+    </div><!-- /Container -->
+</footer>

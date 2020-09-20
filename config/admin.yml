@@ -1,0 +1,21 @@
+# |
+# |--------------------------------------------------------------------------
+# | Admin Path
+# |--------------------------------------------------------------------------
+# |
+# | This dictates where the admin url will sit, and where the user will
+# | login. Defaults to "admin", but can be "dashboard" etc.
+# |
+# |
+admin_path: admin
+
+# |
+# |--------------------------------------------------------------------------
+# | Inactive Session Time
+# |--------------------------------------------------------------------------
+# |
+# | The amount of time in minutes for how long the user was last seen to
+# | them being ejected from the system.
+# |
+# |
+inactive_session_time: 60

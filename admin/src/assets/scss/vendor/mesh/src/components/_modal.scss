@@ -1,0 +1,137 @@
+//_modal.scss
+//
+// All styles related to modal using checkbox, centered, large & JS
+// ==========================================================================
+
+.modal {
+	$self: &;
+	visibility: hidden;
+	position: fixed;
+	display: flex;
+	align-items: flex-start;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	z-index: 9999999;
+	overflow-y: auto;
+	padding: $modal-mobile-padding;
+
+	@include media-tab {
+		padding: $modal-default-padding;
+	}
+
+	//Checkbox
+	&-toggle {
+		display: none;
+		position: absolute;
+		top: -999999px;
+		left: -999999px;
+	}
+
+	&-container {
+		max-width: $modal-container-small-width;
+		position: relative;
+		background-color: #fff;
+		box-shadow: $modal-container-box-shadow;
+		border-radius: $modal-container-border-radius;
+		border: 0;
+		margin: 0 auto;
+		opacity: 0;
+		transform: translateY($modal-container-transform);
+		transition: all $modal-container-transition;
+
+		#{$self}-header {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: $modal-header-padding;
+		}
+
+		//Close Button
+		#{$self}-btn-close {
+			position: absolute;
+			right: 10px;
+			top: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			padding: 8px 16px;
+			color: $modal-close-button-color;
+			cursor: pointer;
+			font-size: 12px;
+		}
+
+		#{$self}-body {
+			padding: $modal-body-padding;
+		}
+
+		#{$self}-footer {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			padding: $modal-footer-padding;
+		}
+	}
+
+	//Grey overlay
+	&-overlay {
+		left: 0;
+		top: 0;
+		width: 100vw;
+		height: 100vh;
+		position: fixed;
+		display: block;
+		cursor: default;
+		background: $modal-overlay-background-color;
+		z-index: -1;
+		opacity: 0;
+		transition: opacity $modal-overlay-transition;
+	}
+
+	//CSS close functionality
+	@if $modal-enable-css {
+		&-toggle:checked + #{$self} {
+			visibility: visible;
+
+			#{$self}-container {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			#{$self}-overlay {
+				opacity: 1;
+			}
+		}
+	}
+
+	//JS close functionality
+	@if $modal-enable-js {
+		&-open {
+			visibility: visible;
+
+			#{$self}-container {
+				opacity: 1;
+				transform: translateY(0);
+			}
+
+			#{$self}-overlay {
+				opacity: 1;
+			}
+		}
+	}
+
+	//Large
+	&-large {
+		#{$self}-container {
+			max-width: $modal-container-large-width;
+		}
+	}
+
+	//Centered
+	&-centered {
+		#{$self}-container {
+			margin: auto;
+		}
+	}
+}

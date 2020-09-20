@@ -1,0 +1,119 @@
+// -----------------------------------------------------------------------------
+// _typography.scss
+// This file contains all type declerations (h1, h2, p etc) for whole site.
+// -----------------------------------------------------------------------------
+
+// Global
+// =========================================================================
+
+html,
+body {
+	color: $copy-text;
+	font-family: $font;
+	font-size: 90%;
+	font-kerning: normal;
+	font-variant-ligatures: common-ligatures;
+
+	@include media-tab {
+		font-size: 95%;
+	}
+
+	@include media-desk {
+		font-size: 100%;
+	}
+
+	@include media-hd {
+		font-size: 102.5%;
+	}
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+	margin: 0;
+}
+
+// Headings
+// =========================================================================
+
+//@include fluid-type(320px, 1408px, 34px, 98px);
+
+h1 {
+	@include fluid-type(320px, 1408px, 24px, 38px);
+	font-weight: bold;
+	color: $copy;
+	line-height: 1;
+}
+
+h2 {
+	@include fluid-type(320px, 1408px, 22px, 24px);
+	font-weight: bold;
+	color: $copy;
+	margin-bottom: 1.8rem;
+	text-align: center;
+}
+
+h3 {
+	@include fluid-type(320px, 1408px, 16px, 20px);
+	font-weight: bold;
+	color: $secondary;
+	line-height: 1;
+}
+
+h4 {
+}
+
+h5 {
+	@include fluid-type(320px, 1408px, 15px, 17px);
+	color: $grey;
+	font-weight: bold;
+}
+
+h6 {
+}
+
+// Paragraph
+// =========================================================================
+
+p {
+	margin-bottom: 1rem;
+	@include px-to-rem(14);
+	color: rgba($secondary, 0.70);
+	font-weight: normal;
+	line-height: 1.4;
+}
+
+// Links
+// =========================================================================
+
+a {
+	color: $secondary;
+	text-decoration: none;
+	@include px-to-rem(14);
+	font-weight: 600;
+	transition: color 200ms ease;
+	will-change: color;
+
+	&:hover {
+		color: $primary;
+	}
+}
+
+// Text Containers
+// =========================================================================
+
+.text-cont {
+	@include text-margin("bottom", "normal");
+
+	p:last-of-type {
+		margin-bottom: 0;
+	}
+
+	&-no-margin {
+		margin-bottom: 0 !important;
+	}
+}

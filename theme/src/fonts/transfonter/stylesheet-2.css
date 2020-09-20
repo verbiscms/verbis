@@ -1,0 +1,10 @@
+@font-face {
+    font-family: 'Atten Round New';
+    src: url('AttenRoundNew-Medium.woff2') format('woff2'),
+        url('AttenRoundNew-Medium.woff') format('woff'),
+        url('AttenRoundNew-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
