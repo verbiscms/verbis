@@ -2,8 +2,8 @@ package cmd
 
 import (
 	"bufio"
-	"cms/api/domain"
-	validation "cms/api/helpers/vaidation"
+	"github.com/ainsleyclark/verbis/api/domain"
+	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"fmt"
 	"github.com/spf13/cobra"
 	"os"

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"cms/api/domain"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"

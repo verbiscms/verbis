@@ -1,8 +1,8 @@
 package cmd
 
 import (
-	"cms/api/environment"
-	"cms/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"fmt"
 	sqlMigrate "github.com/ainsleyclark/golang-sql-migrate"
 	log "github.com/sirupsen/logrus"

@@ -1,7 +1,7 @@
 package cron
 
 import (
-	"cms/api/models"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/jasonlvhit/gocron"
 	log "github.com/sirupsen/logrus"
 )

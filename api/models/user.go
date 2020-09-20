@@ -1,10 +1,10 @@
 package models
 
 import (
-	"cms/api/domain"
-	"cms/api/events"
-	"cms/api/helpers/encryption"
-	"cms/api/http"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/events"
+	"github.com/ainsleyclark/verbis/api/helpers/encryption"
+	"github.com/ainsleyclark/verbis/api/http"
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"

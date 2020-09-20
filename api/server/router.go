@@ -1,9 +1,9 @@
 package server
 
 import (
-	"cms/api/config"
-	"cms/api/environment"
-	"cms/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/ginview"
 	"github.com/gin-contrib/gzip"

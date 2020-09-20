@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"cms/api/domain"
-	"cms/api/http"
-	"cms/api/models"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"strconv"

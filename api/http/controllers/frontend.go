@@ -1,13 +1,13 @@
 package controllers
 
 import (
-	"cms/api/config"
-	"cms/api/domain"
-	"cms/api/environment"
-	"cms/api/helpers/paths"
-	"cms/api/models"
-	"cms/api/server"
-	"cms/api/templates"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/server"
+	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

@@ -2,7 +2,7 @@ package models
 
 import (
 	"bytes"
-	"cms/api/domain"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"encoding/json"
 	"fmt"
 	"github.com/jmoiron/sqlx"

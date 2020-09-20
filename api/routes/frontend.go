@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"cms/api/config"
-	"cms/api/helpers/paths"
-	"cms/api/http/controllers"
-	"cms/api/server"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/server"
 )
 
 func frontend(s *server.Server, c *controllers.Controller) {

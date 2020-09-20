@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"cms/api/models"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 )
 

@@ -1,10 +1,10 @@
 package templates
 
 import (
-	"cms/api/config"
-	"cms/api/domain"
-	"cms/api/environment"
-	"cms/api/models"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/models"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
