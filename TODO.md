@@ -2,7 +2,7 @@
 
 ## Fields
 
-Model will:
+Model will::
 - Get the fields JSON file from /storage/fields (in paths.Storage)
 - You need an endpoint to call to get the admin layout from the fields model which will return below
 - You will need a parser to determine whether or not to display the page, via the location block.
