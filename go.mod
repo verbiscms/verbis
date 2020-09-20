@@ -1,4 +1,4 @@
-module cms
+module github.com/ainsleyclark/verbis
 
 go 1.14
 
@@ -12,7 +12,7 @@ require (
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
-	github.com/fatih/structtag v1.2.0
+	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/foolin/goview v0.3.0
 	github.com/frankban/quicktest v1.11.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.1.1
@@ -29,9 +29,9 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/gookit/color v1.2.7
 	github.com/harukasan/go-libwebp v0.0.0-20190703060927-68562c9c99af // indirect
-	github.com/hashicorp/go-uuid v1.0.1
+	github.com/hashicorp/go-uuid v1.0.1 // indirect
 	github.com/jasonlvhit/gocron v0.0.1
-	github.com/jedib0t/go-pretty v4.3.0+incompatible
+	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/json-iterator/go v1.1.10 // indirect
@@ -54,7 +54,7 @@ require (
 	github.com/spf13/cobra v1.0.0
 	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
-	github.com/unrolled/render v1.0.3
+	github.com/unrolled/render v1.0.3 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
