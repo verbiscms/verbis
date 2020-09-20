@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"cms/api/database/seeds"
+	"github.com/ainsleyclark/verbis/api/database/seeds"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

@@ -1,7 +1,7 @@
 package database
 
 import (
-	"cms/api/environment"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"

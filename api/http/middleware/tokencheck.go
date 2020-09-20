@@ -1,9 +1,9 @@
 package middleware
 
 import (
-	"cms/api/domain"
-	"cms/api/http/controllers"
-	"cms/api/models"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/models"
 	"fmt"
 	"github.com/gin-gonic/gin"
 )

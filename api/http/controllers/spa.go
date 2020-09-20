@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"cms/api/helpers/mime"
-	"cms/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/helpers/mime"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"strings"

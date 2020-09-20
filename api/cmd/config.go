@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"cms/api/config"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )

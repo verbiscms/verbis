@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"bytes"
-	"cms/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"

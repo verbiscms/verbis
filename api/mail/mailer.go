@@ -1,9 +1,9 @@
 package mail
 
 import (
-	"cms/api/environment"
-	"cms/api/helpers/html"
-	"cms/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/html"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"fmt"
 	sp "github.com/SparkPost/gosparkpost"
 )

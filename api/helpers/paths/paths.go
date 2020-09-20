@@ -1,8 +1,8 @@
 package paths
 
 import (
-	"cms/api/config"
-	"cms/api/environment"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"os"
 	"path/filepath"
 	"runtime"

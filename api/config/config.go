@@ -1,8 +1,8 @@
 package config
 
 import (
-	"cms/api/cache"
-	"cms/api/environment"
+	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/environment"
 	log "github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
