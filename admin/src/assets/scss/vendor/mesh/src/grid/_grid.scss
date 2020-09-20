@@ -1,0 +1,72 @@
+//_grid.scss
+//
+//Main grid system, containers, rows & columns.
+// ==========================================================================
+
+.container {
+	width: 100%;
+	padding-right: $gap-width;
+	padding-left: $gap-width;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+.container-fullwidth {
+	width: 100%;
+	padding-left: $gap-width;
+	padding-right: $gap-width;
+	margin-right: auto;
+	margin-left: auto;
+}
+
+//Creates the breakpoints for containers
+@each $modifier, $breakpoint in $grid-properties {
+	@include create-mediaquery($breakpoint) {
+		@if ($breakpoint != 0) {
+			.container {
+				max-width: $breakpoint * 1px - 50px;
+			}
+		}
+	}
+}
+
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin-left: -$gap-width;
+	margin-right: -$gap-width;
+}
+
+.no-gaps {
+	margin-right: 0;
+	margin-left: 0;
+}
+
+.no-gaps > .col,
+.no-gaps > [class*="col-"] {
+	padding-right: 0;
+	padding-left: 0;
+}
+
+//Common Column Properties
+%column-props {
+	position: relative;
+	width: 100%;
+	padding-left: $gap-width;
+	padding-right: $gap-width;
+}
+
+@each $modifier, $breakpoint in $grid-properties {
+	.col#{$modifier}-auto {
+		@extend %column-props;
+	}
+	@for $i from 1 through $grid-columns {
+		.col#{$modifier}-#{$i} {
+			@extend %column-props;
+		}
+	}
+}
+
+@each $modifier, $breakpoint in $grid-properties {
+	@include create-col-classes($modifier, $grid-columns, $breakpoint);
+}

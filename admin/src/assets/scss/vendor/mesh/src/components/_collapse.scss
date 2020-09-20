@@ -1,0 +1,110 @@
+//_collapse.scss
+//
+// Collapsible content
+// ==========================================================================
+// sass-lint:disable nesting-depth
+
+.collapse {
+	$self: &;
+	position: relative;
+
+	&-item {
+		#{$self}-header {
+			padding: $collapse-header-padding;
+			cursor: pointer;
+			position: relative;
+			border-bottom: $collapse-border;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			outline: none;
+
+			#{$self}-title {
+				margin-top: $collapse-title-margin-top;
+			}
+
+			&:hover {
+				#{$self}-title,
+				i {
+					color: $collapse-active-color;
+				}
+			}
+
+			&:focus,
+			&:active {
+				#{$self}-title,
+				i {
+					color: $collapse-active-color;
+				}
+			}
+		}
+
+		#{$self}-content {
+			padding: $collapse-content-padding;
+		}
+	}
+}
+
+// CSS close
+// ==========================================================================
+
+@if $collapse-enable-css-close {
+	.collapse {
+		$self: &;
+
+		&.collapse-css {
+			#{$self}-content {
+				display: none;
+			}
+
+			#{$self}-toggle {
+				display: none;
+				position: absolute;
+				top: -999999px;
+				left: -999999px;
+			}
+
+			#{$self}-toggle:checked ~ #{$self}-content {
+				display: block;
+			}
+		}
+	}
+}
+
+// JS collapse & accordion
+// ==========================================================================
+
+@if $collapse-enable-js-close {
+	.collapse {
+		$self: &;
+
+		&-item.active {
+			#{$self}-header i {
+				transform: rotate(180deg);
+			}
+
+			#{$self}-title,
+			i {
+				color: $collapse-active-color;
+			}
+		}
+
+		#{$self}-title,
+		i {
+			transition: 0.4s;
+		}
+
+		&.collapse-js {
+			#{$self}-content {
+				max-height: 0;
+				overflow: hidden;
+				padding: 0;
+				transition: 0.5s;
+
+				.collapse-inner {
+					padding: $collapse-content-padding;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en_GB">
+<head>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>How to Sleep</title>
+    <meta name="author" content="Reddico">
+    <meta name="description" content="">
+    <link rel="canonical" href="" />
+    <!-- Open Graph -->
+    <meta property="og:locale" content="en_GB">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="">
+    <meta property="og:description" content="">
+    <meta property="og:url" content="">
+    <meta property="og:site_name" content="">
+    <meta property="og:image" content="">
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:title" content="">
+    <meta name="twitter:image" content="">
+    <!-- CSS -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/assets/css/app.css">
+    <!-- Preload JS -->
+    <link rel="preload" href="/assets/js/app.js" as="script">
+    <!-- Favicon -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon/favicon-16x16.png">
+    <link rel="manifest" href="/assets/favicon/site.webmanifest">
+    <link rel="mask-icon" href="/assets/favicon/safari-pinned-tab.svg" color="#1a1533">
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico">
+    <meta name="msapplication-TileColor" content="#1a1533">
+    <meta name="msapplication-config" content="/assets/favicon/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+</head>
+<body>
+<!--[if lte IE 9]>
+<div class="outdated-browser">
+    <h2>You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</h2>
+</div>
+<![endif]-->
+<main>
+    {{ include "partials/header" }}
+    {{ template "content" . }}
+    <!-- Hero Large - Clip Path -->
+    <svg width="0" height="0">
+        <clipPath id="hero-large-clippath" clipPathUnits="objectBoundingBox">
+            <path transform="scale(0.5 1)" d="M1,0.997 c-0.035,0,-0.071,-0.003,-0.107,-0.009 c-0.023,-0.004,-0.045,-0.009,-0.068,-0.014 h0 c-0.025,-0.006,-0.05,-0.011,-0.076,-0.015 c-0.03,-0.005,-0.06,-0.007,-0.09,-0.007 c-0.03,0,-0.06,0.002,-0.09,0.007 c-0.03,0.005,-0.059,0.012,-0.087,0.021 V-0.003 H2 V0.931 c-0.012,-0.003,-0.025,-0.006,-0.038,-0.008 c-0.012,-0.002,-0.026,-0.002,-0.039,-0.002 c-0.016,0,-0.033,0.001,-0.051,0.003 c-0.016,0.002,-0.033,0.005,-0.05,0.009 c-0.013,0.003,-0.028,0.007,-0.045,0.012 c-0.015,0.004,-0.03,0.009,-0.045,0.014 l0,0 c-0.018,0.006,-0.037,0.012,-0.056,0.017 c-0.021,0.006,-0.039,0.01,-0.056,0.013 C1,0.994,1,0.997,1,0.997"></path>
+        </clipPath>
+    </svg>
+</main>
+    {{ include "partials/modal" }}
+    {{ include "partials/signup" }}
+    {{ include "partials/footer" }}
+<!-- Javascript -->
+<script src="/assets/js/app.js"></script>
+<!-- Google Transition Fix -->
+<script> </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+// -----------------------------------------------------------------------------
+// _variables.scss
+// This file contains all variables for use with scss files.
+// -----------------------------------------------------------------------------
+
+// Grid
+// ==========================================================================
+
+// Columns
+$grid-columns: 12;
+$gap-width: 15px;
+
+// Breakpoints
+$grid-breakpoint-mob: 568;
+$grid-breakpoint-tab: 768;
+$grid-breakpoint-desk: 1024;
+$grid-breakpoint-hd: 1408;
+
+// Fonts
+// ==========================================================================
+
+$font: "Atten Round New";
+$font-path: '/assets/fonts/';
+
+// Color
+// ==========================================================================
+
+$white: #fff;
+$black: #000;
+$off-black: #1A1533;
+$primary: #075CA5;
+$primary-dark: #053F73;
+$secondary: #FBBE1F;
+$copy: rgba($primary-dark, 0.8);
+$grey: #F4F4F4;
+$line: #E3E3E3;
+$error: #ea6a6a;
+
+// Color palette
+$palette: (
+	white: $white,
+	black: $black,
+	off-black: $off-black,
+	primary: $primary,
+	primary-dark: $primary-dark,
+	secondary: $secondary,
+	copy: $copy,
+	grey: $grey,
+	line: $line,
+);
+
+// Color attributes
+$color-attr: (
+	c: "color",
+	bg: "background-color"
+);
+
+// Sections
+// =========================================================================
+
+$section-padding: (
+	mob: 40px,
+	tab: 70px,
+	desk: 100px,
+	hd: 120px
+);
+$section-padding-divider: 3;
+
+// Header
+// =========================================================================
+
+$header-height: 80px;
+$header-container-width: true;
+$header-bg-color: transparent;
+$header-scrolled-bg-color: $white;
+
+// Nav
+// =========================================================================
+
+$nav-mob-bg-color: $primary;
+$nav-mob-item-color: $white;
+$nav-desk-item-color: $white;
+$nav-transition-time: 700ms;
+
+// Hamburger
+// =========================================================================
+
+$hamburger-width: 26px;
+$hamburger-height: 2.4px;
+$hamburger-margin: 7px;
+$hamburger-border-radius: 4px;
+$hamburger-color: $white;
+$hamburger-active-color: $white;
+$hamburger-scrolled-color: $primary;
+
+// Text
+// ==========================================================================
+
+$text-cont-margin-mob: 1.2rem;
+$text-cont-margin-tab: 1.4rem;
+$text-cont-margin: 1.6rem;

@@ -1,0 +1,152 @@
+// -----------------------------------------------------------------------------
+// _button.scss
+// This file contains all styles related to the button component.
+// -----------------------------------------------------------------------------
+
+// Variables
+$button-padding: 12px 24px;
+$button-border-radius: 8px;
+$btn-icon-width: 55px;
+$btn-margin-x: 10px;
+
+.btn {
+	$self: &;
+
+	position: relative;
+	display: inline-flex;
+	justify-content: center;
+	background-color: transparent;
+	padding: $button-padding;
+	cursor: pointer;
+	outline: none;
+	font-size: 14px;
+	font-weight: bold;
+	height: auto;
+	user-select: none;
+	line-height: 1;
+	color: $secondary;
+	border-radius: $button-border-radius;
+	border: 2px solid $grey-light;
+	transition: box-shadow 200ms ease;
+	will-change: box-shadow;
+
+	// Arrow
+	// =========================================================================
+
+	&-arrow {
+		display: flex;
+		align-items: center;
+
+		&:after {
+			content: url('~@/assets/images/btn-arrow.svg');
+			position: relative;
+			display: block;
+			margin-left: 16px;
+		}
+	}
+
+	// Icon
+	// =========================================================================
+
+	&-icon {
+		padding: 0;
+		width: $btn-icon-width;
+		height: $btn-form-fixed-height;
+		min-width: $btn-icon-width;
+		min-height: $btn-form-fixed-height;
+		align-items: center;
+		font-size: 1.2rem;
+		border-radius: $button-border-radius;
+		color: $white;
+	}
+
+	// Loading
+	// =========================================================================
+
+	&-loading {
+		transition: none;
+		pointer-events: none;
+		color: transparent !important;
+
+		&:after {
+			content: "";
+			width: 18px;
+			height: 18px;
+			border: 2px solid $white;
+			border-right-color: transparent !important;
+			border-radius: 50%;
+			display: inline-block;
+			animation-duration: 0.75s;
+			animation-iteration-count: infinite;
+			animation-name: spinner;
+			animation-timing-function: linear;
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-left: -9px;
+			margin-top: -9px;
+		}
+
+		@keyframes spinner {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+	}
+
+	&:hover {
+		box-shadow: 0 0 10px 0 rgba($copy, 0.10);
+	}
+
+	// Colours
+	// =========================================================================
+
+	&-white {
+		background-color: $white;
+	}
+
+	&-orange {
+		background-color: $orange;
+	}
+
+	// Margin
+	// =========================================================================
+
+	&-margin {
+		margin-left: $btn-margin-x;
+		margin-right: $btn-margin-x;
+	}
+
+	&-margin-right {
+		margin-right: $btn-margin-x;
+	}
+
+	&-margin-left {
+		margin-left: $btn-margin-x;
+	}
+
+	// Fixed Height
+	// =========================================================================
+
+	&-fixed-height {
+		height: $btn-form-fixed-height;
+		padding-top: 0;
+		padding-bottom: 0;
+		align-items: center;
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+	}
+}

@@ -1,0 +1,33 @@
+# |
+# |--------------------------------------------------------------------------
+# | File Extension
+# |--------------------------------------------------------------------------
+# |
+# | The file extension of the files used to be created for templates
+# | and partials etc.. The template extension can be anything,
+# | for example - ".html, .cms, .tmpl" defaults to ".cms".
+# |
+# |
+file_extension: .cms
+
+# |
+# |--------------------------------------------------------------------------
+# | Template Directory
+# |--------------------------------------------------------------------------
+# |
+# | Defines where the main templates reside relative to the theme's
+# | path.
+# |
+# |
+template_dir: templates
+
+# |
+# |--------------------------------------------------------------------------
+# | Layout Directory
+# |--------------------------------------------------------------------------
+# |
+# | Defines where the main layouts reside relative to the theme's
+# | path.
+# |
+# |
+layout_dir: layouts

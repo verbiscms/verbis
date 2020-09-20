@@ -1,0 +1,203 @@
+// -----------------------------------------------------------------------------
+// _form.scss
+// This file contains all styles related to the forms of the site.
+// -----------------------------------------------------------------------------
+
+// Variables
+$form-input-padding-x: 16px;
+$form-input-padding-y: 12px;
+$form-input-border-radius: 8px;
+$form-group-margin-bottom: 1rem;
+
+.form {
+    $self: &;
+
+    position: relative;
+    width: 100%;
+
+    // Group
+    // =========================================================================
+
+    &-group {
+        position: relative;
+        display: block;
+        width: 100%;
+        margin-bottom: $form-group-margin-bottom;
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    // Input
+    // =========================================================================
+
+    &-input {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: $form-input-padding-x $form-input-padding-y;
+        border: 2px solid $grey-light;
+        outline: none;
+        color: $secondary;
+        border-radius: $form-input-border-radius;
+        background: transparent;
+        font-weight: 600;
+        @include px-to-rem(14);
+        -webkit-appearance: none;
+        appearance: none;
+        transition: box-shadow 200ms ease;
+        will-change: box-shadow;
+
+        @include on-event {
+            box-shadow: 0 0 10px 0 rgba($copy, 0.10);
+        }
+    }
+
+    // Select
+    // =========================================================================
+
+    &-select {
+        position: relative;
+        border: none;
+        background-color: transparent;
+        color: $secondary;
+        font-weight: 600;
+        @include px-to-rem(14);
+        -webkit-appearance: none;
+        appearance: none;
+        outline: none;
+        cursor: pointer;
+        padding-left: $form-input-padding-x;
+        padding-right: $form-input-padding-x * 4;
+        z-index: 2;
+
+        &-cont {
+            width: auto;
+            display: flex;
+            background-color: $white;
+            padding: 0;
+            height: $btn-form-fixed-height;
+
+            // Arrow
+            &:after {
+                content: url("~@/assets/images/form-arrow-down.svg");
+                position: absolute;
+                display: block;
+                top: 50%;
+                right: $form-input-padding-x;
+                width: 20px;
+                height: 20px;
+                transform: translateY(calc(-50% - 2px));
+                z-index: 0;
+            }
+        }
+    }
+
+    // Actions
+    // =========================================================================
+
+    &-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    // Check
+    // =========================================================================
+
+
+    // Is Invalid
+    // =========================================================================
+
+    &-is-invalid {
+
+
+
+    }
+
+    // Global Form Error
+    // =========================================================================
+
+    &-error {
+        position: relative;
+        display: flex;
+        align-items: center;
+        color: $orange;
+        font-size: 12px;
+        font-weight: 600;
+        margin-bottom: $form-group-margin-bottom;
+        opacity: 0;
+        transform: translateY(-6px);
+        transition: opacity 200ms ease, transform 200ms ease;
+        will-change: opacity, transform;
+
+        &:before {
+            content: "";
+            background: url("~@/assets/images/form-error.svg") no-repeat;
+            background-size: contain;
+            position: relative;
+            display: block;
+            width: 14px;
+            height: 14px;
+            margin-right: 6px;
+        }
+
+        // Use animation here not transition
+        &-show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    // Autocomplete
+    // =========================================================================
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active  {
+        -webkit-box-shadow: 0 0 0 30px white inset !important;
+    }
+
+    // Placeholder
+    // =========================================================================
+
+    ::placeholder {
+        /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: $grey;
+        opacity: 1; /* Firefox */
+    }
+
+    :-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        color: $grey;
+    }
+
+    ::-ms-input-placeholder {
+        /* Microsoft Edge */
+        color: $grey;
+    }
+
+    // Mobile
+    // =========================================================================
+
+    @include media-mob {
+
+    }
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+
+
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+	}
+}
+
+

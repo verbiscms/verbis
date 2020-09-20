@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="314.167" height="283.714" viewBox="0 0 314.167 283.714">
+  <defs>
+    <linearGradient id="linear-gradient" x1="0.954" y1="0.14" x2="0.398" y2="0.601" gradientUnits="objectBoundingBox">
+      <stop offset="0" stop-color="#952440"/>
+      <stop offset="0.06" stop-color="#231f20" stop-opacity="0.859"/>
+      <stop offset="0.33" stop-color="#231f20" stop-opacity="0.38"/>
+      <stop offset="0.63" stop-color="#231f20" stop-opacity="0.09"/>
+      <stop offset="1" stop-color="#b4294c" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <g id="logo" transform="translate(314.167 283.714) rotate(180)" style="isolation: isolate">
+    <g id="Layer_1" data-name="Layer 1">
+      <g id="red_stroke">
+        <path id="Path_1" data-name="Path 1" d="M186.879,0H127.288L0,283.714H66.821Z" fill="#4e4e4e"/>
+        <path id="shadow" d="M186.879,0H127.288L0,283.714H66.821Z" opacity="0.57" fill="url(#linear-gradient)" style="mix-blend-mode: multiply;isolation: isolate"/>
+      </g>
+      <path id="blue_stroke" d="M58.1,0h59.591L244.979,283.714H178.158Z" transform="translate(69.188)" fill="#708dcd"/>
+    </g>
+  </g>
+</svg>

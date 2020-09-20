@@ -1,0 +1,160 @@
+// -----------------------------------------------------------------------------
+// _header.scss
+// This file contains all styles related to the header of the site.
+// -----------------------------------------------------------------------------
+
+.header {
+	$self: &;
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	z-index: 99999;
+
+	// Container
+	// ==========================================================================
+
+	&-cont {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: $header-height - 20px;
+		margin: 0 auto;
+		padding: 0 15px;
+		z-index: 9;
+		overflow: visible;
+	}
+
+	// BG
+	// ==========================================================================
+
+	&:before {
+		content: "";
+		position: absolute;
+		display: block;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		left: 0;
+		background: $white;
+		opacity: 0;
+		transition: opacity 300ms linear;
+		will-change: opacity;
+	}
+
+	// Wave
+	// ==========================================================================
+
+	&-wave {
+		position: absolute;
+		display: block;
+		bottom: 0;
+		left: 0;
+		width: 100vw;
+		transform: translateY(calc(100% - 0.5px));
+		opacity: 0;
+		transition: opacity 300ms linear;
+		will-change: opacity;
+
+		svg {
+			width: 100%;
+
+			path {
+				width: 100%;
+				fill: $white;
+				transform: scaleX(2.5);
+			}
+		}
+	}
+
+	// Logo
+	// ==========================================================================
+
+	&-logo {
+		display: flex;
+		align-items: center;
+		z-index: 999999;
+		order: -1;
+		transform: translateY(10px);
+
+		&-text path {
+			transition: fill 300ms linear;
+			will-change: fill;
+		}
+	}
+
+	// Scrolled
+	// ==========================================================================
+
+	&-scrolled {
+
+		&:before,
+		#{$self}-wave {
+			opacity: 1;
+		}
+
+		#{$self}-logo {
+
+			&-text path {
+				fill: $primary;
+			}
+		}
+	}
+
+	// Mobile Active
+	// ==========================================================================
+
+	&-active {
+		#{$self}-logo {
+
+			&-text path {
+				color: $primary;
+			}
+		}
+	}
+
+
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+		height: $header-height - 10px;
+
+		&-logo {
+			transform: translateY(5px);
+		}
+
+		&-cont {
+			height: $header-height;
+			padding: 0 15px;
+			max-width: $grid-breakpoint-tab * 1px - 50px;
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+		height: $header-height - 3px;
+
+		&-cont {
+			max-width: $grid-breakpoint-desk * 1px - 50px;
+		}
+
+		&-logo {
+			transform: translateY(10px);
+		}
+	}
+
+	// HD
+	// =========================================================================
+
+	@include media-hd {
+
+		&-cont {
+			max-width: $grid-breakpoint-hd * 1px - 50px;
+		}
+	}
+}
