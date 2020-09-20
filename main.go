@@ -16,7 +16,7 @@ limitations under the License.
 package main
 
 import (
-	"cms/api/cmd"
+	"github.com/ainsleyclark/verbis/api/cmd"
 )
 
 func main() {
