@@ -7,18 +7,18 @@ import (
 
 func (s *Seeder) runOptions() error {
 
-	optionsSeed := domain.Options{
+	optionsSeed := domain.OptionsDB{
 		"site_title" : api.AppTitle,
 		"site_description": api.AppDescription,
 		"site_logo": api.AppLogo,
 		"site_url" : api.AppUrl,
 		"media_compression": 80,
 		"media_convert_webp": true,
+		"media_serve_webp": true,
 		"media_upload_max_size": 100000,
 		"media_upload_max_width": 0,
 		"media_upload_max_height": 0,
 		"media_organise_year_month": false,
-		"media_serve_webp": true,
 		"media_images_sizes": domain.MediaSizes{
 			"thumbnail": domain.MediaSize{
 				Name: "Thumbnail Size",
@@ -45,7 +45,7 @@ func (s *Seeder) runOptions() error {
 				Crop: false,
 			},
 		},
-		"cache": true,
+		"cache_global": true,
 		"cache_layout": true,
 		"cache_fields": true,
 		"cache_site": true,

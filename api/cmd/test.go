@@ -1,14 +1,21 @@
 package cmd
 
 import (
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
 var (
 	testCmd = &cobra.Command{
 		Use:   "test",
-		Short: "Test",
+		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
+			opts, err := app.store.Options.GetStruct()
+			if err != nil {
+				log.Debug("in err")
+				log.Error(err)
+			}
+			log.Debug(opts)
 		},
 	}
 )
