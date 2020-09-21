@@ -4,7 +4,7 @@
 	"fields": [
 		{
 			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5745",
-			"label": "Title",
+			"label": "Titles",
 			"name": "title",
 			"type": "text",
 			"instructions": "Add a title for the the resource page.",
@@ -22,6 +22,11 @@
 				"param": "category",
 				"operator": "==",
 				"value": "1"
+			},
+			{
+				"param": "page_template",
+				"operator": "!=",
+				"value": "post-single"
 			}
 		]
 	]

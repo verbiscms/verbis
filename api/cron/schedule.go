@@ -21,7 +21,7 @@ func New(m *models.Store) *Scheduler {
 func (s *Scheduler) Run() {
 
 	// Clean password resets table every minute
-	if err := gocron.Every(5).Seconds().Do(s.store.Auth.CleanPasswordResets); err != nil {
+	if err := gocron.Every(15).Minutes().Do(s.store.Auth.CleanPasswordResets); err != nil {
 		log.Error(err)
 	}
 
@@ -29,8 +29,7 @@ func (s *Scheduler) Run() {
 	//fmt.Println(time)
 
 	// Start all the pending jobs
-	// TODO: Ask Kirk, not working! Blocking other operations.
-	//<- gocron.Start()
+	<- gocron.Start()
 }
 
 

@@ -26,6 +26,10 @@ func New() (*DB, error) {
 	}
 	db.Sqlx = sqlxInstance
 
+	defer func(){
+		db.Sqlx.Close()
+	}()
+
 	// Check if database exists
 	_, err = db.Sqlx.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", environment.Env.DbDatabase)
 	if err != nil {
