@@ -102,7 +102,7 @@ func bootstrap() {
 
 	// Load cron jobs
 	scheduler := cron.New(store)
-	scheduler.Run()
+	go scheduler.Run()
 
 	// Load app
 	app = App{
