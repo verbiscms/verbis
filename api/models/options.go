@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"encoding/json"
+	"github.com/ainsleyclark/verbis/api/domain"
 
 	//"encoding/json"
 	"fmt"
@@ -11,10 +11,11 @@ import (
 )
 
 type OptionsRepository interface {
-	GetAll() (domain.Options, error)
+	GetAll() (domain.OptionsDB, error)
 	GetByName(name string) (interface{}, error)
-	UpdateCreate(options domain.Options) error
+	UpdateCreate(options domain.OptionsDB) error
 	Exists(name string) bool
+	GetStruct() (domain.Options, error)
 }
 
 type OptionsStore struct {
@@ -29,18 +30,18 @@ func newOptions(db *sqlx.DB) *OptionsStore {
 }
 
 // Get all options
-func (s *OptionsStore) GetAll() (domain.Options, error) {
-	var o []domain.Option
+func (s *OptionsStore) GetAll() (domain.OptionsDB, error) {
+	var o []domain.OptionDB
 	if err := s.db.Select(&o, "SELECT * FROM options"); err != nil {
 		log.Error(err)
 		return nil, fmt.Errorf("Could not get options")
 	}
 
-	opts := make(domain.Options)
+	opts := make(domain.OptionsDB)
 	for _, v := range o {
 		unValue, err := s.unmarshalValue(v.Value)
 		if err != nil {
-			return domain.Options{}, err
+			return domain.OptionsDB{}, err
 		}
 		opts[v.Name] = unValue
 	}
@@ -63,7 +64,7 @@ func (s *OptionsStore) GetByName(name string) (interface{}, error) {
 }
 
 // Update or create options
-func (s *OptionsStore) UpdateCreate(options domain.Options) error {
+func (s *OptionsStore) UpdateCreate(options domain.OptionsDB) error {
 	for name, value := range options {
 		jsonValue, err := s.marshalValue(value)
 		if err != nil {
@@ -126,3 +127,34 @@ func (s *OptionsStore) marshalValue(optValue interface{}) (json.RawMessage, erro
 	return json.Marshal(optValue)
 }
 
+func (s *OptionsStore) GetStruct() (domain.Options, error){
+	var opts []domain.OptionDB
+	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
+		return domain.Options{}, err
+	}
+
+	unOpts := make(domain.OptionsDB)
+	for _, v := range opts {
+		unValue, err := s.unmarshalValue(v.Value)
+		if err != nil {
+			return domain.Options{}, err
+		}
+		unOpts[v.Name] = unValue
+	}
+
+	mOpts, err := json.Marshal(unOpts)
+	if err != nil {
+		return domain.Options{}, err
+	}
+
+	//fmt.Print(unOpts)
+
+	var options domain.Options
+	if err := json.Unmarshal(mOpts, &options); err != nil {
+		return domain.Options{}, err
+	}
+
+	fmt.Print(options)
+
+	return options, nil
+}

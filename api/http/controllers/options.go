@@ -60,7 +60,7 @@ func (c *OptionsController) GetByName(g *gin.Context) {
 
 // Update & Create options
 func (c *OptionsController) UpdateCreate(g *gin.Context) {
-	var options domain.Options
+	var options domain.OptionsDB
 	if err := g.ShouldBindJSON(&options); err != nil {
 		Respond(g, 400, "Validation failed", err)
 		return
