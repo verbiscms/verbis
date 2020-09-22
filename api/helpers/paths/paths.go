@@ -11,7 +11,7 @@ import (
 // Base path of project
 func Base() string {
 	path := ""
-	if environment.Env.AppEnv == "production" || environment.Env.AppEnv == "prod" {
+	if environment.IsProduction() {
 		path, _ = filepath.Abs(filepath.Dir(os.Args[0]))
 	} else {
 		_, b, _, _ := runtime.Caller(0)

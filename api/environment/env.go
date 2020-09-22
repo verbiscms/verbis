@@ -1,32 +1,38 @@
 package environment
 
 import (
-	"encoding/json"
 	"fmt"
+	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
+	pkgValidate "github.com/go-playground/validator/v10"
+
 	"github.com/joho/godotenv"
 	"os"
 	"path/filepath"
 )
 
-var Env Map
+var env envMap
 
-type Map struct {
-	AppName 			string
-	AppEnv				string
-	AppDebug 			string
-	AppUrl				string
-	DbHost				string
-	DbPort				string
-	DbDatabase			string
-	DbUser				string
-	DbPassword			string
-	RedisHost			string
-	RedisPassword		string
-	RedisPort			string
-	SparkpostApiKey		string
-	SparkpostUrl		string
-	MailFromAddress		string
-	MailFromName		string
+type envMap struct {
+	AppName 			string `json:"APP_NAME"`
+	AppEnv				string `json:"APP_ENV"`
+	AppDebug 			string `json:"APP_DEBUG"`
+	AppUrl				string `json:"APP_URL"`
+	DbHost				string `json:"DB_HOST" binding:"required,ip"`
+	DbPort				string `json:"DB_PORT" binding:"required"`
+	DbDatabase			string `json:"DB_DATABASE" binding:"required"`
+	DbUser				string `json:"DB_USERNAME" binding:"required"`
+	DbPassword			string `json:"DB_PASSWORD" binding:"required"`
+	SparkpostApiKey		string `json:"SPARKPOST_API_KEY"`
+	SparkpostUrl		string `json:"SPARKPOST_URL"`
+	MailFromAddress		string `json:"MAIL_FROM_ADDRESS"`
+	MailFromName		string `json:"MAIL_FROM_NAME"`
+}
+
+type Mail struct {
+	SparkpostApiKey		string `json:"SPARKPOST_API_KEY"`
+	SparkpostUrl		string `json:"SPARKPOST_URL"`
+	FromAddress			string `json:"MAIL_FROM_ADDRESS"`
+	FromName			string `json:"MAIL_FROM_NAME"`
 }
 
 // Populate environment, loads and validates the environment file.
@@ -43,11 +49,10 @@ func Load() error {
 
 	// Init ENV
 	if err := godotenv.Overload(envPath); err != nil {
-		return fmt.Errorf("cannot load environment file: %w", err)
+		return fmt.Errorf("Could not load the enviromnent file, is there a .env file in the root of the verbis project?")
 	}
 
-	Env = Map{
-		AppName: 	os.Getenv("APP_NAME"),
+	env = envMap{
 		AppEnv:  	os.Getenv("APP_ENV"),
 		AppDebug:  	os.Getenv("APP_DEBUG"),
 		AppUrl:  	os.Getenv("APP_URL"),
@@ -56,51 +61,62 @@ func Load() error {
 		DbDatabase: os.Getenv("DB_DATABASE"),
 		DbUser: 	os.Getenv("DB_USERNAME"),
 		DbPassword: os.Getenv("DB_PASSWORD"),
-		RedisHost: os.Getenv("REDIS_HOST"),
-		RedisPassword: os.Getenv("REDIS_PASSWORD"),
-		RedisPort: os.Getenv("REDIS_PORT"),
 		SparkpostApiKey: os.Getenv("SPARKPOST_API_KEY"),
 		SparkpostUrl: os.Getenv("SPARKPOST_URL"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
 		MailFromName: os.Getenv("MAIL_FROM_NAME"),
 	}
 
-	if err := validate(&Env); err != nil {
-		fmt.Errorf("error validating environment file: %w", err)
-	}
-
 	return nil
 }
-
 
 // Validate the environment file for missing keys
-func validate(e *Map) error {
-
-	// Cast struct to map
-	var envMap map[string]interface{}
-	inrec, _ := json.Marshal(e)
-	json.Unmarshal(inrec, &envMap)
-
-	for k, v := range envMap {
-		if v == "" {
-			return fmt.Errorf(k + " is missing from the .environment file")
-		}
+func Validate() []validation.ValidationError {
+	v := validation.New()
+	err := v.Package.Struct(env)
+	if err != nil {
+		validationErrors := err.(pkgValidate.ValidationErrors)
+		return v.Process(validationErrors)
 	}
-
 	return nil
 }
 
-// Get the database connection string.
+// App - Name
+func GetAppName() string {
+	return env.AppName
+}
+
+// Database - Connection String
 func ConnectString() string {
-	return Env.DbUser + ":" + Env.DbPassword + "@tcp(" + Env.DbHost + ":" + Env.DbPort + ")/" + Env.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
+	return env.DbUser + ":" + env.DbPassword + "@tcp(" + env.DbHost + ":" + env.DbPort + ")/" + env.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
 }
 
-// Is production
+// Database - Name
+func GetDatabaseName() string {
+	return env.DbDatabase
+}
+
+// Mail - Configuration
+func GetMailConfiguration() Mail {
+	return Mail{
+		FromAddress: env.MailFromAddress,
+		FromName: env.MailFromName,
+	}
+}
+
+// Env - Production
 func IsProduction() bool {
-	return Env.AppEnv == "production" || Env.AppEnv == "prod"
+	return env.AppEnv == "production" || env.AppEnv == "prod"
 }
 
-// Is in debug mode
-func IsDebug() bool {
-	return Env.AppDebug == "true"
+// Env - Development
+func IsDevelopment() bool {
+	return env.AppEnv != "production" && env.AppEnv != "prod"
 }
+
+// Env - Debug
+func IsDebug() bool {
+	return env.AppDebug != "false"
+}
+
+

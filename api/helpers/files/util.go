@@ -3,6 +3,7 @@ package files
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -72,4 +73,24 @@ func GetFileSize(path string) int {
 		return 0
 	}
 	return int(fi.Size() / 1024)
+}
+
+// Get file contents of given path
+func GetFileContents(path string) (string, error) {
+	contents, err := ioutil.ReadFile(path)
+
+	if err != nil {
+		return "", fmt.Errorf("Could not get file contents: %w", err)
+	}
+
+	return string(contents), nil
+}
+
+// Get files retrieves all files based on the file path param
+func GetFile(path string) ([]byte, error) {
+	f, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	return f, nil
 }
