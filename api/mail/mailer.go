@@ -11,6 +11,8 @@ import (
 type Mailer struct {
 	client sp.Client
 	Transmission Sender
+	FromAddress string
+	FromName string
 }
 
 type Sender struct {
@@ -35,9 +37,11 @@ func New() (*Mailer, error) {
 // Load the mailer and connect to sparkpost
 func (m *Mailer) load() error {
 
+	mailConf := environment.GetMailConfiguration()
+
 	config := &sp.Config{
-		BaseUrl:    environment.Env.SparkpostUrl,
-		ApiKey:     environment.Env.SparkpostApiKey,
+		BaseUrl:    mailConf.SparkpostUrl,
+		ApiKey:     mailConf.SparkpostApiKey,
 		ApiVersion: 1,
 	}
 
@@ -47,6 +51,9 @@ func (m *Mailer) load() error {
 		return fmt.Errorf("SparkPost client init failed: %s\n", err)
 	}
 	m.client = client
+
+	m.FromAddress = mailConf.FromAddress
+	m.FromName = mailConf.FromName
 
 	return nil
 }
@@ -60,7 +67,7 @@ func (m *Mailer) Send(t *Sender) (string, error) {
 		Recipients: t.To,
 		Content: sp.Content{
 			HTML:    t.HTML,
-			From:    environment.Env.MailFromAddress,
+			From:    m.FromAddress,
 			Subject: t.Subject,
 		},
 	}

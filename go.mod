@@ -5,7 +5,7 @@ go 1.14
 require (
 	github.com/0xAX/notificator v0.0.0-20191016112426-3962a5ea8da1 // indirect
 	github.com/SparkPost/gosparkpost v0.2.0
-	github.com/ainsleyclark/golang-sql-migrate v1.0.1
+	github.com/ainsleyclark/golang-sql-migrate v1.0.1 // indirect
 	github.com/chai2010/webp v1.1.0 // indirect
 	github.com/codegangsta/envy v0.0.0-20141216192214-4b78388c8ce4 // indirect
 	github.com/codegangsta/gin v0.0.0-20171026143024-cafe2ce98974 // indirect
@@ -39,6 +39,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/magiconair/properties v1.8.2 // indirect
+	github.com/manifoldco/promptui v0.7.0 // indirect
 	github.com/mattn/go-shellwords v1.0.10 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
