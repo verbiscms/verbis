@@ -31,7 +31,7 @@ import (
 
 // TODO: Change db and store to local variables
 type App struct {
-	db *database.DB
+	db *database.MySql
 	store *models.Store
 }
 
@@ -57,14 +57,14 @@ func Execute() {
 
 // Add child commands and bootstrap
 func init() {
-	bootstrap()
-	rootCmd.AddCommand(migrateCmd)
 	rootCmd.AddCommand(serveCmd)
 	rootCmd.AddCommand(usersCmd)
 	rootCmd.AddCommand(postsCmd)
 	rootCmd.AddCommand(seedCmd)
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(testCmd)
+	rootCmd.AddCommand(doctorCmd)
+	rootCmd.AddCommand(installCmd)
 }
 
 // Bootstrap the application
@@ -73,7 +73,7 @@ func bootstrap() {
 	// Load ENV
 	err := environment.Load()
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	// Init logging
@@ -91,7 +91,7 @@ func bootstrap() {
 	// Load Database
 	db, err := database.New()
 	if err != nil {
-		log.Panic(err)
+		log.Fatal(err)
 	}
 
 	// Set up stores & pass the database.

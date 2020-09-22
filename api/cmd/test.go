@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	log "github.com/sirupsen/logrus"
+	"fmt"
 	"github.com/spf13/cobra"
 )
 
@@ -10,12 +10,17 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			opts, err := app.store.Options.GetStruct()
-			if err != nil {
-				log.Debug("in err")
-				log.Error(err)
-			}
-			log.Debug(opts)
+
+			fmt.Println("in test")
+
+			//opts, err := app.store.Options.GetStruct()
+			//if err != nil {
+			//	log.Debug("in err")
+			//	log.Error(err)
+			//}
+			//log.Debug(opts)
+
+
 		},
 	}
 )

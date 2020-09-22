@@ -1,66 +1,94 @@
 package database
 
 import (
-	"github.com/ainsleyclark/verbis/api/environment"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
-type DB struct {
+type MySql struct {
 	Sqlx 	*sqlx.DB
 }
 
-func newInstance() *DB {
-	return &DB{}
+// Create a new database instance.
+func New() (*MySql, error) {
+	db := MySql{}
+
+	sql, err := db.GetDatabase()
+	if err != nil {
+		return nil, err
+	}
+	db.Sqlx = sql
+
+	if err := db.Ping(); err != nil {
+		return nil, err
+	}
+
+	return &db, nil
 }
 
-// Create a new database instance.
-func New() (*DB, error) {
-	db := newInstance()
-
-	// Open sql database connection
-	sqlxInstance, err := sqlx.Open("mysql", environment.ConnectString())
+// Open sql database connection
+func (db *MySql) GetDatabase() (*sqlx.DB, error) {
+	var driver *sqlx.DB
+	driver, err := sqlx.Connect("mysql", environment.ConnectString())
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to database: %w", err)
 	}
-	db.Sqlx = sqlxInstance
+	return driver, nil
+}
 
-	//defer func(){
-	//	db.Sqlx.Close()
-	//}()
-
-	// Check if database exists
-	_, err = db.Sqlx.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", environment.Env.DbDatabase)
+// Check if database exists
+func (db *MySql) CheckExists() error {
+	_, err := db.Sqlx.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", environment.GetDatabaseName())
 	if err != nil {
-		return nil, fmt.Errorf("unknown database: %s", environment.Env.DbDatabase)
+		return fmt.Errorf("No database found with the name: %s", environment.GetDatabaseName())
+	}
+	return nil
+}
+
+//Ping database to check connection
+func (db *MySql) Ping() error {
+	if err := db.Sqlx.Ping(); err != nil {
+		return fmt.Errorf("Error pinging the database")
+	}
+	return nil
+}
+
+// Install the cms
+func (db *MySql) Install() error {
+	path := paths.Migration() + "/schema.sql"
+	sql, err := files.GetFileContents(path)
+	if err != nil {
+		return fmt.Errorf("Could not get the schema sql file from the path: %s", path)
 	}
 
-	//Ping database to check connection
-	err = db.Sqlx.Ping()
-	if err != nil {
-		return nil, fmt.Errorf("error pinging database: %w", err)
+	if _, err := db.Sqlx.Exec(sql); err != nil {
+		return err
 	}
 
-	return db, nil
+	return nil
 }
 
 // Drop database
-func (db *DB) drop() error {
-	_, err := db.Sqlx.Exec("DROP DATABASE " + environment.Env.DbDatabase + ";")
+func (db *MySql) Drop() error {
+	_, err := db.Sqlx.Exec("DROP DATABASE " + environment.GetDatabaseName() + ";")
 	if err != nil {
-		return fmt.Errorf("error dropping database: %w", err)
+		return fmt.Errorf("Error dropping database: %w", err)
 	}
 	return nil
 }
 
 // Create database
-func (db *DB) create() error {
-	_, err := db.Sqlx.Exec("CREATE DATABASE " + environment.Env.DbDatabase + ";")
+func (db *MySql) Create() error {
+	_, err := db.Sqlx.Exec("CREATE DATABASE " + environment.GetDatabaseName() + ";")
 	if err != nil {
 		return fmt.Errorf("error creating database: %w", err)
 	}
 	return nil
 }
+
 
 

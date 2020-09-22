@@ -15,6 +15,8 @@ var (
 		Long:  `Serve will serve the system dependant on port number passed.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 
+			bootstrap()
+
 			// Set up the router
 			serve, err := server.New()
 			if err != nil {

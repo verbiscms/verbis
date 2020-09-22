@@ -33,7 +33,7 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 	md5String := encryption.MD5Hash(strconv.Itoa(u.Id) + u.Email)
 
 	data := mail.Data{
-		"AppUrl": environment.Env.AppUrl,
+		"AppUrl": environment.GetAppName(),
 		"AppTitle": title,
 		"AdminPath": config.Admin.Path,
 		"Token": md5String,

@@ -31,7 +31,7 @@ func (e *ResetPassword) Send(u *domain.User, token string) error {
 		To:      	[]string{u.Email},
 		Subject: 	"Reset password",
 		HTML: 		"<p>Reset password here</p>" +
-			"<a href='" + environment.Env.AppUrl + "/" + config.Admin.Path + "/password/reset/" + token + "'>Reset</a>",
+			"<a href='" + environment.GetAppName() + "/" + config.Admin.Path + "/password/reset/" + token + "'>Reset</a>",
 	}
 
 	_, err := e.mailer.Send(&tm)

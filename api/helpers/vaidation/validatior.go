@@ -8,7 +8,7 @@ import (
 )
 
 type Validation struct {
-	pkg *pkgValidate.Validate
+	Package *pkgValidate.Validate
 }
 
 type ValidationError struct {
@@ -26,10 +26,10 @@ type Validator interface {
 // Construct
 func New() *Validation {
 	v := &Validation{
-		pkg: pkgValidate.New(),
+		Package: pkgValidate.New(),
 	}
 
-	v.pkg.SetTagName("binding")
+	v.Package.SetTagName("binding")
 
 	return v
 }
@@ -72,7 +72,7 @@ func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 // Function for checking validation by struct on the command line.
 func (v* Validation) CmdCheck(key string, data interface{}) error {
 
-	err := v.pkg.Struct(data)
+	err := v.Package.Struct(data)
 
 	if err != nil {
 		validationErrors, _ := err.(pkgValidate.ValidationErrors)
@@ -106,7 +106,13 @@ func (v* Validation) message(kind string, field string, param string) string {
 		errorMsg = "Enter a maximum of " + param + " characters."
 		break
 	case "alpha":
+		errorMsg = field + " must be alpha."
+		break
+	case "alphanum":
 		errorMsg = field + " must be alphanumeric."
+		break
+	case "ip":
+		errorMsg = field + " must be valid IP address."
 		break
 	}
 

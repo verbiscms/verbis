@@ -20,7 +20,7 @@ type Store struct {
 }
 
 // Create a new database instance, connect to database.
-func New(db *database.DB) (*Store, error) {
+func New(db *database.MySql) (*Store, error) {
 
 	auth := newAuth(db.Sqlx)
 	categories := newCategories(db.Sqlx)

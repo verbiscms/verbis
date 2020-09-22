@@ -43,7 +43,7 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 	return template.FuncMap{
 		// Env
-		"appEnv": t.appEnv,
+		//"appEnv": t.appEnv,
 		"isProduction": t.isProduction,
 		"isDebug": t.isDebug,
 		// Posts
@@ -69,9 +69,9 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
  */
 
 // Get the app env
-func (t *TemplateFunctions) appEnv() string {
-	return environment.Env.AppEnv
-}
+//func (t *TemplateFunctions) appEnv() string {
+//	return environment.Env.AppEnv
+//}
 
 // If the app is in production or development
 func (t *TemplateFunctions) isProduction() bool {
