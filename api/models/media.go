@@ -2,6 +2,8 @@ package models
 
 import (
 	"bytes"
+	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
@@ -9,8 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http"
-	"encoding/json"
-	"fmt"
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
 	"regexp"
@@ -83,62 +83,20 @@ func (s *MediaStore) processImageSizes(sizes map[string]interface{}) domain.Medi
 func (s *MediaStore) init() {
 	om := newOptions(s.db)
 
-	imageSizes, err := om.GetByName("media_images_sizes")
+	opts, err := om.GetStruct()
 	if err != nil {
-		s.imageSizes = nil
-	} else {
-		s.imageSizes = s.processImageSizes(imageSizes.(map[string]interface{}))
+		log.Fatal(err)
 	}
 
-	convertWebP, err := om.GetByName("media_convert_webp")
-	if err != nil {
-		s.convertWebP = false
-	} else {
-		s.convertWebP = convertWebP.(bool)
-	}
+	s.imageSizes = s.processImageSizes(opts.MediaSizes)
 
-	serveWebP, err := om.GetByName("media_convert_webp")
-	if err != nil {
-		s.serveWebP = false
-	} else {
-		s.serveWebP = serveWebP.(bool)
-	}
-
-	compression, err := om.GetByName("media_compression")
-	if err != nil {
-		s.compression = 100
-	} else {
-		s.compression = int(compression.(float64))
-	}
-
-	maxWidth, err := om.GetByName("media_upload_max_width")
-	if err != nil {
-		fmt.Println(err)
-		s.maxWidth = 0
-	} else {
-		s.maxWidth = int(maxWidth.(float64))
-	}
-
-	maxHeight, err := om.GetByName("media_upload_max_height")
-	if err != nil {
-		s.maxHeight = 0
-	} else {
-		s.maxHeight = int(maxHeight.(float64))
-	}
-
-	maxFileSize, err := om.GetByName("media_upload_max_size")
-	if err != nil {
-		s.maxFileSize = 0
-	} else {
-		s.maxFileSize = int(maxFileSize.(float64))
-	}
-
-	organiseYear, err := om.GetByName("media_organise_year_month")
-	if err != nil {
-		s.organiseYear = true
-	} else {
-		s.organiseYear = organiseYear.(bool)
-	}
+	s.convertWebP = opts.MediaConvertWebP
+	s.serveWebP = opts.MediaServeWebP
+	s.compression = opts.MediaCompression
+	s.maxWidth = opts.MediaUploadMaxWidth
+	s.maxHeight = opts.MediaUploadMaxHeight
+	s.maxFileSize = opts.MediaUploadMaxSize
+	s.organiseYear = opts.MediaOrganiseDate
 }
 
 // GetAll Gets all media files from the database

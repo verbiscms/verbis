@@ -87,14 +87,21 @@ func (c *MediaController) Upload(g *gin.Context) {
 		return
 	}
 
+	if len(files) == 0 {
+		Respond(g, 400, "Attach a file to the request to be uploaded", nil)
+		return
+	}
+
 	if err := c.mediaModel.Validate(files[0]); err != nil {
 		Respond(g, 415, err.Error(), nil)
+		return
 	}
 
 	token := g.Request.Header.Get("token")
 	user, err := c.userModel.CheckToken(token)
 	if err != nil {
 		Respond(g, 400, err.Error(), nil)
+		return
 	}
 
 	media, err := c.mediaModel.Upload(files[0], user.Id)

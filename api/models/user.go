@@ -106,17 +106,19 @@ func (s *UserStore) Create(u *domain.User) (domain.User, error) {
 		return domain.User{}, fmt.Errorf("Could not create the user role for user with the name: %v %v", u.FirstName, u.LastName)
 	}
 
-	ve, err := events.NewVerifyEmail()
-	if err != nil {
-		log.Error(err)
-		return domain.User{}, err
-	}
+	if u.Role.Id != 6 {
+		ve, err := events.NewVerifyEmail()
+		if err != nil {
+			log.Error(err)
+			return domain.User{}, err
+		}
 
-	// TODO: Get app title from options model
-	err = ve.Send(u, "Verbis")
-	if err != nil {
-		log.Error(err)
-		return domain.User{}, err
+		// TODO: Get app title from options model
+		err = ve.Send(u, "Verbis")
+		if err != nil {
+			log.Error(err)
+			return domain.User{}, err
+		}
 	}
 
 	return *u, nil

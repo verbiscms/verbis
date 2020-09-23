@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -19,7 +20,7 @@ environment.`,
 			if _, err := doctor(); err != nil {
 				return
 			}
-			printSuccess("All checks passed.")
+
 			return
 		},
 	}
@@ -29,6 +30,14 @@ environment.`,
 // to see if there is a valid database connection and the
 // database exists before proceeding.
 func doctor() (*database.MySql, error) {
+
+	printSpinner("Running doctor...")
+
+	// Check paths are correct
+	if err := paths.BaseCheck(); err != nil {
+		printError(err.Error())
+		return nil, err
+	}
 
 	// Load the environment (.env file)
 	err := environment.Load()
@@ -41,32 +50,29 @@ func doctor() (*database.MySql, error) {
 	vErrors := environment.Validate()
 	if vErrors != nil {
 		for _, v := range vErrors {
-			var msg = fmt.Sprintf("-> Error obtaining environment variable: %s", strings.ToUpper(v.Key))
+			var msg = fmt.Sprintf("Obtaining environment variable: %s", strings.ToUpper(v.Key))
 			if v.Type == "ip" {
-				msg = fmt.Sprintf("-> Error obtaining environment variable: %s must be a valid IP address", strings.ToUpper(v.Key))
+				msg = fmt.Sprintf("Obtaining environment variable: %s must be a valid IP address", strings.ToUpper(v.Key))
 			}
 			printError(msg)
 		}
-		return nil, fmt.Errorf("validation failed for the enviroment")
+		return nil, fmt.Errorf("Validation failed for the enviroment")
 	}
 
 	// Get the database and ping
-	sqlx, err := app.db.GetDatabase()
+	db, err := database.New()
 	if err != nil {
-		printError("Error establishing database connection, are the credentials in the .env file correct?")
-		return nil, fmt.Errorf("error establishing database connection")
-	}
-
-	db := database.MySql{
-		Sqlx: sqlx,
+		printError("Establishing database connection, are the credentials in the .env file correct?")
+		return nil, fmt.Errorf("Error establishing database connection")
 	}
 
 	// Check if the database exists
 	if err := db.CheckExists(); err != nil {
-		fmt.Println("here")
-		printError("Error establishing database connection, are the credentials in the .env file correct?")
+		printError("Establishing database connection, are the credentials in the .env file correct?")
 		return nil, fmt.Errorf("error establishing database connection")
 	}
 
-	return &db, nil
+	printSuccess("All checks passed.")
+
+	return db, nil
 }

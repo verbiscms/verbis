@@ -21,7 +21,7 @@ upload_path: /uploads
 # |
 # |
 allowed_file_types: [
-    image/png
+    image/png,
     image/jpeg,
     image/gif,
     image/webp,

@@ -8,10 +8,10 @@ import (
 func (s *Seeder) runOptions() error {
 
 	optionsSeed := domain.OptionsDB{
-		"site_title" : api.AppTitle,
-		"site_description": api.AppDescription,
-		"site_logo": api.AppLogo,
-		"site_url" : api.AppUrl,
+		"site_title" : api.App.Title,
+		"site_description": api.App.Description,
+		"site_logo": api.App.Logo,
+		"site_url" : api.App.Url,
 		"media_compression": 80,
 		"media_convert_webp": true,
 		"media_serve_webp": true,

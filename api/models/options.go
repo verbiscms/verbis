@@ -13,9 +13,9 @@ import (
 type OptionsRepository interface {
 	GetAll() (domain.OptionsDB, error)
 	GetByName(name string) (interface{}, error)
+	GetStruct() (domain.Options, error)
 	UpdateCreate(options domain.OptionsDB) error
 	Exists(name string) bool
-	GetStruct() (domain.Options, error)
 }
 
 type OptionsStore struct {
@@ -61,6 +61,35 @@ func (s *OptionsStore) GetByName(name string) (interface{}, error) {
 	}
 
 	return nil, fmt.Errorf("Option value has not been found with the name: %v:", name)
+}
+
+// Get the options struct for use in the API
+func (s *OptionsStore) GetStruct() (domain.Options, error) {
+	var opts []domain.OptionDB
+	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
+		return domain.Options{}, err
+	}
+
+	unOpts := make(domain.OptionsDB)
+	for _, v := range opts {
+		unValue, err := s.unmarshalValue(v.Value)
+		if err != nil {
+			return domain.Options{}, err
+		}
+		unOpts[v.Name] = unValue
+	}
+
+	mOpts, err := json.Marshal(unOpts)
+	if err != nil {
+		return domain.Options{}, err
+	}
+
+	var options domain.Options
+	if err := json.Unmarshal(mOpts, &options); err != nil {
+		return domain.Options{}, err
+	}
+
+	return options, nil
 }
 
 // Update or create options
@@ -127,34 +156,3 @@ func (s *OptionsStore) marshalValue(optValue interface{}) (json.RawMessage, erro
 	return json.Marshal(optValue)
 }
 
-func (s *OptionsStore) GetStruct() (domain.Options, error){
-	var opts []domain.OptionDB
-	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
-		return domain.Options{}, err
-	}
-
-	unOpts := make(domain.OptionsDB)
-	for _, v := range opts {
-		unValue, err := s.unmarshalValue(v.Value)
-		if err != nil {
-			return domain.Options{}, err
-		}
-		unOpts[v.Name] = unValue
-	}
-
-	mOpts, err := json.Marshal(unOpts)
-	if err != nil {
-		return domain.Options{}, err
-	}
-
-	//fmt.Print(unOpts)
-
-	var options domain.Options
-	if err := json.Unmarshal(mOpts, &options); err != nil {
-		return domain.Options{}, err
-	}
-
-	fmt.Print(options)
-
-	return options, nil
-}

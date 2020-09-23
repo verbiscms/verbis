@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 NAME HERE ainsley@reddico.co.uk
+Copyright © 2020 Verbis ainsley@reddico.co.uk
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,20 +16,13 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/spf13/cobra"
+	"strconv"
 )
-
-// TODO: Change db and store to local variables
-type App struct {
-	db *database.MySql
-	store *models.Store
-}
 
 // Root represents the base command when called without any subcommands
 var (
-	app App
 	rootCmd = &cobra.Command{
 		Use:   "Verbis",
 		Short: "Verbis CLI",
@@ -41,8 +34,14 @@ var (
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the Root.
 func Execute() {
+
+	// Pass the super admin to bool (ldflags)
+	admin, _ := strconv.ParseBool(api.SuperAdminString)
+	api.SuperAdmin = admin
+
+	// Execute the main command
 	if err := rootCmd.Execute(); err != nil {
-		printError(err.Error())
+		printError("Could not start Verbis")
 	}
 }
 
@@ -52,6 +51,7 @@ func init() {
 	rootCmd.AddCommand(configCmd)
 	rootCmd.AddCommand(doctorCmd)
 	rootCmd.AddCommand(installCmd)
+	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(dumpCmd)
 	rootCmd.AddCommand(testCmd)
 }
