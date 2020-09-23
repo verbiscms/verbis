@@ -1,4 +1,4 @@
-package cmd
+package models
 
 import (
 	"bufio"
