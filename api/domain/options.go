@@ -13,40 +13,28 @@ type OptionDB struct {
 }
 
 type Options struct {
-	OptionsSite
-	OptionsMedia
-	OptionsCache
-	OptionsGzip
-}
-
-type OptionsSite struct {
-	Title string `json:"site_title"`
-	Description string `json:"site_description"`
-	Logo string `json:"site_logo"`
-	Url string `json:"site_url"`
-}
-
-type OptionsMedia struct {
-	Compression int `json:"media_compression"`
-	ConvertWebP bool `json:"media_convert_webp"`
-	ServeWebP bool `json:"media_serve_webp"`
-	UploadMaxSize int `json:"media_upload_max_size"`
-	UploadMaxWidth int `json:"media_upload_max_width"`
-	UploadMaxHeight int `json:"media_upload_max_height"`
-	OrganiseDate bool `json:"media_organise_year_month"`
-	Sizes MediaSize `json:"media_images_sizes"`
-}
-
-type OptionsCache struct {
-	Cache bool `json:"cache_global"`
-	Layout bool `json:"cache_layout"`
-	Fields bool `json:"cache_fields"`
-	Site bool `json:"cache_site"`
-	Templates bool `json:"cache_templates"`
-	Resources bool `json:"cache_resources"`
-}
-
-type OptionsGzip struct {
-	Compress bool `json:"gzip_compression"`
-	Files []string `json:"gzip_files"`
+	// Site
+	SiteTitle string `json:"site_title"`
+	SiteDescription string `json:"site_description"`
+	SiteLogo string `json:"site_logo"`
+	SiteUrl string `json:"site_url"`
+	// Media
+	MediaCompression int `json:"media_compression"`
+	MediaConvertWebP bool `json:"media_convert_webp"`
+	MediaServeWebP bool `json:"media_serve_webp"`
+	MediaUploadMaxSize int `json:"media_upload_max_size"`
+	MediaUploadMaxWidth int `json:"media_upload_max_width"`
+	MediaUploadMaxHeight int `json:"media_upload_max_height"`
+	MediaOrganiseDate bool `json:"media_organise_year_month"`
+	MediaSizes map[string]interface{} `json:"media_images_sizes"`
+	// Cache
+	CacheGlobal bool `json:"cache_global"`
+	CacheLayout bool `json:"cache_layout"`
+	CacheFields bool `json:"cache_fields"`
+	CacheSite bool `json:"cache_site"`
+	CacheTemplates bool `json:"cache_templates"`
+	CacheResources bool `json:"cache_resources"`
+	// Gzip
+	GzipCompress bool `json:"gzip_compression"`
+	GzipFiles []string `json:"gzip_files"`
 }

@@ -1,15 +1,24 @@
 #!/bin/bash
 
-cd api
-GOOS=linux go build main.go
+cd ../
+#GOOS=linux go build main.go -ldflags "-X main.MODE PROD"
+GOOS=linux go build -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
 
-cd ..
+
 rm -rf build/theme
 rm -rf build/admin
-rm build/api/cms
+rm -rf build/api
+rm -rf build/verbis
+rm -rf build/config
 
-cp api/main build/api/cms
-cp -a api/database/migrations build/api/database/migrations
+cp main build
+
+mkdir build/api
+mkdir build/api/database
+
+cp -a api/database/migrations build/api/database
 cp -a theme build/theme
 cp -a admin build/admin
+cp -a config build/config
 
+mv build/main build/verbis

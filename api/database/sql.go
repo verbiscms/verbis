@@ -36,7 +36,7 @@ func (db *MySql) GetDatabase() (*sqlx.DB, error) {
 	var driver *sqlx.DB
 	driver, err := sqlx.Connect("mysql", environment.ConnectString())
 	if err != nil {
-		return nil, fmt.Errorf("error connecting to database: %w", err)
+		return nil, fmt.Errorf("Could not connect to the datbase to database: %w", err)
 	}
 	return driver, nil
 }
@@ -77,7 +77,7 @@ func (db *MySql) Install() error {
 func (db *MySql) Drop() error {
 	_, err := db.Sqlx.Exec("DROP DATABASE " + environment.GetDatabaseName() + ";")
 	if err != nil {
-		return fmt.Errorf("Error dropping database: %w", err)
+		return fmt.Errorf("Could not drop database: %w", err)
 	}
 	return nil
 }
@@ -86,7 +86,7 @@ func (db *MySql) Drop() error {
 func (db *MySql) Create() error {
 	_, err := db.Sqlx.Exec("CREATE DATABASE " + environment.GetDatabaseName() + ";")
 	if err != nil {
-		return fmt.Errorf("error creating database: %w", err)
+		return fmt.Errorf("Could not create database: %w", err)
 	}
 	return nil
 }

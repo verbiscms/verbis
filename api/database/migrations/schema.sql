@@ -1,6 +1,5 @@
 -- MySQL dump 10.13  Distrib 8.0.21, for osx10.15 (x86_64)
 --
--- Host: 127.0.0.1    Database: go_cms
 -- ------------------------------------------------------
 -- Server version	8.0.21
 
@@ -19,7 +18,6 @@
 -- Table structure for table `categories`
 --
 
-DROP TABLE IF EXISTS `categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `categories` (
@@ -42,7 +40,6 @@ CREATE TABLE `categories` (
 -- Table structure for table `media`
 --
 
-DROP TABLE IF EXISTS `media`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `media` (
@@ -65,25 +62,9 @@ CREATE TABLE `media` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Table structure for table `migrations`
---
-
-DROP TABLE IF EXISTS `migrations`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `migrations` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `migration` varchar(255) DEFAULT NULL,
-  `batch` int DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
 -- Table structure for table `options`
 --
 
-DROP TABLE IF EXISTS `options`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `options` (
@@ -98,7 +79,6 @@ CREATE TABLE `options` (
 -- Table structure for table `password_resets`
 --
 
-DROP TABLE IF EXISTS `password_resets`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `password_resets` (
@@ -113,7 +93,6 @@ CREATE TABLE `password_resets` (
 -- Table structure for table `post_categories`
 --
 
-DROP TABLE IF EXISTS `post_categories`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `post_categories` (
@@ -126,7 +105,6 @@ CREATE TABLE `post_categories` (
 -- Table structure for table `posts`
 --
 
-DROP TABLE IF EXISTS `posts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `posts` (
@@ -153,7 +131,6 @@ CREATE TABLE `posts` (
 -- Table structure for table `roles`
 --
 
-DROP TABLE IF EXISTS `roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roles` (
@@ -168,7 +145,6 @@ CREATE TABLE `roles` (
 -- Table structure for table `seo_meta_options`
 --
 
-DROP TABLE IF EXISTS `seo_meta_options`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `seo_meta_options` (
@@ -184,7 +160,6 @@ CREATE TABLE `seo_meta_options` (
 -- Table structure for table `subscribers`
 --
 
-DROP TABLE IF EXISTS `subscribers`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `subscribers` (
@@ -200,7 +175,6 @@ CREATE TABLE `subscribers` (
 -- Table structure for table `user_roles`
 --
 
-DROP TABLE IF EXISTS `user_roles`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_roles` (
@@ -213,7 +187,6 @@ CREATE TABLE `user_roles` (
 -- Table structure for table `user_sessions`
 --
 
-DROP TABLE IF EXISTS `user_sessions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_sessions` (
@@ -230,7 +203,6 @@ CREATE TABLE `user_sessions` (
 -- Table structure for table `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (

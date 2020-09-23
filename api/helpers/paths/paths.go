@@ -1,23 +1,45 @@
 package paths
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"os"
-	"path/filepath"
-	"runtime"
 )
 
 // Base path of project
 func Base() string {
-	path := ""
-	if environment.IsProduction() {
-		path, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-	} else {
-		_, b, _, _ := runtime.Caller(0)
-		path = filepath.Join(filepath.Dir(b), "../../..")
+	basePath := ""
+
+	basePath, err := os.Getwd()
+	if err != nil {
+		return ""
 	}
-	return path
+
+	return basePath
+}
+
+// BaseCheck environment is passable to run Terminal
+func BaseCheck() error {
+	basePath := Base()
+
+	if !files.Exists(basePath + "/.env") {
+		return fmt.Errorf("Could not locate the .env file in the current directory")
+	}
+
+	if !files.DirectoryExists(basePath + "/admin") {
+		return fmt.Errorf("Could not locate the Verbis admin folder in the current directory")
+	}
+
+	if !files.DirectoryExists(basePath + "/storage") {
+		return fmt.Errorf("Could not locate the Verbis storage folder in the current directory")
+	}
+
+	if !files.DirectoryExists(basePath + "/config") {
+		return fmt.Errorf("Could not locate the Verbis config folder in the current directory")
+	}
+
+	return nil
 }
 
 // Admin path of project

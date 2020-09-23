@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/spf13/cobra"
 )
 
@@ -11,14 +12,23 @@ var (
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			fmt.Println("in test")
+			// Run doctor
+			db, err := doctor()
+			if err != nil {
+				printError(err.Error())
+			}
 
-			//opts, err := app.store.Options.GetStruct()
-			//if err != nil {
-			//	log.Debug("in err")
-			//	log.Error(err)
-			//}
-			//log.Debug(opts)
+			// Set up stores & pass the database.
+			store, err := models.New(db)
+			if err != nil {
+				printError(err.Error())
+			}
+
+			opts, err := store.Options.GetStruct()
+			if err != nil {
+				fmt.Println(err)
+			}
+			fmt.Println(opts)
 
 
 		},
