@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func LogMiddleware() gin.HandlerFunc {
+func Log() gin.HandlerFunc {
 	return func(g *gin.Context) {
 		// Start time
 		startTime := time.Now()

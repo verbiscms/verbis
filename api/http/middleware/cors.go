@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CORSMiddleware() gin.HandlerFunc {
+func CORS() gin.HandlerFunc {
 	return func(g *gin.Context) {
 		g.Writer.Header().Set("Access-Control-Allow-Origin", "*")
 		g.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
