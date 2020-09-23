@@ -1,9 +1,8 @@
 #!/bin/bash
 
-cd ../
+cd
 #GOOS=linux go build main.go -ldflags "-X main.MODE PROD"
 GOOS=linux go build -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-
 
 rm -rf build/theme
 rm -rf build/admin
