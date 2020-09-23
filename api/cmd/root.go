@@ -16,11 +16,9 @@ limitations under the License.
 package cmd
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 // TODO: Change db and store to local variables
@@ -35,7 +33,7 @@ var (
 	rootCmd = &cobra.Command{
 		Use:   "Verbis",
 		Short: "Verbis CLI",
-		Long: `Verbis - Command Shell for Serving, Installing & Migrating.`,
+		Long: `Verbis - CHANGE.`,
 		DisableAutoGenTag: true,
 	}
 )
@@ -44,8 +42,7 @@ var (
 // This is called by main.main(). It only needs to happen once to the Root.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		printError(err.Error())
 	}
 }
 
