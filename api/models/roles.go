@@ -52,8 +52,8 @@ func (s *RoleStore) GetById(id int) (domain.UserRole, error) {
 
 // Create role
 func (s *RoleStore) Create(r *domain.UserRole) (domain.UserRole, error) {
-	q := "INSERT INTO roles (name, description) VALUES (?, ?)"
-	c, err := s.db.Exec(q, r.Name, r.Description)
+	q := "INSERT INTO roles (id, name, description) VALUES (?, ?, ?)"
+	c, err := s.db.Exec(q, r.Id, r.Name, r.Description)
 	if err != nil {
 		log.Error(err)
 		return domain.UserRole{}, fmt.Errorf("Could not create the role: %v", r.Name)
@@ -72,7 +72,6 @@ func (s *RoleStore) Create(r *domain.UserRole) (domain.UserRole, error) {
 
 // Update role
 func (s *RoleStore) Update(r *domain.UserRole) (domain.UserRole, error) {
-
 	_, err := s.GetById(r.Id)
 	if err != nil {
 		log.Info(err)

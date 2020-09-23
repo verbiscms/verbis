@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/cron"
@@ -37,6 +38,8 @@ var (
 			// Init Config
 			config.Init()
 
+			fmt.Println(config.Media)
+
 			// Set up stores & pass the database.
 			store, err := models.New(db)
 			if err != nil {
@@ -47,12 +50,6 @@ var (
 			scheduler := cron.New(store)
 			go scheduler.Run()
 
-			// Load app
-			app = App{
-				db: db,
-				store: store,
-			}
-
 			// Set up the router
 			serve, err := server.New()
 			if err != nil {
@@ -60,13 +57,13 @@ var (
 			}
 
 			// Pass the stores to the controllers
-			controllers, err := controllers.New(app.store)
+			controllers, err := controllers.New(store)
 			if err != nil {
 				printError(err.Error())
 			}
 
 			// Load the routes
-			routes.Load(serve, controllers, app.store)
+			routes.Load(serve, controllers, store)
 
 			// Listen & serve.
 			err = serve.ListenAndServe(8080)
@@ -76,10 +73,3 @@ var (
 		},
 	}
 )
-
-
-// Bootstrap the application
-func bootstrap() {
-
-
-}

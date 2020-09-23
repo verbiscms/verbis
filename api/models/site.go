@@ -87,33 +87,33 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 
 	title, err := s.optionsModel.GetByName("site_title")
 	if err != nil {
-		ds.Title = api.AppTitle
+		ds.Title = api.App.Title
 	} else {
 		ds.Title = title.(string)
 	}
 
 	description, err := s.optionsModel.GetByName("site_description")
 	if err != nil {
-		ds.Description = api.AppDescription
+		ds.Description = api.App.Description
 	} else {
 		ds.Description = description.(string)
 	}
 
 	logo, err := s.optionsModel.GetByName("site_logo")
 	if err != nil {
-		ds.Logo = api.AppLogo
+		ds.Logo = api.App.Logo
 	} else {
 		ds.Logo = logo.(string)
 	}
 
 	url, err := s.optionsModel.GetByName("site_url")
 	if err != nil {
-		ds.Url = api.AppUrl
+		ds.Url = api.App.Url
 	} else {
 		ds.Url = url.(string)
 	}
 
-	ds.Version = api.AppVersion
+	ds.Version = api.App.Version
 
 	// Set the cache for the site config if the cache was not found
 	// and the options allow.

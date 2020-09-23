@@ -25,9 +25,8 @@ func TypeByFile(file *multipart.FileHeader) (string, error) {
 func IsValidMime(allowed []string, mime string) bool {
 	if mimetype.EqualsAny(mime, allowed...) {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 // Check if the mime type is an image

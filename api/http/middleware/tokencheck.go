@@ -63,12 +63,10 @@ func OperatorTokenCheck(userModel models.UserRepository, sessionModel models.Ses
 // Check if the token exists in the header
 func checkTokenExists(g *gin.Context) error  {
 	token := g.Request.Header.Get("token")
-
 	if token == "" {
 		controllers.AbortJSON(g, 401, "Missing token in the request header", nil)
 		return fmt.Errorf("Missing token")
 	}
-
 	return nil
 }
 
