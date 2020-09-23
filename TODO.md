@@ -1,5 +1,10 @@
 # To Do
 
+## General
+
+- Make sure schema (migrations path) is set for non super admin users, its currentl database/schema
+- Webp doesnt work, replace library
+
 ## Fields
 
 Model will:
