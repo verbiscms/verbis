@@ -22,7 +22,7 @@ var (
 			// Run doctor
 			db, err := doctor()
 			if err != nil {
-				return
+				printError(err.Error())
 			}
 
 			// Init logging
@@ -41,7 +41,6 @@ var (
 			store, err := models.New(db)
 			if err != nil {
 				printError(err.Error())
-				return
 			}
 
 			// Load cron jobs
@@ -58,14 +57,12 @@ var (
 			serve, err := server.New()
 			if err != nil {
 				printError(err.Error())
-				return
 			}
 
 			// Pass the stores to the controllers
 			controllers, err := controllers.New(app.store)
 			if err != nil {
 				printError(err.Error())
-				return
 			}
 
 			// Load the routes
