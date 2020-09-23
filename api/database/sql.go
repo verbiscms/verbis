@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"github.com/JamesStewy/go-mysqldump"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -87,6 +88,26 @@ func (db *MySql) Create() error {
 	if err != nil {
 		return fmt.Errorf("error creating database: %w", err)
 	}
+	return nil
+}
+
+// Export database
+func (db *MySql) Export(path string, filename string) error {
+	dumper, err := mysqldump.Register(db.Sqlx.DB, path, filename)
+	if err != nil {
+		fmt.Println(err)
+		return fmt.Errorf("could not conenct to the database %v", err)
+	}
+
+	_, err = dumper.Dump()
+	if err != nil {
+		return fmt.Errorf("errror dumping the database: %v", err)
+	}
+
+	if err := dumper.Close(); err != nil {
+		return fmt.Errorf("errror closing database: %v", err)
+	}
+
 	return nil
 }
 

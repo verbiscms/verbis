@@ -4,14 +4,17 @@ go 1.14
 
 require (
 	github.com/0xAX/notificator v0.0.0-20191016112426-3962a5ea8da1 // indirect
+	github.com/JamesStewy/go-mysqldump v0.2.2
 	github.com/SparkPost/gosparkpost v0.2.0
 	github.com/ainsleyclark/golang-sql-migrate v1.0.1 // indirect
+	github.com/briandowns/spinner v1.11.1
 	github.com/chai2010/webp v1.1.0 // indirect
 	github.com/codegangsta/envy v0.0.0-20141216192214-4b78388c8ce4 // indirect
 	github.com/codegangsta/gin v0.0.0-20171026143024-cafe2ce98974 // indirect
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
+	github.com/fatih/color v1.9.0 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/foolin/goview v0.3.0
 	github.com/frankban/quicktest v1.11.0 // indirect
@@ -37,6 +40,7 @@ require (
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/kamoljan/webp v0.0.0-20141012125539-551bf556e428
 	github.com/kr/text v0.2.0 // indirect
+	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/magiconair/properties v1.8.2 // indirect
 	github.com/manifoldco/promptui v0.7.0 // indirect
