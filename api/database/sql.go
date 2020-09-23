@@ -91,11 +91,10 @@ func (db *MySql) Create() error {
 	return nil
 }
 
-// Export database
-func (db *MySql) Export(path string, filename string) error {
+// Dump database
+func (db *MySql) Dump(path string, filename string) error {
 	dumper, err := mysqldump.Register(db.Sqlx.DB, path, filename)
 	if err != nil {
-		fmt.Println(err)
 		return fmt.Errorf("could not conenct to the database %v", err)
 	}
 

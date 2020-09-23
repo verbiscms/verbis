@@ -22,31 +22,30 @@ database.`,
 			// Run doctor
 			db, err := doctor()
 			if err != nil {
-				return
+				printError(err.Error())
 			}
 
 			// Install the database
 			if err := db.Install(); err != nil {
 				printError(err.Error())
-				return
 			}
 
 			// Set up stores & pass the database.
 			store, err := models.New(db)
 			if err != nil {
 				printError(err.Error())
-				return
 			}
 
 			// Run the seeds
 			seeder := seeds.New(db.Sqlx, store)
 			if err := seeder.Seed(); err != nil {
 				printError(err.Error())
-				return
 			}
 
 			// Print success
 			printSuccess("Successfully installed verbis")
+
+			return
 		},
 	}
 )

@@ -4,22 +4,26 @@ import (
 	"fmt"
 	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
+	"os"
 	"time"
 )
 
 // Print error to terminal
 func printError(msg string) {
 	fmt.Println()
-	color.BgRed.Print(" ERROR ")
+	errMsg := color.New(color.LightWhite, color.BgRed, color.OpBold)
+	errMsg.Print(" ERROR ")
 	fmt.Print(" ")
 	color.Red.Print(msg)
 	fmt.Println()
+	os.Exit(1)
 }
 
 // Print success to terminal
 func printSuccess(msg string) {
 	fmt.Println()
-	color.BgGreen.Print(" SUCCESS ")
+	successMsg := color.New(color.LightWhite, color.BgGreen)
+	successMsg.Print(" SUCCESS ")
 	fmt.Print(" ")
 	color.Green.Print(msg)
 	fmt.Println()

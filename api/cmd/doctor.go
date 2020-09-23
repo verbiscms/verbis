@@ -19,6 +19,8 @@ environment.`,
 			if _, err := doctor(); err != nil {
 				return
 			}
+			printSuccess("All checks passed.")
+			return
 		},
 	}
 )
