@@ -17,14 +17,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/cron"
 	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/logger"
 	"github.com/ainsleyclark/verbis/api/models"
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
 )
@@ -40,7 +34,7 @@ var (
 	app App
 	rootCmd = &cobra.Command{
 		Use:   "Verbis",
-		Short: "Verbis - Command Shell for Serving, Installing & Migrating.",
+		Short: "Verbis CLI",
 		Long: `Verbis - Command Shell for Serving, Installing & Migrating.`,
 		DisableAutoGenTag: true,
 	}
@@ -57,56 +51,11 @@ func Execute() {
 
 // Add child commands and bootstrap
 func init() {
-	rootCmd.AddCommand(serveCmd)
-	rootCmd.AddCommand(usersCmd)
-	rootCmd.AddCommand(postsCmd)
-	rootCmd.AddCommand(seedCmd)
+	rootCmd.AddCommand(runCmd)
 	rootCmd.AddCommand(configCmd)
-	rootCmd.AddCommand(testCmd)
 	rootCmd.AddCommand(doctorCmd)
 	rootCmd.AddCommand(installCmd)
+	rootCmd.AddCommand(dumpCmd)
+	rootCmd.AddCommand(testCmd)
 }
 
-// Bootstrap the application
-func bootstrap() {
-
-	// Load ENV
-	err := environment.Load()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Init logging
-	err = logger.Init()
-	if err != nil {
-		log.Panic(err)
-	}
-
-	// Init Cache
-	cache.Init()
-
-	// Init Config
-	config.Init()
-
-	// Load Database
-	db, err := database.New()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Set up stores & pass the database.
-	store, err := models.New(db)
-	if err != nil {
-		log.Panic(err)
-	}
-
-	// Load cron jobs
-	scheduler := cron.New(store)
-	go scheduler.Run()
-
-	// Load app
-	app = App{
-		db: db,
-		store: store,
-	}
-}
