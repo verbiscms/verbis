@@ -18,7 +18,7 @@ func (s *Seeder) runOptions() error {
 		"media_upload_max_size": 100000,
 		"media_upload_max_width": 0,
 		"media_upload_max_height": 0,
-		"media_organise_year_month": false,
+		"media_organise_year_month": true,
 		"media_images_sizes": domain.MediaSizes{
 			"thumbnail": domain.MediaSize{
 				Name: "Thumbnail Size",

@@ -1,12 +1,15 @@
 package logger
 
 import (
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	log "github.com/sirupsen/logrus"
 	"os"
 )
 
+// init will determine if SuperAdmin and set logging levels
+// dependant on environment variables.
 func Init() error {
 
 	// Only log panics if app debug is set to true
@@ -17,7 +20,7 @@ func Init() error {
 	}
 
 	// Log json to file if environment is in production
-	if environment.IsDevelopment() {
+	if !api.SuperAdmin {
 		log.SetFormatter(&log.TextFormatter{
 			ForceColors: true,
 			DisableColors: false,
@@ -31,7 +34,11 @@ func Init() error {
 		if err != nil {
 			return err
 		}
-		log.SetFormatter(&log.JSONFormatter{})
+
+		log.SetFormatter(&log.JSONFormatter{
+			TimestampFormat:"2006-01-02 15:04:05",
+		})
+
 		log.SetOutput(f)
 	}
 
