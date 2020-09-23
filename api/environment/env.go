@@ -4,6 +4,7 @@ import (
 	"fmt"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	pkgValidate "github.com/go-playground/validator/v10"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"os"
@@ -16,7 +17,8 @@ type envMap struct {
 	AppName 			string `json:"APP_NAME"`
 	AppEnv				string `json:"APP_ENV"`
 	AppDebug 			string `json:"APP_DEBUG"`
-	AppUrl				string `json:"APP_URL"`
+	AppUrl				string `json:"APP_URL" binding:"required"`
+	AppPort				string `json:"APP_PORT" binding:"required"`
 	DbHost				string `json:"DB_HOST" binding:"required,ip"`
 	DbPort				string `json:"DB_PORT" binding:"required"`
 	DbDatabase			string `json:"DB_DATABASE" binding:"required"`
@@ -56,6 +58,7 @@ func Load() error {
 		AppEnv:  	os.Getenv("APP_ENV"),
 		AppDebug:  	os.Getenv("APP_DEBUG"),
 		AppUrl:  	os.Getenv("APP_URL"),
+		AppPort:  	os.Getenv("APP_PORT"),
 		DbHost:  	os.Getenv("DB_HOST"),
 		DbPort:  	os.Getenv("DB_PORT"),
 		DbDatabase: os.Getenv("DB_DATABASE"),
@@ -84,6 +87,11 @@ func Validate() []validation.ValidationError {
 // App - Name
 func GetAppName() string {
 	return env.AppName
+}
+
+func GetPort() int {
+	n, _ := strconv.Atoi(env.AppPort)
+	return n
 }
 
 // Database - Connection String

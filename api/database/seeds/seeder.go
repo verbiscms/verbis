@@ -1,6 +1,7 @@
 package seeds
 
 import (
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/jmoiron/sqlx"
 )
@@ -20,8 +21,10 @@ func New(db *sqlx.DB, s *models.Store) *Seeder {
 
 // Seed
 func (s *Seeder) Seed() error {
-	if err := s.runUsers(); err != nil {
-		return err
+	if api.SuperAdmin {
+		if err := s.runUsers(); err != nil {
+			return err
+		}
 	}
 	if err := s.runRoles(); err != nil {
 		return err
