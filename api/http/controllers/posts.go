@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -38,10 +39,19 @@ func newPosts(m models.PostsRepository, f models.FieldsRepository, u models.User
 func (c *PostsController) Get(g *gin.Context) {
 	params := http.GetParams(g)
 	posts, err := c.postModel.Get(params)
+
+	// If no posts, bail
+	if errors.ErrorCode(err) == errors.NOTFOUND {
+		Respond(g, 200, err.Error(), err)
+		return
+	}
+
 	if err != nil {
 		Respond(g, 500, err.Error(), nil)
 		return
 	}
+
+
 
 	// Loop over all posts and obtain data
 	var returnData []domain.PostData
