@@ -2,6 +2,7 @@ package paths
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"os"
@@ -39,6 +40,10 @@ func BaseCheck() error {
 		return fmt.Errorf("Could not locate the Verbis config folder in the current directory")
 	}
 
+	if !files.DirectoryExists(basePath + "/storage") {
+		return fmt.Errorf("Could not locate the Verbis storage folder in the current directory")
+	}
+
 	return nil
 }
 
@@ -54,7 +59,11 @@ func Api() string {
 
 // Database migration path
 func Migration() string {
-	return Api() + "/database/migrations"
+	if api.SuperAdmin {
+		return Api() + "/database/migrations"
+	} else {
+		return Api() + "/database"
+	}
 }
 
 // Theme path

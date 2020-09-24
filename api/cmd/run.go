@@ -1,11 +1,9 @@
 package cmd
 
 import (
-	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/config"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/cron"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/logger"
 	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/routes"
@@ -14,10 +12,12 @@ import (
 )
 
 var (
-	runCmd = &cobra.Command{
-		Use:   "run",
-		Short: "Serve the CMS.",
-		Long:  `Serve will serve the system dependant on port number passed.`,
+	startCmd = &cobra.Command{
+		Use:   "start",
+		Short: "Running start will start Verbis project from the current directory and run the CMS project.",
+		Long:  `This command will start Verbis from the current directory. First it will
+run Verbis doctor to see if the environment is configured correctly. It will then start
+up the server on the port specified in the .env file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
@@ -25,17 +25,6 @@ var (
 			if err != nil {
 				printError(err.Error())
 			}
-
-			// Init logging
-			if err := logger.Init(); err != nil {
-				printError(err.Error())
-			}
-
-			// Init Cache
-			cache.Init()
-
-			// Init Config
-			config.Init()
 
 			// Set up stores & pass the database.
 			store, err := models.New(db)
@@ -62,11 +51,16 @@ var (
 			// Load the routes
 			routes.Load(serve, controllers, store)
 
+			// Print listening success
+			printSuccess(fmt.Sprintf("Verbis listening on port: %d", environment.GetPort()))
+
 			// Listen & serve.
 			err = serve.ListenAndServe(environment.GetPort())
 			if err != nil {
 				printError(err.Error())
 			}
+
+
 		},
 	}
 )

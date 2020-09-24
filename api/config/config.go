@@ -41,6 +41,10 @@ var (
 		AssetsPath:        "/assets",
 		ErrorPageNotFound: "404",
 	}
+	Logs = logs{
+		AccessLog: "default",
+		ErrorLog:  "default",
+	}
 )
 
 // Admin
@@ -73,6 +77,13 @@ type theme struct {
 	ErrorPageNotFound string `yaml:"404_page"`
 }
 
+// Logs 
+type logs struct {
+	AccessLog string `yaml:"access_log"`
+	ErrorLog string `yaml:"error_log"`
+}
+
+
 // Init the configuration, obtain all of the yaml files
 // within the config directory and set variables.
 func Init() {
@@ -104,6 +115,12 @@ func Init() {
 	// Theme
 	th := loadConfig("/theme.yml")
 	if err := yaml.Unmarshal(th, &Theme); err != nil {
+		log.Error(err)
+	}
+
+	// Logs
+	l := loadConfig("/logs.yml")
+	if err := yaml.Unmarshal(l, &Logs); err != nil {
 		log.Error(err)
 	}
 }

@@ -94,12 +94,3 @@ func GetFileContents(path string) (string, error) {
 
 	return string(contents), nil
 }
-
-// Get files retrieves all files based on the file path param
-func GetFile(path string) ([]byte, error) {
-	f, err := ioutil.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-	return f, nil
-}

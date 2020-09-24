@@ -1,14 +1,15 @@
 package server
 
 import (
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/ginview"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"html/template"
+	"io/ioutil"
 	"strconv"
 )
 
@@ -16,25 +17,21 @@ type Server struct {
 	*gin.Engine
 }
 
-
 func New() (*Server, error) {
 
 	// Force log's color
 	gin.ForceConsoleColor()
 
 	// Set mode depending on
-	ginMode := "debug"
-	if environment.IsProduction() || !environment.IsDebug() {
-		ginMode = "release"
+	gin.SetMode(gin.ReleaseMode)
+
+	// Remove from console if not super admin
+	if !api.SuperAdmin {
+		gin.DefaultWriter = ioutil.Discard
 	}
-	gin.SetMode(ginMode)
 
 	// New router
 	r := gin.Default()
-
-	// Logger middleware will write the logs to gin.DefaultWriter even if you set with GIN_MODE=release.
-	// By default gin.DefaultWriter = os.Stdout
-	r.Use(gin.Logger())
 
 	// Recovery middleware recovers from any panics and writes a 500 if there was one.
 	r.Use(gin.Recovery())
