@@ -24,13 +24,19 @@ func Log() gin.HandlerFunc {
 		statusCode := g.Writer.Status()
 		// Request IP
 		clientIP := g.ClientIP()
+		// Data Length
+		dataLength := g.Writer.Size()
+		// User agent
+		clientUserAgent := g.Request.UserAgent()
 		// Log format
 		log.WithFields(log.Fields{
-			"status_code"  : statusCode,
-			"latency_time" : latencyTime,
-			"client_ip"    : clientIP,
-			"req_method"   : reqMethod,
-			"req_uri"      : reqUri,
+			"status_code"  		: statusCode,
+			"latency_time" 		: latencyTime,
+			"client_ip"    		: clientIP,
+			"request_method"   	: reqMethod,
+			"request_uri"      	: reqUri,
+			"data_length"   	: dataLength,
+			"user_agent"    	: clientUserAgent,
 		}).Info()
 	}
 }
