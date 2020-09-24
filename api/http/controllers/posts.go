@@ -51,8 +51,6 @@ func (c *PostsController) Get(g *gin.Context) {
 		return
 	}
 
-
-
 	// Loop over all posts and obtain data
 	var returnData []domain.PostData
 	for _, post := range posts {

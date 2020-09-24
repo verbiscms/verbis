@@ -41,8 +41,8 @@ func newPosts(db *sqlx.DB, sm SeoMetaRepository, um UserRepository, cm CategoryR
 }
 
 // Get all posts
-// Returns INVALID if the username is blank or already exists.
-// Returns ECONFLICT if the username is already in use.
+// Returns errors.INTERNAL if the username is blank or already exists.
+// Returns errors.NOTFOUND if the username is already in use.
 func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
 	const op = "PostsRepository.Get"
 
