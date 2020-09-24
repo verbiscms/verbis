@@ -1,0 +1,27 @@
+# |
+# |--------------------------------------------------------------------------
+# | Access Log Path
+# |--------------------------------------------------------------------------
+# |
+# | The access log path defines where logs will be kept for accessing the
+# | API, this will only include information regarding successful
+# | requests and any misc information. If set to default, the
+# | access log will be stored in /storage/logs/access.log.
+# | Note: Filenames need to be included!
+# |
+# |
+access_log: default
+
+# |
+# |--------------------------------------------------------------------------
+# | Error Log
+# |--------------------------------------------------------------------------
+# |
+# | The error log path defines where logs will be kept for any errors that
+# | occur within Verbis. A detailed log will be defined detailing how
+# | and where the error happened. If set to default, the error log
+# | will be stored in /storage/logs/access.log
+# | Note: Filenames need to be included!
+# |
+# |
+error_log: default

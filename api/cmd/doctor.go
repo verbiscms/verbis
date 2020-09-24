@@ -2,8 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/logger"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/spf13/cobra"
 	"strings"
@@ -72,7 +75,20 @@ func doctor() (*database.MySql, error) {
 		return nil, fmt.Errorf("error establishing database connection")
 	}
 
+	// Init Cache
+	cache.Init()
+
+	// Init Config
+	config.Init()
+
+	// Init logging
+	if err := logger.Init(); err != nil {
+		printError(err.Error())
+	}
+
 	printSuccess("All checks passed.")
+
+
 
 	return db, nil
 }
