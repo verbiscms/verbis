@@ -59,8 +59,6 @@ up the server on the port specified in the .env file.`,
 			if err != nil {
 				printError(err.Error())
 			}
-
-
 		},
 	}
 )
