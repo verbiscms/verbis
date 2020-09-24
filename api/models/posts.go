@@ -1,9 +1,10 @@
 package models
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/http"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
@@ -40,16 +41,19 @@ func newPosts(db *sqlx.DB, sm SeoMetaRepository, um UserRepository, cm CategoryR
 }
 
 // Get all posts
+// Returns INVALID if the username is blank or already exists.
+// Returns ECONFLICT if the username is already in use.
 func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
+	const op = "PostsRepository.Get"
+
 	var p []domain.Post
 	q := fmt.Sprintf("SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, meta.Page * meta.Limit)
 	if err := s.db.Select(&p, q); err != nil {
-		log.Error(err)
-		return nil, fmt.Errorf("Could not get posts")
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
 	if len(p) == 0 {
-		return []domain.Post{}, nil
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
 	}
 
 	return p, nil

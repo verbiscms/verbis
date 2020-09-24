@@ -117,9 +117,11 @@ func getLogFiles() (*logFiles, error) {
 // setupLogs adds hooks to send logs to different destinations depending on level
 func setupLogs(logs *logFiles) {
 
-	log.SetOutput(ioutil.Discard) // Send all logs to nowhere by default
+	// Send all logs to nowhere by default
+	log.SetOutput(ioutil.Discard)
 
-	log.AddHook(&WriterHook{ // Send logs with level higher than warning to stderr
+	// Send logs with level higher than warning to stderr
+	log.AddHook(&WriterHook{
 		Writer: logs.errorLog,
 		LogLevels: []log.Level{
 			log.PanicLevel,
@@ -129,7 +131,8 @@ func setupLogs(logs *logFiles) {
 		},
 	})
 
-	log.AddHook(&WriterHook{ // Send info and debug logs to stdout
+	// Send info and debug logs to stdout
+	log.AddHook(&WriterHook{
 		Writer: logs.accessLog,
 		LogLevels: []log.Level{
 			log.InfoLevel,

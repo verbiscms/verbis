@@ -1,12 +1,13 @@
 package controllers
 
 import (
+	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
-	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"reflect"
@@ -64,6 +65,14 @@ func New(m *models.Store) (*Controller, error) {
 // Main JSON responder.
 func Respond(g *gin.Context, status int, message string, data interface{}, pagination ...http.Pagination) {
 
+	// Get the type of data
+	dataType := reflect.TypeOf(data).String()
+
+	// Report to the log if data is an error
+	if dataType == "*errors.Error" {
+		errData := data.(*errors.Error)
+		errors.ErrorReport(errData)
+	}
 
 	// Check if data is nil or an empty slice, if it is return empty object
 	if data == nil {
@@ -75,9 +84,6 @@ func Respond(g *gin.Context, status int, message string, data interface{}, pagin
 			data = gin.H{}
 		}
 	}
-
-	// Get the type of data
-	dataType := reflect.TypeOf(data).String()
 
 	// If data is of type validation errors, pass to validator
 	if dataType == "validator.ValidationErrors" {
