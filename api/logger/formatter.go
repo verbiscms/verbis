@@ -125,7 +125,9 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	// Print the message
 	msg := entry.Data["message"].(string)
-	b.WriteString(fmt.Sprintf("[msg] %s |", msg))
+	if msg != "" {
+		b.WriteString(fmt.Sprintf("[msg] %s ", msg))
+	}
 
 	// Print any errors if one is set
 	errorData := entry.Data["error"].(errors.Error)
@@ -135,11 +137,10 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 			if errorData.Code != "" {
 				if f.Colours {
-					b.WriteString(color.Red.Sprintf(" [code] %s", errorData.Code))
+					b.WriteString(color.Red.Sprintf("| [code] %s", errorData.Code))
 				} else {
-					b.WriteString(fmt.Sprintf(" [code] %s", errorData.Code))
+					b.WriteString(fmt.Sprintf("| [code] %s", errorData.Code))
 				}
-
 			}
 
 			if errorData.Operation != "" {

@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
@@ -11,7 +14,10 @@ import (
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 	"net/http"
+	"regexp"
+	"runtime"
 	"strings"
 )
 
@@ -26,6 +32,7 @@ type FrontendHandler interface {
 	Subscribe(g *gin.Context)
 	GetUploads(g *gin.Context)
 	Serve(g *gin.Context)
+	Recovery(g *gin.Context, err interface{})
 }
 
 type ResourceData struct {
@@ -90,6 +97,7 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 
 // Serve the front end website
 func (c *FrontendController) Serve(g *gin.Context) {
+
 	path := g.Request.URL.Path
 	post, err := c.models.Posts.GetBySlug(path)
 
@@ -114,6 +122,67 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	if err := gvFrontend.Render(g.Writer, http.StatusOK, config.Template.TemplateDir + "/" + post.PageTemplate, r); err != nil {
 		log.Error(err)
+	}
+}
+
+// Errors
+func (c *FrontendController) Recovery(g *gin.Context, err interface{}) {
+
+	gvRecovery := goview.New(goview.Config{
+		Root:      paths.Web(),
+		Extension: ".html",
+		Master: "",
+		DisableCache: true,
+	})
+
+	errData := err.(error)
+
+	type stackError struct {
+		File string
+		Line int
+		Name string
+		Message string
+	}
+
+	// Get the stack
+	var stack []stackError
+	const stackDepth = 32
+	for c := 2; c < stackDepth; c++ {
+		t, file, line, ok := runtime.Caller(c)
+		if ok {
+			stack = append(stack, stackError{
+				File: file,
+				Line: line,
+				Name: runtime.FuncForPC(t).Name(),
+			})
+		}
+	}
+
+	tmpl := helpers.StringsBetween(errData.Error(), "name:", ",")
+	line := regexp.MustCompile("[0-9]+").FindAllString(errData.Error(), -1)
+	path := paths.Theme() + "/" + tmpl + config.Template.FileExtension
+
+
+	if ok := files.Exists(path); ok {
+		fmt.Println("Opening a file ")
+		var file, err = ioutil.ReadFile(path)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(string(file))
+	}
+
+	fmt.Println(line)
+
+	// Return the error page
+	if err := gvRecovery.Render(g.Writer, http.StatusOK, "/templates/error", gin.H{
+		"Stack": stack,
+		"Message": errData.Error(),
+		"RequestMethod": g.Request.Method,
+		"Ip": g.ClientIP(),
+		"DataLength": g.Writer.Size(),
+	}); err != nil {
+		log.Panic(err)
 	}
 }
 

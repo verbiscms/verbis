@@ -13,6 +13,7 @@ import (
 	"os"
 )
 
+// logFiles defines the files to be written to when app debug is set to false
 type logFiles struct {
 	accessLog io.Writer
 	errorLog io.Writer

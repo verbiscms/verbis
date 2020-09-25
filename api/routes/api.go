@@ -13,9 +13,6 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 	s.GET("/email/verify/:token", c.Auth.VerifyEmail)
 	s.GET("/password/verify/:token", c.Auth.VerifyPasswordToken)
 
-	//Use Middleware Cors
-	s.Use(middleware.CORS())
-
 	// API Routes
 	api := s.Group("/api/v1")
 	{
@@ -83,4 +80,7 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			admin.DELETE("/users/:id", c.User.Delete)
 		}
 	}
+
+	//Use Middleware Cors
+	api.Use(middleware.CORS())
 }

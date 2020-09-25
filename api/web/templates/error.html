@@ -1,0 +1,12 @@
+This is thre errret
+
+
+<img src="/verbis/images/verbis-logo.png" alt="">
+
+<h1>{{ .Message }}</h1>
+<h1>{{ .File }}jj</h1>
+
+{{- range $key, $value := .Stack}}
+    {{$key}} {{ $value.Message }}
+    {{$key}} {{ $value }}
+{{- end}}
