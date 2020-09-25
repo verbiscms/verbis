@@ -53,6 +53,7 @@ up the server on the port specified in the .env file.`,
 
 			// Print listening success
 			printSuccess(fmt.Sprintf("Verbis listening on port: %d", environment.GetPort()))
+			fmt.Println()
 
 			// Listen & serve.
 			err = serve.ListenAndServe(environment.GetPort())

@@ -1,7 +1,6 @@
 package server
 
 import (
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/foolin/goview"
@@ -25,10 +24,8 @@ func New() (*Server, error) {
 	// Set mode depending on
 	gin.SetMode(gin.ReleaseMode)
 
-	// Remove from console if not super admin
-	if !api.SuperAdmin {
-		gin.DefaultWriter = ioutil.Discard
-	}
+	// Remove default gin write
+	gin.DefaultWriter = ioutil.Discard
 
 	// New router
 	r := gin.Default()
@@ -50,11 +47,9 @@ func New() (*Server, error) {
 	})
 
 	// Instantiate the server.
-	s := &Server{
+	return &Server{
 		r,
-	}
-
-	return s, nil
+	}, nil
 }
 
 // Serve the app
