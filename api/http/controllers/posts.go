@@ -1,6 +1,21 @@
+// Copyright 2020 Verbis Inc.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 package controllers
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -10,19 +25,21 @@ import (
 	"time"
 )
 
-type PostsController struct {
-	postModel   	models.PostsRepository
-	fieldsModel 	models.FieldsRepository
-	userModel 		models.UserRepository
-	categoriesModel	models.CategoryRepository
-}
-
+// PostHandler defines methods for Posts to interact with the server
 type PostHandler interface {
 	Get(g *gin.Context)
 	GetById(g *gin.Context)
 	Create(g *gin.Context)
 	Update(g *gin.Context)
 	Delete(g *gin.Context)
+}
+
+// PostsController defines the handler for Posts
+type PostsController struct {
+	postModel   	models.PostsRepository
+	fieldsModel 	models.FieldsRepository
+	userModel 		models.UserRepository
+	categoriesModel	models.CategoryRepository
 }
 
 // Construct
@@ -38,6 +55,8 @@ func newPosts(m models.PostsRepository, f models.FieldsRepository, u models.User
 // Get
 //
 func (c *PostsController) Get(g *gin.Context) {
+	const op = "PostsController.Get"
+
 	params := http.GetParams(g)
 	posts, err := c.postModel.Get(params)
 
@@ -48,7 +67,7 @@ func (c *PostsController) Get(g *gin.Context) {
 	}
 
 	if err != nil {
-		Respond(g, 500, errors.Message(err), nil)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
@@ -77,6 +96,8 @@ func (c *PostsController) Get(g *gin.Context) {
 
 // Get By ID
 func (c *PostsController) GetById(g *gin.Context) {
+	const op = "PostsController.GetById"
+
 	paramId := g.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
@@ -87,14 +108,15 @@ func (c *PostsController) GetById(g *gin.Context) {
 	// Get the post by ID
 	post, err := c.postModel.GetById(id)
 	if err != nil {
-		Respond(g, 400, err.Error(), nil)
+		fmt.Println(err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	}
 
 	// Format the post
 	formatPost, err := c.Format(g, post)
 	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
@@ -128,28 +150,33 @@ func (c *PostsController) Create(g *gin.Context) {
 
 // Update
 func (c *PostsController) Update(g *gin.Context) {
+	const op = "PostsController.Update"
+
 	var post domain.PostCreate
 	if err := g.ShouldBindJSON(&post); err != nil {
-		Respond(g, 400, "Validation failed", err)
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500,"An ID is required to update the post", nil)
+		Respond(g, 500,"A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	post.Id = id
 
 	updatedPost, err := c.postModel.Update(&post)
-	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	formatPost, err := c.Format(g, updatedPost)
 	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
@@ -158,14 +185,16 @@ func (c *PostsController) Update(g *gin.Context) {
 
 // Delete
 func (c *PostsController) Delete(g *gin.Context) {
+	const op = "PostsController.Delete"
+
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+		Respond(g, 500,"A valid ID is required to delete the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	err = c.postModel.Delete(id)
 	if err != nil {
-		Respond(g, 400, err.Error(), nil)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	}
 
