@@ -91,3 +91,8 @@ func Templates() string {
 	// TODO - Make dynamic based on config
 	return Theme() + "/templates"
 }
+
+// Web (Verbis specific)
+func Web() string {
+	return Api() + "/web"
+}

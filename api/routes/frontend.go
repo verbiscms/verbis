@@ -4,21 +4,27 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/server"
 )
 
 func frontend(s *server.Server, c *controllers.Controller) {
 
-	// Serve assets
-	s.Static("/assets", paths.Theme() + config.Theme.AssetsPath)
+	s.Use(middleware.Recovery(c.Frontend.Recovery))
 
-	//s.GET("/verbis/images/verbis-logo.svg", c.Site.GetLogo)
-	s.Static("/verbis", paths.Api() + "/static")
+	_ = s.Group("")
+	{
+		// Serve assets
+		s.Static("/assets", paths.Theme() + config.Theme.AssetsPath)
 
-	s.GET("/", c.Frontend.Home)
-	s.GET("/style-guide", c.Frontend.StyleGuide)
-	s.POST("/ajax/subscribe", c.Frontend.Subscribe)
-	s.GET("/uploads/*any", c.Frontend.GetUploads)
+		//s.GET("/verbis/images/verbis-logo.svg", c.Site.GetLogo)
+		s.Static("/verbis", paths.Api() + "/web")
 
-	s.NoRoute(c.Frontend.Serve)
+		s.GET("/", c.Frontend.Home)
+		s.GET("/style-guide", c.Frontend.StyleGuide)
+		s.POST("/ajax/subscribe", c.Frontend.Subscribe)
+		s.GET("/uploads/*any", c.Frontend.GetUploads)
+
+		s.NoRoute(c.Frontend.Serve)
+	}
 }
