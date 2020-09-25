@@ -35,19 +35,20 @@ func newPosts(m models.PostsRepository, f models.FieldsRepository, u models.User
 	}
 }
 
-// Get All
+// Get
+//
 func (c *PostsController) Get(g *gin.Context) {
 	params := http.GetParams(g)
 	posts, err := c.postModel.Get(params)
 
 	// If no posts, bail
-	if errors.ErrorCode(err) == errors.NOTFOUND {
-		Respond(g, 200, err.Error(), err)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
 		return
 	}
 
 	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+		Respond(g, 500, errors.Message(err), nil)
 		return
 	}
 
@@ -71,12 +72,7 @@ func (c *PostsController) Get(g *gin.Context) {
 	}
 	pagination := http.GetPagination(params, totalAmount)
 
-	successMsg := "Successfully obtained posts"
-	if len(posts) == 0 {
-		successMsg = "No posts available"
-	}
-
-	Respond(g, 200, successMsg, returnData, *pagination)
+	Respond(g, 200, "Successfully obtained posts", returnData, *pagination)
 }
 
 // Get By ID
@@ -107,21 +103,23 @@ func (c *PostsController) GetById(g *gin.Context) {
 
 // Create
 func (c *PostsController) Create(g *gin.Context) {
+	const op = "PostsController.Create"
+
 	var post domain.PostCreate
 	if err := g.ShouldBindJSON(&post); err != nil {
-		Respond(g, 400, "Validation failed", err)
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	newPost, err := c.postModel.Create(&post)
 	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+		Respond(g, 500, err.Error(), err)
 		return
 	}
 
 	formatPost, err := c.Format(g, newPost)
 	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+		Respond(g, 500, err.Error(), err)
 		return
 	}
 

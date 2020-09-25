@@ -6,8 +6,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/logger"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/spf13/cobra"
 	"strings"
 )

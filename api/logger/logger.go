@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	log "github.com/sirupsen/logrus"
@@ -30,12 +31,10 @@ func Init() error {
 
 	// Log json to file if environment is in production if not,
 	// log to console.
-	if api.SuperAdmin {
-		log.SetFormatter(&log.TextFormatter{
-			ForceColors: true,
-			DisableColors: false,
-			FullTimestamp: true,
-			TimestampFormat: "02-01-2006 15:04:05",
+	if environment.IsDebug() {
+		log.SetFormatter(&Formatter{
+			TimestampFormat: "2006-01-02 15:04:05",
+			Colours: 		true,
 		})
 	} else {
 		logs, err := getLogFiles()
