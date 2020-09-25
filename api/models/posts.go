@@ -21,6 +21,7 @@ type PostsRepository interface {
 	Total() (int, error)
 }
 
+// PostStore defines the store for Posts
 type PostStore struct {
 	db *sqlx.DB
 	seoMetaModel 	SeoMetaRepository
@@ -40,9 +41,9 @@ func newPosts(db *sqlx.DB, sm SeoMetaRepository, um UserRepository, cm CategoryR
 	return ps
 }
 
-// Get all posts
-// Returns errors.INTERNAL if the username is blank or already exists.
-// Returns errors.NOTFOUND if the username is already in use.
+// Get returns all posts
+// Returns errors.INTERNAL if the SQL query was invalid.
+// Returns errors.NOTFOUND if there are no posts available.
 func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
 	const op = "PostsRepository.Get"
 
@@ -59,33 +60,39 @@ func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
 	return p, nil
 }
 
-// Get the post by ID
+// GetById returns a post by ID
+// Returns errors.NOTFOUND if the post was not found by the given Id.
 func (s *PostStore) GetById(id int) (domain.Post, error) {
+	const op = "PostsRepository.GetById"
 	var p domain.Post
 	if err := s.db.Get(&p, "SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id WHERE posts.id = ? LIMIT 1", id); err != nil {
-		log.Info(err)
-		return domain.Post{}, fmt.Errorf("Could not get post with the ID: %v", id)
+		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the ID: %v", id), Operation: op}
 	}
 	return p, nil
 }
 
-// Get the post by slug
+// GetBySlug returns a a post by slug
+// Returns errors.NOTFOUND if the post was not found by the given slug.
 func (s *PostStore) GetBySlug(slug string) (domain.Post, error) {
+	const op = "PostsRepository.GetBySlug"
 	var p domain.Post
 	if err := s.db.Get(&p, "SELECT * FROM posts WHERE slug = ?", slug); err != nil {
-		log.Info(err)
-		return domain.Post{}, fmt.Errorf("Could not get post with the slug %v", slug)
+		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %v", slug), Operation: op}
 	}
 	return p, nil
 }
 
-// Create post
+// Create a new post
+// Returns errors.CONFLICT if the the post slug already exists.
+// Returns errors.NOTFOUND if the post was not found by the given slug.
+// Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
 func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
+	const op = "PostsRepository.Create"
 
 	// See if the slug already exists within the database.
 	// Bail if exists
 	if s.Exists(p.Slug) {
-		return domain.Post{}, fmt.Errorf("Could not create the post, the slug %v, already exists", p.Slug)
+		return domain.Post{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", p.Slug), Operation: op}
 	}
 
 	// Check if the author is set assign to owner if not.
@@ -95,16 +102,14 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, fields, codeinjection_head, codeinjection_foot, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId)
 	if err != nil {
-		log.Error(err)
-		return domain.Post{}, fmt.Errorf("Could not create the post with the title: %v", p.Title)
+		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	// Get the last inserted ID and assign to the newly
 	// created post
 	id, err := c.LastInsertId()
 	if err != nil {
-		log.Error(err)
-		return domain.Post{}, fmt.Errorf("Could not get the newly created post ID with the title: %v", p.Title)
+		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post ID with the title: %v", p.Title), Operation: op, Err: err}
 	}
 	p.Id = int(id)
 
@@ -112,17 +117,19 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	// to the controller, used for binding & validation.
 	convertedPost := s.convertToPost(*p)
 	if err := s.seoMetaModel.UpdateCreate(&convertedPost); err != nil {
-		return domain.Post{}, err
+		return domain.Post{},  err
 	}
 
 	return convertedPost, nil
 }
 
 // Update post
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
+	const op = "PostsRepository.Update"
+
 	_, err := s.GetById(p.Id)
 	if err != nil {
-		log.Info(err)
 		return domain.Post{}, err
 	}
 
@@ -133,8 +140,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, updated_at = NOW() WHERE id = ?"
 	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.Author, p.Id)
 	if err != nil {
-		log.Error(err)
-		return domain.Post{}, fmt.Errorf("Could not update the post wuth the title: %v", p.Title)
+		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	// Update the categories based on the array of integers that
@@ -154,37 +160,43 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 }
 
 // Delete post
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *PostStore) Delete(id int) error {
+	const op = "PostsRepository.Delete"
+
 	_, err := s.GetById(id)
 	if err != nil {
 		return err
 	}
 
 	if _, err := s.db.Exec("DELETE FROM posts WHERE id = ?", id); err != nil {
-		log.Info(err)
-		return fmt.Errorf("Could not delete post with the ID: %v", id)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete post with the ID: %v", id), Operation: op, Err: err}
 	}
+
 	return nil
 }
 
-// Get the total number of posts
+// Total gets the total number of posts
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *PostStore) Total() (int, error) {
+	const op = "PostsRepository.Total"
+
 	var total int
 	if err := s.db.QueryRow("SELECT COUNT(*) FROM posts").Scan(&total); err != nil {
-		log.Error(err)
-		return -1, fmt.Errorf("Could not get the total number of posts")
+		return -1,  &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the total number of posts"), Operation: op, Err: err}
 	}
+
 	return total, nil
 }
 
-// Check if a post exists by slug
+// Exists Checks if a post exists by the given slug
 func (s *PostStore) Exists(slug string) bool {
 	var exists bool
 	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM posts WHERE slug = ?)", slug).Scan(&exists)
 	return exists
 }
 
-// Convert post create to post
+// convertToPost converts are post create into a standard post
 func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 	return domain.Post{
 		Id:             c.Id,
@@ -204,8 +216,8 @@ func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 	}
 }
 
-// Check if the author is set or if the author does not exist.
-// Return the owner ID under circumstances.
+// checkOwner Checks if the author is set or if the author does not exist.
+// Returns the owner ID under circumstances.
 func (s *PostStore) checkOwner(p domain.PostCreate) int {
 	if p.UserId == 0 || !s.userModel.Exists(p.Author) {
 		owner, err := s.userModel.GetOwner()
