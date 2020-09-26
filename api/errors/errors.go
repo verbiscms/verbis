@@ -13,15 +13,23 @@ const (
 	INTERNAL   = "internal"   // Internal error
 	INVALID    = "invalid"    // Validation failed
 	NOTFOUND   = "not_found"  // Entity does not exist
+	TEMPLATE   = "template"   // Templating error
 )
 
 // Error defines a standard application error.
 type Error struct {
-	Code    	string
-	Message 	string
-	Operation 	string
-	Err      	error
-	Stack 		[]string
+	Code    	string		`json:"code"`
+	Message 	string	   	`json:"message"`
+	Operation 	string	   	`json:"operation"`
+	Err      	error      	`json:"error"`
+	Stack 		[]string	`json:"stack"`
+}
+
+// FileLine defines the error for templating it includes the line &
+// content of the error file
+type FileLine struct {
+	Line int
+	Content string
 }
 
 // Error returns the string representation of the error message.

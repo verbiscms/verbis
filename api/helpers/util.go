@@ -1,6 +1,8 @@
 package helpers
 
-import "strings"
+import (
+	"strings"
+)
 
 // Check if a string exists in a slice
 func StringInSlice(a string, list []string) bool {
@@ -20,6 +22,17 @@ func IntInSlice(a int, list []int) bool {
 		}
 	}
 	return false
+}
+
+// Split everything before deliminator
+func StringsSplitLeft(str string, delim string) string {
+	return strings.Split(str, delim)[0]
+}
+
+
+// Split everything after deliminator
+func StringsSplitRight(str string, delim string) string {
+	return strings.Join(strings.Split(str, delim)[1:], delim)
 }
 
 // Between Gets substring between two strings.
