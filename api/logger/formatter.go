@@ -7,7 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -35,27 +34,26 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	// Get the response code colour
 	cc := color.Style{}
 	status := entry.Data["status_code"]
-	var code int
-	if code, ok := status.(int); ok {
-		switch code {
+	if codeInt, ok := status.(int); ok {
+		switch codeInt {
 			case 200: {
 				cc = color.Style{color.FgLightWhite, color.BgGreen, color.OpBold}
 				break
 			}
 			default: {
 				cc = color.Style{color.FgLightWhite, color.BgRed, color.OpBold}
+				break
 			}
 		}
 	}
 
 	// Print the response code
 	if status != "" && status != nil {
-		fmt.Println("in")
 		b.WriteString(" |")
 		if f.Colours {
-			b.WriteString(cc.Sprintf(strconv.Itoa(code)))
+			b.WriteString(cc.Sprintf("%d", status))
 		} else {
-			b.WriteString(fmt.Sprintf(strconv.Itoa(code)))
+			b.WriteString(fmt.Sprintf("%d", status))
 		}
 		b.WriteString("| ")
 	} else {
@@ -169,7 +167,6 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 			}
 		}
 	}
-
 
 	b.WriteString("\n")
 
