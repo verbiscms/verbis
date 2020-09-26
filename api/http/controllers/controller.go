@@ -220,6 +220,6 @@ func calculateRequestTime(g *gin.Context) Meta {
 	return Meta{
 		RequestTime: startTime.UTC().String(),
 		ResponseTime: time.Now().UTC().String(),
-		LatencyTime: latencyTime.Round(time.Millisecond).String(),
+		LatencyTime: latencyTime.Round(time.Microsecond).String(),
 	}
 }
