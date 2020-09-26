@@ -33,26 +33,34 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	b.WriteString(entry.Time.Format(timestampFormat))
 
 	// Get the response code colour
-	code := entry.Data["status_code"].(int)
 	cc := color.Style{}
-	switch code {
-		case 200: {
-			cc = color.Style{color.FgLightWhite, color.BgGreen, color.OpBold}
-			break
-		}
-		default: {
-			cc = color.Style{color.FgLightWhite, color.BgRed, color.OpBold}
+	status := entry.Data["status_code"]
+	var code int
+	if code, ok := status.(int); ok {
+		switch code {
+			case 200: {
+				cc = color.Style{color.FgLightWhite, color.BgGreen, color.OpBold}
+				break
+			}
+			default: {
+				cc = color.Style{color.FgLightWhite, color.BgRed, color.OpBold}
+			}
 		}
 	}
 
 	// Print the response code
-	b.WriteString(" |")
-	if f.Colours {
-		b.WriteString(cc.Sprintf(strconv.Itoa(code)))
+	if status != "" && status != nil {
+		fmt.Println("in")
+		b.WriteString(" |")
+		if f.Colours {
+			b.WriteString(cc.Sprintf(strconv.Itoa(code)))
+		} else {
+			b.WriteString(fmt.Sprintf(strconv.Itoa(code)))
+		}
+		b.WriteString("| ")
 	} else {
-		b.WriteString(fmt.Sprintf(strconv.Itoa(code)))
+		b.WriteString(" | ")
 	}
-	b.WriteString("| ")
 
 	// Get level the colour
 	lc := color.Style{}
@@ -75,7 +83,6 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	}
 
 	// Print the level
-
 	level := strings.ToUpper(entry.Level.String())
 	if f.Colours {
 		b.WriteString(lc.Sprintf("["))
@@ -98,70 +105,71 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	}
 
 	// Print the IP
-	ip := entry.Data["client_ip"].(string)
-	b.WriteString(fmt.Sprintf(" | %s | ", ip))
+	if ip, ok := entry.Data["client_ip"].(string); ok {
+		b.WriteString(fmt.Sprintf(" | %s | ", ip))
+	}
 
 	// Print the method
-	method := entry.Data["request_method"].(string)
-	rc := color.Style{color.FgLightWhite, color.BgBlue, color.OpBold}
-
-	if len(method) == 3 {
-		if f.Colours {
-			b.WriteString(rc.Sprintf("  %s   ", method))
+	if method, ok := entry.Data["request_method"].(string); ok {
+		rc := color.Style{color.FgLightWhite, color.BgBlue, color.OpBold}
+		if len(method) == 3 {
+			if f.Colours {
+				b.WriteString(rc.Sprintf("  %s   ", method))
+			} else {
+				b.WriteString(fmt.Sprintf("  %s   ", method))
+			}
 		} else {
-			b.WriteString(fmt.Sprintf("  %s   ", method))
-		}
-	} else {
-		if f.Colours {
-			b.WriteString(rc.Sprintf("  %s  ", method))
-		} else {
-			b.WriteString(fmt.Sprintf("  %s  ", method))
+			if f.Colours {
+				b.WriteString(rc.Sprintf("  %s  ", method))
+			} else {
+				b.WriteString(fmt.Sprintf("  %s  ", method))
+			}
 		}
 	}
 
 	// Print the url
-	url := entry.Data["request_url"].(string)
-	b.WriteString(fmt.Sprintf(" \"%s\" | ", url))
+	if url, ok := entry.Data["request_url"].(string); ok {
+		b.WriteString(fmt.Sprintf(" \"%s\"", url))
+	}
 
 	// Print the message
-	msg := entry.Data["message"].(string)
-	if msg != "" {
-		b.WriteString(fmt.Sprintf("[msg] %s ", msg))
+	if msg, ok := entry.Data["message"].(string); ok {
+		if msg != "" {
+			b.WriteString(fmt.Sprintf("| [msg] %s |", msg))
+		}
 	}
 
 	// Print any errors if one is set
-	errorData := entry.Data["error"].(errors.Error)
-	if errorData.Error() != "" {
-
-		if errorData.Code != errors.NOTFOUND {
-
-			if errorData.Code != "" {
-				if f.Colours {
-					b.WriteString(color.Red.Sprintf("| [code] %s", errorData.Code))
-				} else {
-					b.WriteString(fmt.Sprintf("| [code] %s", errorData.Code))
-				}
-			}
-
-			if errorData.Operation != "" {
-				if api.SuperAdmin {
+	if errorData, ok := entry.Data["error"].(errors.Error); ok {
+		if errorData.Error() != "" {
+			if errorData.Code != errors.NOTFOUND {
+				if errorData.Code != "" {
 					if f.Colours {
-						b.WriteString(color.Red.Sprintf(" [operation] %s", errorData.Operation))
+						b.WriteString(color.Red.Sprintf(" [code] %s", errorData.Code))
 					} else {
-						b.WriteString(fmt.Sprintf(" [operation] %s", errorData.Operation))
+						b.WriteString(fmt.Sprintf("| [code] %s", errorData.Code))
 					}
 				}
-			}
-
-			if errorData.Err != nil {
-				if f.Colours {
-					b.WriteString(color.Red.Sprintf(" [error] %s", errorData.Err.Error()))
-				} else {
-					b.WriteString(fmt.Sprintf(" [error] %s", errorData.Err.Error()))
+				if errorData.Operation != "" {
+					if api.SuperAdmin {
+						if f.Colours {
+							b.WriteString(color.Red.Sprintf(" [operation] %s", errorData.Operation))
+						} else {
+							b.WriteString(fmt.Sprintf(" [operation] %s", errorData.Operation))
+						}
+					}
+				}
+				if errorData.Err != nil {
+					if f.Colours {
+						b.WriteString(color.Red.Sprintf(" [error] %s", errorData.Err.Error()))
+					} else {
+						b.WriteString(fmt.Sprintf(" [error] %s", errorData.Err.Error()))
+					}
 				}
 			}
 		}
 	}
+
 
 	b.WriteString("\n")
 
