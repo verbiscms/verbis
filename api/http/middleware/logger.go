@@ -28,6 +28,10 @@ func Log() gin.HandlerFunc {
 			m, ok := m.(string); if ok {
 				verbisMessage = m
 			}
+		} else if verbisError.Message != "" {
+			verbisMessage = verbisError.Message
+		} else {
+			verbisMessage = ""
 		}
 		// End time
 		endTime := time.Now()
@@ -58,11 +62,15 @@ func Log() gin.HandlerFunc {
 			"error"				: verbisError,
 		}
 		// Log format
-		if statusCode == 200 {
+		if verbisError.Code == errors.TEMPLATE {
+			fields["status_code"] = 500
+			log.WithFields(fields).Error()
+		} else if statusCode == 200 {
 			log.WithFields(fields).Info()
 		} else {
 			log.WithFields(fields).Error()
 		}
 	}
 }
+
 
