@@ -79,49 +79,53 @@ func (s *AuthStore) Logout(token string) (int, error) {
 // with the new details and removes the temporary entry in
 // the reset_passwords table.
 // Returns errors.NOTFOUND if the user was not found by the given token.
-// Returns errors.INTERNAL if the SQL query was invalid or it was unable to create a new password
+// Returns errors.INTERNAL if the SQL query was invalid, unable to
+// create a new password or delete from the password resets table.
 func (s *AuthStore) ResetPassword(token string, password string) error {
 	const op = "AuthRepository.ResetPassword"
 
 	var rp domain.PasswordReset
 	if err := s.db.Get(&rp, "SELECT * FROM password_resets WHERE token = ? LIMIT 1", token); err != nil {
-		return fmt.Errorf("Could not get user with token: %v", token)
+		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get user with token: %v", token), Operation: op}
 	}
 
 	hashedPassword, err := encryption.HashPassword(password)
 	if err != nil {
-		return fmt.Errorf("Could not create the new passsword, please try again")
+		return err
 	}
 
 	updateQ := "UPDATE users SET password = ? WHERE email = ?"
 	_, err = s.db.Exec(updateQ, rp.Email, hashedPassword)
 	if err != nil {
-		return fmt.Errorf("Could not update password, please try again")
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not update the users table with the new password", Operation: op, Err: err}
 	}
 
 	if _, err := s.db.Exec("DELETE FROM password_resets WHERE token = ?", token); err != nil {
-		return fmt.Errorf("Could not delete from the reset passwords table")
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not delete from the password resets table", Operation: op, Err: err}
 	}
 
 	return nil
 }
 
-// Reset the users password email, send email verification link
-// and insert into the password_resets table
+// SendResetPassword obtains the user by email and generates a new email token.
+// A temporary record is inserted to the password resets table and an email
+// is sent to the user by the reset passwords event.
+// Returns errors.NOTFOUND if the user was not found by the given email.
+// Returns errors.INTERNAL if the SQL query was invalid or the email
+// could not be sent.
 func (s *AuthStore) SendResetPassword(email string) error {
 	const op = "AuthRepository.SendResetPassword"
+
 	var u domain.User
 	if err := s.db.Get(&u, "SELECT * FROM users WHERE email = ? LIMIT 1", email); err != nil {
 		return fmt.Errorf("We couldn't find a user with that email address.")
 	}
 
-	// Generate an email token
 	token, err := encryption.GenerateEmailToken(email)
 	if err != nil {
-		return fmt.Errorf("Could not generate the user token.")
+		return err
 	}
 
-	// Insert the email & token into the password resets table.
 	q := "INSERT INTO password_resets (email, token, created_at) VALUES (?, ?, NOW())"
 	_, err = s.db.Exec(q, email, token)
 	if err != nil {

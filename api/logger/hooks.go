@@ -31,9 +31,11 @@ func (hook *WriterHook) Fire(entry *log.Entry) error {
 				"stack":     errors.Stack(&e),
 				"time": 	 entry.Time.Format("2006-01-02 15:04:05"),
 			})
+
 			if err != nil {
 				return err
 			}
+
 			str := string(m) + "\n"
 			_, err = hook.Writer.Write([]byte(str))
 			return err
