@@ -2,7 +2,7 @@ package encryption
 
 import "golang.org/x/crypto/bcrypt"
 
-// Hash the users password
+// HashPassword
 func HashPassword(password string) (string, error) {
 	// Get current password in byte.
 	bytePassword := []byte(password)
