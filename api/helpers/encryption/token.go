@@ -32,7 +32,8 @@ func GenerateEmailToken(email string) (string, error) {
 	return MD5Hash(string(hash)), nil
 }
 
-// GenerateToken returns a unique token based on the provided email string
+// GenerateSessionToken returns a session unique token based
+// on the provided email string
 func GenerateSessionToken(email string) string {
 	hash, err := bcrypt.GenerateFromPassword([]byte(email), bcrypt.DefaultCost)
 	if err != nil {
