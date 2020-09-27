@@ -6,6 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/spf13/cobra"
@@ -79,7 +80,9 @@ func doctor() (*database.MySql, error) {
 	cache.Init()
 
 	// Init Config
-	config.Init()
+	if err := config.Init(); err != nil {
+		printError(errors.Message(err))
+	}
 
 	// Init logging
 	if err := logger.Init(); err != nil {
