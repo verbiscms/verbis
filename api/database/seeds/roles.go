@@ -4,6 +4,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 )
 
+// runRoles will insert all default values for the user roles
+// including the Id.
 func (s *Seeder) runRoles() error {
 	r := []domain.UserRole{
 		{
