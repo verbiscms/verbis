@@ -29,6 +29,8 @@ func (s *Seeder) Seed() error {
 	if err := s.runRoles(); err != nil {
 		return err
 	}
-	if err := s.runOptions(); err != nil {}
+	if err := s.runOptions(); err != nil {
+		return err
+	}
 	return nil
 }
