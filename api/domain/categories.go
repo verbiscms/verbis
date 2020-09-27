@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Category defines the categories for Verbis to be used with posts
 type Category struct {
 	Id				int			`db:"id" json:"id"`
 	UUID 			uuid.UUID	`db:"uuid" json:"uuid"`

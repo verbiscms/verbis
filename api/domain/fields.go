@@ -2,6 +2,7 @@ package domain
 
 import "github.com/google/uuid"
 
+
 type FieldGroup struct {
 	UUID 		uuid.UUID 					`json:"uuid"`
 	Title 		string 						`json:"title"`
