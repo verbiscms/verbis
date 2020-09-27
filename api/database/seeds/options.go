@@ -5,7 +5,10 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 )
 
+// runOptions will insert all default values for the options
+// into the database when installing Verbis.
 func (s *Seeder) runOptions() error {
+	const op = "Seeder.runOptions"
 
 	optionsSeed := domain.OptionsDB{
 		"site_title" : api.App.Title,
@@ -69,7 +72,9 @@ func (s *Seeder) runOptions() error {
 		},
 	}
 
-	s.models.Options.UpdateCreate(optionsSeed)
+	err := s.models.Options.UpdateCreate(optionsSeed); if err != nil {
+		return err
+	}
 
 	return nil
 }

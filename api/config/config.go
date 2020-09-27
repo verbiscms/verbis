@@ -1,9 +1,10 @@
 package config
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/environment"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"os"
@@ -86,43 +87,64 @@ type logs struct {
 
 // Init the configuration, obtain all of the yaml files
 // within the config directory and set variables.
-func Init() {
+func Init() error {
+	const op = "config.Init"
 
 	// Admin
-	a := loadConfig("/admin.yml")
+	a, err := loadConfig("/admin.yml")
+	if err != nil {
+		return err
+	}
 	if err := yaml.Unmarshal(a, &Admin); err != nil {
-		log.Error(err)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the admin.yml file", Operation: op, Err: err}
 	}
 
 	// Media
-	m := loadConfig("/media.yml")
+	m, err := loadConfig("/media.yml")
+	if err != nil {
+		return err
+	}
 	if err := yaml.Unmarshal(m, &Media); err != nil {
-		log.Error(err)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the media.yml file", Operation: op, Err: err}
 	}
 
 	// Resources
-	r := loadConfig("/resources.yml")
+	r, err := loadConfig("/resources.yml")
+	if err != nil {
+		return err
+	}
 	if err := yaml.Unmarshal(r, &Resources); err != nil {
-		log.Error(err)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the resources.yml file", Operation: op, Err: err}
 	}
 
 	// Resources
-	t := loadConfig("/template.yml")
+	t, err := loadConfig("/template.yml")
+	if err != nil {
+		return err
+	}
 	if err := yaml.Unmarshal(t, &Template); err != nil {
-		log.Error(err)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the template.yml file", Operation: op, Err: err}
 	}
 
 	// Theme
-	th := loadConfig("/theme.yml")
+	th, err := loadConfig("/theme.yml")
+	if err != nil {
+		return err
+	}
 	if err := yaml.Unmarshal(th, &Theme); err != nil {
-		log.Error(err)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the template.yml file", Operation: op, Err: err}
 	}
 
 	// Logs
-	l := loadConfig("/logs.yml")
-	if err := yaml.Unmarshal(l, &Logs); err != nil {
-		log.Error(err)
+	l, err := loadConfig("/logs.yml")
+	if err != nil {
+		return err
 	}
+	if err := yaml.Unmarshal(l, &Logs); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the logs.yml file", Operation: op, Err: err}
+	}
+
+	return nil
 }
 
 // Cache the configuration
@@ -143,18 +165,21 @@ func CacheClear() {
 	cache.Store.Delete("config_theme")
 }
 
-// Load the configuration file based on path and return
-// []byte for  yaml conversion
-func loadConfig (path string) []byte {
+// loadConfig load's the configuration file based on path
+// and returns a []byte for yaml conversion
+// Returns errors.INTERNAL if the configuration file failed to load.
+func loadConfig (path string) ([]byte, error) {
+	const op = "config.loadConfig"
 	data, err := ioutil.ReadFile(getConfigPath() + path)
 	if err != nil {
-		log.Panic(err)
+		return nil, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not load the configuration file with the path: %s", getConfigPath() + path), Operation: op, Err: err}
 	}
-	return data
+	return data, nil
 }
 
-// Get the configuration path of the yaml files
+// getConfigPath obtains the configuration path of the yaml files
 func getConfigPath() string {
+	const op = "config.getConfigPath"
 	path := ""
 	if environment.IsProduction() {
 		path, _ = filepath.Abs(filepath.Dir(os.Args[0]))

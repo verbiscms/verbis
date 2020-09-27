@@ -4,17 +4,19 @@ import (
 	"fmt"
 	"github.com/JamesStewy/go-mysqldump"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
+// MySql defines the driver for the database
 type MySql struct {
 	Sqlx 	*sqlx.DB
 }
 
-// Create a new database instance.
+// New - Creates a new MySql instance.
 func New() (*MySql, error) {
 	db := MySql{}
 
@@ -31,80 +33,94 @@ func New() (*MySql, error) {
 	return &db, nil
 }
 
-// Open sql database connection
+// Get Database open's sql database connection
+// Returns errors.INVALID if the the connection string or database is invalid.
 func (db *MySql) GetDatabase() (*sqlx.DB, error) {
+	const op = "Database.GetDatabase"
 	var driver *sqlx.DB
 	driver, err := sqlx.Connect("mysql", environment.ConnectString())
 	if err != nil {
-		return nil, fmt.Errorf("Could not connect to the datbase to database: %w", err)
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not establish a database connection", Operation: op, Err: err}
 	}
 	return driver, nil
 }
 
-// Check if database exists
+// CheckExists check's if database exists with a given name
+// Returns errors.INVALID if the database was not found.
 func (db *MySql) CheckExists() error {
+	const op = "Database.CheckExists"
 	_, err := db.Sqlx.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", environment.GetDatabaseName())
 	if err != nil {
-		return fmt.Errorf("No database found with the name: %s", environment.GetDatabaseName())
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("No database found with the name: %s", environment.GetDatabaseName()), Operation: op, Err: err}
 	}
 	return nil
 }
 
-//Ping database to check connection
+// Ping database to check connection
+// Returns errors.INVALID if the ping was unsuccessful.
 func (db *MySql) Ping() error {
+	const op = "Database.Ping"
 	if err := db.Sqlx.Ping(); err != nil {
-		return fmt.Errorf("Error pinging the database")
+		return &errors.Error{Code: errors.INVALID, Message: "Pinging the database was unsuccessful", Operation: op, Err: err}
 	}
 	return nil
 }
 
-// Install the cms
+// Install Verbis by executing the migration file
+// Returns errors.INVALID if the sql file could not be located.
+// Returns errors.INTERNAL if the exec command could not be ran.
 func (db *MySql) Install() error {
+	const op = "Database.Install"
 	path := paths.Migration() + "/schema.sql"
 	sql, err := files.GetFileContents(path)
 	if err != nil {
-		return fmt.Errorf("Could not get the schema sql file from the path: %s", path)
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Unable to load the sql migration file from the path: %s", path), Operation: op, Err: err}
 	}
-
 	if _, err := db.Sqlx.Exec(sql); err != nil {
-		return err
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could execute the migration file", Operation: op, Err: err}
 	}
-
 	return nil
 }
 
-// Drop database
+// Drop deletes the database with the environments database name.
+// Returns errors.INTERNAL if the exec command could not be ran.
 func (db *MySql) Drop() error {
+	const op = "Database.Drop"
 	_, err := db.Sqlx.Exec("DROP DATABASE " + environment.GetDatabaseName() + ";")
 	if err != nil {
-		return fmt.Errorf("Could not drop database: %w", err)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not drop the database with the name: %s", environment.GetDatabaseName()), Operation: op, Err: err}
 	}
 	return nil
 }
 
-// Create database
+// Create the database with the environments database name.
+// Returns errors.INTERNAL if the exec command could not be ran.
 func (db *MySql) Create() error {
+	const op = "Database.Create"
 	_, err := db.Sqlx.Exec("CREATE DATABASE " + environment.GetDatabaseName() + ";")
 	if err != nil {
-		return fmt.Errorf("Could not create database: %w", err)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the database with the name: %s", environment.GetDatabaseName()), Operation: op, Err: err}
 	}
 	return nil
 }
 
-// Dump database
+// Dump the database to file with the given path and file name.
+// Returns errors.INTERNAL if the connection, dump failed as well as closing
+// the database.
 func (db *MySql) Dump(path string, filename string) error {
+	const op = "Database.Dump"
 	dumper, err := mysqldump.Register(db.Sqlx.DB, path, filename)
 	if err != nil {
-		return fmt.Errorf("could not conenct to the database %v", err)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Unable to register with mysqldump", Operation: op, Err: err}
 	}
 
 	_, err = dumper.Dump()
 	if err != nil {
-		return fmt.Errorf("errror dumping the database: %v", err)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not dump the database with the path and filename: %s", path + filename), Operation: op, Err: err}
 	}
 
 	if err := dumper.Close(); err != nil {
-		return fmt.Errorf("errror closing database: %v", err)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not close the database connection", Operation: op, Err: err}
 	}
 
 	return nil
