@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
@@ -29,8 +30,9 @@ import (
 	"time"
 )
 
+// MediaRepository defines methods for Media to interact with the database
 type MediaRepository interface {
-	GetAll(meta http.Params) ([]domain.Media, error)
+	Get(meta http.Params) ([]domain.Media, error)
 	GetById(id int) (domain.Media, error)
 	GetByName(name string) (domain.Media, error)
 	GetByUrl(url string) (domain.Media, error)
@@ -43,6 +45,7 @@ type MediaRepository interface {
 	Total() (int, error)
 }
 
+// PostStore defines the data layer for Media
 type MediaStore struct {
 	db          	*sqlx.DB
 	imageSizes 		domain.MediaSizes
@@ -55,7 +58,7 @@ type MediaStore struct {
 	organiseYear	bool
 }
 
-//Construct
+// newMedia - Construct
 func newMedia(db *sqlx.DB) *MediaStore {
 	ms := &MediaStore{
 		db: db,
@@ -79,7 +82,7 @@ func (s *MediaStore) processImageSizes(sizes map[string]interface{}) domain.Medi
 	return sizesArr
 }
 
-// init the model
+// init the model with options
 func (s *MediaStore) init() {
 	om := newOptions(s.db)
 
@@ -89,7 +92,6 @@ func (s *MediaStore) init() {
 	}
 
 	s.imageSizes = s.processImageSizes(opts.MediaSizes)
-
 	s.convertWebP = opts.MediaConvertWebP
 	s.serveWebP = opts.MediaServeWebP
 	s.compression = opts.MediaCompression
@@ -99,23 +101,26 @@ func (s *MediaStore) init() {
 	s.organiseYear = opts.MediaOrganiseDate
 }
 
-// GetAll Gets all media files from the database
-func (s *MediaStore) GetAll(meta http.Params) ([]domain.Media, error) {
+// Get all media
+// Returns errors.INTERNAL if the SQL query was invalid.
+// Returns errors.NOTFOUND if there are no media available.
+func (s *MediaStore) Get(meta http.Params) ([]domain.Media, error) {
+	const op = "MediaRepository.Get"
+
 	var m []domain.Media
 	q := fmt.Sprintf("SELECT * FROM media ORDER BY media.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, meta.Page * meta.Limit)
 	if err := s.db.Select(&m, q); err != nil {
-		log.Error(err)
-		return nil, fmt.Errorf("Could not get media - %w", err)
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get media", Operation: op, Err: err}
 	}
 
 	if len(m) == 0 {
-		return []domain.Media{}, nil
+		return []domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "No media available", Operation: op}
 	}
 
 	for k, _ := range m {
 		publicSizes, err := s.getSizesForPublic(m[k])
 		if err != nil {
-			log.Error(err)
+			return []domain.Media{}, err
 		}
 		m[k].Sizes = publicSizes
 	}
@@ -123,38 +128,44 @@ func (s *MediaStore) GetAll(meta http.Params) ([]domain.Media, error) {
 	return m, nil
 }
 
-// GetBydId Gets all media files from the database
+// GetById returns a media item by Id
+// Returns errors.NOTFOUND if the media item was not found by the given Id.
 func (s *MediaStore) GetById(id int) (domain.Media, error) {
+	const op = "MediaRepository.GetById"
 	var m domain.Media
 	if err := s.db.Get(&m, "SELECT * FROM media WHERE id = ?", id); err != nil {
-		log.Info(err)
-		return domain.Media{}, fmt.Errorf("Could not get media with the ID: %v", id)
+		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the ID: %d", id), Operation: op}
 	}
 	return m, nil
 }
 
 // Gets a media file by the file name
+// Returns errors.NOTFOUND if the media item was not found by the given name.
 func (s *MediaStore) GetByName(name string) (domain.Media, error) {
+	const op = "MediaRepository.GetByName"
 	var m domain.Media
 	if err := s.db.Get(&m, "SELECT * FROM media WHERE name = ?", name); err != nil {
-		log.Info(err)
-		return domain.Media{}, fmt.Errorf("Could not get media with the name: %v", name)
+		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the name: %s", name), Operation: op}
 	}
 	return m, nil
 }
 
 // GetByUrl Obtains a media file by the URL from the database
+// Returns errors.NOTFOUND if the media item was not found by the given url.
 func (s *MediaStore) GetByUrl(url string) (domain.Media, error) {
+	const op = "MediaRepository.GetByUrl"
 	var m domain.Media
 	if err := s.db.Get(&m, "SELECT * FROM media WHERE url = ?", url); err != nil {
-		log.Info(err)
-		return domain.Media{}, fmt.Errorf("Could not get media with the url: %v", url)
+		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the url: %s", url), Operation: op}
 	}
 	return m, nil
 }
 
 // Serve is responsible for serving the correct data to the front end
+// Returns errors.NOTFOUND if the media item was not found.
 func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, error) {
+	const op = "MediaRepository.Serve"
+
 	m, err := s.GetByUrl(uploadPath)
 	if err != nil {
 		return nil, "", err
@@ -177,14 +188,16 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, 
 	}
 
 	if found != nil {
-		return nil, "", fmt.Errorf("File does not exist with the path: %v", uploadPath)
+		return nil, "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("File does not exist with the path: %v", uploadPath), Operation: op}
 	}
 
 	return data, mimeType, nil
 }
 
 // Upload the media files, return bool is for server or user error
+// Returns errors.INTERNAL if the uploaded file failed to save.
 func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Media, error) {
+	const op = "MediaRepository.Upload"
 
 	// E.G  /Users/admin/cms/storage/uploads
 	path := s.createDirectory()
@@ -209,13 +222,15 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 
 	// Save the uploaded file
 	if err := files.Save(file, path + "/" + key + extension); err != nil {
-		log.Error(err)
-		return domain.Media{}, fmt.Errorf("Could not save the media file, please try again")
+		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not save the media file, please try again", Operation: op}
 	}
 
 	// Convert to WebP
 	if s.convertWebP {
-		decodedImage := s.decodeImage(file, mimeType)
+		decodedImage, err := s.decodeImage(file, mimeType)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error()
+		}
 		go convertWebP(*decodedImage, path + "/" + key + extension, s.compression)
 	}
 
@@ -223,16 +238,14 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 	sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
 
 	// Insert into the database
-	dm, err := s.insert(key, cleanName + extension, path, int(file.Size), mimeType, sizes, userId)
+	dm, err := s.insert(cleanName + extension, path, int(file.Size), mimeType, sizes, userId)
 	if err != nil {
-		log.Info(err)
-		return domain.Media{}, nil
+		return domain.Media{}, err
 	}
 
 	publicSizes, err := s.getSizesForPublic(dm)
 	if err != nil {
-		log.Info(err)
-		return domain.Media{}, nil
+		return domain.Media{}, err
 	}
 
 	dm.Sizes = publicSizes
@@ -241,36 +254,38 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 }
 
 // Validate the file before uploading
+// Returns errors.INVALID if the file was not in the whitelist or
+// the file was too big.
 func (s *MediaStore) Validate(file *multipart.FileHeader) error {
+	const op = "MediaRepository.Validate"
 
-	// Get the mime type of the file
 	mimeType, err := mime.TypeByFile(file)
 	if err != nil {
-		log.Error(err)
-		return fmt.Errorf("Unable to get the mime type of the file")
-	}
-
-	// Check if the mime is valid in the allowed file types configuration array
-	valid := mime.IsValidMime(config.Media.AllowedFileTypes, mimeType)
-	if !valid {
-		err := fmt.Errorf("The %s, is not in the whitelist for uploading, please upload a correct file format", mimeType)
-		log.Info(err)
 		return err
 	}
 
-	// Check for max file upload limit
+	valid := mime.IsValidMime(config.Media.AllowedFileTypes, mimeType)
+	if !valid {
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The %s, is not in the whitelist for uploading, please upload a correct file format", mimeType), Operation: op, Err: err}
+	}
+
 	fileSize := int(file.Size / 1024)
 	if fileSize > s.maxFileSize {
-		return fmt.Errorf("The file exceeds the upload restriction of: %v", s.maxFileSize)
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The file exceeds the upload restriction of: %v", s.maxFileSize), Operation: op, Err: err}
 	}
 
 	return nil
 }
 
 // Inserts a media item into the database
-func (s *MediaStore) insert(key string, name string, filePath string, fileSize int, mime string, sizes []domain.MediaSizeDB, userId int) (domain.Media, error) {
+// Returns errors.INTERNAL if the SQL query was invalid.
+func (s *MediaStore) insert(name string, filePath string, fileSize int, mime string, sizes []domain.MediaSizeDB, userId int) (domain.Media, error) {
+	const op = "MediaRepository.insert"
 
-	marshal, _ := json.Marshal(sizes)
+	marshal, err := json.Marshal(sizes)
+	if err != nil {
+		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not marshal the media sizes", Operation: op, Err: err}
+	}
 	marshalledSizes := json.RawMessage(marshal)
 
 	m := domain.Media{
@@ -290,14 +305,12 @@ func (s *MediaStore) insert(key string, name string, filePath string, fileSize i
 	q := "INSERT INTO media (uuid, url, title, alt, description, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
 	if err != nil {
-		log.Error(err)
-		return domain.Media{}, fmt.Errorf("Could not create the media item with the name: %v", m.FileName)
+		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the new media item with the name: %v", name), Operation: op, Err: err}
 	}
 
 	id, err := c.LastInsertId()
 	if err != nil {
-		log.Error(err)
-		return domain.Media{}, fmt.Errorf("Could not get the newly created media with the name: %v", m.FileName)
+		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created media with the name: %v", m.FileName), Operation: op, Err: err}
 	}
 	m.Id = int(id)
 
@@ -305,25 +318,32 @@ func (s *MediaStore) insert(key string, name string, filePath string, fileSize i
 }
 
 // Update the media item (title, alt & description)
+// Returns errors.NOTFOUND if the media item was not found.
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *MediaStore) Update(m *domain.Media) error {
+	const op = "MediaRepository.Update"
+
 	_, err := s.GetById(m.Id)
 	if err != nil {
-		log.Info(err)
 		return err
 	}
 
 	q := "UPDATE media SET title = ?, alt = ?, description = ?, updated_at = NOW() WHERE id = ?"
 	_, err = s.db.Exec(q, m.Title, m.Alt, m.Description, m.Id)
 	if err != nil {
-		log.Error(err)
-		return fmt.Errorf("Could not update the media item with the ID: %v", m.Id)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the media item with the ID: %v", m.Id), Operation: op, Err: err}
 	}
 
 	return nil
 }
 
 // Delete the record from the database and all files
+// Returns errors.NOTFOUND if the media item was not found.
+// Returns errors.INTERNAL if any file (original, webp or any sizes) were not deleted.
+// Or if the SQL query was invalid
 func (s *MediaStore) Delete(id int) error {
+	const op = "MediaRepository.Delete"
+
 	m, err := s.GetById(id)
 	if err != nil {
 		return err
@@ -333,59 +353,58 @@ func (s *MediaStore) Delete(id int) error {
 
 	// Delete the main file
 	if err := files.CheckAndDelete(m.FilePath + "/" + m.UUID.String() + extension); err != nil {
-		fmt.Println(m.FilePath + "/" + m.FileName)
-		log.Error(err)
-		return fmt.Errorf("Could not delete the original media file with the ID: %v", id)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the original media file with the ID: %v", id), Operation: op, Err: err}
 	}
 
 	// Delete the sizes and webp versions if stored
 	sizes, err := s.unmarshalSizes(m)
 	if err != nil {
-		log.Error(err)
-		return fmt.Errorf("Could not delete the media file sizes with the ID: %v", id)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the media file sizes with the ID: %v", id), Operation: op, Err: err}
 	}
+
 	for _, v := range sizes {
 		filePath := v.FilePath + "/" + v.UUID.String() + extension
 		if err := files.CheckAndDelete(filePath); err != nil {
-			log.Error(err)
-			return fmt.Errorf("Could not delete the media size file with the name: %v", v.Name)
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the media size file with the name: %v", v.Name), Operation: op, Err: err}
 		}
 		if err := files.CheckAndDelete(filePath + ".webp"); err != nil {
-			log.Error(err)
-			return fmt.Errorf("Could not delete the media size webp file with the name: %v", v.Name)
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the media size webp file with the name: %v", v.Name), Operation: op, Err: err}
 		}
 	}
 
 	// Delete entry from database
 	if _, err := s.db.Exec("DELETE FROM media WHERE id = ?", id); err != nil {
-		log.Info(err)
-		return fmt.Errorf("Could not delete media with the ID : %v", id)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete media item with the ID: %v", id), Operation: op, Err: err}
 	}
 
 	return nil
 }
 
-// Check if the media item exists in the database
+// Exists Checks if a media items exists by the given name
 func (s *MediaStore) Exists(name string) bool {
+	const op = "MediaRepository.Exists"
 	var exists bool
 	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM media WHERE file_name = ?)", name).Scan(&exists)
 	return exists
 }
 
-// Get the total number of posts
+// Total gets the total number of media items
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *MediaStore) Total() (int, error) {
+	const op = "MediaRepository.Total"
 	var total int
 	if err := s.db.QueryRow("SELECT COUNT(*) FROM media").Scan(&total); err != nil {
-		log.Error(err)
-		return -1, fmt.Errorf("Could not get the total number of media items")
+		return -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of media items", Operation: op, Err: err}
 	}
 	return total, nil
 }
 
-// Saves all of the resized images and returns an array if successful
+// saveResizedImages saves all of the resized images and returns
+// an array of media DB sizes if successful.
 func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, path string, mime string, extension string) []domain.MediaSizeDB {
-	var savedSizes []domain.MediaSizeDB
+	const op = "MediaRepository.saveResizedImages"
 
+	var savedSizes []domain.MediaSizeDB
 	if mime == "image/png" || mime == "image/jpeg" {
 		for _, size := range s.imageSizes {
 			mediaUUID := uuid.New()
@@ -411,22 +430,24 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, 
 	return savedSizes
 }
 
-// Process image sizes, convert WebPs and saves various image sizes based on configuration
+// processImageSize processes image sizes, convert WebPs and saves various image sizes based on configuration
+// Returns errors.INTERNAL if the image was unable to be saved or decoded.
 func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath string, mime string, size domain.MediaSize) error {
+	const op = "MediaRepository.processImageSize"
 
 	// PNG Type
 	if mime == "image/png" {
 		filePath = filePath + ".png"
 
-		decodedImage := s.decodeImage(file, mime)
-		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)
-
-		if err := imaging.Save(resized, filePath, imaging.PNGCompressionLevel(png.CompressionLevel(s.compression)));
-			err != nil {
-			log.Error(err)
+		decodedImage, err  := s.decodeImage(file, mime)
+		if err != nil {
 			return err
 		}
-		log.Info("Saved image resized image with path: " + filePath)
+		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)
+
+		if err := imaging.Save(resized, filePath, imaging.PNGCompressionLevel(png.CompressionLevel(s.compression))); err != nil {
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not save the resized image"), Operation: op, Err: err}
+		}
 
 		if s.convertWebP {
 			go convertWebP(resized, filePath, s.compression)
@@ -437,14 +458,15 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 	if mime == "image/jpeg" || mime == "image/jp2" {
 		filePath = filePath + ".jpg"
 
-		decodedImage := s.decodeImage(file, mime)
+		decodedImage, err := s.decodeImage(file, mime)
+		if err != nil {
+			return err
+		}
 		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)
 
 		if err := imaging.Save(resized, filePath, imaging.JPEGQuality(s.compression)); err != nil {
-			log.Error(err)
-			return err
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not save the resized image"), Operation: op, Err: err}
 		}
-		log.Info("Saved image resized image with path: " + filePath)
 
 		if s.convertWebP {
 			go convertWebP(resized, filePath, s.compression)
@@ -466,6 +488,8 @@ func resizeImage(srcImage image.Image, width int, height int, crop bool) image.I
 // Converts an image to webp based on compression and decoded image.
 // Compression level is also set.
 func convertWebP(image image.Image, path string, compression int) {
+	const op = "MediaRepository.insert"
+
 	var buf bytes.Buffer
 	var opts = webp.Options{
 		Lossless: true,
@@ -483,9 +507,11 @@ func convertWebP(image image.Image, path string, compression int) {
 	log.Info("WebP conversion ok with path: " + path + ".webp")
 }
 
-// Creates the media directory year path if the organise year variable in the media
+// createDirectory creates the media directory year path if the organise year variable in the media
 // store is set to true. Date and year folders are created recursively.
 func (s *MediaStore) createDirectory() string {
+	const op = "MediaRepository.createDirectory"
+
 	uploadsPath := paths.Uploads()
 
 	if !s.organiseYear {
@@ -513,44 +539,52 @@ func (s *MediaStore) getUrl() string {
 	}
 }
 
-// Decode the image from a file dependant on the mim type
-func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) *image.Image {
+// decodeImage decodes the image from a file dependant on the mime type
+// Returns errors.INTERNAL if the file was unable to be decoded or the file
+// was unable to be opened.
+func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) (*image.Image, error) {
+	const op = "MediaRepository.decodeImage"
+
 	reader, err := file.Open()
 	if err != nil {
-		log.Error(err)
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to open the file with the filename: %s", file.Filename), Operation: op, Err: err}
 	}
 
 	if mime == "image/png" {
 		pngFile, err := png.Decode(reader)
 		if err != nil {
-			log.Error(err)
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not decode the image with the filename: %s", file.Filename), Operation: op, Err: err}
 		}
-		return &pngFile
+		return &pngFile, nil
 
 	} else if mime == "image/jpeg" || mime == "image/jp2" {
 		jpgFile, err := jpeg.Decode(reader)
 		if err != nil {
-			log.Error(err)
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not decode the image with the filename: %s", file.Filename), Operation: op, Err: err}
 		}
-		return &jpgFile
+		return &jpgFile, nil
 	}
 
-	return nil
+	return nil, &errors.Error{Code: errors.INTERNAL, Message: "Something went wrong decoding the image", Operation: op, Err: err}
 }
 
 // Unmarshal the media sizes for processing
+// Returns errors.INTERNAL if the size was unable to be unmarshalled
 func (s *MediaStore) unmarshalSizes(m domain.Media) ([]domain.MediaSizeDB, error) {
+	const op = "MediaRepository.unmarshalSizes"
 	var sizes []domain.MediaSizeDB
 	if err := json.Unmarshal(*m.Sizes, &sizes); err != nil {
-		log.Error(err)
-		return nil, fmt.Errorf("Could not unmarshal the media sizes with the ID: %v", m.Id)
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could unmarshal the image sizes", Operation: op, Err: err}
 	}
 	return sizes, nil
 }
 
 // Unmarshal the media sizes for public use
+// Returns errors.INTERNAL if the size was unable to be marshalled
 // TODO: Sort by name or size
 func (s *MediaStore) getSizesForPublic(m domain.Media) (*json.RawMessage, error) {
+	const op = "MediaRepository.getSizesForPublic"
+
 	ms, err := s.unmarshalSizes(m)
 	if err != nil {
 		return nil, err
@@ -571,7 +605,7 @@ func (s *MediaStore) getSizesForPublic(m domain.Media) (*json.RawMessage, error)
 
 	marshalled, err := json.Marshal(returnData)
 	if err != nil {
-		return nil, fmt.Errorf("Could not marshal the media sizes with the ID: %v", m.Id)
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could marshal the image sizes", Operation: op, Err: err}
 	}
 	jsonMessage := json.RawMessage(marshalled)
 

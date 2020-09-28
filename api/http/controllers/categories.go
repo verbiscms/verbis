@@ -69,7 +69,7 @@ func (c *CategoriesController) GetById(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained category with ID " + string(id), category)
+	Respond(g, 200, "Successfully obtained category with ID " + string(rune(id)), category)
 }
 
 // Create
@@ -140,5 +140,5 @@ func (c *CategoriesController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted category with ID " + string(id), nil)
+	Respond(g, 200, "Successfully deleted category with ID " + string(rune(id)), nil)
 }
