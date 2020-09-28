@@ -43,12 +43,10 @@ func (c *PostsController) Get(g *gin.Context) {
 
 	params := http.GetParams(g)
 	posts, err := c.postModel.Get(params)
-
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
 	}
-
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -78,7 +76,7 @@ func (c *PostsController) Get(g *gin.Context) {
 }
 
 // Get By ID
-// Returns errors.INVALID if the Id is not a string or passed
+// Returns errors.INVALID if the Id is not a string or passed.
 func (c *PostsController) GetById(g *gin.Context) {
 	const op = "PostsController.GetById"
 

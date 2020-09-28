@@ -28,7 +28,7 @@ func newOptions(m models.OptionsRepository) *OptionsController {
 
 // Get All
 func (c *OptionsController) Get(g *gin.Context) {
-	options, err := c.model.GetAll()
+	options, err := c.model.Get()
 	if err != nil {
 		Respond(g, 500, err.Error(), nil)
 		return

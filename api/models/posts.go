@@ -155,6 +155,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 }
 
 // Delete post
+// Returns errors.NOTFOUND if the post was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *PostStore) Delete(id int) error {
 	const op = "PostsRepository.Delete"
@@ -175,12 +176,10 @@ func (s *PostStore) Delete(id int) error {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *PostStore) Total() (int, error) {
 	const op = "PostsRepository.Total"
-
 	var total int
 	if err := s.db.QueryRow("SELECT COUNT(*) FROM posts").Scan(&total); err != nil {
-		return -1,  &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the total number of posts"), Operation: op, Err: err}
+		return -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
 	}
-
 	return total, nil
 }
 

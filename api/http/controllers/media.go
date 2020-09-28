@@ -33,7 +33,7 @@ func newMedia(m models.MediaRepository, um models.UserRepository) *MediaControll
 // Get All
 func (c *MediaController) Get(g *gin.Context) {
 	params := http.GetParams(g)
-	media, err := c.mediaModel.GetAll(params)
+	media, err := c.mediaModel.Get(params)
 	if err != nil {
 		Respond(g, 500, err.Error(), nil)
 		return
