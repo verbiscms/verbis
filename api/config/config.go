@@ -87,6 +87,7 @@ type logs struct {
 
 // Init the configuration, obtain all of the yaml files
 // within the config directory and set variables.
+// Returns errors.INTERNAL if the unmarshal was unsuccessful.
 func Init() error {
 	const op = "config.Init"
 

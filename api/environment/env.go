@@ -1,7 +1,7 @@
 package environment
 
 import (
-	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	pkgValidate "github.com/go-playground/validator/v10"
 	"strconv"
@@ -37,8 +37,10 @@ type Mail struct {
 	FromName			string `json:"MAIL_FROM_NAME"`
 }
 
-// Populate environment, loads and validates the environment file.
+// Load populates environment, loads and validates the environment file.
+// Returns errors.INVALID if the env file failed to load.
 func Load() error {
+	const op = "environment.Load"
 
 	var (
 		basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
@@ -49,9 +51,8 @@ func Load() error {
 		envPath = basePath + "/.env"
 	}
 
-	// Init ENV
 	if err := godotenv.Overload(envPath); err != nil {
-		return fmt.Errorf("Could not load the enviromnent file, is there a .env file in the root of the verbis project?")
+		return &errors.Error{Code: errors.INVALID, Message: "Could not load the enviromnent file, is there a .env file in the root of the verbis project?", Operation: op, Err: err}
 	}
 
 	env = envMap{
@@ -84,27 +85,28 @@ func Validate() []validation.ValidationError {
 	return nil
 }
 
-// App - Name
+// App - GetAppName
 func GetAppName() string {
 	return env.AppName
 }
 
+// Database - GetPort
 func GetPort() int {
 	n, _ := strconv.Atoi(env.AppPort)
 	return n
 }
 
-// Database - Connection String
+// Database - ConnectString
 func ConnectString() string {
 	return env.DbUser + ":" + env.DbPassword + "@tcp(" + env.DbHost + ":" + env.DbPort + ")/" + env.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
 }
 
-// Database - Name
+// Database - GetDatabaseName
 func GetDatabaseName() string {
 	return env.DbDatabase
 }
 
-// Mail - Configuration
+// Mail - GetMailConfiguration
 func GetMailConfiguration() Mail {
 	return Mail{
 		FromAddress: env.MailFromAddress,
@@ -112,17 +114,17 @@ func GetMailConfiguration() Mail {
 	}
 }
 
-// Env - Production
+// Env - IsProduction
 func IsProduction() bool {
 	return env.AppEnv == "production" || env.AppEnv == "prod"
 }
 
-// Env - Development
+// Env - IsDevelopment
 func IsDevelopment() bool {
 	return env.AppEnv != "production" && env.AppEnv != "prod"
 }
 
-// Env - Debug
+// Env - IsDebug
 func IsDebug() bool {
 	return env.AppDebug != "false"
 }
