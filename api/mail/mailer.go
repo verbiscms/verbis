@@ -1,11 +1,12 @@
 package mail
 
 import (
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/html"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"fmt"
 	sp "github.com/SparkPost/gosparkpost"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/helpers/html"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 )
 
 type Mailer struct {
@@ -23,19 +24,19 @@ type Sender struct {
 
 type Data map[string]interface{}
 
-// Create a new mailable instance using environment.
+// New, Create a new mailable instance using environment variables.
 func New() (*Mailer, error) {
+	const op = "mail.New"
 	m := &Mailer{}
-
 	if err := m.load(); err != nil {
 		return &Mailer{}, err
 	}
-
 	return m, nil
 }
 
 // Load the mailer and connect to sparkpost
 func (m *Mailer) load() error {
+	const op = "mail.Load"
 
 	mailConf := environment.GetMailConfiguration()
 
@@ -48,7 +49,7 @@ func (m *Mailer) load() error {
 	var client sp.Client
 	err := client.Init(config)
 	if err != nil {
-		return fmt.Errorf("SparkPost client init failed: %s\n", err)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not create a new mailer instance", Operation: op, Err: err}
 	}
 	m.client = client
 
@@ -62,6 +63,7 @@ func (m *Mailer) load() error {
 // Create a Transmission using an inline Recipient List
 // and inline email Content.
 func (m *Mailer) Send(t *Sender) (string, error) {
+	const op = "mail.Send"
 
 	tx := &sp.Transmission{
 		Recipients: t.To,
