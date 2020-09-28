@@ -27,7 +27,7 @@ up the server on the port specified in the .env file.`,
 			}
 
 			// Set up stores & pass the database.
-			store, err := models.New(db)
+			store := models.New(db)
 			if err != nil {
 				printError(err.Error())
 			}
@@ -37,10 +37,7 @@ up the server on the port specified in the .env file.`,
 			go scheduler.Run()
 
 			// Set up the router & pass logger
-			serve, err := server.New()
-			if err != nil {
-				printError(err.Error())
-			}
+			serve := server.New()
 
 			// Pass the stores to the controllers
 			controllers, err := controllers.New(store)

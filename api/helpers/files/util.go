@@ -12,15 +12,17 @@ import (
 )
 
 // Delete file based on file path
+// Returns errors.INTERNAL if the file failed to delete.
 func Delete(path string) error {
+	const op = "files.Delete"
 	err := os.Remove(path)
 	if err != nil {
-		return fmt.Errorf("Could not delete the file with the path: %v", path)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the file with the path: %v", path), Operation: op, Err: err}
 	}
 	return nil
 }
 
-// Check if a file exists
+// Exists checks if a file exists using os.Stat
 func Exists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -29,7 +31,7 @@ func Exists(filename string) bool {
 	return !info.IsDir()
 }
 
-// Check if directory exists
+// DirectoryExists checks if directory exists using os.Stat
 func DirectoryExists(filename string) bool {
 	_, err := os.Stat(filename)
 	if os.IsNotExist(err) {
@@ -39,27 +41,32 @@ func DirectoryExists(filename string) bool {
 }
 
 // Check the file exists and delete
+// Returns errors.NOTFOUND if the file was not found.
 func CheckAndDelete(path string) error {
+	const op = "files.Delete"
 	if Exists(path) {
 		if err := Delete(path); err != nil {
 			return err
 		}
 		return nil
 	}
-	return fmt.Errorf("Filepath %v not found", path)
+	return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Failed to delete file with the path: %s", path), Operation: op, Err: fmt.Errorf("filepath %v not found", path)}
 }
 
 // Save File
+// Returns errors.INTERNAL if the file could not be opened or be created.
 func Save(file *multipart.FileHeader, dst string) error {
+	const op = "files.Save"
+
 	src, err := file.Open()
 	if err != nil {
-		return err
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf( "Unable to open file with the name: %s", file.Filename), Operation: op, Err: err}
 	}
 	defer src.Close()
 
 	out, err := os.Create(dst)
 	if err != nil {
-		return err
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf( "Unable to create a file with the name: %s", file.Filename), Operation: op, Err: err}
 	}
 	defer out.Close()
 
@@ -86,14 +93,14 @@ func GetFileSize(path string) int {
 	return int(fi.Size() / 1024)
 }
 
-// Get file contents of given path
+// GetFileContents of given path
+// Returns errors.INTERNAL if the path was invalid
 func GetFileContents(path string) (string, error) {
+	const op = "files.GetFileContents"
 	contents, err := ioutil.ReadFile(path)
-
 	if err != nil {
-		return "", fmt.Errorf("Could not get file contents: %w", err)
+		return "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf( "Could not get the file contents with the path: %s", path), Operation: op, Err: err}
 	}
-
 	return string(contents), nil
 }
 

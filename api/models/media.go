@@ -199,7 +199,10 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 	cleanName := s.processFileName(name, extension)
 
 	// E.G: 180ea4324ab2556032141e956ca1f141
-	key := encryption.GenerateRandomHash()
+	key, err := encryption.GenerateRandomHash()
+	if err != nil {
+		return domain.Media{}, err
+	}
 
 	// E.G image/png
 	mimeType, _ := mime.TypeByFile(file)

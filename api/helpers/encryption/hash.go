@@ -5,22 +5,25 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 )
 
-func GenerateRandomHash() string {
+// GenerateRandomHash generates a unique random md5 hash
+// Returns errors.INTERNAL if the hash failed to generate.
+func GenerateRandomHash() (string, error) {
+	const op = "encryption.GenerateRandomHash"
 	hash, err := bcrypt.GenerateFromPassword([]byte(newSHA1Hash(36)), bcrypt.DefaultCost)
 	if err != nil {
-		log.Error(err)
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Could not generate a random hash", Operation: op, Err: err}
 	}
 	hasher := md5.New()
 	hasher.Write(hash)
-	return hex.EncodeToString(hasher.Sum(nil))
+	return hex.EncodeToString(hasher.Sum(nil)), nil
 }
 
-// NewSHA1Hash generates a new SHA1 hash based on
+// newSHA1Hash generates a new SHA1 hash based on
 // a random number of characters.
 func newSHA1Hash(n ...int) string {
 	noRandomCharacters := 32
@@ -38,10 +41,9 @@ func newSHA1Hash(n ...int) string {
 	return fmt.Sprintf("%x", bs)
 }
 
-var characterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
-
-// RandomString generates a random string of n length
+// randomString generates a random string of n length
 func randomString(n int) string {
+	var characterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	b := make([]rune, n)
 	for i := range b {
 		b[i] = characterRunes[rand.Intn(len(characterRunes))]

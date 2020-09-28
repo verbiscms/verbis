@@ -22,7 +22,7 @@ type AuthRepository interface {
 	CleanPasswordResets() error
 }
 
-// AuthStore defines the store for Authentication
+// AuthStore defines the data layer for Authentication
 type AuthStore struct {
 	db *sqlx.DB
 }
@@ -111,14 +111,13 @@ func (s *AuthStore) ResetPassword(token string, password string) error {
 // A temporary record is inserted to the password resets table and an email
 // is sent to the user by the reset passwords event.
 // Returns errors.NOTFOUND if the user was not found by the given email.
-// Returns errors.INTERNAL if the SQL query was invalid or the email
-// could not be sent.
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *AuthStore) SendResetPassword(email string) error {
 	const op = "AuthRepository.SendResetPassword"
 
 	var u domain.User
 	if err := s.db.Get(&u, "SELECT * FROM users WHERE email = ? LIMIT 1", email); err != nil {
-		return fmt.Errorf("We couldn't find a user with that email address.")
+		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not find the user with the email: %s", email), Operation: op, Err: err}
 	}
 
 	token, err := encryption.GenerateEmailToken(email)
@@ -129,61 +128,63 @@ func (s *AuthStore) SendResetPassword(email string) error {
 	q := "INSERT INTO password_resets (email, token, created_at) VALUES (?, ?, NOW())"
 	_, err = s.db.Exec(q, email, token)
 	if err != nil {
-		return fmt.Errorf("Could not insert into password resets table with the email: %v", email)
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not insert into password resets", Operation: op, Err: err}
 	}
 
-	// Create a new reset password event.
 	rp, err := events.NewResetPassword()
 	if err != nil {
 		return err
 	}
 
-	// Send the reset password email
 	err = rp.Send(&u, token)
 	if err != nil {
-		return fmt.Errorf("Could not sent the reset password email")
+		return err
 	}
 
 	return nil
 }
 
-// Verify the users email address based on the encryption hash string passed
+// VerifyEmail the users email address based on the encryption hash string passed
+// Returns errors.NOTFOUND if the user was not found by the md5string email.
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *AuthStore) VerifyEmail(md5String string) error {
 	const op = "AuthRepository.VerifyEmail"
 
 	var userVerified = struct{
-		ID   	int		`db:"id"`
+		Id   	int		`db:"id"`
 		Hash 	string	`db:"hash"`
 	}{}
 
 	if err := s.db.Get(&userVerified, "SELECT id AS id, MD5(CONCAT(id, email)) AS hash FROM users WHERE MD5(CONCAT(id, email)) = ?", md5String); err != nil {
-		return fmt.Errorf("Could not get user from database")
+		return &errors.Error{Code: errors.NOTFOUND, Message: "Could not find the user for email verification", Operation: op, Err: err}
 	}
 
 	q := "UPDATE users SET email_verified_at = NOW() WHERE ID = ?"
-	_, err := s.db.Exec(q, userVerified.ID)
+	_, err := s.db.Exec(q, userVerified.Id)
 	if err != nil {
-		return fmt.Errorf("Could not users verifiy email address")
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could update the user with the Id: %d", userVerified.Id), Operation: op, Err: err}
 	}
 
 	return nil
 }
 
-// Verify the token is valid from the password resets table
+// VerifyPasswordToken the token is valid from the password resets table
+// Returns errors.NOTFOUND if the user was not found by the given token.
 func (s *AuthStore) VerifyPasswordToken(token string) error {
 	const op = "AuthRepository.VerifyPasswordToken"
 	var pr domain.PasswordReset
 	if err := s.db.Get(&pr, "SELECT * FROM password_resets WHERE token = ? LIMIT 1", token); err != nil {
-		return fmt.Errorf("We couldn't find a email matching that token")
+		return &errors.Error{Code: errors.NOTFOUND, Message: "We couldn't find a email matching that token", Operation: op, Err: err}
 	}
-
 	return nil
 }
 
 // Verify the token is valid from the password resets table
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *AuthStore) CleanPasswordResets() error {
+	const op = "AuthRepository.CleanPasswordResets"
 	if _, err := s.db.Exec("DELETE FROM password_resets WHERE created_at < (NOW() - INTERVAL 2 HOUR)"); err != nil {
-		return fmt.Errorf("Could not delete from the reset passwords table")
+		return &errors.Error{Code: errors.INVALID, Message: "Could not delete from the reset passwords table", Operation: op, Err: err}
 	}
 	return nil
 }
