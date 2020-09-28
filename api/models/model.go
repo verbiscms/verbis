@@ -14,42 +14,24 @@ type Store struct {
 	Posts      		PostsRepository
 	Roles      		RoleRepository
 	Session 		SessionRepository
-	Subscriber 		SubscriberRepository
 	Site      		SiteRepository
 	User       		UserRepository
 }
 
 // Create a new database instance, connect to database.
-func New(db *database.MySql) (*Store, error) {
-
-	auth := newAuth(db.Sqlx)
-	categories := newCategories(db.Sqlx)
-	media := newMedia(db.Sqlx)
-	options := newOptions(db.Sqlx)
-	roles := newRoles(db.Sqlx)
-	session := newSession(db.Sqlx)
-	seoMeta := newSeoMeta(db.Sqlx)
-	subscriber := newSubscriber(db.Sqlx)
-	user := newUser(db.Sqlx)
-	site := newSite(db.Sqlx, options)
-	fields := newFields(db.Sqlx, options)
-	posts := newPosts(db.Sqlx, seoMeta, user, categories)
-
-	s := &Store{
-		Auth:       auth,
-		Categories: categories,
-		Fields:     fields,
-		Media: 		media,
-		Options:    options,
-		Posts:     	posts,
-		Roles:      roles,
-		Session: 	session,
-		Subscriber: subscriber,
-		Site:     	site,
-		User:       user,
+func New(db *database.MySql) *Store {
+	return &Store{
+		Auth:       newAuth(db.Sqlx),
+		Categories: newCategories(db.Sqlx),
+		Fields:     newFields(db.Sqlx),
+		Media: 		newMedia(db.Sqlx),
+		Options:    newOptions(db.Sqlx),
+		Posts:     	newPosts(db.Sqlx),
+		Roles:      newRoles(db.Sqlx),
+		Session: 	newSession(db.Sqlx),
+		Site:     	newSite(db.Sqlx),
+		User:       newUser(db.Sqlx),
 	}
-
-	return s, nil
 }
 
 

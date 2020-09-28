@@ -1,11 +1,11 @@
 package models
 
 import (
+	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -34,10 +34,10 @@ type fieldCache struct {
 }
 
 // Construct
-func newFields(db *sqlx.DB, om OptionsRepository) *FieldsStore {
+func newFields(db *sqlx.DB) *FieldsStore {
 	fs := FieldsStore{
 		db: db,
-		optionsModel: om,
+		optionsModel: newOptions(db),
 		jsonPath: paths.Storage() + "/fields",
 	}
 	fs.cache = fs.initCache()
@@ -183,7 +183,7 @@ func (s *FieldsStore) GetFieldGroups() (*[]domain.FieldGroup, error) {
 	err := filepath.Walk(s.jsonPath, func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(info.Name(), "json") {
 
-			file, err := helpers.ReadJson(path)
+			file, err := files.ReadJson(path)
 			if err != nil {
 				return err
 			}

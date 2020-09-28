@@ -33,7 +33,7 @@ database.`,
 			}
 
 			// Set up stores & pass the database.
-			store, err := models.New(db)
+			store := models.New(db)
 			if err != nil {
 				printError(err.Error())
 			}

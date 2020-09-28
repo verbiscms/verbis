@@ -21,8 +21,6 @@ func frontend(s *server.Server, c *controllers.Controller) {
 		s.Static("/verbis", paths.Api() + "/web")
 
 		s.GET("/", c.Frontend.Home)
-		s.GET("/style-guide", c.Frontend.StyleGuide)
-		s.POST("/ajax/subscribe", c.Frontend.Subscribe)
 		s.GET("/uploads/*any", c.Frontend.GetUploads)
 
 		s.NoRoute(c.Frontend.Serve)

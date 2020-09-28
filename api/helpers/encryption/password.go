@@ -15,7 +15,7 @@ func HashPassword(password string) (string, error) {
 	bytePassword := []byte(password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
 	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could has the password with the string: %s", password), Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not hash the password with the string: %s", password), Operation: op, Err: err}
 	}
 	return string(hashedPassword), err
 }

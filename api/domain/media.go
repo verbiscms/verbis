@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+// Media defines the media entity for interacting with the database
+// and sending data back
 type Media struct {
 	Id				int					`db:"id" json:"id"`
 	UUID 			uuid.UUID			`db:"uuid" json:"uuid"`

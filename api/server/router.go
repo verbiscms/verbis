@@ -1,7 +1,9 @@
 package server
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/ginview"
@@ -16,7 +18,7 @@ type Server struct {
 	*gin.Engine
 }
 
-func New() (*Server, error) {
+func New() *Server {
 
 	// Force log's color
 	gin.ForceConsoleColor()
@@ -49,17 +51,17 @@ func New() (*Server, error) {
 	// Instantiate the server.
 	return &Server{
 		r,
-	}, nil
+	}
 }
 
-// Serve the app
+// ListenAndServe runs Verbis on a given port
+// Returns errors.INVALID if the server could not start
 func (s *Server) ListenAndServe(port int) error {
+	const op = "router.ListenAndServe"
 	passedPort := strconv.Itoa(port)
-
 	err := s.Run(":" + passedPort)
 	if err != nil {
-		return err
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not start Verbis on the port %d", port), Operation: op, Err: err}
 	}
-
 	return nil
 }

@@ -22,7 +22,7 @@ type PostsRepository interface {
 	Total() (int, error)
 }
 
-// PostStore defines the store for Posts
+// PostStore defines the data layer for Posts
 type PostStore struct {
 	db *sqlx.DB
 	seoMetaModel 	SeoMetaRepository
@@ -31,18 +31,16 @@ type PostStore struct {
 }
 
 // newPosts - Construct
-func newPosts(db *sqlx.DB, sm SeoMetaRepository, um UserRepository, cm CategoryRepository) *PostStore {
-	ps := &PostStore{
+func newPosts(db *sqlx.DB) *PostStore {
+	return &PostStore{
 		db: db,
-		seoMetaModel: sm,
-		userModel: um,
-		categoriesModel: cm,
+		seoMetaModel: newSeoMeta(db),
+		userModel: newUser(db),
+		categoriesModel: newCategories(db),
 	}
-
-	return ps
 }
 
-// Get returns all posts
+// Get all posts
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no posts available.
 func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
@@ -61,13 +59,13 @@ func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
 	return p, nil
 }
 
-// GetById returns a post by ID
+// GetById returns a post by Id
 // Returns errors.NOTFOUND if the post was not found by the given Id.
 func (s *PostStore) GetById(id int) (domain.Post, error) {
 	const op = "PostsRepository.GetById"
 	var p domain.Post
 	if err := s.db.Get(&p, "SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id WHERE posts.id = ? LIMIT 1", id); err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the ID: %v", id), Operation: op}
+		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the ID: %d", id), Operation: op}
 	}
 	return p, nil
 }
@@ -78,20 +76,18 @@ func (s *PostStore) GetBySlug(slug string) (domain.Post, error) {
 	const op = "PostsRepository.GetBySlug"
 	var p domain.Post
 	if err := s.db.Get(&p, "SELECT * FROM posts WHERE slug = ?", slug); err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %v", slug), Operation: op}
+		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op}
 	}
 	return p, nil
 }
 
 // Create a new post
 // Returns errors.CONFLICT if the the post slug already exists.
-// Returns errors.NOTFOUND if the post was not found by the given slug.
-// Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
+// Returns errors.INTERNAL if the SQL query was invalid or the function
+// could not get the newly created ID.
 func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	const op = "PostsRepository.Create"
 
-	// See if the slug already exists within the database.
-	// Bail if exists
 	if s.Exists(p.Slug) {
 		return domain.Post{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", p.Slug), Operation: op}
 	}
@@ -99,15 +95,12 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	// Check if the author is set assign to owner if not.
 	p.Id = s.checkOwner(*p)
 
-	// Insert into posts table with data
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, fields, codeinjection_head, codeinjection_foot, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
-	// Get the last inserted ID and assign to the newly
-	// created post
 	id, err := c.LastInsertId()
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post ID with the title: %v", p.Title), Operation: op, Err: err}
@@ -125,6 +118,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 }
 
 // Update a post by Id
+// Returns errors.NOTFOUND if the post was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	const op = "PostsRepository.Update"

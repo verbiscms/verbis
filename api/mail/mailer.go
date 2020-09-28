@@ -35,6 +35,7 @@ func New() (*Mailer, error) {
 }
 
 // Load the mailer and connect to sparkpost
+// Returns errors.INTERNAL if the new mailer instance could not be created
 func (m *Mailer) load() error {
 	const op = "mail.Load"
 
@@ -62,6 +63,7 @@ func (m *Mailer) load() error {
 
 // Create a Transmission using an inline Recipient List
 // and inline email Content.
+// Returns errors.INVALID if the mail failed to send via sparkpost.
 func (m *Mailer) Send(t *Sender) (string, error) {
 	const op = "mail.Send"
 
@@ -76,17 +78,20 @@ func (m *Mailer) Send(t *Sender) (string, error) {
 
 	id, _, err := m.client.Send(tx)
 	if err != nil {
-		return id, fmt.Errorf("Mail sending failed: %s\n", err.Error())
+		return id, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err}
 	}
 
 	return id, nil
 }
 
 // Execute the mail HTML files
+// Returns errors.INTERNAL if the render failed
 func (m *Mailer) ExecuteHTML(file string, data interface{}) (string, error) {
-	html, err := html.RenderTemplate("main", data, paths.Api() + "/mail/main-layout.html", paths.Api() + "/mail/" + file)
+	const op = "mail.ExecuteHTML"
+	path := paths.Api() + "/mail/" + file
+	tmpl, err := html.RenderTemplate("main", data, paths.Api() + "/mail/main-layout.html", path)
 	if err != nil {
-		return "", err
+		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to render the template: %s", path), Operation: op, Err: err}
 	}
-	return html, nil
+	return tmpl, nil
 }

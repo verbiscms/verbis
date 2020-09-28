@@ -7,12 +7,14 @@ import (
 	"github.com/ainsleyclark/verbis/api/mail"
 )
 
+// ResetPassword defines the event instance for resetting passwords
 type ResetPassword struct {
 	mailer *mail.Mailer
 }
 
-// Create a new verify email event.
+// NewResetPassword creates a new reset password event.
 func NewResetPassword() (*ResetPassword, error) {
+	const op = "events.NewResetPassword"
 
 	m, err := mail.New()
 	if err != nil {
@@ -24,8 +26,9 @@ func NewResetPassword() (*ResetPassword, error) {
 	}, nil
 }
 
-// Send the verify email event.
+// Send the reset password event.
 func (e *ResetPassword) Send(u *domain.User, token string) error {
+	const op = "events.ResetPassword.Send"
 
 	tm := mail.Sender{
 		To:      	[]string{u.Email},

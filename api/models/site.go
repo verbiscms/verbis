@@ -1,13 +1,13 @@
 package models
 
 import (
+	gojson "encoding/json"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	gojson "encoding/json"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -35,14 +35,14 @@ type siteCache struct {
 }
 
 //Construct
-func newSite(db *sqlx.DB, om OptionsRepository) *SiteStore {
+func newSite(db *sqlx.DB) *SiteStore {
 	s := &SiteStore{
 		db: db,
-		optionsModel: om,
+		optionsModel: newOptions(db),
 	}
 
 	// Cache the site config JSON file
-	site, err := om.GetByName("cache_site")
+	site, err := s.optionsModel.GetByName("cache_site")
 	if err != nil {
 		s.cache.Site = true
 	} else {
@@ -51,7 +51,7 @@ func newSite(db *sqlx.DB, om OptionsRepository) *SiteStore {
 
 	// Cache the templates, preventing reading from the
 	// templates path when endpoint is hit.
-	resources, err := om.GetByName("cache_templates")
+	resources, err := s.optionsModel.GetByName("cache_templates")
 	if err != nil {
 		s.cache.Resources = true
 	} else {
@@ -60,7 +60,7 @@ func newSite(db *sqlx.DB, om OptionsRepository) *SiteStore {
 
 	// Cache the resources, preventing reading from the
 	// config json file in the theme directory.
-	templates, err := om.GetByName("cache_resources")
+	templates, err := s.optionsModel.GetByName("cache_resources")
 	if err != nil {
 		s.cache.Templates = true
 	} else {
@@ -213,7 +213,7 @@ func (s *SiteStore) GetAllResources() (*[]domain.Resource, error) {
 func (s *SiteStore) getConfig() (domain.ThemeConfig, error) {
 
 	// Retrieve the theme JSON file
-	jsonFile, err := helpers.ReadJson(paths.Theme() + "/config.json")
+	jsonFile, err := files.ReadJson(paths.Theme() + "/config.json")
 	if err != nil {
 		return domain.ThemeConfig{}, err
 	}
