@@ -10,12 +10,14 @@ import (
 	"strconv"
 )
 
+// VerifyEmail defines the event instance for verifying emails
 type VerifyEmail struct {
 	mailer *mail.Mailer
 }
 
-// Create a new verify email event.
+// NewVerifyEmail creates a new verify email event.
 func NewVerifyEmail() (*VerifyEmail, error) {
+	const op = "events.NewResetPassword"
 
 	m, err := mail.New()
 	if err != nil {
@@ -29,6 +31,7 @@ func NewVerifyEmail() (*VerifyEmail, error) {
 
 // Send the verify email event.
 func (e *VerifyEmail) Send(u *domain.User, title string) error {
+	const op = "events.VerifyEmail.Send"
 
 	md5String := encryption.MD5Hash(strconv.Itoa(u.Id) + u.Email)
 

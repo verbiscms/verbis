@@ -7,23 +7,28 @@ import (
 	"strings"
 )
 
-type Validation struct {
-	Package *pkgValidate.Validate
-}
-
-type ValidationError struct {
-	Key     string	`json:"key"`
-	Type	string	`json:"type"`
-	Message string	`json:"message"`
-}
-
+// Validator defines methods for checking the validation errors
 type Validator interface {
 	Process(errors pkgValidate.ValidationErrors) []ValidationError
 	CmdCheck(key string, data interface{}) error
 	message(kind string, field string, param string) string
 }
 
-// Construct
+// Validation defines site wide validation for endpoints
+// and using the Package validation helper.
+type Validation struct {
+	Package *pkgValidate.Validate
+}
+
+// ValidationError defines the structure when returning
+// validation errors.
+type ValidationError struct {
+	Key     string	`json:"key"`
+	Type	string	`json:"type"`
+	Message string	`json:"message"`
+}
+
+// New - Construct & set tag name
 func New() *Validation {
 	v := &Validation{
 		Package: pkgValidate.New(),
@@ -34,7 +39,7 @@ func New() *Validation {
 	return v
 }
 
-// Handle validation errors and pass back, respond.
+// Process handles validation errors and passes back to respond.
 func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationError {
 
 	var returnErrors []ValidationError
@@ -69,7 +74,7 @@ func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 	return returnErrors
 }
 
-// Function for checking validation by struct on the command line.
+// CmdCheck is a function for checking validation by struct on the command line.
 func (v* Validation) CmdCheck(key string, data interface{}) error {
 
 	err := v.Package.Struct(data)
@@ -88,7 +93,8 @@ func (v* Validation) CmdCheck(key string, data interface{}) error {
 	return nil
 }
 
-// Custom Validator Messages
+// message checks the kind, field and parameters and binds custom
+// error messages.
 func (v* Validation) message(kind string, field string, param string) string {
 	var errorMsg string
 

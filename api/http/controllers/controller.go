@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
@@ -159,13 +160,16 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 		// Get the type of data
 		dataType := reflect.TypeOf(data).String()
 
+		fmt.Println(dataType)
+
 		// Report to the log if data is an error
 		if dataType == "*errors.Error" {
 			errData := data.(*errors.Error)
 			g.Set("verbis_error", errData)
 
-			if dataType == "validator.ValidationErrors" && errData.Code == errors.INVALID  {
-				validationErrors, _ := data.(validator.ValidationErrors)
+			errType := reflect.TypeOf(errData.Err).String()
+			if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID  {
+				validationErrors, _ := errData.Err.(validator.ValidationErrors)
 				var v validation.Validator = validation.New()
 				data = &ValidationErrJson{
 					Errors: v.Process(validationErrors),

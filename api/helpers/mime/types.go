@@ -2,6 +2,11 @@ package mime
 
 import "strings"
 
+// TypeByExtension returns the content type based on the extension of the file
+func TypeByExtension(extension string) string {
+	return mimeTypes[strings.ToLower(extension)]
+}
+
 var mimeTypes = map[string]string{
 	"123":         "application/vnd.lotus-1-2-3",
 	"3dml":        "text/vnd.in3d.3dml",
@@ -1115,19 +1120,4 @@ var mimeTypes = map[string]string{
 	"zir":          "application/vnd.zul",
 	"zirz":         "application/vnd.zul",
 	"zmm":          "application/vnd.handheld-entertainment+xml",
-}
-
-// TypeByExtension returns the content type based on the extension of the file
-func TypeByExtension(extension string) string {
-	return mimeTypes[strings.ToLower(extension)]
-}
-
-// ExtensionByType returns the extension type based on the content type of the file
-func ExtensionByType(mime string) string {
-	for k, _ := range mimeTypes {
-		if mimeTypes[k] == mime {
-			return k
-		}
-	}
-	return ""
 }

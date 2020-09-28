@@ -29,8 +29,6 @@ type FrontendController struct {
 
 type FrontendHandler interface {
 	Home(g *gin.Context)
-	StyleGuide(g *gin.Context)
-	Subscribe(g *gin.Context)
 	GetUploads(g *gin.Context)
 	Serve(g *gin.Context)
 	Recovery(g *gin.Context, err interface{})
@@ -47,37 +45,9 @@ func newFrontend(m *models.Store) *FrontendController {
 	}
 }
 
-// Home
+// TEMP - Home
 func (c *FrontendController) Home(g *gin.Context) {
 	g.HTML(200, "templates/home", gin.H{})
-}
-
-// Style Guide
-func (c *FrontendController) StyleGuide(g *gin.Context) {
-	g.HTML(200, "templates/style-guide", gin.H{})
-}
-
-// Subscribe to Newsletter
-func (c *FrontendController) Subscribe(g *gin.Context) {
-	var subscriber domain.Subscriber
-	if err := g.ShouldBindJSON(&subscriber); err != nil {
-		Respond(g, 400, "Validation failed", err)
-		return
-	}
-
-	_, err := c.models.Subscriber.Create(&subscriber)
-	if err != nil {
-		Respond(g, 400, err.Error(), nil)
-		return
-	}
-
-	_, err = c.models.Subscriber.Send(&subscriber)
-	if err != nil {
-		Respond(g, 400, err.Error(), nil)
-		return
-	}
-
-	Respond(g, 200, "Successfully inserted subscriber", subscriber)
 }
 
 // GetUploads retrieves images in the uploads folder, returns webp if accepts

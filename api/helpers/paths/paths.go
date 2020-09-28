@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"os"
 )
@@ -22,6 +23,7 @@ func Base() string {
 
 // BaseCheck environment is passable to run Terminal
 func BaseCheck() error {
+	const op = "paths.BaseCheck"
 	basePath := Base()
 
 	if !files.Exists(basePath + "/.env") {
@@ -29,19 +31,19 @@ func BaseCheck() error {
 	}
 
 	if !files.DirectoryExists(basePath + "/admin") {
-		return fmt.Errorf("Could not locate the Verbis admin folder in the current directory")
+		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis admin folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath + "/admin")}
 	}
 
 	if !files.DirectoryExists(basePath + "/storage") {
-		return fmt.Errorf("Could not locate the Verbis storage folder in the current directory")
+		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis storage folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath + "/storage")}
 	}
 
 	if !files.DirectoryExists(basePath + "/config") {
-		return fmt.Errorf("Could not locate the Verbis config folder in the current directory")
+		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis config folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath + "/config")}
 	}
 
 	if !files.DirectoryExists(basePath + "/storage") {
-		return fmt.Errorf("Could not locate the Verbis storage folder in the current directory")
+		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis storage folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath + "/storage")}
 	}
 
 	return nil
@@ -57,7 +59,7 @@ func Api() string {
 	return Base() + "/api"
 }
 
-// Database migration path
+// Migration is the Database migration path
 func Migration() string {
 	if api.SuperAdmin {
 		return Api() + "/database/migrations"
@@ -81,7 +83,7 @@ func Uploads() string {
 	return Storage() + "/uploads"
 }
 
-// Public Uploads Path
+// PublicUploads Path
 func PublicUploads() string {
 	return config.Media.UploadPath
 }

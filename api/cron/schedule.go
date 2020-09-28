@@ -1,7 +1,6 @@
 package cron
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/jasonlvhit/gocron"
 	log "github.com/sirupsen/logrus"
@@ -22,12 +21,11 @@ func New(m *models.Store) *Scheduler {
 
 // Run all cron jobs
 func (s *Scheduler) Run() {
-	const op = "Scheduler.Run"
 
 	// Clean password resets table every 15 minutes
 	if err := gocron.Every(15).Minutes().Do(s.store.Auth.CleanPasswordResets); err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not set up the password resets cron", Operation: "op", Err: err},
+			"error": err,
 		}).Error()
 	}
 
