@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"

@@ -19,7 +19,7 @@ type SessionRepository interface {
 	Check(userId int) error
 }
 
-// SessionRepository defines the data layer for Posts
+// SessionRepository defines the data layer for Sessions
 type SessionStore struct {
 	db *sqlx.DB
 }
