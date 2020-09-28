@@ -45,7 +45,7 @@ type MediaRepository interface {
 	Total() (int, error)
 }
 
-// PostStore defines the data layer for Media
+// MediaStore defines the data layer for Media
 type MediaStore struct {
 	db          	*sqlx.DB
 	imageSizes 		domain.MediaSizes
