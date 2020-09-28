@@ -1,0 +1,63 @@
+###################################
+## mesh Base sass Lint File
+###################################
+# Linter Options
+# rules @ https://github.com/sasstools/sass-lint/tree/master/docs/rules
+
+options:
+  # Don't merge default rules
+  merge-default-rules: false
+files:
+  ignore:
+    - 'node_modules/**/*'
+    - 'mesh/**/*'
+# Rule Configuration
+rules:
+  border-zero:
+    - 1
+    -
+      convention: 0
+  brace-style:
+    - 1
+    -
+      style: '1tbs'
+  class-name-format:
+    - 1
+    - convention: hyphenatedlowercase
+  empty-args: 1
+  empty-line-between-blocks:
+    - 0
+  # Extends cause trouble
+  no-extends: 0
+  mixin-name-format:
+    - 1
+    -
+      convention: hyphenatedlowercase
+  nesting-depth:
+    - 1
+    -
+      max-depth: 2
+  no-duplicate-properties: 1
+  no-empty-rulesets: 1
+  no-debug: 1
+  no-ids: 1
+  no-misspelled-properties: 1
+  no-vendor-prefixes: 1
+  one-declaration-per-line: 1
+  hex-notation:
+    - 1
+    -
+      style: lowercase
+  indentation:
+    - 1
+    -
+      size: 'tab'
+  single-line-per-selector: 1
+  space-around-operator: 1
+  space-before-brace: 1
+  space-before-bang: 1
+  space-before-colon: 1
+  space-between-parens: 1
+  space-after-colon: true
+  zero-unit:
+    - 1

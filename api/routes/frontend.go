@@ -18,9 +18,10 @@ func frontend(s *server.Server, c *controllers.Controller) {
 		s.Static("/assets", paths.Theme() + config.Theme.AssetsPath)
 
 		//s.GET("/verbis/images/verbis-logo.svg", c.Site.GetLogo)
-		s.Static("/verbis", paths.Api() + "/web")
+		s.Static("/verbis", paths.Api() + "/web/public")
 
 		s.GET("/", c.Frontend.Home)
+		s.GET("/test", c.Frontend.Test)
 		s.GET("/uploads/*any", c.Frontend.GetUploads)
 
 		s.NoRoute(c.Frontend.Serve)

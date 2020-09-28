@@ -25,6 +25,7 @@ import (
 // FrontendHandler defines methods for the frontend to interact with the server
 type FrontendHandler interface {
 	Home(g *gin.Context)
+	Test(g *gin.Context)
 	GetUploads(g *gin.Context)
 	Serve(g *gin.Context)
 	Recovery(g *gin.Context, err interface{})
@@ -47,6 +48,14 @@ func newFrontend(m *models.Store) *FrontendController {
 // TEMP - Home
 func (c *FrontendController) Home(g *gin.Context) {
 	g.HTML(200, "templates/home", nil)
+}
+
+// TEMP - Test
+func (c *FrontendController) Test(g *gin.Context) {
+	log.WithFields(log.Fields{
+		"error": errors.Error{Code: errors.INTERNAL, Message: "Test", Operation: "op", Err: fmt.Errorf("dfdasfdasf")},
+	}).Panic()
+	return
 }
 
 // GetUploads retrieves images in the uploads folder, returns webp if accepts
@@ -107,12 +116,22 @@ func (c *FrontendController) Recovery(g *gin.Context, err interface{}) {
 	gvRecovery := goview.New(goview.Config{
 		Root:      paths.Web(),
 		Extension: ".html",
-		Master: "",
+		Master: "layouts/main",
 		DisableCache: true,
 	})
 
 	// Obtain the error
-	errData := err.(error)
+	var errData error
+	errData, ok := err.(error); if !ok {
+		if entry, ok := err.(*log.Entry); ok {
+
+			// TODO: Check the type of error here
+
+			fmt.Println(entry.Data["error"])
+		}
+		return
+	}
+
 
 	// TemplateStack defines
 	type TemplateStack struct {
@@ -124,8 +143,8 @@ func (c *FrontendController) Recovery(g *gin.Context, err interface{}) {
 
 	// Get the stack
 	var stack []TemplateStack
-	const stackDepth = 32
-	for c := 2; c < stackDepth; c++ {
+	const stackDepth = 16
+	for c := 0; c < stackDepth; c++ {
 		t, file, line, ok := runtime.Caller(c)
 		if ok {
 			stack = append(stack, TemplateStack{
@@ -136,31 +155,43 @@ func (c *FrontendController) Recovery(g *gin.Context, err interface{}) {
 		}
 	}
 
+
+	// Get the file contents of the broken file
+	var errFile string
+	var language string
 	tmpl := helpers.StringsBetween(errData.Error(), "name:", ",")
 	lineStr := regexp.MustCompile("[0-9]+").FindAllString(errData.Error(), -1)
 	var lineNum int
+	// Template
 	if len(lineStr) > 0 {
 		line, err := strconv.Atoi(lineStr[0])
 		if err != nil {
 			log.Panic(errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert %s to int", line), Operation: op, Err: err})
 		}
 		lineNum = line
+		errFile = paths.Theme() + "/" + tmpl + config.Template.FileExtension
+		language = "handlebars"
+	//Go files
+	}  else {
+		errFile = stack[0].File
+		if len(stack) > 3 {
+			lineNum = stack[3].Line
+		}
+		language = "go"
 	}
+
 
 	// Get the template file contents
 	var fileContents string
-	path := paths.Theme() + "/" + tmpl + config.Template.FileExtension
-	if ok := files.Exists(path); ok {
+	if ok := files.Exists(errFile); ok {
 		var err error
-		if fileContents, err = files.GetFileContents(path); err != nil {
-			log.Panic(errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert get file contents with path %s", path), Operation: op, Err: err})
+		if fileContents, err = files.GetFileContents(errFile); err != nil {
+			log.Panic(errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert get file contents with path %s", errFile), Operation: op, Err: err})
 		}
 	}
 
 	// Get the lines near where the error happened
 	fileLines := files.Lines(fileContents, lineNum, 10)
-
-	fmt.Println(fileLines)
 
 	// Set the error for the logger & middleware
 	vErr := errors.Error{
@@ -171,12 +202,15 @@ func (c *FrontendController) Recovery(g *gin.Context, err interface{}) {
 	}
 	g.Set("verbis_error", &vErr)
 
-
 	// Return the error page
 	if err := gvRecovery.Render(g.Writer, http.StatusOK, "/templates/error", gin.H{
 		"Stack": stack,
 		"Message": errData.Error(),
 		"RequestMethod": g.Request.Method,
+		"File": fileLines,
+		"LineNumber": lineNum,
+		"FileLanguage": language,
+		"Url": g.Request.URL.Path,
 		"Ip": g.ClientIP(),
 		"DataLength": g.Writer.Size(),
 	}); err != nil {

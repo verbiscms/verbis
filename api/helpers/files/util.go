@@ -3,6 +3,7 @@ package files
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"html"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -115,7 +116,7 @@ func Lines(file string, line int, limit int) []errors.FileLine {
 		if counter >= 0 && counter < len(split) {
 			fileLines = append(fileLines, errors.FileLine{
 				Line:    counter + 1,
-				Content: split[counter],
+				Content: html.UnescapeString(strings.Replace(split[counter], " ", "&nbsp;", -1)),
 			})
 		}
 		counter ++

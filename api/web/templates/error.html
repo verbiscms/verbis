@@ -1,12 +1,48 @@
-This is thre errret
+{{ define "content" }}
 
+    <!-- =====================
+        Error
+        ===================== -->
+    <section class="error">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <h3 class="card-subtitle">Verbis Error</h3>
+                        <h2 class="card-title">{{ .Message }}</h2>
+                        <pre class="highlight code">
+<code class="{{ .FileLanguage }}">{{- range $key, $value := .File }}<span class="code-line {{ if  eq $value.Line $.LineNumber }}code-line-highlight{{ end }}">{{ $value.Line }}</span>{{ $value.Content }}<br/>{{- end }}</code>
+                        </pre>
+                    </div>
+                </div><!-- /Col -->
+            </div><!-- /Row -->
+            <div class="row">
+                <div class="col-12 col-desk-8">
+                   <div class="card">
+                       <h2>Call Stack</h2>
+                       <div class="stack">
+                           {{- range $key, $value := .Stack }}
+                               <div class="stack-item">
+                                   <span class="stack-line">{{ $value.Line }}</span>
+                                  <div class="stack-cont">
+                                      <span class="stack-file">{{ $value.File }}</span>
+                                      <span class="stack-name">{{ $value.Name }}</span>
+                                  </div>
+                               </div>
+                           {{- end }}
+                       </div>
+                   </div>
+                </div>
+                <div class="col-12 col-desk-4">
+                    <div class="error-info">
+                        <h2>Information</h2>
+                        <h4>Url: {{ .Url }}</h4>
+                        <h4>Client IP:</h4>
+                        <p>{{ .Ip }}</p>
+                    </div>
+                </div>
+            </div><!-- /Row -->
+        </div><!-- /Container -->
+    </section>
 
-<img src="/verbis/images/verbis-logo.png" alt="">
-
-<h1>{{ .Message }}</h1>
-<h1>{{ .File }}jj</h1>
-
-{{- range $key, $value := .Stack}}
-    {{$key}} {{ $value.Message }}
-    {{$key}} {{ $value }}
-{{- end}}
+{{ end }}

@@ -35,15 +35,10 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	cc := color.Style{}
 	status := entry.Data["status_code"]
 	if codeInt, ok := status.(int); ok {
-		switch codeInt {
-			case 200: {
-				cc = color.Style{color.FgLightWhite, color.BgGreen, color.OpBold}
-				break
-			}
-			default: {
-				cc = color.Style{color.FgLightWhite, color.BgRed, color.OpBold}
-				break
-			}
+		if codeInt < 400 {
+			cc = color.Style{color.FgLightWhite, color.BgGreen, color.OpBold}
+		} else {
+			cc = color.Style{color.FgLightWhite, color.BgRed, color.OpBold}
 		}
 	}
 

@@ -1,0 +1,62 @@
+// -----------------------------------------------------------------------------
+// _card.scss
+// This file contains all styles related to the card component.
+// -----------------------------------------------------------------------------
+
+.card {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	background-color: $white;
+	width: 100%;
+	padding: 36px 50px;
+	box-shadow: 0 0 15px rgba($black, 0.08);
+	border-radius: 20px;
+	border: none;
+	margin: 0 auto 2rem auto;
+
+	* {
+		text-align: left;
+	}
+
+	&-cont {
+		width: 100%;
+		max-width: 320px;
+	}
+
+	// Title
+	// =========================================================================
+
+	&-title {
+		margin-bottom: 1rem !important;
+		line-height: 1.3;
+	}
+
+	// Subtitle
+	// =========================================================================
+
+	&-subtitle {
+		margin-bottom: 12px;
+		line-height: 1.3;
+		color: $orange;
+	}
+
+	// Text
+	// =========================================================================
+
+	&-text {
+		margin-bottom: 0;
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+	}
+}

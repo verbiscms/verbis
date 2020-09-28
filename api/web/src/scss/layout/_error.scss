@@ -1,0 +1,24 @@
+// -----------------------------------------------------------------------------
+// _error.scss
+// This file contains all styles related to the error
+// -----------------------------------------------------------------------------
+
+.error {
+	position: relative;
+	width: 100vw;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 60px 0;
+
+	h2 {
+		margin-bottom: 10px;
+	}
+
+	&-info {
+		padding: 0 10px;
+
+		h2 {
+			text-align: left;
+		}
+	}
+}
