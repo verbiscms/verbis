@@ -14,11 +14,13 @@ import (
 	"strings"
 )
 
+// FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
 	GetFieldGroups() (*[]domain.FieldGroup, error)
 	GetLayout(p domain.Post, a domain.User, c []domain.Category) *[]domain.FieldGroup
 }
 
+// FieldsStore defines the data layer for Posts
 type FieldsStore struct {
 	db *sqlx.DB
 	optionsModel OptionsRepository
@@ -33,7 +35,7 @@ type fieldCache struct {
 	Fields bool
 }
 
-// Construct
+// newFields - Construct
 func newFields(db *sqlx.DB) *FieldsStore {
 	fs := FieldsStore{
 		db: db,

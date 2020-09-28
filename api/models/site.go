@@ -2,10 +2,12 @@ package models
 
 import (
 	gojson "encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/jmoiron/sqlx"
@@ -15,62 +17,55 @@ import (
 	"strings"
 )
 
+// SiteRepository defines methods for Posts to interact with the database
 type SiteRepository interface {
 	GetGlobalConfig() *domain.Site
 	GetAllResources() (*[]domain.Resource, error)
 	GetAllTemplates() (*domain.Templates, error)
 }
 
+// SiteStore defines the data layer for Posts
 type SiteStore struct {
 	db *sqlx.DB
-	optionsModel OptionsRepository
+	optionsRepo domain.Options
 	cache siteCache
 }
 
-// Defines the options for caching
+// siteCache defines the options for caching
 type siteCache struct {
 	Site bool
 	Templates bool
 	Resources bool
 }
 
-//Construct
+// newSite - Construct
 func newSite(db *sqlx.DB) *SiteStore {
 	s := &SiteStore{
 		db: db,
-		optionsModel: newOptions(db),
 	}
 
-	// Cache the site config JSON file
-	site, err := s.optionsModel.GetByName("cache_site")
+	om := newOptions(db)
+	opts, err := om.GetStruct()
 	if err != nil {
-		s.cache.Site = true
-	} else {
-		s.cache.Site = site.(bool)
+		log.Fatal(err)
 	}
+	s.optionsRepo = opts
+
+	// Cache the site config JSON file
+	s.cache.Site = s.optionsRepo.CacheSite
 
 	// Cache the templates, preventing reading from the
 	// templates path when endpoint is hit.
-	resources, err := s.optionsModel.GetByName("cache_templates")
-	if err != nil {
-		s.cache.Resources = true
-	} else {
-		s.cache.Resources = resources.(bool)
-	}
+	s.cache.Templates = s.optionsRepo.CacheTemplates
 
 	// Cache the resources, preventing reading from the
 	// config json file in the theme directory.
-	templates, err := s.optionsModel.GetByName("cache_resources")
-	if err != nil {
-		s.cache.Templates = true
-	} else {
-		s.cache.Templates = templates.(bool)
-	}
+	s.cache.Resources = s.optionsRepo.CacheResources
 
 	return s
 }
 
-// Get the site config
+// GetGlobalConfig gets the site global config
 func (s *SiteStore) GetGlobalConfig() *domain.Site {
 
 	// If the cache allows for caching of the site config &
@@ -83,37 +78,13 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 		}
 	}
 
-	ds := domain.Site{}
-
-	title, err := s.optionsModel.GetByName("site_title")
-	if err != nil {
-		ds.Title = api.App.Title
-	} else {
-		ds.Title = title.(string)
+	ds := domain.Site{
+		Title:       s.optionsRepo.SiteTitle,
+		Description: s.optionsRepo.SiteDescription,
+		Logo:        s.optionsRepo.SiteLogo,
+		Url:         s.optionsRepo.SiteUrl,
+		Version:     api.App.Version,
 	}
-
-	description, err := s.optionsModel.GetByName("site_description")
-	if err != nil {
-		ds.Description = api.App.Description
-	} else {
-		ds.Description = description.(string)
-	}
-
-	logo, err := s.optionsModel.GetByName("site_logo")
-	if err != nil {
-		ds.Logo = api.App.Logo
-	} else {
-		ds.Logo = logo.(string)
-	}
-
-	url, err := s.optionsModel.GetByName("site_url")
-	if err != nil {
-		ds.Url = api.App.Url
-	} else {
-		ds.Url = url.(string)
-	}
-
-	ds.Version = api.App.Version
 
 	// Set the cache for the site config if the cache was not found
 	// and the options allow.
@@ -125,7 +96,9 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 }
 
 // Get all templates stored within the template file
+// Returns errors.INTERNAL if the template path is invalid.
 func (s *SiteStore) GetAllTemplates() (*domain.Templates, error) {
+	const op = "SiteRepository.Get"
 
 	// If the cache allows for caching of the site templates &
 	// if the config has already been cached, return.
@@ -133,14 +106,13 @@ func (s *SiteStore) GetAllTemplates() (*domain.Templates, error) {
 	if s.cache.Templates {
 		cached, found := cache.Store.Get("site_templates")
 		if found {
-			log.Debug(cached)
 			return cached.(*domain.Templates), nil
 		}
 	}
 
 	files, err := s.walkMatch(paths.Templates(), "*" + config.Template.FileExtension)
 	if err != nil {
-		return &domain.Templates{}, err
+		return &domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & filextension: %s, %s", paths.Templates(), "*" + config.Template.FileExtension), Operation: op}
 	}
 
 	var templates []map[string]interface{}
@@ -174,8 +146,9 @@ func (s *SiteStore) GetAllTemplates() (*domain.Templates, error) {
 	return &t, nil
 }
 
-// Get all resources
+// GetAllResources gets all resources from the config file
 func (s *SiteStore) GetAllResources() (*[]domain.Resource, error) {
+	const op = "SiteRepository.GetAllResources"
 
 	// If the cache allows for caching of the site resources &
 	// if the config has already been cached, return.
@@ -183,7 +156,6 @@ func (s *SiteStore) GetAllResources() (*[]domain.Resource, error) {
 	if s.cache.Resources {
 		cached, found := cache.Store.Get("site_resources")
 		if found {
-			log.Debug(cached)
 			return cached.(*[]domain.Resource), nil
 		}
 	}
@@ -206,32 +178,33 @@ func (s *SiteStore) GetAllResources() (*[]domain.Resource, error) {
 	}
 
 	return &resources, err
-
 }
 
-// Get json config
+// getConfig gets the json config
+// Returns errors.INVALID if the file could not be located.
+// Returns errors.INTERNAL if the file could not be unmarshalled.
 func (s *SiteStore) getConfig() (domain.ThemeConfig, error) {
+	const op = "SiteRepository.getConfig"
 
-	// Retrieve the theme JSON file
 	jsonFile, err := files.ReadJson(paths.Theme() + "/config.json")
 	if err != nil {
-		return domain.ThemeConfig{}, err
+		return domain.ThemeConfig{}, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not get the theme's config file with the path: %s", paths.Theme() + "/config.json"), Operation: op}
 	}
 
-	// Unmarshal the config file into the Config struct
 	var r domain.ThemeConfig
 	err = gojson.Unmarshal(jsonFile, &r)
 	if err != nil {
-		return domain.ThemeConfig{}, err
+		return domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the theme config file", Operation: op}
 	}
 
 	return r, nil
 }
 
-// Walk through root and return array of strings
+// walkMatch Walk through root and return array of strings
 func (s *SiteStore) walkMatch(root, pattern string) ([]string, error) {
-	var matches []string
+	const op = "SiteRepository.walkMatch"
 
+	var matches []string
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err

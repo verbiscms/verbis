@@ -12,7 +12,7 @@ type SeoMetaRepository interface {
 	UpdateCreate(p *domain.Post) error
 }
 
-// SeoMetaStore defines the data layer for Posts
+// SeoMetaStore defines the data layer for Seo & Meta Options
 type SeoMetaStore struct {
 	db *sqlx.DB
 }
