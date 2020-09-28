@@ -2,17 +2,14 @@ package controllers
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
-type UserController struct {
-	model models.UserRepository
-}
-
+// UserHandler defines methods for Users to interact with the server
 type UserHandler interface {
 	Get(g *gin.Context)
 	GetById(g *gin.Context)
@@ -21,19 +18,30 @@ type UserHandler interface {
 	Delete(g *gin.Context)
 }
 
-// Construct
+// UserController defines the handler for Users
+type UserController struct {
+	model models.UserRepository
+}
+
+// newUser - Construct
 func newUser(m models.UserRepository) *UserController {
 	return &UserController{
 		model: m,
 	}
 }
 
-// Get All
+// Get all users
 func (c *UserController) Get(g *gin.Context) {
+	const op = "UserHandler.Get"
+
 	params := http.GetParams(g)
 	users, err := c.model.Get(params)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	}
 	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
@@ -54,17 +62,20 @@ func (c *UserController) Get(g *gin.Context) {
 }
 
 // Get By ID
+// Returns errors.INVALID if the Id is not a string or passed.
 func (c *UserController) GetById(g *gin.Context) {
+	const op = "UserHandler.GetById"
+
 	paramId := g.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		Respond(g, 500,  err.Error(), nil)
+		Respond(g, 400,  "Pass a valid number to obtain the user by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	user, err := c.model.GetById(id)
 	if err != nil {
-		Respond(g, 400, err.Error(), nil)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	}
 
@@ -75,15 +86,19 @@ func (c *UserController) GetById(g *gin.Context) {
 }
 
 // Create
+// Returns errors.INVALID if validation failed.
 func (c *UserController) Create(g *gin.Context) {
+	const op = "UserHandler.Create"
+
 	var user domain.User
 	if err := g.ShouldBindJSON(&user); err != nil {
-		Respond(g, 400, "Validation failed", err)
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	user, err := c.model.Create(&user)
-	if err != nil {Respond(g, 400, err.Error(), nil)
+	if err != nil {
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
@@ -91,41 +106,51 @@ func (c *UserController) Create(g *gin.Context) {
 }
 
 // Update
+// Returns errors.INVALID if validation failed or the Id is not a string or passed.
 func (c *UserController) Update(g *gin.Context) {
+	const op = "UserHandler.Update"
+
 	var u domain.User
 	if err := g.ShouldBindJSON(&u); err != nil {
-		Respond(g, 400, "Validation failed", err)
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500,"An ID is required to update the user", nil)
+		Respond(g, 400,"A valid ID is required to update the user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	u.Id = id
 
-	cast := domain.User(u)
-	user, err := c.model.Update(&cast)
-	if err != nil {
-		log.Error(err)
-		Respond(g, 500, err.Error(), nil)
+	updatedUser, err := c.model.Update(&u)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	Respond(g, 200, "Successfully updated user with ID " + strconv.Itoa(u.Id), user)
+	Respond(g, 200, "Successfully updated user with ID " + strconv.Itoa(u.Id), updatedUser)
 }
 
 // Delete
+// Returns errors.INVALID if the Id is not a string or passed
 func (c *UserController) Delete(g *gin.Context) {
+	const op = "UserHandler.Delete"
+
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+		Respond(g, 400,"A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	err = c.model.Delete(id)
-	if err != nil {
-		Respond(g, 400, err.Error(), nil)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 

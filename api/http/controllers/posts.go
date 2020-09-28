@@ -39,7 +39,7 @@ func newPosts(m models.PostsRepository, f models.FieldsRepository, u models.User
 
 // Get all posts
 func (c *PostsController) Get(g *gin.Context) {
-	const op = "PostsController.Get"
+	const op = "PostHandler.Get"
 
 	params := http.GetParams(g)
 	posts, err := c.postModel.Get(params)
@@ -78,7 +78,7 @@ func (c *PostsController) Get(g *gin.Context) {
 // Get By ID
 // Returns errors.INVALID if the Id is not a string or passed.
 func (c *PostsController) GetById(g *gin.Context) {
-	const op = "PostsController.GetById"
+	const op = "PostHandler.GetById"
 
 	paramId := g.Param("id")
 	id, err := strconv.Atoi(paramId)
@@ -105,7 +105,7 @@ func (c *PostsController) GetById(g *gin.Context) {
 // Create
 // Returns errors.INVALID if validation failed.
 func (c *PostsController) Create(g *gin.Context) {
-	const op = "PostsController.Create"
+	const op = "PostHandler.Create"
 
 	var post domain.PostCreate
 	if err := g.ShouldBindJSON(&post); err != nil {
@@ -131,7 +131,7 @@ func (c *PostsController) Create(g *gin.Context) {
 // Update
 // Returns errors.INVALID if validation failed or the Id is not a string or passed.
 func (c *PostsController) Update(g *gin.Context) {
-	const op = "PostsController.Update"
+	const op = "PostHandler.Update"
 
 	var post domain.PostCreate
 	if err := g.ShouldBindJSON(&post); err != nil {
@@ -141,7 +141,7 @@ func (c *PostsController) Update(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500,"A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400,"A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	post.Id = id
@@ -167,11 +167,11 @@ func (c *PostsController) Update(g *gin.Context) {
 // Delete
 // Returns errors.INVALID if the Id is not a string or passed
 func (c *PostsController) Delete(g *gin.Context) {
-	const op = "PostsController.Delete"
+	const op = "PostHandler.Delete"
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500,"A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400,"A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	err = c.postModel.Delete(id)
