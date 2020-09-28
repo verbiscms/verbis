@@ -47,7 +47,7 @@ func newFrontend(m *models.Store) *FrontendController {
 
 // TEMP - Home
 func (c *FrontendController) Home(g *gin.Context) {
-	g.HTML(200, "templates/home", gin.H{})
+	g.HTML(200, "templates/home", nil)
 }
 
 // GetUploads retrieves images in the uploads folder, returns webp if accepts

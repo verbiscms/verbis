@@ -3,26 +3,28 @@ package models
 import (
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 
 	//"encoding/json"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 )
 
+// OptionsRepository defines methods for Options to interact with the database
 type OptionsRepository interface {
-	GetAll() (domain.OptionsDB, error)
+	Get() (domain.OptionsDB, error)
 	GetByName(name string) (interface{}, error)
 	GetStruct() (domain.Options, error)
 	UpdateCreate(options domain.OptionsDB) error
 	Exists(name string) bool
 }
 
+// OptionsStore defines the data layer for Posts
 type OptionsStore struct {
 	db *sqlx.DB
 }
 
-//Construct
+// newOptions - Construct
 func newOptions(db *sqlx.DB) *OptionsStore {
 	return &OptionsStore{
 		db: db,
@@ -30,11 +32,14 @@ func newOptions(db *sqlx.DB) *OptionsStore {
 }
 
 // Get all options
-func (s *OptionsStore) GetAll() (domain.OptionsDB, error) {
+// Returns errors.INTERNAL if the SQL query was invalid.
+// Returns errors.NOTFOUND if there are no options available.
+func (s *OptionsStore) Get() (domain.OptionsDB, error) {
+	const op = "OptionsRepository.Get"
+
 	var o []domain.OptionDB
 	if err := s.db.Select(&o, "SELECT * FROM options"); err != nil {
-		log.Error(err)
-		return nil, fmt.Errorf("Could not get options")
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get options", Operation: op, Err: err}
 	}
 
 	opts := make(domain.OptionsDB)
@@ -50,8 +55,11 @@ func (s *OptionsStore) GetAll() (domain.OptionsDB, error) {
 }
 
 // Get by name
+// Returns errors.NOTFOUND if the post was not found by the given name.
 func (s *OptionsStore) GetByName(name string) (interface{}, error) {
-	opts, err := s.GetAll()
+	const op = "OptionsRepository.GetByName"
+
+	opts, err := s.Get()
 	if err != nil {
 		return nil, err
 	}
@@ -60,14 +68,17 @@ func (s *OptionsStore) GetByName(name string) (interface{}, error) {
 		return val, nil
 	}
 
-	return nil, fmt.Errorf("Option value has not been found with the name: %v:", name)
+	return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get option with the name %s", name), Operation: op}
 }
 
-// Get the options struct for use in the API
+// GetStruct gets the options struct for use in the API
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *OptionsStore) GetStruct() (domain.Options, error) {
+	const op = "OptionsRepository.GetStruct"
+
 	var opts []domain.OptionDB
 	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
-		return domain.Options{}, err
+		return domain.Options{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not get options", Operation: op}
 	}
 
 	unOpts := make(domain.OptionsDB)
@@ -92,8 +103,9 @@ func (s *OptionsStore) GetStruct() (domain.Options, error) {
 	return options, nil
 }
 
-// Update or create options
+// UpdateCreate update's or create options depending on Exists check
 func (s *OptionsStore) UpdateCreate(options domain.OptionsDB) error {
+	const op = "OptionsRepository.UpdateCreate"
 	for name, value := range options {
 		jsonValue, err := s.marshalValue(value)
 		if err != nil {
@@ -112,47 +124,57 @@ func (s *OptionsStore) UpdateCreate(options domain.OptionsDB) error {
 	return nil
 }
 
-// Check if the option exists
+// Exists checks if the option exists
 func (s *OptionsStore) Exists(name string) bool {
+	const op = "OptionsRepository.Exists"
 	var exists bool
 	_ = s.db.QueryRow("SELECT EXISTS (SELECT option_name FROM options WHERE option_name = ?)", name).Scan(&exists)
 	return exists
 }
 
 // Create the option
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *OptionsStore) create(name string, value interface{}) error {
+	const op = "OptionsRepository.create"
 	q := "INSERT INTO options (option_name, option_value) VALUES (?, ?)"
 	_, err := s.db.Exec(q, name, value)
 	if err != nil {
-		log.Error(err)
-		return fmt.Errorf("Could not create the option record with the name: %v", name)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the option with the name: %s", name), Operation: op}
 	}
 	return nil
 }
 
 // Update the option
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *OptionsStore) update(name string, value interface{}) error {
+	const op = "OptionsRepository.update"
 	q := "UPDATE options SET option_name = ?, option_value = ? WHERE option_name = ?"
 	_, err := s.db.Exec(q, name, value, name)
 	if err != nil {
-		log.Error(err)
-		return fmt.Errorf("Could not update the option with the name: %v", name)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the option with the name: %s", name), Operation: op}
 	}
 	return nil
 }
 
 // Unmarshal the value
+// Returns errors.INTERNAL if the unmarshalling failed
 func (s *OptionsStore) unmarshalValue(optValue json.RawMessage) (interface{}, error) {
+	const op = "OptionsRepository.unmarshalValue"
 	var value interface{}
 	if err := json.Unmarshal(optValue, &value); err != nil {
-		log.Error(err)
-		return nil, err
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the option", Operation: op}
 	}
 	return value, nil
 }
 
 // Marshal the value
+// Returns errors.INTERNAL if the mmarshalling failed
 func (s *OptionsStore) marshalValue(optValue interface{}) (json.RawMessage, error) {
-	return json.Marshal(optValue)
+	const op = "OptionsRepository.marshalValue"
+	m, err := json.Marshal(optValue)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not marshal the option", Operation: op}
+	}
+	return m, nil
 }
 

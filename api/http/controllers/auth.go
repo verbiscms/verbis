@@ -2,10 +2,9 @@ package controllers
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
@@ -50,17 +49,20 @@ func newAuth(m models.AuthRepository, s models.SessionRepository) *AuthControlle
 }
 
 // Login the user
+// Returns errors.INVALID if validation failed
 func (c *AuthController) Login(g *gin.Context) {
+	const op = "AuthController.Login"
+
 	var u login
 	if err := g.ShouldBindJSON(&u); err != nil {
-		Respond(g, 401, "Validation failed", err)
+		Respond(g, 400,  "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	// Auth user
 	lu, err := c.authModel.Authenticate(u.Email, u.Password)
 	if err != nil {
-		Respond(g, 401, err.Error(), nil)
+		Respond(g, 401, errors.Message(err), err)
 		return
 	}
 
@@ -81,16 +83,21 @@ func (c *AuthController) Login(g *gin.Context) {
 
 // Logout the user
 func (c *AuthController) Logout(g *gin.Context) {
-	token := g.Request.Header.Get("token")
+	const op = "AuthController.Logout"
 
+	token := g.Request.Header.Get("token")
 	userId, err := c.authModel.Logout(token)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	}
 	if err != nil {
-		Respond(g, 401, "Cannot log the given user out", err.Error())
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	if err := c.sessionModel.Delete(userId); err != nil {
-		log.Error(err)
+		Respond(g, 500, errors.Message(err), err)
 	}
 
 	cookie := http.Cookie{
@@ -108,11 +115,11 @@ func (c *AuthController) Logout(g *gin.Context) {
 
 // Verify email
 func (c *AuthController) VerifyEmail(g *gin.Context) {
-	token := g.Param("token")
+	const op = "AuthController.VerifyEmail"
 
+	token := g.Param("token")
 	err := c.authModel.VerifyEmail(token)
 	if err != nil {
-		fmt.Println(err)
 		NoPageFound(g)
 		return
 	}
@@ -122,45 +129,55 @@ func (c *AuthController) VerifyEmail(g *gin.Context) {
 
 // Reset password
 func (c *AuthController) ResetPassword(g *gin.Context) {
+	const op = "AuthController.ResetPassword"
+
 	var rp resetPassword
 	if err := g.ShouldBindJSON(&rp); err != nil {
-		Respond(g, 400, "Validation failed", err)
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	fmt.Println(rp)
-
 	if err := c.authModel.ResetPassword(rp.Token, rp.Password); err != nil {
-		Respond(g, 400, err.Error(), nil)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	}
 
 	Respond(g, 200, "Successfully reset password", nil)
 }
 
-// Verify email
+// VerifyPasswordToken
+// Returns errors.INVALID if validation failed.
 func (c *AuthController) VerifyPasswordToken(g *gin.Context) {
+	const op = "AuthController.VerifyPasswordToken"
+
 	token := g.Param("token")
 	err := c.authModel.VerifyPasswordToken(token)
 	if err != nil {
-		Respond(g, 404, err.Error(), nil)
+		Respond(g, 404, errors.Message(err), err)
 		return
 	}
 
 	Respond(g, 200, "Successfully logged in & session started", nil)
 }
 
-// Send reset password email & generate token
+// SendResetPassword reset password email & generate token
 func (c *AuthController) SendResetPassword(g *gin.Context) {
+	const op = "AuthController.SendResetPassword"
+
 	var srp sendResetPassword
 	if err := g.ShouldBindJSON(&srp); err != nil {
-		Respond(g, 400, "Validation failed", err)
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	err := c.authModel.SendResetPassword(srp.Email)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	}
 	if err != nil {
-		Respond(g, 400, err.Error(), nil)
+		Respond(g, 500, errors.Message(err), err)
+		return
 	}
 
 	Respond(g, 200, "A fresh verification link has been sent to your email", nil)
