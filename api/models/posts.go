@@ -65,7 +65,7 @@ func (s *PostStore) GetById(id int) (domain.Post, error) {
 	const op = "PostsRepository.GetById"
 	var p domain.Post
 	if err := s.db.Get(&p, "SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id WHERE posts.id = ? LIMIT 1", id); err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the ID: %d", id), Operation: op}
+		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op}
 	}
 	return p, nil
 }

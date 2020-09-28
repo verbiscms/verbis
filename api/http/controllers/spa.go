@@ -8,14 +8,15 @@ import (
 	"strings"
 )
 
-type SpaController struct {
-}
-
+// SpaHandler defines methods for the SPA (Vue) to interact with the server
 type SpaHandler interface {
 	Serve(g *gin.Context)
 }
 
-// Construct
+// SpaController defines the handler for the SPA
+type SpaController struct {}
+
+// newSpa - Construct
 func newSpa() *SpaController {
 	return &SpaController{}
 }
@@ -29,14 +30,10 @@ func (c *SpaController) Serve(g *gin.Context) {
 	// If the path is a file
 	if strings.Contains(path, ".") {
 		path = strings.Replace(path, "/admin", "", -1)
-
 		extensionArr := strings.Split(path, ".")
 		extension := extensionArr[len(extensionArr)-1]
-
 		data, _ := ioutil.ReadFile(paths.Admin() + "/dist" + path)
-
 		contentType := mime.TypeByExtension(extension)
-
 		g.Data(200, contentType, data)
 
 	// Page catching

@@ -35,7 +35,7 @@ func newCategories(m models.CategoryRepository) *CategoriesController {
 
 // Get all categories
 func (c *CategoriesController) Get(g *gin.Context) {
-	const op = "CategoriesController.Get"
+	const op = "CategoryHandler.Get"
 
 	params := http.GetParams(g)
 	categories, err := c.model.Get(params)
@@ -55,7 +55,7 @@ func (c *CategoriesController) Get(g *gin.Context) {
 
 // Get By ID
 func (c *CategoriesController) GetById(g *gin.Context) {
-	const op = "CategoriesController.GetById"
+	const op = "CategoryHandler.GetById"
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
@@ -74,7 +74,7 @@ func (c *CategoriesController) GetById(g *gin.Context) {
 
 // Create
 func (c *CategoriesController) Create(g *gin.Context) {
-	const op = "CategoriesController.Create"
+	const op = "CategoryHandler.Create"
 
 	var category domain.Category
 	if err := g.ShouldBindJSON(&category); err != nil {
@@ -94,7 +94,7 @@ func (c *CategoriesController) Create(g *gin.Context) {
 // Update
 // Returns errors.INVALID if validation failed or the Id is not a string or passed.
 func (c *CategoriesController) Update(g *gin.Context) {
-	const op = "CategoriesController.Update"
+	const op = "CategoryHandler.Update"
 
 	var category domain.Category
 	if err := g.ShouldBindJSON(&category); err != nil {
@@ -124,7 +124,7 @@ func (c *CategoriesController) Update(g *gin.Context) {
 // Delete
 // Returns errors.INVALID if the Id is not a string or passed
 func (c *CategoriesController) Delete(g *gin.Context) {
-	const op = "CategoriesController.Delete"
+	const op = "CategoryHandler.Delete"
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
