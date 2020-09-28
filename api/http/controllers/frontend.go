@@ -22,11 +22,7 @@ import (
 	"strings"
 )
 
-type FrontendController struct {
-	server          *server.Server
-	models 			*models.Store
-}
-
+// FrontendHandler defines methods for the frontend to interact with the server
 type FrontendHandler interface {
 	Home(g *gin.Context)
 	GetUploads(g *gin.Context)
@@ -34,11 +30,14 @@ type FrontendHandler interface {
 	Recovery(g *gin.Context, err interface{})
 }
 
-type ResourceData struct {
-	Post		domain.Post
+// FrontendController defines the handler for all frontend routes
+type FrontendController struct {
+	server          *server.Server
+	models 			*models.Store
 }
 
-// Construct
+
+// newFrontend - Construct
 func newFrontend(m *models.Store) *FrontendController {
 	return &FrontendController{
 		models: m,
@@ -75,6 +74,10 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	if err != nil {
 		NoPageFound(g)
 		return
+	}
+
+	type ResourceData struct {
+		Post		domain.Post
 	}
 
 	r := ResourceData{

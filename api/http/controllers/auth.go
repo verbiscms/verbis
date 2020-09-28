@@ -51,7 +51,7 @@ func newAuth(m models.AuthRepository, s models.SessionRepository) *AuthControlle
 // Login the user
 // Returns errors.INVALID if validation failed
 func (c *AuthController) Login(g *gin.Context) {
-	const op = "AuthController.Login"
+	const op = "AuthHandler.Login"
 
 	var u login
 	if err := g.ShouldBindJSON(&u); err != nil {
@@ -83,7 +83,7 @@ func (c *AuthController) Login(g *gin.Context) {
 
 // Logout the user
 func (c *AuthController) Logout(g *gin.Context) {
-	const op = "AuthController.Logout"
+	const op = "AuthHandler.Logout"
 
 	token := g.Request.Header.Get("token")
 	userId, err := c.authModel.Logout(token)
@@ -115,7 +115,7 @@ func (c *AuthController) Logout(g *gin.Context) {
 
 // Verify email
 func (c *AuthController) VerifyEmail(g *gin.Context) {
-	const op = "AuthController.VerifyEmail"
+	const op = "AuthHandler.VerifyEmail"
 
 	token := g.Param("token")
 	err := c.authModel.VerifyEmail(token)
@@ -129,7 +129,7 @@ func (c *AuthController) VerifyEmail(g *gin.Context) {
 
 // Reset password
 func (c *AuthController) ResetPassword(g *gin.Context) {
-	const op = "AuthController.ResetPassword"
+	const op = "AuthHandler.ResetPassword"
 
 	var rp resetPassword
 	if err := g.ShouldBindJSON(&rp); err != nil {
@@ -148,7 +148,7 @@ func (c *AuthController) ResetPassword(g *gin.Context) {
 // VerifyPasswordToken
 // Returns errors.INVALID if validation failed.
 func (c *AuthController) VerifyPasswordToken(g *gin.Context) {
-	const op = "AuthController.VerifyPasswordToken"
+	const op = "AuthHandler.VerifyPasswordToken"
 
 	token := g.Param("token")
 	err := c.authModel.VerifyPasswordToken(token)
@@ -162,7 +162,7 @@ func (c *AuthController) VerifyPasswordToken(g *gin.Context) {
 
 // SendResetPassword reset password email & generate token
 func (c *AuthController) SendResetPassword(g *gin.Context) {
-	const op = "AuthController.SendResetPassword"
+	const op = "AuthHandler.SendResetPassword"
 
 	var srp sendResetPassword
 	if err := g.ShouldBindJSON(&srp); err != nil {
