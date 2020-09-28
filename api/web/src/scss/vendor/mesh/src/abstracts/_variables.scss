@@ -1,0 +1,401 @@
+// ==========================================================================
+// mesh variables
+// ==========================================================================
+//
+// Table of Contents:
+//
+//  1. Grid
+//  2. Display
+//  3. Spacing
+//  4. Position
+//  5. Sizing
+//  6. Color
+//  7. Type
+//  8. Spacers
+//	9. Borders
+//	10. Alerts
+//	11. Badges
+//	12. Breadcrumb
+//	13. Button
+//  14. Card
+//	15. Collapse
+//	16. Epic
+//  17. Form
+//  19. List
+//  20. Modal
+//  21. Nav
+//  18. Navbar
+//  22. Pagination
+//  23. Table
+//	24. Tabs
+//  25. Toasts
+//  26. Tooltip
+
+// 1. Grid
+// ==========================================================================
+
+// Columns
+$grid-columns: 12 !default;
+$gap-width: 15px !default;
+
+// Breakpoints
+$grid-breakpoint-mob: 568 !default;
+$grid-breakpoint-tab: 768 !default;
+$grid-breakpoint-desk: 1024 !default;
+$grid-breakpoint-hd: 1408 !default;
+
+// Properties for grid
+$grid-properties: (
+	"": 0,
+	"-mob": $grid-breakpoint-mob,
+	"-tab": $grid-breakpoint-tab,
+	"-desk": $grid-breakpoint-desk,
+	"-hd": $grid-breakpoint-hd
+) !default;
+
+// 2. Display
+// ==========================================================================
+
+$display-properties: (none, inline, inline-block, block, flex, inline-flex, table, table-row, table-cell) !default;
+
+// 3. Spacing
+// ==========================================================================
+
+$spacing-properties: (
+	0: 0,
+	1: 0.5rem,
+	2: 0.75rem,
+	3: 1rem,
+	4: 2rem,
+	5: 3rem
+);
+
+// 4. Position
+// ==========================================================================
+
+$position-properties: (relative, absolute, fixed, static, sticky) !default;
+
+// 5. Sizing
+// ==========================================================================
+
+$sizing-properties: (10%, 20%, 30%, 40%, 50%, 60%, 70%, 80%, 90%, 100%) !default;
+
+// 6. Color
+// ==========================================================================
+
+$white: #fff !default;
+$black: #000 !default;
+$primary: #ff2451 !default;
+$secondary: #ff2451 !default;
+$copy-text: #000000 !default;
+
+// Color pallette
+$palette: (
+	white: $white,
+	black: $black,
+	dark: #363636,
+	muted: #999999,
+	light: #e8e8e8,
+	primary: $primary,
+	secondary: $secondary,
+	success: #55b559,
+	info: #37abd4,
+	warning: #ff9e0f,
+	danger: #f55145,
+	link: #3763d4
+) !default;
+
+// Color attributes
+$color-attr: (
+	c: "color",
+	bg: "background-color"
+) !default;
+
+// 7. Type
+// ==========================================================================
+
+// Enable features
+$type-enable-responsive-text: true;
+
+//Font Stack
+$font-stack: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !default;
+
+// Font sizes
+$h1-font-size: 3.31rem !default;
+$h2-font-size: 2.25rem !default;
+$h3-font-size: 1.56rem !default;
+$h4-font-size: 1.12rem !default;
+$h5-font-size: 1.06rem !default;
+$h6-font-size: 0.75rem !default;
+$lead-font-size: 1.25rem !default;
+$paragraph-font-size: 1rem !default;
+$small-font-size: 75% !default;
+
+// Colors
+$black-text-color: #3c4858 !default;
+$white-text-color: #ffffff !default;
+
+// Responsive text
+$responsive-text-points: 30 !default;
+
+// 8. Spacers
+// ==========================================================================
+
+$spacer-properties: (1px, 2px, 3px, 4px, 5px, 10px, 15px, 20px, 25px, 30px, 35px, 40px, 45px, 50px, 75px, 100px, 150px, 200px, 300px, 400px, 500px) !default;
+
+// 9. Borders
+// ==========================================================================
+
+// Border colors
+$border-colors: (
+	default: rgba(0, 0, 0, 0.3),
+	light: rgba(0, 0, 0, 0.1),
+	dark: rgba(0, 0, 0, 0.6)
+) !default;
+
+// Border widths
+$border-width: 1px !default;
+
+// Border radius
+$border-radius: 0.5em !default;
+$border-radius-small: 0.25em !default;
+$border-radius-large: 1em !default;
+
+// 10. Alerts
+// ==========================================================================
+
+// Enable features
+$alert-enable-background: true !default;
+$alert-enable-background-shadows: true !default;
+$alert-enable-css-close: true !default;
+$alert-enable-js-close: true !default;
+
+// Enable features
+$alert-default-background-color: rgba(0, 0, 0, 0.5) !default;
+
+// 11. Badges
+// ==========================================================================
+
+// Enable features
+$badge-enable-colored: true !default;
+$badge-enable-rounded: true !default;
+$badge-enable-deletable: true !default;
+
+//Padding
+$badge-padding: 3px 12px !default;
+
+//Font
+$badge-font-size: 10px !default;
+$badge-font-weight: 400 !default;
+
+// 12. Breadcrumb
+// ==========================================================================
+
+$breadcrumb-active-color: rgba(0, 0, 0, 0.5) !default;
+
+// 13. Button
+// ==========================================================================
+
+//Enable features
+$button-enable-colored: true !default;
+$button-enable-disabled: true !default;
+$button-enable-outline: true !default;
+$button-enable-sizes: true !default;
+$button-enable-rounded: true !default;
+$button-enable-icons: true !default;
+$button-enable-block: true !default;
+$button-enable-loading: true !default;
+$button-enable-shadows: true !default;
+
+//Padding
+$button-padding-small: 8px 20px !default;
+$button-padding-medium: 14px 30px !default;
+$button-padding-large: 20px 40px !default;
+$button-padding-round: 14px 40px !default;
+
+//Font
+$button-font-size: 14px !default;
+$button-font-weight: 400 !default;
+
+// 14. Card
+// ==========================================================================
+
+//Enable features
+$card-enable-fab-icon: true !default;
+$card-enable-background-img: true !default;
+
+// Sizes
+$card-default-width: 300px !default;
+$card-default-width-large: 400px !default;
+
+// Color & shadow
+$card-background-color: #fff;
+$card-border-color: rgba(0, 0, 0, 0.2) !default;
+$card-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12) !default;
+
+// Padding & margin
+$card-default-padding: 12px 30px !default;
+$card-header-padding: 12px 24px !default;
+$card-content-padding: 24px !default;
+$card-action-padding: 16px 24px !default;
+$card-margin: 0.5rem 0 1rem 0 !default;
+
+// 15. Collapse
+// ==========================================================================\
+
+//Enable features
+$collapse-enable-css-close: true !default;
+$collapse-enable-js-close: true !default;
+
+//Padding & margin
+$collapse-header-padding: 25px 10px 5px 0 !default;
+$collapse-content-padding: 15px 15px 20px !default;
+$collapse-title-margin-top: 10px !default;
+
+//Color
+$collapse-active-color: color("secondary") !default;
+
+//Border
+$collapse-border: 1px solid #ddd !default;
+
+// 16. Epic
+// ==========================================================================
+
+//Padding
+$epic-mobile-padding: 2rem 1rem !default;
+$epic-default-padding: 4rem 2rem !default;
+
+// 17. Form
+// ==========================================================================
+
+// 18. List
+// ==========================================================================
+
+$list-background-color: #fff !default;
+$list-border-color: #ddd !default;
+$list-active-color: color("primary") !default;
+$list-disabled-color: #999 !default;
+
+// 19. Modal
+// ==========================================================================
+
+//Enable features
+$modal-enable-css: true !default;
+$modal-enable-js: true !default;
+
+//Container
+$modal-container-box-shadow: 0 27px 24px 0 rgba(0, 0, 0, 0.2), 0 40px 77px 0 rgba(0, 0, 0, 0.22) !default;
+$modal-container-border-radius: 6px !default;
+$modal-container-small-width: 500px !default;
+$modal-container-large-width: 700px !default;
+$modal-container-transform: -50px !default;
+
+//Close button
+$modal-close-button-color: rgba(0, 0, 0, 0.4) !default;
+
+//Padding
+$modal-mobile-padding: 25px 15px !default;
+$modal-default-padding: 75px 0 !default;
+$modal-header-padding: 24px 24px 0 !default;
+$modal-body-padding: 24px 24px 16px !default;
+$modal-footer-padding: 0 24px 24px !default;
+
+//Overlay
+$modal-overlay-background-color: rgba(0, 0, 0, 0.4) !default;
+
+//Transition
+$modal-container-transition: 0.4s !default;
+$modal-overlay-transition: 0.6s !default;
+
+// 20. Nav
+// ==========================================================================
+
+// 21. Navbar
+// ==========================================================================
+
+//Padding & margin
+$navbar-mobile-padding: 1.2em !default;
+$navbar-padding: 1.2em 1.5em !default;
+$navbar-margin-bottom: 20px !default;
+
+//Color
+$navbar-background-color: #ebeaea !default;
+
+// 22. Pagination
+// ==========================================================================
+
+//Enable features
+$pagination-enable-shadow: true !default;
+$pagination-rounded: true !default;
+
+//Size
+$pagination-height: 30px;
+
+//Color
+$pagination-text-color: #999 !default;
+$pagination-active-color: color("primary") !default;
+
+//Font size
+$pagination-font-size: 12px !default;
+
+// 23. Table
+// ==========================================================================
+
+//Padding & margin
+$table-row-padding: 12px 32px 12px 0 !default;
+
+//Color
+$table-border-color: #ddd !default;
+$table-striped-color: #f9f9f9 !default;
+$table-hover-color: rgb(245, 245, 245) !default;
+
+//Font size
+$table-header-font-size: 1.1rem !default;
+$table-row-font-size: 14px !default;
+
+// 24. Tabs
+// ==========================================================================
+
+//Color & opacity
+$tabs-active-color: color("primary") !default;
+$tabs-active-bar-color: color("primary") !default;
+$tabs-border-color: 1px solid rgba(0, 0, 0, 0.12) !default;
+
+//Font
+$tabs-font-size: 14px !default;
+$tabs-font-weight: 500 !default;
+
+//Padding
+$tabs-label-mobile-padding: 0 16px !default;
+$tabs-label-padding: 0 24px !default;
+$tabs-panel-padding: 1rem !default;
+
+// 25. Toasts
+// ==========================================================================
+
+//Padding
+$toast-padding: 10px 25px !default;
+
+//Shadow
+$toast-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.16), 0 3px 3px -2px rgba(0, 0, 0, 0.22), 0 1px 7px 0 rgba(0, 0, 0, 0.14) !default;
+
+// 26. Tooltip
+// ==========================================================================
+
+//Enable features
+$tooltip-enable-dark: true !default;
+
+//Color & shadow
+$tooltip-font-color: #666 !default;
+$tooltip-dark-color: #323232 !default;
+$tooltip-box-shadow: 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12), 0 5px 5px -3px rgba(0, 0, 0, 0.2) !default;
+
+//Padding & radius
+$tooltip-padding: 12px 22px !default;
+$tooltip-border-radius: 4px !default;
+
+//Font size
+$tooltip-font-size: 0.875rem !default;
+
+//Transition
+$tooltip-transition-time: 0.15s !default;

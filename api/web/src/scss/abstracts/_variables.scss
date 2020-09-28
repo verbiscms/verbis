@@ -1,0 +1,114 @@
+// -----------------------------------------------------------------------------
+// _variables.scss
+// This file contains all variables for use with scss files.
+// -----------------------------------------------------------------------------
+
+// Grid
+// ==========================================================================
+
+// Columns
+$grid-columns: 12;
+$gap-width: 15px;
+
+// Breakpoints
+$grid-breakpoint-mob: 568;
+$grid-breakpoint-tab: 768;
+$grid-breakpoint-desk: 1024;
+$grid-breakpoint-hd: 1408;
+
+// Containers
+$auth-container-padding-x: 80px;
+$auth-container-padding-y: 50px;
+
+// Fonts
+// ==========================================================================
+
+$fa-font-path: "/verbis/fonts/font-awesome";
+$font-path: '/verbis/fonts/inter/';
+$font: "Inter";
+
+// Color
+// ==========================================================================
+
+$white: #fff;
+$black: #000;
+$primary: #3F87E5;
+$secondary: #7E8593;
+$green: #2ECBAB;
+$orange: #F0765F;
+$orange-light: #F58A75;
+$copy: #1E2027;
+$grey: #C0C0C2;
+$grey-light: #E8E8EB;
+$bg-color: #F7F7FA;
+
+// Color palette
+$palette: (
+	white: $white,
+	black: $black,
+	primary: $primary,
+	secondary: $secondary,
+);
+
+// Color attributes
+$color-attr: (
+	c: "color",
+	bg: "background-color"
+);
+
+// Sections
+// =========================================================================
+
+$section-padding: (
+	mob: 40px,
+	tab: 70px,
+	desk: 100px,
+	hd: 120px
+);
+$section-padding-divider: 3;
+
+// Sidebar
+// =========================================================================
+
+$sidebar-width: 300px;
+
+// Header
+// =========================================================================
+
+$header-height: 72px;
+$header-container-width: true;
+$header-bg-color: rgba($black, 0.4);
+$header-scrolled-bg-color: $primary;
+
+// Nav
+// =========================================================================
+
+$nav-mob-bg-color: $primary;
+$nav-mob-item-color: $black;
+$nav-desk-item-color: $black;
+$nav-transition-time: 700ms;
+
+// Hamburger
+// =========================================================================
+
+$hamburger-width: 26px;
+$hamburger-height: 2.4px;
+$hamburger-margin: 7px;
+$hamburger-border-radius: 4px;
+$hamburger-color: $black;
+$hamburger-active-color: $white;
+
+// Text
+// ==========================================================================
+
+$text-cont-margin-mob: 1.2rem;
+$text-cont-margin-tab: 1.4rem;
+$text-cont-margin-desk: 1.6rem;
+$text-cont-margin-hd: 1.8rem;
+$text-cont-small-diff: 0.5rem;
+$text-cont-large-diff: 1rem;
+
+// Misc
+// =========================================================================
+
+$btn-form-fixed-height: 50px;
