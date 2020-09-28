@@ -1,0 +1,58 @@
+// -----------------------------------------------------------------------------
+// _stack.scss
+// This file contains all styles related to the stack component.
+// -----------------------------------------------------------------------------
+
+.stack {
+	$self: &;
+
+
+
+
+	// Item
+	// ==========================================================================
+
+	&-item {
+		display: flex;
+		border-bottom: 1px solid $grey-light;
+	}
+
+	// Line
+	// ==========================================================================
+
+	&-line {
+		display: block;
+		margin-right: 14px;
+		padding: 22px 0;
+		border-right: 1px solid $primary;
+		width: 40px;
+		min-width: 40px;
+		max-width: 40px;
+		font-size: 14px;
+		color: $secondary;
+	}
+
+	// Cont
+	// ==========================================================================
+
+	&-cont {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+	}
+
+	// File
+	// ==========================================================================
+
+	&-file {
+		@include px-to-rem(14);
+	}
+
+	// Line
+	// ==========================================================================
+
+	&-name {
+		@include px-to-rem(12);
+		color: $secondary;
+	}
+}

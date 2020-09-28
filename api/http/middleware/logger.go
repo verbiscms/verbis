@@ -65,7 +65,7 @@ func Log() gin.HandlerFunc {
 		if verbisError.Code == errors.TEMPLATE {
 			fields["status_code"] = 500
 			log.WithFields(fields).Error()
-		} else if statusCode == 200 {
+		} else if statusCode >= 200 && statusCode < 400 {
 			log.WithFields(fields).Info()
 		} else {
 			log.WithFields(fields).Error()

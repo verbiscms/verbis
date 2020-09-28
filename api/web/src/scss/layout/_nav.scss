@@ -1,0 +1,84 @@
+// -----------------------------------------------------------------------------
+// _nav.scss
+// This file contains styles that are specific to the nav section.
+// -----------------------------------------------------------------------------
+
+.nav {
+	$self: &;
+
+	position: absolute;
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	justify-content: center;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: $nav-mob-bg-color;
+	padding: 0 $gap-width;
+
+	// List
+	// =========================================================================
+
+	// Link
+	// =========================================================================
+
+	&-link {
+		color: $nav-mob-item-color;
+	}
+
+	// Active
+	// =========================================================================
+
+	@include media-desk-down {
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 700ms, visibility 700ms step-end;
+
+		&-active {
+			opacity: 1;
+			visibility: visible;
+			transition: opacity 700ms, visibility 700ms step-start;
+		}
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@if $header-container-width {
+		@include media-tab {
+			&-list {
+				width: 100%;
+				max-width: $grid-breakpoint-tab * 1px;
+				margin: 0 auto;
+			}
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+		position: relative;
+		flex-direction: column;
+		justify-content: flex-start;
+		width: auto;
+		height: auto;
+		padding: 0;
+		background-color: transparent;
+
+		&-list {
+			display: flex;
+			align-items: center;
+		}
+
+		&-item {
+			margin-left: 16px;
+		}
+
+		&-link {
+			color: $nav-desk-item-color;
+		}
+	}
+}

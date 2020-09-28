@@ -1,0 +1,48 @@
+//_position.scss
+//
+//Add position & modifiers to each mediaquery & breakpoint.
+// ==========================================================================
+
+@each $modifier, $breakpoint in $grid-properties {
+	@include create-mediaquery($breakpoint) {
+		@each $property in $position-properties {
+			.p#{$modifier}-#{$property} {
+				position: #{$property} !important;
+			}
+		}
+	}
+}
+
+//Pinning
+.pin-t {
+	top: 0 !important;
+}
+.pin-r {
+	right: 0 !important;
+}
+.pin-b {
+	bottom: 0 !important;
+}
+.pin-l {
+	left: 0 !important;
+}
+.pin-y {
+	top: 0 !important;
+	bottom: 0 !important;
+}
+.pin-x {
+	right: 0 !important;
+	left: 0 !important;
+}
+.pin {
+	top: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+	left: 0 !important;
+}
+.pin-none {
+	top: auto !important;
+	right: auto !important;
+	bottom: auto !important;
+	left: auto !important;
+}

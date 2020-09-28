@@ -1,0 +1,71 @@
+// -----------------------------------------------------------------------------
+// _form.scss
+// This file contains all styles related to the forms of the site.
+// -----------------------------------------------------------------------------
+
+.form {
+    $self: &;
+
+	// Container
+	// =========================================================================
+
+	&-cont {
+
+	}
+
+	// Input
+	// =========================================================================
+
+	&-input {
+		position: relative;
+		width: 100%;
+		border: 0;
+		outline: none;
+		color: $copy;
+		-webkit-appearance: none;
+		appearance: none;
+	}
+    
+    // Autocomplete
+    // =========================================================================
+
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active  {
+        -webkit-box-shadow: 0 0 0 30px white inset !important;
+    }
+
+    // Placeholder
+    // =========================================================================
+
+    ::placeholder {
+        /* Chrome, Firefox, Opera, Safari 10.1+ */
+        color: $copy;
+        opacity: 1; /* Firefox */
+    }
+
+    :-ms-input-placeholder {
+        /* Internet Explorer 10-11 */
+        color: $copy;
+    }
+
+    ::-ms-input-placeholder {
+        /* Microsoft Edge */
+        color: $copy;
+    }
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+	}
+}
+
+

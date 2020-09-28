@@ -1,0 +1,90 @@
+// -----------------------------------------------------------------------------
+// _header.scss
+// This file contains all styles related to the header of the site.
+// -----------------------------------------------------------------------------
+
+.header {
+	$self: &;
+
+	position: fixed;
+	top: 0;
+	left: 0;
+	height: $header-height;
+	width: 100vw;
+	padding: 0 15px;
+	background-color: $header-bg-color;
+	z-index: 99999;
+	transition: background-color 300ms ease;
+	will-change: background-color;
+
+	// Container
+	// ==========================================================================
+
+	&-cont {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		height: 100%;
+	}
+
+	// Logo
+	// ==========================================================================
+
+	&-logo {
+		z-index: 999999;
+	}
+
+	// Scrolled
+	// ==========================================================================
+
+	&-scrolled {
+		background-color: $header-scrolled-bg-color;
+		box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1), 0 3px 6px rgba(0, 0, 0, 0.23);
+	}
+
+	// Mobile Active
+	// ==========================================================================
+
+	&-active {
+		#{$self}-logo {
+			//! TODO: Change colour logo?
+		}
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+		padding: 0;
+
+		&-cont {
+			@if $header-container-width {
+				width: 100%;
+				max-width: $grid-breakpoint-tab * 1px;
+				margin: 0 auto;
+			}
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+		&-cont {
+			@if $header-container-width {
+				max-width: $grid-breakpoint-desk * 1px;
+			}
+		}
+	}
+
+	// HD
+	// =========================================================================
+
+	@include media-hd {
+		&-cont {
+			@if $header-container-width {
+				max-width: $grid-breakpoint-hd * 1px;
+			}
+		}
+	}
+}

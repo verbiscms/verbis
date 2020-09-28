@@ -1,0 +1,84 @@
+//_table.scss
+//
+// Tables with striped, hover & responsive classes
+// =========================================================================
+
+.table {
+	width: 100%;
+	max-width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
+	font-size: $table-row-font-size;
+	font-weight: 300;
+
+	thead {
+		th {
+			font-size: $table-header-font-size;
+			padding: $table-row-padding;
+			position: relative;
+			text-align: left;
+			height: 28px;
+			line-height: 28px;
+			font-weight: 300;
+		}
+	}
+
+	//Align last child right, no padding
+	thead th:last-child,
+	tbody td:last-child,
+	tfoot th:last-child {
+		text-align: right;
+		padding: 0;
+	}
+
+	//Border
+	tbody tr,
+	tfoot tr {
+		border-top: 1.4px solid $table-border-color;
+	}
+
+	//Common props body & footer (td & th)
+	tbody td,
+	tfoot th {
+		font-size: $table-row-font-size;
+		padding: 12px 32px 12px 0;
+		font-weight: 300;
+		text-align: left;
+	}
+
+	//Striped table
+	&-striped {
+		tbody tr:nth-child(even) {
+			background-color: $table-striped-color;
+		}
+	}
+
+	&-striped,
+	&-hover {
+		thead th:first-child,
+		tbody td:first-child,
+		tfoot th:first-child {
+			padding-left: 10px;
+		}
+
+		thead th:last-child,
+		tbody td:last-child,
+		tfoot th:last-child {
+			padding-right: 10px;
+		}
+	}
+
+	//Hover
+	&.table-hover tbody tr {
+		transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+		&:hover {
+			background-color: $table-hover-color;
+		}
+	}
+
+	//Scroll
+	&-scroll {
+		overflow-x: auto;
+	}
+}
