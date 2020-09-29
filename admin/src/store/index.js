@@ -1,19 +1,19 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-//import axios from 'axios'
+import { createStore } from "vuex";
 import createPersistedState from "vuex-persistedstate";
+import axios from 'axios'
 
-Vue.use(Vuex)
-
-export default new Vuex.Store({
+export default createStore({
 	state: {
 		auth: false,
 		apiToken: "",
+		siteInfo: false,
 		userInfo: {},
 		resources: [],
-		logo: false,
 	},
 	mutations: {
+		siteInfo() {
+			console.log("hello")
+		},
 		login(state, loginData) {
 			state.apiToken = loginData.token
 			state.auth = true
@@ -25,8 +25,7 @@ export default new Vuex.Store({
 				accessLevel: loginData.access_level,
 				email_verified_at: true,
 			}
-
-			Vue.prototype.axios.defaults.headers.common = {
+			axios.defaults.headers.common = {
 				"token": loginData.token,
 			};
 		},
@@ -36,8 +35,7 @@ export default new Vuex.Store({
 			state.userInfo = {}
 			state.activeDomain = false
 			state.activePage = false
-
-			Vue.prototype.axios.defaults.headers.common = {
+			axios.defaults.headers.common = {
 				"token": ''
 			};
 		},
@@ -49,15 +47,18 @@ export default new Vuex.Store({
 		}
 	},
 	actions: {
-		getLogo(context) {
-			if (!context.state.logo) {
-				Vue.prototype.axios.get("/theme/logo")
+		getSiteConfig(context) {
+			if (!context.state.siteInfo) {
+				axios.get("/site")
 					.then(res => {
-						context.commit('logo', res.data.data);
+						console.log(res)
+
+						context.state.siteInfo = res.data.data
+						this.commit('siteInfo', res.data.data);
 					})
 			}
 		}
 	},
 	modules: {},
 	plugins: [createPersistedState()],
-})
+});

@@ -51,44 +51,44 @@
 	===================== -->
 <script>
 
-	import Breadcrumbs from "../../components/misc/Breadcrumbs";
-	import Tabs from "../../components/misc/Tabs";
+import Breadcrumbs from "../../components/misc/Breadcrumbs";
+import Tabs from "../../components/misc/Tabs";
 
-	export default {
-		name: "Pages",
-		components: {
-			Breadcrumbs,
-			Tabs
+export default {
+	name: "Pages",
+	components: {
+		Breadcrumbs,
+		Tabs
+	},
+	data: () => ({
+		doingAxios: false,
+		authInfo: {
+			email: '',
+			pass: '',
 		},
-		data: () => ({
-			doingAxios: false,
-			authInfo: {
-				email: '',
-				pass: '',
-			},
-			authMessage: ''
-		}),
-		mounted() {
-			this.getResourceByName()
-			this.test();
-		},
-		watch: {
-			'$route.params.resource': function(){
-				this.getResourceByName();
-			}
-		},
-		methods: {
-			getResourceByName() {
+		authMessage: ''
+	}),
+	mounted() {
+		this.getResourceByName()
+		this.test();
+	},
+	watch: {
+		'$route.params.resource': function () {
+			this.getResourceByName();
+		}
+	},
+	methods: {
+		getResourceByName() {
 
-			},
-			test() {
-				this.axios.get("/posts/pages")
+		},
+		test() {
+			this.axios.get("/posts/pages")
 				.then(res => {
 					console.log(res);
 				});
-			}
 		}
 	}
+}
 
 </script>
 

@@ -13,6 +13,7 @@ func Load(s *server.Server, c *controllers.Controller, m *models.Store) {
 
 	// Global middleware
 	s.Use(middleware.Log())
+	s.Use(middleware.CORS())
 
 	// Load routes
 	api(s, c, m)

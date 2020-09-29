@@ -80,7 +80,4 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			admin.DELETE("/users/:id", c.User.Delete)
 		}
 	}
-
-	//Use Middleware Cors
-	api.Use(middleware.CORS())
 }

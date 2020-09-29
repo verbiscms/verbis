@@ -2,13 +2,11 @@
 	Home
 	===================== -->
 <template>
-	<div id="app">
-		<Sidebar v-if="isLoggedIn"></Sidebar>
-		<main>
-			<router-view/>
-		</main>
-	</div><!-- /App -->
-</template>
+	<Sidebar v-if="isLoggedIn"></Sidebar>
+	<main>
+		<router-view/>
+	</main>
+</template><!-- /App -->
 
 <!-- =====================
 	Scripts
@@ -22,7 +20,7 @@ export default {
 	components: {
 		Sidebar,
 	},
-	mounted: function(){
+	mounted: function () {
 		// this.$moment({
 		// 	timezone: 'Europe/London'
 		// })
@@ -40,5 +38,5 @@ export default {
 	Styles
 	===================== -->
 <style lang="scss">
-	@import "assets/scss/app.scss";
+@import "assets/scss/app.scss";
 </style>
