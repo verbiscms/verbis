@@ -1,12 +1,11 @@
 package templates
 
 import (
+	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/models"
-	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"html/template"
@@ -135,8 +134,6 @@ func (t *TemplateFunctions) isTemplate(resource string) bool {
 // Is published
 
 func (t *TemplateFunctions) getResources(query map[string]interface{}) map[string]interface{} {
-
-	fmt.Println(query)
 
 
 

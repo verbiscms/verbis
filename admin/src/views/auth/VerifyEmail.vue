@@ -40,32 +40,32 @@
 	Scripts
 	===================== -->
 <script>
-export default {
-	name: "SendResetPassword",
-	data: () => ({
-		doingAxios: false,
-		email: "",
-	}),
-	methods: {
-		doReset() {
-			console.log(this.email)
-			this.axios.post("/password/email", {
-				email: this.email
-			})
-			.then(res => {
-				console.log(res);
-			})
-			.catch(err => {
-				console.log(err);
-			})
-		},
-	},
-	computed: {
-		getLogo() {
-			return this.$store.state.logo;
-		}
-	}
-}
+    export default {
+        name: "SendResetPassword",
+        data: () => ({
+            doingAxios: false,
+            email: "",
+        }),
+        methods: {
+            doReset() {
+                console.log(this.email)
+                this.axios.post("/password/email", {
+                    email: this.email
+                })
+                    .then(res => {
+                        console.log(res);
+                    })
+                    .catch(err => {
+                        console.log(err);
+                    })
+            },
+        },
+        computed: {
+            getLogo() {
+                return this.$store.state.logo;
+            }
+        }
+    }
 </script>
 
 <!-- =====================

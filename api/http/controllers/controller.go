@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
@@ -159,8 +158,6 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 
 		// Get the type of data
 		dataType := reflect.TypeOf(data).String()
-
-		fmt.Println(dataType)
 
 		// Report to the log if data is an error
 		if dataType == "*errors.Error" {

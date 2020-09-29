@@ -95,7 +95,7 @@
 	@include media-mob {
 
 		&-logo {
-			max-width: 140px;
+			max-width: 80px;
 		}
 
 		&-card {
@@ -110,7 +110,7 @@
 	@include media-desk {
 
 		&-logo {
-			max-width: 160px;
+			max-width: 100px;
 		}
 	}
 }

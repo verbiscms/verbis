@@ -19,18 +19,16 @@
 	===================== -->
 <script>
 
-	import Breadcrumbs from "../components/misc/Breadcrumbs";
+import Breadcrumbs from "../components/misc/Breadcrumbs";
 
-	export default {
-		name: "Home",
-		components: {
-			Breadcrumbs
-		},
-		data: () => ({
-		}),
-		methods: {
-		}
-	}
+export default {
+	name: "Home",
+	components: {
+		Breadcrumbs
+	},
+	data: () => ({}),
+	methods: {}
+}
 
 </script>
 

@@ -7,8 +7,8 @@
 			<div class="row auth-row">
 				<div class="col-12">
 					<!-- Logo -->
-					<figure class="auth-logo" v-if="getLogo">
-						<img :src="globalBasePath + getLogo">
+					<figure class="auth-logo" v-if="getSite.logo">
+						<img :src="globalBasePath + getSite.logo">
 					</figure><!-- /Col -->
 					<div class="auth-card">
 						<div class="auth-card-cont">
@@ -44,51 +44,51 @@
 	Scripts
 	===================== -->
 <script>
-	export default {
-		name: "Login",
-		data: () => ({
-			doingAxios: false,
-			authInfo: {
-				email: "",
-				password: "",
-			},
-			authMessage: "",
-		}),
-		beforeMount() {
-			//console.log(this.$store.state.logo)
+export default {
+	name: "Login",
+	data: () => ({
+		doingAxios: false,
+		authInfo: {
+			email: "",
+			password: "",
 		},
-		methods: {
-			doLogin() {
-				this.doingAxios = true;
-				this.authMessage = '';
-				this.axios.post('/login', {email: this.authInfo.email, password: this.authInfo.password}, {withCredentials: true })
-					.then(res => {
-						console.log(res)
-						this.$store.commit('login', res.data.data);
-						this.$router.push({ name: 'home' })
-					})
-					.catch(e => {
-						const response = e.response.data;
+		authMessage: "",
+	}),
+	beforeMount() {
+		//console.log(this.$store.state.logo)
+	},
+	methods: {
+		doLogin() {
+			this.doingAxios = true;
+			this.authMessage = '';//{withCredentials: true }
+			this.axios.post('/login', {email: this.authInfo.email, password: this.authInfo.password})
+				.then(res => {
+					console.log(res)
+					this.$store.commit('login', res.data.data);
+					this.$router.push({ name: 'home' })
+				})
+				.catch(e => {
+					const response = e.response.data;
 
-						console.log(response);
-						if (response.data.message === "Validation failed") {
-							console.log("in")
-						} else {
-							this.authMessage = response.data.message
-						}
+					console.log(response);
+					if (response.data.message === "Validation failed") {
+						console.log("in")
+					} else {
+						this.authMessage = response.data.message
+					}
 
-						console.log(e.response.data.data.message);
-						this.$store.commit('logout');
-						this.doingAxios = false;
-					})
-			},
+					console.log(e.response.data.data.message);
+					this.$store.commit('logout');
+					this.doingAxios = false;
+				})
 		},
-		computed: {
-			getLogo() {
-				return this.$store.state.logo;
-			}
+	},
+	computed: {
+		getSite() {
+			return this.$store.state.siteInfo;
 		}
 	}
+}
 </script>
 
 <!-- =====================

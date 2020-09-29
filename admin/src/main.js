@@ -1,10 +1,8 @@
-import Vue from 'vue'
-import App from './App.vue'
-import router from './router'
-import store from './store'
+import {createApp} from "vue";
+import App from "./App.vue";
+import router from "./router";
+import store from "./store";
 import axios from 'axios'
-
-Vue.config.productionTip = false
 
 /**
  * Variables
@@ -16,6 +14,13 @@ const baseUrl = "http://127.0.0.1:8080"
 const apiUrl = "http://127.0.0.1:8080/api/v1"
 
 /**
+ * Vue
+ * Create App
+ *
+ */
+const app = createApp(App)
+
+/**
  * Axios
  *
  */
@@ -24,9 +29,8 @@ axios.defaults.headers.common = {
 	'Access-Control-Allow-Origin': '*',
 	'Content-Type': 'application/json',
 };
-//axios.defaults.withCredentials = true;
 axios.defaults.baseURL = apiUrl
-Vue.prototype.axios = axios;
+app.config.globalProperties.axios = axios
 
 /**
  * Mixins
@@ -35,7 +39,7 @@ Vue.prototype.axios = axios;
  */
 
 // Get global API Path
-Vue.mixin({
+app.mixin({
 	data: function () {
 		return {
 			get globalAPIPath() {
@@ -49,17 +53,15 @@ Vue.mixin({
 })
 
 /**
- * Set up new Vue instance.
+ * Mount Vue
  *
  */
-new Vue({
-	router,
-	store,
-	render: h => h(App)
-}).$mount('#app')
+app.use(store)
+	.use(router)
+	.mount("#app");
 
 /**
  * Dispatch global store
  *
  */
-store.dispatch('getLogo')
+store.dispatch('getSiteConfig')

@@ -25,7 +25,8 @@
 								<router-link :to="{ name: 'login' }" class="auth-link">Back to login</router-link>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
-									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doReset">Reset</button>
+									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doReset">Reset
+									</button>
 								</div>
 							</form>
 						</div><!-- /Card Cont -->
@@ -52,12 +53,12 @@ export default {
 			this.axios.post("/password/email", {
 				email: this.email
 			})
-			.then(res => {
-				console.log(res);
-			})
-			.catch(err => {
-				console.log(err);
-			})
+				.then(res => {
+					console.log(res);
+				})
+				.catch(err => {
+					console.log(err);
+				})
 		},
 	},
 	computed: {
