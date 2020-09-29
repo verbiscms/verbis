@@ -6,28 +6,35 @@
 .stack {
 	$self: &;
 
-
-
+	position: relative;
+	width: 100%;
 
 	// Item
 	// ==========================================================================
 
 	&-item {
+		position: relative;
+		width: 100%;
 		display: flex;
 		border-bottom: 1px solid $grey-light;
+
+		&-highlight {
+			background-color: rgba($primary, 0.2);
+		}
 	}
 
 	// Line
 	// ==========================================================================
 
 	&-line {
-		display: block;
+		display: flex;
+		justify-content: center;
 		margin-right: 14px;
 		padding: 22px 0;
 		border-right: 1px solid $primary;
-		width: 40px;
-		min-width: 40px;
-		max-width: 40px;
+		width: 70px;
+		min-width: 70px;
+		max-width: 70px;
 		font-size: 14px;
 		color: $secondary;
 	}
