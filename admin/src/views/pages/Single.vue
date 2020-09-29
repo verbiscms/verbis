@@ -42,59 +42,57 @@
 	===================== -->
 <script>
 
-	import Breadcrumbs from "../../components/misc/Breadcrumbs";
+import Breadcrumbs from "../../components/misc/Breadcrumbs";
 
-	export default {
-		name: "Single",
-		components: {
-			Breadcrumbs,
+export default {
+	name: "Single",
+	components: {
+		Breadcrumbs,
+	},
+	data: () => ({}),
+	mounted() {
+		this.getResourceDataTest()
+	},
+	methods: {
+		findResourceByName(resources, name) {
+			const resource = resources.find(r => r.name.toLowerCase() === name);
+			if (resource === undefined) {
+				//return this.$router.push('/404')
+			}
+			return resource
 		},
-		data: () => ({
-
-		}),
-		mounted() {
-			this.getResourceDataTest()
-		},
-		methods: {
-			findResourceByName(resources, name) {
-				const resource =  resources.find(r => r.name.toLowerCase() === name);
-				if (resource === undefined) {
-					//return this.$router.push('/404')
-				}
-				return resource
-			},
-			getResourceDataTest() {
-				const id = this.$route.params.id;
-				this.axios.get(`/posts/${id}`)
+		getResourceDataTest() {
+			const id = this.$route.params.id;
+			this.axios.get(`/posts/${id}`)
 				.then(res => {
 					console.log(res)
 				})
 				.catch(err => {
 					console.log(err)
 				})
-			}
-		},
-		computed: {
-			getResourceData() {
-				// const resources = this.$store.state.resources,
-				// 	currentSlug = this.$route.params.resource,
-				// 	resource = {};
-				//
-				// if (currentSlug === "pages") {
-				// 	resource.icon = "fal fa-file"
-				// } else {
-				// 	const r = this.findResourceByName(resources, currentSlug)
-				// 	resource.icon = r.options.icon
-				// }
-				//
-				// resource.name = currentSlug
-				//
-				// return resource;
-
-				return 0;
-			},
 		}
+	},
+	computed: {
+		getResourceData() {
+			// const resources = this.$store.state.resources,
+			// 	currentSlug = this.$route.params.resource,
+			// 	resource = {};
+			//
+			// if (currentSlug === "pages") {
+			// 	resource.icon = "fal fa-file"
+			// } else {
+			// 	const r = this.findResourceByName(resources, currentSlug)
+			// 	resource.icon = r.options.icon
+			// }
+			//
+			// resource.name = currentSlug
+			//
+			// return resource;
+
+			return 0;
+		},
 	}
+}
 </script>
 
 <!-- =====================
