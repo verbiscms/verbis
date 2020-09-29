@@ -14,6 +14,10 @@
 				<div class="aside-left-icon" v-if="getSite.logo">
 					<i class="fal fa-file"></i>
 				</div>
+				<!-- Users -->
+				<div class="aside-left-icon" v-if="getSite.logo">
+					<i class="fal fa-users"></i>
+				</div><!-- /Logo -->
 				<!-- Settings -->
 				<div class="aside-left-icon" v-if="getSite.logo">
 					<i class="fal fa-cog"></i>
@@ -21,7 +25,7 @@
 			</div><!-- /Top -->
 			<!-- Bottom -->
 			<div class="aside-left-bottom">
-				<div class="aside-left-icon aside-collapse" @click="collapse">
+				<div class="aside-left-icon aside-collapse" :class="{ 'aside-collapse-active' : collapsed }" @click="collapse">
 					<i class="fal fa-arrow-alt-to-left"></i>
 				</div>
 				<div class="aside-initials" v-html="getInitials"></div>
@@ -34,6 +38,7 @@
 			</div>
 			<!-- Navigation -->
 			<nav class="aside-nav">
+				<h6>Resources</h6>
 				<ul>
 					<!-- Pages -->
 					<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'pages' }">
@@ -65,14 +70,7 @@
 							<span>Media</span>
 						</router-link>
 					</li><!-- /Media -->
-					<!-- Users -->
-					<li class="aside-nav-item" v-if="getUserInfo.accessLevel === 2"
-						:class="{ 'aside-nav-item-active' : activePage === 'users' }">
-						<router-link class="aside-nav-link" to="/pages">
-							<i class="fal fa-users"></i>
-							<span>Users</span>
-						</router-link>
-					</li><!-- /Users -->
+
 					<!-- Settings -->
 					<li class="aside-nav-item">
 						<router-link class="aside-nav-link" to="/pages" :class="{ 'aside-nav-item-active' : activePage === 'settings' }">
@@ -81,6 +79,7 @@
 						</router-link>
 					</li><!-- /Settings -->
 				</ul>
+				<h6>Pages</h6>
 			</nav>
 		</div><!-- /Container -->
 	</aside><!-- /Aside Cont -->
@@ -97,7 +96,8 @@ export default {
 		doingAxios: false,
 		themeConfig: {},
 		resources: {},
-		activePage: ""
+		activePage: "",
+		collapsed: false
 	}),
 	beforeMount() {
 		this.getThemeConfig();
@@ -135,7 +135,8 @@ export default {
 			this.activePage = resource === undefined ? this.$route.name : resource
 		},
 		collapse() {
-			console.log("click")
+			document.querySelector(".auth-container").classList.toggle("auth-container-collapsed")
+			this.collapsed = !this.collapsed
 		}
 	},
 	computed: {
@@ -159,7 +160,7 @@ export default {
 <style scoped lang="scss">
 
 // Variables
-$aside-padding: 30px;
+$aside-padding: 10px;
 $aside-initials-size: 44px;
 $aside-left-icon-margin: 40px;
 
@@ -186,8 +187,9 @@ $aside-left-icon-margin: 40px;
 		justify-content: space-between;
 		align-items: center;
 		width: $sidebar-left-width;
+		min-width: $sidebar-left-width;
 		height: 100%;
-		padding: 30px 0;
+		padding: 44px 0;
 
 		#{$self}-left-icon {
 			display: flex;
@@ -216,6 +218,11 @@ $aside-left-icon-margin: 40px;
 		#{$self}-collapse {
 			margin-top: 0;
 			margin-bottom: $aside-left-icon-margin / 2;
+			transition: transform 300ms ease;
+
+			&-active {
+				transform: rotate(180deg);
+			}
 		}
 	}
 
