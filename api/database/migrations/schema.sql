@@ -29,8 +29,8 @@ CREATE TABLE `categories` (
   `hidden` tinyint(1) NOT NULL DEFAULT '0',
   `parent_id` int DEFAULT NULL,
   `page_template` varchar(150) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -55,7 +55,7 @@ CREATE TABLE `media` (
   `sizes` json DEFAULT NULL,
   `type` varchar(150) NOT NULL,
   `user_id` int DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -120,8 +120,8 @@ CREATE TABLE `posts` (
   `codeinjection_head` longtext,
   `codeinjection_foot` longtext,
   `user_id` int NOT NULL,
-  `updated_at` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -165,7 +165,7 @@ CREATE TABLE `seo_meta_options` (
 CREATE TABLE `subscribers` (
   `id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -193,8 +193,8 @@ CREATE TABLE `user_sessions` (
   `id` int NOT NULL AUTO_INCREMENT,
   `user_id` int NOT NULL,
   `session_key` varchar(38) NOT NULL,
-  `login_time` timestamp NOT NULL,
-  `last_seen_time` timestamp NOT NULL,
+  `login_time` timestamp NULL DEFAULT NULL,
+  `last_seen_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -219,8 +219,8 @@ CREATE TABLE `users` (
   `instagram` text,
   `token` varchar(38) NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `created_at` timestamp NOT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

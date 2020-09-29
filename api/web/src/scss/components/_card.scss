@@ -4,6 +4,8 @@
 // -----------------------------------------------------------------------------
 
 .card {
+	$self: &;
+
 	display: flex;
 	flex-direction: column;
 	align-items: flex-start;
@@ -14,6 +16,9 @@
 	border-radius: 20px;
 	border: none;
 	margin: 0 auto 2rem auto;
+
+	// Props
+	// =========================================================================
 
 	* {
 		text-align: left;
@@ -46,6 +51,26 @@
 
 	&-text {
 		margin-bottom: 0;
+	}
+
+	// Small
+	// =========================================================================
+
+	&-small {
+		border-radius: 10px;
+		padding: 16px 30px;
+		margin-bottom: 1rem;
+
+		h4 {
+			margin-bottom: 0;
+			line-height: 1;
+		}
+
+		#{$self}-subtitle {
+			display: inline-block;
+			margin: 0 6px 0 0;
+			color: $green;
+		}
 	}
 
 	// Tablet

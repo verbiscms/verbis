@@ -7816,6 +7816,23 @@ a:hover {
   margin-bottom: 0;
 }
 
+.card-small {
+  border-radius: 10px;
+  padding: 16px 30px;
+  margin-bottom: 1rem;
+}
+
+.card-small h4 {
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+.card-small .card-subtitle {
+  display: inline-block;
+  margin: 0 6px 0 0;
+  color: #2ECBAB;
+}
+
 .hamburger {
   font: inherit;
   display: inline-block;
@@ -7950,7 +7967,7 @@ a:hover {
 .code-line-highlight:before {
   content: "";
   position: absolute;
-  width: calc(100% - 30px);
+  width: calc(100% - 20px);
   height: 30px;
   left: 10px;
   transform: translateY(0px);
@@ -7960,19 +7977,31 @@ a:hover {
   z-index: 1;
 }
 
+.stack {
+  position: relative;
+  width: 100%;
+}
+
 .stack-item {
+  position: relative;
+  width: 100%;
   display: flex;
   border-bottom: 1px solid #E8E8EB;
 }
 
+.stack-item-highlight {
+  background-color: rgba(63, 135, 229, 0.2);
+}
+
 .stack-line {
-  display: block;
+  display: flex;
+  justify-content: center;
   margin-right: 14px;
   padding: 22px 0;
   border-right: 1px solid #3F87E5;
-  width: 40px;
-  min-width: 40px;
-  max-width: 40px;
+  width: 70px;
+  min-width: 70px;
+  max-width: 70px;
   font-size: 14px;
   color: #7E8593;
 }
