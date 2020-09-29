@@ -11,15 +11,19 @@
 					<img :src="globalBasePath + getSite.logo">
 				</router-link>
 				<!-- Pages -->
-				<div class="aside-left-icon" v-if="getSite.logo">
+				<div class="aside-left-icon">
 					<i class="fal fa-file"></i>
 				</div>
 				<!-- Users -->
-				<div class="aside-left-icon" v-if="getSite.logo">
+				<div class="aside-left-icon">
 					<i class="fal fa-users"></i>
 				</div><!-- /Logo -->
+				<!-- Media -->
+				<div class="aside-left-icon">
+					<i class="fal fa-images"></i>
+				</div><!-- /Logo -->
 				<!-- Settings -->
-				<div class="aside-left-icon" v-if="getSite.logo">
+				<div class="aside-left-icon">
 					<i class="fal fa-cog"></i>
 				</div><!-- /Logo -->
 			</div><!-- /Top -->
@@ -57,20 +61,12 @@
 						</router-link>
 					</li><!-- /Resources -->
 					<!-- Media -->
-					<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'analytics' }">
-						<router-link class="aside-nav-link" to="/analytics">
-							<i class="fal fa-chart-line"></i>
-							<span>Analytics</span>
-						</router-link>
-					</li><!-- /Media -->
-					<!-- Media -->
 					<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'media' }">
 						<router-link class="aside-nav-link" to="media">
 							<i class="fal fa-images"></i>
 							<span>Media</span>
 						</router-link>
 					</li><!-- /Media -->
-
 					<!-- Settings -->
 					<li class="aside-nav-item">
 						<router-link class="aside-nav-link" to="/pages" :class="{ 'aside-nav-item-active' : activePage === 'settings' }">
@@ -100,8 +96,8 @@ export default {
 		collapsed: false
 	}),
 	beforeMount() {
-		this.getThemeConfig();
-		this.getResourceData();
+		//this.getThemeConfig();
+		this.getResources();
 	},
 	watch: {
 		'$route'() {
@@ -109,13 +105,13 @@ export default {
 		}
 	},
 	methods: {
-		getThemeConfig() {
-			this.axios.get("/theme/config")
-				.then(res => {
-					this.themeConfig = res.data.data
-				})
-		},
-		getResourceData() {
+		// getThemeConfig() {
+		// 	this.axios.get("/theme/config")
+		// 		.then(res => {
+		// 			this.themeConfig = res.data.data
+		// 		})
+		// },
+		getResources() {
 			this.axios.get("/resources")
 				.then(res => {
 					this.resources = res.data.data
@@ -163,6 +159,7 @@ export default {
 $aside-padding: 10px;
 $aside-initials-size: 44px;
 $aside-left-icon-margin: 40px;
+$aside-btn-padding-x: 18px;
 
 .aside {
 	$self: &;
@@ -232,6 +229,10 @@ $aside-left-icon-margin: 40px;
 	&-right {
 		width: 100%;
 		padding: $auth-container-padding-y $aside-padding $aside-padding;
+
+		h6 {
+			margin-left: $aside-btn-padding-x;
+		}
 	}
 
 	// Info
@@ -242,6 +243,7 @@ $aside-left-icon-margin: 40px;
 		flex-direction: column;
 		align-items: flex-start;
 		margin-bottom: 2rem;
+		margin-left: $aside-btn-padding-x;
 
 		p,
 		h2 {
@@ -285,17 +287,21 @@ $aside-left-icon-margin: 40px;
 
 	&-nav {
 
+		ul:not(:last-child) {
+			margin-bottom: 1rem;
+		}
+
 		// Item
 		// =========================================================================
 
 		&-item {
-			margin-bottom: 14px;
+			margin-bottom: 10px;
 
 			a {
 				display: flex;
 				align-items: center;
 				justify-content: flex-start;
-				padding: 14px 20px;
+				padding: 12px $aside-btn-padding-x;
 				border-radius: 8px;
 				background-color: transparent;
 				transition: background-color 400ms ease, box-shadow 400ms ease;
@@ -313,6 +319,10 @@ $aside-left-icon-margin: 40px;
 				font-size: 1.2rem;
 				margin-right: 14px;
 				width: 24px;
+			}
+
+			&:last-child {
+				margin-bottom: 0;
 			}
 		}
 

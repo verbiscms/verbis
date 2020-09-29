@@ -1,0 +1,36 @@
+# |
+# |--------------------------------------------------------------------------
+# | Theme
+# |--------------------------------------------------------------------------
+# |
+# | Include a title, description and version for your custom Verbis
+# | theme here.
+# |
+# |
+theme:
+    title: A Verbis Theme
+    description: Stock theme for verbis
+    version: 0.0.1
+
+# |
+# |--------------------------------------------------------------------------
+# | Resources
+# |--------------------------------------------------------------------------
+# |
+# | Defines the resources to be used for the site. Each resource should
+# | contain a name (key) a friendly name (for use within the admin)
+# | a slug and an icon, if the icon is omitted, a default one
+# | will be used.
+# |
+# |
+resources:
+    posts:
+        name: posts
+        friendly_name: Posts
+        slug: /posts
+        icon: fa-toolbox
+    news:
+        name: news
+        friendly_name: News
+        slug: /news
+        icon: fa-toolbox
