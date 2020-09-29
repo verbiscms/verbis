@@ -10,14 +10,14 @@ import (
 
 func frontend(s *server.Server, c *controllers.Controller) {
 
-	s.Use(middleware.Recovery(c.Frontend.Recovery))
+	s.Use(middleware.Recovery(server.Recover))
 
 	_ = s.Group("")
 	{
 		// Serve assets
 		s.Static("/assets", paths.Theme() + config.Theme.AssetsPath)
 
-		//s.GET("/verbis/images/verbis-logo.svg", c.Site.GetLogo)
+		// Serve Verbis Assets
 		s.Static("/verbis", paths.Api() + "/web/public")
 
 		s.GET("/", c.Frontend.Home)

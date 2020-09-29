@@ -25,12 +25,7 @@ type Error struct {
 	Stack 		[]string	`json:"stack"`
 }
 
-// FileLine defines the error for templating it includes the line &
-// content of the error file
-type FileLine struct {
-	Line int
-	Content string
-}
+
 
 // Error returns the string representation of the error message.
 func (e *Error) Error() string {

@@ -6,8 +6,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
@@ -16,9 +14,6 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"net/http"
-	"regexp"
-	"runtime"
-	"strconv"
 	"strings"
 )
 
@@ -28,7 +23,6 @@ type FrontendHandler interface {
 	Test(g *gin.Context)
 	GetUploads(g *gin.Context)
 	Serve(g *gin.Context)
-	Recovery(g *gin.Context, err interface{})
 }
 
 // FrontendController defines the handler for all frontend routes
@@ -107,120 +101,3 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		log.Error(err)
 	}
 }
-
-// Errors
-func (c *FrontendController) Recovery(g *gin.Context, err interface{}) {
-	const op = "FrontendController.Recovery"
-
-	// Load up the Verbis error pages
-	gvRecovery := goview.New(goview.Config{
-		Root:      paths.Web(),
-		Extension: ".html",
-		Master: "layouts/main",
-		DisableCache: true,
-	})
-
-	// Obtain the error
-	var errData error
-	errData, ok := err.(error); if !ok {
-		if entry, ok := err.(*log.Entry); ok {
-
-			// TODO: Check the type of error here
-
-			fmt.Println(entry.Data["error"])
-		}
-		return
-	}
-
-
-	// TemplateStack defines
-	type TemplateStack struct {
-		File string
-		Line int
-		Name string
-		Message string
-	}
-
-	// Get the stack
-	var stack []TemplateStack
-	const stackDepth = 16
-	for c := 0; c < stackDepth; c++ {
-		t, file, line, ok := runtime.Caller(c)
-		if ok {
-			stack = append(stack, TemplateStack{
-				File: file,
-				Line: line,
-				Name: runtime.FuncForPC(t).Name(),
-			})
-		}
-	}
-
-
-	// Get the file contents of the broken file
-	var errFile string
-	var language string
-	tmpl := helpers.StringsBetween(errData.Error(), "name:", ",")
-	lineStr := regexp.MustCompile("[0-9]+").FindAllString(errData.Error(), -1)
-	var lineNum int
-	// Template
-	if len(lineStr) > 0 {
-		line, err := strconv.Atoi(lineStr[0])
-		if err != nil {
-			log.Panic(errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert %s to int", line), Operation: op, Err: err})
-		}
-		lineNum = line
-		errFile = paths.Theme() + "/" + tmpl + config.Template.FileExtension
-		language = "handlebars"
-	//Go files
-	}  else {
-		errFile = stack[0].File
-		if len(stack) > 3 {
-			lineNum = stack[3].Line
-		}
-		language = "go"
-	}
-
-
-	// Get the template file contents
-	var fileContents string
-	if ok := files.Exists(errFile); ok {
-		var err error
-		if fileContents, err = files.GetFileContents(errFile); err != nil {
-			log.Panic(errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert get file contents with path %s", errFile), Operation: op, Err: err})
-		}
-	}
-
-	// Get the lines near where the error happened
-	fileLines := files.Lines(fileContents, lineNum, 10)
-
-	// Set the error for the logger & middleware
-	vErr := errors.Error{
-		Code:      errors.TEMPLATE,
-		Message:   fmt.Sprintf("Could not render the template %s", tmpl),
-		Operation: "RenderTemplate",
-		Err:       fmt.Errorf("%s on line %d", helpers.StringsSplitRight(errData.Error(), "function "), lineNum),
-	}
-	g.Set("verbis_error", &vErr)
-
-	// Return the error page
-	if err := gvRecovery.Render(g.Writer, http.StatusOK, "/templates/error", gin.H{
-		"Stack": stack,
-		"Message": errData.Error(),
-		"RequestMethod": g.Request.Method,
-		"File": fileLines,
-		"LineNumber": lineNum,
-		"FileLanguage": language,
-		"Url": g.Request.URL.Path,
-		"Ip": g.ClientIP(),
-		"DataLength": g.Writer.Size(),
-	}); err != nil {
-		log.Panic(err)
-	}
-}
-
-
-
-
-
-
-

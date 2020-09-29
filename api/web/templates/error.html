@@ -8,8 +8,8 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <h3 class="card-subtitle">Verbis Error</h3>
-                        <h2 class="card-title">{{ .Message }}</h2>
+                        <h3 class="card-subtitle">Verbis Error - {{ .Error.Code }}</h3>
+                        <h2 class="card-title">{{ .Error.Message }}</h2>
                         <pre class="highlight code">
 <code class="{{ .FileLanguage }}">{{- range $key, $value := .File }}<span class="code-line {{ if  eq $value.Line $.LineNumber }}code-line-highlight{{ end }}">{{ $value.Line }}</span>{{ $value.Content }}<br/>{{- end }}</code>
                         </pre>
@@ -22,7 +22,7 @@
                        <h2>Call Stack</h2>
                        <div class="stack">
                            {{- range $key, $value := .Stack }}
-                               <div class="stack-item">
+                               <div class="stack-item {{ if eq $.Highlight $key }} stack-item-highlight {{ end }}">
                                    <span class="stack-line">{{ $value.Line }}</span>
                                   <div class="stack-cont">
                                       <span class="stack-file">{{ $value.File }}</span>
@@ -35,10 +35,16 @@
                 </div>
                 <div class="col-12 col-desk-4">
                     <div class="error-info">
-                        <h2>Information</h2>
-                        <h4>Url: {{ .Url }}</h4>
-                        <h4>Client IP:</h4>
-                        <p>{{ .Ip }}</p>
+                        <h2>Information:</h2>
+                        <div class="card card-small">
+                            <h4><span class="card-subtitle">Url:</span>{{ .Url }}</h4>
+                        </div>
+                        <div class="card card-small">
+                            <h4><span class="card-subtitle">Client IP:</span>{{ .Ip }}</h4>
+                        </div>
+                        <div class="card card-small">
+                            <h4><span class="card-subtitle">Data Length:</span>{{ .DataLength }}</h4>
+                        </div>
                     </div>
                 </div>
             </div><!-- /Row -->

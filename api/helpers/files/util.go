@@ -3,13 +3,11 @@ package files
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"html"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 // Delete file based on file path
@@ -105,22 +103,3 @@ func GetFileContents(path string) (string, error) {
 	return string(contents), nil
 }
 
-// Lines gets the range of lines of a file in between a limit
-// Returns an array of file lines
-func Lines(file string, line int, limit int) []errors.FileLine {
-	split := strings.Split(file, "\n")
-
-	var fileLines []errors.FileLine
-	counter := line - (limit / 2)
-	for i := 0; i < limit; i++ {
-		if counter >= 0 && counter < len(split) {
-			fileLines = append(fileLines, errors.FileLine{
-				Line:    counter + 1,
-				Content: html.UnescapeString(strings.Replace(split[counter], " ", "&nbsp;", -1)),
-			})
-		}
-		counter ++
-	}
-
-	return fileLines
-}
