@@ -22,10 +22,19 @@ section {
 	position: relative;
 }
 
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+// Containers
+// =========================================================================
+
 .auth-container {
 	position: relative;
 	display: block;
-	left: $sidebar-width;
+	left: 0;
 	max-width: none;
 	min-height: 100vh;
 	width: calc(100vw - #{$sidebar-width});
@@ -34,26 +43,21 @@ section {
 	z-index: 9;
 	box-shadow: 0 0 50px 0 rgba($black, 0.11);
 	background-color: $bg-color;
+	transform: translateX($sidebar-width);
+	transition: transform 300ms ease, width 300ms ease, box-shadow 300ms ease;
+	will-change: left, width, box-shadow;
+
+	&-collapsed {
+		box-shadow: 0 0 20px 0 rgba($black, 0.06);
+		width: calc(100vw - #{$sidebar-left-width});
+		transform: translateX($sidebar-left-width);
+	}
 }
 
 .container {
 	padding: 0;
 	margin: 0;
 	max-width: none;
-}
-
-*,
-*::before,
-*::after {
-	box-sizing: inherit;
-}
-
-.trans {
-	transition: all 0.4s;
-
-	&.slow {
-		transition: all 3s;
-	}
 }
 
 // Resets
