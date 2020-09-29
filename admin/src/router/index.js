@@ -35,6 +35,16 @@ const routes = [
 		path: "/editor/:id",
 		name: "single",
 		component: () => import("../views/pages/Single.vue")
+	},
+	{
+		path: "/editor/:id",
+		name: "settings",
+		component: () => import("../views/pages/Single.vue")
+	},
+	{
+		path: "/editor/:id",
+		name: "media",
+		component: () => import("../views/pages/Single.vue")
 	}
 	// {
 	//     path: '/404',
