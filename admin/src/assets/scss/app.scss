@@ -16,6 +16,7 @@
     Vendor
     ==================== */
 @import "vendor/mesh/src/mesh";
+@import "vendor/feather/icons";
 @import "vendor/font-awesome/scss/fontawesome";
 @import "vendor/font-awesome/scss/regular";
 @import "vendor/font-awesome/scss/solid";
@@ -35,6 +36,8 @@
 @import "components/_card";
 @import "components/_list";
 @import "components/_hamburger";
+@import "components/_tabs";
+@import "components/_field";
 
 /* ====================
     Layout

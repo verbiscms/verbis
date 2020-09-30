@@ -1,0 +1,190 @@
+<!-- =====================
+	Single
+	===================== -->
+<template>
+	<section>
+		<div class="auth-container">
+			<div class="row">
+				<div class="col-12">
+					<header class="header header-with-actions">
+						<div class="header-title">
+							<div class="header-icon-cont">
+								<i :class="getResourceData.icon"></i>
+								<h1>New Page</h1>
+							</div>
+							<Breadcrumbs></Breadcrumbs>
+						</div>
+						<!-- Actions -->
+						<div class="header-actions">
+							<form class="form form-actions">
+								<div class="form-select-cont form-input">
+									<select class="form-select">
+										<option value="" disabled selected>Bulk actions</option>
+										<option value="">Move to drafts</option>
+										<option value="">Delete</option>
+									</select>
+								</div>
+								<button class="btn btn-fixed-height btn-margin btn-white">Apply</button>
+								<button class="btn btn-icon btn-orange">
+									<i class="fal fa-plus"></i>
+								</button>
+							</form>
+						</div><!-- /Actions -->
+					</header>
+				</div><!-- /Col -->
+			</div><!-- /Row -->
+			<div class="row">
+				<div class="col-12 col-desk-9">
+					<div class="tabs">
+						<div class="tabs-header">
+							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 1 }" @click="activeTab = 1">Content</div>
+							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 2 }" @click="activeTab = 2">Meta</div>
+							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 3 }" @click="activeTab = 3">SEO</div>
+							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 4 }" @click="activeTab = 4">Analytics</div>
+						</div>
+						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
+							<div class="field">
+								<div class="field-wrapper">
+									<div class="field-title-cont">
+										<span class="field-collapse" v-on:click="this.isActive = !this.isActive"></span>
+										<div class="field-title">
+											<h5>Text</h5>
+											<p>Add a title for the page</p>
+										</div>
+									</div>
+									<div class="field-controls">
+										<i class="feather icon-trash-2"></i>
+										<i class="feather icon-arrow-up"></i>
+										<i class="feather icon-arrow-down"></i>
+										<i class="fal fa-arrows"></i>
+									</div>
+								</div>
+								<div class="field-content" ref="myText" :style="[isActive ? { height : computedHeight } : {}]">
+									<input class="form-input form-input-white" type="text" value="How the development team go their jobs at Reddico">
+								</div>
+							</div>
+							<div class="field">
+								<div class="field-wrapper">
+									<div class="field-title-cont">
+										<span class="field-collapse"></span>
+										<div class="field-title">
+											<h5>Rich text</h5>
+											<p>Add rich text content for the news page.</p>
+										</div>
+									</div>
+									<div class="field-controls">
+										<i class="feather icon-trash-2"></i>
+										<i class="feather icon-arrow-up"></i>
+										<i class="feather icon-arrow-down"></i>
+										<i class="fal fa-arrows"></i>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 2 }">
+							<h3>Second Tab Content</h3>
+							<p>Glossier brooklyn church-key...</p>
+						</div>
+						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 3 }">
+							<h3>Third Tab Content</h3>
+							<p>Vexillologist messenger bag master...</p>
+						</div>
+						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 4 }">
+							<h3>Third Tab Content</h3>
+							<p>Vexillologist messenger bag master...</p>
+						</div>
+					</div>
+				</div><!-- /Col -->
+				<div class="col-12 col-desk-3">
+					<div class="options">
+						<h2>Options</h2>
+						<div class="form-group">
+							<input class="form-input form-input-white" type="text">
+						</div>
+
+					</div>
+
+				</div>
+			</div><!-- /Row -->
+		</div><!-- /Container -->
+	</section>
+</template>
+
+<!-- =====================
+	Scripts
+	===================== -->
+<script>
+
+import Breadcrumbs from "../../components/misc/Breadcrumbs";
+//import RichText from "../../components/editor/RichText";
+
+export default {
+	name: "Single",
+	components: {
+		//RichText,
+		Breadcrumbs,
+	},
+	data: () => ({
+		activeTab: 1,
+		computedHeight: 'auto',
+		fieldHeights: [],
+		isActive: true,
+	}),
+	mounted() {
+		this.getResourceDataTest()
+		this.initHeight()
+	},
+	methods: {
+		findResourceByName(resources, name) {
+			const resource = resources.find(r => r.name.toLowerCase() === name);
+			if (resource === undefined) {
+				//return this.$router.push('/404')
+			}
+			return resource
+		},
+		getResourceDataTest() {
+			const id = this.$route.params.id;
+			this.axios.get(`/posts/${id}`)
+				.then(res => {
+					console.log(res)
+				})
+				.catch(err => {
+					console.log(err)
+				})
+		},
+		initHeight() {
+			this.computedHeight= getComputedStyle(this.$refs['myText']).height;
+		}
+	},
+	computed: {
+		getResourceData() {
+			// const resources = this.$store.state.resources,
+			// 	currentSlug = this.$route.params.resource,
+			// 	resource = {};
+			//
+			// if (currentSlug === "pages") {
+			// 	resource.icon = "fal fa-file"
+			// } else {
+			// 	const r = this.findResourceByName(resources, currentSlug)
+			// 	resource.icon = r.options.icon
+			// }
+			//
+			// resource.name = currentSlug
+			//
+			// return resource;
+
+			return 0;
+		},
+	}
+}
+</script>
+
+<!-- =====================
+	Styles
+	===================== -->
+<style scoped lang="scss">
+
+// Dummy
+// =========================================================================
+
+</style>
