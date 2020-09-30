@@ -1,0 +1,123 @@
+// -----------------------------------------------------------------------------
+// _field.scss
+// This file contains all styles related to the field component.
+// -----------------------------------------------------------------------------
+
+.field {
+	background: $bg-color;
+	border-radius: 10px;
+	padding: 20px;
+	margin-bottom: 1.6rem;
+
+	// Props
+	// =========================================================================
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	input {
+		background-color: $white;
+	}
+
+	// Wrapper
+	// =========================================================================
+
+	&-wrapper {
+		margin-bottom: 10px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	// Collapse
+	// =========================================================================
+
+	&-collapse {
+		display: block;
+		cursor: pointer;
+
+		&:before {
+			content: "\f078";
+			display: inline-flex;
+			color: $primary;
+			font-family: "Font Awesome 5 Pro";
+			font-size: 14px;
+			font-weight: bold;
+			margin-right: 10px;
+		}
+	}
+
+	// Title
+	// =========================================================================
+
+	&-title {
+
+		&-cont {
+			display: flex;
+
+			p {
+				margin-bottom: 0;
+				font-size: 0.8rem;
+			}
+		}
+	}
+
+	// Controls
+	// =========================================================================
+
+	&-controls {
+		display: flex;
+		align-items: center;
+		border: 2px solid $grey-light;
+		border-radius: 4px;
+		padding: 0;
+
+		i {
+			padding: 4px 6px;
+			border-right: 1.6px solid $grey-light;
+			color: $grey;
+			cursor: pointer;
+			font-size: 18px;
+			transition: color 200ms ease, background-color 200ms ease;
+			will-change: color, background-color;
+
+			&:hover {
+				color: $primary;
+				background-color: $white;
+			}
+
+			&:last-child {
+				border-right-width: 0;
+			}
+
+			&:first-child {
+				border-left-width: 0;
+			}
+		}
+	}
+
+	// Content
+	// =========================================================================
+
+	&-content {
+		//height: 0;
+		//max-height: 0;
+		height: 0;
+		overflow: hidden;
+		transition: height 500ms ease;
+		will-change: height;
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+	}
+}

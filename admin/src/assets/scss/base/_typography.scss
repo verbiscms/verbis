@@ -54,7 +54,7 @@ h2 {
 	font-weight: bold;
 	color: $copy;
 	margin-bottom: 1.8rem;
-	text-align: center;
+	text-align: left;
 }
 
 h3 {
@@ -65,11 +65,14 @@ h3 {
 }
 
 h4 {
+	@include fluid-type(320px, 1408px, 15px, 17px);
+	color: $grey;
+	font-weight: bold;
 }
 
 h5 {
-	@include fluid-type(320px, 1408px, 15px, 17px);
-	color: $grey;
+	@include px-to-rem(14);
+	color: $primary;
 	font-weight: bold;
 }
 
@@ -123,3 +126,4 @@ a {
 		margin-bottom: 0 !important;
 	}
 }
+
