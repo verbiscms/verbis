@@ -49,6 +49,10 @@ $form-group-margin-bottom: 1rem;
         transition: box-shadow 200ms ease;
         will-change: box-shadow;
 
+        &-white {
+            background-color: $white;
+        }
+
         @include on-event {
             box-shadow: 0 0 10px 0 rgba($copy, 0.10);
         }
