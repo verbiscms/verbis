@@ -60,8 +60,8 @@ export default {
 	methods: {
 		doLogin() {
 			this.doingAxios = true;
-			this.authMessage = '';//{withCredentials: true }
-			this.axios.post('/login', {email: this.authInfo.email, password: this.authInfo.password})
+			this.authMessage = '';
+			this.axios.post('/login', {email: this.authInfo.email, password: this.authInfo.password}, {withCredentials: true })
 				.then(res => {
 					console.log(res)
 					//this.$store.dispatch("login", res.data.data)
