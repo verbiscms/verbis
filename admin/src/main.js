@@ -1,9 +1,10 @@
-import {createApp} from "vue";
+import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import axios from 'axios'
-import DatePicker from 'v-calendar/lib/components/date-picker.umd'
+
+Vue.config.productionTip = false;
 
 /**
  * Variables
@@ -13,13 +14,6 @@ import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 //const apiUrl = process.env.VUE_APP_APIURL
 const baseUrl = "http://127.0.0.1:8080"
 const apiUrl = "http://127.0.0.1:8080/api/v1"
-
-/**
- * Vue
- * Create App
- *
- */
-const app = createApp(App)
 
 /**
  * Axios
@@ -44,8 +38,11 @@ axios.interceptors.response.use(function (response) {
 	} else {
 		return Promise.reject(error);
 	}
-});
-app.config.globalProperties.axios = axios
+})
+
+// Assign axios globally
+Vue.prototype.axios = axios;
+
 
 /**
  * Mixins
@@ -54,7 +51,7 @@ app.config.globalProperties.axios = axios
  */
 
 // Get global API Path
-app.mixin({
+Vue.mixin({
 	data: function () {
 		return {
 			get globalAPIPath() {
@@ -67,15 +64,16 @@ app.mixin({
 	}
 })
 
-app.component('date-picker', DatePicker)
-
 /**
- * Mount Vue
+ * Vue
+ * Create App
  *
  */
-app.use(store)
-	.use(router)
-	.mount("#app");
+new Vue({
+  router,
+  store,
+  render: h => h(App)
+}).$mount("#app");
 
 /**
  * Dispatch global store

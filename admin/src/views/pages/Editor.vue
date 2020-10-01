@@ -122,7 +122,7 @@
 						</div>
 						<!-- Date -->
 						<div class="form-group">
-							<vc-date-picker/>
+
 						</div>
 
 					</div><!-- /Options -->
@@ -138,13 +138,11 @@
 <script>
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
-import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 
 export default {
 	name: "Single",
 	components: {
 		Breadcrumbs,
-		DatePicker
 	},
 	data: () => ({
 		activeTab: 1,

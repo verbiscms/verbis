@@ -1,4 +1,4 @@
-# hello-vue3
+# hello
 
 ## Project setup
 ```

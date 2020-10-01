@@ -2,10 +2,12 @@
 	Home
 	===================== -->
 <template>
-	<Sidebar v-if="isLoggedIn"></Sidebar>
-	<main>
-		<router-view/>
-	</main>
+	<div id="app">
+		<Sidebar v-if="isLoggedIn"></Sidebar>
+		<main>
+			<router-view/>
+		</main>
+	</div>
 </template><!-- /App -->
 
 <!-- =====================
