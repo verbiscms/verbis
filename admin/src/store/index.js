@@ -8,6 +8,7 @@ export default createStore({
 		apiToken: "",
 		siteInfo: false,
 		userInfo: {},
+		users: [],
 		resources: [],
 	},
 	mutations: {
@@ -52,11 +53,17 @@ export default createStore({
 				axios.get("/site")
 					.then(res => {
 						console.log(res)
-
 						context.state.siteInfo = res.data.data
 						this.commit('siteInfo', res.data.data);
 					})
 			}
+		},
+		logout({ commit }, payload) {
+			this.axios.post("/logout", {})
+				.then(() => {
+					commit('logout', payload)
+					location.reload()
+				});
 		}
 	},
 	modules: {},

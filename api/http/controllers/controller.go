@@ -164,14 +164,18 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 			errData := data.(*errors.Error)
 			g.Set("verbis_error", errData)
 
-			errType := reflect.TypeOf(errData.Err).String()
-			if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID  {
-				validationErrors, _ := errData.Err.(validator.ValidationErrors)
-				var v validation.Validator = validation.New()
-				data = &ValidationErrJson{
-					Errors: v.Process(validationErrors),
+			if errData.Err != nil {
+				errType := reflect.TypeOf(errData.Err).String()
+				if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID  {
+					validationErrors, _ := errData.Err.(validator.ValidationErrors)
+					var v validation.Validator = validation.New()
+					data = &ValidationErrJson{
+						Errors: v.Process(validationErrors),
+					}
+					return data, true
+				} else {
+					return errData, true
 				}
-				return data, true
 			}
 
 			return gin.H{}, true

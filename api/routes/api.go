@@ -65,6 +65,10 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			operator.GET("/options", c.Options.Get)
 			operator.GET("/options/:name", c.Options.GetByName)
 			operator.POST("/options", c.Options.UpdateCreate)
+
+			// Users
+			operator.GET("/users", c.User.Get)
+			operator.GET("/users/:id", c.User.GetById)
 		}
 
 		// Administrator
@@ -73,8 +77,6 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			admin.Use(middleware.AdminTokenCheck(m.User, m.Session))
 
 			// Users
-			admin.GET("/users", c.User.Get)
-			admin.GET("/users/:id", c.User.GetById)
 			admin.POST("/users", c.User.Create)
 			admin.PUT("/users/:id", c.User.Update)
 			admin.DELETE("/users/:id", c.User.Delete)
