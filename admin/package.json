@@ -13,6 +13,7 @@
 		"core-js": "^3.6.5",
 		"tiptap": "^1.30.0",
 		"tiptap-extensions": "^1.33.1",
+		"v-calendar": "^1.0.8",
 		"vue": "^2.6.11",
 		"vue-color": "^2.7.1",
 		"vue-router": "^3.2.0",
