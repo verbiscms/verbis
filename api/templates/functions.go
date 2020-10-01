@@ -2,7 +2,6 @@ package templates
 
 import (
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -220,7 +219,8 @@ func (t *TemplateFunctions) isAdmin() bool {
 
 // Retrieve the assets path for the theme
 func (t *TemplateFunctions) assetsPath() string {
-	return config.Theme.AssetsPath
+	//return config.Theme.AssetsPath
+	return ""
 }
 
 // Retrieve the assets path for the theme

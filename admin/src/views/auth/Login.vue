@@ -64,10 +64,13 @@ export default {
 			this.axios.post('/login', {email: this.authInfo.email, password: this.authInfo.password})
 				.then(res => {
 					console.log(res)
+					//this.$store.dispatch("login", res.data.data)
 					this.$store.commit('login', res.data.data);
 					this.$router.push({ name: 'home' })
 				})
 				.catch(e => {
+
+
 					const response = e.response.data;
 
 					console.log(response);
@@ -85,7 +88,7 @@ export default {
 	},
 	computed: {
 		getSite() {
-			return this.$store.state.siteInfo;
+			return this.$store.state.site;
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package models
 
 import (
-	gojson "encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
@@ -10,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ghodss/yaml"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -17,10 +17,58 @@ import (
 	"strings"
 )
 
+// Global Configuration, sets defaults to ensure that there are no
+// empty values within the themes config to prevent any errors.
+var (
+	ThemeConfig = domain.ThemeConfig{
+		Theme:      domain.Theme{},
+		Resources:  nil,
+		AssetsPath: "/assets",
+		Editor:     domain.Editor{
+			Modules: []string{
+				"blockquote",
+				"code_block",
+				"code_block_highlight",
+				"hardbreak",
+				"h1",
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"paragraph",
+				"hr",
+				"ul",
+				"ol",
+				"bold",
+				"code",
+				"italic",
+				"link",
+				"strike",
+				"underline",
+				"history",
+				"search",
+				"trailing_node",
+				"color",
+			},
+			Options: map[string]interface{}{
+				"palette": []string{
+					"#4D4D4D", "#999999", "#FFFFFF", "#F44E3B", "#FE9200", "#FCDC00",
+					"#DBDF00", "#A4DD00", "#68CCCA", "#73D8FF", "#AEA1FF", "#FDA1FF",
+					"#333333", "#808080", "#CCCCCC", "#D33115", "#E27300", "#FCC400",
+					"#B0BC00", "#68BC00", "#16A5A5", "#009CE0", "#7B64FF", "#FA28FF",
+					"#000000", "#666666", "#B3B3B3", "#9F0500", "#C45100", "#FB9E00",
+					"#808900", "#194D33", "#0C797D", "#0062B1", "#653294", "#AB149E",
+				},
+			},
+		},
+	}
+)
+
 // SiteRepository defines methods for Posts to interact with the database
 type SiteRepository interface {
 	GetGlobalConfig() *domain.Site
-	GetAllResources() (*[]domain.Resource, error)
+	GetThemeConfig() (domain.ThemeConfig, error)
 	GetAllTemplates() (*domain.Templates, error)
 }
 
@@ -95,10 +143,27 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 	return &ds
 }
 
+// Get"s the themes configuration from the themes path
+// Returns errors.INTERNAL if the unmarshalling was unsuccessful.
+func (s *SiteStore) GetThemeConfig() (domain.ThemeConfig, error) {
+	const op = "SiteRepository.GetThemeConfig"
+
+	y, err := files.LoadFile(paths.Theme() + "/config.yml")
+	if err != nil {
+		return domain.ThemeConfig{}, err
+	}
+	if err := yaml.Unmarshal(y, &ThemeConfig); err != nil {
+		return domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the config.yml file", Operation: op, Err: err}
+	}
+
+	return ThemeConfig, nil
+}
+
+
 // Get all templates stored within the template file
 // Returns errors.INTERNAL if the template path is invalid.
 func (s *SiteStore) GetAllTemplates() (*domain.Templates, error) {
-	const op = "SiteRepository.Get"
+	const op = "SiteRepository.GetAllTemplates"
 
 	// If the cache allows for caching of the site templates &
 	// if the config has already been cached, return.
@@ -146,59 +211,6 @@ func (s *SiteStore) GetAllTemplates() (*domain.Templates, error) {
 	return &t, nil
 }
 
-// GetAllResources gets all resources from the config file
-func (s *SiteStore) GetAllResources() (*[]domain.Resource, error) {
-	const op = "SiteRepository.GetAllResources"
-
-	// If the cache allows for caching of the site resources &
-	// if the config has already been cached, return.
-	var found bool
-	if s.cache.Resources {
-		cached, found := cache.Store.Get("site_resources")
-		if found {
-			return cached.(*[]domain.Resource), nil
-		}
-	}
-
-	jsonResources, err := s.getConfig()
-	if err != nil {
-		return &[]domain.Resource{}, err
-	}
-
-	var resources []domain.Resource
-	for k, _ := range jsonResources.Resources {
-		r := jsonResources.Resources[k]
-		resources = append(resources, r)
-	}
-
-	// Set the cache for the templates if the cache was not found
-	// and the options allow.
-	if !found && s.cache.Resources {
-		cache.Store.Set("site_resources", &resources, cache.RememberForever)
-	}
-
-	return &resources, err
-}
-
-// getConfig gets the json config
-// Returns errors.INVALID if the file could not be located.
-// Returns errors.INTERNAL if the file could not be unmarshalled.
-func (s *SiteStore) getConfig() (domain.ThemeConfig, error) {
-	const op = "SiteRepository.getConfig"
-
-	jsonFile, err := files.ReadJson(paths.Theme() + "/config.json")
-	if err != nil {
-		return domain.ThemeConfig{}, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not get the theme's config file with the path: %s", paths.Theme() + "/config.json"), Operation: op}
-	}
-
-	var r domain.ThemeConfig
-	err = gojson.Unmarshal(jsonFile, &r)
-	if err != nil {
-		return domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the theme config file", Operation: op}
-	}
-
-	return r, nil
-}
 
 // walkMatch Walk through root and return array of strings
 func (s *SiteStore) walkMatch(root, pattern string) ([]string, error) {

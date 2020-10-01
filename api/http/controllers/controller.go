@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -136,7 +135,8 @@ func AbortJSON(g *gin.Context, status int, message string, data interface{}) {
 
 // Handle 404s.
 func NoPageFound(g *gin.Context) {
-	g.HTML(404, config.Theme.ErrorPageNotFound, gin.H{})
+	// TODO make 404 dynamic
+	g.HTML(404, "404", gin.H{})
 }
 
 // Abort message

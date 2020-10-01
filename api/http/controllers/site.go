@@ -9,7 +9,7 @@ import (
 // SiteHandler defines methods for the Site to interact with the server
 type SiteHandler interface {
 	GetSite(g *gin.Context)
-	GetResources(g *gin.Context)
+	GetTheme(g *gin.Context)
 	GetTemplates(g *gin.Context)
 }
 
@@ -30,15 +30,15 @@ func (c *SiteController) GetSite(g *gin.Context) {
 	Respond(g, 200, "Successfully obtained site config", c.model.GetGlobalConfig())
 }
 
-// GetResources gets all resources
-func (c *SiteController) GetResources(g *gin.Context) {
-	const op = "SiteHandler.GetResources"
-	resources, err := c.model.GetAllResources()
+// GetTheme gets the theme's config from the theme path
+func (c *SiteController) GetTheme(g *gin.Context) {
+	const op = "SiteHandler.GetTheme"
+	config, err := c.model.GetThemeConfig()
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
-	Respond(g, 200,"Successfully obtained resources", resources)
+	Respond(g, 200,"Successfully obtained theme config", config)
 }
 
 // GetTemplates gets all templates

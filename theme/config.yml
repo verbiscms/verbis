@@ -34,3 +34,73 @@ resources:
         friendly_name: News
         slug: /news
         icon: fa-toolbox
+
+# |
+# |--------------------------------------------------------------------------
+# | Assets Path
+# |--------------------------------------------------------------------------
+# |
+# | The file path for the all static assets to be served by the CMS such as
+# | images, fonts, favicon etc. is not resolved by the cms. Note - it
+# | should not contain the file extension and is relative to the
+# | theme's root.
+# |
+# |
+assets_path: /assets
+
+
+# |
+# |--------------------------------------------------------------------------
+# | Editor
+# |--------------------------------------------------------------------------
+# |
+# |
+# |
+# |
+# |
+# |
+# |
+editor:
+    modules: [
+        blockquote,
+        code_block,
+        code_block_highlight,
+        code_view,
+        hardbreak,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        paragraph,
+        hr,
+        ul,
+        ol,
+        bold,
+        code,
+        italic,
+        link,
+        strike,
+        underline,
+        history,
+        search,
+        trailing_node,
+        color,
+        table
+    ]
+    options:
+        ul:
+            class: list list-screw
+        ol:
+            class: list list-numbered
+        h1:
+            class: test
+        link:
+            rel: noopener noreferrer nofollow
+#        palette: [
+#            '#fad839',
+#            '#ca1f26',
+#            '#1b3990',
+#            '#333',
+#        ]

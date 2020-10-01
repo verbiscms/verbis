@@ -78,10 +78,6 @@ type ViewData struct {
 	Post		domain.Post
 }
 
-
-func Test() {
-}
-
 func GetViewData(post *domain.Post) *ViewData {
 
 	fields := make(map[string]string)
