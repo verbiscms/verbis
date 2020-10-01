@@ -20,6 +20,7 @@ export default class VerbisColour extends Mark {
                     default: 'rgba(0,0,0,1)',
                 },
             },
+            inclusive: true,
             parseDOM: this.options.color.map(color => ({
                 tag: `span[style="color:${color}"]`,
                 attrs: { color },
