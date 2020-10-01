@@ -1,10 +1,10 @@
 package routes
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 )
 
@@ -15,7 +15,7 @@ func frontend(s *server.Server, c *controllers.Controller) {
 	_ = s.Group("")
 	{
 		// Serve assets
-		s.Static("/assets", paths.Theme() + config.Theme.AssetsPath)
+		s.Static("/assets", paths.Theme() +	models.ThemeConfig.AssetsPath)
 
 		// Serve Verbis Assets
 		s.Static("/verbis", paths.Api() + "/web/public")

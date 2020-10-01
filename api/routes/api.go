@@ -34,8 +34,8 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			operator.Use(middleware.OperatorTokenCheck(m.User, m.Session))
 			operator.Use(middleware.EmptyBody())
 
-			// Resources
-			operator.GET("/resources", c.Site.GetResources)
+			// Theme
+			operator.GET("/theme", c.Site.GetTheme)
 
 			// Templates
 			operator.GET("/templates", c.Site.GetTemplates)

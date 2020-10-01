@@ -1,12 +1,11 @@
 package config
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -23,24 +22,10 @@ var (
 		UploadPath:       "",
 		AllowedFileTypes: nil,
 	}
-	Resources = resources{
-		Configuration: map[string]map[string]string{
-			"posts": {
-				"name": "posts",
-				"friendly_name": "Posts",
-				"slug": "/posts",
-				"icon": "fal fa-newspaper",
-			},
-		},
-	}
 	Template = template{
 		FileExtension: ".cms",
 		TemplateDir:   "templates",
 		LayoutDir:     "layouts",
-	}
-	Theme = theme{
-		AssetsPath:        "/assets",
-		ErrorPageNotFound: "404",
 	}
 	Logs = logs{
 		AccessLog: "default",
@@ -58,11 +43,6 @@ type admin struct {
 type media struct {
 	UploadPath string `yaml:"upload_path"`
 	AllowedFileTypes []string `yaml:"allowed_file_types"`
-}
-
-// Resources
-type resources struct {
-	Configuration map[string]map[string]string `yaml:"resources"`
 }
 
 // Template
@@ -92,7 +72,7 @@ func Init() error {
 	const op = "config.Init"
 
 	// Admin
-	a, err := loadConfig("/admin.yml")
+	a, err := files.LoadFile(getConfigPath() + "/admin.yml")
 	if err != nil {
 		return err
 	}
@@ -101,7 +81,7 @@ func Init() error {
 	}
 
 	// Media
-	m, err := loadConfig("/media.yml")
+	m, err := files.LoadFile(getConfigPath() + "/media.yml")
 	if err != nil {
 		return err
 	}
@@ -110,16 +90,7 @@ func Init() error {
 	}
 
 	// Resources
-	r, err := loadConfig("/resources.yml")
-	if err != nil {
-		return err
-	}
-	if err := yaml.Unmarshal(r, &Resources); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the resources.yml file", Operation: op, Err: err}
-	}
-
-	// Resources
-	t, err := loadConfig("/template.yml")
+	t, err := files.LoadFile(getConfigPath() + "/template.yml")
 	if err != nil {
 		return err
 	}
@@ -127,17 +98,8 @@ func Init() error {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the template.yml file", Operation: op, Err: err}
 	}
 
-	// Theme
-	th, err := loadConfig("/theme.yml")
-	if err != nil {
-		return err
-	}
-	if err := yaml.Unmarshal(th, &Theme); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the template.yml file", Operation: op, Err: err}
-	}
-
 	// Logs
-	l, err := loadConfig("/logs.yml")
+	l, err := files.LoadFile(getConfigPath() + "/logs.yml")
 	if err != nil {
 		return err
 	}
@@ -152,30 +114,14 @@ func Init() error {
 func Cache() {
 	cache.Store.Set("config_admin", Admin, cache.RememberForever)
 	cache.Store.Set("config_media", Media, cache.RememberForever)
-	cache.Store.Set("config_resources", Resources, cache.RememberForever)
 	cache.Store.Set("config_template", Template, cache.RememberForever)
-	cache.Store.Set("config_theme", Theme, cache.RememberForever)
 }
 
 // Clear the configuration
 func CacheClear() {
 	cache.Store.Delete("config_admin")
 	cache.Store.Delete("config_media")
-	cache.Store.Delete("config_resources")
 	cache.Store.Delete("config_template")
-	cache.Store.Delete("config_theme")
-}
-
-// loadConfig load's the configuration file based on path
-// and returns a []byte for yaml conversion
-// Returns errors.INTERNAL if the configuration file failed to load.
-func loadConfig (path string) ([]byte, error) {
-	const op = "config.loadConfig"
-	data, err := ioutil.ReadFile(getConfigPath() + path)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not load the configuration file with the path: %s", getConfigPath() + path), Operation: op, Err: err}
-	}
-	return data, nil
 }
 
 // getConfigPath obtains the configuration path of the yaml files
