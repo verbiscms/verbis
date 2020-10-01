@@ -274,7 +274,6 @@ export default {
 			this.palette = this.config.options.palette.length > 0 ? this.config.options.palette : false
 		},
 		applyTextColor(commands) {
-			console.log(commands);
 			const { r, g, b, a } = this.textColor.rgba;
 			commands.textcolor({ color: `rgba(${r},${g},${b},${a})` })
 			this.showTextColorPicker = false
@@ -554,6 +553,7 @@ $richtext-border-radius: 10px;
 
 		.vc-compact {
 			box-shadow: none;
+			width: auto;
 		}
 	}
 
@@ -610,6 +610,7 @@ $richtext-border-radius: 10px;
 		z-index: 0;
 		color: $copy-light;
 		font-size: 14px;
+		resize: none;
 	}
 
 	// Content (Body)
