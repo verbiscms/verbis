@@ -91,16 +91,16 @@ editor:
     ]
     options:
         ul:
-            class: list list-screw
+            class: list
         ol:
-            class: list list-numbered
+            class: list
         h1:
             class: test
         link:
             rel: noopener noreferrer nofollow
-#        palette: [
-#            '#fad839',
-#            '#ca1f26',
-#            '#1b3990',
-#            '#333',
-#        ]
+        palette: [
+            '#fad839',
+            '#ca1f26',
+            '#1b3990',
+            '#333',
+        ]
