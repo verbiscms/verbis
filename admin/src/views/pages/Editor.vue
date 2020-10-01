@@ -40,7 +40,7 @@
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 1 }" @click="activeTab = 1">Content</div>
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 2 }" @click="activeTab = 2">Meta</div>
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 3 }" @click="activeTab = 3">SEO</div>
-							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 4 }" @click="activeTab = 4">Analytics</div>
+							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 4 }" @click="activeTab = 4">Code Injection</div>
 						</div>
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
 							<!-- Text -->
@@ -87,16 +87,72 @@
 							</div>
 						</div>
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 2 }">
-							<h3>Second Tab Content</h3>
-							<p>Glossier brooklyn church-key...</p>
+							<!-- Serp -->
+							<div class="field">
+								<h4>SERP Preview</h4>
+								<div class="field-content">
+									<div class="serp">
+										<span class="serp-title">How the development team got their jobs at Reddico</span>
+										<span class="serp-url">https://reddico.co.uk/how-we-got-our-development-jobs/</span>
+										<span class="serp-description">Have you ever wondered how to become a developer? Our team has taken different routes to get to their jobs here – with some surprising diversions along the way. We asked them to explain how they’ve progressed over the years.</span>
+									</div>
+								</div>
+							</div>
+							<!-- Meta -->
+							<div class="field">
+								<h4>Meta</h4>
+								<div class="field-content">
+									<div class="form-group">
+										<h5>Title</h5>
+										<p>This will appear at the top of the search preview</p>
+										<input class="form-input form-input-white" type="text">
+									</div>
+									<div class="form-group">
+										<h5>Description</h5>
+										<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
+										<textarea class="form-input form-input-white" type="text" rows="4"></textarea>
+									</div>
+								</div>
+							</div>
+							<!-- Facebook -->
+							<div class="field">
+								<h4>Facebook (Open Graph)</h4>
+								<div class="field-content">
+									<div class="form-group">
+										<h5>Title</h5>
+										<p>This will appear at the top of the search preview</p>
+										<input class="form-input form-input-white" type="text">
+									</div>
+									<div class="form-group">
+										<h5>Description</h5>
+										<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
+										<textarea class="form-input form-input-white" type="text" rows="4"></textarea>
+									</div>
+								</div>
+							</div>
 						</div>
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 3 }">
 							<h3>Third Tab Content</h3>
 							<p>Vexillologist messenger bag master...</p>
 						</div>
+						<!-- Code Injection -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 4 }">
-							<h3>Third Tab Content</h3>
-							<p>Vexillologist messenger bag master...</p>
+							<!-- Head -->
+							<div class="field">
+								<h4>Header</h4>
+								<div class="form-group">
+									<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
+									<textarea class="form-input form-input-white" type="text" rows="14"></textarea>
+								</div>
+							</div>
+							<!-- Footer -->
+							<div class="field">
+								<h4>Footer</h4>
+								<div class="form-group">
+									<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
+									<textarea class="form-input form-input-white" type="text" rows="14"></textarea>
+								</div>
+							</div>
 						</div>
 					</div>
 				</div><!-- /Col -->
@@ -127,7 +183,8 @@
 						</div>
 						<!-- Date -->
 						<div class="form-group">
-
+							<label class="form-label">Published Date</label>
+							<DatePicker class="date" color="blue" :value="null"></DatePicker>
 						</div>
 					</div><!-- /Options -->
 				</div><!-- /Col -->
@@ -143,12 +200,14 @@
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import RichText from "@/components/editor/RichText";
+import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 
 export default {
 	name: "Single",
 	components: {
 		Breadcrumbs,
-		RichText
+		RichText,
+		DatePicker,
 	},
 	data: () => ({
 		activeTab: 1,

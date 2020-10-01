@@ -65,9 +65,10 @@ h3 {
 }
 
 h4 {
-	@include fluid-type(320px, 1408px, 15px, 17px);
-	color: $grey;
+	font-size: 1rem;
+	color: $copy;
 	font-weight: bold;
+	margin-bottom: 10px;
 }
 
 h5 {

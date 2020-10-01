@@ -607,7 +607,7 @@ $richtext-border-radius: 10px;
 		border: none;
 		padding: 20px;
 		opacity: 0;
-		z-index: 0;
+		z-index: -1;
 		color: $copy-light;
 		font-size: 14px;
 		resize: none;
@@ -619,13 +619,16 @@ $richtext-border-radius: 10px;
 	&-content {
 		position: relative;
 		background-color: $white;
-		min-height: 350px;
-		max-height: 700px;
 		border: 2px solid $grey-light;
 		border-bottom-left-radius: $richtext-border-radius;
 		border-bottom-right-radius: $richtext-border-radius;
-		padding: 20px;
 		overflow-y: scroll;
+
+		.ProseMirror {
+			min-height: 350px;
+			max-height: 700px;
+			padding: 20px;
+		}
 
 		&-codeview {
 

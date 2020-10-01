@@ -1,0 +1,30 @@
+// -----------------------------------------------------------------------------
+// _date.scss
+// This file contains all styles related to the date picker component.
+// -----------------------------------------------------------------------------
+
+.date {
+
+	input {
+		position: relative;
+		width: 100%;
+		height: auto;
+		min-height: 52px;
+		padding: 12px 16px;
+		border: 2px solid $grey-light;
+		outline: none;
+		color: $secondary;
+		border-radius: 8px;
+		font-weight: 600;
+		@include px-to-rem(14);
+		-webkit-appearance: none;
+		appearance: none;
+		background-color: $white;
+		transition: box-shadow 200ms ease;
+		will-change: box-shadow;
+
+		@include on-event {
+			box-shadow: 0 0 10px 0 rgba($copy, 0.10);
+		}
+	}
+}
