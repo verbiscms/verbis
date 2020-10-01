@@ -11,7 +11,16 @@ type Site struct {
 
 // Theme
 type ThemeConfig struct {
-	Resources map[string]Resource `json:"resources"`
+	Theme Theme `yaml:"theme" json:"theme"`
+	Resources map[string]Resource `yaml:"resources" json:"resources"`
+	AssetsPath string `yaml:"assets_path" json:"assets_path"`
+	Editor Editor `yaml:"editor" json:"editor"`
+}
+
+type Theme struct {
+	Title string `yaml:"title" json:"title"`
+	Description string `yaml:"description" json:"description"`
+	Version string `yaml:"version" json:"version"`
 }
 
 // Resources
@@ -20,16 +29,19 @@ type Resources struct {
 }
 
 type Resource struct {
-	Name    string  `json:"name"`
-	Options options `json:"options"`
-}
-
-type options struct {
-	Slug string `json:"slug"`
-	Icon string `json:"icon"`
+	Name string `yaml:"name" json:"name"`
+	FriendlyName string `yaml:"friendly_name" json:"friendly_name"`
+	Slug string `yaml:"slug" json:"slug"`
+	Icon string `yaml:"icon" json:"icon"`
 }
 
 // Templates
 type Templates struct {
 	Template  []map[string]interface{} `json:"templates"`
+}
+
+// Editor
+type Editor struct {
+	Modules []string `yaml:"modules" json:"modules"`
+	Options map[string]interface{} `yaml:"options" json:"options"`
 }

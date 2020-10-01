@@ -19,3 +19,4 @@ func ReadJson(path string) ([]byte, error) {
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	return byteValue, nil
 }
+

@@ -14,7 +14,8 @@ $tabs-panel-padding: 36px;
 	display: flex;
 	flex-wrap: wrap;
 	width: 100%;
-	overflow-x: auto;
+	overflow: visible;
+
 	// Header
 	// ==========================================================================
 
@@ -105,6 +106,7 @@ $tabs-panel-padding: 36px;
 		border: $tabs-border;
 		border-bottom-left-radius: $tabs-border-radius;
 		border-bottom-right-radius: $tabs-border-radius;
+		overflow: visible;
 
 		*:last-child {
 			margin-bottom: 0;

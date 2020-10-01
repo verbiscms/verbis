@@ -3,7 +3,7 @@ module.exports = {
 	env: {
 		node: true
 	},
-	extends: ["plugin:vue/essential", "eslint:recommended", "@vue/prettier"],
+	extends: ["plugin:vue/essential", "eslint:recommended"],
 	parserOptions: {
 		parser: "babel-eslint",
 		"ecmaVersion": 6,
@@ -14,8 +14,8 @@ module.exports = {
 	rules: {
 		"no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
 		"no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
-		"vue/html-indent": ["error", "tab"],  // enforce tabs in template
-		"indent": ["error", "tab"]            // enforce tabs in script and js files
+		//"vue/html-indent": ["error", "tab"],  // enforce tabs in template
+		//"indent": ["error", "tab"]            // enforce tabs in script and js files
 	},
 	overrides: [
 		{

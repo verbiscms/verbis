@@ -20,6 +20,7 @@ require (
 	github.com/foolin/goview v0.3.0
 	github.com/frankban/quicktest v1.11.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.1.1
+	github.com/ghodss/yaml v1.0.0
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/sessions v0.0.3 // indirect
 	github.com/gin-gonic/contrib v0.0.0-20200810162008-6dee08bf958e // indirect

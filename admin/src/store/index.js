@@ -9,15 +9,13 @@ export default new Vuex.Store({
 	state: {
 		auth: false,
 		apiToken: "",
-		siteInfo: false,
+		site: false,
 		userInfo: {},
 		users: [],
+		theme: {},
 		resources: [],
 	},
 	mutations: {
-		siteInfo() {
-			console.log("hello")
-		},
 		login(state, loginData) {
 			state.apiToken = loginData.token
 			state.auth = true
@@ -37,6 +35,8 @@ export default new Vuex.Store({
 			state.apiToken = ''
 			state.auth = false
 			state.userInfo = {}
+			state.site = {}
+			state.theme = {}
 			state.activeDomain = false
 			state.activePage = false
 			axios.defaults.headers.common = {
@@ -46,18 +46,26 @@ export default new Vuex.Store({
 		setResources(state, resources) {
 			state.resources = resources;
 		},
-		logo(state, logo) {
-			state.logo = logo
-		}
 	},
 	actions: {
+		login(context) {
+			context.commit("login")
+		},
 		getSiteConfig(context) {
-			if (!context.state.siteInfo) {
+			if (!context.state.site) {
 				axios.get("/site")
 					.then(res => {
-						console.log(res)
-						context.state.siteInfo = res.data.data
-						this.commit('siteInfo', res.data.data);
+						context.state.site = res.data.data
+						this.commit('site', res.data.data);
+					})
+			}
+		},
+		getThemeConfig(context) {
+			if (!context.state.theme) {
+				axios.get("/theme")
+					.then(res => {
+						context.state.theme = res.data.data
+						this.commit('theme', res.data.data);
 					})
 			}
 		},

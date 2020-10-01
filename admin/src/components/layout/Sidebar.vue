@@ -97,7 +97,7 @@ export default {
 	}),
 	beforeMount() {
 		//this.getThemeConfig();
-		this.getResources();
+		//this.getResources();
 	},
 	watch: {
 		'$route'() {
@@ -105,19 +105,6 @@ export default {
 		}
 	},
 	methods: {
-		// getThemeConfig() {
-		// 	this.axios.get("/theme/config")
-		// 		.then(res => {
-		// 			this.themeConfig = res.data.data
-		// 		})
-		// },
-		getResources() {
-			this.axios.get("/resources")
-				.then(res => {
-					this.resources = res.data.data
-					this.$store.commit("setResources", res.data.data)
-				})
-		},
 		doLogout() {
 			this.axios.post("/logout", {})
 				.then(res => {
@@ -140,7 +127,7 @@ export default {
 			return this.$store.state.userInfo
 		},
 		getSite() {
-			return this.$store.state.siteInfo
+			return this.$store.state.site
 		},
 		getInitials() {
 			const info = this.getUserInfo

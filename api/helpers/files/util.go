@@ -103,3 +103,13 @@ func GetFileContents(path string) (string, error) {
 	return string(contents), nil
 }
 
+// LoadFile load's the a file based on the path and returns a []byte ready for conversion
+// Returns errors.INTERNAL if the configuration file failed to load.
+func LoadFile(path string) ([]byte, error) {
+	const op = "config.loadConfig"
+	data, err := ioutil.ReadFile(path)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not load the  file with the path: %s", path), Operation: op, Err: err}
+	}
+	return data, nil
+}

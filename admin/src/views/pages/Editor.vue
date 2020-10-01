@@ -43,6 +43,7 @@
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 4 }" @click="activeTab = 4">Analytics</div>
 						</div>
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
+							<!-- Text -->
 							<div class="field">
 								<div class="field-wrapper">
 									<div class="field-title-cont">
@@ -63,6 +64,7 @@
 									<input class="form-input form-input-white" type="text" value="How the development team go their jobs at Reddico">
 								</div>
 							</div>
+							<!-- Rich Text -->
 							<div class="field">
 								<div class="field-wrapper">
 									<div class="field-title-cont">
@@ -78,6 +80,9 @@
 										<i class="feather icon-arrow-down"></i>
 										<i class="fal fa-arrows"></i>
 									</div>
+								</div>
+								<div class="field-content">
+									<RichText></RichText>
 								</div>
 							</div>
 						</div>
@@ -124,7 +129,6 @@
 						<div class="form-group">
 
 						</div>
-
 					</div><!-- /Options -->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
@@ -138,11 +142,13 @@
 <script>
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
+import RichText from "@/components/editor/RichText";
 
 export default {
 	name: "Single",
 	components: {
 		Breadcrumbs,
+		RichText
 	},
 	data: () => ({
 		activeTab: 1,
@@ -152,7 +158,7 @@ export default {
 		users: [],
 	}),
 	mounted() {
-		this.getResourceDataTest()
+		//this.getResourceDataTest()
 		this.initHeight()
 		this.getUsers()
 	},
@@ -207,7 +213,7 @@ export default {
 			return 0;
 		},
 	}
-}
+};
 </script>
 
 <!-- =====================
