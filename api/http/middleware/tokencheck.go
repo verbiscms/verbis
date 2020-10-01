@@ -1,10 +1,11 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"github.com/ainsleyclark/verbis/api/models"
-	"fmt"
 	"github.com/gin-gonic/gin"
 )
 
@@ -95,10 +96,9 @@ func checkSession(g *gin.Context, userId int, m models.SessionRepository) error 
 		return nil
 	}
 
-	if err := m.Check(userId); err != nil {
-		controllers.AbortJSON(g, 401, err.Error(), gin.H{
-			"reason": "Timed out",
-		})
+	err := m.Check(userId);
+	if err != nil {
+		controllers.AbortJSON(g, 401, errors.Message(err), err)
 		return err
 	}
 

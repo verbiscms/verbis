@@ -95,16 +95,38 @@
 						</div>
 					</div>
 				</div><!-- /Col -->
+				<!-- Page Options -->
 				<div class="col-12 col-desk-3">
 					<div class="options">
 						<h2>Options</h2>
+						<!-- URL -->
 						<div class="form-group">
-							<input class="form-input form-input-white" type="text">
+							<label class="form-label" for="options-url">URL</label>
+							<input class="form-input form-input-white" type="text" id="options-url">
+						</div>
+						<!-- Status -->
+						<div class="form-group">
+							<label class="form-label" for="options-status">Status</label>
+							<div class="form-select-cont form-input">
+								<select class="form-select" id="options-status">
+									<option value="" disabled selected>Select status</option>
+									<option value="drafts">Draft</option>
+									<option value="published">Published</option>
+								</select>
+							</div>
+						</div>
+						<!-- Author -->
+						<div class="form-group">
+							<label class="form-label" for="options-author">Author</label>
+							<input class="form-input form-input-white" type="text" id="options-author">
+						</div>
+						<!-- Date -->
+						<div class="form-group">
+							<vc-date-picker/>
 						</div>
 
-					</div>
-
-				</div>
+					</div><!-- /Options -->
+				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
 	</section>
@@ -116,23 +138,25 @@
 <script>
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
-//import RichText from "../../components/editor/RichText";
+import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 
 export default {
 	name: "Single",
 	components: {
-		//RichText,
 		Breadcrumbs,
+		DatePicker
 	},
 	data: () => ({
 		activeTab: 1,
 		computedHeight: 'auto',
 		fieldHeights: [],
 		isActive: true,
+		users: [],
 	}),
 	mounted() {
 		this.getResourceDataTest()
 		this.initHeight()
+		this.getUsers()
 	},
 	methods: {
 		findResourceByName(resources, name) {
@@ -141,6 +165,15 @@ export default {
 				//return this.$router.push('/404')
 			}
 			return resource
+		},
+		getUsers() {
+			this.axios.get(`/users`)
+				.then(res => {
+					console.log(res)
+				})
+				.catch(err => {
+					console.log(err)
+				})
 		},
 		getResourceDataTest() {
 			const id = this.$route.params.id;

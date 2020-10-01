@@ -3,6 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import axios from 'axios'
+import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 
 /**
  * Variables
@@ -24,12 +25,26 @@ const app = createApp(App)
  * Axios
  *
  */
+
+// Set defaults
 axios.defaults.headers.common = {
 	"token": store.state.apiToken || "",
 	'Access-Control-Allow-Origin': '*',
 	'Content-Type': 'application/json',
 };
 axios.defaults.baseURL = apiUrl
+
+// Add a 401 response interceptor
+axios.interceptors.response.use(function (response) {
+	return response;
+}, function (error) {
+	if (401 === error.response.status) {
+		store.dispatch('logout')
+		router.push('/login')
+	} else {
+		return Promise.reject(error);
+	}
+});
 app.config.globalProperties.axios = axios
 
 /**
@@ -51,6 +66,8 @@ app.mixin({
 		}
 	}
 })
+
+app.component('date-picker', DatePicker)
 
 /**
  * Mount Vue

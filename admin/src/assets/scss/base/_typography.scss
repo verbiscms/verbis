@@ -52,8 +52,8 @@ h1 {
 h2 {
 	@include fluid-type(320px, 1408px, 22px, 24px);
 	font-weight: bold;
-	color: $copy;
-	margin-bottom: 1.8rem;
+	color: $copy-light;
+	margin-bottom: 1rem;
 	text-align: left;
 }
 
