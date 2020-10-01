@@ -1,8 +1,11 @@
-import { createStore } from "vuex";
-import createPersistedState from "vuex-persistedstate";
+import Vue from "vue";
+import Vuex from "vuex";
 import axios from 'axios'
+import createPersistedState from "vuex-persistedstate";
 
-export default createStore({
+Vue.use(Vuex);
+
+export default new Vuex.Store({
 	state: {
 		auth: false,
 		apiToken: "",
@@ -58,8 +61,8 @@ export default createStore({
 					})
 			}
 		},
-		logout({ commit }, payload) {
-			this.axios.post("/logout", {})
+		logout({commit}, payload) {
+			axios.post("/logout", {})
 				.then(() => {
 					commit('logout', payload)
 					location.reload()

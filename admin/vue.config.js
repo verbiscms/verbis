@@ -4,10 +4,11 @@ module.exports = {
 	css: {
 		loaderOptions: {
 			sass: {
-				additionalData:
-					`@import "@/assets/scss/vendor/mesh/src/abstracts/mixins.scss";
-                    @import "@/assets/scss/abstracts/mixins.scss";
-                    @import "@/assets/scss/abstracts/variables.scss";`
+				prependData:
+					`@import "~@/assets/scss/vendor/mesh/src/abstracts/mixins.scss";
+                    @import "~@/assets/scss/abstracts/mixins.scss";
+                    @import "~@/assets/scss/abstracts/variables.scss";`
+
 			}
 		}
 	}
