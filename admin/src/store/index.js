@@ -68,13 +68,6 @@ export default new Vuex.Store({
 						this.commit('theme', res.data.data);
 					})
 			}
-		},
-		logout({commit}, payload) {
-			axios.post("/logout", {})
-				.then(() => {
-					commit('logout', payload)
-					location.reload()
-				});
 		}
 	},
 	modules: {},
