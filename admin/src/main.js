@@ -33,8 +33,11 @@ axios.interceptors.response.use(function (response) {
 	return response;
 }, function (error) {
 	if (401 === error.response.status) {
-		store.dispatch('logout')
-		router.push('/login')
+		axios.post("/logout", {})
+			.then(() => {
+				router.push('/login')
+				location.reload()
+			});
 	} else {
 		return Promise.reject(error);
 	}
