@@ -1,0 +1,131 @@
+[
+    {
+        "key": "group_5f7747b7d9858",
+        "title": "Test",
+        "fields": [
+            {
+                "key": "field_5f7747baa0697",
+                "label": "Text",
+                "name": "text",
+                "type": "text",
+                "instructions": "Instructions",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "Default",
+                "placeholder": "Placeholder",
+                "prepend": "",
+                "append": "",
+                "maxlength": ""
+            },
+            {
+                "key": "field_5f774b57a0698",
+                "label": "Textarea",
+                "name": "textarea",
+                "type": "textarea",
+                "instructions": "Instructions",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "maxlength": "",
+                "rows": 4,
+                "new_lines": ""
+            },
+            {
+                "key": "field_5f774b69a0699",
+                "label": "Number",
+                "name": "number",
+                "type": "number",
+                "instructions": "Instructions",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "default_value": "",
+                "placeholder": "",
+                "prepend": "",
+                "append": "",
+                "min": 50,
+                "max": 100,
+                "step": 1
+            },
+            {
+                "key": "field_5f774b7ba069a",
+                "label": "Select",
+                "name": "Select",
+                "type": "select",
+                "instructions": "Instructions",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "choices": {
+                    "red": "Red",
+                    "orange": "Orange"
+                },
+                "default_value": [],
+                "allow_null": 0,
+                "multiple": 0,
+                "ui": 0,
+                "return_format": "value",
+                "ajax": 0,
+                "placeholder": ""
+            },
+            {
+                "key": "field_5f774b96a069b",
+                "label": "Post",
+                "name": "Post",
+                "type": "post_object",
+                "instructions": "Instructions",
+                "required": 1,
+                "conditional_logic": 0,
+                "wrapper": {
+                    "width": "",
+                    "class": "",
+                    "id": ""
+                },
+                "post_type": [
+                    "page"
+                ],
+                "taxonomy": "",
+                "allow_null": 0,
+                "multiple": 0,
+                "return_format": "object",
+                "ui": 1
+            }
+        ],
+        "location": [
+            [
+                {
+                    "param": "post_type",
+                    "operator": "==",
+                    "value": "post"
+                }
+            ]
+        ],
+        "menu_order": 0,
+        "position": "normal",
+        "style": "default",
+        "label_placement": "top",
+        "instruction_placement": "label",
+        "hide_on_screen": "",
+        "active": true,
+        "description": ""
+    }
+]

@@ -11,6 +11,7 @@
 	"dependencies": {
 		"axios": "^0.20.0",
 		"core-js": "^3.6.5",
+		"slugify": "^1.4.5",
 		"tiptap": "^1.30.0",
 		"tiptap-extensions": "^1.33.1",
 		"v-calendar": "^1.0.8",

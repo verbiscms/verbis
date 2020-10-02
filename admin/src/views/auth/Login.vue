@@ -16,20 +16,22 @@
 							<div class="auth-text">
 								<h2>Login</h2>
 							</div>
-							<form class="form form-center" >
+							<form class="form form-center" :class="{ 'form-is-invalid' : authMessage }">
 								<span class="form-error" v-html="authMessage" :class="{ 'form-error-show' : authMessage }"></span>
 								<!-- Email -->
-								<div class="form-group">
+								<div class="form-group" :class="{ 'form-group-error' : hasError('email') }">
 									<input type="text" autocomplete="email" placeholder="Email" class="form-input" v-model="authInfo.email">
+									<span class="form-message">{{ getError('email') }}</span>
 								</div>
 								<!-- Password -->
-								<div class="form-group">
+								<div class="form-group" :class="{ 'form-group-error' : hasError('password') }">
 									<input type="password" autocomplete="password" placeholder="Password" class="form-input" v-model="authInfo.password">
+									<span class="form-message">{{ getError('password') }}</span>
 								</div>
 								<router-link :to="{ name: 'password-reset' }" class="login-password">Forgot your password?</router-link>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
-									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doLogin">Login</button>
+									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doLogin" :class="{ 'btn-loading' : doingAxios }">Login</button>
 								</div>
 							</form>
 						</div><!-- /Card Cont -->
@@ -44,6 +46,7 @@
 	Scripts
 	===================== -->
 <script>
+
 export default {
 	name: "Login",
 	data: () => ({
@@ -53,38 +56,55 @@ export default {
 			password: "",
 		},
 		authMessage: "",
+		errors: [],
 	}),
-	beforeMount() {
-		//console.log(this.$store.state.logo)
-	},
 	methods: {
 		doLogin() {
 			this.doingAxios = true;
 			this.authMessage = '';
-			this.axios.post('/login', {email: this.authInfo.email, password: this.authInfo.password}, {withCredentials: true })
+
+			this.axios.post('/login', {email: this.authInfo.email, password: this.authInfo.password})
 				.then(res => {
-					console.log(res)
-					//this.$store.dispatch("login", res.data.data)
-					this.$store.commit('login', res.data.data);
-					this.$router.push({ name: 'home' })
+					this.$store.commit('login', res.data.data.user, res.data.data.session)
+					this.$store.commit('setSession', res.data.data.session);
+
+					if (!this.$store.state.theme.title) {
+						this.axios.get("/theme")
+							.then(res => {
+								this.$store.commit('setTheme', res.data.data);
+								this.$router.push({ name: 'home' })
+								this.doingAxios = false;
+							})
+							.catch(err => {
+								this.helpers.handleResponse(err);
+								this.doingAxios = false;
+							})
+					}
 				})
 				.catch(e => {
 
+					const response = e.response.data,
+						errors = response.data.errors;
 
-					const response = e.response.data;
-
-					console.log(response);
-					if (response.data.message === "Validation failed") {
-						console.log("in")
+					if (errors) {
+						this.errors = errors
 					} else {
-						this.authMessage = response.data.message
+						this.errors = []
+						this.authMessage = response.message
 					}
 
-					console.log(e.response.data.data.message);
-					this.$store.commit('logout');
-					this.doingAxios = false;
+					setTimeout(() => {
+						this.doingAxios = false;
+					}, 200)
 				})
 		},
+		getError(key) {
+			const err = this.errors.find(e => e.key === key)
+			return err !== undefined ? err.message : "";
+		},
+		hasError(key) {
+			return this.errors.find(e => e.key === key)
+		}
 	},
 	computed: {
 		getSite() {

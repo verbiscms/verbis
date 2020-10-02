@@ -87,12 +87,12 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c []domain.Categor
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
 	var found bool
-	if s.cache.Layout {
-		cached, found := cache.Store.Get("field_layout_" + p.UUID.String())
-		if found {
-			return cached.(*[]domain.FieldGroup)
-		}
-	}
+	//if s.cache.Layout {
+	//	cached, found := cache.Store.Get("field_layout_" + p.UUID.String())
+	//	if found {
+	//		return cached.(*[]domain.FieldGroup)
+	//	}
+	//}
 
 	// Obtain json files
 	fieldGroups, err := s.GetFieldGroups()
@@ -103,61 +103,81 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c []domain.Categor
 	// Loop over the groups
 	for _, group := range *fieldGroups {
 
-		// Loop over locations
-		for _, location := range group.Locations {
+		// Check for empty location
+		if len(group.Locations) == 0 && !s.hasBeenAdded(group.UUID.String(), fg) {
+			fg = append(fg, group)
 
-			if !s.hasBeenAdded(group.UUID.String(), fg) {
+		} else {
 
-				// Loop over rule sets
-				var locationSet []bool
-				for _, rule := range location {
+			// Check and Loop over locations
+			for _, location := range group.Locations {
 
-					switch rule.Param {
+				if !s.hasBeenAdded(group.UUID.String(), fg) {
+
+					// Loop over rule sets
+					var locationSet []bool
+					for _, rule := range location {
+
+						switch rule.Param {
 						// Status
-						case "status": {
-							locationSet = append(locationSet, s.checkLocation(p.Status, rule))
-							break
-						}
-						// Status
-						case "post": {
-							locationSet = append(locationSet, s.checkLocation(strconv.Itoa(p.Id), rule))
-							break
-						}
-						// Page Templates
-						case "page_template": {
-							locationSet = append(locationSet, s.checkLocation(p.PageTemplate, rule))
-							break
-						}
-						// Resources
-						case "resource": {
-							locationSet = append(locationSet, s.checkLocation(*p.Resource, rule))
-							break
-						}
-						// Categories
-						case "categories": {
-							for _, category := range c {
-								locationSet = append(locationSet, s.checkLocation(strconv.Itoa(category.Id), rule))
+						case "status":
+							{
+								locationSet = append(locationSet, s.checkLocation(p.Status, rule))
+								break
 							}
-							break
-						}
+						// Status
+						case "post":
+							{
+								locationSet = append(locationSet, s.checkLocation(strconv.Itoa(p.Id), rule))
+								break
+							}
+						// Page Templates
+						case "page_template":
+							{
+								locationSet = append(locationSet, s.checkLocation(p.PageTemplate, rule))
+								break
+							}
+						// Layout
+						case "layout":
+							{
+								locationSet = append(locationSet, s.checkLocation(p.Layout, rule))
+								break
+							}
+						// Resources
+						case "resource":
+							{
+								locationSet = append(locationSet, s.checkLocation(*p.Resource, rule))
+								break
+							}
+						// Categories
+						case "categories":
+							{
+								for _, category := range c {
+									locationSet = append(locationSet, s.checkLocation(strconv.Itoa(category.Id), rule))
+								}
+								break
+							}
 						// Author
-						case "author": {
-							locationSet = append(locationSet, s.checkLocation(strconv.Itoa(p.UserId), rule))
-							break
-						}
+						case "author":
+							{
+								locationSet = append(locationSet, s.checkLocation(strconv.Itoa(p.UserId), rule))
+								break
+							}
 						// Role
-						case "role": {
-							locationSet = append(locationSet, s.checkLocation(strconv.Itoa(a.Role.Id), rule))
-							break
+						case "role":
+							{
+								locationSet = append(locationSet, s.checkLocation(strconv.Itoa(a.Role.Id), rule))
+								break
+							}
 						}
 					}
-				}
 
-				// Remove from the array for the front end
-				group.Locations = nil
+					// Remove from the array for the front end
+					group.Locations = nil
 
-				if s.checkMatch(locationSet) {
-					fg = append(fg, group)
+					if s.checkMatch(locationSet) {
+						fg = append(fg, group)
+					}
 				}
 			}
 		}
@@ -227,6 +247,7 @@ func (s *FieldsStore) checkLocation(check string, location domain.FieldLocation)
 			}
 		}
 	}
+
 
 	return match
 }

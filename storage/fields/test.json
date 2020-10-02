@@ -1,6 +1,6 @@
 {
-	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc34",
-	"title": "Resource Options",
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9135ec34",
+	"title": "TEST1 Options",
 	"fields": [
 		{
 			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5745",
@@ -19,21 +19,9 @@
 	"location": [
 		[
 			{
-				"param": "category",
+				"param": "page_template",
 				"operator": "==",
-				"value": "1"
-			},
-			{
-				"param": "page_template",
-				"operator": "!=",
-				"value": "post-single"
-			},
-		]
-		[
-			{
-				"param": "page_template",
-				"operator": "!=",
-				"value": "post-single"
+				"value": "home"
 			}
 		]
 	]
