@@ -1,0 +1,54 @@
+{
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc24",
+	"title": "TEST2 Options",
+	"fields": [
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+			"label": "Titles",
+			"name": "title",
+			"type": "richtext",
+			"instructions": "Make sure you cose in",
+			"required": false,
+			"conditional_logic": 0,
+			"default_value": "",
+			"placeholder": "",
+			"maxlength": "",
+			"rows": 4
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+			"label": "Titles",
+			"name": "title",
+			"type": "richtext",
+			"instructions": "TEST2 Add a title for the the resource page.",
+			"required": false,
+			"conditional_logic": 0,
+			"default_value": "",
+			"placeholder": "",
+			"maxlength": "",
+			"rows": 4
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+			"label": "Titles",
+			"name": "title",
+			"type": "textarea",
+			"instructions": "TEST2 Add a title for the the resource page.",
+			"required": false,
+			"conditional_logic": 0,
+			"default_value": "",
+			"placeholder": "",
+			"maxlength": "",
+			"rows": 4
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "layout",
+				"operator": "!=",
+				"value": "main"
+			}
+		]
+	]
+}

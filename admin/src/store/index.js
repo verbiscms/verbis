@@ -1,3 +1,17 @@
+/**
+ * store/index.js
+ * Set up of Vuex
+ * @author Ainsley Clark
+ * @author URL:   https://reddico.co.uk
+ * @author Email: ainsley@reddico.co.uk
+ */
+
+/**
+ * Require * Import
+ *
+ */
+
+// Vendor
 import Vue from "vue";
 import Vuex from "vuex";
 import axios from 'axios'
@@ -9,7 +23,8 @@ export default new Vuex.Store({
 	state: {
 		auth: false,
 		apiToken: "",
-		site: false,
+		site: {},
+		session: "",
 		userInfo: {},
 		users: [],
 		theme: {},
@@ -35,41 +50,51 @@ export default new Vuex.Store({
 			state.apiToken = ''
 			state.auth = false
 			state.userInfo = {}
-			state.site = {}
-			state.theme = {}
 			state.activeDomain = false
 			state.activePage = false
+			Vue.prototype.helpers.deleteCookie("verbis-session")
 			axios.defaults.headers.common = {
 				"token": ''
 			};
 		},
+		setSite(state, site) {
+			state.site = site;
+		},
+		setSession(state, session) {
+			Vue.prototype.helpers.setCookie("verbis-session", session, 1)
+			state.session = session;
+		},
+		setTheme(state, theme) {
+			state.theme = theme;
+		},
 		setResources(state, resources) {
 			state.resources = resources;
 		},
+		setUsers(state, users) {
+			state.users = users;
+		},
 	},
 	actions: {
-		login(context) {
-			context.commit("login")
-		},
 		getSiteConfig(context) {
-			if (!context.state.site) {
-				axios.get("/site")
-					.then(res => {
-						context.state.site = res.data.data
-						this.commit('site', res.data.data);
-					})
-			}
+			return new Promise((resolve, reject) => {
+				const site = context.state.site
+				if (Object.keys(site).length === 0 && site.constructor === Object) {
+					axios.get("/site")
+						.then(res => {
+							context.state.site = res.data.data
+							this.commit('setSite', res.data.data);
+							resolve()
+						})
+						.catch(() => {
+							reject();
+						});
+				} else {
+					resolve();
+				}
+			})
 		},
-		getThemeConfig(context) {
-			if (!context.state.theme) {
-				axios.get("/theme")
-					.then(res => {
-						context.state.theme = res.data.data
-						this.commit('theme', res.data.data);
-					})
-			}
-		}
 	},
 	modules: {},
 	plugins: [createPersistedState()],
 });
+

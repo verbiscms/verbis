@@ -3,7 +3,6 @@ package middleware
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -96,11 +95,11 @@ func checkSession(g *gin.Context, userId int, m models.SessionRepository) error 
 		return nil
 	}
 
-	err := m.Check(userId);
-	if err != nil {
-		controllers.AbortJSON(g, 401, errors.Message(err), err)
-		return err
-	}
+	//err := m.Check(userId);
+	//if err != nil {
+	//	controllers.AbortJSON(g, 401, errors.Message(err), err)
+	//	return err
+	//}
 
 	return nil
 }

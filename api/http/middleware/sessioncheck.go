@@ -10,6 +10,7 @@ func SessionCheck(m models.SessionRepository) gin.HandlerFunc {
 
 		// Get the Verbis session cookie
 		cookie, err := g.Cookie("verbis-session")
+
 		if err != nil {
 			g.Next()
 		}
