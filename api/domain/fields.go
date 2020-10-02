@@ -21,6 +21,13 @@ type Field struct {
 	Options 	 	map[string]interface{} 	`json:"options"`
 }
 
+type FieldFilter struct {
+	Resource 			string 					`json:"resource"`
+	PageTemplate 		string 					`json:"template"`
+	Layout 				string 					`json:"layout"`
+	Category 			string 					`json:"layout"`
+}
+
 // FieldLocation defines where the FieldGroup will appear
 type FieldLocation struct {
 	Param string

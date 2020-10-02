@@ -1,8 +1,22 @@
+/**
+ * router/router.js
+ * Set up of Vue Router
+ * @author Ainsley Clark
+ * @author URL:   https://reddico.co.uk
+ * @author Email: ainsley@reddico.co.uk
+ */
+
+/**
+ * Require * Import
+ *
+ */
+
+// Vendor
 import Vue from "vue";
 import VueRouter from "vue-router";
 import store from '../store/index'
 
-Vue.use(VueRouter);
+
 
 /*
  * Main Routes
@@ -48,25 +62,39 @@ const routes = [
 		path: "/editor/:id",
 		name: "media",
 		component: () => import("../views/pages/Editor.vue")
-	}
+	},
 	// {
 	//     path: '/404',
 	//     name: 'not-found',
 	//     component: () => import('../views/errors/Error.vue'),
 	// },
+	{
+		path: '/error',
+		name: 'error',
+		component: () => import('../views/errors/ServerDown.vue'),
+	},
 	// {
 	//     path: '*',
 	//     redirect: '/404'
 	// },
 ];
 
+/**
+ * Setup Router
+ *
+ */
+Vue.use(VueRouter);
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
 });
 
-// Protect routes, return redirect if not logged in.
+/**
+ * Protect Routes
+ * Return redirect if not logged in.
+ *
+ */
 router.beforeEach((to, from, next) => {
 	if (store.state.auth) {
 		if (to.name === "login") {
@@ -77,8 +105,8 @@ router.beforeEach((to, from, next) => {
 		} else {
 			next();
 		}
-	} else {
-		if (to.name === "login" || to.name === "password-reset") {
+	}else {
+		if (to.name === "login" || to.name === "password-reset" || to.name === "error") {
 			next();
 		} else {
 			next({

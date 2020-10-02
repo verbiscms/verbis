@@ -94,6 +94,12 @@ func Templates() string {
 	return Theme() + "/templates"
 }
 
+// Layouts path
+func Layouts() string {
+	// TODO - Make dynamic based on config
+	return Theme() + "/layouts"
+}
+
 // Web (Verbis specific)
 func Web() string {
 	return Api() + "/web"

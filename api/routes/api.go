@@ -40,12 +40,18 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			// Templates
 			operator.GET("/templates", c.Site.GetTemplates)
 
+			// Layouts
+			operator.GET("/layouts", c.Site.GetLayouts)
+
 			// Posts
 			operator.GET("/posts", c.Posts.Get)
 			operator.GET("/posts/:id", c.Posts.GetById)
 			operator.POST("/posts", c.Posts.Create)
 			operator.PUT("/posts/:id", c.Posts.Update)
 			operator.DELETE("/posts/:id", c.Posts.Delete)
+
+			// Fields
+			operator.GET("/fields", c.Fields.Get)
 
 			// Categories
 			operator.GET("/categories", c.Categories.Get)

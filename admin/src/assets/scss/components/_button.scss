@@ -42,6 +42,7 @@ $btn-margin-x: 10px;
 			position: relative;
 			display: block;
 			margin-left: 16px;
+			transition: opacity 100ms ease;
 		}
 	}
 
@@ -60,6 +61,28 @@ $btn-margin-x: 10px;
 		color: $white;
 	}
 
+	// Popover Icon
+	// =========================================================================
+
+	&-popover {
+		padding-right: 8px;
+
+		&-icon {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			width: 40px;
+			height: 36px;
+			background-color: $orange-light;
+			border-radius: 4px;
+			margin-left: 16px;
+
+			i {
+				font-weight: 700;
+			}
+		}
+	}
+
 	// Loading
 	// =========================================================================
 
@@ -68,11 +91,11 @@ $btn-margin-x: 10px;
 		pointer-events: none;
 		color: transparent !important;
 
-		&:after {
+		&:before {
 			content: "";
 			width: 18px;
 			height: 18px;
-			border: 2px solid $white;
+			border: 2px solid $secondary;
 			border-right-color: transparent !important;
 			border-radius: 50%;
 			display: inline-block;
@@ -85,6 +108,10 @@ $btn-margin-x: 10px;
 			left: 50%;
 			margin-left: -9px;
 			margin-top: -9px;
+		}
+
+		&:after {
+			opacity: 0;
 		}
 
 		@keyframes spinner {
@@ -106,10 +133,12 @@ $btn-margin-x: 10px;
 
 	&-white {
 		background-color: $white;
+		color: $secondary;
 	}
 
 	&-orange {
 		background-color: $orange;
+		color: $white;
 	}
 
 	// Margin

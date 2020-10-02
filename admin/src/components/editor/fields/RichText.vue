@@ -1,5 +1,5 @@
 <!-- =====================
-	Rich Text
+	Field - Rich Text
 	===================== -->
 <template>
 	<div class=richtext v-if="editor">
@@ -152,7 +152,9 @@
 <!-- =====================
 	Scripts
 	===================== -->
+
 <script>
+
 import {Editor, EditorContent, EditorMenuBar, EditorMenuBubble} from 'tiptap'
 import {
 	VerbisBlockquote,
@@ -172,7 +174,7 @@ import {
 	VerbisUnderline,
 	VerbisColour,
 	VerbisTable
-} from '../../extensions/tiptap/index'
+} from '../../../extensions/tiptap/index'
 import {
 	Highlight,
 	History,
@@ -186,7 +188,7 @@ import {
 const Chrome = require('vue-color/src/components/Compact.vue').default;
 
 export default {
-	name: "RichText",
+	name: "FieldRichText",
 	components: {
 		EditorContent,
 		EditorMenuBar,
@@ -208,28 +210,33 @@ export default {
 		}
 	},
 	mounted() {
-		this.getEditorConfig().then(() => {
-			this.setUpEditor()
-			this.setColourPalette()
-		});
+		this.config = this.getEditorConfig
+		this.setUpEditor()
+		this.setColourPalette()
+
+	},
+	computed: {
+		getEditorConfig() {
+			return this.$store.state.theme.editor
+		}
 	},
 	methods: {
 		setContent(content) {
 			if (this.editor) this.editor.setContent(content);
 		},
-		getEditorConfig() {
-			return new Promise((resolve, reject) => {
-				this.axios.get('/theme')
-					.then(res => {
-						this.config = res.data.data.editor
-						resolve()
-					})
-					.catch(e => {
-						console.log(e);
-						reject();
-					})
-			});
-		},
+		// getEditorConfig() {
+		// 	return new Promise((resolve, reject) => {
+		// 		this.axios.get('/theme')
+		// 			.then(res => {
+		// 				this.config = res.data.data.editor
+		// 				resolve()
+		// 			})
+		// 			.catch(e => {
+		// 				console.log(e);
+		// 				reject();
+		// 			})
+		// 	});
+		// },
 		setUpEditor() {
 			const extensions = this.createExtensions();
 			this.editor = new Editor({
@@ -433,6 +440,7 @@ $richtext-border-radius: 10px;
 	&-menu {
 		position: relative;
 		display: flex;
+		flex-wrap: wrap;
 		width: 100%;
 		background-color: $white;
 		border-top-left-radius: $richtext-border-radius;
@@ -451,6 +459,7 @@ $richtext-border-radius: 10px;
 		border: none;
 		background-color: $white;
 		width: 50px;
+		min-width: 40px;
 		height: 42px;
 		border-right: 1px solid $grey-light;
 		color: $grey;

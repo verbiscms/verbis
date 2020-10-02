@@ -16,6 +16,7 @@ import (
 type Controller struct {
 	Auth 		AuthHandler
 	Categories 	CategoryHandler
+	Fields 		FieldHandler
 	Frontend 	FrontendHandler
 	Media 		MediaHandler
 	Options 	OptionsHandler
@@ -51,6 +52,7 @@ func New(m *models.Store) (*Controller, error) {
 	c := Controller{
 		Auth: newAuth(m.Auth, m.Session),
 		Categories: newCategories(m.Categories),
+		Fields: newFields(m.Fields, m.User, m.Categories),
 		Frontend: newFrontend(m),
 		Media: newMedia(m.Media, m.User),
 		Options: newOptions(m.Options),

@@ -5,7 +5,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 type AuthController struct {
@@ -68,17 +67,11 @@ func (c *AuthController) Login(g *gin.Context) {
 
 	// Store session
 	sessionToken, err := c.sessionModel.Create(lu.Id, lu.Email)
-	cookie := http.Cookie{
-		Name: "verbis-session",
-		Value: sessionToken,
-		HttpOnly: true,
-		MaxAge: 43200,
-		Path: "/",
-		Secure: false,
-	}
-	http.SetCookie(g.Writer, &cookie)
 
-	Respond(g, 200, "Successfully logged in & session started", lu)
+	Respond(g, 200, "Successfully logged in & session started", gin.H{
+		"user": lu,
+		"session": sessionToken,
+	})
 }
 
 // Logout the user
@@ -100,15 +93,15 @@ func (c *AuthController) Logout(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 	}
 
-	cookie := http.Cookie{
-		Name: "verbis-session",
-		Value: "",
-		HttpOnly: true,
-		MaxAge: -1,
-		Path: "/",
-		Secure: false,
-	}
-	http.SetCookie(g.Writer, &cookie)
+	//cookie := http.Cookie{
+	//	Name: "verbis-session",
+	//	Value: "",
+	//	HttpOnly: true,
+	//	MaxAge: -1,
+	//	Path: "/",
+	//	Secure: false,
+	//}
+	//http.SetCookie(g.Writer, &cookie)
 
 	return
 }

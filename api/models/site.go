@@ -69,7 +69,8 @@ var (
 type SiteRepository interface {
 	GetGlobalConfig() *domain.Site
 	GetThemeConfig() (domain.ThemeConfig, error)
-	GetAllTemplates() (*domain.Templates, error)
+	GetTemplates() (*domain.Templates, error)
+	GetLayouts() (*domain.Layouts, error)
 }
 
 // SiteStore defines the data layer for Posts
@@ -84,6 +85,7 @@ type siteCache struct {
 	Site bool
 	Templates bool
 	Resources bool
+	Layout bool
 }
 
 // newSite - Construct
@@ -105,6 +107,10 @@ func newSite(db *sqlx.DB) *SiteStore {
 	// Cache the templates, preventing reading from the
 	// templates path when endpoint is hit.
 	s.cache.Templates = s.optionsRepo.CacheTemplates
+
+	// Cache the layouts, preventing reading from the
+	// layouts path when endpoint is hit.
+	s.cache.Layout = s.optionsRepo.CacheLayout
 
 	// Cache the resources, preventing reading from the
 	// config json file in the theme directory.
@@ -160,10 +166,10 @@ func (s *SiteStore) GetThemeConfig() (domain.ThemeConfig, error) {
 }
 
 
-// Get all templates stored within the template file
+// Get all templates stored within the templates directory
 // Returns errors.INTERNAL if the template path is invalid.
-func (s *SiteStore) GetAllTemplates() (*domain.Templates, error) {
-	const op = "SiteRepository.GetAllTemplates"
+func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
+	const op = "SiteRepository.GetTemplates"
 
 	// If the cache allows for caching of the site templates &
 	// if the config has already been cached, return.
@@ -177,7 +183,7 @@ func (s *SiteStore) GetAllTemplates() (*domain.Templates, error) {
 
 	files, err := s.walkMatch(paths.Templates(), "*" + config.Template.FileExtension)
 	if err != nil {
-		return &domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & filextension: %s, %s", paths.Templates(), "*" + config.Template.FileExtension), Operation: op}
+		return &domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & file extension: %s, %s", paths.Templates(), "*" + config.Template.FileExtension), Operation: op}
 	}
 
 	var templates []map[string]interface{}
@@ -211,6 +217,56 @@ func (s *SiteStore) GetAllTemplates() (*domain.Templates, error) {
 	return &t, nil
 }
 
+// Get all layouts stored within the layouts directory
+// Returns errors.INTERNAL if the layout path is invalid.
+func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
+	const op = "SiteRepository.GetLayouts"
+
+	// If the cache allows for caching of the site templates &
+	// if the config has already been cached, return.
+	var found bool
+	if s.cache.Templates {
+		cached, found := cache.Store.Get("site_layouts")
+		if found {
+			return cached.(*domain.Layouts), nil
+		}
+	}
+
+	files, err := s.walkMatch(paths.Layouts(), "*" + config.Template.FileExtension)
+	if err != nil {
+		return &domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get layouts from the path & file extension: %s, %s", paths.Templates(), "*" + config.Template.FileExtension), Operation: op}
+	}
+
+	var layouts []map[string]interface{}
+	for _, file := range files {
+		name := strings.Title(strings.ToLower(strings.Replace(file, "-", " ", -1)))
+		t := map[string]interface{}{
+			"key": file,
+			"name": name,
+		}
+		layouts = append(layouts, t)
+	}
+
+	t := domain.Layouts{
+		Layout: layouts,
+	}
+
+	if len(t.Layout) == 0 {
+		var m = make([]map[string]interface{}, 0)
+		t := domain.Layouts{
+			Layout: m,
+		}
+		return &t, nil
+	}
+
+	// Set the cache for the templates if the cache was not found
+	// and the options allow.
+	if !found && s.cache.Templates {
+		cache.Store.Set("site_layouts", &t, cache.RememberForever)
+	}
+
+	return &t, nil
+}
 
 // walkMatch Walk through root and return array of strings
 func (s *SiteStore) walkMatch(root, pattern string) ([]string, error) {

@@ -1,9 +1,25 @@
+/**
+ * main.js
+ * Set up Vue & Axios
+ * @author Ainsley Clark
+ * @author URL:   https://reddico.co.uk
+ * @author Email: ainsley@reddico.co.uk
+ */
+
+/**
+ * Require * Import
+ *
+ */
+
+// Vendor
 import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import axios from 'axios'
+require('./functions.js');
 
+// Local
 Vue.config.productionTip = false;
 
 /**
@@ -23,29 +39,22 @@ const apiUrl = "http://127.0.0.1:8080/api/v1"
 // Set defaults
 axios.defaults.headers.common = {
 	"token": store.state.apiToken || "",
-	'Access-Control-Allow-Origin': '*',
+	'Access-Control-Allow-Origin': '*/*',
 	'Content-Type': 'application/json',
 };
+// axios.defaults.withCredentials = true
+// axios.default.credentials = "include"
 axios.defaults.baseURL = apiUrl
 
 // Add a 401 response interceptor
-axios.interceptors.response.use(function (response) {
-	return response;
-}, function (error) {
-	if (401 === error.response.status) {
-		axios.post("/logout", {})
-			.then(() => {
-				router.push('/login')
-				location.reload()
-			});
-	} else {
-		return Promise.reject(error);
-	}
-})
-
+// axios.interceptors.response.use(function (response) {
+// 	return response;
+// }, function (err) {
+// 	Vue.prototype.helpers.handleResponse(err)
+// })
+//
 // Assign axios globally
 Vue.prototype.axios = axios;
-
 
 /**
  * Mixins
@@ -82,4 +91,6 @@ new Vue({
  * Dispatch global store
  *
  */
-store.dispatch('getSiteConfig')
+store.dispatch('getSiteConfig').catch(err => {
+	Vue.prototype.helpers.handleResponse(err)
+})

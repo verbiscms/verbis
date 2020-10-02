@@ -40,6 +40,11 @@ type Templates struct {
 	Template  []map[string]interface{} `json:"templates"`
 }
 
+// Layouts
+type Layouts struct {
+	Layout  []map[string]interface{} `json:"layouts"`
+}
+
 // Editor
 type Editor struct {
 	Modules []string `yaml:"modules" json:"modules"`

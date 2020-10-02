@@ -7,13 +7,14 @@
 $form-input-padding-x: 16px;
 $form-input-padding-y: 12px;
 $form-input-border-radius: 8px;
-$form-group-margin-bottom: 1rem;
+$form-group-margin-bottom: 1.2rem;
 
 .form {
     $self: &;
 
     position: relative;
     width: 100%;
+    transition: margin-top 200ms ease;
 
     // Group
     // =========================================================================
@@ -23,6 +24,7 @@ $form-group-margin-bottom: 1rem;
         display: block;
         width: 100%;
         margin-bottom: $form-group-margin-bottom;
+        transition: all 200ms ease;
 
         &:last-child {
             margin-bottom: 0;
@@ -115,16 +117,61 @@ $form-group-margin-bottom: 1rem;
         align-items: center;
     }
 
+    // Message
+    // =========================================================================
+
+    &-message {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        display: block;
+        font-size: 13px;
+        color: $orange;
+        font-weight: 600;
+        opacity: 0;
+        transform: translateY(calc(100% - 6px));
+        transition: opacity 200ms ease, transform 200ms ease;
+        will-change: opacity, transform;
+
+        &:before {
+            content: "\f06a";
+            display: inline-block;
+            font-family: 'Font Awesome 5 Pro';
+            font-weight: 300;
+            margin-right: 5px;
+        }
+    }
+
     // Check
     // =========================================================================
 
+
+    // Error & Valid
+    // =========================================================================
+
+    &-group {
+
+        &-error,
+        &-valid {
+            margin-bottom: 2rem;
+
+            #{$self}-message {
+                opacity: 1;
+                transform: translateY(calc(100% + 2px));
+            }
+        }
+
+        &-error {
+
+
+        }
+    }
 
     // Is Invalid
     // =========================================================================
 
     &-is-invalid {
-
-
+        margin-top: 50px;
 
     }
 
@@ -132,33 +179,30 @@ $form-group-margin-bottom: 1rem;
     // =========================================================================
 
     &-error {
-        position: relative;
+        position: absolute;
         display: flex;
         align-items: center;
         color: $orange;
-        font-size: 12px;
+        font-size: 13px;
         font-weight: 600;
         margin-bottom: $form-group-margin-bottom;
         opacity: 0;
-        transform: translateY(-6px);
+        transform: translateY(calc(-100% - 6px));
         transition: opacity 200ms ease, transform 200ms ease;
         will-change: opacity, transform;
 
         &:before {
-            content: "";
-            background: url("~@/assets/images/form-error.svg") no-repeat;
-            background-size: contain;
-            position: relative;
-            display: block;
-            width: 14px;
-            height: 14px;
-            margin-right: 6px;
+            content: "\f06a";
+            display: inline-block;
+            font-family: 'Font Awesome 5 Pro';
+            font-weight: 300;
+            margin-right: 5px;
         }
 
         // Use animation here not transition
         &-show {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateY(calc(-100% - 6px));
         }
     }
 
@@ -191,6 +235,8 @@ $form-group-margin-bottom: 1rem;
         color: $grey;
     }
 
+
+
     // Mobile
     // =========================================================================
 
@@ -211,6 +257,10 @@ $form-group-margin-bottom: 1rem;
 
 	@include media-desk {
 	}
+}
+
+input:-internal-autofill-selected {
+    background-color: $secondary !important;
 }
 
 
