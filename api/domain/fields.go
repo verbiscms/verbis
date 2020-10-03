@@ -18,6 +18,7 @@ type Field struct {
 	Type 			string 					`json:"type"`
 	Instructions 	string 					`json:"instructions"`
 	Required 		bool 					`json:"required"`
+	Logic 			*[][]ConditionalLogic 	`json:"conditional_logic"`
 	Options 	 	map[string]interface{} 	`json:"options"`
 }
 
@@ -30,6 +31,12 @@ type FieldFilter struct {
 
 // FieldLocation defines where the FieldGroup will appear
 type FieldLocation struct {
+	Param string
+	Operator string
+	Value string
+}
+
+type ConditionalLogic struct {
 	Param string
 	Operator string
 	Value string

@@ -4,6 +4,8 @@
 <template>
 	<section>
 		<div class="auth-container">
+
+			{{ data }}
 			<!-- =====================
 				Header
 				===================== -->
@@ -55,7 +57,7 @@
 						</div>
 						<!-- Fields -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
-							<Fields :field-groups="fields"></Fields>
+							<Fields :layout="layout" @update="updateFields"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 2 }">
@@ -112,7 +114,6 @@
 					</div><!-- /Properties -->
 					<!-- Properties -->
 					<div class="options">
-						{{ layouts }}
 						<h2>Properties</h2>
 						<!-- Template -->
 						<div class="form-group">
@@ -170,10 +171,11 @@ export default {
 		users: [],
 		slug: "",
 		publishedDate: new Date(),
-		fields: [],
+		layout: [],
 		templates: [],
 		layouts: [],
 		data: {
+			"fields": {},
 			"meta": {},
 			"codeinjection_header": "",
 			"codeinjection_footer": "",
@@ -211,13 +213,6 @@ export default {
 			// 		console.log(err)
 			// 	})
 		},
-		updateMeta(e) {
-			this.data.meta = e
-		},
-		updateCodeInjection(e) {
-			this.data.codeinjection_header = e.header;
-			this.data.codeinjection_footer = e.footer;
-		},
 		getFields() {
 			this.axios.get("/fields", {
 				params: {
@@ -227,7 +222,7 @@ export default {
 				}
 			})
 				.then(res => {
-					this.fields = res.data.data
+					this.layout = res.data.data
 				})
 		},
 		getTemplates() {
@@ -258,7 +253,18 @@ export default {
 			} else {
 				this.users = this.$store.state.users
 			}
-		}
+		},
+		updateFields(e) {
+			console.log(e)
+			this.data.fields = e
+		},
+		updateMeta(e) {
+			this.data.meta = e
+		},
+		updateCodeInjection(e) {
+			this.data.codeinjection_header = e.header;
+			this.data.codeinjection_footer = e.footer;
+		},
 	},
 	computed: {
 		computedSlug(){

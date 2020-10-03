@@ -16,7 +16,7 @@
 			"rows": 4
 		},
 		{
-			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5731",
 			"label": "Titles",
 			"name": "title",
 			"type": "richtext",
@@ -29,7 +29,7 @@
 			"rows": 4
 		},
 		{
-			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5732",
 			"label": "Titles",
 			"name": "title",
 			"type": "textarea",
@@ -46,7 +46,7 @@
 		[
 			{
 				"param": "layout",
-				"operator": "!=",
+				"operator": "==",
 				"value": "main"
 			}
 		]

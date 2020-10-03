@@ -73,7 +73,7 @@ func (s *UserStore) GetById(id int) (domain.User, error) {
 	const op = "UserRepository.GetById"
 	var u domain.User
 	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id WHERE users.id = ?", id); err != nil {
-		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the ID: %d", id), Operation: op}
+		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the ID: %d", id), Operation: op, Err: err}
 	}
 	return u, nil
 }
@@ -84,7 +84,7 @@ func (s *UserStore) GetOwner() (domain.User, error) {
 	const op = "UserRepository.GetOwner"
 	var u domain.User
 	if err := s.db.Get(&u,"SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
-		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the owner of the site", Operation: op}
+		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the owner of the site", Operation: op, Err: err}
 	}
 	return u, nil
 }
@@ -97,7 +97,7 @@ func (s *UserStore) Create(u *domain.User) (domain.User, error) {
 	const op = "UserRepository.Create"
 
 	if exists := s.ExistsByEmail(u.Email); exists {
-		return domain.User{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the user, the email %v, already exists", u.Email), Operation: op}
+		return domain.User{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the user, the email %v, already exists", u.Email), Operation: op, Err: fmt.Errorf("user already exists")}
 	}
 
 	hashedPassword, err := encryption.HashPassword(u.Password)
@@ -197,7 +197,7 @@ func (s *UserStore) CheckToken(token string) (domain.User, error) {
 	const op = "UserRepository.CheckToken"
 	var u domain.User
 	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id WHERE users.token = ?", token); err != nil {
-		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get user with token: %v", token), Operation: op}
+		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get user with token: %v", token), Operation: op, Err: err}
 	}
 	return u, nil
 }
