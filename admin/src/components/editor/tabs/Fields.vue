@@ -4,7 +4,8 @@
 <template>
 	<section>
 		<!-- Text -->
-		<div class="field-group"  v-for="group in fieldGroups" :key="group.uuid">
+		{{ fields }}
+		<div class="field-group"  v-for="group in layout" :key="group.uuid">
 			<div class="field" v-for="field in group.fields" :key="field.uuid" >
 				<div class="field-wrapper">
 					<div class="field-title-cont">
@@ -26,11 +27,11 @@
 				<div class="field-content" ref="myText" :style="[isActive ? { height : computedHeight } : {}]">
 					<!-- Text -->
 					<div v-if="field.type === 'text'">
-						<FieldText></FieldText>
+						<FieldText :layout="field" @update:text="updateField($event, field.name)"></FieldText>
 					</div>
 					<!-- Textarea -->
 					<div v-else-if="field.type === 'textarea'">
-						<FieldTextarea></FieldTextarea>
+						<FieldTextarea :layout="field" @update="updateField($event, field.name)"></FieldTextarea>
 					</div>
 					<!-- Richtext -->
 					<div v-else-if="field.type === 'richtext'">
@@ -54,7 +55,7 @@ import FieldRichText from "@/components/editor/fields/RichText";
 export default {
 	name: "Fields",
 	props: {
-		fieldGroups: Object,
+		layout: Array,
 	},
 	components: {
 		FieldRichText,
@@ -64,13 +65,18 @@ export default {
 	data: () => ({
 		computedHeight: 'auto',
 		isActive: true,
+		fields: {},
 	}),
 	mounted() {
 		this.initHeight()
 	},
 	methods: {
 		initHeight() {
-			this.computedHeight= getComputedStyle(this.$refs['myText']).height;
+			//this.computedHeight= getComputedStyle(this.$refs['myText']).height;
+		},
+		updateField(e, field) {
+			this.$set(this.fields, field, e)
+			this.$emit("update", this.fields)
 		},
 		parseLogic() {
 		// 	//if(field.hasOwnProperty('logic')) {

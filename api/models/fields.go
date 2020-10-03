@@ -2,12 +2,13 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -17,7 +18,7 @@ import (
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
 	GetFieldGroups() (*[]domain.FieldGroup, error)
-	GetLayout(p domain.Post, a domain.User, c []domain.Category) *[]domain.FieldGroup
+	GetLayout(p domain.Post, a domain.User, c []domain.Category) (*[]domain.FieldGroup, error)
 }
 
 // FieldsStore defines the data layer for Posts
@@ -81,7 +82,7 @@ func (s *FieldsStore) initCache() fieldCache {
 // GetLayout loops over all of the locations within the config json
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
-func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c []domain.Category) *[]domain.FieldGroup {
+func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c []domain.Category) (*[]domain.FieldGroup, error) {
 	var fg []domain.FieldGroup
 
 	// If the cache allows for caching of layouts & if the
@@ -97,7 +98,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c []domain.Categor
 	// Obtain json files
 	fieldGroups, err := s.GetFieldGroups()
 	if err != nil {
-		log.Error(err)
+		return nil, err
 	}
 
 	// Loop over the groups
@@ -193,27 +194,29 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c []domain.Categor
 		cache.Store.Set("field_layout_" + p.UUID.String(), &fg, cache.RememberForever)
 	}
 
-	return &fg
+	return &fg, nil
 }
 
 // GetFieldGroups will loop over all of the json files that have been
 // stored in /storage/fields and append them to the array to be
 // returned.
+// Returns errors.INTERNAL if the path file not be read or be unmarshalled
 func (s *FieldsStore) GetFieldGroups() (*[]domain.FieldGroup, error) {
-	var fg []domain.FieldGroup
+	const op = "FieldsRepository.GetFieldGroups"
 
+	var fg []domain.FieldGroup
 	err := filepath.Walk(s.jsonPath, func(path string, info os.FileInfo, err error) error {
 		if strings.Contains(info.Name(), "json") {
 
 			file, err := files.ReadJson(path)
 			if err != nil {
-				return err
+				return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field path with the path: %s", path), Operation: op, Err: err}
 			}
 
 			var fields domain.FieldGroup
 			err = json.Unmarshal(file, &fields)
 			if err != nil {
-				return err
+				return &errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal the field struct", Operation: op, Err: err}
 			}
 
 			fg = append(fg, fields)
@@ -247,7 +250,6 @@ func (s *FieldsStore) checkLocation(check string, location domain.FieldLocation)
 			}
 		}
 	}
-
 
 	return match
 }

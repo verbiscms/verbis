@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -67,27 +67,27 @@ func (c *FieldController) Get(g *gin.Context) {
 	}
 
 	// Check for user ID
-	if u, ok := query["user_id"]; ok {
+	// TODO: clean up here
+	if u, ok := query["user_id"]; ok{
 		id, err := strconv.Atoi(u[0])
 		if err != nil {
-			owner, err := c.userModel.GetOwner()
-			if err != nil {
-				log.WithFields(log.Fields{
-					"error": err,
-				}).Error()
-				return
-			}
+			owner, _ := c.userModel.GetOwner()
 			post.UserId = owner.Id
 		}
 		post.UserId = id
+	} else {
+		owner, _ := c.userModel.GetOwner()
+		post.UserId = owner.Id
 	}
 
 	// Get the author associated with the post
 	author, err := c.userModel.GetById(post.UserId)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error()
+		//log.WithFields(log.Fields{
+		//	"error": err.(*errors.Error),
+		//}).Error()
+		//Respond(g, 500, errors.Message(err), err)
+		//return
 	}
 
 	// Get the categories associated with the post
@@ -96,7 +96,11 @@ func (c *FieldController) Get(g *gin.Context) {
 		categories = nil
 	}
 
-	fields := c.fieldsModel.GetLayout(post, author, categories)
+	fields, err := c.fieldsModel.GetLayout(post, author, categories)
+	if err != nil {
+		Respond(g, 500, errors.Message(err), err)
+		return
+	}
 
 	Respond(g, 200, "Successfully obtained fields", fields)
 }

@@ -1,0 +1,29 @@
+{
+	"title": "text",
+	"textarea": "textareacontent",
+	"6a4d7442-1020-490f-a3e2-436f9135ec32": [
+		{
+			"6a4d7442-1020-490f-a3e2-436f9135ec32": "repeater-field-1",
+			"6a4d7442-1020-490f-a3e2-436f9135ec34": "repeater-field-2"
+		},
+		{
+			"6a4d7442-1020-490f-a3e2-436f9135ec32": "repeater-field-1",
+			"6a4d7442-1020-490f-a3e2-436f9135ec34": "repeater-field-2"
+		}
+	],
+	"6a4d7442-1020-490f-a3e2-436f9135ec38": {
+		"6a4d7442-1020-490f-a3e2-436f9135ec34": "text",
+		"6a4d7442-1020-490f-a3e2-436f9135ec36": "textareacontent",
+		"6a4d7442-1020-490f-a3e2-436f9135ec38": [
+			{
+				"6a4d7442-1020-490f-a3e2-436f9135ec32": "repeater-field-in-flexible-1",
+				"6a4d7442-1020-490f-a3e2-436f9135ec34": "repeater-field-in-flexible-2"
+			},
+			{
+				"6a4d7442-1020-490f-a3e2-436f9135ec32": "repeater-field-in-flexible-1",
+				"6a4d7442-1020-490f-a3e2-436f9135ec34": "repeater-field-in-flex-bile2"
+			}
+		]
+	},
+	"6a4d7442-1020-490f-a3e2-436f9135e55d": "mediaID1"
+}
