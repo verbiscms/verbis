@@ -1,12 +1,12 @@
 <!-- =====================
-	Field - Text
+	Field - Email
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<div class="field-prepend-append" :class="{ 'field-focused' : focused }">
 			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
 			<input class="form-input form-input-white" type="text" value="The value"
-				v-model="text"
+				v-model="email"
 				@keyup="process"
 				:placeholder="getOptions['placeholder']"
 				:maxlength="getOptions['maxlength']"
@@ -27,12 +27,12 @@
 <script>
 
 export default {
-	name: "FieldText",
+	name: "FieldEmail",
 	props: {
 		layout: Object,
 	},
 	data: () => ({
-		text: "",
+		email: "",
 		errors: [],
 		focused: false,
 	}),
@@ -43,15 +43,15 @@ export default {
 		},
 		validate() {
 			this.errors = [];
-			const maxLength = this.getOptions['maxlength']
-
-			if (maxLength !== "" && this.text.length === maxLength) {
-				this.errors.push(`The maximum length of the ${this.layout.name} can not exceed ${this.getOptions["maxlength"]} characters.`)
+			// eslint-disable-next-line no-useless-escape
+			const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			if (this.email !== "" && !re.test(String(this.email).toLowerCase())) {
+				this.errors.push(`Enter a valid email address for the ${this.layout.name} field.`)
 			}
+
 		},
 		validateRequired() {
-			console.log(this.text)
-			if (this.text === "" && this.layout["required"]) {
+			if (this.email === "" && this.layout["required"]) {
 				this.errors.push(`The ${this.layout.name} field is required.`)
 			}
 		},
@@ -60,7 +60,7 @@ export default {
 			this.validateRequired()
 		},
 		emit() {
-			this.$emit("update:text", this.getOptions['prepend'] + this.text + this.getOptions['append'])
+			this.$emit("update:text", this.getOptions['prepend'] + this.email + this.getOptions['append'])
 		}
 	},
 	computed: {
