@@ -9,15 +9,15 @@
 				rIndex{{ repeaterIndex }}
 				fIndex {{ fieldIndex }}
 				<!-- Text -->
-				<FieldText v-if="field.type === 'text'" :layout="field" @update:text="updateField($event, repeaterIndex, fieldIndex, field.name)"></FieldText>
+				<FieldText v-if="field.type === 'text'" :layout="field" @update:text="updateField($event, repeaterIndex, field.name)"></FieldText>
 				<!-- Textarea -->
-				<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" @update="updateField($event, repeaterIndex, fieldIndex, field.name)"></FieldTextarea>
+				<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" @update="updateField($event, repeaterIndex, field.name)"></FieldTextarea>
 				<!-- Number -->
-				<FieldNumber v-if="field.type === 'number'" :layout="field" @update:number="updateField($event, repeaterIndex, fieldIndex, field.name)"></FieldNumber>
+				<FieldNumber v-if="field.type === 'number'" :layout="field" @update:number="updateField($event, repeaterIndex, field.name)"></FieldNumber>
 				<!-- Range -->
-				<FieldRange v-if="field.type === 'range'" :layout="field" @update:range="updateField($event, repeaterIndex, fieldIndex, field.name)"></FieldRange>
+				<FieldRange v-if="field.type === 'range'" :layout="field" @update:range="updateField($event, repeaterIndex, field.name)"></FieldRange>
 				<!-- Email -->
-				<FieldEmail v-if="field.type === 'email'" :layout="field" @update:email="updateField($event, repeaterIndex, fieldIndex, field.name)"></FieldEmail>
+				<FieldEmail v-if="field.type === 'email'" :layout="field" @update:email="updateField($event, repeaterIndex, field.name)"></FieldEmail>
 				<!-- Richtext -->
 				<FieldRichText v-else-if="field.type === 'richtext'"></FieldRichText>
 			</div>
@@ -30,7 +30,6 @@
 		<transition name="trans-fade-height">
 			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
 		</transition><!-- /Message -->
-
 		{{ fields }}
 	</div><!-- /Container -->
 </template>
@@ -61,7 +60,7 @@ export default {
 		FieldRichText,
 	},
 	data: () => ({
-		fields: {},
+		fields: [],
 		errors: [],
 		repeaters: [],
 		focused: false,
@@ -70,16 +69,17 @@ export default {
 		this.addRow()
 	},
 	methods: {
-		updateField(e, repeaterIndex, fieldIndex, field) {
-			console.log(fieldIndex)
-			console.log(field)
-			this.$set(this.fields, field, e)
-			//this.$emit("update:repeater", this.fields)
+		updateField(e, repeaterIndex, field) {
+			this.$set(this.fields[repeaterIndex], field, e)
+			this.$emit("update:repeater", this.fields)
 		},
+
 		deleteRow(index) {
+			this.fields.splice(index, 1);
 			this.repeaters.splice(index, 1);
 		},
 		addRow() {
+			this.fields.push({})
 			this.repeaters.push(this.getSubFields)
 		}
 	},
