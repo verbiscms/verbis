@@ -19,6 +19,7 @@ type Field struct {
 	Instructions 	string 					`json:"instructions"`
 	Required 		bool 					`json:"required"`
 	Logic 			*[][]ConditionalLogic 	`json:"conditional_logic"`
+	Wrapper 		*Wrapper 				`json:"wrapper"`
 	Options 	 	map[string]interface{} 	`json:"options"`
 }
 
@@ -36,8 +37,12 @@ type FieldLocation struct {
 	Value string
 }
 
+type Wrapper struct {
+	Width int `json:"width"`
+}
+
 type ConditionalLogic struct {
-	Param string
-	Operator string
-	Value string
+	Param string `json:"param"`
+	Operator string `json:"operator"`
+	Value string `json:"value"`
 }

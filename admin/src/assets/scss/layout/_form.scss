@@ -3,12 +3,6 @@
 // This file contains all styles related to the forms of the site.
 // -----------------------------------------------------------------------------
 
-// Variables
-$form-input-padding-x: 16px;
-$form-input-padding-y: 12px;
-$form-input-border-radius: 8px;
-$form-group-margin-bottom: 1.2rem;
-
 .form {
     $self: &;
 
@@ -41,23 +35,32 @@ $form-group-margin-bottom: 1.2rem;
         padding: $form-input-padding-x $form-input-padding-y;
         border: 2px solid $grey-light;
         outline: none;
-        color: $secondary;
+        color: $form-input-color;
         border-radius: $form-input-border-radius;
         background: transparent;
         font-weight: 600;
         @include px-to-rem(14);
         -webkit-appearance: none;
         appearance: none;
-        transition: box-shadow 200ms ease;
-        will-change: box-shadow;
+        @include formInputBoxShadow;
 
         &-white {
             background-color: $white;
         }
 
         @include on-event {
-            box-shadow: 0 0 10px 0 rgba($copy, 0.10);
+            box-shadow: $form-box-shadow;
         }
+    }
+
+    // Textarea
+    // =========================================================================
+
+    &-textarea {
+        font-weight: 400;
+        padding: 24px;
+        min-width: 100%;
+        max-width: 100%;
     }
 
     // Select
@@ -97,6 +100,40 @@ $form-group-margin-bottom: 1.2rem;
                 transform: translateY(calc(-50% - 2px));
                 z-index: 0;
             }
+        }
+    }
+
+    // Range
+    // =========================================================================
+
+    &-range {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 5px;
+        max-height: 5px;
+        border-radius: 10px;
+        background-color: rgba($secondary, 0.15) !important;
+        border: 1px solid $grey-light;
+        outline: none;
+        opacity: 1;
+        transition: opacity .2s;
+
+        ::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 100%;
+            background: $primary;
+            cursor: pointer;
+        }
+
+        ::-moz-range-thumb {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: $primary;
+            cursor: pointer;
         }
     }
 
@@ -216,27 +253,6 @@ $form-group-margin-bottom: 1.2rem;
         -webkit-box-shadow: 0 0 0 30px white inset !important;
     }
 
-    // Placeholder
-    // =========================================================================
-
-    ::placeholder {
-        /* Chrome, Firefox, Opera, Safari 10.1+ */
-        color: $grey;
-        opacity: 1; /* Firefox */
-    }
-
-    :-ms-input-placeholder {
-        /* Internet Explorer 10-11 */
-        color: $grey;
-    }
-
-    ::-ms-input-placeholder {
-        /* Microsoft Edge */
-        color: $grey;
-    }
-
-
-
     // Mobile
     // =========================================================================
 
@@ -263,4 +279,23 @@ input:-internal-autofill-selected {
     background-color: $secondary !important;
 }
 
+
+// Placeholder
+// =========================================================================
+
+::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: rgba($secondary, 0.6);
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: rgba($secondary, 0.6);
+}
+
+::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: rgba($secondary, 0.6);
+}
 
