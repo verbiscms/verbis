@@ -36,6 +36,8 @@
 					<FieldEmail v-if="field.type === 'email'" :layout="field" @update:email="updateField($event, field.name)"></FieldEmail>
 					<!-- Richtext -->
 					<FieldRichText v-else-if="field.type === 'richtext'"></FieldRichText>
+					<!-- Repeater -->
+					<FieldRepeater v-if="field.type === 'repeater'" :layout="field" @update:repeater="updateField($event, field.name)"></FieldRepeater>
 				</div>
 			</div>
 		</div>
@@ -53,6 +55,7 @@ import FieldNumber from "@/components/editor/fields/Number";
 import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldRichText from "@/components/editor/fields/RichText";
+import FieldRepeater from "@/components/editor/fields/Repeater";
 
 export default {
 	name: "Fields",
@@ -60,12 +63,13 @@ export default {
 		layout: Array,
 	},
 	components: {
-		FieldRichText,
+		FieldText,
 		FieldTextarea,
 		FieldNumber,
 		FieldRange,
 		FieldEmail,
-		FieldText,
+		FieldRichText,
+		FieldRepeater
 	},
 	data: () => ({
 		computedHeight: 'auto',
