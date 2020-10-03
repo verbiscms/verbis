@@ -4,15 +4,14 @@
 <template>
 	<section>
 		<!-- Text -->
-		{{ fields }}
-		<div class="field-group"  v-for="group in layout" :key="group.uuid">
-			<div class="field" v-for="field in group.fields" :key="field.uuid" >
+		<div class="field-group" v-for="group in layout" :key="group.uuid">
+			<div class="field" v-for="field in group.fields" :key="field.uuid" :style="{ width: field.wrapper['width'] + '%' }">
 				<div class="field-wrapper">
 					<div class="field-title-cont">
-						<span class="field-collapse" v-on:click="this.isActive = !this.isActive"></span>
+						<span class="field-collapse" v-on:click="isActive = !isActive"></span>
 						<div class="field-title">
 							<h5>{{ field.label }}</h5>
-							<p>{{  field.instructions }}</p>
+							<p>{{ field.instructions }}</p>
 						</div>
 					</div>
 					<!-- TODO: If flexible -->
@@ -24,19 +23,19 @@
 					</div>
 				</div>
 				<!--Content -->
-				<div class="field-content" ref="myText" :style="[isActive ? { height : computedHeight } : {}]">
+				<div class="field-content">
 					<!-- Text -->
-					<div v-if="field.type === 'text'">
-						<FieldText :layout="field" @update:text="updateField($event, field.name)"></FieldText>
-					</div>
+					<FieldText v-if="field.type === 'text'" :layout="field" @update:text="updateField($event, field.name)"></FieldText>
 					<!-- Textarea -->
-					<div v-else-if="field.type === 'textarea'">
-						<FieldTextarea :layout="field" @update="updateField($event, field.name)"></FieldTextarea>
-					</div>
+					<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" @update="updateField($event, field.name)"></FieldTextarea>
+					<!-- Number -->
+					<FieldNumber v-if="field.type === 'number'" :layout="field" @update:number="updateField($event, field.name)"></FieldNumber>
+					<!-- Range -->
+					<FieldRange v-if="field.type === 'range'" :layout="field" @update:range="updateField($event, field.name)"></FieldRange>
+					<!-- Email -->
+					<FieldEmail v-if="field.type === 'email'" :layout="field" @update:email="updateField($event, field.name)"></FieldEmail>
 					<!-- Richtext -->
-					<div v-else-if="field.type === 'richtext'">
-						<FieldRichText></FieldRichText>
-					</div>
+					<FieldRichText v-else-if="field.type === 'richtext'"></FieldRichText>
 				</div>
 			</div>
 		</div>
@@ -50,6 +49,9 @@
 
 import FieldText from "@/components/editor/fields/Text";
 import FieldTextarea from "@/components/editor/fields/Textarea";
+import FieldNumber from "@/components/editor/fields/Number";
+import FieldRange from "@/components/editor/fields/Range";
+import FieldEmail from "@/components/editor/fields/Email";
 import FieldRichText from "@/components/editor/fields/RichText";
 
 export default {
@@ -60,6 +62,9 @@ export default {
 	components: {
 		FieldRichText,
 		FieldTextarea,
+		FieldNumber,
+		FieldRange,
+		FieldEmail,
 		FieldText,
 	},
 	data: () => ({
