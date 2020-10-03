@@ -6,7 +6,7 @@ import "github.com/google/uuid"
 type FieldGroup struct {
 	UUID 		uuid.UUID 					`json:"uuid"`
 	Title 		string 						`json:"title"`
-	Fields 		[]Field 					`json:"fields"`
+	Fields 		*[]Field 					`json:"fields,omitempty"`
 	Locations 	[][]FieldLocation 			`json:"location,omitempty"`
 }
 
@@ -21,13 +21,14 @@ type Field struct {
 	Logic 			*[][]ConditionalLogic 	`json:"conditional_logic"`
 	Wrapper 		*Wrapper 				`json:"wrapper"`
 	Options 	 	map[string]interface{} 	`json:"options"`
+	SubFields 		*[]Field 				`json:"sub_fields,omitempty"`
 }
 
 type FieldFilter struct {
-	Resource 			string 					`json:"resource"`
-	PageTemplate 		string 					`json:"template"`
-	Layout 				string 					`json:"layout"`
-	Category 			string 					`json:"layout"`
+	Resource 			string 				`json:"resource"`
+	PageTemplate 		string 				`json:"template"`
+	Layout 				string 				`json:"layout"`
+	Category 			string 				`json:"category"`
 }
 
 // FieldLocation defines where the FieldGroup will appear
