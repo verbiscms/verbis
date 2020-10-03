@@ -202,7 +202,10 @@ func (c *PostsController) Format(g *gin.Context, post domain.Post) (domain.PostD
 	}
 
 	// Get the layout associated with the post
-	layout := c.fieldsModel.GetLayout(post, author, categories)
+	layout, err := c.fieldsModel.GetLayout(post, author, categories)
+	if err != nil {
+		return domain.PostData{}, err
+	}
 
 	return domain.PostData{
 		Post:       post,

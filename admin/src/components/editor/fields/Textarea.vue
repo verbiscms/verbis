@@ -2,9 +2,7 @@
 	Field - Textarea
 	===================== -->
 <template>
-	<section>
-
-	</section>
+	<textarea class="form-input form-input-white" @keyup="emit" v-model="text" rows="8"></textarea>
 </template>
 
 <!-- =====================
@@ -15,10 +13,12 @@
 export default {
 	name: "FieldTextarea",
 	data: () => ({
-
+		text: "",
 	}),
 	methods: {
-
+		emit() {
+			this.$emit("update", this.text)
+		}
 	}
 }
 

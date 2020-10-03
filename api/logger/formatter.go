@@ -7,6 +7,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -133,37 +134,52 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	}
 
 	// Print any errors if one is set
-	if errorData, ok := entry.Data["error"].(errors.Error); ok {
-		if errorData.Error() != "" {
-			if errorData.Code != errors.NOTFOUND {
-				if errorData.Code != "" {
-					if f.Colours {
-						b.WriteString(color.Red.Sprintf(" [code] %s", errorData.Code))
-					} else {
-						b.WriteString(fmt.Sprintf("| [code] %s", errorData.Code))
-					}
-				}
-				if errorData.Operation != "" {
-					if api.SuperAdmin {
-						if f.Colours {
-							b.WriteString(color.Red.Sprintf(" [operation] %s", errorData.Operation))
-						} else {
-							b.WriteString(fmt.Sprintf(" [operation] %s", errorData.Operation))
-						}
-					}
-				}
-				if errorData.Err != nil {
-					if f.Colours {
-						b.WriteString(color.Red.Sprintf(" [error] %s", errorData.Err.Error()))
-					} else {
-						b.WriteString(fmt.Sprintf(" [error] %s", errorData.Err.Error()))
-					}
-				}
-			}
-		}
+	// TODO Fix here
+	if reflect.TypeOf(entry.Data["error"]).String() == "*errors.Error" {
+		err := entry.Data["error"].(*errors.Error)
+		s := f.printError(*err)
+		b.Write(s.Bytes())
+	} else if errorData, ok := entry.Data["error"].(errors.Error); ok {
+		s := f.printError(errorData)
+		b.Write(s.Bytes())
 	}
 
 	b.WriteString("\n")
 
 	return b.Bytes(), nil
+}
+
+
+func (f *Formatter) printError(errorData errors.Error) *bytes.Buffer {
+	b := &bytes.Buffer{}
+
+	if errorData.Error() != "" {
+		if errorData.Code != errors.NOTFOUND {
+			if errorData.Code != "" {
+				if f.Colours {
+					b.WriteString(color.Red.Sprintf(" [code] %s", errorData.Code))
+				} else {
+					b.WriteString(fmt.Sprintf("| [code] %s", errorData.Code))
+				}
+			}
+			if errorData.Operation != "" {
+				if api.SuperAdmin {
+					if f.Colours {
+						b.WriteString(color.Red.Sprintf(" [operation] %s", errorData.Operation))
+					} else {
+						b.WriteString(fmt.Sprintf(" [operation] %s", errorData.Operation))
+					}
+				}
+			}
+			if errorData.Err != nil {
+				if f.Colours {
+					b.WriteString(color.Red.Sprintf(" [error] %s", errorData.Err.Error()))
+				} else {
+					b.WriteString(fmt.Sprintf(" [error] %s", errorData.Err.Error()))
+				}
+			}
+		}
+	}
+
+	return b
 }

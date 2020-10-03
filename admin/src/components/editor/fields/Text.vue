@@ -2,9 +2,12 @@
 	Field - Text
 	===================== -->
 <template>
-	<section>
-		<input class="form-input form-input-white" type="text" value="How the development team go their jobs at Reddico">
-	</section>
+	<div class="form-group" :class="{ 'form-group-error' : error }">
+		{{ layout.options.maxlength }}
+		{{ error }}
+		<input class="form-input form-input-white" type="text" value="The value" @keyup="process" v-model="text">
+		<span class="form-message">Too many charatcers</span>
+	</div>
 </template>
 
 <!-- =====================
@@ -15,13 +18,24 @@
 export default {
 	name: "FieldText",
 	props: {
-		Field: Object,
+		layout: Object,
 	},
 	data: () => ({
-
+		text: "",
+		error: false,
 	}),
 	methods: {
-
+		process() {
+			this.validate()
+			this.emit()
+		},
+		validate() {
+			const maxLength = this.layout.options.maxlength;
+			this.error = maxLength && this.text.length > maxLength
+		},
+		emit() {
+			this.$emit("update:text", this.text)
+		}
 	}
 }
 
