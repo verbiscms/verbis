@@ -68,7 +68,7 @@ export default {
 			this.validateRequired()
 		},
 		emit() {
-			this.$emit("update:number", this.getOptions['prepend'] + this.number + this.getOptions['append'])
+			this.$emit("input", this.getOptions['prepend'] + this.number + this.getOptions['append'])
 		}
 	},
 	computed: {

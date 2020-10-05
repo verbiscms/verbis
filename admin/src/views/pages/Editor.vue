@@ -57,7 +57,7 @@
 						</div>
 						<!-- Fields -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
-							<Fields :layout="layout" @update="updateFields"></Fields>
+							<Fields :layout="layout" v-model="data.fields"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 2 }">

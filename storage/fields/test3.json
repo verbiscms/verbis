@@ -100,6 +100,47 @@
 			}
 		},
 		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5175",
+			"label": "Flexible",
+			"name": "flexible",
+			"type": "flexible",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"layouts": {
+				"layout_5f737e6211824": {
+					"key": "layout_5f737e6211824",
+					"name": "",
+					"label": "",
+					"display": "block",
+					"sub_fields": [
+						{
+							"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+							"label": "Text",
+							"name": "text",
+							"type": "text",
+							"instructions": "Instructions",
+							"required": true,
+							"conditional_logic": null,
+							"wrapper": {
+								"width": 100
+							},
+							"options": {
+								"maxlength": 10,
+								"default_value": "default",
+								"placeholder": "Placeholder",
+								"prepend": "",
+								"append": "Append"
+							}
+						}
+					]
+				}
+			}
+		},
+		{
 			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5732",
 			"label": "Repeater",
 			"name": "repeater",

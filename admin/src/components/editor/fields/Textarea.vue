@@ -35,7 +35,7 @@ export default {
 	methods: {
 		process() {
 			this.validate()
-			this.$emit("update", this.text)
+			this.$emit("input", this.text)
 		},
 		validate() {
 			this.errors = [];
