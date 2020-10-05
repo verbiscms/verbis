@@ -8,7 +8,9 @@
 
 			<div v-if="getLayouts[groupIndex]">
 				<div  class="test" v-for="(layout, layoutIndex) in group['sub_fields']" :key="layoutIndex">
-					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[groupIndex][layoutIndex]"></FieldText>
+
+						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[groupIndex][layoutIndex]"></FieldText>
+
 				</div>
 			</div>
 		</div>
@@ -71,6 +73,7 @@ export default {
 			return this.layout.options
 		},
 		getLayouts() {
+			// Need to do some work here!
 			return this.layout['layouts'];
 		},
 		getFields() {
@@ -95,6 +98,7 @@ export default {
 							console.log("in")
 						}
 					}
+					console.log(temp)
 					return temp
 				} else {
 					return this.fields
