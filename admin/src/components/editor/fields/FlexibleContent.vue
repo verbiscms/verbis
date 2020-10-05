@@ -3,26 +3,15 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
-		<div class="repeater-item" v-for="(repeater, repeaterIndex) in repeaters" :key="repeaterIndex">
-			<button class="btn btn-orange" @click="deleteRow(repeaterIndex)">Delete</button>
-			<div v-for="(field, fieldIndex) in getSubFields" :key="field.uuid">
-				rIndex{{ repeaterIndex }}
-				fIndex {{ fieldIndex }}
-				<!-- Text -->
-				<FieldText v-if="field.type === 'text'" :layout="field" @update:text="updateField($event, repeaterIndex, field.name)"></FieldText>
-				<!-- Textarea -->
-				<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" @update="updateField($event, repeaterIndex, field.name)"></FieldTextarea>
-				<!-- Number -->
-				<FieldNumber v-if="field.type === 'number'" :layout="field" @update:number="updateField($event, repeaterIndex, field.name)"></FieldNumber>
-				<!-- Range -->
-				<FieldRange v-if="field.type === 'range'" :layout="field" @update:range="updateField($event, repeaterIndex, field.name)"></FieldRange>
-				<!-- Email -->
-				<FieldEmail v-if="field.type === 'email'" :layout="field" @update:email="updateField($event, repeaterIndex, field.name)"></FieldEmail>
-				<!-- Richtext -->
-				<FieldRichText v-else-if="field.type === 'richtext'"></FieldRichText>
+
+		<div class="repeater-item" v-for="(group, groupIndex) in getLayouts" :key="groupIndex">
+
+			<div v-if="getLayouts[groupIndex]">
+				<div  class="test" v-for="(layout, layoutIndex) in group['sub_fields']" :key="layoutIndex">
+					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[groupIndex][layoutIndex]"></FieldText>
+				</div>
 			</div>
 		</div>
-
 		<div class="repeater-btn">
 			<button class="btn btn-blue" @click="addRow">Add row</button>
 		</div>
@@ -30,7 +19,7 @@
 		<transition name="trans-fade-height">
 			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
 		</transition><!-- /Message -->
-		{{ fields }}
+		<pre>{{ fields }}</pre>
 	</div><!-- /Container -->
 </template>
 
@@ -40,55 +29,80 @@
 <script>
 
 import FieldText from "@/components/editor/fields/Text";
-import FieldTextarea from "@/components/editor/fields/Textarea";
-import FieldNumber from "@/components/editor/fields/Number";
-import FieldRange from "@/components/editor/fields/Range";
-import FieldEmail from "@/components/editor/fields/Email";
-import FieldRichText from "@/components/editor/fields/RichText";
 
 export default {
-	name: "FieldRepeater",
+	name: "FieldFlexible",
 	props: {
 		layout: Object,
+		fields: Object,
 	},
 	components: {
 		FieldText,
-		FieldTextarea,
-		FieldNumber,
-		FieldRange,
-		FieldEmail,
-		FieldRichText,
 	},
 	data: () => ({
-		fields: [],
 		errors: [],
-		repeaters: [],
-		focused: false,
+		layouts: [],
 	}),
 	mounted() {
-		this.addRow()
+		if (this.layoutFields !== undefined) {
+			this.layoutFields = this.getFields
+		}
 	},
 	methods: {
-		updateField(e, repeaterIndex, field) {
-			this.$set(this.fields[repeaterIndex], field, e)
-			this.$emit("update:repeater", this.fields)
-		},
-
 		deleteRow(index) {
 			this.fields.splice(index, 1);
-			this.repeaters.splice(index, 1);
+			this.layouts.splice(index, 1);
 		},
 		addRow() {
-			this.fields.push({})
-			this.repeaters.push(this.getSubFields)
-		}
+			//this.layoutFields.push({})
+		},
+		moveUp(index) {
+			this.moveItem(index, index - 1)
+		},
+		moveDown(index) {
+			this.moveItem(index, index + 1)
+		},
+		moveItem(from, to) {
+			this.layoutFields.splice(to, 0, this.layoutFields.splice(from, 1)[0]);
+		},
 	},
 	computed: {
 		getOptions() {
 			return this.layout.options
 		},
-		getSubFields() {
-			return this.layout['sub_fields'];
+		getLayouts() {
+			return this.layout['layouts'];
+		},
+		getFields() {
+			return this.fields
+		},
+		layoutFields: {
+			get() {
+				if (this.fields === undefined) {
+					let temp = {};
+					for (const layout in this.getLayouts) {
+						if (this.getLayouts[layout] !== undefined) {
+							temp[layout] = {};
+							const fields = this.getLayouts[layout]['sub_fields'];
+							if (fields !== undefined) {
+								for (const field in fields) {
+									temp[layout][field] = ""
+								}
+							} else {
+								console.log("in fields undef")
+							}
+						} else {
+							console.log("in")
+						}
+					}
+					return temp
+				} else {
+					return this.fields
+				}
+			},
+			set() {
+				this.$emit("update:fields", this.layoutFields)
+			}
 		}
 	}
 }

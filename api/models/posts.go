@@ -93,7 +93,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	}
 
 	// Check if the author is set assign to owner if not.
-	p.Id = s.checkOwner(*p)
+	p.UserId = s.checkOwner(*p)
 
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, fields, codeinjection_head, codeinjection_foot, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId)
@@ -129,7 +129,8 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	}
 
 	// Check if the author is set assign to owner if not.
-	p.Id = s.checkOwner(*p)
+	p.Author = s.checkOwner(*p)
+	p.UserId = p.Author
 
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, updated_at = NOW() WHERE id = ?"

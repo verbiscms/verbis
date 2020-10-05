@@ -4,8 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container">
-
-			{{ data }}
+			<pre>{{ data }}7</pre>
 			<!-- =====================
 				Header
 				===================== -->
@@ -15,8 +14,9 @@
 					<header class="header header-with-actions">
 						<div class="header-title">
 							<div class="header-icon-cont">
-								<i :class="getResourceData.icon"></i>
-								<h1>New Page</h1>
+								<i :class="resource.icon"></i>
+								<h1 v-if="newItem">Add a new {{ resource.friendly_name }}</h1>
+								<h1 v-else>Edit {{ resource.friendly_name }}</h1>
 							</div>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
@@ -24,8 +24,9 @@
 						<div class="header-actions">
 							<form class="form form-actions">
 								<button class="btn btn-fixed-height btn-margin btn-white">Preview</button>
-								<button class="btn btn-fixed-height btn-orange btn-popover">
-									Publish
+								<button class="btn btn-fixed-height btn-orange btn-popover" @click.prevent="save">
+									<span v-if="newItem">Publish</span>
+									<span v-else>Update</span>
 									<span class="btn-popover-icon">
 										<i class="fal fa-chevron-down"></i>
 									</span>
@@ -44,7 +45,7 @@
 					<!-- Title -->
 					<div class="title">
 						<div class="form-group">
-							<input class="form-input form-input-white" type="text" placeholder="Title">
+							<input class="form-input form-input-white" type="text" placeholder="Title" v-model="data.title">
 						</div>
 					</div>
 					<!-- Tabs -->
@@ -57,11 +58,11 @@
 						</div>
 						<!-- Fields -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
-							<Fields :layout="layout" v-model="data.fields"></Fields>
+							<Fields :layout="fieldLayout" :fields.sync="data.fields"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 2 }">
-							<MetaOptions @update="updateMeta">hhh</MetaOptions>
+							<MetaOptions @update="updateMeta"></MetaOptions>
 						</div>
 						<!-- Seo Options -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 3 }">
@@ -83,7 +84,7 @@
 						<!-- URL -->
 						<div class="form-group">
 							<label class="form-label" for="options-url">URL</label>
-							<input class="form-input form-input-white" type="text" id="options-url">
+							<input class="form-input form-input-white" type="text" id="options-url" v-model="data.slug">
 						</div>
 						<!-- Status -->
 						<div class="form-group">
@@ -100,7 +101,7 @@
 						<div class="form-group">
 							<label class="form-label" for="options-author">Author</label>
 							<div class="form-select-cont form-input">
-								<select class="form-select" id="options-author" v-model="selectedAuthor" @change="getFields">
+								<select class="form-select" id="options-author" v-model="selectedAuthor" @change="getFieldLayout">
 									<option value="" disabled selected>Select author</option>
 									<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
 								</select>
@@ -119,7 +120,7 @@
 						<div class="form-group">
 							<label class="form-label" for="properties-template">Template</label>
 							<div class="form-select-cont form-input">
-								<select class="form-select" id="properties-template" v-model="selectedTemplate" @change="getFields">
+								<select class="form-select" id="properties-template" v-model="selectedTemplate" @change="getFieldLayout">
 									<option value="" disabled selected>Select template</option>
 									<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
 								</select>
@@ -129,7 +130,7 @@
 						<div class="form-group">
 							<label class="form-label" for="properties-layout">Layout</label>
 							<div class="form-select-cont form-input">
-								<select class="form-select" id="properties-layout" v-model="selectedLayout" @change="getFields">
+								<select class="form-select" id="properties-layout" v-model="selectedLayout" @change="getFieldLayout">
 									<option value="" disabled selected>Select template</option>
 									<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
 								</select>
@@ -171,14 +172,20 @@ export default {
 		users: [],
 		slug: "",
 		publishedDate: new Date(),
-		layout: [],
+		fieldLayout: [],
 		templates: [],
 		layouts: [],
+		resource: {},
+		newItem: false,
 		data: {
+			"title": "",
+			"slug": "",
 			"fields": {},
 			"meta": {},
-			"codeinjection_header": "",
-			"codeinjection_footer": "",
+			"options": {
+				"codeinjection_header": "",
+				"codeinjection_footer": "",
+			},
 			"updated_at": new Date(),
 			"created_at": new Date(),
 		},
@@ -187,7 +194,9 @@ export default {
 		selectedLayout: "",
 	}),
 	beforeMount() {
-		this.getFields()
+		this.getFieldLayout()
+		this.setResource()
+		this.setNewUpdate()
 	},
 	mounted() {
 		//this.getResourceDataTest()
@@ -196,24 +205,17 @@ export default {
 		this.getLayouts()
 	},
 	methods: {
-		findResourceByName(resources, name) {
-			const resource = resources.find(r => r.name.toLowerCase() === name);
-			if (resource === undefined) {
-				//return this.$router.push('/404')
-			}
-			return resource
-		},
 		getResourceData() {
-			// const id = this.$route.params.id;
-			// this.axios.get(`/posts/${id}`)
-			// 	.then(res => {
-			// 		console.log(res)
-			// 	})
-			// 	.catch(err => {
-			// 		console.log(err)
-			// 	})
+			const id = this.$route.params.id;
+			this.axios.get(`/posts/${id}`)
+				.then(res => {
+					this.data = res.data.data.post
+				})
+				.catch(err => {
+					console.log(err)
+				})
 		},
-		getFields() {
+		getFieldLayout() {
 			this.axios.get("/fields", {
 				params: {
 					"layout": this.selectedLayout,
@@ -222,7 +224,7 @@ export default {
 				}
 			})
 				.then(res => {
-					this.layout = res.data.data
+					this.fieldLayout = res.data.data
 				})
 		},
 		getTemplates() {
@@ -238,7 +240,7 @@ export default {
 				})
 		},
 		getUsers() {
-			if (this.$store.state.users.length === 0) {
+			if (!this.$store.state.users.length) {
 				this.axios.get(`/users`)
 					.then(res => {
 						const users = res.data.data
@@ -254,8 +256,43 @@ export default {
 				this.users = this.$store.state.users
 			}
 		},
+		setResource() {
+			const resource = this.getResources[this.$route.query.resource]
+			this.resource = resource === undefined ? {
+				"name": "page",
+				"friendly_name": "Page",
+				"slug": "",
+				"icon": 'fal fa-file'
+			} : resource
+		},
+		setNewUpdate() {
+			const isNew = this.$route.params.id === "new"
+			this.newItem = isNew
+			if (!isNew) {
+				this.getResourceData()
+			}
+		},
+		save() {
+			if (this.newItem) {
+				this.axios.post("/posts", this.data)
+					.then(res => {
+						console.log(res);
+					})
+					.catch(err => {
+						console.log(err);
+					})
+			} else {
+				this.axios.put("/posts/" + this.$route.params.id, this.data)
+					.then(res => {
+						console.log(res);
+					})
+					.catch(err => {
+						console.log(err);
+					})
+			}
+
+		},
 		updateFields(e) {
-			console.log(e)
 			this.data.fields = e
 		},
 		updateMeta(e) {
@@ -267,7 +304,10 @@ export default {
 		},
 	},
 	computed: {
-		computedSlug(){
+		getResources() {
+			return this.$store.state.theme.resources;
+		},
+		computedSlug() {
 			let slugResult = '';
 
 			const test = slugify("kjfhsdf£$fdsfldshf", {

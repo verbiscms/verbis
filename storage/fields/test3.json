@@ -41,6 +41,24 @@
 			}
 		},
 		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e1225",
+			"label": "RichText",
+			"name": "richtext",
+			"type": "richtext",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"default_value": "Default Value",
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		},
+		{
 			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5225",
 			"label": "Number",
 			"name": "number",
@@ -111,13 +129,40 @@
 				"width": 100
 			},
 			"layouts": {
-				"layout_5f737e6211824": {
+				"layoutkey1": {
 					"key": "layout_5f737e6211824",
-					"name": "",
-					"label": "",
+					"name": "layoutkey1",
+					"label": "layoutlabel",
 					"display": "block",
-					"sub_fields": [
-						{
+					"sub_fields": {
+						"text2": {
+							"uuid": "39ca0ea0-c911-4eaa-b4e0-67dfd99e5735",
+							"label": "Text",
+							"name": "text",
+							"type": "text",
+							"instructions": "Instructions",
+							"required": true,
+							"conditional_logic": null,
+							"wrapper": {
+								"width": 100
+							},
+							"options": {
+								"maxlength": 10,
+								"default_value": "default",
+								"placeholder": "Placeholder",
+								"prepend": "",
+								"append": ""
+							}
+						}
+					}
+				},
+				"layoutkey2": {
+					"key": "layout_5f737e6211824",
+					"name": "layoutkey2",
+					"label": "layoutlabel",
+					"display": "block",
+					"sub_fields": {
+						"text1": {
 							"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
 							"label": "Text",
 							"name": "text",
@@ -133,10 +178,29 @@
 								"default_value": "default",
 								"placeholder": "Placeholder",
 								"prepend": "",
-								"append": "Append"
+								"append": ""
+							}
+						},
+						"text2": {
+							"uuid": "39ca0ea0-c911-4eaa-b4e0-67dfd99e5735",
+							"label": "Text",
+							"name": "text",
+							"type": "text",
+							"instructions": "Instructions",
+							"required": true,
+							"conditional_logic": null,
+							"wrapper": {
+								"width": 100
+							},
+							"options": {
+								"maxlength": 10,
+								"default_value": "default",
+								"placeholder": "Placeholder",
+								"prepend": "",
+								"append": ""
 							}
 						}
-					]
+					}
 				}
 			}
 		},
@@ -171,7 +235,7 @@
 						"width": 100
 					},
 					"options": {
-						"maxlength": "",
+						"maxlength": "20",
 						"default_value": "default",
 						"placeholder": "Placeholder",
 						"prepend": "",
