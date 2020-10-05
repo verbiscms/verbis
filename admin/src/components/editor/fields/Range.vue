@@ -6,8 +6,7 @@
 		<div class="field-prepend-append field-prepend-append-range" :class="{ 'field-focused' : focused }">
 			<div class="field-prepend" v-if="layout.options['prepend'] !== ''">{{ layout.options['prepend'] }}</div>
 			<input class="form-range" type="range"
-				v-model="number"
-				@input="process"
+				v-model="value"
 				:placeholder="getOptions['placeholder']"
 				:step="getOptions['step']"
 				:min="getOptions['min']"
@@ -31,24 +30,29 @@ export default {
 	name: "FieldRange",
 	props: {
 		layout: Object,
+		fields: {
+			type: String,
+			default: ''
+		},
 	},
 	data: () => ({
-		number: 0,
 		errors: [],
 		focused: false,
 	}),
 	methods: {
-		process() {
-			//this.validate()
-			this.emit()
-		},
-		emit() {
-			this.$emit("input", this.getOptions['prepend'] + this.number + this.getOptions['append'])
-		}
+
 	},
 	computed: {
 		getOptions() {
 			return this.layout.options;
+		},
+		value: {
+			get() {
+				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+			},
+			set(value) {
+				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+			}
 		}
 	}
 }

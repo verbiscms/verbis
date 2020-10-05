@@ -5,9 +5,9 @@
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<div class="field-prepend-append" :class="{ 'field-focused' : focused }">
 			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
-			<input class="form-input form-input-white" type="text" value="The value"
-				v-model="text"
-				@keyup="process"
+			<input class="form-input form-input-white" type="text"
+				v-model="value"
+				@keyup="validate"
 				:placeholder="getOptions['placeholder']"
 				:maxlength="getOptions['maxlength']"
 				@focus="focused = true"
@@ -30,42 +30,46 @@ export default {
 	name: "FieldText",
 	props: {
 		layout: Object,
+		fields: {
+			type: String,
+			default: ''
+		},
 	},
 	data: () => ({
-		text: "",
 		errors: [],
 		focused: false,
 	}),
 	methods: {
-		process() {
-			this.validate()
-			this.emit()
-		},
 		validate() {
 			this.errors = [];
 			const maxLength = this.getOptions['maxlength']
-
-			if (maxLength !== "" && this.text.length === maxLength) {
+			if (maxLength !== "" && (this.value.length === maxLength)) {
 				this.errors.push(`The maximum length of the ${this.layout.name} can not exceed ${this.getOptions["maxlength"]} characters.`)
+			} else {
+				this.errors = [];
 			}
 		},
 		validateRequired() {
-			console.log(this.text)
-			if (this.text === "" && this.layout["required"]) {
+			if (this.value === "" && this.layout["required"]) {
 				this.errors.push(`The ${this.layout.name} field is required.`)
 			}
 		},
 		handleBlur() {
 			this.focused = false;
 			this.validateRequired()
-		},
-		emit() {
-			this.$emit("input", this.getOptions['prepend'] + this.text + this.getOptions['append'])
 		}
 	},
 	computed: {
 		getOptions() {
 			return this.layout.options
+		},
+		value: {
+			get() {
+				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+			},
+			set(value) {
+				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+			}
 		}
 	}
 }

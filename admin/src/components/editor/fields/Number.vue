@@ -6,8 +6,8 @@
 		<div class="field-prepend-append" :class="{ 'field-focused' : focused }">
 			<div class="field-prepend" v-if="layout.options['prepend'] !== ''">{{ layout.options['prepend'] }}</div>
 			<input class="form-input form-input-white" type="number"
-				v-model="number"
-				@keyup="process"
+				v-model="value"
+				@keyup="validate"
 				@change="validateRequired"
 				:placeholder="getOptions['placeholder']"
 				:step="getOptions['step']"
@@ -33,27 +33,25 @@ export default {
 	name: "FieldNumber",
 	props: {
 		layout: Object,
+		fields: {
+			type: String,
+			default: ''
+		},
 	},
 	data: () => ({
-		number: 0,
 		errors: [],
 		focused: false,
 	}),
 	methods: {
-		process() {
-			this.validate()
-			this.emit()
-		},
 		validate() {
 			this.errors = []
 			const min = this.getOptions['min'],
 				max = this.getOptions['max'];
-
-			if (this.number !== "") {
-				if (this.number > max && max !== "") {
+			if (this.value !== "") {
+				if (this.value > max && max !== "") {
 					this.errors.push(`The maximum value of the ${this.layout.name} can not exceed ${max}.`)
 				}
-				if (this.number < min && min !== "") {
+				if (this.value < min && min !== "") {
 					this.errors.push(`The minimum value of the ${this.layout.name} can not be below ${min}.`)
 				}
 			}
@@ -67,13 +65,18 @@ export default {
 			this.focused = false;
 			this.validateRequired()
 		},
-		emit() {
-			this.$emit("input", this.getOptions['prepend'] + this.number + this.getOptions['append'])
-		}
 	},
 	computed: {
 		getOptions() {
 			return this.layout.options;
+		},
+		value: {
+			get() {
+				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+			},
+			set(value) {
+				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+			}
 		}
 	}
 }

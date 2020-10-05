@@ -5,17 +5,18 @@
 	<section>
 		<!-- Text -->
 		<div class="field-group" v-for="group in layout" :key="group.uuid">
-			<div class="field" v-for="(field) in group.fields" :key="field.uuid" :style="{ width: field.wrapper['width'] + '%' }">
+			<h4>{{ group.title }}</h4>
+			<div class="field" v-for="layout in group.fields" :key="layout.uuid" :style="{ width: layout.wrapper['width'] + '%' }">
 				<div class="field-wrapper">
 					<div class="field-title-cont">
 						<span class="field-collapse" v-on:click="isActive = !isActive"></span>
 						<div class="field-title">
-							<h5>{{ field.label }}</h5>
-							<p>{{ field.instructions }}</p>
+							<h5>{{ layout.label }}</h5>
+							<p>{{ layout.instructions }}</p>
 						</div>
 					</div>
 					<!-- TODO: If flexible -->
-					<div class="field-controls" v-if="field.type === 'flexible'">
+					<div class="field-controls" v-if="layout.type === 'flexible'">
 						<i class="feather icon-trash-2"></i>
 						<i class="feather icon-arrow-up"></i>
 						<i class="feather icon-arrow-down"></i>
@@ -25,22 +26,23 @@
 				<!--Content -->
 				<div class="field-content">
 					<!-- Text -->
-					<FieldText v-if="field.type === 'text'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldText>
+					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]"></FieldText>
 					<!-- Textarea -->
-					<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldTextarea>
+					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]"></FieldTextarea>
 					<!-- Number -->
-					<FieldNumber v-if="field.type === 'number'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldNumber>
+					<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[layout.name]"></FieldNumber>
 					<!-- Range -->
-					<FieldRange v-if="field.type === 'range'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldRange>
+					<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRange>
 					<!-- Email -->
-					<FieldEmail v-if="field.type === 'email'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldEmail>
+					<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]"></FieldEmail>
 					<!-- Richtext -->
-					<FieldRichText v-else-if="field.type === 'richtext'" v-model="fields[field.name]" @input="emit"></FieldRichText>
+					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRichText>
 					<!-- Repeater -->
-					<FieldRepeater v-if="field.type === 'repeater'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldRepeater>
+					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRepeater>
+					<!-- Flexible -->
+					<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]"></FieldFlexible>
 				</div>
 			</div>
-			{{ fields }}
 		</div>
 	</section>
 </template>
@@ -57,11 +59,16 @@ import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldRichText from "@/components/editor/fields/RichText";
 import FieldRepeater from "@/components/editor/fields/Repeater";
+import FieldFlexible from "@/components/editor/fields/FlexibleContent";
 
 export default {
 	name: "Fields",
 	props: {
 		layout: Array,
+		fields: {
+			required: true,
+			type: Object
+		},
 	},
 	components: {
 		FieldText,
@@ -70,12 +77,12 @@ export default {
 		FieldRange,
 		FieldEmail,
 		FieldRichText,
-		FieldRepeater
+		FieldRepeater,
+		FieldFlexible,
 	},
 	data: () => ({
 		computedHeight: 'auto',
 		isActive: true,
-		fields: {},
 	}),
 	mounted() {
 		this.initHeight()
@@ -83,9 +90,6 @@ export default {
 	methods: {
 		initHeight() {
 			//this.computedHeight= getComputedStyle(this.$refs['myText']).height;
-		},
-		emit() {
-			this.$emit("input", this.fields)
 		},
 		parseLogic() {
 		// 	//if(field.hasOwnProperty('logic')) {

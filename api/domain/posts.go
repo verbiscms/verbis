@@ -18,12 +18,12 @@ type PostData struct {
 type Post struct {
 	Id				int							`db:"id" json:"id" binding:"numeric"`
 	UUID 			uuid.UUID					`db:"uuid" json:"uuid"`
-	Slug			string 						`db:"slug" json:"slug" binding:"required,alphanum,max=150"`
-	Title			string 						`db:"title" json:"title" binding:"required,alphanum,max=255"`
+	Slug			string 						`db:"slug" json:"slug" binding:"required,max=150"`
+	Title			string 						`db:"title" json:"title" binding:"required,max=500"`
 	Status			string						`db:"status" json:"status"`
 	Resource		*string 					`db:"resource" json:"resource,max=150"`
-	PageTemplate	string						`db:"page_template" json:"page_template" binding:"required,max=150"`
-	Layout			string						`db:"layout" json:"layout" binding:"required,max=150"`
+	PageTemplate	string						`db:"page_template" json:"page_template" binding:"max=150"`
+	Layout			string						`db:"layout" json:"layout" binding:"max=150"`
 	Fields			*json.RawMessage 			`db:"fields" json:"fields"`
 	CodeInjectHead	*string 					`db:"codeinjection_head" json:"codeinjection_head"`
 	CodeInjectFoot	*string 					`db:"codeinjection_foot" json:"codeinjection_foot"`

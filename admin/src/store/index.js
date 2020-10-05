@@ -28,7 +28,6 @@ export default new Vuex.Store({
 		userInfo: {},
 		users: [],
 		theme: {},
-		resources: [],
 	},
 	mutations: {
 		login(state, loginData) {

@@ -141,16 +141,6 @@ func NoPageFound(g *gin.Context) {
 	g.HTML(404, "404", gin.H{})
 }
 
-// Abort message
-func AbortMsg(g *gin.Context, code int, err error) {
-	g.String(code, "Oops! Please retry.")
-	// A custom error page with HTML templates can be shown by c.HTML()
-	//g.HTML(code, "PUT VIEW HRTEW"", gin.H{})
-	g.String(code, "Not working", err)
-	g.Error(err)
-	g.Abort()
-}
-
 // checkResponseData checks what type of data is passed and processes it
 // accordingly. errors, empty slices & interfaces as well as validation.
 // Returns true if the data has changed.
@@ -174,9 +164,9 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 					data = &ValidationErrJson{
 						Errors: v.Process(validationErrors),
 					}
-					return data, true
+					return gin.H{}, true
 				} else {
-					return errData, true
+					return gin.H{}, true
 				}
 			}
 

@@ -4,9 +4,9 @@
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<textarea class="form-input form-input-white form-textarea"
-			@keyup="process"
+			v-model="value"
+			@keyup="validate"
 			@blur="validateRequired"
-			v-model="text"
 			:rows="getRows"
 			:maxlength="getOptions['maxlength']"
 			:style="{ 'resize': getResize }">
@@ -27,21 +27,19 @@ export default {
 	name: "FieldTextarea",
 	props: {
 		layout: Object,
+		fields: {
+			type: String,
+			default: ''
+		},
 	},
 	data: () => ({
-		text: "",
 		errors: [],
 	}),
 	methods: {
-		process() {
-			this.validate()
-			this.$emit("input", this.text)
-		},
 		validate() {
 			this.errors = [];
 			const maxLength = this.getOptions['maxlength']
-
-			if (maxLength !== "" && this.text.length === maxLength) {
+			if (maxLength !== "" && this.value.length === maxLength - 1) {
 				this.errors.push(`The maximum length of the ${this.layout.name} can not exceed ${this.getOptions["maxlength"]} characters.`)
 			}
 		},
@@ -55,13 +53,21 @@ export default {
 		getOptions() {
 			return this.layout.options
 		},
+		value: {
+			get() {
+				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+			},
+			set(value) {
+				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+			}
+		},
 		getResize() {
 			return this.layout.options["resize"] ? '' : "none !important"
 		},
 		getRows() {
 			const rows = this.layout.options['rows']
 			return rows ? rows : 8
-		}
+		},
 	}
 }
 

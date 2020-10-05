@@ -39,6 +39,7 @@ class helpers {
 		}
 	}
 
+
 	// Set Cookie
 	setCookie(name, value, days) {
 		let expires = "";

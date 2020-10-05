@@ -3,27 +3,32 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
-		<div class="repeater-item" v-for="(repeater, repeaterIndex) in repeaters" :key="repeaterIndex">
-			<button class="btn btn-orange" @click="deleteRow(repeaterIndex)">Delete</button>
-			<div v-for="(field, fieldIndex) in getSubFields" :key="field.uuid">
-				rIndex{{ repeaterIndex }}
-				fIndex {{ fieldIndex }}
-				{{ test }}
-				<!-- Text -->
-				<FieldText v-if="field.type === 'text'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldText>
-				<!-- Textarea -->
-				<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldTextarea>
-				<!-- Number -->
-				<FieldNumber v-if="field.type === 'number'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldNumber>
-				<!-- Range -->
-				<FieldRange v-if="field.type === 'range'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldRange>
-				<!-- Email -->
-				<FieldEmail v-if="field.type === 'email'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldEmail>
-				<!-- Richtext -->
-				<FieldRichText v-else-if="field.type === 'richtext'"></FieldRichText>
+		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".repeater-handle">
+			<div class="repeater-item" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
+				<div class="field-controls">
+					<i class="feather icon-trash-2" @click="deleteRow(repeaterIndex)"></i>
+					<i class="feather icon-arrow-up" @click="moveUp(repeaterIndex)"></i>
+					<i class="feather icon-arrow-down" @click="moveDown(repeaterIndex)"></i>
+					<i class="repeater-handle fal fa-arrows"></i>
+				</div>
+				<div v-for="(layout, layoutIndex) in getSubFields" :key="layoutIndex">
+					<!-- Text -->
+					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldText>
+					<!-- Textarea -->
+					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldTextarea>
+					<!-- Number -->
+					<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldNumber>
+					<!-- Range -->
+					<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldRange>
+					<!-- Email -->
+					<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldEmail>
+					<!-- Richtext -->
+					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldRichText>
+					<!-- Repeater -->
+					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRepeater>
+				</div>
 			</div>
-		</div>
-
+		</draggable>
 		<div class="repeater-btn">
 			<button class="btn btn-blue" @click="addRow">Add row</button>
 		</div>
@@ -31,7 +36,6 @@
 		<transition name="trans-fade-height">
 			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
 		</transition><!-- /Message -->
-		{{ fields }}
 	</div><!-- /Container -->
 </template>
 
@@ -46,11 +50,14 @@ import FieldNumber from "@/components/editor/fields/Number";
 import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldRichText from "@/components/editor/fields/RichText";
+import FieldRepeater from "@/components/editor/fields/Repeater";
+import draggable from 'vuedraggable'
 
 export default {
 	name: "FieldRepeater",
 	props: {
 		layout: Object,
+		fields: Array,
 	},
 	components: {
 		FieldText,
@@ -59,31 +66,35 @@ export default {
 		FieldRange,
 		FieldEmail,
 		FieldRichText,
+		FieldRepeater,
+		draggable,
 	},
 	data: () => ({
-		test: {},
-		fields: [],
 		errors: [],
 		repeaters: [],
-		focused: false,
 	}),
 	mounted() {
-		this.addRow()
+		if (this.repeaterFields !== undefined) {
+			this.repeaterFields = this.getFields
+		}
 	},
 	methods: {
-		emit() {
-			//this.$set(this.fields[repeaterIndex], field, e)
-			const fields = this.fields.filter(value => JSON.stringify(value) !== '{}');
-			this.$emit("input", fields)
-		},
 		deleteRow(index) {
 			this.fields.splice(index, 1);
 			this.repeaters.splice(index, 1);
 		},
 		addRow() {
-			this.fields.push({})
-			this.repeaters.push(this.getSubFields)
-		}
+			this.repeaterFields.push({})
+		},
+		moveUp(index) {
+			this.moveItem(index, index - 1)
+		},
+		moveDown(index) {
+			this.moveItem(index, index + 1)
+		},
+		moveItem(from, to) {
+			this.repeaterFields.splice(to, 0, this.repeaterFields.splice(from, 1)[0]);
+		},
 	},
 	computed: {
 		getOptions() {
@@ -91,6 +102,17 @@ export default {
 		},
 		getSubFields() {
 			return this.layout['sub_fields'];
+		},
+		getFields() {
+			return this.fields
+		},
+		repeaterFields: {
+			get() {
+				return this.fields === undefined ? [{}] : this.fields
+			},
+			set() {
+				this.$emit("update:fields", this.repeaterFields)
+			}
 		}
 	}
 }
@@ -105,13 +127,14 @@ export default {
 
 	.repeater {
 
-
 		// Item
 		// =========================================================================
 
 		&-item {
 			border: 2px solid $grey-light;
 			padding: 10px;
+			margin-bottom: 1rem;
+			border-radius: 4px;
 		}
 
 		// Button
