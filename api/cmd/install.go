@@ -29,6 +29,7 @@ database.`,
 
 			// Install the database
 			if err := db.Install(); err != nil {
+				fmt.Println(err)
 				printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", environment.GetDatabaseName()))
 			}
 

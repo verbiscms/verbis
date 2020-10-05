@@ -61,6 +61,8 @@ export default {
 						temp = bPath.replace(/\/$/, "")
 					}
 
+					path = path.split("?")[0];
+
 					this.breadcrumbs.push({
 						name: path === "" ? "Home" : this.capitalize(path),
 						url: temp,

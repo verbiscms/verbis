@@ -195,55 +195,55 @@ export default {
 		EditorMenuBubble,
 		'color-picker': Chrome,
 	},
-	props: {},
-	data() {
-		return {
-			html: '',
-			editor: false,
-			config: {},
-			linkMenuIsActive: false,
-			showTextColorPicker: false,
-			palette: false,
-			textColor: '#000000',
-			code: '',
-			codeView: false,
-		}
+	props: {
+		layout: Object,
+		fields: {
+			type: String,
+			default: ''
+		},
 	},
+	data: () => ({
+		html: '',
+		editor: false,
+		config: {},
+		linkMenuIsActive: false,
+		showTextColorPicker: false,
+		palette: false,
+		textColor: '#000000',
+		code: '',
+		codeView: false,
+	}),
 	mounted() {
 		this.config = this.getEditorConfig
 		this.setUpEditor()
 		this.setColourPalette()
-
 	},
 	computed: {
 		getEditorConfig() {
 			return this.$store.state.theme.editor
+		},
+		getOptions() {
+			return this.layout.options
+		},
+		value: {
+			get() {
+				return this.fields;
+			},
+			set(value) {
+				this.$emit("update:fields", value);
+			}
 		}
 	},
 	methods: {
 		setContent(content) {
 			if (this.editor) this.editor.setContent(content);
 		},
-		// getEditorConfig() {
-		// 	return new Promise((resolve, reject) => {
-		// 		this.axios.get('/theme')
-		// 			.then(res => {
-		// 				this.config = res.data.data.editor
-		// 				resolve()
-		// 			})
-		// 			.catch(e => {
-		// 				console.log(e);
-		// 				reject();
-		// 			})
-		// 	});
-		// },
 		setUpEditor() {
 			const extensions = this.createExtensions();
 			this.editor = new Editor({
-				content: '',
+				content: this.getField,
 				onUpdate: ({ getHTML }) => {
-					this.html = getHTML()
-					this.$emit('update', {body: getHTML()})
+					this.value = getHTML()
 				},
 				extensions: extensions,
 			});
