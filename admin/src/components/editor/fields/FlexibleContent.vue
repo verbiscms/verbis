@@ -1,5 +1,5 @@
 <!-- =====================
-	Field - Repeater
+	Field - Flexible Content
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
@@ -8,17 +8,16 @@
 			<div v-for="(field, fieldIndex) in getSubFields" :key="field.uuid">
 				rIndex{{ repeaterIndex }}
 				fIndex {{ fieldIndex }}
-				{{ test }}
 				<!-- Text -->
-				<FieldText v-if="field.type === 'text'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldText>
+				<FieldText v-if="field.type === 'text'" :layout="field" @update:text="updateField($event, repeaterIndex, field.name)"></FieldText>
 				<!-- Textarea -->
-				<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldTextarea>
+				<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" @update="updateField($event, repeaterIndex, field.name)"></FieldTextarea>
 				<!-- Number -->
-				<FieldNumber v-if="field.type === 'number'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldNumber>
+				<FieldNumber v-if="field.type === 'number'" :layout="field" @update:number="updateField($event, repeaterIndex, field.name)"></FieldNumber>
 				<!-- Range -->
-				<FieldRange v-if="field.type === 'range'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldRange>
+				<FieldRange v-if="field.type === 'range'" :layout="field" @update:range="updateField($event, repeaterIndex, field.name)"></FieldRange>
 				<!-- Email -->
-				<FieldEmail v-if="field.type === 'email'" :layout="field" v-model="fields[repeaterIndex][field.name]" @input="emit"></FieldEmail>
+				<FieldEmail v-if="field.type === 'email'" :layout="field" @update:email="updateField($event, repeaterIndex, field.name)"></FieldEmail>
 				<!-- Richtext -->
 				<FieldRichText v-else-if="field.type === 'richtext'"></FieldRichText>
 			</div>
@@ -61,7 +60,6 @@ export default {
 		FieldRichText,
 	},
 	data: () => ({
-		test: {},
 		fields: [],
 		errors: [],
 		repeaters: [],
@@ -71,11 +69,11 @@ export default {
 		this.addRow()
 	},
 	methods: {
-		emit() {
-			//this.$set(this.fields[repeaterIndex], field, e)
-			const fields = this.fields.filter(value => JSON.stringify(value) !== '{}');
-			this.$emit("input", fields)
+		updateField(e, repeaterIndex, field) {
+			this.$set(this.fields[repeaterIndex], field, e)
+			this.$emit("update:repeater", this.fields)
 		},
+
 		deleteRow(index) {
 			this.fields.splice(index, 1);
 			this.repeaters.splice(index, 1);

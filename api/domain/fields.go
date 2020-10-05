@@ -22,6 +22,7 @@ type Field struct {
 	Wrapper 		*Wrapper 				`json:"wrapper"`
 	Options 	 	map[string]interface{} 	`json:"options"`
 	SubFields 		*[]Field 				`json:"sub_fields,omitempty"`
+	Layouts			map[string]interface{} 	`json:"layouts,omitempty"`
 }
 
 type FieldFilter struct {
