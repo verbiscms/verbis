@@ -43,7 +43,7 @@ export default {
 			this.emit()
 		},
 		emit() {
-			this.$emit("update:range", this.getOptions['prepend'] + this.number + this.getOptions['append'])
+			this.$emit("input", this.getOptions['prepend'] + this.number + this.getOptions['append'])
 		}
 	},
 	computed: {

@@ -5,7 +5,7 @@
 	<section>
 		<!-- Text -->
 		<div class="field-group" v-for="group in layout" :key="group.uuid">
-			<div class="field" v-for="field in group.fields" :key="field.uuid" :style="{ width: field.wrapper['width'] + '%' }">
+			<div class="field" v-for="(field) in group.fields" :key="field.uuid" :style="{ width: field.wrapper['width'] + '%' }">
 				<div class="field-wrapper">
 					<div class="field-title-cont">
 						<span class="field-collapse" v-on:click="isActive = !isActive"></span>
@@ -15,7 +15,7 @@
 						</div>
 					</div>
 					<!-- TODO: If flexible -->
-					<div class="field-controls">
+					<div class="field-controls" v-if="field.type === 'flexible'">
 						<i class="feather icon-trash-2"></i>
 						<i class="feather icon-arrow-up"></i>
 						<i class="feather icon-arrow-down"></i>
@@ -25,21 +25,22 @@
 				<!--Content -->
 				<div class="field-content">
 					<!-- Text -->
-					<FieldText v-if="field.type === 'text'" :layout="field" @update:text="updateField($event, field.name)"></FieldText>
+					<FieldText v-if="field.type === 'text'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldText>
 					<!-- Textarea -->
-					<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" @update="updateField($event, field.name)"></FieldTextarea>
+					<FieldTextarea v-else-if="field.type === 'textarea'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldTextarea>
 					<!-- Number -->
-					<FieldNumber v-if="field.type === 'number'" :layout="field" @update:number="updateField($event, field.name)"></FieldNumber>
+					<FieldNumber v-if="field.type === 'number'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldNumber>
 					<!-- Range -->
-					<FieldRange v-if="field.type === 'range'" :layout="field" @update:range="updateField($event, field.name)"></FieldRange>
+					<FieldRange v-if="field.type === 'range'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldRange>
 					<!-- Email -->
-					<FieldEmail v-if="field.type === 'email'" :layout="field" @update:email="updateField($event, field.name)"></FieldEmail>
+					<FieldEmail v-if="field.type === 'email'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldEmail>
 					<!-- Richtext -->
-					<FieldRichText v-else-if="field.type === 'richtext'"></FieldRichText>
+					<FieldRichText v-else-if="field.type === 'richtext'" v-model="fields[field.name]" @input="emit"></FieldRichText>
 					<!-- Repeater -->
-					<FieldRepeater v-if="field.type === 'repeater'" :layout="field" @update:repeater="updateField($event, field.name)"></FieldRepeater>
+					<FieldRepeater v-if="field.type === 'repeater'" :layout="field" v-model="fields[field.name]" @input="emit"></FieldRepeater>
 				</div>
 			</div>
+			{{ fields }}
 		</div>
 	</section>
 </template>
@@ -83,9 +84,8 @@ export default {
 		initHeight() {
 			//this.computedHeight= getComputedStyle(this.$refs['myText']).height;
 		},
-		updateField(e, field) {
-			this.$set(this.fields, field, e)
-			this.$emit("update", this.fields)
+		emit() {
+			this.$emit("input", this.fields)
 		},
 		parseLogic() {
 		// 	//if(field.hasOwnProperty('logic')) {

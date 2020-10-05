@@ -60,7 +60,7 @@ export default {
 			this.validateRequired()
 		},
 		emit() {
-			this.$emit("update:text", this.getOptions['prepend'] + this.email + this.getOptions['append'])
+			this.$emit("input", this.getOptions['prepend'] + this.email + this.getOptions['append'])
 		}
 	},
 	computed: {
