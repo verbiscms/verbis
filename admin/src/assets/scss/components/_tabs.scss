@@ -108,9 +108,9 @@ $tabs-panel-padding: 36px;
 		border-bottom-right-radius: $tabs-border-radius;
 		overflow: visible;
 
-		*:last-child {
-			margin-bottom: 0;
-		}
+		//div:last-child {
+		//	margin-bottom: 0;
+		//}
 
 		&-active {
 			display: block;

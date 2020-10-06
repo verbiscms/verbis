@@ -58,6 +58,7 @@ export default {
 	props: {
 		layout: Object,
 		fields: Array,
+		fieldError: Boolean,
 	},
 	components: {
 		FieldText,

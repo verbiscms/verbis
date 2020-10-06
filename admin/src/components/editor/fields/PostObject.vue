@@ -58,7 +58,7 @@ export default {
 			this.errors.push(msg)
 		},
 		validateRequired() {
-			if (!this.selectedTags.length && !this.layout["allow_null"]) {
+			if (!this.selectedTags.length && !this.getOptions["allow_null"]) {
 				this.errors.push(`The ${this.layout.label} field is required.`)
 			}
 		},
@@ -119,6 +119,8 @@ export default {
 				return this.fields === undefined ? [] : this.fields
 			},
 			set(value) {
+				console.log(!this.errors.length)
+				//this.$emit("update:field-error", !this.errors.length ? this.layout.label : "")
 				this.$emit("update:fields", value)
 			}
 		}

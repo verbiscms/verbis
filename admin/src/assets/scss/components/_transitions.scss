@@ -6,11 +6,23 @@
 
 .trans {
 
+	// Fade
+	// =========================================================================
+
+	&-fade-enter-active,
+	&-fade-leave-active {
+		transition: opacity 300ms ease;
+	}
+
+	&-fade-enter,
+	&-fade-leave-to  {
+		opacity: 0;
+	}
+
 	// Fade Height
 	// =========================================================================
 
 	&-fade-height {
-
 
 		&-enter-active {
 			animation: fade-in 300ms forwards;

@@ -40,12 +40,12 @@ export default {
 			this.errors = [];
 			const maxLength = this.getOptions['maxlength']
 			if (maxLength !== "" && this.value.length === maxLength - 1) {
-				this.errors.push(`The maximum length of the ${this.layout.name} can not exceed ${this.getOptions["maxlength"]} characters.`)
+				this.errors.push(`The maximum length of the ${this.layout.label} can not exceed ${this.getOptions["maxlength"]} characters.`)
 			}
 		},
 		validateRequired() {
 			if (this.text === "" && this.layout["required"]) {
-				this.errors.push(`The ${this.layout.name} field is required.`)
+				this.errors.push(`The ${this.layout.label} field is required.`)
 			}
 		}
 	},
