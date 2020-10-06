@@ -3,13 +3,14 @@
 	===================== -->
 <template>
 	<section>
-
-		<!-- Text -->
+		<!-- Field Group -->
 		<div class="field-group" v-for="(group, groupIndex) in layout" :key="group.uuid">
 			<h4>{{ group.title }}</h4>
+			<!-- Field Layout -->
 			<div v-for="(layout) in group.fields" :key="layout.uuid" :style="{ width: layout.wrapper['width'] + '%' }">
 				<transition name="trans-fade">
 					<div class="field" v-if="parseLogic(layout, groupIndex)">
+						<!-- Field Wrapper -->
 						<div class="field-wrapper">
 							<div class="field-title-cont">
 								<span class="field-collapse" v-on:click="isActive = !isActive"></span>
@@ -18,11 +19,11 @@
 									<p>{{ layout.instructions }}</p>
 								</div>
 							</div>
-						</div>
-						<!--Content -->
+						</div><!-- /Field Wrapper -->
+						<!-- /Field Content -->
 						<div class="field-content">
 							<!-- Text -->
-							<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]"></FieldText>
+							<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]" @error="emitError"></FieldText>
 							<!-- Textarea -->
 							<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]"></FieldTextarea>
 							<!-- Number -->
@@ -34,17 +35,16 @@
 							<!-- Richtext -->
 							<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRichText>
 							<!-- Post Object -->
-							<FieldPostObject v-if="layout.type === 'post_object'" :layout="layout" :fields.sync="fields[layout.name]" @update:field-error="fieldError = $event"></FieldPostObject>
+							<FieldPostObject v-if="layout.type === 'post_object'" :layout="layout" :fields.sync="fields[layout.name]"></FieldPostObject>
 							<!-- Repeater -->
 							<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRepeater>
 							<!-- Flexible -->
 							<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]"></FieldFlexible>
-						</div>
+						</div><!-- /Field Content -->
 					</div>
 				</transition>
-			</div>
-		</div>
-
+			</div><!-- /Field Layout -->
+		</div><!-- /Field Group -->
 	</section>
 </template>
 
@@ -71,10 +71,6 @@ export default {
 			required: true,
 			type: Object
 		},
-		fieldError: {
-			type: String,
-			default: "",
-		},
 	},
 	components: {
 		FieldText,
@@ -89,7 +85,8 @@ export default {
 	},
 	data: () => ({
 		computedHeight: 'auto',
-		isActive: true
+		isActive: true,
+		errors: [],
 	}),
 	mounted() {
 		this.initHeight()
@@ -97,6 +94,9 @@ export default {
 	methods: {
 		initHeight() {
 			//this.computedHeight= getComputedStyle(this.$refs['myText']).height;
+		},
+		emitError(event) {
+			console.log(event);
 		},
 		getLayoutByName(groupIndex, name) {
 			return this.getLayout[groupIndex]['fields'].find(f => f.name === name)

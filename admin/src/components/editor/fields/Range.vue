@@ -14,6 +14,7 @@
 				@focus="focused = true" @blur="focused = false">
 			<div class="field-append" v-if="layout.options['append'] !== ''">{{ layout.options['append'] }}</div>
 		</div><!-- /Prepend Append -->
+		<p class="range-value">Value: {{ value }}</p>
 		<!-- Message -->
 		<transition name="trans-fade-height">
 			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
@@ -32,7 +33,7 @@ export default {
 		layout: Object,
 		fields: {
 			type: String,
-			default: ''
+			default: '0'
 		},
 	},
 	data: () => ({
@@ -48,7 +49,12 @@ export default {
 		},
 		value: {
 			get() {
-				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+				let value = this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+				if (value === "" && !this.typed && this.getOptions['default_value'] !== "") { // eslint-disable-line
+					value = this.getOptions['default_value']
+				}
+				this.typed = true // eslint-disable-line
+				return value;
 			},
 			set(value) {
 				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
@@ -64,5 +70,17 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
+	.range {
+
+		// Title
+		// =========================================================================
+
+		&-value {
+			text-align: right;
+			margin-top: 10px;
+			font-weight: 500;
+			color: $primary
+		}
+	}
 
 </style>

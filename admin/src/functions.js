@@ -19,6 +19,10 @@ import router from './router';
 
 class helpers {
 
+	constructor() {
+		this.debounceTime = 1000;
+	}
+
 	// Test for an empty object
 	isEmptyObject(obj) {
 		return Object.keys(obj).length === 0 && obj.constructor === Object
@@ -39,6 +43,22 @@ class helpers {
 		}
 	}
 
+	// Debounce input
+	debounce(fn, immediate = false) {
+		let timeout = this.debounceTime
+		if (immediate) {
+			timeout = 0;
+		}
+		let timeoutID = null
+		return function () {
+			clearTimeout(timeoutID)
+			let args = arguments,
+				that = this
+			timeoutID = setTimeout(function () {
+				fn.apply(that, args)
+			}, timeout)
+		}
+	}
 
 	// Set Cookie
 	setCookie(name, value, days) {

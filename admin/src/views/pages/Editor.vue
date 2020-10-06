@@ -4,7 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container">
-			<pre>{{ data }}7</pre>
+			<pre>{{ data }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
@@ -137,6 +137,7 @@
 							</div>
 						</div>
 					</div>
+					{{ layouts }}
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
@@ -273,6 +274,8 @@ export default {
 			this.newItem = isNew
 			if (!isNew) {
 				this.getResourceData()
+			} else {
+				this.loadingResourceData = false;
 			}
 		},
 		save() {
