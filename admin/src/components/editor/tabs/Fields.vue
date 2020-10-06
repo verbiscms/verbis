@@ -3,42 +3,48 @@
 	===================== -->
 <template>
 	<section>
+
 		<!-- Text -->
-		<div class="field-group" v-for="group in layout" :key="group.uuid">
+		<div class="field-group" v-for="(group, groupIndex) in layout" :key="group.uuid">
 			<h4>{{ group.title }}</h4>
-			<div class="field" v-for="layout in group.fields" :key="layout.uuid" :style="{ width: layout.wrapper['width'] + '%' }">
-				<div class="field-wrapper">
-					<div class="field-title-cont">
-						<span class="field-collapse" v-on:click="isActive = !isActive"></span>
-						<div class="field-title">
-							<h5>{{ layout.label }}</h5>
-							<p>{{ layout.instructions }}</p>
+			<div v-for="(layout) in group.fields" :key="layout.uuid" :style="{ width: layout.wrapper['width'] + '%' }">
+				<transition name="trans-fade">
+					<div class="field" v-if="parseLogic(layout, groupIndex)">
+						<div class="field-wrapper">
+							<div class="field-title-cont">
+								<span class="field-collapse" v-on:click="isActive = !isActive"></span>
+								<div class="field-title">
+									<h5>{{ layout.label }}</h5>
+									<p>{{ layout.instructions }}</p>
+								</div>
+							</div>
+						</div>
+						<!--Content -->
+						<div class="field-content">
+							<!-- Text -->
+							<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]"></FieldText>
+							<!-- Textarea -->
+							<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]"></FieldTextarea>
+							<!-- Number -->
+							<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[layout.name]"></FieldNumber>
+							<!-- Range -->
+							<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRange>
+							<!-- Email -->
+							<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]"></FieldEmail>
+							<!-- Richtext -->
+							<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRichText>
+							<!-- Post Object -->
+							<FieldPostObject v-if="layout.type === 'post_object'" :layout="layout" :fields.sync="fields[layout.name]" @update:field-error="fieldError = $event"></FieldPostObject>
+							<!-- Repeater -->
+							<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRepeater>
+							<!-- Flexible -->
+							<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]"></FieldFlexible>
 						</div>
 					</div>
-				</div>
-				<!--Content -->
-				<div class="field-content">
-					<!-- Text -->
-					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]"></FieldText>
-					<!-- Textarea -->
-					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]"></FieldTextarea>
-					<!-- Number -->
-					<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[layout.name]"></FieldNumber>
-					<!-- Range -->
-					<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRange>
-					<!-- Email -->
-					<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]"></FieldEmail>
-					<!-- Richtext -->
-					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRichText>
-					<!-- Post Object -->
-					<FieldPostObject v-if="layout.type === 'post_object'" :layout="layout" :fields.sync="fields[layout.name]"></FieldPostObject>
-					<!-- Repeater -->
-					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRepeater>
-					<!-- Flexible -->
-					<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]"></FieldFlexible>
-				</div>
+				</transition>
 			</div>
 		</div>
+
 	</section>
 </template>
 
@@ -65,6 +71,10 @@ export default {
 			required: true,
 			type: Object
 		},
+		fieldError: {
+			type: String,
+			default: "",
+		},
 	},
 	components: {
 		FieldText,
@@ -79,7 +89,7 @@ export default {
 	},
 	data: () => ({
 		computedHeight: 'auto',
-		isActive: true,
+		isActive: true
 	}),
 	mounted() {
 		this.initHeight()
@@ -88,48 +98,68 @@ export default {
 		initHeight() {
 			//this.computedHeight= getComputedStyle(this.$refs['myText']).height;
 		},
-		parseLogic() {
-		// 	//if(field.hasOwnProperty('logic')) {
-		// 		if (field.logic) {
-		// 			const logic = field.logic;
-		// 			const fieldEval = this.fieldValue[logic.field];
-		// 			let value = logic.value;
-		// 			const operator = logic.operator.toString();
-		//
-		// 			if (value === 'true') {
-		// 				value = true;
-		// 			} else if (value === 'false') {
-		// 				value = false;
-		// 			}
-		//
-		// 			switch (operator) {
-		// 				case '>':
-		// 					return fieldEval > value;
-		// 				case '<':
-		// 					return fieldEval < value;
-		// 				case '>=':
-		// 					return fieldEval >= value;
-		// 				case '<=':
-		// 					return fieldEval <= value;
-		// 				case '==':
-		// 					return fieldEval == value;
-		// 				case '!=':
-		// 					return fieldEval != value;
-		// 				case '===':
-		// 					return fieldEval === value;
-		// 				case '!==':
-		// 					return fieldEval !== value;
-		// 			}
-		// 		} else {
-		// 			return false;
-		// 		}
-		// 	} else {
-		// 		return false;
-		// 	}
-		//
-		// },
+		getLayoutByName(groupIndex, name) {
+			return this.getLayout[groupIndex]['fields'].find(f => f.name === name)
+		},
+		parseLogic(layout, groupIndex) {
+			const logic = layout['conditional_logic']
+			let passed = true
+
+			if (logic) {
+				logic.forEach(block => {
+					block.forEach(location => {
+						const field = this.getLayoutByName(groupIndex, location.field),
+							operator = location.operator,
+							fieldEval = location.value;
+
+						let value = this.fields[location.field],
+							prepend = field.options['prepend'],
+							append = field.options['append']
+
+						value = value === undefined ? "" : value
+						value = value.replace(prepend, "").replace(append, "")
+
+						switch (operator) {
+							case '>':
+								passed = fieldEval > value;
+								break;
+							case '<':
+								passed = fieldEval < value;
+								break;
+							case '>=':
+								passed = fieldEval >= value;
+								break;
+							case '<=':
+								passed = fieldEval <= value;
+								break;
+							case '==':
+								passed = fieldEval == value;
+								break;
+							case '!=':
+								passed = fieldEval != value;
+								break;
+							case '===':
+								passed = fieldEval === value;
+								break;
+							case '!==':
+								passed = fieldEval !== value;
+								break;
+						}
+					})
+				});
 			}
-	}
+
+			return passed;
+		},
+	},
+	computed: {
+		getLayout() {
+			return this.layout
+		},
+		getFields() {
+			return this.fields
+		}
+	},
 }
 
 </script>

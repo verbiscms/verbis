@@ -124,7 +124,15 @@
 			"type": "post_object",
 			"instructions": "Instructions",
 			"required": true,
-			"conditional_logic": null,
+			"conditional_logic": [
+				[
+					{
+						"field": "email",
+						"operator": "==",
+						"value": "hh"
+					}
+				]
+			],
 			"wrapper": {
 				"width": 100
 			},
@@ -134,7 +142,7 @@
 					"news"
 				],
 				"category": "",
-				"allow_null": true,
+				"allow_null": false,
 				"multiple": true
 			}
 		},
