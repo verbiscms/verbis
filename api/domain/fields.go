@@ -44,7 +44,7 @@ type Wrapper struct {
 }
 
 type ConditionalLogic struct {
-	Param string `json:"param"`
+	Field string `json:"field"`
 	Operator string `json:"operator"`
 	Value string `json:"value"`
 }

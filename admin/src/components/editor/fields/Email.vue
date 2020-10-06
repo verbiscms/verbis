@@ -24,6 +24,7 @@
 <!-- =====================
 	Scripts
 	===================== -->
+
 <script>
 
 export default {
@@ -45,13 +46,12 @@ export default {
 			// eslint-disable-next-line no-useless-escape
 			const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 			if (this.value !== "" && !re.test(String(this.value).toLowerCase())) {
-				this.errors.push(`Enter a valid email address for the ${this.layout.name} field.`)
+				this.errors.push(`Enter a valid email address for the ${this.layout.label} field.`)
 			}
-
 		},
 		validateRequired() {
 			if (this.email === "" && this.layout["required"]) {
-				this.errors.push(`The ${this.layout.name} field is required.`)
+				this.errors.push(`The ${this.layout.label} field is required.`)
 			}
 		},
 		handleBlur() {

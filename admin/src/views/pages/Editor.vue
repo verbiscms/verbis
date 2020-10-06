@@ -58,7 +58,7 @@
 						</div>
 						<!-- Fields -->
 						<div v-if="!loadingResourceData" class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
-							<Fields :layout="fieldLayout" :fields.sync="data.fields"></Fields>
+							<Fields :layout="fieldLayout" :fields.sync="data.fields" :field-error.sync="fieldError"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 2 }">
@@ -192,6 +192,7 @@ export default {
 		selectedAuthor: "",
 		selectedTemplate: "",
 		selectedLayout: "",
+		fieldError: "",
 		loadingResourceData: true,
 	}),
 	beforeMount() {
