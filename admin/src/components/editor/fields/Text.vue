@@ -15,6 +15,7 @@
 			<div class="field-append" v-if="getOptions['append']">{{ getOptions['append'] }}</div>
 		</div><!-- /Prepend Append -->
 		<!-- Message -->
+		{{ hasError }}
 		<transition name="trans-fade-height">
 			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
 		</transition><!-- /Message -->
@@ -25,6 +26,8 @@
 	Scripts
 	===================== -->
 <script>
+
+import common from "@/components/editor/fields/common";
 
 export default {
 	name: "FieldText",
@@ -38,21 +41,18 @@ export default {
 	data: () => ({
 		errors: [],
 		focused: false,
+		typed: false,
+		hasError: false,
 	}),
 	methods: {
 		validate() {
-			this.errors = [];
-			const maxLength = this.getOptions['maxlength']
-			if (maxLength !== "" && (this.value.length === maxLength)) {
-				this.errors.push(`The maximum length of the ${this.layout.label} can not exceed ${this.getOptions["maxlength"]} characters.`)
-			} else {
-				this.errors = [];
-			}
+			this.hasError = false;
+			this.errors = common.validateMaxLength(this.value, this.layout, this.getOptions)
+			this.$emit("update:error", this.hasError)
 		},
 		validateRequired() {
-			if (this.value === "" && this.layout["required"]) {
-				this.errors.push(`The ${this.layout.label} field is required.`)
-			}
+			this.errors = common.validateRequired(this.value, this.layout)
+			this.hasError = true;
 		},
 		handleBlur() {
 			this.focused = false;
@@ -65,10 +65,16 @@ export default {
 		},
 		value: {
 			get() {
-				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+				let value = common.replacePrependAppend(this.fields, this.getOptions),
+					defaultVal = common.checkDefaultValue(value, this.getOptions);
+				if (defaultVal && !this.typed) {
+					value = defaultVal
+				}
+				this.typed = true // eslint-disable-line
+				return value;
 			},
 			set(value) {
-				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+				this.$emit("update:fields", common.setPrependAppend(value, this.getOptions))
 			}
 		}
 	}

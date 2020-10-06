@@ -41,6 +41,7 @@ export default {
 	data: () => ({
 		errors: [],
 		focused: false,
+		typed: false,
 	}),
 	methods: {
 		validate() {
@@ -72,7 +73,13 @@ export default {
 		},
 		value: {
 			get() {
-				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+				let value = this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+				if (value === "" && !this.typed) { // eslint-disable-line
+					this.typed = true; // eslint-disable-line
+					value = this.getOptions['default_value']
+				}
+				this.typed = true // eslint-disable-line
+				return value;
 			},
 			set(value) {
 				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
