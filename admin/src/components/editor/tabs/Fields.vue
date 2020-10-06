@@ -15,13 +15,6 @@
 							<p>{{ layout.instructions }}</p>
 						</div>
 					</div>
-					<!-- TODO: If flexible -->
-					<div class="field-controls" v-if="layout.type === 'flexible'">
-						<i class="feather icon-trash-2"></i>
-						<i class="feather icon-arrow-up"></i>
-						<i class="feather icon-arrow-down"></i>
-						<i class="fal fa-arrows"></i>
-					</div>
 				</div>
 				<!--Content -->
 				<div class="field-content">
@@ -37,6 +30,8 @@
 					<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]"></FieldEmail>
 					<!-- Richtext -->
 					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRichText>
+					<!-- Post Object -->
+					<FieldPostObject v-if="layout.type === 'post_object'" :layout="layout" :fields.sync="fields[layout.name]"></FieldPostObject>
 					<!-- Repeater -->
 					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRepeater>
 					<!-- Flexible -->
@@ -58,6 +53,7 @@ import FieldNumber from "@/components/editor/fields/Number";
 import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldRichText from "@/components/editor/fields/RichText";
+import FieldPostObject from "@/components/editor/fields/PostObject";
 import FieldRepeater from "@/components/editor/fields/Repeater";
 import FieldFlexible from "@/components/editor/fields/FlexibleContent";
 
@@ -77,6 +73,7 @@ export default {
 		FieldRange,
 		FieldEmail,
 		FieldRichText,
+		FieldPostObject,
 		FieldRepeater,
 		FieldFlexible,
 	},

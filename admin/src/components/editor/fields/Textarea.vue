@@ -72,10 +72,3 @@ export default {
 }
 
 </script>
-
-<!-- =====================
-	Styles
-	===================== -->
-<style scoped lang="scss">
-
-</style>

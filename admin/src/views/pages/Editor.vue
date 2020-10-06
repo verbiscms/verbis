@@ -57,7 +57,7 @@
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 4 }" @click="activeTab = 4">Code Injection</div>
 						</div>
 						<!-- Fields -->
-						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
+						<div v-if="!loadingResourceData" class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
 							<Fields :layout="fieldLayout" :fields.sync="data.fields"></Fields>
 						</div>
 						<!-- Meta Options -->
@@ -192,6 +192,7 @@ export default {
 		selectedAuthor: "",
 		selectedTemplate: "",
 		selectedLayout: "",
+		loadingResourceData: true,
 	}),
 	beforeMount() {
 		this.getFieldLayout()
@@ -209,7 +210,8 @@ export default {
 			const id = this.$route.params.id;
 			this.axios.get(`/posts/${id}`)
 				.then(res => {
-					this.data = res.data.data.post
+					this.data = res.data.data.post;
+					this.loadingResourceData = false;
 				})
 				.catch(err => {
 					console.log(err)
