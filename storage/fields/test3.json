@@ -184,7 +184,7 @@
 						"text2": {
 							"uuid": "39ca0ea0-c911-4eaa-b4e0-67dfd99e5735",
 							"label": "Text",
-							"name": "text",
+							"name": "text2",
 							"type": "text",
 							"instructions": "Instructions",
 							"required": true,
