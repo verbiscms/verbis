@@ -118,11 +118,16 @@ $form-input-padding-y: 12px;
 $form-input-border-radius: 8px;
 $form-input-color: $secondary;
 $form-group-margin-bottom: 1.2rem;
-$form-box-shadow: 0 0 10px 0 rgba($copy, 0.10);
+$form-box-shadow: 0 0 14px 0 rgba($copy, 0.06);
 
 @mixin formInputBoxShadow {
 	transition: box-shadow 200ms ease;
 	will-change: box-shadow;
+}
+
+@mixin formPlaceholder {
+	color: rgba($secondary, 0.6);
+	opacity: 1; /* Firefox */
 }
 
 // Misc

@@ -1,0 +1,125 @@
+// -----------------------------------------------------------------------------
+// _popover.scss
+// This file contains all styles related to the popover component.
+// -----------------------------------------------------------------------------
+
+// Variables
+$popover-triangle-size: 20px;
+
+.popover {
+	$self: &;
+
+	position: absolute;
+	top: 0;
+	left: 50%;
+	border: 2px solid $grey-light;
+	background-color: $white;
+	padding: 4px;
+	border-radius: 8px;
+	box-shadow: 0 3px 20px 0 rgba($black, 0.08);
+	transform: translate(-50%, -100%);
+	z-index: 99;
+	opacity: 0;
+	transition: opacity 200ms ease;
+
+	// Container
+	// =========================================================================
+
+	&-cont {
+		display: inline-block;
+		position: relative;
+		width: auto;
+
+		.btn {
+			z-index: 99;
+		}
+
+		.popover:hover,
+		.btn:hover + #{$self} {
+			opacity: 1;
+		}
+	}
+
+	&::before {
+		content: "";
+		position: absolute;
+		width: 22px;
+		height: 14px;
+		bottom: 0;
+		left: 50%;
+		background:  url("~@/assets/images/popover-triangle.svg") no-repeat;
+		background-size: cover;
+		z-index: 100;
+		transform: translate(-50%, calc(100% - 1px)) rotate(180deg);
+	}
+
+	//Arrow
+	//&::before {
+	//	position: absolute;
+	//	content: "";
+	//	display: inline-block;
+	//	//margin-top: 8px;
+	//	transform: translateX(-50%);
+	//	left: 50%;
+	//	bottom: -4px;
+	//	border-width: 8px 10px 0;
+	//	border-style: solid;
+	//	border-color: $white transparent transparent;
+	//	z-index: 1000;
+	//}
+
+	//&-triangle {
+	//	position: relative;
+	//	width: 0;
+	//	height: 0;
+	//	border-style: solid;
+	//	border-width: $popover-triangle-size $popover-triangle-size 0 $popover-triangle-size;
+	//	border-color: $grey-light transparent transparent transparent;
+	//	border-radius: 2px;
+	//
+	//	&:before {
+	//		content: '';
+	//		width: 0;
+	//		height: 0;
+	//		border-style: solid;
+	//		border-width: $popover-triangle-size $popover-triangle-size 0 $popover-triangle-size;
+	//		border-color: $white transparent transparent transparent;
+	//		position: absolute;
+	//		top: 50%;
+	//		left: 50%;
+	//		transform: translate(-50%, -150%) scale(0.9);
+	//		border-radius: 2px;
+	//	}
+	//}
+
+	// Item
+	// =========================================================================
+
+	&-item {
+		position: relative;
+		width: 120px;
+		font-size: 13px;
+		font-weight: 600;
+		color: $secondary;
+		padding: 6px 0;
+		text-align: center;
+		cursor: pointer;
+
+
+		&:hover {
+			background-color: rgba($primary, 0.07);
+		}
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+	}
+}

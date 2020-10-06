@@ -285,17 +285,16 @@ input:-internal-autofill-selected {
 
 ::placeholder {
     /* Chrome, Firefox, Opera, Safari 10.1+ */
-    color: rgba($secondary, 0.6);
-    opacity: 1; /* Firefox */
+   @include formPlaceholder
 }
 
 :-ms-input-placeholder {
     /* Internet Explorer 10-11 */
-    color: rgba($secondary, 0.6);
+    @include formPlaceholder
 }
 
 ::-ms-input-placeholder {
     /* Microsoft Edge */
-    color: rgba($secondary, 0.6);
+    @include formPlaceholder
 }
 

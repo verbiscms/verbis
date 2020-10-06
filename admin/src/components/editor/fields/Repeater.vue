@@ -124,7 +124,6 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-
 	.repeater {
 
 		// Item

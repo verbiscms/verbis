@@ -20,7 +20,7 @@ $btn-margin-x: 10px;
 	cursor: pointer;
 	outline: none;
 	font-size: 14px;
-	font-weight: bold;
+	font-weight: 600;
 	height: auto;
 	user-select: none;
 	line-height: 1;
@@ -29,6 +29,14 @@ $btn-margin-x: 10px;
 	border: 2px solid $grey-light;
 	transition: box-shadow 200ms ease;
 	will-change: box-shadow;
+
+	// Props
+	// =========================================================================
+
+	i {
+		margin-right: 6px;
+		margin-left: -4px;
+	}
 
 	// Arrow
 	// =========================================================================

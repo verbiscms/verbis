@@ -118,6 +118,27 @@
 			}
 		},
 		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e9125",
+			"label": "Post Object",
+			"name": "post_object",
+			"type": "post_object",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"post_type": [
+					"page",
+					"news"
+				],
+				"category": "",
+				"allow_null": true,
+				"multiple": true
+			}
+		},
+		{
 			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5175",
 			"label": "Flexible",
 			"name": "flexible",
