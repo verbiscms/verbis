@@ -114,7 +114,10 @@ func (c *PostsController) Create(g *gin.Context) {
 	}
 
 	newPost, err := c.postModel.Create(&post)
-	if err != nil {
+	if errors.Code(err) == errors.CONFLICT {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}

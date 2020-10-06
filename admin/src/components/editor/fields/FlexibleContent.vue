@@ -3,25 +3,15 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
-
-		<div class="repeater-item" v-for="(group, groupIndex) in getLayouts" :key="groupIndex">
-
-			<div v-if="getLayouts[groupIndex]">
-				<div  class="test" v-for="(layout, layoutIndex) in group['sub_fields']" :key="layoutIndex">
-
-						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[groupIndex][layoutIndex]"></FieldText>
-
-				</div>
+		<div class="field-group" v-for="(group, groupIndex) in getFields" :key="groupIndex">
+			<div class="field-content" v-for="(layout, layoutKey) in getSubFields(group.type)" :key="layoutKey">
+				<!-- Text -->
+				<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[groupIndex]['fields'][layout.name]"></FieldText>
 			</div>
 		</div>
-		<div class="repeater-btn">
-			<button class="btn btn-blue" @click="addRow">Add row</button>
+		<div class="repeater-btn" v-for="(group) in getLayouts" :key="group.uuid">
+			<button class="btn btn-blue" @click="addRow(group.name)">Add {{ group.name }}</button>
 		</div>
-		<!-- Message -->
-		<transition name="trans-fade-height">
-			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
-		</transition><!-- /Message -->
-		<pre>{{ fields }}</pre>
 	</div><!-- /Container -->
 </template>
 
@@ -36,7 +26,7 @@ export default {
 	name: "FieldFlexible",
 	props: {
 		layout: Object,
-		fields: Object,
+		fields: [Array, Object],
 	},
 	components: {
 		FieldText,
@@ -55,8 +45,19 @@ export default {
 			this.fields.splice(index, 1);
 			this.layouts.splice(index, 1);
 		},
-		addRow() {
-			//this.layoutFields.push({})
+		addRow(key) {
+			this.layouts.push(this.getLayouts[key])
+			const subFields = this.getLayouts[key]['sub_fields']
+
+			let temp = {
+				type: key,
+				fields: {},
+			}
+			for (const fieldKey in subFields) {
+				temp['fields'][fieldKey] = "";
+			}
+
+			this.layoutFields.push(temp)
 		},
 		moveUp(index) {
 			this.moveItem(index, index - 1)
@@ -67,13 +68,17 @@ export default {
 		moveItem(from, to) {
 			this.layoutFields.splice(to, 0, this.layoutFields.splice(from, 1)[0]);
 		},
+		getSubFields(key) {
+			const layout = this.getLayouts[key],
+				subFields = layout['sub_fields'];
+			return subFields;
+		},
 	},
 	computed: {
 		getOptions() {
 			return this.layout.options
 		},
 		getLayouts() {
-			// Need to do some work here!
 			return this.layout['layouts'];
 		},
 		getFields() {
@@ -81,28 +86,7 @@ export default {
 		},
 		layoutFields: {
 			get() {
-				if (this.fields === undefined) {
-					let temp = {};
-					for (const layout in this.getLayouts) {
-						if (this.getLayouts[layout] !== undefined) {
-							temp[layout] = {};
-							const fields = this.getLayouts[layout]['sub_fields'];
-							if (fields !== undefined) {
-								for (const field in fields) {
-									temp[layout][field] = ""
-								}
-							} else {
-								console.log("in fields undef")
-							}
-						} else {
-							console.log("in")
-						}
-					}
-					console.log(temp)
-					return temp
-				} else {
-					return this.fields
-				}
+				return this.fields === undefined ? [] : this.fields
 			},
 			set() {
 				this.$emit("update:fields", this.layoutFields)
@@ -118,6 +102,10 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
+.field-group {
+	background-color: rgba(red, 0.4);
+	margin-bottom: 1rem;
+}
 
 	.repeater {
 
