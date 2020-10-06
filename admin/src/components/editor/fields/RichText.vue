@@ -212,6 +212,7 @@ export default {
 		textColor: '#000000',
 		code: '',
 		codeView: false,
+		typed: false,
 	}),
 	mounted() {
 		this.config = this.getEditorConfig
@@ -227,7 +228,8 @@ export default {
 		},
 		value: {
 			get() {
-				return this.fields;
+				let value = this.fields === "" && !this.typed && this.getOptions['default_value'] !== "" ? this.getOptions['default_value'] : this.fields;
+				return value === '<p></p>' ? '' : value
 			},
 			set(value) {
 				this.$emit("update:fields", value);
@@ -241,9 +243,11 @@ export default {
 		setUpEditor() {
 			const extensions = this.createExtensions();
 			this.editor = new Editor({
-				content: this.getField,
+				content: this.value,
 				onUpdate: ({ getHTML }) => {
-					this.value = getHTML()
+					this.html = getHTML()
+					if (this.html === '<p></p>') this.html = ''
+					this.value = this.html
 				},
 				extensions: extensions,
 			});
@@ -289,8 +293,7 @@ export default {
 			if (this.codeView) {
 				this.editor.setContent(this.code)
 			} else {
-				this.code = this.html
-
+				this.code = this.value
 			}
 			this.codeView = !this.codeView
 		},

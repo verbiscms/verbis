@@ -12,6 +12,7 @@
 		"@jack_reddico/vue-tags-input": "^1.0.5",
 		"axios": "^0.20.0",
 		"core-js": "^3.6.5",
+		"debounce": "^1.2.0",
 		"slugify": "^1.4.5",
 		"tiptap": "^1.30.0",
 		"tiptap-extensions": "^1.33.1",

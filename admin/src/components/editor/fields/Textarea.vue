@@ -23,6 +23,8 @@
 	===================== -->
 <script>
 
+import common from "@/components/editor/fields/common";
+
 export default {
 	name: "FieldTextarea",
 	props: {
@@ -34,19 +36,14 @@ export default {
 	},
 	data: () => ({
 		errors: [],
+		typed: false,
 	}),
 	methods: {
 		validate() {
-			this.errors = [];
-			const maxLength = this.getOptions['maxlength']
-			if (maxLength !== "" && this.value.length === maxLength - 1) {
-				this.errors.push(`The maximum length of the ${this.layout.label} can not exceed ${this.getOptions["maxlength"]} characters.`)
-			}
+			this.errors = common.validateMaxLength(this.value, this.layout, this.getOptions)
 		},
 		validateRequired() {
-			if (this.text === "" && this.layout["required"]) {
-				this.errors.push(`The ${this.layout.label} field is required.`)
-			}
+			this.errors = common.validateRequired(this.value, this.layout)
 		}
 	},
 	computed: {
@@ -55,10 +52,16 @@ export default {
 		},
 		value: {
 			get() {
-				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+				let value = this.fields,
+					defaultVal = common.checkDefaultValue(value, this.getOptions);
+				if (defaultVal && !this.typed) {
+					value = defaultVal
+				}
+				this.typed = true // eslint-disable-line
+				return value;
 			},
 			set(value) {
-				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+				this.$emit("update:fields", value)
 			}
 		},
 		getResize() {

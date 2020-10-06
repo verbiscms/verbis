@@ -7,7 +7,7 @@
 			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
 			<input class="form-input form-input-white" type="text" value="The value"
 				v-model="value"
-				@keyup="validate"
+				@keyup="validate(false)"
 				:placeholder="getOptions['placeholder']"
 				:maxlength="getOptions['maxlength']"
 				@focus="focused = true"
@@ -24,8 +24,9 @@
 <!-- =====================
 	Scripts
 	===================== -->
-
 <script>
+
+import common from './common'
 
 export default {
 	name: "FieldEmail",
@@ -40,19 +41,22 @@ export default {
 		errors: [],
 		focused: false,
 	}),
+	mounted() {
+		this.validate(true)
+	},
 	methods: {
-		validate() {
-			this.errors = [];
-			// eslint-disable-next-line no-useless-escape
-			const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-			if (this.value !== "" && !re.test(String(this.value).toLowerCase())) {
-				this.errors.push(`Enter a valid email address for the ${this.layout.label} field.`)
-			}
+		validate(timeout) {
+			this.helpers.debounce(() => {
+				this.errors = [];
+				// eslint-disable-next-line no-useless-escape
+				const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+				if (this.value !== "" && !re.test(String(this.value).toLowerCase())) {
+					this.errors.push(`Enter a valid email address for the ${this.layout.label} field.`)
+				}
+			}, timeout).apply();
 		},
 		validateRequired() {
-			if (this.email === "" && this.layout["required"]) {
-				this.errors.push(`The ${this.layout.label} field is required.`)
-			}
+			this.errors.push(common.validateRequired(this.value, this.layout))
 		},
 		handleBlur() {
 			this.focused = false;
@@ -65,10 +69,10 @@ export default {
 		},
 		value: {
 			get() {
-				return this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+				return common.replacePrependAppend(this.fields, this.getOptions)
 			},
 			set(value) {
-				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+				this.$emit("update:fields", common.setPrependAppend(value, this.getOptions))
 			}
 		}
 	}
