@@ -10,7 +10,7 @@
 				:key="choiceIndex"
 				@click="value = choice"
 				:class="{ 'btn-blue' : value === choice}">
-				{{  choice }}</button>
+				{{ choice }}</button>
 		</div><!-- /Button Container -->
 		<!-- Message -->
 		<transition name="trans-fade-height">
@@ -39,6 +39,12 @@ export default {
 	data: () => ({
 		errors: [],
 	}),
+	methods: {
+		validate() {
+			this.errors = [];
+			this.validateRequired()
+		},
+	},
 	computed: {
 		getOptions() {
 			return this.layout.options;

@@ -30,15 +30,7 @@ import { fieldMixin } from "@/util/fields"
 export default {
 	name: "FieldText",
 	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: ''
-		},
-	},
 	data: () => ({
-		errors: [],
 		focused: false,
 	}),
 	methods: {

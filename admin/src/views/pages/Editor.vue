@@ -4,7 +4,6 @@
 <template>
 	<section>
 		<div class="auth-container">
-			<pre>{{ data }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
@@ -58,7 +57,7 @@
 						</div>
 						<!-- Fields -->
 						<div v-if="!loadingResourceData" class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
-							<Fields :layout="fieldLayout" :fields.sync="data.fields" :field-error.sync="fieldError"></Fields>
+							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 2 }">
@@ -78,65 +77,67 @@
 					Options & Properties
 					===================== -->
 				<div class="col-12 col-desk-3">
-					<!-- Options -->
-					<div class="options">
-						<h2>Options</h2>
-						<!-- URL -->
-						<div class="form-group">
-							<label class="form-label" for="options-url">URL</label>
-							<input class="form-input form-input-white" type="text" id="options-url" v-model="data.slug">
-						</div>
-						<!-- Status -->
-						<div class="form-group">
-							<label class="form-label" for="options-status">Status</label>
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="options-status">
-									<option value="" disabled selected>Select status</option>
-									<option value="drafts">Draft</option>
-									<option value="published">Published</option>
-								</select>
+					<div class="editor-sidebar">
+						<!-- Options -->
+						<div class="editor-sidebar-options">
+							<h2>Options</h2>
+							<!-- URL -->
+							<div class="form-group">
+								<label class="form-label" for="options-url">URL</label>
+								<input class="form-input form-input-white" type="text" id="options-url" v-model="data.slug">
 							</div>
-						</div>
-						<!-- Author -->
-						<div class="form-group">
-							<label class="form-label" for="options-author">Author</label>
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="options-author" v-model="selectedAuthor" @change="getFieldLayout">
-									<option value="" disabled selected>Select author</option>
-									<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
-								</select>
+							<!-- Status -->
+							<div class="form-group">
+								<label class="form-label" for="options-status">Status</label>
+								<div class="form-select-cont form-input">
+									<select class="form-select" id="options-status">
+										<option value="" disabled selected>Select status</option>
+										<option value="drafts">Draft</option>
+										<option value="published">Published</option>
+									</select>
+								</div>
 							</div>
-						</div>
-						<!-- Date -->
-						<div class="form-group">
-							<label class="form-label">Published Date</label>
-							<DatePicker class="date" color="blue" :value="null" v-model="publishedDate"></DatePicker>
-						</div>
-					</div><!-- /Properties -->
-					<!-- Properties -->
-					<div class="options">
-						<h2>Properties</h2>
-						<!-- Template -->
-						<div class="form-group">
-							<label class="form-label" for="properties-template">Template</label>
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="properties-template" v-model="selectedTemplate" @change="getFieldLayout">
-									<option value="" disabled selected>Select template</option>
-									<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
-								</select>
+							<!-- Author -->
+							<div class="form-group">
+								<label class="form-label" for="options-author">Author</label>
+								<div class="form-select-cont form-input">
+									<select class="form-select" id="options-author" v-model="selectedAuthor" @change="getFieldLayout">
+										<option value="" disabled selected>Select author</option>
+										<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
+									</select>
+								</div>
 							</div>
-						</div>
-						<!-- Layout -->
-						<div class="form-group">
-							<label class="form-label" for="properties-layout">Layout</label>
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="properties-layout" v-model="selectedLayout" @change="getFieldLayout">
-									<option value="" disabled selected>Select template</option>
-									<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
-								</select>
+							<!-- Date -->
+							<div class="form-group">
+								<label class="form-label">Published Date</label>
+								<DatePicker class="date" color="blue" :value="null" v-model="publishedDate"></DatePicker>
 							</div>
-						</div>
-					</div>
+						</div><!-- /Options -->
+						<!-- Properties -->
+						<div class="editor-sidebar-properties">
+							<h2>Properties</h2>
+							<!-- Template -->
+							<div class="form-group">
+								<label class="form-label" for="properties-template">Template</label>
+								<div class="form-select-cont form-input">
+									<select class="form-select" id="properties-template" v-model="selectedTemplate" @change="getFieldLayout">
+										<option value="" disabled selected>Select template</option>
+										<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
+									</select>
+								</div>
+							</div>
+							<!-- Layout -->
+							<div class="form-group">
+								<label class="form-label" for="properties-layout">Layout</label>
+								<div class="form-select-cont form-input">
+									<select class="form-select" id="properties-layout" v-model="selectedLayout" @change="getFieldLayout">
+										<option value="" disabled selected>Select template</option>
+										<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
+									</select>
+								</div>
+							</div>
+						</div><!-- /Properties -->
+					</div><!-- /Sidebar -->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
@@ -192,7 +193,7 @@ export default {
 		selectedAuthor: "",
 		selectedTemplate: "",
 		selectedLayout: "",
-		fieldError: "",
+		errorTrigger: false,
 		loadingResourceData: true,
 	}),
 	beforeMount() {
@@ -278,23 +279,31 @@ export default {
 			}
 		},
 		save() {
-			if (this.newItem) {
-				this.axios.post("/posts", this.data)
-					.then(res => {
-						console.log(res);
-					})
-					.catch(err => {
-						console.log(err);
-					})
-			} else {
-				this.axios.put("/posts/" + this.$route.params.id, this.data)
-					.then(res => {
-						console.log(res);
-					})
-					.catch(err => {
-						console.log(err);
-					})
-			}
+			this.errorTrigger = true;
+			this.$nextTick().then(() => {
+				if (this.validateFields()) {
+					if (this.newItem) {
+						this.axios.post("/posts", this.data)
+							.then(res => {
+								console.log(res);
+							})
+							.catch(err => {
+								console.log(err);
+							})
+					} else {
+						this.axios.put("/posts/" + this.$route.params.id, this.data)
+							.then(res => {
+								console.log(res);
+							})
+							.catch(err => {
+								console.log(err);
+							})
+					}
+				} else {
+					console.log("in")
+					this.$noty.error("Fix the errors before saving the post.")
+				}
+			})
 		},
 		updateFields(e) {
 			this.data.fields = e
@@ -306,11 +315,15 @@ export default {
 			this.data.codeinjection_header = e.header;
 			this.data.codeinjection_footer = e.footer;
 		},
+		validateFields() {
+			return document.querySelectorAll(".field-cont-error").length === 0;
+		},
 	},
 	computed: {
 		getResources() {
 			return this.$store.state.theme.resources;
 		},
+
 		computedSlug() {
 			let slugResult = '';
 
@@ -340,5 +353,18 @@ export default {
 	.title {
 		margin-bottom: 1.4rem;
 	}
+
+	.editor {
+
+		// Sidebar
+		// =========================================================================
+
+		&-sidebar {
+			position: sticky;
+			top: 100px;
+		}
+
+	}
+
 
 </style>
