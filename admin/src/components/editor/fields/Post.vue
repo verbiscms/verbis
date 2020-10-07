@@ -15,6 +15,7 @@
 			@max-tags-reached="validate(`Only one post can be inserted in to the ${layout.label}`)"
 			placeholder="Add Post"
 			@blur="validateRequired"
+			:add-on-key="[13, ':', ';']"
 		/>
 		<!-- Message -->
 		<transition name="trans-fade-height">
