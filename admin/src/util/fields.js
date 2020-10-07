@@ -7,10 +7,29 @@
  */
 
 export const fieldMixin = {
+	props: {
+		layout: Object,
+		fields: {
+			type: String,
+			default: ''
+		},
+		errorTrigger: Boolean,
+	},
 	data() {
 		return {
+			errors: [],
 			typed: false,
 		};
+	},
+	watch: {
+		errorTrigger: function() {
+			if (typeof this.validate !== "undefined") {
+				this.validate()
+			}
+			if (typeof this.validateRequired !== "undefined") {
+				this.validateRequired()
+			}
+		}
 	},
 	methods: {
 

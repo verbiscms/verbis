@@ -1,0 +1,87 @@
+// -----------------------------------------------------------------------------
+// _noty.scss
+// This file contains all styles related to the noty toast component.
+// -----------------------------------------------------------------------------
+
+.noty {
+
+	// Bar
+	// =========================================================================
+
+	&_bar {
+		margin: 10px 0;
+		overflow: visible!important;
+		border-radius: 6px;
+		position: relative;
+		box-shadow: $form-box-shadow;
+		//border: 2px solid $grey-light;
+	}
+
+	// Body
+	// =========================================================================
+
+	&_body {
+		padding: 14px 18px;
+		font-size: 14px;
+		font-weight: 500;
+	}
+
+	// Progress Bar
+	// =========================================================================
+
+	&_progressbar {
+		background: $white !important;
+		opacity: 1 !important;
+	}
+
+	// Buttons
+	// =========================================================================
+
+	&_buttons {
+		padding: 10px;
+	}
+
+	// Notification
+	// =========================================================================
+
+	&_type__notification {
+		background: $white;
+		color: $secondary;
+	}
+
+	// Warning
+	// =========================================================================
+
+	&_type__alert,
+	&_type__warning {
+		background: $orange;
+		color: $white;
+	}
+
+	// Error
+	// =========================================================================
+
+	&_type__error {
+		background: $orange;
+		color: $white;
+	}
+
+	// Information
+	// =========================================================================
+
+	&_type__info,
+	&_type__information {
+		background: $primary;
+		color: $white;
+	}
+
+	// Success
+	// =========================================================================
+
+	&_type__success {
+		background: $green;
+		color: $white;
+	}
+}
+
+

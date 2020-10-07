@@ -21,6 +21,7 @@
 @import "vendor/font-awesome/scss/regular";
 @import "vendor/font-awesome/scss/solid";
 @import "vendor/font-awesome/scss/light";
+@import '~vuejs-noty/dist/vuejs-noty.css';
 
 /* ====================
     Base
@@ -42,6 +43,7 @@
 @import "components/_serp";
 @import "components/_popover";
 @import "components/_tag";
+@import "components/_noty";
 @import "components/_transitions";
 
 /* ====================
