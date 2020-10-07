@@ -106,6 +106,10 @@
 			border-top: 2px solid $grey-light;
 			cursor: pointer;
 
+			&#{$self}-selected-item {
+				background-color: rgba($primary, 0.07);
+			}
+
 			&:hover {
 				background-color: rgba($primary, 0.07);
 			}
@@ -151,7 +155,7 @@
 			transform: translateY(0px);
 			color: $secondary;
 			font-size: 14px;
-			min-height: 56px;
+			min-height: 46px;
 		}
 
 		::-webkit-input-placeholder {
