@@ -15,7 +15,7 @@
 			},
 			"options": {
 				"maxlength": 10,
-				"default_value": "default",
+				"default_value": "",
 				"placeholder": "Placeholder",
 				"prepend": "",
 				"append": "Append"
@@ -34,7 +34,7 @@
 			},
 			"options": {
 				"maxlength": 20,
-				"default_value": "default",
+				"default_value": "",
 				"placeholder": "Placeholder",
 				"resize": true,
 				"rows": ""
@@ -52,7 +52,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "Default Value",
+				"default_value": "",
 				"tabs": "all",
 				"toolbar": "full",
 				"media_upload": 1
@@ -70,7 +70,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": 20,
+				"default_value": "",
 				"placeholder": "Enter a number",
 				"prepend": 20,
 				"append": "",
@@ -111,7 +111,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "default",
+				"default_value": "",
 				"placeholder": "Placeholder",
 				"prepend": "",
 				"append": "Append"
@@ -129,7 +129,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "default",
+				"default_value": "",
 				"placeholder": "Placeholder"
 			}
 		},
@@ -146,7 +146,7 @@
 			},
 			"options": {
 				"placeholder": "Placeholder",
-				"prepend": "Prepend",
+				"prepend": "",
 				"append": ""
 			}
 		},

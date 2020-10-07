@@ -146,6 +146,10 @@
 			<textarea class="richtext-code" v-model="code"></textarea>
 			<editor-content :editor="editor" />
 		</div>
+		<!-- Message -->
+		<transition name="trans-fade-height">
+			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
+		</transition><!-- /Message -->
 	</div>
 </template>
 
@@ -249,6 +253,7 @@ export default {
 			this.editor = new Editor({
 				content: this.value,
 				onUpdate: ({ getHTML }) => {
+					this.errors = [];
 					this.html = getHTML()
 					if (this.html === '<p></p>') this.html = ''
 					this.value = this.html

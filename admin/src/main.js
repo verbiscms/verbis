@@ -17,6 +17,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import axios from 'axios'
+import VueNoty from 'vuejs-noty'
 require('./functions.js');
 
 // Local
@@ -75,6 +76,17 @@ Vue.mixin({
 		}
 	}
 })
+
+/**
+ * Plugins
+ *
+ */
+Vue.use(VueNoty, {
+	timeout: 2500,
+	theme: 'verbis',
+	progressBar: true,
+	layout: 'bottomRight'
+});
 
 /**
  * Vue
