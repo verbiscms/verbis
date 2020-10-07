@@ -38,9 +38,11 @@ export default {
 	data: () => ({
 		errors: [],
 	}),
+	mounted() {
+		this.setDefaultValue()
+	},
 	methods: {
 		validate() {
-			this.typed = true;
 			this.errors = [];
 			this.validateMaxLength()
 		},
@@ -61,10 +63,10 @@ export default {
 		},
 		value: {
 			get() {
-				return this.setDefaultValue(this.replacePrependAppend());
+				return this.fields;
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value))
+				this.$emit("update:fields", value)
 			}
 		},
 	}

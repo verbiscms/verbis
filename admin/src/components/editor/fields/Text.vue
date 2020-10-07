@@ -44,6 +44,9 @@ export default {
 			this.validateRequired();
 		},
 	},
+	mounted() {
+		this.setDefaultValue()
+	},
 	computed: {
 		getOptions() {
 			return this.layout.options;
@@ -53,7 +56,7 @@ export default {
 		},
 		value: {
 			get() {
-				return this.setDefaultValue(this.replacePrependAppend());
+				return this.replacePrependAppend();
 			},
 			set(value) {
 				this.$emit("update:fields", this.setPrependAppend(value));
