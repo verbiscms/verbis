@@ -37,6 +37,9 @@ export default {
 		errors: [],
 		focused: false,
 	}),
+	mounted() {
+		this.setDefaultValueChoices()
+	},
 	methods: {
 		validate() {
 			this.errors = [];
@@ -62,7 +65,7 @@ export default {
 		},
 		value: {
 			get() {
-				return this.setDefaultValueChoices()
+				return this.fields;
 			},
 			set(value) {
 				this.$emit("update:fields", this.setPrependAppend(value));

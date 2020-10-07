@@ -45,6 +45,9 @@ export default {
 		errors: [],
 		focused: false,
 	}),
+	mounted() {
+		this.setDefaultValue()
+	},
 	methods: {
 		validate() {
 			this.errors = []
@@ -73,7 +76,7 @@ export default {
 		},
 		value: {
 			get() {
-				return this.setDefaultValue(this.replacePrependAppend());
+				return this.replacePrependAppend();
 			},
 			set(value) {
 				this.$emit("update:fields", this.setPrependAppend(value));

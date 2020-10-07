@@ -15,7 +15,7 @@
 			},
 			"options": {
 				"maxlength": 10,
-				"default_value": "",
+				"default_value": "default",
 				"placeholder": "Placeholder",
 				"prepend": "",
 				"append": "Append"
@@ -34,7 +34,7 @@
 			},
 			"options": {
 				"maxlength": 20,
-				"default_value": "",
+				"default_value": "default",
 				"placeholder": "Placeholder",
 				"resize": true,
 				"rows": ""
@@ -52,7 +52,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "",
+				"default_value": "default",
 				"tabs": "all",
 				"toolbar": "full",
 				"media_upload": 1
@@ -70,7 +70,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "",
+				"default_value": "default",
 				"placeholder": "Enter a number",
 				"prepend": 20,
 				"append": "",
@@ -91,7 +91,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "",
+				"default_value": "default",
 				"min": 20,
 				"max": 300,
 				"step": 5,
@@ -111,7 +111,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "",
+				"default_value": "default",
 				"placeholder": "Placeholder",
 				"prepend": "",
 				"append": "Append"
@@ -129,7 +129,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "",
+				"default_value": "default",
 				"placeholder": "Placeholder"
 			}
 		},
@@ -166,7 +166,7 @@
 					"red": "Red",
 					"orange": "Orangey"
 				},
-				"default_value": [],
+				"default_value": ["red"],
 				"allow_null": false,
 				"multiple": false,
 				"placeholder": "Placeholder"
@@ -204,9 +204,7 @@
 					"red": "Red",
 					"blue": "Blue"
 				},
-				"default_value": [
-					"red"
-				],
+				"default_value": ["blue"],
 				"allow_null": false,
 				"placeholder": "Placeholder"
 			}
@@ -228,7 +226,7 @@
 					"green": "Green"
 				},
 				"allow_null": 0,
-				"default_value": ""
+				"default_value": ["red"]
 			}
 		},
 		{
