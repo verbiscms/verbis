@@ -23,10 +23,11 @@
 	===================== -->
 <script>
 
-import common from "@/components/editor/fields/common";
+import { fieldMixin } from "@/util/fields"
 
 export default {
 	name: "FieldTextarea",
+	mixins: [fieldMixin],
 	props: {
 		layout: Object,
 		fields: {
@@ -36,33 +37,20 @@ export default {
 	},
 	data: () => ({
 		errors: [],
-		typed: false,
 	}),
 	methods: {
 		validate() {
-			this.errors = common.validateMaxLength(this.value, this.layout, this.getOptions)
+			this.typed = true;
+			this.errors = [];
+			this.validateMaxLength()
 		},
-		validateRequired() {
-			this.errors = common.validateRequired(this.value, this.layout)
-		}
 	},
 	computed: {
 		getOptions() {
 			return this.layout.options
 		},
-		value: {
-			get() {
-				let value = this.fields,
-					defaultVal = common.checkDefaultValue(value, this.getOptions);
-				if (defaultVal && !this.typed) {
-					value = defaultVal
-				}
-				this.typed = true // eslint-disable-line
-				return value;
-			},
-			set(value) {
-				this.$emit("update:fields", value)
-			}
+		getLayout() {
+			return this.layout;
 		},
 		getResize() {
 			return this.layout.options["resize"] ? '' : "none !important"
@@ -70,6 +58,14 @@ export default {
 		getRows() {
 			const rows = this.layout.options['rows']
 			return rows ? rows : 8
+		},
+		value: {
+			get() {
+				return this.setDefaultValue(this.replacePrependAppend());
+			},
+			set(value) {
+				this.$emit("update:fields", this.setPrependAppend(value))
+			}
 		},
 	}
 }

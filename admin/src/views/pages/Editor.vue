@@ -137,7 +137,6 @@
 							</div>
 						</div>
 					</div>
-					{{ layouts }}
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
@@ -296,7 +295,6 @@ export default {
 						console.log(err);
 					})
 			}
-
 		},
 		updateFields(e) {
 			this.data.fields = e

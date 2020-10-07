@@ -22,8 +22,11 @@
 						</div><!-- /Field Wrapper -->
 						<!-- /Field Content -->
 						<div class="field-content">
+							<!-- =====================
+								Basic
+								===================== -->
 							<!-- Text -->
-							<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]" @error="emitError"></FieldText>
+							<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]"></FieldText>
 							<!-- Textarea -->
 							<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]"></FieldTextarea>
 							<!-- Number -->
@@ -32,10 +35,36 @@
 							<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRange>
 							<!-- Email -->
 							<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]"></FieldEmail>
+							<!-- Url -->
+							<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields[layout.name]"></FieldUrl>
+							<!-- Password -->
+							<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields[layout.name]"></FieldPassword>
+							<!-- =====================
+								Content
+								===================== -->
 							<!-- Richtext -->
 							<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRichText>
+							<!-- =====================
+								Choice
+								===================== -->
+							<!-- Select -->
+							<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[layout.name]"></FieldSelect>
+							<!-- Checkbox -->
+							<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields[layout.name]"></FieldCheckbox>
+							<!-- Radio -->
+							<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRadio>
+							<!-- Button Group -->
+							<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields[layout.name]"></FieldButtonGroup>
+							<!-- =====================
+								Relational
+								===================== -->
 							<!-- Post Object -->
-							<FieldPostObject v-if="layout.type === 'post_object'" :layout="layout" :fields.sync="fields[layout.name]"></FieldPostObject>
+							<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[layout.name]"></FieldPost>
+							<!-- User -->
+							<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[layout.name]"></FieldUser>
+							<!-- =====================
+								Layout
+								===================== -->
 							<!-- Repeater -->
 							<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRepeater>
 							<!-- Flexible -->
@@ -53,15 +82,32 @@
 	===================== -->
 <script>
 
+// Basic
 import FieldText from "@/components/editor/fields/Text";
 import FieldTextarea from "@/components/editor/fields/Textarea";
 import FieldNumber from "@/components/editor/fields/Number";
 import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
+import FieldUrl from "@/components/editor/fields/Url";
+import FieldPassword from "@/components/editor/fields/Password";
+
+// Content
 import FieldRichText from "@/components/editor/fields/RichText";
-import FieldPostObject from "@/components/editor/fields/PostObject";
+
+// Choice
+import FieldSelect from "@/components/editor/fields/Select";
+import FieldCheckbox from "@/components/editor/fields/Checkbox";
+import FieldRadio from "@/components/editor/fields/Radio";
+import FieldButtonGroup from "@/components/editor/fields/ButtonGroup";
+
+// Relational
+import FieldPost from "@/components/editor/fields/Post";
+import FieldUser from "@/components/editor/fields/User";
+
+// Layout
 import FieldRepeater from "@/components/editor/fields/Repeater";
 import FieldFlexible from "@/components/editor/fields/FlexibleContent";
+
 
 export default {
 	name: "Fields",
@@ -73,20 +119,32 @@ export default {
 		},
 	},
 	components: {
+		// Basic
 		FieldText,
 		FieldTextarea,
 		FieldNumber,
 		FieldRange,
 		FieldEmail,
+		FieldUrl,
+		FieldPassword,
+		// Content
 		FieldRichText,
-		FieldPostObject,
+		// Choice
+		FieldSelect,
+		FieldCheckbox,
+		FieldRadio,
+		FieldButtonGroup,
+		// Relational
+		FieldPost,
+		FieldUser,
+		// Layout
 		FieldRepeater,
 		FieldFlexible,
 	},
 	data: () => ({
 		computedHeight: 'auto',
 		isActive: true,
-		errors: [],
+		errors: {},
 	}),
 	mounted() {
 		this.initHeight()
@@ -94,9 +152,6 @@ export default {
 	methods: {
 		initHeight() {
 			//this.computedHeight= getComputedStyle(this.$refs['myText']).height;
-		},
-		emitError(event) {
-			console.log(event);
 		},
 		getLayoutByName(groupIndex, name) {
 			return this.getLayout[groupIndex]['fields'].find(f => f.name === name)

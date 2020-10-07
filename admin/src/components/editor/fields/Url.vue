@@ -1,18 +1,16 @@
 <!-- =====================
-	Field - Text
+	Field - Url
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
-		<div class="field-prepend-append" :class="{ 'field-focused' : focused }">
-			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
-			<input class="form-input form-input-white" type="text"
+		<div class="form-input-icon">
+			<input class="form-input form-input-white" type="text" value="The value"
 				v-model="value"
 				@keyup="validate"
-				@blur="handleBlur"
 				:placeholder="getOptions['placeholder']"
-				:maxlength="getOptions['maxlength']">
-			<div class="field-append" v-if="getOptions['append']">{{ getOptions['append'] }}</div>
-		</div><!-- /Prepend Append -->
+				@blur="validateRequired">
+			<i class="fal fa-globe"></i>
+		</div>
 		<!-- Message -->
 		<transition name="trans-fade-height">
 			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
@@ -28,7 +26,7 @@
 import { fieldMixin } from "@/util/fields"
 
 export default {
-	name: "FieldText",
+	name: "FieldEmail",
 	mixins: [fieldMixin],
 	props: {
 		layout: Object,
@@ -39,22 +37,24 @@ export default {
 	},
 	data: () => ({
 		errors: [],
-		focused: false,
 	}),
 	methods: {
 		validate() {
 			this.errors = [];
-			this.typed = true;
-			this.validateMaxLength();
-		},
-		handleBlur() {
-			this.focused = false;
-			this.validateRequired();
-		},
+			let pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+				'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+				'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+				'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+				'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+				'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+			if (this.value !== "" && !pattern.test(this.value)) {
+				this.errors.push(`Enter a valid url for the ${this.layout.label} field.`)
+			}
+		}
 	},
 	computed: {
 		getOptions() {
-			return this.layout.options;
+			return this.layout.options
 		},
 		getLayout() {
 			return this.layout;
@@ -64,7 +64,7 @@ export default {
 				return this.setDefaultValue(this.replacePrependAppend());
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value));
+				this.$emit("update:fields", this.setPrependAppend(value))
 			}
 		}
 	}
