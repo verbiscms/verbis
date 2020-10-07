@@ -40,7 +40,6 @@
 		align-items: center;
 		width: 100%;
 		background: $white;
-		min-height: 26px;
 		padding: 0 $form-input-padding-x;
 	}
 
@@ -139,19 +138,20 @@
 
 	&-new-tag-input-wrapper {
 		margin: 2px;
-		flex: 1 0 auto;
+		flex-grow: 2;
 
 		input {
-			flex: 1 0 auto;
+			width: 100%;
 			line-height: initial;
 			border: none;
 			outline: none;
 			min-width: 130px;
 			padding: 0;
 			height: 100%;
-			transform: translateY(px);
+			transform: translateY(0px);
 			color: $secondary;
 			font-size: 14px;
+			min-height: 56px;
 		}
 
 		::-webkit-input-placeholder {

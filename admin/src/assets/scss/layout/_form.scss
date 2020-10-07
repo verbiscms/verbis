@@ -53,6 +53,27 @@
         }
     }
 
+    // Input With Icon
+    // =========================================================================
+
+    &-input-icon {
+        position: relative;
+        width: 100%;
+
+        #{$self}-input {
+            padding-left: 44px;
+        }
+
+        i {
+            position: absolute;
+            color: rgba($secondary, 0.4);
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 9;
+        }
+    }
+
     // Textarea
     // =========================================================================
 
@@ -66,8 +87,10 @@
     // Select
     // =========================================================================
 
+
     &-select {
         position: relative;
+        width: 100%;
         border: none;
         background-color: transparent;
         color: $secondary;
@@ -103,6 +126,62 @@
         }
     }
 
+    // Checkbox
+    // =========================================================================
+
+    &-checkbox {
+        display: flex;
+        align-items: center;
+
+        &-text {
+            color: rgba($secondary, 0.7);
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+
+        input {
+            display: none;
+            position: absolute;
+            top: -99999999px;
+            left: -99999999px;
+
+            &:checked + label {
+                background-color: $primary;
+                border-color: $primary;
+
+                i {
+                    opacity: 1;
+                }
+            }
+        }
+
+        label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: $form-checkbox-size;
+            width: $form-checkbox-size;
+            min-width: $form-checkbox-size;
+            min-height: $form-checkbox-size;
+            background-color: $white;
+            border-radius: 3px;
+            cursor: pointer;
+            border: 2px solid $grey-light;
+            transition: background-color 120ms, border 120ms;
+            will-change: background-color, border;
+
+            i {
+                font-size: 13px;
+                font-weight: 500;
+                color: $white;
+                opacity: 0;
+                transform: translateY(1px);
+                transition: opacity 120ms;
+            }
+        }
+    }
+
     // Range
     // =========================================================================
 
@@ -134,6 +213,77 @@
             border-radius: 50%;
             background: $primary;
             cursor: pointer;
+        }
+    }
+
+    // Radio
+    // =========================================================================
+
+    &-radio {
+        display: flex;
+        align-items: center;
+        margin-right: 30px;
+
+        &-cont {
+            display: flex;
+            align-items: center;
+        }
+
+        &-text {
+            color: rgba($secondary, 0.7);
+            font-size: 14px;
+            transition: all .2s ease;
+        }
+
+        input {
+            display: none;
+            position: absolute;
+            top: -99999999px;
+            left: -99999999px;
+
+            &:checked + label {
+                border: 2px solid $primary;
+
+                &:after {
+                    transform: scale(1);
+                    transition: all .2s cubic-bezier(.35,.9,.4,.9);
+                    opacity: 1;
+                }
+            }
+
+            &:checked ~ #{$self}-radio-text {
+               color: $copy;
+            }
+        }
+
+        label {
+            position: relative;
+            display: block;
+            float: left;
+            margin-right: 6px;
+            width: 20px;
+            height: 20px;
+            border: 2px solid $grey-light;
+            border-radius: 100%;
+            -webkit-tap-highlight-color: transparent;
+            transition: all .2s ease;
+            cursor: pointer;
+            will-change: border-color;
+
+            &:after {
+                content: '';
+                position: absolute;
+                top: 3px;
+                left: 3px;
+                width: 10px;
+                height: 10px;
+                border-radius: 100%;
+                background: $primary;
+                transform: scale(0);
+                transition: all .2s ease;
+                opacity: .08;
+                pointer-events: none;
+            }
         }
     }
 
@@ -297,4 +447,3 @@ input:-internal-autofill-selected {
     /* Microsoft Edge */
     @include formPlaceholder
 }
-

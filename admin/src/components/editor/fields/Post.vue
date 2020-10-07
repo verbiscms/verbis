@@ -31,7 +31,7 @@
 import VueTagsInput from '@jack_reddico/vue-tags-input';
 
 export default {
-	name: "FieldPostObject",
+	name: "FieldPost",
 	props: {
 		layout: Object,
 		fields: Array,
@@ -128,15 +128,3 @@ export default {
 }
 
 </script>
-
-<!-- =====================
-	Styles
-	===================== -->
-<style lang="scss">
-
-.ti-new-tag-input.ti-valid  {
-	width: 100% !important;
-	padding: 20px 0;
-}
-
-</style>

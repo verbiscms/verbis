@@ -27,37 +27,36 @@
 	===================== -->
 <script>
 
+import { fieldMixin } from "@/util/fields"
+
 export default {
 	name: "FieldRange",
+	mixins: [fieldMixin],
 	props: {
 		layout: Object,
 		fields: {
 			type: String,
-			default: '0'
+			default: "0",
 		},
 	},
 	data: () => ({
 		errors: [],
 		focused: false,
 	}),
-	methods: {
-
-	},
 	computed: {
 		getOptions() {
 			return this.layout.options;
 		},
+		getLayout() {
+			return this.layout;
+		},
 		value: {
 			get() {
-				let value = this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
-				if (value === "" && !this.typed && this.getOptions['default_value'] !== "") { // eslint-disable-line
-					value = this.getOptions['default_value']
-				}
-				this.typed = true // eslint-disable-line
-				return value;
+				// TODO: The range field is jumping when stripping default values.
+				return this.setDefaultValue(this.replacePrependAppend())
 			},
 			set(value) {
-				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+				this.$emit("update:fields", this.setPrependAppend(value));
 			}
 		}
 	}

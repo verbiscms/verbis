@@ -29,19 +29,21 @@
 	===================== -->
 <script>
 
+import { fieldMixin } from "@/util/fields"
+
 export default {
 	name: "FieldNumber",
+	mixins: [fieldMixin],
 	props: {
 		layout: Object,
 		fields: {
 			type: String,
-			default: ''
+			default: "0",
 		},
 	},
 	data: () => ({
 		errors: [],
 		focused: false,
-		typed: false,
 	}),
 	methods: {
 		validate() {
@@ -57,11 +59,6 @@ export default {
 				}
 			}
 		},
-		validateRequired() {
-			if (this.number === "" && this.layout["required"]) {
-				this.errors.push(`The ${this.layout.name} field is required.`)
-			}
-		},
 		handleBlur() {
 			this.focused = false;
 			this.validateRequired()
@@ -71,18 +68,15 @@ export default {
 		getOptions() {
 			return this.layout.options;
 		},
+		getLayout() {
+			return this.layout;
+		},
 		value: {
 			get() {
-				let value = this.fields.replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
-				if (value === "" && !this.typed) { // eslint-disable-line
-					this.typed = true; // eslint-disable-line
-					value = this.getOptions['default_value']
-				}
-				this.typed = true // eslint-disable-line
-				return value;
+				return this.setDefaultValue(this.replacePrependAppend());
 			},
 			set(value) {
-				this.$emit("update:fields", this.getOptions['prepend'] + value + this.getOptions['append'])
+				this.$emit("update:fields", this.setPrependAppend(value));
 			}
 		}
 	}
