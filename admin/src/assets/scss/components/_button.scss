@@ -3,12 +3,6 @@
 // This file contains all styles related to the button component.
 // -----------------------------------------------------------------------------
 
-// Variables
-$button-padding: 12px 24px;
-$button-border-radius: 8px;
-$btn-icon-width: 55px;
-$btn-margin-x: 10px;
-
 .btn {
 	$self: &;
 
@@ -16,7 +10,7 @@ $btn-margin-x: 10px;
 	display: inline-flex;
 	justify-content: center;
 	background-color: transparent;
-	padding: $button-padding;
+	padding: $btn-padding;
 	cursor: pointer;
 	outline: none;
 	font-size: 14px;
@@ -25,7 +19,7 @@ $btn-margin-x: 10px;
 	user-select: none;
 	line-height: 1;
 	color: $secondary;
-	border-radius: $button-border-radius;
+	border-radius: $btn-border-radius;
 	border: 2px solid $grey-light;
 	transition: box-shadow 200ms ease;
 	will-change: box-shadow;
@@ -65,7 +59,7 @@ $btn-margin-x: 10px;
 		min-height: $btn-form-fixed-height;
 		align-items: center;
 		font-size: 1.2rem;
-		border-radius: $button-border-radius;
+		border-radius: $btn-border-radius;
 		color: $white;
 	}
 

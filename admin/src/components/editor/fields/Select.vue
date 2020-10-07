@@ -1,18 +1,14 @@
 <!-- =====================
-	Field - Text
+	Field - Select TODO: Handle multiple!
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
-		<div class="field-prepend-append" :class="{ 'field-focused' : focused }">
-			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
-			<input class="form-input form-input-white" type="text"
-				v-model="value"
-				@keyup="validate"
-				@blur="handleBlur"
-				:placeholder="getOptions['placeholder']"
-				:maxlength="getOptions['maxlength']">
-			<div class="field-append" v-if="getOptions['append']">{{ getOptions['append'] }}</div>
-		</div><!-- /Prepend Append -->
+		<div class="form-select-cont form-input">
+			<select class="form-select" v-model="value" @blur="validate">
+				<option value="" disabled selected>{{ getPlaceholder }}</option>
+				<option :value="choice" v-for="choice in getOptions['choices']" :key="choice">{{ choice }}</option>
+			</select>
+		</div>
 		<!-- Message -->
 		<transition name="trans-fade-height">
 			<span class="field-message field-message-warning" v-if="errors.length">{{ errors[0] }}</span>
@@ -25,16 +21,16 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import {fieldMixin} from "@/util/fields"
 
 export default {
-	name: "FieldText",
+	name: "FieldSelect",
 	mixins: [fieldMixin],
 	props: {
 		layout: Object,
 		fields: {
-			type: String,
-			default: ''
+			type: [String, Array],
+			default: '',
 		},
 	},
 	data: () => ({
@@ -44,8 +40,6 @@ export default {
 	methods: {
 		validate() {
 			this.errors = [];
-			this.typed = true;
-			this.validateMaxLength();
 		},
 		handleBlur() {
 			this.focused = false;
@@ -59,9 +53,16 @@ export default {
 		getLayout() {
 			return this.layout;
 		},
+		getPlaceholder() {
+			const placeholder = this.getOptions['placeholder']
+			if (!placeholder || placeholder === "") {
+				return "Select " + this.getLayout['label'].toLowerCase()
+			}
+			return placeholder;
+		},
 		value: {
 			get() {
-				return this.setDefaultValue(this.replacePrependAppend());
+				return this.setDefaultValueChoices()
 			},
 			set(value) {
 				this.$emit("update:fields", this.setPrependAppend(value));

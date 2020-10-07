@@ -35,7 +35,7 @@
 			"options": {
 				"maxlength": 20,
 				"default_value": "default",
-				"placeholder": "text",
+				"placeholder": "Placeholder",
 				"resize": true,
 				"rows": ""
 			}
@@ -118,21 +118,127 @@
 			}
 		},
 		{
-			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e9125",
-			"label": "Post Object",
-			"name": "post_object",
-			"type": "post_object",
+			"uuid": "32ca0ea0-c911-4eaa-b6e0-67dfd99e5775",
+			"label": "Url",
+			"name": "url",
+			"type": "url",
 			"instructions": "Instructions",
 			"required": true,
-			"conditional_logic": [
-				[
-					{
-						"field": "email",
-						"operator": "==",
-						"value": "hh"
-					}
-				]
-			],
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"default_value": "default",
+				"placeholder": "Placeholder"
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-4eaa-b6e0-67dfd99e5775",
+			"label": "Password",
+			"name": "password",
+			"type": "password",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"placeholder": "Placeholder",
+				"prepend": "Prepend",
+				"append": ""
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-67dfd99e5775",
+			"label": "Select",
+			"name": "select",
+			"type": "select",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"choices": {
+					"red": "Red",
+					"orange": "Orangey"
+				},
+				"default_value": [],
+				"allow_null": false,
+				"multiple": false,
+				"placeholder": "Placeholder"
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e5775",
+			"label": "Checkbox",
+			"name": "checkbox",
+			"type": "checkbox",
+			"instructions": "Instructions",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"default_value": true,
+				"message": "Message next to checkbox"
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e2775",
+			"label": "Radio",
+			"name": "radio",
+			"type": "radio",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"choices": {
+					"red": "Red",
+					"blue": "Blue"
+				},
+				"default_value": [
+					"red"
+				],
+				"allow_null": false,
+				"placeholder": "Placeholder"
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e2735",
+			"label": "Button Group",
+			"name": "button_group",
+			"type": "button_group",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"choices": {
+					"red": "Red",
+					"green": "Green"
+				},
+				"allow_null": 0,
+				"default_value": ""
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e2935",
+			"label": "Post Object",
+			"name": "post",
+			"type": "post",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
 			},
@@ -147,7 +253,26 @@
 			}
 		},
 		{
-			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5175",
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e1735",
+			"label": "User",
+			"name": "user",
+			"type": "user",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"role": [
+					"admin"
+				],
+				"allow_null": false,
+				"multiple": false
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e2725",
 			"label": "Flexible",
 			"name": "flexible",
 			"type": "flexible",

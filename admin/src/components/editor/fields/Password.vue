@@ -1,16 +1,20 @@
 <!-- =====================
-	Field - Text
+	Field - Password
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<div class="field-prepend-append" :class="{ 'field-focused' : focused }">
 			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
-			<input class="form-input form-input-white" type="text"
-				v-model="value"
-				@keyup="validate"
-				@blur="handleBlur"
-				:placeholder="getOptions['placeholder']"
-				:maxlength="getOptions['maxlength']">
+			<div class="form-input-icon">
+				<input class="form-input form-input-white" type="password"
+					v-model="value"
+					@keyup="validate"
+					:placeholder="getOptions['placeholder']"
+					@focus="focused = true"
+					:maxlength="defaultMaxLength"
+					@blur="validateRequired">
+				<i class="fal fa-lock"></i>
+			</div>
 			<div class="field-append" v-if="getOptions['append']">{{ getOptions['append'] }}</div>
 		</div><!-- /Prepend Append -->
 		<!-- Message -->
@@ -28,7 +32,7 @@
 import { fieldMixin } from "@/util/fields"
 
 export default {
-	name: "FieldText",
+	name: "FieldPassword",
 	mixins: [fieldMixin],
 	props: {
 		layout: Object,
@@ -40,31 +44,28 @@ export default {
 	data: () => ({
 		errors: [],
 		focused: false,
+		defaultMaxLength: 36,
 	}),
 	methods: {
 		validate() {
 			this.errors = [];
 			this.typed = true;
-			this.validateMaxLength();
-		},
-		handleBlur() {
-			this.focused = false;
-			this.validateRequired();
+			this.validateMaxLength(this.defaultMaxLength);
 		},
 	},
 	computed: {
 		getOptions() {
-			return this.layout.options;
+			return this.layout.options
 		},
 		getLayout() {
 			return this.layout;
 		},
 		value: {
 			get() {
-				return this.setDefaultValue(this.replacePrependAppend());
+				return this.replacePrependAppend();
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value));
+				this.$emit("update:fields", this.setPrependAppend(value))
 			}
 		}
 	}

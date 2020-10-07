@@ -155,6 +155,7 @@
 
 <script>
 
+import { fieldMixin } from "@/util/fields"
 import {Editor, EditorContent, EditorMenuBar, EditorMenuBubble} from 'tiptap'
 import {
 	VerbisBlockquote,
@@ -189,18 +190,19 @@ const Chrome = require('vue-color/src/components/Compact.vue').default;
 
 export default {
 	name: "FieldRichText",
-	components: {
-		EditorContent,
-		EditorMenuBar,
-		EditorMenuBubble,
-		'color-picker': Chrome,
-	},
 	props: {
 		layout: Object,
 		fields: {
 			type: String,
 			default: ''
 		},
+	},
+	mixins: [fieldMixin],
+	components: {
+		EditorContent,
+		EditorMenuBar,
+		EditorMenuBubble,
+		'color-picker': Chrome,
 	},
 	data: () => ({
 		html: '',
@@ -212,7 +214,6 @@ export default {
 		textColor: '#000000',
 		code: '',
 		codeView: false,
-		typed: false,
 	}),
 	mounted() {
 		this.config = this.getEditorConfig
@@ -226,9 +227,12 @@ export default {
 		getOptions() {
 			return this.layout.options
 		},
+		getLayout() {
+			return this.layout;
+		},
 		value: {
 			get() {
-				let value = this.fields === "" && !this.typed && this.getOptions['default_value'] !== "" ? this.getOptions['default_value'] : this.fields;
+				let value = this.setDefaultValue(this.fields);
 				return value === '<p></p>' ? '' : value
 			},
 			set(value) {
