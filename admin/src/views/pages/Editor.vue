@@ -300,7 +300,6 @@ export default {
 							})
 					}
 				} else {
-					console.log("in")
 					this.$noty.error("Fix the errors before saving the post.")
 				}
 			})

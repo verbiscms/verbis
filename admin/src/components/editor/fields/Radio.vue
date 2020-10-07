@@ -43,6 +43,9 @@ export default {
 		errors: [],
 		test: "",
 	}),
+	mounted() {
+		this.setDefaultValueChoices()
+	},
 	computed: {
 		getOptions() {
 			return this.layout.options;
@@ -52,7 +55,7 @@ export default {
 		},
 		value: {
 			get() {
-				return this.setDefaultValueChoices()
+				return this.fields;
 			},
 			set(value) {
 				this.$emit("update:fields", value);

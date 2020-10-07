@@ -48,16 +48,14 @@ export const fieldMixin = {
 		},
 
 		/*
-		 * setDefaultValue()
+		 * setField()
 		 * Set the default value if there is no field data.
 		 */
-		setDefaultValue(value) {
-			if (value === "" && !this.typed && this.getOptions['default_value'] !== "") {
-				this.typed = true;
-				return this.getOptions['default_value']
+		setDefaultValue() {
+			const defaultVal = this.getOptions['default_value'];
+			if (this.value === "" && defaultVal !== "" && defaultVal !== undefined) {
+				this.value = this.getOptions['default_value'];
 			}
-			this.typed = true;
-			return value
 		},
 
 		/*
@@ -66,14 +64,17 @@ export const fieldMixin = {
 		 */
 		setDefaultValueChoices() {
 			if (this.fields === "" && this.getOptions['default_value'] !== "") {
-				const opts = this.getOptions['default_value']
+				const opts = this.getOptions['default_value'];
 				let defaultVal = ""
 				opts.forEach(opt => {
 					defaultVal = this.getOptions['choices'][opt]
 				});
-				return defaultVal
+				if (defaultVal !== "") {
+					this.value = defaultVal;
+					return
+				}
 			}
-			return this.fields;
+			this.value = this.fields;
 		},
 
 		/*
@@ -104,5 +105,6 @@ export const fieldMixin = {
 				this.errors.push(`The maximum length of the ${this.getLayout.label.toLowerCase()} can not exceed ${maxLength} characters.`);
 			}
 		},
+
 	},
 };

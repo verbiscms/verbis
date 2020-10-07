@@ -43,6 +43,9 @@ export default {
 		errors: [],
 		focused: false,
 	}),
+	mounted() {
+		this.setDefaultValue()
+	},
 	computed: {
 		getOptions() {
 			return this.layout.options;
@@ -53,7 +56,7 @@ export default {
 		value: {
 			get() {
 				// TODO: The range field is jumping when stripping default values.
-				return this.setDefaultValue(this.replacePrependAppend())
+				return this.replacePrependAppend()
 			},
 			set(value) {
 				this.$emit("update:fields", this.setPrependAppend(value));

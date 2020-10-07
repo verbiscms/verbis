@@ -236,8 +236,7 @@ export default {
 		},
 		value: {
 			get() {
-				let value = this.setDefaultValue(this.fields);
-				return value === '<p></p>' ? '' : value
+				return this.fields === '<p></p>' ? '' : this.fields;
 			},
 			set(value) {
 				this.$emit("update:fields", value);
@@ -250,16 +249,19 @@ export default {
 		},
 		setUpEditor() {
 			const extensions = this.createExtensions();
-			this.editor = new Editor({
-				content: this.value,
-				onUpdate: ({ getHTML }) => {
-					this.errors = [];
-					this.html = getHTML()
-					if (this.html === '<p></p>') this.html = ''
-					this.value = this.html
-				},
-				extensions: extensions,
-			});
+			this.setDefaultValue()
+			this.$nextTick(() => {
+				this.editor = new Editor({
+					content: this.value,
+					onUpdate: ({ getHTML }) => {
+						this.errors = [];
+						this.html = getHTML()
+						if (this.html === '<p></p>') this.html = ''
+						this.value = this.html
+					},
+					extensions: extensions,
+				});
+			})
 		},
 		getByElement(element) {
 			if (!this.config) {
