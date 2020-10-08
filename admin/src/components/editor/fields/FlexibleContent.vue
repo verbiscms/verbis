@@ -5,13 +5,22 @@
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".repeater-handle">
 			<div class="field-group" v-for="(group, groupIndex) in getFields" :key="groupIndex">
-				<div class="field-controls">
-					<i class="feather icon-trash-2" @click="deleteRow(groupIndex)"></i>
-					<i class="feather icon-arrow-up" @click="moveUp(groupIndex)"></i>
-					<i class="feather icon-arrow-down" @click="moveDown(groupIndex)"></i>
-					<i class="repeater-handle fal fa-arrows"></i>
+				<div class="flexible-header">
+					<h4>{{ group.type }}</h4>
+					<div class="field-controls">
+						<i class="feather icon-trash-2" @click="deleteRow(groupIndex)"></i>
+						<i class="feather icon-arrow-up" @click="moveUp(groupIndex)"></i>
+						<i class="feather icon-arrow-down" @click="moveDown(groupIndex)"></i>
+						<i class="repeater-handle fal fa-arrows"></i>
+					</div>
 				</div>
+				<!-- /Field Content -->
 				<div class="field-content" v-for="(layout, layoutKey) in getSubFields(group.type)" :key="layoutKey">
+					<!-- Field Title -->
+					<div class="field-title">
+						<h5>{{ layout.label }}</h5>
+						<p>{{ layout.instructions }}</p>
+					</div>
 					<!-- Text -->
 					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[groupIndex]['fields'][layout.name]"></FieldText>
 					<!-- Textarea -->
@@ -26,7 +35,7 @@
 					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[groupIndex]['fields'][layout.name]"></FieldRichText>
 					<!-- Repeater -->
 					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[groupIndex]['fields'][layout.name]"></FieldRepeater>
-				</div>
+				</div><!-- /Field Content -->
 			</div>
 		</draggable>
 		<div class="popover-cont">
@@ -142,15 +151,52 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-.field-group {
-	//background-color: rgba(red, 0.4);
-	margin-bottom: 1rem;
-	border: 2px solid $secondary;
-	padding: 15px;
-	border-radius: 4px;
+// Field
+// =========================================================================
+
+.field {
+
+	&-group {
+		//background-color: rgba(red, 0.4);
+		margin-bottom: 1rem;
+		border: 2px solid $grey-light;
+		padding: 15px 0;
+		border-radius: 6px;
+	}
+
+	&-content {
+		margin-bottom: 1rem;
+		padding: 0 20px;
+
+		&:last-of-type {
+			margin-bottom: 0;
+		}
+	}
+
+	&-title {
+		color: $secondary;
+	}
 }
 
 	.flexible {
+
+
+		// Header
+		// =========================================================================
+
+		&-header {
+			display: flex;
+			justify-content: space-between;
+			width: 100%;
+			margin-bottom: 1rem;
+			padding: 0 20px 15px 20px;
+			border-bottom: 1px solid $grey-light;
+
+			h4 {
+				margin-bottom: 0;
+			}
+		}
+
 
 		// Btn
 		// =========================================================================

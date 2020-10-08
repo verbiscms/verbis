@@ -9,6 +9,7 @@
 				v-model="value"
 				@keyup="validate"
 				@blur="handleBlur"
+				@focus="focused = true"
 				:placeholder="getOptions['placeholder']"
 				:maxlength="getOptions['maxlength']">
 			<div class="field-append" v-if="getOptions['append']">{{ getOptions['append'] }}</div>

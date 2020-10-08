@@ -7,6 +7,7 @@
 	$self: &;
 
 	background: $bg-color;
+	border: 2px solid $grey-light ;
 	border-radius: 10px;
 	padding: 20px;
 	margin-bottom: 1.6rem;
@@ -14,39 +15,49 @@
 	// Props
 	// =========================================================================
 
-	//&:last-child {
-	//	margin-bottom: 0;
-	//}
+	&:last-child {
+		margin-bottom: 0;
+	}
 
+
+	textarea,
 	input {
 		background-color: $white;
+		font-weight: 500 !important;
 	}
 
-	// Wrapper
+	// Group
 	// =========================================================================
 
-	&-wrapper {
-		margin-bottom: 10px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
+	&-group {
+		background: $white;
+		margin-bottom: 1.6rem;
+		//padding: 0 26px 26px;
+		border-radius: 10px;
+		border: 2px solid $grey-light;
 
-	// Collapse
-	// =========================================================================
+		&-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			height: 60px;
+			border-bottom: 2px solid $grey-light;
+			padding: 0 26px;
 
-	&-collapse {
-		display: block;
-		cursor: pointer;
+			h4 {
+				margin-bottom: 0;
+			}
+		}
 
-		&:before {
-			content: "\f078";
-			display: inline-flex;
-			color: $primary;
-			font-family: "Font Awesome 5 Pro";
-			font-size: 14px;
-			font-weight: bold;
-			margin-right: 10px;
+		&-height {
+			max-height: initial;
+			transition: height 1s ease;
+			will-change: max-height;
+			overflow: hidden;
+		}
+
+		&-wrapper {
+			padding: 26px;
 		}
 	}
 
@@ -69,12 +80,11 @@
 	// =========================================================================
 
 	&-cont {
-		//transition: all 500ms ease;
-		//overflow: hidden;
 
 		input,
 		textarea {
 			font-weight: 500;
+			background-color: $white;
 		}
 	}
 
@@ -88,6 +98,7 @@
 		border-radius: $form-input-border-radius;
 		overflow: hidden;
 		border: 2px solid $grey-light;
+		background-color: $white;
 		@include formInputBoxShadow;
 
 		#{$self}-prepend,
@@ -105,6 +116,10 @@
 			text-align: center;
 			color: $form-input-color;
 			white-space: nowrap;
+		}
+
+		&#{$self}-focused {
+			box-shadow: $form-box-shadow;
 		}
 
 		#{$self}-prepend {
@@ -130,10 +145,6 @@
 				margin: 0 14px;
 				height: auto;
 			}
-		}
-
-		#{$self}-focused {
-			box-shadow: $form-box-shadow;
 		}
 	}
 
@@ -171,18 +182,25 @@
 		border-radius: 4px;
 		padding: 0;
 
+		&-chevron {
+
+			&.active {
+				transform: rotate(180deg);
+			}
+		}
+
 		i {
 			padding: 4px 6px;
 			border-right: 1.6px solid $grey-light;
 			color: $grey;
 			cursor: pointer;
 			font-size: 18px;
-			transition: color 200ms ease, background-color 200ms ease;
-			will-change: color, background-color;
+			transition: all 200ms ease;
+			background-color: transparent;
+			will-change: color;
 
 			&:hover {
 				color: $primary;
-				background-color: $white;
 			}
 
 			&:last-child {
@@ -193,18 +211,6 @@
 				border-left-width: 0;
 			}
 		}
-	}
-
-	// Content
-	// =========================================================================
-
-	&-content {
-		//height: 0;
-		//max-height: 0;
-		//height: 0;
-		//overflow: hidden;
-		transition: height 500ms ease;
-		will-change: height;
 	}
 
 	// Tablet

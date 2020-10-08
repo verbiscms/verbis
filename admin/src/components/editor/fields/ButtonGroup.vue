@@ -45,7 +45,9 @@ export default {
 	methods: {
 		validate() {
 			this.errors = [];
-			this.validateRequired()
+			if (!this.getOptions["allow_null"]) {
+				this.validateRequired()
+			}
 		},
 	},
 	computed: {
