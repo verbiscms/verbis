@@ -44,7 +44,6 @@ export default {
 		errors: [],
 		selectedTags: [],
 		posts: [],
-		focused: false,
 		post: '',
 		tag: '',
 		tags: [],
@@ -75,8 +74,8 @@ export default {
 					this.setTags()
 				})
 				.catch(err => {
-					// TODO: Add toast
-					console.log(err)
+					console.log(err);
+					this.$noty.error("There was an error obtaining the posts.")
 				});
 		},
 		setTags() {
@@ -120,8 +119,6 @@ export default {
 				return this.fields === undefined ? [] : this.fields
 			},
 			set(value) {
-				console.log(!this.errors.length)
-				//this.$emit("update:field-error", !this.errors.length ? this.layout.label : "")
 				this.$emit("update:fields", value)
 			}
 		}

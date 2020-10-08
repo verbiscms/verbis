@@ -41,10 +41,17 @@ export default {
 	},
 	data: () => ({
 		errors: [],
-		test: "",
 	}),
 	mounted() {
 		this.setDefaultValueChoices()
+	},
+	methods: {
+		validate() {
+			this.errors = [];
+			if (!this.getOptions["allow_null"]) {
+				this.validateRequired()
+			}
+		},
 	},
 	computed: {
 		getOptions() {

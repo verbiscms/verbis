@@ -43,6 +43,9 @@ export default {
 	methods: {
 		validate() {
 			this.errors = [];
+			if (!this.getOptions["allow_null"]) {
+				this.validateRequired()
+			}
 		},
 		handleBlur() {
 			this.focused = false;

@@ -80,6 +80,7 @@ export default {
 		&-value {
 			text-align: right;
 			margin-top: 10px;
+			margin-bottom: 0;
 			font-weight: 500;
 			color: $primary
 		}
