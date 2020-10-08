@@ -26,9 +26,9 @@ export const fieldMixin = {
 			if (typeof this.validate !== "undefined") {
 				this.validate()
 			}
-			if (typeof this.validateRequired !== "undefined") {
-				this.validateRequired()
-			}
+			// if (typeof this.validateRequired !== "undefined") {
+			// 	this.validateRequired()
+			// }
 		}
 	},
 	methods: {

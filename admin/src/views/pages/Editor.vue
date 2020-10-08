@@ -56,7 +56,7 @@
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 4 }" @click="activeTab = 4">Code Injection</div>
 						</div>
 						<!-- Fields -->
-						<div v-if="!loadingResourceData" class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 1 }">
+						<div v-if="!loadingResourceData && fieldLayout.length" class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 1 }">
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
@@ -350,7 +350,7 @@ export default {
 	// =========================================================================
 
 	.title {
-		margin-bottom: 1.4rem;
+		margin-bottom: 1.6rem;
 	}
 
 	.editor {
