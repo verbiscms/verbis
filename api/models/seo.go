@@ -51,7 +51,7 @@ func (s *SeoMetaStore) exists(id int) bool {
 func (s *SeoMetaStore) create(p *domain.Post) error {
 	const op = "SeoMetaRepository.create"
 	q := "INSERT INTO seo_meta_options (page_id, seo, meta) VALUES (?, ?, ?)"
-	_, err := s.db.Exec(q, p.Id, p.SeoMeta.Seo, p.SeoMeta.Seo)
+	_, err := s.db.Exec(q, p.Id, p.SeoMeta.Seo, p.SeoMeta.Meta)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the seo meta options record for post title: %v"), Operation: op, Err: err}
 	}
@@ -63,7 +63,7 @@ func (s *SeoMetaStore) create(p *domain.Post) error {
 func (s *SeoMetaStore) update(p *domain.Post) error {
 	const op = "SeoMetaRepository.update"
 	q := "UPDATE seo_meta_options SET seo = ?, meta = ? WHERE page_id = ?"
-	_, err := s.db.Exec(q, p.SeoMeta.Seo, p.SeoMeta.Seo, p.Id)
+	_, err := s.db.Exec(q, p.SeoMeta.Seo, p.SeoMeta.Meta, p.Id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the seo meta options for the post title: %v", p.Title), Operation: op, Err: err}
 	}

@@ -25,7 +25,7 @@ type Post struct {
 	PageTemplate	string						`db:"page_template" json:"page_template" binding:"max=150"`
 	Layout			string						`db:"layout" json:"layout" binding:"max=150"`
 	Fields			*json.RawMessage 			`db:"fields" json:"fields"`
-	CodeInjectHead	*string 					`db:"codeinjection_head" json:"codeinjection_head"`
+	CodeInjectHead	*string 					`db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 	CodeInjectFoot	*string 					`db:"codeinjection_foot" json:"codeinjection_foot"`
 	UserId 			int 						`db:"user_id" json:"-"`
 	CreatedAt		*time.Time					`db:"created_at" json:"created_at"`
@@ -73,8 +73,8 @@ type PostSeoMeta struct {
 
 type PostCreate struct {
 	Post
-	Author 			int    		`json:"author" binding:"omitempty,numeric"`
-	Categories		[]int		`json:"categories" binding:"omitempty,unique"`
+	Author 			int    		`json:"author,omitempty" binding:"numeric"`
+	Categories		[]int		`json:"categories,omitempty" binding:"unique"`
 }
 
 //xss in golang implementation

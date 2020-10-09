@@ -3,7 +3,7 @@
 	===================== -->
 <template>
 	<section>
-		<div class="auth-container">
+		<div class="auth-container" v-if="!loadingResourceData">
 			<!-- =====================
 				Header
 				===================== -->
@@ -48,7 +48,7 @@
 						</div>
 					</div>
 					<!-- Tabs -->
-					<div class="tabs">
+					<div class="tabs" v-if="!loadingResourceData">
 						<div class="tabs-header">
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 1 }" @click="activeTab = 1">Content</div>
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 2 }" @click="activeTab = 2">Meta</div>
@@ -56,12 +56,12 @@
 							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 4 }" @click="activeTab = 4">Code Injection</div>
 						</div>
 						<!-- Fields -->
-						<div v-if="!loadingResourceData && fieldLayout.length" class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 1 }">
+						<div v-if=" fieldLayout.length" class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 1 }">
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
-						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 2 }">
-							<MetaOptions @update="updateMeta"></MetaOptions>
+						<div class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 2 }">
+							<MetaOptions :meta.sync="data.options.meta" :url="computedBaseSlug"> </MetaOptions>
 						</div>
 						<!-- Seo Options -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 3 }">
@@ -69,7 +69,7 @@
 						</div>
 						<!-- Code Injection -->
 						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 4 }">
-							<CodeInjection @update="updateCodeInjection"></CodeInjection>
+							<CodeInjection :header="data.codeinjection_head" :footer="data.codeinjection_foot" @update="updateCodeInjection"></CodeInjection>
 						</div>
 					</div>
 				</div><!-- /Col -->
@@ -101,7 +101,7 @@
 							<div class="form-group">
 								<label class="form-label" for="options-author">Author</label>
 								<div class="form-select-cont form-input">
-									<select class="form-select" id="options-author" v-model="selectedAuthor" @change="getFieldLayout">
+									<select class="form-select" id="options-author" v-model="data.author" @change="getFieldLayout">
 										<option value="" disabled selected>Select author</option>
 										<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
 									</select>
@@ -172,53 +172,77 @@ export default {
 		fieldHeights: [],
 		users: [],
 		slug: "",
+		rootSlug: "",
+		title: "",
+		isCustomSlug: false,
 		publishedDate: new Date(),
 		fieldLayout: [],
 		templates: [],
 		layouts: [],
 		resource: {},
 		newItem: false,
-		data: {
-			"title": "",
-			"slug": "",
-			"fields": {},
-			"meta": {},
-			"options": {
-				"codeinjection_header": "",
-				"codeinjection_footer": "",
-			},
-			"updated_at": new Date(),
-			"created_at": new Date(),
-		},
 		selectedAuthor: "",
 		selectedTemplate: "",
 		selectedLayout: "",
 		errorTrigger: false,
+		data: {
+			"title": "",
+			"slug": "",
+			"fields": {},
+			"author": 0,
+			"options": {},
+			"categories": [],
+			"codeinjection_head": "",
+			"codeinjection_foot": "",
+			"updated_at": new Date(),
+			"created_at": new Date(),
+		},
+		doingAxios: true,
 		loadingResourceData: true,
 	}),
 	beforeMount() {
-		this.getFieldLayout()
 		this.setResource()
-		this.setNewUpdate()
+		this.setNewUpdate();
 	},
 	mounted() {
-		//this.getResourceDataTest()
-		this.getUsers()
-		this.getTemplates()
-		this.getLayouts()
+		this.getFieldLayout();
+		this.getUsers();
+		this.getTemplates();
+		this.getLayouts();
+		this.getSuccessMessage();
 	},
 	methods: {
+		/*
+		 * getSuccessMessage()
+		 * Determine if the page has been created.
+		 */
+		getSuccessMessage() {
+			if (this.$route.query.success) {
+				this.$noty.success("Successfully created new page.")
+			}
+		},
+		/*
+		 * getResourceData()
+		 * Get the page data, if none exists return 404.
+		 */
 		getResourceData() {
 			const id = this.$route.params.id;
 			this.axios.get(`/posts/${id}`)
 				.then(res => {
 					this.data = res.data.data.post;
+					if (!this.data) {
+						this.$router.push({ name : 'not-found' })
+					}
 					this.loadingResourceData = false;
 				})
-				.catch(err => {
-					console.log(err)
+				.catch(() => {
+					this.$noty.error("Something went wrong, please refresh the page.")
 				})
 		},
+		/*
+		 * getFieldLayout()
+		 * Obtain the field layout, on change.
+		 */
 		getFieldLayout() {
 			this.axios.get("/fields", {
 				params: {
@@ -227,39 +251,48 @@ export default {
 					"user_id": this.selectedAuthor,
 				}
 			})
-				.then(res => {
-					this.fieldLayout = res.data.data
-				})
+			.then(res => {
+				this.fieldLayout = res.data.data
+			})
 		},
+		/*
+		 * getTemplates()
+		 * Obtain page templates from API.
+		 */
 		getTemplates() {
 			this.axios.get("/templates")
-				.then(res => {
-					this.templates = res.data.data.templates
-				})
+			.then(res => {
+				this.templates = res.data.data.templates
+			})
 		},
+		/*
+		 * getLayouts()
+		 * Obtain page layouts from API.
+		 */
 		getLayouts() {
 			this.axios.get("/layouts")
-				.then(res => {
-					this.layouts = res.data.data.layouts
+			.then(res => {
+				this.layouts = res.data.data.layouts
+			})
+		},
+		/*
+		 * getUsers()
+		 * Obtain users from store, if none, dispatch users action.
+		 */
+		getUsers() {
+			this.$store.dispatch("getUsers")
+				.then(users => {
+					this.users = users;
+				})
+				.catch(() => {
+					this.$noty.error("Error occured when loading authors, please refresh.")
 				})
 		},
-		getUsers() {
-			if (!this.$store.state.users.length) {
-				this.axios.get(`/users`)
-					.then(res => {
-						const users = res.data.data
-						this.$store.commit("setUsers", users)
-						console.log(users)
-						this.users = users
-					})
-					.catch(err => {
-						this.helpers.handleResponse(err)
-
-					})
-			} else {
-				this.users = this.$store.state.users
-			}
-		},
+		/*
+		 * setResource()
+		 * Set the resource from the query parameter, if none defined,
+		 * set default page 'resource'.
+		 */
 		setResource() {
 			const resource = this.getResources[this.$route.query.resource]
 			this.resource = resource === undefined ? {
@@ -269,6 +302,10 @@ export default {
 				"icon": 'fal fa-file'
 			} : resource
 		},
+		/*
+		 * setNewUpdate()
+		 * Determine if the page is new or if it already exists.
+		 */
 		setNewUpdate() {
 			const isNew = this.$route.params.id === "new"
 			this.newItem = isNew
@@ -278,14 +315,22 @@ export default {
 				this.loadingResourceData = false;
 			}
 		},
+		/*
+		 * save()
+		 * Save the new page, check for field validation.
+		 */
 		save() {
 			this.errorTrigger = true;
 			this.$nextTick().then(() => {
-				if (this.validateFields()) {
+				if (document.querySelectorAll(".field-cont-error").length === 0) {
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)
 							.then(res => {
-								console.log(res);
+								this.$router.push({
+									name: 'editor',
+									params: { id : res.data.data.post.id },
+									query: { success : "true" }
+								})
 							})
 							.catch(err => {
 								console.log(err);
@@ -304,39 +349,51 @@ export default {
 				}
 			})
 		},
-		updateFields(e) {
-			this.data.fields = e
-		},
-		updateMeta(e) {
-			this.data.meta = e
-		},
+		/*
+		 * updateCodeInjection()
+		 * Update code injection from component.
+		 */
 		updateCodeInjection(e) {
-			this.data.codeinjection_header = e.header;
-			this.data.codeinjection_footer = e.footer;
-		},
-		validateFields() {
-			return document.querySelectorAll(".field-cont-error").length === 0;
+			this.data['codeinjection_head'] = e.header;
+			this.data['codeinjection_foot'] = e.footer;
 		},
 	},
 	computed: {
+		/*
+		 * getResources()
+		 * Get the theme resources from store.
+		 */
 		getResources() {
 			return this.$store.state.theme.resources;
 		},
-
 		computedSlug() {
-			let slugResult = '';
+			//let slugResult = '';
 
-			const test = slugify("kjfhsdf£$fdsfldshf", {
+			const rootSlug = this.resource.name === "page" ? "" : this.resource.name;
+			//this.rootSlug = ""
+
+			const test = slugify(rootSlug + this.title, {
 				replacement: '-',    // replace spaces with replacement
 				remove: null,        // regex to remove characters
 				lower: true          // result in lower case
 			})
 
-			console.log(test)
-
-			return slugResult;
+			return test;
 		},
-
+		computedBaseSlug: {
+			get: function(){
+				return this.customSlug;
+			},
+			set: function(value){
+				if(value.length < 1){
+					this.customSlug = '/';
+					this.isCustomSlug = false;
+				} else {
+					this.customSlug = value;
+					this.isCustomSlug = true;
+				}
+			}
+		},
 	}
 };
 </script>
@@ -361,6 +418,10 @@ export default {
 		&-sidebar {
 			position: sticky;
 			top: 100px;
+
+			&-options {
+				margin-bottom: 1.6rem;
+			}
 		}
 
 	}
