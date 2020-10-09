@@ -5,43 +5,5 @@
 
 .serp {
 
-	position: relative;
-	background-color: $white;
-	border-radius: 10px;
-	padding: 20px;
-	border: 2px solid $grey-light;
 
-	// Props
-	// =========================================================================
-
-	span {
-		display: block;
-	}
-
-	// Title
-	// =========================================================================
-
-	&-title {
-		font-size: 1rem;
-		color: $primary;
-		font-weight: bold;
-	}
-
-	// URL
-	// =========================================================================
-
-	&-url {
-		@include px-to-rem(12);
-		color: $green;
-		font-weight: 600;
-		margin-bottom: 4px;
-	}
-
-	// Description
-	// =========================================================================
-
-	&-description {
-		@include px-to-rem(12);
-		color: $secondary;
-	}
 }

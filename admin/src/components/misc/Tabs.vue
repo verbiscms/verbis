@@ -1,16 +1,10 @@
 <!-- =====================
 	Tabs
 	===================== -->
-<template>
-	<ul class="tabs" ref="tabs" :class="{ 'tabs-loading' : loading }">
-		<li class="tabs-item" @click="changeTab($event, 0)" :class="{ 'tabs-item-active' : activeTab === 0 }">
-			<h5 class="tabs-title">Show All</h5>
-		</li>
-		<li class="tabs-item" @click="changeTab($event, 1)" :class="{ 'tabs-item-active' : activeTab === 1 }">
-			<h5 class="tabs-title">Published</h5>
-		</li>
-		<li class="tabs-item" @click="changeTab($event, 2)" :class="{ 'tabs-item-active' : activeTab === 2 }">
-			<h5 class="tabs-title">Drafts</h5>
+<template slot="buttons" scope="props">
+	<ul class="tabs" ref="tabs" :class="{ 'tabs-loading' : loading }" >
+		<li class="tabs-item" v-for="(tab, tabIndex) in tabs" :key="tabIndex" @click="changeTab($event, tabIndex)" :class="{ 'tabs-item-active' : activeTab === tabIndex }">
+			<h5 class="tabs-title">{{ tab }}</h5>
 		</li>
 		<li class="tabs-indicator" ref="indicator"></li>
 	</ul><!-- /Tabs -->
@@ -26,8 +20,10 @@ export default {
 	data: () => ({
 		loading: true,
 		activeTab: 0,
+		tabs: []
 	}),
 	mounted() {
+		this.setUpTabs()
 		const firstTab = this.$refs.tabs.childNodes[0];
 		this.updatePosition(firstTab, 0);
 		setTimeout(() => {
@@ -35,8 +31,14 @@ export default {
 		}, 200);
 	},
 	methods: {
+		setUpTabs() {
+			this.$slots.item.forEach(item => {
+				this.tabs.push(item.text)
+			});
+		},
 		changeTab(e, index) {
 			this.updatePosition(e.target, index);
+			this.$emit("update", index + 1)
 		},
 		updatePosition(el, index) {
 			this.activeTab = index;
@@ -74,7 +76,7 @@ $tabs-underline-height: 3px;
 	position: relative;
 	display: flex;
 	flex-wrap: wrap;
-	margin: 36px 0;
+	margin-bottom: 36px;
 	width: 100%;
 	border-bottom: 1.4px solid $grey-light;
 	overflow-x: auto;
@@ -124,7 +126,7 @@ $tabs-underline-height: 3px;
 		left: 0;
 		display: block;
 		height: $tabs-underline-height;
-		width: 100px;
+		width: 75px;
 		background-color: $primary;
 		opacity: 1;
 		transition: left 200ms ease, width 200ms ease, opacity 1000ms ease;
