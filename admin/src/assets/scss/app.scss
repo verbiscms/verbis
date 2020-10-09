@@ -21,6 +21,7 @@
 @import "vendor/font-awesome/scss/regular";
 @import "vendor/font-awesome/scss/solid";
 @import "vendor/font-awesome/scss/light";
+@import "vendor/font-awesome/scss/brands";
 @import '~vuejs-noty/dist/vuejs-noty.css';
 
 /* ====================
@@ -38,6 +39,7 @@
 @import "components/_list";
 @import "components/_hamburger";
 @import "components/_tabs";
+@import "components/_icon";
 @import "components/_field";
 @import "components/_date";
 @import "components/_serp";

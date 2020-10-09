@@ -3,7 +3,121 @@
 // This file contains all styles related to the card component.
 // -----------------------------------------------------------------------------
 
+// Variables
+$card-padding-y-desk: 24px;
+$card-padding-x-desk: 24px;
+
 .card {
+	$self: &;
+
+	border: 2px solid $grey-light;
+	//padding: 30px;
+	margin-bottom: 1.6rem;
+	border-radius: 6px;
+	background-color: $white;
+	box-shadow: 3px 3px 10px 0 rgba($black, 0.05);
+
+	// Title
+	// =========================================================================
+
+	&-title-cont {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 12px $card-padding-x-desk;
+		border-bottom: 1px solid $grey-light;
+		//margin-bottom: 10px;
+
+		#{$self}-title {
+			margin-bottom: 0;
+		}
+
+		i {
+			color: $secondary;
+		}
+	}
+
+	// Content
+	// =========================================================================
+
+	&-content {
+		padding: $card-padding-y-desk $card-padding-x-desk;
+	}
+
+	// Input
+	// =========================================================================
+
+	&-input {
+		margin-bottom: 1.4rem;
+
+		input,
+		textarea {
+			font-weight: 500;
+			background-color: $white;
+		}
+
+		textarea {
+			width: 100%;
+			min-width: 100%;
+			min-height: 52px;
+		}
+
+		p {
+			margin-bottom: 10px;
+		}
+
+		h5 {
+			color: $secondary;
+			font-size: 0.9rem;
+			margin-bottom: 0;
+		}
+
+		&:last-child {
+			margin-bottom: 0;
+		}
+	}
+
+	// Serp
+	// =========================================================================
+
+	&-serp {
+		padding: $card-padding-y-desk $card-padding-x-desk;
+
+		// Props
+		// =========================================================================
+
+		span {
+			display: block;
+		}
+
+		// Title
+		// =========================================================================
+
+		&-title {
+			font-size: 1rem;
+			color: $primary;
+			font-weight: bold;
+		}
+
+		// URL
+		// =========================================================================
+
+		&-url {
+			@include px-to-rem(12);
+			color: $green;
+			font-weight: 600;
+			margin-bottom: 4px;
+		}
+
+		// Description
+		// =========================================================================
+
+		&-description {
+			@include px-to-rem(12);
+			color: $secondary;
+		}
+	}
+
 	// Tablet
 	// =========================================================================
 

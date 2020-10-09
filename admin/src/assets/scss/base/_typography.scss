@@ -52,7 +52,7 @@ h1 {
 h2 {
 	@include fluid-type(320px, 1408px, 22px, 24px);
 	font-weight: bold;
-	color: $copy-light;
+	color: $copy;
 	margin-bottom: 1rem;
 	text-align: left;
 }
@@ -65,16 +65,16 @@ h3 {
 }
 
 h4 {
-	font-size: 1rem;
+	font-size: 1.2rem;
 	color: $copy;
 	font-weight: bold;
 	margin-bottom: 10px;
 }
 
 h5 {
-	@include px-to-rem(14);
-	color: $primary;
-	font-weight: bold;
+	font-size: 1rem;
+	color: $secondary;
+	font-weight: 600;
 }
 
 h6 {

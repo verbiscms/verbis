@@ -6,65 +6,103 @@
 		<!-- =====================
 			Serp
 			===================== -->
-		<div class="field">
-			<h4>SERP Preview</h4>
-			<div class="field-content">
-				<div class="serp">
-					<span class="serp-title">{{ value.title }}</span>
-					<span class="serp-url">{{ getUrl }}</span>
-					<span class="serp-description">{{ value.description }}</span>
-				</div>
-			</div>
+		<h4>Serp Preview</h4>
+		<div class="card card-serp">
+			<span class="card-serp-title" v-text="value.title === '' ? 'Title will appear here' : value.title"></span>
+			<span class="card-serp-url">{{ getUrl }}</span>
+			<span class="card-serp-description" v-text="value.description === '' ? 'Description will appear here' : value.title"></span>
 		</div>
 		<!-- =====================
 			General Meta
 			===================== -->
-		<div class="field">
-			<h4>Meta</h4>
-			<div class="field-content">
-				<div class="form-group">
+		<h4 class="card-title">Meta</h4>
+		<div class="card">
+			<div class="card-content">
+				<div class="card-input">
 					<h5>Title</h5>
 					<p>This will appear at the top of the search preview</p>
-					<input class="form-input form-input-white" type="text" v-model="value.title">
+					<input class="form-input" type="text" v-model="value.title">
 				</div>
-				<div class="form-group">
+				<div class="card-input">
 					<h5>Description</h5>
 					<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
-					<textarea class="form-input form-input-white" type="text" rows="4" v-model="value.description"></textarea>
+					<textarea class="form-input" type="text" rows="4" v-model="value.description"></textarea>
 				</div>
 			</div>
 		</div>
 		<!-- =====================
 			Facebook
 			===================== -->
-		<div class="field">
-			<h4>Facebook (Open Graph)</h4>
-			<div class="field-content">
-				<div class="form-group">
-					<h5>Title</h5>
-					<p>This will appear at the top of the search preview</p>
-<!--					<input class="form-input form-input-white" type="text" v-model="value.facebook.title">-->
-				</div>
-				<div class="form-group">
-					<h5>Description</h5>
-					<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
-<!--					<textarea class="form-input form-input-white" type="text" rows="4" v-model="value.facebook.description"></textarea>-->
-				</div>
+		<div class="icon-cont">
+			<div class="icon">
+				<i class="fab fa-facebook-f"></i>
 			</div>
-		</div><!-- /Facebook -->
+			<h4>Facebook</h4>
+		</div>
+		<div class="card">
+			<div class="card-content">
+				<div class="row">
+					<div class="col-12 col-desk-6">
+						<div class="form-group">
+							<h5>Title</h5>
+							<p>This will appear at the top of the search preview</p>
+							<input class="form-input" type="text" v-model="value.facebook.title" :disabled="useFacebookGlobal">
+						</div>
+						<div class="form-group">
+							<h5>Description</h5>
+							<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
+							<textarea class="form-input" type="text" rows="4" v-model="value.facebook.description" :disabled="useFacebookGlobal"></textarea>
+						</div>
+						<div class="form-group">
+							<h5>Image</h5>
+							<p>Add an image for the twitter card.</p>
+							<button class="btn btn-green">Add image</button>
+						</div>
+					</div><!-- /Col -->
+					<div class="col-12 col-desk-6">
+						<div class="form-group">
+							<h5>Global:</h5>
+							<p>Tick this box to use the global meta information from above</p>
+							<div class="form-checkbox checkbox-cont">
+								<input type="checkbox" id="metafacebookcheck" @change="updateGlobal('facebook')" v-model="useFacebookGlobal" :true-value="true" :false-value="false">
+								<label for="metafacebookcheck">
+									<i class="fal fa-check"></i>
+								</label>
+								<div  class="form-checkbox-text">Use global meta?</div>
+							</div>
+						</div>
+						<h5>Preview:</h5>
+						<p>The Facebook preview will appear here:</p>
+						<div class="twitter">
+							<div class="twitter-image">
+								<i class="fal fa-file-alt"></i>
+							</div>
+							<div class="twitter-text">
+								<span class="twitter-title">{{ value['facebook']['title'] }}</span>
+								<span class="twitter-description">{{ getDescription(140, value['facebook']['description']) }}</span>
+								<span class="twitter-url">{{ getSiteUrl }}</span>
+							</div>
+						</div><!-- /Twitter Card -->
+					</div><!-- /Col -->
+					<div class="col-12">
+
+					</div>
+				</div><!-- /Row -->
+			</div><!-- /Card Content -->
+		</div><!-- /Card -->
 		<!-- =====================
 			Twitter
 			===================== -->
-		<div class="field">
-			<div class="row">
-				<div class="col-12">
-					<div class="meta-title">
-						<h4>Twitter</h4>
-						<p>Twitter cards allow you to attach rich photo's, videos and media to Tweets. Add a title & description below.</p>
-					</div>
-				</div><!-- /Col -->
-				<div class="col-12 col-desk-6">
-					<div class="field-content">
+		<div class="icon-cont">
+			<div class="icon">
+				<i class="fab fa-twitter"></i>
+			</div>
+			<h4>Twitter</h4>
+		</div>
+		<div class="card">
+			<div class="card-content">
+				<div class="row">
+					<div class="col-12 col-desk-6">
 						<div class="form-group">
 							<h5>Title</h5>
 							<p>This will appear at the top of the search preview</p>
@@ -80,34 +118,35 @@
 							<p>Add an image for the twitter card.</p>
 							<button class="btn">Add image</button>
 						</div>
-					</div>
-				</div><!-- /Col -->
-				<div class="col-12 col-desk-6">
-					<h5>Global:</h5>
-					<p>The twitter preview will appear here:</p>
-					<div class="form-checkbox checkbox-cont">
-						<input type="checkbox" id="metatwittercheck" @change="updateGlobal('twitter')" v-model="useTwitterGlobal" :true-value="true" :false-value="false">
-						<label for="metatwittercheck">
-							<i class="fal fa-check"></i>
-						</label>
-						<div  class="form-checkbox-text">Use global meta?</div>
-					</div>
-					<h5>Preview:</h5>
-					<p>The twitter preview will appear here:</p>
-					<div class="twitter">
-						<div class="twitter-image">
-							<i class="fal fa-file-alt"></i>
+					</div><!-- /Col -->
+					<div class="col-12 col-desk-6">
+						<div class="form-group">
+							<h5>Global:</h5>
+							<p>Tick this box to use the global meta information from above</p>
+							<div class="form-checkbox checkbox-cont">
+								<input type="checkbox" id="metatwittercheck" @change="updateGlobal('twitter')" v-model="useTwitterGlobal" :true-value="true" :false-value="false">
+								<label for="metatwittercheck">
+									<i class="fal fa-check"></i>
+								</label>
+								<div  class="form-checkbox-text">Use global meta?</div>
+							</div>
 						</div>
-						<div class="twitter-text">
-							<span class="twitter-title">{{ value['twitter']['title'] }}</span>
-							<span class="twitter-description">{{ getDescription(140, value['twitter']['description']) }}</span>
-							<span class="twitter-url">{{ getSiteUrl }}</span>
-						</div>
-					</div><!-- /Twitter Card -->
-				</div><!-- /Col -->
-			</div><!-- /Row -->
-		</div>
-
+						<h5>Preview:</h5>
+						<p>The Twitter preview will appear here:</p>
+						<div class="twitter">
+							<div class="twitter-image">
+								<i class="fal fa-file-alt"></i>
+							</div>
+							<div class="twitter-text">
+								<span class="twitter-title">{{ value['twitter']['title'] }}</span>
+								<span class="twitter-description">{{ getDescription(140, value['twitter']['description']) }}</span>
+								<span class="twitter-url">{{ getSiteUrl }}</span>
+							</div>
+						</div><!-- /Twitter Card -->
+					</div><!-- /Col -->
+				</div><!-- /Row -->
+			</div><!-- /Card Content -->
+		</div><!-- /Card -->
 	</section>
 </template>
 
@@ -171,10 +210,10 @@ export default {
 			return text;
 		},
 		isGlobal() {
-			if (this.value.title === this.value.facebook.title && this.value.description === this.value.facebook.description) {
+			if (this.value.title === this.value.facebook.title && this.value.description === this.value.facebook.description && this.value.facebook.title !== "" && this.value.facebook.description !== "") {
 				this.useFacebookGlobal = true;
 			}
-			if (this.value.title === this.value.twitter.title && this.value.description === this.value.twitter.description) {
+			if (this.value.title === this.value.twitter.title && this.value.description === this.value.twitter.description && this.value.twitter.title !== "" && this.value.twitter.description !== "") {
 				this.useTwitterGlobal = true;
 			}
 		},
@@ -232,6 +271,10 @@ export default {
 	Styles
 	===================== -->
 <style scoped lang="scss">
+
+.meta {
+
+}
 
 .field{
 	background-color: $white;
