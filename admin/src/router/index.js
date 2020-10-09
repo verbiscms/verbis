@@ -50,7 +50,7 @@ const routes = [
 	},
 	{
 		path: "/editor/:id",
-		name: "single",
+		name: "editor",
 		component: () => import("../views/pages/Editor.vue")
 	},
 	{
@@ -63,11 +63,11 @@ const routes = [
 		name: "media",
 		component: () => import("../views/pages/Editor.vue")
 	},
-	// {
-	//     path: '/404',
-	//     name: 'not-found',
-	//     component: () => import('../views/errors/Error.vue'),
-	// },
+	{
+		path: '/404',
+		name: 'not-found',
+		component: () => import('../views/errors/Error.vue'),
+	},
 	{
 		path: '/error',
 		name: 'error',

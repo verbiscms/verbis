@@ -92,6 +92,23 @@ export default new Vuex.Store({
 				}
 			})
 		},
+		getUsers() {
+			return new Promise((resolve, reject) => {
+				if (!this.state.users.length) {
+					axios.get(`/users`)
+						.then(res => {
+							const users = res.data.data
+							this.commit("setUsers", users)
+							resolve(users)
+						})
+						.catch(err => {
+							reject(err)
+						})
+				} else {
+					resolve(this.state.users)
+				}
+			})
+		}
 	},
 	modules: {},
 	plugins: [createPersistedState()],
