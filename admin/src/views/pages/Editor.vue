@@ -41,22 +41,21 @@
 					Title & Tabs
 					===================== -->
 				<div class="col-12 col-desk-9">
-					<!-- Title -->
-					<div class="title">
-						<div class="form-group">
-							<input class="form-input form-input-white" type="text" placeholder="Title" v-model="data.title">
-						</div>
-					</div>
-					<!-- Tabs -->
-					<div class="tabs" v-if="!loadingResourceData">
-						<div class="tabs-header">
-							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 1 }" @click="activeTab = 1">Content</div>
-							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 2 }" @click="activeTab = 2">Meta</div>
-							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 3 }" @click="activeTab = 3">SEO</div>
-							<div class="tabs-label" :class="{ 'tabs-label-active' : activeTab === 4 }" @click="activeTab = 4">Code Injection</div>
-						</div>
-						<!-- Fields -->
+					<Tabs @update="activeTab = $event">
+						<template slot="item">Content</template>
+						<template slot="item">Meta</template>
+						<template slot="item">SEO</template>
+						<template slot="item">Code Injection</template>
+					</Tabs>
+					<div v-if="!loadingResourceData">
+						<!-- Content & Fields -->
 						<div v-if=" fieldLayout.length" class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 1 }">
+							<!-- Title -->
+							<div class="title">
+								<div class="form-group">
+									<input class="form-input form-input-white" type="text" placeholder="Add title" v-model="data.title">
+								</div>
+							</div>
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
@@ -64,11 +63,11 @@
 							<MetaOptions :meta.sync="data.options.meta" :url="computedBaseSlug"> </MetaOptions>
 						</div>
 						<!-- Seo Options -->
-						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 3 }">
+						<div class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 3 }">
 							<SeoOptions></SeoOptions>
 						</div>
 						<!-- Code Injection -->
-						<div class="tabs-panel" :class="{ 'tabs-panel-active' : activeTab === 4 }">
+						<div class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 4 }">
 							<CodeInjection :header="data.codeinjection_head" :footer="data.codeinjection_foot" @update="updateCodeInjection"></CodeInjection>
 						</div>
 					</div>
@@ -79,8 +78,8 @@
 				<div class="col-12 col-desk-3">
 					<div class="editor-sidebar">
 						<!-- Options -->
+						<h2>Options</h2>
 						<div class="editor-sidebar-options">
-							<h2>Options</h2>
 							<!-- URL -->
 							<div class="form-group">
 								<label class="form-label" for="options-url">URL</label>
@@ -156,10 +155,12 @@ import CodeInjection from "@/components/editor/tabs/CodeInjection";
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import Fields from "@/components/editor/tabs/Fields";
 import slugify from "slugify";
+import Tabs from "@/components/misc/Tabs";
 
 export default {
 	name: "Single",
 	components: {
+		Tabs,
 		Fields,
 		Breadcrumbs,
 		DatePicker,
@@ -173,7 +174,6 @@ export default {
 		users: [],
 		slug: "",
 		rootSlug: "",
-		title: "",
 		isCustomSlug: false,
 		publishedDate: new Date(),
 		fieldLayout: [],
@@ -235,8 +235,9 @@ export default {
 					}
 					this.loadingResourceData = false;
 				})
-				.catch(() => {
-					this.$noty.error("Something went wrong, please refresh the page.")
+				.catch(err => {
+					console.log(err);
+					this.$noty.error("Error occurred, please refresh the page.")
 				})
 		},
 		/*
@@ -326,6 +327,7 @@ export default {
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)
 							.then(res => {
+								// Push to new page if successfull
 								this.$router.push({
 									name: 'editor',
 									params: { id : res.data.data.post.id },
@@ -334,14 +336,16 @@ export default {
 							})
 							.catch(err => {
 								console.log(err);
+								this.$noty.error("Error occurred, please refresh the page.")
 							})
 					} else {
 						this.axios.put("/posts/" + this.$route.params.id, this.data)
-							.then(res => {
-								console.log(res);
+							.then(() => {
+								this.$noty.success("Page updated successfully.")
 							})
 							.catch(err => {
-								console.log(err);
+								console.log(err)
+								this.$noty.error("Error occurred, please refresh the page.")
 							})
 					}
 				} else {

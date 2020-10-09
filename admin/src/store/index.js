@@ -74,6 +74,10 @@ export default new Vuex.Store({
 		},
 	},
 	actions: {
+		/*
+	 	 * getSiteConfig()
+		 * Get site config from API & commit.
+		 */
 		getSiteConfig(context) {
 			return new Promise((resolve, reject) => {
 				const site = context.state.site
@@ -92,6 +96,10 @@ export default new Vuex.Store({
 				}
 			})
 		},
+		/*
+	 	 * getUsers()
+		 * Get users from API & commit.
+		 */
 		getUsers() {
 			return new Promise((resolve, reject) => {
 				if (!this.state.users.length) {
