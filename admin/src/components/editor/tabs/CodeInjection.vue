@@ -3,16 +3,34 @@
 	===================== -->
 <template>
 	<section>
-		<!-- Head -->
-		<div class="form-group">
-			<h4 class="card-title">Header</h4>
-			<prism-editor class="prism" v-model="headerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
-		</div>
-		<!-- Footer -->
-		<h4>Footer</h4>
-		<div class="form-group">
-			<prism-editor class="prism" v-model="footerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
-		</div>
+		<!-- =====================
+			Head
+			===================== -->
+		<div class="card">
+			<div class="card-header">
+				<h3 class="card-title">Header</h3>
+				<div class="card-controls">
+					<i class="feather feather-chevron-down"></i>
+				</div>
+			</div><!-- /Card Header -->
+			<div class="card-body card-body-code">
+				<prism-editor class="prism" v-model="headerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
+			</div><!-- /Card Body -->
+		</div><!-- /Card -->
+		<!-- =====================
+			Footer
+			===================== -->
+		<div class="card">
+			<div class="card-header">
+				<h3 class="card-title">Footer</h3>
+				<div class="card-controls">
+					<i class="feather feather-chevron-down"></i>
+				</div>
+			</div><!-- /Card Header -->
+			<div class="card-body card-body-code">
+				<prism-editor class="prism" v-model="footerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
+			</div><!-- /Card Body -->
+		</div><!-- /Card -->
 	</section>
 </template>
 

@@ -4,7 +4,7 @@
 <template slot="buttons" scope="props">
 	<ul class="tabs" ref="tabs" :class="{ 'tabs-loading' : loading }" >
 		<li class="tabs-item" v-for="(tab, tabIndex) in tabs" :key="tabIndex" @click="changeTab($event, tabIndex)" :class="{ 'tabs-item-active' : activeTab === tabIndex }">
-			<h5 class="tabs-title">{{ tab }}</h5>
+			<span class="tabs-title">{{ tab }}</span>
 		</li>
 		<li class="tabs-indicator" ref="indicator"></li>
 	</ul><!-- /Tabs -->
@@ -113,6 +113,9 @@ $tabs-underline-height: 3px;
 	// =========================================================================
 
 	&-title {
+		font-size: 16px;
+		color: $grey;
+		font-weight: 600;
 		transition: color 200ms ease;
 		will-change: color;
 	}

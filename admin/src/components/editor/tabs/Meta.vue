@@ -6,60 +6,79 @@
 		<!-- =====================
 			Serp
 			===================== -->
-		<h2>Serp Preview</h2>
 		<div class="card card-serp">
-			<span class="card-serp-title" v-text="value.title === '' ? 'Title will appear here' : value.title"></span>
-			<span class="card-serp-url">{{ getUrl }}</span>
-			<span class="card-serp-description" v-text="value.description === '' ? 'Description will appear here' : value.title"></span>
-		</div>
+			<div class="card-header">
+				<h3 class="card-title">Serp Preview</h3>
+				<div class="card-controls">
+					<i class="feather feather-chevron-down"></i>
+				</div>
+			</div><!-- /Card Header -->
+			<div class="card-body">
+				<span class="card-serp-title" v-text="value.title === '' ? 'Title will appear here' : value.title"></span>
+				<span class="card-serp-url">{{ getUrl }}</span>
+				<span class="card-serp-description" v-text="value.description === '' ? 'Description will appear here' : value.description"></span>
+			</div><!-- /Card Body -->
+		</div><!-- /Card -->
 		<!-- =====================
 			General Meta
 			===================== -->
-		<h2>Meta</h2>
 		<div class="card">
-			<div class="card-input">
-				<h5>Title</h5>
-				<p>This will appear at the top of the search preview</p>
-				<input class="form-input" type="text" v-model="value.title">
-			</div>
-			<div class="card-input">
-				<h5>Description</h5>
-				<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
-				<textarea class="form-input" type="text" rows="4" v-model="value.description"></textarea>
-			</div>
-		</div>
+			<div class="card-header">
+				<h3 class="card-title">Meta</h3>
+				<div class="card-controls">
+					<i class="feather feather-chevron-down"></i>
+				</div>
+			</div><!-- /Card Header -->
+			<div class="card-body">
+				<div class="card-input">
+					<h4>Title</h4>
+					<p>This will appear at the top of the search preview</p>
+					<input class="form-input" type="text" v-model="value.title">
+				</div>
+				<div class="card-input">
+					<h4>Description</h4>
+					<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
+					<textarea class="form-input" type="text" rows="4" v-model="value.description"></textarea>
+				</div>
+			</div><!-- /Card Body -->
+		</div><!-- /Card -->
 		<!-- =====================
 			Facebook
 			===================== -->
-		<div class="icon-cont">
-			<div class="icon">
-				<i class="fab fa-facebook-f"></i>
-			</div>
-			<h4>Facebook</h4>
-		</div>
 		<div class="card">
-			<div class="card-content">
+			<div class="card-header">
+				<div class="card-header-icon">
+					<div class="icon icon-facebook">
+						<i class="fab fa-facebook-f"></i>
+					</div>
+					<h3 class="card-title">Facebook (Open Graph)</h3>
+				</div>
+				<div class="card-controls">
+					<i class="feather feather-chevron-down"></i>
+				</div>
+			</div><!-- /Card Header -->
+			<div class="card-body">
 				<div class="row">
 					<div class="col-12 col-desk-6">
 						<div class="form-group">
-							<h5>Title</h5>
+							<h4>Title</h4>
 							<p>This will appear at the top of the search preview</p>
 							<input class="form-input" type="text" v-model="value.facebook.title" :disabled="useFacebookGlobal">
 						</div>
 						<div class="form-group">
-							<h5>Description</h5>
+							<h4>Description</h4>
 							<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
 							<textarea class="form-input" type="text" rows="4" v-model="value.facebook.description" :disabled="useFacebookGlobal"></textarea>
 						</div>
 						<div class="form-group">
-							<h5>Image</h5>
+							<h4>Image</h4>
 							<p>Add an image for the twitter card.</p>
 							<button class="btn btn-green">Add image</button>
 						</div>
 					</div><!-- /Col -->
 					<div class="col-12 col-desk-6">
 						<div class="form-group">
-							<h5>Global:</h5>
+							<h4>Global:</h4>
 							<p>Tick this box to use the global meta information from above</p>
 							<div class="form-checkbox checkbox-cont">
 								<input type="checkbox" id="metafacebookcheck" @change="updateGlobal('facebook')" v-model="useFacebookGlobal" :true-value="true" :false-value="false">
@@ -69,7 +88,7 @@
 								<div  class="form-checkbox-text">Use global meta?</div>
 							</div>
 						</div>
-						<h5>Preview:</h5>
+						<h4>Preview:</h4>
 						<p>The Facebook preview will appear here:</p>
 						<div class="twitter">
 							<div class="twitter-image">
@@ -82,44 +101,46 @@
 							</div>
 						</div><!-- /Twitter Card -->
 					</div><!-- /Col -->
-					<div class="col-12">
-
-					</div>
 				</div><!-- /Row -->
-			</div><!-- /Card Content -->
+			</div><!-- /Card Body -->
 		</div><!-- /Card -->
 		<!-- =====================
 			Twitter
 			===================== -->
-		<div class="icon-cont">
-			<div class="icon">
-				<i class="fab fa-twitter"></i>
-			</div>
-			<h4>Twitter</h4>
-		</div>
 		<div class="card">
-			<div class="card-content">
+			<div class="card-header">
+				<div class="card-header-icon">
+					<div class="icon icon-twitter">
+						<i class="fab fa-twitter"></i>
+					</div>
+					<h3 class="card-title">Twitter</h3>
+				</div>
+				<div class="card-controls">
+					<i class="feather feather-chevron-down"></i>
+				</div>
+			</div><!-- /Card Header -->
+			<div class="card-body">
 				<div class="row">
 					<div class="col-12 col-desk-6">
 						<div class="form-group">
-							<h5>Title</h5>
+							<h4>Title</h4>
 							<p>This will appear at the top of the search preview</p>
 							<input class="form-input" type="text" v-model="value.twitter.title" :disabled="useTwitterGlobal">
 						</div>
 						<div class="form-group">
-							<h5>Description</h5>
+							<h4>Description</h4>
 							<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
 							<textarea class="form-input" type="text" rows="4" v-model="value.twitter.description" :disabled="useTwitterGlobal"></textarea>
 						</div>
 						<div class="form-group">
-							<h5>Image</h5>
+							<h4>Image</h4>
 							<p>Add an image for the twitter card.</p>
 							<button class="btn">Add image</button>
 						</div>
 					</div><!-- /Col -->
 					<div class="col-12 col-desk-6">
 						<div class="form-group">
-							<h5>Global:</h5>
+							<h4>Global:</h4>
 							<p>Tick this box to use the global meta information from above</p>
 							<div class="form-checkbox checkbox-cont">
 								<input type="checkbox" id="metatwittercheck" @change="updateGlobal('twitter')" v-model="useTwitterGlobal" :true-value="true" :false-value="false">
@@ -129,7 +150,7 @@
 								<div  class="form-checkbox-text">Use global meta?</div>
 							</div>
 						</div>
-						<h5>Preview:</h5>
+						<h4>Preview:</h4>
 						<p>The Twitter preview will appear here:</p>
 						<div class="twitter">
 							<div class="twitter-image">
@@ -143,7 +164,7 @@
 						</div><!-- /Twitter Card -->
 					</div><!-- /Col -->
 				</div><!-- /Row -->
-			</div><!-- /Card Content -->
+			</div><!-- /Card Body -->
 		</div><!-- /Card -->
 	</section>
 </template>
@@ -270,27 +291,6 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-.meta {
-
-}
-
-.field{
-	background-color: $white;
-}
-
-// Global
-// =========================================================================
-
-.meta {
-
-	&-title {
-		margin-bottom: 1.6rem;
-
-		h4 {
-			margin-bottom: 0;
-		}
-	}
-}
 
 // Twitter
 // =========================================================================
@@ -357,6 +357,7 @@ export default {
 		overflow: hidden;
 		line-height: 1.3;
 		margin-bottom: 4px;
+		word-break: break-all;
 	}
 
 	&-url {
