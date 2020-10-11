@@ -13,6 +13,7 @@
 		"axios": "^0.20.0",
 		"core-js": "^3.6.5",
 		"debounce": "^1.2.0",
+		"prism-themes": "^1.4.1",
 		"prismjs": "^1.21.0",
 		"slugify": "^1.4.5",
 		"tiptap": "^1.30.0",
