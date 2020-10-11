@@ -23,6 +23,7 @@
 @import "vendor/font-awesome/scss/light";
 @import "vendor/font-awesome/scss/brands";
 @import '~vuejs-noty/dist/vuejs-noty.css';
+@import '~vue-prism-editor/dist/prismeditor.min.css';
 
 /* ====================
     Base
@@ -46,6 +47,7 @@
 @import "components/_popover";
 @import "components/_tag";
 @import "components/_noty";
+@import "components/_prism";
 @import "components/_transitions";
 
 /* ====================

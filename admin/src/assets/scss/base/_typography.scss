@@ -43,17 +43,17 @@ p {
 //@include fluid-type(320px, 1408px, 34px, 98px);
 
 h1 {
-	@include fluid-type(320px, 1408px, 24px, 38px);
+	@include fluid-type(320px, 1408px, 24px, 32px);
 	font-weight: bold;
 	color: $copy;
 	line-height: 1;
 }
 
 h2 {
-	@include fluid-type(320px, 1408px, 22px, 24px);
+	@include fluid-type(320px, 1408px, 22px, 22px);
 	font-weight: bold;
 	color: $copy;
-	margin-bottom: 1rem;
+	margin-bottom: 0.8rem;
 	text-align: left;
 }
 

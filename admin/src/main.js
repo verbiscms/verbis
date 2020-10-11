@@ -18,6 +18,7 @@ import router from "./router";
 import store from "./store";
 import axios from 'axios'
 import VueNoty from 'vuejs-noty'
+//import { PrismEditor } from 'vue-prism-editor';
 require('./functions.js');
 
 // Local
@@ -87,6 +88,11 @@ Vue.use(VueNoty, {
 	progressBar: true,
 	layout: 'bottomRight'
 });
+
+
+import { PrismEditor } from 'vue-prism-editor';
+import 'vue-prism-editor/dist/prismeditor.min.css'; // import the styles
+Vue.component('PrismEditor', PrismEditor);
 
 /**
  * Vue

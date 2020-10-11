@@ -6,7 +6,7 @@
 		<!-- =====================
 			Serp
 			===================== -->
-		<h4>Serp Preview</h4>
+		<h2>Serp Preview</h2>
 		<div class="card card-serp">
 			<span class="card-serp-title" v-text="value.title === '' ? 'Title will appear here' : value.title"></span>
 			<span class="card-serp-url">{{ getUrl }}</span>
@@ -15,19 +15,17 @@
 		<!-- =====================
 			General Meta
 			===================== -->
-		<h4 class="card-title">Meta</h4>
+		<h2>Meta</h2>
 		<div class="card">
-			<div class="card-content">
-				<div class="card-input">
-					<h5>Title</h5>
-					<p>This will appear at the top of the search preview</p>
-					<input class="form-input" type="text" v-model="value.title">
-				</div>
-				<div class="card-input">
-					<h5>Description</h5>
-					<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
-					<textarea class="form-input" type="text" rows="4" v-model="value.description"></textarea>
-				</div>
+			<div class="card-input">
+				<h5>Title</h5>
+				<p>This will appear at the top of the search preview</p>
+				<input class="form-input" type="text" v-model="value.title">
+			</div>
+			<div class="card-input">
+				<h5>Description</h5>
+				<p>This will appear at the bottom of the search preview, recommended 240 characters.</p>
+				<textarea class="form-input" type="text" rows="4" v-model="value.description"></textarea>
 			</div>
 		</div>
 		<!-- =====================

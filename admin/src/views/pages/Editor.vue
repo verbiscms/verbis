@@ -12,11 +12,8 @@
 					<!-- Header -->
 					<header class="header header-with-actions">
 						<div class="header-title">
-							<div class="header-icon-cont">
-								<i :class="resource.icon"></i>
-								<h1 v-if="newItem">Add a new {{ resource.friendly_name }}</h1>
-								<h1 v-else>Edit {{ resource.friendly_name }}</h1>
-							</div>
+							<h1 v-if="newItem">Add a new {{ resource.friendly_name }}</h1>
+							<h1 v-else>Edit {{ resource.friendly_name }}</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<!-- Actions -->
