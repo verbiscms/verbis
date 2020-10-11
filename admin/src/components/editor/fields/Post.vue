@@ -65,12 +65,17 @@ export default {
 		getPosts() {
 			this.axios.get("/posts")
 				.then(res => {
-					this.posts = res.data.data.map(a => {
-						return {
-							text: a.post.title,
-							id: a.post.id
-						};
-					});
+					const posts = res.data.data.map
+					if (posts === undefined) {
+						// TODO: Handle
+					} else {
+						this.posts = posts.map(a => {
+							return {
+								text: a.post.title,
+								id: a.post.id
+							};
+						});
+					}
 					this.setTags()
 				})
 				.catch(err => {

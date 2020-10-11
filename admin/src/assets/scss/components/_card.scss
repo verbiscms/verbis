@@ -10,13 +10,21 @@ $card-padding-x-desk: 24px;
 .card {
 	$self: &;
 
-	border: 2px solid $grey-light;
+	border: 0px solid $grey-light;
 	//padding: 30px;
-	margin-bottom: 1.6rem;
-	border-radius: 6px;
+	margin-bottom: 2rem;
+	border-radius: 12px;
 	background-color: $white;
-	box-shadow: 3px 3px 10px 0 rgba($black, 0.05);
+	padding: 38px;
+	//box-shadow: 3px 3px 10px 0 rgba($black, 0.05);
 
+	h5 {
+		color: $black !important;
+	}
+
+	p {
+		font-weight: 500;
+	}
 	// Title
 	// =========================================================================
 
@@ -41,7 +49,7 @@ $card-padding-x-desk: 24px;
 	// =========================================================================
 
 	&-content {
-		padding: $card-padding-y-desk $card-padding-x-desk;
+	//	padding: 34px;
 	}
 
 	// Input
@@ -53,7 +61,7 @@ $card-padding-x-desk: 24px;
 		input,
 		textarea {
 			font-weight: 500;
-			background-color: $white;
+			background-color: transparent;
 		}
 
 		textarea {
