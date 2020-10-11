@@ -33,7 +33,7 @@
         width: 100%;
         height: auto;
         padding: $form-input-padding-x $form-input-padding-y;
-        border: 2px solid $grey-light;
+        border: 1px solid $grey-light;
         outline: none;
         color: $form-input-color;
         border-radius: $form-input-border-radius;
@@ -171,7 +171,7 @@
             background-color: $white;
             border-radius: 3px;
             cursor: pointer;
-            border: 2px solid $grey-light;
+            border: 1px solid $grey-light;
             transition: background-color 120ms, border 120ms;
             will-change: background-color, border;
 
@@ -267,7 +267,7 @@
             margin-right: 6px;
             width: 20px;
             height: 20px;
-            border: 2px solid $grey-light;
+            border: 1px solid $grey-light;
             border-radius: 100%;
             -webkit-tap-highlight-color: transparent;
             transition: all .2s ease;

@@ -3,12 +3,14 @@
 	===================== -->
 <template>
 	<section>
-		<h4 class="card-title">Seo Options</h4>
 		<div class="card">
-			<div class="card-content">
-				<h5>Coming soon!</h5>
-			</div>
-		</div>
+			<div class="card-header">
+				<h3 class="card-title">SEO</h3>
+			</div><!-- /Card Header -->
+			<div class="card-body">
+				<h4>Coming soon!</h4>
+			</div><!-- /Card Body -->
+		</div><!-- /Card -->
 	</section>
 </template>
 

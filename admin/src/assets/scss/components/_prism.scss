@@ -6,7 +6,7 @@
 .prism {
 	background: #ffffff;
 	color: $secondary;
-	height: 500px !important;
+	height: 350px !important;
 	font-family: Fira code, Fira Mono, Consolas, Menlo, Courier, monospace;
 	font-size: 14px;
 	line-height: 1.5;
@@ -19,6 +19,10 @@
 
 	&-editor__container {
 		min-height: 100%;
+	}
+
+	&-editor-wrapper {
+		padding: 0;
 	}
 
 	code[class*="language-"],

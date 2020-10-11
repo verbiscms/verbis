@@ -58,23 +58,20 @@ h2 {
 }
 
 h3 {
-	@include fluid-type(320px, 1408px, 16px, 20px);
+	@include fluid-type(320px, 1408px, 15px, 17px);
 	font-weight: bold;
-	color: $secondary;
+	color: #32325d;
 	line-height: 1;
 }
 
 h4 {
-	font-size: 1.2rem;
-	color: $copy;
-	font-weight: bold;
-	margin-bottom: 10px;
+	font-size: 0.9rem;
+	color: $copy-light;
+	font-weight: 600;
 }
 
 h5 {
-	font-size: 1rem;
-	color: $secondary;
-	font-weight: 600;
+
 }
 
 h6 {
@@ -91,7 +88,7 @@ h6 {
 
 p {
 	margin-bottom: 1rem;
-	@include px-to-rem(14);
+	@include px-to-rem(13);
 	color: rgba($secondary, 0.70);
 	font-weight: normal;
 	line-height: 1.4;

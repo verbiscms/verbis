@@ -65,7 +65,7 @@ export default {
 		getPosts() {
 			this.axios.get("/posts")
 				.then(res => {
-					const posts = res.data.data.map
+					const posts = res.data.data
 					if (posts === undefined) {
 						// TODO: Handle
 					} else {

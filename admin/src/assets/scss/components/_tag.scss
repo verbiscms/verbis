@@ -7,9 +7,9 @@
 // =========================================================================
 
 .vue-tags-input {
-	background-color: red;
+	//background-color: red;
 	border-radius: $form-input-border-radius;
-	border: 2px solid $grey-light;
+	border: 1px solid $grey-light;
 	@include formInputBoxShadow;
 	overflow: hidden;
 }
@@ -103,7 +103,7 @@
 			color: $secondary;
 			font-size: 14px;
 			padding: 10px $form-input-padding-x;
-			border-top: 2px solid $grey-light;
+			border-top: 1px solid $grey-light;
 			cursor: pointer;
 
 			&#{$self}-selected-item {
@@ -116,7 +116,7 @@
 
 			&:first-child {
 				margin-top: -4px;
-				border-top: 2px solid $grey-light;
+				border-top: 1px solid $grey-light;
 			}
 
 			&:last-child {
