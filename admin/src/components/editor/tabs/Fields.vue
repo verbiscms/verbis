@@ -4,25 +4,25 @@
 <template>
 	<section>
 		<!-- Field Group -->
-		<div class="field-group" v-for="(group, groupIndex) in layout" :key="group.uuid">
-			<div class="field-group-header">
-				<h4>{{ group.title }}</h4>
-				<div class="field-controls">
-					<i class="feather icon-arrow-up" @click="moveGroupUp(groupIndex)"></i>
-					<i class="feather icon-arrow-down" @click="moveGroupDown(groupIndex)"></i>
-					<i class="feather icon-chevron-down field-controls-chevron" @click="collapseGroup(group.uuid)" :class="{ 'active' : computedHeights[group.uuid] == '0px' }"></i>
+		<div class="card" v-for="(group, groupIndex) in layout" :key="group.uuid">
+			<div class="card-header">
+				<h3 class="card-title">{{  group.title }}</h3>
+				<div class="card-controls">
+					<i class="feather feather-arrow-up" @click="moveGroupUp(groupIndex)"></i>
+					<i class="feather feather-arrow-down" @click="moveGroupDown(groupIndex)"></i>
+					<i class="feather feather-chevron-down card-controls-chevron" @click="collapseGroup(group.uuid)" :class="{ 'active' : computedHeights[group.uuid] == '0px' }"></i>
 				</div>
-			</div>
+			</div><!-- /Card Header -->
 			<!-- Field Layout -->
-			<div class="field-group-height" :ref="group.uuid" :style="{ maxHeight: computedHeights[group.uuid] }">
-				<div class="field-group-wrapper">
+			<div class="field-height" :ref="group.uuid" :style="{ maxHeight: computedHeights[group.uuid] }">
+				<div class="card-body">
 					<!-- :style="{ width: layout.wrapper['width'] + '%' }" -->
 					<div class="field" v-for="(layout) in group.fields" :key="layout.uuid" >
 						<transition name="trans-fade" >
 							<div v-if="parseLogic(layout, groupIndex)">
 								<!-- Field Title -->
-								<div class="field-title">
-									<h5>{{ layout.label }}</h5>
+								<div class="field-title" :class="{ 'field-title-margin-bottom' : layout.type === 'flexible' || layout.type === 'repeater' }">
+									<h4>{{ layout.label }}</h4>
 									<p>{{ layout.instructions }}</p>
 								</div>
 								<!-- Field Content -->
@@ -91,8 +91,6 @@
 	===================== -->
 <script>
 
-import {arrayMixin} from "@/util/arrays"
-
 // Basic
 import FieldText from "@/components/editor/fields/Text";
 import FieldTextarea from "@/components/editor/fields/Textarea";
@@ -122,7 +120,6 @@ import FieldFlexible from "@/components/editor/fields/FlexibleContent";
 
 export default {
 	name: "Fields",
-	mixins: [arrayMixin],
 	props: {
 		layout: Array,
 		fields: {

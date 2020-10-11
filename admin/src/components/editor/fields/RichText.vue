@@ -459,7 +459,7 @@ $richtext-border-radius: 10px;
 		background-color: $white;
 		border-top-left-radius: $richtext-border-radius;
 		border-top-right-radius: $richtext-border-radius;
-		border: 2px solid $grey-light;
+		border: 1px solid $grey-light;
 		border-bottom-width: 0;
 	}
 
@@ -516,7 +516,7 @@ $richtext-border-radius: 10px;
 		border-radius: 5px;
 		margin-bottom: .5rem;
 		transform: translateX(-50%);
-		border: 2px solid $grey-light;
+		border: 1px solid $grey-light;
 		overflow: visible;
 		visibility: hidden;
 		opacity: 0;
@@ -569,7 +569,7 @@ $richtext-border-radius: 10px;
 		top: 20px;
 		right: 20px;
 		background-color: $white;
-		border: 2px solid $grey-light;
+		border: 1px solid $grey-light;
 		z-index: 99;
 		padding: 10px;
 		border-radius: 4px;
@@ -590,7 +590,7 @@ $richtext-border-radius: 10px;
 		justify-content: space-between;
 		width: 100%;
 		background-color: $white;
-		border: 2px solid $grey-light;
+		border: 1px solid $grey-light;
 		border-bottom-width: 0;
 		padding: 0 2px;
 
@@ -642,7 +642,7 @@ $richtext-border-radius: 10px;
 	&-content {
 		position: relative;
 		background-color: $white;
-		border: 2px solid $grey-light;
+		border: 1px solid $grey-light;
 		border-bottom-left-radius: $richtext-border-radius;
 		border-bottom-right-radius: $richtext-border-radius;
 		overflow-y: scroll;

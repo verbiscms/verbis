@@ -17,8 +17,9 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import axios from 'axios'
+import titleMixin from './util/title';
 import VueNoty from 'vuejs-noty'
-//import { PrismEditor } from 'vue-prism-editor';
+import { PrismEditor } from 'vue-prism-editor';
 require('./functions.js');
 
 // Local
@@ -75,23 +76,29 @@ Vue.mixin({
 				return baseUrl
 			}
 		}
-	}
+	},
 })
+
+// Title
+Vue.mixin(titleMixin)
 
 /**
  * Plugins
  *
  */
-Vue.use(VueNoty, {
-	timeout: 2500,
-	theme: 'verbis',
-	progressBar: true,
-	layout: 'bottomRight'
-});
+Vue.use(
+	VueNoty, {
+		timeout: 2500,
+		theme: 'verbis',
+		progressBar: true,
+		layout: 'bottomRight'
+	},
+);
 
-
-import { PrismEditor } from 'vue-prism-editor';
-import 'vue-prism-editor/dist/prismeditor.min.css'; // import the styles
+/**
+ * Components
+ *
+ */
 Vue.component('PrismEditor', PrismEditor);
 
 /**

@@ -22,11 +22,12 @@ export default {
 	components: {
 		Sidebar,
 	},
-	mounted: function () {
-		// this.$moment({
-		// 	timezone: 'Europe/London'
-		// })
-		// this.$noty.info("Welcome to the CMS");
+	metaInfo: {
+		meta: [
+			{ charset: 'utf-8' },
+			{ name: 'description', content: 'Verbis CMS' },
+			{ name: 'viewport', content: 'width=device-width, initial-scale=1.0' }
+		],
 	},
 	computed: {
 		isLoggedIn() {
@@ -40,5 +41,7 @@ export default {
 	Styles
 	===================== -->
 <style lang="scss">
-@import "assets/scss/app.scss";
+
+	@import "assets/scss/app.scss";
+
 </style>

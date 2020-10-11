@@ -46,13 +46,21 @@
 					</Tabs>
 					<div v-if="!loadingResourceData">
 						<!-- Content & Fields -->
-						<div v-if=" fieldLayout.length" class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 1 }">
+						<div v-if="fieldLayout.length" class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 1 }">
 							<!-- Title -->
-							<div class="title">
-								<div class="form-group">
-									<input class="form-input form-input-white" type="text" placeholder="Add title" v-model="data.title">
-								</div>
-							</div>
+							<div class="card">
+								<div class="card-header">
+									<h3 class="card-title">Title</h3>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+								<div class="card-body">
+									<div class="card-input">
+										<input class="form-input form-input-white" type="text" placeholder="Add title" v-model="data.title">
+									</div>
+								</div><!-- /Card Body -->
+							</div><!-- /Card -->
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
@@ -156,6 +164,7 @@ import Tabs from "@/components/misc/Tabs";
 
 export default {
 	name: "Single",
+	title: 'Editor',
 	components: {
 		Tabs,
 		Fields,

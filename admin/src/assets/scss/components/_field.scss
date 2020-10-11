@@ -7,8 +7,8 @@
 	$self: &;
 
 	background: $bg-color;
-	border: 2px solid $grey-light ;
-	border-radius: 10px;
+	border: 1px solid $grey-light;
+	border-radius: 6px;
 	padding: 20px;
 	margin-bottom: 1.6rem;
 
@@ -19,46 +19,20 @@
 		margin-bottom: 0;
 	}
 
-
 	textarea,
 	input {
 		background-color: $white;
 		font-weight: 500 !important;
 	}
 
-	// Group
+	// Height
 	// =========================================================================
 
-	&-group {
-		background: $white;
-		margin-bottom: 1.6rem;
-		//padding: 0 26px 26px;
-		border-radius: 10px;
-		border: 2px solid $grey-light;
-
-		&-header {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			height: 60px;
-			border-bottom: 2px solid $grey-light;
-			padding: 0 26px;
-
-			h4 {
-				margin-bottom: 0;
-			}
-		}
-
-		&-height {
-			max-height: initial;
-			transition: height 1s ease;
-			will-change: max-height;
-			overflow: hidden;
-		}
-
-		&-wrapper {
-			padding: 26px;
-		}
+	&-height {
+		max-height: initial;
+		transition: height 1s ease;
+		will-change: max-height;
+		overflow: hidden;
 	}
 
 	// Title
@@ -66,25 +40,16 @@
 
 	&-title {
 
-		&-cont {
-			display: flex;
-
-			p {
-				margin-bottom: 0;
-				font-size: 0.8rem;
-			}
+		h4 {
+			font-weight: bold;
 		}
-	}
 
-	// Container
-	// =========================================================================
+		p {
+			margin-bottom: 10px;
+		}
 
-	&-cont {
-
-		input,
-		textarea {
-			font-weight: 500;
-			background-color: $white;
+		&-margin-bottom {
+			margin-bottom: 1rem;
 		}
 	}
 
@@ -97,7 +62,7 @@
 		align-items: center;
 		border-radius: $form-input-border-radius;
 		overflow: hidden;
-		border: 2px solid $grey-light;
+		border: 1px solid $grey-light;
 		background-color: $white;
 		@include formInputBoxShadow;
 
@@ -123,11 +88,11 @@
 		}
 
 		#{$self}-prepend {
-			border-right: 2px solid $grey-light;
+			border-right: 1px solid $grey-light;
 		}
 
 		#{$self}-append {
-			border-left: 2px solid $grey-light;
+			border-left: 1px solid $grey-light;
 		}
 
 		input {
@@ -172,45 +137,12 @@
 		}
 	}
 
-	// Controls
+	// Button (Flexible Content & Repeater)
 	// =========================================================================
 
-	&-controls {
+	&-btn {
 		display: flex;
-		align-items: center;
-		border: 2px solid $grey-light;
-		border-radius: 4px;
-		padding: 0;
-
-		&-chevron {
-
-			&.active {
-				transform: rotate(180deg);
-			}
-		}
-
-		i {
-			padding: 4px 6px;
-			border-right: 1.6px solid $grey-light;
-			color: $grey;
-			cursor: pointer;
-			font-size: 18px;
-			transition: all 200ms ease;
-			background-color: transparent;
-			will-change: color;
-
-			&:hover {
-				color: $primary;
-			}
-
-			&:last-child {
-				border-right-width: 0;
-			}
-
-			&:first-child {
-				border-left-width: 0;
-			}
-		}
+		justify-content: flex-end;
 	}
 
 	// Tablet

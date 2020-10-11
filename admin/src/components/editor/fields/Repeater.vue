@@ -4,33 +4,76 @@
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".repeater-handle">
-			<div class="repeater-item" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
-				<div class="field-controls">
-					<i class="feather icon-trash-2" @click="deleteRow(repeaterIndex)"></i>
-					<i class="feather icon-arrow-up" @click="moveUp(repeaterIndex)"></i>
-					<i class="feather icon-arrow-down" @click="moveDown(repeaterIndex)"></i>
-					<i class="repeater-handle fal fa-arrows"></i>
+			<div class="card card-margin-small" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
+				<div class="card-header">
+					<h4>{{ layout.label }} item {{ repeaterIndex + 1 }}</h4>
+					<div class="card-controls">
+						<i class="feather feather-trash-2" @click="deleteRow(repeaterIndex)"></i>
+						<i class="feather feather-arrow-up" @click="moveUp(repeaterIndex)"></i>
+						<i class="feather feather-arrow-down" @click="moveDown(repeaterIndex)"></i>
+						<i class="repeater-handle fal fa-arrows"></i>
+					</div>
 				</div>
-				<div v-for="(layout, layoutIndex) in getSubFields" :key="layoutIndex">
+				<div class="card-body" v-for="(layout, layoutIndex) in getSubFields" :key="layoutIndex">
+					<!-- Field Title -->
+					<div class="field-title">
+						<h4>{{ layout.label }}</h4>
+						<p>{{ layout.instructions }}</p>
+					</div>
+					<!-- =====================
+						Basic
+						===================== -->
 					<!-- Text -->
-					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldText>
+					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldText>
 					<!-- Textarea -->
-					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldTextarea>
+					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldTextarea>
 					<!-- Number -->
-					<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldNumber>
+					<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldNumber>
 					<!-- Range -->
-					<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldRange>
+					<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldRange>
 					<!-- Email -->
-					<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldEmail>
+					<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldEmail>
+					<!-- Url -->
+					<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldUrl>
+					<!-- Password -->
+					<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldPassword>
+					<!-- =====================
+						Content
+						===================== -->
 					<!-- Richtext -->
-					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]"></FieldRichText>
+					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldRichText>
+					<!-- =====================
+						Choice
+						===================== -->
+					<!-- Select -->
+					<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldSelect>
+					<!-- Multi Select -->
+					<FieldTags v-else-if="layout.type === 'multi_select'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldTags>
+					<!-- Checkbox -->
+					<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldCheckbox>
+					<!-- Radio -->
+					<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldRadio>
+					<!-- Button Group -->
+					<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldButtonGroup>
+					<!-- =====================
+						Relational
+						===================== -->
+					<!-- Post Object -->
+					<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldPost>
+					<!-- User -->
+					<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldUser>
+					<!-- =====================
+						Layout
+						===================== -->
 					<!-- Repeater -->
-					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]"></FieldRepeater>
-				</div>
-			</div>
+					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldRepeater>
+					<!-- Flexible -->
+					<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldFlexible>
+				</div><!-- /Card Body -->
+			</div><!-- /Card -->
 		</draggable>
-		<div class="repeater-btn">
-			<button class="btn btn-blue" @click="addRow">Add row</button>
+		<div class="field-btn">
+			<button class="btn btn-blue" @click="addRow"><i class="fal fa-plus-circle"></i>Add Row</button>
 		</div>
 		<!-- Message -->
 		<transition name="trans-fade-height">
@@ -58,7 +101,10 @@ export default {
 	props: {
 		layout: Object,
 		fields: Array,
-		fieldError: Boolean,
+		errorTrigger: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	components: {
 		FieldText,
