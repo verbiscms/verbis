@@ -142,9 +142,9 @@
 		<!-- =====================
 			Content
 			===================== -->
-		<div class="richtext-content" :class="{ 'richtext-content-codeview' : codeView }" >
-			<textarea class="richtext-code" v-model="code"></textarea>
-			<editor-content :editor="editor" />
+		<div class="richtext-content">
+			<prism-editor class="richtext-prism prism" v-show="codeView" v-model="code" :highlight="highlighter" line-numbers></prism-editor>
+			<editor-content :editor="editor" v-show="!codeView" />
 		</div>
 		<!-- Message -->
 		<transition name="trans-fade-height">
@@ -159,6 +159,8 @@
 
 <script>
 
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-markup';
 import { fieldMixin } from "@/util/fields"
 import {Editor, EditorContent, EditorMenuBar, EditorMenuBubble} from 'tiptap'
 import {
@@ -262,6 +264,9 @@ export default {
 					extensions: extensions,
 				});
 			})
+		},
+		highlighter(code) {
+			return highlight(code, languages.html);
 		},
 		getByElement(element) {
 			if (!this.config) {
@@ -621,17 +626,13 @@ $richtext-border-radius: 10px;
 	// Code
 	// =========================================================================
 
-	&-code {
-		position: absolute;
+	&-prism {
+		position: relative;
 		top: 0;
 		left: 0;
 		width: 100% !important;
 		height: 100% !important;
 		border: none;
-		padding: 20px;
-		opacity: 0;
-		z-index: -1;
-		color: $copy-light;
 		font-size: 14px;
 		resize: none;
 	}
@@ -645,20 +646,13 @@ $richtext-border-radius: 10px;
 		border: 1px solid $grey-light;
 		border-bottom-left-radius: $richtext-border-radius;
 		border-bottom-right-radius: $richtext-border-radius;
+		height: 400px;
+		padding: 20px;
 		overflow-y: scroll;
 
+		& > div,
 		.ProseMirror {
-			min-height: 350px;
-			max-height: 700px;
-			padding: 20px;
-		}
-
-		&-codeview {
-
-			#{$self}-code {
-				opacity: 1;
-				z-index: 99;
-			}
+			min-height: 400px;
 		}
 
 		* {

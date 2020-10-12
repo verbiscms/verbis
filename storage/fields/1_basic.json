@@ -137,7 +137,7 @@
 		[
 			{
 				"param": "layout",
-				"operator": "!=",
+				"operator": "==",
 				"value": "main"
 			}
 		]

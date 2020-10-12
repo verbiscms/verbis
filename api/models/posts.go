@@ -95,8 +95,19 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	// Check if the author is set assign to owner if not.
 	p.UserId = s.checkOwner(*p)
 
-	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, fields, codeinjection_head, codeinjection_foot, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId)
+	// TODO: Work out why sql defaults arent working!
+	if p.Layout == "" {
+		p.Layout = "default"
+	}
+	if p.PageTemplate == "" {
+		p.PageTemplate = "default"
+	}
+	if p.Status == "" {
+		p.Status = "draft"
+	}
+
+	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, fields, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
+	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId, p.PublishedAt)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -105,16 +116,19 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post ID with the title: %v", p.Title), Operation: op, Err: err}
 	}
-	p.Id = int(id)
+
+	post, err := s.GetById(int(id))
+	if err != nil {
+		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post with the title: %v", p.Title), Operation: op, Err: err}
+	}
 
 	// Convert the PostCreate type to type of Post to be returned
 	// to the controller, used for binding & validation.
-	convertedPost := s.convertToPost(*p)
-	if err := s.seoMetaModel.UpdateCreate(&convertedPost); err != nil {
+	if err := s.seoMetaModel.UpdateCreate(&post); err != nil {
 		return domain.Post{},  err
 	}
 
-	return convertedPost, nil
+	return post, nil
 }
 
 // Update a post by Id
@@ -132,9 +146,11 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	p.Author = s.checkOwner(*p)
 	p.UserId = p.Author
 
+	fmt.Println(p.PublishedAt)
+
 	// Update the posts table with data
-	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.Author, p.Id)
+	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
+	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.Author, p.PublishedAt, p.Id)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}

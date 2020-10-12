@@ -61,14 +61,17 @@ func Log() gin.HandlerFunc {
 			"message"			: verbisMessage,
 			"error"				: verbisError,
 		}
+
+		if verbisError.Code == errors.TEMPLATE {
+			fields["status_code"] = 500
+		}
+
 		// Log format
 		if verbisError.Code == errors.TEMPLATE || verbisError.Code == errors.INTERNAL {
-			fields["status_code"] = 500
 			log.WithFields(fields).Panic()
 		} else if statusCode >= 200 && statusCode < 400 {
 			log.WithFields(fields).Info()
 		} else {
-			fields["status_code"] = 500
 			log.WithFields(fields).Error()
 		}
 	}

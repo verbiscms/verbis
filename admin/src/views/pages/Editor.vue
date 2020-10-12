@@ -3,7 +3,7 @@
 	===================== -->
 <template>
 	<section>
-		<div class="auth-container" v-if="!loadingResourceData">
+		<div class="auth-container editor-auth-container" v-if="!loadingResourceData">
 			<!-- =====================
 				Header
 				===================== -->
@@ -37,45 +37,55 @@
 				<!-- =====================
 					Title & Tabs
 					===================== -->
-				<div class="col-12 col-desk-9">
-					<Tabs @update="activeTab = $event">
+				<div class="col-12 col-desk-9 editor-main-col">
+					<Tabs @update="activeTab = $event - 1">
 						<template slot="item">Content</template>
 						<template slot="item">Meta</template>
 						<template slot="item">SEO</template>
 						<template slot="item">Code Injection</template>
 					</Tabs>
-					<div v-if="!loadingResourceData">
-						<!-- Content & Fields -->
-						<div v-if="fieldLayout.length" class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 1 }">
+					<!-- Content & Fields -->
+					<transition name="trans-fade" mode="out-in">
+						<div class="editor-slide" :class="{ 'editor-slide-active' : activeTab === 0}" v-if="fieldLayout.length && activeTab === 0" :key="1">
 							<!-- Title -->
 							<div class="card">
-								<div class="card-header">
-									<h3 class="card-title">Title</h3>
-									<div class="card-controls">
-										<i class="feather feather-chevron-down"></i>
-									</div>
-								</div><!-- /Card Header -->
-								<div class="card-body">
-									<div class="card-input">
-										<input class="form-input form-input-white" type="text" placeholder="Add title" v-model="data.title">
-									</div>
-								</div><!-- /Card Body -->
+								<collapse :show="true">
+									<template v-slot:header>
+										<div class="card-header">
+											<h3 class="card-title">Title</h3>
+											<div class="card-controls">
+												<i class="feather feather-chevron-down"></i>
+											</div>
+										</div><!-- /Card Header -->
+									</template>
+									<template v-slot:body>
+										<div class="card-body">
+											<div class="card-input">
+												<input class="form-input form-input-white" type="text" placeholder="Add title" v-model="data.title">
+												<!-- Message -->
+												<transition name="trans-fade-height">
+													<span class="field-message field-message-warning" v-if="errors.title">{{ errors.title }}</span>
+												</transition><!-- /Message -->
+											</div>
+										</div><!-- /Card Body -->
+									</template>
+								</collapse>
 							</div><!-- /Card -->
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
-						<div class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 2 }">
-							<MetaOptions :meta.sync="data.options.meta" :url="computedBaseSlug"> </MetaOptions>
+						<div class="editor-slide" :class="{ 'editor-slide-active' : activeTab === 1}" v-if="activeTab === 1" :key="2">
+							<MetaOptions :meta.sync="data.options.meta" url="CHANGE ME"> </MetaOptions>
 						</div>
 						<!-- Seo Options -->
-						<div class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 3 }">
+						<div class="editor-slide" :class="{ 'editor-slide-active' : activeTab === 2}" v-if="activeTab === 2" :key="3">
 							<SeoOptions></SeoOptions>
 						</div>
 						<!-- Code Injection -->
-						<div class="tabs-panel tabs-panel-naked" :class="{ 'tabs-panel-active' : activeTab === 4 }">
+						<div class="editor-slide" :class="{ 'editor-slide-active' : activeTab === 3 }" v-if="activeTab === 3" :key="4">
 							<CodeInjection :header="data.codeinjection_head" :footer="data.codeinjection_foot" @update="updateCodeInjection"></CodeInjection>
 						</div>
-					</div>
+					</transition>
 				</div><!-- /Col -->
 				<!-- =====================
 					Options & Properties
@@ -88,15 +98,20 @@
 							<!-- URL -->
 							<div class="form-group">
 								<label class="form-label" for="options-url">URL</label>
-								<input class="form-input form-input-white" type="text" id="options-url" v-model="data.slug">
+								<input class="form-input form-input-white" type="text" id="options-url" v-model="slug">
+								<h2>Tes  {{ computedSlug }}</h2>
+								<!-- Message -->
+								<transition name="trans-fade-height">
+									<span class="field-message field-message-warning" v-if="errors.slug">{{ errors.slug }}</span>
+								</transition><!-- /Message -->
 							</div>
 							<!-- Status -->
 							<div class="form-group">
 								<label class="form-label" for="options-status">Status</label>
 								<div class="form-select-cont form-input">
-									<select class="form-select" id="options-status">
+									<select class="form-select" id="options-status" v-model="data.status">
 										<option value="" disabled selected>Select status</option>
-										<option value="drafts">Draft</option>
+										<option value="draft">Draft</option>
 										<option value="published">Published</option>
 									</select>
 								</div>
@@ -105,8 +120,8 @@
 							<div class="form-group">
 								<label class="form-label" for="options-author">Author</label>
 								<div class="form-select-cont form-input">
-									<select class="form-select" id="options-author" v-model="data.author" @change="getFieldLayout">
-										<option value="" disabled selected>Select author</option>
+									<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
+										<option value="0" disabled selected>Select author</option>
 										<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
 									</select>
 								</div>
@@ -114,8 +129,9 @@
 							<!-- Date -->
 							<div class="form-group">
 								<label class="form-label">Published Date</label>
-								<DatePicker class="date" color="blue" :value="null" v-model="publishedDate"></DatePicker>
+								<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
 							</div>
+							{{data['published_at']}}
 						</div><!-- /Options -->
 						<!-- Properties -->
 						<div class="editor-sidebar-properties">
@@ -124,7 +140,7 @@
 							<div class="form-group">
 								<label class="form-label" for="properties-template">Template</label>
 								<div class="form-select-cont form-input">
-									<select class="form-select" id="properties-template" v-model="selectedTemplate" @change="getFieldLayout">
+									<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
 										<option value="" disabled selected>Select template</option>
 										<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
 									</select>
@@ -134,8 +150,8 @@
 							<div class="form-group">
 								<label class="form-label" for="properties-layout">Layout</label>
 								<div class="form-select-cont form-input">
-									<select class="form-select" id="properties-layout" v-model="selectedLayout" @change="getFieldLayout">
-										<option value="" disabled selected>Select template</option>
+									<select class="form-select" id="properties-layout" v-model="data['layout']" @change="getFieldLayout">
+										<option value="" disabled selected>Select layout</option>
 										<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
 									</select>
 								</div>
@@ -161,6 +177,7 @@ import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import Fields from "@/components/editor/tabs/Fields";
 import slugify from "slugify";
 import Tabs from "@/components/misc/Tabs";
+import Collapse from "@/components/misc/Collapse";
 
 export default {
 	name: "Single",
@@ -173,35 +190,33 @@ export default {
 		MetaOptions,
 		SeoOptions,
 		CodeInjection,
+		Collapse,
 	},
 	data: () => ({
-		activeTab: 1,
+		activeTab: 0,
 		fieldHeights: [],
 		users: [],
 		slug: "",
-		rootSlug: "",
-		isCustomSlug: false,
-		publishedDate: new Date(),
 		fieldLayout: [],
 		templates: [],
 		layouts: [],
 		resource: {},
 		newItem: false,
-		selectedAuthor: "",
-		selectedTemplate: "",
-		selectedLayout: "",
 		errorTrigger: false,
+		errors: {},
 		data: {
 			"title": "",
-			"slug": "",
+			"slug": "/",
 			"fields": {},
 			"author": 0,
+			"status": "",
+			"page_template": "",
+			"layout": "",
 			"options": {},
 			"categories": [],
 			"codeinjection_head": "",
 			"codeinjection_foot": "",
-			"updated_at": new Date(),
-			"created_at": new Date(),
+			"published_at": new Date(),
 		},
 		doingAxios: true,
 		loadingResourceData: true,
@@ -215,7 +230,6 @@ export default {
 		this.getUsers();
 		this.getTemplates();
 		this.getLayouts();
-		this.getSuccessMessage();
 	},
 	methods: {
 		/*
@@ -224,6 +238,7 @@ export default {
 		 */
 		getSuccessMessage() {
 			if (this.$route.query.success) {
+				console.log("in")
 				this.$noty.success("Successfully created new page.")
 			}
 		},
@@ -235,10 +250,24 @@ export default {
 			const id = this.$route.params.id;
 			this.axios.get(`/posts/${id}`)
 				.then(res => {
-					this.data = res.data.data.post;
+					const post = res.data.data.post;
+					this.data = post;
+
+					// Return 404 if there is no ID
 					if (!this.data) {
 						this.$router.push({ name : 'not-found' })
 					}
+
+					// Compare slugs & set
+					if (this.slugify(this.slug) !== this.slugify(this.data.slug)) {
+						this.slug = this.data.slug;
+					}
+
+					// Set author
+					this.data.author = res.data.data.author.id;
+
+					this.setDates()
+
 					this.loadingResourceData = false;
 				})
 				.catch(err => {
@@ -253,9 +282,9 @@ export default {
 		getFieldLayout() {
 			this.axios.get("/fields", {
 				params: {
-					"layout": this.selectedLayout,
-					"page_template": this.selectedTemplate,
-					"user_id": this.selectedAuthor,
+					"layout": this.data['layout'],
+					"page_template": this.data['page_template'],
+					"user_id": this.data['author'],
 				}
 			})
 			.then(res => {
@@ -322,6 +351,11 @@ export default {
 				this.loadingResourceData = false;
 			}
 		},
+		setDates() {
+			this.data["created_at"] = new Date(this.data['created_at']);
+			this.data["updated_at"] = new Date(this.data['updated_at']);
+			this.data["published_at"] = new Date(this.data['published_at']);
+		},
 		/*
 		 * save()
 		 * Save the new page, check for field validation.
@@ -330,18 +364,29 @@ export default {
 			this.errorTrigger = true;
 			this.$nextTick().then(() => {
 				if (document.querySelectorAll(".field-cont-error").length === 0) {
+					this.data.slug = this.computedSlug;
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)
 							.then(res => {
-								// Push to new page if successfull
+								// Push to new page if successful
 								this.$router.push({
 									name: 'editor',
 									params: { id : res.data.data.post.id },
 									query: { success : "true" }
 								})
+
+								// Set defaults
+								this.data = res.data.data.post;
+								this.data.author = res.data.data.author.id;
+								this.newItem = false;
+								this.setDates();
+								this.getSuccessMessage()
 							})
 							.catch(err => {
 								console.log(err);
+								if (err.response.status === 400) {
+									this.validate(err.response.data.data.errors)
+								}
 								this.$noty.error("Error occurred, please refresh the page.")
 							})
 					} else {
@@ -359,6 +404,12 @@ export default {
 				}
 			})
 		},
+		validate(errors) {
+			this.errors = {}
+			errors.forEach(err => {
+				this.$set(this.errors, err.key, err.message)
+			})
+		},
 		/*
 		 * updateCodeInjection()
 		 * Update code injection from component.
@@ -366,6 +417,17 @@ export default {
 		updateCodeInjection(e) {
 			this.data['codeinjection_head'] = e.header;
 			this.data['codeinjection_foot'] = e.footer;
+		},
+		/*
+		 * slugify()
+		 * Slugify's given input.
+		 */
+		slugify(text) {
+			return slugify(text, {
+				replacement: '-',    // replace spaces with replacement
+				remove: null,        // regex to remove characters
+				lower: true          // result in lower case
+			})
 		},
 	},
 	computed: {
@@ -376,34 +438,27 @@ export default {
 		getResources() {
 			return this.$store.state.theme.resources;
 		},
-		computedSlug() {
-			//let slugResult = '';
-
-			const rootSlug = this.resource.name === "page" ? "" : this.resource.name;
-			//this.rootSlug = ""
-
-			const test = slugify(rootSlug + this.title, {
-				replacement: '-',    // replace spaces with replacement
-				remove: null,        // regex to remove characters
-				lower: true          // result in lower case
-			})
-
-			return test;
+		/*
+		 * getBaseSlug()
+		 * Get the base slug (resource).
+		 */
+		getBaseSlug() {
+			return  this.resource.name === "page" ? "/" : "/" + this.resource.name + "/";
 		},
-		computedBaseSlug: {
-			get: function(){
-				return this.customSlug;
+		/*
+		 * computedSlug()
+		 * Obtain the computed slug from the input & title.
+		 */
+		computedSlug: {
+			get() {
+				return this.getBaseSlug + this.slugify(this.slug ? this.slug : this.data.title);
 			},
-			set: function(value){
-				if(value.length < 1){
-					this.customSlug = '/';
-					this.isCustomSlug = false;
-				} else {
-					this.customSlug = value;
-					this.isCustomSlug = true;
-				}
+			set(value) {
+				let slug = this.slugify(value)
+				this.data.slug = slug;
+				return slug;
 			}
-		},
+		}
 	}
 };
 </script>
@@ -411,16 +466,11 @@ export default {
 <!-- =====================
 	Styles
 	===================== -->
-<style scoped lang="scss">
+<style lang="scss">
 
-	// Title
-	// =========================================================================
-
-	.title {
-		margin-bottom: 1.6rem;
-	}
 
 	.editor {
+
 
 		// Sidebar
 		// =========================================================================
@@ -428,13 +478,12 @@ export default {
 		&-sidebar {
 			position: sticky;
 			top: 100px;
+			background-color: $bg-color;
 
 			&-options {
 				margin-bottom: 1.6rem;
 			}
 		}
-
 	}
-
 
 </style>

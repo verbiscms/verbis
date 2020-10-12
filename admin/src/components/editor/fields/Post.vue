@@ -66,7 +66,7 @@ export default {
 			this.axios.get("/posts")
 				.then(res => {
 					const posts = res.data.data
-					if (posts === undefined) {
+					if (posts === undefined || Object.keys(posts).length === 0 && posts.constructor === Object) {
 						// TODO: Handle
 					} else {
 						this.posts = posts.map(a => {
