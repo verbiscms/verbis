@@ -6,7 +6,7 @@
             <div class="row mt-5 mb-3">
                 <div class="col-12">
                     <h2>Environment</h2>
-                    <p>App Env: {{ appEnv }}</p>
+{{/*                    <p>App Env: {{ appEnv }}</p>*/}}
                     <p>Is Production: {{ isProduction }}</p>
                     <p>Is Debug: {{ isDebug }}</p>
                 </div>

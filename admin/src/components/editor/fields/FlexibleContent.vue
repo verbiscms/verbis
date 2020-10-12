@@ -2,7 +2,7 @@
 	Field - Flexible Content
 	===================== -->
 <template>
-	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
+	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="flexible">
 		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".flexible-handle">
 			<div class="card card-margin-small" v-for="(group, groupIndex) in getFields" :key="groupIndex">
 				<div class="card-header">
@@ -147,6 +147,9 @@ export default {
 			}
 
 			this.layoutFields.push(temp)
+			this.$nextTick(() => {
+				this.helpers.setHeight(this.$refs.flexible.closest(".collapse-content"));
+			});
 		},
 		moveUp(index) {
 			this.moveItem(index, index - 1)

@@ -20,8 +20,6 @@ func frontend(s *server.Server, c *controllers.Controller) {
 		// Serve Verbis Assets
 		s.Static("/verbis", paths.Api() + "/web/public")
 
-		s.GET("/", c.Frontend.Home)
-		s.GET("/test", c.Frontend.Test)
 		s.GET("/uploads/*any", c.Frontend.GetUploads)
 
 		s.NoRoute(c.Frontend.Serve)

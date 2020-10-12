@@ -45,7 +45,7 @@
 <![endif]-->
 <main>
     {{ include "partials/header" }}
-    {{ template "content" . }}
+{{/*    {{ template "content" . }}*/}}
     <!-- Hero Large - Clip Path -->
     <svg width="0" height="0">
         <clipPath id="hero-large-clippath" clipPathUnits="objectBoundingBox">
@@ -53,8 +53,6 @@
         </clipPath>
     </svg>
 </main>
-    {{ include "partials/modal" }}
-    {{ include "partials/signup" }}
     {{ include "partials/footer" }}
 <!-- Javascript -->
 <script src="/assets/js/app.js"></script>

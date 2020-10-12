@@ -87,6 +87,17 @@ class helpers {
 	deleteCookie(name) {
 		document.cookie = name + '=; Max-Age=0; path=/; domain=' + location.host;
 	}
+
+	// Calculate height & children of element
+	setHeight(el) {
+		let children = el.children;
+		let height = 0;
+		for (let i = 0; i < children.length; i++) {
+			height += children[i].clientHeight;
+		}
+		el.style.maxHeight = height + "px";
+		console.log(el.style.maxHeight)
+	}
 }
 
 Vue.prototype.helpers = new helpers();
