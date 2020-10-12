@@ -90,6 +90,11 @@ func GetAppName() string {
 	return env.AppName
 }
 
+// App - GetAppEv
+func GetAppEnv() string {
+	return env.AppEnv
+}
+
 // Database - GetPort
 func GetPort() int {
 	n, _ := strconv.Atoi(env.AppPort)

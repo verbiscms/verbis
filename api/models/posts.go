@@ -106,8 +106,8 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 		p.Status = "draft"
 	}
 
-	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, fields, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId, p.PublishedAt)
+	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, fields, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
+	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId, p.PublishedAt)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -146,11 +146,9 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	p.Author = s.checkOwner(*p)
 	p.UserId = p.Author
 
-	fmt.Println(p.PublishedAt)
-
 	// Update the posts table with data
-	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.Author, p.PublishedAt, p.Id)
+	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
+	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.Author, p.PublishedAt, p.Id)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}

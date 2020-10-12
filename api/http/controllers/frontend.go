@@ -19,8 +19,6 @@ import (
 
 // FrontendHandler defines methods for the frontend to interact with the server
 type FrontendHandler interface {
-	Home(g *gin.Context)
-	Test(g *gin.Context)
 	GetUploads(g *gin.Context)
 	Serve(g *gin.Context)
 }
@@ -31,25 +29,11 @@ type FrontendController struct {
 	models 			*models.Store
 }
 
-
 // newFrontend - Construct
 func newFrontend(m *models.Store) *FrontendController {
 	return &FrontendController{
 		models: m,
 	}
-}
-
-// TEMP - Home
-func (c *FrontendController) Home(g *gin.Context) {
-	g.HTML(200, "templates/home", nil)
-}
-
-// TEMP - Test
-func (c *FrontendController) Test(g *gin.Context) {
-	log.WithFields(log.Fields{
-		"error": errors.Error{Code: errors.INTERNAL, Message: "Test", Operation: "op", Err: fmt.Errorf("dfdasfdasf")},
-	}).Panic()
-	return
 }
 
 // GetUploads retrieves images in the uploads folder, returns webp if accepts
@@ -70,6 +54,7 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 
 // Serve the front end website
 func (c *FrontendController) Serve(g *gin.Context) {
+	const op = "FrontendHandler.Serve"
 
 	path := g.Request.URL.Path
 	post, err := c.models.Posts.GetBySlug(path)
@@ -87,17 +72,29 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		Post: post,
 	}
 
+	pt := "index"
+	if post.PageTemplate != "default" {
+		pt = config.Template.TemplateDir + "/" + post.PageTemplate
+	}
+
+	master := ""
+	if post.Layout != "default" {
+		master = config.Template.LayoutDir + "/" + post.Layout
+	}
+
 	tf := templates.NewFunctions(g, c.models, &post)
 	gvFrontend := goview.New(goview.Config{
 		Root:      paths.Theme(),
 		Extension: config.Template.FileExtension,
-		Master:    config.Template.LayoutDir + "/" + post.Layout,
+		Master:    master,
 		Partials:  []string{},
 		Funcs: tf.GetFunctions(),
 		DisableCache: !environment.IsProduction(),
 	})
 
-	if err := gvFrontend.Render(g.Writer, http.StatusOK, config.Template.TemplateDir + "/" + post.PageTemplate, r); err != nil {
-		log.Error(err)
+	if err := gvFrontend.Render(g.Writer, http.StatusOK, pt, r); err != nil {
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Could not render the template", err.Error()), Operation: op, Err: err},
+		}).Panic()
 	}
 }

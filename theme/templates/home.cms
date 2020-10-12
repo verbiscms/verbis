@@ -1,70 +1,9 @@
 {{ define "content" }}
 
-    {{ hello }}
+    <h1>The new title</h1>
 
-    <!-- =====================
-        Hero
-        ===================== -->
-    <section class="hero hero-off-black" id="home">
-        <div class="home-hero-canvas"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-12 col-tab-10 col-desk-7 col-hd-5">
-                    <div class="hero-text">
-                        <h1>We exist to help you sleep better.</h1>
-                        <p class="lead">Sign up to our newsletter for sleep tips and tricks</p>
-                        <form action="" class="form">
-                            <div class="form-input-cont form-input-cont-submit form-input-cont-border">
-                                <input type="text" name="email" class="form-input" placeholder="Email Address">
-                                <span class="form-message">Wrong email</span>
-                                <button class="btn btn-large btn-arrow btn-blue form-send">
-                                    <span>Sign up</span>
-                                    <span class="btn-spinner"></span>
-                                </button>
-                            </div>
-                            <span class="form-success-message">Thanks! Please check your email.</span>
-                        </form>
-                    </div>
-                </div><!-- /Col -->
-            </div><!-- /Row -->
-        </div><!-- /Container -->
-    </section>
-    <!-- =====================
-         About
-         ===================== -->
-    <section class="section wave wave-blue wave-center-tab wave-margin-neg-top" id="about">
-        <div class="wave-cont">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12 col-tab-10 col-desk-5">
-                        <h2>Do you need to get better sleep?</h2>
-                        <div class="text-cont">
-                            <p>If you’re waking up tired and fuzzy-headed, it can be harder to remember things, like where you left the keys when you’re rushing to get out the door, or maybe at work, you don’t feel as focused or productive as you could be.</p>
-                            <p>Being tired throws your hunger hormones out of whack, and a sleepy brain loses executive function, so it’s harder to make healthy choices. What that means: when you hit a wall late in the afternoon you’re more apt to grab a candy bar, a bag of chips, or other sugary or salty snacks that would not get a nutritionist’s stamp of approval.</p>
-                            <p>Not surprisingly, by the time you get home you may be feeling irritable or cranky, and a little wound up. Not the best state of mind for peacefully drifting off a few hours later.</p>
-                        </div>
-                        <button class="btn btn-arrow btn-yellow btn-large"><span>Learn more</span></button>
-                    </div><!-- /Col -->
-                    <div class="col-12 col-tab-10 col-desk-6 offset-desk-1">
-                        <figure class="home-about-img">
-                            <img src="/assets/images/about-image.svg" alt="Sleep Scene">
-                        </figure>
-                    </div>
-                </div><!-- /Row -->
-            </div><!-- /Container -->
-        </div><!-- /Wave Cont -->
-    </section>
-    <!-- =====================
-         Popular Reads
-         ===================== -->
-    <section class="section section-padding wave wave-blue">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <h3>Popular reads</h3>
-                </div><!-- /Col -->
-            </div><!-- /Row -->
-        </div><!-- /Container -->
-    </section>
+
+            {{ escape ("richtext" | getField) }}
+
 
 {{ end }}
