@@ -2,7 +2,7 @@
 	Field - Repeater
 	===================== -->
 <template>
-	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
+	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
 		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".repeater-handle">
 			<div class="card card-margin-small" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
 				<div class="card-header">
@@ -132,6 +132,9 @@ export default {
 		},
 		addRow() {
 			this.repeaterFields.push({})
+			this.$nextTick(() => {
+				this.helpers.setHeight(this.$refs.repeater.closest(".collapse-content"));
+			});
 		},
 		moveUp(index) {
 			this.moveItem(index, index - 1)

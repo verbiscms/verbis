@@ -91,7 +91,6 @@ func Recover(g *gin.Context, err interface{}) {
 	}); err != nil {
 		log.Panic(err)
 	}
-
 }
 
 // Get the type of error and return new Verbis error
@@ -107,10 +106,23 @@ func (r *Recovery) setType(err interface{}) *errors.Error {
 		}
 		errData = entry.Data["error"].(errors.Error)
 
-		r.Line = stack[8].Line
-		r.Path = stack[8].File
-		r.Highlight = 7
-		r.Language = "go"
+		if strings.Contains(errData.Error(), "ViewEngine") {
+			if err := r.handleTemplate(&errData); err != nil {
+				//fmt.Println(err)
+			}
+			errData = errors.Error{
+				Code:      errors.TEMPLATE,
+				Message:   fmt.Sprintf("Could not render the template %s: %s,", r.Path, errData.Err),
+				Operation: "RenderTemplate",
+				Err:       fmt.Errorf("%s on line %d", helpers.StringsSplitRight(errData.Error(), "function "), r.Line),
+			}
+			r.Highlight = -1
+		} else {
+			r.Line = stack[8].Line
+			r.Path = stack[8].File
+			r.Highlight = 7
+			r.Language = "go"
+		}
 
 	} else {
 		e, ok := err.(error)
@@ -162,7 +174,10 @@ func (r *Recovery) setFileContents() (string, error) {
 	if ok := files.Exists(r.Path); ok {
 		var err error
 		if fileContents, err = files.GetFileContents(r.Path); err != nil {
+			fmt.Println(err)
 			return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert get file contents with path %s", r.Path), Operation: op, Err: err}
+		} else {
+			return fileContents, nil
 		}
 	}
 

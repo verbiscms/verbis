@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -142,8 +141,6 @@ func (c *PostsController) Update(g *gin.Context) {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-
-	fmt.Println(post.PublishedAt)
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {

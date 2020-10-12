@@ -13,14 +13,14 @@ import (
 type TemplateFunctions struct {
 	gin *gin.Context
 	post *domain.Post
-	fields map[string]string
+	fields map[string]interface{}
 	store *models.Store
 }
 
 // Construct
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunctions {
 
-	f := make(map[string]string)
+	f := make(map[string]interface{})
 	if p.Fields != nil {
 		if err := json.Unmarshal(*p.Fields, &f); err != nil {
 			log.Error(err)
@@ -58,6 +58,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"storage": t.storagePath,
 		// Helpers
 		"fullUrl": t.GetFullUrl,
+		"escape": t.escape,
 	}
 }
 
@@ -67,9 +68,9 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
  */
 
 // Get the app env
-//func (t *TemplateFunctions) appEnv() string {
-//	return environment.Env.AppEnv
-//}
+func (t *TemplateFunctions) appEnv() string {
+	return environment.GetAppEnv()
+}
 
 // If the app is in production or development
 func (t *TemplateFunctions) isProduction() bool {
@@ -147,7 +148,7 @@ func (t *TemplateFunctions) getResources(query map[string]interface{}) map[strin
  */
 
 // Get field based on input return nothing if found
-func (t *TemplateFunctions) getField(field string) string {
+func (t *TemplateFunctions) getField(field string) interface{} {
 	if _, found := t.fields[field]; found {
 		return t.fields[field]
 	} else {
@@ -156,7 +157,7 @@ func (t *TemplateFunctions) getField(field string) string {
 }
 
 // Get all fields for template
-func (t *TemplateFunctions) getFields() map[string]string {
+func (t *TemplateFunctions) getFields() map[string]interface{} {
 	return t.fields
 }
 
@@ -167,6 +168,7 @@ func (t *TemplateFunctions) hasField(field string) bool {
 	}
 	return false
 }
+
 
 /*
  * Auth
@@ -237,4 +239,9 @@ func (t *TemplateFunctions) storagePath() string {
 // Get all fields for template
 func (t *TemplateFunctions) GetFullUrl() string {
 	return t.gin.Request.Host + t.gin.Request.URL.String()
+}
+
+// escape HTML
+func (t *TemplateFunctions) escape(text string) template.HTML {
+	return template.HTML(text)
 }
