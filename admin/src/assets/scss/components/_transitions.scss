@@ -19,6 +19,19 @@
 		opacity: 0;
 	}
 
+	// Fade Quick
+	// =========================================================================
+
+	&-fade-quick-enter-active,
+	&-fade-quick-leave-active {
+		transition: opacity 180ms ease;
+	}
+
+	&-fade-quick-enter,
+	&-fade-quick-leave-to  {
+		opacity: 0;
+	}
+
 	// Fade Height
 	// =========================================================================
 
@@ -48,3 +61,5 @@
 		}
 	}
 }
+
+

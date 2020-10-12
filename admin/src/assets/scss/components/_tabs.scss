@@ -16,68 +16,6 @@ $tabs-panel-padding: 36px;
 	width: 100%;
 	overflow: visible;
 
-	// Header
-	// ==========================================================================
-
-	&-header {
-		width: 100%;
-		display: block;
-		border: $tabs-border;
-		border-radius: $tabs-border-radius;
-		z-index: 99;
-		//background-color: $white;
-		box-shadow: $form-box-shadow;
-	}
-
-	// Label
-	// ==========================================================================
-
-	&-label {
-		font-size: $tabs-font-size;
-		height: 50px;
-		padding: $tabs-label-mobile-padding;
-		cursor: pointer;
-		opacity: 1;
-		min-width: 50px;
-		text-align: center;
-		display: inline-flex;
-		justify-content: center;
-		align-items: center;
-		white-space: nowrap;
-		vertical-align: top;
-		text-decoration: none;
-		position: relative;
-		//overflow-x: hidden;
-		color: $grey;
-		-webkit-tap-highlight-color: transparent; // sass-lint:disable-line  no-vendor-prefixes
-		font-weight: $tabs-font-weight;
-		border-left: $tabs-border;
-		border-right: $tabs-border;
-		border-left-width: 0;
-		z-index: 9999999;
-		transition: border 200ms ease, background-color 200ms ease, color 200ms ease;
-		will-change: border, background-color, color;
-
-		&:first-child {
-			border-top-left-radius: $tabs-border-radius;
-			border-bottom-left-radius: $tabs-border-radius;
-		}
-
-		@include media-tab {
-			min-width: 160px;
-			padding: 0px
-		}
-
-		&-active {
-			background-color: $white;
-			color: $primary;
-			font-weight: bold;
-
-			&:after {
-				opacity: 1;
-			}
-		}
-	}
 
 	// Panel
 	// ==========================================================================
@@ -85,12 +23,15 @@ $tabs-panel-padding: 36px;
 	&-panel {
 		margin-top: 1.6rem;
 		width: 100%;
-		display: none;
+		display: block;
+		visibility: visible;
 		padding: $tabs-panel-padding;
 		background: #fff;
 		border: $tabs-border;
 		border-radius: $tabs-border-radius;
 		overflow: visible;
+		height: auto;
+		//opacity: 0;
 
 		&-naked {
 			padding: 0;
@@ -99,9 +40,9 @@ $tabs-panel-padding: 36px;
 		}
 
 		&-active {
-			display: block;
+			visibility: visible;
 			opacity: 1;
-			transform: scale(1) !important; //Overwrite specificity of left and right tabs;
+			//transform: scale(1) !important; //Overwrite specificity of left and right tabs;
 		}
 	}
 

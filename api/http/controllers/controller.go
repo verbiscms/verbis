@@ -158,13 +158,14 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 
 			if errData.Err != nil {
 				errType := reflect.TypeOf(errData.Err).String()
+
 				if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID  {
 					validationErrors, _ := errData.Err.(validator.ValidationErrors)
 					var v validation.Validator = validation.New()
 					data = &ValidationErrJson{
 						Errors: v.Process(validationErrors),
 					}
-					return gin.H{}, true
+					return data, true
 				} else {
 					return gin.H{}, true
 				}

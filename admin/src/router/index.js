@@ -52,15 +52,8 @@ const routes = [
 		name: "editor",
 		component: () => import("../views/pages/Editor.vue")
 	},
-	{
-		path: "/editor/:id",
-		name: "settings",
-		component: () => import("../views/pages/Editor.vue")
-	},
-	{
-		path: "/editor/:id",
-		name: "media",
-		component: () => import("../views/pages/Editor.vue")
+	{ 	path: '/editor',
+		redirect: '/editor/new',
 	},
 	{
 		path: '/404',

@@ -58,6 +58,11 @@ section {
 		width: calc(100vw - #{$sidebar-left-width});
 		transform: translateX($sidebar-left-width);
 	}
+
+	.row {
+		max-width: 1750px;
+		margin: 0 auto;
+	}
 }
 
 .container {
