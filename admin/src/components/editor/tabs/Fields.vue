@@ -5,83 +5,87 @@
 	<section>
 		<!-- Field Group -->
 		<div class="card" v-for="(group, groupIndex) in layout" :key="group.uuid">
-			<div class="card-header">
-				<h3 class="card-title">{{  group.title }}</h3>
-				<div class="card-controls">
-					<i class="feather feather-arrow-up" @click="moveGroupUp(groupIndex)"></i>
-					<i class="feather feather-arrow-down" @click="moveGroupDown(groupIndex)"></i>
-					<i class="feather feather-chevron-down card-controls-chevron" @click="collapseGroup(group.uuid)" :class="{ 'active' : computedHeights[group.uuid] == '0px' }"></i>
-				</div>
-			</div><!-- /Card Header -->
-			<!-- Field Layout -->
-			<div class="field-height" :ref="group.uuid" :style="{ maxHeight: computedHeights[group.uuid] }">
-				<div class="card-body">
-					<!-- :style="{ width: layout.wrapper['width'] + '%' }" -->
-					<div class="field" v-for="(layout) in group.fields" :key="layout.uuid" >
-						<transition name="trans-fade" >
-							<div v-if="parseLogic(layout, groupIndex)">
-								<!-- Field Title -->
-								<div class="field-title" :class="{ 'field-title-margin-bottom' : layout.type === 'flexible' || layout.type === 'repeater' }">
-									<h4>{{ layout.label }}</h4>
-									<p>{{ layout.instructions }}</p>
+			<collapse>
+				<template v-slot:header>
+					<div class="card-header">
+						<h3 class="card-title">{{  group.title }}</h3>
+						<div class="card-controls">
+							<i class="feather feather-arrow-up" @click="moveGroupUp(groupIndex)"></i>
+							<i class="feather feather-arrow-down" @click="moveGroupDown(groupIndex)"></i>
+							<i class="feather feather-chevron-down" @click="collapseGroup(group.uuid)"></i>
+						</div>
+					</div><!-- /Card Header -->
+				</template>
+				<!-- Field Layout -->
+				<template v-slot:body>
+					<div class="card-body">
+						<!-- :style="{ width: layout.wrapper['width'] + '%' }" -->
+						<div class="field" v-for="(layout) in group.fields" :key="layout.uuid" >
+							<transition name="trans-fade" >
+								<div v-if="parseLogic(layout, groupIndex)">
+									<!-- Field Title -->
+									<div class="field-title" :class="{ 'field-title-margin-bottom' : layout.type === 'flexible' || layout.type === 'repeater' }">
+										<h4>{{ layout.label }}</h4>
+										<p>{{ layout.instructions }}</p>
+									</div>
+									<!-- Field Content -->
+									<div class="field-content">
+										<!-- =====================
+											Basic
+											===================== -->
+										<!-- Text -->
+										<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldText>
+										<!-- Textarea -->
+										<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTextarea>
+										<!-- Number -->
+										<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldNumber>
+										<!-- Range -->
+										<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRange>
+										<!-- Email -->
+										<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldEmail>
+										<!-- Url -->
+										<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUrl>
+										<!-- Password -->
+										<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPassword>
+										<!-- =====================
+											Content
+											===================== -->
+										<!-- Richtext -->
+										<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRichText>
+										<!-- =====================
+											Choice
+											===================== -->
+										<!-- Select -->
+										<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldSelect>
+										<!-- Multi Select -->
+										<FieldTags v-else-if="layout.type === 'multi_select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTags>
+										<!-- Checkbox -->
+										<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldCheckbox>
+										<!-- Radio -->
+										<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRadio>
+										<!-- Button Group -->
+										<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldButtonGroup>
+										<!-- =====================
+											Relational
+											===================== -->
+										<!-- Post Object -->
+										<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPost>
+										<!-- User -->
+										<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUser>
+										<!-- =====================
+											Layout
+											===================== -->
+										<!-- Repeater -->
+										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRepeater>
+										<!-- Flexible -->
+										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>
+									</div><!-- /Field Content -->
 								</div>
-								<!-- Field Content -->
-								<div class="field-content">
-									<!-- =====================
-										Basic
-										===================== -->
-									<!-- Text -->
-									<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldText>
-									<!-- Textarea -->
-									<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTextarea>
-									<!-- Number -->
-									<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldNumber>
-									<!-- Range -->
-									<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRange>
-									<!-- Email -->
-									<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldEmail>
-									<!-- Url -->
-									<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUrl>
-									<!-- Password -->
-									<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPassword>
-									<!-- =====================
-										Content
-										===================== -->
-									<!-- Richtext -->
-									<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRichText>
-									<!-- =====================
-										Choice
-										===================== -->
-									<!-- Select -->
-									<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldSelect>
-									<!-- Multi Select -->
-									<FieldTags v-else-if="layout.type === 'multi_select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTags>
-									<!-- Checkbox -->
-									<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldCheckbox>
-									<!-- Radio -->
-									<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRadio>
-									<!-- Button Group -->
-									<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldButtonGroup>
-									<!-- =====================
-										Relational
-										===================== -->
-									<!-- Post Object -->
-									<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPost>
-									<!-- User -->
-									<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUser>
-									<!-- =====================
-										Layout
-										===================== -->
-									<!-- Repeater -->
-									<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRepeater>
-									<!-- Flexible -->
-									<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>
-								</div><!-- /Field Content -->
-							</div>
-						</transition>
-					</div><!-- /Field Layout -->
-				</div><!-- /Field Group Layout -->
-			</div><!-- /Field Layout -->
+							</transition>
+						</div><!-- /Field Layout -->
+					</div><!-- /Field Group Layout -->
+				</template>
+			</collapse>
 		</div><!-- /Field Group -->
 	</section>
 </template>
@@ -118,6 +122,8 @@ import FieldUser from "@/components/editor/fields/User";
 import FieldRepeater from "@/components/editor/fields/Repeater";
 import FieldFlexible from "@/components/editor/fields/FlexibleContent";
 
+import Collapse from "@/components/misc/Collapse";
+
 export default {
 	name: "Fields",
 	props: {
@@ -132,6 +138,7 @@ export default {
 		},
 	},
 	components: {
+		Collapse,
 		// Basic
 		FieldText,
 		FieldTextarea,
@@ -161,20 +168,7 @@ export default {
 		isActive: true,
 		errors: {},
 	}),
-	mounted() {
-		//this.initHeight()
-	},
 	methods: {
-		initHeight() {
-			setTimeout(() => {
-				for (const ref in this.$refs) {
-					const el = this.$refs[ref],
-						height = getComputedStyle(el[0]).height
-					/this.$set(this.heights, ref, height)
-					this.$set(this.computedHeights, ref, height)
-				}
-			}, 100)
-		},
 		getLayoutByName(groupIndex, name) {
 			return this.getLayout[groupIndex]['fields'].find(f => f.name === name)
 		},

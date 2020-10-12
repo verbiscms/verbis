@@ -7,29 +7,41 @@
 			Head
 			===================== -->
 		<div class="card">
-			<div class="card-header">
-				<h3 class="card-title">Header</h3>
-				<div class="card-controls">
-					<i class="feather feather-chevron-down"></i>
-				</div>
-			</div><!-- /Card Header -->
-			<div class="card-body card-body-code">
-				<prism-editor class="prism" v-model="headerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
-			</div><!-- /Card Body -->
+			<collapse>
+				<template v-slot:header>
+					<div class="card-header">
+						<h3 class="card-title">Header</h3>
+						<div class="card-controls">
+							<i class="feather feather-chevron-down"></i>
+						</div>
+					</div><!-- /Card Header -->
+				</template>
+				<template v-slot:body>
+					<div class="card-body">
+						<prism-editor class="prism" v-model="headerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
+					</div><!-- /Card Body -->
+				</template>
+			</collapse>
 		</div><!-- /Card -->
 		<!-- =====================
 			Footer
 			===================== -->
 		<div class="card">
-			<div class="card-header">
-				<h3 class="card-title">Footer</h3>
-				<div class="card-controls">
-					<i class="feather feather-chevron-down"></i>
-				</div>
-			</div><!-- /Card Header -->
-			<div class="card-body card-body-code">
-				<prism-editor class="prism" v-model="footerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
-			</div><!-- /Card Body -->
+			<collapse>
+				<template v-slot:header>
+					<div class="card-header">
+						<h3 class="card-title">Footer</h3>
+						<div class="card-controls">
+							<i class="feather feather-chevron-down"></i>
+						</div>
+					</div><!-- /Card Header -->
+				</template>
+				<template v-slot:body>
+					<div class="card-body">
+						<prism-editor class="prism" v-model="footerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
+					</div><!-- /Card Body -->
+				</template>
+			</collapse>
 		</div><!-- /Card -->
 	</section>
 </template>
@@ -41,9 +53,13 @@
 
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-markup';
+import Collapse from "@/components/misc/Collapse";
 
 export default {
 	name: "CodeInjection",
+	components: {
+		Collapse,
+	},
 	props: {
 		header: {
 			type: String,

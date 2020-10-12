@@ -20,6 +20,7 @@ import axios from 'axios'
 import titleMixin from './util/title';
 import VueNoty from 'vuejs-noty'
 import { PrismEditor } from 'vue-prism-editor';
+
 require('./functions.js');
 
 // Local
@@ -86,6 +87,8 @@ Vue.mixin(titleMixin)
  * Plugins
  *
  */
+
+// Noty
 Vue.use(
 	VueNoty, {
 		timeout: 2500,
@@ -94,6 +97,7 @@ Vue.use(
 		layout: 'bottomRight'
 	},
 );
+
 
 /**
  * Components

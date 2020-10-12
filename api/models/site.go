@@ -187,6 +187,11 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 	}
 
 	var templates []map[string]interface{}
+	templates = append(templates, map[string]interface{}{
+		"key": "default",
+		"name": "Default",
+	})
+
 	for _, file := range files {
 		name := strings.Title(strings.ToLower(strings.Replace(file, "-", " ", -1)))
 		t := map[string]interface{}{
@@ -207,6 +212,7 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 		}
 		return &t, nil
 	}
+
 
 	// Set the cache for the templates if the cache was not found
 	// and the options allow.
@@ -238,6 +244,11 @@ func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 	}
 
 	var layouts []map[string]interface{}
+	layouts = append(layouts, map[string]interface{}{
+		"key": "default",
+		"name": "Default",
+	})
+
 	for _, file := range files {
 		name := strings.Title(strings.ToLower(strings.Replace(file, "-", " ", -1)))
 		t := map[string]interface{}{

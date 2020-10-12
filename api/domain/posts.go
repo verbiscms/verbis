@@ -14,20 +14,20 @@ type PostData struct {
 	Layout 			*[]FieldGroup				`json:"layout"`
 }
 
-
 type Post struct {
 	Id				int							`db:"id" json:"id" binding:"numeric"`
 	UUID 			uuid.UUID					`db:"uuid" json:"uuid"`
 	Slug			string 						`db:"slug" json:"slug" binding:"required,max=150"`
 	Title			string 						`db:"title" json:"title" binding:"required,max=500"`
-	Status			string						`db:"status" json:"status"`
+	Status			string						`db:"status" json:"status,omitempty"`
 	Resource		*string 					`db:"resource" json:"resource,max=150"`
-	PageTemplate	string						`db:"page_template" json:"page_template" binding:"max=150"`
-	Layout			string						`db:"layout" json:"layout" binding:"max=150"`
+	PageTemplate	string						`db:"page_template" json:"page_template,omitempty" binding:"max=150"`
+	Layout			string						`db:"layout" json:"layout,omitempty" binding:"max=150"`
 	Fields			*json.RawMessage 			`db:"fields" json:"fields"`
 	CodeInjectHead	*string 					`db:"codeinjection_head" json:"codeinjection_head,omitempty"`
-	CodeInjectFoot	*string 					`db:"codeinjection_foot" json:"codeinjection_foot"`
+	CodeInjectFoot	*string 					`db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
 	UserId 			int 						`db:"user_id" json:"-"`
+	PublishedAt		*time.Time					`db:"published_at" json:"published_at"`
 	CreatedAt		*time.Time					`db:"created_at" json:"created_at"`
 	UpdatedAt		*time.Time					`db:"updated_at" json:"updated_at"`
 	SeoMeta			PostSeoMeta					`db:"options" json:"options"`
