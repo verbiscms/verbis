@@ -75,6 +75,7 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			// Users
 			operator.GET("/users", c.User.Get)
 			operator.GET("/users/:id", c.User.GetById)
+			operator.PUT("/users/:id", c.User.Update)
 		}
 
 		// Administrator
@@ -84,7 +85,6 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 
 			// Users
 			admin.POST("/users", c.User.Create)
-			admin.PUT("/users/:id", c.User.Update)
 			admin.DELETE("/users/:id", c.User.Delete)
 		}
 	}

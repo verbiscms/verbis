@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
@@ -11,6 +12,12 @@ type Params struct {
 	Limit 			int
 	OrderBy 		string
 	OrderDirection 	string
+	Filters 		map[string][]Filter
+}
+
+type Filter struct {
+	Operator string
+	Value    interface{}  `json:"value"`
 }
 
 // PaginationAllLimit defines how many items will be returned if
@@ -26,8 +33,8 @@ func GetParams(g *gin.Context) Params {
 	var page int
 	pageStr := g.Query("page")
 	page, err := strconv.Atoi(pageStr)
-	if err != nil {
-		page = 0
+	if err != nil || page == 0 {
+		page = 1
 	}
 
 	// Get limit & calculate if list all
@@ -62,11 +69,22 @@ func GetParams(g *gin.Context) Params {
 		orderParams[1] = orderArr[1]
 	}
 
+	// Get the filters
+	filtersParam := g.Query("filter")
+	var filters map[string][]Filter
+	if filtersParam != "" {
+		err := json.Unmarshal([]byte(filtersParam), &filters)
+		if err != nil {
+			filters = nil
+		}
+	}
+
 	return Params{
 		Page:  page,
 		Limit: limit,
 		OrderBy: orderArr[0],
 		OrderDirection: orderArr[1],
+		Filters: filters,
 	}
 }
 

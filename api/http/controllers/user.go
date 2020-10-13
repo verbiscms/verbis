@@ -58,7 +58,7 @@ func (c *UserController) Get(g *gin.Context) {
 	}
 	pagination := http.GetPagination(params, totalAmount)
 
-	Respond(g, 200,"Successfully obtained users", users, *pagination)
+	Respond(g, 200,"Successfully obtained users", users, pagination)
 }
 
 // Get By ID

@@ -56,7 +56,7 @@ func (c *MediaController) Get(g *gin.Context) {
 	}
 	pagination := http.GetPagination(params, totalAmount)
 
-	Respond(g, 200, "Successfully obtained media", media, *pagination)
+	Respond(g, 200, "Successfully obtained media", media, pagination)
 }
 
 // Get By ID

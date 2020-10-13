@@ -72,7 +72,7 @@ func (c *PostsController) Get(g *gin.Context) {
 	}
 	pagination := http.GetPagination(params, totalAmount)
 
-	Respond(g, 200, "Successfully obtained posts", returnData, *pagination)
+	Respond(g, 200, "Successfully obtained posts", returnData, pagination)
 }
 
 // Get By ID

@@ -120,6 +120,9 @@ func (v* Validation) message(kind string, field string, param string) string {
 	case "ip":
 		errorMsg = field + " must be valid IP address."
 		break
+	case "url":
+		errorMsg = field + " must be valid URL."
+		break
 	}
 
 	return errorMsg
