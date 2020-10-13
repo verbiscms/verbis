@@ -117,7 +117,6 @@ func (s *UserStore) Create(u *domain.User) (domain.User, error) {
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created user ID with the email: %v", u.Email), Operation: op, Err: err}
 	}
-	u.Id = int(id)
 
 	roleQ := "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)"
 	_, err = s.db.Exec(roleQ, id, u.Role.Id)
@@ -165,8 +164,8 @@ func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user with the email: %s", u.Email), Operation: op, Err: err}
 	}
 
-	roleQ := "UPDATE users SET (role_id) VALUES (?)"
-	_, err = s.db.Exec(roleQ, u.Role.Id)
+	roleQ := "UPDATE user_roles SET role_id = ? WHERE user_id = ?"
+	_, err = s.db.Exec(roleQ, u.Role.Id, u.Id)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user roles with the user ID: %d", u.Id), Operation: op, Err: err}
 	}

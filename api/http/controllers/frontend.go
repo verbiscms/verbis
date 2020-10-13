@@ -1,18 +1,15 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"strings"
 )
@@ -77,9 +74,11 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		pt = config.Template.TemplateDir + "/" + post.PageTemplate
 	}
 
+	// If there is
 	master := ""
 	if post.Layout != "default" {
 		master = config.Template.LayoutDir + "/" + post.Layout
+		pt = pt + config.Template.FileExtension
 	}
 
 	tf := templates.NewFunctions(g, c.models, &post)
@@ -93,8 +92,6 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	})
 
 	if err := gvFrontend.Render(g.Writer, http.StatusOK, pt, r); err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Could not render the template", err.Error()), Operation: op, Err: err},
-		}).Panic()
+		panic(err)
 	}
 }

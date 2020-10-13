@@ -32,7 +32,21 @@
 				<div class="aside-left-icon aside-collapse" :class="{ 'aside-collapse-active' : collapsed }" @click="collapse">
 					<i class="fal fa-arrow-alt-to-left"></i>
 				</div>
-				<div class="aside-initials" v-html="getInitials"></div>
+				<div class="popover-cont">
+					<button class="aside-initials" v-html="getInitials"></button>
+					<div class="popover popover-top-right popover-no-arrow">
+						<!-- Profile -->
+						<router-link class="popover-item popover-item-icon" :to="{ name: 'profile' }">
+							<i class="fal fa-id-card"></i>
+							Profile
+						</router-link>
+						<!-- Logout -->
+						<div class="popover-item popover-item-icon" @click="doLogout">
+							<i class="fal fa-sign-out-alt"></i>
+							Logout
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div class="aside-right">
@@ -101,7 +115,7 @@ export default {
 	},
 	watch: {
 		'$route'() {
-			this.setActivePage()
+			this.setActivePage();
 		}
 	},
 	methods: {
@@ -109,29 +123,29 @@ export default {
 			this.axios.post("/logout", {})
 				.then(res => {
 					console.log(res);
-					this.$store.commit("logout")
-					location.reload()
+					this.$store.commit("logout");
+					location.reload();
 				});
 		},
 		setActivePage() {
-			const resource = this.$route.params.resource
-			this.activePage = resource === undefined ? this.$route.name : resource
+			const resource = this.$route.params.resource;
+			this.activePage = resource === undefined ? this.$route.name : resource;
 		},
 		collapse() {
-			document.querySelector(".auth-container").classList.toggle("auth-container-collapsed")
-			this.collapsed = !this.collapsed
+			document.querySelector(".auth-container").classList.toggle("auth-container-collapsed");
+			this.collapsed = !this.collapsed;
 		}
 	},
 	computed: {
 		getUserInfo() {
-			return this.$store.state.userInfo
+			return this.$store.state.userInfo;
 		},
 		getSite() {
-			return this.$store.state.site
+			return this.$store.state.site;
 		},
 		getInitials() {
 			const info = this.getUserInfo
-			return info.firstName.charAt(0) + info.lastName.charAt(0).toUpperCase()
+			return info['first_name'].charAt(0) + info['last_name'].charAt(0).toUpperCase();
 		}
 	},
 }
@@ -174,6 +188,7 @@ $aside-btn-padding-x: 18px;
 		min-width: $sidebar-left-width;
 		height: 100%;
 		padding: 44px 0;
+		overflow: visible;
 
 		#{$self}-left-icon {
 			display: flex;
@@ -267,6 +282,7 @@ $aside-btn-padding-x: 18px;
 		font-size: 1rem;
 		font-weight: 500;
 		cursor: pointer;
+		border: none;
 	}
 
 	// Nav

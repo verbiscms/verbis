@@ -56,6 +56,11 @@ const routes = [
 		redirect: '/editor/new',
 	},
 	{
+		path: '/profile',
+		name: 'profile',
+		component: () => import('../views/users/Profile.vue'),
+	},
+	{
 		path: '/404',
 		name: 'not-found',
 		component: () => import('../views/errors/Error.vue'),
@@ -65,10 +70,10 @@ const routes = [
 		name: 'error',
 		component: () => import('../views/errors/ServerDown.vue'),
 	},
-	// {
-	//     path: '*',
-	//     redirect: '/404'
-	// },
+	{
+		path: '*',
+		redirect: '/404'
+	},
 ];
 
 /**

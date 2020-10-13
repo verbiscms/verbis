@@ -48,8 +48,14 @@
             background-color: $white;
         }
 
+        &:not(:first-of-type) {
+            margin-top: 10px;
+        }
+
+
         &:disabled {
-            background-color: rgba($secondary, 0.03);
+            background-color: rgba($secondary, 0.04);
+            box-shadow: none !important;
         }
 
         @include on-event {
@@ -75,6 +81,37 @@
             top: 50%;
             transform: translateY(-50%);
             z-index: 9;
+        }
+    }
+
+    // Group/Row (With Border)
+    // =========================================================================
+
+    &-row {
+        align-items: center;
+        padding: 30px 0;
+        transition: height 200ms;
+
+        &-group {
+            margin-bottom: 3rem;
+        }
+
+        &-border {
+            border-bottom: 1px solid $grey-light;
+            margin-left: 15px !important;
+            margin-right: 15px !important;
+
+            & > div:first-of-type {
+                padding-left: 0;
+            }
+
+            & > div:last-of-type {
+                padding-right: 0;
+            }
+
+            &-top {
+                border-top: 1px solid $grey-light;
+            }
         }
     }
 
@@ -183,6 +220,10 @@
                 transform: translateY(1px);
                 transition: opacity 120ms;
             }
+        }
+
+        &-dark label {
+            border-color: rgba($grey, 0.8);
         }
     }
 
@@ -295,8 +336,8 @@
     // =========================================================================
 
     &-label {
-        font-weight: 600;
-        font-size: 14px;
+        font-weight: 500;
+        font-size: 13px;
         color: $grey;
     }
 

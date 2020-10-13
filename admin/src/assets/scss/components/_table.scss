@@ -1,0 +1,122 @@
+// -----------------------------------------------------------------------------
+// _table.scss
+// This file contains all styles related to the table component.
+// -----------------------------------------------------------------------------
+
+.table {
+	width: 100%;
+	max-width: 100%;
+	border-collapse: collapse;
+	border-spacing: 0;
+	font-size: 14px;
+	font-weight: 300;
+
+	// Props
+	// =========================================================================
+
+	//Align last child right, no padding
+	thead th:last-child,
+	tbody td:last-child,
+	tfoot th:last-child {
+		text-align: right;
+		padding: 0;
+	}
+
+	//Border
+	tbody tr,
+	tfoot tr {
+		border-top: 1px solid $grey-light;
+	}
+
+	//Common props body & footer (td & th)
+	tbody td,
+	tfoot th {
+		font-size: 14px;
+		padding: 12px 32px 12px 0;
+		font-weight: 300;
+		text-align: left;
+	}
+
+	p {
+		margin-bottom: 0;
+	}
+
+	// Head
+	// =========================================================================
+
+	thead {
+		th {
+			font-size: 13px;
+			padding: 12px 32px 12px 0;
+			position: relative;
+			text-align: left;
+			height: 28px;
+			line-height: 28px;
+			font-weight: 600;
+			color: rgba($secondary, 0.7)
+		}
+	}
+
+	// Body
+	// =========================================================================
+
+	tbody {
+
+		p,
+		td {
+			@include px-to-rem(14);
+			color: rgba($secondary, 0.70);
+			font-weight: 500;
+			line-height: 1.4;
+		}
+	}
+
+	// Striped
+	// =========================================================================
+
+	&-striped {
+		tbody tr:nth-child(even) {
+			background-color: $grey-light;
+		}
+	}
+
+	&-striped,
+	&-hover {
+		thead th:first-child,
+		tbody td:first-child,
+		tfoot th:first-child {
+			padding-left: 10px;
+		}
+
+		thead th:last-child,
+		tbody td:last-child,
+		tfoot th:last-child {
+			padding-right: 10px;
+		}
+	}
+
+	// Checkbox
+	// =========================================================================
+
+	&-checkbox {
+		width: 60px;
+	}
+
+	// Hover
+	// =========================================================================
+
+	&.table-hover tbody tr {
+		transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+		&:hover {
+			background-color: $table-hover-color;
+		}
+	}
+
+	// Scroll
+	// =========================================================================
+
+	&-scroll {
+		overflow-x: auto;
+	}
+}

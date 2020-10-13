@@ -46,7 +46,7 @@
 					</Tabs>
 					<!-- Content & Fields -->
 					<transition name="trans-fade" mode="out-in">
-						<div class="editor-slide" :class="{ 'editor-slide-active' : activeTab === 0}" v-if="fieldLayout.length && activeTab === 0" :key="1">
+						<div v-if="fieldLayout.length && activeTab === 0" :key="1">
 							<!-- Title -->
 							<div class="card">
 								<collapse :show="true">
@@ -74,17 +74,11 @@
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
-						<div class="editor-slide" :class="{ 'editor-slide-active' : activeTab === 1}" v-if="activeTab === 1" :key="2">
-							<MetaOptions :meta.sync="data.options.meta" url="CHANGE ME"> </MetaOptions>
-						</div>
+						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"> </MetaOptions>
 						<!-- Seo Options -->
-						<div class="editor-slide" :class="{ 'editor-slide-active' : activeTab === 2}" v-if="activeTab === 2" :key="3">
-							<SeoOptions></SeoOptions>
-						</div>
+						<SeoOptions v-if="activeTab === 2" :key="3"></SeoOptions>
 						<!-- Code Injection -->
-						<div class="editor-slide" :class="{ 'editor-slide-active' : activeTab === 3 }" v-if="activeTab === 3" :key="4">
-							<CodeInjection :header="data.codeinjection_head" :footer="data.codeinjection_foot" @update="updateCodeInjection"></CodeInjection>
-						</div>
+						<CodeInjection v-if="activeTab === 3" :key="4" :header="data.codeinjection_head" :footer="data.codeinjection_foot" @update="updateCodeInjection"></CodeInjection>
 					</transition>
 				</div><!-- /Col -->
 				<!-- =====================
@@ -93,14 +87,17 @@
 				<div class="col-12 col-desk-3">
 					<div class="editor-sidebar">
 						<div class="card editor-sidebar-options">
-							<div class="card-header">
+							<div class="card-header card-header-naked">
 								<h3 class="card-title">Options</h3>
 							</div>
 							<div class="card-body">
 								<!-- URL -->
-								<div class="form-group">
+								<div class="form-group editor-url">
 									<label class="form-label" for="options-url">URL</label>
-									<input class="form-input form-input-white" type="text" id="options-url" v-model="slug">
+									<div class="editor-url-cont">
+										<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
+										<i class="fal fa-edit" @click="slugBtn = !slugBtn"></i>
+									</div>
 									<h4>{{ computedSlug }}</h4>
 									<!-- Message -->
 									<transition name="trans-fade-height">
@@ -137,7 +134,7 @@
 						</div><!-- /Options -->
 						<!-- Properties -->
 						<div class="card editor-sidebar-properties">
-							<div class="card-header">
+							<div class="card-header card-header-naked">
 								<h3 class="card-title">Properties</h3>
 							</div>
 							<div class="card-body">
@@ -200,9 +197,9 @@ export default {
 	},
 	data: () => ({
 		activeTab: 0,
-		fieldHeights: [],
 		users: [],
 		slug: "",
+		slugBtn: false,
 		fieldLayout: [],
 		templates: [],
 		layouts: [],
@@ -413,6 +410,10 @@ export default {
 				}
 			})
 		},
+		/*
+		 * validate()
+		 * Add errors if the post/put failed.
+		 */
 		validate(errors) {
 			this.errors = {}
 			errors.forEach(err => {
@@ -487,6 +488,38 @@ export default {
 
 	.editor {
 
+		// Url
+		// =========================================================================
+
+		&-url {
+
+			h4 {
+				margin-top: 10px;
+				font-weight: 500;
+			}
+
+			&-cont {
+				position: relative;
+				display: flex;
+
+				i {
+					position: absolute;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					right: 0;
+					top: 50%;
+					height: 50px;
+					width: 50px;
+					transform: translateY(-50%);
+					background-color: $green;
+					color: $white;
+					border-top-right-radius: $form-input-border-radius;
+					border-bottom-right-radius: $form-input-border-radius;
+					border: 1px solid $grey-light;
+				}
+			}
+		}
 
 		// Sidebar
 		// =========================================================================
@@ -495,14 +528,6 @@ export default {
 			position: sticky;
 			top: 100px;
 			background-color: $bg-color;
-
-
-			&-options {
-				//background-color: $white;
-				//padding: 20px;
-				//border-radius: 20px;
-				//margin-bottom: 1.6rem;
-			}
 		}
 	}
 

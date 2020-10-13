@@ -25,6 +25,7 @@ const (
 
 type Recovery struct {
 	Err errors.Error
+	SubMessage string
 	Path string
 	Line int
 	Contents string
@@ -80,6 +81,7 @@ func Recover(g *gin.Context, err interface{}) {
 	if err := gvRecovery.Render(g.Writer, http.StatusOK, "/templates/error", gin.H{
 		"Error": rc.Err,
 		"Stack": rc.Stack,
+		"SubMessage": rc.SubMessage,
 		"RequestMethod": g.Request.Method,
 		"File": rc.getFileLines(rc.Contents, rc.Line, 10),
 		"Highlight": rc.Highlight,
@@ -106,23 +108,10 @@ func (r *Recovery) setType(err interface{}) *errors.Error {
 		}
 		errData = entry.Data["error"].(errors.Error)
 
-		if strings.Contains(errData.Error(), "ViewEngine") {
-			if err := r.handleTemplate(&errData); err != nil {
-				//fmt.Println(err)
-			}
-			errData = errors.Error{
-				Code:      errors.TEMPLATE,
-				Message:   fmt.Sprintf("Could not render the template %s: %s,", r.Path, errData.Err),
-				Operation: "RenderTemplate",
-				Err:       fmt.Errorf("%s on line %d", helpers.StringsSplitRight(errData.Error(), "function "), r.Line),
-			}
-			r.Highlight = -1
-		} else {
-			r.Line = stack[8].Line
-			r.Path = stack[8].File
-			r.Highlight = 7
-			r.Language = "go"
-		}
+		r.Line = stack[8].Line
+		r.Path = stack[8].File
+		r.Highlight = 7
+		r.Language = "go"
 
 	} else {
 		e, ok := err.(error)
@@ -135,10 +124,11 @@ func (r *Recovery) setType(err interface{}) *errors.Error {
 			}
 			errData = errors.Error{
 				Code:      errors.TEMPLATE,
-				Message:   fmt.Sprintf("Could not render the template %s", r.Path),
+				Message:   fmt.Sprintf("Could not render the template %s: ", r.Path),
 				Operation: "RenderTemplate",
 				Err:       fmt.Errorf("%s on line %d", helpers.StringsSplitRight(errData.Error(), "function "), r.Line),
 			}
+			r.SubMessage = e.Error()
 		}
 		r.Highlight = -1
 	}

@@ -25,8 +25,8 @@ func GetPagination(params Params, total int) *Pagination {
 	}
 
 	// Calculate prev and next variables
-	var next bool = false
-	var prev bool = false
+	var next = false
+	var prev = false
 	if params.Page + 1 < pages {
 		next = true
 	}
@@ -39,7 +39,7 @@ func GetPagination(params Params, total int) *Pagination {
 
 	// Construct pagination meta
 	var pagination *Pagination
-	if (Params{}) == params {
+	if params.Limit == PaginationAllLimit {
 		pagination = nil
 	} else {
 		pagination = &Pagination{

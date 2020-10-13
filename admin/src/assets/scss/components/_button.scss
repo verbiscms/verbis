@@ -136,21 +136,37 @@
 	&-white {
 		background-color: $white;
 		color: $secondary;
+
+		&:before {
+			border-color: $secondary;
+		}
 	}
 
 	&-orange {
 		background-color: $orange;
 		color: $white;
+
+		&:before {
+			border-color: $white;
+		}
 	}
 
 	&-blue {
 		background-color: $primary;
 		color: $white;
+
+		&:before {
+			border-color: $white;
+		}
 	}
 
 	&-green {
 		background-color: $green;
 		color: $white;
+
+		&:before {
+			border-color: $white;
+		}
 	}
 
 	// Margin

@@ -33,14 +33,7 @@ export default new Vuex.Store({
 		login(state, loginData) {
 			state.apiToken = loginData.token
 			state.auth = true
-			state.userInfo = {
-				id: loginData.id,
-				firstName: loginData.first_name,
-				lastName: loginData.last_name,
-				email: loginData.email,
-				accessLevel: loginData.access_level,
-				email_verified_at: true,
-			}
+			state.userInfo =  loginData;
 			axios.defaults.headers.common = {
 				"token": loginData.token,
 			};
@@ -49,8 +42,6 @@ export default new Vuex.Store({
 			state.apiToken = ''
 			state.auth = false
 			state.userInfo = {}
-			state.activeDomain = false
-			state.activePage = false
 			Vue.prototype.helpers.deleteCookie("verbis-session")
 			axios.defaults.headers.common = {
 				"token": ''
@@ -58,6 +49,9 @@ export default new Vuex.Store({
 		},
 		setSite(state, site) {
 			state.site = site;
+		},
+		setUser(state, user) {
+			state.userInfo = user;
 		},
 		setSession(state, session) {
 			Vue.prototype.helpers.setCookie("verbis-session", session, 1)

@@ -98,6 +98,9 @@ Vue.use(
 	},
 );
 
+// Moment
+Vue.use(require('vue-moment'));
+
 
 /**
  * Components

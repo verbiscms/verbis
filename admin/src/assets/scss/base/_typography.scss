@@ -65,7 +65,7 @@ h3 {
 }
 
 h4 {
-	font-size: 0.9rem;
+	font-size: 0.95rem;
 	color: $copy-light;
 	font-weight: 600;
 }
@@ -123,5 +123,12 @@ a {
 	&-no-margin {
 		margin-bottom: 0 !important;
 	}
+}
+
+// Helpers
+// =========================================================================
+
+.capitalize {
+	text-transform: capitalize;
 }
 
