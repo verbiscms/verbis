@@ -30,12 +30,12 @@ $popover-triangle-size: 20px;
 		position: relative;
 		width: auto;
 
-		.btn {
+		button {
 			z-index: 99;
 		}
 
 		.popover:hover,
-		.btn:hover + #{$self} {
+		button:hover + #{$self} {
 			opacity: 1;
 		}
 	}
@@ -53,45 +53,6 @@ $popover-triangle-size: 20px;
 		transform: translate(-50%, calc(100% - 1px)) rotate(180deg);
 	}
 
-	//Arrow
-	//&::before {
-	//	position: absolute;
-	//	content: "";
-	//	display: inline-block;
-	//	//margin-top: 8px;
-	//	transform: translateX(-50%);
-	//	left: 50%;
-	//	bottom: -4px;
-	//	border-width: 8px 10px 0;
-	//	border-style: solid;
-	//	border-color: $white transparent transparent;
-	//	z-index: 1000;
-	//}
-
-	//&-triangle {
-	//	position: relative;
-	//	width: 0;
-	//	height: 0;
-	//	border-style: solid;
-	//	border-width: $popover-triangle-size $popover-triangle-size 0 $popover-triangle-size;
-	//	border-color: $grey-light transparent transparent transparent;
-	//	border-radius: 2px;
-	//
-	//	&:before {
-	//		content: '';
-	//		width: 0;
-	//		height: 0;
-	//		border-style: solid;
-	//		border-width: $popover-triangle-size $popover-triangle-size 0 $popover-triangle-size;
-	//		border-color: $white transparent transparent transparent;
-	//		position: absolute;
-	//		top: 50%;
-	//		left: 50%;
-	//		transform: translate(-50%, -150%) scale(0.9);
-	//		border-radius: 2px;
-	//	}
-	//}
-
 	// Item
 	// =========================================================================
 
@@ -105,9 +66,43 @@ $popover-triangle-size: 20px;
 		text-align: center;
 		cursor: pointer;
 
+		&-icon {
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			padding-left: 12px;
+			padding-right: 12px;
+
+			i {
+				margin-right: 10px;
+			}
+		}
 
 		&:hover {
 			background-color: rgba($primary, 0.07);
+		}
+	}
+
+	// Mods
+	// =========================================================================
+
+	&-no-arrow {
+
+		&::before {
+			display: none !important;
+		}
+	}
+
+	// Positions
+	// =========================================================================
+
+	&-top {
+
+
+		&-right {
+			left: auto;
+			right: 0;
+			transform: translate(90%, -90%);
 		}
 	}
 

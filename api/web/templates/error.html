@@ -10,6 +10,9 @@
                     <div class="card">
                         <h3 class="card-subtitle">Verbis Error - {{ .Error.Code }}</h3>
                         <h2 class="card-title">{{ .Error.Message }}</h2>
+                        {{ if .SubMessage }}
+                            <h4>{{ .SubMessage }}</h4>
+                        {{ end }}
                         <pre class="highlight code">
 <code class="{{ .FileLanguage }}">{{- range $key, $value := .File }}<span class="code-line {{ if  eq $value.Line $.LineNumber }}code-line-highlight{{ end }}">{{ $value.Line }}</span>{{ $value.Content }}<br/>{{- end }}</code>
                         </pre>

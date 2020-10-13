@@ -50,7 +50,7 @@ type ValidationErrJson struct {
 func New(m *models.Store) (*Controller, error) {
 
 	c := Controller{
-		Auth: newAuth(m.Auth, m.Session),
+		Auth: newAuth(m.Auth, m.Session, m.User),
 		Categories: newCategories(m.Categories),
 		Fields: newFields(m.Fields, m.User, m.Categories),
 		Frontend: newFrontend(m),
@@ -66,7 +66,7 @@ func New(m *models.Store) (*Controller, error) {
 }
 
 // Main JSON responder.
-func Respond(g *gin.Context, status int, message string, data interface{}, pagination ...http.Pagination) {
+func Respond(g *gin.Context, status int, message string, data interface{}, pagination ...*http.Pagination) {
 
 	// Check the response data
 	if d, changed := checkResponseData(g, data); changed {
@@ -84,6 +84,8 @@ func Respond(g *gin.Context, status int, message string, data interface{}, pagin
 	// Check if the pagination is empty
 	var returnPagination interface{}
 	if len(pagination) == 0 {
+		pagination = nil
+	} else if pagination[0] == nil {
 		returnPagination = nil
 	} else {
 		returnPagination = pagination[0]

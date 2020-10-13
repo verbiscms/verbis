@@ -10,6 +10,7 @@ import (
 type AuthController struct {
 	authModel models.AuthRepository
 	sessionModel models.SessionRepository
+	userModel models.UserRepository
 }
 
 type AuthHandler interface {
@@ -40,10 +41,11 @@ type resetPassword struct {
 }
 
 // Construct
-func newAuth(m models.AuthRepository, s models.SessionRepository) *AuthController {
+func newAuth(m models.AuthRepository, s models.SessionRepository, u models.UserRepository) *AuthController {
 	return &AuthController{
 		authModel: m,
 		sessionModel: s,
+		userModel: u,
 	}
 }
 
@@ -65,11 +67,21 @@ func (c *AuthController) Login(g *gin.Context) {
 		return
 	}
 
+	// Get the user & role
+	user, err := c.userModel.GetById(lu.Id)
+	if err != nil {
+		Respond(g, 401, errors.Message(err), err)
+		return
+	}
+
+	// Remove the password
+	user.Password = ""
+
 	// Store session
-	sessionToken, err := c.sessionModel.Create(lu.Id, lu.Email)
+	sessionToken, err := c.sessionModel.Create(user.Id, lu.Email)
 
 	Respond(g, 200, "Successfully logged in & session started", gin.H{
-		"user": lu,
+		"user": user,
 		"session": sessionToken,
 	})
 }

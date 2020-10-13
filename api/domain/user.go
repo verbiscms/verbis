@@ -11,11 +11,9 @@ type User struct {
 	UUID 				uuid.UUID		`db:"uuid" json:"uuid"`
 	FirstName			string 			`db:"first_name" json:"first_name" binding:"required,max=150,alpha"`
 	LastName			string 			`db:"last_name" json:"last_name" binding:"required,max=150,alpha"`
-	Email				string			`db:"email" json:"email" binding:"required,email,max=255,alpha"`
-	// TODO: Need to fix update here
-	//Password			string			`db:"password" json:"password,omitempty" binding:"required,min=8,max=60,alphanum"`
-	Password			string			`db:"password" json:"password,omitempty" binding:"-"`
-	Website				*string			`db:"website" json:"website"`
+	Email				string			`db:"email" json:"email" binding:"required,email,max=255"`
+	Password			string			`db:"password" json:"password,omitempty" binding:"omitempty,min=8,max=60,alphanum"`
+	Website				string			`db:"website" json:"website,omitempty" binding:"omitempty,url"`
 	Facebook			*string			`db:"facebook" json:"facebook"`
 	Twitter				*string			`db:"twitter" json:"twitter"`
 	Linkedin			*string			`db:"linked_in" json:"linked_in"`
