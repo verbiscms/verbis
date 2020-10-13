@@ -47,40 +47,9 @@ func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
 	const op = "PostsRepository.Get"
 
 	var p []domain.Post
-	//q := fmt.Sprintf("SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
 	q := fmt.Sprintf("SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
-
-	// loop and switch
-
-	if len(meta.Filters) != 0 {
-		for column, v := range meta.Filters {
-			for index, filter := range v {
-				if index > 0 {
-					q += fmt.Sprintf(" AND ")
-				} else {
-					q += fmt.Sprintf(" WHERE ")
-				}
-				q += fmt.Sprintf("(posts.%s %s '%s')", column, filter.Operator, filter.Value)
-			}
-		}
-	}
-
-	//https://api.akeneo.com/documentation/filter.html
-
+	q += filterRows(s.db, meta.Filters, "posts")
 	q += fmt.Sprintf(" ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
-	fmt.Println()
-	fmt.Println(q)
-	fmt.Println()
-
-	// do pagination account first
-	// order by limit and offset comes last
-
-	//fmt.Println(meta)
-	//"SELECT COUNT(*) FROM posts" with offset and limit applied
-
-	//$paginationPage = ($paginationPage === 0) ? 1 : $paginationPage;
-	//$offset = ($paginationPage - 1) * $limit;
-
 
 	if err := s.db.Select(&p, q); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
@@ -89,8 +58,6 @@ func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
 	if len(p) == 0 {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
 	}
-
-	fmt.Println(len(p))
 
 	return p, nil
 }
