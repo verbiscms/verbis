@@ -108,7 +108,10 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, error) {
 	const op = "MediaRepository.Get"
 
 	var m []domain.Media
-	q := fmt.Sprintf("SELECT * FROM media ORDER BY media.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, meta.Page * meta.Limit)
+	q := fmt.Sprintf("SELECT * FROM media")
+	q += filterRows(s.db, meta.Filters, "media")
+	q += fmt.Sprintf(" ORDER BY media.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
+
 	if err := s.db.Select(&m, q); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get media", Operation: op, Err: err}
 	}

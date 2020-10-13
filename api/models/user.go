@@ -55,7 +55,10 @@ func (s *UserStore) Get(meta http.Params) ([]domain.User, error) {
 	const op = "UserRepository.Get"
 
 	var u []domain.User
-	q := fmt.Sprintf("SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id ORDER BY users.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, meta.Page * meta.Limit)
+	q := fmt.Sprintf("SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id")
+	q += filterRows(s.db, meta.Filters, "users")
+	q += fmt.Sprintf(" ORDER BY users.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
+
 	if err := s.db.Select(&u, q); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get users", Operation: op, Err: err}
 	}
