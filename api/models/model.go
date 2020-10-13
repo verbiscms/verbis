@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/http"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -48,7 +47,7 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) str
 		table = table + "."
 	}
 	var exists bool
-	err := db.QueryRow(fmt.Sprintf("SELECT count(*) AS [Column Exists] FROM SYSOBJECTS INNER JOIN SYSCOLUMNS ON SYSOBJECTS.ID = SYSCOLUMNS.ID WHERE SYSOBJECTS.NAME = '%s' AND SYSCOLUMNS.NAME = '%s'", table, environment.GetDatabaseName())).Scan(&exists)
+	err := db.QueryRow(fmt.Sprintf("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'users' AND COLUMN_NAME = 'hhhhh'")).Scan(&exists)
 
 	fmt.Println(err)
 	fmt.Println(exists)
