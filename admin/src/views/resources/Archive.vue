@@ -165,16 +165,11 @@ export default {
 	methods: {
 		getPosts(order = "") {
 			// TODO: Add filter to go
+			console.log(order)
 			this.axios.get("/posts", {
-				params: {
-					"order": order,
-					"filters":
-						[
-							{
-						"test": "testing",
-					}]
-					,
-				}
+				// params: {
+				// 	//"order": order,
+				// }
 			})
 			.then(res => {
 				this.posts = {};

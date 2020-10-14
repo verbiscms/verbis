@@ -50,8 +50,10 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	q := fmt.Sprintf("SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
 
+	fmt.Println()
+
 	// Get by resource
-	if resource != "all" {
+	if resource != "all" && resource != "" {
 		resourceQ := fmt.Sprintf(" WHERE resource = '%s'", resource)
 		q += resourceQ
 		countQ += resourceQ
