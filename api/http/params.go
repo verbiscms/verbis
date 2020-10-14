@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
@@ -16,14 +17,15 @@ type Params struct {
 }
 
 type Filter struct {
-	Operator string
-	Value    interface{}  `json:"value"`
+	Operator string  `json:"operator"`
+	Value    string  `json:"value"`
 }
 
 // PaginationAllLimit defines how many items will be returned if
 // the limit is set to list all
 const (
 	PaginationAllLimit = 999999
+	PaginationDefault = 15
 )
 
 // Get query Parameters
@@ -37,6 +39,8 @@ func GetParams(g *gin.Context) Params {
 		page = 1
 	}
 
+	fmt.Println(pageStr)
+
 	// Get limit & calculate if list all
 	var limit int
 	limitStr := g.Query("limit")
@@ -47,10 +51,12 @@ func GetParams(g *gin.Context) Params {
 		if err != nil {
 			limit = PaginationAllLimit
 		}
-		if limit == 0 {
-			limit = 15
+		if limit == 0 || limitStr == "" {
+			limit = PaginationDefault
 		}
 	}
+
+	fmt.Println(limit)
 
 	// Get order and set defaults
 	order := g.Query("order")

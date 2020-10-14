@@ -35,12 +35,14 @@ func (c *UserController) Get(g *gin.Context) {
 	const op = "UserHandler.Get"
 
 	params := http.GetParams(g)
-	users, err := c.model.Get(params)
+	users, total, err := c.model.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	}
-	if err != nil {
+	} else if errors.Code(err) == errors.INVALID {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
@@ -51,12 +53,7 @@ func (c *UserController) Get(g *gin.Context) {
 		users[k].Token = ""
 	}
 
-	totalAmount, err := c.model.Total()
-	if err != nil {
-		Respond(g, 500, err.Error(), nil)
-		return
-	}
-	pagination := http.GetPagination(params, totalAmount)
+	pagination := http.GetPagination(params, total)
 
 	Respond(g, 200,"Successfully obtained users", users, pagination)
 }

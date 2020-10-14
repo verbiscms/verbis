@@ -39,22 +39,19 @@ func (c *MediaController) Get(g *gin.Context) {
 	const op = "MediaHandler.Get"
 
 	params := http.GetParams(g)
-	media, err := c.mediaModel.Get(params)
+	media, total, err := c.mediaModel.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	}
-	if err != nil {
+	} else if errors.Code(err) == errors.INVALID {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	totalAmount, err := c.mediaModel.Total()
-	if err != nil {
-		Respond(g, 500, errors.Message(err), err)
-		return
-	}
-	pagination := http.GetPagination(params, totalAmount)
+	pagination := http.GetPagination(params, total)
 
 	Respond(g, 200, "Successfully obtained media", media, pagination)
 }
