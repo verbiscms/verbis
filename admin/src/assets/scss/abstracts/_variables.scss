@@ -73,7 +73,7 @@ $section-padding-divider: 3;
 // Sidebar
 // =========================================================================
 
-$sidebar-width: 320px;
+$sidebar-width: 280px;
 $sidebar-left-width: 70px;
 
 // Header
@@ -99,8 +99,8 @@ $hamburger-width: 26px;
 $hamburger-height: 2.4px;
 $hamburger-margin: 7px;
 $hamburger-border-radius: 4px;
-$hamburger-color: $black;
-$hamburger-active-color: $white;
+$hamburger-color: $copy;
+$hamburger-active-color: $copy;
 
 // Text
 // ==========================================================================
@@ -137,8 +137,12 @@ $form-box-shadow: 0 0 14px 0 rgba($copy, 0.06);
 // Button
 // =========================================================================
 
-$btn-form-fixed-height: 50px;
-$btn-padding: 12px 24px;
+$btn-fixed-height-mob: 40px;
+$btn-fixed-height-tab: 45px;
+$btn-fixed-height-desk: 50px;
+$btn-padding-mob: 16px 24px;
+$btn-padding-tab: 8px 20px;
+$btn-padding-desk: 12px 24px;
 $btn-border-radius: 8px;
 $btn-icon-width: 55px;
 $btn-margin-x: 10px;

@@ -150,7 +150,7 @@
             display: flex;
             background-color: $white;
             padding: 0;
-            height: $btn-form-fixed-height;
+            height: $btn-fixed-height-mob;
 
             // Arrow
             &:after {
@@ -164,6 +164,14 @@
                 transform: translateY(calc(-50% - 2px));
                 z-index: 0;
             }
+        }
+
+        @include media-tab {
+            height: $btn-fixed-height-tab;
+        }
+
+        @include media-desk {
+            height: $btn-fixed-height-desk;
         }
     }
 

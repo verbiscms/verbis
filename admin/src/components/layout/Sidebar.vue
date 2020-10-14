@@ -2,96 +2,196 @@
 	Sidebar
 	===================== -->
 <template>
-	<aside class="aside">
-		<div class="aside-left">
-			<!-- Top -->
-			<div class="aside-left-top">
-				<!-- Logo -->
-				<router-link class="aside-logo" :to="{ name: 'home' }" v-if="getSite.logo">
-					<img :src="globalBasePath + getSite.logo">
-				</router-link>
-				<!-- Pages -->
-				<div class="aside-left-icon">
-					<i class="fal fa-file"></i>
-				</div>
-				<!-- Users -->
-				<div class="aside-left-icon">
-					<i class="fal fa-users"></i>
-				</div><!-- /Logo -->
-				<!-- Media -->
-				<div class="aside-left-icon">
-					<i class="fal fa-images"></i>
-				</div><!-- /Logo -->
-				<!-- Settings -->
-				<div class="aside-left-icon">
-					<i class="fal fa-cog"></i>
-				</div><!-- /Logo -->
-			</div><!-- /Top -->
-			<!-- Bottom -->
-			<div class="aside-left-bottom">
-				<div class="aside-left-icon aside-collapse" :class="{ 'aside-collapse-active' : collapsed }" @click="collapse">
-					<i class="fal fa-arrow-alt-to-left"></i>
-				</div>
-				<div class="popover-cont">
-					<button class="aside-initials" v-html="getInitials"></button>
-					<div class="popover popover-top-right popover-no-arrow">
-						<!-- Profile -->
-						<router-link class="popover-item popover-item-icon" :to="{ name: 'profile' }">
-							<i class="fal fa-id-card"></i>
-							Profile
-						</router-link>
-						<!-- Logout -->
-						<div class="popover-item popover-item-icon" @click="doLogout">
-							<i class="fal fa-sign-out-alt"></i>
-							Logout
+	<aside class="aside" :class="{ 'aside-active' : open }">
+		<div class="aside-top">
+			<!-- Logo -->
+			<router-link class="aside-logo" :to="{ name: 'home' }" v-if="getSite.logo">
+				<img :src="globalBasePath + getSite.logo">
+				<h2>Verbis</h2>
+			</router-link>
+			<!-- =====================
+				Resources
+				===================== -->
+			<div class="aside-block">
+				<collapse :use-icon="false">
+					<template v-slot:header>
+						<div class="aside-block-nav">
+							<h6>Resources</h6>
+							<i class="feather feather-chevron-down"></i>
 						</div>
-					</div>
-				</div>
-			</div>
+					</template>
+					<template v-slot:body>
+						<nav class="aside-nav">
+							<ul>
+								<!-- Pages -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'pages' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: 'pages' }}">
+										<i class="feather feather-file"></i>
+										<span>Pages</span>
+									</router-link>
+								</li><!-- /Pages -->
+								<!-- Resources -->
+								<li class="aside-nav-item" v-for="(resource) in getTheme.resources"
+									v-bind:key="resource.name"
+									:class="{ 'aside-nav-item-active' : activePage === resource.name.toLowerCase() }"
+									@click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: resource.name }}">
+										<i v-if="resource.icon" class="fa" :class="resource.icon"></i>
+										<i v-else class="fal fa-file"></i>
+										<span>{{ resource['friendly_name'] }}</span>
+									</router-link>
+								</li><!-- /Resources -->
+							</ul>
+						</nav>
+					</template>
+				</collapse>
+			</div><!-- /Resources -->
+			<!-- =====================
+				Content
+				===================== -->
+			<div class="aside-block">
+				<collapse :use-icon="false">
+					<template v-slot:header>
+						<div class="aside-block-nav">
+							<h6>Content</h6>
+							<i class="feather feather-chevron-down"></i>
+						</div>
+					</template>
+					<template v-slot:body>
+						<nav class="aside-nav">
+							<ul>
+								<!-- Categories -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'categories' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'categories' }">
+										<i class="feather feather-tag"></i>
+										<span>Categories</span>
+									</router-link>
+								</li><!-- /Categories -->
+								<!-- Media -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'media' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'media' }">
+										<i class="feather feather-image"></i>
+										<span>Media</span>
+									</router-link>
+								</li><!-- /Media -->
+								<!-- Fields -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'fields' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'fields' }">
+										<i class="feather feather-layout"></i>
+										<span>Fields</span>
+									</router-link>
+								</li><!-- /Users -->
+								<!-- Users -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'users' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'users' }">
+										<i class="feather feather-users"></i>
+										<span>Users</span>
+									</router-link>
+								</li><!-- /Users -->
+							</ul>
+						</nav>
+					</template>
+				</collapse>
+			</div><!-- /Content -->
+			<!-- =====================
+				Settings
+				===================== -->
+			<div class="aside-block">
+				<collapse :use-icon="false">
+					<template v-slot:header>
+						<div class="aside-block-nav">
+							<h6>Settings</h6>
+							<i class="feather feather-chevron-down"></i>
+						</div>
+					</template>
+					<template v-slot:body>
+						<nav class="aside-nav">
+							<ul>
+								<!-- General -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-general' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'settings-general' }">
+										<i class="feather feather-settings"></i>
+										<span>General</span>
+									</router-link>
+								</li><!-- /Code Injection -->
+								<!-- Code Injection -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-code-injection' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'settings-code-injection' }">
+										<i class="feather feather-code"></i>
+										<span>Code Injection</span>
+									</router-link>
+								</li><!-- /Code Injection -->
+								<!-- Performance -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-performance' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'settings-performance' }">
+										<i class="feather feather-clock"></i>
+										<span>Performance</span>
+									</router-link>
+								</li><!-- /Performance -->
+								<!-- Media -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-media' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'settings-media' }">
+										<i class="feather feather-film"></i>
+										<span>Media</span>
+									</router-link>
+								</li><!-- /Media -->
+							</ul>
+						</nav>
+					</template>
+				</collapse>
+			</div><!-- /Content -->
 		</div>
-		<div class="aside-right">
-			<div class="aside-info">
-				<h2>{{ getSite.title }}</h2>
-				<p>Admin CMS</p>
-			</div>
-			<!-- Navigation -->
-			<nav class="aside-nav">
-				<h6>Resources</h6>
-				<ul>
-					<!-- Pages -->
-					<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'pages' }">
-						<router-link class="aside-nav-link" to="/content/pages">
-							<i class="fal fa-file"></i>
-							<span>Pages</span>
-						</router-link>
-					</li><!-- /Pages -->
-					<!-- Resources -->
-					<li class="aside-nav-item" v-for="(resource) in resources" v-bind:key="resource.name"
-						:class="{ 'aside-nav-item-active' : activePage === resource.name.toLowerCase() }">
-						<router-link class="aside-nav-link" :to="'/content/' + resource.options.slug">
-							<i v-if="resource.options.icon" class="fa" :class="resource.options.icon"></i>
-							<i v-else class="fal fa-file"></i>
-							<span>{{ resource.name }}</span>
-						</router-link>
-					</li><!-- /Resources -->
-					<!-- Media -->
-					<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'media' }">
-						<router-link class="aside-nav-link" to="media">
-							<i class="fal fa-images"></i>
-							<span>Media</span>
-						</router-link>
-					</li><!-- /Media -->
-					<!-- Settings -->
-					<li class="aside-nav-item">
-						<router-link class="aside-nav-link" to="/pages" :class="{ 'aside-nav-item-active' : activePage === 'settings' }">
-							<i class="fal fa-cogs"></i>
-							<span>Settings</span>
-						</router-link>
-					</li><!-- /Settings -->
-				</ul>
-				<h6>Pages</h6>
-			</nav>
-		</div><!-- /Container -->
+		<!-- =====================
+			Bottom (User)
+			===================== -->
+		<div class="aside-bottom">
+			<collapse :use-icon="false" :show="false" :reverse="true">
+				<template v-slot:header>
+					<div class="aside-bottom-content" @click="accountActive = !accountActive">
+						<span class="avatar" v-html="getInitials"></span>
+						<!--Aside Bottom User -->
+						<div class="aside-bottom-user">
+							<!-- User Text -->
+							<div class="aside-bottom-user-text">
+								<h4>{{ getUserInfo['first_name'] }} {{ getUserInfo['last_name'] }}</h4>
+								<p>{{ getUserInfo['email'] }}</p>
+							</div><!-- /User Text -->
+							<div class="icon icon-naked aside-bottom-chevron">
+								<i class="feather feather-chevrons-up" :class="{ 'active' : accountActive }"></i>
+							</div>
+						</div><!--/Aside Bottom User -->
+					</div>
+				</template>
+				<template v-slot:body>
+					<!-- =====================
+						Account
+						===================== -->
+					<div class="aside-block aside-block-account">
+						<div class="aside-block-nav">
+							<h6>Account</h6>
+						</div>
+						<nav class="aside-nav">
+							<ul>
+								<!-- Profile -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'profile' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'profile' }">
+										<i class="feather feather-user"></i>
+										<span>Profile</span>
+									</router-link>
+								</li><!-- /Profile -->
+								<!-- Logout -->
+								<li class="aside-nav-item" @click="doLogout">
+									<router-link class="aside-nav-link" :to="{ name: 'logout' }">
+										<i class="feather feather-log-out"></i>
+										<span>Logout</span>
+									</router-link>
+								</li><!-- /Logout -->
+							</ul>
+						</nav>
+					</div><!-- /Account -->
+				</template>
+			</collapse>
+		</div>
 	</aside><!-- /Aside Cont -->
 </template>
 
@@ -100,19 +200,27 @@
 	===================== -->
 <script>
 
+import Collapse from "@/components/misc/Collapse";
+
 export default {
 	name: "Sidebar",
+	props: {
+		open: {
+			type: Boolean,
+			default: false,
+		}
+	},
+	components: {
+		Collapse,
+	},
 	data: () => ({
 		doingAxios: false,
 		themeConfig: {},
 		resources: {},
 		activePage: "",
-		collapsed: false
+		collapsed: false,
+		accountActive: false,
 	}),
-	beforeMount() {
-		//this.getThemeConfig();
-		//this.getResources();
-	},
 	watch: {
 		'$route'() {
 			this.setActivePage();
@@ -143,6 +251,9 @@ export default {
 		getSite() {
 			return this.$store.state.site;
 		},
+		getTheme() {
+			return this.$store.state.theme
+		},
 		getInitials() {
 			const info = this.getUserInfo
 			return info['first_name'].charAt(0) + info['last_name'].charAt(0).toUpperCase();
@@ -157,100 +268,48 @@ export default {
 <style scoped lang="scss">
 
 // Variables
-$aside-padding: 10px;
-$aside-initials-size: 44px;
-$aside-left-icon-margin: 40px;
-$aside-btn-padding-x: 18px;
+$aside-padding-mob: 18px;
+$aside-padding-tab: 22px;
+$aside-padding-desk: 26px;
 
 .aside {
 	$self: &;
 
 	position: fixed;
 	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
+	flex-direction: column;
+	justify-content: space-between;
 	left: 0;
 	top: 0;
 	width: $sidebar-width;
 	height: 100vh;
+	overflow-y: scroll;
 	background-color: $bg-color;
-	z-index: 8;
+	transform: translateX(-100%);
+	transition: transform 300ms ease;
+	will-change: transform;
+	z-index: 999;
+	box-shadow: 0 0 50px 0 rgba(0, 0, 0, 0.11);
 
-	// Left
+	// Block
 	// =========================================================================
 
-	&-left {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		align-items: center;
-		width: $sidebar-left-width;
-		min-width: $sidebar-left-width;
-		height: 100%;
-		padding: 44px 0;
-		overflow: visible;
+	&-block {
+		padding: $aside-padding-mob;
+		border-bottom: 1px solid $grey-light;
 
-		#{$self}-left-icon {
+		&-nav {
+			position: relative;
 			display: flex;
-			justify-content: center;
-			margin-top: 40px;
-			cursor: pointer;
+			justify-content: space-between;
+			align-items: center;
 			width: 100%;
 			padding: 10px 0;
+			cursor: pointer;
 
 			i {
-				font-size: 1.4rem;
-				color: $grey;
-				transition: 180ms ease;
+				color: rgba($secondary, 0.8);
 			}
-
-			&:hover i {
-				color: $primary;
-			}
-
-			&-margin-bottom {
-				margin-top: 0;
-				margin-bottom: $aside-left-icon-margin;
-			}
-		}
-
-		#{$self}-collapse {
-			margin-top: 0;
-			margin-bottom: $aside-left-icon-margin / 2;
-			transition: transform 300ms ease;
-
-			&-active {
-				transform: rotate(180deg);
-			}
-		}
-	}
-
-	// Right
-	// =========================================================================
-
-	&-right {
-		width: 100%;
-		padding: $auth-container-padding-y $aside-padding $aside-padding;
-
-		h6 {
-			margin-left: $aside-btn-padding-x;
-		}
-	}
-
-	// Info
-	// =========================================================================
-
-	&-info {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		margin-bottom: 2rem;
-		margin-left: $aside-btn-padding-x;
-
-		p,
-		h2 {
-			margin-bottom: 0;
-			text-align: center;
 		}
 	}
 
@@ -258,31 +317,79 @@ $aside-btn-padding-x: 18px;
 	// =========================================================================
 
 	&-logo {
-		display: block;
-		margin: 0 0 10px 0;
-		width: 30px;
+		display: flex;
+		align-items: center;
+		padding: $aside-padding-mob $aside-padding-mob 0;
 
 		img {
-			width: 100%;
+			width: 26px;
+			margin-right: 10px;
+		}
+
+		h2 {
+			margin-bottom: 0;
+			transform: translateY(5px);
 		}
 	}
 
-	// Initials
+	// Bottom
 	// =========================================================================
 
-	&-initials {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		background-color: $secondary;
-		width: $aside-initials-size;
-		height: $aside-initials-size;
-		border-radius: 100%;
-		color: $white;
-		font-size: 1rem;
-		font-weight: 500;
-		cursor: pointer;
-		border: none;
+	&-bottom {
+
+		&-content {
+			display: flex;
+			align-items: center;
+			padding: $aside-padding-mob;
+			border-top: 1px solid $grey-light;
+			cursor: pointer;
+		}
+
+		&-chevron {
+
+			i {
+				transition: transform 200ms ease;
+				will-change: transform;
+
+				&.active {
+					transform: rotate(180deg);
+				}
+			}
+		}
+
+		.avatar {
+			margin-right: 10px;
+		}
+
+		&-user {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			width: 100%;
+
+			.icon-naked {
+				padding: 6px;
+				margin-right: -6px;
+				font-size: 18px;
+				color: $grey;
+				cursor: pointer;
+			}
+
+			p {
+				margin-bottom: 0;
+			}
+
+			h4 {
+				line-height: 1;
+			}
+		}
+	}
+
+	// Active
+	// =========================================================================
+
+	&-active {
+		transform: translateX(0);
 	}
 
 	// Nav
@@ -298,17 +405,20 @@ $aside-btn-padding-x: 18px;
 		// =========================================================================
 
 		&-item {
-			margin-bottom: 10px;
-
+			margin-bottom: 2px;
 			a {
 				display: flex;
 				align-items: center;
 				justify-content: flex-start;
-				padding: 12px $aside-btn-padding-x;
-				border-radius: 8px;
+				padding: 8px 14px;
+				border-radius: 4px;
 				background-color: transparent;
-				transition: background-color 400ms ease, box-shadow 400ms ease;
-				will-change: background-color, box-shadow;
+				transition: background-color 100ms linear;
+				will-change: box-shadow;
+			}
+
+			span {
+				font-size: 14px;
 			}
 
 			span,
@@ -335,30 +445,61 @@ $aside-btn-padding-x: 18px;
 		&-item-active {
 
 			a {
-				background-color: $white;
-				box-shadow: 0 3px 20px rgba($black, 0.14);
-			}
-
-			span,
-			i {
-				color: $primary;
-			}
-		}
-
-		// Hover
-		// =========================================================================
-
-		&-item:not(&-item-active):hover {
-
-			a {
-				background-color: rgba($white, 0.4);
-				box-shadow: 0 3px 20px rgba($black, 0.14);
+				background-color: rgba(#EBEDF9, 1);
 			}
 
 			span,
 			i {
 				color: $secondary;
 			}
+		}
+
+		// Hover
+		// =========================================================================
+
+		//&-item:not(&-item-active):hover {
+		&-item:hover {
+
+			a {
+				background-color: rgba($primary, 1);
+			}
+
+			span,
+			i {
+				color: $white;
+			}
+		}
+	}
+
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+
+		&-logo,
+		&-block,
+		&-bottom &-content {
+			padding: $aside-padding-tab;
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+		transform: none;
+		transition: none;
+		z-index: 8;
+
+		&-logo,
+		&-block,
+		&-bottom &-content {
+			padding: $aside-padding-desk;
+		}
+
+		&-block-account {
+			border-top: 1px solid $grey-light;
 		}
 	}
 }

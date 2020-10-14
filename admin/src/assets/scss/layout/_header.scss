@@ -6,17 +6,20 @@
 .header {
 	$self: &;
 
-	margin-bottom: 2rem;
-
+	margin-bottom: 10px;
 
 	// With Actions
 	// =========================================================================
 
 	&-with-actions {
 		display: flex;
-		align-items: center;
-		justify-content: space-between;
+		flex-direction: column;
+		justify-content: flex-start;
 		width: 100%;
+	}
+
+	&-actions {
+		margin-top: 1rem;
 	}
 
 	// Icon
@@ -47,5 +50,18 @@
 	// =========================================================================
 
 	@include media-desk {
+		margin-bottom: 2rem;
+
+		&-with-actions {
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		&-actions {
+			margin-top: 0;
+		}
+
 	}
+
 }

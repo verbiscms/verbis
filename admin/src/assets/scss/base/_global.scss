@@ -43,13 +43,12 @@ section {
 	left: 0;
 	max-width: none;
 	min-height: 100vh;
-	width: calc(100vw - #{$sidebar-width});
+	width: 100vw;
 	margin: 0;
-	padding: $auth-container-padding-y $auth-container-padding-x;
+	padding: 20px 0;
 	z-index: 9;
 	box-shadow: 0 0 50px 0 rgba($black, 0.11);
 	background-color: $bg-color;
-	transform: translateX($sidebar-width);
 	transition: transform 300ms ease, width 300ms ease, box-shadow 300ms ease;
 	will-change: left, width, box-shadow;
 
@@ -62,6 +61,16 @@ section {
 	.row {
 		max-width: 1750px;
 		margin: 0 auto;
+	}
+
+	@include media-tab {
+		padding: 30px 10px;
+	}
+
+	@include media-desk {
+		transform: translateX($sidebar-width);
+		width: calc(100vw - #{$sidebar-width});
+		padding: $auth-container-padding-y $auth-container-padding-x;
 	}
 }
 

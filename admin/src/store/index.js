@@ -60,9 +60,6 @@ export default new Vuex.Store({
 		setTheme(state, theme) {
 			state.theme = theme;
 		},
-		setResources(state, resources) {
-			state.resources = resources;
-		},
 		setUsers(state, users) {
 			state.users = users;
 		},
@@ -110,7 +107,7 @@ export default new Vuex.Store({
 					resolve(this.state.users)
 				}
 			})
-		}
+		},
 	},
 	modules: {},
 	plugins: [createPersistedState()],

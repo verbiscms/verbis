@@ -75,12 +75,11 @@ $tabs-underline-height: 3px;
 
 	position: relative;
 	display: flex;
-	flex-wrap: wrap;
-	margin-bottom: 36px;
+	flex-wrap: nowrap;
+	margin-bottom: 24px;
 	width: 100%;
 	border-bottom: 1.4px solid $grey-light;
-	overflow-x: auto;
-	overflow-y: hidden;
+	overflow-x: scroll;
 	white-space: nowrap;
 
 	// Item
@@ -155,6 +154,22 @@ $tabs-underline-height: 3px;
 			transition: none;
 		}
 	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+		margin-bottom: 30px;
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+		margin-bottom: 36px;
+	}
+
+
 }
 
 

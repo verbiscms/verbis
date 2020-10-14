@@ -27,6 +27,9 @@ const routes = [
 		name: "home",
 		component: () => import("../views/Home.vue")
 	},
+	/**
+	 * Auth
+	 */
 	{
 		path: "/login",
 		name: "login",
@@ -42,24 +45,84 @@ const routes = [
 	//     name: "password-reset",
 	//     component: () => import("../views/auth/ResetPassword.vue")
 	// },
+	/**
+	 * Resources
+	 *
+	 */
 	{
-		path: "/content/:resource",
-		name: "archive",
-		component: () => import("../views/pages/Archive.vue")
+		path: "/resources/:resource",
+		name: "resources",
+		component: () => import("../views/resources/Archive.vue")
 	},
 	{
 		path: "/editor/:id",
 		name: "editor",
-		component: () => import("../views/pages/Editor.vue")
+		component: () => import("../views/resources/Editor.vue")
 	},
 	{ 	path: '/editor',
 		redirect: '/editor/new',
 	},
+	/**
+	 * Content
+	 *
+	 */
+	{
+		path: '/categories',
+		name: 'categories',
+		component: () => import('../views/content/Categories.vue'),
+	},
+	{
+		path: '/media',
+		name: 'media',
+		component: () => import('../views/content/Media.vue'),
+	},
+	{
+		path: '/fields',
+		name: 'fields',
+		component: () => import('../views/content/Fields.vue'),
+	},
+	{
+		path: '/users',
+		name: 'users',
+		component: () => import('../views/content/Users.vue'),
+	},
+	/**
+	 * Account
+	 *
+	 */
 	{
 		path: '/profile',
 		name: 'profile',
-		component: () => import('../views/users/Profile.vue'),
+		component: () => import('../views/account/Profile.vue'),
 	},
+	/**
+	 * Settings
+	 *
+	 */
+	{
+		path: '/settings/general',
+		name: 'settings-general',
+		component: () => import('../views/settings/General.vue'),
+	},
+	{
+		path: '/settings/code-injection',
+		name: 'settings-code-injection',
+		component: () => import('../views/settings/CodeInjection.vue'),
+	},
+	{
+		path: '/settings/performance',
+		name: 'settings-performance',
+		component: () => import('../views/settings/Performance.vue'),
+	},
+	{
+		path: '/settings/media',
+		name: 'settings-media',
+		component: () => import('../views/settings/Media.vue'),
+	},
+	/**
+	 * Errors / Not Found
+	 *
+	 */
 	{
 		path: '/404',
 		name: 'not-found',
