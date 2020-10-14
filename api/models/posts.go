@@ -12,7 +12,7 @@ import (
 
 // PostsRepository defines methods for Posts to interact with the database
 type PostsRepository interface {
-	Get(meta http.Params) ([]domain.Post, error)
+	Get(meta http.Params) ([]domain.Post, int, error)
 	GetById(id int) (domain.Post, error)
 	GetBySlug(slug string) (domain.Post, error)
 	Create(p *domain.PostCreate) (domain.Post, error)
@@ -43,23 +43,41 @@ func newPosts(db *sqlx.DB) *PostStore {
 // Get all posts
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no posts available.
-func (s *PostStore) Get(meta http.Params) ([]domain.Post, error) {
+func (s *PostStore) Get(meta http.Params) ([]domain.Post, int, error) {
 	const op = "PostsRepository.Get"
 
 	var p []domain.Post
 	q := fmt.Sprintf("SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
-	q += filterRows(s.db, meta.Filters, "posts")
+	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
+
+	// Apply filters to total and original query
+	filter, err := filterRows(s.db, meta.Filters, "posts")
+	if err != nil {
+		return nil, -1, err
+	}
+	q += filter
+	countQ += filter
+
+	// Apply pagination
 	q += fmt.Sprintf(" ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
 
+	// Select posts
 	if err := s.db.Select(&p, q); err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
+	// Return not found error if no posts are available
 	if len(p) == 0 {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
+		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
 	}
 
-	return p, nil
+	// Count the total number of posts
+	var total int
+	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
+	}
+
+	return p, total, nil
 }
 
 // GetById returns a post by Id

@@ -51,3 +51,4 @@ func StringsBetween(value string, a string, b string) string {
 	}
 	return value[posFirstAdjusted:posLast]
 }
+

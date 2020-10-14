@@ -42,12 +42,14 @@ func (c *PostsController) Get(g *gin.Context) {
 	const op = "PostHandler.Get"
 
 	params := http.GetParams(g)
-	posts, err := c.postModel.Get(params)
+	posts, total, err := c.postModel.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	}
-	if err != nil {
+	} else if errors.Code(err) == errors.INVALID {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
@@ -64,13 +66,7 @@ func (c *PostsController) Get(g *gin.Context) {
 		}
 	}
 
-	// Get the total number of posts for response
-	totalAmount, err := c.postModel.Total()
-	if err != nil {
-		Respond(g, 500, errors.Message(err), err)
-		return
-	}
-	pagination := http.GetPagination(params, totalAmount)
+	pagination := http.GetPagination(params, total)
 
 	Respond(g, 200, "Successfully obtained posts", returnData, pagination)
 }
