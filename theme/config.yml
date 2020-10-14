@@ -29,11 +29,6 @@ resources:
         friendly_name: Posts
         slug: /posts
         icon: feather feather-clipboard
-    news:
-        name: news
-        friendly_name: News
-        slug: /news
-        icon: fal fa-newspaper
 
 # |
 # |--------------------------------------------------------------------------

@@ -65,6 +65,10 @@ export default {
 		})
 	},
 	methods: {
+		/*
+		 * addListener()
+		 * Add the event listener to the header or chevron based on props.
+		 */
 		addListener() {
 			if (!this.useIcon) {
 				this.header.addEventListener("click", () => {
@@ -72,12 +76,16 @@ export default {
 				});
 			} else {
 				const chevron = this.header.querySelector(".feather");
-				console.log(chevron)
 				chevron.addEventListener("click", () => {
 					this.collapse(chevron)
 				});
 			}
 		},
+		/*
+		 * setDefaults()
+		 * If the show prop is true, calculate the height and set max height.
+		 * Else set to 0.
+		 */
 		setDefaults() {
 			if (this.show) {
 				const height = this.content.getBoundingClientRect().height,
@@ -87,8 +95,11 @@ export default {
 				this.isOpen = false;
 				this.content.style.maxHeight = 0 + "px"
 			}
-
 		},
+		/*
+		 * collapse()
+		 * Change the maximum height on click, add chevron active class.
+		 */
 		collapse(chevron) {
 			if (this.isOpen) {
 				this.content.style.maxHeight = "0px";
@@ -99,6 +110,10 @@ export default {
 			}
 			this.isOpen = !this.isOpen;
 		},
+		/*
+		 * calcHeight()
+		 * Calculate the height of the el's children.
+		 */
 		calcHeight(el) {
 			let children = el.children;
 			let height = 0;
@@ -107,7 +122,6 @@ export default {
 			}
 			return height;
 		},
-
 	}
 }
 
