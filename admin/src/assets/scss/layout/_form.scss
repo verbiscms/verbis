@@ -168,10 +168,18 @@
 
         @include media-tab {
             height: $btn-fixed-height-tab;
+
+            &-cont {
+                height: $btn-fixed-height-tab;
+            }
         }
 
         @include media-desk {
             height: $btn-fixed-height-desk;
+
+            &-cont {
+                height: $btn-fixed-height-desk;
+            }
         }
     }
 

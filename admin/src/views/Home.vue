@@ -8,6 +8,9 @@
 				<div class="col-12">
 					<h1>Home</h1>
 					<Breadcrumbs></Breadcrumbs>
+					<Alert colour="green">
+						<slot><strong>Welcome back {{ getUserInfo['first_name'] }}</strong></slot>
+					</Alert>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
@@ -20,14 +23,25 @@
 <script>
 
 import Breadcrumbs from "../components/misc/Breadcrumbs";
+import Alert from "@/components/misc/Alert";
 
 export default {
 	name: "Home",
 	components: {
+		Alert,
 		Breadcrumbs
 	},
 	data: () => ({}),
-	methods: {}
+	methods: {},
+	computed: {
+		/*
+		 * getUserInfo()
+		 * Get the logged in user info from the store.
+		 */
+		getUserInfo() {
+			return this.$store.state.userInfo;
+		},
+	}
 }
 
 </script>

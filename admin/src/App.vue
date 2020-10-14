@@ -44,12 +44,11 @@ export default {
 	data: () => ({
 		sidebarOpen: false,
 	}),
-	methods: {
-		closeSideBar() {
-			console.log(this.sidebarOpen)
-		}
-	},
 	computed: {
+		/*
+		 * isLoggedIn()
+		 * Determines if the user is logged in from the store.
+		 */
 		isLoggedIn() {
 			return this.$store.state.auth ? this.$store.state.auth : false;
 		},

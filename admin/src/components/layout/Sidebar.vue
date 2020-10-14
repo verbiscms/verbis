@@ -36,7 +36,7 @@
 									:class="{ 'aside-nav-item-active' : activePage === resource.name.toLowerCase() }"
 									@click="$emit('close', true)">
 									<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: resource.name }}">
-										<i v-if="resource.icon" class="fa" :class="resource.icon"></i>
+										<i v-if="resource.icon" :class="resource.icon"></i>
 										<i v-else class="fal fa-file"></i>
 										<span>{{ resource['friendly_name'] }}</span>
 									</router-link>
@@ -311,6 +311,10 @@ $aside-padding-desk: 26px;
 				color: rgba($secondary, 0.8);
 			}
 		}
+
+		&-block-account {
+			max-height: 0;
+		}
 	}
 
 	// Logo
@@ -406,13 +410,15 @@ $aside-padding-desk: 26px;
 
 		&-item {
 			margin-bottom: 2px;
-			a {
+
+			#{$self}-nav-link {
 				display: flex;
 				align-items: center;
 				justify-content: flex-start;
 				padding: 8px 14px;
 				border-radius: 4px;
 				background-color: transparent;
+				cursor: pointer;
 				transition: background-color 100ms linear;
 				will-change: box-shadow;
 			}
@@ -444,7 +450,7 @@ $aside-padding-desk: 26px;
 
 		&-item-active {
 
-			a {
+			#{$self}-nav-link {
 				background-color: rgba(#EBEDF9, 1);
 			}
 
@@ -460,7 +466,7 @@ $aside-padding-desk: 26px;
 		//&-item:not(&-item-active):hover {
 		&-item:hover {
 
-			a {
+			#{$self}-nav-link {
 				background-color: rgba($primary, 1);
 			}
 

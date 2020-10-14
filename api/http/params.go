@@ -63,7 +63,7 @@ func GetParams(g *gin.Context) Params {
 	orderArr := strings.Split(order, ",")
 	var orderParams [3]string
 	if len(orderArr) == 1 {
-		orderParams[0] = orderArr[0]
+		orderParams[0] = "id"
 		orderParams[1] = "ASC"
 	} else {
 		orderParams[0] = orderArr[0]
@@ -83,8 +83,8 @@ func GetParams(g *gin.Context) Params {
 	return Params{
 		Page:  page,
 		Limit: limit,
-		OrderBy: orderArr[0],
-		OrderDirection: orderArr[1],
+		OrderBy: orderParams[0],
+		OrderDirection: orderParams[1],
 		Filters: filters,
 	}
 }

@@ -23,7 +23,7 @@ func GetPagination(params Params, total int) *Pagination {
 	// Calculate prev and next variables
 	var next = false
 	var prev = false
-	if params.Page + 1 < pages {
+	if params.Page < pages {
 		next = true
 	}
 	if params.Page > 1 {

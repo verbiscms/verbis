@@ -31,6 +31,10 @@ export default {
 		}
 	},
 	methods: {
+		/*
+		 * updateList()
+		 *
+		 */
 		updateList() {
 			this.breadcrumbs = [];
 
@@ -71,6 +75,10 @@ export default {
 				});
 			}
 		},
+		/*
+		 * capitalize()
+		 * Capitalize the first letter of the breadcrumb..
+		 */
 		capitalize(str) {
 			return str.replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 		}
