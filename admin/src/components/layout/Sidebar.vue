@@ -181,10 +181,10 @@
 								</li><!-- /Profile -->
 								<!-- Logout -->
 								<li class="aside-nav-item" @click="doLogout">
-									<router-link class="aside-nav-link" :to="{ name: 'logout' }">
+									<div class="aside-nav-link">
 										<i class="feather feather-log-out"></i>
 										<span>Logout</span>
-									</router-link>
+									</div>
 								</li><!-- /Logout -->
 							</ul>
 						</nav>
