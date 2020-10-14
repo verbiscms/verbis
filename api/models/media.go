@@ -32,7 +32,7 @@ import (
 
 // MediaRepository defines methods for Media to interact with the database
 type MediaRepository interface {
-	Get(meta http.Params) ([]domain.Media, error)
+	Get(meta http.Params) ([]domain.Media, int, error)
 	GetById(id int) (domain.Media, error)
 	GetByName(name string) (domain.Media, error)
 	GetByUrl(url string) (domain.Media, error)
@@ -104,31 +104,50 @@ func (s *MediaStore) init() {
 // Get all media
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no media available.
-func (s *MediaStore) Get(meta http.Params) ([]domain.Media, error) {
+func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 	const op = "MediaRepository.Get"
 
 	var m []domain.Media
 	q := fmt.Sprintf("SELECT * FROM media")
-	q += filterRows(s.db, meta.Filters, "media")
+	countQ := fmt.Sprintf("SELECT COUNT(*) FROM media")
+
+	// Apply filters to total and original query
+	filter, err := filterRows(s.db, meta.Filters, "media")
+	if err != nil {
+		return nil, -1, err
+	}
+	q += filter
+	countQ += filter
+
+	// Apply pagination
 	q += fmt.Sprintf(" ORDER BY media.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
 
+	// Select media
 	if err := s.db.Select(&m, q); err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get media", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get media", Operation: op, Err: err}
 	}
 
+	// Return not found error if no posts are available
 	if len(m) == 0 {
-		return []domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "No media available", Operation: op}
+		return []domain.Media{}, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No media available", Operation: op}
 	}
 
+	// Count the total number of media
+	var total int
+	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of media items", Operation: op, Err: err}
+	}
+
+	// Loop over and process the sizes
 	for k, _ := range m {
 		publicSizes, err := s.getSizesForPublic(m[k])
 		if err != nil {
-			return []domain.Media{}, err
+			return []domain.Media{}, -1, err
 		}
 		m[k].Sizes = publicSizes
 	}
 
-	return m, nil
+	return m, total, nil
 }
 
 // GetById returns a media item by Id

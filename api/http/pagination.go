@@ -18,11 +18,7 @@ func GetPagination(params Params, total int) *Pagination {
 
 	// Calculate total pages
 	var pages int
-	if params.Limit == 0 {
-		pages = int(math.Round(float64(total / params.Limit)))
-	} else {
-		pages = int(math.Round(float64(total / params.Limit + 1)))
-	}
+	pages = int(math.Ceil(float64(total) / float64(params.Limit)))
 
 	// Calculate prev and next variables
 	var next = false
@@ -30,26 +26,19 @@ func GetPagination(params Params, total int) *Pagination {
 	if params.Page + 1 < pages {
 		next = true
 	}
-	if params.Page > 0 {
-		prev = true
-	}
-	if params.Page >= total {
+	if params.Page > 1 {
 		prev = true
 	}
 
 	// Construct pagination meta
 	var pagination *Pagination
-	if params.Limit == PaginationAllLimit {
-		pagination = nil
-	} else {
-		pagination = &Pagination{
-			Page:  params.Page,
-			Pages: pages,
-			Limit: params.Limit,
-			Total: total,
-			Next:  &next,
-			Prev:  &prev,
-		}
+	pagination = &Pagination{
+		Page:  params.Page,
+		Pages: pages,
+		Limit: params.Limit,
+		Total: total,
+		Next:  &next,
+		Prev:  &prev,
 	}
 
 	return pagination
