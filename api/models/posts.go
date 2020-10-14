@@ -12,7 +12,7 @@ import (
 
 // PostsRepository defines methods for Posts to interact with the database
 type PostsRepository interface {
-	Get(meta http.Params) ([]domain.Post, int, error)
+	Get(meta http.Params, resource string) ([]domain.Post, int, error)
 	GetById(id int) (domain.Post, error)
 	GetBySlug(slug string) (domain.Post, error)
 	Create(p *domain.PostCreate) (domain.Post, error)
@@ -43,12 +43,19 @@ func newPosts(db *sqlx.DB) *PostStore {
 // Get all posts
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no posts available.
-func (s *PostStore) Get(meta http.Params) ([]domain.Post, int, error) {
+func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, error) {
 	const op = "PostsRepository.Get"
 
 	var p []domain.Post
 	q := fmt.Sprintf("SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
+
+	// Get by resource
+	if resource != "all" {
+		resourceQ := fmt.Sprintf(" WHERE resource = '%s'", resource)
+		q += resourceQ
+		countQ += resourceQ
+	}
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.db, meta.Filters, "posts")
