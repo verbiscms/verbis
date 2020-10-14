@@ -61,11 +61,18 @@
 		min-height: $btn-fixed-height-mob;
 		align-items: center;
 		font-size: 1.2rem;
-		border-radius: $btn-border-radius;
+		border-radius: 6px;
 		color: $white;
 
 		i {
 			margin: 0;
+		}
+
+		&:hover {
+
+			i {
+				color: $white;
+			}
 		}
 	}
 

@@ -50,15 +50,6 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	q := fmt.Sprintf("SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
 
-	fmt.Println()
-
-	// Get by resource
-	if resource != "all" && resource != "" {
-		resourceQ := fmt.Sprintf(" WHERE resource = '%s'", resource)
-		q += resourceQ
-		countQ += resourceQ
-	}
-
 	// Apply filters to total and original query
 	filter, err := filterRows(s.db, meta.Filters, "posts")
 	if err != nil {
@@ -66,6 +57,20 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	}
 	q += filter
 	countQ += filter
+
+	// Get by resource
+	if resource != "all" && resource != "" {
+		if len(meta.Filters) > 0 {
+			q += fmt.Sprintf(" AND")
+			countQ += fmt.Sprintf(" AND")
+		} else {
+			q += fmt.Sprintf(" WHERE")
+			countQ += fmt.Sprintf(" WHERE")
+		}
+		resourceQ := fmt.Sprintf(" resource = '%s'", resource)
+		q += resourceQ
+		countQ += resourceQ
+	}
 
 	// Apply pagination
 	q += fmt.Sprintf(" ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)

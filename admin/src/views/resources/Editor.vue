@@ -241,7 +241,6 @@ export default {
 		 */
 		getSuccessMessage() {
 			if (this.$route.query.success) {
-				console.log("in")
 				this.$noty.success("Successfully created new page.")
 			}
 		},

@@ -31,15 +31,27 @@ export default {
 		}, 200);
 	},
 	methods: {
+		/*
+		 * setUpTabs()
+		 * Init the tabs and push to the tabs array.
+		 */
 		setUpTabs() {
 			this.$slots.item.forEach(item => {
 				this.tabs.push(item.text)
 			});
 		},
+		/*
+		 * changeTab()
+		 * Update the position and emit the index.
+		 */
 		changeTab(e, index) {
 			this.updatePosition(e.target, index);
 			this.$emit("update", index + 1)
 		},
+		/*
+ 		 * updatePosition()
+		 * Change the left and right width of the tab by boundingClientRect().
+		 */
 		updatePosition(el, index) {
 			this.activeTab = index;
 
@@ -166,7 +178,7 @@ $tabs-underline-height: 3px;
 	// =========================================================================
 
 	@include media-desk {
-		margin-bottom: 36px;
+		margin-bottom: 2rem;
 	}
 
 
