@@ -3,6 +3,8 @@
 // This file contains all styles related to the button component.
 // -----------------------------------------------------------------------------
 
+// Variables
+
 .btn {
 	$self: &;
 
@@ -10,7 +12,7 @@
 	display: inline-flex;
 	justify-content: center;
 	background-color: transparent;
-	padding: $btn-padding;
+	padding: $btn-padding-mob;
 	cursor: pointer;
 	outline: none;
 	font-size: 14px;
@@ -54,13 +56,17 @@
 	&-icon {
 		padding: 0;
 		width: $btn-icon-width;
-		height: $btn-form-fixed-height;
+		height: $btn-fixed-height-mob;
 		min-width: $btn-icon-width;
-		min-height: $btn-form-fixed-height;
+		min-height: $btn-fixed-height-mob;
 		align-items: center;
 		font-size: 1.2rem;
 		border-radius: $btn-border-radius;
 		color: $white;
+
+		i {
+			margin: 0;
+		}
 	}
 
 	// Popover Icon
@@ -189,7 +195,7 @@
 	// =========================================================================
 
 	&-fixed-height {
-		height: $btn-form-fixed-height;
+		height: $btn-fixed-height-mob;
 		padding-top: 0;
 		padding-bottom: 0;
 		align-items: center;
@@ -199,11 +205,31 @@
 	// =========================================================================
 
 	@include media-tab {
+		padding: $btn-padding-tab;
+
+		&-fixed-height {
+			height: $btn-fixed-height-tab;
+		}
+
+		&-icon {
+			height: $btn-fixed-height-tab;
+			min-height: $btn-fixed-height-tab;
+		}
 	}
 
 	// Desktop
 	// =========================================================================
 
 	@include media-desk {
+		padding: $btn-padding-desk;
+
+		&-fixed-height {
+			height: $btn-fixed-height-desk;
+		}
+
+		&-icon {
+			height: $btn-fixed-height-desk;
+			min-height: $btn-fixed-height-desk;
+		}
 	}
 }
