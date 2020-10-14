@@ -4,12 +4,24 @@
 <template>
 	<div class="expand">
 		<div class="collapse">
-			<div class="collapse-item">
-				<div class="collapse-header" ref="header">
-					<slot name="header"></slot>
+			<div v-if="!reverse">
+				<div class="collapse-item">
+					<div class="collapse-header" ref="header">
+						<slot name="header"></slot>
+					</div>
+					<div class="collapse-content" ref="content">
+						<slot name="body"></slot>
+					</div>
 				</div>
-				<div class="collapse-content" ref="content">
-					<slot name="body"></slot>
+			</div>
+			<div v-else>
+				<div class="collapse-item">
+					<div class="collapse-content" ref="content">
+						<slot name="body"></slot>
+					</div>
+					<div class="collapse-header" ref="header">
+						<slot name="header"></slot>
+					</div>
 				</div>
 			</div>
 		</div>
@@ -28,9 +40,14 @@ export default {
 			type: Boolean,
 			default: true,
 		},
-		chevron: {
-			default: null
-		}
+		useIcon: {
+			type: Boolean,
+			default: true,
+		},
+		reverse: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	data: () => ({
 		isOpen: true,
@@ -49,15 +66,28 @@ export default {
 	},
 	methods: {
 		addListener() {
-			const chevron = this.header.querySelector(".feather-chevron-down");
-			chevron.addEventListener("click", () => {
-				this.collapse(chevron)
-			});
+			if (!this.useIcon) {
+				this.header.addEventListener("click", () => {
+					this.collapse(this.header.querySelector("i"))
+				});
+			} else {
+				const chevron = this.header.querySelector(".feather");
+				console.log(chevron)
+				chevron.addEventListener("click", () => {
+					this.collapse(chevron)
+				});
+			}
 		},
 		setDefaults() {
-			const height = this.content.getBoundingClientRect().height,
-				variable = this.content.querySelectorAll(".field").length * 35;
-			this.content.style.maxHeight = (height + variable + 40) + "px";
+			if (this.show) {
+				const height = this.content.getBoundingClientRect().height,
+					variable = this.content.querySelectorAll(".field").length * 35;
+				this.content.style.maxHeight = (height + variable + 40) + "px";
+			} else {
+				this.isOpen = false;
+				this.content.style.maxHeight = 0 + "px"
+			}
+
 		},
 		collapse(chevron) {
 			if (this.isOpen) {

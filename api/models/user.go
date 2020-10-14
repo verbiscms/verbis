@@ -56,7 +56,7 @@ func (s *UserStore) Get(meta http.Params) ([]domain.User, int, error) {
 
 	var u []domain.User
 	q := fmt.Sprintf("SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM media FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id")
+	countQ := fmt.Sprintf("SELECT COUNT(*) FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id")
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.db, meta.Filters, "users")

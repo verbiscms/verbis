@@ -30,11 +30,15 @@ $popover-triangle-size: 20px;
 		position: relative;
 		width: auto;
 
+		.icon,
+		i,
 		button {
 			z-index: 99;
 		}
 
 		.popover:hover,
+		.icon:hover,
+		i:hover + #{$self},
 		button:hover + #{$self} {
 			opacity: 1;
 		}
@@ -98,6 +102,11 @@ $popover-triangle-size: 20px;
 
 	&-top {
 
+		&-left {
+			left: 0;
+			right: auto;
+			transform: translate(-85%, -85%);
+		}
 
 		&-right {
 			left: auto;

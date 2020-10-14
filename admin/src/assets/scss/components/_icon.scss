@@ -20,6 +20,18 @@ $icon-size: 36px;
 	color: #7E8593;
 	font-size: 14px;
 
+	// Naked
+	// =========================================================================
+
+	&-naked {
+		border-radius: 0;
+		width: auto;
+		height: auto;
+		min-width: auto;
+		min-height: auto;
+		background-color: transparent;
+	}
+
 	// Facebook
 	// =========================================================================
 

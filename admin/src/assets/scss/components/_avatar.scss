@@ -1,0 +1,25 @@
+// -----------------------------------------------------------------------------
+// _avatar.scss
+// This file contains all styles related to the avatar component.
+// -----------------------------------------------------------------------------
+
+
+// Variables
+$avatar-size: 40px;
+
+.avatar {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: $secondary;
+	width: $avatar-size;
+	height: $avatar-size;
+	min-width: $avatar-size;
+	min-height: $avatar-size;
+	border-radius: 100%;
+	color: $white;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	border: none;
+}

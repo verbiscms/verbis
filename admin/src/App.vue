@@ -3,12 +3,24 @@
 	===================== -->
 <template>
 	<div id="app">
-		<Sidebar v-if="isLoggedIn"></Sidebar>
+		<!-- Sidebar -->
+		<Sidebar v-if="isLoggedIn" :open="sidebarOpen" @close="sidebarOpen = false"></Sidebar>
 		<main>
-			<router-view/>
+			<!-- Hamburger -->
+			<input class="hamburger-checkbox" type="checkbox" id="hamburger-check" v-model="sidebarOpen" />
+			<div class="hamburger">
+				<label for="hamburger-check" class="hamburger-box">
+					<span class="hamburger-inner"></span>
+				</label>
+			</div>
+			<!-- Main Router View -->
+			<div class="router">
+				<span class="router-overlay" :class="{ 'router-overlay-active' : sidebarOpen }" @click="sidebarOpen = false"></span>
+				<router-view class="router" />
+			</div>
 		</main>
-	</div>
-</template><!-- /App -->
+	</div><!-- /App -->
+</template>
 
 <!-- =====================
 	Scripts
@@ -29,6 +41,14 @@ export default {
 			{ name: 'viewport', content: 'width=device-width, initial-scale=1.0' }
 		],
 	},
+	data: () => ({
+		sidebarOpen: false,
+	}),
+	methods: {
+		closeSideBar() {
+			console.log(this.sidebarOpen)
+		}
+	},
 	computed: {
 		isLoggedIn() {
 			return this.$store.state.auth ? this.$store.state.auth : false;
@@ -42,6 +62,49 @@ export default {
 	===================== -->
 <style lang="scss">
 
+	// Import
+	// =========================================================================
+
 	@import "assets/scss/app.scss";
+
+	// Router Container
+	// =========================================================================
+
+	.router {
+		$self: &;
+
+		position: relative;
+
+		&-overlay {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			display: block;
+			width: 100vw;
+			height: 100vh;
+			background-color: black;
+			z-index: 0;
+			opacity: 0;
+			transition: opacity 300ms ease-in-out, z-index 300ms step-end;
+			will-change: opacity;
+
+			&-active {
+				transition: opacity 300ms ease-in-out, z-index 300ms step-start;
+				opacity: 0.4;
+				z-index: 99;
+			}
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+
+		.router-overlay {
+			display: none;
+		}
+	}
 
 </style>

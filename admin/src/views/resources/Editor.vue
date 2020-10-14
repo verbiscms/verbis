@@ -19,7 +19,7 @@
 						<!-- Actions -->
 						<div class="header-actions">
 							<form class="form form-actions">
-								<a :href="getSiteUrl + computedSlug" target="_blank" class="btn btn-fixed-height btn-margin btn-white">Preview</a>
+								<a :href="getSiteUrl + computedSlug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white">Preview</a>
 								<button class="btn btn-fixed-height btn-orange btn-popover" @click.prevent="save">
 									<span v-if="newItem">Publish</span>
 									<span v-else>Update</span>

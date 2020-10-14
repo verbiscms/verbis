@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
@@ -39,8 +38,6 @@ func GetParams(g *gin.Context) Params {
 		page = 1
 	}
 
-	fmt.Println(pageStr)
-
 	// Get limit & calculate if list all
 	var limit int
 	limitStr := g.Query("limit")
@@ -55,8 +52,6 @@ func GetParams(g *gin.Context) Params {
 			limit = PaginationDefault
 		}
 	}
-
-	fmt.Println(limit)
 
 	// Get order and set defaults
 	order := g.Query("order")

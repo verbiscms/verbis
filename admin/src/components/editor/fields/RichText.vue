@@ -459,7 +459,8 @@ $richtext-border-radius: 10px;
 	&-menu {
 		position: relative;
 		display: flex;
-		flex-wrap: wrap;
+		flex-wrap: nowrap;
+		overflow-x: scroll;
 		width: 100%;
 		background-color: $white;
 		border-top-left-radius: $richtext-border-radius;

@@ -28,12 +28,12 @@ resources:
         name: posts
         friendly_name: Posts
         slug: /posts
-        icon: fa-toolbox
+        icon: feather feather-clipboard
     news:
         name: news
         friendly_name: News
         slug: /news
-        icon: fa-toolbox
+        icon: fal fa-newspaper
 
 # |
 # |--------------------------------------------------------------------------
