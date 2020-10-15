@@ -13,7 +13,7 @@
 					<header class="header header-with-actions">
 						<div class="header-title">
 							<h1 v-if="newItem">Add a new {{ resource.friendly_name }}</h1>
-							<h1 v-else>Edit {{ resource.friendly_name }}</h1>
+							<h1 v-else>Edit {{ resource['singular_name'] ? resource['singular_name'] : resource['friendly_name']  }}</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<!-- Actions -->
@@ -371,6 +371,7 @@ export default {
 			this.resource = resource === undefined ? {
 				"name": "page",
 				"friendly_name": "Page",
+				"singular_name": "Page",
 				"slug": "",
 				"icon": 'fal fa-file'
 			} : resource

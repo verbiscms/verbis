@@ -31,6 +31,7 @@ type Resources struct {
 type Resource struct {
 	Name string `yaml:"name" json:"name"`
 	FriendlyName string `yaml:"friendly_name" json:"friendly_name"`
+	SingularName string `yaml:"singular_name" json:"singular_name"`
 	Slug string `yaml:"slug" json:"slug"`
 	Icon string `yaml:"icon" json:"icon"`
 }

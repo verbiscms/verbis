@@ -2,16 +2,16 @@
 	Alert
 	===================== -->
 <template>
-	<transition name="trans-fade-quick">
+	<transition name="trans-fade-quick" mode="out-in">
 		<div v-if="show" class="alert alert-background" :class="'alert-' + colour">
 			<!-- Icon -->
 			<div class="alert-icon">
 				<i class="feather feather-alert-circle"></i>
 			</div><!-- /Icon -->
 			<!-- Text -->
-			<span>
+			<DIV class="alert-text">
 				<slot></slot>
-			</span><!-- /Text -->
+			</DIV><!-- /Text -->
 			<!-- Close -->
 			<button type="button" class="alert-close" aria-label="Close" @click="show = false">
 				<i class="feather feather-x"></i>
@@ -43,16 +43,15 @@ export default {
 <!-- =====================
 	Styles
 	===================== -->
-<style scoped lang="scss">
+<style lang="scss">
 
 .alert {
 	$self: &;
 
-	border: 0;
 	position: relative;
 	display: flex;
 	align-items: center;
-	padding: 26px 15px;
+	padding: 26px 24px;
 	margin-bottom: 20px;
 	font-size: 14px;
 	font-weight: 400;
@@ -80,10 +79,24 @@ export default {
 	&-icon {
 		display: flex;
 		align-items: center;
-		margin-right: 10px;
+		margin-right: 24px;
 
 		i {
-			font-size: 20px;
+			font-size: 24px;
+		}
+	}
+
+	// Text
+	// ==========================================================================
+
+	&-text {
+
+		p {
+			margin-bottom: 0;
+		}
+
+		h3 {
+			margin-bottom: 2px;
 		}
 	}
 
@@ -113,24 +126,20 @@ export default {
 	// ==========================================================================
 
 	&-orange {
-		background-color: $orange;
-		color: $white;
-		box-shadow: 0 12px 20px -10px rgba($orange, 0.28), 0 4px 20px 0 rgba(0, 0, 0, 0.12), 0 7px 8px -5px rgba($orange, 0.2);
-		border-color: darken($orange, 10%);
+		border-left-color: $orange;
 
-		* {
-			color: $white;
+		#{$self}-icon,
+		#{$self}-text h3 {
+			color: $orange;
 		}
 	}
 
 	&-green {
-		background-color: $green;
-		color: $white;
-		box-shadow: 0 12px 20px -10px rgba($green, 0.28), 0 4px 20px 0 rgba(0, 0, 0, 0.12), 0 7px 8px -5px rgba($green, 0.2);
-		border-color: darken($green, 10%);
+		border-left-color: $green;
 
-		* {
-			color: $white;
+		#{$self}-icon,
+		#{$self}-text h3  {
+			color: $green;
 		}
 	}
 }

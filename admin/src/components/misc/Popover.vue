@@ -6,7 +6,7 @@
 		<div class="popover-btn" @click="update">
 			<slot name="button"></slot>
 		</div>
-		<div class="popover" :class="[{ 'popover-triangle' : triangle }, { 'popover-active' : show && itemKey === active }, 'popover-' + position]">
+		<div class="popover" :class="[{ 'popover-triangle' : triangle }, { 'popover-active' : show && itemKey === active }, classes]" ref="popover">
 			<div class="popover-items-cont">
 				<slot name="items"></slot>
 			</div>
@@ -29,9 +29,9 @@ export default {
 			type: Boolean,
 			default: false,
 		},
-		position: {
+		classes: {
 			type: String,
-			default: "bottom-left",
+			default: "",
 		},
 		itemKey: {
 			type: String,
@@ -51,8 +51,10 @@ export default {
 		 * Show & hide the popover, and emit data.
 		 */
 		update() {
-			this.show = !this.show;
-			this.$emit("update", this.show)
+			//if (!this.$refs.popover.classList.contains("popover-hover")) {
+				this.show = !this.show;
+				this.$emit("update", this.show);
+			//}
 		},
 	},
 	computed: {
@@ -83,11 +85,11 @@ $popover-triangle-size: 20px;
 	position: absolute;
 	top: 0;
 	left: 50%;
+	transform: translate(-50%, -100%);
 	border: 1px solid $grey-light;
 	background-color: $white;
 	border-radius: 8px;
 	box-shadow: 0 3px 20px 0 rgba($black, 0.08);
-	transform: translate(-50%, -100%);
 	z-index: -1;
 	opacity: 0;
 	transition: opacity 200ms ease, z-index 200ms step-end;
@@ -100,18 +102,21 @@ $popover-triangle-size: 20px;
 		position: relative;
 		width: auto;
 
-		//.icon,
-		//i,
-		//button {
-		//	z-index: 99;
-		//}
-		//
-		//.popover:hover,
-		//.icon:hover,
-		//i:hover + #{$self},
-		//button:hover + #{$self} {
-		//	opacity: 1;
-		//}
+		#{$self}-hover {
+
+			.icon,
+			i,
+			button {
+				z-index: 99;
+			}
+
+			.popover:hover,
+			.icon:hover,
+			i:hover + #{$self},
+			button:hover + #{$self} {
+				opacity: 1;
+			}
+		}
 	}
 
 	// Triangle
@@ -157,7 +162,7 @@ $popover-triangle-size: 20px;
 		font-weight: 500;
 		color: rgba($secondary, 0.7);
 		padding: 6px 0;
-		text-align: left;
+		text-align: center;
 		cursor: pointer;
 		margin: 4px;
 		border-radius: 4px;
@@ -168,6 +173,7 @@ $popover-triangle-size: 20px;
 			align-items: center;
 			padding-left: 16px;
 			padding-right: 16px;
+			text-align: left;
 
 			i {
 				margin-right: 12px;
@@ -234,42 +240,31 @@ $popover-triangle-size: 20px;
 		}
 	}
 
-	// Positions
+	// Table
 	// =========================================================================
 
-	&-top {
+	&-table {
+		position: fixed;
 
-		&-left {
+		&-top {
+			top: auto;
 			bottom: auto;
-			top: -14px;
+			transform: translate(-110px, calc(-100% - 42px));
 			left: auto;
 			right: 0;
-			transform: translateY(-100%);
 		}
 
-		&-right {
+		&-bottom {
+			top: auto;
+			bottom: auto;
+			transform: translate(-110px, 10px);
 			left: auto;
 			right: 0;
-			transform: translate(90%, -90%);
 		}
 	}
 
-
-	&-bottom {
-
-		&-right {
-			bottom: 0;
-			top: auto;
-		}
-
-		&-left {
-			bottom: -14px;
-			top: auto;
-			left: auto;
-			right: 0;
-			transform: translateY(100%);
-		}
-	}
+	// Positions
+	// =========================================================================
 
 	// Tablet
 	// =========================================================================
