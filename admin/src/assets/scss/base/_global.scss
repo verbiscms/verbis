@@ -70,6 +70,10 @@ section {
 	@include media-desk {
 		transform: translateX($sidebar-width);
 		width: calc(100vw - #{$sidebar-width});
+		padding: 26px 30px;
+	}
+
+	@include media-hd {
 		padding: $auth-container-padding-y $auth-container-padding-x;
 	}
 }

@@ -5,7 +5,7 @@
 	<section>
 		<!-- Field Group -->
 		<div class="card" v-for="(group, groupIndex) in layout" :key="group.uuid">
-			<collapse>
+			<collapse :show="true" :use-icon="true">
 				<template v-slot:header>
 					<div class="card-header">
 						<h3 class="card-title">{{  group.title }}</h3>
