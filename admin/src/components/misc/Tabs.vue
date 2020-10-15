@@ -23,7 +23,7 @@ export default {
 		tabs: []
 	}),
 	mounted() {
-		this.setUpTabs()
+		this.setUpTabs();
 		const firstTab = this.$refs.tabs.childNodes[0];
 		this.updatePosition(firstTab, 0);
 		setTimeout(() => {

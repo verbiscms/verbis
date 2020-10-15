@@ -43,7 +43,7 @@
 						Posts
 						===================== -->
 <!--					<transition name="trans-fade-quick" mode="out-in">-->
-						<div class="table-scroll" v-if="posts.length">
+						<div class="table-scroll table-with-hover" v-if="posts.length">
 							<table class="table archive-table">
 								<thead>
 									<tr>
@@ -106,6 +106,14 @@
 										</td>
 										<!-- Actions -->
 										<td class="archive-table-actions">
+											<Popover>
+												<template slot="items">
+													<div>
+														<i class="feather feather-trash"></i>
+														Delete
+													</div>
+												</template>
+											</Popover>
 											<i class="far fa-ellipsis-h"></i>
 										</td>
 									</tr>
@@ -113,20 +121,21 @@
 							</table>
 						</div><!-- /Table Scroll -->
 						<Alert v-else colour="orange">
-							<slot><strong>No {{ resource['friendly_name'].toLowerCase() }} available. </strong>To create a new one, click the plus sign above.</slot>
+							<slot><strong>No {{ resource['friendly_name'] }} available. </strong>To create a new one, click the plus sign above.</slot>
 						</Alert>
 <!--					</transition>-->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 			<div class="row">
+				{{ resource }}
 				<div class="col-12">
 					<p>Sort out the pagination ui, add singular and plural names to config, add doing axios and transition, sort out alert, it looks shit, need to do action buttons</p>
 					<div v-if="paginationObj">
 						<button v-if="paginationObj['prev']" class="btn" @click="setPagination('prev')">Prev</button>
 						<button v-if="paginationObj['next']" class="btn" @click="setPagination('next')">Next</button>
 					</div>
-				</div>
-			</div>
+				</div><!-- /Col -->
+			</div><!-- /Row -->
 		</div><!-- /Container -->
 	</section>
 </template>
@@ -139,6 +148,7 @@
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Tabs from "../../components/misc/Tabs";
 import Alert from "@/components/misc/Alert";
+import Popover from "@/components/misc/Popover";
 
 export default {
 	name: "Pages",
@@ -146,7 +156,8 @@ export default {
 	components: {
 		Alert,
 		Breadcrumbs,
-		Tabs
+		Tabs,
+		Popover,
 	},
 	data: () => ({
 		doingAxios: true,

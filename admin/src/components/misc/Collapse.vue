@@ -75,7 +75,7 @@ export default {
 					this.collapse(this.header.querySelector("i"))
 				});
 			} else {
-				const chevron = this.header.querySelector(".feather");
+				const chevron = this.header.querySelector(".feather-chevron-down");
 				chevron.addEventListener("click", () => {
 					this.collapse(chevron)
 				});
