@@ -3,7 +3,7 @@
 	===================== -->
 <template slot="buttons" scope="props">
 	<ul class="tabs" ref="tabs" :class="{ 'tabs-loading' : loading }" >
-		<li class="tabs-item" v-for="(tab, tabIndex) in tabs" :key="tabIndex" @click="changeTab($event, tabIndex)" :class="{ 'tabs-item-active' : activeTab === tabIndex }">
+		<li class="tabs-item" v-for="(tab, tabIndex) in tabs" :key="tabIndex" ref="tab" @click="changeTab($event, tabIndex)" :class="{ 'tabs-item-active' : activeTab === tabIndex }">
 			<span class="tabs-title">{{ tab }}</span>
 		</li>
 		<li class="tabs-indicator" ref="indicator"></li>
@@ -17,6 +17,12 @@
 
 export default {
 	name: "Tabs",
+	props: {
+		defaultTab: {
+			type: Number,
+			default: 0,
+		}
+	},
 	data: () => ({
 		loading: true,
 		activeTab: 0,
@@ -24,11 +30,15 @@ export default {
 	}),
 	mounted() {
 		this.setUpTabs();
-		const firstTab = this.$refs.tabs.childNodes[0];
-		this.updatePosition(firstTab, 0);
-		setTimeout(() => {
-			this.loading = false;
-		}, 200);
+		this.activeTab = this.defaultTab;
+
+		this.$nextTick(() => {
+			const firstTab = this.$refs['tab'][this.defaultTab]
+			this.updatePosition(firstTab, this.defaultTab);
+			setTimeout(() => {
+				this.loading = false;
+			}, 100);
+		})
 	},
 	methods: {
 		/*

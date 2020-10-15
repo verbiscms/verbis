@@ -3,13 +3,13 @@
 	===================== -->
 <template>
 	<div class="popover-cont">
-		<button class="btn btn-blue"><i class="fal fa-plus-circle"></i>Add Row</button>
-		<div class="popover">
-			<span class="popover-triangle"></span>
+		<div class="popover-btn" @click="update">
+			<slot name="button"></slot>
+		</div>
+		<div class="popover" :class="[{ 'popover-triangle' : triangle }, { 'popover-active' : show && itemKey === active }, 'popover-' + position]">
 			<div class="popover-items-cont">
 				<slot name="items"></slot>
 			</div>
-<!--			<div class="popover-item" v-for="item in getItems" :key="item.key">{{ item.name }}</div>-->
 		</div>
 	</div>
 </template>
@@ -24,15 +24,36 @@ export default {
 	props: {
 		items: {
 			type: Array,
-		}
+		},
+		triangle: {
+			type: Boolean,
+			default: false,
+		},
+		position: {
+			type: String,
+			default: "bottom-left",
+		},
+		itemKey: {
+			type: String,
+			default: "",
+		},
+		active: {
+			type: String,
+			default: "",
+		},
 	},
 	data: () => ({
-		test: [],
+		show: false,
 	}),
-	mounted() {
-	//	this.setUpItems();
-	},
 	methods: {
+		/*
+		 * update()
+		 * Show & hide the popover, and emit data.
+		 */
+		update() {
+			this.show = !this.show;
+			this.$emit("update", this.show)
+		},
 	},
 	computed: {
 		/*
@@ -50,7 +71,7 @@ export default {
 <!-- =====================
 	Styles
 	===================== -->
-<style scoped lang="scss">
+<style lang="scss">
 
 
 // Variables
@@ -64,13 +85,12 @@ $popover-triangle-size: 20px;
 	left: 50%;
 	border: 1px solid $grey-light;
 	background-color: $white;
-	padding: 4px;
 	border-radius: 8px;
 	box-shadow: 0 3px 20px 0 rgba($black, 0.08);
 	transform: translate(-50%, -100%);
-	z-index: 99;
-	//opacity: 0;
-	transition: opacity 200ms ease;
+	z-index: -1;
+	opacity: 0;
+	transition: opacity 200ms ease, z-index 200ms step-end;
 
 	// Container
 	// =========================================================================
@@ -80,64 +100,128 @@ $popover-triangle-size: 20px;
 		position: relative;
 		width: auto;
 
-		.icon,
-		i,
-		button {
-			z-index: 99;
-		}
+		//.icon,
+		//i,
+		//button {
+		//	z-index: 99;
+		//}
+		//
+		//.popover:hover,
+		//.icon:hover,
+		//i:hover + #{$self},
+		//button:hover + #{$self} {
+		//	opacity: 1;
+		//}
+	}
 
-		.popover:hover,
-		.icon:hover,
-		i:hover + #{$self},
-		button:hover + #{$self} {
-			opacity: 1;
+	// Triangle
+	// =========================================================================
+
+	&-triangle {
+
+		&::before {
+			content: "";
+			position: absolute;
+			width: 22px;
+			height: 14px;
+			bottom: 0;
+			left: 50%;
+			background:  url("~@/assets/images/popover-triangle.svg") no-repeat;
+			background-size: cover;
+			z-index: 100;
+			transform: translate(-50%, calc(100% - 1px)) rotate(180deg);
 		}
 	}
 
-	&::before {
-		content: "";
-		position: absolute;
-		width: 22px;
-		height: 14px;
-		bottom: 0;
-		left: 50%;
-		background:  url("~@/assets/images/popover-triangle.svg") no-repeat;
-		background-size: cover;
-		z-index: 100;
-		transform: translate(-50%, calc(100% - 1px)) rotate(180deg);
+	// Line
+	// =========================================================================
+
+	&-line {
+		&:before {
+			content: "";
+			display: block;
+			position: relative;
+			width: 100%;
+			height: 1px;
+			background-color: $grey-light;
+		}
 	}
 
 	// Item
 	// =========================================================================
 
-	&-items-cont {
+	&-item {
+		position: relative;
+		width: 180px;
+		font-size: 13px;
+		font-weight: 500;
+		color: rgba($secondary, 0.7);
+		padding: 6px 0;
+		text-align: left;
+		cursor: pointer;
+		margin: 4px;
+		border-radius: 4px;
 
-		div {
-			position: relative;
-			width: 120px;
-			font-size: 13px;
-			font-weight: 600;
-			color: $secondary;
-			padding: 6px 0;
-			text-align: center;
-			cursor: pointer;
+		&-icon {
+			display: flex;
+			justify-content: flex-start;
+			align-items: center;
+			padding-left: 16px;
+			padding-right: 16px;
 
-			&-icon {
-				display: flex;
-				justify-content: flex-start;
-				align-items: center;
-				padding-left: 12px;
-				padding-right: 12px;
+			i {
+				margin-right: 12px;
+			}
+		}
 
-				i {
-					margin-right: 10px;
-				}
+		&:not(div):not(&-orange) {
+
+			i,
+			span {
+				color: rgba($secondary, 0.7) !important;
+			}
+		}
+
+		&:hover {
+			background-color: rgba($primary, 0.07);
+		}
+
+		&-orange {
+
+			i,
+			span {
+				color: $orange;
 			}
 
 			&:hover {
-				background-color: rgba($primary, 0.07);
+				background-color: rgba($orange, 0.07);
+
+				i,
+				span {
+					color: $orange;
+				}
 			}
 		}
+	}
+
+	// Button
+	// =========================================================================
+
+	&-btn {
+		position: relative;
+		display: block;
+		//padding: 10px;
+		//margin-right: -10px;
+		z-index: 9;
+	}
+
+	// Active
+	// =========================================================================
+
+	&-active {
+		opacity: 1;
+		z-index: 99999;
+		transition: opacity 200ms ease, z-index 200ms step-start;
 	}
 
 	// Mods
@@ -156,15 +240,34 @@ $popover-triangle-size: 20px;
 	&-top {
 
 		&-left {
-			left: 0;
-			right: auto;
-			transform: translate(-85%, -85%);
+			bottom: auto;
+			top: -14px;
+			left: auto;
+			right: 0;
+			transform: translateY(-100%);
 		}
 
 		&-right {
 			left: auto;
 			right: 0;
 			transform: translate(90%, -90%);
+		}
+	}
+
+
+	&-bottom {
+
+		&-right {
+			bottom: 0;
+			top: auto;
+		}
+
+		&-left {
+			bottom: -14px;
+			top: auto;
+			left: auto;
+			right: 0;
+			transform: translateY(100%);
 		}
 	}
 

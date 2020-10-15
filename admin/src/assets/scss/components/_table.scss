@@ -128,10 +128,22 @@ $table-row-border-radius: 8px;
 		}
 	}
 
+	// Wrapper
+	// =========================================================================
+
+	&-wrapper {
+		height: auto;
+		width: auto;
+		overflow-y: hidden;
+	}
+
 	// Scroll
 	// =========================================================================
 
 	&-scroll {
-		overflow-x: auto;
+		width: 100% !important;
+		height: 100% !important;
+		overflow-x: scroll;
+		overflow-y: hidden;
 	}
 }
