@@ -4,31 +4,55 @@
 // -----------------------------------------------------------------------------
 
 // Variables
-$icon-size: 36px;
+$icon-circle-size: 36px;
+
 
 .icon {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: $icon-size;
-	height: $icon-size;
-	min-width: $icon-size;
-	min-height: $icon-size;
-	background-color: #fff;
-	border-radius: 100%;
-	margin-right: 10px;
 	color: #7E8593;
 	font-size: 14px;
+
+	// Circle
+	// =========================================================================
+
+	&-circle {
+		margin-right: 10px;
+		background-color: #fff;
+		width: $icon-circle-size;
+		height: $icon-circle-size;
+		min-width: $icon-circle-size;
+		min-height: $icon-circle-size;
+		border-radius: 100%;
+	}
+
+	// Square
+	// =========================================================================
+
+	&-square {
+		border: 1.4px solid transparent;
+		padding: 7px 11px;
+		border-radius: 4px;
+		background-color: $bg-color;
+		cursor: pointer;
+		transition: border-color 200ms ease, box-shadow 200ms ease;
+		will-change: border-color, box-shadow;
+
+		&-active {
+			border-color: $primary;
+			box-shadow: 0 0 2px 2px rgba($primary, 0.16);
+
+			i {
+				color: $primary;
+			}
+		}
+	}
 
 	// Naked
 	// =========================================================================
 
 	&-naked {
-		border-radius: 0;
-		width: auto;
-		height: auto;
-		min-width: auto;
-		min-height: auto;
 		background-color: transparent;
 	}
 

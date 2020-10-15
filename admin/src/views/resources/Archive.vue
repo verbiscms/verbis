@@ -31,9 +31,11 @@
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<!-- Tabs -->
 			<div class="row">
 				<div class="col-12">
+					<!-- =====================
+						Tabs
+						===================== -->
 					<Tabs @update="filterTabs">
 						<template slot="item">Show all</template>
 						<template slot="item">Published</template>
@@ -43,6 +45,7 @@
 						Posts
 						===================== -->
 <!--					<transition name="trans-fade-quick" mode="out-in">-->
+					<div class="table-wrapper">
 						<div class="table-scroll table-with-hover" v-if="posts.length">
 							<table class="table archive-table">
 								<thead>
@@ -71,11 +74,11 @@
 											<span>Published at</span>
 											<i class="fas fa-caret-down" :class="{ 'active' : orderBy['published_at'] !== 'asc' }"></i>
 										</th>
-										<th>Actions</th>
+										<th></th>
 									</tr>
 								</thead>
 								<tbody>
-									<tr v-for="item in posts" :key="item.post.uuid">
+									<tr v-for="(item, itemIndex) in posts" :key="item.post.uuid">
 										<td class="table-checkbox">
 											<div class="form-checkbox form-checkbox-dark">
 												<input type="checkbox" :id="item.post.uuid" :value="item.post.id" v-model="checked"/>
@@ -97,24 +100,57 @@
 										</td>
 										<!-- Status -->
 										<td class="archive-table-status">
-											<div class="tag capitalize" :class="{ 'tag-warning' : item.post.status  === 'draft' }">{{ item.post.status }}</div>
+											<div class="badge capitalize" :class="{ 'badge-warning' : item.post.status  === 'draft' }">{{ item.post.status }}</div>
 										</td>
 										<!-- Published at -->
 										<td class="archive-table-date">
 											<span v-if="!item.post['published_at']">Not published</span>
 											<span v-else>{{ item.post['published_at'] | moment("dddd, MMMM Do YYYY") }}</span>
 										</td>
-										<!-- Actions -->
+										<!-- =====================
+											Actions
+											===================== -->
 										<td class="archive-table-actions">
-											<Popover>
+											<Popover :triangle="false" :position="(itemIndex + 1) > (posts.length - 6) ? 'top-left' : 'bottom-left'" @update="updateActions($event, item.post.uuid)" :item-key="item.post.uuid" :active="activeAction">
 												<template slot="items">
-													<div>
-														<i class="feather feather-trash"></i>
-														Delete
+													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }}" >
+														<i class="feather feather-edit"></i>
+														<span>Edit</span>
+													</router-link>
+													<a  class="popover-item popover-item-icon" :href="getSiteUrl + item.post.slug" target="_blank">
+														<i class="feather feather-eye"></i>
+														<span>View</span>
+													</a>
+													<div class="popover-item popover-item-icon" @click="moveToDrafts(item.post.id)">
+														<i class="feather feather-archive"></i>
+														<span>Move to drafts</span>
+													</div>
+													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'meta' }}" >
+														<i class="feather feather-external-link"></i>
+														<span>Meta</span>
+													</router-link>
+													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'seo' }}" >
+														<i class="feather feather-search"></i>
+														<span>SEO</span>
+													</router-link>
+													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'code-injection' }}" >
+														<i class="feather feather-code"></i>
+														<span>Code Injection</span>
+													</router-link>
+													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'insights' }}" >
+														<i class="feather feather-bar-chart-2"></i>
+														<span>Insights</span>
+													</router-link>
+													<div class="popover-line"></div>
+													<div class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="deletePost(item.post.id)">
+														<i class="feather feather-trash-2"></i>
+														<span>Delete</span>
 													</div>
 												</template>
+												<template slot="button">
+													<i class="icon icon-square far fa-ellipsis-h" :class="{'icon-square-active' : activeAction === item.post.uuid}"></i>
+												</template>
 											</Popover>
-											<i class="far fa-ellipsis-h"></i>
 										</td>
 									</tr>
 								</tbody>
@@ -124,10 +160,10 @@
 							<slot><strong>No {{ resource['friendly_name'] }} available. </strong>To create a new one, click the plus sign above.</slot>
 						</Alert>
 <!--					</transition>-->
+					</div>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 			<div class="row">
-				{{ resource }}
 				<div class="col-12">
 					<p>Sort out the pagination ui, add singular and plural names to config, add doing axios and transition, sort out alert, it looks shit, need to do action buttons</p>
 					<div v-if="paginationObj">
@@ -178,6 +214,7 @@ export default {
 		savingBulk: false,
 		bulkType: "",
 		checked: [],
+		activeAction: "",
 	}),
 	mounted() {
 		this.getPosts();
@@ -190,6 +227,9 @@ export default {
 		},
 	},
 	methods: {
+		updateActions(e, uuid) {
+			this.activeAction = e ? uuid : "";
+		},
 		/*
 		 * getPosts()
 		 * Obtain the posts or resources & apply query strings.
@@ -198,7 +238,7 @@ export default {
 		getPosts() {
 			const resource = this.$route.params.resource;
 			const url = resource === "pages" ? "/posts" : "/resource/" + resource;
-			this.axios.get(`${url}?order=${this.order}&filter=${this.filter}&${this.pagination}&limit=2`, {
+			this.axios.get(`${url}?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
 				paramsSerializer: function(params) {
 					return params;
 				}
@@ -299,61 +339,61 @@ export default {
 			}
 			// Move to drafts
 			if (this.bulkType === "drafts") {
-				this.moveToDrafts()
-					.then(() => {
-						this.$noty.success("Posts updated successfully.")
-						this.getPosts()
-					})
-					.catch(err => {
-						console.log(err);
-						this.$noty.error("Error occurred, please refresh the page.")
-					})
-					.finally(() => {
-						this.savingBulk = false;
-					});
+				this.moveToDrafts(false);
 			} else if (this.bulkType === "delete") {
-				this.deletePost()
-					.then(() => {
-						this.$noty.success("Posts deleted successfully.")
-						this.getPosts()
-					})
-					.catch(err => {
-						console.log(err);
-						this.$noty.error("Error occurred, please refresh the page.")
-					})
-					.finally(() => {
-						this.savingBulk = false;
-					});
+				this.deletePost(false);
 			}
 		},
 		/*
 		 * moveToDrafts()
 		 */
-		moveToDrafts() {
-			return new Promise((resolve, reject) => {
-				this.checked.forEach(id => {
-					const post =  this.getPostsById(id).post
-					post.status = "draft"
-					this.axios.put("/posts/" + id, post)
-						.catch((err) => {
-							reject(err);
-						})
-				});
-				resolve();
+		moveToDrafts(id = false) {
+			let checkedArr = [];
+			if (id) {
+				checkedArr.push(id);
+			} else {
+				checkedArr = this.checked;
+			}
+			checkedArr.forEach(id => {
+				const post =  this.getPostsById(id).post
+				post.status = "draft"
+				this.axios.put("/posts/" + id, post)
+					.then(() => {
+						this.$noty.success("Posts updated successfully.");
+						this.getPosts();
+					})
+					.catch((err) => {
+						console.log(err);
+						this.$noty.error("Error occurred, please refresh the page.");
+					})
+					.finally(() => {
+						this.savingBulk = false;
+					});
 			});
 		},
 		/*
 		 * deletePost()
 		 */
-		deletePost() {
-			return new Promise((resolve, reject) => {
-				this.checked.forEach(id => {
-					this.axios.delete("/posts/" + id)
-						.catch((err) => {
-							reject(err);
-						})
-				});
-				resolve();
+		deletePost(id = false) {
+			let checkedArr = [];
+			if (id) {
+				checkedArr.push(id);
+			} else {
+				checkedArr = this.checked;
+			}
+			checkedArr.forEach(id => {
+				this.axios.delete("/posts/" + id)
+					.then(() => {
+						this.$noty.success("Posts deleted successfully.");
+						this.getPosts();
+					})
+					.catch(err => {
+						console.log(err);
+						this.$noty.error("Error occurred, please refresh the page.");
+					})
+					.finally(() => {
+						this.savingBulk = false;
+					});
 			});
 		}
 	},
@@ -364,6 +404,13 @@ export default {
 		 */
 		getResources() {
 			return this.$store.state.theme.resources;
+		},
+		/*
+		 * getSiteUrl()
+		 * Get the site url from the store for previewing.
+		 */
+		getSiteUrl() {
+			return this.$store.state.site.url;
 		},
 		/*
 		 * checkedAll()
@@ -400,6 +447,15 @@ export default {
 
 		&-table {
 
+			// Props
+			// =========================================================================
+
+			tbody tr:hover {
+
+				.icon-square {
+					background-color: $white;
+				}
+			}
 
 			// Order
 			// =========================================================================
@@ -464,6 +520,11 @@ export default {
 			// =========================================================================
 
 			&-actions {
+
+				.icon-square {
+					transition: background-color 160ms ease;
+					will-change: background-color;
+				}
 
 				i {
 					font-size: 16px;

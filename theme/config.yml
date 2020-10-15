@@ -27,6 +27,7 @@ resources:
     posts:
         name: posts
         friendly_name: Posts
+        singular_name: Post
         slug: /posts
         icon: feather feather-clipboard
 
