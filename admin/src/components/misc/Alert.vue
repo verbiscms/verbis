@@ -35,24 +35,7 @@ export default {
 	},
 	data: () => ({
 		show: true,
-	}),
-	beforeMount() {
-		this.updateList()
-	},
-	watch: {
-		'$route'() {
-			this.updateList()
-		}
-	},
-	methods: {
-		/*
-		 * updateList()
-		 *
-		 */
-		close() {
-
-		}
-	}
+	})
 }
 
 </script>
