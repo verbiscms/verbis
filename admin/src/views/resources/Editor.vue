@@ -38,11 +38,12 @@
 					Title & Tabs
 					===================== -->
 				<div class="col-12 col-desk-9 editor-main-col">
-					<Tabs @update="activeTab = $event - 1">
+					<Tabs @update="activeTab = $event - 1" :default-tab="activeTab">
 						<template slot="item">Content</template>
 						<template slot="item">Meta</template>
 						<template slot="item">SEO</template>
 						<template slot="item">Code Injection</template>
+						<template slot="item">Insights</template>
 					</Tabs>
 					<!-- Content & Fields -->
 					<transition name="trans-fade" mode="out-in">
@@ -79,6 +80,8 @@
 						<SeoOptions v-if="activeTab === 2" :key="3"></SeoOptions>
 						<!-- Code Injection -->
 						<CodeInjection v-if="activeTab === 3" :key="4" :header="data.codeinjection_head" :footer="data.codeinjection_foot" @update="updateCodeInjection"></CodeInjection>
+						<!-- Seo Options -->
+						<Insights v-if="activeTab === 4" :key="4"></Insights>
 					</transition>
 				</div><!-- /Col -->
 				<!-- =====================
@@ -176,6 +179,7 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import MetaOptions from "@/components/editor/tabs/Meta";
 import SeoOptions from "@/components/editor/tabs/Seo";
 import CodeInjection from "@/components/editor/tabs/CodeInjection";
+import Insights from "@/components/editor/tabs/Insights";
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import Fields from "@/components/editor/tabs/Fields";
 import slugify from "slugify";
@@ -193,6 +197,7 @@ export default {
 		MetaOptions,
 		SeoOptions,
 		CodeInjection,
+		Insights,
 		Collapse,
 	},
 	data: () => ({
@@ -227,6 +232,7 @@ export default {
 	beforeMount() {
 		this.setResource()
 		this.setNewUpdate();
+		this.setTab();
 	},
 	mounted() {
 		this.getFieldLayout();
@@ -242,6 +248,33 @@ export default {
 		getSuccessMessage() {
 			if (this.$route.query.success) {
 				this.$noty.success("Successfully created new page.")
+			}
+		},
+		/*
+		 * setTab()
+		 * Determine if there is a tab query paramater and set the active tab.
+		 */
+		setTab() {
+			const tab = this.$route.query.tab
+			if (tab) {
+				switch (tab) {
+					case "meta" : {
+						this.activeTab = 1;
+						break;
+					}
+					case "seo" : {
+						this.activeTab = 2;
+						break;
+					}
+					case "code-injection" : {
+						this.activeTab = 3;
+						break;
+					}
+					case "insights" : {
+						this.activeTab = 4;
+						break;
+					}
+				}
 			}
 		},
 		/*
