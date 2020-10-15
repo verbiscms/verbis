@@ -44,134 +44,141 @@
 					<!-- =====================
 						Posts
 						===================== -->
-<!--					<transition name="trans-fade-quick" mode="out-in">-->
-					<div class="table-wrapper">
-						<div class="table-scroll table-with-hover" v-if="posts.length">
-							<table class="table archive-table">
-								<thead>
-									<tr>
-										<th>
-											<div class="form-checkbox form-checkbox-dark">
-												<input type="checkbox" id="archive-check-all" v-model="checkedAll"/>
-												<label for="archive-check-all">
-													<i class="fal fa-check"></i>
-												</label>
-											</div>
-										</th>
-										<th class="archive-table-order" @click="changeOrderBy('title')" :class="{ 'active' : activeOrder === 'title' }">
-											<span>Name</span>
-											<i class="fas fa-caret-down" :class="{ 'active' : orderBy['title'] !== 'asc' }"></i>
-										</th>
-										<th class="archive-table-order" @click="changeOrderBy('user_id')" :class="{ 'active' : activeOrder === 'user_id' }">
-											<span>Author</span>
-											<i class="fas fa-caret-down" :class="{ 'active' : orderBy['user_id'] !== 'asc' }"></i>
-										</th>
-										<th class="archive-table-order" @click="changeOrderBy('status')" :class="{ 'active' : activeOrder === 'status' }">
-											<span>Status</span>
-											<i class="fas fa-caret-down" :class="{ 'active' : orderBy['status'] !== 'asc' }"></i>
-										</th>
-										<th class="archive-table-order" @click="changeOrderBy('published_at')" :class="{ 'active' : activeOrder === 'published_at' }">
-											<span>Published at</span>
-											<i class="fas fa-caret-down" :class="{ 'active' : orderBy['published_at'] !== 'asc' }"></i>
-										</th>
-										<th></th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr v-for="(item, itemIndex) in posts" :key="item.post.uuid">
-										<td class="table-checkbox">
-											<div class="form-checkbox form-checkbox-dark">
-												<input type="checkbox" :id="item.post.uuid" :value="item.post.id" v-model="checked"/>
-												<label :for="item.post.uuid">
-													<i class="fal fa-check"></i>
-												</label>
-											</div>
-										</td>
-										<!-- Title & Slug -->
-										<td class="archive-table-title">
-											<router-link :to="{ name: 'editor', params: { id: item.post.id }}">
-												<h4>{{ item.post.title }}</h4>
-												<p>{{ item.post.slug }}</p>
-											</router-link>
-										</td>
-										<!-- Author -->
-										<td class="archive-table-author">
-											{{ item.author['first_name'] }} {{ item.author['last_name'] }}
-										</td>
-										<!-- Status -->
-										<td class="archive-table-status">
-											<div class="badge capitalize" :class="{ 'badge-warning' : item.post.status  === 'draft' }">{{ item.post.status }}</div>
-										</td>
-										<!-- Published at -->
-										<td class="archive-table-date">
-											<span v-if="!item.post['published_at']">Not published</span>
-											<span v-else>{{ item.post['published_at'] | moment("dddd, MMMM Do YYYY") }}</span>
-										</td>
-										<!-- =====================
-											Actions
-											===================== -->
-										<td class="archive-table-actions">
-											<Popover :triangle="false" :position="(itemIndex + 1) > (posts.length - 6) ? 'top-left' : 'bottom-left'" @update="updateActions($event, item.post.uuid)" :item-key="item.post.uuid" :active="activeAction">
-												<template slot="items">
-													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }}" >
-														<i class="feather feather-edit"></i>
-														<span>Edit</span>
-													</router-link>
-													<a  class="popover-item popover-item-icon" :href="getSiteUrl + item.post.slug" target="_blank">
-														<i class="feather feather-eye"></i>
-														<span>View</span>
-													</a>
-													<div class="popover-item popover-item-icon" @click="moveToDrafts(item.post.id)">
-														<i class="feather feather-archive"></i>
-														<span>Move to drafts</span>
+					<div v-if="!doingAxios">
+						<transition name="trans-fade-quick" mode="out-in">
+							<div class="table-wrapper" v-if="posts.length">
+								<div class="table-scroll table-with-hover">
+									<table class="table archive-table">
+										<thead>
+											<tr>
+												<th>
+													<div class="form-checkbox form-checkbox-dark">
+														<input type="checkbox" id="archive-check-all" v-model="checkedAll"/>
+														<label for="archive-check-all">
+															<i class="fal fa-check"></i>
+														</label>
 													</div>
-													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'meta' }}" >
-														<i class="feather feather-external-link"></i>
-														<span>Meta</span>
-													</router-link>
-													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'seo' }}" >
-														<i class="feather feather-search"></i>
-														<span>SEO</span>
-													</router-link>
-													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'code-injection' }}" >
-														<i class="feather feather-code"></i>
-														<span>Code Injection</span>
-													</router-link>
-													<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'insights' }}" >
-														<i class="feather feather-bar-chart-2"></i>
-														<span>Insights</span>
-													</router-link>
-													<div class="popover-line"></div>
-													<div class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="deletePost(item.post.id)">
-														<i class="feather feather-trash-2"></i>
-														<span>Delete</span>
+												</th>
+												<th class="archive-table-order" @click="changeOrderBy('title')" :class="{ 'active' : activeOrder === 'title' }">
+													<span>Name</span>
+													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['title'] !== 'asc' }"></i>
+												</th>
+												<th class="archive-table-order" @click="changeOrderBy('user_id')" :class="{ 'active' : activeOrder === 'user_id' }">
+													<span>Author</span>
+													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['user_id'] !== 'asc' }"></i>
+												</th>
+												<th class="archive-table-order" @click="changeOrderBy('status')" :class="{ 'active' : activeOrder === 'status' }">
+													<span>Status</span>
+													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['status'] !== 'asc' }"></i>
+												</th>
+												<th class="archive-table-order" @click="changeOrderBy('published_at')" :class="{ 'active' : activeOrder === 'published_at' }">
+													<span>Published at</span>
+													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['published_at'] !== 'asc' }"></i>
+												</th>
+												<th></th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr v-for="(item, itemIndex) in posts" :key="item.post.uuid">
+												<td class="table-checkbox">
+													<div class="form-checkbox form-checkbox-dark">
+														<input type="checkbox" :id="item.post.uuid" :value="item.post.id" v-model="checked"/>
+														<label :for="item.post.uuid">
+															<i class="fal fa-check"></i>
+														</label>
 													</div>
-												</template>
-												<template slot="button">
-													<i class="icon icon-square far fa-ellipsis-h" :class="{'icon-square-active' : activeAction === item.post.uuid}"></i>
-												</template>
-											</Popover>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div><!-- /Table Scroll -->
-						<Alert v-else colour="orange">
-							<slot><strong>No {{ resource['friendly_name'] }} available. </strong>To create a new one, click the plus sign above.</slot>
-						</Alert>
-<!--					</transition>-->
+												</td>
+												<!-- Title & Slug -->
+												<td class="archive-table-title">
+													<router-link :to="{ name: 'editor', params: { id: item.post.id }, query: {resource: item.post.resource ? item.post.resource : '' }}">
+														<h4>{{ item.post.title }}</h4>
+														<p>{{ item.post.slug }}</p>
+													</router-link>
+												</td>
+												<!-- Author -->
+												<td class="archive-table-author">
+													{{ item.author['first_name'] }} {{ item.author['last_name'] }}
+												</td>
+												<!-- Status -->
+												<td class="archive-table-status">
+													<div class="badge capitalize" :class="{ 'badge-warning' : item.post.status  === 'draft' }">{{ item.post.status }}</div>
+												</td>
+												<!-- Published at -->
+												<td class="archive-table-date">
+													<span v-if="!item.post['published_at']">Not published</span>
+													<span v-else>{{ item.post['published_at'] | moment("dddd, MMMM Do YYYY") }}</span>
+												</td>
+												<!-- =====================
+													Actions
+													===================== -->
+												<td class="archive-table-actions">
+													<Popover :triangle="false"
+															:classes="(itemIndex + 1) > (posts.length - 4) ? 'popover-table popover-table-top' : 'popover-table popover-table-bottom'"
+															@update="updateActions($event, item.post.uuid)"
+															:item-key="item.post.uuid"
+															:active="activeAction">
+														<template slot="items">
+															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: {resource: item.post.resource ? item.post.resource : '' }}">
+																<i class="feather feather-edit"></i>
+																<span>Edit</span>
+															</router-link>
+															<a  class="popover-item popover-item-icon" :href="getSiteUrl + item.post.slug" target="_blank">
+																<i class="feather feather-eye"></i>
+																<span>View</span>
+															</a>
+															<div class="popover-item popover-item-icon" @click="moveToDrafts(item.post.id)">
+																<i class="feather feather-archive"></i>
+																<span>Move to drafts</span>
+															</div>
+															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'meta' }}" >
+																<i class="feather feather-external-link"></i>
+																<span>Meta</span>
+															</router-link>
+															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'seo' }}" >
+																<i class="feather feather-search"></i>
+																<span>SEO</span>
+															</router-link>
+															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'code-injection' }}" >
+																<i class="feather feather-code"></i>
+																<span>Code Injection</span>
+															</router-link>
+															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'insights' }}" >
+																<i class="feather feather-bar-chart-2"></i>
+																<span>Insights</span>
+															</router-link>
+															<div class="popover-line"></div>
+															<div class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="deletePost(item.post.id)">
+																<i class="feather feather-trash-2"></i>
+																<span>Delete</span>
+															</div>
+														</template>
+														<template slot="button">
+															<i class="icon icon-square far fa-ellipsis-h" :class="{'icon-square-active' : activeAction === item.post.uuid}"></i>
+														</template>
+													</Popover>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div><!-- /Table Scroll -->
+							</div><!-- /Table Wrapper -->
+							<Alert v-else colour="orange">
+								<slot>
+									<h3>No {{ resource['friendly_name'].toLowerCase() }} available. </h3>
+									<p>To create a new one, click the plus sign above.</p>
+								</slot>
+							</Alert>
+						</transition>
 					</div>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<div class="row">
-				<div class="col-12">
-					<p>Sort out the pagination ui, add singular and plural names to config, add doing axios and transition, sort out alert, it looks shit, need to do action buttons</p>
-					<div v-if="paginationObj">
-						<button v-if="paginationObj['prev']" class="btn" @click="setPagination('prev')">Prev</button>
-						<button v-if="paginationObj['next']" class="btn" @click="setPagination('next')">Next</button>
-					</div>
-				</div><!-- /Col -->
-			</div><!-- /Row -->
+			<transition name="archive-pagination-trans">
+				<div class="row" v-if="!doingAxios && paginationObj">
+					<div class="col-12">
+						<Pagination :pagination="paginationObj" @update="setPagination"></Pagination>
+					</div><!-- /Col -->
+				</div><!-- /Row -->
+			</transition>
 		</div><!-- /Container -->
 	</section>
 </template>
@@ -185,11 +192,13 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Tabs from "../../components/misc/Tabs";
 import Alert from "@/components/misc/Alert";
 import Popover from "@/components/misc/Popover";
+import Pagination from "@/components/misc/Pagination";
 
 export default {
 	name: "Pages",
 	title: "Archive",
 	components: {
+		Pagination,
 		Alert,
 		Breadcrumbs,
 		Tabs,
@@ -227,9 +236,6 @@ export default {
 		},
 	},
 	methods: {
-		updateActions(e, uuid) {
-			this.activeAction = e ? uuid : "";
-		},
 		/*
 		 * getPosts()
 		 * Obtain the posts or resources & apply query strings.
@@ -238,7 +244,7 @@ export default {
 		getPosts() {
 			const resource = this.$route.params.resource;
 			const url = resource === "pages" ? "/posts" : "/resource/" + resource;
-			this.axios.get(`${url}?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
+			this.axios.get(`${url}?order=${this.order}&filter=${this.filter}&${this.pagination}&limit=2`, {
 				paramsSerializer: function(params) {
 					return params;
 				}
@@ -266,7 +272,8 @@ export default {
 			const resource = this.getResources[this.$route.params.resource]
 			this.resource = resource === undefined ? {
 				"name": "page",
-				"friendly_name": "Page",
+				"friendly_name": "Pages",
+				"singular_name": "Page",
 				"slug": "",
 				"icon": 'fal fa-file'
 			} : resource
@@ -314,11 +321,17 @@ export default {
 		 * setPagination()
 		 * Update the pagination string when clicked, obtain posts.
 		 */
-		setPagination(direction) {
-			this.pagination = "";
-			const page = direction === "next" ? this.paginationObj.page + 1 : this.paginationObj.page - 1
-			this.pagination = `page=${page}`
+		setPagination(query) {
+			this.activeAction = "";
+			this.pagination = query;
 			this.getPosts();
+		},
+		/*
+		 * updateActions()
+		 *  Update the action uuid for clearing the popover.
+		 */
+		updateActions(e, uuid) {
+			this.activeAction = e ? uuid : "";
 		},
 		/*
 		 * doBulkAction()
@@ -441,6 +454,24 @@ export default {
 <style scoped lang="scss">
 
 	.archive {
+
+		// Pagination
+		// =========================================================================
+
+		&-pagination {
+
+			&-trans {
+				&-enter-active, &-leave-active {
+					transition: opacity 200ms;
+					transition-delay: 200ms;
+				}
+
+				&-enter, &-leave-to /* .fade-leave-active below version 2.1.8 */ {
+					opacity: 0;
+					transition-delay: 200ms;
+				}
+			}
+		}
 
 		// Table
 		// =========================================================================

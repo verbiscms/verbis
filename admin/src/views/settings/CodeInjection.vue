@@ -6,12 +6,68 @@
 		<div class="auth-container">
 			<div class="row">
 				<div class="col-12">
-					<header class="header">
+					<header class="header header-with-actions">
 						<div class="header-title">
 							<h1>Code Injection</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
+						<div class="header-actions">
+							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">
+								<i class="far fa-check"></i>
+								Update settings
+							</button>
+						</div>
 					</header>
+				</div><!-- /Col -->
+				<div class="col-12">
+					<div class="text-cont">
+						<h2>How to use</h2>
+						<p>Code injection allows you to inject a small snippet of HTML into your site. It can be a css override, analytics of a block javascript. To insert code into a specific page, visit the page in the resources section.</p>
+					</div>
+				</div>
+			</div><!-- /Row -->
+			<div class="row">
+				<div class="col-12">
+					<!-- =====================
+						Head
+						===================== -->
+					<div class="card">
+						<collapse>
+							<template v-slot:header>
+								<div class="card-header">
+									<h3 class="card-title">Header</h3>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<prism-editor class="prism" v-model="data['codeinjection_head']" :highlight="highlighter" line-numbers></prism-editor>
+								</div><!-- /Card Body -->
+							</template>
+						</collapse>
+					</div><!-- /Card -->
+					<!-- =====================
+						Footer
+						===================== -->
+					<div class="card">
+						<collapse>
+							<template v-slot:header>
+								<div class="card-header">
+									<h3 class="card-title">Footer</h3>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<prism-editor class="prism" v-model="data['codeinjection_foot']" :highlight="highlighter" line-numbers></prism-editor>
+								</div><!-- /Card Body -->
+							</template>
+						</collapse>
+					</div><!-- /Card -->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
@@ -24,14 +80,32 @@
 <script>
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
+import {optionsMixin} from "@/util/options";
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-markup';
+import Collapse from "@/components/misc/Collapse";
 
 export default {
 	name: "CodeInjection",
+	title: "Code Injection",
+	mixins: [optionsMixin],
 	components: {
-		Breadcrumbs
+		Breadcrumbs,
+		Collapse
 	},
-	data: () => ({}),
-	methods: {}
+	data: () => ({
+		errorMsg: "Fix the errors before saving code injection.",
+		successMsg: "Code injection updated successfully."
+	}),
+	methods: {
+		/*
+		 * highlighter()
+		 * Return html for prism editor.
+		 */
+		highlighter(code) {
+			return highlight(code, languages.html);
+		},
+	}
 }
 
 </script>
@@ -41,7 +115,15 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-	// Dummy
+	// Text
 	// =========================================================================
+
+	h2 {
+		margin-bottom: 4px;
+	}
+
+	p {
+		font-size: 0.9rem;
+	}
 
 </style>

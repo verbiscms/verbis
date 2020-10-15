@@ -14,6 +14,16 @@
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
+			<div class="row">
+				<div class="col-12">
+					<Alert colour="orange">
+						<slot>
+							<h3>Coming soon!</h3>
+							<p>Hold tight, we're working on this..</p>
+						</slot>
+					</Alert>
+				</div>
+			</div>
 		</div><!-- /Container -->
 	</section>
 </template>
@@ -24,11 +34,13 @@
 <script>
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
+import Alert from "../../components/misc/Alert";
 
 export default {
 	name: "Fields",
 	components: {
-		Breadcrumbs
+		Breadcrumbs,
+		Alert
 	},
 	data: () => ({}),
 	methods: {}

@@ -15,12 +15,10 @@ export const fieldMixin = {
 		},
 		errorTrigger: Boolean,
 	},
-	data() {
-		return {
-			errors: [],
-			typed: false,
-		};
-	},
+	data: () => ({
+		errors: [],
+		typed: false,
+	}),
 	watch: {
 		errorTrigger: function() {
 			if (typeof this.validate !== "undefined") {
@@ -29,7 +27,6 @@ export const fieldMixin = {
 		}
 	},
 	methods: {
-
 		/*
 		 * setPrependAppend()
 		 * Set the prepend and value options back for setting the field.
@@ -43,7 +40,6 @@ export const fieldMixin = {
 			}
 			return value;
 		},
-
 		/*
 		 * setField()
 		 * Set the default value if there is no field data.
@@ -54,7 +50,6 @@ export const fieldMixin = {
 				this.value = this.getOptions['default_value'];
 			}
 		},
-
 		/*
 		 * setDefaultValueChoices()
 		 * Set the default value for choices if there is no field data.
@@ -73,7 +68,6 @@ export const fieldMixin = {
 			}
 			this.value = this.fields;
 		},
-
 		/*
 		 * replacePrependAppend()
 		 * Replace the field value with empty strings.
@@ -81,7 +75,6 @@ export const fieldMixin = {
 		replacePrependAppend() {
 			return this.fields.toString().replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
 		},
-
 		/*
 		 * validateRequired()
 		 * Return a error message if the options are required & the value is nil.
@@ -91,7 +84,6 @@ export const fieldMixin = {
 				this.errors.push(`The ${this.getLayout.label.toLowerCase()} field is required.`);
 			}
 		},
-
 		/*
 		 * validateMaxLength()
 		 * Return a error message the max length has been reached.
@@ -102,6 +94,5 @@ export const fieldMixin = {
 				this.errors.push(`The maximum length of the ${this.getLayout.label.toLowerCase()} can not exceed ${maxLength} characters.`);
 			}
 		},
-
 	},
 };

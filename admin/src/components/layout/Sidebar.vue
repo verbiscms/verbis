@@ -128,6 +128,13 @@
 										<span>Performance</span>
 									</router-link>
 								</li><!-- /Performance -->
+								<!-- SEO & Meta -->
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-seo-meta' }" @click="$emit('close', true)">
+									<router-link class="aside-nav-link" :to="{ name: 'settings-seo-meta' }">
+										<i class="feather feather-search"></i>
+										<span>SEO & Meta</span>
+									</router-link>
+								</li><!-- /Performance -->
 								<!-- Media -->
 								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-media' }" @click="$emit('close', true)">
 									<router-link class="aside-nav-link" :to="{ name: 'settings-media' }">
