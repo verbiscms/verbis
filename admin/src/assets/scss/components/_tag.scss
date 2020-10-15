@@ -10,13 +10,13 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	color: $green;
+	color: $grey;
 	font-size: 12px;
 	text-align: center;
 	font-weight: 600;
 	white-space: nowrap;
 	min-width: 60px;
-	border: 1px solid $green;
+	border: 1px solid $grey;
 	vertical-align: baseline;
 	height: auto;
 	margin-right: 5px;
@@ -31,6 +31,11 @@
 	&-warning {
 		border-color: $warning;
 		color: $warning;
+	}
+
+	&-green {
+		border-color: $green;
+		color: $green;
 	}
 
 }

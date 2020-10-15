@@ -93,26 +93,33 @@
         transition: height 200ms;
 
         &-group {
-            margin-bottom: 3rem;
+            max-width: 1750px;
+            margin: 0 auto 3rem auto;
         }
 
         &-border {
             border-bottom: 1px solid $grey-light;
-            margin-left: 15px !important;
-            margin-right: 15px !important;
 
-            & > div:first-of-type {
-                padding-left: 0;
+            @include media-desk {
+                margin-left: 15px !important;
+                margin-right: 15px !important;
+
+                & > div:first-of-type {
+                    padding-left: 0;
+                }
+
+                & > div:last-of-type {
+                    padding-right: 0;
+                }
             }
 
-            & > div:last-of-type {
-                padding-right: 0;
-            }
 
             &-top {
                 border-top: 1px solid $grey-light;
             }
         }
+
+
     }
 
     // Textarea

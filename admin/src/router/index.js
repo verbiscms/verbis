@@ -115,6 +115,11 @@ const routes = [
 		component: () => import('../views/settings/Performance.vue'),
 	},
 	{
+		path: '/settings/seo-meta',
+		name: 'settings-seo-meta',
+		component: () => import('../views/settings/SEOMeta.vue'),
+	},
+	{
 		path: '/settings/media',
 		name: 'settings-media',
 		component: () => import('../views/settings/Media.vue'),

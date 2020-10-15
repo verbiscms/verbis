@@ -20,9 +20,6 @@
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<!-- =====================
-				Info
-				===================== -->
 			<form class="form">
 				<!-- =====================
 					Basic Options
@@ -35,10 +32,10 @@
 					</div><!-- /Row -->
 					<!-- First name -->
 					<div class="row form-row form-row-border form-row-border-top">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>First name*</h4>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<input class="form-input form-input-white" type="text" v-model="data['first_name']">
 								<!-- Message -->
@@ -50,10 +47,10 @@
 					</div><!-- /Row -->
 					<!-- Last name -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>Last name*</h4>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<input class="form-input form-input-white" type="text" v-model="data['last_name']">
 								<!-- Message -->
@@ -66,11 +63,11 @@
 					<!-- Password -->
 					<transition name="trans-fade-height">
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>Password*</h4>
 							<p>Enter a new password, a minimum of 8 alphanumeric characters are required.</p>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<input class="form-input form-input-white" type="password" placeholder="New password" v-model="newPassword" @keyup="validatePassword">
 								<transition name="trans-fade-height">
@@ -98,11 +95,11 @@
 					</div><!-- /Row -->
 					<!-- Email -->
 					<div class="row form-row form-row-border form-row-border-top">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>Email address*</h4>
 							<p>Enter a valid email address, this will be used for signing in to Verbis.</p>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<input class="form-input form-input-white" type="text" v-model="data['email']">
 								<!-- Message -->
@@ -114,10 +111,10 @@
 					</div><!-- /Row -->
 					<!-- Website -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>Website</h4>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<input class="form-input form-input-white" type="text" v-model="data['website']">
 								<!-- Message -->
@@ -129,10 +126,10 @@
 					</div><!-- /Row -->
 					<!-- Facebook -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>Facebook</h4>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<input class="form-input form-input-white" type="text" v-model="data['facebook']">
 							</div>
@@ -140,10 +137,10 @@
 					</div><!-- /Row -->
 					<!-- Twitter -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>Twitter</h4>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<input class="form-input form-input-white" type="text" v-model="data['twitter']">
 							</div>
@@ -151,10 +148,10 @@
 					</div><!-- /Row -->
 					<!-- LinkedIn -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>LinkedIn</h4>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<input class="form-input form-input-white" type="text" v-model="data['linked_in']">
 							</div>
@@ -164,7 +161,7 @@
 				<!-- =====================
 					Profile
 					===================== -->
-				<div class="form-group">
+				<div class="form-row-group">
 					<div class="row">
 						<div class="col-12">
 							<h2>Profile</h2>
@@ -172,10 +169,10 @@
 					</div><!-- /Row -->
 					<!-- Profile Picture -->
 					<div class="row form-row form-row-border form-row-border-top">
-						<div class="col-12 col-desk-2">
+						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>Profile picture</h4>
 						</div>
-						<div class="col-12 col-desk-6">
+						<div class="col-12 col-desk-8 col-hd-6">
 							<div class="form-group">
 								<p class="c-primary t-bold mb-0">Coming soon!</p>
 							</div>
@@ -201,13 +198,13 @@ export default {
 		Breadcrumbs
 	},
 	data: () => ({
-		newPassword: "",
-		confirmPassword: "",
+		doingAxios: false,
 		data: {
 			website: "",
 		},
 		errors: [],
-		doingAxios: false,
+		newPassword: "",
+		confirmPassword: "",
 	}),
 	mounted() {
 		this.data = this.getUserInfo;

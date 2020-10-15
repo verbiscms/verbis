@@ -73,13 +73,14 @@
 			</div><!-- /Card -->
 		</draggable>
 		<div class="field-btn">
-			<div class="popover-cont">
-				<button class="btn btn-blue"><i class="fal fa-plus-circle"></i>Add Row</button>
-				<div class="popover">
-					<span class="popover-triangle"></span>
+			<Popover :triangle="true" :classes="'popover-hover'">
+				<template slot="items">
 					<div class="popover-item" v-for="(group) in getLayouts" :key="group.uuid" @click="addRow(group.name)">{{ group.name }}</div>
-				</div>
-			</div>
+				</template>
+				<template slot="button">
+					<button class="btn btn-blue"><i class="fal fa-plus-circle"></i>Add Row</button>
+				</template>
+			</Popover>
 		</div>
 	</div><!-- /Container -->
 </template>
@@ -96,8 +97,8 @@ import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldRichText from "@/components/editor/fields/RichText";
 import FieldRepeater from "@/components/editor/fields/Repeater";
+import Popover from "@/components/misc/Popover";
 import draggable from 'vuedraggable'
-
 
 export default {
 	name: "FieldFlexible",
@@ -117,6 +118,7 @@ export default {
 		FieldEmail,
 		FieldRichText,
 		FieldRepeater,
+		Popover,
 		draggable,
 	},
 	data: () => ({
