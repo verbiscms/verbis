@@ -95,6 +95,11 @@ const routes = [
 		name: 'profile',
 		component: () => import('../views/account/Profile.vue'),
 	},
+	{
+		path: '/users/:id',
+		name: 'edit-user',
+		component: () => import('../views/account/Profile.vue'),
+	},
 	/**
 	 * Settings
 	 *

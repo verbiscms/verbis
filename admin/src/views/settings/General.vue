@@ -205,19 +205,14 @@ export default {
 	// Dummy
 	// =========================================================================
 
-	.card-test {
-		//box-shadow: none;
-		//border: 1px solid #1DA1F2;
-	}
-
 	.card-social {
 		display: flex;
 		align-items: center;
 		margin-bottom: 1rem;
 
 		img {
-			margin-right: 4px;
-			height: 50px;
+			margin-right: 8px;
+			height: 30px;
 		}
 
 		h3 {

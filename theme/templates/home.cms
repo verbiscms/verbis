@@ -1,6 +1,6 @@
 {{ define "content" }}
 
     <h1>The new title</h1>
-    {{ escape g ("richtext" | getField) }}
+{{/*    {{ escape g ("richtext" | getField) }}*/}}
 
 {{ end }}

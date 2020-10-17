@@ -1,17 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="47" height="45" viewBox="0 0 47 45">
-  <defs>
-    <filter id="Rectangle_692" x="0" y="0" width="47" height="45" filterUnits="userSpaceOnUse">
-      <feOffset dy="3" input="SourceAlpha"/>
-      <feGaussianBlur stdDeviation="3" result="blur"/>
-      <feFlood flood-color="#2867b2" flood-opacity="0.373"/>
-      <feComposite operator="in" in2="blur"/>
-      <feComposite in="SourceGraphic"/>
-    </filter>
-  </defs>
-  <g id="Group_157" data-name="Group 157" transform="translate(-347 -1378)">
-    <g transform="matrix(1, 0, 0, 1, 347, 1378)" filter="url(#Rectangle_692)">
-      <rect id="Rectangle_692-2" data-name="Rectangle 692" width="29" height="27" transform="translate(9 6)" fill="#fff"/>
-    </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="31.5" height="31.5" viewBox="0 0 31.5 31.5">
+  <g id="Group_161" data-name="Group 161" transform="translate(-354.85 -1381.75)">
     <path id="Icon_awesome-linkedin" data-name="Icon awesome-linkedin" d="M29.25,2.25H2.243A2.26,2.26,0,0,0,0,4.521V31.479A2.26,2.26,0,0,0,2.243,33.75H29.25a2.266,2.266,0,0,0,2.25-2.271V4.521A2.266,2.266,0,0,0,29.25,2.25Zm-19.73,27H4.852V14.217H9.527V29.25ZM7.186,12.164A2.707,2.707,0,1,1,9.893,9.457a2.708,2.708,0,0,1-2.707,2.707ZM27.021,29.25H22.352V21.938c0-1.744-.035-3.987-2.426-3.987-2.433,0-2.805,1.9-2.805,3.86V29.25H12.452V14.217h4.479V16.27h.063a4.917,4.917,0,0,1,4.423-2.426c4.725,0,5.6,3.115,5.6,7.165Z" transform="translate(354.85 1379.5)" fill="#2867b2"/>
   </g>
 </svg>

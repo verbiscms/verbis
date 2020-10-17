@@ -74,10 +74,10 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		pt = config.Template.TemplateDir + "/" + post.PageTemplate
 	}
 
-	// If there is
 	master := ""
 	if post.Layout != "default" {
 		master = config.Template.LayoutDir + "/" + post.Layout
+	} else {
 		pt = pt + config.Template.FileExtension
 	}
 
@@ -86,12 +86,12 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		Root:      paths.Theme(),
 		Extension: config.Template.FileExtension,
 		Master:    master,
-		Partials:  []string{},
+		Partials:  []string{"blocks/test"},
 		Funcs: tf.GetFunctions(),
 		DisableCache: !environment.IsProduction(),
 	})
 
-	if err := gvFrontend.Render(g.Writer, http.StatusOK, pt, r); err != nil {
+  	if err := gvFrontend.Render(g.Writer, http.StatusOK, pt, r); err != nil {
 		panic(err)
 	}
 }

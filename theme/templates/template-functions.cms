@@ -1,12 +1,13 @@
 {{ define "content" }}
 
+    <h1>Template Functions</h1>
 
     <section>
         <div class="container">
             <div class="row mt-5 mb-3">
                 <div class="col-12">
                     <h2>Environment</h2>
-{{/*                    <p>App Env: {{ appEnv }}</p>*/}}
+                    {{/*                    <p>App Env: {{ appEnv }}</p>*/}}
                     <p>Is Production: {{ isProduction }}</p>
                     <p>Is Debug: {{ isDebug }}</p>
                 </div>
@@ -15,7 +16,7 @@
                 <div class="col-12">
                     <h2>Posts</h2>
                     <p>Resource: {{ getResource }}</p>
-{{/*                    <p>Loop: {{ $args := dict "key" "value"}}</p>*/}}
+                    {{/*                    <p>Loop: {{ $args := dict "key" "value"}}</p>*/}}
                 </div>
             </div>
             <div class="row mb-3">
@@ -25,6 +26,37 @@
                     <p>Get Field: {{ "main_text" | getField }}</p>
                     <p>Get Fields: {{ getFields }}</p>
                     <p>Has Field: {{ "main_text" | hasField }}</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h2>Repeater</h2>
+                    <p>Repeater: {{ $repeaterFields := "repeater" | getRepeater }}</p>
+                    {{ if $repeaterFields }}
+                        {{ range $a, $field := $repeaterFields }}
+                            {{ index $field "text" }}
+                            {{ $a }}
+                        {{ end }}
+                    {{ end }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <h2>Flexible</h2>
+                    <p>Flexible: {{ $flexibleContent := "flexible" | getFlexible }}</p>
+                    {{ $flexibleContent }}
+                    {{ if $flexibleContent }}
+                        {{ range $layout, $field := $flexibleContent }}
+
+                            {{ if eq $field.type "layoutkey1" }}
+                                {{ template "blocks/test" $field }}
+                            {{ end }}
+
+                            <h4> {{ $field.type }}</h4>
+                            <h4> {{ $layout }}</h4>
+
+                        {{ end }}
+                    {{ end }}
                 </div>
             </div>
             <div class="row mt-5 mb-3">
@@ -43,7 +75,5 @@
             </div>
         </div>
     </section>
-
-
 
 {{ end }}

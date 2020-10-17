@@ -6,6 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -125,7 +126,7 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 	// If the cache allows for caching of the site config &
 	// if the config has already been cached, return.
 	var found bool
-	if s.cache.Site {
+	if s.cache.Site && environment.IsProduction() {
 		cached, found := cache.Store.Get("site_config")
 		if found {
 			return cached.(*domain.Site)
@@ -174,7 +175,7 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 	// If the cache allows for caching of the site templates &
 	// if the config has already been cached, return.
 	var found bool
-	if s.cache.Templates {
+	if s.cache.Templates && environment.IsProduction() {
 		cached, found := cache.Store.Get("site_templates")
 		if found {
 			return cached.(*domain.Templates), nil
@@ -231,7 +232,7 @@ func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 	// If the cache allows for caching of the site templates &
 	// if the config has already been cached, return.
 	var found bool
-	if s.cache.Templates {
+	if s.cache.Templates && environment.IsProduction() {
 		cached, found := cache.Store.Get("site_layouts")
 		if found {
 			return cached.(*domain.Layouts), nil
