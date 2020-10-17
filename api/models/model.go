@@ -78,7 +78,7 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 				operator := stripAlphaNum(filter.Operator)
 				value := stripAlphaNum(filter.Value)
 
-				// Account for liek or not like values
+				// Account for like or not like values
 				if operator == "like" || operator == "LIKE" || operator == "not like" || operator == "NOT LIKE"  {
 					value = "%" + value + "%"
 				}
@@ -111,6 +111,6 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 
 // Strip characters and return alpha numeric string for database processing.
 func stripAlphaNum(text string) string {
-	reg := regexp.MustCompile("[^a-zA-Z0-9 =<>%']+")
+	reg := regexp.MustCompile("[^a-zA-Z0-9 =<>%.@']+")
 	return reg.ReplaceAllString(text, "")
 }

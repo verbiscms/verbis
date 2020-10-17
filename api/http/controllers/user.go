@@ -13,6 +13,7 @@ import (
 type UserHandler interface {
 	Get(g *gin.Context)
 	GetById(g *gin.Context)
+	GetRoles(g *gin.Context)
 	Create(g *gin.Context)
 	Update(g *gin.Context)
 	Delete(g *gin.Context)
@@ -80,6 +81,19 @@ func (c *UserController) GetById(g *gin.Context) {
 	user.Token = ""
 
 	Respond(g, 200, "Successfully obtained user with ID: " + strconv.Itoa(id), user)
+}
+
+// Get Roles
+func (c *UserController) GetRoles(g *gin.Context) {
+	const op = "UserHandler.GetRoles"
+
+	roles, err := c.model.GetRoles()
+	if err != nil {
+		Respond(g, 500, errors.Message(err), err)
+		return
+	}
+
+	Respond(g, 200, "Successfully obtained user roles", roles)
 }
 
 // Create

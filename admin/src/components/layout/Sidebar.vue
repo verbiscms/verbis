@@ -82,7 +82,7 @@
 									</router-link>
 								</li><!-- /Users -->
 								<!-- Users -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'users' }" @click="$emit('close', true)">
+								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'users' || activePage === 'edit-user' }" @click="$emit('close', true)">
 									<router-link class="aside-nav-link" :to="{ name: 'users' }">
 										<i class="feather feather-users"></i>
 										<span>Users</span>
@@ -243,8 +243,15 @@ export default {
 				});
 		},
 		setActivePage() {
-			const resource = this.$route.params.resource;
-			this.activePage = resource === undefined ? this.$route.name : resource;
+			const editorResource = this.$route.query.resource;
+			const archiveResource = this.$route.params.resource;
+			if (editorResource) {
+				this.activePage = editorResource;
+			} else if (archiveResource) {
+				this.activePage = archiveResource;
+			} else {
+				this.activePage = this.$route.name;
+			}
 		},
 		collapse() {
 			document.querySelector(".auth-container").classList.toggle("auth-container-collapsed");
@@ -261,6 +268,9 @@ export default {
 		getTheme() {
 			return this.$store.state.theme
 		},
+		/*
+		* getInitials()
+		*/
 		getInitials() {
 			const info = this.getUserInfo
 			return info['first_name'].charAt(0) + info['last_name'].charAt(0).toUpperCase();

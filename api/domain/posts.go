@@ -71,6 +71,21 @@ type PostSeoMeta struct {
 	Meta			*json.RawMessage			`db:"meta" json:"meta"`
 }
 
+type PostMea struct {
+	Title   	string `json:"title,omitempty"`
+	Description string `json:"description,omitempty"`
+	Twitter struct {
+		Title       string `json:"title,omitempty"`
+		Description string `json:"description,omitempty"`
+		Image      	string `json:"image,omitempty"`
+	} `json:"twitter,omitempty"`
+	Facebook struct {
+		Title       string `json:"title,omitempty"`
+		Description string `json:"description,omitempty"`
+		Image      	string `json:"image,omitempty"`
+	} `json:"facebook,omitempty"`
+}
+
 type PostCreate struct {
 	Post
 	Author 			int    		`json:"author,omitempty" binding:"numeric"`

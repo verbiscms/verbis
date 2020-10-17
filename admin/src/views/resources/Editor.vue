@@ -47,6 +47,7 @@
 					</Tabs>
 					<!-- Content & Fields -->
 					<transition name="trans-fade" mode="out-in">
+
 						<div v-if="fieldLayout.length && activeTab === 0" :key="1">
 							<!-- Title -->
 							<div class="card">
@@ -235,7 +236,9 @@ export default {
 		this.setTab();
 	},
 	mounted() {
-		this.getFieldLayout();
+		if (this.newItem) {
+			this.getFieldLayout();
+		}
 		this.getUsers();
 		this.getTemplates();
 		this.getLayouts();

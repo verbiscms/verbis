@@ -28,7 +28,7 @@
 	// Colours
 	// =========================================================================
 
-	&-warning {
+	&-yellow {
 		border-color: $warning;
 		color: $warning;
 	}
@@ -38,6 +38,15 @@
 		color: $green;
 	}
 
+	&-orange {
+		border-color: $orange;
+		color: $orange;
+	}
+
+	&-blue {
+		border-color: $primary;
+		color: $primary;
+	}
 }
 
 // Default
