@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
 // UserRepository defines methods for Posts to interact with the database
@@ -17,6 +18,7 @@ type UserRepository interface {
 	Get(meta http.Params) ([]domain.User, int, error)
 	GetById(id int) (domain.User, error)
 	GetOwner() (domain.User, error)
+	GetRoles() ([]domain.UserRole, error)
 	Create(u *domain.User) (domain.User, error)
 	Update(u *domain.User) (domain.User, error)
 	Delete(id int) error
@@ -58,8 +60,22 @@ func (s *UserStore) Get(meta http.Params) ([]domain.User, int, error) {
 	q := fmt.Sprintf("SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id")
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id")
 
+	// Check if there is a role filter, for example
+	// roles.name and reorder meta.Filters
+	table := "users"
+	for k, v := range meta.Filters {
+		if strings.Contains(k, "roles") {
+			arr := strings.Split(k, ".")
+			if len(arr) > 1 {
+				meta.Filters[arr[1]] = v
+				delete(meta.Filters, k)
+				table = "roles"
+			}
+		}
+	}
+
 	// Apply filters to total and original query
-	filter, err := filterRows(s.db, meta.Filters, "users")
+	filter, err := filterRows(s.db, meta.Filters, table)
 	if err != nil {
 		return nil, -1, err
 	}
@@ -108,6 +124,17 @@ func (s *UserStore) GetOwner() (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the owner of the site", Operation: op, Err: err}
 	}
 	return u, nil
+}
+
+// GetRoles gets all of the roles in the roles table
+// Returns errors.INTERNAL if the roles table was inaccessible.
+func (s *UserStore) GetRoles() ([]domain.UserRole, error) {
+	const op = "UserRepository.GetRoles"
+	var r []domain.UserRole
+	if err := s.db.Select(&r,"SELECT * FROM roles"); err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the user roles", Operation: op, Err: err}
+	}
+	return r, nil
 }
 
 // Create user
@@ -195,13 +222,18 @@ func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 }
 
 // Delete user
+// Returns errors.INVALID if role ID is thw owner
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *UserStore) Delete(id int) error {
 	const op = "UserRepository.Delete"
 
-	_, err := s.GetById(id)
+	u, err := s.GetById(id)
 	if err != nil {
 		return err
+	}
+
+	if u.Role.Name == "Owner" {
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Can not delete the owner of the site"), Operation: op, Err: err}
 	}
 
 	if _, err := s.db.Exec("DELETE FROM users WHERE id = ?", id); err != nil {

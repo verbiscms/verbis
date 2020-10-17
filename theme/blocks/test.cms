@@ -1,0 +1,7 @@
+This is the test block
+
+<div>
+    {{ ("text" "hello") | getSubField }}
+    {{ . }}
+    <h1>{{ index . "fields" }}HH</h1>
+</div>

@@ -2,7 +2,8 @@
 	Pagination
 	===================== -->
 <template>
-	<div class="pagination-cont"  v-if="pagination">
+
+	<div class="pagination-cont"  v-if="pagination && pagination.pages > 1">
 		<div class="pagination">
 			<!-- Beginning -->
 			<div class="pagination-item" :class="{ 'pagination-item-disabled' : !getPagination.prev }" @click="update(1)">
@@ -25,17 +26,6 @@
 				<i class="feather feather-chevrons-right"></i>
 			</div>
 		</div><!-- /Pagination  -->
-		<div>
-			{{ pagination }}
-			{{ getPages }}
-<!--			{{ getPages }}-->
-<!--			1 - 1 2 3 4 5-->
-<!--			2 - 1 2 3 4 5-->
-<!--			3 - 1 2 3 4 5-->
-<!--			4 - 2 3 4 5 6-->
-<!--			5 - 2 3 4 5 6-->
-<!--			6 - 2 3 4 5 6-->
-		</div>
 	</div><!-- /Pagination Cont -->
 </template>
 
@@ -67,34 +57,48 @@ export default {
 	},
 	computed: {
 		getPages() {
+			let maxDepth = 2;
 			let forwardPages = 0;
 			let backwardsPages = 0;
 			const curPage = this.getPagination.page;
 
-			if ((curPage - 3) < 0) {
-				backwardsPages = Math.abs(Math.abs(curPage - 3) - curPage)
+			if ((curPage - maxDepth) < 0) {
+				backwardsPages = Math.abs(Math.abs(curPage - maxDepth) - curPage)
 			} else {
-				backwardsPages = curPage - (curPage - 3)
+				backwardsPages = curPage - (curPage - maxDepth)
 			}
 
-			if ((curPage + 3) > curPage) {
-				let totalMax = this.getPagination.pages - (curPage + 3)
-				forwardPages = forwardPages + totalMax
+			if ((curPage + maxDepth) > this.getPagination.pages) {
+				let totalMax = this.getPagination.pages - (curPage + maxDepth)
+
+				if (totalMax < 0) {
+					forwardPages = Math.abs(totalMax) + 1;
+				} else {
+					forwardPages = curPage + totalMax
+				}
 			} else {
-				forwardPages = (curPage + 3) - curPage
+				forwardPages = (curPage + maxDepth) - curPage
 			}
+
 
 			let arr = [];
-			for (let i = 0; i <= forwardPages; i++) {
-				if ((curPage + i) !== 0) {
-					arr.push(curPage + i)
+
+			let f = 0
+			while (f <= forwardPages) {
+				if ((curPage + f) <= this.getPagination.pages) {
+					arr.push(curPage + f)
 				}
+				f++;
 			}
-			for (let i = 1; i <= backwardsPages; i++) {
-				if ((curPage - i) !== 0) {
-					arr.push(curPage - i)
+
+			let b = 1
+			while (b <= backwardsPages) {
+				if ((curPage - b) !== 0) {
+					arr.push(curPage - b)
 				}
+				b++;
 			}
+
 			arr.sort();
 
 			return arr;

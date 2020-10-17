@@ -8,11 +8,12 @@
 				<div class="col-12">
 					<header class="header header-with-actions">
 						<div class="header-title">
-							<h1>Edit profile</h1>
+							<h1 v-if="isSelf">Edit profile</h1>
+							<h1 v-else>Edit User {{ data['first_name'] }} {{ data['last_name'] }}</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : doingAxios }">
+							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">
 								<i class="far fa-check"></i>
 								Update Profile
 							</button>
@@ -199,41 +200,87 @@ export default {
 	},
 	data: () => ({
 		doingAxios: false,
+		saving: false,
 		data: {
 			website: "",
 		},
 		errors: [],
 		newPassword: "",
 		confirmPassword: "",
+		userId: -1,
+		isSelf: false,
 	}),
 	mounted() {
-		this.data = this.getUserInfo;
+		this.init();
+	},
+	watch: {
+		'$route.params.id': function() {
+			this.init();
+		},
 	},
 	methods: {
+		/*
+		 * init()
+		 * Determine if the profile to edit is the user logged in,
+		 * or a user that needs to be obtained from the API.
+		 */
+		init() {
+			this.userId = this.$route.params.id;
+			if (!this.userId) {
+				this.data = this.getUserInfo;
+				this.isSelf = true;
+			} else {
+				this.getUser();
+			}
+		},
 		/*
 		 * save()
 		 * Save the updated profile, check for field validation.
 		 */
 		save() {
-			this.doingAxios = true;
+			this.saving = true;
 			if (this.errors.length) {
 				this.$noty.error("Fix the errors before saving your profile.")
 				return
 			}
 			this.data['password'] = this.newPassword;
-			this.axios.put("/users/" + this.$store.state.userInfo.id, this.data)
+			this.axios.put("/users/" + this.userId, this.data)
 				.then(res => {
 					this.errors = [];
 					this.$noty.success("Profile updated successfully.");
-					this.$store.commit("setUser", res.data.data);
+
+					// IMPORTANT: Don't commit to the store, if the user isn't the one logged in!
+					if (this.isSelf) {
+						this.$store.commit("setUser", res.data.data);
+					}
 				})
 				.catch(err => {
 					console.log(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
-						this.$noty.error("Fix the errors before saving your profile.")
-						return
+						this.$noty.error("Fix the errors before saving your profile.");
+						return;
 					}
+					this.$noty.error("Error occurred, please refresh the page.");
+				})
+				.finally(() => {
+					setTimeout(() => {
+						this.saving = false;
+					}, 100);
+				});
+		},
+		/*
+		 * getUser()
+		 * Obtains data from API, if the user being edited is not the one
+		 * logged in.
+		 */
+		getUser() {
+			this.axios.get("/users/" + this.userId)
+				.then(res => {
+					this.data = res.data.data;
+				})
+				.catch(err => {
+					console.log(err);
 					this.$noty.error("Error occurred, please refresh the page.");
 				})
 				.finally(() => {
@@ -287,7 +334,6 @@ export default {
 
 		&-confirm-password {
 			margin-top: 10px;
-
 		}
 	}
 

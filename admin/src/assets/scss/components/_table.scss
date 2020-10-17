@@ -146,4 +146,52 @@ $table-row-border-radius: 8px;
 		overflow-x: scroll;
 		overflow-y: hidden;
 	}
+
+	// Actions
+	// =========================================================================
+
+	&-actions {
+
+		.icon-square {
+			transition: background-color 160ms ease;
+			will-change: background-color;
+		}
+
+		i {
+			font-size: 16px;
+		}
+	}
+
+	// Order
+	// =========================================================================
+
+	&-order {
+		cursor: pointer;
+		user-select: none;
+
+		span {
+			transition: color 180ms ease;
+			will-change: color;
+		}
+
+		i {
+			color: rgba($secondary, 0.7);
+			font-size: 12px;
+			margin-left: 4px;
+			transition: 180ms ease, color 180ms ease;
+			will-change: transform, color;
+
+			&.active {
+				transform: rotate(180deg);
+			}
+		}
+
+		&.active {
+
+			i,
+			span {
+				color: $primary;
+			}
+		}
+	}
 }

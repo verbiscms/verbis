@@ -44,12 +44,18 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		//"appEnv": t.appEnv,
 		"isProduction": t.isProduction,
 		"isDebug": t.isDebug,
+		// Header & Footer
+		"verbis_head": t.getHeader,
+		"verbis_foot": t.getFooter,
 		// Posts
 		"getResource": t.getResource,
 		// Fields
 		"getField": t.getField,
 		"getFields": t.getFields,
 		"hasField": t.hasField,
+		"getRepeater": t.getRepeater,
+		"getFlexible": t.getFlexible,
+		"getSubField": t.getSubField,
 		// Auth
 		"auth": t.isAuth,
 		"admin": t.isAdmin,
@@ -132,41 +138,8 @@ func (t *TemplateFunctions) isTemplate(resource string) bool {
 // Get author
 // Is draft
 // Is published
-
 func (t *TemplateFunctions) getResources(query map[string]interface{}) map[string]interface{} {
-
-
-
-
 	return map[string]interface{}{}
-}
-
-
-/*
- * Fields
- * Functions for templates for Fields associated with the post
- */
-
-// Get field based on input return nothing if found
-func (t *TemplateFunctions) getField(field string) interface{} {
-	if _, found := t.fields[field]; found {
-		return t.fields[field]
-	} else {
-		return ""
-	}
-}
-
-// Get all fields for template
-func (t *TemplateFunctions) getFields() map[string]interface{} {
-	return t.fields
-}
-
-// Determine if the given field exists
-func (t *TemplateFunctions) hasField(field string) bool {
-	if _, found := t.fields[field]; found {
-		return true
-	}
-	return false
 }
 
 

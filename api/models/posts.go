@@ -75,6 +75,8 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	// Apply pagination
 	q += fmt.Sprintf(" ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
 
+	fmt.Println(q)
+
 	// Select posts
 	if err := s.db.Select(&p, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
@@ -110,7 +112,7 @@ func (s *PostStore) GetById(id int) (domain.Post, error) {
 func (s *PostStore) GetBySlug(slug string) (domain.Post, error) {
 	const op = "PostsRepository.GetBySlug"
 	var p domain.Post
-	if err := s.db.Get(&p, "SELECT * FROM posts WHERE slug = ?", slug); err != nil {
+	if err := s.db.Get(&p, "SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id WHERE posts.slug = ? LIMIT 1", slug); err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op}
 	}
 	return p, nil

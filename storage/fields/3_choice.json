@@ -1,5 +1,5 @@
 {
-	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc23",
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9125bc23",
 	"title": "Choice Verbis Options",
 	"fields": [
 		{
@@ -112,7 +112,7 @@
 		[
 			{
 				"param": "layout",
-				"operator": "!=",
+				"operator": "==",
 				"value": "main"
 			}
 		]

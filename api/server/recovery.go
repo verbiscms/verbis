@@ -126,7 +126,8 @@ func (r *Recovery) setType(err interface{}) *errors.Error {
 				Code:      errors.TEMPLATE,
 				Message:   fmt.Sprintf("Could not render the template %s: ", r.Path),
 				Operation: "RenderTemplate",
-				Err:       fmt.Errorf("%s on line %d", helpers.StringsSplitRight(errData.Error(), "function "), r.Line),
+				//Err:       fmt.Errorf("%s on line %d", helpers.StringsSplitRight(errData.Error(), "function "), r.Line),
+				Err: fmt.Errorf(e.Error()),
 			}
 			r.SubMessage = e.Error()
 		}
