@@ -36,6 +36,7 @@ type MediaSize struct {
 	UUID 			uuid.UUID			`db:"uuid" json:"uuid"`
 	Url 			string				`db:"url" json:"url"`
 	Name			string 				`db:"name" json:"name"`
+	SizeName 		string 				`db:"size_name" json:"size_name"`
 	FileSize		int 				`db:"file_size" json:"file_size"`
 	Width			int 				`db:"width" json:"width"`
 	Height			int 				`db:"height" json:"height"`
