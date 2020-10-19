@@ -1,7 +1,16 @@
-This is the test block
 
+<br>
+<br>
+<br>
+
+This is the test block
+fff
+{{ . }}
 <div>
-    {{ ("text" "hello") | getSubField }}
-    {{ . }}
-    <h1>{{ index . "fields" }}HH</h1>
+{{/*    {{ ("text" "hello") | getSubField }}*/}}
+{{/*    {{ . }}*/}}
+{{/*    <h1>{{ index . "fields" }}HH</h1>*/}}
 </div>
+<br>
+<br>
+<br>

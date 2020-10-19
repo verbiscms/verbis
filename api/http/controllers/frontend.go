@@ -57,7 +57,15 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	post, err := c.models.Posts.GetBySlug(path)
 
 	if err != nil {
-		NoPageFound(g)
+		gvError := goview.New(goview.Config{
+			Root:      paths.Theme(),
+			Extension: config.Template.FileExtension,
+			Partials:  []string{},
+			DisableCache: true,
+		})
+		if err := gvError.Render(g.Writer, http.StatusOK, "404", nil); err != nil {
+			panic(err)
+		}
 		return
 	}
 
@@ -86,7 +94,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		Root:      paths.Theme(),
 		Extension: config.Template.FileExtension,
 		Master:    master,
-		Partials:  []string{"blocks/test"},
+		Partials:  []string{},
 		Funcs: tf.GetFunctions(),
 		DisableCache: !environment.IsProduction(),
 	})
