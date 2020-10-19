@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
@@ -40,9 +41,12 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 
 	path := g.Request.URL.Path
 
+	fmt.Println(path)
+
 	data, mime, err := c.models.Media.Serve(path, acceptWebp)
 	if err != nil {
-		NoPageFound(g)
+		fmt.Println(err)
+		c.NoPageFound(g)
 		return
 	}
 
@@ -57,15 +61,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	post, err := c.models.Posts.GetBySlug(path)
 
 	if err != nil {
-		gvError := goview.New(goview.Config{
-			Root:      paths.Theme(),
-			Extension: config.Template.FileExtension,
-			Partials:  []string{},
-			DisableCache: true,
-		})
-		if err := gvError.Render(g.Writer, http.StatusOK, "404", nil); err != nil {
-			panic(err)
-		}
+		c.NoPageFound(g)
 		return
 	}
 
@@ -102,4 +98,17 @@ func (c *FrontendController) Serve(g *gin.Context) {
   	if err := gvFrontend.Render(g.Writer, http.StatusOK, pt, r); err != nil {
 		panic(err)
 	}
+}
+
+func (c *FrontendController) NoPageFound(g *gin.Context) {
+	gvError := goview.New(goview.Config{
+		Root:      paths.Theme(),
+		Extension: config.Template.FileExtension,
+		Partials:  []string{},
+		DisableCache: true,
+	})
+	if err := gvError.Render(g.Writer, http.StatusOK, "404", nil); err != nil {
+		panic(err)
+	}
+	return
 }
