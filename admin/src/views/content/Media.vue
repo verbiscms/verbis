@@ -23,10 +23,12 @@
 									</select>
 								</div>
 								<button class="btn btn-fixed-height btn-margin btn-white" :class="{ 'btn-loading' : savingBulk }" @click.prevent="doBulkAction">Apply</button>
-								<router-link class="btn btn-icon btn-orange" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
+								<label for="browse-file" class="btn btn-icon btn-orange">
+									<input class="media-input" id="browse-file" type="file" multiple  ref="file" @change="insertedFiles = $event">
 									<i class="fal fa-plus"></i>
-								</router-link>
+								</label>
 							</form>
+							{{ insertedFiles }}
 						</div><!-- /Actions -->
 					</header>
 				</div><!-- /Col -->
@@ -45,9 +47,9 @@
 						Posts
 						===================== -->
 					<div v-if="!doingAxios">
+						<Uploader :inserted-files="insertedFiles" @uploaded="insertedFiles = {}"></Uploader>
 						<transition name="trans-fade-quick" mode="out-in">
-
-							<Alert colour="orange">
+							<Alert colour="orange" style="display: none ">
 								<slot>
 									<h3>No media items available. </h3>
 									<p>To create a new one, click the plus sign above.</p>
@@ -77,6 +79,7 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Tabs from "../../components/misc/Tabs";
 import Alert from "@/components/misc/Alert";
 import Pagination from "@/components/misc/Pagination";
+import Uploader from "@/components/media/Uploader";
 
 export default {
 	name: "Pages",
@@ -86,12 +89,14 @@ export default {
 		Alert,
 		Breadcrumbs,
 		Tabs,
+		Uploader
 	},
 	data: () => ({
-		doingAxios: true,
+		doingAxios: false,
 		activeTab: 0,
 		resource: {},
-		posts: [],
+		files: [],
+		insertedFiles: {},
 		paginationObj: {},
 		order: "",
 		orderBy: {
@@ -108,35 +113,7 @@ export default {
 		checked: [],
 		activeAction: "",
 	}),
-	mounted() {
-		this.getMedia();
-	},
 	methods: {
-		/*
-		 * getMedia()
-		 * Obtain the media or resources & apply query strings.
-		 * NOTE: paramsSerializer is required here.
-		 */
-		getMedia() {
-			this.axios.get(`media?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
-				paramsSerializer: function(params) {
-					return params;
-				}
-			})
-				.then(res => {
-					this.posts = {};
-					this.paginationObj = {};
-					this.paginationObj = res.data.meta.pagination;
-					this.posts = res.data.data;
-				})
-				.catch(err => {
-					console.log(err)
-					this.$noty.error("Error occurred, please refresh the page.");
-				})
-				.finally(() => {
-					this.doingAxios = false;
-				});
-		},
 		/*
 		 * changeOrderBy()
 		 * Update the order by object when clicked, obtain posts.
@@ -313,6 +290,13 @@ export default {
 <style scoped lang="scss">
 
 .media {
+
+	&-input {
+		display: none;
+		position: absolute;
+		top: -9999999px;
+		left: -9999999px;
+	}
 
 }
 
