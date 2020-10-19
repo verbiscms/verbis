@@ -5,7 +5,6 @@
 	<section class="media">
 		<!-- =====================
 			TODO:
-				- Do the styling for bulk action and the checkbox
 				- Tidy up the information sidebar (actions)
 				- Fix the transition when going to a different tab.
 				- Adding files from the plus button isnt working (the loading)
@@ -34,18 +33,18 @@
 				<!-- =====================
 					Editor
 					===================== -->
-				<div class="col-12 col-desk-3 order-desk-last">
+				<div class="col-12 col-desk-4 col-hd-3 order-desk-last">
 					<div v-if="selectedMedia">
 						<!-- Options -->
 						<form class="form media-options">
 							<h2>Options</h2>
-							<!-- Title -->
+							{{ getMediaType(selectedMedia.type )}							<!-- Title -->
 							<div class="form-group">
 								<label for="media-title" class="form-label">Title</label>
 								<input id="media-title" type="text" class="form-input form-input-white" v-model="selectedMedia.title" @keyup="save">
 							</div><!-- /Title -->
 							<!-- Alt Text -->
-							<div class="form-group">
+							<div class="form-group" v-if="getMediaType(selectedMedia.type) !== 'file'">
 								<label for="media-alt" class="form-label">Alternative text</label>
 								<input id="media-alt" type="text" class="form-input form-input-white" v-model="selectedMedia.alt" @keyup="save">
 							</div><!-- /Alt Text -->
@@ -60,7 +59,7 @@
 							<h2>Information</h2>
 							<div class="text-cont">
 								<h6>Url:</h6>
-								<p>{{ selectedMedia.url }}</p>
+								<p><a :href="getSiteUrl + selectedMedia.url" target="_blank">{{ selectedMedia.url }}</a></p>
 							</div>
 							<div class="text-cont">
 								<h6>Filesize:</h6>
@@ -78,7 +77,7 @@
 								<h6>Uploaded at:</h6>
 								<p>{{ selectedMedia['created_at'] | moment("dddd, MMMM Do YYYY") }}</p>
 							</div>
-							<div class="text-cont" v-if="selectedMedia.sizes.length">
+							<div class="text-cont" v-if="selectedMedia.sizes && selectedMedia.sizes.length">
 								<h6>Sizes:</h6>
 								<div class="media-size" v-for="size in sortSizes(selectedMedia.sizes)" :key="size.uuid">
 									<div class="media-size-header">
@@ -115,8 +114,8 @@
 				<!-- =====================
 					Media Items
 					===================== -->
-				<div class="col-12" :class="{ 'col-desk-9' : media.length }">
-					<div class="media-files" :class="{ 'media-files-selected' : selectedMedia, 'media-dragging' : dragging, 'media-dragging-empty' : !media.length && dragging }" @click.stop="selectedMedia = false" @drop.prevent="addFile($event, false)" @dragover.prevent @dragover="dragging = true" @dragleave="dragging = false" @dragend="dragging = false" @drop="dragging = false">
+				<div class="col-12" :class="{ 'col-desk-8 col-hd-9' : media.length }">
+					<div class="media-files" :class="{ 'media-dragging' : dragging, 'media-dragging-empty' : !media.length && dragging }" @click.stop="selectedMedia = false" @drop.prevent="addFile($event, false)" @dragover.prevent @dragover="dragging = true" @dragleave="dragging = false" @dragend="dragging = false" @drop="dragging = false">
 						<!-- Placeholder -->
 						<div v-if="!media.length" class="media-placeholder">
 							<i class="feather feather-image"></i>
@@ -125,7 +124,7 @@
 						</div>
 						<!-- Media -->
 						<div v-else class="media-item" v-for="item in media" :key="item.uuid" @click.prevent.stop="handleMediaClick(item)"
-							:class="{ 'media-item-active' : selectedMedia && selectedMedia['uuid'] === item['uuid'], 'media-item-loading' : item.loading, 'media-item-bulk' : bulkDelete }">
+							:class="{ 'media-item-active' : selectedMedia && selectedMedia['uuid'] === item['uuid'], 'media-item-loading' : item.loading, 'media-item-bulk' : checked.includes(item.id) }">
 							<!-- Checkbox -->
 							<div class="form-checkbox media-item-checkbox">
 								<input type="checkbox" checked :id="'media-item-' + item.uuid"/>
@@ -133,30 +132,30 @@
 									<i class="fal fa-check"></i>
 								</label>
 							</div>
+							<!-- Uploading -->
+							<div v-if="item.loading" class="media-item-loading-cont">
+								<div v-if="item['unsupported']" class="media-item-loading-cont-error">
+									<i class="feather feather-alert-circle"></i>
+									<p>Media type unsupported</p>
+								</div>
+								<div v-else>
+									<div class="spinner spinner-grey"></div>
+									<h4>{{ item.name }}</h4>
+								</div>
+							</div>
 							<!-- Image -->
-							<figure v-if="getMediaType(item.type) === 'image'" class="media-item-image">
+							<div v-else-if="getMediaType(item.type) === 'image'" class="media-item-image">
 								<img :src="getSiteUrl + item.url" :alt="item.alt">
-							</figure>
+							</div>
 							<!-- Video -->
 							<div v-else-if="getMediaType(item.type) === 'video'">
 								<i class="feather feather-video"></i>
+								<p>{{ item['file_name'] }}</p>
 							</div>
 							<!-- File -->
 							<div v-else-if="getMediaType(item.type) === 'file'">
 								<i class="feather feather-file"></i>
-							</div>
-							<!-- Uploading -->
-							<div v-else-if="item.loading" class="media-item-loading-cont">
-								<transition name="trans-fade">
-									<div v-if="item['unsupported']" class="media-item-loading-cont-error">
-										<i class="feather feather-alert-circle"></i>
-										<p>Media type unsupported</p>
-									</div>
-									<div v-else>
-										<div class="spinner spinner-grey"></div>
-										<h4>{{ item.name }}</h4>
-									</div>
-								</transition>
+								<p>{{ item['file_name'] }}</p>
 							</div>
 						</div><!-- /Media Item -->
 					</div><!-- /Media Files -->
@@ -229,10 +228,21 @@ export default {
 	},
 	watch: {
 		deleting: function() {
+			if (!this.checked.length) {
+				this.$noty.warning("Select items in order to apply bulk actions");
+				return;
+			}
 			this.checked.forEach(id => {
 				this.deleteItem(id);
 			});
 			this.$noty.success("Media items deleted successfully.");
+		},
+		bulkAction: function(val) {
+			if (!val) {
+				this.checked = [];
+			} else {
+				this.selectedMedia = false;
+			}
 		}
 	},
 	methods: {
@@ -304,7 +314,10 @@ export default {
 				headers: {'Content-Type': 'multipart/form-data'}
 			})
 				.then(res => {
-					console.log(res.data.data);
+					console.log(this.media[index]);
+					console.log(res.data.data)
+					this.$set(this.media, index, res.data.data);
+					//this.media[index] = res.data.data;
 					//this.media = res.data.data;
 				})
 				.catch(err => {
@@ -546,6 +559,7 @@ export default {
 		h4 {
 			font-weight: 600;
 			color: $copy;
+			margin-bottom: 4px;
 		}
 	}
 
@@ -588,15 +602,6 @@ export default {
 		margin: 0 -15px -1rem -15px;
 		padding-bottom: 20px;
 		border-radius: 10px;
-		transition: all 100ms ease;
-
-		&-selected {
-
-			#{$self}-item:not(#{$self}-item-active) {
-				filter: grayscale(100%);
-				opacity: 0.5;
-			}
-		}
 	}
 
 	// Input
@@ -617,28 +622,31 @@ export default {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		flex-basis: calc(20% - 15px);
+		flex-basis: calc(100% - 15px);
 		margin-right: 15px;
 		height: 200px;
 		background-color: $grey;
 		margin-bottom: 1rem;
 		border-radius: 6px;
 		cursor: pointer;
-		transition: all 200ms ease;
+		transition: box-shadow 100ms ease;
 
 		&-image {
+			display: flex;
+			justify-content: center;
+			align-items: center;
 			width: 100%;
 			height: 100%;
 			margin: 0;
+			border-radius: 6px;
+			overflow: hidden;
 
 			img {
-				border-radius: 6px;
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
 			}
 		}
-
 
 		&:nth-child(5n) {
 			margin-right: 0;
@@ -687,23 +695,35 @@ export default {
 			}
 		}
 
-
-
 		// Checkbox
 		// =========================================================================
 
 		&-checkbox {
 			position: absolute;
-			bottom: 10px;
-			right: 10px;
+			top: 0;
+			right: 0;
 			z-index: 9999;
+			opacity: 0;
+			transition: opacity 160ms ease;
+			transform: translate(-50%, -50%);
+		}
+
+		// Bulk View
+		// =========================================================================
+
+		&-bulk {
+			border: 2px solid $primary;
+
+			#{$self}-item-checkbox {
+				opacity: 1;
+			}
 		}
 
 		// Active (Clicked)
 		// =========================================================================
 
 		&-active {
-			opacity: 1;
+			border: 2px solid $primary;
 			box-shadow: 0 0 10px 0 rgba($black, 0.14);
 		}
 	}
@@ -745,6 +765,10 @@ export default {
 
 	&-information {
 
+		a {
+			font-weight: normal;
+
+		}
 		.text-cont {
 			margin-bottom: 1.4rem;
 		}
@@ -794,6 +818,36 @@ export default {
 			max-width: 100%;
 			word-break: keep-all;
 			text-overflow: ellipsis;
+		}
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+
+		&-item {
+			flex-basis: calc(50% - 15px);
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+
+		&-item {
+			flex-basis: calc(33.33333% - 15px);
+		}
+	}
+
+	// HD
+	// =========================================================================
+
+	@include media-hd{
+
+		&-item {
+			flex-basis: calc(20% - 15px);
 		}
 	}
 }
