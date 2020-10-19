@@ -21,16 +21,6 @@
 										<option value="restore">Restore</option>
 										<option value="delete">Delete permanently</option>
 									</select>
-									<select class="form-select" v-model="bulkType" v-else-if="activeTab === 3">
-										<option value="" disabled selected>Bulk actions</option>
-										<option value="publish">Publish</option>
-										<option value="bin">Move to bin</option>
-									</select>
-									<select class="form-select" v-model="bulkType" v-else>
-										<option value="" disabled selected>Bulk actions</option>
-										<option value="draft">Move to draft</option>
-										<option value="bin">Move to bin</option>
-									</select>
 								</div>
 								<button class="btn btn-fixed-height btn-margin btn-white" :class="{ 'btn-loading' : savingBulk }" @click.prevent="doBulkAction">Apply</button>
 								<router-link class="btn btn-icon btn-orange" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
