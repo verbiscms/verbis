@@ -7,7 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -35,7 +34,7 @@ type MediaRepository interface {
 	Get(meta http.Params) ([]domain.Media, int, error)
 	GetById(id int) (domain.Media, error)
 	GetByName(name string) (domain.Media, error)
-	GetByUrl(url string) (domain.Media, error)
+	GetByUrl(url string) (string, string, error)
 	Serve(uploadPath string, acceptWeb bool) ([]byte, string, error)
 	Upload(file *multipart.FileHeader, userId int) (domain.Media, error)
 	Validate(file *multipart.FileHeader) error
@@ -174,13 +173,28 @@ func (s *MediaStore) GetByName(name string) (domain.Media, error) {
 
 // GetByUrl Obtains a media file by the URL from the database
 // Returns errors.NOTFOUND if the media item was not found by the given url.
-func (s *MediaStore) GetByUrl(url string) (domain.Media, error) {
+func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 	const op = "MediaRepository.GetByUrl"
 	var m domain.Media
-	if err := s.db.Get(&m, "SELECT * FROM media WHERE url = ?", url); err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the url: %s", url), Operation: op}
+
+	// Test normal size
+	if err := s.db.Get(&m, "SELECT * FROM media WHERE url = ?", url); err == nil {
+		return m.FilePath + "/" + m.UUID.String(), m.Type, nil
 	}
-	return m, nil
+
+	// Test Sizes
+	if err := s.db.Get(&m, "SELECT * FROM media WHERE sizes LIKE '%" + url + "%' LIMIT 1"); err == nil {
+		sizes, err := s.unmarshalSizes(m)
+		if err == nil {
+			for _, v := range sizes {
+				if v.Url == url {
+					return v.FilePath + "/" + v.UUID.String(), m.Type, nil
+				}
+			}
+		}
+	}
+
+	return "", "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the url: %s", url), Operation: op}
 }
 
 // Serve is responsible for serving the correct data to the front end
@@ -188,25 +202,24 @@ func (s *MediaStore) GetByUrl(url string) (domain.Media, error) {
 func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, error) {
 	const op = "MediaRepository.Serve"
 
-	m, err := s.GetByUrl(uploadPath)
+	path, mimeType, err := s.GetByUrl(uploadPath)
 	if err != nil {
 		return nil, "", err
 	}
 
 	extension := files.GetFileExtension(uploadPath)
 
-	var mimeType = m.Type
 	var data []byte
 	var found error
 	if acceptWebP && s.serveWebP {
-		data, found = ioutil.ReadFile(m.FilePath + "/" + m.UUID.String() + extension + ".bollox")
+		data, found = ioutil.ReadFile(path + extension + ".webp")
 		if found != nil {
-			data, found = ioutil.ReadFile(m.FilePath + "/" + m.UUID.String() + extension)
+			data, found = ioutil.ReadFile(path + extension)
 		} else {
 			mimeType = "image/webp"
 		}
 	} else {
-		data, found = ioutil.ReadFile(m.FilePath + "/" + m.UUID.String() + extension)
+		data, found = ioutil.ReadFile(path + extension)
 	}
 
 	if found != nil {
@@ -233,34 +246,31 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 	// E.G: image.png
 	cleanName := s.processFileName(name, extension)
 
-	// E.G: 180ea4324ab2556032141e956ca1f141
-	key, err := encryption.GenerateRandomHash()
-	if err != nil {
-		return domain.Media{}, err
-	}
+	// E.G: 53252e77-308a-4587-a078-637bf1b0e186
+	key := uuid.New()
 
 	// E.G image/png
 	mimeType, _ := mime.TypeByFile(file)
 
 	// Save the uploaded file
-	if err := files.Save(file, path + "/" + key + extension); err != nil {
+	if err := files.Save(file, path + "/" + key.String() + extension); err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not save the media file, please try again", Operation: op}
 	}
 
 	// Convert to WebP
 	if s.convertWebP {
-		decodedImage, err := s.decodeImage(file, mimeType)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error()
-		}
-		go convertWebP(*decodedImage, path + "/" + key + extension, s.compression)
+		//decodedImage, err := s.decodeImage(file, mimeType)
+		//if err != nil {
+			//log.WithFields(log.Fields{"error": err}).Error()
+		//}
+		//go convertWebP(*decodedImage, path + "/" + key + extension, s.compression)
 	}
 
 	// Resize
 	sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
 
 	// Insert into the database
-	dm, err := s.insert(cleanName + extension, path, int(file.Size), mimeType, sizes, userId)
+	dm, err := s.insert(key, cleanName + extension, path, int(file.Size), mimeType, sizes, userId)
 	if err != nil {
 		return domain.Media{}, err
 	}
@@ -301,7 +311,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 
 // Inserts a media item into the database
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *MediaStore) insert(name string, filePath string, fileSize int, mime string, sizes []domain.MediaSizeDB, userId int) (domain.Media, error) {
+func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSize int, mime string, sizes []domain.MediaSizeDB, userId int) (domain.Media, error) {
 	const op = "MediaRepository.insert"
 
 	marshal, err := json.Marshal(sizes)
@@ -311,7 +321,7 @@ func (s *MediaStore) insert(name string, filePath string, fileSize int, mime str
 	marshalledSizes := json.RawMessage(marshal)
 
 	m := domain.Media{
-		UUID: 			uuid.New(),
+		UUID: 			uuid,
 		Url:			s.getUrl() + "/" + name,
 		Title: 			nil,
 		Description:	nil,
@@ -472,7 +482,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.convertWebP {
-			go convertWebP(resized, filePath, s.compression)
+			//go convertWebP(resized, filePath, s.compression)
 		}
 	}
 
@@ -491,7 +501,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.convertWebP {
-			go convertWebP(resized, filePath, s.compression)
+			//go convertWebP(resized, filePath, s.compression)
 		}
 	}
 
