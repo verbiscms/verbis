@@ -120,16 +120,21 @@ func (r *Recovery) setType(err interface{}) *errors.Error {
 		}
 		if strings.Contains(e.Error(), "ViewEngine") {
 			if err := r.handleTemplate(e); err != nil {
-				//fmt.Println(err)
+				panic(err)
 			}
 			errData = errors.Error{
 				Code:      errors.TEMPLATE,
 				Message:   fmt.Sprintf("Could not render the template %s: ", r.Path),
 				Operation: "RenderTemplate",
-				//Err:       fmt.Errorf("%s on line %d", helpers.StringsSplitRight(errData.Error(), "function "), r.Line),
 				Err: fmt.Errorf(e.Error()),
 			}
 			r.SubMessage = e.Error()
+		} else {
+			errData = errors.Error{
+				Code:      errors.INTERNAL,
+				Message:   "Internal Verbis error, please report.",
+				Err: fmt.Errorf(e.Error()),
+			}
 		}
 		r.Highlight = -1
 	}
