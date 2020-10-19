@@ -117,7 +117,7 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 	}
 	q += filter
 	countQ += filter
-
+	
 	// Apply pagination
 	q += fmt.Sprintf(" ORDER BY media.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
 
@@ -394,13 +394,14 @@ func (s *MediaStore) Delete(id int) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the media file sizes with the ID: %v", id), Operation: op, Err: err}
 	}
 
+	// Delete sizes
 	for _, v := range sizes {
 		filePath := v.FilePath + "/" + v.UUID.String() + extension
 		if err := files.CheckAndDelete(filePath); err != nil {
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the media size file with the name: %v", v.Name), Operation: op, Err: err}
 		}
 		if err := files.CheckAndDelete(filePath + ".webp"); err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the media size webp file with the name: %v", v.Name), Operation: op, Err: err}
+			// Don't return if webp doesnt exist.
 		}
 	}
 
@@ -629,6 +630,7 @@ func (s *MediaStore) getSizesForPublic(m domain.Media) (*json.RawMessage, error)
 			UUID: 	  v.UUID,
 			Url:      v.Url,
 			Name:     v.Name,
+			SizeName: v.SizeName,
 			FileSize: v.FileSize,
 			Width:    v.Width,
 			Height:   v.Height,
