@@ -3,48 +3,67 @@
 // This file contains all styles related to the spinner component.
 // -----------------------------------------------------------------------------
 
+$spinner-size: 18px;
+
 .spinner {
-	color: #ffffff;
-	font-size: 11px;
-	text-indent: -99999em;
-	margin: 55px auto;
 	position: relative;
-	width: 10em;
-	height: 10em;
-	box-shadow: inset 0 0 0 1em;
-	transform: translateZ(0) scale(0.4);
-	border-radius: 50%;
+	display: block;
+	transition: none;
+	pointer-events: none;
+	color: transparent !important;
+	min-width: $spinner-size;
+	min-height: $spinner-size;
 
 	// Loader
 	// =========================================================================
 
-	&:before,
-	&:after {
-		content: '';
-		position: absolute;
-		border-radius: 50%;
-	}
-
 	&:before {
-		width: 5.2em;
-		height: 10.2em;
-		background: $white;
-		border-radius: 10.2em 0 0 10.2em;
-		top: -0.1em;
-		left: -0.1em;
-		transform-origin: 5.1em 5.1em;
-		animation: load2 2s infinite ease 1.5s;
+		content: "";
+		width: 18px;
+		height: 18px;
+		border: 2px solid $secondary;
+		border-right-color: transparent !important;
+		border-radius: 50%;
+		display: inline-block;
+		animation-duration: 0.75s;
+		animation-iteration-count: infinite;
+		animation-name: spinner;
+		animation-timing-function: linear;
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		margin-left: -9px;
+		margin-top: -9px;
 	}
 
 	&:after {
-		width: 5.2em;
-		height: 10.2em;
-		background: $white;
-		border-radius: 0 10.2em 10.2em 0;
-		top: -0.1em;
-		left: 4.9em;
-		transform-origin: 0.1em 5.1em;
-		animation: load2 2s infinite ease;
+		opacity: 0;
+	}
+
+	@keyframes spinner {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
+	}
+
+	// Container
+	// =========================================================================
+
+	&-container {
+		display: flex;
+		justify-content: center;
+		width: 100%;
+		padding: 30px;
+	}
+
+	// Sizes
+	// =========================================================================
+
+	&-large {
+		transform: scale(1.5);
 	}
 
 	// Colours
@@ -52,63 +71,37 @@
 
 	&-white {
 
-		&:before,
-		&:after {
-			background-color: $white;
+		&:before {
+			border-color: $white;
+		}
+	}
+
+	&-secondary {
+
+		&:before {
+			border-color: $secondary;
 		}
 	}
 
 	&-grey {
 
-		&:before,
-		&:after {
-			background-color: $grey;
+		&:before {
+			border-color: $grey;
+		}
+	}
+
+	&-grey-light {
+
+		&:before {
+			border-color: $grey-light;
 		}
 	}
 
 	&-blue {
 
-		&:before,
-		&:after {
-			background-color: $primary;
+		&:before {
+			border-color: $primary;
 		}
-	}
-
-
-	// Animation
-	// =========================================================================
-
-	@-webkit-keyframes load2 {
-		0% {
-			-webkit-transform: rotate(0deg);
-			transform: rotate(0deg);
-		}
-		100% {
-			-webkit-transform: rotate(360deg);
-			transform: rotate(360deg);
-		}
-	}
-	@keyframes load2 {
-		0% {
-			-webkit-transform: rotate(0deg);
-			transform: rotate(0deg);
-		}
-		100% {
-			-webkit-transform: rotate(360deg);
-			transform: rotate(360deg);
-		}
-	}
-
-	// Tablet
-	// =========================================================================
-
-	@include media-tab {
-	}
-
-	// Desktop
-	// =========================================================================
-
-	@include media-desk {
 	}
 }
 

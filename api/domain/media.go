@@ -12,9 +12,9 @@ type Media struct {
 	Id				int					`db:"id" json:"id"`
 	UUID 			uuid.UUID			`db:"uuid" json:"uuid"`
 	Url 			string				`db:"url" json:"url"`
-	Title			*string 			`db:"title" json:"title" binding:"alphanum,max=150"`
-	Alt				*string 			`db:"alt" json:"alt" binding:"alphanum,max=150"`
-	Description		*string 			`db:"description" json:"description" binding:"alphanum,max=500"`
+	Title			*string 			`db:"title" json:"title"`
+	Alt				*string 			`db:"alt" json:"alt"`
+	Description		*string 			`db:"description" json:"description"`
 	FilePath		string 				`db:"file_path" json:"-"`
 	FileSize		int 				`db:"file_size" json:"file_size"`
 	FileName		string 				`db:"file_name" json:"file_name"`
