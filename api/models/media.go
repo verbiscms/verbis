@@ -383,6 +383,11 @@ func (s *MediaStore) Delete(id int) error {
 
 	extension := files.GetFileExtension(m.Url)
 
+	// Delete entry from database
+	if _, err := s.db.Exec("DELETE FROM media WHERE id = ?", id); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete media item with the ID: %v", id), Operation: op, Err: err}
+	}
+
 	// Delete the main file
 	if err := files.CheckAndDelete(m.FilePath + "/" + m.UUID.String() + extension); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the original media file with the ID: %v", id), Operation: op, Err: err}
@@ -390,24 +395,12 @@ func (s *MediaStore) Delete(id int) error {
 
 	// Delete the sizes and webp versions if stored
 	sizes, err := s.unmarshalSizes(m)
-	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the media file sizes with the ID: %v", id), Operation: op, Err: err}
-	}
-
-	// Delete sizes
-	for _, v := range sizes {
-		filePath := v.FilePath + "/" + v.UUID.String() + extension
-		if err := files.CheckAndDelete(filePath); err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the media size file with the name: %v", v.Name), Operation: op, Err: err}
+	if len(sizes) > 0 && err == nil {
+		for _, v := range sizes {
+			filePath := v.FilePath + "/" + v.UUID.String() + extension
+			go files.CheckAndDelete(filePath)
+			go files.CheckAndDelete(filePath + ".webp")
 		}
-		if err := files.CheckAndDelete(filePath + ".webp"); err != nil {
-			// Don't return if webp doesnt exist.
-		}
-	}
-
-	// Delete entry from database
-	if _, err := s.db.Exec("DELETE FROM media WHERE id = ?", id); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete media item with the ID: %v", id), Operation: op, Err: err}
 	}
 
 	return nil
