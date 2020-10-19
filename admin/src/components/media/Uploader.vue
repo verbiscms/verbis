@@ -1,26 +1,59 @@
 <!-- =====================
-	Modal
+	Media
 	===================== -->
-
 <template>
-	<div class="media" :class="{ 'media-loading' : uploading, 'media-dragging' : dragging }" @drop.prevent="addFile($event, false)" @dragover.prevent @dragover="dragging = true" @dragleave="dragging = false">
-<!--		<div class="media-placeholder" >-->
-<!--			<i  class="feather feather-image"></i>-->
-<!--			<h4>Drop your images here or click the button below to browse.</h4>-->
-<!--		</div>-->
-
-		<div class="media-files">
-			<div class="row">
-				<div class="col-12 col-tab-6 col-desk-3" v-for="item in media" :key="item.uuid">
-					<div class="media-item">
-						<img :src="getSiteUrl + item.url" :alt="item.alt">
-						{{ item }}
-<!--						<div class="spinner spinner-grey"></div>-->
+	<section class="media" :class="{ 'media-loading' : uploading, 'media-dragging' : dragging }" @drop.prevent="addFile($event, false)" @dragover.prevent @dragover="dragging = true" @dragleave="dragging = false">
+		<div class="row">
+			<!-- =====================
+				Editor
+				===================== -->
+			<div class="col-12 col-desk-3 order-desk-last">
+				<div v-if="selectedMedia">
+					<h2>Information</h2>
+					<div class="text-cont">
+						<h6>Url:</h6>
+						<p>{{ selectedMedia.url }}</p>
 					</div>
-				</div><!-- /Col -->
-			</div><!-- /Row -->
-		</div>
-	</div>
+					<div class="text-cont">
+						<h6>Filesize:</h6>
+						<p>{{ formatBytes(selectedMedia['file_size']) }}</p>
+					</div>
+					<div class="text-cont">
+						<h6>Uploaded By:</h6>
+						<p>{{ selectedMedia['uploaded_by']['full_name'] }}</p>
+					</div>
+					<div class="text-cont">
+						<h6>Type:</h6>
+						<p>{{ selectedMedia.type }}</p>
+					</div>
+					<div class="text-cont">
+						<h6>Uploaded at:</h6>
+						<p>{{ selectedMedia.type }}</p>
+					</div>
+					<form class="form">
+						<div class="form-group">
+							<input type="text" class="form-input form-input-white">
+						</div>
+					</form>
+				</div>
+
+				<pre>{{ selectedMedia }}</pre>
+
+			</div><!-- /Col -->
+			{{ users }}
+			<!-- =====================
+				Modal
+				===================== -->
+			<div class="col-12 col-desk-9">
+				<div class="media-files">
+					<div class="media-item" v-for="item in media" :key="item.uuid" @click.prevent="changeSelectedMedia(item)">
+						<img :src="getSiteUrl + item.url" :alt="item.alt">
+<!--						<div class="spinner spinner-grey"></div>-->
+					</div><!-- /Media Item -->
+				</div><!-- /Media Files -->
+			</div><!-- /Col -->
+		</div><!-- /Row -->
+	</section>
 </template>
 
 <!-- =====================
@@ -49,6 +82,8 @@ export default {
 			}
 		],
 		media: [],
+		selectedMedia: false,
+		users: [],
 		uploading: false,
 		dragging: false,
 	}),
@@ -59,6 +94,7 @@ export default {
 	// },
 	mounted() {
 		this.getMedia();
+		this.getUsers();
 	},
 	methods: {
 		/*
@@ -67,9 +103,6 @@ export default {
 		 * NOTE: paramsSerializer is required here.
 		 */
 		getMedia() {
-
-			console.log("dfsgklhsdfg")
-
 			this.axios.get(`media?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
 				paramsSerializer: function(params) {
 					return params;
@@ -124,6 +157,39 @@ export default {
 				.catch(err => {
 					console.log(err);
 				})
+		},
+		changeSelectedMedia(item) {
+			this.selectedMedia = {};
+			const user = this.findUserById(item['user_id']);
+			user['full_name'] = `${user['first_name']} ${user['last_name']}`;
+			item['uploaded_by'] = user;
+			this.selectedMedia = item;
+		},
+		formatBytes(bytes, decimals = 2) {
+			if (bytes === 0) return '0 Bytes';
+
+			const k = 1024,
+				dm = decimals < 0 ? 0 : decimals,
+				sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
+				i = Math.floor(Math.log(bytes) / Math.log(k));
+
+			return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+		},
+		/*
+		 * getUsers()
+		 * Obtain users from store, if none, dispatch users action.
+		 */
+		getUsers() {
+			this.$store.dispatch("getUsers")
+				.then(users => {
+					this.users = users;
+				})
+				.catch(() => {
+					this.$noty.error("Error occurred when loading authors, please refresh.")
+				})
+		},
+		findUserById(id) {
+			return this.users.find(u => u.id === id);
 		}
 	},
 	computed: {
@@ -147,7 +213,6 @@ export default {
 .media {
 	$self: &;
 
-	padding: 20px;
 	min-height: 300px;
 	border-radius: 10px;
 
@@ -159,47 +224,35 @@ export default {
 	}
 
 
-	// Placeholder
-	// =========================================================================
-
-	&-placeholder {
-		position: absolute;
-		top: 50%;
-		left: 50%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		transform: translate(-50%, -50%);
-		transition: opacity 100ms ease;
-		will-change: opacity;
-
-		i {
-			font-size: 60px;
-			color: $grey-light;
-			margin-bottom: 6px;
-		}
-
-		.btn {
-			margin-top: 1rem;
-		}
-
-		input {
-			position: absolute;
-			display: none;
-			top: -9999999px;
-			left: -9999999px;
-		}
-	}
-
 	// Files
 	// =========================================================================
 
 	&-files {
+		display: flex;
+		flex-wrap: wrap;
 		width: 100%;
-		//opacity: 0;
+		margin: 0 -15px;
 		transition: opacity 100ms ease;
 	}
 
+	// Loading
+	// =========================================================================
+
+	&-item {
+		flex-basis: calc(20% - 15px);
+		margin-right: 15px;
+		height: 200px;
+		background-color: $grey;
+		margin-bottom: 1rem;
+		cursor: pointer;
+
+		img {
+			border-radius: 6px;
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
 
 	// Loading
 	// =========================================================================
@@ -215,11 +268,9 @@ export default {
 	}
 }
 
+
 .media-item {
-	width: 100%;
-	min-height: 200px;
-	border: 1px solid $grey;
-	background-color: $grey;
+
 }
 
 
