@@ -2,6 +2,7 @@
 
     <h1>Template Functions</h1>
 
+
     <section>
         <div class="container">
             <div class="row mt-5 mb-3">
@@ -49,7 +50,7 @@
                         {{ range $layout, $field := $flexibleContent }}
 
                             {{ if eq $field.type "layoutkey1" }}
-                                {{ template "blocks/test" $field }}
+                                {{ partial "blocks/test.cms" . }}
                             {{ end }}
 
                             <h4> {{ $field.type }}</h4>

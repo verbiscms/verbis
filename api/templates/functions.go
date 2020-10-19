@@ -1,9 +1,13 @@
 package templates
 
 import (
+	"bytes"
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -65,6 +69,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Helpers
 		"fullUrl": t.GetFullUrl,
 		"escape": t.escape,
+		"partial": t.partial,
 	}
 }
 
@@ -217,4 +222,27 @@ func (t *TemplateFunctions) GetFullUrl() string {
 // escape HTML
 func (t *TemplateFunctions) escape(text string) template.HTML {
 	return template.HTML(text)
+}
+
+// partial
+func (t *TemplateFunctions) partial(name string, data ...interface{}) template.HTML {
+	path := paths.Theme() + "/" + name
+
+	if !files.Exists(path) {
+		panic(fmt.Errorf("No file exists with the path: %s", name))
+	}
+
+	file, err := template.ParseFiles(path)
+	if err != nil {
+		panic(fmt.Errorf("Unable to create a new partial file"))
+	}
+
+	var tpl bytes.Buffer
+	err = file.Execute(&tpl, data)
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+
+	return template.HTML(tpl.String())
 }
