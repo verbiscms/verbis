@@ -18,7 +18,7 @@
 								<button v-if="bulkAction" class="btn btn-fixed-height btn-white" @click.prevent="bulkAction = false">Cancel</button>
 								<button v-if="!bulkAction" class="btn btn-fixed-height btn-margin btn-white" @click.prevent="bulkAction = true">Bulk select</button>
 								<button v-else class="btn btn-fixed-height btn-margin btn-orange" @click.prevent="deleting = !deleting">Delete permanently</button>
-								<label for="browse-file" class="btn btn-icon btn-orange media-add-new">
+								<label for="browse-file" class="btn btn-icon btn-orange btn-icon-mob media-add-new">
 									<i class="fal fa-plus"></i>
 									<p>Add new media</p>
 								</label>
@@ -90,7 +90,7 @@ export default {
 	// Tablet Down
 	// =========================================================================
 
-	@include media-tab-down {
+	@include media-mob-down {
 
 		&-add-new {
 			width: auto;
@@ -112,9 +112,13 @@ export default {
 	// Desktop
 	// =========================================================================
 
-	@include media-desk {
+	@include media-tab {
 
 		&-add-new {
+
+			i {
+				display: block;
+			}
 
 			p {
 				display: none;

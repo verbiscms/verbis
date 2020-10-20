@@ -29,10 +29,10 @@
 		<!-- Input -->
 		<input class="media-input" id="browse-file" type="file" multiple ref="file" @change="addFile($event, true)">
 		<!-- Spinner -->
-		<div v-show="doingAxios || loadingImages" class="media-spinner spinner-container">
+		<div v-show="(doingAxios || loadingImages)" class="media-spinner spinner-container">
 			<div class="spinner spinner-large spinner-grey"></div>
 		</div>
-		<div v-show="!doingAxios && !loadingImages" class="row">
+		<div v-show="(!doingAxios && !loadingImages) || !media.length" class="row">
 			<!-- =====================
 				Editor
 				===================== -->
@@ -132,7 +132,7 @@
 				</transition>
 				<div class="media-files">
 					<!-- Placeholder -->
-					<div v-if="!media.length" class="media-placeholder">
+					<div v-if="!media.length && !doingAxios" class="media-placeholder">
 						<i class="feather feather-image"></i>
 						<h4>No media items found!</h4>
 						<p>Drag and drop files here or click the button above.</p>
@@ -153,7 +153,7 @@
 						</div>
 						<!-- Uploading -->
 						<div v-if="item.loading && !item['unsupported']" :key="item.uuid + '-loading'" class="media-item-trans">
-							<div class="spinner spinner-grey"></div>
+							<div class="spinner spinner-grey spinner-large"></div>
 							<h4>{{ item.name }}</h4>
 						</div>
 						<!-- Unsupported -->
@@ -1061,7 +1061,7 @@ export default {
 			max-height: 825px;
 		}
 
-		&-col-item {
+		&:not(&-modal) &-col-item {
 			padding-left: 0;
 		}
 
