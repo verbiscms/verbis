@@ -174,14 +174,30 @@
 							<h4>Profile picture</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
+
 							<div class="form-group">
-								<p class="c-primary t-bold mb-0">Coming soon!</p>
+								<button class="btn" @click.prevent="showImageModal = true">Add photo</button>
 							</div>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 				</div><!-- Form Group -->
 			</form>
 		</div><!-- /Container -->
+		<!-- =====================
+			Insert Photo Modal
+			===================== -->
+		<Modal :show.sync="showImageModal" class="modal-full-width modal-hide-close">
+			<template slot="text">
+				<Uploader :rows="3" :modal="true" :filters="false" class="media-modal" @insert="insertProfilePhoto">
+					<template slot="close">
+						<button class="btn btn-margin-right btn-icon-mob" @click.prevent="showImageModal = false">
+							<i class="feather feather-x"></i>
+							<span>Close</span>
+						</button>
+					</template>
+				</Uploader>
+			</template>
+		</Modal>
 	</section>
 </template>
 
@@ -191,11 +207,15 @@
 <script>
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
+import Modal from "@/components/modals/General";
+import Uploader from "@/components/media/Uploader";
 
 export default {
 	name: "Home",
 	title: 'Profile',
 	components: {
+		Uploader,
+		Modal,
 		Breadcrumbs
 	},
 	data: () => ({
@@ -209,6 +229,7 @@ export default {
 		confirmPassword: "",
 		userId: -1,
 		isSelf: false,
+		showImageModal: false,
 	}),
 	mounted() {
 		this.init();
@@ -308,6 +329,9 @@ export default {
 				this.$set(this.errors, err.key, err.message);
 			})
 		},
+		insertProfilePhoto(e) {
+			console.log(e);
+		}
 	},
 	computed: {
 		/*
