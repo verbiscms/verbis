@@ -51,11 +51,14 @@ export default {
 		 * Init the tabs and push to the tabs array.
 		 */
 		update(page) {
-			console.log(page)
-			this.$emit('update', `page=${page}`)
+			this.$emit('update', `page=${page}`);
 		},
 	},
 	computed: {
+		/*
+		 * getPages()
+		 * Calculate the amount of backwards & forwards pages.
+		 */
 		getPages() {
 			let maxDepth = 2;
 			let forwardPages = 0;
@@ -63,21 +66,21 @@ export default {
 			const curPage = this.getPagination.page;
 
 			if ((curPage - maxDepth) < 0) {
-				backwardsPages = Math.abs(Math.abs(curPage - maxDepth) - curPage)
+				backwardsPages = Math.abs(Math.abs(curPage - maxDepth) - curPage);
 			} else {
-				backwardsPages = curPage - (curPage - maxDepth)
+				backwardsPages = curPage - (curPage - maxDepth);
 			}
 
 			if ((curPage + maxDepth) > this.getPagination.pages) {
-				let totalMax = this.getPagination.pages - (curPage + maxDepth)
+				let totalMax = this.getPagination.pages - (curPage + maxDepth);
 
 				if (totalMax < 0) {
 					forwardPages = Math.abs(totalMax) + 1;
 				} else {
-					forwardPages = curPage + totalMax
+					forwardPages = curPage + totalMax;
 				}
 			} else {
-				forwardPages = (curPage + maxDepth) - curPage
+				forwardPages = (curPage + maxDepth) - curPage;
 			}
 
 
@@ -86,7 +89,7 @@ export default {
 			let f = 0
 			while (f <= forwardPages) {
 				if ((curPage + f) <= this.getPagination.pages) {
-					arr.push(curPage + f)
+					arr.push(curPage + f);
 				}
 				f++;
 			}
@@ -94,7 +97,7 @@ export default {
 			let b = 1
 			while (b <= backwardsPages) {
 				if ((curPage - b) !== 0) {
-					arr.push(curPage - b)
+					arr.push(curPage - b);
 				}
 				b++;
 			}
@@ -191,6 +194,16 @@ $pagination-border-radius: 4px;
 			border-right: none;
 			border-top-right-radius: $pagination-border-radius;
 			border-bottom-right-radius: $pagination-border-radius;
+		}
+	}
+
+	// Tablet Down
+	// =========================================================================
+
+	@include media-tab-down {
+
+		&-item-page {
+			display: none;
 		}
 	}
 }

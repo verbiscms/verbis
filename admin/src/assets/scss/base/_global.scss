@@ -49,14 +49,14 @@ section {
 	z-index: 9;
 	box-shadow: 0 0 50px 0 rgba($black, 0.11);
 	background-color: $bg-color;
-	transition: transform 300ms ease, width 300ms ease, box-shadow 300ms ease;
+	transition: transform 100ms ease, width 100ms ease, box-shadow 100ms ease;
 	will-change: left, width, box-shadow;
 
-	&-collapsed {
-		box-shadow: 0 0 20px 0 rgba($black, 0.06);
-		width: calc(100vw - #{$sidebar-left-width});
-		transform: translateX($sidebar-left-width);
-	}
+	//&-collapsed {
+	//	box-shadow: 0 0 20px 0 rgba($black, 0.06);
+	//	width: calc(100vw - #{$sidebar-left-width});
+	//	transform: translateX($sidebar-left-width);
+	//}
 
 	.row {
 		max-width: 1750px;
@@ -68,12 +68,14 @@ section {
 	}
 
 	@include media-desk {
-		transform: translateX($sidebar-width);
-		width: calc(100vw - #{$sidebar-width});
-		padding: 26px 30px;
+		left: $sidebar-width-desk;
+		width: calc(100vw - #{$sidebar-width-desk});
+		padding: 26px 20px;
 	}
 
 	@include media-hd {
+		left: $sidebar-width-hd;
+		width: calc(100vw - #{$sidebar-width-hd});
 		padding: $auth-container-padding-y $auth-container-padding-x;
 	}
 }

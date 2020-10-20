@@ -38,7 +38,9 @@ export default {
 			setTimeout(() => {
 				this.loading = false;
 			}, 100);
-		})
+		});
+
+
 	},
 	methods: {
 		/*
@@ -62,7 +64,7 @@ export default {
  		 * updatePosition()
 		 * Change the left and right width of the tab by boundingClientRect().
 		 */
-		updatePosition(el, index) {
+		updatePosition(el = false, index) {
 			this.activeTab = index;
 
 			const tabs = this.$refs.tabs,
@@ -110,7 +112,7 @@ $tabs-underline-height: 3px;
 	&-item {
 		position: relative;
 		display: block;
-		margin: 0 24px;
+		margin: 0 16px;
 		cursor: pointer;
 		padding: $tabs-padding;
 
@@ -134,7 +136,7 @@ $tabs-underline-height: 3px;
 	// =========================================================================
 
 	&-title {
-		font-size: 16px;
+		font-size: 1rem;
 		color: $grey;
 		font-weight: 600;
 		transition: color 200ms ease;
@@ -150,7 +152,7 @@ $tabs-underline-height: 3px;
 		left: 0;
 		display: block;
 		height: $tabs-underline-height;
-		width: 75px;
+		width: auto;
 		background-color: $primary;
 		opacity: 1;
 		transition: left 200ms ease, width 200ms ease, opacity 1000ms ease;
@@ -182,6 +184,10 @@ $tabs-underline-height: 3px;
 
 	@include media-tab {
 		margin-bottom: 30px;
+
+		&-item {
+			margin: 0 20px;
+		}
 	}
 
 	// Desktop
@@ -189,9 +195,11 @@ $tabs-underline-height: 3px;
 
 	@include media-desk {
 		margin-bottom: 2rem;
+
+		&-item {
+			margin: 0 24px;
+		}
 	}
-
-
 }
 
 

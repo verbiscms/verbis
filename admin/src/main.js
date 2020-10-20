@@ -19,6 +19,7 @@ import store from "./store";
 import axios from 'axios'
 import titleMixin from './util/title';
 import VueNoty from 'vuejs-noty'
+import OnLoad from 'vue-onload'
 import { PrismEditor } from 'vue-prism-editor';
 
 require('./functions.js');
@@ -101,6 +102,8 @@ Vue.use(
 // Moment
 Vue.use(require('vue-moment'));
 
+// OnLoad
+Vue.use(OnLoad)
 
 /**
  * Components
