@@ -19,6 +19,24 @@
 				"toolbar": "full",
 				"media_upload": 1
 			}
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd92e1225",
+			"label": "Image",
+			"name": "image",
+			"type": "image",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"default_value": "default",
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
 		}
 	],
 	"location": [

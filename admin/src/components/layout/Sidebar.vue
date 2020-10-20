@@ -298,7 +298,7 @@ $aside-padding-desk: 26px;
 	justify-content: space-between;
 	left: 0;
 	top: 0;
-	width: $sidebar-width;
+	width: $sidebar-width-mob;
 	height: 100vh;
 	overflow-y: scroll;
 	background-color: $bg-color;
@@ -499,6 +499,7 @@ $aside-padding-desk: 26px;
 	// =========================================================================
 
 	@include media-tab {
+		width: $sidebar-width-tab;
 
 		&-logo,
 		&-block,
@@ -511,6 +512,7 @@ $aside-padding-desk: 26px;
 	// =========================================================================
 
 	@include media-desk {
+		width: $sidebar-width-desk;
 		transform: none;
 		transition: none;
 		z-index: 8;
@@ -524,6 +526,13 @@ $aside-padding-desk: 26px;
 		&-block-account {
 			border-top: 1px solid $grey-light;
 		}
+	}
+
+	// HD
+	// =========================================================================
+
+	@include media-hd {
+		width: $sidebar-width-hd;
 	}
 }
 

@@ -73,8 +73,10 @@ $section-padding-divider: 3;
 // Sidebar
 // =========================================================================
 
-$sidebar-width: 280px;
-$sidebar-left-width: 70px;
+$sidebar-width-mob: 200px;
+$sidebar-width-tab: 200px;
+$sidebar-width-desk: 240px;
+$sidebar-width-hd: 280px;
 
 // Header
 // =========================================================================
@@ -140,8 +142,8 @@ $form-box-shadow: 0 0 14px 0 rgba($copy, 0.06);
 $btn-fixed-height-mob: 40px;
 $btn-fixed-height-tab: 45px;
 $btn-fixed-height-desk: 50px;
-$btn-padding-mob: 16px 24px;
-$btn-padding-tab: 8px 20px;
+$btn-padding-mob: 10px 16px;
+$btn-padding-tab: 12px 20px;
 $btn-padding-desk: 12px 24px;
 $btn-border-radius: 8px;
 $btn-icon-width: 50px;
