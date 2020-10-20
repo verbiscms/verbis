@@ -52,6 +52,8 @@
 											===================== -->
 										<!-- Richtext -->
 										<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRichText>
+										<!-- Image -->
+										<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldImage>
 										<!-- =====================
 											Choice
 											===================== -->
@@ -123,6 +125,7 @@ import FieldRepeater from "@/components/editor/fields/Repeater";
 import FieldFlexible from "@/components/editor/fields/FlexibleContent";
 
 import Collapse from "@/components/misc/Collapse";
+import FieldImage from "@/components/editor/fields/Image";
 
 export default {
 	name: "Fields",
@@ -138,6 +141,7 @@ export default {
 		},
 	},
 	components: {
+		FieldImage,
 		Collapse,
 		// Basic
 		FieldText,

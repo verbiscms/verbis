@@ -2,26 +2,28 @@
 	Modal
 	===================== -->
 <template>
-	<div class="modal modal-centered" :class="{ 'modal-open' : showModal }" aria-hidden="true">
-		<!-- Container -->
-		<div class="modal-container">
-			<!-- Close -->
-			<div class="modal-close" @click="showModal = false">
-				<i class="feather feather-x"></i>
-			</div>
-			<!-- Icon -->
-			<div class="modal-icon">
-				<i class="feather feather-alert-triangle"></i>
-			</div>
-			<!-- Text -->
-			<div class="modal-text">
-				<slot name="text"></slot>
-			</div>
-			<slot name="button"></slot>
-		</div><!-- /Container -->
-		<!-- /Overlay -->
-		<div class="modal-overlay"></div>
-	</div><!-- /Modal -->
+	<transition name="fade" mode="out-in">
+		<div v-if="showModal" class="modal modal-centered trans-fade" :class="{ 'modal-open' : showModal }" aria-hidden="true">
+			<!-- Container -->
+			<div class="modal-container">
+				<!-- Close -->
+				<div class="modal-close" @click="showModal = false">
+					<i class="feather feather-x"></i>
+				</div>
+	<!--			&lt;!&ndash; Icon &ndash;&gt;-->
+	<!--			<div class="modal-icon">-->
+	<!--				<i class="feather feather-alert-triangle"></i>-->
+	<!--			</div>-->
+				<!-- Text -->
+				<div class="modal-text">
+					<slot name="text"></slot>
+				</div>
+				<slot name="button"></slot>
+			</div><!-- /Container -->
+			<!-- /Overlay -->
+			<div class="modal-overlay"></div>
+		</div><!-- /Modal -->
+	</transition>
 </template>
 
 <!-- =====================
@@ -71,10 +73,9 @@ $modal-transition-time: 400ms;
 	right: 0;
 	bottom: 0;
 	left: 0;
-	z-index: -1;
-	overflow-y: auto;
+	overflow-y: hidden;
 	padding: 75px 0;
-	transition: z-index $modal-transition-time step-end;
+	z-index: 99999999;
 
 	// Icon
 	// ==========================================================================
@@ -91,6 +92,19 @@ $modal-transition-time: 400ms;
 		}
 	}
 
+
+	// Full Width
+	// ==========================================================================
+
+	&-full-width {
+
+		#{$self}-container {
+			width: 90vw;
+			max-width: 1800px;
+			min-width: 0 !important;
+		}
+	}
+
 	// Text
 	// ==========================================================================
 
@@ -98,7 +112,7 @@ $modal-transition-time: 400ms;
 		margin-bottom: 1.6rem;
 
 		h2 {
-			text-align: center;
+		//	text-align: center;
 			margin-bottom: 2px;
 		}
 
@@ -139,8 +153,9 @@ $modal-transition-time: 400ms;
 		border: 0;
 		margin: 0 auto;
 		opacity: 0;
+		overflow-y: auto;
 		transform: translateY(-50px);
-		transition: opacity $modal-transition-time ease, transform $modal-transition-time ease;
+		transition: opacity $modal-transition-time ease, transform $modal-transition-time ease, z-index $modal-transition-time step-end;
 		padding: $modal-padding-desk;
 		will-change: transform, opacity
 	}
@@ -156,7 +171,7 @@ $modal-transition-time: 400ms;
 		position: fixed;
 		display: block;
 		cursor: default;
-		background: rgba($black, 0.1);
+		background: rgba($black, 0.2);
 		z-index: -1;
 		opacity: 0;
 		transition: opacity $modal-transition-time ease;
@@ -167,16 +182,26 @@ $modal-transition-time: 400ms;
 
 	&-open {
 		visibility: visible;
-		z-index: 9999999;
-		transition: z-index $modal-transition-time step-start;
 
 		#{$self}-container {
 			opacity: 1;
 			transform: translateY(0);
+			z-index: 9999999;
+			transition: opacity $modal-transition-time ease, transform $modal-transition-time ease, z-index $modal-transition-time step-start;
 		}
 
 		#{$self}-overlay {
 			opacity: 1;
+		}
+	}
+
+	// Hide Close Button
+	// ==========================================================================
+
+	&-hide-close {
+
+		#{$self}-close {
+			display: none !important;
 		}
 	}
 

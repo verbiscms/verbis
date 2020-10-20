@@ -3,8 +3,6 @@
 // This file contains all styles related to the button component.
 // -----------------------------------------------------------------------------
 
-// Variables
-
 .btn {
 	$self: &;
 
@@ -21,7 +19,7 @@
 	user-select: none;
 	line-height: 1;
 	color: $secondary;
-	border-radius: $btn-border-radius;
+	border-radius: $btn-border-radius - 4px;
 	border: 1px solid $grey-light;
 	transition: box-shadow 200ms ease;
 	will-change: box-shadow;
@@ -208,11 +206,45 @@
 		align-items: center;
 	}
 
+	// Icon Mobile
+	// =========================================================================
+
+	&-icon-mob {
+
+		i {
+			margin: 0;
+		}
+
+		span {
+			display: none;
+		}
+	}
+
+	// Mobile Only
+	// =========================================================================
+
+	@include media-mob-down {
+
+		&-margin {
+			margin-left: $btn-margin-x - 4px;
+			margin-right: $btn-margin-x - 4px;
+		}
+
+		&-margin-right {
+			margin-right: $btn-margin-x - 4px;
+		}
+
+		&-margin-left {
+			margin-left: $btn-margin-x - 4px;
+		}
+	}
+
 	// Tablet
 	// =========================================================================
 
 	@include media-tab {
 		padding: $btn-padding-tab;
+		border-radius: $btn-border-radius - 2px;
 
 		&-fixed-height {
 			height: $btn-fixed-height-tab;
@@ -221,6 +253,17 @@
 		&-icon {
 			height: $btn-fixed-height-tab;
 			min-height: $btn-fixed-height-tab;
+		}
+
+		&-icon-mob {
+
+			i {
+				display: none;
+			}
+
+			span {
+				display: block;
+			}
 		}
 	}
 

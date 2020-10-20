@@ -50,7 +50,7 @@ h1 {
 }
 
 h2 {
-	@include fluid-type(320px, 1408px, 22px, 22px);
+	@include fluid-type(320px, 1408px, 18px, 22px);
 	font-weight: bold;
 	color: $copy;
 	margin-bottom: 0.8rem;

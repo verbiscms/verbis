@@ -4,178 +4,194 @@
 <template>
 	<section class="media">
 		<!-- =====================
-			TODO:
-				- Tidy up the information sidebar (actions)
-				- Fix the transition when going to a different tab.
-				- Adding files from the plus button isnt working (the loading)
-				- Look into the styling for the spinner when a media item is being uploaded
-			===================== -->
-
-		<!-- =====================
 			Tabs
 			===================== -->
-		<div class="row" v-if="filters">
-			<Tabs @update="filterTabs">
-				<template slot="item">Show all</template>
-				<template slot="item">JPG's</template>
-				<template slot="item">PNG's</template>
-				<template slot="item">Files</template>
-			</Tabs>
+		<Tabs v-if="filters" @update="filterTabs">
+			<template slot="item">Show all</template>
+			<template slot="item">JPG's</template>
+			<template slot="item">PNG's</template>
+			<template slot="item">Files</template>
+		</Tabs>
+		<!-- =====================
+			Insert
+			===================== -->
+		<div class="media-insert" v-if="modal">
+			<h2>Insert media item</h2>
+			<div>
+				<button v-if="selectMultiple" class="btn btn-margin-right" @click="bulkMode = true">Select multiple</button>
+				<slot name="close"></slot>
+				<button class="btn btn-green btn-icon-mob" @click="insertItem">
+					<i class="feather feather-check"></i>
+					<span>Insert</span>
+				</button>
+			</div>
 		</div>
 		<!-- Input -->
 		<input class="media-input" id="browse-file" type="file" multiple ref="file" @change="addFile($event, true)">
 		<!-- Spinner -->
-		<div v-if="doingAxios" class="spinner-container">
+		<div v-show="doingAxios || loadingImages" class="media-spinner spinner-container">
 			<div class="spinner spinner-large spinner-grey"></div>
 		</div>
-		<div v-else>
-			<div class="row">
-				<!-- =====================
-					Editor
-					===================== -->
-				<div class="col-12 col-desk-4 col-hd-3 order-desk-last">
-					<div v-if="selectedMedia">
-						<!-- Options -->
-						<form class="form media-options">
-							<h2>Options</h2>
-							{{ getMediaType(selectedMedia.type )}							<!-- Title -->
-							<div class="form-group">
-								<label for="media-title" class="form-label">Title</label>
-								<input id="media-title" type="text" class="form-input form-input-white" v-model="selectedMedia.title" @keyup="save">
-							</div><!-- /Title -->
-							<!-- Alt Text -->
-							<div class="form-group" v-if="getMediaType(selectedMedia.type) !== 'file'">
-								<label for="media-alt" class="form-label">Alternative text</label>
-								<input id="media-alt" type="text" class="form-input form-input-white" v-model="selectedMedia.alt" @keyup="save">
-							</div><!-- /Alt Text -->
-							<!-- Description -->
-							<div class="form-group">
-								<label for="media-description" class="form-label">Description</label>
-								<input id="media-description" type="text" class="form-input form-input-white" v-model="selectedMedia.description" @keyup="save">
-							</div><!-- /Description -->
-						</form><!-- /Options -->
-						<!-- Editor -->
-						<div class="media-information">
-							<h2>Information</h2>
-							<div class="text-cont">
-								<h6>Url:</h6>
-								<p><a :href="getSiteUrl + selectedMedia.url" target="_blank">{{ selectedMedia.url }}</a></p>
-							</div>
-							<div class="text-cont">
-								<h6>Filesize:</h6>
-								<p>{{ formatBytes(selectedMedia['file_size']) }}</p>
-							</div>
-							<div class="text-cont">
-								<h6>Uploaded By:</h6>
-								<p>{{ selectedMedia['uploaded_by']['full_name'] }}</p>
-							</div>
-							<div class="text-cont">
-								<h6>Type:</h6>
-								<p>{{ selectedMedia.type }}</p>
-							</div>
-							<div class="text-cont">
-								<h6>Uploaded at:</h6>
-								<p>{{ selectedMedia['created_at'] | moment("dddd, MMMM Do YYYY") }}</p>
-							</div>
-							<div class="text-cont" v-if="selectedMedia.sizes && selectedMedia.sizes.length">
-								<h6>Sizes:</h6>
-								<div class="media-size" v-for="size in sortSizes(selectedMedia.sizes)" :key="size.uuid">
-									<div class="media-size-header">
-										<h4>{{ size['size_name'] }}</h4>
-										<div class="badge badge-green">{{ formatBytes(size['file_size']) }}</div>
-									</div>
-									<div class="media-size-body">
-										<p><span>Crop:</span> {{ size.crop }}</p>
-										<p><span>Url:</span> {{ size.url }}</p>
-										<p><span>Width:</span> {{ size.width }}px</p>
-										<p><span>Height:</span> {{ size.height }}px</p>
-									</div>
-								</div>
-							</div>
-						</div><!-- /Editor -->
-						<!-- Actions -->
-						<div class="media-actions">
-							<h2>Actions</h2>
-							<button class="btn btn-orange" @click="deleteItem" :class="{ 'btn-loading' : isDeleting }">Delete</button>
+		<div v-show="!doingAxios && !loadingImages" class="row">
+			<!-- =====================
+				Editor
+				===================== -->
+			<div class="col-12 col-desk-4 col-hd-3 order-desk-last media-col">
+				<div v-if="selectedMedia">
+					<!-- Options -->
+					<form class="form media-options">
+						<h2>Options</h2>
+						<!-- Title -->
+						<div class="form-group">
+							<label for="media-title" class="form-label">Title</label>
+							<input id="media-title" type="text" class="form-input form-input-white" v-model="selectedMedia.title" @keyup="save">
+						</div><!-- /Title -->
+						<!-- Alt Text -->
+						<div class="form-group" v-if="getMediaType(selectedMedia.type) !== 'file'">
+							<label for="media-alt" class="form-label">Alternative text</label>
+							<input id="media-alt" type="text" class="form-input form-input-white" v-model="selectedMedia.alt" @keyup="save">
+						</div><!-- /Alt Text -->
+						<!-- Description -->
+						<div class="form-group">
+							<label for="media-description" class="form-label">Description</label>
+							<input id="media-description" type="text" class="form-input form-input-white" v-model="selectedMedia.description" @keyup="save">
+						</div><!-- /Description -->
+					</form><!-- /Options -->
+					<!-- Editor -->
+					<div class="media-information" v-if="!modal">
+						<h2>Information</h2>
+						<!-- Url -->
+						<div class="text-cont">
+							<h6>Url:</h6>
+							<p><a :href="getSiteUrl + selectedMedia.url" target="_blank">{{ selectedMedia.url }}</a></p>
 						</div>
-					</div><!-- /Wrapper -->
-					<div v-else-if="!selectedMedia && media.length">
-						<div class="card media-select-card">
-							<div class="card-body">
-								<i class="feather feather-edit"></i>
-								<div>
-									<h4>No file selected</h4>
-									<p>Select media to edit & view information</p>
+						<!-- Filesize -->
+						<div class="text-cont">
+							<h6>Filesize:</h6>
+							<p>{{ formatBytes(selectedMedia['file_size']) }}</p>
+						</div>
+						<!-- Uploaded by -->
+						<div class="text-cont">
+							<h6>Uploaded by:</h6>
+							<p>{{ selectedMedia['uploaded_by']['full_name'] }}</p>
+						</div>
+						<!-- Type -->
+						<div class="text-cont">
+							<h6>Type:</h6>
+							<p>{{ selectedMedia.type }}</p>
+						</div>
+						<!-- Uploaded at -->
+						<div class="text-cont">
+							<h6>Uploaded at:</h6>
+							<p>{{ selectedMedia['created_at'] | moment("dddd, MMMM Do YYYY") }}</p>
+						</div>
+						<div class="text-cont" v-if="selectedMedia.sizes && selectedMedia.sizes.length">
+							<h6>Sizes:</h6>
+							<div class="media-size" v-for="size in sortSizes(selectedMedia.sizes)" :key="size.uuid">
+								<div class="media-size-header">
+									<h4>{{ size['size_name'] }}</h4>
+									<div class="badge badge-green">{{ formatBytes(size['file_size']) }}</div>
 								</div>
+								<div class="media-size-body">
+									<p><span>Crop:</span> {{ size.crop }}</p>
+									<p><span>Url:</span> {{ size.url }}</p>
+									<p><span>Width:</span> {{ size.width }}px</p>
+									<p><span>Height:</span> {{ size.height }}px</p>
+								</div>
+							</div>
+						</div>
+					</div><!-- /Editor -->
+					<!-- Actions -->
+					<div class="media-actions">
+						<h2>Actions</h2>
+						<button class="btn btn-orange" @click="deleteItem(false)" :class="{ 'btn-loading' : isDeleting }">Delete</button>
+					</div>
+				</div><!-- /Wrapper -->
+				<div v-else-if="!selectedMedia && media.length">
+					<div class="card media-select-card">
+						<div class="card-body">
+							<i class="feather feather-edit"></i>
+							<div>
+								<h4>No file selected</h4>
+								<p>Select media to edit & view information</p>
 							</div>
 						</div>
 					</div>
-				</div><!-- /Col -->
-				<!-- =====================
-					Media Items
-					===================== -->
-				<div class="col-12" :class="{ 'col-desk-8 col-hd-9' : media.length }">
-					<div class="media-files" :class="{ 'media-dragging' : dragging, 'media-dragging-empty' : !media.length && dragging }" @click.stop="selectedMedia = false" @drop.prevent="addFile($event, false)" @dragover.prevent @dragover="dragging = true" @dragleave="dragging = false" @dragend="dragging = false" @drop="dragging = false">
-						<!-- Placeholder -->
-						<div v-if="!media.length" class="media-placeholder">
-							<i class="feather feather-image"></i>
-							<h4>No media items found!</h4>
-							<p>Drag and drop files here or click the button above.</p>
+				</div>
+			</div><!-- /Col -->
+			<!-- =====================
+				Media Items
+				===================== -->
+			<div class="col-12 media-col media-col-item" :class="{ 'col-desk-8 col-hd-9' : media.length }" @dragover.prevent.stop="dragging = true">
+				<transition name="trans-fade-quick">
+					<div class="media-dragging" v-if="dragging" :class="{ 'media-dragging-centered' : !media.length || media.length < 15 }" @drop.prevent="addFile($event, false)" @dragexit="dragging = false" @dragleave="dragging = false">
+						<i class="feather feather-upload-cloud"></i>
+						<h4>Drop!</h4>
+						<p>Drop files to upload them instantly to the media library.</p>
+					</div>
+				</transition>
+				<div class="media-files">
+					<!-- Placeholder -->
+					<div v-if="!media.length" class="media-placeholder">
+						<i class="feather feather-image"></i>
+						<h4>No media items found!</h4>
+						<p>Drag and drop files here or click the button above.</p>
+					</div>
+					<!-- Media -->
+					<div v-else class="media-item" v-for="(item, itemIndex) in media" :key="item.uuid" @click.prevent.stop="handleMediaClick(item)"
+						:class="{ 'media-item-active' : selectedMedia && selectedMedia['uuid'] === item['uuid'],
+						'media-item-plain' : item.loading,
+						'media-item-bulk' : checked.includes(item.id),
+						'media-item-icon' : getMediaType(item.type) !== 'image' && getMediaType(item.type) !== 'video' || (item['unsupported']) ,
+						'media-item-error' : item.loading && item['unsupported'] }">
+						<!-- Checkbox -->
+						<div class="form-checkbox media-item-checkbox">
+							<input type="checkbox" checked :id="'media-item-' + item.uuid"/>
+							<label :for="'media-item-' + item.uuid">
+								<i class="fal fa-check"></i>
+							</label>
 						</div>
-						<!-- Media -->
-						<div v-else class="media-item" v-for="item in media" :key="item.uuid" @click.prevent.stop="handleMediaClick(item)"
-							:class="{ 'media-item-active' : selectedMedia && selectedMedia['uuid'] === item['uuid'], 'media-item-loading' : item.loading, 'media-item-bulk' : checked.includes(item.id) }">
-							<!-- Checkbox -->
-							<div class="form-checkbox media-item-checkbox">
-								<input type="checkbox" checked :id="'media-item-' + item.uuid"/>
-								<label :for="'media-item-' + item.uuid">
-									<i class="fal fa-check"></i>
-								</label>
-							</div>
-							<!-- Uploading -->
-							<div v-if="item.loading" class="media-item-loading-cont">
-								<div v-if="item['unsupported']" class="media-item-loading-cont-error">
-									<i class="feather feather-alert-circle"></i>
-									<p>Media type unsupported</p>
-								</div>
-								<div v-else>
-									<div class="spinner spinner-grey"></div>
-									<h4>{{ item.name }}</h4>
-								</div>
-							</div>
-							<!-- Image -->
-							<div v-else-if="getMediaType(item.type) === 'image'" class="media-item-image">
-								<img :src="getSiteUrl + item.url" :alt="item.alt">
-							</div>
-							<!-- Video -->
-							<div v-else-if="getMediaType(item.type) === 'video'">
-								<i class="feather feather-video"></i>
-								<p>{{ item['file_name'] }}</p>
-							</div>
-							<!-- File -->
-							<div v-else-if="getMediaType(item.type) === 'file'">
-								<i class="feather feather-file"></i>
-								<p>{{ item['file_name'] }}</p>
-							</div>
-						</div><!-- /Media Item -->
-					</div><!-- /Media Files -->
-					<!-- =====================
-						Pagination
-						===================== -->
-					<div class="row">
-						<div class="col-12">
-							<transition name="trans-fade">
-								<div class="row" v-if="!doingAxios && paginationObj">
-									<div class="col-12">
-										<Pagination :pagination="paginationObj" @update="setPagination"></Pagination>
-									</div><!-- /Col -->
-								</div><!-- /Row -->
-							</transition>
+						<!-- Uploading -->
+						<div v-if="item.loading && !item['unsupported']" :key="item.uuid + '-loading'" class="media-item-trans">
+							<div class="spinner spinner-grey"></div>
+							<h4>{{ item.name }}</h4>
+						</div>
+						<!-- Unsupported -->
+						<div v-else-if="item['unsupported']" class="media-item-icon-cont media-item-trans">
+							<i class="feather feather-alert-circle"></i>
+							<p>Media type unsupported</p>
+							<i class="media-close feather feather-x" @click="removeErrorItem(item, itemIndex)"></i>
+						</div>
+						<!-- Image -->
+						<div v-else-if="getMediaType(item.type) === 'image'" class="media-item-image media-item-trans" ref="images">
+							<img v-onload="getSiteUrl + item.url" :alt="item.alt" @loaded="loadImages($event)">
+						</div>
+						<!-- Video -->
+						<div v-else-if="getMediaType(item.type) === 'video'" class="media-item-video media-item-trans">
+							<video controls preload="none" disablepictureinpicture controlslist="nodownload">
+								<source :src="getSiteUrl + item.url">
+							</video>
+						</div>
+						<!-- File -->
+						<div v-else-if="getMediaType(item.type) === 'file'" class="media-item-icon-cont media-item-trans">
+							<i class="feather feather-file"></i>
+							<p>{{ item['file_name'] }}</p>
+						</div>
+					</div><!-- /Media Item -->
+				</div><!-- /Media Files -->
+				<!-- =====================
+					Pagination
+					===================== -->
+				<transition name="trans-fade">
+					<div class="row"  v-if="!doingAxios && paginationObj && media.length">
+						<div class="col-12 media-col">
+							<Pagination :pagination="paginationObj" @update="setPagination"></Pagination>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
-				</div><!-- /Col -->
-			</div><!-- /Row -->
-		</div><!-- /Doing Axios -->
+				</transition>
+			</div><!-- /Col -->
+		</div><!-- /Row -->
+<!--		</div>&lt;!&ndash; /Doing Axios &ndash;&gt;-->
 	</section>
 </template>
 
@@ -186,9 +202,11 @@
 
 import Tabs from "../../components/misc/Tabs";
 import Pagination from "@/components/misc/Pagination";
+import {mediaMixin} from "@/util/media";
 
 export default {
 	name: "Uploader",
+	mixins: [mediaMixin],
 	props: {
 		filters: {
 			type: Boolean,
@@ -201,6 +219,18 @@ export default {
 		deleting: {
 			type: Boolean,
 			default: false,
+		},
+		modal: {
+			type: Boolean,
+			default: false,
+		},
+		selectMultiple: {
+			type: Boolean,
+			default: false,
+		},
+		rows: {
+			type: Number,
+			default: 6,
 		}
 	},
 	components: {
@@ -218,9 +248,12 @@ export default {
 		checked: [],
 		activeAction: "",
 		uploading: false,
-		dragging: false,
 		timeout: null,
 		isDeleting: false,
+		dragging: false,
+		loadingImages: true,
+		loadedImages: [],
+		initial: true,
 	}),
 	mounted() {
 		this.getMedia();
@@ -254,17 +287,15 @@ export default {
 		getMedia() {
 			this.doingAxios = true;
 
-			this.axios.get(`media?order=${this.order}&filter=${this.filter}&${this.pagination}&limit=35`, {
+			this.axios.get(`media?order=created_at,desc&filter=${this.filter}&${this.pagination}&limit=${this.rows * 5}`, {
 				paramsSerializer: function (params) {
 					return params;
 				}
 			})
 				.then(res => {
-					console.log(res);
 					this.media = [];
 					this.paginationObj = {};
 					this.paginationObj = res.data.meta.pagination;
-
 					const media = res.data.data;
 					if (media.length) {
 						this.media = media;
@@ -275,9 +306,8 @@ export default {
 					this.$noty.error("Error occurred, please refresh the page.");
 				})
 				.finally(() => {
-					setTimeout(() => {
-						this.doingAxios = false;
-					}, 100)
+					this.doingAxios = false;
+					this.initialLoad = true;
 				});
 		},
 		/*
@@ -286,6 +316,7 @@ export default {
 		 * by the button from parent component.
 		 */
 		addFile(e, manual = false) {
+			this.dragging = false;
 			this.uploading = true;
 
 			let droppedFiles = manual ? e.target.files : e.dataTransfer.files;
@@ -314,18 +345,19 @@ export default {
 				headers: {'Content-Type': 'multipart/form-data'}
 			})
 				.then(res => {
-					console.log(this.media[index]);
-					console.log(res.data.data)
-					this.$set(this.media, index, res.data.data);
-					//this.media[index] = res.data.data;
-					//this.media = res.data.data;
+					setTimeout(() => {
+						this.$set(this.media, index, res.data.data);
+					}, Math.floor(Math.random() * (230 - 100 + 1)) + 100);
 				})
 				.catch(err => {
-					console.log(err);
-					console.log(index);
 					if (err.response.status === 415) {
-						this.$set(this.media[index], "unsupported", true)
+						setTimeout(() => {
+							this.$set(this.media[index], "unsupported", true);
+						}, Math.floor(Math.random() * (430 - 200 + 1)) + 200);
+						return;
 					}
+					console.log(err);
+					this.$noty.error("Error occurred, please refresh the page.");
 				})
 		},
 		/*
@@ -379,9 +411,26 @@ export default {
 					return false;
 				})
 				.finally(() => {
+					this.paginationObj.page = 0;
 					this.isDeleting = false;
-					this.bulkDelete = false;
-				})
+					this.bulkMode = false;
+				});
+		},
+		/*
+		 * insertItem()
+		 * Update parent component if modal, emit the selected media.
+		 */
+		insertItem() {
+			if (!this.selectedMedia && (!this.checked.length && this.bulkMode)) {
+				this.$noty.warning("Select media item to insert.");
+				return;
+			}
+			if (this.checked.length) {
+				const media = this.checked.map(m => this.findMediaById(m));
+				this.$emit("insert", media);
+				return;
+			}
+			this.$emit("insert", this.selectedMedia);
 		},
 		/*
 		 * handleMediaClick()
@@ -390,7 +439,10 @@ export default {
 		 * Else, change & show the selected media panel.
 		 */
 		handleMediaClick(item) {
-			if (this.bulkDelete) {
+			if (item['unsupported']) {
+				return;
+			}
+			if (this.bulkMode) {
 				if (this.checked.includes(item.id)) {
 					const index = this.checked.indexOf(item.id);
 					this.checked.splice(index, 1);
@@ -399,6 +451,25 @@ export default {
 				this.checked.push(item.id)
 			} else {
 				this.changeSelectedMedia(item);
+			}
+		},
+		/*
+		 * loadImages()
+		 * Push to loaded images array, if the images length is equal
+		 * To the amount of images loaded, set the loading images
+		 * to falsely.
+		 */
+		loadImages(e) {
+			this.loadedImages.push(e);
+			if (this.$refs.images.length === this.loadedImages.length) {
+				if (this.initial) {
+					setTimeout(() => {
+						this.loadingImages = false;
+						this.initial = false;
+					}, 100);
+					return;
+				}
+				this.loadingImages = false;
 			}
 		},
 		/*
@@ -446,40 +517,19 @@ export default {
 			this.getMedia();
 		},
 		/*
-		 * getMediaType()
-		 * Determines if the file is a image, video or file.
-		 */
-		getMediaType(type) {
-			const images = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'image/bmp', 'image/svg+xml'],
-				video = ['video/mpeg', 'video/mp4', 'video/webm'];
-			if (images.includes(type)) {
-				return "image";
-			} else if (video.includes(type)) {
-				return "video";
-			} else {
-				return "file";
-			}
-		},
-		/*
-		 * formatBytes()
-		 * Return formatted byte information for file size.
-		 */
-		formatBytes(bytes, decimals = 2) {
-			if (bytes === 0) return '0 Bytes';
-
-			const k = 1024,
-				dm = decimals < 0 ? 0 : decimals,
-				sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'],
-				i = Math.floor(Math.log(bytes) / Math.log(k));
-
-			return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-		},
-		/*
 		 * sortSizes()
 		 * Sort sizes by width for the side panel.
 		 */
 		sortSizes(sizes) {
 			return sizes.slice().sort((a, b) => parseFloat(a.width) - parseFloat(b.width));
+		},
+		/*
+		 * removeErrorItem()
+		 * If there is an error on the media item, allow the user to remove
+		 * by deleting from the media array.
+		 */
+		removeErrorItem(item, index) {
+			this.$delete(this.media, index);
 		},
 		/*
 		 * getUsers()
@@ -490,8 +540,9 @@ export default {
 				.then(users => {
 					this.users = users;
 				})
-				.catch(() => {
-					this.$noty.error("Error occurred when loading authors, please refresh.")
+				.catch(err => {
+					console.log(err);
+					this.$noty.error("Error occurred when loading authors, please refresh.");
 				})
 		},
 		/*
@@ -499,6 +550,12 @@ export default {
 		 */
 		findUserById(id) {
 			return this.users.find(u => u.id === id);
+		},
+		/*
+		 * findMediaById()
+		 */
+		findMediaById(id) {
+			return this.media.find(u => u.id === id);
 		},
 	},
 	computed: {
@@ -509,14 +566,18 @@ export default {
 		getSiteUrl() {
 			return this.$store.state.site.url;
 		},
-		bulkDelete: {
+		/*
+		 * bulkMode()
+		 * Get & set the bulk action to emit to parent.
+		 */
+		bulkMode: {
 			get() {
 				return this.bulkAction;
 			},
 			set(value) {
 				this.$emit("update:bulk-action", value)
 			}
-		}
+		},
 	}
 }
 
@@ -531,26 +592,14 @@ export default {
 	$self: &;
 
 
-	// Placeholder
+	// Placeholder / Dragging Props
 	// =========================================================================
 
-	&-placeholder {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-		align-items: center;
-		width: 100%;
-		min-height: 300px;
-		border-radius: 10px;
-		background-color: $white;
-		border: 2px dashed $grey-light;
-		transition: background-color 100ms ease;
-		will-change: background-color;
+	&-placeholder,
+	&-dragging {
 
 		i {
 			font-size: 46px;
-			color: $orange;
 			margin-bottom: 1rem;
 			transition: color 100ms ease;
 			will-change: color;
@@ -561,33 +610,65 @@ export default {
 			color: $copy;
 			margin-bottom: 4px;
 		}
+
+		p {
+			margin-bottom: 0;
+		}
+	}
+
+	// Placeholder
+	// =========================================================================
+
+	&-placeholder {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
+		width: 100%;
+		min-height: 100%;
+		border-radius: 10px;
+		background-color: $white;
+		border: 2px dashed $grey-light;
+		transition: background-color 100ms ease;
+		will-change: background-color;
+
+		i {
+			color: $orange;
+		}
 	}
 
 	// Dragging
 	// =========================================================================
 
 	&-dragging {
-		border: 2px dashed $grey-light;
-		background-color: rgba($primary, 0.14);
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		min-height: 200px;
+		//width: calc(100% - 30px);
+		background-color: rgba($white, 0.99);
+		z-index: 9999999;
+		border: 2px dashed $primary;
+		transition: all 200ms;
+		padding-top: 20%;
+		border-radius: 10px;
 		cursor: copy;
-		padding: 1rem 1rem 0 1rem;
 
-		&-empty {
-			padding: 0;
-			border: none;
-			background-color: $white;
-
-			#{$self}-placeholder {
-				background-color: rgba($primary, 0.08);
-
-				i {
-					color: $primary;
-				}
-			}
+		i {
+			color: $primary;
 		}
 
 		* {
 			cursor: copy;
+		}
+
+		&-centered {
+			padding-top: 0;
+			justify-content: center;
 		}
 	}
 
@@ -597,11 +678,16 @@ export default {
 	&-files {
 		display: flex;
 		flex-wrap: wrap;
-		justify-content: flex-start;
+		justify-content: space-between;
 		width: 100%;
-		margin: 0 -15px -1rem -15px;
+		margin-bottom: -1rem;
 		padding-bottom: 20px;
 		border-radius: 10px;
+
+		&:after {
+			content: "";
+			flex: auto;
+		}
 	}
 
 	// Input
@@ -622,14 +708,18 @@ export default {
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		flex-basis: calc(100% - 15px);
-		margin-right: 15px;
-		height: 200px;
-		background-color: $grey;
+		flex-basis: calc(50% - 6px);
+		height: 160px;
+		background-color: transparent;
 		margin-bottom: 1rem;
 		border-radius: 6px;
 		cursor: pointer;
-		transition: box-shadow 100ms ease;
+		border: 2px solid rgba($black, 0);
+		transition: all 100ms ease;
+		will-change: opacity;
+
+		// Image
+		// =========================================================================
 
 		&-image {
 			display: flex;
@@ -638,7 +728,7 @@ export default {
 			width: 100%;
 			height: 100%;
 			margin: 0;
-			border-radius: 6px;
+			border-radius: 4px;
 			overflow: hidden;
 
 			img {
@@ -648,50 +738,98 @@ export default {
 			}
 		}
 
-		&:nth-child(5n) {
-			margin-right: 0;
+		// Video
+		// =========================================================================
+
+		&-video {
+			width: 100%;
+			height: 100%;
+			border-radius: 4px;
+			overflow: hidden;
+			border: none;
+			background-color: transparent;
+
+			video {
+				display: block;
+				height: 100%;
+				width: 100%;
+				border-radius: 4px;
+				object-fit: contain;
+				outline: none;
+			}
 		}
 
-		&-loading {
-			background-color: $white;
-			box-shadow: $form-box-shadow;
-			cursor: default;
+		// Icon
+		// =========================================================================
+
+		&-icon {
+			border-color: $grey-light;
+			padding: 0 10px;
+			border-radius: 6px;
 
 			&-cont {
-				position: relative;
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
 				align-items: center;
-				width: 100%;
-				height: 100%;
-				z-index: 99;
-				box-shadow: none;
+			}
+
+			p,
+			i {
+				transition: color 100ms ease;
+				will-change: color;
+			}
+
+			i {
+				font-size: 26px;
+				margin-bottom: 6px;
+				color: $copy-light;
+			}
+
+			p {
+				text-align: center;
+				margin-bottom: 0;
+				color: $copy-light;
+			}
+		}
+
+		// Plain
+		// =========================================================================
+
+		&-plain {
+			background-color: $white;
+			box-shadow: $form-box-shadow;
+			cursor: default;
+
+			h4 {
+				color: $copy;
+				margin-top: 1rem;
+				font-size: 0.86rem;
 				user-select: none;
+			}
+		}
 
-				h4 {
-					color: $copy;
-					margin-top: 1rem;
-					font-size: 0.86rem;
-					user-select: none;
-				}
+		// Error
+		// =========================================================================
 
-				&-error {
-					display: flex;
-					flex-direction: column;
-					align-items: center;
+		&-error {
+			border-color: $orange;
 
-					i {
-						display: inline-block;
-						font-size: 26px;
-						color: $orange;
-						margin-bottom: 4px;
-					}
+			#{$self}-close {
+				position: absolute;
+				top: 0;
+				right: 0;
+				padding: 10px;
+				font-size: 18px;
+				cursor: pointer;
+			}
 
-					p {
-						color: $orange;
-					}
-				}
+			i {
+				color: $orange;
+			}
+
+			p {
+				color: $orange;
 			}
 		}
 
@@ -712,7 +850,7 @@ export default {
 		// =========================================================================
 
 		&-bulk {
-			border: 2px solid $primary;
+			border-color: $primary;
 
 			#{$self}-item-checkbox {
 				opacity: 1;
@@ -723,8 +861,14 @@ export default {
 		// =========================================================================
 
 		&-active {
-			border: 2px solid $primary;
+			border-color: $primary;
 			box-shadow: 0 0 10px 0 rgba($black, 0.14);
+
+
+			p,
+			i {
+				color: $primary;
+			}
 		}
 	}
 
@@ -785,7 +929,7 @@ export default {
 		}
 	}
 
-	// Size
+	// Size (Image Size Card)
 	// =========================================================================
 
 	&-size {
@@ -821,13 +965,89 @@ export default {
 		}
 	}
 
+	// Insert
+	// =========================================================================
+
+	&-insert {
+		position: relative;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
+		padding-bottom: 1rem;
+		margin-bottom: 2rem;
+		border-bottom: 1px solid $grey-light;
+
+		h2 {
+			margin-bottom: 0;
+		}
+	}
+
+	// Modal
+	// =========================================================================
+
+	&-modal {
+		display: block;
+		height: 70vh;
+
+		.pagination {
+			margin-bottom: 1rem;
+		}
+	}
+
+	// Fade Anim
+	// =========================================================================
+
+	&-item-trans {
+		animation: fade 400ms ease-in;
+
+		@keyframes fade {
+
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
+			}
+		}
+	}
+
+	// Tablet Down
+	// =========================================================================
+
+	@include media-tab-down {
+
+		&-col {
+			padding: 0;
+		}
+
+		&-item {
+			&:last-child {
+				margin-left: 6px;
+			}
+		}
+	}
+
 	// Tablet
 	// =========================================================================
 
 	@include media-tab {
 
+		&-modal {
+
+			.pagination {
+				margin-bottom: 2rem;
+			}
+		}
+
+		&-files {
+			min-height: 300px;
+		}
+
 		&-item {
-			flex-basis: calc(50% - 15px);
+			flex-basis: calc(33.333333333% - 6px);
+			height: 200px;
 		}
 	}
 
@@ -836,20 +1056,37 @@ export default {
 
 	@include media-desk {
 
+		&-modal {
+			height: 80vh;
+			max-height: 825px;
+		}
+
+		&-col-item {
+			padding-left: 0;
+		}
+
+		&-files {
+			min-height: 400px;
+		}
+
 		&-item {
-			flex-basis: calc(33.33333% - 15px);
+			flex-basis: calc(33.33333% - 10px);
+			margin-right: 10px;
+			height: 180px;
 		}
 	}
+
 
 	// HD
 	// =========================================================================
 
-	@include media-hd{
+	@include media-hd {
 
 		&-item {
+			height: 220px;
 			flex-basis: calc(20% - 15px);
+			margin-right: 15px;
 		}
 	}
 }
-
 </style>
