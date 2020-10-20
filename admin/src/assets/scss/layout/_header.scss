@@ -49,7 +49,7 @@
 	// Desktop
 	// =========================================================================
 
-	@include media-desk {
+	@include media-tab {
 		margin-bottom: 2rem;
 
 		&-with-actions {
@@ -61,7 +61,6 @@
 		&-actions {
 			margin-top: 0;
 		}
-
 	}
 
 }

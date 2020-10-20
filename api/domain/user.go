@@ -18,6 +18,7 @@ type User struct {
 	Twitter				*string			`db:"twitter" json:"twitter"`
 	Linkedin			*string			`db:"linked_in" json:"linked_in"`
 	Instagram			*string			`db:"instagram" json:"instagram"`
+	ProfilePictureID	*int			`db:"profile_picture_id" json:"profile_picture_id"`
 	Token				string			`db:"token" json:"token,omitempty"`
 	Role				UserRole 		`db:"roles" json:"role"`
 	EmailVerifiedAt		*time.Time		`db:"email_verified_at" json:"email_verified_at"`

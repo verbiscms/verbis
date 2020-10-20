@@ -45,6 +45,7 @@ type PostAuthor struct {
 	Twitter				*string			`json:"twitter"`
 	Linkedin			*string			`json:"linked_in"`
 	Instagram			*string			`json:"instagram"`
+	ProfilePictureID	*int			`json:"profile_picture_id"`
 	Token				string			`json:"-"`
 	Role				UserRole 		`json:"role"`
 	EmailVerifiedAt		*time.Time		`json:"email_verified_at"`
