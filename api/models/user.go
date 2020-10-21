@@ -22,6 +22,7 @@ type UserRepository interface {
 	Create(u *domain.User) (domain.User, error)
 	Update(u *domain.User) (domain.User, error)
 	Delete(id int) error
+	ResetPassword(id int, reset domain.UserPasswordReset) error
 	CheckToken(token string) (domain.User, error)
 	Exists(id int) bool
 	ExistsByEmail(email string) bool
@@ -201,15 +202,8 @@ func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 		return domain.User{}, err
 	}
 
-	fmt.Println(u.Password)
-
-	hashedPassword, err := encryption.HashPassword(u.Password)
-	if err != nil {
-		return domain.User{}, err
-	}
-
-	userQ := "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, website = ?, facebook = ?, twitter = ?, linked_in = ?, instagram = ?, profile_picture_id = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(userQ, u.FirstName, u.LastName, u.Email, hashedPassword, u.Website, u.Facebook, u.Twitter, u.Linkedin, u.Instagram, u.ProfilePictureID, u.Id)
+	userQ := "UPDATE users SET first_name = ?, last_name = ?, email = ?, website = ?, facebook = ?, twitter = ?, linked_in = ?, instagram = ?, profile_picture_id = ?, updated_at = NOW() WHERE id = ?"
+	_, err = s.db.Exec(userQ, u.FirstName, u.LastName, u.Email, u.Website, u.Facebook, u.Twitter, u.Linkedin, u.Instagram, u.ProfilePictureID, u.Id)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user with the email: %s", u.Email), Operation: op, Err: err}
 	}
@@ -240,6 +234,24 @@ func (s *UserStore) Delete(id int) error {
 
 	if _, err := s.db.Exec("DELETE FROM users WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete user with the ID: %d", id), Operation: op, Err: err}
+	}
+
+	return nil
+}
+
+// ResetPassword
+// Returns errors.INTERNAL if the SQL query was invalid.
+func (s *UserStore) ResetPassword(id int, reset domain.UserPasswordReset) error {
+	const op = "UserRepository.ResetPassword"
+
+	hashedPassword, err := encryption.HashPassword(reset.NewPassword)
+	if err != nil {
+		return err
+	}
+
+	_, err = s.db.Exec("UPDATE users SET password = ? WHERE id = ?", hashedPassword, id)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not update the users table with the new password", Operation: op, Err: err}
 	}
 
 	return nil

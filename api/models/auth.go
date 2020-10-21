@@ -94,8 +94,7 @@ func (s *AuthStore) ResetPassword(token string, password string) error {
 		return err
 	}
 
-	updateQ := "UPDATE users SET password = ? WHERE email = ?"
-	_, err = s.db.Exec(updateQ, rp.Email, hashedPassword)
+	_, err = s.db.Exec("UPDATE users SET password = ? WHERE email = ?", hashedPassword, rp.Email)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not update the users table with the new password", Operation: op, Err: err}
 	}
