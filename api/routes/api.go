@@ -51,7 +51,7 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			operator.DELETE("/posts/:id", c.Posts.Delete)
 
 			// Resources
-			operator.GET("/resource/:resource", c.Posts.Get)
+			operator.GET("/resources/:resource", c.Posts.Get)
 
 			// Fields
 			operator.GET("/fields", c.Fields.Get)

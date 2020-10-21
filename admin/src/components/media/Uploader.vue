@@ -29,14 +29,10 @@
 		<!-- Input -->
 		<input class="media-input" id="browse-file" type="file" multiple ref="file" @change="addFile($event, true)">
 		<!-- Spinner -->
-		{{ doingAxios }}
-		{{ loadingImages }}
-		{{ media.length }}
-<!--		<div v-show="(doingAxios || loadingImages) && media.length" class="media-spinner spinner-container">-->
-		<div v-show="doingAxios" class="media-spinner spinner-container">
+		<div v-show="doingAxios && loadingImages" class="media-spinner spinner-container">
 			<div class="spinner spinner-large spinner-grey"></div>
 		</div>
-		<div v-show="!doingAxios" class="row">
+		<div v-show="!doingAxios" class="row media-row trans-fade-in-anim">
 			<!-- =====================
 				Editor
 				===================== -->
@@ -44,7 +40,10 @@
 				<div v-if="selectedMedia">
 					<!-- Options -->
 					<form class="form media-options">
-						<h2>Options</h2>
+						<div class="media-actions">
+							<h2>Options</h2>
+							<button class="btn btn-orange" @click.prevent="showDeleteModal = true" :class="{ 'btn-loading' : isDeleting }">Delete</button>
+						</div>
 						<!-- Title -->
 						<div class="form-group">
 							<label for="media-title" class="form-label">Title</label>
@@ -105,13 +104,8 @@
 							</div>
 						</div>
 					</div><!-- /Editor -->
-					<!-- Actions -->
-					<div class="media-actions">
-						<h2>Actions</h2>
-						<button class="btn btn-orange" @click="deleteItem(false)" :class="{ 'btn-loading' : isDeleting }">Delete</button>
-					</div>
 				</div><!-- /Wrapper -->
-				<div v-else-if="!selectedMedia && media.length">
+				<div v-else-if="!selectedMedia && media.length" class="trans-fade-in-anim">
 					<div class="card media-select-card">
 						<div class="card-body">
 							<i class="feather feather-edit"></i>
@@ -126,9 +120,9 @@
 			<!-- =====================
 				Media Items
 				===================== -->
-			<div class="col-12 media-col media-col-item" :class="{ 'col-desk-8 col-hd-9' : media.length }" @dragover.prevent.stop="dragging = true">
+			<div class="col-12 media-col media-col-item" :class="{ 'col-desk-8 col-hd-9' : media.length }" @dragover.prevent.stop="handleDrag">
 				<transition name="trans-fade-quick">
-					<div class="media-dragging" v-if="dragging" :class="{ 'media-dragging-centered' : !media.length || media.length < 15 }" @drop.prevent="addFile($event, false)" @dragexit="dragging = false" @dragleave="dragging = false">
+					<div class="media-dragging" v-if="dragging" :class="{ 'media-dragging-centered' : !media.length || media.length < 15 }" @drop.prevent.stop="addFile($event, false)" @dragexit.stop="dragging = false" @dragleave.stop="dragging = false" @mouseleave="dragging = false">
 						<i class="feather feather-upload-cloud"></i>
 						<h4>Drop!</h4>
 						<p>Drop files to upload them instantly to the media library.</p>
@@ -168,7 +162,7 @@
 						</div>
 						<!-- Image -->
 						<div v-else-if="getMediaType(item.type) === 'image'" class="media-item-image media-item-trans" ref="images">
-							<img :src="getSiteUrl + item.url" :alt="item.alt">
+							<img v-onload="getSiteUrl + item.url" :alt="item.alt" @loaded="loadImages($event)">
 						</div>
 						<!-- Video -->
 						<div v-else-if="getMediaType(item.type) === 'video'" class="media-item-video media-item-trans">
@@ -187,7 +181,7 @@
 					Pagination
 					===================== -->
 				<transition name="trans-fade">
-					<div class="row"  v-if="!doingAxios && paginationObj && media.length">
+					<div class="row" v-if="!doingAxios && paginationObj && media.length">
 						<div class="col-12 media-col">
 							<Pagination :pagination="paginationObj" @update="setPagination"></Pagination>
 						</div><!-- /Col -->
@@ -195,7 +189,19 @@
 				</transition>
 			</div><!-- /Col -->
 		</div><!-- /Row -->
-<!--		</div>&lt;!&ndash; /Doing Axios &ndash;&gt;-->
+		<!-- =====================
+			Delete Modal
+			===================== -->
+		<Modal :show.sync="showDeleteModal" class="modal-with-icon modal-with-warning">
+			<template slot="button">
+				<button class="btn" @click="deleteItem">Delete</button>
+			</template>
+			<template slot="text">
+				<h2>Are you sure?</h2>
+				<p v-if="!checked.length">Are you sure want to delete this media item?</p>
+				<p v-else>Are you sure want to delete {{ checked.length }} media items?</p>
+			</template>
+		</Modal>
 	</section>
 </template>
 
@@ -204,6 +210,7 @@
 	===================== -->
 <script>
 
+import Modal from "../../components/modals/General";
 import Tabs from "../../components/misc/Tabs";
 import Pagination from "@/components/misc/Pagination";
 import {mediaMixin} from "@/util/media";
@@ -238,6 +245,7 @@ export default {
 		}
 	},
 	components: {
+		Modal,
 		Pagination,
 		Tabs,
 	},
@@ -258,6 +266,7 @@ export default {
 		loadingImages: true,
 		loadedImages: [],
 		initial: true,
+		showDeleteModal: false,
 	}),
 	mounted() {
 		this.getMedia();
@@ -269,10 +278,7 @@ export default {
 				this.$noty.warning("Select items in order to apply bulk actions");
 				return;
 			}
-			this.checked.forEach(id => {
-				this.deleteItem(id);
-			});
-			this.$noty.success("Media items deleted successfully.");
+			this.showDeleteModal = true;
 		},
 		bulkAction: function(val) {
 			if (!val) {
@@ -304,6 +310,12 @@ export default {
 					if (media.length) {
 						this.media = media;
 					}
+					if (!this.initialLoad) {
+						setTimeout(() => {
+							this.doingAxios = false;
+						}, 200);
+						return
+					}
 					this.doingAxios = false;
 				})
 				.catch(err => {
@@ -320,8 +332,14 @@ export default {
 		 * by the button from parent component.
 		 */
 		addFile(e, manual = false) {
-			this.dragging = false;
+			if (this.uploading) {
+				this.$noty.warning("Wait for the other files to finish uploading")
+				this.dragging = false;
+				return;
+			}
+
 			this.uploading = true;
+			this.dragging = false;
 
 			let droppedFiles = manual ? e.target.files : e.dataTransfer.files;
 			if (!droppedFiles) return;
@@ -363,6 +381,9 @@ export default {
 					console.log(err);
 					this.$noty.error("Error occurred, please refresh the page.");
 				})
+				.finally(() => {
+					this.uploading = false;
+				})
 		},
 		/*
 		 * save()
@@ -390,35 +411,46 @@ export default {
 		 * deleteItem()
 		 * Delete media item and remove from media array.
 		 */
-		deleteItem(id = false) {
+		deleteItem() {
 			this.isDeleting = true;
-			const isMultiple = id;
-			if (!id) id = this.selectedMedia.id;
 
-			this.axios.delete("/media/" + id)
-				.then(() => {
-					if (!isMultiple) {
+			let toDelete = [];
+			if (this.selectedMedia) {
+				toDelete.push(this.selectedMedia.id);
+			} else {
+				toDelete = this.checked;
+			}
+
+			toDelete.forEach(id => {
+				this.axios.delete("/media/" + id)
+					.then(() => {
 						this.$noty.success("Media item deleted successfully.");
-					}
-					// Clear selected item
-					this.selectedMedia = false;
-					// Remove from media array
-					const index = this.media.findIndex(m => m.id === id);
-					this.media.splice(index, 1);
-					return true;
-				})
-				.catch(err => {
-					console.log(err);
-					if (!isMultiple) {
+						// Clear selected item
+						this.selectedMedia = false;
+						// Remove from media array
+						const index = this.media.findIndex(m => m.id === id);
+						this.media.splice(index, 1);
+					})
+					.catch(err => {
+						console.log(err);
 						this.$noty.error("Error occurred, please refresh the page.");
-					}
-					return false;
-				})
-				.finally(() => {
-					this.paginationObj.page = 0;
-					this.isDeleting = false;
-					this.bulkMode = false;
-				});
+					})
+					.finally(() => {
+						if (this.paginationObj) this.paginationObj.page = 0;
+						this.isDeleting = false;
+						this.bulkMode = false;
+						this.showDeleteModal = false;
+					});
+			});
+		},
+		/*
+		 * handleDrag()
+		 * Handler for when user drags item onto media uploader.
+		 * Sets bulk mode to falsely.
+		 */
+		handleDrag() {
+			this.dragging = true;
+			this.bulkMode = false;
 		},
 		/*
 		 * insertItem()
@@ -465,9 +497,6 @@ export default {
 		 */
 		loadImages(e) {
 			this.loadedImages.push(e);
-
-			console.log(this.$refs.images.length)
-			console.log(this.loadedImages.length)
 
 			if (this.$refs.images.length === this.loadedImages.length) {
 				if (this.initial) {
@@ -599,12 +628,20 @@ export default {
 .media {
 	$self: &;
 
+	// Props
+	// =========================================================================
+
+	&-row {
+		align-items: flex-start;
+	}
 
 	// Placeholder / Dragging Props
 	// =========================================================================
 
 	&-placeholder,
 	&-dragging {
+		height: calc(100% - 1rem);
+		min-height: 100%;
 
 		i {
 			font-size: 46px;
@@ -634,7 +671,6 @@ export default {
 		justify-content: center;
 		align-items: center;
 		width: 100%;
-		min-height: 100%;
 		border-radius: 10px;
 		background-color: $white;
 		border: 2px dashed $grey-light;
@@ -655,8 +691,6 @@ export default {
 		flex-direction: column;
 		align-items: center;
 		width: 100%;
-		height: 100%;
-		min-height: 200px;
 		//width: calc(100% - 30px);
 		background-color: rgba($white, 0.99);
 		z-index: 9999999;
@@ -672,6 +706,7 @@ export default {
 
 		* {
 			cursor: copy;
+			pointer-events: none !important;
 		}
 
 		&-centered {
@@ -780,6 +815,10 @@ export default {
 				flex-direction: column;
 				justify-content: center;
 				align-items: center;
+			}
+
+			h4 {
+				text-align: center;
 			}
 
 			p,
@@ -910,6 +949,17 @@ export default {
 
 	&-options {
 		margin-bottom: 1.6em;
+
+		#{$self}-actions {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 0.8rem;
+
+			h2 {
+				margin-bottom: 0;
+			}
+		}
 	}
 
 	// Information
@@ -1007,7 +1057,7 @@ export default {
 	// =========================================================================
 
 	&-item-trans {
-		animation: fade 400ms ease-in;
+		animation: fade 300ms ease-in;
 
 		@keyframes fade {
 
