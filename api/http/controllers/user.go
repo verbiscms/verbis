@@ -1,11 +1,14 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"strconv"
 )
 
@@ -174,8 +177,12 @@ func (c *UserController) Delete(g *gin.Context) {
 func (c *UserController) ResetPassword(g *gin.Context) {
 	const op = "UserHandler.ResetPassword"
 
+	test := validation.New()
+	test.Package.RegisterValidation("is-awesome", test)
+
 	var u domain.UserPasswordReset
 	if err := g.ShouldBindJSON(&u); err != nil {
+		fmt.Println(err)
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
@@ -186,10 +193,17 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 	}
 
 	err = c.model.ResetPassword(id, u)
-	if err != nil {
+	if errors.Code(err) == errors.INVALID {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil  {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	Respond(g, 200, "Successfully upated password for the user with ID " + strconv.Itoa(id), nil)
+}
+
+func test (fl validator.FieldLevel) bool {
+	return fl.Field().String() == "awesome"
 }

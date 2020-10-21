@@ -246,7 +246,7 @@ export default {
 		},
 		options: {
 			type: Boolean,
-			defualt: true,
+			default: true,
 		}
 	},
 	components: {

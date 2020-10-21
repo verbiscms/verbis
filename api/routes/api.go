@@ -79,6 +79,7 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			operator.GET("/users", c.User.Get)
 			operator.GET("/users/:id", c.User.GetById)
 			operator.PUT("/users/:id", c.User.Update)
+			operator.POST("/users/:id/reset-password", c.User.ResetPassword)
 
 			// Roles
 			operator.GET("/roles", c.User.GetRoles)
@@ -92,7 +93,6 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			// Users
 			admin.POST("/users", c.User.Create)
 			admin.DELETE("/users/:id", c.User.Delete)
-			admin.POST("/users/:id/reset-password", c.User.ResetPassword)
 		}
 	}
 }
