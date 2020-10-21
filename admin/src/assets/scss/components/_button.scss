@@ -62,6 +62,13 @@
 		border-radius: 6px;
 		color: $white;
 
+		&-small {
+			width: $btn-icon-width - 6px;
+			height: $btn-fixed-height-mob - 6px;
+			min-width: $btn-icon-width - 6px;
+			min-height: $btn-fixed-height-mob - 6px;
+		}
+
 		i {
 			margin: 0;
 		}
@@ -138,7 +145,7 @@
 	}
 
 	&:hover {
-		box-shadow: 0 0 10px 0 rgba($copy, 0.10);
+		box-shadow: 0 0 10px 2px rgba($copy, 0.12);
 	}
 
 	// Colours

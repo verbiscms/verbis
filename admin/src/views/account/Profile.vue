@@ -174,9 +174,13 @@
 							<h4>Profile picture</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-
-							<div class="form-group">
+							<div class="form-group" v-if="!profilePicture">
 								<button class="btn" @click.prevent="showImageModal = true">Add photo</button>
+							</div>
+							<div v-else>
+								<ImageWithActions @choose="showImageModal = true" @remove="removeProfilePicture">
+									<img :src="getSiteUrl + profilePicture['url']" />
+								</ImageWithActions>
 							</div>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
@@ -188,7 +192,7 @@
 			===================== -->
 		<Modal :show.sync="showImageModal" class="modal-full-width modal-hide-close">
 			<template slot="text">
-				<Uploader :rows="3" :modal="true" :filters="false" class="media-modal" @insert="insertProfilePhoto">
+				<Uploader :rows="3" :modal="true" :filters="false" class="media-modal" @insert="insertProfilePicture">
 					<template slot="close">
 						<button class="btn btn-margin-right btn-icon-mob" @click.prevent="showImageModal = false">
 							<i class="feather feather-x"></i>
@@ -209,11 +213,13 @@
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Modal from "@/components/modals/General";
 import Uploader from "@/components/media/Uploader";
+import ImageWithActions from "@/components/misc/ImageWithActions";
 
 export default {
 	name: "Home",
 	title: 'Profile',
 	components: {
+		ImageWithActions,
 		Uploader,
 		Modal,
 		Breadcrumbs
@@ -227,9 +233,10 @@ export default {
 		errors: [],
 		newPassword: "",
 		confirmPassword: "",
-		userId: -1,
 		isSelf: false,
 		showImageModal: false,
+		profilePicture: false,
+		timeout: null,
 	}),
 	mounted() {
 		this.init();
@@ -244,12 +251,21 @@ export default {
 		 * init()
 		 * Determine if the profile to edit is the user logged in,
 		 * or a user that needs to be obtained from the API.
+		 * Obtains profile picture if the user is already set.
 		 */
 		init() {
 			this.userId = this.$route.params.id;
+
+			// Return 404 if the user is self
+			if (parseFloat(this.userId) === this.getUserInfo.id) {
+				this.$router.push({ name : 'not-found' })
+			}
+
 			if (!this.userId) {
 				this.data = this.getUserInfo;
+				this.userId = this.data.id;
 				this.isSelf = true;
+				this.getProfilePicture();
 			} else {
 				this.getUser();
 			}
@@ -265,6 +281,11 @@ export default {
 				return
 			}
 			this.data['password'] = this.newPassword;
+
+			if (this.profilePicture) {
+				this.data['profile_picture_id'] = this.profilePicture.id;
+			}
+
 			this.axios.put("/users/" + this.userId, this.data)
 				.then(res => {
 					this.errors = [];
@@ -298,7 +319,15 @@ export default {
 		getUser() {
 			this.axios.get("/users/" + this.userId)
 				.then(res => {
-					this.data = res.data.data;
+					const user = res.data.data;
+
+					// Return 404 if not found
+					if (this.helpers.isEmptyObject(user)) {
+						this.$router.push({ name : 'not-found' })
+					}
+
+					this.data = user;
+					this.getProfilePicture();
 				})
 				.catch(err => {
 					console.log(err);
@@ -313,14 +342,18 @@ export default {
 		 * Check if the new nad confirm passwords match
 		 */
 		validatePassword() {
-			if (this.newPassword !== "" && this.newPassword !== this.confirmPassword && this.confirmPassword !== "") {
-				this.$set(this.errors, 'password', "The new password & confirm password must match.")
-			} else {
-				this.$delete(this.errors, 'password')
-			}
+			clearTimeout(this.timeout);
+
+			this.timeout = setTimeout(() => {
+				if (this.newPassword !== "" && this.newPassword !== this.confirmPassword && this.confirmPassword !== "") {
+					this.$set(this.errors, 'password', "The new password & confirm password must match.")
+				} else {
+					this.$delete(this.errors, 'password')
+				}
+			}, 1000);
 		},
 		/*
- 		* validate()
+ 		 * validate()
 		 * Add errors if the post/put failed.
 		 */
 		validate(errors) {
@@ -329,9 +362,33 @@ export default {
 				this.$set(this.errors, err.key, err.message);
 			})
 		},
-		insertProfilePhoto(e) {
-			console.log(e);
-		}
+		/*
+		 * insertProfilePicture()
+		 * Set the profile picture and show modal, update the store.
+		 */
+		insertProfilePicture(e) {
+			this.profilePicture = e;
+			this.showImageModal = false;
+			this.$store.commit("setProfilePicture", e);
+		},
+		/*
+		 * removeProfilePicture()
+		 * Set profile picture to false, update the store.
+		 */
+		removeProfilePicture() {
+			this.profilePicture = false;
+			this.$store.commit("setProfilePicture", false);
+		},
+		/*
+		 * getProfilePicture()
+		 * Obtain from store.
+		 */
+		getProfilePicture() {
+			this.$store.dispatch("getProfilePicture")
+				.then(pic => {
+					this.profilePicture = pic;
+				})
+		},
 	},
 	computed: {
 		/*
@@ -340,6 +397,13 @@ export default {
 		 */
 		getUserInfo() {
 			return this.$store.state.userInfo;
+		},
+		/*
+		 * getSiteUrl()
+		 * Get the site url from the store for previewing.
+		 */
+		getSiteUrl() {
+			return this.$store.state.site.url;
 		},
 	}
 }
@@ -358,6 +422,23 @@ export default {
 
 		&-confirm-password {
 			margin-top: 10px;
+		}
+
+		// Picture
+		// =========================================================================
+
+		&-picture {
+			width: 300px;
+			height: 260px;
+
+			img {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				border-radius: 6px;
+				//border-radius: 100%;
+				box-shadow: 0 0 12px 2px rgba($black, 0.12);
+			}
 		}
 	}
 

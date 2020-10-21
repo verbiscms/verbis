@@ -2,18 +2,20 @@
 	Modal
 	===================== -->
 <template>
-	<transition name="fade" mode="out-in">
-		<div v-if="showModal" class="modal modal-centered trans-fade" :class="{ 'modal-open' : showModal }" aria-hidden="true">
+	<transition name="trans-fade">
+		<div v-if="showModal" class="modal modal-centered" :class="{ 'modal-open' : showModal }" aria-hidden="true">
 			<!-- Container -->
-			<div class="modal-container">
+			<div class="modal-container trans-fade-down-anim">
 				<!-- Close -->
 				<div class="modal-close" @click="showModal = false">
 					<i class="feather feather-x"></i>
 				</div>
-	<!--			&lt;!&ndash; Icon &ndash;&gt;-->
-	<!--			<div class="modal-icon">-->
-	<!--				<i class="feather feather-alert-triangle"></i>-->
-	<!--			</div>-->
+				<!-- Warning -->
+				<div class="modal-warning">
+					<div class="modal-icon">
+						<i class="feather feather-alert-triangle"></i>
+					</div>
+				</div>
 				<!-- Text -->
 				<div class="modal-text">
 					<slot name="text"></slot>
@@ -154,8 +156,7 @@ $modal-transition-time: 400ms;
 		margin: 0 auto;
 		opacity: 0;
 		overflow-y: auto;
-		transform: translateY(-50px);
-		transition: opacity $modal-transition-time ease, transform $modal-transition-time ease, z-index $modal-transition-time step-end;
+		transition: z-index $modal-transition-time step-end;
 		padding: $modal-padding-desk;
 		will-change: transform, opacity
 	}
@@ -184,10 +185,8 @@ $modal-transition-time: 400ms;
 		visibility: visible;
 
 		#{$self}-container {
-			opacity: 1;
-			transform: translateY(0);
 			z-index: 9999999;
-			transition: opacity $modal-transition-time ease, transform $modal-transition-time ease, z-index $modal-transition-time step-start;
+			transition: z-index $modal-transition-time step-start;
 		}
 
 		#{$self}-overlay {
@@ -212,6 +211,34 @@ $modal-transition-time: 400ms;
 
 		#{$self}-container {
 			margin: auto;
+		}
+	}
+
+	// With Icon
+	// ==========================================================================
+
+	&-with-icon {
+
+		#{$self}-container {
+			align-items: center;
+
+			* {
+				text-align: center;
+			}
+		}
+	}
+
+	// Warning
+	// ==========================================================================
+
+	&-warning {
+		display: none;
+	}
+
+	&-with-warning {
+
+		#{$self}-warning {
+			display: block;
 		}
 	}
 }

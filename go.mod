@@ -26,45 +26,47 @@ require (
 	github.com/gin-gonic/contrib v0.0.0-20200810162008-6dee08bf958e // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/strfmt v0.19.5 // indirect
-	github.com/go-playground/validator/v10 v10.3.0
+	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/golang/protobuf v1.4.2 // indirect
+	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/martian v2.1.0+incompatible // indirect
 	github.com/google/uuid v1.1.2
-	github.com/gookit/color v1.2.7
+	github.com/gookit/color v1.3.1
 	github.com/hashicorp/go-uuid v1.0.1 // indirect
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/json-iterator/go v1.1.10 // indirect
+	github.com/konsorten/go-windows-terminal-sequences v1.0.3 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible // indirect
 	github.com/lib/pq v1.8.0 // indirect
 	github.com/magiconair/properties v1.8.2 // indirect
 	github.com/manifoldco/promptui v0.7.0 // indirect
+	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-shellwords v1.0.10 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
-	github.com/nickalie/go-binwrapper v0.0.0-20190114141239-525121d43c84 // indirect
-	github.com/nickalie/go-webpbin v0.0.0-20170427122138-7e79cf5bb01e
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/roberthodgen/spa-server v0.0.0-20171007154335-bb87b4ff3253 // indirect
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/afero v1.3.5 // indirect
-	github.com/spf13/cobra v1.0.0
+	github.com/spf13/cobra v1.1.1
 	github.com/stretchr/testify v1.6.1 // indirect
+	github.com/ugorji/go v1.1.13 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/unrolled/render v1.0.3 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yosssi/gohtml v0.0.0-20201013000340-ee4748c638f4
-	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
-	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
-	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0 // indirect
+	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
+	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5 // indirect
+	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
+	golang.org/x/sys v0.0.0-20201020230747-6e5568b54d1a // indirect
 	golang.org/x/tools v0.0.0-20191112195655-aa38f8e97acc // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect

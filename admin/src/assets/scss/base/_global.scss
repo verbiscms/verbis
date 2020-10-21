@@ -49,8 +49,8 @@ section {
 	z-index: 9;
 	box-shadow: 0 0 50px 0 rgba($black, 0.11);
 	background-color: $bg-color;
-	transition: transform 100ms ease, width 100ms ease, box-shadow 100ms ease;
-	will-change: left, width, box-shadow;
+	//transition: box-shadow 100ms ease;
+	//will-change: box-shadow;
 
 	//&-collapsed {
 	//	box-shadow: 0 0 20px 0 rgba($black, 0.06);
