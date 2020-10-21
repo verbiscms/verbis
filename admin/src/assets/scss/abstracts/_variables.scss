@@ -133,8 +133,8 @@ $form-group-margin-bottom: 1.2rem;
 $form-box-shadow: 0 0 14px 0 rgba($copy, 0.06);
 
 @mixin formInputBoxShadow {
-	transition: box-shadow 200ms ease;
-	will-change: box-shadow;
+	transition: box-shadow 200ms ease, border-color 200ms ease;
+	will-change: box-shadow, border-color;
 }
 
 @mixin formPlaceholder {

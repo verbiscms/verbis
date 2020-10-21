@@ -44,6 +44,7 @@
         appearance: none;
         @include formInputBoxShadow;
 
+
         &-white {
             background-color: $white;
         }
@@ -51,7 +52,6 @@
         &:not(:first-of-type) {
             margin-top: 10px;
         }
-
 
         &:disabled {
             background-color: rgba($secondary, 0.04);
@@ -416,7 +416,9 @@
 
         &-error {
 
-
+            input {
+                border: 1px solid $orange;
+            }
         }
     }
 
@@ -494,9 +496,9 @@
 	// =========================================================================
 
 	@include media-desk {
+
 	}
 }
-
 
 // AutoComplete
 // =========================================================================

@@ -23,9 +23,9 @@ export default new Vuex.Store({
 	state: {
 		auth: false,
 		apiToken: "",
-		site: {},
 		session: "",
 		userInfo: {},
+		site: {},
 		users: [],
 		theme: {},
 		profilePicture: false,
@@ -43,6 +43,10 @@ export default new Vuex.Store({
 			state.apiToken = ''
 			state.auth = false
 			state.userInfo = {}
+			state.site = {};
+			state.users = [];
+			state.theme = {};
+			state.profilePicture = false;
 			Vue.prototype.helpers.deleteCookie("verbis-session")
 			axios.defaults.headers.common = {
 				"token": ''

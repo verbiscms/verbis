@@ -101,7 +101,7 @@
 							<p>Enter a valid email address, this will be used for signing in to Verbis.</p>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
+							<div class="form-group" :class="{ 'form-group-error' : errors['email'] }">
 								<input class="form-input form-input-white" type="text" v-model="data['email']">
 								<!-- Message -->
 								<transition name="trans-fade-height">
@@ -116,7 +116,7 @@
 							<h4>Website</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
+							<div class="form-group" :class="{ 'form-group-error' : errors['website'] }">
 								<input class="form-input form-input-white" type="text" v-model="data['website']">
 								<!-- Message -->
 								<transition name="trans-fade-height">
@@ -289,7 +289,9 @@ export default {
 			this.axios.put("/users/" + this.userId, this.data)
 				.then(res => {
 					this.errors = [];
-					this.$noty.success("Profile updated successfully.");
+
+					const successMsg = this.isSelf ? "Profile updated successfully." : "User updated successfully."
+					this.$noty.success(successMsg);
 
 					// IMPORTANT: Don't commit to the store, if the user isn't the one logged in!
 					if (this.isSelf) {
@@ -300,7 +302,8 @@ export default {
 					console.log(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
-						this.$noty.error("Fix the errors before saving your profile.");
+						const errorMsg =  this.isSelf ? "Fix the errors before saving your profile." : "User updated successfully."
+						this.$noty.error(errorMsg);
 						return;
 					}
 					this.$noty.error("Error occurred, please refresh the page.");
