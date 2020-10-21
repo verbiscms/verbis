@@ -61,29 +61,6 @@
 							</div>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
-					<!-- Password -->
-					<transition name="trans-fade-height">
-					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
-							<h4>Password*</h4>
-							<p>Enter a new password, a minimum of 8 alphanumeric characters are required.</p>
-						</div>
-						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
-								<input class="form-input form-input-white" type="password" placeholder="New password" v-model="newPassword" @keyup="validatePassword">
-								<transition name="trans-fade-height">
-									<div v-show="newPassword != ''" class="profile-confirm-password">
-										<input class="form-input form-input-white form-input-test" type="password" placeholder="Confirm password" v-model="confirmPassword" @keyup="validatePassword">
-									</div>
-								</transition>
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['password']">{{ errors['password'] }}</span>
-								</transition><!-- /Message -->
-							</div>
-						</div><!-- /Col -->
-					</div><!-- /Row -->
-					</transition>
 				</div><!-- Form Group -->
 				<!-- =====================
 					Contact Info
@@ -184,6 +161,45 @@
 							</div>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
+				</div><!-- Form Group -->
+				<!-- =====================
+					Reset Password
+					===================== -->
+				<div class="form-row-group" v-if="isSelf || data.role['name'] === 'Administrator'">
+					<div class="row">
+						<div class="col-12">
+							<h2>Reset password</h2>
+						</div><!-- /Col -->
+					</div><!-- /Row -->
+					<!-- Password -->
+					<transition name="trans-fade-height">
+						<div class="row form-row form-row-border">
+							<div class="col-12 col-desk-4 col-hd-2">
+								<h4>Password</h4>
+								<p>Enter a new password, a minimum of 8 alphanumeric characters are required.</p>
+							</div>
+							<div class="col-12 col-desk-8 col-hd-6">
+								<div class="form-group">
+									<input class="form-input form-input-white" type="password" placeholder="New password" v-model="newPassword" @keyup="validatePassword">x
+									<!-- Message -->
+									<transition name="trans-fade-height">
+										<span class="field-message field-message-warning" v-if="errors['password']">{{ errors['password'] }}</span>
+									</transition><!-- /Message -->
+								</div>
+							</div><!-- /Col -->
+						</div><!-- /Row -->
+						<!-- LinkedIn -->
+						<div class="row form-row form-row-border">
+							<div class="col-12 col-desk-4 col-hd-2">
+								<h4>Confirm password</h4>
+							</div>
+							<div class="col-12 col-desk-8 col-hd-6">
+								<div class="form-group">
+									<input class="form-input form-input-white form-input-test" type="password" placeholder="Confirm password" v-model="confirmPassword" @keyup="validatePassword">
+								</div>
+							</div><!-- /Col -->
+						</div><!-- /Row -->
+					</transition>
 				</div><!-- Form Group -->
 			</form>
 		</div><!-- /Container -->

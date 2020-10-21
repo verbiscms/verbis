@@ -206,6 +206,8 @@
 					</div><!-- /Col -->
 				</div><!-- /Row -->
 			</transition>
+			{{ checked }}
+			{{ checkedAll }}
 		</div><!-- /Container -->
 		<!-- =====================
 			Delete Modal
@@ -270,7 +272,7 @@ export default {
 		selectedDeleteId: null,
 	}),
 	mounted() {
-		this.getPosts();
+		this.filterTabs(1);
 		this.setResource();
 	},
 	watch: {
@@ -347,10 +349,15 @@ export default {
 		 * filterTabs()
 		 * Update the filter by string when tabs are clicked, obtain posts.
 		 */
-		filterTabs(e) {
-			this.activeTab = e;
-			let filter = ""
-			switch (e) {
+		filterTabs(tab) {
+			this.activeTab = tab;
+			let filter = "";
+			console.log(tab);
+			switch (tab) {
+				case 1: {
+					filter = '{"status":[{"operator":"NOT LIKE", "value": "bin" }]}';
+					break;
+				}
 				case 2: {
 					filter = '{"status":[{"operator":"=", "value": "published" }]}';
 					break;
@@ -412,7 +419,7 @@ export default {
 			}
 		},
 		/*
-		 * moveToDrafts()
+		 * updateStatus()
 		 */
 		updateStatus(id = false, status = 'draft') {
 			let checkedArr = [];
@@ -437,7 +444,7 @@ export default {
 						this.savingBulk = false;
 						this.activeAction = "";
 						this.checked = [];
-						this.checkedAll = [];
+						this.checkedAll = false;
 						this.bulkType = "";
 					});
 			});
@@ -497,7 +504,7 @@ export default {
 		 */
 		checkedAll: {
 			get() {
-				return false;
+				return this.checked;
 			},
 			set(value) {
 				if (value) {
