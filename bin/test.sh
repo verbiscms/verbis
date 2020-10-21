@@ -13,10 +13,10 @@ function build() {
     if [[ $1 == "mac" ]]
 		then
 			echo "Building for mac"
-			go build -o "verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
+			CGO_ENABLED=1 go build -o "verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
 		else
 			echo "Building for $1"
-		  	GOOS=$1 go build -o "verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
+		  	CGO_ENABLED=1 GOOS=$1 go build -o "verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
     fi
 
 	# API (Database)
