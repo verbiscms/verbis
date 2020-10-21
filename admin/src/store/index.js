@@ -28,6 +28,7 @@ export default new Vuex.Store({
 		userInfo: {},
 		users: [],
 		theme: {},
+		profilePicture: false,
 	},
 	mutations: {
 		login(state, loginData) {
@@ -63,6 +64,9 @@ export default new Vuex.Store({
 		setUsers(state, users) {
 			state.users = users;
 		},
+		setProfilePicture(state, picture) {
+			state.profilePicture = picture;
+		}
 	},
 	actions: {
 		/*
@@ -106,7 +110,28 @@ export default new Vuex.Store({
 				} else {
 					resolve(this.state.users)
 				}
-			})
+			});
+		},
+		/*
+		 * getProfilePicture()
+		 */
+		getProfilePicture() {
+			if (!this.state.userInfo['profile_picture_id']) return;
+			return new Promise((resolve, reject) => {
+				if (!this.state.profilePicture) {
+					axios.get('/media/' + this.state.userInfo['profile_picture_id'])
+						.then(res => {
+							const picture = res.data.data;
+							this.commit("setProfilePicture", picture)
+							resolve(picture)
+						})
+						.catch(err => {
+							reject(err)
+						});
+				} else {
+					resolve(this.state.profilePicture)
+				}
+			});
 		},
 	},
 	modules: {},

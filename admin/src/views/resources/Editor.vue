@@ -48,7 +48,7 @@
 					<!-- Content & Fields -->
 					<transition name="trans-fade" mode="out-in">
 
-						<div v-if="fieldLayout.length && activeTab === 0" :key="1">
+						<div v-if="activeTab === 0" :key="1">
 							<!-- Title -->
 							<div class="card">
 								<collapse :show="true">
@@ -406,6 +406,9 @@ export default {
 			this.$nextTick().then(() => {
 				if (document.querySelectorAll(".field-cont-error").length === 0) {
 					this.data.slug = this.computedSlug;
+					if (this.resource.name !== "page") {
+						this.data.resource = this.resource.name;
+					}
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)
 							.then(res => {

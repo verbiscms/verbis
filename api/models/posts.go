@@ -58,8 +58,10 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	q += filter
 	countQ += filter
 
+
+
 	// Get by resource
-	if resource != "all" && resource != "" {
+	if resource != "all" && resource != ""{
 		if len(meta.Filters) > 0 {
 			q += fmt.Sprintf(" AND")
 			countQ += fmt.Sprintf(" AND")
@@ -67,15 +69,21 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 			q += fmt.Sprintf(" WHERE")
 			countQ += fmt.Sprintf(" WHERE")
 		}
-		resourceQ := fmt.Sprintf(" resource = '%s'", resource)
+
+		// If the resource is pages or a resource
+		resourceQ := ""
+		if resource == "pages" {
+			resourceQ = fmt.Sprintf(" resource IS NULL")
+		} else {
+			resourceQ = fmt.Sprintf(" resource = '%s'", resource)
+		}
+
 		q += resourceQ
 		countQ += resourceQ
 	}
 
 	// Apply pagination
 	q += fmt.Sprintf(" ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
-
-	fmt.Println(q)
 
 	// Select posts
 	if err := s.db.Select(&p, q); err != nil {

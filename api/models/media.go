@@ -259,8 +259,9 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not save the media file, please try again", Operation: op}
 	}
 
+
 	// Convert to WebP
-	if s.convertWebP {
+	if s.convertWebP && mimeType == "image/jpeg" || mimeType == "image/png"  {
 		decodedImage, err := s.decodeImage(file, mimeType)
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error()
@@ -269,10 +270,10 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 	}
 
 	// Resize
-	//sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
+	sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
 
 	// Insert into the database
-	dm, err := s.insert(key, cleanName + extension, path, int(file.Size), mimeType, nil, userId)
+	dm, err := s.insert(key, cleanName + extension, path, int(file.Size), mimeType, sizes, userId)
 	if err != nil {
 		return domain.Media{}, err
 	}
@@ -519,7 +520,6 @@ func convertWebP(image image.Image, path string, compression int) {
 	const op = "MediaRepository.convertWebP"
 
 	var buf bytes.Buffer
-
 	if err := webp.Encode(&buf, image, &webp.Options{Lossless: true}); err != nil {
 		log.Println(err)
 	}
@@ -528,7 +528,6 @@ func convertWebP(image image.Image, path string, compression int) {
 		log.Println(err)
 	}
 }
-
 
 // createDirectory creates the media directory year path if the organise year variable in the media
 // store is set to true. Date and year folders are created recursively.
@@ -667,5 +666,3 @@ func (s *MediaStore) processFileName(file string, extension string) string {
 
 	return cleanedFile
 }
-
-

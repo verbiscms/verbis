@@ -206,7 +206,7 @@ func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 		return domain.User{}, err
 	}
 
-	userQ := "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, website = ?, facebook = ?, twitter = ?, linked_in = ?, instagram = ?, profile_picture_id = ? updated_at = NOW() WHERE id = ?"
+	userQ := "UPDATE users SET first_name = ?, last_name = ?, email = ?, password = ?, website = ?, facebook = ?, twitter = ?, linked_in = ?, instagram = ?, profile_picture_id = ?, updated_at = NOW() WHERE id = ?"
 	_, err = s.db.Exec(userQ, u.FirstName, u.LastName, u.Email, hashedPassword, u.Website, u.Facebook, u.Twitter, u.Linkedin, u.Instagram, u.ProfilePictureID, u.Id)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user with the email: %s", u.Email), Operation: op, Err: err}

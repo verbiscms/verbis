@@ -155,7 +155,8 @@
 			<collapse :use-icon="false" :show="false" :reverse="true">
 				<template v-slot:header>
 					<div class="aside-bottom-content" @click="accountActive = !accountActive">
-						<span class="avatar" v-html="getInitials"></span>
+						<img v-if="getProfilePicture['url']" class="avatar" :src="getSite.url + getProfilePicture.url">
+						<span v-else class="avatar" v-html="getInitials"></span>
 						<!--Aside Bottom User -->
 						<div class="aside-bottom-user">
 							<!-- User Text -->
@@ -234,14 +235,20 @@ export default {
 		}
 	},
 	methods: {
+		/*
+		 * doLogout()
+		 */
 		doLogout() {
 			this.axios.post("/logout", {})
-				.then(res => {
-					console.log(res);
+				.then(() => {
 					this.$store.commit("logout");
 					location.reload();
 				});
 		},
+		/*
+		 * setActivePage()
+		 * Define the active class by resource or query
+		 */
 		setActivePage() {
 			const editorResource = this.$route.query.resource;
 			const archiveResource = this.$route.params.resource;
@@ -253,28 +260,47 @@ export default {
 				this.activePage = this.$route.name;
 			}
 		},
+		/*
+		 * collapse()
+		 */
 		collapse() {
 			document.querySelector(".auth-container").classList.toggle("auth-container-collapsed");
 			this.collapsed = !this.collapsed;
-		}
+		},
+
 	},
 	computed: {
+		/*
+		 * getUserInfo()
+		 */
 		getUserInfo() {
 			return this.$store.state.userInfo;
 		},
+		/*
+		 * getSite()
+		 */
 		getSite() {
 			return this.$store.state.site;
 		},
+		/*
+		 * getTheme()
+		 */
 		getTheme() {
 			return this.$store.state.theme
 		},
 		/*
-		* getInitials()
-		*/
+		 * getInitials()
+		 */
 		getInitials() {
 			const info = this.getUserInfo
 			return info['first_name'].charAt(0) + info['last_name'].charAt(0).toUpperCase();
-		}
+		},
+		/*
+		 * getProfilePicture()
+		 */
+		getProfilePicture() {
+			return this.$store.state.profilePicture;
+		},
 	},
 }
 </script>

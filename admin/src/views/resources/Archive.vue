@@ -21,6 +21,16 @@
 										<option value="restore">Restore</option>
 										<option value="delete">Delete permanently</option>
 									</select>
+									<select class="form-select" v-model="bulkType" v-else-if="activeTab === 3">
+										<option value="" disabled selected>Bulk actions</option>
+										<option value="publish">Publish</option>
+										<option value="bin">Move to bin</option>
+									</select>
+									<select class="form-select" v-model="bulkType" v-else>
+										<option value="" disabled selected>Bulk actions</option>
+										<option value="draft">Move to draft</option>
+										<option value="bin">Move to bin</option>
+									</select>
 								</div>
 								<button class="btn btn-fixed-height btn-margin btn-white" :class="{ 'btn-loading' : savingBulk }" @click.prevent="doBulkAction">Apply</button>
 								<router-link class="btn btn-icon btn-orange" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
@@ -200,7 +210,7 @@
 		<!-- =====================
 			Delete Modal
 			===================== -->
-		<Modal :show.sync="showDeleteModal">
+		<Modal :show.sync="showDeleteModal" class="modal-with-icon modal-with-warning">
 			<template slot="button">
 				<button class="btn" @click="deletePost(false); savingBulk = true;">Delete</button>
 			</template>
@@ -277,7 +287,8 @@ export default {
 		 */
 		getPosts() {
 			const resource = this.$route.params.resource;
-			const url = resource === "pages" ? "/posts" : "/resource/" + resource;
+			const url = /resources/ + resource;
+
 			this.axios.get(`${url}?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
 				paramsSerializer: function(params) {
 					return params;

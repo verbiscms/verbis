@@ -1,11 +1,11 @@
-package res
-
-import (
-	"bytes"
-	"github.com/chai2010/webp"
-	"image"
-	"io/ioutil"
-)
+//package res
+//
+//import (
+//	"bytes"
+//	"github.com/chai2010/webp"
+//	"image"
+//	"io/ioutil"
+//)
 
 // Converts an image to webp based on compression and decoded image.
 // Compression level is also set.
