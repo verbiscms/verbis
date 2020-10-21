@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
+	"golang.org/x/crypto/bcrypt"
 	"strings"
 )
 
@@ -239,10 +240,22 @@ func (s *UserStore) Delete(id int) error {
 	return nil
 }
 
+
 // ResetPassword
+// Returns errors.INVALID if the current password didn't match.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *UserStore) ResetPassword(id int, reset domain.UserPasswordReset) error {
 	const op = "UserRepository.ResetPassword"
+
+	u, err := s.GetById(reset.Id);
+	if err != nil {
+		return err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(reset.CurrentPassword))
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "The current password doesnt match our records.", Operation: op, Err: err}
+	}
 
 	hashedPassword, err := encryption.HashPassword(reset.NewPassword)
 	if err != nil {

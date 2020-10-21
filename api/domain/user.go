@@ -27,8 +27,10 @@ type User struct {
 }
 
 type UserPasswordReset struct {
-	NewPassword			string			`db:"password" json:"new_password" binding:"required,min=8,max=60"`
-	ConfirmPassword		string			`db:"password" json:"confirm_password" binding:"eqfield=NewPassword,required"`
+	Id					int				`json:"id" binding:"required"`
+	CurrentPassword		string			`json:"current_password" binding:"required"`
+	NewPassword			string			`json:"new_password" binding:"required,min=8,max=60"`
+	ConfirmPassword		string			`json:"confirm_password" binding:"eqfield=NewPassword,required"`
 }
 
 type UserSession struct {
