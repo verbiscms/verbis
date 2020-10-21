@@ -29,10 +29,14 @@
 		<!-- Input -->
 		<input class="media-input" id="browse-file" type="file" multiple ref="file" @change="addFile($event, true)">
 		<!-- Spinner -->
-		<div v-show="(doingAxios || loadingImages)" class="media-spinner spinner-container">
+		{{ doingAxios }}
+		{{ loadingImages }}
+		{{ media.length }}
+<!--		<div v-show="(doingAxios || loadingImages) && media.length" class="media-spinner spinner-container">-->
+		<div v-show="doingAxios" class="media-spinner spinner-container">
 			<div class="spinner spinner-large spinner-grey"></div>
 		</div>
-		<div v-show="(!doingAxios && !loadingImages) || !media.length" class="row">
+		<div v-show="!doingAxios" class="row">
 			<!-- =====================
 				Editor
 				===================== -->
@@ -164,7 +168,7 @@
 						</div>
 						<!-- Image -->
 						<div v-else-if="getMediaType(item.type) === 'image'" class="media-item-image media-item-trans" ref="images">
-							<img v-onload="getSiteUrl + item.url" :alt="item.alt" @loaded="loadImages($event)">
+							<img :src="getSiteUrl + item.url" :alt="item.alt">
 						</div>
 						<!-- Video -->
 						<div v-else-if="getMediaType(item.type) === 'video'" class="media-item-video media-item-trans">
@@ -300,13 +304,13 @@ export default {
 					if (media.length) {
 						this.media = media;
 					}
+					this.doingAxios = false;
 				})
 				.catch(err => {
 					console.log(err)
 					this.$noty.error("Error occurred, please refresh the page.");
 				})
 				.finally(() => {
-					this.doingAxios = false;
 					this.initialLoad = true;
 				});
 		},
@@ -461,6 +465,10 @@ export default {
 		 */
 		loadImages(e) {
 			this.loadedImages.push(e);
+
+			console.log(this.$refs.images.length)
+			console.log(this.loadedImages.length)
+
 			if (this.$refs.images.length === this.loadedImages.length) {
 				if (this.initial) {
 					setTimeout(() => {
