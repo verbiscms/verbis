@@ -123,6 +123,9 @@ func (v* Validation) message(kind string, field string, param string) string {
 	case "url":
 		errorMsg = field + " must be valid URL."
 		break
+	case "eqfield":
+		errorMsg = field + " must equal the " + param + "."
+		break
 	}
 
 	return errorMsg

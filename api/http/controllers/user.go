@@ -17,6 +17,7 @@ type UserHandler interface {
 	Create(g *gin.Context)
 	Update(g *gin.Context)
 	Delete(g *gin.Context)
+	ResetPassword(g *gin.Context)
 }
 
 // UserController defines the handler for Users
@@ -153,7 +154,7 @@ func (c *UserController) Delete(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 400,"A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400,"A valid ID is required to delete a user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	err = c.model.Delete(id)
@@ -166,4 +167,29 @@ func (c *UserController) Delete(g *gin.Context) {
 	}
 
 	Respond(g, 200, "Successfully deleted user with ID " + strconv.Itoa(id), nil)
+}
+
+// Delete
+// Returns errors.INVALID if validation failed or the Id is not a string or passed.
+func (c *UserController) ResetPassword(g *gin.Context) {
+	const op = "UserHandler.ResetPassword"
+
+	var u domain.UserPasswordReset
+	if err := g.ShouldBindJSON(&u); err != nil {
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
+	}
+
+	id, err := strconv.Atoi(g.Param("id"))
+	if err != nil {
+		Respond(g, 400,"A valid ID is required to update a user's password", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+	}
+
+	err = c.model.ResetPassword(id, u)
+	if err != nil {
+		Respond(g, 500, errors.Message(err), err)
+		return
+	}
+
+	Respond(g, 200, "Successfully upated password for the user with ID " + strconv.Itoa(id), nil)
 }
