@@ -13,15 +13,12 @@
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">
-								<i class="far fa-check"></i>
-								Update Profile
-							</button>
+							<button class="btn btn-orange" @click.prevent="save" :class="{ 'btn-loading' : saving }">Update Profile</button>
 						</div>
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<form class="form">
+			<form class="form" v-if="!doingAxios">
 				<!-- =====================
 					Basic Options
 					===================== -->
@@ -37,7 +34,7 @@
 							<h4>First name*</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
+							<div class="form-group" :class="{ 'form-group-error' : errors['first_name'] }">
 								<input class="form-input form-input-white" type="text" v-model="data['first_name']">
 								<!-- Message -->
 								<transition name="trans-fade-height">
@@ -52,7 +49,7 @@
 							<h4>Last name*</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
+							<div class="form-group" :class="{ 'form-group-error' : errors['last_name'] }">
 								<input class="form-input form-input-white" type="text" v-model="data['last_name']">
 								<!-- Message -->
 								<transition name="trans-fade-height">
@@ -168,38 +165,60 @@
 				<div class="form-row-group" v-if="isSelf || data.role['name'] === 'Administrator'">
 					<div class="row">
 						<div class="col-12">
-							<h2>Reset password</h2>
+							<div class="profile-reset-password">
+								<h2>Reset password</h2>
+								<button class="btn btn-orange" @click.prevent="resetPassword">Reset password</button>
+							</div>
+						</div><!-- /Col -->
+					</div><!-- /Row -->
+					<!-- Current Password -->
+					<div class="row form-row form-row-border">
+						<div class="col-12 col-desk-4 col-hd-2">
+							<h4>Current password</h4>
+							<p>Type in your current password.</p>
+						</div>
+						<div class="col-12 col-desk-8 col-hd-6">
+							<div class="form-group" :class="{ 'form-group-error' : errors['current_password'] }">
+								<input class="form-input form-input-white" type="password" placeholder="Current password" v-model="password['current_password']">
+								<!-- Message -->
+								<transition name="trans-fade-height">
+									<span class="field-message field-message-warning" v-if="errors['current_password']">{{ errors['current_password'] }}</span>
+								</transition><!-- /Message -->
+							</div>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 					<!-- Password -->
-					<transition name="trans-fade-height">
-						<div class="row form-row form-row-border">
-							<div class="col-12 col-desk-4 col-hd-2">
-								<h4>Password</h4>
-								<p>Enter a new password, a minimum of 8 alphanumeric characters are required.</p>
+					<div class="row form-row form-row-border">
+						<div class="col-12 col-desk-4 col-hd-2">
+							<h4>Password</h4>
+							<p>Enter a new password, a minimum of 8 alphanumeric characters are required.</p>
+						</div>
+						<div class="col-12 col-desk-8 col-hd-6">
+							<div class="form-group" :class="{ 'form-group-error' : errors['new_password'] }">
+								<input class="form-input form-input-white" type="password" placeholder="New password" v-model="password['new_password']">
+								<!-- Message -->
+								<transition name="trans-fade-height">
+									<span class="field-message field-message-warning" v-if="errors['new_password']">{{ errors['new_password'] }}</span>
+								</transition><!-- /Message -->
 							</div>
-							<div class="col-12 col-desk-8 col-hd-6">
-								<div class="form-group">
-									<input class="form-input form-input-white" type="password" placeholder="New password" v-model="newPassword" @keyup="validatePassword">x
-									<!-- Message -->
-									<transition name="trans-fade-height">
-										<span class="field-message field-message-warning" v-if="errors['password']">{{ errors['password'] }}</span>
-									</transition><!-- /Message -->
-								</div>
-							</div><!-- /Col -->
-						</div><!-- /Row -->
-						<!-- LinkedIn -->
-						<div class="row form-row form-row-border">
-							<div class="col-12 col-desk-4 col-hd-2">
-								<h4>Confirm password</h4>
+						</div><!-- /Col -->
+					</div><!-- /Row -->
+					<!-- Confirm Password -->
+					<div class="row form-row form-row-border">
+						<div class="col-12 col-desk-4 col-hd-2">
+							<h4>Confirm Password</h4>
+							<p>Enter the same password in again.</p>
+						</div>
+						<div class="col-12 col-desk-8 col-hd-6">
+							<div class="form-group" :class="{ 'form-group-error' : errors['confirm_password'] }">
+								<input class="form-input form-input-white form-input-test" type="password" placeholder="Confirm password" v-model="password['confirm_password']">
+								<!-- Message -->
+								<transition name="trans-fade-height">
+									<span class="field-message field-message-warning" v-if="errors['confirm_password']">{{ errors['confirm_password'] }}</span>
+								</transition><!-- /Message -->
 							</div>
-							<div class="col-12 col-desk-8 col-hd-6">
-								<div class="form-group">
-									<input class="form-input form-input-white form-input-test" type="password" placeholder="Confirm password" v-model="confirmPassword" @keyup="validatePassword">
-								</div>
-							</div><!-- /Col -->
-						</div><!-- /Row -->
-					</transition>
+						</div><!-- /Col -->
+					</div><!-- /Row -->
 				</div><!-- Form Group -->
 			</form>
 		</div><!-- /Container -->
@@ -241,14 +260,18 @@ export default {
 		Breadcrumbs
 	},
 	data: () => ({
-		doingAxios: false,
+		doingAxios: true,
 		saving: false,
 		data: {
 			website: "",
 		},
+		password: {
+			id: false,
+			"current_password": "",
+			"new_password": "",
+			"confirm_password": "",
+		},
 		errors: [],
-		newPassword: "",
-		confirmPassword: "",
 		isSelf: false,
 		showImageModal: false,
 		profilePicture: false,
@@ -282,6 +305,7 @@ export default {
 				this.userId = this.data.id;
 				this.isSelf = true;
 				this.getProfilePicture();
+				this.doingAxios = false;
 			} else {
 				this.getUser();
 			}
@@ -331,6 +355,26 @@ export default {
 				});
 		},
 		/*
+		 * resetPassword()
+		 */
+		resetPassword() {
+			this.password.id = this.userId;
+			this.axios.post("/users/" + this.userId + "/reset-password", this.password)
+				.then(() => {
+					this.errors = [];
+					this.password = {};
+					this.$noty.success("Password updated successfully.");
+				})
+				.catch(err => {
+					if (err.response.status === 400) {
+						this.validate(err.response.data.data.errors);
+						this.$noty.error("Fix the errors before resetting password.");
+						return;
+					}
+					this.$noty.error("Error occurred, please refresh the page.");
+				})
+		},
+		/*
 		 * getUser()
 		 * Obtains data from API, if the user being edited is not the one
 		 * logged in.
@@ -355,21 +399,6 @@ export default {
 				.finally(() => {
 					this.doingAxios = false;
 				});
-		},
-		/*
-		 * validatePassword()
-		 * Check if the new nad confirm passwords match
-		 */
-		validatePassword() {
-			clearTimeout(this.timeout);
-
-			this.timeout = setTimeout(() => {
-				if (this.newPassword !== "" && this.newPassword !== this.confirmPassword && this.confirmPassword !== "") {
-					this.$set(this.errors, 'password', "The new password & confirm password must match.")
-				} else {
-					this.$delete(this.errors, 'password')
-				}
-			}, 1000);
 		},
 		/*
  		 * validate()
@@ -434,31 +463,37 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-	.profile {
+.profile {
 
-		// Password
-		// =========================================================================
+	// Password
+	// =========================================================================
 
-		&-confirm-password {
-			margin-top: 10px;
-		}
+	&-confirm-password {
+		margin-top: 10px;
+	}
 
-		// Picture
-		// =========================================================================
+	&-reset-password {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
 
-		&-picture {
-			width: 300px;
-			height: 260px;
+	// Picture
+	// =========================================================================
 
-			img {
-				width: 100%;
-				height: 100%;
-				object-fit: cover;
-				border-radius: 6px;
-				//border-radius: 100%;
-				box-shadow: 0 0 12px 2px rgba($black, 0.12);
-			}
+	&-picture {
+		width: 300px;
+		height: 260px;
+
+		img {
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+			border-radius: 6px;
+			//border-radius: 100%;
+			box-shadow: 0 0 12px 2px rgba($black, 0.12);
 		}
 	}
+}
 
 </style>

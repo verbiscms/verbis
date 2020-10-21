@@ -206,8 +206,6 @@
 					</div><!-- /Col -->
 				</div><!-- /Row -->
 			</transition>
-			{{ checked }}
-			{{ checkedAll }}
 		</div><!-- /Container -->
 		<!-- =====================
 			Delete Modal
@@ -352,7 +350,6 @@ export default {
 		filterTabs(tab) {
 			this.activeTab = tab;
 			let filter = "";
-			console.log(tab);
 			switch (tab) {
 				case 1: {
 					filter = '{"status":[{"operator":"NOT LIKE", "value": "bin" }]}';

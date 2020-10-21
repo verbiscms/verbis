@@ -2,6 +2,7 @@ package validation
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/helpers"
 	pkgValidate "github.com/go-playground/validator/v10"
 	"regexp"
 	"strings"
@@ -97,6 +98,9 @@ func (v* Validation) CmdCheck(key string, data interface{}) error {
 // error messages.
 func (v* Validation) message(kind string, field string, param string) string {
 	var errorMsg string
+
+	field = helpers.StringsAddSpace(field)
+	param = helpers.StringsAddSpace(param)
 
 	switch kind {
 	case "required":
