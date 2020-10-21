@@ -201,6 +201,8 @@ func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 		return domain.User{}, err
 	}
 
+	fmt.Println(u.Password)
+
 	hashedPassword, err := encryption.HashPassword(u.Password)
 	if err != nil {
 		return domain.User{}, err
