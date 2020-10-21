@@ -2,6 +2,9 @@ package models
 
 import (
 	"bytes"
+	"github.com/chai2010/webp"
+
+	//	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
@@ -13,12 +16,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/kamoljan/webp"
-	log "github.com/sirupsen/logrus"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -259,18 +261,18 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 
 	// Convert to WebP
 	if s.convertWebP {
-		//decodedImage, err := s.decodeImage(file, mimeType)
-		//if err != nil {
-			//log.WithFields(log.Fields{"error": err}).Error()
-		//}
-		//go convertWebP(*decodedImage, path + "/" + key + extension, s.compression)
+		decodedImage, err := s.decodeImage(file, mimeType)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error()
+		}
+		go convertWebP(*decodedImage, path + "/" + key.String() + extension, s.compression)
 	}
 
 	// Resize
-	sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
+	//sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
 
 	// Insert into the database
-	dm, err := s.insert(key, cleanName + extension, path, int(file.Size), mimeType, sizes, userId)
+	dm, err := s.insert(key, cleanName + extension, path, int(file.Size), mimeType, nil, userId)
 	if err != nil {
 		return domain.Media{}, err
 	}
@@ -389,9 +391,8 @@ func (s *MediaStore) Delete(id int) error {
 	}
 
 	// Delete the main file
-	if err := files.CheckAndDelete(m.FilePath + "/" + m.UUID.String() + extension); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the original media file with the ID: %v", id), Operation: op, Err: err}
-	}
+	go files.CheckAndDelete(m.FilePath + "/" + m.UUID.String() + extension)
+	go files.CheckAndDelete(m.FilePath + "/" + m.UUID.String() + extension + ".webp")
 
 	// Delete the sizes and webp versions if stored
 	sizes, err := s.unmarshalSizes(m)
@@ -477,7 +478,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.convertWebP {
-			//go convertWebP(resized, filePath, s.compression)
+			go convertWebP(resized, filePath, s.compression)
 		}
 	}
 
@@ -496,7 +497,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.convertWebP {
-			//go convertWebP(resized, filePath, s.compression)
+			go convertWebP(resized, filePath, s.compression)
 		}
 	}
 
@@ -515,24 +516,19 @@ func resizeImage(srcImage image.Image, width int, height int, crop bool) image.I
 // Converts an image to webp based on compression and decoded image.
 // Compression level is also set.
 func convertWebP(image image.Image, path string, compression int) {
-	const op = "MediaRepository.insert"
+	const op = "MediaRepository.convertWebP"
 
 	var buf bytes.Buffer
-	var opts = webp.Options{
-		Lossless: true,
-		Quality:  float32(compression),
-	}
 
-	if err := webp.Encode(&buf, image, &opts); err != nil {
-		log.Error(err)
+	if err := webp.Encode(&buf, image, &webp.Options{Lossless: true}); err != nil {
+		log.Println(err)
 	}
 
 	if err := ioutil.WriteFile(path + ".webp", buf.Bytes(), 0666); err != nil {
-		log.Error(err)
+		log.Println(err)
 	}
-
-	log.Info("WebP conversion ok with path: " + path + ".webp")
 }
+
 
 // createDirectory creates the media directory year path if the organise year variable in the media
 // store is set to true. Date and year folders are created recursively.

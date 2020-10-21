@@ -9,7 +9,7 @@ require (
 	github.com/SparkPost/gosparkpost v0.2.0
 	github.com/ainsleyclark/golang-sql-migrate v1.0.1 // indirect
 	github.com/briandowns/spinner v1.11.1
-	github.com/chai2010/webp v1.1.0 // indirect
+	github.com/chai2010/webp v1.1.0
 	github.com/codegangsta/envy v0.0.0-20141216192214-4b78388c8ce4 // indirect
 	github.com/codegangsta/gin v0.0.0-20171026143024-cafe2ce98974 // indirect
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
@@ -29,18 +29,16 @@ require (
 	github.com/go-playground/validator/v10 v10.3.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.4.2 // indirect
-	github.com/golang/snappy v0.0.1 // indirect
+	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/martian v2.1.0+incompatible // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gookit/color v1.2.7
-	github.com/harukasan/go-libwebp v0.0.0-20190703060927-68562c9c99af // indirect
 	github.com/hashicorp/go-uuid v1.0.1 // indirect
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/joho/godotenv v1.3.0
 	github.com/json-iterator/go v1.1.10 // indirect
-	github.com/kamoljan/webp v0.0.0-20141012125539-551bf556e428
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible // indirect
 	github.com/lib/pq v1.8.0 // indirect
@@ -50,7 +48,7 @@ require (
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/nickalie/go-binwrapper v0.0.0-20190114141239-525121d43c84 // indirect
-	github.com/nickalie/go-webpbin v0.0.0-20170427122138-7e79cf5bb01e // indirect
+	github.com/nickalie/go-webpbin v0.0.0-20170427122138-7e79cf5bb01e
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
@@ -67,7 +65,7 @@ require (
 	golang.org/x/crypto v0.0.0-20200820211705-5c72a883971a
 	golang.org/x/image v0.0.0-20200801110659-972c09e46d76 // indirect
 	golang.org/x/net v0.0.0-20201016165138-7b1cca2348c0 // indirect
-	golang.org/x/tools v0.0.0-20191112195655-aa38f8e97acc
+	golang.org/x/tools v0.0.0-20191112195655-aa38f8e97acc // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect
