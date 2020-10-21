@@ -113,7 +113,7 @@
 										<i class="feather feather-settings"></i>
 										<span>General</span>
 									</router-link>
-								</li><!-- /Code Injection -->
+								</li><!-- /General -->
 								<!-- Code Injection -->
 								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-code-injection' }" @click="$emit('close', true)">
 									<router-link class="aside-nav-link" :to="{ name: 'settings-code-injection' }">
@@ -325,7 +325,7 @@ $aside-padding-desk: 26px;
 	left: 0;
 	top: 0;
 	width: $sidebar-width-mob;
-	height: 100vh;
+	height: calc(100vh - #{$mobile-menu-height-mob});
 	overflow-y: scroll;
 	background-color: $bg-color;
 	transform: translateX(-100%);
@@ -526,6 +526,7 @@ $aside-padding-desk: 26px;
 
 	@include media-tab {
 		width: $sidebar-width-tab;
+		height: calc(100vh - #{$mobile-menu-height-tab});
 
 		&-logo,
 		&-block,
@@ -539,6 +540,7 @@ $aside-padding-desk: 26px;
 
 	@include media-desk {
 		width: $sidebar-width-desk;
+		height: 100vh;
 		transform: none;
 		transition: none;
 		z-index: 8;

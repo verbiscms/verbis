@@ -36,7 +36,7 @@
 			<!-- =====================
 				Editor
 				===================== -->
-			<div class="col-12 col-desk-4 col-hd-3 order-desk-last media-col">
+			<div v-if="options" class="col-12 col-desk-4 col-hd-3 order-desk-last media-col">
 				<div v-if="selectedMedia">
 					<!-- Options -->
 					<form class="form media-options">
@@ -120,7 +120,7 @@
 			<!-- =====================
 				Media Items
 				===================== -->
-			<div class="col-12 media-col media-col-item" :class="{ 'col-desk-8 col-hd-9' : media.length }" @dragover.prevent.stop="handleDrag">
+			<div class="col-12 media-col media-col-item" :class="{ 'col-desk-8 col-hd-9' : media.length && options }" @dragover.prevent.stop="handleDrag">
 				<transition name="trans-fade-quick">
 					<div class="media-dragging" v-if="dragging" :class="{ 'media-dragging-centered' : !media.length || media.length < 15 }" @drop.prevent.stop="addFile($event, false)" @dragexit.stop="dragging = false" @dragleave.stop="dragging = false" @mouseleave="dragging = false">
 						<i class="feather feather-upload-cloud"></i>
@@ -140,8 +140,9 @@
 						:class="{ 'media-item-active' : selectedMedia && selectedMedia['uuid'] === item['uuid'],
 						'media-item-plain' : item.loading,
 						'media-item-bulk' : checked.includes(item.id),
-						'media-item-icon' : getMediaType(item.type) !== 'image' && getMediaType(item.type) !== 'video' || (item['unsupported']) ,
-						'media-item-error' : item.loading && item['unsupported'] }">
+						'media-item-icon' : getMediaType(item.type) !== 'image' && getMediaType(item.type) !== 'video' || (item['unsupported']),
+						'media-item-error' : item.loading && item['unsupported'],
+						'media-item-no-options' : !options }">
 						<!-- Checkbox -->
 						<div class="form-checkbox media-item-checkbox">
 							<input type="checkbox" checked :id="'media-item-' + item.uuid"/>
@@ -242,6 +243,10 @@ export default {
 		rows: {
 			type: Number,
 			default: 6,
+		},
+		options: {
+			type: Boolean,
+			defualt: true,
 		}
 	},
 	components: {
@@ -1115,7 +1120,7 @@ export default {
 	@include media-desk {
 
 		&-modal {
-			height: 80vh;
+			height: 70vh;
 			max-height: 825px;
 		}
 
@@ -1131,9 +1136,12 @@ export default {
 			flex-basis: calc(33.33333% - 10px);
 			margin-right: 10px;
 			height: 180px;
+
+			&-no-options {
+				flex-basis: calc(25% - 15px);
+			}
 		}
 	}
-
 
 	// HD
 	// =========================================================================
@@ -1144,6 +1152,10 @@ export default {
 			height: 220px;
 			flex-basis: calc(20% - 15px);
 			margin-right: 15px;
+
+			&-no-options {
+				flex-basis: calc(16.6666667% - 15px);
+			}
 		}
 	}
 }

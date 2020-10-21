@@ -192,7 +192,7 @@
 			===================== -->
 		<Modal :show.sync="showImageModal" class="modal-full-width modal-hide-close">
 			<template slot="text">
-				<Uploader :rows="3" :modal="true" :filters="false" class="media-modal" @insert="insertProfilePicture">
+				<Uploader :rows="3" :modal="true" :filters="false" class="media-modal" @insert="insertProfilePicture" :options="false">
 					<template slot="close">
 						<button class="btn btn-margin-right btn-icon-mob" @click.prevent="showImageModal = false">
 							<i class="feather feather-x"></i>

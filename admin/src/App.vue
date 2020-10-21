@@ -5,14 +5,9 @@
 	<div id="app">
 		<!-- Sidebar -->
 		<Sidebar v-if="isLoggedIn" :open="sidebarOpen" @close="sidebarOpen = false"></Sidebar>
+		<!-- Mobile Menu -->
+		<MobileMenu v-if="isLoggedIn" :sidebar.sync="sidebarOpen"></MobileMenu>
 		<main>
-			<!-- Hamburger -->
-			<input class="hamburger-checkbox" type="checkbox" id="hamburger-check" v-model="sidebarOpen" />
-			<div class="hamburger">
-				<label for="hamburger-check" class="hamburger-box">
-					<span class="hamburger-inner"></span>
-				</label>
-			</div>
 			<!-- Main Router View -->
 			<div class="router">
 				<span class="router-overlay" :class="{ 'router-overlay-active' : sidebarOpen }" @click="sidebarOpen = false"></span>
@@ -28,10 +23,12 @@
 <script>
 
 import Sidebar from '@/components/layout/Sidebar.vue'
+import MobileMenu from "@/components/layout/MobileMenu";
 
 export default {
 	name: 'App',
 	components: {
+		MobileMenu,
 		Sidebar,
 	},
 	metaInfo: {
