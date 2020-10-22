@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
-	"golang.org/x/crypto/bcrypt"
 	"strings"
 )
 
@@ -59,8 +58,8 @@ func (s *UserStore) Get(meta http.Params) ([]domain.User, int, error) {
 	const op = "UserRepository.Get"
 
 	var u []domain.User
-	q := fmt.Sprintf("SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id")
+	q := fmt.Sprintf("SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id")
+	countQ := fmt.Sprintf("SELECT COUNT(*) FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id")
 
 	// Check if there is a role filter, for example
 	// roles.name and reorder meta.Filters
@@ -111,7 +110,7 @@ func (s *UserStore) Get(meta http.Params) ([]domain.User, int, error) {
 func (s *UserStore) GetById(id int) (domain.User, error) {
 	const op = "UserRepository.GetById"
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id WHERE users.id = ?", id); err != nil {
+	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE users.id = ?", id); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the ID: %d", id), Operation: op, Err: err}
 	}
 	return u, nil
@@ -122,7 +121,7 @@ func (s *UserStore) GetById(id int) (domain.User, error) {
 func (s *UserStore) GetOwner() (domain.User, error) {
 	const op = "UserRepository.GetOwner"
 	var u domain.User
-	if err := s.db.Get(&u,"SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
+	if err := s.db.Get(&u,"SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the owner of the site", Operation: op, Err: err}
 	}
 	return u, nil
@@ -230,11 +229,15 @@ func (s *UserStore) Delete(id int) error {
 	}
 
 	if u.Role.Name == "Owner" {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Can not delete the owner of the site"), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The owner of the site cannot be deleted."), Operation: op, Err: err}
 	}
 
 	if _, err := s.db.Exec("DELETE FROM users WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete user with the ID: %d", id), Operation: op, Err: err}
+	}
+
+	if _, err := s.db.Exec("DELETE FROM user_roles WHERE user_id = ?", id); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not from the user roles with the ID: %d", id), Operation: op, Err: err}
 	}
 
 	return nil
@@ -246,16 +249,6 @@ func (s *UserStore) Delete(id int) error {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *UserStore) ResetPassword(id int, reset domain.UserPasswordReset) error {
 	const op = "UserRepository.ResetPassword"
-
-	u, err := s.GetById(reset.Id);
-	if err != nil {
-		return err
-	}
-
-	err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(reset.CurrentPassword))
-	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "The current password doesnt match our records.", Operation: op, Err: err}
-	}
 
 	hashedPassword, err := encryption.HashPassword(reset.NewPassword)
 	if err != nil {

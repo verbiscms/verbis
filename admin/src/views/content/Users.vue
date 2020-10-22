@@ -4,7 +4,6 @@
 <template>
 	<section>
 		<div class="auth-container">
-			{{ roles }}
 			<!-- Header -->
 			<div class="row">
 				<div class="col-12">
@@ -17,14 +16,13 @@
 						<div class="header-actions">
 							<form class="form form-actions">
 								<div class="form-select-cont form-input">
-									<select class="form-select">
+									<select class="form-select" v-model="bulkType">
 										<option value="" disabled selected>Bulk actions</option>
-										<option value="restore">Restore</option>
 										<option value="delete">Delete permanently</option>
 									</select>
 								</div>
-								<button class="btn btn-fixed-height btn-margin btn-white" :class="{ 'btn-loading' : savingBulk }" @click.prevent="doBulkAction">Apply</button>
-								<div class="btn btn-icon btn-orange">
+								<button class="btn btn-fixed-height btn-margin btn-white" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
+								<div class="btn btn-icon btn-orange" @click="showCreateModal = true">
 									<i class="fal fa-plus"></i>
 								</div>
 							</form>
@@ -45,10 +43,14 @@
 						<template slot="item">Editor</template>
 						<template slot="item">Admin</template>
 					</Tabs>
+					<!-- Spinner -->
+					<div v-if="doingAxios" class="media-spinner spinner-container">
+						<div class="spinner spinner-large spinner-grey"></div>
+					</div>
 					<!-- =====================
 						Users
 						===================== -->
-					<div v-if="!doingAxios">
+					<div v-else>
 						<transition name="trans-fade-quick" mode="out-in">
 							<div class="table-wrapper" v-if="users.length">
 								<div class="table-scroll table-with-hover">
@@ -67,9 +69,10 @@
 													<span>Name</span>
 													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['first_name'] !== 'asc' }"></i>
 												</th>
-												<th class="table-order" @click="changeOrderBy('role.name')" :class="{ 'active' : activeOrder === 'role.name' }">
+												<!-- @click="changeOrderBy('role.name')" :class="{ 'active' : activeOrder === 'role.name' }" -->
+												<th class="table-order">
 													<span>Role</span>
-													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['role.name'] !== 'asc' }"></i>
+<!--													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['role.name'] !== 'asc' }"></i>-->
 												</th>
 												<th class="table-order" @click="changeOrderBy('created_at')" :class="{ 'active' : activeOrder === 'created_at' }">
 													<span>Created at</span>
@@ -121,7 +124,7 @@
 																<span>Edit</span>
 															</router-link>
 															<div class="popover-line"></div>
-															<div class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="handleDelete(item.post.id);">
+															<div class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="handleDelete(user);">
 																<i class="feather feather-trash-2"></i>
 																<span>Delete</span>
 															</div>
@@ -138,12 +141,12 @@
 							</div><!-- /Table Wrapper -->
 							<Alert v-else colour="orange">
 								<slot>
-<!--									<h3>No {{ resource['friendly_name'].toLowerCase() }} available. </h3>-->
+									<h3>No {{ activeTabName }} users available. </h3>
 									<p>To create a new one, click the plus sign above.</p>
 								</slot>
 							</Alert>
 						</transition>
-					</div><!-- /Doing Axios -->
+					</div>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 			<transition name="archive-pagination-trans">
@@ -157,59 +160,20 @@
 		<!-- =====================
 			Delete Modal
 			===================== -->
-		<Modal :show.sync="showDeleteModal">
+		<Modal :show.sync="showDeleteModal" class="modal-with-icon modal-with-warning users-delete">
 			<template slot="button">
-				<button class="btn" @click="deletePost(false); savingBulk = true;">Delete</button>
+				<button class="btn" :class="{ 'btn-loading' : isDeleting }" @click="deleteUser">Delete</button>
 			</template>
 			<template slot="text">
 				<h2>Are you sure?</h2>
-				<p v-if="checked.length === 1">Are you sure want to delete this user }}?</p>
+				<p v-if="selectedUser">Are you sure want to delete {{ selectedUser['first_name'] }}?</p>
 				<p v-else>Are you sure want to delete {{ checked.length }} users?</p>
 			</template>
 		</Modal>
 		<!-- =====================
 			Create Modal
 			===================== -->
-		<Modal :show.sync="showCreateModal" class="users-modal-create">
-			<template slot="button">
-				<button class="btn">Create</button>
-			</template>
-			<template slot="text">
-				<div class="row">
-					<div class="col-12">
-						<h2>New User</h2>
-					</div><!-- /Col -->
-					<div class="col-12 col-desk-6">
-						<div class="form-group">
-							<label class="form-label" for="user-first-name">First name:</label>
-							<input class="form-input form-input-white" id="user-first-name" type="text" v-model="newUser['first_name']">
-						</div>
-						<div class="form-group">
-							<label class="form-label" for="user-email">Email:</label>
-							<input class="form-input form-input-white" id="user-email" type="text" v-model="newUser['email']">
-						</div>
-						<div class="form-group">
-							<label class="form-label" for="user-password">Password:</label>
-							<input class="form-input form-input-white" id="user-password" type="text">
-						</div>
-					</div><!-- /Col -->
-					<div class="col-12 col-desk-6">
-						<div class="form-group">
-							<label class="form-label" for="user-last-name">Last name:</label>
-							<input class="form-input form-input-white" id="user-last-name" type="text" v-model="newUser['last_name']">
-						</div>
-						<div class="form-group">
-							<label class="form-label" for="user-role">Role:</label>
-							<input class="form-input form-input-white" id="user-role" type="text">
-						</div>
-						<div class="form-group">
-							<label class="form-label" for="user-role">Confirm Password:</label>
-							<input class="form-input form-input-white" id="user-confirm-password" type="text">
-						</div>
-					</div><!-- /Col -->
-				</div><!-- /Row -->
-			</template>
-		</Modal>
+		<CreateUser :show.sync="showCreateModal"></CreateUser>
 	</section>
 </template>
 
@@ -224,11 +188,13 @@ import Modal from "@/components/modals/General";
 import Popover from "@/components/misc/Popover";
 import Pagination from "@/components/misc/Pagination";
 import Tabs from "../../components/misc/Tabs";
+import CreateUser from "@/components/modals/CreateUser";
 
 export default {
 	name: "Users",
 	title: "Users",
 	components: {
+		CreateUser,
 		Alert,
 		Breadcrumbs,
 		Modal,
@@ -239,8 +205,12 @@ export default {
 	data: () => ({
 		doingAxios: true,
 		users: [],
+		selectedUser: false,
 		roles: [],
+		errors: [],
 		paginationObj: {},
+		activeTab: 1,
+		activeTabName: "all",
 		order: "",
 		orderBy: {
 			title: "asc",
@@ -251,20 +221,18 @@ export default {
 		activeOrder: "",
 		filter: "",
 		pagination: "",
-		savingBulk: false,
 		bulkType: "",
 		checked: [],
 		activeAction: "",
 		showDeleteModal: false,
-		showCreateModal: true,
+		showCreateModal: false,
 		selectedDeleteId: null,
-		newUser: {
+		isDeleting: false,
+		isDoingBulk: false,
 
-		}
 	}),
 	mounted() {
 		this.getUsers();
-		this.getRoles();
 	},
 	methods: {
 		/*
@@ -296,21 +264,61 @@ export default {
 				});
 		},
 		/*
-		 * getRoles()
-		 * Obtain all roles from API for use with creating a new user.
+		 * deleteUser()
+		 * Marking the interface as deleting (for the button) and detected if the
+		 * user has been selected by the actions or bulk, push all of the
+		 * promises to an array and send all requests.
 		 */
-		getRoles() {
-			this.axios.get("/roles")
-				.then(res => {
-					this.roles = res.data.data;
+		deleteUser() {
+			this.isDeleting = false;
+
+			const promises = [];
+			let toDelete = this.selectedUser ? [this.selectedUser.id] : this.checked;
+
+			toDelete.forEach(id => {
+				promises.push(this.deleteUserAxios(id));
+			});
+
+			// Send all requests
+			Promise.all(promises)
+				.then(() => {
+					const successMsg = toDelete.length === 1 ? "User deleted successfully" : "Users deleted successfully."
+					this.$noty.success(successMsg);
+					this.bulkType = "";
+					this.getUsers();
 				})
 				.catch(err => {
-					console.log(err)
+					console.log(err);
+					if (err.response.status === 400) {
+						this.$noty.error(err.response.data.message);
+						return;
+					}
 					this.$noty.error("Error occurred, please refresh the page.");
 				})
 				.finally(() => {
-					this.doingAxios = false;
+					this.activeAction = "";
+					this.checked = [];
+					this.checkedAll = false;
+					this.showDeleteModal = false;
+					setTimeout(() => {
+						this.isDeleting = false;
+					}, 150)
 				});
+		},
+		/*
+		 * async deleteUserAxios()
+		 */
+		async deleteUserAxios(id) {
+			return await this.axios.delete("/users/" + id);
+		},
+		/*
+		 * handleDelete()
+		 * Changes the selected user to the given input,
+		 * & show's the delete user modal.
+		 */
+		handleDelete(user) {
+			this.selectedUser = user;
+			this.showDeleteModal = true;
 		},
 		/*
 		 * removeSelf()
@@ -339,27 +347,37 @@ export default {
 		 * filterTabs()
 		 * Update the filter by string when tabs are clicked, obtain users.
 		 */
-		filterTabs(e) {
-			this.activeTab = e;
+		filterTabs(tab) {
+			this.pagination = "page=1";
+			this.activeTab = tab;
 			let filter = "";
-			switch (e) {
+			switch (tab) {
+				case 1: {
+					this.activeTabName = "all";
+					break;
+				}
 				case 2: {
-					filter = '{"roles.name":[{"operator":"=", "value": "b=Banned"}]}';
+					this.activeTabName = "banned";
+					filter = '{"roles.name":[{"operator":"=", "value": "Banned"}]}';
 					break;
 				}
 				case 3: {
+					this.activeTabName = "contributor";
 					filter = '{"roles.name":[{"operator":"=", "value": "Contributor"}]}';
 					break;
 				}
 				case 4: {
+					this.activeTabName = "author";
 					filter = '{"roles.name":[{"operator":"=", "value": "Author"}]}';
 					break;
 				}
 				case 5: {
+					this.activeTabName = "editor";
 					filter = '{"roles.name":[{"operator":"=", "value": "Editor"}]}';
 					break;
 				}
 				case 6: {
+					this.activeTabName = "administrator";
 					filter = '{"roles.name":[{"operator":"=", "value": "Administrator"}]}';
 					break;
 				}
@@ -377,6 +395,30 @@ export default {
 			this.getUsers();
 		},
 		/*
+		 * doBulkAction()
+		 * When bulk action is clicked, this function will call drafts or delete.
+		 * Validation on bulk type action and checked length performed.
+		 */
+		doBulkAction() {
+			this.isDoingBulk = true;
+
+			// Check if there no items
+			if (!this.checked.length) {
+				this.$noty.warning("Select items in order to apply bulk actions");
+				setTimeout(() => {
+					this.isDoingBulk = false;
+				}, 200)
+				return
+			}
+			// Delete
+			if (this.bulkType === "delete") {
+				setTimeout(() => {
+					this.isDoingBulk = false;
+				}, 200)
+				this.showDeleteModal = true;
+			}
+		},
+		/*
 		 * updateActions()
 		 *  Update the action uuid for clearing the popover.
 		 */
@@ -389,11 +431,16 @@ export default {
 		getInitials(user) {
 			return user['first_name'].charAt(0) + user['last_name'].charAt(0).toUpperCase();
 		},
-		makeid(length) {
-			let result = '';
-			const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@:\\/@£$%=^&&*()_+?><';
-			const charactersLength = characters.length;
-			for (let i = 0; i < length; i++) {
+		/*
+		 * generatePassword()
+		 * Generate a random password with the length of 16
+		 */
+		generatePassword() {
+			let result = "";
+			const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@:\\/@£$%=^&&*()_+?><',
+				charactersLength = characters.length,
+				lengthOfPassword = 16;
+			for (let i = 0; i < lengthOfPassword; i++) {
 				result += characters.charAt(Math.floor(Math.random() * charactersLength));
 			}
 			return result;
@@ -436,16 +483,6 @@ export default {
 <style lang="scss">
 
 .users {
-
-	// Create Modal
-	// =========================================================================
-
-	&-modal-create {
-
-		.modal-container {
-			max-width: 700px;
-		}
-	}
 
 	// Table
 	// =========================================================================

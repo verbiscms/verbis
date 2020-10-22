@@ -23,7 +23,7 @@
 				<slot name="button"></slot>
 			</div><!-- /Container -->
 			<!-- /Overlay -->
-			<div class="modal-overlay"></div>
+			<div class="modal-overlay" @click="showModal = false"></div>
 		</div><!-- /Modal -->
 	</transition>
 </template>
@@ -77,7 +77,7 @@ $modal-transition-time: 400ms;
 	left: 0;
 	overflow-y: hidden;
 	padding: 75px 0;
-	z-index: 99999999;
+	z-index: 9999;
 
 	// Icon
 	// ==========================================================================
@@ -93,7 +93,6 @@ $modal-transition-time: 400ms;
 			-webkit-text-fill-color: transparent;
 		}
 	}
-
 
 	// Full Width
 	// ==========================================================================
@@ -114,7 +113,6 @@ $modal-transition-time: 400ms;
 		margin-bottom: 1.6rem;
 
 		h2 {
-		//	text-align: center;
 			margin-bottom: 2px;
 		}
 
@@ -133,11 +131,33 @@ $modal-transition-time: 400ms;
 		right: 4px;
 		padding: 16px;
 		cursor: pointer;
+		z-index: 999;
 
 		i {
 			color: $secondary;
+			transition: color 100ms ease;
+			will-change: color;
+		}
+
+		&:hover i {
+			color: $orange;
 		}
 	}
+
+	// Sizes
+	// ==========================================================================
+
+	@include media-desk {
+
+		&-large {
+
+			#{$self}-container {
+				max-width: 700px;
+				min-width: 600px;
+			}
+		}
+	}
+
 
 	// Container
 	// ==========================================================================
@@ -171,7 +191,7 @@ $modal-transition-time: 400ms;
 		height: 100vh;
 		position: fixed;
 		display: block;
-		cursor: default;
+		cursor: pointer;
 		background: rgba($black, 0.2);
 		z-index: -1;
 		opacity: 0;

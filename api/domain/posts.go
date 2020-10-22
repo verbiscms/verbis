@@ -40,6 +40,7 @@ type PostAuthor struct {
 	LastName			string 			`json:"last_name"`
 	Email				string			`json:"email"`
 	Password			string			`json:"-"`
+	ConfirmPassword		string			`json:"-"`
 	Website				string			`json:"website"`
 	Facebook			*string			`json:"facebook"`
 	Twitter				*string			`json:"twitter"`
