@@ -126,15 +126,15 @@ export default new Vuex.Store({
 		getProfilePicture() {
 			if (!this.state.userInfo['profile_picture_id']) return;
 			return new Promise((resolve, reject) => {
+				// NOTE: Don't check if the store already contains profile picture,
+				// otherwise sidebar won't be updated.
 				axios.get('/media/' + this.state.userInfo['profile_picture_id'])
 					.then(res => {
-						console.log(res);
 						const picture = res.data.data;
 						this.commit("setProfilePicture", picture)
 						resolve(picture)
 					})
 					.catch(err => {
-						console.log("in err")
 						this.commit("setProfilePicture", false)
 						reject(err)
 					});
@@ -158,8 +158,7 @@ export default new Vuex.Store({
 				} else {
 					resolve(this.state.roles)
 				}
-			})
-
+			});
 		},
 	},
 	modules: {},
