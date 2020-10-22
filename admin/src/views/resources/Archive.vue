@@ -28,11 +28,12 @@
 									</select>
 									<select class="form-select" v-model="bulkType" v-else>
 										<option value="" disabled selected>Bulk actions</option>
+										<option value="publish">Publish</option>
 										<option value="draft">Move to draft</option>
 										<option value="bin">Move to bin</option>
 									</select>
 								</div>
-								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : savingBulk }" @click.prevent="doBulkAction">Apply</button>
+								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
 								<router-link class="btn btn-icon btn-orange btn-text-mob" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
 									<i class="fal fa-plus"></i>
 									<span>New {{ resource['singular_name'] }}</span>
@@ -91,7 +92,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr v-for="(item, itemIndex) in posts" :key="item.post.uuid">
+											<tr class="trans-fade-in-anim-slow" v-for="(item, itemIndex) in posts" :key="item.post.uuid">
 												<!-- Checkbox -->
 												<td class="table-checkbox">
 													<div class="form-checkbox form-checkbox-dark">
@@ -213,7 +214,7 @@
 			===================== -->
 		<Modal :show.sync="showDeleteModal" class="modal-with-icon modal-with-warning">
 			<template slot="button">
-				<button class="btn" @click="deletePost(false);">Delete</button>
+				<button class="btn" :class="{ 'btn-loading' : isDeleting }" @click="deletePost(false);">Delete</button>
 			</template>
 			<template slot="text">
 				<h2>Are you sure?</h2>
@@ -264,12 +265,13 @@ export default {
 		activeOrder: "",
 		filter: "",
 		pagination: "",
-		savingBulk: false,
 		bulkType: "",
 		checked: [],
 		activeAction: "",
 		showDeleteModal: false,
 		selectedDeleteId: null,
+		isDoingBulk: false,
+		isDeleting: false,
 	}),
 	mounted() {
 		this.filterTabs(1);
@@ -311,6 +313,42 @@ export default {
 				});
 		},
 		/*
+		 * deletePost()
+		 */
+		deletePost() {
+			this.isDeleting = true;
+
+			const promises = [];
+			this.checked.forEach(id => {
+				promises.push(this.deleteUserAxios(id));
+			});
+
+			// Send all requests
+			Promise.all(promises)
+				.then(() => {
+					this.$noty.success("Posts deleted successfully.");
+					this.getPosts();
+				})
+				.catch(err => {
+					console.log(err);
+					this.$noty.error("Error occurred, please refresh the page.");
+				})
+				.finally(() => {
+					this.activeAction = "";
+					this.checked = [];
+					this.checkedAll = false;
+					this.showDeleteModal = false;
+					this.bulkType = "";
+					this.isDeleting = false;
+				});
+		},
+		/*
+		 * async deletePostAxios()
+		 */
+		async deleteUserAxios(id) {
+			return await this.axios.delete("/posts/" + id);
+		},
+		/*
 		 * handleDelete()
 		 * Pushes ID to array on single click (not bulk action) &
 		 * show the delete post modal.
@@ -320,29 +358,48 @@ export default {
 			this.showDeleteModal = true;
 		},
 		/*
-		 * deletePost()
+		 * updateStatus()
 		 */
-		deletePost() {
-			this.savingBulk = true;
-			this.checked.forEach(id => {
-				this.axios.delete("/posts/" + id)
-					.then(() => {
-						this.$noty.success("Posts deleted successfully.");
-						this.getPosts();
-					})
-					.catch(err => {
-						console.log(err);
-						this.$noty.error("Error occurred, please refresh the page.");
-					})
-					.finally(() => {
-						this.savingBulk = false;
-						this.showDeleteModal = false;
-						this.activeAction = "";
-						this.checked = [];
-						this.checkedAll = [];
-						this.bulkType = "";
-					});
+		updateStatus(id = false, status = 'draft') {
+			let checkedArr = [];
+			if (id) {
+				checkedArr.push(id);
+			} else {
+				checkedArr = this.checked;
+			}
+
+			const promises = [];
+			checkedArr.forEach(id => {
+				const post =  this.getPostsById(id).post
+				post.status = status;
+				promises.push(this.updateStatusAxios(id, post));
 			});
+
+			Promise.all(promises)
+				.then(() => {
+					this.$noty.success("Posts updated successfully.");
+					this.getPosts();
+				})
+				.catch((err) => {
+					console.log(err);
+					this.$noty.error("Error occurred, please refresh the page.");
+				})
+				.finally(() => {
+					this.activeAction = "";
+					this.checked = [];
+					this.checkedAll = false;
+					this.showDeleteModal = false;
+					this.bulkType = "";
+					setTimeout(() => {
+						this.isDoingBulk = false;
+					}, 150);
+				});
+		},
+		/*
+		 * async deletePostAxios()
+		 */
+		async updateStatusAxios(id, post) {
+			return await this.axios.put("/posts/" + id, post);
 		},
 		/*
 		 * setResource()
@@ -357,7 +414,7 @@ export default {
 				"singular_name": "Page",
 				"slug": "",
 				"icon": 'fal fa-file'
-			} : resource
+			} : resource;
 		},
 		/*
 		 * changeOrderBy()
@@ -370,14 +427,8 @@ export default {
 			} else {
 				this.$set(this.orderBy, column, 'desc');
 			}
-			this.order = column + "," + this.orderBy[column]
-			this.getPosts()
-		},
-		/*
-		 * getPostsById()
-		 */
-		getPostsById(id) {
-			return this.posts.find(p => p.post.id === id)
+			this.order = column + "," + this.orderBy[column];
+			this.getPosts();
 		},
 		/*
 		 * filterTabs()
@@ -409,6 +460,7 @@ export default {
 					break;
 				}
 			}
+			this.checkedAll = false;
 			this.filter = filter;
 			this.getPosts();
 		},
@@ -434,11 +486,17 @@ export default {
 		 * Validation on bulk type action and checked length performed.
 		 */
 		doBulkAction() {
+			this.isDoingBulk = true;
+
+			// Check if there no items
 			if (!this.checked.length) {
 				this.$noty.warning("Select items in order to apply bulk actions");
-				this.savingBulk = false;
-				return
+				setTimeout(() => {
+					this.isDoingBulk = false;
+				}, 150);
+				return;
 			}
+
 			// Move to drafts / restore
 			if (this.bulkType === "draft" || this.bulkType === "restore") {
 				this.updateStatus(false, 'draft');
@@ -453,39 +511,14 @@ export default {
 				this.showDeleteModal = true;
 			} else {
 				this.$noty.warning("Select a bulk action.");
-				this.savingBulk = false;
+				this.isDoingBulk = false;
 			}
 		},
 		/*
-		 * updateStatus()
+		 * getPostsById()
 		 */
-		updateStatus(id = false, status = 'draft') {
-			let checkedArr = [];
-			if (id) {
-				checkedArr.push(id);
-			} else {
-				checkedArr = this.checked;
-			}
-			checkedArr.forEach(id => {
-				const post =  this.getPostsById(id).post
-				post.status = status;
-				this.axios.put("/posts/" + id, post)
-					.then(() => {
-						this.$noty.success("Posts updated successfully.");
-						this.getPosts();
-					})
-					.catch((err) => {
-						console.log(err);
-						this.$noty.error("Error occurred, please refresh the page.");
-					})
-					.finally(() => {
-						this.savingBulk = false;
-						this.activeAction = "";
-						this.checked = [];
-						this.checkedAll = false;
-						this.bulkType = "";
-					});
-			});
+		getPostsById(id) {
+			return this.posts.find(p => p.post.id === id)
 		},
 	},
 	computed: {
@@ -509,12 +542,12 @@ export default {
 		 */
 		checkedAll: {
 			get() {
-				return this.checked;
+				return this.checked.length === this.posts.length;
 			},
 			set(value) {
 				if (value) {
 					this.checked = this.posts.map(m => {
-						return m.post.id
+						return m.post.id;
 					});
 					return;
 				}
