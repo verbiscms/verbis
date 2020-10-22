@@ -308,9 +308,8 @@ export default {
 					this.checked = [];
 					this.checkedAll = false;
 					this.showDeleteModal = false;
-					setTimeout(() => {
-						this.isDeleting = false;
-					}, 150)
+					this.bulkType = "";
+					this.isDeleting = false;
 				});
 		},
 		/*
@@ -415,14 +414,15 @@ export default {
 				this.$noty.warning("Select items in order to apply bulk actions");
 				setTimeout(() => {
 					this.isDoingBulk = false;
-				}, 200)
+				}, 150)
 				return
 			}
+
 			// Delete
 			if (this.bulkType === "delete") {
 				setTimeout(() => {
 					this.isDoingBulk = false;
-				}, 200)
+				}, 150)
 				this.showDeleteModal = true;
 			}
 		},
@@ -476,7 +476,7 @@ export default {
 		 */
 		checkedAll: {
 			get() {
-				return false;
+				return this.checked.length === this.users.length;
 			},
 			set(value) {
 				if (value) {
