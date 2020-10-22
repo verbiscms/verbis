@@ -39,8 +39,6 @@ export default {
 				this.loading = false;
 			}, 100);
 		});
-
-
 	},
 	methods: {
 		/*
@@ -100,7 +98,7 @@ $tabs-underline-height: 3px;
 	position: relative;
 	display: flex;
 	flex-wrap: nowrap;
-	margin-bottom: 24px;
+	margin-bottom: $header-margin-bottom-mob;
 	width: 100%;
 	border-bottom: 1.4px solid $grey-light;
 	overflow-x: scroll;
@@ -183,7 +181,7 @@ $tabs-underline-height: 3px;
 	// =========================================================================
 
 	@include media-tab {
-		margin-bottom: 30px;
+		margin-bottom: $header-margin-bottom-tab;
 
 		&-item {
 			margin: 0 20px;
@@ -194,7 +192,7 @@ $tabs-underline-height: 3px;
 	// =========================================================================
 
 	@include media-desk {
-		margin-bottom: 2rem;
+		margin-bottom: $header-margin-bottom-desk;
 
 		&-item {
 			margin: 0 24px;

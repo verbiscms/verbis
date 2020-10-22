@@ -4,7 +4,9 @@
 // -----------------------------------------------------------------------------
 
 // Variables
-$table-padding: 24px 26px;
+$table-padding-mob: 16px 20px;
+$table-padding-tab: 20px 24px;
+$table-padding-desk: 24px 26px;
 $table-row-border-radius: 8px;
 
 .table {
@@ -33,13 +35,15 @@ $table-row-border-radius: 8px;
 		border-top: 1px solid $grey-light;
 	}
 
-	//Common props body & footer (td & th)
+	//Common props header, body & footer (td & th)
+	thead th,
 	tbody td,
 	tfoot th {
 		font-size: 14px;
-		padding: $table-padding;
+		padding: $table-padding-mob;
 		font-weight: 300;
 		text-align: left;
+		white-space: nowrap;
 	}
 
 	p {
@@ -52,7 +56,6 @@ $table-row-border-radius: 8px;
 	thead {
 		th {
 			font-size: 13px;
-			padding: $table-padding;
 			position: relative;
 			text-align: left;
 			height: 28px;
@@ -192,6 +195,41 @@ $table-row-border-radius: 8px;
 			span {
 				color: $primary;
 			}
+		}
+	}
+
+	// Mobile Only
+	// =========================================================================
+
+	@include media-mob-down {
+
+		&-header-checkbox,
+		&-checkbox {
+			display: none;
+		}
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+
+		thead th,
+		tbody td,
+		tfoot th {
+			padding: $table-padding-tab;
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+
+		thead th,
+		tbody td,
+		tfoot th {
+			padding: $table-padding-desk;
 		}
 	}
 }

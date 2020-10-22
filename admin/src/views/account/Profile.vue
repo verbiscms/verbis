@@ -6,19 +6,23 @@
 		<div class="auth-container">
 			<div class="row">
 				<div class="col-12">
-					<header class="header header-with-actions">
+					<header class="header header-with-actions header-margin-large">
 						<div class="header-title">
 							<h1 v-if="isSelf">Edit profile</h1>
 							<h1 v-else>Edit User {{ data['first_name'] }} {{ data['last_name'] }}</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-orange" @click.prevent="save" :class="{ 'btn-loading' : saving }">Update Profile</button>
+							<button class="btn btn-orange" @click.prevent="save" :class="{ 'btn-loading' : isSavingUser }">Update profile</button>
 						</div>
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<form class="form" v-if="!doingAxios">
+			<!-- Spinner -->
+			<div v-if="doingAxios" class="media-spinner spinner-container">
+				<div class="spinner spinner-large spinner-grey"></div>
+			</div>
+			<form class="form" v-else>
 				<!-- =====================
 					Basic Options
 					===================== -->
@@ -152,8 +156,8 @@
 							<div class="profile-reset-password">
 								<h2>Reset password</h2>
 								<div>
-									<button class="btn btn-orange btn-margin-right">Forgot Password?</button>
-									<button class="btn btn-orange" @click.prevent="resetPassword">Reset password</button>
+<!--									<button class="btn btn-orange btn-margin-right">Forgot Password?</button>-->
+									<button class="btn btn-orange" @click.prevent="resetPassword" :class="{ 'btn-loading' : isSavingPassword }">Reset password</button>
 								</div>
 							</div>
 						</div><!-- /Col -->
@@ -175,6 +179,7 @@
 						<div class="col-12 col-desk-4 col-hd-2">
 							<h4>Password</h4>
 							<p>Enter a new password, a minimum of 8 alphanumeric characters are required.</p>
+							<button class="btn profile-generate-pass" @click.prevent="generatePassword">Generate password</button>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
 							<FormGroup :error="errors['new_password']">
@@ -240,7 +245,6 @@ export default {
 	},
 	data: () => ({
 		doingAxios: true,
-		saving: false,
 		data: {
 			website: "",
 		},
@@ -250,11 +254,14 @@ export default {
 			"new_password": "",
 			"confirm_password": "",
 		},
+		media: [],
 		errors: [],
 		isSelf: false,
 		showImageModal: false,
 		profilePicture: false,
 		timeout: null,
+		isSavingUser: false,
+		isSavingPassword: false,
 		isGeneratedPassword: false,
 	}),
 	mounted() {
@@ -284,10 +291,10 @@ export default {
 				this.data = this.getUserInfo;
 				this.userId = this.data.id;
 				this.isSelf = true;
-				this.getProfilePicture();
 				this.doingAxios = false;
+				this.getMedia().then(() => this.getProfilePicture())
 			} else {
-				this.getUser();
+				Promise.all([this.getMedia(), this.getUser()]).then(() => this.getProfilePicture())
 			}
 		},
 		/*
@@ -295,7 +302,8 @@ export default {
 		 * Save the updated profile, check for field validation.
 		 */
 		save() {
-			this.saving = true;
+			this.isSavingUser = true;
+
 			if (this.errors.length) {
 				this.$noty.error("Fix the errors before saving your profile.")
 				return
@@ -331,19 +339,22 @@ export default {
 				})
 				.finally(() => {
 					setTimeout(() => {
-						this.saving = false;
-					}, 100);
+						this.isSavingUser = false;
+					}, 150);
 				});
 		},
 		/*
 		 * resetPassword()
 		 */
 		resetPassword() {
+			this.isSavingPassword = true;
 			this.password.id = this.userId;
+
 			this.axios.post("/users/" + this.userId + "/reset-password", this.password)
 				.then(() => {
 					this.errors = [];
 					this.password = {};
+					this.isGeneratedPassword = false;
 					this.$noty.success("Password updated successfully.");
 				})
 				.catch(err => {
@@ -353,6 +364,11 @@ export default {
 						return;
 					}
 					this.$noty.error("Error occurred, please refresh the page.");
+				})
+				.finally(() => {
+					setTimeout(() => {
+						this.isSavingPassword = true;
+					}, 150);
 				})
 		},
 		// TODO: Implement
@@ -372,8 +388,8 @@ export default {
 		 * Obtains data from API, if the user being edited is not the one
 		 * logged in.
 		 */
-		getUser() {
-			this.axios.get("/users/" + this.userId)
+		async getUser() {
+			await this.axios.get("/users/" + this.userId)
 				.then(res => {
 					const user = res.data.data;
 
@@ -383,7 +399,6 @@ export default {
 					}
 
 					this.data = user;
-					this.getProfilePicture();
 				})
 				.catch(err => {
 					console.log(err);
@@ -406,11 +421,14 @@ export default {
 		/*
 		 * insertProfilePicture()
 		 * Set the profile picture and show modal, update the store.
+		 * Commit to the store if self.
 		 */
 		insertProfilePicture(e) {
 			this.profilePicture = e;
 			this.showImageModal = false;
-			this.$store.commit("setProfilePicture", e);
+			if (this.isSelf) {
+				this.$store.commit("setProfilePicture", e);
+			}
 		},
 		/*
 		 * removeProfilePicture()
@@ -421,14 +439,20 @@ export default {
 			this.$store.commit("setProfilePicture", false);
 		},
 		/*
+		 * getMedia()
+		 * Return media for filtering profile picture.
+		 */
+		async getMedia() {
+			await this.axios.get("/media")
+				.then(res => {
+					this.media = res.data.data;
+				})
+		},
+		/*
 		 * getProfilePicture()
-		 * Obtain from store.
 		 */
 		getProfilePicture() {
-			this.$store.dispatch("getProfilePicture")
-				.then(pic => {
-					this.profilePicture = pic;
-				})
+			this.profilePicture = this.media.find(m => m.id === this.data['profile_picture_id']);
 		},
 		/*
  		* generatePassword()
@@ -479,6 +503,14 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+
+		h2 {
+			margin-bottom: 0;
+		}
+	}
+
+	&-generate-pass {
+		margin-bottom: 1rem;
 	}
 
 	// Picture
@@ -495,6 +527,25 @@ export default {
 			border-radius: 6px;
 			//border-radius: 100%;
 			box-shadow: 0 0 12px 2px rgba($black, 0.12);
+		}
+	}
+
+	// Tablet Down
+	// ========================================================================
+
+	@include media-tab-down {
+
+
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+
+		&-generate-pass {
+			margin-top: 1rem;
+			margin-bottom: 0;
 		}
 	}
 }
