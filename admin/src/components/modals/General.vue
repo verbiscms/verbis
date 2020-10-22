@@ -152,8 +152,8 @@ $modal-transition-time: 400ms;
 		&-large {
 
 			#{$self}-container {
-				max-width: 700px;
-				min-width: 600px;
+				max-width: 700px !important;
+				min-width: 600px !important;
 			}
 		}
 	}
@@ -163,8 +163,6 @@ $modal-transition-time: 400ms;
 	// ==========================================================================
 
 	&-container {
-		max-width: 500px;
-		min-width: 400px;
 		position: relative;
 		display: flex;
 		flex-direction: column;
@@ -178,7 +176,12 @@ $modal-transition-time: 400ms;
 		overflow-y: auto;
 		transition: z-index $modal-transition-time step-end;
 		padding: $modal-padding-desk;
-		will-change: transform, opacity
+		will-change: transform, opacity;
+
+		@include media-tab {
+			max-width: 500px;
+			min-width: 400px;
+		}
 	}
 
 	// Open

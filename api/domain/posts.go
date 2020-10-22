@@ -40,7 +40,6 @@ type PostAuthor struct {
 	LastName			string 			`json:"last_name"`
 	Email				string			`json:"email"`
 	Password			string			`json:"-"`
-	ConfirmPassword		string			`json:"-"`
 	Website				string			`json:"website"`
 	Facebook			*string			`json:"facebook"`
 	Twitter				*string			`json:"twitter"`
@@ -73,7 +72,7 @@ type PostSeoMeta struct {
 	Meta			*json.RawMessage			`db:"meta" json:"meta"`
 }
 
-type PostMea struct {
+type PostMeta struct {
 	Title   	string `json:"title,omitempty"`
 	Description string `json:"description,omitempty"`
 	Twitter struct {

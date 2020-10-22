@@ -12,8 +12,7 @@ type User struct {
 	FirstName			string 			`db:"first_name" json:"first_name" binding:"required,max=150,alpha"`
 	LastName			string 			`db:"last_name" json:"last_name" binding:"required,max=150,alpha"`
 	Email				string			`db:"email" json:"email" binding:"required,email,max=255"`
-	Password			string			`db:"password" json:"password,omitempty" binding:"required,min=8,max=60"`
-	ConfirmPassword		string			`json:"confirm_password,omitempty" binding:"required,eqfield=NewPassword,required"`
+	Password			string			`db:"password" json:"password,omitempty" binding:""`
 	Website				string			`db:"website" json:"website,omitempty" binding:"omitempty,url"`
 	Facebook			*string			`db:"facebook" json:"facebook"`
 	Twitter				*string			`db:"twitter" json:"twitter"`
@@ -25,6 +24,12 @@ type User struct {
 	EmailVerifiedAt		*time.Time		`db:"email_verified_at" json:"email_verified_at"`
 	CreatedAt			time.Time		`db:"created_at" json:"created_at"`
 	UpdatedAt			time.Time		`db:"updated_at" json:"updated_at"`
+}
+
+type UserCreate struct {
+	User
+	Password			string			`db:"password" json:"password,omitempty" binding:"required,min=8,max=60"`
+	ConfirmPassword		string			`json:"confirm_password,omitempty" binding:"required,eqfield=Password,required"`
 }
 
 type UserPasswordReset struct {

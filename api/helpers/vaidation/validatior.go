@@ -62,7 +62,7 @@ func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 		result := strings.Split(e.Namespace(), ".")
 
 		// TODO: Clean up here
-		if len(result) > 2 && !strings.Contains(e.Namespace(), "PostCreate") {
+		if len(result) > 2 && !strings.Contains(e.Namespace(), "PostCreate") || !strings.Contains(e.Namespace(), "UserCreate") {
 			field = "";
 			for i := 1; i < len(result); i++ {
 				field += result[i]
@@ -74,6 +74,9 @@ func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 
 		submatchall := reg.FindAllString(field, -1)
 		for _, element := range submatchall {
+			if element == "User" || element == "Post" {
+				continue
+			}
 			fieldString += strings.ToLower(element) + "_"
 		}
 

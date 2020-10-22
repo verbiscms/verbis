@@ -68,6 +68,8 @@ export default {
 					this.$store.commit('login', res.data.data.user, res.data.data.session)
 					this.$store.commit('setSession', res.data.data.session);
 
+					// TODO
+					// Move to helper function and do a promise all
 					if (!this.$store.state.theme.title) {
 						this.axios.get("/theme")
 							.then(res => {
@@ -80,8 +82,17 @@ export default {
 								this.doingAxios = false;
 							})
 					}
+
+					this.$store.dispatch("getRoles").then(res => {
+						console.log(res);
+					})
+					.catch(err => {
+						console.log(err);
+					})
 				})
 				.catch(e => {
+
+					console.log(e);
 
 					const response = e.response.data,
 						errors = response.data.errors;

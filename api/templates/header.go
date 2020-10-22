@@ -27,7 +27,7 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 	}
 
 	// Obtain Meta
-	var meta domain.PostMea
+	var meta domain.PostMeta
 	err = json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
 	if err != nil {
 		fmt.Println(err)

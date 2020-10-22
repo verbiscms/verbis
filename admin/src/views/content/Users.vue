@@ -93,12 +93,15 @@
 													</div>
 												</td>
 												<!-- Name, Email & Avatar -->
-												<td class="users-table-info">
-													<span class="avatar" v-html="getInitials(user)"></span>
-													<div class="users-table-info-name">
-														<h4>{{ user['first_name'] }} {{ user['last_name'] }}</h4>
-														<p>{{ user['email'] }}</p>
-													</div>
+												<td>
+													<router-link  class="users-table-info" :to="{ name: 'edit-user', params: { id: user.id }}">
+														<img v-if="getProfilePicture(user['profile_picture_id'])" class="avatar" :src="getSite.url + getProfilePicture(user['profile_picture_id'])">
+														<span v-else class="avatar" v-html="getInitials(user)"></span>
+														<div class="users-table-info-name">
+															<h4>{{ user['first_name'] }} {{ user['last_name'] }}</h4>
+															<p>{{ user['email'] }}</p>
+														</div>
+													</router-link>
 												</td>
 												<!-- Role -->
 												<td class="users-table-role">
@@ -189,10 +192,12 @@ import Popover from "@/components/misc/Popover";
 import Pagination from "@/components/misc/Pagination";
 import Tabs from "../../components/misc/Tabs";
 import CreateUser from "@/components/modals/CreateUser";
+import {userMixin} from "@/util/users";
 
 export default {
 	name: "Users",
 	title: "Users",
+	mixins: [userMixin],
 	components: {
 		CreateUser,
 		Alert,
@@ -207,6 +212,7 @@ export default {
 		users: [],
 		selectedUser: false,
 		roles: [],
+		media: [],
 		errors: [],
 		paginationObj: {},
 		activeTab: 1,
@@ -233,6 +239,7 @@ export default {
 	}),
 	mounted() {
 		this.getUsers();
+		this.getMedia();
 	},
 	methods: {
 		/*
@@ -431,28 +438,29 @@ export default {
 		getInitials(user) {
 			return user['first_name'].charAt(0) + user['last_name'].charAt(0).toUpperCase();
 		},
-		/*
-		 * generatePassword()
-		 * Generate a random password with the length of 16
-		 */
-		generatePassword() {
-			let result = "";
-			const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@:\\/@£$%=^&&*()_+?><',
-				charactersLength = characters.length,
-				lengthOfPassword = 16;
-			for (let i = 0; i < lengthOfPassword; i++) {
-				result += characters.charAt(Math.floor(Math.random() * charactersLength));
-			}
-			return result;
+		getMedia() {
+			this.axios.get("/media")
+				.then(res => {
+					this.media = res.data.data;
+				})
+		},
+		getProfilePicture(id) {
+			const picture = this.media.find(m => m.id === id);
+			return picture ? picture.url : false;
 		}
 	},
 	computed: {
 		/*
 		 * getUserInfo()
-		 * Get the logged in user info from the store.
 		 */
 		getUserInfo() {
 			return this.$store.state.userInfo;
+		},
+		/*
+		 * getSite()
+		 */
+		getSite() {
+			return this.$store.state.site;
 		},
 		/*
 		 * checkedAll()
