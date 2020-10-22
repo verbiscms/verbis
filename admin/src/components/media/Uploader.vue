@@ -426,27 +426,39 @@ export default {
 				toDelete = this.checked;
 			}
 
+			const promises = [];
 			toDelete.forEach(id => {
-				this.axios.delete("/media/" + id)
-					.then(() => {
-						this.$noty.success("Media item deleted successfully.");
-						// Clear selected item
-						this.selectedMedia = false;
-						// Remove from media array
-						const index = this.media.findIndex(m => m.id === id);
-						this.media.splice(index, 1);
-					})
-					.catch(err => {
-						console.log(err);
-						this.$noty.error("Error occurred, please refresh the page.");
-					})
-					.finally(() => {
-						if (this.paginationObj) this.paginationObj.page = 0;
-						this.isDeleting = false;
-						this.bulkMode = false;
-						this.showDeleteModal = false;
-					});
+				promises.push(this.deleteItemAxios(id));
 			});
+
+			// Send all requests
+			Promise.all(promises)
+				.then(() => {
+					this.$noty.success("Media item deleted successfully.");
+					// Clear selected item
+					this.selectedMedia = false;
+					// Remove from media array
+					this.getMedia();
+					this.$store.dispatch("getProfilePicture");
+					// const index = this.media.findIndex(m => m.id === id);
+					// this.media.splice(index, 1);
+				})
+				.catch(err => {
+					console.log(err);
+					this.$noty.error("Error occurred, please refresh the page.");
+				})
+				.finally(() => {
+					if (this.paginationObj) this.paginationObj.page = 0;
+					this.isDeleting = false;
+					this.bulkMode = false;
+					this.showDeleteModal = false;
+				});
+		},
+		/*
+		 * async deleteItemAxios()
+		 */
+		async deleteItemAxios(id) {
+			return await this.axios.delete("/media/" + id);
 		},
 		/*
 		 * handleDrag()
@@ -542,7 +554,7 @@ export default {
 					break;
 				}
 				case 4: {
-					filter = '{"type":[{"operator": "!=", "value": "image/png"},{"operator": "!=", "value": "image/jpeg"},{"operator": "!=", "value": "image/gif"},{"operator": "!=", "value": "image/webp"},{"operator": "!=", "value": "image/bmp"},{"operator": "!=", "value": "image/svg+xml"}]}'
+					filter = '{"type":[{"operator": "NOT LIKE", "value": "image/png"},{"operator": "NOT LIKE", "value": "image/jpeg"},{"operator": "NOT LIKE", "value": "image/gif"},{"operator": "NOT LIKE", "value": "image/webp"},{"operator": "NOT LIKE", "value": "image/bmp"},{"operator": "NOT LIKE", "value": "image/svg+xml"}]}'
 				}
 			}
 			this.selectedMedia = false;
