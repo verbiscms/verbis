@@ -89,16 +89,12 @@
 
     &-row {
         align-items: center;
-        padding: 40px 0;
+        padding: 20px 0;
         transition: height 200ms;
 
         &-group {
             max-width: 1750px;
             margin: 0 auto 3rem auto;
-
-            p:last-of-type {
-                margin-bottom: 0;
-            }
         }
 
         #{$self}-group {
@@ -125,6 +121,21 @@
 
             &-top {
                 border-top: 1px solid $grey-light;
+            }
+        }
+
+        @include media-tab {
+            padding: 30px 0;
+        }
+
+        @include media-desk {
+            padding: 40px 0;
+
+            &-group {
+
+                p:last-of-type {
+                    margin-bottom: 0;
+                }
             }
         }
     }

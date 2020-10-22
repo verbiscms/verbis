@@ -9,7 +9,7 @@
 				===================== -->
 			<template slot="button">
 				<div class="create-buttons">
-					<button class="btn" @click="generatePassword">Generate password</button>
+					<button class="btn" @click.prevent="generatePassword">Generate password</button>
 					<button class="btn btn-blue btn-margin-left" :class="{ 'btn-loading' : doingAxios }" @click="create">Create</button>
 				</div>
 			</template>
@@ -71,7 +71,6 @@
 					</div><!-- /Col -->
 				</div><!-- /Row -->
 			</template>
-			{{ newUser }}
 		</Modal>
 	</section>
 </template>
@@ -140,7 +139,7 @@ export default {
 				.finally(() => {
 					setTimeout(() => {
 						this.doingAxios = false;
-					}, 150)
+					}, 150);
 				})
 		},
 		/*

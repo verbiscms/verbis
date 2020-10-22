@@ -15,12 +15,12 @@
 						<!-- Actions -->
 						<div class="header-actions">
 							<form class="form form-actions">
-								<button v-if="bulkAction" class="btn btn-fixed-height btn-white" @click.prevent="bulkAction = false">Cancel</button>
-								<button v-if="!bulkAction" class="btn btn-fixed-height btn-margin btn-white" @click.prevent="bulkAction = true">Bulk select</button>
-								<button v-else class="btn btn-fixed-height btn-margin btn-orange" @click.prevent="deleting = !deleting">Delete permanently</button>
-								<label for="browse-file" class="btn btn-icon btn-orange btn-icon-mob media-add-new">
+								<button v-if="bulkAction" class="btn btn-fixed-height btn-white header-hide-mob" @click.prevent="bulkAction = false">Cancel</button>
+								<button v-if="!bulkAction" class="btn btn-fixed-height btn-margin btn-white header-hide-mob" @click.prevent="bulkAction = true">Bulk select</button>
+								<button v-else class="btn btn-fixed-height btn-margin btn-orange header-hide-mob" @click.prevent="deleting = !deleting">Delete permanently</button>
+								<label for="browse-file" class="btn btn-icon btn-orange btn-text-mob">
 									<i class="fal fa-plus"></i>
-									<p>Add new media</p>
+									<span>Add new media</span>
 								</label>
 							</form>
 						</div><!-- /Actions -->
@@ -78,53 +78,3 @@ export default {
 }
 
 </script>
-
-<!-- =====================
-	Styles
-	===================== -->
-
-<style scoped lang="scss">
-
-.media {
-
-	// Tablet Down
-	// =========================================================================
-
-	@include media-mob-down {
-
-		&-add-new {
-			width: auto;
-
-			i {
-				display: none;
-			}
-
-			p {
-				color: $white;
-				margin: 0;
-				font-weight: 600;
-				font-size: 0.9rem;
-				padding: $btn-padding-mob;
-			}
-		}
-	}
-
-	// Desktop
-	// =========================================================================
-
-	@include media-tab {
-
-		&-add-new {
-
-			i {
-				display: block;
-			}
-
-			p {
-				display: none;
-			}
-		}
-	}
-}
-
-</style>

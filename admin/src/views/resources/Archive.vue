@@ -15,7 +15,7 @@
 						<!-- Actions -->
 						<div class="header-actions">
 							<form class="form form-actions">
-								<div class="form-select-cont form-input">
+								<div class="form-select-cont form-input header-hide-mob">
 									<select class="form-select" v-model="bulkType" v-if="activeTab === 4">
 										<option value="" disabled selected>Bulk actions</option>
 										<option value="restore">Restore</option>
@@ -32,9 +32,10 @@
 										<option value="bin">Move to bin</option>
 									</select>
 								</div>
-								<button class="btn btn-fixed-height btn-margin btn-white" :class="{ 'btn-loading' : savingBulk }" @click.prevent="doBulkAction">Apply</button>
-								<router-link class="btn btn-icon btn-orange" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
+								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : savingBulk }" @click.prevent="doBulkAction">Apply</button>
+								<router-link class="btn btn-icon btn-orange btn-text-mob" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
 									<i class="fal fa-plus"></i>
+									<span>New {{ resource['singular_name'] }}</span>
 								</router-link>
 							</form>
 						</div><!-- /Actions -->
@@ -62,7 +63,7 @@
 									<table class="table archive-table">
 										<thead>
 											<tr>
-												<th>
+												<th class="table-header-checkbox">
 													<div class="form-checkbox form-checkbox-dark">
 														<input type="checkbox" id="archive-check-all" v-model="checkedAll"/>
 														<label for="archive-check-all">

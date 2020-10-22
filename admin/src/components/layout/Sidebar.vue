@@ -325,13 +325,13 @@ $aside-padding-desk: 26px;
 	left: 0;
 	top: 0;
 	width: $sidebar-width-mob;
-	height: calc(100vh - #{$mobile-menu-height-mob});
+	height: 100vh;
 	overflow-y: scroll;
 	background-color: $bg-color;
 	transform: translateX(-100%);
 	transition: transform 300ms ease;
 	will-change: transform;
-	z-index: 999;
+	z-index: 9998;
 	box-shadow: 0 0 50px 0 rgba(0, 0, 0, 0.11);
 
 	// Block
@@ -526,7 +526,6 @@ $aside-padding-desk: 26px;
 
 	@include media-tab {
 		width: $sidebar-width-tab;
-		height: calc(100vh - #{$mobile-menu-height-tab});
 
 		&-logo,
 		&-block,

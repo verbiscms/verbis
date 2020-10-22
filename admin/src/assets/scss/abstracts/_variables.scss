@@ -87,10 +87,9 @@ $mobile-menu-height-tab: 84px;
 // Header
 // =========================================================================
 
-$header-height: 72px;
-$header-container-width: true;
-$header-bg-color: rgba($black, 0.4);
-$header-scrolled-bg-color: $primary;
+$header-margin-bottom-mob: 1.2rem;
+$header-margin-bottom-tab: 1.4rem;
+$header-margin-bottom-desk: 2rem;
 
 // Nav
 // =========================================================================

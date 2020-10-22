@@ -15,15 +15,16 @@
 						<!-- Actions -->
 						<div class="header-actions">
 							<form class="form form-actions">
-								<div class="form-select-cont form-input">
+								<div class="form-select-cont form-input header-hide-mob">
 									<select class="form-select" v-model="bulkType">
 										<option value="" disabled selected>Bulk actions</option>
 										<option value="delete">Delete permanently</option>
 									</select>
 								</div>
-								<button class="btn btn-fixed-height btn-margin btn-white" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
-								<div class="btn btn-icon btn-orange" @click="showCreateModal = true">
+								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
+								<div class="btn btn-icon btn-orange btn-text-mob" @click="showCreateModal = true">
 									<i class="fal fa-plus"></i>
+									<span>New user</span>
 								</div>
 							</form>
 						</div><!-- /Actions -->
@@ -51,13 +52,13 @@
 						Users
 						===================== -->
 					<div v-else>
-						<transition name="trans-fade-quick" mode="out-in">
+						<transition name="trans-fade" mode="out-in">
 							<div class="table-wrapper" v-if="users.length">
 								<div class="table-scroll table-with-hover">
 									<table class="table users-table">
 										<thead>
 											<tr>
-												<th>
+												<th class="table-header-checkbox">
 													<div class="form-checkbox form-checkbox-dark">
 														<input type="checkbox" id="users-check-all" v-model="checkedAll"/>
 														<label for="users-check-all">
@@ -82,7 +83,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr v-for="(user, userIndex) in users" :key="user.uuid">
+											<tr class="trans-fade-in-anim-slow" v-for="(user, userIndex) in users" :key="user.uuid" >
 												<!-- Checkbox -->
 												<td class="table-checkbox">
 													<div class="form-checkbox form-checkbox-dark">
@@ -152,7 +153,7 @@
 					</div>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<transition name="archive-pagination-trans">
+			<transition name="trans-fade-in-anim">
 				<div class="row" v-if="!doingAxios && paginationObj">
 					<div class="col-12">
 						<Pagination :pagination="paginationObj" @update="setPagination"></Pagination>
@@ -438,12 +439,19 @@ export default {
 		getInitials(user) {
 			return user['first_name'].charAt(0) + user['last_name'].charAt(0).toUpperCase();
 		},
+		/*
+		 * getMedia()
+		 * Return media for filtering profile picture.
+		 */
 		getMedia() {
 			this.axios.get("/media")
 				.then(res => {
 					this.media = res.data.data;
 				})
 		},
+		/*
+		 * getProfilePicture()
+		 */
 		getProfilePicture(id) {
 			const picture = this.media.find(m => m.id === id);
 			return picture ? picture.url : false;
