@@ -2,8 +2,11 @@ package validation
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers"
+	"github.com/gin-gonic/gin/binding"
 	pkgValidate "github.com/go-playground/validator/v10"
+	"golang.org/x/crypto/bcrypt"
 	"regexp"
 	"strings"
 )
@@ -37,8 +40,17 @@ func New() *Validation {
 
 	v.Package.SetTagName("binding")
 
+	if v, ok := binding.Validator.Engine().(*pkgValidate.Validate); ok {
+		v.RegisterValidation("password", comparePassword)
+	}
+
+	if v, ok := binding.Validator.Engine().(*pkgValidate.Validate); ok {
+		v.RegisterValidation("required-on-post", validateOnPost)
+	}
+
 	return v
 }
+
 
 // Process handles validation errors and passes back to respond.
 func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationError {
@@ -130,8 +142,36 @@ func (v* Validation) message(kind string, field string, param string) string {
 	case "eqfield":
 		errorMsg = field + " must equal the " + param + "."
 		break
+	case "password":
+		errorMsg = field + " doesn't match our records."
+		break
 	}
 
 	return errorMsg
 }
 
+// comparePassword for the password field on the domain.UserPasswordReset
+// (custom validation)
+func comparePassword(fl pkgValidate.FieldLevel) bool {
+	curPass := fl.Field().String()
+	reset := fl.Parent().Interface().(*domain.UserPasswordReset)
+
+	err := bcrypt.CompareHashAndPassword([]byte(reset.DBPassword), []byte(curPass))
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
+func validateOnPost(fl pkgValidate.FieldLevel) bool {
+	curPass := fl.Field().String()
+	reset := fl.Parent().Interface().(*domain.UserPasswordReset)
+
+	err := bcrypt.CompareHashAndPassword([]byte(reset.DBPassword), []byte(curPass))
+	if err != nil {
+		return false
+	}
+
+	return true
+}

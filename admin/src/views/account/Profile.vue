@@ -4,6 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container">
+			<pre>{{ data }}</pre>
 			<div class="row">
 				<div class="col-12">
 					<header class="header header-with-actions">
@@ -162,12 +163,15 @@
 				<!-- =====================
 					Reset Password
 					===================== -->
-				<div class="form-row-group" v-if="isSelf || data.role['name'] === 'Administrator'">
+				<div class="form-row-group" v-if="isSelf">
 					<div class="row">
 						<div class="col-12">
 							<div class="profile-reset-password">
 								<h2>Reset password</h2>
-								<button class="btn btn-orange" @click.prevent="resetPassword">Reset password</button>
+								<div>
+									<button class="btn btn-orange btn-margin-right">Forgot Password?</button>
+									<button class="btn btn-orange" @click.prevent="resetPassword">Reset password</button>
+								</div>
 							</div>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
@@ -326,6 +330,7 @@ export default {
 				this.data['profile_picture_id'] = this.profilePicture.id;
 			}
 
+			this.$delete(this.data, 'confirm_password');
 			this.axios.put("/users/" + this.userId, this.data)
 				.then(res => {
 					this.errors = [];
@@ -372,6 +377,18 @@ export default {
 						return;
 					}
 					this.$noty.error("Error occurred, please refresh the page.");
+				})
+		},
+		// TODO: Implement
+		sendResetPassword() {
+			this.axios.post("/password/email", {
+				email: this.data.email
+			})
+				.then(res => {
+					console.log(res);
+				})
+				.catch(err => {
+					console.log(err);
 				})
 		},
 		/*

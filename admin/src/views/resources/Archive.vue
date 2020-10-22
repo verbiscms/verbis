@@ -137,7 +137,7 @@
 																<i class="feather feather-edit"></i>
 																<span>Edit</span>
 															</router-link>
-															<a  class="popover-item popover-item-icon" :href="getSiteUrl + item.post.slug" target="_blank">
+															<a class="popover-item popover-item-icon" :href="getSiteUrl + item.post.slug" target="_blank">
 																<i class="feather feather-eye"></i>
 																<span>View</span>
 															</a>
@@ -212,7 +212,7 @@
 			===================== -->
 		<Modal :show.sync="showDeleteModal" class="modal-with-icon modal-with-warning">
 			<template slot="button">
-				<button class="btn" @click="deletePost(false); savingBulk = true;">Delete</button>
+				<button class="btn" @click="deletePost(false);">Delete</button>
 			</template>
 			<template slot="text">
 				<h2>Are you sure?</h2>
@@ -248,10 +248,11 @@ export default {
 	},
 	data: () => ({
 		doingAxios: true,
-		activeTab: 1,
 		resource: {},
 		posts: [],
 		paginationObj: {},
+		activeTab: 1,
+		activeTabName: "all",
 		order: "",
 		orderBy: {
 			title: "asc",
@@ -309,6 +310,40 @@ export default {
 				});
 		},
 		/*
+		 * handleDelete()
+		 * Pushes ID to array on single click (not bulk action) &
+		 * show the delete post modal.
+		 */
+		handleDelete(id) {
+			this.checked.push(id);
+			this.showDeleteModal = true;
+		},
+		/*
+		 * deletePost()
+		 */
+		deletePost() {
+			this.savingBulk = true;
+			this.checked.forEach(id => {
+				this.axios.delete("/posts/" + id)
+					.then(() => {
+						this.$noty.success("Posts deleted successfully.");
+						this.getPosts();
+					})
+					.catch(err => {
+						console.log(err);
+						this.$noty.error("Error occurred, please refresh the page.");
+					})
+					.finally(() => {
+						this.savingBulk = false;
+						this.showDeleteModal = false;
+						this.activeAction = "";
+						this.checked = [];
+						this.checkedAll = [];
+						this.bulkType = "";
+					});
+			});
+		},
+		/*
 		 * setResource()
 		 * Set the resource from the query parameter, if none defined,
 		 * set default page 'resource'.
@@ -348,22 +383,27 @@ export default {
 		 * Update the filter by string when tabs are clicked, obtain posts.
 		 */
 		filterTabs(tab) {
+			this.pagination = "page=1";
 			this.activeTab = tab;
 			let filter = "";
 			switch (tab) {
 				case 1: {
+					this.activeTabName = "all";
 					filter = '{"status":[{"operator":"NOT LIKE", "value": "bin" }]}';
 					break;
 				}
 				case 2: {
+					this.activeTabName = "published";
 					filter = '{"status":[{"operator":"=", "value": "published" }]}';
 					break;
 				}
 				case 3: {
+					this.activeTabName = "draft";
 					filter = '{"status":[{"operator":"=", "value": "draft" }]}';
 					break;
 				}
 				case 4: {
+					this.activeTabName = "bin";
 					filter = '{"status":[{"operator":"=", "value": "bin" }]}';
 					break;
 				}
@@ -446,39 +486,6 @@ export default {
 					});
 			});
 		},
-		/*
-		 * handleDelete()
-		 * Pushes ID to array on single click (not bulk action) &
-		 * show the delete post mnodal.
-		 */
-		handleDelete(id) {
-			this.checked.push(id);
-			this.showDeleteModal = true;
-		},
-		/*
-		 * deletePost()
-		 */
-		deletePost() {
-			this.checked.forEach(id => {
-				this.axios.delete("/posts/" + id)
-					.then(() => {
-						this.$noty.success("Posts deleted successfully.");
-						this.getPosts();
-					})
-					.catch(err => {
-						console.log(err);
-						this.$noty.error("Error occurred, please refresh the page.");
-					})
-					.finally(() => {
-						this.savingBulk = false;
-						this.showDeleteModal = false;
-						this.activeAction = "";
-						this.checked = [];
-						this.checkedAll = [];
-						this.bulkType = "";
-					});
-			});
-		}
 	},
 	computed: {
 		/*
