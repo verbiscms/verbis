@@ -280,9 +280,9 @@ export default {
 		deleteUser() {
 			this.isDeleting = false;
 
-			const promises = [];
 			let toDelete = this.selectedUser ? [this.selectedUser.id] : this.checked;
 
+			const promises = [];
 			toDelete.forEach(id => {
 				promises.push(this.deleteUserAxios(id));
 			});

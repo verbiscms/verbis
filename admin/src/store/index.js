@@ -126,19 +126,18 @@ export default new Vuex.Store({
 		getProfilePicture() {
 			if (!this.state.userInfo['profile_picture_id']) return;
 			return new Promise((resolve, reject) => {
-				if (!this.state.profilePicture) {
-					axios.get('/media/' + this.state.userInfo['profile_picture_id'])
-						.then(res => {
-							const picture = res.data.data;
-							this.commit("setProfilePicture", picture)
-							resolve(picture)
-						})
-						.catch(err => {
-							reject(err)
-						});
-				} else {
-					resolve(this.state.profilePicture)
-				}
+				axios.get('/media/' + this.state.userInfo['profile_picture_id'])
+					.then(res => {
+						console.log(res);
+						const picture = res.data.data;
+						this.commit("setProfilePicture", picture)
+						resolve(picture)
+					})
+					.catch(err => {
+						console.log("in err")
+						this.commit("setProfilePicture", false)
+						reject(err)
+					});
 			});
 		},
 		/*
