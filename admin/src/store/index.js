@@ -28,6 +28,7 @@ export default new Vuex.Store({
 		site: {},
 		users: [],
 		theme: {},
+		roles: [],
 		profilePicture: false,
 	},
 	mutations: {
@@ -64,6 +65,9 @@ export default new Vuex.Store({
 		},
 		setTheme(state, theme) {
 			state.theme = theme;
+		},
+		setRoles(state, roles) {
+			state.roles = roles;
 		},
 		setUsers(state, users) {
 			state.users = users;
@@ -136,6 +140,27 @@ export default new Vuex.Store({
 					resolve(this.state.profilePicture)
 				}
 			});
+		},
+		/*
+		 * getRoles()
+		 */
+		getRoles() {
+			return new Promise((resolve, reject) => {
+				if (!this.state.roles.length) {
+					axios.get("/roles")
+						.then(res => {
+							const roles = res.data.data;
+							this.commit("setRoles", roles);
+							resolve(roles);
+						})
+						.catch(err => {
+							reject(err);
+						});
+				} else {
+					resolve(this.state.roles)
+				}
+			})
+
 		},
 	},
 	modules: {},

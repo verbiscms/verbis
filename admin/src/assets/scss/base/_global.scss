@@ -45,18 +45,10 @@ section {
 	min-height: 100vh;
 	width: 100vw;
 	margin: 0;
-	padding: 20px 0;
+	padding: 20px 0 (20px + $mobile-menu-height-mob) 0;
 	z-index: 9;
 	box-shadow: 0 0 50px 0 rgba($black, 0.11);
 	background-color: $bg-color;
-	//transition: box-shadow 100ms ease;
-	//will-change: box-shadow;
-
-	//&-collapsed {
-	//	box-shadow: 0 0 20px 0 rgba($black, 0.06);
-	//	width: calc(100vw - #{$sidebar-left-width});
-	//	transform: translateX($sidebar-left-width);
-	//}
 
 	.row {
 		max-width: 1750px;
@@ -64,7 +56,7 @@ section {
 	}
 
 	@include media-tab {
-		padding: 30px 10px;
+		padding: 30px 10px (30px + $mobile-menu-height-tab) 10px;
 	}
 
 	@include media-desk {

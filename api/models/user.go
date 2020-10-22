@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
@@ -19,7 +18,7 @@ type UserRepository interface {
 	GetById(id int) (domain.User, error)
 	GetOwner() (domain.User, error)
 	GetRoles() ([]domain.UserRole, error)
-	Create(u *domain.User) (domain.User, error)
+	Create(u *domain.UserCreate) (domain.User, error)
 	Update(u *domain.User) (domain.User, error)
 	Delete(id int) error
 	ResetPassword(id int, reset domain.UserPasswordReset) error
@@ -142,7 +141,7 @@ func (s *UserStore) GetRoles() ([]domain.UserRole, error) {
 // Returns errors.CONFLICT if the the post slug already exists.
 // Returns errors.INTERNAL if the SQL query was invalid, the function
 // could not get the newly created ID or the user role failed to be inserted.
-func (s *UserStore) Create(u *domain.User) (domain.User, error) {
+func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 	const op = "UserRepository.Create"
 
 	if exists := s.ExistsByEmail(u.Email); exists {
@@ -173,21 +172,26 @@ func (s *UserStore) Create(u *domain.User) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the user role for user with the email: %s", u.Email), Operation: op, Err: err}
 	}
 
-	// TODO: Determine of email verified is turned on.
-	//If the user is not the owner, send the verification email
-	if u.Role.Id != 6 {
-		ve, err := events.NewVerifyEmail()
-		if err != nil {
-			return domain.User{}, err
-		}
-
-		err = ve.Send(u, s.optionsRepo.SiteTitle)
-		if err != nil {
-			return domain.User{}, err
-		}
+	newUser, err := s.GetById(int(id))
+	if err != nil {
+		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created user with the email: %v", u.Email), Operation: op, Err: err}
 	}
 
-	return *u, nil
+	// TODO: Determine of email verified is turned on.
+	//If the user is not the owner, send the verification email
+	//if u.Role.Id != 6 {
+	//	ve, err := events.NewVerifyEmail()
+	//	if err != nil {
+	//		return domain.User{}, err
+	//	}
+	//
+	//	err = ve.Send(&newUser, s.optionsRepo.SiteTitle)
+	//	if err != nil {
+	//		return domain.User{}, err
+	//	}
+	//}
+
+	return newUser, nil
 }
 
 // Update user
