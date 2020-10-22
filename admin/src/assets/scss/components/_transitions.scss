@@ -23,6 +23,10 @@
 		animation-fill-mode: both;
 	}
 
+	&-fade-in-anim-slow {
+		animation: fadeIn 400ms ease-in;
+	}
+
 	// Fade
 	// =========================================================================
 

@@ -6,7 +6,7 @@
 .header {
 	$self: &;
 
-	margin-bottom: 10px;
+	margin-bottom: $header-margin-bottom-mob;
 
 	// With Actions
 	// =========================================================================
@@ -17,7 +17,6 @@
 		align-items: flex-start;
 		justify-content: space-between;
 		width: 100%;
-		margin-bottom: 2rem;
 	}
 
 	// Icon
@@ -44,15 +43,46 @@
 		}
 	}
 
-	// Desktop
+	// Large Margin (No Tabs)
+	// =========================================================================
+
+	&-margin-large {
+		margin-bottom: $header-margin-bottom-mob + 0.6rem;
+	}
+
+	// Mobile Only
+	// =========================================================================
+
+	@include media-mob-down {
+
+		&-hide-mob {
+			display: none !important;
+		}
+	}
+
+	// Tablet
 	// =========================================================================
 
 	@include media-tab {
-		margin-bottom: 2rem;
+		margin-bottom: $header-margin-bottom-tab;
 
 		&-with-actions {
 			align-items: center;
 		}
+
+		&-margin-large {
+			margin-bottom: $header-margin-bottom-tab + 0.6rem;
+		}
 	}
 
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+		margin-bottom: $header-margin-bottom-desk;
+
+		&-margin-large {
+			margin-bottom: $header-margin-bottom-desk + 0.6rem;
+		}
+	}
 }

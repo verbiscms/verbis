@@ -227,10 +227,35 @@
 		}
 	}
 
+	// Text Mobile
+	// =========================================================================
+
+	&-text-mob {
+
+		i {
+			display: none;
+		}
+
+		span {
+			font-size: 14px !important;
+			font-weight: inherit !important;
+		}
+	}
+
 	// Mobile Only
 	// =========================================================================
 
 	@include media-mob-down {
+
+		&-text-mob {
+			width: auto;
+			height: auto;
+			min-width: auto;
+			min-height: auto;
+			max-height: none;
+			max-width: none;
+			padding: $btn-padding-mob;
+		}
 
 		&-margin {
 			margin-left: $btn-margin-x - 4px;
@@ -270,6 +295,17 @@
 
 			span {
 				display: block;
+			}
+		}
+
+		&-text-mob {
+
+			i {
+				display: block;
+			}
+
+			span {
+				display: none;
 			}
 		}
 	}
