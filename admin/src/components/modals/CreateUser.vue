@@ -9,7 +9,7 @@
 				===================== -->
 			<template slot="button">
 				<div class="create-buttons">
-					<button class="btn">Generate password</button>
+					<button class="btn" @click="generatePassword">Generate password</button>
 					<button class="btn btn-blue btn-margin-left" :class="{ 'btn-loading' : doingAxios }" @click="create">Create</button>
 				</div>
 			</template>
@@ -21,40 +21,57 @@
 					<div class="col-12">
 						<h2>Create user</h2>
 					</div><!-- /Col -->
-					<div class="col-12 col-desk-6">
-						<!-- First name -->
-						<FormGroup label="First name*" :error="errors['first_name']">
-							<input class="form-input form-input-white" type="text" v-model="newUser['first_name']">
-						</FormGroup>
-						<!-- Email -->
-						<FormGroup label="Email*" :error="errors['email']">
-							<input class="form-input form-input-white" type="text" v-model="newUser['email']">
-						</FormGroup>
-						<!-- New password -->
-						<FormGroup label="Password*" :error="errors['password']">
-							<input class="form-input form-input-white" type="text" v-model="newUser['password']">
-						</FormGroup>
-					</div><!-- /Col -->
-					<div class="col-12 col-desk-6">
-						<!-- Last name -->
-						<FormGroup label="Last name*" :error="errors['last_name']">
-							<input class="form-input form-input-white" type="text" v-model="newUser['last_name']">
-						</FormGroup>
-						<!-- Role -->
-						<FormGroup label="Role*" :error="errors['role_id']">
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="user-role" v-model="newUser['role']">
-									<option v-for="(role, roleIndex) in roles" :selected="roleIndex === 0" :value="role" :key="role.id">{{ role.name }}</option>
-								</select>
-							</div>
-						</FormGroup>
-						<!-- Confirm password -->
-						<FormGroup label="Confirm password*" :error="errors['confirm_password']">
-							<input class="form-input form-input-white" type="text" v-model="newUser['confirm_password']">
-						</FormGroup>
+					<div class="col-12">
+						<div class="row">
+							<div class="col-12 col-desk-6">
+								<!-- First name -->
+								<FormGroup label="First name*" :error="errors['first_name']">
+									<input class="form-input form-input-white" type="text" v-model="newUser['first_name']" tabindex="1">
+								</FormGroup>
+							</div><!-- /Col -->
+							<div class="col-12 col-desk-6">
+								<!-- Last name -->
+								<FormGroup label="Last name*" :error="errors['last_name']">
+									<input class="form-input form-input-white" type="text" v-model="newUser['last_name']" tabindex="2">
+								</FormGroup>
+							</div><!-- /Col -->
+						</div><!-- /Row -->
+						<div class="row">
+							<div class="col-12 col-desk-6">
+								<!-- Email -->
+								<FormGroup label="Email*" :error="errors['email']">
+									<input class="form-input form-input-white" type="text" v-model="newUser['email']" tabindex="3">
+								</FormGroup>
+							</div><!-- /Col -->
+							<div class="col-12 col-desk-6">
+								<!-- Role -->
+								<FormGroup label="Role*" :error="errors['role_id']">
+									<div class="form-select-cont form-input">
+										<select class="form-select" id="user-role" v-model="newUser['role']">
+											<option v-for="(role, roleIndex) in getRoles" :selected="roleIndex === 0" :value="role" :key="role.id" tabindex="4">{{ role.name }}</option>
+										</select>
+									</div>
+								</FormGroup>
+							</div><!-- /Col -->
+						</div><!-- /Row -->
+						<div class="row">
+							<div class="col-12 col-desk-6">
+								<!-- New password -->
+								<FormGroup label="Password*" :error="errors['password']">
+									<input class="form-input form-input-white" :type="isGeneratedPassword ? 'text' : 'password'" v-model="newUser['password']" tabindex="5">
+								</FormGroup>
+							</div><!-- /Col -->
+							<div class="col-12 col-desk-6">
+								<!-- Confirm password -->
+								<FormGroup label="Confirm password*" :error="errors['confirm_password']">
+									<input class="form-input form-input-white" :type="isGeneratedPassword ? 'text' : 'password'" v-model="newUser['confirm_password']" tabindex="6">
+								</FormGroup>
+							</div><!-- /Col -->
+						</div><!-- /Row -->
 					</div><!-- /Col -->
 				</div><!-- /Row -->
 			</template>
+			{{ newUser }}
 		</Modal>
 	</section>
 </template>
@@ -66,9 +83,11 @@
 
 import Modal from "@/components/modals/General";
 import FormGroup from "@/components/forms/FormGroup";
+import {userMixin} from "@/util/users";
 
 export default {
 	name: "CreateUser",
+	mixins: [userMixin],
 	props: {
 		show: {
 			type: Boolean,
@@ -84,9 +103,11 @@ export default {
 		newUser: {},
 		roles: [],
 		errors: [],
+		isGeneratedPassword: false,
 	}),
 	mounted() {
-		this.getRoles();
+		// Set the new users role to Contributor
+		this.$set(this.newUser, "role", this.getRoles.find(r => r.name === "Contributor"))
 	},
 	methods: {
 		/*
@@ -99,14 +120,19 @@ export default {
 			this.axios.post("/users", this.newUser)
 				.then(() => {
 					this.$noty.success("User created successfully");
+					this.showCreateModal = false;
+					this.newUser = {};
 					this.getUsers();
 				})
 				.catch(err => {
-					console.log(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
-						const errorMsg =  this.isSelf ? "Fix the errors before saving your profile." : "User updated successfully."
-						this.$noty.error(errorMsg);
+						this.$noty.error("Fix the errors before saving the user.");
+						return;
+					}
+					if (err.response.status === 409) {
+						this.errors = [];
+						this.$noty.error(err.response.data.message);
 						return;
 					}
 					this.$noty.error("Error occurred, please refresh the page.");
@@ -118,33 +144,30 @@ export default {
 				})
 		},
 		/*
-		 * getRoles()
-		 * Obtain all roles from API for use with creating a new user.
-		 */
-		getRoles() {
-			this.axios.get("/roles")
-				.then(res => {
-					this.roles = res.data.data;
-					this.$set(this.newUser, "role", this.roles.find(r => r.name === "Contributor"))
-				})
-				.catch(err => {
-					console.log(err)
-					this.$noty.error("Error occurred, please refresh the page.");
-				});
-		},
-		/*
-		  * validate()
+		 * validate()
 		 * Add errors if the post failed.
 		 */
 		validate(errors) {
-			console.log(errors)
 			this.errors = {};
 			errors.forEach(err => {
 				this.$set(this.errors, err.key, err.message);
 			})
 		},
+		/*
+		 * generatePassword()
+		 * Generate random hash.
+		 */
+		generatePassword() {
+			const password = this.createPassword();
+			this.newUser['password'] = password;
+			this.newUser['confirm_password'] = password;
+			this.isGeneratedPassword = true;
+		},
 	},
 	computed: {
+		/*
+		 * showCreateModal()
+		 */
 		showCreateModal: {
 			get() {
 				return this.show;
@@ -152,6 +175,15 @@ export default {
 			set(value) {
 				this.$emit("update:show", value)
 			}
+
+		},
+		/*
+		 * getRoles()
+		 * Obtain all roles from API for use with creating a new user.
+		 * Don't allow the user to create the owner by filter.
+		 */
+		getRoles() {
+			return this.$store.state.roles.filter(r => r.name !== "Owner");
 		}
 	}
 }

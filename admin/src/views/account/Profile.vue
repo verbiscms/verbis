@@ -4,7 +4,6 @@
 <template>
 	<section>
 		<div class="auth-container">
-			<pre>{{ data }}</pre>
 			<div class="row">
 				<div class="col-12">
 					<header class="header header-with-actions">
@@ -35,13 +34,9 @@
 							<h4>First name*</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group" :class="{ 'form-group-error' : errors['first_name'] }">
+							<FormGroup :error="errors['first_name']">
 								<input class="form-input form-input-white" type="text" v-model="data['first_name']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['first_name']">{{ errors['first_name'] }}</span>
-								</transition><!-- /Message -->
-							</div>
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 					<!-- Last name -->
@@ -50,13 +45,9 @@
 							<h4>Last name*</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group" :class="{ 'form-group-error' : errors['last_name'] }">
+							<FormGroup :error="errors['last_name']">
 								<input class="form-input form-input-white" type="text" v-model="data['last_name']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['last_name']">{{ errors['last_name'] }}</span>
-								</transition><!-- /Message -->
-							</div>
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 				</div><!-- Form Group -->
@@ -76,13 +67,9 @@
 							<p>Enter a valid email address, this will be used for signing in to Verbis.</p>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group" :class="{ 'form-group-error' : errors['email'] }">
+							<FormGroup :error="errors['email']">
 								<input class="form-input form-input-white" type="text" v-model="data['email']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['email']">{{ errors['email'] }}</span>
-								</transition><!-- /Message -->
-							</div>
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 					<!-- Website -->
@@ -91,13 +78,9 @@
 							<h4>Website</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group" :class="{ 'form-group-error' : errors['website'] }">
+							<FormGroup :error="errors['website']">
 								<input class="form-input form-input-white" type="text" v-model="data['website']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['website']">{{ errors['website'] }}</span>
-								</transition><!-- /Message -->
-							</div>
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 					<!-- Facebook -->
@@ -106,9 +89,9 @@
 							<h4>Facebook</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
+							<FormGroup :error="errors['facebook']">
 								<input class="form-input form-input-white" type="text" v-model="data['facebook']">
-							</div>
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 					<!-- Twitter -->
@@ -117,9 +100,9 @@
 							<h4>Twitter</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
+							<FormGroup :error="errors['twitter']">
 								<input class="form-input form-input-white" type="text" v-model="data['twitter']">
-							</div>
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 					<!-- LinkedIn -->
@@ -128,9 +111,9 @@
 							<h4>LinkedIn</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
+							<FormGroup :error="errors['linked_in']">
 								<input class="form-input form-input-white" type="text" v-model="data['linked_in']">
-							</div>
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 				</div><!-- Form Group -->
@@ -182,13 +165,9 @@
 							<p>Type in your current password.</p>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group" :class="{ 'form-group-error' : errors['current_password'] }">
+							<FormGroup :error="errors['current_password']">
 								<input class="form-input form-input-white" type="password" placeholder="Current password" v-model="password['current_password']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['current_password']">{{ errors['current_password'] }}</span>
-								</transition><!-- /Message -->
-							</div>
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 					<!-- Password -->
@@ -198,13 +177,9 @@
 							<p>Enter a new password, a minimum of 8 alphanumeric characters are required.</p>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group" :class="{ 'form-group-error' : errors['new_password'] }">
-								<input class="form-input form-input-white" type="password" placeholder="New password" v-model="password['new_password']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['new_password']">{{ errors['new_password'] }}</span>
-								</transition><!-- /Message -->
-							</div>
+							<FormGroup :error="errors['new_password']">
+								<input class="form-input form-input-white" placeholder="New password" :type="isGeneratedPassword ? 'text' : 'password'" v-model="password['new_password']">
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 					<!-- Confirm Password -->
@@ -214,13 +189,9 @@
 							<p>Enter the same password in again.</p>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group" :class="{ 'form-group-error' : errors['confirm_password'] }">
-								<input class="form-input form-input-white form-input-test" type="password" placeholder="Confirm password" v-model="password['confirm_password']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['confirm_password']">{{ errors['confirm_password'] }}</span>
-								</transition><!-- /Message -->
-							</div>
+							<FormGroup :error="errors['confirm_password']">
+								<input class="form-input form-input-white form-input-test" :type="isGeneratedPassword ? 'text' : 'password'" placeholder="Confirm password" v-model="password['confirm_password']">
+							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 				</div><!-- Form Group -->
@@ -253,11 +224,15 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Modal from "@/components/modals/General";
 import Uploader from "@/components/media/Uploader";
 import ImageWithActions from "@/components/misc/ImageWithActions";
+import {userMixin} from "@/util/users";
+import FormGroup from "@/components/forms/FormGroup";
 
 export default {
 	name: "Home",
 	title: 'Profile',
+	mixins: [userMixin],
 	components: {
+		FormGroup,
 		ImageWithActions,
 		Uploader,
 		Modal,
@@ -280,6 +255,7 @@ export default {
 		showImageModal: false,
 		profilePicture: false,
 		timeout: null,
+		isGeneratedPassword: false,
 	}),
 	mounted() {
 		this.init();
@@ -453,6 +429,16 @@ export default {
 				.then(pic => {
 					this.profilePicture = pic;
 				})
+		},
+		/*
+ 		* generatePassword()
+		 * Generate random hash.
+		 */
+		generatePassword() {
+			const password = this.createPassword()
+			this.password['new_password'] = password;
+			this.password['confirm_password'] = password;
+			this.isGeneratedPassword = true;
 		},
 	},
 	computed: {

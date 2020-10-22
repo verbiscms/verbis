@@ -102,14 +102,20 @@ func (c *UserController) GetRoles(g *gin.Context) {
 func (c *UserController) Create(g *gin.Context) {
 	const op = "UserHandler.Create"
 
-	var user domain.User
-	if err := g.ShouldBindJSON(&user); err != nil {
+	var u domain.UserCreate
+	if err := g.ShouldBindJSON(&u); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	user, err := c.model.Create(&user)
-	if err != nil {
+	user, err := c.model.Create(&u)
+	if errors.Code(err) == errors.CONFLICT {
+		Respond(g, 409, errors.Message(err), err)
+		return
+	} else if errors.Code(err) == errors.INVALID {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}

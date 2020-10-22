@@ -105,7 +105,7 @@ export default {
 	left: 0;
 	width: 100vw;
 	height: $mobile-menu-height-mob;
-	z-index: 99999999;
+	z-index: 99999;
 	background-color: $white;
 	box-shadow: -3px 0 10px 0 rgba($black, 0.16);
 
