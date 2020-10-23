@@ -15,6 +15,13 @@ type Fields struct {
 	fields map[string]interface{}
 }
 
+// newFields - Construct
+func newFields(f map[string]interface{}) *Fields {
+	return &Fields{
+		fields: f,
+	}
+}
+
 // getField - Get field based on input return nothing if found
 func (f *Fields) getField(field string) interface{} {
 	if _, found := f.fields[field]; found {
