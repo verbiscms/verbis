@@ -370,7 +370,7 @@ export default {
 		 * set default page 'resource'.
 		 */
 		setResource() {
-			const resource = this.getResources[this.$route.query.resource]
+			const resource = this.getTheme['resources'][this.$route.query.resource]
 			this.resource = resource === undefined ? {
 				"name": "page",
 				"friendly_name": "Page",
@@ -481,25 +481,11 @@ export default {
 	},
 	computed: {
 		/*
-		 * getResources()
-		 * Get the theme resources from store.
-		 */
-		getResources() {
-			return this.$store.state.theme.resources;
-		},
-		/*
 		 * getBaseSlug()
 		 * Get the base slug (resource).
 		 */
 		getBaseSlug() {
 			return  this.resource.name === "page" ? "/" : "/" + this.resource.name + "/";
-		},
-		/*
-		 * getSiteUrl()
-		 * Get the site url from the store for previewing.
-		 */
-		getSiteUrl() {
-			return this.$store.state.site.url;
 		},
 		/*
 		 * computedSlug()

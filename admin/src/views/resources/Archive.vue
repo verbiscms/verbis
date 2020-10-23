@@ -29,7 +29,7 @@
 									<select class="form-select" v-model="bulkType" v-else>
 										<option value="" disabled selected>Bulk actions</option>
 										<option value="publish">Publish</option>
-										<option value="draft">Move to draft</option>
+										<option value="draft">Move to drafts</option>
 										<option value="bin">Move to bin</option>
 									</select>
 								</div>
@@ -172,7 +172,7 @@
 																<span>Insights</span>
 															</router-link>
 															<div class="popover-line"></div>
-															<div v-if="item.post.status === 'bin'" class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="handleDelete(item.post.id);">
+															<div v-if="item.post.status === 'bin'" class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="handleDelete(item.post);">
 																<i class="feather feather-trash-2"></i>
 																<span>Delete</span>
 															</div>
@@ -193,7 +193,7 @@
 							</div><!-- /Table Wrapper -->
 							<Alert v-else colour="orange">
 								<slot>
-									<h3>No {{ resource['friendly_name'].toLowerCase() }} available. </h3>
+									<h3>No {{ activeTabName === "all" ? "" : (activeTabName === "bin" ? "binned" : activeTabName ) }} {{ resource['friendly_name'].toLowerCase() }} available. </h3>
 									<p>To create a new one, click the plus sign above.</p>
 								</slot>
 							</Alert>
@@ -218,7 +218,7 @@
 			</template>
 			<template slot="text">
 				<h2>Are you sure?</h2>
-				<p v-if="checked.length === 1">Are you sure want to delete this {{ resource['singular_name'] }}?</p>
+				<p v-if="selectedPost">Are you sure want to delete this {{ resource['singular_name'] }}?</p>
 				<p v-else>Are you sure want to delete {{ checked.length }} {{ resource['friendly_name'] }}?</p>
 			</template>
 		</Modal>
@@ -252,6 +252,7 @@ export default {
 		doingAxios: true,
 		resource: {},
 		posts: [],
+		selectedPost: false,
 		paginationObj: {},
 		activeTab: 1,
 		activeTabName: "all",
@@ -318,15 +319,18 @@ export default {
 		deletePost() {
 			this.isDeleting = true;
 
+			const toDelete = this.selectedPost ? [this.selectedPost.id] : this.checked;
+
 			const promises = [];
-			this.checked.forEach(id => {
+			toDelete.forEach(id => {
 				promises.push(this.deleteUserAxios(id));
 			});
 
 			// Send all requests
 			Promise.all(promises)
 				.then(() => {
-					this.$noty.success("Posts deleted successfully.");
+					const successMsg = toDelete.length === 1 ? `${this.resource['singular_name']} deleted successfully.` : `${this.resource['name']} deleted successfully.`
+					this.$noty.success(successMsg);
 					this.getPosts();
 				})
 				.catch(err => {
@@ -340,6 +344,7 @@ export default {
 					this.showDeleteModal = false;
 					this.bulkType = "";
 					this.isDeleting = false;
+					this.selectedPost = false;
 				});
 		},
 		/*
@@ -353,8 +358,8 @@ export default {
 		 * Pushes ID to array on single click (not bulk action) &
 		 * show the delete post modal.
 		 */
-		handleDelete(id) {
-			this.checked.push(id);
+		handleDelete(post) {
+			this.selectedPost = post;
 			this.showDeleteModal = true;
 		},
 		/*
@@ -377,7 +382,8 @@ export default {
 
 			Promise.all(promises)
 				.then(() => {
-					this.$noty.success("Posts updated successfully.");
+					const successMsg = checkedArr.length === 1 ? `${this.resource['singular_name']} updated successfully.` : `${this.resource['name']} updated successfully.`
+					this.$noty.success(successMsg);
 					this.getPosts();
 				})
 				.catch((err) => {
@@ -392,7 +398,7 @@ export default {
 					this.bulkType = "";
 					setTimeout(() => {
 						this.isDoingBulk = false;
-					}, 150);
+					}, this.timeoutDelay);
 				});
 		},
 		/*
@@ -493,7 +499,7 @@ export default {
 				this.$noty.warning("Select items in order to apply bulk actions");
 				setTimeout(() => {
 					this.isDoingBulk = false;
-				}, 150);
+				}, this.timeoutDelay);
 				return;
 			}
 
@@ -502,7 +508,7 @@ export default {
 				this.updateStatus(false, 'draft');
 			// Publish
 			} else if (this.bulkType === "publish") {
-				this.updateStatus(false, 'publish');
+				this.updateStatus(false, 'published');
 			// Move to bin
 			} else if (this.bulkType === "bin") {
 				this.updateStatus(false, 'bin');
@@ -513,6 +519,10 @@ export default {
 				this.$noty.warning("Select a bulk action.");
 				this.isDoingBulk = false;
 			}
+
+			setTimeout(() => {
+				this.isDoingBulk = false;
+			}, this.timeoutDelay);
 		},
 		/*
 		 * getPostsById()
@@ -528,13 +538,6 @@ export default {
 		 */
 		getResources() {
 			return this.$store.state.theme.resources;
-		},
-		/*
-		 * getSiteUrl()
-		 * Get the site url from the store for previewing.
-		 */
-		getSiteUrl() {
-			return this.$store.state.site.url;
 		},
 		/*
 		 * checkedAll()

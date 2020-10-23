@@ -37,10 +37,6 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 	siteTitle, _ := t.store.Options.GetByName("site_title")
 
 	// Normal Meta
-	if meta.Title != "" {
-		//TODO: Ask Kirk!
-	//	b.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", meta.Description))
-	}
 	if meta.Description != "" {
 		b.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", meta.Description))
 	}

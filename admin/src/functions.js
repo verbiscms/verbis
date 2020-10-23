@@ -98,6 +98,12 @@ class helpers {
 		el.style.maxHeight = height + "px";
 		console.log(el.style.maxHeight)
 	}
+
+	// Capitalize first character of string
+	capitalize(s) {
+		if (typeof s !== 'string') return '';
+		return s.charAt(0).toUpperCase() + s.slice(1);
+	}
 }
 
 Vue.prototype.helpers = new helpers();

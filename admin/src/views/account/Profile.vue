@@ -340,7 +340,7 @@ export default {
 				.finally(() => {
 					setTimeout(() => {
 						this.isSavingUser = false;
-					}, 150);
+					}, this.timeoutDelay);
 				});
 		},
 		/*
@@ -368,7 +368,7 @@ export default {
 				.finally(() => {
 					setTimeout(() => {
 						this.isSavingPassword = true;
-					}, 150);
+					}, this.timeoutDelay);
 				})
 		},
 		// TODO: Implement
@@ -465,22 +465,6 @@ export default {
 			this.isGeneratedPassword = true;
 		},
 	},
-	computed: {
-		/*
-		 * getUserInfo()
-		 * Get the logged in user info from the store.
-		 */
-		getUserInfo() {
-			return this.$store.state.userInfo;
-		},
-		/*
-		 * getSiteUrl()
-		 * Get the site url from the store for previewing.
-		 */
-		getSiteUrl() {
-			return this.$store.state.site.url;
-		},
-	}
 }
 
 </script>

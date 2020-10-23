@@ -139,7 +139,7 @@ export default {
 				.finally(() => {
 					setTimeout(() => {
 						this.doingAxios = false;
-					}, 150);
+					}, this.timeoutDelay);
 				})
 		},
 		/*

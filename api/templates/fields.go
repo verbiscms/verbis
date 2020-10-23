@@ -2,37 +2,48 @@ package templates
 
 import "fmt"
 
-/*
- * Fields
- * Functions for templates for Fields associated with the post
- */
+type FieldsHandler interface {
+	getField(field string) interface{}
+	getFields() map[string]interface{}
+	hasField(field string) bool
+	getRepeater(field string) []map[string]interface{}
+	getFlexible(field string) []map[string]interface{}
+	getSubField(field string, test string) map[string]interface{}
+}
 
-// Get field based on input return nothing if found
-func (t *TemplateFunctions) getField(field string) interface{} {
-	if _, found := t.fields[field]; found {
-		return t.fields[field]
+type Fields struct {
+	fields map[string]interface{}
+}
+
+// getField - Get field based on input return nothing if found
+func (f *Fields) getField(field string) interface{} {
+	if _, found := f.fields[field]; found {
+		return f.fields[field]
 	} else {
 		return ""
 	}
+
+	// If field is type of media
+	// If field is type of post
 }
 
-// Get all fields for template
-func (t *TemplateFunctions) getFields() map[string]interface{} {
-	return t.fields
+// getFields - Get all fields for template
+func (f *Fields) getFields() map[string]interface{} {
+	return f.fields
 }
 
-// Determine if the given field exists
-func (t *TemplateFunctions) hasField(field string) bool {
-	if _, found := t.fields[field]; found {
+// hasField - Determine if the given field exists
+func (f *Fields) hasField(field string) bool {
+	if _, found := f.fields[field]; found {
 		return true
 	}
 	return false
 }
 
-// Get repeater field
-func (t *TemplateFunctions) getRepeater(field string) []map[string]interface{} {
-	if _, found := t.fields[field]; found {
-		fields := t.fields[field].([]interface{})
+// getRepeater
+func (f *Fields) getRepeater(field string) []map[string]interface{} {
+	if _, found := f.fields[field]; found {
+		fields := f.fields[field].([]interface{})
 		var f []map[string]interface{}
 		for _, v := range fields {
 			f = append(f, v.(map[string]interface{}))
@@ -42,10 +53,10 @@ func (t *TemplateFunctions) getRepeater(field string) []map[string]interface{} {
 	return nil
 }
 
-// Get flexible content field
-func (t *TemplateFunctions) getFlexible(field string) []map[string]interface{} {
-	if _, found := t.fields[field]; found {
-		fields := t.fields[field].([]interface{})
+// getFlexible
+func (f *Fields) getFlexible(field string) []map[string]interface{} {
+	if _, found := f.fields[field]; found {
+		fields := f.fields[field].([]interface{})
 		var f []map[string]interface{}
 		for _, v := range fields {
 			f = append(f, v.(map[string]interface{}))
@@ -55,9 +66,11 @@ func (t *TemplateFunctions) getFlexible(field string) []map[string]interface{} {
 	return nil
 }
 
-func (t *TemplateFunctions) getSubField(field string, test string) map[string]interface{} {
+func (f *Fields) getSubField(field string, test string) map[string]interface{} {
 	fmt.Println(test)
 	fmt.Println(field)
 	return nil
 }
+
+
 

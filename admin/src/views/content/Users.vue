@@ -292,7 +292,6 @@ export default {
 				.then(() => {
 					const successMsg = toDelete.length === 1 ? "User deleted successfully" : "Users deleted successfully."
 					this.$noty.success(successMsg);
-					this.bulkType = "";
 					this.getUsers();
 				})
 				.catch(err => {
@@ -310,6 +309,7 @@ export default {
 					this.showDeleteModal = false;
 					this.bulkType = "";
 					this.isDeleting = false;
+					this.selectedUser = false;
 				});
 		},
 		/*
@@ -414,7 +414,7 @@ export default {
 				this.$noty.warning("Select items in order to apply bulk actions");
 				setTimeout(() => {
 					this.isDoingBulk = false;
-				}, 150)
+				}, this.timeoutDelay)
 				return
 			}
 
@@ -422,7 +422,7 @@ export default {
 			if (this.bulkType === "delete") {
 				setTimeout(() => {
 					this.isDoingBulk = false;
-				}, 150)
+				}, this.timeoutDelay)
 				this.showDeleteModal = true;
 			}
 		},
@@ -458,18 +458,6 @@ export default {
 		}
 	},
 	computed: {
-		/*
-		 * getUserInfo()
-		 */
-		getUserInfo() {
-			return this.$store.state.userInfo;
-		},
-		/*
-		 * getSite()
-		 */
-		getSite() {
-			return this.$store.state.site;
-		},
 		/*
 		 * checkedAll()
 		 * Update the checked array to everything/nothing when checked all is clicked.
