@@ -43,6 +43,9 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 
 // Get all template functions
 func (t *TemplateFunctions) GetFunctions() template.FuncMap {
+
+	fields := newFields(t.fields)
+
 	return template.FuncMap{
 		// Env
 		//"appEnv": t.appEnv,
@@ -54,12 +57,12 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Posts
 		"getResource": t.getResource,
 		// Fields
-		//"getField": t.getField,
-		//"getFields": t.getFields,
-		//"hasField": t.hasField,
-		//"getRepeater": t.getRepeater,
-		//"getFlexible": t.getFlexible,
-		//"getSubField": t.getSubField,
+		"getField": fields.getFields,
+		"getFields": fields.getFields,
+		"hasField": fields.hasField,
+		"getRepeater": fields.getRepeater,
+		"getFlexible": fields.getFlexible,
+		"getSubField": fields.getSubField,
 		// Auth
 		"auth": t.isAuth,
 		"admin": t.isAdmin,

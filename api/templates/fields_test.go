@@ -75,7 +75,7 @@ func TestGetRepeater(t *testing.T) {
 
 	repeater := f.getRepeater("repeater")
 	if repeater == nil {
-		t.Error(test.Format(`{"repeater": [{"text": "text1", "": "text2"}]}`, nil))
+		t.Error(test.Format(str, nil))
 	}
 
 	if len(repeater) != 2 {
@@ -96,22 +96,22 @@ func TestGetFlexible(t *testing.T) {
 	str := `{
 		"flexible": [
 			{
-				 "type": "layoutkey1",
+				 "type": "block1",
 				 "fields": {
-					"text": "text",
-					"text2": ""
+					"text": "content",
+					"text2": "content"
 				 }
 			},
 			{
-				"type": "layoutkey2",
+				"type": "block2",
 				"fields": {
-					"text": "default",
-					"text1": "",
-					"text2": "default",
+					"text": "content",
+					"text1": "content",
+					"text2": "content",
 					"repeater": [
 						{
-						  "text":"text",
-						  "text2":"text"
+						  "text":"content",
+						  "text2":"content"
 						}
 					]
 				}
@@ -119,11 +119,23 @@ func TestGetFlexible(t *testing.T) {
       	]
    	}`
 
-	_, err := helper(str)
+	f, err := helper(str)
 	if err != nil {
 		t.Error(err)
 	}
 
+	if field := f.getRepeater("wrongval"); len(field) != 0 {
+		t.Error(test.Format(nil, field))
+	}
+
+	flexible := f.getRepeater("flexible")
+	if flexible == nil {
+		t.Error(test.Format(str, nil))
+	}
+
+	if len(flexible) != 2 {
+		t.Error(test.Format("length of 2", len(flexible)))
+	}
 }
 
 func helper(fields string) (*Fields, error) {
