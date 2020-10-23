@@ -23,7 +23,7 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <h2>Fields</h2>
-                    <p>Variable Field: {{ $getFieldText := "main_text" | getField }} {{ $getFieldText }}</p>
+{{/*                    <p>Variable Field: {{ $getField := "main_text" | getField }} {{ $getField }}</p>*/}}
                     <p>Get Field: {{ "main_text" | getField }}</p>
                     <p>Get Fields: {{ getFields }}</p>
                     <p>Has Field: {{ "main_text" | hasField }}</p>
