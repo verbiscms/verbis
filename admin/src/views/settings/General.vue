@@ -12,165 +12,153 @@
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">
-								<i class="far fa-check"></i>
-								Update settings
-							</button>
+							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">Update settings</button>
 						</div>
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<form class="form">
+
+			<div class="row" v-if="!doingAxios">
 				<!-- =====================
 					Basic Options
 					===================== -->
-				<div class="form-row-group">
-					<div class="row">
-						<div class="col-12">
-							<h2>Site options</h2>
-						</div><!-- /Col -->
-					</div><!-- /Row -->
-					<!-- First name -->
-					<div class="row form-row form-row-border form-row-border-top">
-						<div class="col-12 col-desk-4 col-hd-2">
-							<h4>Title</h4>
-						</div>
-						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
-								<input class="form-input form-input-white" type="text" v-model="data['site_title']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['site_title']">{{ errors['site_title'] }}</span>
-								</transition><!-- /Message -->
-							</div>
-						</div><!-- /Col -->
-					</div><!-- /Row -->
-					<!-- Description -->
-					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
-							<h4>Description</h4>
-						</div>
-						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
-								<input class="form-input form-input-white" type="text" v-model="data['site_description']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['site_description']">{{ errors['site_description'] }}</span>
-								</transition><!-- /Message -->
-							</div>
-						</div><!-- /Col -->
-					</div><!-- /Row -->
-					<!-- Url -->
-					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
-							<h4>Url</h4>
-						</div>
-						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
-								<input class="form-input form-input-white" type="text" v-model="data['site_url']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['site_url']">{{ errors['site_url'] }}</span>
-								</transition><!-- /Message -->
-							</div>
-						</div><!-- /Col -->
-					</div><!-- /Row -->
-					<!-- Logo -->
-					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
-							<h4>Logo</h4>
-						</div>
-						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group">
-								<input class="form-input form-input-white" type="text" v-model="data['site_logo']">
-								<!-- Message -->
-								<transition name="trans-fade-height">
-									<span class="field-message field-message-warning" v-if="errors['site_logo']">{{ errors['site_logo'] }}</span>
-								</transition><!-- /Message -->
-							</div>
-						</div><!-- /Col -->
-					</div><!-- /Row -->
-				</div><!-- Form Group -->
+				<div class="col-12">
+					<div class="card card-small-box-shadow">
+						<collapse>
+							<template v-slot:header>
+								<div class="card-header">
+									<h3 class="card-title">Site Options</h3>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Title -->
+									<FormGroup label="Site title*" :error="errors['site_title']">
+										<input class="form-input form-input-white" type="text" v-model="data['site_title']">
+									</FormGroup>
+									<!-- Description -->
+									<FormGroup label="Site description*" :error="errors['site_description']">
+										<input class="form-input form-input-white" type="text" v-model="data['site_description']">
+									</FormGroup>
+									<!-- Url -->
+									<FormGroup label="Site title*" :error="errors['site_url']">
+										<input class="form-input form-input-white" type="text" v-model="data['site_url']">
+									</FormGroup>
+									<!-- Logo -->
+									<div class="general-logo">
+										<label class="form-label">Logo</label>
+										<div v-show="!hasLogo">
+											<button class="btn" @click.prevent="showImageModal = true">Insert Logo</button>
+										</div>
+										<div v-show="hasLogo">
+											<ImageWithActions @choose="showImageModal = true" @remove="hasLogo = false">
+												<img :src="getSiteUrl + data['logo']" @error="hasLogo = false"/>
+											</ImageWithActions>
+										</div>
+									</div>
+								</div><!-- /Card Body -->
+							</template>
+						</collapse>
+					</div><!-- /Card -->
+				</div><!-- /Col -->
 				<!-- =====================
 					Social media
 					===================== -->
-				<div class="form-row-group">
-					<div class="row">
-						<div class="col-12">
-							<h2>Social media</h2>
-						</div><!-- /Col -->
-						<div class="col-12 col-tab-6 col-desk-3">
-							<div class="card">
+				<div class="col-12">
+					<div class="card card-small-box-shadow">
+						<collapse>
+							<template v-slot:header>
+								<div class="card-header">
+									<h3 class="card-title">Social media</h3>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
 								<div class="card-body">
-									<div class="card-social">
-										<img src="@/assets/images/facebook.svg">
-										<h4>Facebook</h4>
-									</div>
-									<div class="form-group">
-										<input class="form-input form-input-white" type="text" v-model="data['social_facebook_url']" placeholder="https://">
-										<!-- Message -->
-										<transition name="trans-fade-height">
-											<span class="field-message field-message-warning" v-if="errors['social_facebook_url']">{{ errors['social_facebook_url'] }}</span>
-										</transition><!-- /Message -->
-									</div>
+									<div class="row no-gutter">
+										<div class="col-12 col-desk-6">
+											<FormGroup label="Facebook" :error="errors['social_facebook_url']">
+												<input class="form-input form-input-white" type="text" v-model="data['social_facebook_url']">
+											</FormGroup>
+											<FormGroup label="Twitter" :error="errors['social_twitter_url']">
+												<input class="form-input form-input-white" type="text" v-model="data['social_twitter_url']">
+											</FormGroup>
+											<FormGroup label="Youtube" :error="errors['social_youtube_url']">
+												<input class="form-input form-input-white" type="text" v-model="data['social_youtube_url']">
+											</FormGroup>
+										</div><!-- /Card -->
+										<div class="col-12 col-desk-6">
+											<FormGroup label="LinkedIn" :error="errors['social_linked_in']">
+												<input class="form-input form-input-white" type="text" v-model="data['social_linked_in']">
+											</FormGroup>
+											<FormGroup label="Instagram" :error="errors['social_instagram_url']">
+												<input class="form-input form-input-white" type="text" v-model="data['social_instagram_url']">
+											</FormGroup>
+											<FormGroup label="Pinterest" :error="errors['social_pinterest_url']">
+												<input class="form-input form-input-white" type="text" v-model="data['social_pinterest_url']">
+											</FormGroup>
+										</div>
+									</div><!-- /Col -->
 								</div><!-- /Card Body -->
-							</div><!-- /Card -->
-						</div><!-- /Col -->
-						<div class="col-12 col-tab-6 col-desk-3">
-							<div class="card card-test">
+							</template>
+						</collapse>
+					</div><!-- /Card -->
+				</div><!-- /Col -->
+				<!-- =====================
+					Contact Details
+					===================== -->
+				<div class="col-12">
+					<div class="card card-small-box-shadow">
+						<collapse>
+							<template v-slot:header>
+								<div class="card-header">
+									<h3 class="card-title">Contact details</h3>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
 								<div class="card-body">
-									<div class="card-social">
-										<img src="@/assets/images/twitter.svg">
-										<h3>Twitter</h3>
-									</div>
-									<div class="form-group">
-										<input class="form-input form-input-white" type="text" v-model="data['social_twitter_url']" placeholder="https://">
-										<!-- Message -->
-										<transition name="trans-fade-height">
-											<span class="field-message field-message-warning" v-if="errors['social_twitter_url']">{{ errors['social_twitter_url'] }}</span>
-										</transition><!-- /Message -->
-									</div>
+									<div class="row no-gutter">
+										<div class="col-12 col-desk-6">
+											<FormGroup label="Address" :error="errors['contact_telephone']">
+												<input class="form-input form-input-white" type="text" v-model="data['social_facebook_url']">
+											</FormGroup>
+										</div><!-- /Card -->
+										<div class="col-12 col-desk-6">
+											<FormGroup label="LinkedIn" :error="errors['contact_address']">
+												<input class="form-input form-input-white" type="text" v-model="data['social_linked_in']">
+											</FormGroup>
+										</div>
+									</div><!-- /Col -->
 								</div><!-- /Card Body -->
-							</div><!-- /Card -->
-						</div><!-- /Col -->
-						<div class="col-12 col-tab-6 col-desk-3">
-							<div class="card">
-								<div class="card-body">
-									<div class="card-social">
-										<img src="@/assets/images/instagram.svg">
-										<h3>Instagram</h3>
-									</div>
-									<div class="form-group">
-										<input class="form-input form-input-white" type="text" v-model="data['social_instagram_url']" placeholder="https://">
-										<!-- Message -->
-										<transition name="trans-fade-height">
-											<span class="field-message field-message-warning" v-if="errors['social_instagram_url']">{{ errors['social_instagram_url'] }}</span>
-										</transition><!-- /Message -->
-									</div>
-								</div><!-- /Card Body -->
-							</div><!-- /Card -->
-						</div><!-- /Col -->
-						<div class="col-12 col-tab-6 col-desk-3">
-							<div class="card">
-								<div class="card-body">
-									<div class="card-social">
-										<img src="@/assets/images/linkedin.svg">
-										<h3>LinkedIn</h3>
-									</div>
-									<div class="form-group">
-										<input class="form-input form-input-white" type="text" v-model="data['social_linkedin_url']" placeholder="https://">
-										<!-- Message -->
-										<transition name="trans-fade-height">
-											<span class="field-message field-message-warning" v-if="errors['social_linkedin_url']">{{ errors['social_linkedin_url'] }}</span>
-										</transition><!-- /Message -->
-									</div>
-								</div><!-- /Card Body -->
-							</div><!-- /Card -->
-						</div><!-- /Col -->
-					</div><!-- /Row -->
-				</div>
-			</form>
+							</template>
+						</collapse>
+					</div><!-- /Card -->
+				</div><!-- /Col -->
+			</div><!-- /Row -->
 		</div><!-- /Container -->
+		<!-- =====================
+			Insert Photo Modal
+			===================== -->
+		<Modal :show.sync="showImageModal" class="modal-full-width modal-hide-close">
+			<template slot="text">
+				<Uploader :rows="3" :modal="true" :filters="false" class="media-modal" @insert="insertLogo" :options="false">
+					<template slot="close">
+						<button class="btn btn-margin-right btn-icon-mob" @click.prevent="showImageModal = false">
+							<i class="feather feather-x"></i>
+							<span>Close</span>
+						</button>
+					</template>
+				</Uploader>
+			</template>
+		</Modal>
 	</section>
 </template>
 
@@ -181,18 +169,42 @@
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import {optionsMixin} from "@/util/options";
+import FormGroup from "@/components/forms/FormGroup";
+import Modal from "@/components/modals/General";
+import Uploader from "@/components/media/Uploader";
+import ImageWithActions from "@/components/misc/ImageWithActions";
+import Collapse from "@/components/misc/Collapse";
 
 export default {
 	name: "General",
 	title: 'General Settings',
 	mixins: [optionsMixin],
 	components: {
+		Collapse,
+		ImageWithActions,
+		Uploader,
+		Modal,
+		FormGroup,
 		Breadcrumbs
 	},
 	data: () => ({
 		errorMsg: "Fix the errors before saving settings.",
-		successMsg: "Site options updated successfully."
-	})
+		successMsg: "Site options updated successfully.",
+		errors: [],
+		hasLogo: true,
+		showImageModal: false,
+	}),
+	methods: {
+		/*
+		 * insertLogo()
+		 */
+		insertLogo(e) {
+			this.profilePicture = e;
+			this.showImageModal = false;
+			this.data['logo'] = e.url;
+			this.hasLogo = true;
+		},
+	}
 }
 
 </script>
@@ -202,23 +214,15 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-	// Dummy
+	// Text
 	// =========================================================================
 
-	.card-social {
-		display: flex;
-		align-items: center;
-		margin-bottom: 1rem;
+	h2 {
+		margin-bottom: 4px;
+	}
 
-		img {
-			margin-right: 8px;
-			height: 30px;
-		}
-
-		h3 {
-			color: $copy-light;
-			margin-bottom: 0;
-		}
+	p {
+		font-size: 0.9rem;
 	}
 
 </style>

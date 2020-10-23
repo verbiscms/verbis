@@ -71,14 +71,18 @@ h4 {
 }
 
 h5 {
-
+	font-size: 0.9rem;
+	color: darken($grey, 30%);
+	font-weight: 500;
+	margin-bottom: 0;
+	line-height: 1;
 }
 
 h6 {
 	font-size: 12px;
 	text-transform: uppercase;
 	font-weight: 500;
-	color: rgba($secondary, 0.8);
+	color: rgba($secondary, 0.80);
 	letter-spacing: 1px;
 }
 
@@ -88,7 +92,7 @@ h6 {
 p {
 	margin-bottom: 1rem;
 	@include px-to-rem(13);
-	color: rgba($secondary, 0.70);
+	color: rgba($secondary, 0.80);
 	font-weight: normal;
 	line-height: 1.4;
 }

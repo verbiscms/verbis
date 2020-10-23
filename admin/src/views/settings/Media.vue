@@ -3,7 +3,7 @@
 	===================== -->
 <template>
 	<section>
-		<div class="auth-container">
+		<div class="auth-container" v-if="!doingAxios">
 			<div class="row">
 				<div class="col-12">
 					<header class="header header-with-actions">
@@ -65,24 +65,27 @@
 						<h2>Image sizes:</h2>
 					</div>
 				</div><!-- /Col -->
-				<div class="col-12 col-tab-6 col-desk-3">
-					<div class="card">
+				<!-- Thumbnail -->
+				<div class="col-12 col-tab-6 col-desk-3" v-for="(size, sizeKey) in data['media_images_sizes']" :key="size.name">
+					<div class="card card-small-box-shadow">
+						<div class="card-header card-header-icon card-header-naked">
+							<h3>{{ size.name}}</h3>
+							<div class="badge">{{ helpers.capitalize(sizeKey) }}</div>
+						</div>
 						<div class="card-body">
-							<div class="text-cont" style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-								<h3>Thumbnail size</h3>
-								<div class="badge">Thumbnail</div>
-							</div>
 							<div class="form-group">
 								<label class="form-label" for="media-size-small-width">Width</label>
-								<input class="form-input" id="media-size-small-width" type="number" placeholder="Enter a width">
+								<input class="form-input" id="media-size-small-width" type="number" placeholder="Enter a width" v-model="data['media_images_sizes'][sizeKey]['width']">
 							</div>
 							<div class="form-group">
 								<label class="form-label" for="media-size-small-height">Height</label>
-								<input class="form-input" id="media-size-small-height" type="number" placeholder="Enter a height">
+								<input class="form-input" id="media-size-small-height" type="number" placeholder="Enter a height" v-model="data['media_images_sizes'][sizeKey]['height']">
 							</div>
+							{{ sizeKey }}
+							{{ data['media_images_sizes'][sizeKey]['crop'] }}
 							<div class="form-checkbox">
-								<input type="checkbox" id="archive-check-all"/>
-								<label for="archive-check-all">
+								<input type="checkbox" id="media-size-small-crop" v-model="data['media_images_sizes'][sizeKey].crop" :true-value="true" :false-value="false" />
+								<label for="media-size-small-crop">
 									<i class="fal fa-check"></i>
 								</label>
 								<div class="form-checkbox-text">Crop image?</div>
@@ -111,8 +114,34 @@ export default {
 	components: {
 		Breadcrumbs
 	},
-	data: () => ({}),
-	methods: {}
+	data: () => ({
+		sizes: [],
+	}),
+	mounted() {
+
+	},
+	methods: {
+		/*
+		 * runAfter()
+		 * The options hae
+		 */
+		runAfter() {
+			this.sortImageSizes()
+		},
+		/*
+		 * sortSizes()
+		 * Sort sizes by width for the size cards.
+		 */
+		sortImageSizes() {
+			this.data['media_images_sizes'] = Object.fromEntries(
+				Object.entries(this.data['media_images_sizes']).sort(([,a],[,b]) => {
+					return parseFloat(a.width) - parseFloat(b.width)
+				})
+			);
+		}
+	},
+	computed: {
+	}
 }
 
 </script>

@@ -47,11 +47,6 @@
 					})
 			}
 		},
-		computed: {
-			getSite() {
-				return this.$store.state.site;
-			}
-		}
     }
 </script>
 

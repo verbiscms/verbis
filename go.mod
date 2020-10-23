@@ -28,11 +28,14 @@ require (
 	github.com/go-openapi/strfmt v0.19.5 // indirect
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/golang/mock v1.4.4 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/martian v2.1.0+incompatible // indirect
 	github.com/google/uuid v1.1.2
 	github.com/gookit/color v1.3.1
+	github.com/gregoryv/nexus v0.4.0 // indirect
+	github.com/gregoryv/uncover v0.4.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.1 // indirect
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jedib0t/go-pretty v4.3.0+incompatible // indirect
@@ -67,7 +70,7 @@ require (
 	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5 // indirect
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	golang.org/x/sys v0.0.0-20201020230747-6e5568b54d1a // indirect
-	golang.org/x/tools v0.0.0-20191112195655-aa38f8e97acc // indirect
+	golang.org/x/tools v0.0.0-20201022215848-ffe8bce740af // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/go-playground/validator.v8 v8.18.2 // indirect

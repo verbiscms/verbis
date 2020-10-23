@@ -83,8 +83,6 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	// Apply pagination
 	q += fmt.Sprintf(" ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
 
-	fmt.Println(q)
-
 	// Select posts
 	if err := s.db.Select(&p, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}

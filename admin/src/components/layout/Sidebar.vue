@@ -6,7 +6,7 @@
 		<div class="aside-top">
 			<!-- Logo -->
 			<router-link class="aside-logo" :to="{ name: 'home' }" v-if="getSite.logo">
-				<img :src="globalBasePath + getSite.logo">
+				<img :src="getSiteUrl + getSite.logo">
 				<h2>Verbis</h2>
 			</router-link>
 			<!-- =====================
@@ -270,24 +270,6 @@ export default {
 
 	},
 	computed: {
-		/*
-		 * getUserInfo()
-		 */
-		getUserInfo() {
-			return this.$store.state.userInfo;
-		},
-		/*
-		 * getSite()
-		 */
-		getSite() {
-			return this.$store.state.site;
-		},
-		/*
-		 * getTheme()
-		 */
-		getTheme() {
-			return this.$store.state.theme
-		},
 		/*
 		 * getInitials()
 		 */

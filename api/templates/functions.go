@@ -54,12 +54,12 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Posts
 		"getResource": t.getResource,
 		// Fields
-		"getField": t.getField,
-		"getFields": t.getFields,
-		"hasField": t.hasField,
-		"getRepeater": t.getRepeater,
-		"getFlexible": t.getFlexible,
-		"getSubField": t.getSubField,
+		//"getField": t.getField,
+		//"getFields": t.getFields,
+		//"hasField": t.hasField,
+		//"getRepeater": t.getRepeater,
+		//"getFlexible": t.getFlexible,
+		//"getSubField": t.getSubField,
 		// Auth
 		"auth": t.isAuth,
 		"admin": t.isAdmin,

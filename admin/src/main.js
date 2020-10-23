@@ -21,7 +21,7 @@ import titleMixin from './util/title';
 import VueNoty from 'vuejs-noty'
 import OnLoad from 'vue-onload'
 import { PrismEditor } from 'vue-prism-editor';
-
+import {globalMixin} from "@/util/global";
 require('./functions.js');
 
 // Local
@@ -33,7 +33,7 @@ Vue.config.productionTip = false;
  */
 // Not working
 //const apiUrl = process.env.VUE_APP_APIURL
-const baseUrl = "http://127.0.0.1:8080"
+//const baseUrl = "http://127.0.0.1:8080"
 const apiUrl = "http://127.0.0.1:8080/api/v1"
 
 /**
@@ -67,22 +67,11 @@ Vue.prototype.axios = axios;
  * Mixins must be instantiated *before* your call to new Vue(...)
  */
 
-// Get global API Path
-Vue.mixin({
-	data: function () {
-		return {
-			get globalAPIPath() {
-				return apiUrl
-			},
-			get globalBasePath() {
-				return baseUrl
-			}
-		}
-	},
-})
+// Global
+Vue.mixin(globalMixin);
 
 // Title
-Vue.mixin(titleMixin)
+Vue.mixin(titleMixin);
 
 /**
  * Plugins
