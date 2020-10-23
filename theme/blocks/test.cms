@@ -5,7 +5,11 @@
 
 This is the test block
 fff
+<h1>{{ getSubField "text" . }}</h1>
+
+
 {{ . }}
+<pre>{{ index . 0 }}</pre>
 <div>
 {{/*    {{ ("text" "hello") | getSubField }}*/}}
 {{/*    {{ . }}*/}}
