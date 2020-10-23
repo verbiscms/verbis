@@ -1,14 +1,12 @@
 package templates
 
-import "fmt"
-
 type FieldsHandler interface {
 	getField(field string) interface{}
 	getFields() map[string]interface{}
 	hasField(field string) bool
 	getRepeater(field string) []map[string]interface{}
 	getFlexible(field string) []map[string]interface{}
-	getSubField(field string, test string) map[string]interface{}
+	getSubField(field string) map[string]interface{}
 }
 
 type Fields struct {
@@ -63,7 +61,10 @@ func (f *Fields) getRepeater(field string) []map[string]interface{} {
 // getFlexible
 func (f *Fields) getFlexible(field string) []map[string]interface{} {
 	if _, found := f.fields[field]; found {
-		fields := f.fields[field].([]interface{})
+		fields, ok := f.fields[field].([]interface{})
+		if !ok {
+			return nil
+		}
 		var f []map[string]interface{}
 		for _, v := range fields {
 			f = append(f, v.(map[string]interface{}))
@@ -73,9 +74,15 @@ func (f *Fields) getFlexible(field string) []map[string]interface{} {
 	return nil
 }
 
-func (f *Fields) getSubField(field string, test string) map[string]interface{} {
-	fmt.Println(test)
-	fmt.Println(field)
+func (f *Fields) getSubField(field string, layout map[string]interface{}) interface{} {
+	block := layout["fields"]
+	fields, ok := block.(map[string]interface{})
+	if !ok {
+		return nil
+	}
+	if _, found := fields[field]; found {
+		return fields[field]
+	}
 	return nil
 }
 

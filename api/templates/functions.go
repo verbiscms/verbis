@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"html/template"
+	"strings"
 )
 
 type TemplateFunctions struct {
@@ -19,6 +20,7 @@ type TemplateFunctions struct {
 	post *domain.Post
 	fields map[string]interface{}
 	store *models.Store
+	functions template.FuncMap
 }
 
 // Construct
@@ -46,7 +48,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 
 	fields := newFields(t.fields)
 
-	return template.FuncMap{
+	funcMap := template.FuncMap{
 		// Env
 		//"appEnv": t.appEnv,
 		"isProduction": t.isProduction,
@@ -57,7 +59,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Posts
 		"getResource": t.getResource,
 		// Fields
-		"getField": fields.getFields,
+		"getField": fields.getField,
 		"getFields": fields.getFields,
 		"hasField": fields.hasField,
 		"getRepeater": fields.getRepeater,
@@ -74,6 +76,10 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"escape": t.escape,
 		"partial": t.partial,
 	}
+
+	t.functions = funcMap
+
+	return funcMap
 }
 
 /*
@@ -231,19 +237,21 @@ func (t *TemplateFunctions) escape(text string) template.HTML {
 func (t *TemplateFunctions) partial(name string, data ...interface{}) template.HTML {
 	path := paths.Theme() + "/" + name
 
+	fmt.Println(data)
+
 	if !files.Exists(path) {
 		panic(fmt.Errorf("No file exists with the path: %s", name))
 	}
 
-	file, err := template.ParseFiles(path)
+	pathArr := strings.Split(path, "/")
+	file, err := template.New(pathArr[len(pathArr) - 1]).Funcs(t.functions).ParseFiles(path)
 	if err != nil {
-		panic(fmt.Errorf("Unable to create a new partial file"))
+		panic(fmt.Errorf("Unable to create a new partial file: %v", err))
 	}
 
 	var tpl bytes.Buffer
 	err = file.Execute(&tpl, data)
 	if err != nil {
-		fmt.Println(err)
 		panic(err)
 	}
 

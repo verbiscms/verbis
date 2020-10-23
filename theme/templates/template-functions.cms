@@ -25,8 +25,8 @@
                     <h2>Fields</h2>
 {{/*                    <p>Variable Field: {{ $getField := "main_text" | getField }} {{ $getField }}</p>*/}}
                     <p>Get Field: {{ "main_text" | getField }}</p>
-                    <p>Get Fields: {{ getFields }}</p>
-                    <p>Has Field: {{ "main_text" | hasField }}</p>
+{{/*                    <p>Get Fields: {{ getFields }}</p>*/}}
+{{/*                    <p>Has Field: {{ "main_text" | hasField }}</p>*/}}
                 </div>
             </div>
             <div class="row">
@@ -45,16 +45,15 @@
                 <div class="col-12">
                     <h2>Flexible</h2>
                     <p>Flexible: {{ $flexibleContent := "flexible" | getFlexible }}</p>
-                    {{ $flexibleContent }}
                     {{ if $flexibleContent }}
-                        {{ range $layout, $field := $flexibleContent }}
-
+                        {{ range $field := $flexibleContent }}
                             {{ if eq $field.type "layoutkey1" }}
+                                <h1>{{ getSubField "text" $field }}</h1>
                                 {{ partial "blocks/test.cms" . }}
                             {{ end }}
 
                             <h4> {{ $field.type }}</h4>
-                            <h4> {{ $layout }}</h4>
+
 
                         {{ end }}
                     {{ end }}
