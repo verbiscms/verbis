@@ -8,7 +8,7 @@
 				<div class="col-12">
 					<!-- Logo -->
 					<figure class="auth-logo" v-if="getSite.logo">
-						<img :src="globalBasePath + getSite.logo">
+						<img :src="getSiteUrl + getSite.logo">
 					</figure><!-- /Col -->
 					<div class="auth-card">
 						<div class="auth-card-cont">

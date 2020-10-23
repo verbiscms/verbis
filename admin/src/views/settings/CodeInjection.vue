@@ -24,14 +24,14 @@
 						<h2>How to use</h2>
 						<p>Code injection allows you to inject a small snippet of HTML into your site. It can be a css override, analytics of a block javascript. To insert code into a specific page, visit the page in the resources section.</p>
 					</div>
-				</div>
+				</div><!-- /Col -->
 			</div><!-- /Row -->
 			<div class="row">
 				<div class="col-12">
 					<!-- =====================
 						Head
 						===================== -->
-					<div class="card">
+					<div class="card card-small-box-shadow">
 						<collapse>
 							<template v-slot:header>
 								<div class="card-header">
@@ -51,7 +51,7 @@
 					<!-- =====================
 						Footer
 						===================== -->
-					<div class="card">
+					<div class="card card-small-box-shadow">
 						<collapse>
 							<template v-slot:header>
 								<div class="card-header">

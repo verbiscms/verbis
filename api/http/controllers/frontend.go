@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
@@ -42,6 +43,7 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 
 	data, mime, err := c.models.Media.Serve(path, acceptWebp)
 	if err != nil {
+		fmt.Println("here")
 		c.NoPageFound(g)
 		return
 	}
@@ -103,7 +105,7 @@ func (c *FrontendController) NoPageFound(g *gin.Context) {
 		Partials:  []string{},
 		DisableCache: true,
 	})
-	if err := gvError.Render(g.Writer, http.StatusOK, "404", nil); err != nil {
+	if err := gvError.Render(g.Writer, 404, "404", nil); err != nil {
 		panic(err)
 	}
 	return

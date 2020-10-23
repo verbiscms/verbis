@@ -33,15 +33,6 @@ export default {
 	},
 	data: () => ({}),
 	methods: {},
-	computed: {
-		/*
-		 * getUserInfo()
-		 * Get the logged in user info from the store.
-		 */
-		getUserInfo() {
-			return this.$store.state.userInfo;
-		},
-	}
 }
 
 </script>

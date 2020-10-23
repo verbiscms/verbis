@@ -152,13 +152,6 @@ export default {
 		}
 	},
 	computed: {
-		/*
-		 * getSiteUrl()
-		 * Get the site url from the store for previewing.
-		 */
-		getSiteUrl() {
-			return this.$store.state.site.url;
-		},
 		getOptions() {
 			return this.layout.options
 		},

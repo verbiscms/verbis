@@ -22,7 +22,7 @@ export const fieldMixin = {
 	watch: {
 		errorTrigger: function() {
 			if (typeof this.validate !== "undefined") {
-				this.validate()
+				this.validate();
 			}
 		}
 	},

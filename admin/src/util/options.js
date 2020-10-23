@@ -32,6 +32,9 @@ export const optionsMixin = {
 				})
 				.finally(() => {
 					this.doingAxios = false;
+					if (typeof this.runAfter == 'function') {
+						this.runAfter();
+					}
 				});
 		},
 		/*

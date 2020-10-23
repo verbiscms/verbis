@@ -435,13 +435,8 @@ export default {
 			Promise.all(promises)
 				.then(() => {
 					this.$noty.success("Media item deleted successfully.");
-					// Clear selected item
-					this.selectedMedia = false;
-					// Remove from media array
 					this.getMedia();
 					this.$store.dispatch("getProfilePicture");
-					// const index = this.media.findIndex(m => m.id === id);
-					// this.media.splice(index, 1);
 				})
 				.catch(err => {
 					console.log(err);
@@ -449,6 +444,7 @@ export default {
 				})
 				.finally(() => {
 					if (this.paginationObj) this.paginationObj.page = 0;
+					this.selectedMedia = false;
 					this.isDeleting = false;
 					this.bulkMode = false;
 					this.showDeleteModal = false;
@@ -520,7 +516,7 @@ export default {
 					setTimeout(() => {
 						this.loadingImages = false;
 						this.initial = false;
-					}, 100);
+					}, this.timeoutDelay);
 					return;
 				}
 				this.loadingImages = false;
@@ -613,13 +609,6 @@ export default {
 		},
 	},
 	computed: {
-		/*
-		 * getSiteUrl()
-		 * Get the site url from the store for previewing.
-		 */
-		getSiteUrl() {
-			return this.$store.state.site.url;
-		},
 		/*
 		 * bulkMode()
 		 * Get & set the bulk action to emit to parent.
