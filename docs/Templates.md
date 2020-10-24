@@ -1,20 +1,20 @@
 # Templates
 
-## Fields
+# Fields
 
 Short introduction here
 
 ___
 
-### getField
+## getField
 
 Gets the value of a specific field specified in the layout.
 
-#### Returns:
+### Returns:
 
 `interface{}` The field value or an empty string if the function did not find the field.
 
-#### Examples:
+### Examples:
 
 **Get the value from the current post**
 
@@ -105,6 +105,12 @@ This example demonstrates how to output all the fields with the post ID of 10.
 ___
 
 ### getRepeater
+
+Get a repeater block associated
+
+#### Returns:
+
+`[]map[string[interface{}` The field values, or nil if there are no fields set.
 
 
 
