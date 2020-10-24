@@ -7,7 +7,7 @@ import (
 
 type fieldsHandler interface {
 	getField(field string, id ...int) interface{}
-	getFields() map[string]interface{}
+	getFields(id ...int) map[string]interface{}
 	hasField(field string) bool
 	getRepeater(field string) []map[string]interface{}
 	getFlexible(field string) []map[string]interface{}
