@@ -46,7 +46,8 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 // Get all template functions
 func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 
-	fields := newFields(t.fields)
+	var fields fieldsHandler
+	fields = newFields(t.fields, t.store)
 
 	funcMap := template.FuncMap{
 		// Env
@@ -236,8 +237,6 @@ func (t *TemplateFunctions) escape(text string) template.HTML {
 // partial
 func (t *TemplateFunctions) partial(name string, data ...interface{}) template.HTML {
 	path := paths.Theme() + "/" + name
-
-	fmt.Println(data)
 
 	if !files.Exists(path) {
 		panic(fmt.Errorf("No file exists with the path: %s", name))

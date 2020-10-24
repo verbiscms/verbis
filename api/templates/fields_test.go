@@ -3,8 +3,12 @@ package templates
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/mocks"
+	"github.com/ainsleyclark/verbis/api/models"
+
 	"github.com/ainsleyclark/verbis/api/test"
-	"reflect"
+	"github.com/golang/mock/gomock"
 	"testing"
 )
 
@@ -19,21 +23,81 @@ func TestGetField(t *testing.T) {
 	}
 
 	if field := f.getField("wrongval"); field != "" {
-		t.Errorf(test.Format(nil, field))
+		t.Errorf(test.Format("", field))
 	}
 }
 
-func TestGetFields(t *testing.T) {
-	f, err := helper(`{"text": "content", "text2": "content2"}`)
+func TestGetField_Post(t *testing.T) {
+	f, err := helper("{}")
 	if err != nil {
 		t.Error(err)
 	}
 
-	m := map[string]interface{}{}
-	if reflect.TypeOf(f.getFields()) != reflect.TypeOf(m) {
-		t.Errorf(test.Format("map[string]interface{}", reflect.TypeOf(f.getFields())))
+	controller := gomock.NewController(t)
+	defer controller.Finish()
+
+	data := []byte(`{"posttext": "postcontent"}`)
+	mockPost := domain.Post{
+		Id:     2,
+		Fields: (*json.RawMessage)(&data),
+	}
+
+	posts := mocks.NewMockPostsRepository(controller)
+	f.store.Posts = posts
+	posts.EXPECT().GetById(2).Return(mockPost, nil)
+
+	field := f.getField("posttext", 2)
+	if field != "postcontent" {
+		t.Errorf(test.Format("postcontent", field))
 	}
 }
+
+func TestGetField_No_Post(t *testing.T) {
+	f, err := helper("{}")
+	if err != nil {
+		t.Error(err)
+	}
+
+	controller := gomock.NewController(t)
+	defer controller.Finish()
+
+	posts := mocks.NewMockPostsRepository(controller)
+	var mockErr = fmt.Errorf("No post")
+	posts.EXPECT().GetById(gomock.Any()).Return(domain.Post{}, mockErr)
+	f.store.Posts = posts
+
+	field := f.getField("text", 1)
+
+	if field != "" {
+		t.Errorf(test.Format("", field))
+	}
+}
+
+func TestGetField_Invalid_JSON(t *testing.T) {
+	f, err := helper("{}")
+	if err != nil {
+		t.Error(err)
+	}
+
+	controller := gomock.NewController(t)
+	defer controller.Finish()
+
+	data := []byte(`"text "content"`)
+	mockPost := domain.Post{
+		Id:     1,
+		Fields: (*json.RawMessage)(&data),
+	}
+
+	posts := mocks.NewMockPostsRepository(controller)
+	posts.EXPECT().GetById(1).Return(mockPost, nil)
+	f.store.Posts = posts
+
+	field := f.getField("text", 1)
+	if field != "" {
+		t.Errorf(test.Format("", field))
+	}
+}
+
 
 func TestHasField(t *testing.T) {
 	f, err := helper(`{"text": "content"}`)
@@ -138,15 +202,13 @@ func TestGetFlexible(t *testing.T) {
 	}
 }
 
-func helper(fields string) (*Fields, error) {
+
+func helper(str string) (*fields, error) {
 	m := make(map[string]interface{})
-	err := json.Unmarshal([]byte(fields), &m)
+	err := json.Unmarshal([]byte(str), &m)
 	if err != nil {
 		fmt.Printf("Cannot unmarshal fields: %v", err)
-		fmt.Println()
 	}
 
-	return &Fields{
-		fields: m,
-	}, nil
+	return newFields(m, &models.Store{}), nil
 }

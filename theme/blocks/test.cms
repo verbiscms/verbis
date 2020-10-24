@@ -1,20 +1,2 @@
-
-<br>
-<br>
-<br>
-
-This is the test block
-fff
-<h1>{{ getSubField "text" . }}</h1>
-
-
-{{ . }}
-<pre>{{ index . 0 }}</pre>
-<div>
-{{/*    {{ ("text" "hello") | getSubField }}*/}}
-{{/*    {{ . }}*/}}
-{{/*    <h1>{{ index . "fields" }}HH</h1>*/}}
-</div>
-<br>
-<br>
-<br>
+{{ $layout := index . 0 }}
+<h1>{{ getSubField "text" $layout }}</h1>
