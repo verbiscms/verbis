@@ -60,8 +60,24 @@ func (f *fields) getField(field string, id ...int) interface{} {
 }
 
 // getFields - Get all fields for template
-func (f *fields) getFields() map[string]interface{} {
-	return f.fields
+func (f *fields) getFields(id ...int) map[string]interface{} {
+	fields := f.fields
+	if len(id) > 0 {
+		post, err := f.store.Posts.GetById(id[0])
+
+		if err != nil {
+			return nil
+		}
+
+		var m map[string]interface{}
+		if err := json.Unmarshal(*post.Fields, &m); err != nil {
+			return nil
+		}
+
+		fields = m
+	}
+
+	return fields
 }
 
 // hasField - Determine if the given field exists
