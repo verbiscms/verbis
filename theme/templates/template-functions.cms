@@ -43,11 +43,12 @@
             <div class="row">
                 <div class="col-12">
                     <h2>Repeater</h2>
-                    <p>Repeater: {{ $repeaterFields := "repeater" | getRepeater }}</p>
+                    <p>Repeater: {{ $repeaterFields := getRepeater "repeater" }}</p>
+                    {{ $repeaterFields := getRepeater "repeater" }}
                     {{ if $repeaterFields }}
-                        {{ range $a, $field := $repeaterFields }}
-                            {{ index $field "text" }}
-                            {{ $a }}
+                        {{ range $index, $field := $repeaterFields }}
+                            {{ index . "text" }}
+                            {{ index . "richtext" }}
                         {{ end }}
                     {{ end }}
                 </div>
@@ -55,7 +56,7 @@
             <div class="row">
                 <div class="col-12">
                     <h2>Flexible</h2>
-                    <p>Flexible: {{ $flexibleContent := "flexible" | getFlexible }}</p>
+                    {{ $flexibleContent := getFlexible "flexible" }}
                     {{ if $flexibleContent }}
                         {{ range $field := $flexibleContent }}
                             {{ if eq $field.type "layoutkey1" }}
@@ -63,10 +64,7 @@
                                 <h1>{{ getSubField "text" $field }}</h1>
                                 {{ partial "blocks/test.cms" . }}
                             {{ end }}
-
                             <h4> {{ $field.type }}</h4>
-
-
                         {{ end }}
                     {{ end }}
                 </div>
