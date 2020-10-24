@@ -1,18 +1,13 @@
 package templates
 
 import (
-	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"html/template"
-	"strings"
 )
 
 type TemplateFunctions struct {
@@ -207,11 +202,7 @@ func (t *TemplateFunctions) isAdmin() bool {
  * Functions for templates for paths
  */
 
-// Retrieve the assets path for the theme
-func (t *TemplateFunctions) assetsPath() string {
-	//return config.Theme.AssetsPath
-	return ""
-}
+
 
 // Retrieve the assets path for the theme
 func (t *TemplateFunctions) storagePath() string {
@@ -227,32 +218,4 @@ func (t *TemplateFunctions) storagePath() string {
 // Get all fields for template
 func (t *TemplateFunctions) GetFullUrl() string {
 	return t.gin.Request.Host + t.gin.Request.URL.String()
-}
-
-// escape HTML
-func (t *TemplateFunctions) escape(text string) template.HTML {
-	return template.HTML(text)
-}
-
-// partial
-func (t *TemplateFunctions) partial(name string, data ...interface{}) template.HTML {
-	path := paths.Theme() + "/" + name
-
-	if !files.Exists(path) {
-		panic(fmt.Errorf("No file exists with the path: %s", name))
-	}
-
-	pathArr := strings.Split(path, "/")
-	file, err := template.New(pathArr[len(pathArr) - 1]).Funcs(t.functions).ParseFiles(path)
-	if err != nil {
-		panic(fmt.Errorf("Unable to create a new partial file: %v", err))
-	}
-
-	var tpl bytes.Buffer
-	err = file.Execute(&tpl, data)
-	if err != nil {
-		panic(err)
-	}
-
-	return template.HTML(tpl.String())
 }
