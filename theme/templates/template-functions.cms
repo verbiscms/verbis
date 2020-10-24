@@ -20,15 +20,26 @@
                     {{/*                    <p>Loop: {{ $args := dict "key" "value"}}</p>*/}}
                 </div>
             </div>
+            <!-- =====================
+                Fields
+                ===================== -->
             <div class="row mb-3">
                 <div class="col-12">
                     <h2>Fields</h2>
-{{/*                    <p>Variable Field: {{ $getField := "main_text" | getField }} {{ $getField }}</p>*/}}
-                    <p>Get Field: {{ "main_text" | getField }}</p>
-{{/*                    <p>Get Fields: {{ getFields }}</p>*/}}
+
+
+                    <p>Get Fields: {{ getField "text" 2 }}</p>
+
+                    {{ if getField "text" 2 }}
+        kdfjghdfighi
+                        {{ end }}
+                    <p>Get Fields: {{ getFields }}</p>
 {{/*                    <p>Has Field: {{ "main_text" | hasField }}</p>*/}}
                 </div>
             </div>
+
+
+
             <div class="row">
                 <div class="col-12">
                     <h2>Repeater</h2>
@@ -48,6 +59,7 @@
                     {{ if $flexibleContent }}
                         {{ range $field := $flexibleContent }}
                             {{ if eq $field.type "layoutkey1" }}
+                                <h1>{{ $field }}</h1>
                                 <h1>{{ getSubField "text" $field }}</h1>
                                 {{ partial "blocks/test.cms" . }}
                             {{ end }}
