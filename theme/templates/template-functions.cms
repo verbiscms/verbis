@@ -46,7 +46,6 @@
 
 {{/*                    {{ $post.Slug }}*/}}
 
-                    yo
                     {{ getFlexible "flexible" }}
                 </div>
             </div>
