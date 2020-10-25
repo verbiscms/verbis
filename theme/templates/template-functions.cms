@@ -38,8 +38,11 @@
                 </div>
             </div>
 
+           <h1>Image  {{ $image := getField "image" }}</h1>
 
-
+            {{ $image.Sizes }}
+{{/*            {{ $id }}*/}}
+{{/*{{ getMediaAttachment $id }}*/}}
             <div class="row">
                 <div class="col-12">
                     <h2>Repeater</h2>

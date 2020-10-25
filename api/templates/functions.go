@@ -41,9 +41,6 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 // Get all template functions
 func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 
-	var fields fieldsHandler
-	fields = newFields(t.fields, t.store)
-
 	funcMap := template.FuncMap{
 		// Env
 		//"appEnv": t.appEnv,
@@ -55,18 +52,20 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Posts
 		"getResource": t.getResource,
 		// Fields
-		"getField": fields.getField,
-		"getFields": fields.getFields,
-		"hasField": fields.hasField,
-		"getRepeater": fields.getRepeater,
-		"getFlexible": fields.getFlexible,
-		"getSubField": fields.getSubField,
+		"getField": t.getField,
+		"getFields": t.getFields,
+		"hasField": t.hasField,
+		"getRepeater": t.getRepeater,
+		"getFlexible": t.getFlexible,
+		"getSubField": t.getSubField,
 		// Auth
 		"auth": t.isAuth,
 		"admin": t.isAdmin,
 		// Paths
 		"assets": t.assetsPath,
 		"storage": t.storagePath,
+		// Media
+		"getMedia": t.getMedia,
 		// Helpers
 		"fullUrl": t.GetFullUrl,
 		"escape": t.escape,

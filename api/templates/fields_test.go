@@ -4,114 +4,79 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/mocks"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-
 	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/golang/mock/gomock"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGetField(t *testing.T) {
-	f, err := helper(`{"text": "content"}`)
-	if err != nil {
-		t.Error(err)
+	f := helper(`{"text": "content"}`)
+
+	if got := f.getField("text"); got == "" {
+		assert.Equal(t, got, "content")
 	}
 
-	if field := f.getField("text"); field == "" {
-		t.Errorf(test.Format("content", nil))
-	}
-
-	if field := f.getField("wrongval"); field != "" {
-		t.Errorf(test.Format("", field))
+	if got := f.getField("wrongval"); got != "" {
+		assert.Equal(t, got, "")
 	}
 }
 
 func TestGetField_Post(t *testing.T) {
-	f, err := helper("{}")
-	if err != nil {
-		t.Error(err)
-	}
+	f := helper(`{"text": "content"}`)
 
-	controller := gomock.NewController(t)
-	defer controller.Finish()
-
+	mockPosts := mocks.PostsRepository{}
 	data := []byte(`{"posttext": "postcontent"}`)
 	mockPost := domain.Post{
-		Id:     2,
+		Id:     1,
 		Fields: (*json.RawMessage)(&data),
 	}
 
-	posts := mocks.NewMockPostsRepository(controller)
-	f.store.Posts = posts
-	posts.EXPECT().GetById(2).Return(mockPost, nil)
+	mockPosts.On("GetById", 1).Return(mockPost, nil)
+	f.store.Posts = &mockPosts
 
-	field := f.getField("posttext", 2)
-	if field != "postcontent" {
-		t.Errorf(test.Format("postcontent", field))
-	}
+	got := f.getField("posttext", 1)
+	assert.Equal(t, got, "postcontent")
 }
 
 func TestGetField_No_Post(t *testing.T) {
-	f, err := helper("{}")
-	if err != nil {
-		t.Error(err)
-	}
+	f := helper(`{}`)
 
-	controller := gomock.NewController(t)
-	defer controller.Finish()
+	mockPosts := mocks.PostsRepository{}
+	f.store.Posts = &mockPosts
+	mockPosts.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("No post"))
 
-	posts := mocks.NewMockPostsRepository(controller)
-	var mockErr = fmt.Errorf("No post")
-	posts.EXPECT().GetById(gomock.Any()).Return(domain.Post{}, mockErr)
-	f.store.Posts = posts
-
-	field := f.getField("text", 1)
-
-	if field != "" {
-		t.Errorf(test.Format("", field))
-	}
+	got := f.getField("posttext", 1)
+	assert.Equal(t, got, "")
 }
 
-func TestGetField_Invalid_JSON(t *testing.T) {
-	f, err := helper("{}")
-	if err != nil {
-		t.Error(err)
-	}
+func TestGetField_Invalid_Json(t *testing.T) {
+	f := helper("{}")
 
-	controller := gomock.NewController(t)
-	defer controller.Finish()
-
+	mockPosts := mocks.PostsRepository{}
 	data := []byte(`"text "content"`)
 	mockPost := domain.Post{
 		Id:     1,
 		Fields: (*json.RawMessage)(&data),
 	}
 
-	posts := mocks.NewMockPostsRepository(controller)
-	posts.EXPECT().GetById(1).Return(mockPost, nil)
-	f.store.Posts = posts
+	mockPosts.On("GetById", 1).Return(mockPost, nil)
+	f.store.Posts = &mockPosts
 
-	field := f.getField("text", 1)
-	if field != "" {
-		t.Errorf(test.Format("", field))
-	}
+	got := f.getField("text", 1)
+	assert.Equal(t, got, "")
 }
 
 
 func TestHasField(t *testing.T) {
-	f, err := helper(`{"text": "content"}`)
-	if err != nil {
-		t.Error(err)
-	}
+	f := helper(`{"text": "content"}`)
 
-	if has := f.hasField("text"); !has {
-		t.Errorf(test.Format(true, has))
-	}
+	got := f.hasField("text")
+	assert.Equal(t, got, true)
 
-	if has := f.hasField("wrongval"); has {
-		t.Errorf(test.Format(true, has))
-	}
+	got = f.hasField("wrongval")
+	assert.Equal(t, got, false)
 }
 
 func TestGetRepeater(t *testing.T) {
@@ -128,31 +93,21 @@ func TestGetRepeater(t *testing.T) {
 		]
 	}`
 
-	f, err := helper(str)
-	if err != nil {
-		t.Error(err)
-	}
+	f := helper(str)
 
-	if field := f.getRepeater("wrongval"); len(field) != 0 {
-		t.Error(test.Format(nil, field))
-	}
+	field := f.getRepeater("wrongval")
+	assert.Equal(t, len(field), 0)
 
 	repeater := f.getRepeater("repeater")
-	if repeater == nil {
-		t.Error(test.Format(str, nil))
-	}
 
-	if len(repeater) != 2 {
-		t.Error(test.Format("length of 2", len(repeater)))
-	}
-
-	if _, ok := repeater[0]["text1"]; !ok {
-		t.Error(test.Format("text1", nil))
-	}
-
-	if _, ok := repeater[1]["text2"]; !ok {
-		t.Error(test.Format("text2", nil))
-	}
+	assert.NotNil(t, repeater)
+	assert.Equal(t, len(repeater), 2)
+	assert.Equal(t, repeater[0]["text1"], "content")
+	assert.Equal(t, repeater[0]["text2"], "content")
+	assert.Equal(t, repeater[1]["text1"], "content")
+	assert.Equal(t, repeater[1]["text2"], "content")
+	assert.Nil(t, repeater[0]["wrongval"])
+	assert.Nil(t, repeater[1]["wrongval"])
 }
 
 func TestGetFlexible(t *testing.T) {
@@ -183,10 +138,7 @@ func TestGetFlexible(t *testing.T) {
       	]
    	}`
 
-	f, err := helper(str)
-	if err != nil {
-		t.Error(err)
-	}
+	f := helper(str)
 
 	if field := f.getRepeater("wrongval"); len(field) != 0 {
 		t.Error(test.Format(nil, field))
@@ -202,13 +154,11 @@ func TestGetFlexible(t *testing.T) {
 	}
 }
 
-
-func helper(str string) (*fields, error) {
-	m := make(map[string]interface{})
-	err := json.Unmarshal([]byte(str), &m)
-	if err != nil {
-		fmt.Printf("Cannot unmarshal fields: %v", err)
+func helper(str string) *TemplateFunctions {
+	data := []byte(str)
+	p := domain.Post{
+		Fields: (*json.RawMessage)(&data),
 	}
 
-	return newFields(m, &models.Store{}), nil
+	return NewFunctions(nil, &models.Store{}, &p)
 }
