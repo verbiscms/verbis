@@ -26,50 +26,28 @@
             <div class="row mb-3">
                 <div class="col-12">
                     <h2>Fields</h2>
+                    <!-- ===================== Media ===================== -->
+                    <h1>Image  {{ $image := getField "image" }}</h1>
+                   <pre> {{ $image }}</pre>
+                    {{ $image.Sizes.hd }}
+                    {{ getMedia 132 }}
+                    <img src="{{ $image.Sizes.thumbnail.Url }}" alt="">
+                    <!-- ================================================== -->
 
+                    <!-- ===================== Posts ===================== -->
+                    {{ getFields }}
+                 <h1>   {{ $post := getField "post" }}</h1>
+                   <h1> {{ $post.Title }}</h1>
+                    {{ $post.PageTemplate }}
+                    {{ getField "post" }}
+                    {{ getPost 12 }}
 
-                    <p>Get Fields: {{ getField "text" 2 }}</p>
+                    <!-- ================================================== -->
 
-                    {{ if getField "text" 2 }}
-        kdfjghdfighi
-                        {{ end }}
-                    <p>Get Fields: {{ getFields }}</p>
-{{/*                    <p>Has Field: {{ "main_text" | hasField }}</p>*/}}
-                </div>
-            </div>
+{{/*                    {{ $post.Slug }}*/}}
 
-           <h1>Image  {{ $image := getField "image" }}</h1>
-
-            {{ $image.Sizes }}
-{{/*            {{ $id }}*/}}
-{{/*{{ getMediaAttachment $id }}*/}}
-            <div class="row">
-                <div class="col-12">
-                    <h2>Repeater</h2>
-                    <p>Repeater: {{ $repeaterFields := getRepeater "repeater" }}</p>
-                    {{ $repeaterFields := getRepeater "repeater" }}
-                    {{ if $repeaterFields }}
-                        {{ range $index, $field := $repeaterFields }}
-                            {{ index . "text" }}
-                            {{ index . "richtext" }}
-                        {{ end }}
-                    {{ end }}
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12">
-                    <h2>Flexible</h2>
-                    {{ $flexibleContent := getFlexible "flexible" }}
-                    {{ if $flexibleContent }}
-                        {{ range $field := $flexibleContent }}
-                            {{ if eq $field.type "layoutkey1" }}
-                                <h1>{{ $field }}</h1>
-                                <h1>{{ getSubField "text" $field }}</h1>
-                                {{ partial "blocks/test.cms" . }}
-                            {{ end }}
-                            <h4> {{ $field.type }}</h4>
-                        {{ end }}
-                    {{ end }}
+                    yo
+                    {{ getFlexible "flexible" }}
                 </div>
             </div>
             <div class="row mt-5 mb-3">

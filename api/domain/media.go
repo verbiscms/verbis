@@ -27,12 +27,6 @@ type Media struct {
 	UpdatedAt		time.Time			`db:"updated_at" json:"updated_at"`
 }
 
-type MediaPublic struct {
-	Media
-	Sizes 			MediaSizes 	 		`db:"sizes" json:"sizes"`
-}
-
-
 type MediaSize struct {
 	UUID 			uuid.UUID			`db:"uuid" json:"uuid"`
 	Url 			string				`db:"url" json:"url"`
@@ -45,20 +39,37 @@ type MediaSize struct {
 	Crop			bool 				`db:"crop" json:"crop"`
 }
 
+type MediaSizeOptions struct {
+	Name			string 				`db:"name" json:"name"`
+	Width			int 				`db:"width" json:"width"`
+	Height			int 				`db:"height" json:"height"`
+	Crop			bool 				`db:"crop" json:"crop"`
+}
+
 type MediaSizes map[string]MediaSize
 
-func (m *MediaSizes) Scan(value interface{}) error {
+func (m MediaSizes) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
 	bytes, ok := value.([]byte)
 	if !ok {
 		return fmt.Errorf("scan not supported")
 	}
-	return json.Unmarshal(bytes, m)
+	if bytes == nil {
+		return nil
+	}
+	return json.Unmarshal(bytes, &m)
 }
 
-func (m *MediaSizes) Value() (driver.Value, error) {
+func (m MediaSizes) Value() (driver.Value, error) {
+	if len(m) == 0 {
+		return nil, nil
+	}
 	j, err := json.Marshal(m)
 	if err != nil {
-		return nil, fmt.Errorf("not supported")
+		return nil, fmt.Errorf("could not unmarshal to domain.MediaSizes")
 	}
+
 	return driver.Value(j), nil
 }

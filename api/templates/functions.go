@@ -58,14 +58,16 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"getRepeater": t.getRepeater,
 		"getFlexible": t.getFlexible,
 		"getSubField": t.getSubField,
+		// Posts
+		"getPost": t.getPost,
+		// Media
+		"getMedia": t.getMedia,
 		// Auth
 		"auth": t.isAuth,
 		"admin": t.isAdmin,
 		// Paths
 		"assets": t.assetsPath,
 		"storage": t.storagePath,
-		// Media
-		"getMedia": t.getMedia,
 		// Helpers
 		"fullUrl": t.GetFullUrl,
 		"escape": t.escape,

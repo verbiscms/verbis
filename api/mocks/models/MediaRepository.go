@@ -75,14 +75,14 @@ func (_m *MediaRepository) Get(meta http.Params) ([]domain.Media, int, error) {
 }
 
 // GetById provides a mock function with given fields: id
-func (_m *MediaRepository) GetById(id int) (domain.MediaPublic, error) {
+func (_m *MediaRepository) GetById(id int) (domain.Media, error) {
 	ret := _m.Called(id)
 
-	var r0 domain.MediaPublic
-	if rf, ok := ret.Get(0).(func(int) domain.MediaPublic); ok {
+	var r0 domain.Media
+	if rf, ok := ret.Get(0).(func(int) domain.Media); ok {
 		r0 = rf(id)
 	} else {
-		r0 = ret.Get(0).(domain.MediaPublic)
+		r0 = ret.Get(0).(domain.Media)
 	}
 
 	var r1 error
