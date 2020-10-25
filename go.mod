@@ -26,6 +26,7 @@ require (
 	github.com/gin-gonic/contrib v0.0.0-20200810162008-6dee08bf958e // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/strfmt v0.19.5 // indirect
+	github.com/go-playground/assert/v2 v2.0.1
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/mock v1.4.4
@@ -46,7 +47,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible // indirect
 	github.com/lib/pq v1.8.0 // indirect
-	github.com/magiconair/properties v1.8.2 // indirect
+	github.com/magiconair/properties v1.8.2
 	github.com/manifoldco/promptui v0.7.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-shellwords v1.0.10 // indirect
@@ -64,6 +65,7 @@ require (
 	github.com/ugorji/go v1.1.13 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/unrolled/render v1.0.3 // indirect
+	github.com/vektra/mockery/v2 v2.3.0 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yosssi/gohtml v0.0.0-20201013000340-ee4748c638f4
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897

@@ -5,7 +5,7 @@ import (
 	"github.com/chai2010/webp"
 
 	//	"bytes"
-	"encoding/json"
+	//"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -139,15 +139,6 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of media items", Operation: op, Err: err}
 	}
 
-	// Loop over and process the sizes
-	for k, _ := range m {
-		publicSizes, err := s.getSizesForPublic(m[k])
-		if err != nil {
-			return []domain.Media{}, -1, err
-		}
-		m[k].Sizes = publicSizes
-	}
-
 	return m, total, nil
 }
 
@@ -159,6 +150,7 @@ func (s *MediaStore) GetById(id int) (domain.Media, error) {
 	if err := s.db.Get(&m, "SELECT * FROM media WHERE id = ?", id); err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the ID: %d", id), Operation: op}
 	}
+
 	return m, nil
 }
 
@@ -186,12 +178,9 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 
 	// Test Sizes
 	if err := s.db.Get(&m, "SELECT * FROM media WHERE sizes LIKE '%" + url + "%' LIMIT 1"); err == nil {
-		sizes, err := s.unmarshalSizes(m)
-		if err == nil {
-			for _, v := range sizes {
-				if v.Url == url {
-					return v.FilePath + "/" + v.UUID.String(), m.Type, nil
-				}
+		for _, v := range m.Sizes {
+			if v.Url == url {
+				return v.FilePath + "/" + v.UUID.String(), m.Type, nil
 			}
 		}
 	}
@@ -259,7 +248,6 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not save the media file, please try again", Operation: op}
 	}
 
-
 	// Convert to WebP
 	if s.convertWebP && mimeType == "image/jpeg" || mimeType == "image/png"  {
 		decodedImage, err := s.decodeImage(file, mimeType)
@@ -277,13 +265,6 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 	if err != nil {
 		return domain.Media{}, err
 	}
-
-	publicSizes, err := s.getSizesForPublic(dm)
-	if err != nil {
-		return domain.Media{}, err
-	}
-
-	dm.Sizes = publicSizes
 
 	return dm, nil
 }
@@ -314,14 +295,14 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 
 // Inserts a media item into the database
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSize int, mime string, sizes []domain.MediaSizeDB, userId int) (domain.Media, error) {
+func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSize int, mime string, sizes domain.MediaSizes, userId int) (domain.Media, error) {
 	const op = "MediaRepository.insert"
 
-	marshal, err := json.Marshal(sizes)
-	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not marshal the media sizes", Operation: op, Err: err}
-	}
-	marshalledSizes := json.RawMessage(marshal)
+	//marshal, err := json.Marshal(sizes)
+	//if err != nil {
+	//	return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not marshal the media sizes", Operation: op, Err: err}
+	//}
+	//marshalledSizes := json.RawMessage(marshal)
 
 	m := domain.Media{
 		UUID: 			uuid,
@@ -332,7 +313,7 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 		FilePath:    	filePath,
 		FileSize:    	fileSize,
 		FileName:    	name,
-		Sizes:       	&marshalledSizes,
+		Sizes:       	sizes,
 		Type:        	mime,
 		UserID:      	userId,
 	}
@@ -396,13 +377,10 @@ func (s *MediaStore) Delete(id int) error {
 	go files.CheckAndDelete(m.FilePath + "/" + m.UUID.String() + extension + ".webp")
 
 	// Delete the sizes and webp versions if stored
-	sizes, err := s.unmarshalSizes(m)
-	if len(sizes) > 0 && err == nil {
-		for _, v := range sizes {
-			filePath := v.FilePath + "/" + v.UUID.String() + extension
-			go files.CheckAndDelete(filePath)
-			go files.CheckAndDelete(filePath + ".webp")
-		}
+	for _, v := range m.Sizes {
+		filePath := v.FilePath + "/" + v.UUID.String() + extension
+		go files.CheckAndDelete(filePath)
+		go files.CheckAndDelete(filePath + ".webp")
 	}
 
 	return nil
@@ -429,29 +407,27 @@ func (s *MediaStore) Total() (int, error) {
 
 // saveResizedImages saves all of the resized images and returns
 // an array of media DB sizes if successful.
-func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, path string, mime string, extension string) []domain.MediaSizeDB {
+func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, path string, mime string, extension string) domain.MediaSizes {
 	const op = "MediaRepository.saveResizedImages"
 
-	var savedSizes []domain.MediaSizeDB
+	savedSizes := make(domain.MediaSizes)
 	if mime == "image/png" || mime == "image/jpeg" {
 		for _, size := range s.imageSizes {
 			mediaUUID := uuid.New()
 			fileName := name + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + extension
 
 			if err := s.processImageSize(file, path + "/" + mediaUUID.String(), mime, size); err == nil {
-				savedSizes = append(savedSizes, domain.MediaSizeDB{
+				savedSizes[size.Name] = domain.MediaSize{
 					FilePath: path,
-					MediaSize: domain.MediaSize{
-						UUID: mediaUUID,
-						Url: s.getUrl() + "/" + fileName,
-						Name: fileName,
-						SizeName: size.Name,
-						FileSize: files.GetFileSize(path + "/" + mediaUUID.String() + extension),
-						Width: size.Width,
-						Height: size.Height,
-						Crop: size.Crop,
-					},
-				})
+					UUID: mediaUUID,
+					Url: s.getUrl() + "/" + fileName,
+					Name: fileName,
+					SizeName: size.Name,
+					FileSize: files.GetFileSize(path + "/" + mediaUUID.String() + extension),
+					Width: size.Width,
+					Height: size.Height,
+					Crop: size.Crop,
+				}
 			}
 		}
 	}
@@ -517,8 +493,6 @@ func resizeImage(srcImage image.Image, width int, height int, crop bool) image.I
 // Converts an image to webp based on compression and decoded image.
 // Compression level is also set.
 func convertWebP(image image.Image, path string, compression int) {
-	const op = "MediaRepository.convertWebP"
-
 	var buf bytes.Buffer
 	if err := webp.Encode(&buf, image, &webp.Options{Lossless: true}); err != nil {
 		log.Println(err)
@@ -590,50 +564,6 @@ func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) (*imag
 	return nil, &errors.Error{Code: errors.INTERNAL, Message: "Something went wrong decoding the image", Operation: op, Err: err}
 }
 
-// Unmarshal the media sizes for processing
-// Returns errors.INTERNAL if the size was unable to be unmarshalled
-func (s *MediaStore) unmarshalSizes(m domain.Media) ([]domain.MediaSizeDB, error) {
-	const op = "MediaRepository.unmarshalSizes"
-	var sizes []domain.MediaSizeDB
-	if err := json.Unmarshal(*m.Sizes, &sizes); err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could unmarshal the image sizes", Operation: op, Err: err}
-	}
-	return sizes, nil
-}
-
-// Unmarshal the media sizes for public use
-// Returns errors.INTERNAL if the size was unable to be marshalled
-// TODO: Sort by name or size
-func (s *MediaStore) getSizesForPublic(m domain.Media) (*json.RawMessage, error) {
-	const op = "MediaRepository.getSizesForPublic"
-
-	ms, err := s.unmarshalSizes(m)
-	if err != nil {
-		return nil, err
-	}
-
-	var returnData []domain.MediaSize
-	for _, v := range ms {
-		returnData = append(returnData, domain.MediaSize{
-			UUID: 	  v.UUID,
-			Url:      v.Url,
-			Name:     v.Name,
-			SizeName: v.SizeName,
-			FileSize: v.FileSize,
-			Width:    v.Width,
-			Height:   v.Height,
-			Crop:     v.Crop,
-		})
-	}
-
-	marshalled, err := json.Marshal(returnData)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could marshal the image sizes", Operation: op, Err: err}
-	}
-	jsonMessage := json.RawMessage(marshalled)
-
-	return &jsonMessage, nil
-}
 
 // Process file name
 func (s *MediaStore) processFileName(file string, extension string) string {
@@ -666,3 +596,4 @@ func (s *MediaStore) processFileName(file string, extension string) string {
 
 	return cleanedFile
 }
+

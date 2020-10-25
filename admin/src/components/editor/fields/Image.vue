@@ -122,7 +122,6 @@ export default {
 		},
 		insertMedia(e) {
 			this.value = {
-				url: e.url,
 				id: e.id,
 				type: "image"
 			};
