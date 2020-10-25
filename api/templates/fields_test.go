@@ -68,6 +68,12 @@ func TestGetField_Invalid_Json(t *testing.T) {
 	assert.Equal(t, got, "")
 }
 
+func TestCheckFieldType(t *testing.T) {
+
+}
+
+
+
 
 func TestHasField(t *testing.T) {
 	f := helper(`{"text": "content"}`)

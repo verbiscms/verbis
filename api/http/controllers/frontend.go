@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
@@ -43,7 +42,6 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 
 	data, mime, err := c.models.Media.Serve(path, acceptWebp)
 	if err != nil {
-		fmt.Println("here")
 		c.NoPageFound(g)
 		return
 	}

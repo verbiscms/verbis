@@ -34,28 +34,28 @@ func (s *Seeder) runOptions() error {
 		"media_upload_max_width": 0,
 		"media_upload_max_height": 0,
 		"media_organise_year_month": true,
-		"media_images_sizes": domain.MediaSizes{
-			"thumbnail": domain.MediaSize{
-				Name: "Thumbnail Size",
-				Width: 550,
+		"media_images_sizes": map[string]domain.MediaSizeOptions{
+			"thumbnail": {
+				Name:   "Thumbnail Size",
+				Width:  550,
 				Height: 300,
 				Crop: true,
 			},
-			"medium": domain.MediaSize{
-				Name: "Medium Size",
-				Width: 992,
+			"medium": {
+				Name:   "Medium Size",
+				Width:  992,
 				Height: 0,
 				Crop: false,
 			},
-			"large": domain.MediaSize{
-				Name: "Large Size",
-				Width: 1280,
+			"large": {
+				Name:   "Large Size",
+				Width:  1280,
 				Height: 0,
 				Crop: false,
 			},
-			"hd": domain.MediaSize{
-				Name: "HD Size",
-				Width: 1920,
+			"hd": {
+				Name:   "HD Size",
+				Width:  1920,
 				Height: 0,
 				Crop: false,
 			},

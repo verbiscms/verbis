@@ -150,7 +150,6 @@ func (s *MediaStore) GetById(id int) (domain.Media, error) {
 	if err := s.db.Get(&m, "SELECT * FROM media WHERE id = ?", id); err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the ID: %d", id), Operation: op}
 	}
-
 	return m, nil
 }
 
@@ -180,7 +179,7 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 	if err := s.db.Get(&m, "SELECT * FROM media WHERE sizes LIKE '%" + url + "%' LIMIT 1"); err == nil {
 		for _, v := range m.Sizes {
 			if v.Url == url {
-				return v.FilePath + "/" + v.UUID.String(), m.Type, nil
+				return m.FilePath + "/" + v.FilePath + "/" + v.UUID.String(), m.Type, nil
 			}
 		}
 	}
@@ -298,11 +297,6 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSize int, mime string, sizes domain.MediaSizes, userId int) (domain.Media, error) {
 	const op = "MediaRepository.insert"
 
-	//marshal, err := json.Marshal(sizes)
-	//if err != nil {
-	//	return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not marshal the media sizes", Operation: op, Err: err}
-	//}
-	//marshalledSizes := json.RawMessage(marshal)
 
 	m := domain.Media{
 		UUID: 			uuid,
@@ -320,7 +314,9 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 
 	q := "INSERT INTO media (uuid, url, title, alt, description, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
+
 	if err != nil {
+		fmt.Println(err)
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the new media item with the name: %v", name), Operation: op, Err: err}
 	}
 
@@ -412,12 +408,12 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, 
 
 	savedSizes := make(domain.MediaSizes)
 	if mime == "image/png" || mime == "image/jpeg" {
-		for _, size := range s.imageSizes {
+		for key, size := range s.imageSizes {
 			mediaUUID := uuid.New()
 			fileName := name + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + extension
 
 			if err := s.processImageSize(file, path + "/" + mediaUUID.String(), mime, size); err == nil {
-				savedSizes[size.Name] = domain.MediaSize{
+				savedSizes[key] = domain.MediaSize{
 					FilePath: path,
 					UUID: mediaUUID,
 					Url: s.getUrl() + "/" + fileName,
