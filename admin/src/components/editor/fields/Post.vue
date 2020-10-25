@@ -86,8 +86,7 @@ export default {
 		setTags() {
 			this.value.forEach(val => {
 				this.posts.forEach(post => {
-					const id = val.replace("verbis_post_", "");
-					if (parseInt(id) === post.id) {
+					if (val.id === post.id) {
 						this.selectedTags.push({
 							text: post.text,
 							id: post.id
@@ -102,7 +101,10 @@ export default {
 			this.validateRequired()
 			let tagsArr = []
 			tags.forEach(tag => {
-				tagsArr.push("verbis_post_" + tag.id)
+				tagsArr.push({
+					id: tag.id,
+					type: "post",
+				})
 			})
 			this.value = tagsArr
 		},
