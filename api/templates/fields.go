@@ -31,6 +31,7 @@ func (t *TemplateFunctions) getField(field string, id ...int) interface{} {
 		return ""
 	}
 
+	// Check if the field is a post, or media item
 	val = t.checkFieldType(val)
 
 	return val
