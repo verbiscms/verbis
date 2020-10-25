@@ -1,7 +1,9 @@
 package domain
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"time"
 )
@@ -18,19 +20,18 @@ type Media struct {
 	FilePath		string 				`db:"file_path" json:"-"`
 	FileSize		int 				`db:"file_size" json:"file_size"`
 	FileName		string 				`db:"file_name" json:"file_name"`
-	Sizes 			*json.RawMessage 	`db:"sizes" json:"sizes"`
+	Sizes 			MediaSizes		 	`db:"sizes" json:"sizes"`
 	Type			string 				`db:"type" json:"type"`
 	UserID			int					`db:"user_id" json:"user_id"`
 	CreatedAt		time.Time			`db:"created_at" json:"created_at"`
 	UpdatedAt		time.Time			`db:"updated_at" json:"updated_at"`
 }
 
-type MediaSizes map[string]MediaSize
-
-type MediaSizeDB struct {
-	FilePath		string 				`db:"file_path" json:"file_path"`
-	MediaSize
+type MediaPublic struct {
+	Media
+	Sizes 			MediaSizes 	 		`db:"sizes" json:"sizes"`
 }
+
 
 type MediaSize struct {
 	UUID 			uuid.UUID			`db:"uuid" json:"uuid"`
@@ -38,8 +39,26 @@ type MediaSize struct {
 	Name			string 				`db:"name" json:"name"`
 	SizeName 		string 				`db:"size_name" json:"size_name"`
 	FileSize		int 				`db:"file_size" json:"file_size"`
+	FilePath		string 				`db:"file_path" json:"-"`
 	Width			int 				`db:"width" json:"width"`
 	Height			int 				`db:"height" json:"height"`
 	Crop			bool 				`db:"crop" json:"crop"`
 }
 
+type MediaSizes map[string]MediaSize
+
+func (m *MediaSizes) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("scan not supported")
+	}
+	return json.Unmarshal(bytes, m)
+}
+
+func (m *MediaSizes) Value() (driver.Value, error) {
+	j, err := json.Marshal(m)
+	if err != nil {
+		return nil, fmt.Errorf("not supported")
+	}
+	return driver.Value(j), nil
+}
