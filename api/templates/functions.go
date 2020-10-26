@@ -70,10 +70,11 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Paths
 		"assets": t.assetsPath,
 		"storage": t.storagePath,
+		// Partials
+		"partial": t.partial,
 		// Helpers
 		"fullUrl": t.getFullUrl,
 		"escape": t.escape,
-		"partial": t.partial,
 	}
 
 	t.functions = funcMap
