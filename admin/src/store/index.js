@@ -25,9 +25,9 @@ export default new Vuex.Store({
 		apiToken: "",
 		session: "",
 		userInfo: {},
-		site: {},
+		site: false,
 		users: [],
-		theme: {},
+		theme: false,
 		roles: [],
 		profilePicture: false,
 	},
@@ -44,11 +44,11 @@ export default new Vuex.Store({
 			state.apiToken = ''
 			state.auth = false
 			state.userInfo = {}
-			state.site = {};
+			state.site = false;
 			state.users = [];
-			state.theme = {};
+			state.theme = false;
+			state.roles = [];
 			state.profilePicture = false;
-			Vue.prototype.helpers.deleteCookie("verbis-session")
 			axios.defaults.headers.common = {
 				"token": ''
 			};
@@ -59,10 +59,9 @@ export default new Vuex.Store({
 		setUser(state, user) {
 			state.userInfo = user;
 		},
-		setSession(state, session) {
-			Vue.prototype.helpers.setCookie("verbis-session", session, 1)
-			state.session = session;
-		},
+		// setSession(state, session) {
+		// 	//Vue.prototype.helpers.setCookie("verbis-session", session, 1)
+		// },
 		setTheme(state, theme) {
 			state.theme = theme;
 		},
@@ -83,21 +82,42 @@ export default new Vuex.Store({
 		 */
 		getSiteConfig(context) {
 			return new Promise((resolve, reject) => {
-				const site = context.state.site
-				if (Object.keys(site).length === 0 && site.constructor === Object) {
+				if (!this.state.site) {
 					axios.get("/site")
 						.then(res => {
-							context.state.site = res.data.data
+							const site = res.data.data
+							context.state.site = site;
 							this.commit('setSite', res.data.data);
-							resolve()
+							resolve(site)
 						})
-						.catch(() => {
-							reject();
+						.catch(err => {
+							reject(err);
 						});
 				} else {
-					resolve();
+					resolve(this.state.site);
 				}
 			})
+		},
+		/*
+		 * getTheme()
+		 * Get them description, resources, assets paths from API & commit.
+		 */
+		getTheme() {
+			return new Promise((resolve, reject) => {
+				if (!this.state.theme) {
+					axios.get(`/theme`)
+						.then(res => {
+							const theme = res.data.data;
+							this.commit("setTheme", theme);
+							resolve(theme);
+						})
+						.catch(err => {
+							reject(err)
+						})
+				} else {
+					resolve(this.state.theme)
+				}
+			});
 		},
 		/*
 	 	 * getUsers()
@@ -108,15 +128,15 @@ export default new Vuex.Store({
 				if (!this.state.users.length) {
 					axios.get(`/users`)
 						.then(res => {
-							const users = res.data.data
-							this.commit("setUsers", users)
-							resolve(users)
+							const users = res.data.data;
+							this.commit("setUsers", users);
+							resolve(users);
 						})
 						.catch(err => {
-							reject(err)
+							reject(err);
 						})
 				} else {
-					resolve(this.state.users)
+					resolve(this.state.users);
 				}
 			});
 		},
@@ -131,12 +151,12 @@ export default new Vuex.Store({
 				axios.get('/media/' + this.state.userInfo['profile_picture_id'])
 					.then(res => {
 						const picture = res.data.data;
-						this.commit("setProfilePicture", picture)
-						resolve(picture)
+						this.commit("setProfilePicture", picture);
+						resolve(picture);
 					})
 					.catch(err => {
-						this.commit("setProfilePicture", false)
-						reject(err)
+						this.commit("setProfilePicture", false);
+						reject(err);
 					});
 			});
 		},
@@ -156,7 +176,7 @@ export default new Vuex.Store({
 							reject(err);
 						});
 				} else {
-					resolve(this.state.roles)
+					resolve(this.state.roles);
 				}
 			});
 		},

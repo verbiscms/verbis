@@ -306,8 +306,7 @@ export default {
 					this.posts = res.data.data;
 				})
 				.catch(err => {
-					console.log(err)
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.doingAxios = false;
@@ -334,8 +333,7 @@ export default {
 					this.getPosts();
 				})
 				.catch(err => {
-					console.log(err);
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.activeAction = "";
@@ -387,8 +385,7 @@ export default {
 					this.getPosts();
 				})
 				.catch((err) => {
-					console.log(err);
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.activeAction = "";

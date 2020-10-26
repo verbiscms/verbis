@@ -9,7 +9,6 @@ import (
 
 type AuthController struct {
 	authModel models.AuthRepository
-	sessionModel models.SessionRepository
 	userModel models.UserRepository
 }
 
@@ -41,10 +40,9 @@ type resetPassword struct {
 }
 
 // Construct
-func newAuth(m models.AuthRepository, s models.SessionRepository, u models.UserRepository) *AuthController {
+func newAuth(m models.AuthRepository, u models.UserRepository) *AuthController {
 	return &AuthController{
 		authModel: m,
-		sessionModel: s,
 		userModel: u,
 	}
 }
@@ -77,13 +75,12 @@ func (c *AuthController) Login(g *gin.Context) {
 	// Remove the password
 	user.Password = ""
 
+	// Set the verbis cookie
+	g.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true)
 	// Store session
-	sessionToken, err := c.sessionModel.Create(user.Id, lu.Email)
+	//sessionToken, err := c.sessionModel.Create(user.Id, lu.Email)
 
-	Respond(g, 200, "Successfully logged in & session started", gin.H{
-		"user": user,
-		"session": sessionToken,
-	})
+	Respond(g, 200, "Successfully logged in & session started", user)
 }
 
 // Logout the user
@@ -91,7 +88,7 @@ func (c *AuthController) Logout(g *gin.Context) {
 	const op = "AuthHandler.Logout"
 
 	token := g.Request.Header.Get("token")
-	userId, err := c.authModel.Logout(token)
+	_, err := c.authModel.Logout(token)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -101,19 +98,10 @@ func (c *AuthController) Logout(g *gin.Context) {
 		return
 	}
 
-	if err := c.sessionModel.Delete(userId); err != nil {
-		Respond(g, 500, errors.Message(err), err)
-	}
+	g.SetCookie("verbis-session", "", -1, "/", "", false, true)
+	//if err := c.sessionModel.Delete(userId); err != nil {
+	//	Respond(g, 500, errors.Message(err), err)
 
-	//cookie := http.Cookie{
-	//	Name: "verbis-session",
-	//	Value: "",
-	//	HttpOnly: true,
-	//	MaxAge: -1,
-	//	Path: "/",
-	//	Secure: false,
-	//}
-	//http.SetCookie(g.Writer, &cookie)
 
 	return
 }

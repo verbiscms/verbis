@@ -49,6 +49,11 @@ func (s *AuthStore) Authenticate(email string, password string) (domain.User, er
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "These credentials don't match our records.", Operation: op, Err: err}
 	}
 
+	_, err = s.db.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", u.Token)
+	if err != nil {
+		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user token last used."), Operation: op, Err: err}
+	}
+
 	return u, nil
 }
 

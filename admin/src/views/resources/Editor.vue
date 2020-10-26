@@ -311,8 +311,7 @@ export default {
 					this.loadingResourceData = false;
 				})
 				.catch(err => {
-					console.log(err);
-					this.$noty.error("Error occurred, please refresh the page.")
+					this.helpers.handleResponse(err);
 				})
 		},
 		/*
@@ -360,8 +359,8 @@ export default {
 				.then(users => {
 					this.users = users;
 				})
-				.catch(() => {
-					this.$noty.error("Error occured when loading authors, please refresh.")
+				.catch(err => {
+					this.helpers.handleResponse(err);
 				})
 		},
 		/*
@@ -428,11 +427,12 @@ export default {
 								this.getSuccessMessage()
 							})
 							.catch(err => {
-								console.log(err);
+								this.helpers.checkServer(err);
 								if (err.response.status === 400) {
-									this.validate(err.response.data.data.errors)
+									this.validate(err.response.data.data.errors);
+									return;
 								}
-								this.$noty.error("Error occurred, please refresh the page.")
+								this.helpers.handleResponse(err);
 							})
 					} else {
 						this.axios.put("/posts/" + this.$route.params.id, this.data)
@@ -440,9 +440,8 @@ export default {
 								this.$noty.success("Page updated successfully.")
 							})
 							.catch(err => {
-								console.log(err)
-								this.$noty.error("Error occurred, please refresh the page.")
-							})
+								this.helpers.handleResponse(err);
+							});
 					}
 				} else {
 					this.$noty.error("Fix the errors before saving the post.")

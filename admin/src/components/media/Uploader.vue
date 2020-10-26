@@ -324,8 +324,7 @@ export default {
 					this.doingAxios = false;
 				})
 				.catch(err => {
-					console.log(err)
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.initialLoad = true;
@@ -377,14 +376,14 @@ export default {
 					}, Math.floor(Math.random() * (230 - 100 + 1)) + 100);
 				})
 				.catch(err => {
+					this.helpers.checkServer(err);
 					if (err.response.status === 415) {
 						setTimeout(() => {
 							this.$set(this.media[index], "unsupported", true);
 						}, Math.floor(Math.random() * (430 - 200 + 1)) + 200);
 						return;
 					}
-					console.log(err);
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.uploading = false;
@@ -407,8 +406,7 @@ export default {
 						this.$noty.success("Media item updated successfully.");
 					})
 					.catch(err => {
-						console.log(err);
-						this.$noty.error("Error occurred, please refresh the page.");
+						this.helpers.handleResponse(err);
 					});
 			}, 1000);
 		},
@@ -439,8 +437,7 @@ export default {
 					this.$store.dispatch("getProfilePicture");
 				})
 				.catch(err => {
-					console.log(err);
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					if (this.paginationObj) this.paginationObj.page = 0;
@@ -591,8 +588,7 @@ export default {
 					this.users = users;
 				})
 				.catch(err => {
-					console.log(err);
-					this.$noty.error("Error occurred when loading authors, please refresh.");
+					this.helpers.handleResponse(err);
 				})
 		},
 		/*

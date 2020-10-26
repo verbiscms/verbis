@@ -2,20 +2,21 @@
 	Errors (Server Down)
 	===================== -->
 <template>
-	<section class="auth">
-		<div class="container">
-			<div class="row auth-row">
+	<section :class="{ 'auth' : !isAuth }">
+		<div :class="{ 'container' : !isAuth, 'auth-container' : isAuth }">
+			<div class="row" :class="{ 'auth-row' : !isAuth }">
 				<div class="col-12">
 					<figure class="error-warning">
 						<img src="@/assets/images/warning.svg">
 					</figure>
 					<div class="auth-card">
 						<div class="auth-card-cont">
-							<!-- Auth Text -->
 							<div class="auth-text">
 								<h2>Server Down</h2>
 								<p>The Verbis server could not be initialised, please contact the system administrator.</p>
-								<button class="btn" @click.prevent="toLogin">Try again</button>
+								<div class="auth-btn-cont">
+									<button class="btn" @click.prevent="checkServer">Try again</button>
+								</div>
 							</div>
 						</div><!-- /Card Cont -->
 					</div><!-- /Card -->
@@ -29,23 +30,37 @@
 	Scripts
 	===================== -->
 <script>
-    export default {
+
+	export default {
         name: "ServerDown",
+		title: 'Server Down',
+		data: () => ({
+			initialLoad: true,
+			isAuth: false,
+		}),
 		beforeMount() {
-			if (this.getSite) {
-				this.$router.push({name: 'login'})
-			}
+			this.isAuth = this.$store.state.auth;
+			this.checkServer();
 		},
 		methods: {
-			toLogin() {
-				this.$store.dispatch("getSiteConfig")
-					.then(() => {
-						this.$router.push({name: 'login'})
-					})
-					.catch(() => {
-						console.log("Server still down")
-					})
-			}
+			checkServer() {
+				this.axios.get("/site").then(res => {
+					if (this.$store.state.auth) {
+						this.$router.push({ name: "home" });
+					} else {
+						this.$store.commit("setSite", res.data.data);
+						this.$router.push({ name: "login" });
+					}
+				}).catch(err => {
+					console.log(err);
+					if (!this.initialLoad) {
+						this.$noty.error("Server still down.");
+					}
+				})
+				.finally(() => {
+					this.initialLoad = false;
+				})
+			},
 		},
     }
 </script>
@@ -53,11 +68,15 @@
 <!-- =====================
 	Styles
 	===================== -->
-<style lang="scss">
+<style scoped lang="scss">
 
-	h2,
-	.auth-text {
-		margin-bottom: 0;
+
+	.row {
+		display: flex;
+		align-items: center;
+		height: 100%;
+		min-height: 90vh;
+		justify-content: center;
 	}
 
 	.auth-text {

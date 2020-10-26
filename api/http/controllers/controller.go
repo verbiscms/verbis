@@ -50,7 +50,7 @@ type ValidationErrJson struct {
 func New(m *models.Store) (*Controller, error) {
 
 	c := Controller{
-		Auth: newAuth(m.Auth, m.Session, m.User),
+		Auth: newAuth(m.Auth, m.User),
 		Categories: newCategories(m.Categories),
 		Fields: newFields(m.Fields, m.User, m.Categories),
 		Frontend: newFrontend(m),
