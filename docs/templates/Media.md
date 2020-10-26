@@ -1,8 +1,10 @@
 # Media
 
-The media functions used within templates are used to retrieve items from the media library.
+The media functions within templates are used to retrieve items from the media library.
 
 ## Media Type
+The media type is what is returned when calling `getMedia`. You are able to access any of the
+properties below to output your desired content. 
 ```
 
 type Media struct {
@@ -23,7 +25,10 @@ type Media struct {
 ```
 
 ## Media Size Type
-The m
+The media size type contains useful data for displaying different images for different view ports using the
+`<picture>` element.
+To access the media sizes from a media item, you need to pass the name of the size as the MediaSizes
+type is a `map[string]MediaSizes`, for example: `{{ $mymedia.Sizes.thumbnail }}`
 
 ```
 type MediaSize struct {
@@ -41,7 +46,7 @@ ___
 
 ## getMedia
 
-Gets the media item from the library.
+Get the media item from the library.
 
 ### Accepts: 
 
@@ -68,4 +73,29 @@ You can also assign the contents of a media item to a variable to be used later 
 ```
 {{ $image := getMedia 10" }}
 {{ $image.Url }}
+```
+
+**Access from a field**
+
+The `getField` function returns a media library item if it's a type of media.
+See `getField` for more information.
+
+```
+{{ $image := getField "image" }}
+{{ if $image }}
+    {{ $image.Url }}
+{{ end }}
+```
+
+**Access a specific image size**
+
+Get the `thumnbail` size of an image.
+
+```
+{{ $image := getField "image" }}
+{{ if $image }}
+    {{ if $image.Sizes.thumbnail }}
+        {{ $image.Sizes.thumbnail }}
+    {{ end }}
+{{ end }}
 ```
