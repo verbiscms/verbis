@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"html/template"
+	"net/http"
+	"net/http/httptest"
 )
 
 type TemplateFunctions struct {
@@ -69,7 +71,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"assets": t.assetsPath,
 		"storage": t.storagePath,
 		// Helpers
-		"fullUrl": t.GetFullUrl,
+		"fullUrl": t.getFullUrl,
 		"escape": t.escape,
 		"partial": t.partial,
 	}
@@ -79,10 +81,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 	return funcMap
 }
 
-/*
- * Environment
- * Functions for templates for the environment
- */
+
 
 // Get the app env
 func (t *TemplateFunctions) appEnv() string {
@@ -99,122 +98,9 @@ func (t *TemplateFunctions) isDebug() bool {
 	return environment.IsDebug()
 }
 
-/*
- * Posts
- * Functions for templates for the Posts and modifications
-*/
+func newTestSuite() *TemplateFunctions {
+	g, _ := gin.CreateTestContext(httptest.NewRecorder())
+	g.Request, _ = http.NewRequest("GET", "/get", nil)
 
-// Get the post resource
-func (t *TemplateFunctions) getResource() string {
-	resource := t.post.Resource
-	if resource == nil {
-		return ""
-	}
-	return *resource
-}
-
-func (t *TemplateFunctions) isResource(resource string) bool {
-
-	return false
-}
-
-// Get the post resource
-func (t *TemplateFunctions) getLayout() string {
-	resource := t.post.Resource
-	if resource == nil {
-		return ""
-	}
-	return *resource
-}
-
-func (t *TemplateFunctions) isLayout(resource string) bool {
-
-	return false
-}
-
-// Get the post template
-func (t *TemplateFunctions) getTemplate() string {
-	resource := t.post.Resource
-	if resource == nil {
-		return ""
-	}
-	return *resource
-}
-
-func (t *TemplateFunctions) isTemplate(resource string) bool {
-
-	return false
-}
-
-// Get author
-// Is draft
-// Is published
-func (t *TemplateFunctions) getResources(query map[string]interface{}) map[string]interface{} {
-	return map[string]interface{}{}
-}
-
-
-/*
- * Auth
- * Functions for templates for anything else
-*/
-
-// If the user is authenticated
-func (t *TemplateFunctions) isAuth() bool {
-	//cookie, err := t.gin.Cookie("verbis-session")
-	//if err != nil {
-	//	return false
-	//}
-
-	//_, err = t.store.Session.GetByKey(cookie)
-	//if err != nil {
-	//	return false
-	//}
-
-	return true
-}
-
-// If the user is admin
-func (t *TemplateFunctions) isAdmin() bool {
-	//cookie, err := t.gin.Cookie("verbis-session")
-	//if err != nil {
-	//	return false
-	//}
-
-	//us, err := t.store.Session.GetByKey(cookie)
-	//if err != nil {
-	//	return false
-	//}
-
-	//_, err = t.store.User.GetById(us.UserId)
-	//if err != nil {
-	//	return false
-	//}
-
-	//if u.AccessLevel != 2 {
-	//	return false
-	//}
-
-	return true
-}
-
-/*
- * Paths
- * Functions for templates for paths
- */
-
-// Retrieve the assets path for the theme
-func (t *TemplateFunctions) storagePath() string {
-	// TODO: Make dynamic?
-	return "/storage"
-}
-
-/*
- * Helpers
- * Functions for templates for miscellaneous
-*/
-
-// Get all fields for template
-func (t *TemplateFunctions) GetFullUrl() string {
-	return t.gin.Request.Host + t.gin.Request.URL.String()
+	return NewFunctions(g, &models.Store{}, &domain.Post{})
 }

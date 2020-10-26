@@ -52,10 +52,7 @@ export default {
 		loadingUsers: true,
 	}),
 	mounted() {
-		this.getUsers().then(() => {
-			this.mapUsers()
-			this.loadingUsers = false;
-		})
+		this.getUsers()
 	},
 	methods: {
 		validate(msg) {
@@ -71,6 +68,8 @@ export default {
 			this.$store.dispatch("getUsers")
 				.then(users => {
 					this.users = users;
+					this.mapUsers()
+					this.loadingUsers = false;
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);

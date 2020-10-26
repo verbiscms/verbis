@@ -11,3 +11,17 @@ func (t *TemplateFunctions) getPost(id float64) *domain.Post {
 	}
 	return &p
 }
+
+// Get the post resource
+func (t *TemplateFunctions) getResource() string {
+	resource := t.post.Resource
+	if resource == nil {
+		return ""
+	}
+	return *resource
+}
+
+
+func (t *TemplateFunctions) getResources(query map[string]interface{}) map[string]interface{} {
+	return map[string]interface{}{}
+}
