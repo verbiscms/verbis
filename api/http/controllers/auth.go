@@ -21,24 +21,6 @@ type AuthHandler interface {
 	SendResetPassword(g *gin.Context)
 }
 
-type login struct {
-	Email string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
-}
-
-type sendResetPassword struct {
-	Email string `json:"email" binding:"required,email"`
-}
-
-type showPasswordReset struct {
-	Token string `db:"token" json:"token" binding:"required"`
-}
-
-type resetPassword struct {
-	Password string	`db:"password" json:"password" binding:"required,min=8,max=60,alphanum"`
-	Token string `db:"token" json:"token" binding:"required"`
-}
-
 // Construct
 func newAuth(m models.AuthRepository, u models.UserRepository) *AuthController {
 	return &AuthController{
@@ -51,6 +33,11 @@ func newAuth(m models.AuthRepository, u models.UserRepository) *AuthController {
 // Returns errors.INVALID if validation failed
 func (c *AuthController) Login(g *gin.Context) {
 	const op = "AuthHandler.Login"
+
+	type login struct {
+		Email string `json:"email" binding:"required,email"`
+		Password string `json:"password" binding:"required"`
+	}
 
 	var u login
 	if err := g.ShouldBindJSON(&u); err != nil {
@@ -77,8 +64,6 @@ func (c *AuthController) Login(g *gin.Context) {
 
 	// Set the verbis cookie
 	g.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true)
-	// Store session
-	//sessionToken, err := c.sessionModel.Create(user.Id, lu.Email)
 
 	Respond(g, 200, "Successfully logged in & session started", user)
 }
@@ -92,16 +77,12 @@ func (c *AuthController) Logout(g *gin.Context) {
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	}
-	if err != nil {
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	g.SetCookie("verbis-session", "", -1, "/", "", false, true)
-	//if err := c.sessionModel.Delete(userId); err != nil {
-	//	Respond(g, 500, errors.Message(err), err)
-
 
 	return
 }
@@ -124,13 +105,19 @@ func (c *AuthController) VerifyEmail(g *gin.Context) {
 func (c *AuthController) ResetPassword(g *gin.Context) {
 	const op = "AuthHandler.ResetPassword"
 
+	type resetPassword struct {
+		NewPassword			string			`json:"new_password" binding:"required,min=8,max=60"`
+		ConfirmPassword		string			`json:"confirm_password" binding:"eqfield=NewPassword,required"`
+		Token 				string 			`db:"token" json:"token" binding:"required"`
+	}
+
 	var rp resetPassword
 	if err := g.ShouldBindJSON(&rp); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	if err := c.authModel.ResetPassword(rp.Token, rp.Password); err != nil {
+	if err := c.authModel.ResetPassword(rp.Token, rp.NewPassword); err != nil {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	}
@@ -157,6 +144,10 @@ func (c *AuthController) VerifyPasswordToken(g *gin.Context) {
 func (c *AuthController) SendResetPassword(g *gin.Context) {
 	const op = "AuthHandler.SendResetPassword"
 
+	type sendResetPassword struct {
+		Email string `json:"email" binding:"required,email"`
+	}
+
 	var srp sendResetPassword
 	if err := g.ShouldBindJSON(&srp); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
@@ -165,7 +156,7 @@ func (c *AuthController) SendResetPassword(g *gin.Context) {
 
 	err := c.authModel.SendResetPassword(srp.Email)
 	if errors.Code(err) == errors.NOTFOUND {
-		Respond(g, 200, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	}
 	if err != nil {

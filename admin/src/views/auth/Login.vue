@@ -58,6 +58,11 @@ export default {
 		authMessage: "",
 		errors: {},
 	}),
+	mounted() {
+		if (this.$route.query.reset) {
+			this.$noty.success("Password reset successfully.");
+		}
+	},
 	methods: {
 		doLogin() {
 			this.doingAxios = true;
@@ -77,7 +82,6 @@ export default {
 				.catch(err => {
 					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
-						console.log(err.response.data.data)
 						this.validate(err.response.data.data.errors);
 						return;
 					} else {
@@ -89,7 +93,7 @@ export default {
 				.finally(() => {
 					setTimeout(() => {
 						this.doingAxios = false;
-					}, this.helpers.timeoutDelay)
+					}, this.timeoutDelay)
 				})
 		},
 		/*

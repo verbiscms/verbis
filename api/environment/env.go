@@ -17,7 +17,6 @@ type envMap struct {
 	AppName 			string `json:"APP_NAME"`
 	AppEnv				string `json:"APP_ENV"`
 	AppDebug 			string `json:"APP_DEBUG"`
-	AppUrl				string `json:"APP_URL" binding:"required"`
 	AppPort				string `json:"APP_PORT" binding:"required"`
 	DbHost				string `json:"DB_HOST" binding:"required,ip"`
 	DbPort				string `json:"DB_PORT" binding:"required"`
@@ -58,7 +57,6 @@ func Load() error {
 	env = envMap{
 		AppEnv:  	os.Getenv("APP_ENV"),
 		AppDebug:  	os.Getenv("APP_DEBUG"),
-		AppUrl:  	os.Getenv("APP_URL"),
 		AppPort:  	os.Getenv("APP_PORT"),
 		DbHost:  	os.Getenv("DB_HOST"),
 		DbPort:  	os.Getenv("DB_PORT"),
@@ -116,6 +114,8 @@ func GetMailConfiguration() Mail {
 	return Mail{
 		FromAddress: env.MailFromAddress,
 		FromName: env.MailFromName,
+		SparkpostApiKey: env.SparkpostApiKey,
+		SparkpostUrl: env.SparkpostUrl,
 	}
 }
 

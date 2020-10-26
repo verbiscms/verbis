@@ -40,11 +40,11 @@ const routes = [
 		name: "password-reset",
 		component: () => import("../views/auth/SendResetPassword.vue")
 	},
-	// {
-	//     path: "/password/reset/:token",
-	//     name: "password-reset",
-	//     component: () => import("../views/auth/ResetPassword.vue")
-	// },
+	{
+		path: "/password/reset/:token",
+		name: "password-reset",
+		component: () => import("../views/auth/ResetPassword.vue")
+	},
 	/**
 	 * Resources
 	 *
