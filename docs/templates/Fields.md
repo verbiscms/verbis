@@ -6,7 +6,7 @@ ___
 
 ## getField
 
-Gets the value of a specific field specified in the layout.
+Get the value of a specific field specified in the layout.
 
 ### Accepts: 
 
@@ -57,7 +57,7 @@ ___
 
 ## hasField
 
-Checks if a field value exists.
+Check if a field value exists.
 
 ### Accepts: 
 
@@ -148,7 +148,7 @@ ___
 
 ## getFlexible
 
-Gets a map of flexible content of specific field.
+Get a map of flexible content of specific field.
 
 ### Accepts: 
 
@@ -225,7 +225,7 @@ ___
 
 ## getSubField
 
-Gets the value of a sub field within a flexible content layout.
+Get the value of a sub field within a flexible content layout.
 
 ### Accepts: 
 
