@@ -2,6 +2,8 @@
 
 Short introduction here
 
+Note about posts, users & media. 
+
 ___
 
 ## getField
@@ -65,7 +67,7 @@ Check if a field value exists.
 
 ### Returns:
 
-`boolean` True if the field exists.
+`bool` True if the field exists.
 
 ### Examples:
 
