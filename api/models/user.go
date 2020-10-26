@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
@@ -268,8 +269,7 @@ func (s *UserStore) CheckSession(token string) error {
 		// Destroy the token and create a new one if session expired.
 		inactiveFor := time.Now().Sub(*u.TokenLastUsed).Minutes()
 
-		//if int(inactiveFor) > config.Admin.InactiveSessionTime {
-		if inactiveFor > 0.1 {
+		if int(inactiveFor) > config.Admin.InactiveSessionTime {
 			newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
 			_, err := s.db.Exec("UPDATE users SET token = ?, updated_at = NOW() WHERE token = token", newToken)

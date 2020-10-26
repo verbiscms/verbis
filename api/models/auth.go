@@ -2,12 +2,14 @@ package models
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
+	"log"
 )
 
 // AuthRepository defines methods for for Users to gain
@@ -25,13 +27,23 @@ type AuthRepository interface {
 // AuthStore defines the data layer for Authentication
 type AuthStore struct {
 	db *sqlx.DB
+	optionsRepo domain.Options
 }
 
 // newAuth - Construct
 func newAuth(db *sqlx.DB) *AuthStore {
-	return &AuthStore{
+	a := &AuthStore{
 		db: db,
 	}
+
+	om := newOptions(db)
+	opts, err := om.GetStruct()
+	if err != nil {
+		log.Fatal(err)
+	}
+	a.optionsRepo = opts
+
+	return a
 }
 
 // Authenticate compares the email & password for a match in the DB.
@@ -140,7 +152,13 @@ func (s *AuthStore) SendResetPassword(email string) error {
 		return err
 	}
 
-	err = rp.Send(&u, token)
+	// TODO: Clean up here
+	siteUrl := s.optionsRepo.SiteUrl + "/admin"
+	if api.SuperAdmin {
+		siteUrl = "http://127.0.0.1:8090/admin"
+	}
+
+	err = rp.Send(&u, siteUrl, token, s.optionsRepo.SiteTitle)
 	if err != nil {
 		return err
 	}
