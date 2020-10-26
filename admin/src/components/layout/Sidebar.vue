@@ -242,7 +242,8 @@ export default {
 			this.axios.post("/logout", {})
 				.then(() => {
 					this.$store.commit("logout");
-					location.reload();
+					this.$store.dispatch("getSiteConfig");
+					this.$router.push("/login")
 				});
 		},
 		/*

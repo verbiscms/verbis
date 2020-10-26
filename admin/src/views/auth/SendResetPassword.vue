@@ -19,14 +19,13 @@
 							</div>
 							<form class="form form-center">
 								<!-- Password -->
-								<div class="form-group">
+								<FormGroup :error="errors['email']">
 									<input type="text" autocomplete="email" placeholder="Email" class="form-input" v-model="email">
-								</div>
+								</FormGroup>
 								<router-link :to="{ name: 'login' }" class="auth-link">Back to login</router-link>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
-									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doReset">Reset
-									</button>
+									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" :class="{ 'btn-loading' : doingAxios }" @click.prevent="doReset">Reset</button>
 								</div>
 							</form>
 						</div><!-- /Card Cont -->
@@ -41,31 +40,59 @@
 	Scripts
 	===================== -->
 <script>
+import FormGroup from "@/components/forms/FormGroup";
 export default {
 	name: "SendResetPassword",
+	title: "Reset Password",
+	components: {FormGroup},
 	data: () => ({
 		doingAxios: false,
 		email: "",
+		errors: [],
 	}),
 	methods: {
 		doReset() {
-			console.log(this.email)
+			this.doingAxios = true;
 			this.axios.post("/password/email", {
 				email: this.email
 			})
 				.then(res => {
-					console.log(res);
+					console.log(res.data.message);
+					this.$noty.success("A fresh link has been sent to your email.");
+					this.$router.push({name: 'login'});
 				})
 				.catch(err => {
+					this.helpers.checkServer(err);
+
+					if (err.response.status === 400) {
+						const errors = err.response.data.data.errors;
+						if (errors) {
+							this.validate(errors);
+							this.$noty.error("Fix the errors before resetting your password.",)
+							return
+						}
+						this.$noty.error("Invalid email address.");
+						return;
+					}
 					this.helpers.handleResponse(err);
 				})
+				.finally(() => {
+					setTimeout(() => {
+						this.doingAxios = false;
+					}, this.timeoutDelay)
+				});
+		},
+		/*
+		 * validate()
+		 * Add errors if the post/put failed.
+		 */
+		validate(errors) {
+			this.errors = {};
+			errors.forEach(err => {
+				this.$set(this.errors, err.key, err.message);
+			})
 		},
 	},
-	computed: {
-		getLogo() {
-			return this.$store.state.logo;
-		}
-	}
 }
 </script>
 

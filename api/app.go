@@ -16,7 +16,8 @@ var App = struct{
 }{
 	Title: "Verbis",
 	Description: "A Verbis website. Publish online, build a business, work from home",
-	Url: "http://localhost:8080",
+	Url: "http://127.0.0.1:8080",
 	Logo: "/verbis/images/verbis-logo.svg",
 	Version: "0.0.1",
 }
+

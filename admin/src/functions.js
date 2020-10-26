@@ -53,9 +53,9 @@ class helpers {
 						.finally(() => {
 							store.commit("logout");
 							store.dispatch("getSiteConfig");
-							router.push("/login")
-							const errors = data.response.data.data.errors;
+							router.push("/login");
 
+							const errors = data.response.data.data.errors;
 							if (errors['session'] !== undefined) {
 								this.noty(data.response.data.message);
 							}

@@ -6,7 +6,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/mail"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -45,7 +44,7 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 
 	html, err := e.mailer.ExecuteHTML("verify-email.html", data)
 	if err != nil {
-		log.Error(err)
+		return err
 	}
 
 	tm := mail.Sender{

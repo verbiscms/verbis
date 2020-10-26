@@ -10,8 +10,6 @@ import (
 func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 
 	// Auth routes outside of admin
-	s.GET("/email/verify/:token", c.Auth.VerifyEmail)
-	s.GET("/password/verify/:token", c.Auth.VerifyPasswordToken)
 
 	// API Routes
 	api := s.Group("/api/v1")
@@ -26,8 +24,8 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 		api.POST("/logout", c.Auth.Logout)
 		api.POST("/password/reset", c.Auth.ResetPassword)
 		api.POST("/password/email", c.Auth.SendResetPassword)
-		// TODO: Use gin and not vue for reset password
-		api.GET("/password/email", c.Auth.SendResetPassword)
+		api.GET("/password/verify/:token", c.Auth.VerifyPasswordToken)
+		api.GET("/email/verify/:token", c.Auth.VerifyEmail)
 
 		// Operator
 		operator := api.Group("")
