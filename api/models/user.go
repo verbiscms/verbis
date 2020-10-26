@@ -19,6 +19,7 @@ type UserRepository interface {
 	Get(meta http.Params) ([]domain.User, int, error)
 	GetById(id int) (domain.User, error)
 	GetOwner() (domain.User, error)
+	GetByToken(token string) (domain.User, error)
 	GetRoles() ([]domain.UserRole, error)
 	Create(u *domain.UserCreate) (domain.User, error)
 	Update(u *domain.User) (domain.User, error)
@@ -125,6 +126,17 @@ func (s *UserStore) GetOwner() (domain.User, error) {
 	var u domain.User
 	if err := s.db.Get(&u,"SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the owner of the site", Operation: op, Err: err}
+	}
+	return u, nil
+}
+
+// GetByToken gets a user with the given token.
+// Returns errors.NOTFOUND if the owner was not found.
+func (s *UserStore) GetByToken(token string) (domain.User, error) {
+	const op = "UserRepository.GetOwner"
+	var u domain.User
+	if err := s.db.Get(&u,"SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE token = ? LIMIT 1", token); err != nil {
+		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the token: %s", token), Operation: op, Err: err}
 	}
 	return u, nil
 }
@@ -258,9 +270,9 @@ func (s *UserStore) Delete(id int) error {
 func (s *UserStore) CheckSession(token string) error {
 	const op = "UserRepository.UpdateSession"
 
-	var u domain.User
-	if err := s.db.Get(&u,"SELECT * FROM users WHERE token = ?", token); err != nil {
-		return &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the user", Operation: op, Err: err}
+	u, err := s.GetByToken(token)
+	if err != nil {
+		return err
 	}
 
 	// If not login
@@ -282,7 +294,7 @@ func (s *UserStore) CheckSession(token string) error {
 		}
 	}
 
-	_, err := s.db.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", token)
+	_, err = s.db.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", token)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user token last used."), Operation: op, Err: err}
 	}

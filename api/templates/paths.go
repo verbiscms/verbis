@@ -6,3 +6,10 @@ func (t *TemplateFunctions) assetsPath() string {
 //
 	return ""
 }
+
+
+// Retrieve the assets path for the theme
+func (t *TemplateFunctions) storagePath() string {
+	// TODO: Make dynamic?
+	return "/storage"
+}

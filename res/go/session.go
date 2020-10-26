@@ -1,13 +1,5 @@
-package models
 
-import (
-	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
-	"github.com/jmoiron/sqlx"
-)
+
 
 // SessionRepository defines methods for Sessions to interact with the database
 type SessionRepository interface {

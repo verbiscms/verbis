@@ -28,25 +28,28 @@
                     <h2>Fields</h2>
                     <!-- ===================== Media ===================== -->
                     <h1>Image  {{ $image := getField "image" }}</h1>
-                   <pre> {{ $image }}</pre>
-                    {{ $image.Sizes.hd }}
-                    {{ getMedia 132 }}
-                    <img src="{{ $image.Sizes.thumbnail.Url }}" alt="">
+
+                    {{ if $image }}
+                       <pre> {{ $image }}</pre>
+                        {{ $image.Sizes.hd }}
+                        {{ getMedia 132 }}
+                        <img src="{{ $image.Sizes.thumbnail.Url }}" alt="">
+                        {{ end }}
+
                     <!-- ================================================== -->
 
                     <!-- ===================== Posts ===================== -->
-                    {{ getFields }}
-                 <h1>   {{ $post := getField "post" }}</h1>
-                   <h1> {{ $post.Title }}</h1>
-                    {{ $post.PageTemplate }}
-                    {{ getField "post" }}
-                    {{ getPost 12 }}
+{{/*                    {{ getFields }}*/}}
+{{/*                 <h1>   {{ $post := getField "post" }}</h1>*/}}
+{{/*                   <h1> {{ $post.Title }}</h1>*/}}
+{{/*                    {{ $post.PageTemplate }}*/}}
+{{/*                    {{ getField "post" }}*/}}
+{{/*                    {{ getPost 12 }}*/}}
 
                     <!-- ================================================== -->
 
 {{/*                    {{ $post.Slug }}*/}}
 
-                    {{ getFlexible "flexible" }}
                 </div>
             </div>
             <div class="row mt-5 mb-3">

@@ -14,6 +14,20 @@ type UserRepository struct {
 	mock.Mock
 }
 
+// CheckSession provides a mock function with given fields: token
+func (_m *UserRepository) CheckSession(token string) error {
+	ret := _m.Called(token)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string) error); ok {
+		r0 = rf(token)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // CheckToken provides a mock function with given fields: token
 func (_m *UserRepository) CheckToken(token string) (domain.User, error) {
 	ret := _m.Called(token)
@@ -142,6 +156,27 @@ func (_m *UserRepository) GetById(id int) (domain.User, error) {
 	var r1 error
 	if rf, ok := ret.Get(1).(func(int) error); ok {
 		r1 = rf(id)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// GetByToken provides a mock function with given fields: token
+func (_m *UserRepository) GetByToken(token string) (domain.User, error) {
+	ret := _m.Called(token)
+
+	var r0 domain.User
+	if rf, ok := ret.Get(0).(func(string) domain.User); ok {
+		r0 = rf(token)
+	} else {
+		r0 = ret.Get(0).(domain.User)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(token)
 	} else {
 		r1 = ret.Error(1)
 	}
