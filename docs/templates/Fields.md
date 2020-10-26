@@ -148,7 +148,7 @@ ___
 
 ## getFlexible
 
-Get a map of flexible content of specific field.
+Get the map of flexible content of a specific field.
 
 ### Accepts: 
 
@@ -156,7 +156,7 @@ Get a map of flexible content of specific field.
 
 ### Returns:
 
-`map[string[interface{}` The flexible content field values, or `nil` if there are no flexible content with the given name.
+`map[string[interface{}` The flexible content field values, or `nil` if there are no flexible content fields with the given name.
 
 ### Examples:
 
@@ -164,7 +164,7 @@ Get a map of flexible content of specific field.
 
 This example demonstrates how to loop over a flexible content block in the template.
 
-First the value of the flexible content field is assign to a variable and `if` is used to establish if there are rows within the flexible content field.
+First the value of the flexible content field is assigned to a variable and `if` is used to establish if there are rows within the flexible content field.
 A loop is used to range over the blocks.
 
 The field type (layout) is stored in `$field.type`. The `if eq` function can be used to compare the layouts and output content based on the layout.
@@ -195,7 +195,7 @@ See `getSubField` for more information on how to output the layouts fields.
 Sometimes you may want to use different template files for different layouts. The example below shows how.
 
 #### flexible-content.cms
-In your master template, The same principle applies, loop over the flexible content and compare the layouts using `$layout.type`
+In your master template, the same principle applies. Simply loop over the flexible content and compare the layouts using `$layout.type`
 
 It's important to pass the context of the loop using the dot `.`. If the post data is required in the partial, pass the dollar symbol `$`.
 This will enable you to still access the post data in the child template.
@@ -214,7 +214,7 @@ See `partial` for more details on including child templates.
 
 #### blocks/test.cms
 In the child template, it is important to assign the layout to a variable using `index . {index-number}`. 
-The index number correlates where you passed the context (dot `.`) in the partial function. If you passed the global context before the loop context 
+The index number correlates to where you passed the context (dot `.`) in the calling partial function. If you passed the global context before the loop context 
 `{{ partial "blocks/text-block.cms" $ . }}`, the index would be 1.
 From there, it's a simple case of using the `getSubField` function.
 ```
