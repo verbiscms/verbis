@@ -10,6 +10,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"strings"
+	"time"
 )
 
 // UserRepository defines methods for Posts to interact with the database
@@ -21,6 +22,7 @@ type UserRepository interface {
 	Create(u *domain.UserCreate) (domain.User, error)
 	Update(u *domain.User) (domain.User, error)
 	Delete(id int) error
+	CheckSession(token string) error
 	ResetPassword(id int, reset domain.UserPasswordReset) error
 	CheckToken(token string) (domain.User, error)
 	Exists(id int) bool
@@ -174,7 +176,8 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 
 	newUser, err := s.GetById(int(id))
 	if err != nil {
-		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created user with the email: %v", u.Email), Operation: op, Err: err}
+		fmt.Println(err)
+		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created user with the id: %v", u.Id), Operation: op, Err: err}
 	}
 
 	// TODO: Determine of email verified is turned on.
@@ -247,6 +250,45 @@ func (s *UserStore) Delete(id int) error {
 	return nil
 }
 
+// CheckSession
+// Returns errors.NOTFOUND if the user was not found
+// Returns errors.INTERNAL if the SQL query was invalid.
+// Returns errors.CONFLICT if the user session expired.
+func (s *UserStore) CheckSession(token string) error {
+	const op = "UserRepository.UpdateSession"
+
+	var u domain.User
+	if err := s.db.Get(&u,"SELECT * FROM users WHERE token = ?", token); err != nil {
+		return &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the user", Operation: op, Err: err}
+	}
+
+	// If not login
+	if u.TokenLastUsed != nil {
+
+		// Destroy the token and create a new one if session expired.
+		inactiveFor := time.Now().Sub(*u.TokenLastUsed).Minutes()
+
+		//if int(inactiveFor) > config.Admin.InactiveSessionTime {
+		if inactiveFor > 0.1 {
+			newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
+
+			_, err := s.db.Exec("UPDATE users SET token = ?, updated_at = NOW() WHERE token = token", newToken)
+			if err != nil {
+				fmt.Println(err)
+				return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user's token with the name: %v", u.FirstName+" "+u.LastName), Operation: op, Err: err}
+			}
+
+			return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("User seesion expiered, please login again."), Operation: op, Err: fmt.Errorf("user session expiered")}
+		}
+	}
+
+	_, err := s.db.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", token)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user token last used."), Operation: op, Err: err}
+	}
+
+	return nil
+}
 
 // ResetPassword
 // Returns errors.INVALID if the current password didn't match.

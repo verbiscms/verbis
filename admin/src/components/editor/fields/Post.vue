@@ -79,8 +79,7 @@ export default {
 					this.setTags()
 				})
 				.catch(err => {
-					console.log(err);
-					this.$noty.error("There was an error obtaining the posts.")
+					this.helpers.handleResponse(err);
 				});
 		},
 		setTags() {

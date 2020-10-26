@@ -27,8 +27,7 @@ export const optionsMixin = {
 					this.data = res.data.data;
 				})
 				.catch(err => {
-					console.log(err);
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.doingAxios = false;
@@ -53,19 +52,29 @@ export const optionsMixin = {
 					this.$noty.success("Site options updated successfully.");
 				})
 				.catch(err => {
-					console.log(err);
+					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						this.$noty.error(this.successMsg)
-						return
+						return;
 					}
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					setTimeout(() => {
 						this.saving = false;
 					}, 100);
 				});
+		},
+		/*
+		 * validate()
+		 * Add errors if the post/put failed.
+		 */
+		validate(errors) {
+			this.errors = {};
+			errors.forEach(err => {
+				this.$set(this.errors, err.key, err.message);
+			})
 		},
 	}
 }

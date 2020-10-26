@@ -20,7 +20,6 @@ type Store struct {
 	Options 		OptionsRepository
 	Posts      		PostsRepository
 	Roles      		RoleRepository
-	Session 		SessionRepository
 	Site      		SiteRepository
 	User       		UserRepository
 }
@@ -35,7 +34,6 @@ func New(db *database.MySql) *Store {
 		Options:    newOptions(db.Sqlx),
 		Posts:     	newPosts(db.Sqlx),
 		Roles:      newRoles(db.Sqlx),
-		Session: 	newSession(db.Sqlx),
 		Site:     	newSite(db.Sqlx),
 		User:       newUser(db.Sqlx),
 	}
@@ -110,7 +108,8 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 	return q, nil
 }
 
-// Strip characters and return alpha numeric string for database processing.
+// stripAlphaNum - Strip characters and return alpha numeric string for
+// database processing.
 func stripAlphaNum(text string) string {
 	reg := regexp.MustCompile("[^a-zA-Z0-9 =<>%.@/!+']+")
 	return reg.ReplaceAllString(text, "")

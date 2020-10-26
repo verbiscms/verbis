@@ -21,13 +21,14 @@ func New(db *sqlx.DB, s *models.Store) *Seeder {
 
 // Seed
 func (s *Seeder) Seed() error {
+	// IMPORTANT: Run roles before inserting the user.
+	if err := s.runRoles(); err != nil {
+		return err
+	}
 	if api.SuperAdmin {
 		if err := s.runUsers(); err != nil {
 			return err
 		}
-	}
-	if err := s.runRoles(); err != nil {
-		return err
 	}
 	if err := s.runOptions(); err != nil {
 		return err

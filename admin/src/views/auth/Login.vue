@@ -9,25 +9,22 @@
 					<!-- Logo -->
 					<figure class="auth-logo" v-if="getSite.logo">
 						<img :src="getSiteUrl + getSite.logo">
-					</figure><!-- /Col -->
+					</figure><!-- /Logo -->
 					<div class="auth-card">
 						<div class="auth-card-cont">
 							<!-- Auth Text -->
-							<div class="auth-text">
+							<div class="auth-text auth-text-margin">
 								<h2>Login</h2>
 							</div>
 							<form class="form form-center" :class="{ 'form-is-invalid' : authMessage }">
 								<span class="form-error" v-html="authMessage" :class="{ 'form-error-show' : authMessage }"></span>
 								<!-- Email -->
-								<div class="form-group" :class="{ 'form-group-error' : hasError('email') }">
+								<FormGroup :error="errors['email']">
 									<input type="text" autocomplete="email" placeholder="Email" class="form-input" v-model="authInfo.email">
-									<span class="form-message">{{ getError('email') }}</span>
-								</div>
-								<!-- Password -->
-								<div class="form-group" :class="{ 'form-group-error' : hasError('password') }">
+								</FormGroup>
+								<FormGroup :error="errors['password']">
 									<input type="password" autocomplete="password" placeholder="Password" class="form-input" v-model="authInfo.password">
-									<span class="form-message">{{ getError('password') }}</span>
-								</div>
+								</FormGroup>
 								<router-link :to="{ name: 'password-reset' }" class="login-password">Forgot your password?</router-link>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
@@ -47,8 +44,11 @@
 	===================== -->
 <script>
 
+import FormGroup from "@/components/forms/FormGroup";
 export default {
 	name: "Login",
+	title: "Login",
+	components: {FormGroup},
 	data: () => ({
 		doingAxios: false,
 		authInfo: {
@@ -56,7 +56,7 @@ export default {
 			password: "",
 		},
 		authMessage: "",
-		errors: [],
+		errors: {},
 	}),
 	methods: {
 		doLogin() {
@@ -65,57 +65,43 @@ export default {
 
 			this.axios.post('/login', {email: this.authInfo.email, password: this.authInfo.password})
 				.then(res => {
-					this.$store.commit('login', res.data.data.user, res.data.data.session)
-					this.$store.commit('setSession', res.data.data.session);
-
-					// TODO
-					// Move to helper function and do a promise all
-					if (!this.$store.state.theme.title) {
-						this.axios.get("/theme")
-							.then(res => {
-								this.$store.commit('setTheme', res.data.data);
-								this.$router.push({ name: 'home' })
-								this.doingAxios = false;
-							})
-							.catch(err => {
-								this.helpers.handleResponse(err);
-								this.doingAxios = false;
-							})
-					}
-
-					this.$store.dispatch("getRoles").then(res => {
-						console.log(res);
-					})
-					.catch(err => {
-						console.log(err);
-					})
+					this.$store.commit('login', res.data.data)
+					Promise.all([this.$store.dispatch("getTheme"), this.$store.dispatch("getRoles")])
+						.then(() => {
+							this.$router.push({ name: 'home' })
+						})
+						.catch(err => {
+							console.log(err);
+						});
 				})
-				.catch(e => {
-
-					console.log(e);
-
-					const response = e.response.data,
-						errors = response.data.errors;
-
-					if (errors) {
-						this.errors = errors
+				.catch(err => {
+					this.helpers.checkServer(err);
+					if (err.response.status === 400) {
+						console.log(err.response.data.data)
+						this.validate(err.response.data.data.errors);
+						return;
 					} else {
-						this.errors = []
-						this.authMessage = response.message
+						this.errors = {};
+						this.authMessage = err.response.data.message
 					}
-
+					this.helpers.handleResponse(err);
+				})
+				.finally(() => {
 					setTimeout(() => {
 						this.doingAxios = false;
-					}, 200)
+					}, this.helpers.timeoutDelay)
 				})
 		},
-		getError(key) {
-			const err = this.errors.find(e => e.key === key)
-			return err !== undefined ? err.message : "";
+		/*
+		 * validate()
+		 * Add errors if the post/put failed.
+		 */
+		validate(errors) {
+			this.errors = {};
+			errors.forEach(err => {
+				this.$set(this.errors, err.key, err.message);
+			})
 		},
-		hasError(key) {
-			return this.errors.find(e => e.key === key)
-		}
 	},
 	computed: {
 		getSite() {
@@ -140,6 +126,10 @@ export default {
 			text-align: right;
 			margin-top: -5px;
 		}
+	}
+
+	.auth-btn-cont {
+		margin-top: 1.8rem;
 	}
 
 </style>

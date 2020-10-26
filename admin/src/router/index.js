@@ -176,7 +176,7 @@ router.beforeEach((to, from, next) => {
 		} else {
 			next();
 		}
-	}else {
+	} else {
 		if (to.name === "login" || to.name === "password-reset" || to.name === "error") {
 			next();
 		} else {

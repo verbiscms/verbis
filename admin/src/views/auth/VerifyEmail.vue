@@ -56,7 +56,7 @@
                         console.log(res);
                     })
                     .catch(err => {
-                        console.log(err);
+						this.helpers.handleResponse(err);
                     })
             },
         },

@@ -72,9 +72,6 @@ func TestCheckFieldType(t *testing.T) {
 
 }
 
-
-
-
 func TestHasField(t *testing.T) {
 	f := helper(`{"text": "content"}`)
 

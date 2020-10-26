@@ -47,17 +47,9 @@ axios.defaults.headers.common = {
 	'Access-Control-Allow-Origin': '*/*',
 	'Content-Type': 'application/json',
 };
-// axios.defaults.withCredentials = true
-// axios.default.credentials = "include"
+axios.defaults.withCredentials = true
 axios.defaults.baseURL = apiUrl
 
-// Add a 401 response interceptor
-// axios.interceptors.response.use(function (response) {
-// 	return response;
-// }, function (err) {
-// 	Vue.prototype.helpers.handleResponse(err)
-// })
-//
 // Assign axios globally
 Vue.prototype.axios = axios;
 

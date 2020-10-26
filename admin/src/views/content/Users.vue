@@ -264,8 +264,7 @@ export default {
 					}
 				})
 				.catch(err => {
-					console.log(err)
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.doingAxios = false;
@@ -295,12 +294,12 @@ export default {
 					this.getUsers();
 				})
 				.catch(err => {
-					console.log(err);
+					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.$noty.error(err.response.data.message);
 						return;
 					}
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.activeAction = "";
@@ -447,6 +446,9 @@ export default {
 			this.axios.get("/media")
 				.then(res => {
 					this.media = res.data.data;
+				})
+				.catch(err => {
+					this.helpers.handleResponse(err);
 				})
 		},
 		/*
