@@ -9,7 +9,7 @@ import (
 )
 
 // Administrator middleware
-func AdminTokenCheck(userModel models.UserRepository, sessionModel models.SessionRepository) gin.HandlerFunc {
+func AdminTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
 	return func(g *gin.Context) {
 
 		if err := checkTokenExists(g); err != nil {
@@ -18,10 +18,6 @@ func AdminTokenCheck(userModel models.UserRepository, sessionModel models.Sessio
 
 		u, err := checkUserToken(g, userModel)
 		if err != nil {
-			return
-		}
-
-		if err := checkSession(g, u.Id, sessionModel); err != nil {
 			return
 		}
 
@@ -35,7 +31,7 @@ func AdminTokenCheck(userModel models.UserRepository, sessionModel models.Sessio
 }
 
 // Operator middleware
-func OperatorTokenCheck(userModel models.UserRepository, sessionModel models.SessionRepository) gin.HandlerFunc {
+func OperatorTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
 	return func(g *gin.Context) {
 
 		if err := checkTokenExists(g); err != nil {
@@ -44,10 +40,6 @@ func OperatorTokenCheck(userModel models.UserRepository, sessionModel models.Ses
 
 		u, err := checkUserToken(g, userModel)
 		if err != nil {
-			return
-		}
-
-		if err := checkSession(g, u.Id, sessionModel); err != nil {
 			return
 		}
 
@@ -89,11 +81,11 @@ func checkUserToken(g *gin.Context, m models.UserRepository) (*domain.User, erro
 }
 
 // Check to see if the session has expired
-func checkSession(g *gin.Context, userId int, m models.SessionRepository) error {
+func checkSession(g *gin.Context, userId int) error {
 
-	if hasSession := m.Has(userId); !hasSession {
-		return nil
-	}
+	//if hasSession := m.Has(userId); !hasSession {
+	//	return nil
+	//}
 
 	//err := m.Check(userId);
 	//if err != nil {

@@ -16,6 +16,8 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 	// API Routes
 	api := s.Group("/api/v1")
 	{
+		api.Use(middleware.EmptyBody())
+
 		// Site
 		api.GET("/site", c.Site.GetSite)
 
@@ -30,9 +32,8 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 		// Operator
 		operator := api.Group("")
 		{
-			operator.Use(middleware.SessionCheck(m.Session))
-			operator.Use(middleware.OperatorTokenCheck(m.User, m.Session))
-			operator.Use(middleware.EmptyBody())
+			operator.Use(middleware.OperatorTokenCheck(m.User))
+			operator.Use(middleware.SessionCheck(m.User))
 
 			// Theme
 			operator.GET("/theme", c.Site.GetTheme)
@@ -88,7 +89,8 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 		// Administrator
 		admin := api.Group("")
 		{
-			admin.Use(middleware.AdminTokenCheck(m.User, m.Session))
+			admin.Use(middleware.AdminTokenCheck(m.User))
+			operator.Use(middleware.SessionCheck(m.User))
 
 			// Users
 			admin.POST("/users", c.User.Create)

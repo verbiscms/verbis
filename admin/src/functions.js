@@ -16,6 +16,7 @@ import Vue from "vue";
 import store from "./store";
 import axios from 'axios'
 import router from './router';
+import Noty from 'noty';
 
 class helpers {
 
@@ -28,18 +29,51 @@ class helpers {
 		return Object.keys(obj).length === 0 && obj.constructor === Object
 	}
 
+	// noty specific for helper
+	noty(msg) {
+		new Noty({
+			text: msg,
+			type: 'error',
+			timeout: 3500,
+			theme: 'verbis',
+			progressBar: false,
+			layout: 'bottomRight'
+		}).show();
+	}
+
 	// Handle response data
 	handleResponse(data) {
-		if (data) {
-			if (!data.status) {
-				router.push('/error')
-			} else if (data.response.status === 401 || data.response.status === 429) {
-				axios.post("/logout", {})
-					.then(() => {
-						store.commit("logout")
-						router.push('/login')
-					});
+
+		this.checkServer(data);
+
+		if (store.state.auth) {
+			if (data) {
+				if (data.response.status === 401 || data.response.status === 429) {
+					axios.post("/logout", {})
+						.finally(() => {
+							store.commit("logout");
+							store.dispatch("getSiteConfig");
+							router.push("/login")
+							const errors = data.response.data.data.errors;
+
+							if (errors['session'] !== undefined) {
+								this.noty(data.response.data.message);
+							}
+						})
+				} else if (data.response.status === 429) {
+					this.noty(data.response.data.message);
+				} else {
+					this.error("Error occurred, please refresh the page.");
+				}
 			}
+		} else {
+			return Promise.reject(data)
+		}
+	}
+
+	checkServer(data) {
+		if (!data.status && !data.response) {
+			router.push({ "name" : "error" })
 		}
 	}
 

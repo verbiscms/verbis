@@ -10,21 +10,6 @@
     width: 100%;
     transition: margin-top 200ms ease;
 
-    // Group
-    // =========================================================================
-
-    &-group {
-        position: relative;
-        display: block;
-        width: 100%;
-        margin-bottom: $form-group-margin-bottom;
-        transition: all 200ms ease;
-
-       // &:last-child {
-          //  margin-bottom: 0;
-       // }
-    }
-
     // Input
     // =========================================================================
 
@@ -38,12 +23,16 @@
         color: $form-input-color;
         border-radius: $form-input-border-radius;
         background: transparent;
-        font-weight: 600;
+        font-weight: $form-input-font-weight;
+        -webkit-font-smoothing: antialiased;
         @include px-to-rem(14);
         -webkit-appearance: none;
         appearance: none;
         @include formInputBoxShadow;
 
+        @include firefox {
+            font-weight: 500 !important;
+        }
 
         &-white {
             background-color: $white;
@@ -60,6 +49,34 @@
 
         @include on-event {
             box-shadow: $form-box-shadow;
+        }
+    }
+
+    &-group {
+        $self: &;
+
+        position: relative;
+        display: block;
+        width: 100%;
+        margin-bottom: $form-group-margin-bottom;
+        transition: all 200ms ease;
+
+        // Error
+        // =========================================================================
+
+        &-error {
+
+            #{$self}-message {
+                opacity: 1;
+                transform: translateY(calc(100% + 2px));
+            }
+        }
+
+        // No Margin
+        // =========================================================================
+
+        &-no-margin {
+            margin-bottom: 0;
         }
     }
 
@@ -160,7 +177,7 @@
         border: none;
         background-color: transparent;
         color: $secondary;
-        font-weight: 600;
+        font-weight: $form-input-font-weight;
         @include px-to-rem(14);
         -webkit-appearance: none;
         appearance: none;
@@ -169,6 +186,10 @@
         padding-left: $form-input-padding-x;
         padding-right: $form-input-padding-x * 4;
         z-index: 2;
+
+        @include firefox {
+            font-weight: 500;
+        }
 
         &-cont {
             width: auto;
@@ -426,18 +447,15 @@
 
         &-error,
         &-valid {
-            margin-bottom: 2rem;
+            //margin-bottom: 1rem;
 
-            #{$self}-message {
-                opacity: 1;
-                transform: translateY(calc(100% + 2px));
-            }
+
         }
 
         &-error {
 
             input {
-                border: 1px solid $orange;
+                //border: 1px solid $orange;
             }
         }
     }
@@ -458,7 +476,7 @@
         align-items: center;
         color: $orange;
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 500;
         margin-bottom: $form-group-margin-bottom;
         opacity: 0;
         transform: translateY(calc(-100% - 6px));

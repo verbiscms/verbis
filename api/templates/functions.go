@@ -161,35 +161,35 @@ func (t *TemplateFunctions) getResources(query map[string]interface{}) map[strin
 
 // If the user is authenticated
 func (t *TemplateFunctions) isAuth() bool {
-	cookie, err := t.gin.Cookie("verbis-session")
-	if err != nil {
-		return false
-	}
+	//cookie, err := t.gin.Cookie("verbis-session")
+	//if err != nil {
+	//	return false
+	//}
 
-	_, err = t.store.Session.GetByKey(cookie)
-	if err != nil {
-		return false
-	}
+	//_, err = t.store.Session.GetByKey(cookie)
+	//if err != nil {
+	//	return false
+	//}
 
 	return true
 }
 
 // If the user is admin
 func (t *TemplateFunctions) isAdmin() bool {
-	cookie, err := t.gin.Cookie("verbis-session")
-	if err != nil {
-		return false
-	}
+	//cookie, err := t.gin.Cookie("verbis-session")
+	//if err != nil {
+	//	return false
+	//}
 
-	us, err := t.store.Session.GetByKey(cookie)
-	if err != nil {
-		return false
-	}
+	//us, err := t.store.Session.GetByKey(cookie)
+	//if err != nil {
+	//	return false
+	//}
 
-	_, err = t.store.User.GetById(us.UserId)
-	if err != nil {
-		return false
-	}
+	//_, err = t.store.User.GetById(us.UserId)
+	//if err != nil {
+	//	return false
+	//}
 
 	//if u.AccessLevel != 2 {
 	//	return false
@@ -202,8 +202,6 @@ func (t *TemplateFunctions) isAdmin() bool {
  * Paths
  * Functions for templates for paths
  */
-
-
 
 // Retrieve the assets path for the theme
 func (t *TemplateFunctions) storagePath() string {

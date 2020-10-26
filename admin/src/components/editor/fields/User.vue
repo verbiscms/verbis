@@ -68,21 +68,13 @@ export default {
 			}
 		},
 		getUsers() {
-			return new Promise((resolve, reject) => {
-				if (!this.$store.state.users) {
-					this.axios.get("/users")
-						.then(res => {
-							this.$store.commit('setUsers', res.data.data);
-							resolve()
-						})
-						.catch(err => {
-							reject(err)
-						});
-				} else {
-					this.users = this.$store.state.users
-					resolve()
-				}
-			});
+			this.$store.dispatch("getUsers")
+				.then(users => {
+					this.users = users;
+				})
+				.catch(err => {
+					this.helpers.handleResponse(err);
+				})
 		},
 		mapUsers() {
 			this.users = this.users.map(a => {

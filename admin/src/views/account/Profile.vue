@@ -38,7 +38,7 @@
 							<h4>First name*</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['first_name']">
+							<FormGroup class="form-group-no-margin" :error="errors['first_name']">
 								<input class="form-input form-input-white" type="text" v-model="data['first_name']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -49,7 +49,7 @@
 							<h4>Last name*</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['last_name']">
+							<FormGroup class="form-group-no-margin" :error="errors['last_name']">
 								<input class="form-input form-input-white" type="text" v-model="data['last_name']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -71,7 +71,7 @@
 							<p>Enter a valid email address, this will be used for signing in to Verbis.</p>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['email']">
+							<FormGroup class="form-group-no-margin" :error="errors['email']">
 								<input class="form-input form-input-white" type="text" v-model="data['email']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -82,7 +82,7 @@
 							<h4>Website</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['website']">
+							<FormGroup class="form-group-no-margin" :error="errors['website']">
 								<input class="form-input form-input-white" type="text" v-model="data['website']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -93,7 +93,7 @@
 							<h4>Facebook</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['facebook']">
+							<FormGroup class="form-group-no-margin" :error="errors['facebook']">
 								<input class="form-input form-input-white" type="text" v-model="data['facebook']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -104,7 +104,7 @@
 							<h4>Twitter</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['twitter']">
+							<FormGroup class="form-group-no-margin" :error="errors['twitter']">
 								<input class="form-input form-input-white" type="text" v-model="data['twitter']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -115,7 +115,7 @@
 							<h4>LinkedIn</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['linked_in']">
+							<FormGroup class="form-group-no-margin" :error="errors['linked_in']">
 								<input class="form-input form-input-white" type="text" v-model="data['linked_in']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -169,7 +169,7 @@
 							<p>Type in your current password.</p>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['current_password']">
+							<FormGroup class="form-group-no-margin" :error="errors['current_password']">
 								<input class="form-input form-input-white" type="password" placeholder="Current password" v-model="password['current_password']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -182,7 +182,7 @@
 							<button class="btn profile-generate-pass" @click.prevent="generatePassword">Generate password</button>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['new_password']">
+							<FormGroup class="form-group-no-margin" :error="errors['new_password']">
 								<input class="form-input form-input-white" placeholder="New password" :type="isGeneratedPassword ? 'text' : 'password'" v-model="password['new_password']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -194,7 +194,7 @@
 							<p>Enter the same password in again.</p>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<FormGroup :error="errors['confirm_password']">
+							<FormGroup class="form-group-no-margin" :error="errors['confirm_password']">
 								<input class="form-input form-input-white form-input-test" :type="isGeneratedPassword ? 'text' : 'password'" placeholder="Confirm password" v-model="password['confirm_password']">
 							</FormGroup>
 						</div><!-- /Col -->
@@ -335,7 +335,7 @@ export default {
 						this.$noty.error(errorMsg);
 						return;
 					}
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					setTimeout(() => {
@@ -358,12 +358,13 @@ export default {
 					this.$noty.success("Password updated successfully.");
 				})
 				.catch(err => {
+					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						this.$noty.error("Fix the errors before resetting password.");
 						return;
 					}
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					setTimeout(() => {
@@ -380,7 +381,7 @@ export default {
 					console.log(res);
 				})
 				.catch(err => {
-					console.log(err);
+					this.helpers.handleResponse(err);
 				})
 		},
 		/*
@@ -401,8 +402,7 @@ export default {
 					this.data = user;
 				})
 				.catch(err => {
-					console.log(err);
-					this.$noty.error("Error occurred, please refresh the page.");
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.doingAxios = false;

@@ -20,6 +20,7 @@ type User struct {
 	Instagram			*string			`db:"instagram" json:"instagram"`
 	ProfilePictureID	*int			`db:"profile_picture_id" json:"profile_picture_id"`
 	Token				string			`db:"token" json:"token,omitempty"`
+	TokenLastUsed		*time.Time		`db:"token_last_used" json:"token_last_used,omitempty"`
 	Role				UserRole 		`db:"roles" json:"role"`
 	EmailVerifiedAt		*time.Time		`db:"email_verified_at" json:"email_verified_at"`
 	CreatedAt			time.Time		`db:"created_at" json:"created_at"`
@@ -37,14 +38,6 @@ type UserPasswordReset struct {
 	CurrentPassword		string			`json:"current_password" binding:"required,password"`
 	NewPassword			string			`json:"new_password" binding:"required,min=8,max=60"`
 	ConfirmPassword		string			`json:"confirm_password" binding:"eqfield=NewPassword,required"`
-}
-
-type UserSession struct {
-	Id 					int				`db:"id"`
-	UserId				int				`db:"user_id"`
-	SessionKey			string			`db:"session_key"`
-	LoginTime			time.Time		`db:"login_time"`
-	LastSeenTime 		time.Time		`db:"last_seen_time"`
 }
 
 type UserRole struct {

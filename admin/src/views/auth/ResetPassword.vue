@@ -7,9 +7,9 @@
 			<div class="row auth-row">
 				<div class="col-12">
 					<!-- Logo -->
-					<figure class="auth-logo" v-if="getLogo">
-						<img :src="getSiteUrl + getLogo">
-					</figure><!-- /Col -->
+					<figure class="auth-logo" v-if="getSite.logo">
+						<img :src="getSiteUrl + getSite.logo">
+					</figure><!-- /Logo -->
 					<div class="auth-card">
 						<div class="auth-card-cont">
 							<!-- Auth Text -->
@@ -68,7 +68,7 @@ export default {
 					this.$router.push({name: 'login'});
 				})
 				.catch(err => {
-					console.log(err);
+					this.helpers.handleResponse(err);
 				})
 		},
 	},
@@ -85,7 +85,14 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-//
-// =========================================================================
+.auth {
+
+	// Text
+	// =========================================================================
+
+	&-text {
+		margin-bottom: 1.2rem;
+	}
+}
 
 </style>
