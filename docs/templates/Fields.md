@@ -1,5 +1,3 @@
-# Templates
-
 # Fields
 
 Short introduction here
@@ -9,6 +7,10 @@ ___
 ## getField
 
 Gets the value of a specific field specified in the layout.
+
+### Accepts: 
+
+`string, id (optional)` The field name & optional post ID.
 
 ### Returns:
 
@@ -57,9 +59,13 @@ ___
 
 Checks if a field value exists.
 
+### Accepts: 
+
+`string` The field name.
+
 ### Returns:
 
-`boolean` True if the field exists
+`boolean` True if the field exists.
 
 ### Examples:
 
@@ -77,6 +83,10 @@ ___
 ## getFields
 
 Get all fields associated with a post. This function is especially useful for debugging.
+
+### Accepts: 
+
+`id (optional)` Optional post ID.
 
 ### Returns:
 
@@ -104,6 +114,10 @@ ___
 ## getRepeater
 
 Get a slice of repeater blocks of a specific field.
+
+### Accepts: 
+
+`string` The field name.
 
 ### Returns:
 
@@ -135,6 +149,10 @@ ___
 ## getFlexible
 
 Gets a map of flexible content of specific field.
+
+### Accepts: 
+
+`string` The field name.
 
 ### Returns:
 
@@ -209,6 +227,10 @@ ___
 
 Gets the value of a sub field within a flexible content layout.
 
+### Accepts: 
+
+`string, string` The field & layout name.
+
 ### Returns:
 
 `interface{}` The field value or an empty string if the function did not find the field.
@@ -223,11 +245,4 @@ Get the value of a field named `"content"` in the layout being ranged.
 {{ getSubField "content" $layout }}
 ```
 ___
-
-# Partials
-
-Using the partial method is an easy way to include child components or layouts into templates by passing
-the partial name (relative to the theme) and any data to be included in the rendered partial.
-
-## partial
 
