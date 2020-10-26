@@ -1,8 +1,8 @@
 # Auth
 
 The auth functions used within templates are used to establish if the user is logged in to the backend of the
-Verbis website. These functions relies on the `verbis-cookie` with a value of the current user's token. 
-If the user clears their cookies, usage may vary until the user logs out again.
+Verbis website. These functions rely on the `verbis-cookie` with a value of the current user's token. 
+If the user clears their cookies, usage may vary until the user logs out and in again.
 
 These functions can be handy to display hidden content or media to logged in users.
 
@@ -10,7 +10,7 @@ ___
 
 ## isAuth
 
-Checks if the current user is logged in to the backend.
+Check if the current user is logged in to the backend.
 
 ### Returns:
 
@@ -30,7 +30,7 @@ ___
 
 ## isAdmin
 
-Checks if the current user is logged in to the backend and if the user
+Check if the current user is logged in to the backend and if the user
 has administrator or owner privileges.
 
 ### Returns:
