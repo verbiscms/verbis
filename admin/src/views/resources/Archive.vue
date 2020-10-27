@@ -2,7 +2,7 @@
 	Archive
 	===================== -->
 <template>
-	<section class="">
+	<section>
 		<div class="auth-container">
 			<!-- Header -->
 			<div class="row">
@@ -92,7 +92,7 @@
 											</tr>
 										</thead>
 										<tbody>
-											<tr class="trans-fade-in-anim-slow" v-for="(item, itemIndex) in posts" :key="item.post.uuid">
+											<tr v-for="(item, itemIndex) in posts" :key="item.post.uuid">
 												<!-- Checkbox -->
 												<td class="table-checkbox">
 													<div class="form-checkbox form-checkbox-dark">
@@ -282,6 +282,7 @@ export default {
 		'$route.params.resource': function() {
 			this.setResource();
 			this.getPosts();
+			this.activeTab = 1;
 		},
 	},
 	methods: {

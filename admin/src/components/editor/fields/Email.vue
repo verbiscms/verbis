@@ -52,13 +52,9 @@ export default {
 		validate() {
 			this.errors = [];
 			// eslint-disable-next-line no-useless-escape
-			const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-			if (this.value !== "" && !re.test(String(this.value).toLowerCase())) {
+			if (this.value !== "" && !this.helpers.validateEmail(this.value)) {
 				this.errors.push(`Enter a valid email address for the ${this.layout.label} field.`)
 			}
-			// TODO: Come back to debounce, not working
-			this.helpers.debounce(() => {
-			}, false).apply();
 		}
 	},
 	computed: {

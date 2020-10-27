@@ -2,8 +2,8 @@
 	Collapse
 	===================== -->
 <template>
-	<div class="expand">
-		<div class="collapse">
+	<div class="collapse">
+		<div class="expand">
 			<div v-if="!reverse">
 				<div class="collapse-item">
 					<div class="collapse-header" ref="header">
@@ -58,11 +58,12 @@ export default {
 		this.content = this.$refs.content;
 		this.header = this.$refs.header;
 		this.addListener()
-		this.$nextTick(() => {
-			setTimeout(() => {
-				this.setDefaults();
-			}, 100)
-		})
+		this.setDefaults();
+		// this.$nextTick(() => {
+		// 	setTimeout(() => {
+		// 		this.setDefaults();
+		// 	}, 100);
+		// })
 	},
 	methods: {
 		/*
@@ -133,7 +134,14 @@ export default {
 <style scoped lang="scss">
 
 	.collapse {
+		$self: &;
 
+		&-border-bottom {
+
+			#{$self}-content {
+				border-bottom: 1px solid rgba($grey-light, 0.7);
+			}
+		}
 
 		// Content
 		// ==========================================================================
@@ -155,5 +163,6 @@ export default {
 			}
 		}
 	}
+
 
 </style>

@@ -129,7 +129,6 @@ export default {
 			this.$nextTick(() => {
 				this.showImageModal = false;
 				this.getMediaById();
-
 				setTimeout(() => {
 					this.helpers.setHeight(this.$refs.image.closest(".collapse-content"));
 				}, 200);

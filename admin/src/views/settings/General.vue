@@ -17,17 +17,20 @@
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-
 			<div class="row" v-if="!doingAxios">
 				<!-- =====================
 					Basic Options
 					===================== -->
 				<div class="col-12">
-					<div class="card card-small-box-shadow">
-						<collapse>
+					<h6 class="margin">Site options</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['site_title'] ||  errors['site_description'] }">
 							<template v-slot:header>
 								<div class="card-header">
-									<h3 class="card-title">Site Options</h3>
+									<div>
+										<h4 class="card-title">Title & Description</h4>
+										<p>Details of the website that will be used publicly around the web.</p>
+									</div>
 									<div class="card-controls">
 										<i class="feather feather-chevron-down"></i>
 									</div>
@@ -43,36 +46,74 @@
 									<FormGroup label="Site description*" :error="errors['site_description']">
 										<input class="form-input form-input-white" type="text" v-model="data['site_description']">
 									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse>
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['site_url']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Url</h4>
+										<p>Set the global site url, be careful when changing the site url, it may have undesired effects.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
 									<!-- Url -->
 									<FormGroup label="Site title*" :error="errors['site_url']">
 										<input class="form-input form-input-white" type="text" v-model="data['site_url']">
 									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse>
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['site_logo']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Logo</h4>
+										<p>Set the logo of the site, this will be used for the Verbis backend and the publicly accessible routes.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
 									<!-- Logo -->
 									<div class="general-logo">
-										<label class="form-label">Logo</label>
 										<div v-show="!hasLogo">
 											<button class="btn" @click.prevent="showImageModal = true">Insert Logo</button>
 										</div>
 										<div v-show="hasLogo">
 											<ImageWithActions @choose="showImageModal = true" @remove="hasLogo = false">
-												<img :src="getSiteUrl + data['logo']" @error="hasLogo = false"/>
+												<img :src="getSiteUrl + data['site_logo']" @error="hasLogo = false"/>
 											</ImageWithActions>
 										</div>
 									</div>
 								</div><!-- /Card Body -->
 							</template>
-						</collapse>
+						</Collapse>
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
 					Social media
 					===================== -->
 				<div class="col-12">
-					<div class="card card-small-box-shadow">
-						<collapse>
+					<h6 class="margin">Social</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' :
+						errors['social_facebook_url'] || errors['social_twitter_url'] || errors['social_youtube_url'] || errors['social_linked_in'] || errors['social_instagram_url'] || errors['social_pinterest_url']}">
 							<template v-slot:header>
 								<div class="card-header">
-									<h3 class="card-title">Social media</h3>
+									<div>
+										<h4 class="card-title">Social media URL's</h4>
+										<p>Enter a valid url for the website's social media accounts.</p>
+									</div>
 									<div class="card-controls">
 										<i class="feather feather-chevron-down"></i>
 									</div>
@@ -80,44 +121,43 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body">
-									<div class="row no-gutter">
-										<div class="col-12 col-desk-6">
-											<FormGroup label="Facebook" :error="errors['social_facebook_url']">
-												<input class="form-input form-input-white" type="text" v-model="data['social_facebook_url']">
-											</FormGroup>
-											<FormGroup label="Twitter" :error="errors['social_twitter_url']">
-												<input class="form-input form-input-white" type="text" v-model="data['social_twitter_url']">
-											</FormGroup>
-											<FormGroup label="Youtube" :error="errors['social_youtube_url']">
-												<input class="form-input form-input-white" type="text" v-model="data['social_youtube_url']">
-											</FormGroup>
-										</div><!-- /Card -->
-										<div class="col-12 col-desk-6">
-											<FormGroup label="LinkedIn" :error="errors['social_linked_in']">
-												<input class="form-input form-input-white" type="text" v-model="data['social_linked_in']">
-											</FormGroup>
-											<FormGroup label="Instagram" :error="errors['social_instagram_url']">
-												<input class="form-input form-input-white" type="text" v-model="data['social_instagram_url']">
-											</FormGroup>
-											<FormGroup label="Pinterest" :error="errors['social_pinterest_url']">
-												<input class="form-input form-input-white" type="text" v-model="data['social_pinterest_url']">
-											</FormGroup>
-										</div>
-									</div><!-- /Col -->
+									<FormGroup label="Facebook" :error="errors['social_facebook']">
+										<input class="form-input form-input-white" type="text" v-model="data['social_facebook']">
+									</FormGroup>
+									<FormGroup label="Twitter" :error="errors['social_twitter']">
+										<input class="form-input form-input-white" type="text" v-model="data['social_twitter']">
+									</FormGroup>
+									<FormGroup label="Youtube" :error="errors['social_youtube']">
+										<input class="form-input form-input-white" type="text" v-model="data['social_youtube']">
+									</FormGroup>
+									<FormGroup label="LinkedIn" :error="errors['social_linked_in']">
+										<input class="form-input form-input-white" type="text" v-model="data['social_linked_in']">
+									</FormGroup>
+									<FormGroup label="Instagram" :error="errors['social_instagram']">
+										<input class="form-input form-input-white" type="text" v-model="data['social_instagram']">
+									</FormGroup>
+									<FormGroup label="Pinterest" :error="errors['social_pinterest']">
+										<input class="form-input form-input-white" type="text" v-model="data['social_pinterest']">
+									</FormGroup>
 								</div><!-- /Card Body -->
 							</template>
-						</collapse>
+						</Collapse>
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
 					Contact Details
 					===================== -->
 				<div class="col-12">
-					<div class="card card-small-box-shadow">
-						<collapse>
+					<h6 class="margin">Contact details</h6>
+					<div class="card card-small-box-shadow card-expand card-margin-none">
+						<!-- Email -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['contact_email']}">
 							<template v-slot:header>
 								<div class="card-header">
-									<h3 class="card-title">Contact details</h3>
+									<div>
+										<h4 class="card-title">Email</h4>
+										<p>Enter an address for {{ getSiteTitle }}.</p>
+									</div>
 									<div class="card-controls">
 										<i class="feather feather-chevron-down"></i>
 									</div>
@@ -125,21 +165,54 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body">
-									<div class="row no-gutter">
-										<div class="col-12 col-desk-6">
-											<FormGroup label="Address" :error="errors['contact_telephone']">
-												<input class="form-input form-input-white" type="text" v-model="data['social_facebook_url']">
-											</FormGroup>
-										</div><!-- /Card -->
-										<div class="col-12 col-desk-6">
-											<FormGroup label="LinkedIn" :error="errors['contact_address']">
-												<input class="form-input form-input-white" type="text" v-model="data['social_linked_in']">
-											</FormGroup>
-										</div>
-									</div><!-- /Col -->
+									<FormGroup label="Email" :error="errors['contact_email']">
+										<input class="form-input form-input-white" type="text" v-model="data['contact_email']" @keyup="validateEmail(true, data['contact_email'], 'contact_email')">
+									</FormGroup>
 								</div><!-- /Card Body -->
 							</template>
-						</collapse>
+						</Collapse><!-- /Email -->
+						<!-- Telephone -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['contact_telephone']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Telephone</h4>
+										<p>Enter a telephone number for {{ getSiteTitle }}.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<FormGroup label="Telephone">
+										<input class="form-input form-input-white" type="text" v-model="data['contact_telephone']">
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Telephone -->
+						<!-- Address -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['contact_address']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Address</h4>
+										<p>Enter an address for {{ getSiteTitle }}.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<FormGroup label="Address" :error="errors['contact_address']">
+										<textarea rows="6" class="form-textarea form-input form-input-white" type="text" v-model="data['contact_address']"></textarea>
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Address -->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
@@ -174,11 +247,12 @@ import Modal from "@/components/modals/General";
 import Uploader from "@/components/media/Uploader";
 import ImageWithActions from "@/components/misc/ImageWithActions";
 import Collapse from "@/components/misc/Collapse";
+import {validationMixin} from "@/util/validation";
 
 export default {
 	name: "General",
 	title: 'General Settings',
-	mixins: [optionsMixin],
+	mixins: [optionsMixin, validationMixin],
 	components: {
 		Collapse,
 		ImageWithActions,
@@ -190,7 +264,6 @@ export default {
 	data: () => ({
 		errorMsg: "Fix the errors before saving settings.",
 		successMsg: "Site options updated successfully.",
-		errors: [],
 		hasLogo: true,
 		showImageModal: false,
 	}),
@@ -201,9 +274,18 @@ export default {
 		insertLogo(e) {
 			this.profilePicture = e;
 			this.showImageModal = false;
-			this.data['logo'] = e.url;
+			this.data['site_logo'] = e.url;
 			this.hasLogo = true;
+			// Update store with new logo.
+			const site = this.$store.state.site;
+			site['logo'] = e.url;
+			this.$store.commit("setSite", site)
 		},
+	},
+	computed: {
+		getSiteTitle() {
+			return this.getSite.title === "Verbis" ? "the business" : this.getSite.title;
+		}
 	}
 }
 
@@ -214,15 +296,7 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-	// Text
+	// Dummy
 	// =========================================================================
-
-	h2 {
-		margin-bottom: 4px;
-	}
-
-	p {
-		font-size: 0.9rem;
-	}
 
 </style>

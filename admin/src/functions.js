@@ -41,11 +41,18 @@ class helpers {
 		}).show();
 	}
 
+	// Rename object key
+	renameKey(object, key, newKey) {
+		const clonedObj =  Object.assign({}, object);
+		const targetKey = clonedObj[key];
+		delete clonedObj[key];
+		clonedObj[newKey] = targetKey;
+		return clonedObj;
+	}
+
 	// Handle response data
 	handleResponse(data) {
-
 		this.checkServer(data);
-
 		if (store.state.auth) {
 			if (data) {
 				if (data.response.status === 401 || data.response.status === 429) {
@@ -71,58 +78,14 @@ class helpers {
 		}
 	}
 
+	// Check if the server is down
 	checkServer(data) {
 		if (!data.status && !data.response) {
 			router.push({ "name" : "error" })
 		}
 	}
 
-	// Debounce input
-	debounce(fn, immediate = false) {
-		let timeout = this.debounceTime
-		if (immediate) {
-			timeout = 0;
-		}
-		let timeoutID = null
-		return function () {
-			clearTimeout(timeoutID)
-			let args = arguments,
-				that = this
-			timeoutID = setTimeout(function () {
-				fn.apply(that, args)
-			}, timeout)
-		}
-	}
-
-	// Set Cookie
-	setCookie(name, value, days) {
-		let expires = "";
-		if (days) {
-			let date = new Date();
-			date.setTime(date.getTime() + (days*24*60*60*1000));
-			expires = "; expires=" + date.toUTCString();
-		}
-		document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-	}
-
-	// Get Cookie
-	getCookie(name) {
-		let nameEQ = name + "=";
-		let ca = document.cookie.split(';');
-		for(let i=0; i < ca.length; i++) {
-			let c = ca[i];
-			while (c.charAt(0) === ' ') c = c.substring(1,c.length);
-			if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length,c.length);
-		}
-		return null;
-	}
-
-	// Delete cookie
-	deleteCookie(name) {
-		document.cookie = name + '=; Max-Age=0; path=/; domain=' + location.host;
-	}
-
-	// Calculate height & children of element
+	// Calculate & set height & children of element
 	setHeight(el) {
 		let children = el.children;
 		let height = 0;
@@ -130,7 +93,6 @@ class helpers {
 			height += children[i].clientHeight;
 		}
 		el.style.maxHeight = height + "px";
-		console.log(el.style.maxHeight)
 	}
 
 	// Capitalize first character of string
@@ -138,6 +100,25 @@ class helpers {
 		if (typeof s !== 'string') return '';
 		return s.charAt(0).toUpperCase() + s.slice(1);
 	}
+
+	// Validate given email
+	validateEmail(email) {
+		// eslint-disable-next-line no-useless-escape
+		const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		return re.test(String(email).toLowerCase());
+	}
+
+	// Validate given url
+	validateUrl(url) {
+		let pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+			'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+			'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+			'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+			'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+			'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+		return pattern.test(url)
+	}
+
 }
 
 Vue.prototype.helpers = new helpers();

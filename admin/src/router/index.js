@@ -33,17 +33,20 @@ const routes = [
 	{
 		path: "/login",
 		name: "login",
-		component: () => import("../views/auth/Login.vue")
+		component: () => import("../views/auth/Login.vue"),
+		meta: { transitionName : 'slide' },
 	},
 	{
 		path: "/password/reset",
-		name: "password-reset",
-		component: () => import("../views/auth/SendResetPassword.vue")
+		name: "send-password-reset",
+		component: () => import("../views/auth/SendResetPassword.vue"),
+		meta: { transitionName : 'slide' },
 	},
 	{
 		path: "/password/reset/:token",
 		name: "password-reset",
-		component: () => import("../views/auth/ResetPassword.vue")
+		component: () => import("../views/auth/ResetPassword.vue"),
+		meta: { transitionName : 'slide' },
 	},
 	/**
 	 * Resources
@@ -52,15 +55,18 @@ const routes = [
 	{
 		path: "/resources/:resource",
 		name: "resources",
-		component: () => import("../views/resources/Archive.vue")
+		component: () => import("../views/resources/Archive.vue"),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: "/editor/:id",
 		name: "editor",
-		component: () => import("../views/resources/Editor.vue")
+		component: () => import("../views/resources/Editor.vue"),
+		meta: { transitionName : 'fade' },
 	},
 	{ 	path: '/editor',
 		redirect: '/editor/new',
+		meta: { transitionName : 'fade' },
 	},
 	/**
 	 * Content
@@ -70,21 +76,25 @@ const routes = [
 		path: '/categories',
 		name: 'categories',
 		component: () => import('../views/content/Categories.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/media',
 		name: 'media',
 		component: () => import('../views/content/Media.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/fields',
 		name: 'fields',
 		component: () => import('../views/content/Fields.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/users',
 		name: 'users',
 		component: () => import('../views/content/Users.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	/**
 	 * Account
@@ -94,11 +104,13 @@ const routes = [
 		path: '/profile',
 		name: 'profile',
 		component: () => import('../views/account/Profile.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/users/:id',
 		name: 'edit-user',
 		component: () => import('../views/account/Profile.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	/**
 	 * Settings
@@ -108,26 +120,32 @@ const routes = [
 		path: '/settings/general',
 		name: 'settings-general',
 		component: () => import('../views/settings/General.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/settings/code-injection',
 		name: 'settings-code-injection',
 		component: () => import('../views/settings/CodeInjection.vue'),
+		meta: { transitionName : 'fade' },
+
 	},
 	{
 		path: '/settings/performance',
 		name: 'settings-performance',
 		component: () => import('../views/settings/Performance.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/settings/seo-meta',
 		name: 'settings-seo-meta',
 		component: () => import('../views/settings/SEOMeta.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/settings/media',
 		name: 'settings-media',
 		component: () => import('../views/settings/Media.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	/**
 	 * Errors / Not Found
@@ -137,15 +155,18 @@ const routes = [
 		path: '/404',
 		name: 'not-found',
 		component: () => import('../views/errors/Error.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/error',
 		name: 'error',
 		component: () => import('../views/errors/ServerDown.vue'),
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '*',
-		redirect: '/404'
+		redirect: '/404',
+		meta: { transitionName : 'fade' },
 	},
 ];
 
@@ -177,7 +198,7 @@ router.beforeEach((to, from, next) => {
 			next();
 		}
 	} else {
-		if (to.name === "login" || to.name === "password-reset" || to.name === "error") {
+		if (to.name === "login" || to.name === "password-reset" || to.name === "send-password-reset" || to.name === "error") {
 			next();
 		} else {
 			next({

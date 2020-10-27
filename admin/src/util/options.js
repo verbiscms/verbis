@@ -10,7 +10,7 @@ export const optionsMixin = {
 	data: () => ({
 		doingAxios: true,
 		saving: false,
-		errors: [],
+		errors: {},
 		data: {},
 	}),
 	mounted() {
@@ -42,10 +42,7 @@ export const optionsMixin = {
 		 */
 		save() {
 			this.saving = true;
-			if (this.errors.length) {
-				this.$noty.error(this.errorMsg)
-				return
-			}
+
 			this.axios.post("/options", this.data)
 				.then(() => {
 					this.errors = [];
@@ -55,7 +52,8 @@ export const optionsMixin = {
 					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
-						this.$noty.error(this.successMsg)
+						this.$noty.error(this.errorMsg);
+						this.setAllHeight();
 						return;
 					}
 					this.helpers.handleResponse(err);
@@ -64,6 +62,10 @@ export const optionsMixin = {
 					setTimeout(() => {
 						this.saving = false;
 					}, 100);
+					this.axios.get("/site")
+						.then(res => {
+							this.$store.commit('setSite', res.data.data);
+						});
 				});
 		},
 		/*

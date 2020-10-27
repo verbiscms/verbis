@@ -14,27 +14,38 @@ type OptionDB struct {
 
 type Options struct {
 	// Site
-	SiteTitle string `json:"site_title"`
-	SiteDescription string `json:"site_description"`
-	SiteLogo string `json:"site_logo"`
-	SiteUrl string `json:"site_url"`
+	SiteTitle 				string 					`json:"site_title" binding:"required"`
+	SiteDescription 		string 					`json:"site_description" binding:"required"`
+	SiteLogo 				string 					`json:"site_logo" binding:"required"`
+	SiteUrl 				string 					`json:"site_url" binding:"required,url"`
 	// Media
-	MediaCompression int `json:"media_compression"`
-	MediaConvertWebP bool `json:"media_convert_webp"`
-	MediaServeWebP bool `json:"media_serve_webp"`
-	MediaUploadMaxSize int `json:"media_upload_max_size"`
-	MediaUploadMaxWidth int `json:"media_upload_max_width"`
-	MediaUploadMaxHeight int `json:"media_upload_max_height"`
-	MediaOrganiseDate bool `json:"media_organise_year_month"`
-	MediaSizes map[string]interface{} `json:"media_images_sizes"`
+	MediaCompression		int 					`json:"media_compression" binding:"required"`
+	MediaConvertWebP 		bool 					`json:"media_convert_webp" binding:"required"`
+	MediaServeWebP 			bool 					`json:"media_serve_webp" binding:"required"`
+	MediaUploadMaxSize 		int 					`json:"media_upload_max_size" binding:"required,numeric"`
+	MediaUploadMaxWidth 	int 					`json:"media_upload_max_width" binding:"required,numeric"`
+	MediaUploadMaxHeight 	int 					`json:"media_upload_max_height" binding:"required,numeric"`
+	MediaOrganiseDate 		bool 					`json:"media_organise_year_month" binding:"required"`
+	MediaSizes 				MediaSizes 				`json:"media_images_sizes" binding:"required"`
+	// Contact
+	ContactEmail			string 					`json:"contact_email" binding:"email"`
+	ContactTelephone		string 					`json:"contact_telephone"`
+	ContactAddress			string 					`json:"contact_address"`
+	// Social
+	SocialFacebook			string 					`json:"social_facebook" binding:"omitempty,url"`
+	SocialTwitter			string 					`json:"social_twitter" binding:"omitempty,url"`
+	SocialInstagram			string 					`json:"social_instagram" binding:"omitempty,url"`
+	SocialLinkedIn			string 					`json:"social_linkedin" binding:"omitempty,url"`
+	SocialYoutube			string 					`json:"social_youtube" binding:"omitempty,url"`
+	SocialPinterest			string 					`json:"social_pinterest" binding:"omitempty,url"`
 	// Cache
-	CacheGlobal bool `json:"cache_global"`
-	CacheLayout bool `json:"cache_layout"`
-	CacheFields bool `json:"cache_fields"`
-	CacheSite bool `json:"cache_site"`
-	CacheTemplates bool `json:"cache_templates"`
-	CacheResources bool `json:"cache_resources"`
+	CacheGlobal 			bool 					`json:"cache_global"`
+	CacheLayout 			bool 					`json:"cache_layout"`
+	CacheFields 			bool 					`json:"cache_fields"`
+	CacheSite 				bool 					`json:"cache_site"`
+	CacheTemplates 			bool 					`json:"cache_templates"`
+	CacheResources			bool 					`json:"cache_resources"`
 	// Gzip
-	GzipCompress bool `json:"gzip_compression"`
-	GzipFiles []string `json:"gzip_files"`
+	GzipCompress 			bool 					`json:"gzip_compression"`
+	GzipFiles 				[]string 				`json:"gzip_files"`
 }

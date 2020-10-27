@@ -44,10 +44,6 @@ func New() *Validation {
 		v.RegisterValidation("password", comparePassword)
 	}
 
-	if v, ok := binding.Validator.Engine().(*pkgValidate.Validate); ok {
-		v.RegisterValidation("required-on-post", validateOnPost)
-	}
-
 	return v
 }
 
@@ -140,7 +136,7 @@ func (v* Validation) message(kind string, field string, param string) string {
 		errorMsg = field + " must be valid IP address."
 		break
 	case "url":
-		errorMsg = field + " must be valid URL."
+		errorMsg = "Enter a valid url."
 		break
 	case "eqfield":
 		errorMsg = field + " must equal the " + param + "."
@@ -156,18 +152,6 @@ func (v* Validation) message(kind string, field string, param string) string {
 // comparePassword for the password field on the domain.UserPasswordReset
 // (custom validation)
 func comparePassword(fl pkgValidate.FieldLevel) bool {
-	curPass := fl.Field().String()
-	reset := fl.Parent().Interface().(*domain.UserPasswordReset)
-
-	err := bcrypt.CompareHashAndPassword([]byte(reset.DBPassword), []byte(curPass))
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
-func validateOnPost(fl pkgValidate.FieldLevel) bool {
 	curPass := fl.Field().String()
 	reset := fl.Parent().Interface().(*domain.UserPasswordReset)
 
