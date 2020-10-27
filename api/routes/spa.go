@@ -7,7 +7,7 @@ import (
 )
 
 // Vue (SPA) routes
-func spa(s *server.Server, c *controllers.Controller) {
+func spa(s *server.Server, c *controllers.Controller, config config.Configuration) {
 	spa := s.Group(config.Admin.Path)
 	{
 		spa.GET("/*any",  c.Spa.Serve)

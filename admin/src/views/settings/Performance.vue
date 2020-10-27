@@ -10,6 +10,8 @@
 						<div class="header-title">
 							<h1>Performance</h1>
 							<Breadcrumbs></Breadcrumbs>
+							<p>Caching</p>
+							<p>gzip compression</p>
 						</div>
 					</header>
 				</div><!-- /Col -->

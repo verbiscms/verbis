@@ -12,10 +12,11 @@ import (
 // VerifyEmail defines the event instance for verifying emails
 type VerifyEmail struct {
 	mailer *mail.Mailer
+	config config.Configuration
 }
 
 // NewVerifyEmail creates a new verify email event.
-func NewVerifyEmail() (*VerifyEmail, error) {
+func NewVerifyEmail(config config.Configuration) (*VerifyEmail, error) {
 	const op = "events.NewResetPassword"
 
 	m, err := mail.New()
@@ -25,6 +26,7 @@ func NewVerifyEmail() (*VerifyEmail, error) {
 
 	return &VerifyEmail{
 		mailer: m,
+		config: config,
 	}, nil
 }
 
@@ -37,7 +39,7 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 	data := mail.Data{
 		"AppUrl": environment.GetAppName(),
 		"AppTitle": title,
-		"AdminPath": config.Admin.Path,
+		"AdminPath": e.mailer.Config.Admin.Path,
 		"Token": md5String,
 		"UserName": u.FirstName,
 	}

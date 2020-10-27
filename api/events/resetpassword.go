@@ -2,7 +2,6 @@ package events
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/mail"
 )
@@ -35,7 +34,7 @@ func (e *ResetPassword) Send(u *domain.User, url string, token string, title str
 	data := mail.Data{
 		"AppUrl": url,
 		"AppTitle": title,
-		"AdminPath": config.Admin.Path,
+		"AdminPath": e.mailer.Config.Admin.Path,
 		"Token": token,
 		"UserName": u.FirstName,
 	}

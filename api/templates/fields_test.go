@@ -5,26 +5,21 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestGetField(t *testing.T) {
-	f := helper(`{"text": "content"}`)
+	f := newTestSuite(`{"text": "content"}`)
 
-	if got := f.getField("text"); got == "" {
-		assert.Equal(t, got, "content")
-	}
+	tpl := `{{ getField "text" }}`
+	runt(t, f, tpl, "content")
 
-	if got := f.getField("wrongval"); got != "" {
-		assert.Equal(t, got, "")
-	}
+	tpl2 := `{{ getField "wrongval" }}`
+	runt(t, f, tpl2, "")
 }
 
 func TestGetField_Post(t *testing.T) {
-	f := helper(`{"text": "content"}`)
+	f := newTestSuite(`{"text": "content"}`)
 
 	mockPosts := mocks.PostsRepository{}
 	data := []byte(`{"posttext": "postcontent"}`)
@@ -36,23 +31,24 @@ func TestGetField_Post(t *testing.T) {
 	mockPosts.On("GetById", 1).Return(mockPost, nil)
 	f.store.Posts = &mockPosts
 
-	got := f.getField("posttext", 1)
-	assert.Equal(t, got, "postcontent")
+	tpl := `{{ getField "text" 1 }}`
+	runt(t, f, tpl, "")
 }
 
 func TestGetField_No_Post(t *testing.T) {
-	f := helper(`{}`)
+	f := newTestSuite(`{}`)
 
 	mockPosts := mocks.PostsRepository{}
 	f.store.Posts = &mockPosts
 	mockPosts.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("No post"))
 
-	got := f.getField("posttext", 1)
-	assert.Equal(t, got, "")
+
+	tpl := `{{ getField "posttext" 1 }}`
+	runt(t, f, tpl, "")
 }
 
 func TestGetField_Invalid_Json(t *testing.T) {
-	f := helper("{}")
+	f := newTestSuite("{}")
 
 	mockPosts := mocks.PostsRepository{}
 	data := []byte(`"text "content"`)
@@ -64,8 +60,8 @@ func TestGetField_Invalid_Json(t *testing.T) {
 	mockPosts.On("GetById", 1).Return(mockPost, nil)
 	f.store.Posts = &mockPosts
 
-	got := f.getField("text", 1)
-	assert.Equal(t, got, "")
+	tpl := `{{ getField "text" 1 }}`
+	runt(t, f, tpl, "")
 }
 
 func TestCheckFieldType(t *testing.T) {
@@ -73,13 +69,13 @@ func TestCheckFieldType(t *testing.T) {
 }
 
 func TestHasField(t *testing.T) {
-	f := helper(`{"text": "content"}`)
+	f := newTestSuite(`{"text": "content"}`)
 
-	got := f.hasField("text")
-	assert.Equal(t, got, true)
+	tpl := `{{ hasField "text" }}`
+	runt(t, f, tpl, true)
 
-	got = f.hasField("wrongval")
-	assert.Equal(t, got, false)
+	tpl2 := `{{ hasField "wrongval" }}`
+	runt(t, f, tpl2, false)
 }
 
 func TestGetRepeater(t *testing.T) {
@@ -96,21 +92,14 @@ func TestGetRepeater(t *testing.T) {
 		]
 	}`
 
-	f := helper(str)
+	f := newTestSuite(str)
 
-	field := f.getRepeater("wrongval")
-	assert.Equal(t, len(field), 0)
+	tpl := `{{ getRepeater "wrongval" }}`
+	runt(t, f, tpl, "[]")
 
-	repeater := f.getRepeater("repeater")
 
-	assert.NotNil(t, repeater)
-	assert.Equal(t, len(repeater), 2)
-	assert.Equal(t, repeater[0]["text1"], "content")
-	assert.Equal(t, repeater[0]["text2"], "content")
-	assert.Equal(t, repeater[1]["text1"], "content")
-	assert.Equal(t, repeater[1]["text2"], "content")
-	assert.Nil(t, repeater[0]["wrongval"])
-	assert.Nil(t, repeater[1]["wrongval"])
+	tpl2 := `{{ getRepeater "repeater" }}`
+	runt(t, f, tpl2, "[map[text1:content text2:content] map[text1:content text2:content]]")
 }
 
 func TestGetFlexible(t *testing.T) {
@@ -141,27 +130,12 @@ func TestGetFlexible(t *testing.T) {
       	]
    	}`
 
-	f := helper(str)
+	f := newTestSuite(str)
 
-	if field := f.getRepeater("wrongval"); len(field) != 0 {
-		t.Error(test.Format(nil, field))
-	}
+	tpl := `{{ getFlexible "wrongval" }}`
+	runt(t, f, tpl, "[]")
 
-	flexible := f.getRepeater("flexible")
-	if flexible == nil {
-		t.Error(test.Format(str, nil))
-	}
 
-	if len(flexible) != 2 {
-		t.Error(test.Format("length of 2", len(flexible)))
-	}
-}
-
-func helper(str string) *TemplateFunctions {
-	data := []byte(str)
-	p := domain.Post{
-		Fields: (*json.RawMessage)(&data),
-	}
-
-	return NewFunctions(nil, &models.Store{}, &p)
+	tpl2 := `{{ getFlexible "flexible" }}`
+	runt(t, f, tpl2, "[map[fields:map[text:content text2:content] type:block1] map[fields:map[repeater:[map[text:content text2:content]] text:content text1:content text2:content] type:block2]]")
 }

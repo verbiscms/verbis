@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database/seeds"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/spf13/cobra"
 )
@@ -33,8 +35,14 @@ database.`,
 				printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", environment.GetDatabaseName()))
 			}
 
+			// Init Config
+			con, err := config.New()
+			if err != nil {
+				printError(errors.Message(err))
+			}
+
 			// Set up stores & pass the database.
-			store := models.New(db)
+			store := models.New(db, *con)
 			if err != nil {
 				printError(err.Error())
 			}

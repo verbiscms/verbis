@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
@@ -22,20 +23,22 @@ type Store struct {
 	Roles      		RoleRepository
 	Site      		SiteRepository
 	User       		UserRepository
+	Config 			config.Configuration
 }
 
 // Create a new database instance, connect to database.
-func New(db *database.MySql) *Store {
+func New(db *database.MySql, config config.Configuration) *Store {
 	return &Store{
 		Auth:       newAuth(db.Sqlx),
 		Categories: newCategories(db.Sqlx),
 		Fields:     newFields(db.Sqlx),
-		Media: 		newMedia(db.Sqlx),
+		Media: 		newMedia(db.Sqlx, config),
 		Options:    newOptions(db.Sqlx),
-		Posts:     	newPosts(db.Sqlx),
+		Posts:     	newPosts(db.Sqlx, config),
 		Roles:      newRoles(db.Sqlx),
-		Site:     	newSite(db.Sqlx),
-		User:       newUser(db.Sqlx),
+		Site:     	newSite(db.Sqlx, config),
+		User:       newUser(db.Sqlx, config),
+		Config: 	config,
 	}
 }
 

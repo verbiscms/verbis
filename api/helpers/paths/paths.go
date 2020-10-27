@@ -3,7 +3,6 @@ package paths
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"os"
@@ -84,9 +83,9 @@ func Uploads() string {
 }
 
 // PublicUploads Path
-func PublicUploads() string {
-	return config.Media.UploadPath
-}
+//func PublicUploads() string {
+//	return config.Media.UploadPath
+//}
 
 // Templates path
 func Templates() string {

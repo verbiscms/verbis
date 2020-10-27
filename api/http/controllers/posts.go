@@ -47,7 +47,9 @@ func (c *PostsController) Get(g *gin.Context) {
 	fmt.Printf("%+v\n", g.Request.Header.Get("origin"))
 	fmt.Println("------")
 
-	g.Header("twat", "hello")
+
+	g.Header("Cache-Control", "max-age=2000")
+	g.Header("Cache-Control", "public")
 
 	params := http.GetParams(g)
 	posts, total, err := c.postModel.Get(params, g.Param("resource"))
