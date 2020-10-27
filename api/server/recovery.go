@@ -32,6 +32,7 @@ type Recovery struct {
 	Language string
 	Stack []Stack
 	Highlight int
+	config config.Configuration
 }
 
 // TemplateStack defines the stack used for the error page
@@ -51,7 +52,14 @@ type FileLine struct {
 
 func Recover(g *gin.Context, err interface{}) {
 
-	rc := &Recovery{}
+	cfg, err := config.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	rc := &Recovery{
+		config: *cfg,
+	}
 
 	// Load up the Verbis error pages
 	gvRecovery := goview.New(goview.Config{
@@ -200,7 +208,7 @@ func (r *Recovery) handleTemplate(err error) error {
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert %s to int", line), Operation: op, Err: err}
 		}
 		line = l
-		file = paths.Theme() + "/" + tmpl + config.Template.FileExtension
+		file = paths.Theme() + "/" + tmpl + r.config.Template.FileExtension
 	}
 
 	r.Path = file

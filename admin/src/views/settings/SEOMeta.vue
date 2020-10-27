@@ -8,8 +8,12 @@
 				<div class="col-12">
 					<header class="header">
 						<div class="header-title">
-							<h1>Seo Meta</h1>
 							<Breadcrumbs></Breadcrumbs>
+							<h1>Seo Meta</h1>
+							<p>Meta data</p>
+							<p>Facebook card</p>
+							<p>Twitter card</p>
+							<p>Robots, make this site private?</p>
 						</div>
 					</header>
 				</div><!-- /Col -->

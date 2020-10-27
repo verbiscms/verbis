@@ -4,13 +4,12 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
 	"testing"
 )
 
 func TestGetPost(t *testing.T) {
 	mockPosts := mocks.PostsRepository{}
-	f := NewFunctions(nil, &models.Store{}, &domain.Post{})
+	f := newTestSuite()
 
 	mockPostItem := domain.Post{
 		Id:          1,
@@ -20,19 +19,17 @@ func TestGetPost(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("GetById", 1).Return(mockPostItem, nil)
 
-	_ = f.getPost(1)
-
-	mockPosts.AssertExpectations(t)
+	tpl := "{{ getPost 1 }}"
+	runt(t, f, tpl, mockPostItem)
 }
 
 func TestGetPost_NoItem(t *testing.T) {
 	mockPosts := mocks.PostsRepository{}
-	f := NewFunctions(nil, &models.Store{}, &domain.Post{})
+	f := newTestSuite()
 
 	f.store.Posts = &mockPosts
 	mockPosts.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("No post item"))
 
-	_ = f.getPost(1)
-
-	mockPosts.AssertExpectations(t)
+	tpl := "{{ getPost 1 }}"
+	runt(t, f, tpl, nil)
 }

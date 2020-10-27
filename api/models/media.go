@@ -49,6 +49,7 @@ type MediaRepository interface {
 // MediaStore defines the data layer for Media
 type MediaStore struct {
 	db          	*sqlx.DB
+	config 			config.Configuration
 	imageSizes 		domain.MediaSizes
 	convertWebP     bool
 	serveWebP     	bool
@@ -60,9 +61,10 @@ type MediaStore struct {
 }
 
 // newMedia - Construct
-func newMedia(db *sqlx.DB) *MediaStore {
+func newMedia(db *sqlx.DB, config config.Configuration) *MediaStore {
 	ms := &MediaStore{
 		db: db,
+		config: config,
 	}
 	ms.init()
 	return ms
@@ -264,7 +266,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 		return err
 	}
 
-	valid := mime.IsValidMime(config.Media.AllowedFileTypes, mimeType)
+	valid := mime.IsValidMime(s.config.Media.AllowedFileTypes, mimeType)
 	if !valid {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The %s, is not in the whitelist for uploading, please upload a correct file format", mimeType), Operation: op, Err: err}
 	}
@@ -509,10 +511,10 @@ func (s *MediaStore) createDirectory() string {
 // return the public uploads folder by default.
 func (s *MediaStore) getUrl() string {
 	if !s.organiseYear {
-		return paths.PublicUploads()
+		return s.config.Media.UploadPath
 	} else {
 		t := time.Now()
-		return paths.PublicUploads() + "/" + t.Format("2006") + "/" + t.Format("01")
+		return s.config.Media.UploadPath + "/" + t.Format("2006") + "/" + t.Format("01")
 	}
 }
 

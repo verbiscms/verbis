@@ -27,65 +27,64 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 	}
 
 	if t.post.SeoMeta.Meta != nil {
-
-		// Obtain Meta
-		var meta domain.PostMeta
-		err = json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		// Get site options
-		siteTitle, _ := t.store.Options.GetByName("site_title")
-
-		// Normal Meta
-		if meta.Title != "" {
-			//TODO: Ask Kirk!
-			//	b.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", meta.Description))
-		}
-		if meta.Description != "" {
-			b.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", meta.Description))
-		}
-
-		// Open Graph
-		if meta.Facebook.Title != "" || meta.Facebook.Description != "" || meta.Facebook.Image != "" {
-			b.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
-			b.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", siteTitle))
-		}
-		if meta.Facebook.Title != "" {
-			b.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\">", meta.Facebook.Title))
-		}
-		if meta.Facebook.Description != "" {
-			b.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", meta.Facebook.Description))
-		}
-
-		// Facebook
-		if meta.Facebook.Title != "" || meta.Facebook.Description != "" || meta.Facebook.Image != "" {
-			b.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
-			b.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", siteTitle))
-		}
-		if meta.Facebook.Title != "" {
-			b.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\">", meta.Facebook.Title))
-		}
-		if meta.Facebook.Description != "" {
-			b.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", meta.Facebook.Description))
-		}
-		// TODO: Add image
-
-		// Twitter
-		if meta.Twitter.Title != "" || meta.Twitter.Description != "" || meta.Twitter.Image != "" {
-			b.WriteString(fmt.Sprintf("<meta name=\"twitter:card\" content=\"summary\">"))
-		}
-		if meta.Twitter.Title != "" {
-			b.WriteString(fmt.Sprintf("<meta name=\"twitter:title\" content=\"%s\">", meta.Twitter.Title))
-		}
-		if meta.Twitter.Description != "" {
-			b.WriteString(fmt.Sprintf("<meta name=\"twitter:description\" content=\"%s\">", meta.Twitter.Title))
-		}
-		// TODO: Add image
-
 		return template.HTML(gohtml.Format(b.String()))
 	}
 
-	return ""
+	// Obtain Meta
+	var meta domain.PostMeta
+	err = json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// Get site options
+	siteTitle, _ := t.store.Options.GetByName("site_title")
+
+	// Normal Meta
+	if meta.Title != "" {
+		//TODO: Ask Kirk!
+		//	b.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", meta.Description))
+	}
+	if meta.Description != "" {
+		b.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", meta.Description))
+	}
+
+	// Open Graph
+	if meta.Facebook.Title != "" || meta.Facebook.Description != "" || meta.Facebook.Image != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
+		b.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", siteTitle))
+	}
+	if meta.Facebook.Title != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\">", meta.Facebook.Title))
+	}
+	if meta.Facebook.Description != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", meta.Facebook.Description))
+	}
+
+	// Facebook
+	if meta.Facebook.Title != "" || meta.Facebook.Description != "" || meta.Facebook.Image != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
+		b.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", siteTitle))
+	}
+	if meta.Facebook.Title != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\">", meta.Facebook.Title))
+	}
+	if meta.Facebook.Description != "" {
+		b.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", meta.Facebook.Description))
+	}
+	// TODO: Add image
+
+	// Twitter
+	if meta.Twitter.Title != "" || meta.Twitter.Description != "" || meta.Twitter.Image != "" {
+		b.WriteString(fmt.Sprintf("<meta name=\"twitter:card\" content=\"summary\">"))
+	}
+	if meta.Twitter.Title != "" {
+		b.WriteString(fmt.Sprintf("<meta name=\"twitter:title\" content=\"%s\">", meta.Twitter.Title))
+	}
+	if meta.Twitter.Description != "" {
+		b.WriteString(fmt.Sprintf("<meta name=\"twitter:description\" content=\"%s\">", meta.Twitter.Title))
+	}
+	// TODO: Add image
+
+	return template.HTML(gohtml.Format(b.String()))
 }

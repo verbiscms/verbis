@@ -1,0 +1,16 @@
+// -----------------------------------------------------------------------------
+// _code.scss
+// This file contains all styles related to the code component.
+// -----------------------------------------------------------------------------
+
+code {
+	border: 1px solid $grey-light;
+	vertical-align: middle;
+	padding: .2rem .3rem;
+	border-radius: 2px;
+	color: $green;
+	white-space: pre-wrap;
+	font-size: .8em;
+	line-height: 1em;
+	background: rgba($grey-light, 0.4);
+}

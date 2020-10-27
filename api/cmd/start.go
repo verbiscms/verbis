@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/cron"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/routes"
@@ -20,14 +22,21 @@ run Verbis doctor to see if the environment is configured correctly. It will the
 up the server on the port specified in the .env file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 
+
 			// Run doctor
 			db, err := doctor()
 			if err != nil {
 				printError(err.Error())
 			}
 
+			// Init Config
+			cfg, err := config.New()
+			if err != nil {
+				printError(errors.Message(err))
+			}
+
 			// Set up stores & pass the database.
-			store := models.New(db)
+			store := models.New(db, *cfg)
 			if err != nil {
 				printError(err.Error())
 			}
@@ -40,13 +49,27 @@ up the server on the port specified in the .env file.`,
 			serve := server.New()
 
 			// Pass the stores to the controllers
-			controllers, err := controllers.New(store)
+			controllers, err := controllers.New(store, *cfg)
 			if err != nil {
 				printError(err.Error())
 			}
 
+			//type App struct {
+			//	Store *models.Store
+			//	DB *database.MySql
+			//	Controller controllers.Controller
+			//	Config *config.Configuration
+			//}
+			//
+			//a := App{
+			//	Store:       store,
+			//	DB:          db,
+			//	Controllers: controllers,
+			//	Config:      cfg,
+			//}
+
 			// Load the routes
-			routes.Load(serve, controllers, store)
+			routes.Load(serve, controllers, store, *cfg)
 
 			// Print listening success
 			printSuccess(fmt.Sprintf("Verbis listening on port: %d", environment.GetPort()))

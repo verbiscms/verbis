@@ -21,7 +21,7 @@ type logFiles struct {
 
 // Init will determine if SuperAdmin and set logging levels
 // dependant on environment variables.
-func Init() error {
+func Init(config config.Configuration) error {
 
 	// Set log level depending on SuperAdmin var
 	if api.SuperAdmin {
@@ -38,7 +38,7 @@ func Init() error {
 			Colours: 		true,
 		})
 	} else {
-		logs, err := getLogFiles()
+		logs, err := getLogFiles(config)
 		if err != nil {
 			return err
 		}
@@ -57,7 +57,7 @@ func Init() error {
 // in the configuration is valid. If it is set to default (storage/logs)
 // and the file does not exist, it will create them. If set to a
 // custom path, will return an error if not found.
-func getLogFiles() (*logFiles, error) {
+func getLogFiles(config config.Configuration) (*logFiles, error) {
 
 	logFiles := logFiles{}
 

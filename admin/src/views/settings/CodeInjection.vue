@@ -28,14 +28,18 @@
 			</div><!-- /Row -->
 			<div class="row">
 				<div class="col-12">
+					<h6 class="margin">Header</h6>
 					<!-- =====================
 						Head
 						===================== -->
-					<div class="card card-small-box-shadow">
-						<collapse>
+					<div class="card card-small-box-shadow card-expand">
+						<Collapse :show="true" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['codeinjection_head']}">
 							<template v-slot:header>
 								<div class="card-header">
-									<h3 class="card-title">Header</h3>
+									<div>
+										<h4 class="card-title">Head</h4>
+										<p>Any code inputted here will be injected the <code v-html="'{{ verbisHead }}'"></code> of the site.</p>
+									</div>
 									<div class="card-controls">
 										<i class="feather feather-chevron-down"></i>
 									</div>
@@ -46,16 +50,20 @@
 									<prism-editor class="prism" v-model="data['codeinjection_head']" :highlight="highlighter" line-numbers></prism-editor>
 								</div><!-- /Card Body -->
 							</template>
-						</collapse>
+						</Collapse>
 					</div><!-- /Card -->
 					<!-- =====================
 						Footer
 						===================== -->
-					<div class="card card-small-box-shadow">
-						<collapse>
+					<h6 class="margin">Footer</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<Collapse :show="true" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['codeinjection_foot']}">
 							<template v-slot:header>
 								<div class="card-header">
-									<h3 class="card-title">Footer</h3>
+									<div>
+										<h4 class="card-title">Foot</h4>
+										<p>Any code inputted here will be injected to the <code v-html="'{{ verbisFooter }}'"></code> before the closing body tag.</p>
+									</div>
 									<div class="card-controls">
 										<i class="feather feather-chevron-down"></i>
 									</div>
@@ -66,7 +74,7 @@
 									<prism-editor class="prism" v-model="data['codeinjection_foot']" :highlight="highlighter" line-numbers></prism-editor>
 								</div><!-- /Card Body -->
 							</template>
-						</collapse>
+						</Collapse>
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
@@ -124,6 +132,11 @@ export default {
 
 	p {
 		font-size: 0.9rem;
+	}
+
+	.card-body {
+		width: 100%;
+		padding-left: 10px
 	}
 
 </style>
