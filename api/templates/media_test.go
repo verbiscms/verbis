@@ -1,10 +1,14 @@
 package templates
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"html"
+	"html/template"
+	"strings"
 	"testing"
 )
 
@@ -20,9 +24,12 @@ func TestGetMedia(t *testing.T) {
 	f.store.Media = &mockMedia
 	mockMedia.On("GetById", 1).Return(mockMediaItem, nil)
 
-	_ = f.getMedia(1)
+	tpl := "{{ getMedia 1 }}"
+	runt(f, tpl, mockMediaItem)
 
-	mockMedia.AssertExpectations(t)
+	//_ = f.getMedia(1)
+	//
+	//mockMedia.AssertExpectations(t)
 }
 
 func TestGetMedia_NoItem(t *testing.T) {
@@ -35,4 +42,18 @@ func TestGetMedia_NoItem(t *testing.T) {
 	_ = f.getMedia(1)
 
 	mockMedia.AssertExpectations(t)
+}
+
+func runt(tf *TemplateFunctions, tpl string, expect interface{}) error {
+	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
+	var b bytes.Buffer
+	err := tt.Execute(&b, map[string]string{})
+	if err != nil {
+		fmt.Println(err)
+	}
+	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
+	if got != b.String() {
+		fmt.Println("fail")
+	}
+	return nil
 }
