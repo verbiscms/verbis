@@ -11,7 +11,9 @@
 			<!-- Main Router View -->
 			<div class="router">
 				<span class="router-overlay" :class="{ 'router-overlay-active' : sidebarOpen }" @click="sidebarOpen = false"></span>
-				<router-view class="router" />
+				<TransitionPage>
+					<router-view class="router" />
+				</TransitionPage>
 			</div>
 		</main>
 	</div><!-- /App -->
@@ -24,12 +26,14 @@
 
 import Sidebar from '@/components/layout/Sidebar.vue'
 import MobileMenu from "@/components/layout/MobileMenu";
+import TransitionPage from "@/components/misc/TransitionPage";
 
 export default {
 	name: 'App',
 	components: {
 		MobileMenu,
 		Sidebar,
+		TransitionPage
 	},
 	metaInfo: {
 		meta: [
@@ -70,6 +74,8 @@ export default {
 		$self: &;
 
 		position: relative;
+		// Transition Page fix
+		height: auto !important;
 
 		&-overlay {
 			content: "";

@@ -6,95 +6,235 @@
 		<div class="auth-container" v-if="!doingAxios">
 			<div class="row">
 				<div class="col-12">
-					<header class="header header-with-actions">
+					<header class="header header-with-actions header-margin-large">
 						<div class="header-title">
 							<h1>Media Settings</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">
-								<i class="far fa-check"></i>
-								Update settings
-							</button>
+							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">Update settings</button>
 						</div>
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<!-- =====================
-				General
-				===================== -->
-			<div class="form-row-group">
-				<div class="row">
-					<div class="col-6">
-
-					</div>
-				</div>
-				<div class="row">
-					<div class="col-12">
-						<h2>General media settings:</h2>
-					</div><!-- /Col -->
-				</div><!-- /Row -->
-				<!-- First name -->
-				<div class="row form-row form-row-border form-row-border-top">
-					<div class="col-12 col-desk-6">
-						<h4>Upload maximum size</h4>
-						<div class="form-group">
-							<input class="form-input form-input-white" type="text">
-							<!-- Message -->
-							<transition name="trans-fade-height">
-<!--								<span class="field-message field-message-warning" v-if="errors['site_title']">{{ errors['site_title'] }}</span>-->
-							</transition><!-- /Message -->
-						</div>
-						<h4>Upload maximum width</h4>
-						<div class="form-group">
-							<input class="form-input form-input-white" type="text">
-							<!-- Message -->
-							<transition name="trans-fade-height">
-								<!--								<span class="field-message field-message-warning" v-if="errors['site_title']">{{ errors['site_title'] }}</span>-->
-							</transition><!-- /Message -->
-						</div>
-					</div><!-- /Col -->
-					<div class="col-12 col-desk-4">
-
-					</div><!-- /Col -->
-				</div><!-- /Row -->
-			</div>
-			<div class="row">
+			<div class="row" v-if="!doingAxios">
+				<!-- =====================
+					General
+					===================== -->
 				<div class="col-12">
-					<div class="text-cont">
-						<h2>Image sizes:</h2>
-					</div>
+					<h6 class="margin">General options</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<!-- Maximum size -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['media_upload_max_size']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Maximum size</h4>
+										<p>Set the maximum size (in bytes) of a media item allowed to be uploaded to the library.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Max Size -->
+									<FormGroup label="Maximum size*" :error="errors['media_upload_max_size']">
+										<input class="form-input form-input-white" type="number" v-model.number="maxSize">
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Maximum size -->
+						<!-- Maximum dimensions -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['media_upload_max_width'] || errors['media_upload_max_height'] }">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Maximum dimensions</h4>
+										<p>Set the maximum width & height (in pixels) of a media item allowed to be uploaded to the library.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Max Width -->
+									<FormGroup label="Maximum width*" :error="errors['media_upload_max_width']">
+										<input class="form-input form-input-white" type="number" v-model.number="maxWidth">
+									</FormGroup>
+									<!-- Max Height -->
+									<FormGroup label="Maximum height*" :error="errors['media_upload_max_height']">
+										<input class="form-input form-input-white" type="number" v-model.number="maxHeight">
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Maximum dimensions -->
+						<!-- Compression -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['media_compression']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Compression</h4>
+										<p>Set the image compression from 0 to 100.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Compression -->
+									<FormGroup label="Media compression*" :error="errors['media_compression']">
+										<input class="form-input form-input-white" type="text" v-model.number="compression">
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Compression -->
+						<!-- Organise by date -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['media_organise_year_month']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Organise by date</h4>
+										<p>By ticking the box, the Verbis server will organise media items by year & month, e.g. /uploads/2020/01</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Organise Month Year -->
+									<FormGroup :error="errors['media_organise_year_month']">
+										<div class="form-checkbox">
+											<input type="checkbox" id="media-size-year" v-model="data['media_organise_year_month']" :true-value="true" :false-value="false" />
+											<label for="media-size-year">
+												<i class="fal fa-check"></i>
+											</label>
+											<div class="form-checkbox-text">Organise into year month?</div>
+										</div>
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Organise by date -->
+					</div><!-- /Card -->
 				</div><!-- /Col -->
-				<!-- Thumbnail -->
-				<div class="col-12 col-tab-6 col-desk-3" v-for="(size, sizeKey) in data['media_images_sizes']" :key="size.name">
-					<div class="card card-small-box-shadow">
-						<div class="card-header card-header-icon card-header-naked">
-							<h3>{{ size.name}}</h3>
-							<div class="badge">{{ helpers.capitalize(sizeKey) }}</div>
-						</div>
-						<div class="card-body">
-							<div class="form-group">
-								<label class="form-label" for="media-size-small-width">Width</label>
-								<input class="form-input" id="media-size-small-width" type="number" placeholder="Enter a width" v-model="data['media_images_sizes'][sizeKey]['width']">
-							</div>
-							<div class="form-group">
-								<label class="form-label" for="media-size-small-height">Height</label>
-								<input class="form-input" id="media-size-small-height" type="number" placeholder="Enter a height" v-model="data['media_images_sizes'][sizeKey]['height']">
-							</div>
-							{{ sizeKey }}
-							{{ data['media_images_sizes'][sizeKey]['crop'] }}
-							<div class="form-checkbox">
-								<input type="checkbox" id="media-size-small-crop" v-model="data['media_images_sizes'][sizeKey].crop" :true-value="true" :false-value="false" />
-								<label for="media-size-small-crop">
-									<i class="fal fa-check"></i>
-								</label>
-								<div class="form-checkbox-text">Crop image?</div>
-							</div>
-						</div><!-- /Card Body -->
-					</div><!-- /Card  -->
+				<!-- =====================
+					WebP
+					===================== -->
+				<div class="col-12">
+					<h6 class="margin">WebP Options</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<!-- Convert Webp -->
+						<Collapse :show="false" class="collapse-border-bottom"  :class="{ 'card-expand-error' : errors['media_convert_webp']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Convert to Webp's</h4>
+										<p>By ticking the box, the Verbis media library will automatically convert Jpg's & Png's to Webp's on upload.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Organise Month Year -->
+									<FormGroup :error="errors['media_organise_year_month']">
+										<div class="form-checkbox">
+											<input type="checkbox" id="media-convert-webp" v-model="data['media_convert_webp']" :true-value="true" :false-value="false" />
+											<label for="media-convert-webp">
+												<i class="fal fa-check"></i>
+											</label>
+											<div class="form-checkbox-text">Convert images to Webp format?</div>
+										</div>
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Convert Webp -->
+						<!-- Serve Webp -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['media_serve_webp']}">
+							<template v-slot:header>
+								<div class="card-header card-header-block">
+									<div>
+										<h4 class="card-title">Serve Webp images</h4>
+										<p>By ticking the box, the Verbis server will automagically serve Webp images if the browser supports it.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Organise Month Year -->
+									<FormGroup :error="errors['media_serve_webp']">
+										<div class="form-checkbox">
+											<input type="checkbox" id="media-serve-webp" v-model="data['media_serve_webp']" :true-value="true" :false-value="false" />
+											<label for="media-serve-webp">
+												<i class="fal fa-check"></i>
+											</label>
+											<div class="form-checkbox-text">Serve images in Webp format?</div>
+										</div>
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Serve Webp -->
+					</div><!-- /Card -->
+				</div><!-- /Col -->
+				<!-- =====================
+					Sizes
+					===================== -->
+				<div class="col-12">
+					<h6>Image Sizes</h6>
+					<p>The image sizes determines the maximum dimensions in pixels when an image is uploaded to the media library.</p>
+					<pre>{{ sizes }}</pre>
+					<div class="card card-small-box-shadow card-expand card-margin-none">
+						<!-- Sizes -->
+						<Collapse v-for="(size, sizeKey) in data['media_images_sizes']" :key="size.name" :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header">
+									<h4 class="card-title">{{ size.name }}</h4>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<FormGroup label="Key*">
+										<input class="form-input" :id="'media-size-key-' + sizeKey" type="text" placeholder="Enter a key" :value="sizeKey" @keyup="changeSizeKey($event, sizeKey)">
+									</FormGroup>
+									<FormGroup label="Width*">
+										<input class="form-input" :id="'media-size-width-' + sizeKey" type="number" placeholder="Enter a width" v-model.number="data['media_images_sizes'][sizeKey]['width']">
+									</FormGroup>
+									<FormGroup label="Height*">
+										<input class="form-input" :id="'media-size-height-' + sizeKey" type="number" placeholder="Enter a height" v-model.number="data['media_images_sizes'][sizeKey]['height']">
+									</FormGroup>
+									<FormGroup>
+										<div class="form-checkbox">
+											<input type="checkbox" :id="'media-size-crop-' + sizeKey" v-model="data['media_images_sizes'][sizeKey]['crop']" :true-value="true" :false-value="false" />
+											<label :for="'media-size-crop-' + sizeKey">
+												<i class="fal fa-check"></i>
+											</label>
+											<div class="form-checkbox-text">Crop image?</div>
+										</div>
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Sizes -->
+					</div><!-- /Card -->
+					<div class="media-btn-cont">
+						<button class="btn" @click="addImageSize">Add image size</button>
+					</div>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-
 		</div><!-- /Container -->
 	</section>
 </template>
@@ -106,16 +246,22 @@
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import {optionsMixin} from "@/util/options";
+import Collapse from "@/components/misc/Collapse";
+import FormGroup from "@/components/forms/FormGroup";
 
 export default {
 	name: "Media",
 	title: 'Media Settings',
 	mixins: [optionsMixin],
 	components: {
-		Breadcrumbs
+		FormGroup,
+		Breadcrumbs,
+		Collapse
 	},
 	data: () => ({
 		sizes: [],
+		errorMsg: "Fix the errors before saving media settings.",
+		successMsg: "Media options updated successfully.",
 	}),
 	mounted() {
 
@@ -126,21 +272,107 @@ export default {
 		 * The options hae
 		 */
 		runAfter() {
-			this.sortImageSizes()
+			//this.sortImageSizes();
 		},
 		/*
 		 * sortSizes()
 		 * Sort sizes by width for the size cards.
 		 */
 		sortImageSizes() {
-			this.data['media_images_sizes'] = Object.fromEntries(
+			this.sizes = Object.fromEntries(
 				Object.entries(this.data['media_images_sizes']).sort(([,a],[,b]) => {
 					return parseFloat(a.width) - parseFloat(b.width)
 				})
 			);
-		}
+		},
+		/*
+		 * addImageSize()
+		 *
+		 */
+		addImageSize() {
+			this.$set(this.data['media_images_sizes'], "Enter size", {
+				crop: false,
+				width: 0,
+				height: 0,
+				name: "Enter size",
+			});
+		},
+		/*
+		 * addImageSize()
+		 *
+		 */
+		changeSizeKey(e, key) {
+			console.log(key);
+		},
+
 	},
 	computed: {
+		/*
+		 * maxSize()
+		 * Change the value from an empty string to null if not set.
+		 */
+		maxSize: {
+			get() {
+				return this.data['media_upload_max_size'];
+			},
+			set(value) {
+				console.log(value);
+				if (value === "") {
+					this.$set(this.data, 'media_upload_max_size', null);
+					return
+				}
+				this.$set(this.data, 'media_upload_max_size', value);
+			}
+		},
+		/*
+		 * maxWidth()
+		 * Change the value from an empty string to null if not set.
+		 */
+		maxWidth: {
+			get() {
+				return this.data['media_upload_max_width'];
+			},
+			set(value) {
+				if (value === "") {
+					this.$set(this.data, 'media_upload_max_width', null);
+				} else {
+					this.$set(this.data, 'media_upload_max_width', value);
+				}
+			}
+		},
+		/*
+	 	 * maxHeight()
+		 * Change the value from an empty string to null if not set.
+		 */
+		maxHeight: {
+			get() {
+				return this.data['media_upload_max_height'];
+			},
+			set(value) {
+				if (value === "") {
+					this.$set(this.data, 'media_upload_max_height', null);
+					return;
+				}
+				this.$set(this.data, 'media_upload_max_height', value);
+			}
+		},
+		/*
+		 * compression()
+		 * Change the value from an empty string to null if not set.
+		 */
+		compression: {
+			get() {
+				return this.data['media_compression'];
+			},
+			set(value) {
+				console.log(value);
+				if (value === "") {
+					this.$set(this.data, 'media_compression', null);
+					return
+				}
+				this.$set(this.data, 'media_compression', value);
+			}
+		},
 	}
 }
 
@@ -151,12 +383,19 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-	// Dummy
+.media {
+
+	$self: &;
+
+	// Button Container
 	// =========================================================================
 
-	h3 {
-		//color: $green;
-		//color: $green;
+	&-btn-cont {
+		margin-top: 2rem;
+		display: flex;
+		justify-content: flex-end;
 	}
+
+}
 
 </style>
