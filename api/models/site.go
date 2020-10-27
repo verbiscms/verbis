@@ -77,7 +77,7 @@ type SiteRepository interface {
 // SiteStore defines the data layer for Posts
 type SiteStore struct {
 	db *sqlx.DB
-	optionsRepo domain.Options
+	optionsModel OptionsRepository
 	cache siteCache
 }
 
@@ -96,26 +96,28 @@ func newSite(db *sqlx.DB) *SiteStore {
 	}
 
 	om := newOptions(db)
-	opts, err := om.GetStruct()
+	s.optionsModel = om
+
+	opts, err := s.optionsModel.GetStruct()
 	if err != nil {
 		log.Fatal(err)
 	}
-	s.optionsRepo = opts
+
 
 	// Cache the site config JSON file
-	s.cache.Site = s.optionsRepo.CacheSite
+	s.cache.Site = opts.CacheSite
 
 	// Cache the templates, preventing reading from the
 	// templates path when endpoint is hit.
-	s.cache.Templates = s.optionsRepo.CacheTemplates
+	s.cache.Templates = opts.CacheTemplates
 
 	// Cache the layouts, preventing reading from the
 	// layouts path when endpoint is hit.
-	s.cache.Layout = s.optionsRepo.CacheLayout
+	s.cache.Layout = opts.CacheLayout
 
 	// Cache the resources, preventing reading from the
 	// config json file in the theme directory.
-	s.cache.Resources = s.optionsRepo.CacheResources
+	s.cache.Resources = opts.CacheResources
 
 	return s
 }
@@ -133,11 +135,16 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 		}
 	}
 
+	opts, err := s.optionsModel.GetStruct()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	ds := domain.Site{
-		Title:       s.optionsRepo.SiteTitle,
-		Description: s.optionsRepo.SiteDescription,
-		Logo:        s.optionsRepo.SiteLogo,
-		Url:         s.optionsRepo.SiteUrl,
+		Title:       opts.SiteTitle,
+		Description: opts.SiteDescription,
+		Logo:        opts.SiteLogo,
+		Url:         opts.SiteUrl,
 		Version:     api.App.Version,
 	}
 
@@ -175,7 +182,7 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 	// If the cache allows for caching of the site templates &
 	// if the config has already been cached, return.
 	var found bool
-	if s.cache.Templates && environment.IsProduction() {
+	if s.cache.Templates {
 		cached, found := cache.Store.Get("site_templates")
 		if found {
 			return cached.(*domain.Templates), nil

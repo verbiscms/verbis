@@ -526,6 +526,7 @@ $aside-padding-desk: 26px;
 		transform: none;
 		transition: none;
 		z-index: 8;
+		box-shadow: none;
 
 		&-logo,
 		&-block,
@@ -535,6 +536,17 @@ $aside-padding-desk: 26px;
 
 		&-block-account {
 			border-top: 1px solid $grey-light;
+		}
+
+		&:after {
+			content: "";
+			position: absolute;
+			right: -1px;
+			top: 0;
+			height: 100%;
+			width: 2px;
+			background-color: $grey-light;
+			box-shadow: 0 0 50px 10px rgba($black, 0.11) !important;
 		}
 	}
 

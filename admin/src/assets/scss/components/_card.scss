@@ -52,7 +52,6 @@ $card-padding-x-desk: 24px;
 			justify-content: flex-end;
 			max-height: 60px;
 		}
-
 	}
 
 	// Body
@@ -118,6 +117,56 @@ $card-padding-x-desk: 24px;
 		}
 	}
 
+	// Expand (Settings)
+	// =========================================================================
+
+	&-expand {
+		margin-bottom: 3rem;
+
+		#{$self}-header {
+			max-height: none;
+			border-bottom: 0;
+			padding: 1.1rem 1.2rem;
+
+			h4 {
+				transition: color 300ms ease;
+			}
+
+			p {
+				margin-bottom: 0;
+			}
+		}
+
+		.form-group {
+			margin-bottom: 1rem;
+
+			&:last-of-type {
+				margin-bottom: 0;
+			}
+		}
+
+		&-error {
+
+			h4 {
+				color: $orange;
+			}
+		}
+
+		#{$self}-body {
+			padding: 0 1.4rem 1.4rem;
+		}
+
+		@include media-desk {
+			margin-bottom: 4rem;
+
+
+			#{$self}-body {
+				width: 50%;
+			}
+		}
+	}
+
+
 	// Padding
 	// =========================================================================
 
@@ -129,13 +178,17 @@ $card-padding-x-desk: 24px;
 	// =========================================================================
 
 	&-small-box-shadow {
-		box-shadow: 0 3px 6px 1px rgba($black, 0.04);
+		box-shadow: 0 0 1px rgba(0,0,0,.12), 0 1px 6px rgba(0,0,0,.03), 0 6px 10px -8px rgba(0,0,0,.1);
 	}
 
 	// Margin
 	// =========================================================================
 
 	&-margin {
+
+		&-none {
+			margin-bottom: 0;
+		}
 
 		&-small {
 			margin-bottom: 1rem;
@@ -150,6 +203,7 @@ $card-padding-x-desk: 24px;
 		align-items: center;
 		border: 1px solid $grey-light;
 		border-radius: 4px;
+		margin-left: 10px;
 		padding: 0;
 
 		&-chevron {

@@ -68,21 +68,6 @@ func newMedia(db *sqlx.DB) *MediaStore {
 	return ms
 }
 
-// processImageSizes Processes image sizes from options
-func (s *MediaStore) processImageSizes(sizes map[string]interface{}) domain.MediaSizes {
-	sizesArr := make(domain.MediaSizes)
-	for name, mediaSize := range sizes {
-		size := mediaSize.(map[string]interface{})
-		sizesArr[name] = domain.MediaSize{
-			Name:   size["name"].(string),
-			Width:  int(size["width"].(float64)),
-			Height: int(size["height"].(float64)),
-			Crop:   size["crop"].(bool),
-		}
-	}
-	return sizesArr
-}
-
 // init the model with options
 func (s *MediaStore) init() {
 	om := newOptions(s.db)
@@ -92,7 +77,7 @@ func (s *MediaStore) init() {
 		log.Fatal(err)
 	}
 
-	s.imageSizes = s.processImageSizes(opts.MediaSizes)
+	s.imageSizes = opts.MediaSizes
 	s.convertWebP = opts.MediaConvertWebP
 	s.serveWebP = opts.MediaServeWebP
 	s.compression = opts.MediaCompression

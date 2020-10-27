@@ -7,6 +7,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 // OptionsHandler defines methods for Options to interact with the server
@@ -72,8 +73,14 @@ func (c *OptionsController) GetByName(g *gin.Context) {
 func (c *OptionsController) UpdateCreate(g *gin.Context) {
 	const op = "OptionsHandler.UpdateCreate"
 
+	var vOptions domain.Options
+	if err := g.ShouldBindBodyWith(&vOptions, binding.JSON); err != nil {
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
+	}
+
 	var options domain.OptionsDB
-	if err := g.ShouldBindJSON(&options); err != nil {
+	if err := g.ShouldBindBodyWith(&options, binding.JSON); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

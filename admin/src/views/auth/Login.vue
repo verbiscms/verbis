@@ -25,7 +25,7 @@
 								<FormGroup :error="errors['password']">
 									<input type="password" autocomplete="password" placeholder="Password" class="form-input" v-model="authInfo.password">
 								</FormGroup>
-								<router-link :to="{ name: 'password-reset' }" class="login-password">Forgot your password?</router-link>
+								<router-link :to="{ name: 'send-password-reset' }" class="login-password">Forgot your password?</router-link>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
 									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doLogin" :class="{ 'btn-loading' : doingAxios }">Login</button>

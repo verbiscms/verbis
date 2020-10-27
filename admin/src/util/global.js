@@ -11,7 +11,23 @@ export const globalMixin = {
 		timeoutDelay: 150,
 	}),
 	methods: {
-
+		/*
+		 * setAllHeight()
+		 * Set all height of collapse content.
+		 */
+		setAllHeight() {
+			this.$nextTick(() => {
+				document.querySelectorAll(".auth-container .collapse-content").forEach(el => {
+					if (el.style.maxHeight !== "0px") {
+						const messages = el.querySelectorAll(".field-message-warning");
+						if (messages.length) {
+							const heightToAdd = messages.length * 26 + (messages.length + 7);
+							el.style.maxHeight = (heightToAdd + parseInt(el.style.maxHeight.replace("px", ""))) + "px";
+						}
+					}
+				});
+			});
+		}
 	},
 	computed: {
 		/*
