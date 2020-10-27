@@ -35,13 +35,15 @@ type UserRepository interface {
 // UserStore defines the data layer for Users
 type UserStore struct {
 	db *sqlx.DB
+	config config.Configuration
 	optionsRepo domain.Options
 }
 
 // newUser - Construct
-func newUser(db *sqlx.DB) *UserStore {
+func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
 	s := &UserStore{
 		db: db,
+		config: config,
 	}
 
 	om := newOptions(db)
@@ -281,7 +283,7 @@ func (s *UserStore) CheckSession(token string) error {
 		// Destroy the token and create a new one if session expired.
 		inactiveFor := time.Now().Sub(*u.TokenLastUsed).Minutes()
 
-		if int(inactiveFor) > config.Admin.InactiveSessionTime {
+		if int(inactiveFor) > s.config.Admin.InactiveSessionTime {
 			newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
 			_, err := s.db.Exec("UPDATE users SET token = ?, updated_at = NOW() WHERE token = token", newToken)

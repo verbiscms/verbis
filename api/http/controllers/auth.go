@@ -10,6 +10,7 @@ import (
 type AuthController struct {
 	authModel models.AuthRepository
 	userModel models.UserRepository
+	config 	  config.Configuration
 }
 
 type AuthHandler interface {
@@ -22,10 +23,11 @@ type AuthHandler interface {
 }
 
 // Construct
-func newAuth(m models.AuthRepository, u models.UserRepository) *AuthController {
+func newAuth(m models.AuthRepository, u models.UserRepository, config config.Configuration) *AuthController {
 	return &AuthController{
 		authModel: m,
 		userModel: u,
+		config:    config,
 	}
 }
 
@@ -98,7 +100,7 @@ func (c *AuthController) VerifyEmail(g *gin.Context) {
 		return
 	}
 
-	g.Redirect(301, config.Admin.Path)
+	g.Redirect(301, c.config.Admin.Path)
 }
 
 // Reset password

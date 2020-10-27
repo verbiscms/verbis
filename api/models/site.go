@@ -77,6 +77,7 @@ type SiteRepository interface {
 // SiteStore defines the data layer for Posts
 type SiteStore struct {
 	db *sqlx.DB
+	config config.Configuration
 	optionsModel OptionsRepository
 	cache siteCache
 }
@@ -90,9 +91,10 @@ type siteCache struct {
 }
 
 // newSite - Construct
-func newSite(db *sqlx.DB) *SiteStore {
+func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
 	s := &SiteStore{
 		db: db,
+		config: config,
 	}
 
 	om := newOptions(db)
@@ -102,7 +104,6 @@ func newSite(db *sqlx.DB) *SiteStore {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 
 	// Cache the site config JSON file
 	s.cache.Site = opts.CacheSite
@@ -189,9 +190,9 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 		}
 	}
 
-	files, err := s.walkMatch(paths.Templates(), "*" + config.Template.FileExtension)
+	files, err := s.walkMatch(paths.Templates(), "*" + s.config.Template.FileExtension)
 	if err != nil {
-		return &domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & file extension: %s, %s", paths.Templates(), "*" + config.Template.FileExtension), Operation: op}
+		return &domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & file extension: %s, %s", paths.Templates(), "*" + s.config.Template.FileExtension), Operation: op}
 	}
 
 	var templates []map[string]interface{}
@@ -246,9 +247,9 @@ func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 		}
 	}
 
-	files, err := s.walkMatch(paths.Layouts(), "*" + config.Template.FileExtension)
+	files, err := s.walkMatch(paths.Layouts(), "*" + s.config.Template.FileExtension)
 	if err != nil {
-		return &domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get layouts from the path & file extension: %s, %s", paths.Templates(), "*" + config.Template.FileExtension), Operation: op}
+		return &domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get layouts from the path & file extension: %s, %s", paths.Templates(), "*" + s.config.Template.FileExtension), Operation: op}
 	}
 
 	var layouts []map[string]interface{}
@@ -302,9 +303,9 @@ func (s *SiteStore) walkMatch(root, pattern string) ([]string, error) {
 		if matched, err := filepath.Match(pattern, filepath.Base(path)); err != nil {
 			return err
 		} else if matched {
-			s := strings.Split(path, "/")
-			template := s[len(s)-1]
-			template = strings.Replace(template, config.Template.FileExtension, "", -1)
+			str := strings.Split(path, "/")
+			template := str[len(str)-1]
+			template = strings.Replace(template, s.config.Template.FileExtension, "", -1)
 			matches = append(matches, template)
 		}
 		return nil

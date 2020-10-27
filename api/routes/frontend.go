@@ -1,6 +1,7 @@
 package routes
 
-import (
+import  (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
@@ -8,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/server"
 )
 
-func frontend(s *server.Server, c *controllers.Controller) {
+func frontend(s *server.Server, c *controllers.Controller, config config.Configuration) {
 
 	s.Use(middleware.Recovery(server.Recover))
 

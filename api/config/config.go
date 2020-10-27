@@ -11,27 +11,15 @@ import (
 	"runtime"
 )
 
+
 // Global Configuration, sets defaults to ensure that there are no
 // empty values within the configuration to prevent any errors.
-var (
-	Admin = admin{
-		Path:                "admin",
-		InactiveSessionTime: 60,
-	}
-	Media = media{
-		UploadPath:       "",
-		AllowedFileTypes: nil,
-	}
-	Template = template{
-		FileExtension: ".cms",
-		TemplateDir:   "templates",
-		LayoutDir:     "layouts",
-	}
-	Logs = logs{
-		AccessLog: "default",
-		ErrorLog:  "default",
-	}
-)
+type Configuration struct {
+	Admin admin
+	Media media
+	Template template
+	Logs logs
+}
 
 // Admin
 type admin struct {
@@ -52,58 +40,99 @@ type template struct {
 	LayoutDir string `yaml:"layout_dir"`
 }
 
-// Theme
-type theme struct {
-	AssetsPath string `yaml:"assets_path"`
-	ErrorPageNotFound string `yaml:"404_page"`
-}
-
-// Logs 
+// Logs
 type logs struct {
 	AccessLog string `yaml:"access_log"`
 	ErrorLog string `yaml:"error_log"`
 }
+//
+//var (
+//	Admin = admin{
+//		Path:                "admin",
+//		InactiveSessionTime: 60,
+//	}
+//	Media = media{
+//		UploadPath:       "",
+//		AllowedFileTypes: nil,
+//	}
+//	Template = template{
+//		FileExtension: ".cms",
+//		TemplateDir:   "templates",
+//		LayoutDir:     "layouts",
+//	}
+//	Logs = logs{
+//		AccessLog: "default",
+//		ErrorLog:  "default",
+//	}
+//)
 
+func New() (*Configuration, error) {
+	c := &Configuration{
+		Admin:    admin{
+			Path:                "admin",
+			InactiveSessionTime: 60,
+		},
+		Media:    media{
+			UploadPath:       "",
+			AllowedFileTypes: nil,
+		},
+		Template: template{
+			FileExtension: ".cms",
+			TemplateDir:   "templates",
+			LayoutDir:     "layouts",
+		},
+		Logs:     logs{
+			AccessLog: "default",
+			ErrorLog:  "default",
+		},
+	}
+
+	if err := c.Init(); err != nil {
+		return nil, err
+	}
+
+	return c, nil
+}
 
 // Init the configuration, obtain all of the yaml files
 // within the config directory and set variables.
 // Returns errors.INTERNAL if the unmarshal was unsuccessful.
-func Init() error {
+func (c *Configuration) Init() error {
 	const op = "config.Init"
 
 	// Admin
-	a, err := files.LoadFile(getConfigPath() + "/admin.yml")
+	a, err := files.LoadFile(c.getConfigPath() + "/admin.yml")
 	if err != nil {
 		return err
 	}
-	if err := yaml.Unmarshal(a, &Admin); err != nil {
+	if err := yaml.Unmarshal(a, &c.Admin); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the admin.yml file", Operation: op, Err: err}
 	}
 
 	// Media
-	m, err := files.LoadFile(getConfigPath() + "/media.yml")
+	m, err := files.LoadFile(c.getConfigPath() + "/media.yml")
 	if err != nil {
 		return err
 	}
-	if err := yaml.Unmarshal(m, &Media); err != nil {
+	if err := yaml.Unmarshal(m, &c.Media); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the media.yml file", Operation: op, Err: err}
 	}
 
 	// Resources
-	t, err := files.LoadFile(getConfigPath() + "/template.yml")
+	t, err := files.LoadFile(c.getConfigPath() + "/template.yml")
 	if err != nil {
 		return err
 	}
-	if err := yaml.Unmarshal(t, &Template); err != nil {
+	if err := yaml.Unmarshal(t, &c.Template); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the template.yml file", Operation: op, Err: err}
 	}
 
 	// Logs
-	l, err := files.LoadFile(getConfigPath() + "/logs.yml")
+	l, err := files.LoadFile(c.getConfigPath() + "/logs.yml")
 	if err != nil {
 		return err
 	}
-	if err := yaml.Unmarshal(l, &Logs); err != nil {
+	if err := yaml.Unmarshal(l, &c.Logs); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the logs.yml file", Operation: op, Err: err}
 	}
 
@@ -111,21 +140,21 @@ func Init() error {
 }
 
 // Cache the configuration
-func Cache() {
-	cache.Store.Set("config_admin", Admin, cache.RememberForever)
-	cache.Store.Set("config_media", Media, cache.RememberForever)
-	cache.Store.Set("config_template", Template, cache.RememberForever)
+func (c *Configuration) Cache() {
+	cache.Store.Set("config_admin", c.Admin, cache.RememberForever)
+	cache.Store.Set("config_media", c.Media, cache.RememberForever)
+	cache.Store.Set("config_template", c.Template, cache.RememberForever)
 }
 
-// Clear the configuration
-func CacheClear() {
+// CacheClear - Clear the configuration
+func (c *Configuration) CacheClear() {
 	cache.Store.Delete("config_admin")
 	cache.Store.Delete("config_media")
 	cache.Store.Delete("config_template")
 }
 
 // getConfigPath obtains the configuration path of the yaml files
-func getConfigPath() string {
+func (c *Configuration) getConfigPath() string {
 	const op = "config.getConfigPath"
 	path := ""
 	if environment.IsProduction() {

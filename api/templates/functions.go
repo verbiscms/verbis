@@ -8,8 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"html/template"
-	"net/http"
-	"net/http/httptest"
 )
 
 type TemplateFunctions struct {
@@ -49,8 +47,8 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"isProduction": t.isProduction,
 		"isDebug": t.isDebug,
 		// Header & Footer
-		"verbis_head": t.getHeader,
-		"verbis_foot": t.getFooter,
+		"verbisHead": t.getHeader,
+		"verbisFoot": t.getFooter,
 		// Posts
 		"getResource": t.getResource,
 		// Fields
@@ -61,8 +59,8 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"getFlexible": t.getFlexible,
 		"getSubField": t.getSubField,
 		// Auth
-		"auth": t.isAuth,
-		"admin": t.isAdmin,
+		"isAuth": t.isAuth,
+		"isAdmin": t.isAdmin,
 		// Posts
 		"getPost": t.getPost,
 		// Media
@@ -83,7 +81,6 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 }
 
 
-
 // Get the app env
 func (t *TemplateFunctions) appEnv() string {
 	return environment.GetAppEnv()
@@ -99,9 +96,3 @@ func (t *TemplateFunctions) isDebug() bool {
 	return environment.IsDebug()
 }
 
-func newTestSuite() *TemplateFunctions {
-	g, _ := gin.CreateTestContext(httptest.NewRecorder())
-	g.Request, _ = http.NewRequest("GET", "/get", nil)
-
-	return NewFunctions(g, &models.Store{}, &domain.Post{})
-}

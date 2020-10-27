@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"reflect"
@@ -24,7 +24,6 @@ type Controller struct {
 	Spa 		SpaHandler
 	Site 		SiteHandler
 	User 		UserHandler
-	server 		*server.Server
 }
 
 type RespondJson struct {
@@ -47,13 +46,13 @@ type ValidationErrJson struct {
 }
 
 // Construct
-func New(m *models.Store) (*Controller, error) {
+func New(m *models.Store, config config.Configuration) (*Controller, error) {
 
 	c := Controller{
-		Auth: newAuth(m.Auth, m.User),
+		Auth: newAuth(m.Auth, m.User, config),
 		Categories: newCategories(m.Categories),
 		Fields: newFields(m.Fields, m.User, m.Categories),
-		Frontend: newFrontend(m),
+		Frontend: newFrontend(m, config),
 		Media: newMedia(m.Media, m.User),
 		Options: newOptions(m.Options),
 		Posts: newPosts(m.Posts, m.Fields, m.User, m.Categories),

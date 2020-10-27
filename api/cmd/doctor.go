@@ -80,18 +80,17 @@ func doctor() (*database.MySql, error) {
 	cache.Init()
 
 	// Init Config
-	if err := config.Init(); err != nil {
+	con, err := config.New()
+	if err != nil {
 		printError(errors.Message(err))
 	}
 
 	// Init logging
-	if err := logger.Init(); err != nil {
+	if err := logger.Init(*con); err != nil {
 		printError(err.Error())
 	}
 
 	printSuccess("All checks passed.")
-
-
 
 	return db, nil
 }

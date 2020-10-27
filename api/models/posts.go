@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -31,11 +32,11 @@ type PostStore struct {
 }
 
 // newPosts - Construct
-func newPosts(db *sqlx.DB) *PostStore {
+func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 	return &PostStore{
 		db: db,
 		seoMetaModel: newSeoMeta(db),
-		userModel: newUser(db),
+		userModel: newUser(db, config),
 		categoriesModel: newCategories(db),
 	}
 }

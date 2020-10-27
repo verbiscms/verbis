@@ -24,12 +24,14 @@ type FrontendHandler interface {
 type FrontendController struct {
 	server          *server.Server
 	models 			*models.Store
+	config 			config.Configuration
 }
 
 // newFrontend - Construct
-func newFrontend(m *models.Store) *FrontendController {
+func newFrontend(m *models.Store, config config.Configuration) *FrontendController {
 	return &FrontendController{
 		models: m,
+		config: config,
 	}
 }
 
@@ -71,20 +73,20 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	pt := "index"
 	if post.PageTemplate != "default" {
-		pt = config.Template.TemplateDir + "/" + post.PageTemplate
+		pt = c.config.Template.TemplateDir + "/" + post.PageTemplate
 	}
 
 	master := ""
 	if post.Layout != "default" {
-		master = config.Template.LayoutDir + "/" + post.Layout
+		master = c.config.Template.LayoutDir + "/" + post.Layout
 	} else {
-		pt = pt + config.Template.FileExtension
+		pt = pt + c.config.Template.FileExtension
 	}
 
 	tf := templates.NewFunctions(g, c.models, &post)
 	gvFrontend := goview.New(goview.Config{
 		Root:      paths.Theme(),
-		Extension: config.Template.FileExtension,
+		Extension: c.models.Config.Template.FileExtension,
 		Master:    master,
 		Partials:  []string{},
 		Funcs: tf.GetFunctions(),
@@ -99,7 +101,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 func (c *FrontendController) NoPageFound(g *gin.Context) {
 	gvError := goview.New(goview.Config{
 		Root:      paths.Theme(),
-		Extension: config.Template.FileExtension,
+		Extension: c.config.Template.FileExtension,
 		Partials:  []string{},
 		DisableCache: true,
 	})
