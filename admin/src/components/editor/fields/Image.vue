@@ -125,7 +125,6 @@ export default {
 				id: e.id,
 				type: "image"
 			};
-
 			this.$nextTick(() => {
 				this.showImageModal = false;
 				this.getMediaById();
