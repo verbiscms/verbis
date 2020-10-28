@@ -52,8 +52,10 @@ type FileLine struct {
 
 func Recover(g *gin.Context, err interface{}) {
 
-	cfg, err := config.New()
-	if err != nil {
+	// IMPORTANT: Do not set anything else to be err here
+
+	cfg, ok := config.New()
+	if ok != nil {
 		log.Fatal(err)
 	}
 

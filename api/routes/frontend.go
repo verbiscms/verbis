@@ -7,16 +7,22 @@ import  (
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
+	"log"
 )
 
-func frontend(s *server.Server, c *controllers.Controller, config config.Configuration) {
+func frontend(s *server.Server, c *controllers.Controller, m *models.Store, config config.Configuration) {
 
 	s.Use(middleware.Recovery(server.Recover))
+
+	theme, err := m.Site.GetThemeConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	_ = s.Group("")
 	{
 		// Serve assets
-		s.Static("/assets", paths.Theme() +	models.ThemeConfig.AssetsPath)
+		s.Static("/assets", paths.Theme() +	theme.AssetsPath)
 
 		// Serve Verbis Assets
 		s.Static("/verbis", paths.Api() + "/web/public")

@@ -21,7 +21,7 @@ import (
 // Global Configuration, sets defaults to ensure that there are no
 // empty values within the themes config to prevent any errors.
 var (
-	ThemeConfig = domain.ThemeConfig{
+	themeConfig = domain.ThemeConfig{
 		Theme:      domain.Theme{},
 		Resources:  nil,
 		AssetsPath: "/assets",
@@ -167,11 +167,11 @@ func (s *SiteStore) GetThemeConfig() (domain.ThemeConfig, error) {
 	if err != nil {
 		return domain.ThemeConfig{}, err
 	}
-	if err := yaml.Unmarshal(y, &ThemeConfig); err != nil {
+	if err := yaml.Unmarshal(y, &themeConfig); err != nil {
 		return domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the config.yml file", Operation: op, Err: err}
 	}
 
-	return ThemeConfig, nil
+	return themeConfig, nil
 }
 
 
@@ -221,7 +221,6 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 		}
 		return &t, nil
 	}
-
 
 	// Set the cache for the templates if the cache was not found
 	// and the options allow.

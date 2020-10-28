@@ -1,6 +1,8 @@
 # Media
 
-The media functions within templates are used to retrieve items from the media library.
+These media functions within templates are used to retrieve items from the media library allowing you 
+to output any type of media file into your template.
+See below for respective return types & data.
 
 ## Media Type
 The media type is what is returned when calling `getMedia`. You are able to access any of the

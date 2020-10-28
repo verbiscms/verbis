@@ -18,6 +18,6 @@ func Load(s *server.Server, c *controllers.Controller, m *models.Store, cf confi
 
 	// Load routes
 	api(s, c, m)
-	frontend(s, c, cf)
+	frontend(s, c, m, cf)
 	spa(s, c, cf)
 }
