@@ -86,7 +86,8 @@ export default {
 	methods: {
 		/*
 		 * runAfterGet()
-		 * Insert facebook or twitter image & update the height.
+		 * Insert facebook or twitter image & update the height
+		 * after the options have been obtained.
 		 */
 		runAfterGet() {
 			for (const key in this.data) {
@@ -101,7 +102,6 @@ export default {
 		 * Sets the data using the key when the meta updates.
 		 */
 		updateMeta(val, key) {
-			console.log(val);
 			this.$set(this.data, key, val);
 		}
 	}
