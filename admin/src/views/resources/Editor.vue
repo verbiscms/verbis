@@ -76,7 +76,7 @@
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
-						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"> </MetaOptions>
+						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"></MetaOptions>
 						<!-- Seo Options -->
 						<SeoOptions v-if="activeTab === 2" :key="3"></SeoOptions>
 						<!-- Code Injection -->
