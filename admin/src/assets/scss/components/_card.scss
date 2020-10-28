@@ -143,6 +143,11 @@ $card-padding-x-desk: 24px;
 			&:last-of-type {
 				margin-bottom: 0;
 			}
+
+			p {
+				margin-top: 6px;
+				margin-bottom: 0;
+			}
 		}
 
 		&-error {
@@ -160,7 +165,12 @@ $card-padding-x-desk: 24px;
 			margin-bottom: 4rem;
 
 
-			#{$self}-body {
+			.form-label {
+				display: block;
+			}
+
+			input,
+			textarea {
 				width: 50%;
 			}
 		}

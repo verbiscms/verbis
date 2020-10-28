@@ -77,9 +77,11 @@ export default {
 				});
 			} else {
 				const chevron = this.header.querySelector(".feather-chevron-down");
-				chevron.addEventListener("click", () => {
-					this.collapse(chevron)
-				});
+				if (chevron) {
+					chevron.addEventListener("click", () => {
+						this.collapse(chevron)
+					});
+				}
 			}
 		},
 		/*

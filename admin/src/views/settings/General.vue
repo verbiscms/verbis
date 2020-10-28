@@ -17,18 +17,23 @@
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<div class="row" v-if="!doingAxios">
+			<!-- Spinner -->
+			<div v-show="doingAxios" class="media-spinner spinner-container">
+				<div class="spinner spinner-large spinner-grey"></div>
+			</div>
+			<div v-show="!doingAxios" class="row trans-fade-in-anim">
 				<!-- =====================
 					Basic Options
 					===================== -->
 				<div class="col-12">
 					<h6 class="margin">Site options</h6>
 					<div class="card card-small-box-shadow card-expand">
+						<!-- Title & description -->
 						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['site_title'] ||  errors['site_description'] }">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>
-										<h4 class="card-title">Title & Description</h4>
+										<h4 class="card-title">Title & description</h4>
 										<p>Details of the website that will be used publicly around the web.</p>
 									</div>
 									<div class="card-controls">
@@ -48,7 +53,8 @@
 									</FormGroup>
 								</div><!-- /Card Body -->
 							</template>
-						</Collapse>
+						</Collapse><!-- /Title & description -->
+						<!-- Url -->
 						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['site_url']}">
 							<template v-slot:header>
 								<div class="card-header">
@@ -69,7 +75,8 @@
 									</FormGroup>
 								</div><!-- /Card Body -->
 							</template>
-						</Collapse>
+						</Collapse><!--/ Url -->
+						<!-- Logo -->
 						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['site_logo']}">
 							<template v-slot:header>
 								<div class="card-header">
@@ -87,7 +94,7 @@
 									<!-- Logo -->
 									<div class="general-logo">
 										<div v-show="!hasLogo">
-											<button class="btn" @click.prevent="showImageModal = true">Insert Logo</button>
+											<button class="btn" @click.prevent="showImageModal = true">Insert logo</button>
 										</div>
 										<div v-show="hasLogo">
 											<ImageWithActions @choose="showImageModal = true" @remove="hasLogo = false">
@@ -97,7 +104,7 @@
 									</div>
 								</div><!-- /Card Body -->
 							</template>
-						</Collapse>
+						</Collapse><!-- /Logo -->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
@@ -106,6 +113,7 @@
 				<div class="col-12">
 					<h6 class="margin">Social</h6>
 					<div class="card card-small-box-shadow card-expand">
+						<!-- Social Media -->
 						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' :
 						errors['social_facebook_url'] || errors['social_twitter_url'] || errors['social_youtube_url'] || errors['social_linked_in'] || errors['social_instagram_url'] || errors['social_pinterest_url']}">
 							<template v-slot:header>
@@ -141,7 +149,7 @@
 									</FormGroup>
 								</div><!-- /Card Body -->
 							</template>
-						</Collapse>
+						</Collapse><!-- /Social Media -->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
@@ -264,7 +272,7 @@ export default {
 	data: () => ({
 		errorMsg: "Fix the errors before saving settings.",
 		successMsg: "Site options updated successfully.",
-		hasLogo: true,
+		hasLogo: false,
 		showImageModal: false,
 	}),
 	methods: {
@@ -283,6 +291,9 @@ export default {
 		},
 	},
 	computed: {
+		/*
+		 * getSiteTitle()
+		 */
 		getSiteTitle() {
 			return this.getSite.title === "Verbis" ? "the business" : this.getSite.title;
 		}

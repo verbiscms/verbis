@@ -2,6 +2,8 @@ package models
 
 import (
 	"bytes"
+	"encoding/json"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/chai2010/webp"
 
 	//	"bytes"
@@ -51,14 +53,7 @@ type MediaStore struct {
 	db          	*sqlx.DB
 	config 			config.Configuration
 	optionsModel 	OptionsRepository
-	imageSizes 		domain.MediaSizes
-	convertWebP     bool
-	serveWebP     	bool
-	compression 	int
-	maxWidth    	int
-	maxHeight   	int
-	maxFileSize 	int
-	organiseYear	bool
+	options 		domain.Options
 }
 
 // newMedia - Construct
@@ -78,14 +73,7 @@ func (s *MediaStore) getOptionsStruct() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s.imageSizes = opts.MediaSizes
-	s.convertWebP = opts.MediaConvertWebP
-	s.serveWebP = opts.MediaServeWebP
-	s.compression = opts.MediaCompression
-	s.maxWidth = opts.MediaUploadMaxWidth
-	s.maxHeight = opts.MediaUploadMaxHeight
-	s.maxFileSize = opts.MediaUploadMaxSize
-	s.organiseYear = opts.MediaOrganiseDate
+	s.options = opts
 }
 
 // Get all media
@@ -189,7 +177,7 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, 
 
 	var data []byte
 	var found error
-	if acceptWebP && s.serveWebP {
+	if acceptWebP && s.options.MediaServeWebP {
 		data, found = ioutil.ReadFile(path + extension + ".webp")
 		if found != nil {
 			data, found = ioutil.ReadFile(path + extension)
@@ -238,12 +226,12 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 	}
 
 	// Convert to WebP
-	if s.convertWebP && mimeType == "image/jpeg" || mimeType == "image/png"  {
+	if s.options.MediaConvertWebP && mimeType == "image/jpeg" || mimeType == "image/png"  {
 		decodedImage, err := s.decodeImage(file, mimeType)
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error()
 		}
-		go convertWebP(*decodedImage, path + "/" + key.String() + extension, s.compression)
+		go convertWebP(*decodedImage, path + "/" + key.String() + extension, s.options.MediaCompression)
 	}
 
 	// Resize
@@ -277,8 +265,8 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 	}
 
 	fileSize := int(file.Size / 1024)
-	if fileSize > s.maxFileSize && s.maxFileSize != 0 {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The file exceeds the maximum size restriction of %vkb", s.maxFileSize), Operation: op, Err: err}
+	if fileSize > s.options.MediaUploadMaxSize && s.options.MediaUploadMaxSize != 0 {
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The file exceeds the maximum size restriction of %vkb.", s.options.MediaUploadMaxSize), Operation: op, Err: err}
 	}
 
 	io, err := file.Open()
@@ -289,12 +277,12 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 
 	defer io.Close()
 
-	if img.Bounds().Max.X > s.maxWidth && s.maxWidth != 0  {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max width of %vpx", s.maxWidth), Operation: op, Err: err}
+	if img.Bounds().Max.X > s.options.MediaUploadMaxWidth && s.options.MediaUploadMaxWidth != 0  {
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max width of %vpx.", s.options.MediaUploadMaxWidth), Operation: op, Err: err}
 	}
 
-	if img.Bounds().Max.Y > s.maxHeight && s.maxHeight != 0 {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max height of %vpx", s.maxHeight), Operation: op, Err: err}
+	if img.Bounds().Max.Y > s.options.MediaUploadMaxHeight && s.options.MediaUploadMaxHeight != 0 {
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max height of %vpx.", s.options.MediaUploadMaxHeight), Operation: op, Err: err}
 	}
 
 	return nil
@@ -363,6 +351,8 @@ func (s *MediaStore) Update(m *domain.Media) error {
 func (s *MediaStore) Delete(id int) error {
 	const op = "MediaRepository.Delete"
 
+	s.getOptionsStruct()
+
 	m, err := s.GetById(id)
 	if err != nil {
 		return err
@@ -384,6 +374,14 @@ func (s *MediaStore) Delete(id int) error {
 		filePath := m.FilePath + "/" + v.FilePath + "/" + v.UUID.String() + extension
 		go files.CheckAndDelete(filePath)
 		go files.CheckAndDelete(filePath + ".webp")
+	}
+
+	// Check if the file deleted was the one stored in the site logo
+	if m.Url == s.options.SiteLogo {
+		logo, _ := json.Marshal(api.App.Logo)
+		if err := s.optionsModel.Update("site_logo", logo); err != nil {
+			log.Error(err)
+		}
 	}
 
 	return nil
@@ -417,7 +415,7 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, 
 
 	savedSizes := make(domain.MediaSizes)
 	if mime == "image/png" || mime == "image/jpeg" {
-		for key, size := range s.imageSizes {
+		for key, size := range s.options.MediaSizes {
 			mediaUUID := uuid.New()
 			fileName := name + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + extension
 
@@ -457,12 +455,12 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)
 
-		if err := imaging.Save(resized, filePath, imaging.PNGCompressionLevel(png.CompressionLevel(s.compression))); err != nil {
+		if err := imaging.Save(resized, filePath, imaging.PNGCompressionLevel(png.CompressionLevel(s.options.MediaCompression))); err != nil {
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not save the resized image"), Operation: op, Err: err}
 		}
 
-		if s.convertWebP {
-			go convertWebP(resized, filePath, s.compression)
+		if s.options.MediaConvertWebP {
+			go convertWebP(resized, filePath, s.options.MediaCompression)
 		}
 	}
 
@@ -476,12 +474,12 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)
 
-		if err := imaging.Save(resized, filePath, imaging.JPEGQuality(s.compression)); err != nil {
+		if err := imaging.Save(resized, filePath, imaging.JPEGQuality(s.options.MediaCompression)); err != nil {
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not save the resized image"), Operation: op, Err: err}
 		}
 
-		if s.convertWebP {
-			go convertWebP(resized, filePath, s.compression)
+		if s.options.MediaConvertWebP {
+			go convertWebP(resized, filePath, s.options.MediaCompression)
 		}
 	}
 
@@ -518,7 +516,7 @@ func (s *MediaStore) createDirectory() string {
 	s.getOptionsStruct()
 	uploadsPath := paths.Uploads()
 
-	if !s.organiseYear {
+	if !s.options.MediaOrganiseDate {
 		return uploadsPath
 	} else {
 		t := time.Now()
@@ -535,7 +533,7 @@ func (s *MediaStore) createDirectory() string {
 // year variable in the media store is set to true. If not the function will
 // return the public uploads folder by default.
 func (s *MediaStore) getUrl() string {
-	if !s.organiseYear {
+	if !s.options.MediaOrganiseDate {
 		return s.config.Media.UploadPath
 	} else {
 		t := time.Now()

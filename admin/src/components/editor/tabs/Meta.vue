@@ -106,14 +106,14 @@
 								</div>
 								<h4>Preview:</h4>
 								<p>The Facebook preview will appear here:</p>
-								<div class="twitter">
-									<div class="twitter-image">
+								<div class="social">
+									<div class="social-image">
 										<i class="fal fa-file-alt"></i>
 									</div>
-									<div class="twitter-text">
-										<span class="twitter-title">{{ value['facebook']['title'] }}</span>
-										<span class="twitter-description">{{ getDescription(140, value['facebook']['description']) }}</span>
-										<span class="twitter-url">{{ getSiteUrl }}</span>
+									<div class="social-text">
+										<span class="social-title">{{ value['facebook']['title'] }}</span>
+										<span class="social-description">{{ getDescription(140, value['facebook']['description']) }}</span>
+										<span class="social-url">{{ getSiteUrl }}</span>
 									</div>
 								</div><!-- /Twitter Card -->
 							</div><!-- /Col -->
@@ -314,86 +314,3 @@ export default {
 }
 
 </script>
-
-<!-- =====================
-	Styles
-	===================== -->
-<style scoped lang="scss">
-
-
-// Twitter
-// =========================================================================
-
-.twitter {
-	position: relative;
-	display: flex;
-	width: 100%;
-	border: 1px solid #E1E8ED;
-	border-radius: 10px;
-	overflow: hidden;
-	margin-top: 1rem;
-
-	// Image
-	// =========================================================================
-
-	&-image {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		width: 125px;
-		min-height: 125px;
-		min-width: 125px;
-		background-color: $grey-light;
-
-		i {
-			color: $grey;
-			font-size: 2rem;
-		}
-	}
-
-	// Text
-	// =========================================================================
-
-	&-text {
-		//flex-grow: 2;
-		padding: 14px;
-		background-color: $white;
-		width: calc(100% - 125px);
-	}
-
-
-	&-title,
-	&-description,
-	&-url {
-		color: $black;
-		display: block;
-	}
-
-	&-title {
-		font-size: 0.9rem;
-		font-weight: 600;
-		margin-bottom: 0;
-		max-height: 23px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis
-	}
-
-	&-description {
-		color: $black;
-		font-size: 0.8rem;
-		height: 52px;
-		overflow: hidden;
-		line-height: 1.3;
-		margin-bottom: 4px;
-		word-break: break-all;
-	}
-
-	&-url {
-		color: $grey;
-		font-size: 0.8rem;
-	}
-}
-
-
-</style>
