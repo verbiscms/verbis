@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Verbis</title>
-    {{ verbis_head }}
+    {{ verbisHead }}
     <meta name="author" content="Reddico">
     <meta name="description" content="">
     <link rel="canonical" href="" />
@@ -33,6 +33,6 @@
 {{/*<script src="/assets/js/app.js"></script>*/}}
 <!-- Google Transition Fix -->
 <script> </script>
-    {{ verbis_foot }}
+    {{ verbisFoot }}
 </body>
 </html>

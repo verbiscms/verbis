@@ -1,8 +1,9 @@
 # Fields
 
-Short introduction here
-
-Note about posts, users & media. 
+Fields are the building blocks of a Verbis theme, it's important to grasp the foundations on how they work to,
+accelerate your theme building. Usually interface is rednered in the template when obtaining a field, however
+ if the field is a post, media item, or  user, their respective types will be returned allowing you to filter
+ through rich data, quickly.
 
 ___
 

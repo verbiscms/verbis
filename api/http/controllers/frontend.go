@@ -1,8 +1,8 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -63,12 +64,10 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		return
 	}
 
-	type ResourceData struct {
-		Post		domain.Post
-	}
-
-	r := ResourceData{
-		Post: post,
+	_, err = g.Cookie("verbis-session")
+	if err != nil && post.Status != "published" {
+		c.NoPageFound(g)
+		return
 	}
 
 	pt := "index"
@@ -93,8 +92,15 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		DisableCache: !environment.IsProduction(),
 	})
 
-  	if err := gvFrontend.Render(g.Writer, http.StatusOK, pt, r); err != nil {
-		panic(err)
+	data, err := tf.GetData()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+  	if err := gvFrontend.Render(g.Writer, http.StatusOK, pt, data); err != nil {
+		// TODO: Panic
+  		fmt.Println(err)
+  		panic(err)
 	}
 }
 

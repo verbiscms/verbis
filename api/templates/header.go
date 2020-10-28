@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	log "github.com/sirupsen/logrus"
 	"github.com/yosssi/gohtml"
 	"html/template"
 )
@@ -26,7 +27,8 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 		b.WriteString(*t.post.CodeInjectHead)
 	}
 
-	if t.post.SeoMeta.Meta != nil {
+	// Bail early if there is no meta
+	if t.post.SeoMeta.Meta == nil {
 		return template.HTML(gohtml.Format(b.String()))
 	}
 
@@ -34,7 +36,7 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 	var meta domain.PostMeta
 	err = json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
 	if err != nil {
-		fmt.Println(err)
+		log.Error(err)
 	}
 
 	// Get site options
