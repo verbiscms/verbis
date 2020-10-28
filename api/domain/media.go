@@ -40,9 +40,9 @@ type MediaSize struct {
 }
 
 type MediaSizeOptions struct {
-	Name			string 				`db:"name" json:"name"`
-	Width			int 				`db:"width" json:"width"`
-	Height			int 				`db:"height" json:"height"`
+	Name			string 				`db:"name" json:"name" binding:"required,numeric"`
+	Width			int 				`db:"width" json:"width" binding:"required,numeric"`
+	Height			int 				`db:"height" json:"height" binding:"required,numeric"`
 	Crop			bool 				`db:"crop" json:"crop"`
 }
 

@@ -20,13 +20,13 @@ type Options struct {
 	SiteUrl 				string 					`json:"site_url" binding:"required,url"`
 	// Media
 	MediaCompression		int 					`json:"media_compression" binding:"required"`
-	MediaConvertWebP 		bool 					`json:"media_convert_webp" binding:"required"`
-	MediaServeWebP 			bool 					`json:"media_serve_webp" binding:"required"`
-	MediaUploadMaxSize 		int 					`json:"media_upload_max_size" binding:"required,numeric"`
-	MediaUploadMaxWidth 	int 					`json:"media_upload_max_width" binding:"required,numeric"`
-	MediaUploadMaxHeight 	int 					`json:"media_upload_max_height" binding:"required,numeric"`
-	MediaOrganiseDate 		bool 					`json:"media_organise_year_month" binding:"required"`
-	MediaSizes 				MediaSizes 				`json:"media_images_sizes" binding:"required"`
+	MediaConvertWebP 		bool 					`json:"media_convert_webp"`
+	MediaServeWebP 			bool 					`json:"media_serve_webp"`
+	MediaUploadMaxSize 		int 					`json:"media_upload_max_size" binding:"numeric"`
+	MediaUploadMaxWidth 	int 					`json:"media_upload_max_width" binding:"numeric"`
+	MediaUploadMaxHeight 	int 					`json:"media_upload_max_height" binding:"numeric"`
+	MediaOrganiseDate 		bool 					`json:"media_organise_year_month"`
+	MediaSizes 				MediaSizes 				`json:"media_images_sizes"`
 	// Contact
 	ContactEmail			string 					`json:"contact_email" binding:"email"`
 	ContactTelephone		string 					`json:"contact_telephone"`

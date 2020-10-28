@@ -102,7 +102,10 @@ export default {
 		 * Change the maximum height on click, add chevron active class.
 		 */
 		collapse(chevron) {
-			if (this.isOpen) {
+			if (!this.isOpen && this.content.style.maxHeight !== "0px") {
+				this.content.style.maxHeight = "0px";
+				chevron.classList.add("active");
+			} else if (this.isOpen) {
 				this.content.style.maxHeight = "0px";
 				chevron.classList.add("active");
 			} else {
