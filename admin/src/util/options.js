@@ -30,10 +30,12 @@ export const optionsMixin = {
 					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
-					this.doingAxios = false;
 					if (typeof this.runAfterGet == 'function') {
 						this.runAfterGet();
 					}
+					setTimeout(() => {
+						this.doingAxios = false;
+					}, this.axiosTimeout ? 200 : 0)
 				});
 		},
 		/*

@@ -445,6 +445,11 @@ export default {
 					this.isDeleting = false;
 					this.bulkMode = false;
 					this.showDeleteModal = false;
+
+					// Check if the file deleted was the site logo
+					this.axios.get("/site").then(res => {
+						this.$store.commit("setSite", res.data.data);
+					});
 				});
 		},
 		/*
