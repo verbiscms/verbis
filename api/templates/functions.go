@@ -80,6 +80,49 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 	return funcMap
 }
 
+// GetData - Returns all the necessary data for template usage.
+func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
+
+	 theme, err := t.store.Site.GetThemeConfig()
+	 if err != nil {
+	 	return nil, err
+	 }
+
+	 templates, err := t.store.Site.GetTemplates()
+	 if err != nil {
+		return nil, err
+	 }
+	 //
+	 //var test = make(map[string]map[string]string)
+	 //for _, v := range templates.Template {
+	 //	 test[v["key"]] = *v
+		// fmt.Println(test)
+	 //	//layouts[k] = map[string]interface{
+	 //	//	v: "e"
+		////}
+	 //}
+
+	layouts, err := t.store.Site.GetLayouts()
+	if err != nil {
+		return nil, err
+	}
+	//var layouts = make(map[string]interface{})
+	//for k, v := range l {
+	//	l.Layout[k].
+	//	layouts[v.] = v
+	//}
+
+	 data := map[string]interface{}{
+	 	"Site": t.store.Site.GetGlobalConfig(),
+	 	"Post": t.post,
+	 	"Theme": theme.Theme,
+	 	"Resources": theme.Resources,
+	 	"Templates": templates,
+	 	"Layouts": layouts,
+	 }
+
+	return data, nil
+}
 
 // Get the app env
 func (t *TemplateFunctions) appEnv() string {
