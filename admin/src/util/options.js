@@ -31,8 +31,8 @@ export const optionsMixin = {
 				})
 				.finally(() => {
 					this.doingAxios = false;
-					if (typeof this.runAfter == 'function') {
-						this.runAfter();
+					if (typeof this.runAfterGet == 'function') {
+						this.runAfterGet();
 					}
 				});
 		},
@@ -42,6 +42,10 @@ export const optionsMixin = {
 		 */
 		save() {
 			this.saving = true;
+
+			if (typeof this.runBeforeSave == 'function') {
+				this.runBeforeSave();
+			}
 
 			this.axios.post("/options", this.data)
 				.then(() => {

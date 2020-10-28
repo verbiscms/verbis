@@ -158,7 +158,7 @@
 						<!-- Unsupported -->
 						<div v-else-if="item['unsupported']" class="media-item-icon-cont media-item-trans">
 							<i class="feather feather-alert-circle"></i>
-							<p>Media type unsupported</p>
+							<p>{{ item['unsupported'] }}</p>
 							<i class="media-close feather feather-x" @click="removeErrorItem(item, itemIndex)"></i>
 						</div>
 						<!-- Image -->
@@ -379,7 +379,7 @@ export default {
 					this.helpers.checkServer(err);
 					if (err.response.status === 415) {
 						setTimeout(() => {
-							this.$set(this.media[index], "unsupported", true);
+							this.$set(this.media[index], "unsupported", err.response.data.message);
 						}, Math.floor(Math.random() * (430 - 200 + 1)) + 200);
 						return;
 					}

@@ -194,32 +194,36 @@
 				<div class="col-12">
 					<h6>Image Sizes</h6>
 					<p>The image sizes determines the maximum dimensions in pixels when an image is uploaded to the media library.</p>
-					<pre>{{ sizes }}</pre>
 					<div class="card card-small-box-shadow card-expand card-margin-none">
 						<!-- Sizes -->
-						<Collapse v-for="(size, sizeKey) in data['media_images_sizes']" :key="size.name" :show="false" class="collapse-border-bottom">
+						<Collapse v-for="(size, sizeKey) in sizes" :key="size.id" :show="false" class="collapse-border-bottom">
 							<template v-slot:header>
 								<div class="card-header">
 									<h4 class="card-title">{{ size.name }}</h4>
 									<div class="card-controls">
+										<i class="feather feather-trash-2" @click="deleteSize(sizeKey)"></i>
 										<i class="feather feather-chevron-down"></i>
 									</div>
 								</div><!-- /Card Header -->
 							</template>
 							<template v-slot:body>
-								<div class="card-body">
-									<FormGroup label="Key*">
-										<input class="form-input" :id="'media-size-key-' + sizeKey" type="text" placeholder="Enter a key" :value="sizeKey" @keyup="changeSizeKey($event, sizeKey)">
+								<div class="card-body media-sizes" ref="sizes">
+									<FormGroup label="Key">
+										<input class="form-input" :id="'media-size-key-' + sizeKey" type="text" placeholder="Enter a key" v-model="sizes[sizeKey].key">
+										<p>Tgis</p>
 									</FormGroup>
-									<FormGroup label="Width*">
-										<input class="form-input" :id="'media-size-width-' + sizeKey" type="number" placeholder="Enter a width" v-model.number="data['media_images_sizes'][sizeKey]['width']">
+									<FormGroup label="Name">
+										<input class="form-input" :id="'media-size-name-' + sizeKey" type="text" placeholder="Enter a key" v-model="sizes[sizeKey].name">
 									</FormGroup>
-									<FormGroup label="Height*">
-										<input class="form-input" :id="'media-size-height-' + sizeKey" type="number" placeholder="Enter a height" v-model.number="data['media_images_sizes'][sizeKey]['height']">
+									<FormGroup label="Width">
+										<input class="form-input" :id="'media-size-width-' + sizeKey" type="number" placeholder="Enter a width" v-model.number="sizes[sizeKey].width">
+									</FormGroup>
+									<FormGroup label="Height">
+										<input class="form-input" :id="'media-size-height-' + sizeKey" type="number" placeholder="Enter a height" v-model.number="sizes[sizeKey].height">
 									</FormGroup>
 									<FormGroup>
 										<div class="form-checkbox">
-											<input type="checkbox" :id="'media-size-crop-' + sizeKey" v-model="data['media_images_sizes'][sizeKey]['crop']" :true-value="true" :false-value="false" />
+											<input type="checkbox" :id="'media-size-crop-' + sizeKey" v-model="sizes[sizeKey].crop" :true-value="true" :false-value="false" />
 											<label :for="'media-size-crop-' + sizeKey">
 												<i class="fal fa-check"></i>
 											</label>
@@ -248,11 +252,12 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import {optionsMixin} from "@/util/options";
 import Collapse from "@/components/misc/Collapse";
 import FormGroup from "@/components/forms/FormGroup";
+import {userMixin} from "@/util/users";
 
 export default {
 	name: "Media",
 	title: 'Media Settings',
-	mixins: [optionsMixin],
+	mixins: [optionsMixin, userMixin],
 	components: {
 		FormGroup,
 		Breadcrumbs,
@@ -269,42 +274,87 @@ export default {
 	methods: {
 		/*
 		 * runAfter()
-		 * The options hae
+		 * Process the image sizes once axios has finished loading.
 		 */
-		runAfter() {
-			//this.sortImageSizes();
+		runAfterGet() {
+			this.processImageSizes();
+		},
+		/*
+		 * runBeforeSave()
+		 * Process the image sizes once before posting.
+		 */
+		runBeforeSave() {
+			let tempSizes = {};
+			this.sizes.forEach((s, index) => {
+				let key =  s.key === undefined || s.key === "" ?  `media-size-${index + 1}` : s.key;
+				const name = s.name === "" || s.name == "Enter size" ?  `Media size ${index + 1}` : s.name;
+
+				tempSizes[key] = tempSizes[key] || {};
+
+				const obj = {
+					name: name,
+					width: s.width,
+					height: s.height,
+					crop: s.crop,
+				};
+				tempSizes[key] = obj;
+
+				obj.id = s.id;
+				obj.key = key;
+				this.sizes[index] = obj;
+			});
+
+			// Set null if there are no sizes
+			if (this.helpers.isEmptyObject(tempSizes)) {
+				tempSizes = null
+			}
+
+			this.$delete(this.data, 'media_images_sizes');
+			this.$set(this.data, 'media_images_sizes', tempSizes);
+		},
+		/*
+		 * processImageSizes()
+		 */
+		processImageSizes() {
+			for (const sizeName in this.data['media_images_sizes']) {
+				const size = this.data['media_images_sizes'][sizeName];
+				this.sizes.push({
+					key: sizeName,
+					name: size.name,
+					width: size.width,
+					height: size.height,
+					crop: size.crop,
+					id: this.createPassword(),
+				});
+			}
+			this.sortImageSizes();
 		},
 		/*
 		 * sortSizes()
 		 * Sort sizes by width for the size cards.
 		 */
 		sortImageSizes() {
-			this.sizes = Object.fromEntries(
-				Object.entries(this.data['media_images_sizes']).sort(([,a],[,b]) => {
-					return parseFloat(a.width) - parseFloat(b.width)
-				})
-			);
+			this.sizes.sort((a, b) => parseFloat(a.width) - parseFloat(b.width));
 		},
 		/*
 		 * addImageSize()
-		 *
+		 * Add an image to the image sizes array and expand the el.
 		 */
 		addImageSize() {
-			this.$set(this.data['media_images_sizes'], "Enter size", {
+			this.sizes.push({
 				crop: false,
 				width: 0,
 				height: 0,
 				name: "Enter size",
 			});
+			this.$nextTick(function() {
+				const newSize = this.$refs.sizes[this.sizes.length - 1];
+				this.helpers.setHeight(newSize.closest(".collapse-content"));
+			});
 		},
-		/*
-		 * addImageSize()
-		 *
-		 */
-		changeSizeKey(e, key) {
-			console.log(key);
+		deleteSize(index) {
+			this.sizes.splice(index, 1);
 		},
-
 	},
 	computed: {
 		/*
@@ -394,6 +444,19 @@ export default {
 		margin-top: 2rem;
 		display: flex;
 		justify-content: flex-end;
+	}
+
+	// Image Sizes
+	// =========================================================================
+
+	&-sizes {
+
+		.form-group {
+
+			p {
+				margin-top: 6px;
+			}
+		}
 	}
 
 }
