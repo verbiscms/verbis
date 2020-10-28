@@ -6,12 +6,14 @@
 		<div v-if="show" class="alert alert-background" :class="'alert-' + colour">
 			<!-- Icon -->
 			<div class="alert-icon">
-				<i class="feather feather-alert-circle"></i>
+				<i v-if="type === 'error'" class="feather feather-alert-triangle"></i>
+				<i v-if="type === 'warning'" class="feather feather-alert-circle"></i>
+				<i v-if="type === 'success'" class="feather feather-check-circle"></i>
 			</div><!-- /Icon -->
 			<!-- Text -->
-			<DIV class="alert-text">
+			<div class="alert-text">
 				<slot></slot>
-			</DIV><!-- /Text -->
+			</div><!-- /Text -->
 			<!-- Close -->
 			<button type="button" class="alert-close" aria-label="Close" @click="show = false">
 				<i class="feather feather-x"></i>
@@ -30,7 +32,11 @@ export default {
 	props: {
 		colour: {
 			type: String,
-			default: ""
+			default: "",
+		},
+		type: {
+			type: String,
+			default: "error",
 		}
 	},
 	data: () => ({

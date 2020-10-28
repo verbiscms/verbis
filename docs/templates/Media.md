@@ -71,7 +71,7 @@ Get the media item with the ID of 10.
 You can also assign the contents of a media item to a variable to be used later on in the template.
 
 ```
-{{ $image := getMedia 10" }}
+{{ $image := getMedia 10 }}
 {{ $image.Url }}
 ```
 

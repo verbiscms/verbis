@@ -32,7 +32,7 @@ export default {
 
 	position: relative;
 	height: 250px;
-	width: 250px;
+	width: 100%;
 	border-radius: 4px;
 	overflow: hidden;
 
@@ -126,6 +126,13 @@ export default {
 	&-cover {
 		width: 100% !important;
 		height: 100% !important;
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+		width: 250px;
 	}
 }
 

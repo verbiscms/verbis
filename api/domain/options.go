@@ -18,6 +18,7 @@ type Options struct {
 	SiteDescription 		string 					`json:"site_description" binding:"required"`
 	SiteLogo 				string 					`json:"site_logo" binding:"required"`
 	SiteUrl 				string 					`json:"site_url" binding:"required,url"`
+	SitePublic 				bool 					`json:"site_public"`
 	// Media
 	MediaCompression		int 					`json:"media_compression" binding:"required"`
 	MediaConvertWebP 		bool 					`json:"media_convert_webp"`
