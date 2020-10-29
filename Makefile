@@ -1,5 +1,5 @@
 build:
-	go build  ./main.go
+	go build -o verbis
 
 run:
 	go run ./main.go

@@ -1,9 +1,12 @@
 package controllers
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/mime"
+	"github.com/ainsleyclark/verbis/api/helpers/minify"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
@@ -12,12 +15,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 )
 
 // FrontendHandler defines methods for the frontend to interact with the server
 type FrontendHandler interface {
 	GetUploads(g *gin.Context)
+	GetAssets(g *gin.Context)
 	Serve(g *gin.Context)
 }
 
@@ -26,18 +32,23 @@ type FrontendController struct {
 	server          *server.Server
 	models 			*models.Store
 	config 			config.Configuration
+	minify 			minify.Minifier
 }
 
 // newFrontend - Construct
 func newFrontend(m *models.Store, config config.Configuration) *FrontendController {
+	min := minify.New(m.Options)
 	return &FrontendController{
 		models: m,
 		config: config,
+		minify: min,
 	}
 }
 
 // GetUploads retrieves images in the uploads folder, returns webp if accepts
 func (c *FrontendController) GetUploads(g *gin.Context) {
+	const op = "FrontendHandler.GetUploads"
+
 	acceptHeader := g.Request.Header.Get("Accept")
 	acceptWebp := strings.Contains(acceptHeader, "image/webp")
 
@@ -51,6 +62,41 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 
 	g.Data(200, mime, data)
 }
+
+func (c *FrontendController) GetAssets(g *gin.Context) {
+	const op = "FrontendHandler.GetAssets"
+
+	// Get the site config for serving the assets
+	theme, err := c.models.Site.GetThemeConfig()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	assetsPath := paths.Theme() + theme.AssetsPath
+	fileName := strings.Replace(g.Request.URL.Path, "/assets", "", 1)
+
+	file, err := os.Open(assetsPath + fileName)
+	if err != nil {
+		g.Writer.WriteHeader(http.StatusNotFound)
+	}
+
+	defer func() {
+		file.Close()
+	}()
+
+	mime := mime.TypeByExtension(strings.Replace(filepath.Ext(fileName), ".", "", 1))
+
+
+	// If the minified file is nil or the err is not empty, serve the original data
+	minifiedFile, err := c.minify.Minify(file, mime)
+	if err != nil || minifiedFile == nil {
+		g.File(assetsPath + fileName)
+	}
+
+	g.Data(200, mime, minifiedFile)
+}
+
+
 
 // Serve the front end website
 func (c *FrontendController) Serve(g *gin.Context) {
@@ -97,11 +143,21 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		log.Fatal(err)
 	}
 
-  	if err := gvFrontend.Render(g.Writer, http.StatusOK, pt, data); err != nil {
+	var b bytes.Buffer
+  	if err := gvFrontend.RenderWriter(&b, pt, data); err != nil {
 		// TODO: Panic
   		fmt.Println(err)
   		panic(err)
 	}
+
+	minfied, err := c.minify.MinifyBytes(&b, "text/html")
+	if err != nil || minfied == nil {
+		g.Writer.Write(b.Bytes())
+	}
+
+	g.Writer.WriteHeader(200)
+	g.Writer.Write(minfied)
+
 }
 
 func (c *FrontendController) NoPageFound(g *gin.Context) {
@@ -116,3 +172,4 @@ func (c *FrontendController) NoPageFound(g *gin.Context) {
 	}
 	return
 }
+

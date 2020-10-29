@@ -22,7 +22,6 @@ run Verbis doctor to see if the environment is configured correctly. It will the
 up the server on the port specified in the .env file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 
-
 			// Run doctor
 			db, err := doctor()
 			if err != nil {
@@ -46,27 +45,14 @@ up the server on the port specified in the .env file.`,
 			go scheduler.Run()
 
 			// Set up the router & pass logger
-			serve := server.New()
+			serve := server.New(store.Options)
 
 			// Pass the stores to the controllers
 			controllers, err := controllers.New(store, *cfg)
 			if err != nil {
+				fmt.Println(err)
 				printError(err.Error())
 			}
-
-			//type App struct {
-			//	Store *models.Store
-			//	DB *database.MySql
-			//	Controller controllers.Controller
-			//	Config *config.Configuration
-			//}
-			//
-			//a := App{
-			//	Store:       store,
-			//	DB:          db,
-			//	Controllers: controllers,
-			//	Config:      cfg,
-			//}
 
 			// Load the routes
 			routes.Load(serve, controllers, store, *cfg)

@@ -246,7 +246,7 @@ export default {
 	}),
 	methods: {
 		/*
-		 * runAfter()
+		 * runAfterGet()
 		 * Process the image sizes once axios has finished loading.
 		 */
 		runAfterGet() {
