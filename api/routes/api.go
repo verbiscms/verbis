@@ -14,6 +14,7 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 	// API Routes
 	api := s.Group("/api/v1")
 	{
+		// Set API Middleware
 		api.Use(middleware.EmptyBody())
 
 		// Site

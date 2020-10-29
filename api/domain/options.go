@@ -29,7 +29,7 @@ type Options struct {
 	MediaOrganiseDate 		bool 					`json:"media_organise_year_month"`
 	MediaSizes 				MediaSizes 				`json:"media_images_sizes"`
 	// Contact
-	ContactEmail			string 					`json:"contact_email" binding:"email"`
+	ContactEmail			string 					`json:"contact_email" binding:"omitempty,email"`
 	ContactTelephone		string 					`json:"contact_telephone"`
 	ContactAddress			string 					`json:"contact_address"`
 	// Social
@@ -46,7 +46,21 @@ type Options struct {
 	CacheSite 				bool 					`json:"cache_site"`
 	CacheTemplates 			bool 					`json:"cache_templates"`
 	CacheResources			bool 					`json:"cache_resources"`
+	// Frontend Caching
+	CacheFrontend			bool					`json:"cache_frontend"`
+	CacheFrontendRequest	string					`json:"cache_frontend_request"`
+	CacheFrontendSeconds	int64					`json:"cache_frontend_seconds"`
+	CacheFrontendExtension	[]string				`json:"cache_frontend_extensions"`
 	// Gzip
-	GzipCompress 			bool 					`json:"gzip_compression"`
-	GzipFiles 				[]string 				`json:"gzip_files"`
+	Gzip 		 			bool 					`json:"gzip"`
+	GzipCompression 		string 					`json:"gzip_compression"`
+	GzipExcludedExtensions 	[]string 				`json:"gzip_excluded_extensions"`
+	GzipExcludedPaths 		[]string 				`json:"gzip_excluded_paths"`
+	// Minify
+	MinifyHTML 				bool 					`json:"minify_html"`
+	MinifyJS				bool 					`json:"minify_js"`
+	MinifyCSS				bool 					`json:"minify_css"`
+	MinifySVG 				bool 					`json:"minify_svg"`
+	MinifyJSON				bool 					`json:"minify_json"`
+	MinifyXML				bool 					`json:"minify_xml"`
 }
