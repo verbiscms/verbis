@@ -1,0 +1,80 @@
+// -----------------------------------------------------------------------------
+// _toggle.scss
+// This file contains all styles related to the toggle component.
+// -----------------------------------------------------------------------------
+
+.toggle {
+	position: relative;
+	height: 22px;
+	width: 40px;
+	margin-left: 10px;
+
+	// Switch (Checkbox)
+	// =========================================================================
+
+	&-switch {
+
+		// Empty Val
+		// =========================================================================
+
+		&:empty {
+			margin-left: -9999px;
+
+			& ~ label {
+				position: relative;
+				float: left;
+				width: 150px;
+				cursor: pointer;
+				user-select: none;
+			}
+
+			& ~ label:before,
+			& ~ label:after {
+				position: absolute;
+				display: block;
+				content: ' ';
+				transition: all 250ms cubic-bezier(.4,0,.2,1);
+			}
+
+			& ~ label:before {
+				top: 3px;
+				left: 0px;
+				width: 32px;
+				height: 13px;
+				border-radius: 12px;
+				background-color: $grey;
+			}
+
+			& ~ label:after {
+				top: -1px;
+				left: -9px;
+				bottom: 0.1em;
+				margin-left: 0.1em;
+				background-color: #fff;
+				border-radius: 50%;
+				width: 20px;
+				height: 20px;
+				border-radius: 50%;
+				border: solid 2px;
+				border-color: #fff;
+				box-shadow: 0 3px 4px 0 rgba(0,0,0,.14),0 3px 3px -2px rgba(0,0,0,.2),0 1px 8px 0 rgba(0,0,0,.12);
+			}
+		}
+
+		// Checked
+		// =========================================================================
+
+		&:checked {
+
+			& ~ label:before {
+				background-color: lighten($primary, 10%);
+			}
+
+			& ~ label:after {
+				left: 15px;
+				background-color: $primary;
+				border-color: $primary;
+			}
+		}
+	}
+}

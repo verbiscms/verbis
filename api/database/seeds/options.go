@@ -91,6 +91,7 @@ func (s *Seeder) runOptions() error {
 		// Gzip
 		"gzip": true,
 		"gzip_compression": "default-compression",
+		"gzip_use_paths": false,
 		"gzip_excluded_extensions": []string{},
 		"gzip_excluded_paths": []string{},
 		// Minify
