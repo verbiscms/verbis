@@ -66,7 +66,7 @@ func (s *Server) setupGzip(o models.OptionsRepository) {
 	options, err := o.GetStruct()
 	if err != nil {
 		// TODO: Need to check here for logging.
-		log.Fatal(&errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not get the options struct"), Operation: op, Err: err}
+		log.Fatal(&errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not get the options struct"), Operation: op, Err: err})
 	}
 
 	// Bail if there is no
