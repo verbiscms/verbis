@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/helpers/frontend"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/minify"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -32,16 +33,17 @@ type FrontendController struct {
 	server          *server.Server
 	models 			*models.Store
 	config 			config.Configuration
+	cacher 			frontend.Cacher
 	minify 			minify.Minifier
 }
 
 // newFrontend - Construct
 func newFrontend(m *models.Store, config config.Configuration) *FrontendController {
-	min := minify.New(m.Options)
 	return &FrontendController{
 		models: m,
 		config: config,
-		minify: min,
+		cacher: frontend.NewCache(m.Options),
+		minify: minify.New(m.Options),
 	}
 }
 
@@ -60,7 +62,16 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 		return
 	}
 
-	g.Data(200, mime, data)
+	// If the minified file is nil or the err is not empty, serve the original data
+	buf := bytes.NewBuffer(data)
+	minifiedFile, err := c.minify.MinifyBytes(buf, mime)
+	if err != nil || minifiedFile == nil {
+		g.Data(200, mime, data)
+	}
+
+	c.cacher.Cache(g)
+
+	g.Data(200, mime, minifiedFile)
 }
 
 func (c *FrontendController) GetAssets(g *gin.Context) {
@@ -92,9 +103,10 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 		g.File(assetsPath + fileName)
 	}
 
+	c.cacher.Cache(g)
+
 	g.Data(200, mime, minifiedFile)
 }
-
 
 
 // Serve the front end website
@@ -156,7 +168,6 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	g.Writer.WriteHeader(200)
 	g.Writer.Write(minfied)
-
 }
 
 func (c *FrontendController) NoPageFound(g *gin.Context) {

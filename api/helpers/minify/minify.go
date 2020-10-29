@@ -30,9 +30,8 @@ type Minify struct {
 	options models.OptionsRepository
 }
 
+// New - Construct, sets minify functions
 func New(o models.OptionsRepository) *Minify {
-	const op = "Minifier.GetAssets"
-
 	m := min.New()
 
 	m.AddFunc("text/css", css.Minify)
