@@ -161,9 +161,16 @@ $card-padding-x-desk: 24px;
 			padding: 0 1.4rem 1.4rem;
 		}
 
+		&-margin-small {
+			margin-bottom: 1.6rem;
+		}
+
 		@include media-desk {
 			margin-bottom: 4rem;
 
+			&-margin-small {
+				margin-bottom: 2rem;
+			}
 
 			.form-label {
 				display: block;

@@ -6,11 +6,15 @@
 		<!-- =====================
 			Serp
 			===================== -->
-		<div class="card card-serp">
+		<div class="card card-serp card-small-box-shadow card-expand card-expand-margin-small">
 			<collapse :show="true">
 				<template v-slot:header>
 					<div class="card-header">
-						<h3 class="card-title">Serp Preview</h3>
+						<div>
+							<h4 class="card-title">Serp Preview</h4>
+							<p>Hello</p>
+						</div>
+
 						<div class="card-controls">
 							<i class="feather feather-chevron-down"></i>
 						</div>
@@ -18,18 +22,16 @@
 				</template>
 				<template v-slot:body>
 					<div class="card-body">
-<!--						<span class="card-serp-title" v-text="meta.title === '' ? 'Title will appear here' : meta.title"></span>-->
-<!--						<span class="card-serp-url">{{ getUrl }}</span>-->
-<!--						<span class="card-serp-description" v-text="meta.description === '' ? 'Description will appear here' : meta.description"></span>-->
+						<span class="card-serp-title" v-text="metaProcessed['meta_title'] === '' ? 'Title will appear here' : metaProcessed['meta_title']"></span>
+						<span class="card-serp-url">{{ getSiteUrl + getUrl }}</span>
+						<span class="card-serp-description" v-text="metaProcessed['meta_description'] === '' ? 'Description will appear here' : metaProcessed['meta_description']"></span>
 					</div><!-- /Card Body -->
 				</template>
 			</collapse>
 		</div><!-- /Card -->
 		<div v-if="!loadingMeta" class="card card-small-box-shadow card-expand">
-			<MetaForm :meta="test" @update="updateMeta"></MetaForm>
+			<MetaForm :meta="metaProcessed" @update="updateMeta"></MetaForm>
 		</div>
-		{{ test }}
-		{{ emitVal }}
 	</section>
 </template>
 
@@ -91,49 +93,36 @@ export default {
 					break;
 				}
 				case "meta_facebook_title": {
-					if (this.emitVal['facebook'] === undefined) {
-						this.$set(this.emitVal, "facebook", {});
-					}
 					this.$set(this.emitVal['facebook'], "title", val);
 					break;
 				}
 				case "meta_facebook_description": {
-					if (this.emitVal['facebook'] === undefined) {
-						this.$set(this.emitVal, "facebook", {});
-					}
 					this.$set(this.emitVal['facebook'], "description", val);
 					break;
 				}
 				case "meta_twitter_title": {
-					if (this.emitVal['twitter'] === undefined) {
-						this.$set(this.emitVal, "twitter", {});
-					}
 					this.$set(this.emitVal['twitter'], "title", val);
 					break;
 				}
 				case "meta_twitter_description": {
-					if (this.emitVal['twitter'] === undefined) {
-						this.$set(this.emitVal, "twitter", {});
-					}
 					this.$set(this.emitVal['twitter'], "description", val);
 					break;
 				}
 			}
-			this.test = this.emitVal;
+			this.metaProcessed = this.emitVal;
 		},
 	},
 	computed: {
+		/*
+		 * getUrl()
+		 */
 		getUrl() {
 			return this.url;
 		},
-		getSiteUrl() {
-			return this.$store.state.site['url'];
-		},
-		test: {
+		metaProcessed: {
 			get() {
 				const meta = this.meta;
-				if (this.meta === null) {
-					console.log("in")
+				if (this.meta === null || this.meta === undefined) {
 					return {
 						meta_title: "",
 						meta_description: "",
@@ -144,7 +133,7 @@ export default {
 					}
 				} else {
 					return {
-						meta_title: meta['title'],
+						meta_title: meta['title'] === undefined ? "" : meta['title'],
 						meta_description: meta['description'],
 						meta_facebook_title: meta['facebook']['title'],
 						meta_facebook_description: meta['facebook']['description'],
@@ -153,15 +142,11 @@ export default {
 					}
 				}
 			},
-			set() {
-				this.$emit("update:meta", this.emitVal);
+			set(value) {
+				this.$emit("update:meta", value);
 			}
 		}
 	}
 }
 
 </script>
-
-<!--<span class="social-title">{{ value['facebook']['title'] }}</span>-->
-<!--<span class="social-description">{{ getDescription(140, value['facebook']['description']) }}</span>-->
-<!--<span class="social-url">{{ getSiteUrl }}</span>-->
