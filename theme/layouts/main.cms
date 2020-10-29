@@ -27,7 +27,7 @@
 <![endif]-->
 <main>
     <img src="/assets/test.svg">
-    < src="/assets/test.json">
+    <img src="/assets/test.jpg">
     <img src="/assets/test.xml">
     {{ include "partials/header" }}
     {{ template "content" . }}

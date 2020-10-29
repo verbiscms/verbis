@@ -136,7 +136,7 @@
 							<h4>Profile picture</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
-							<div class="form-group" v-if="!profilePicture">
+							<div v-if="!profilePicture">
 								<button class="btn" @click.prevent="showImageModal = true">Add photo</button>
 							</div>
 							<div v-else>
