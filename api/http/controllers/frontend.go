@@ -86,7 +86,6 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 
 	mime := mime.TypeByExtension(strings.Replace(filepath.Ext(fileName), ".", "", 1))
 
-
 	// If the minified file is nil or the err is not empty, serve the original data
 	minifiedFile, err := c.minify.Minify(file, mime)
 	if err != nil || minifiedFile == nil {

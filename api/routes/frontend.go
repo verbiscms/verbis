@@ -19,16 +19,14 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 	{
 		// Serve assets
 		s.GET("/assets/*any", c.Frontend.GetAssets)
-		//s.Static("/assets", paths.Theme() + theme.AssetsPath)
-
-		// minify then cache
-		// wrap in cache check
 
 		// Serve Verbis Assets
 		s.Static("/verbis", paths.Api() + "/web/public")
 
+		// Serve uploads
 		s.GET("/uploads/*any", c.Frontend.GetUploads)
 
+		// Serve the front end
 		s.NoRoute(c.Frontend.Serve)
 	}
 }

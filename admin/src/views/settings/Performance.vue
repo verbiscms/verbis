@@ -34,7 +34,7 @@
 								<div class="card-header">
 									<div>
 										<h4 class="card-title">Cache assets?</h4>
-										<p>By ticking the box, assets will be globally.</p>
+										<p>By ticking the box, cache headers will be sent from the Verbis server with the expiration times & extensions set below.</p>
 									</div>
 									<div class="toggle">
 										<input type="checkbox" class="toggle-switch" id="cache-frontend" checked v-model="data['cache_frontend']" :true-value="true" :false-value="false" />
@@ -49,7 +49,7 @@
 								<div class="card-header">
 									<div>
 										<h4 class="card-title">Expiration</h4>
-										<p>By ticking the box, assets will be globally.</p>
+										<p>Set an duration in seconds for a duration to set the caching headers.</p>
 									</div>
 									<div class="card-controls">
 										<i class="feather feather-chevron-down"></i>
@@ -75,8 +75,8 @@
 									</FormGroup><!-- /Request -->
 									<!-- Seconds -->
 									<FormGroup label="Maximum age*" :error="errors['cache_frontend_seconds']">
-										<input class="form-input form-input-white" type="text" v-model.number="data['cache_frontend_seconds']">
-										<p>Enter a maximum age (in seconds) to cache the assets.</p>
+										<input class="form-input form-input-white" type="number" v-model.number="data['cache_frontend_seconds']">
+										<p>Enter a maximum age (in seconds) to cache the assets. <b>Duration: <span>{{ [data['cache_frontend_seconds'], 'seconds'] | duration('humanize') }}</span></b></p>
 									</FormGroup><!-- /Seconds -->
 								</div><!-- /Card Body -->
 							</template>
@@ -87,7 +87,7 @@
 								<div class="card-header">
 									<div>
 										<h4 class="card-title">File extensions</h4>
-										<p>Assets can be cached by inputting </p>
+										<p>Assets can be cached by inputting file extensions below, if the file extension is not in the list, it will be ignored.</p>
 									</div>
 									<div class="card-controls">
 										<i class="feather feather-chevron-down"></i>
@@ -152,9 +152,24 @@
 									</FormGroup>
 								</div><!-- /Card Body -->
 							</template>
-						</Collapse><!-- /Excluded File extensions -->
+						</Collapse><!-- /Compression -->
+						<!-- Use Paths? -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['gzip_use_paths'] }">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Use excluded paths?</h4>
+										<p>The default way to set excluded directives for Gzip is to use fiel extensions, if you would like to use paths, check the toggle.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="gzip-use-paths" v-model="data['gzip_use_paths']" :true-value="true" :false-value="false" />
+										<label for="gzip-use-paths"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Compression -->
 						<!-- Excluded File extensions -->
-						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['gzip_excluded_extensions'] }">
+						<Collapse v-if="data['gzip_use_paths']" :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['gzip_excluded_extensions'] }">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>
@@ -176,7 +191,7 @@
 							</template>
 						</Collapse><!-- /Excluded File extensions -->
 						<!-- Excluded Paths -->
-						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['gzip_excluded_paths'] }">
+						<Collapse v-else :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['gzip_excluded_paths'] }">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>

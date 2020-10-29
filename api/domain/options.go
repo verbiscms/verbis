@@ -54,6 +54,7 @@ type Options struct {
 	// Gzip
 	Gzip 		 			bool 					`json:"gzip"`
 	GzipCompression 		string 					`json:"gzip_compression"`
+	GzipUsePaths		 	bool 					`json:"gzip_use_paths"`
 	GzipExcludedExtensions 	[]string 				`json:"gzip_excluded_extensions"`
 	GzipExcludedPaths 		[]string 				`json:"gzip_excluded_paths"`
 	// Minify
