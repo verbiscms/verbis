@@ -45,7 +45,6 @@ func printSpinner(msg string) {
 	s := spinner.New(spinner.CharSets[14], 50*time.Millisecond)
 	s.Suffix = " " + msg
 	s.Start()
-	time.Sleep(1 * time.Second)
 	fmt.Printf("\n")
 	s.Stop()
 }

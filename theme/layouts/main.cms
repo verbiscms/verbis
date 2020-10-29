@@ -12,7 +12,8 @@
     <!-- Open Graph -->
     <!-- CSS -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
-{{/*    <link rel="stylesheet" href="/assets/css/app.css">*/}}
+    <link rel="stylesheet" href="/assets/test.css">
+
     <!-- Preload JS -->
 {{/*    <link rel="preload" href="/assets/js/app.js" as="script">*/}}
     <!-- Favicon -->
@@ -25,12 +26,16 @@
 </div>
 <![endif]-->
 <main>
+    <img src="/assets/test.svg">
+    < src="/assets/test.json">
+    <img src="/assets/test.xml">
     {{ include "partials/header" }}
     {{ template "content" . }}
 </main>
     {{ include "partials/footer" }}
 <!-- Javascript -->
 {{/*<script src="/assets/js/app.js"></script>*/}}
+<script src="/assets/test.js"></script>
 <!-- Google Transition Fix -->
 <script> </script>
     {{ verbisFoot }}

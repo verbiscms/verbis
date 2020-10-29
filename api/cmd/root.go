@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/spf13/cobra"
 	"strconv"
@@ -41,7 +42,7 @@ func Execute() {
 
 	// Execute the main command
 	if err := rootCmd.Execute(); err != nil {
-		printError("Could not start Verbis")
+		printError(fmt.Sprintf("Could not start Verbis: %s", err.Error()))
 	}
 }
 
