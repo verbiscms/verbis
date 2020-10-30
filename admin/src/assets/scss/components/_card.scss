@@ -126,7 +126,7 @@ $card-padding-x-desk: 24px;
 		#{$self}-header {
 			max-height: none;
 			border-bottom: 0;
-			padding: 1.1rem 1.2rem;
+			padding: 1.4rem 1.2rem;
 
 			h4 {
 				transition: color 300ms ease;
@@ -176,11 +176,14 @@ $card-padding-x-desk: 24px;
 				display: block;
 			}
 
-			input,
-			textarea,
-			.form-select-cont {
-				width: 50%;
+			&:not(#{$self}-expand-full-width) {
+				input,
+				textarea,
+				.form-select-cont {
+					width: 50%;
+				}
 			}
+
 		}
 	}
 

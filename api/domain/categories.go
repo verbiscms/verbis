@@ -18,3 +18,8 @@ type Category struct {
 	UpdatedAt		time.Time	`db:"updated_at" json:"updated_at"`
 	CreatedAt		time.Time	`db:"created_at" json:"created_at"`
 }
+
+// master if not parent id
+
+// archive page uuid
+// resource name,

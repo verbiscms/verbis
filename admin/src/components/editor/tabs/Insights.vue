@@ -3,22 +3,17 @@
 	===================== -->
 <template>
 	<section>
-		<div class="card">
-			<collapse :show="true">
+		<div class="card card-small-box-shadow card-expand">
+			<Collapse :show="false" class="collapse-border-bottom">
 				<template v-slot:header>
 					<div class="card-header">
-						<h3 class="card-title">Insights</h3>
-						<div class="card-controls">
-							<i class="feather feather-chevron-down"></i>
+						<div>
+							<h4 class="card-title">Insights</h4>
+							<p>Coming soon!</p>
 						</div>
 					</div><!-- /Card Header -->
 				</template>
-				<template v-slot:body>
-					<div class="card-body">
-						<h4>Coming soon!</h4>
-					</div><!-- /Card Body -->
-				</template>
-			</collapse>
+			</Collapse>
 		</div><!-- /Card -->
 	</section>
 </template>
