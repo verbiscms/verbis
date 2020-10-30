@@ -74,17 +74,17 @@ type PostSeoMeta struct {
 }
 
 type PostMeta struct {
-	Title   	string `json:"title,omitempty"`
-	Description string `json:"description,omitempty"`
+	Title   			string `json:"title,omitempty"`
+	Description 		string `json:"description,omitempty"`
 	Twitter struct {
-		Title       string `json:"title,omitempty"`
-		Description string `json:"description,omitempty"`
-		Image      	string `json:"image,omitempty"`
+		Title       	string `json:"title,omitempty"`
+		Description 	string `json:"description,omitempty"`
+		ImageId      	int `json:"image_id,omitempty"`
 	} `json:"twitter,omitempty"`
 	Facebook struct {
-		Title       string `json:"title,omitempty"`
-		Description string `json:"description,omitempty"`
-		Image      	string `json:"image,omitempty"`
+		Title       	string `json:"title,omitempty"`
+		Description 	string `json:"description,omitempty"`
+		ImageId      	int `json:"image_id,omitempty"`
 	} `json:"facebook,omitempty"`
 }
 

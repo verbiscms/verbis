@@ -15,12 +15,13 @@ type TemplateFunctions struct {
 	post *domain.Post
 	fields map[string]interface{}
 	store *models.Store
-	functions template.FuncMap
+	options domain.Options
 }
 
 // Construct
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunctions {
 
+	// Unmarshal the fields on the post
 	f := make(map[string]interface{})
 	if p.Fields != nil {
 		if err := json.Unmarshal(*p.Fields, &f); err != nil {
@@ -28,14 +29,18 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 		}
 	}
 
-	tf := &TemplateFunctions{
+	options, err := s.Options.GetStruct()
+	if err != nil {
+		log.Error(err)
+	}
+
+	return &TemplateFunctions{
 		gin: g,
 		post: p,
 		fields: f,
 		store: s,
+		options: options,
 	}
-
-	return tf
 }
 
 // Get all template functions
@@ -75,8 +80,6 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"escape": t.escape,
 	}
 
-	t.functions = funcMap
-
 	return funcMap
 }
 
@@ -88,37 +91,10 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 	 	return nil, err
 	 }
 
-	 templates, err := t.store.Site.GetTemplates()
-	 if err != nil {
-		return nil, err
-	 }
-	 //
-	 //var test = make(map[string]map[string]string)
-	 //for _, v := range templates.Template {
-	 //	 test[v["key"]] = *v
-		// fmt.Println(test)
-	 //	//layouts[k] = map[string]interface{
-	 //	//	v: "e"
-		////}
-	 //}
-
-	layouts, err := t.store.Site.GetLayouts()
-	if err != nil {
-		return nil, err
-	}
-	//var layouts = make(map[string]interface{})
-	//for k, v := range l {
-	//	l.Layout[k].
-	//	layouts[v.] = v
-	//}
-
 	 data := map[string]interface{}{
 	 	"Site": t.store.Site.GetGlobalConfig(),
 	 	"Post": t.post,
 	 	"Theme": theme.Theme,
-	 	"Resources": theme.Resources,
-	 	"Templates": templates,
-	 	"Layouts": layouts,
 	 }
 
 	return data, nil

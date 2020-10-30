@@ -36,77 +36,111 @@
 			<!-- =====================
 				Editor
 				===================== -->
-			<div v-if="options" class="col-12 col-desk-4 col-hd-3 order-desk-last media-col">
+			<div v-if="options" class="col-12 col-desk-4 col-hd-3 order-desk-last media-col media-side">
 				<div v-if="selectedMedia">
-					<!-- Options -->
-					<form class="form media-options">
-						<div class="media-actions">
-							<h2>Options</h2>
-							<button class="btn btn-orange" @click.prevent="showDeleteModal = true" :class="{ 'btn-loading' : isDeleting }">Delete</button>
-						</div>
-						<!-- Title -->
-						<div class="form-group">
-							<label for="media-title" class="form-label">Title</label>
-							<input id="media-title" type="text" class="form-input form-input-white" v-model="selectedMedia.title" @keyup="save">
-						</div><!-- /Title -->
-						<!-- Alt Text -->
-						<div class="form-group" v-if="getMediaType(selectedMedia.type) !== 'file'">
-							<label for="media-alt" class="form-label">Alternative text</label>
-							<input id="media-alt" type="text" class="form-input form-input-white" v-model="selectedMedia.alt" @keyup="save">
-						</div><!-- /Alt Text -->
-						<!-- Description -->
-						<div class="form-group">
-							<label for="media-description" class="form-label">Description</label>
-							<input id="media-description" type="text" class="form-input form-input-white" v-model="selectedMedia.description" @keyup="save">
-						</div><!-- /Description -->
-					</form><!-- /Options -->
-					<!-- Editor -->
-					<div class="media-information" v-if="!modal">
-						<h2>Information</h2>
-						<!-- Url -->
-						<div class="text-cont">
-							<h6>Url:</h6>
-							<p><a :href="getSiteUrl + selectedMedia.url" target="_blank">{{ selectedMedia.url }}</a></p>
-						</div>
-						<!-- Filesize -->
-						<div class="text-cont">
-							<h6>Filesize:</h6>
-							<p>{{ formatBytes(selectedMedia['file_size']) }}</p>
-						</div>
-						<!-- Uploaded by -->
-						<div class="text-cont">
-							<h6>Uploaded by:</h6>
-							<p>{{ selectedMedia['uploaded_by']['full_name'] }}</p>
-						</div>
-						<!-- Type -->
-						<div class="text-cont">
-							<h6>Type:</h6>
-							<p>{{ selectedMedia.type }}</p>
-						</div>
-						<!-- Uploaded at -->
-						<div class="text-cont">
-							<h6>Uploaded at:</h6>
-							<p>{{ selectedMedia['created_at'] | moment("dddd, MMMM Do YYYY") }}</p>
-						</div>
-						<div class="text-cont" v-if="selectedMedia.sizes && selectedMedia.sizes.length">
-							<h6>Sizes:</h6>
-							<div class="media-size" v-for="size in sortSizes(selectedMedia.sizes)" :key="size.uuid">
-								<div class="media-size-header">
-									<h4>{{ size['size_name'] }}</h4>
-									<div class="badge badge-green">{{ formatBytes(size['file_size']) }}</div>
+					<div class="media-options card card-small-box-shadow card-expand card-expand-full-width card-margin-none">
+						<!-- Options -->
+						<Collapse  class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header">
+									<h3 class="card-title">Options</h3>
+									<div class="card-controls">
+										<i class="feather feather-trash-2" @click.prevent="showDeleteModal = true" :class="{ 'btn-loading' : isDeleting }"></i>
+										<i class="feather feather-chevron-down"></i>
+									</div>
 								</div>
-								<div class="media-size-body">
-									<p><span>Crop:</span> {{ size.crop }}</p>
-									<p><span>Url:</span> {{ size.url }}</p>
-									<p><span>Width:</span> {{ size.width }}px</p>
-									<p><span>Height:</span> {{ size.height }}px</p>
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Title -->
+									<div class="form-group">
+										<label for="media-title" class="form-label">Title</label>
+										<input id="media-title" type="text" class="form-input form-input-white" v-model="selectedMedia.title" @keyup="save">
+									</div><!-- /Title -->
+									<!-- Alt Text -->
+									<div class="form-group" v-if="getMediaType(selectedMedia.type) !== 'file'">
+										<label for="media-alt" class="form-label">Alternative text</label>
+										<input id="media-alt" type="text" class="form-input form-input-white" v-model="selectedMedia.alt" @keyup="save">
+									</div><!-- /Alt Text -->
+									<!-- Description -->
+									<div class="form-group">
+										<label for="media-description" class="form-label">Description</label>
+										<input id="media-description" type="text" class="form-input form-input-white" v-model="selectedMedia.description" @keyup="save">
+									</div><!-- /Description -->
 								</div>
-							</div>
-						</div>
-					</div><!-- /Editor -->
+							</template>
+						</Collapse><!-- /Options -->
+						<!-- Editor -->
+						<Collapse v-if="!modal" :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header">
+									<h3 class="card-title">Information</h3>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div>
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Url -->
+									<div class="text-cont">
+										<h6>Url:</h6>
+										<p><a :href="getSiteUrl + selectedMedia.url" target="_blank">{{ selectedMedia.url }}</a></p>
+									</div>
+									<!-- Filesize -->
+									<div class="text-cont">
+										<h6>Filesize:</h6>
+										<p>{{ formatBytes(selectedMedia['file_size']) }}</p>
+									</div>
+									<!-- Uploaded by -->
+									<div class="text-cont">
+										<h6>Uploaded by:</h6>
+										<p>{{ selectedMedia['uploaded_by']['full_name'] }}</p>
+									</div>
+									<!-- Type -->
+									<div class="text-cont">
+										<h6>Type:</h6>
+										<p>{{ selectedMedia.type }}</p>
+									</div>
+									<!-- Uploaded at -->
+									<div class="text-cont text-cont-no-margin">
+										<h6>Uploaded at:</h6>
+										<p>{{ selectedMedia['created_at'] | moment("dddd, MMMM Do YYYY") }}</p>
+									</div>
+								</div>
+							</template>
+						</Collapse><!-- /Editor -->
+						<!-- Sizes -->
+						<Collapse  v-if="selectedMedia.sizes"  :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header">
+									<h3 class="card-title">Sizes</h3>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div>
+							</template>
+							<template v-slot:body>
+								<div class="card-body" >
+									<div class="media-size" v-for="size in sortSizes(selectedMedia.sizes)" :key="size.uuid">
+										<div class="media-size-header">
+											<h4>{{ size['size_name'] }}</h4>
+											<div class="badge badge-green">{{ formatBytes(size['file_size']) }}</div>
+										</div>
+										<div class="media-size-body">
+											<p><span>Crop:</span> {{ size.crop }}</p>
+											<p><span>Url:</span> {{ size.url }}</p>
+											<p><span>Width:</span> {{ size.width }}px</p>
+											<p><span>Height:</span> {{ size.height }}px</p>
+										</div>
+									</div>
+								</div>
+							</template>
+						</Collapse><!-- /Sizes -->
+					</div>
 				</div><!-- /Wrapper -->
 				<div v-else-if="!selectedMedia && media.length" class="trans-fade-in-anim">
-					<div class="card media-select-card">
+					<div class="card card-small-box-shadow media-select-card">
 						<div class="card-body">
 							<i class="feather feather-edit"></i>
 							<div>
@@ -215,6 +249,7 @@ import Modal from "../../components/modals/General";
 import Tabs from "../../components/misc/Tabs";
 import Pagination from "@/components/misc/Pagination";
 import {mediaMixin} from "@/util/media";
+import Collapse from "@/components/misc/Collapse";
 
 export default {
 	name: "Uploader",
@@ -250,6 +285,7 @@ export default {
 		}
 	},
 	components: {
+		Collapse,
 		Modal,
 		Pagination,
 		Tabs,
@@ -573,7 +609,9 @@ export default {
 		 * Sort sizes by width for the side panel.
 		 */
 		sortSizes(sizes) {
-			return sizes.slice().sort((a, b) => parseFloat(a.width) - parseFloat(b.width));
+			return sizes;
+
+			//return sizes.slice().sort((a, b) => parseFloat(a.width) - parseFloat(b.width));
 		},
 		/*
 		 * removeErrorItem()
@@ -678,6 +716,7 @@ export default {
 		justify-content: center;
 		align-items: center;
 		width: 100%;
+		min-height: 300px;
 		border-radius: 10px;
 		background-color: $white;
 		border: 2px dashed $grey-light;
@@ -930,7 +969,7 @@ export default {
 	// =========================================================================
 
 	&-select-card {
-		box-shadow: 0 3px 6px 0 rgba($black, 0.05);
+	//	box-shadow: 0 3px 6px 0 rgba($black, 0.05);
 
 		.card-body {
 			display: flex;
@@ -954,19 +993,9 @@ export default {
 	// Options
 	// =========================================================================
 
-	&-options {
-		margin-bottom: 1.6em;
+	&-side {
+		margin-bottom: 1.6rem;
 
-		#{$self}-actions {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-bottom: 0.8rem;
-
-			h2 {
-				margin-bottom: 0;
-			}
-		}
 	}
 
 	// Information
@@ -979,7 +1008,7 @@ export default {
 
 		}
 		.text-cont {
-			margin-bottom: 1.4rem;
+			//margin-bottom: 1.4rem;
 		}
 	}
 
@@ -998,13 +1027,13 @@ export default {
 	// =========================================================================
 
 	&-size {
-		padding: 1rem;
-		margin-bottom: 10px;
-		border-radius: 10px;
+		border-bottom: 1px solid $grey-light;
 		background-color: $white;
+		padding: 16px 0;
 
 		&:first-of-type {
-			margin-top: 10px;
+			border-top: 1px solid $grey-light;
+			//padding-top: 10px;
 		}
 
 		&-header {
@@ -1012,7 +1041,7 @@ export default {
 			justify-content: space-between;
 			align-items: center;
 			width: 100%;
-			margin-bottom: 4px;
+			//margin-bottom: 4px;
 		}
 
 		&-body {
@@ -1027,6 +1056,15 @@ export default {
 			max-width: 100%;
 			word-break: keep-all;
 			text-overflow: ellipsis;
+
+			&:last-of-type {
+				margin-bottom: 0;
+			}
+		}
+
+		&:last-of-type {
+			border-bottom: 0;
+			padding-bottom: 0;
 		}
 	}
 

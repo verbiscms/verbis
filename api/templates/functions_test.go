@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/magiconair/properties/assert"
@@ -30,7 +31,11 @@ func newTestSuite(args ...string) *TemplateFunctions {
 		}
 	}
 
-	return NewFunctions(g, &models.Store{}, p)
+	mockOptions := mocks.OptionsRepository{}
+	mockOptions.On("GetStruct").Return(domain.Options{}, nil)
+	return NewFunctions(g, &models.Store{
+		Options: &mockOptions,
+	}, p)
 }
 
 // runt - Run the template test by executing the tpl give.

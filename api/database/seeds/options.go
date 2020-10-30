@@ -16,6 +16,8 @@ func (s *Seeder) runOptions() error {
 		"site_description": api.App.Description,
 		"site_logo": api.App.Logo,
 		"site_url" : api.App.Url,
+		// General
+		"general_locale" : "en-gb",
 		// Contact
 		"contact_email" : "",
 		"contact_telephone" : "",
@@ -30,18 +32,18 @@ func (s *Seeder) runOptions() error {
 		"footer_text" : "",
 		"footer_disclosure" : "",
 		"seo_public" : false,
+		// Code Injection
+		"codeinjection_head": "",
+		"codeinjection_foot": "",
 		// Meta
 		"meta_title" : "",
 		"meta_description" : "",
 		"meta_facebook_title" : "",
 		"meta_facebook_description" : "",
-		"meta_facebook_image_id" : "",
+		"meta_facebook_image_id" : 0,
 		"meta_twitter_title" : "",
 		"meta_twitter_description" : "",
-		"meta_twitter_image_id" : "",
-		// Code Injection
-		"codeinjection_head": "",
-		"codeinjection_foot": "",
+		"meta_twitter_image_id" : 0,
 		// Media
 		"media_compression": 80,
 		"media_convert_webp": true,

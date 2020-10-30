@@ -238,12 +238,14 @@ export default {
 			if (this.selectedImageType === "facebook") {
 				this.facebookImage = e;
 				this.meta['meta_facebook_image_id'] = e.id;
+				this.$emit('update', e.id, 'meta_facebook_image_id');
 				this.$nextTick(() => {
 					this.helpers.setHeight(this.$refs.facebook.closest(".collapse-content"));
 				})
 			} else {
 				this.twitterImage = e;
 				this.meta['meta_twitter_image_id'] = e.id;
+				this.$emit('update', e.id, 'meta_twitter_image_id');
 				this.$nextTick(() => {
 					this.helpers.setHeight(this.$refs.twitter.closest(".collapse-content"));
 				})

@@ -1,13 +1,10 @@
 package models
 
 import (
-	"bytes"
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api"
-	"github.com/chai2010/webp"
+	"github.com/ainsleyclark/verbis/api/helpers/webp"
 
-	//	"bytes"
-	//"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -231,7 +228,8 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error()
 		}
-		go convertWebP(*decodedImage, path + "/" + key.String() + extension, s.options.MediaCompression)
+
+		go webp.Convert(*decodedImage, path + "/" + key.String() + extension, s.options.MediaCompression)
 	}
 
 	// Resize
@@ -460,7 +458,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.options.MediaConvertWebP {
-			go convertWebP(resized, filePath, s.options.MediaCompression)
+			go webp.Convert(resized, filePath, s.options.MediaCompression)
 		}
 	}
 
@@ -479,7 +477,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.options.MediaConvertWebP {
-			go convertWebP(resized, filePath, s.options.MediaCompression)
+			go webp.Convert(resized, filePath, s.options.MediaCompression)
 		}
 	}
 
@@ -492,19 +490,6 @@ func resizeImage(srcImage image.Image, width int, height int, crop bool) image.I
 		return imaging.Fill(srcImage, width, height, imaging.Center, imaging.Lanczos)
 	} else {
 		return imaging.Resize(srcImage, width, height, imaging.Lanczos)
-	}
-}
-
-// Converts an image to webp based on compression and decoded image.
-// Compression level is also set.
-func convertWebP(image image.Image, path string, compression int) {
-	var buf bytes.Buffer
-	if err := webp.Encode(&buf, image, &webp.Options{Lossless: true}); err != nil {
-		log.Println(err)
-	}
-
-	if err := ioutil.WriteFile(path + ".webp", buf.Bytes(), 0666); err != nil {
-		log.Println(err)
 	}
 }
 
