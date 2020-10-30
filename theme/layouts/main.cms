@@ -27,7 +27,10 @@
 <![endif]-->
 <main>
     <img src="/assets/test.svg">
-    <img src="/assets/test.jpg">
+{{/*    <img src="/assets/test.jpg">*/}}
+
+{{/*    {{ $m := getMedia 1 }}*/}}
+{{/*    <img src=" {{ $m.Url }}" alt="">*/}}
     <img src="/assets/test.xml">
     {{ include "partials/header" }}
     {{ template "content" . }}

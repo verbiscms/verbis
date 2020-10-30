@@ -12,6 +12,20 @@ type OptionsRepository struct {
 	mock.Mock
 }
 
+// Create provides a mock function with given fields: name, value
+func (_m *OptionsRepository) Create(name string, value interface{}) error {
+	ret := _m.Called(name, value)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, interface{}) error); ok {
+		r0 = rf(name, value)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Exists provides a mock function with given fields: name
 func (_m *OptionsRepository) Exists(name string) bool {
 	ret := _m.Called(name)
@@ -91,6 +105,20 @@ func (_m *OptionsRepository) GetStruct() (domain.Options, error) {
 	}
 
 	return r0, r1
+}
+
+// Update provides a mock function with given fields: name, value
+func (_m *OptionsRepository) Update(name string, value interface{}) error {
+	ret := _m.Called(name, value)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, interface{}) error); ok {
+		r0 = rf(name, value)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // UpdateCreate provides a mock function with given fields: options

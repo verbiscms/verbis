@@ -32,6 +32,7 @@
 		<div v-if="!loadingMeta" class="card card-small-box-shadow card-expand">
 			<MetaForm :meta="metaProcessed" @update="updateMeta"></MetaForm>
 		</div>
+	<pre>	{{ metaProcessed }}</pre>
 	</section>
 </template>
 
@@ -67,15 +68,20 @@ export default {
 			"facebook": {
 				"title": "",
 				"description": "",
+				"image_id": "",
 			},
 			"twitter": {
 				"title": "",
 				"description": "",
+				"image_id": "",
 			}
 		}
 	}),
 	created() {
 		this.loadingMeta = false;
+		if (this.meta !== null && this.meta !== undefined) {
+			this.emitVal = this.meta;
+		}
 	},
 	methods: {
 		/*
@@ -100,12 +106,20 @@ export default {
 					this.$set(this.emitVal['facebook'], "description", val);
 					break;
 				}
+				case "meta_facebook_image_id": {
+					this.$set(this.emitVal['facebook'], "image_id", val);
+					break;
+				}
 				case "meta_twitter_title": {
 					this.$set(this.emitVal['twitter'], "title", val);
 					break;
 				}
 				case "meta_twitter_description": {
 					this.$set(this.emitVal['twitter'], "description", val);
+					break;
+				}
+				case "meta_twitter_image_id": {
+					this.$set(this.emitVal['twitter'], "image_id", val);
 					break;
 				}
 			}
@@ -127,18 +141,22 @@ export default {
 						meta_title: "",
 						meta_description: "",
 						meta_facebook_title: "",
+						meta_facebook_image_id: "",
 						meta_facebook_description: "",
 						meta_twitter_title: "",
 						meta_twitter_description: "",
+						meta_twitter_image_id: "",
 					}
 				} else {
 					return {
-						meta_title: meta['title'] === undefined ? "" : meta['title'],
+						meta_title: meta['title'],
 						meta_description: meta['description'],
 						meta_facebook_title: meta['facebook']['title'],
 						meta_facebook_description: meta['facebook']['description'],
+						meta_facebook_image_id: meta['facebook']['image_id'],
 						meta_twitter_title: meta['twitter']['title'],
 						meta_twitter_description: meta['twitter']['description'],
+						meta_twitter_image_id: meta['twitter']['image_id'],
 					}
 				}
 			},

@@ -3,20 +3,21 @@ package controllers
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/frontend"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/minify"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
+	"io/ioutil"
 	"log"
-	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 )
@@ -25,6 +26,7 @@ import (
 type FrontendHandler interface {
 	GetUploads(g *gin.Context)
 	GetAssets(g *gin.Context)
+	GetCachedAsset(url string) (*[]byte, *string)
 	Serve(g *gin.Context)
 }
 
@@ -51,31 +53,69 @@ func newFrontend(m *models.Store, config config.Configuration) *FrontendControll
 func (c *FrontendController) GetUploads(g *gin.Context) {
 	const op = "FrontendHandler.GetUploads"
 
-	acceptHeader := g.Request.Header.Get("Accept")
-	acceptWebp := strings.Contains(acceptHeader, "image/webp")
+	// Get the base url e.g /uploads/2020/10/test.png
+	url := g.Request.URL.Path
 
-	path := g.Request.URL.Path
+	// Check if the file has been cached
+	cachedFile, cachedMime := c.GetCachedAsset(url)
+	if cachedFile != nil && cachedMime != nil {
+		fmt.Println("in cache")
+		g.Data(200, *cachedMime, *cachedFile)
+	}
 
-	data, mime, err := c.models.Media.Serve(path, acceptWebp)
+	// Set cache headers
+	c.cacher.Cache(g)
+
+	// Get the data & mime type from the media store
+	file, mimeType, err := c.models.Media.Serve(url, webp.Accepts(g))
 	if err != nil {
 		c.NoPageFound(g)
 		return
 	}
 
+	// Set the cache if the app is in production
+	defer func() {
+		if environment.IsProduction() {
+			cache.Store.Set(url, &file, cache.RememberForever)
+			cache.Store.Set(url + "mimetype",  &mimeType, cache.RememberForever)
+		}
+	}()
+
 	// If the minified file is nil or the err is not empty, serve the original data
-	buf := bytes.NewBuffer(data)
-	minifiedFile, err := c.minify.MinifyBytes(buf, mime)
-	if err != nil || minifiedFile == nil {
-		g.Data(200, mime, data)
+	minifiedFile, err :=  c.minify.MinifyBytes(bytes.NewBuffer(file), mimeType)
+	if err != nil || minifiedFile != nil {
+		file = minifiedFile
 	}
 
-	c.cacher.Cache(g)
-
-	g.Data(200, mime, minifiedFile)
+	// Return the upload
+	g.Data(200, mimeType, file)
 }
 
+// GetAssets
+//
+// It then obtains the assets path from the site model, and then checks
+// if the file exists, by opening the file, if it doesnt it will return a
+// 404.
+// It then sets cache headers using the cacher interface & checks if a webp
+// image is available with the path of .jpg.webp. The minify is the used
+// to see if the file can be minfied.
 func (c *FrontendController) GetAssets(g *gin.Context) {
 	const op = "FrontendHandler.GetAssets"
+
+	// Get the base url e.g /assets/images/test.png
+	url := g.Request.URL.Path
+
+	// Check if the file has been cached
+	cachedFile, cachedMime := c.GetCachedAsset(url)
+	if cachedFile != nil && cachedMime != nil {
+		g.Data(200, *cachedMime, *cachedFile)
+	}
+
+	// Get the options
+	options, err := c.models.Options.GetStruct()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Get the site config for serving the assets
 	theme, err := c.models.Site.GetThemeConfig()
@@ -83,31 +123,67 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 		log.Fatal(err)
 	}
 
+	// Get the relevant paths
 	assetsPath := paths.Theme() + theme.AssetsPath
-	fileName := strings.Replace(g.Request.URL.Path, "/assets", "", 1)
+	fileName := strings.Replace(url, "/assets", "", 1)
+	mimeType := mime.TypeByExtension(strings.Replace(filepath.Ext(fileName), ".", "", 1))
 
-	file, err := os.Open(assetsPath + fileName)
+	// Open the file.
+	file, err := ioutil.ReadFile(assetsPath + fileName)
 	if err != nil {
-		g.Writer.WriteHeader(http.StatusNotFound)
+		c.NoPageFound(g)
+		return
 	}
 
+	// Set the cache if the app is in production
 	defer func() {
-		file.Close()
+		if environment.IsProduction() {
+			cache.Store.Set(url, &file, cache.RememberForever)
+			cache.Store.Set(url + "mimetype",  &mimeType, cache.RememberForever)
+		}
 	}()
 
-	mime := mime.TypeByExtension(strings.Replace(filepath.Ext(fileName), ".", "", 1))
-
-	// If the minified file is nil or the err is not empty, serve the original data
-	minifiedFile, err := c.minify.Minify(file, mime)
-	if err != nil || minifiedFile == nil {
-		g.File(assetsPath + fileName)
-	}
-
+	// Set cache headers
 	c.cacher.Cache(g)
 
-	g.Data(200, mime, minifiedFile)
+	// Check if the serving of webp's is allowed & get the
+	// webp images and assign if not nil
+	if options.MediaServeWebP && webp.Accepts(g) {
+		webpFile := webp.GetData(g, assetsPath + fileName, mimeType)
+		if webpFile != nil {
+			mimeType = "image/webp"
+			file = webpFile
+		}
+	}
+
+	// If the minified file is nil or the err is not empty, serve the original data
+	minifiedFile, err := c.minify.MinifyBytes(bytes.NewBuffer(file), mimeType)
+	if err != nil || minifiedFile != nil {
+		file = minifiedFile
+	}
+
+	// Return the asset
+	g.Data(200, mimeType, file)
 }
 
+// GetCachedAsset checks to see if there is a cached version of the file
+// and mimetypes, returns nil for both if nothing was found.
+func (c *FrontendController) GetCachedAsset(url string) (*[]byte, *string) {
+	if environment.IsProduction() {
+		return nil, nil
+	}
+
+	file, foundFile := cache.Store.Get(url)
+	mime, foundMime := cache.Store.Get(url + "mimetype")
+
+	if foundFile && foundMime {
+		file := file.(*[]byte)
+		mimeType := mime.(*string)
+		return file, mimeType
+	}
+
+	return nil, nil
+}
 
 // Serve the front end website
 func (c *FrontendController) Serve(g *gin.Context) {

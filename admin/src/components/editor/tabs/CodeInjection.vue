@@ -6,11 +6,15 @@
 		<!-- =====================
 			Head
 			===================== -->
-		<div class="card">
-			<collapse>
+		<h6 class="margin">Header</h6>
+		<div class="card card-small-box-shadow card-expand">
+			<Collapse class="collapse-border-bottom">
 				<template v-slot:header>
 					<div class="card-header">
-						<h3 class="card-title">Header</h3>
+						<div>
+							<h4 class="card-title">Head</h4>
+							<p>Any code inputted here will be injected the <code v-html="'{{ verbisHead }}'"></code> of the site.</p>
+						</div>
 						<div class="card-controls">
 							<i class="feather feather-chevron-down"></i>
 						</div>
@@ -21,16 +25,20 @@
 						<prism-editor class="prism" v-model="headerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
 					</div><!-- /Card Body -->
 				</template>
-			</collapse>
+			</Collapse>
 		</div><!-- /Card -->
 		<!-- =====================
 			Footer
 			===================== -->
-		<div class="card">
-			<collapse>
+		<h6 class="margin">Footer</h6>
+		<div class="card card-small-box-shadow card-expand">
+			<Collapse class="collapse-border-bottom">
 				<template v-slot:header>
 					<div class="card-header">
-						<h3 class="card-title">Footer</h3>
+						<div>
+							<h4 class="card-title">Foot</h4>
+							<p>Any code inputted here will be injected to the <code v-html="'{{ verbisFooter }}'"></code> before the closing body tag.</p>
+						</div>
 						<div class="card-controls">
 							<i class="feather feather-chevron-down"></i>
 						</div>
@@ -41,7 +49,7 @@
 						<prism-editor class="prism" v-model="footerVal" :highlight="highlighter" line-numbers @keyup="emit"></prism-editor>
 					</div><!-- /Card Body -->
 				</template>
-			</collapse>
+			</Collapse>
 		</div><!-- /Card -->
 	</section>
 </template>

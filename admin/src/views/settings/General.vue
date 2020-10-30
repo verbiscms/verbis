@@ -108,6 +108,40 @@
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
+					General
+					===================== -->
+				<div class="col-12">
+					<h6 class="margin">General</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<!-- Title & description -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['general_locale']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Locale</h4>
+										<p>Set the site's location.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Locale -->
+									<FormGroup label="Location">
+										<div class="form-select-cont form-input">
+											<select class="form-select" v-model="test">
+												<option v-for="location in locale" :value="location" :key="location">{{ location }}</option>
+											</select>
+										</div>
+									</FormGroup><!-- /Request -->
+								</div>
+							</template>
+						</Collapse><!-- /Title & description -->
+					</div><!-- /Card -->
+				</div><!-- /Col -->
+				<!-- =====================
 					Social media
 					===================== -->
 				<div class="col-12">
@@ -256,6 +290,7 @@ import Uploader from "@/components/media/Uploader";
 import ImageWithActions from "@/components/misc/ImageWithActions";
 import Collapse from "@/components/misc/Collapse";
 import {validationMixin} from "@/util/validation";
+import localeObj from "@/util/locale.js";
 
 export default {
 	name: "General",
@@ -274,7 +309,11 @@ export default {
 		successMsg: "Site options updated successfully.",
 		hasLogo: false,
 		showImageModal: false,
+		locale: {},
 	}),
+	mounted() {
+		this.locale = localeObj;
+	},
 	methods: {
 		/*
 		 * insertLogo()
@@ -296,6 +335,26 @@ export default {
 		 */
 		getSiteTitle() {
 			return this.getSite.title === "Verbis" ? "the business" : this.getSite.title;
+		},
+		test: {
+			/*
+			 * getDefaultLocale()
+			 * Sets the default locale if there is none or returns
+			 * the set locale.
+			 */
+			get() {
+				if (this.data['general_locale'] === undefined || this.data['general_locale'] === "") {
+					return "English (United Kingdom)";
+				}
+				return this.locale[this.data['general_locale']];
+			},
+			/*
+			 * setLocale()
+			 * Sets the locale by key.
+			 */
+			set(value) {
+				this.data['general_locale'] = Object.keys(this.locale).find(key => this.locale[key] === value);
+			}
 		}
 	}
 }

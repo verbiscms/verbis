@@ -49,6 +49,8 @@ export const optionsMixin = {
 				this.runBeforeSave();
 			}
 
+			console.log(this.data);
+
 			this.axios.post("/options", this.data)
 				.then(() => {
 					this.errors = [];

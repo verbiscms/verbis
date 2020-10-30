@@ -16,77 +16,108 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 
 	var b bytes.Buffer
 
-	// Get Global Head (Code Injection)
-	siteCodeHead, err := t.store.Options.GetByName("codeinjection_head")
-	if siteCodeHead != "" && err == nil {
-		b.WriteString(fmt.Sprintf("%v", siteCodeHead))
+	// Get Code Injection from the Options (globally)
+	if t.options.CodeInjectionFoot != "" {
+		b.WriteString(t.options.CodeInjectionFoot)
 	}
 
-	// Get Code Injection for the Post
-	if *t.post.CodeInjectHead != "" {
-		b.WriteString(*t.post.CodeInjectHead)
+	// Get Code Injection from the Post
+	if t.options.CodeInjectionHead != "" {
+		b.WriteString(t.options.CodeInjectionHead)
 	}
 
-	// Bail early if there is no meta
-	if t.post.SeoMeta.Meta == nil {
-		return template.HTML(gohtml.Format(b.String()))
-	}
 
-	// Obtain Meta
-	var meta domain.PostMeta
-	err = json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
-	if err != nil {
-		log.Error(err)
-	}
+	// Check if the site is public
+	if t.options.SitePublic {
 
-	// Get site options
-	siteTitle, _ := t.store.Options.GetByName("site_title")
+		// Obtain Meta
+		var meta domain.PostMeta
+		postMeta := t.post.SeoMeta.Meta
+		if postMeta != nil {
 
-	// Normal Meta
-	if meta.Title != "" {
-		//TODO: Ask Kirk!
-		//	b.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", meta.Description))
-	}
-	if meta.Description != "" {
-		b.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", meta.Description))
-	}
+			err := json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
+			if err != nil {
+				log.Error(err)
+			}
 
-	// Open Graph
-	if meta.Facebook.Title != "" || meta.Facebook.Description != "" || meta.Facebook.Image != "" {
-		b.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
-		b.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", siteTitle))
-	}
-	if meta.Facebook.Title != "" {
-		b.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\">", meta.Facebook.Title))
-	}
-	if meta.Facebook.Description != "" {
-		b.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", meta.Facebook.Description))
-	}
+			if meta.Description != "" {
+				t.writeMeta(&b, meta.Description)
+			} else {
+				t.writeMeta(&b, t.options.MetaDescription)
+			}
 
-	// Facebook
-	if meta.Facebook.Title != "" || meta.Facebook.Description != "" || meta.Facebook.Image != "" {
-		b.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
-		b.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", siteTitle))
-	}
-	if meta.Facebook.Title != "" {
-		b.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\">", meta.Facebook.Title))
-	}
-	if meta.Facebook.Description != "" {
-		b.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", meta.Facebook.Description))
-	}
-	// TODO: Add image
+			if meta.Facebook.Title != "" || meta.Facebook.Description != "" {
+				t.writeFacebook(&b, meta.Facebook.Title, meta.Facebook.Title, meta.Facebook.ImageId)
+			} else {
+				t.writeFacebook(&b, t.options.MetaFacebookTitle, t.options.MetaFacebookDescription, t.options.MetaFacebookImageId)
+			}
 
-	// Twitter
-	if meta.Twitter.Title != "" || meta.Twitter.Description != "" || meta.Twitter.Image != "" {
-		b.WriteString(fmt.Sprintf("<meta name=\"twitter:card\" content=\"summary\">"))
+			if meta.Twitter.Title != "" || meta.Twitter.Description != "" {
+				t.writeTwitter(&b, meta.Twitter.Title, meta.Twitter.Description, meta.Twitter.ImageId)
+			} else {
+				t.writeTwitter(&b, t.options.MetaTwitterTitle, t.options.MetaTwitterDescription, t.options.MetaTwitterImageId)
+			}
+
+		} else {
+			t.writeMeta(&b, t.options.MetaDescription)
+			t.writeFacebook(&b, t.options.MetaFacebookTitle, t.options.MetaFacebookDescription, t.options.MetaFacebookImageId)
+			t.writeTwitter(&b, t.options.MetaTwitterTitle, t.options.MetaTwitterDescription, t.options.MetaTwitterImageId)
+		}
+	} else {
+		b.WriteString("<meta name=\"robots\" content=\"noindex\">")
 	}
-	if meta.Twitter.Title != "" {
-		b.WriteString(fmt.Sprintf("<meta name=\"twitter:title\" content=\"%s\">", meta.Twitter.Title))
-	}
-	if meta.Twitter.Description != "" {
-		b.WriteString(fmt.Sprintf("<meta name=\"twitter:description\" content=\"%s\">", meta.Twitter.Title))
-	}
-	// TODO: Add image
 
 	return template.HTML(gohtml.Format(b.String()))
+}
+
+
+func (t *TemplateFunctions) writeMeta(bytes *bytes.Buffer, description string) {
+	if description != "" {
+		bytes.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", description))
+	}
+	bytes.WriteString(fmt.Sprintf("<meta property=\"article:modified_time\" content=\"%s\" />", t.post.PublishedAt))
+}
+
+
+// Facebook
+func (t *TemplateFunctions) writeFacebook(bytes *bytes.Buffer, title string, description string, imageId int) {
+	if title != "" || description != "" {
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", t.options.SiteTitle))
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:locale\" content=\"%s\">", t.options.GeneralLocale))
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\" />"))
+	}
+
+	if title != "" {
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\">", title))
+	}
+
+	if description != "" {
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", description))
+	}
+
+	image, foundImage := t.store.Media.GetById(imageId)
+	if foundImage == nil {
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:image\" content=\"%s\">", t.options.SiteUrl + image.Url))
+	}
+}
+
+// Twitter
+func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, description string, imageId int) {
+	if title != "" || description != "" {
+		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:card\" content=\"summary\">"))
+	}
+
+	if title != "" {
+		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:title\" content=\"%s\">", title))
+	}
+
+	if description != "" {
+		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:description\" content=\"%s\">", title))
+	}
+
+	image, foundImage := t.store.Media.GetById(imageId)
+	if foundImage == nil {
+		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:image\" content=\"%s\">", t.options.SiteUrl + image.Url))
+	}
 }
