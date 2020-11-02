@@ -12,7 +12,7 @@ require (
 	github.com/chai2010/webp v1.1.0
 	github.com/codegangsta/envy v0.0.0-20141216192214-4b78388c8ce4 // indirect
 	github.com/codegangsta/gin v0.0.0-20171026143024-cafe2ce98974 // indirect
-	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
+	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2 // indirect
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/fatih/color v1.9.0 // indirect
@@ -26,10 +26,10 @@ require (
 	github.com/gin-gonic/contrib v0.0.0-20200810162008-6dee08bf958e // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/strfmt v0.19.5 // indirect
-	github.com/go-playground/assert/v2 v2.0.1
+	github.com/go-playground/assert/v2 v2.0.1 // indirect
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
-	github.com/golang/mock v1.4.4
+	github.com/golang/mock v1.4.4 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/golang/snappy v0.0.2 // indirect
 	github.com/google/martian v2.1.0+incompatible // indirect
@@ -47,7 +47,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible // indirect
 	github.com/lib/pq v1.8.0 // indirect
-	github.com/magiconair/properties v1.8.2
+	github.com/magiconair/properties v1.8.2 // indirect
 	github.com/manifoldco/promptui v0.7.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-shellwords v1.0.10 // indirect
@@ -62,7 +62,7 @@ require (
 	github.com/slayer/autorestart v0.0.0-20170706172704-7bc8d250279b
 	github.com/spf13/afero v1.3.5 // indirect
 	github.com/spf13/cobra v1.1.1
-	github.com/stretchr/testify v1.6.1
+	github.com/stretchr/testify v1.6.1 // indirect
 	github.com/tdewolff/minify/v2 v2.9.10
 	github.com/ugorji/go v1.1.13 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
