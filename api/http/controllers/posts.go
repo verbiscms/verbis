@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -41,15 +40,6 @@ func newPosts(m models.PostsRepository, f models.FieldsRepository, u models.User
 // Get all posts
 func (c *PostsController) Get(g *gin.Context) {
 	const op = "PostHandler.Get"
-
-	fmt.Println("------")
-	fmt.Printf("%+v\n", g.Request)
-	fmt.Printf("%+v\n", g.Request.Header.Get("origin"))
-	fmt.Println("------")
-
-
-	//g.Header("Cache-Control", "max-age=2000")
-	//g.Header("Cache-Control", "public")
 
 	params := http.GetParams(g)
 	posts, total, err := c.postModel.Get(params, g.Param("resource"))

@@ -6,18 +6,19 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"os"
+	"path/filepath"
 )
 
 // Base path of project
 func Base() string {
-	basePath := ""
+	//basePath := ""
 
-	basePath, err := os.Getwd()
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		return ""
 	}
 
-	return basePath
+	return dir
 }
 
 // BaseCheck environment is passable to run Terminal

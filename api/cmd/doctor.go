@@ -54,11 +54,7 @@ func doctor() (*database.MySql, error) {
 	vErrors := environment.Validate()
 	if vErrors != nil {
 		for _, v := range vErrors {
-			var msg = fmt.Sprintf("Obtaining environment variable: %s", strings.ToUpper(v.Key))
-			if v.Type == "ip" {
-				msg = fmt.Sprintf("Obtaining environment variable: %s must be a valid IP address", strings.ToUpper(v.Key))
-			}
-			printError(msg)
+			printError(fmt.Sprintf("Obtaining environment variable: %s", strings.ToUpper(v.Key)))
 		}
 		return nil, fmt.Errorf("Validation failed for the enviroment")
 	}
@@ -66,13 +62,13 @@ func doctor() (*database.MySql, error) {
 	// Get the database and ping
 	db, err := database.New()
 	if err != nil {
-		printError("Establishing database connection, are the credentials in the .env file correct?")
+		printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
 		return nil, fmt.Errorf("Error establishing database connection")
 	}
 
 	// Check if the database exists
 	if err := db.CheckExists(); err != nil {
-		printError("Establishing database connection, are the credentials in the .env file correct?")
+		printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
 		return nil, fmt.Errorf("error establishing database connection")
 	}
 

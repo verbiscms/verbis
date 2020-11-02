@@ -18,7 +18,7 @@ type envMap struct {
 	AppEnv				string `json:"APP_ENV"`
 	AppDebug 			string `json:"APP_DEBUG"`
 	AppPort				string `json:"APP_PORT" binding:"required"`
-	DbHost				string `json:"DB_HOST" binding:"required,ip"`
+	DbHost				string `json:"DB_HOST" binding:"required"`
 	DbPort				string `json:"DB_PORT" binding:"required"`
 	DbDatabase			string `json:"DB_DATABASE" binding:"required"`
 	DbUser				string `json:"DB_USERNAME" binding:"required"`
