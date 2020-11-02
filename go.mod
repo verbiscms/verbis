@@ -53,6 +53,7 @@ require (
 	github.com/mattn/go-shellwords v1.0.10 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
+	github.com/nickalie/go-binwrapper v0.0.0-20190114141239-525121d43c84
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible

@@ -1,11 +1,8 @@
 package webp
 
 import (
-	"bytes"
-	"github.com/chai2010/webp"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"image"
 	"io/ioutil"
 	"strings"
 )
@@ -32,13 +29,26 @@ func GetData(g *gin.Context, path string, mime string) []byte {
 
 // Converts an image to webp based on compression and decoded image.
 // Compression level is also set.
-func Convert(image image.Image, path string, compression int) {
-	var buf bytes.Buffer
-	if err := webp.Encode(&buf, image, &webp.Options{Lossless: true}); err != nil {
-		log.Error(err)
-	}
+//func Convert(image image.Image, path string, compression int) {
+//	var buf bytes.Buffer
+//	if err := webp.Encode(&buf, image, &webp.Options{Lossless: true}); err != nil {
+//		log.Error(err)
+//	}
+//
+//	if err := ioutil.WriteFile(path + ".webp", buf.Bytes(), 0666); err != nil {
+//		log.Error(err)
+//	}
+//}
 
-	if err := ioutil.WriteFile(path + ".webp", buf.Bytes(), 0666); err != nil {
+func Convert(path string, compression int) {
+	err := NewCWebP().
+		Quality(uint(compression)).
+		InputFile(path).
+		OutputFile(path + ".webp").
+		SkipDownload().
+		Run()
+
+	if err != nil {
 		log.Error(err)
 	}
 }
