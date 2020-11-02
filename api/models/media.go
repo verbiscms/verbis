@@ -224,12 +224,7 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 
 	// Convert to WebP
 	if s.options.MediaConvertWebP && mimeType == "image/jpeg" || mimeType == "image/png"  {
-		decodedImage, err := s.decodeImage(file, mimeType)
-		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error()
-		}
-
-		go webp.Convert(*decodedImage, path + "/" + key.String() + extension, s.options.MediaCompression)
+		go webp.Convert(path + "/" + key.String() + extension, s.options.MediaCompression)
 	}
 
 	// Resize
@@ -458,7 +453,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.options.MediaConvertWebP {
-			go webp.Convert(resized, filePath, s.options.MediaCompression)
+			go webp.Convert(filePath, s.options.MediaCompression)
 		}
 	}
 
@@ -477,7 +472,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.options.MediaConvertWebP {
-			go webp.Convert(resized, filePath, s.options.MediaCompression)
+			go webp.Convert(filePath, s.options.MediaCompression)
 		}
 	}
 
