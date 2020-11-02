@@ -108,6 +108,7 @@ export default new Vuex.Store({
 					axios.get(`/theme`)
 						.then(res => {
 							const theme = res.data.data;
+							console.log(theme);
 							this.commit("setTheme", theme);
 							resolve(theme);
 						})

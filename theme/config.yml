@@ -30,6 +30,12 @@ resources:
         singular_name: Post
         slug: /posts
         icon: feather feather-clipboard
+    test:
+        name: test
+        friendly_name: test
+        singular_name: tests
+        slug: /tests
+        icon: feather feather-clipboard
 
 # |
 # |--------------------------------------------------------------------------

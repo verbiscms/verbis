@@ -79,6 +79,12 @@ const routes = [
 		meta: { transitionName : 'fade' },
 	},
 	{
+		path: '/categories/:id',
+		name: 'categories-single',
+		component: () => import('../views/content/CategoriesSingle.vue'),
+		meta: { transitionName : 'fade' },
+	},
+	{
 		path: '/media',
 		name: 'media',
 		component: () => import('../views/content/Media.vue'),

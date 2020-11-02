@@ -121,7 +121,7 @@ export default {
 					this.$noty.success("User created successfully");
 					this.showCreateModal = false;
 					this.newUser = {};
-					this.getUsers();
+					this.$emit("update", true)
 				})
 				.catch(err => {
 					this.helpers.checkServer(err);
