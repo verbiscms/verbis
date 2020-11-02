@@ -177,7 +177,7 @@
 		<!-- =====================
 			Create Modal
 			===================== -->
-		<CreateUser :show.sync="showCreateModal"></CreateUser>
+		<CreateUser :show.sync="showCreateModal" @update="getUsers"></CreateUser>
 	</section>
 </template>
 
@@ -236,7 +236,6 @@ export default {
 		selectedDeleteId: null,
 		isDeleting: false,
 		isDoingBulk: false,
-
 	}),
 	mounted() {
 		this.getUsers();
@@ -245,7 +244,7 @@ export default {
 	methods: {
 		/*
 		 * getUsers()
-		 * Obtain the users or resources & apply query strings.
+		 * Obtain the users & apply query strings.
 		 * NOTE: paramsSerializer is required here.
 		 */
 		getUsers() {
@@ -255,7 +254,7 @@ export default {
 				}
 			})
 				.then(res => {
-					this.users = {};
+					this.users = [];
 					this.paginationObj = {};
 					this.paginationObj = res.data.meta.pagination;
 					const users = res.data.data

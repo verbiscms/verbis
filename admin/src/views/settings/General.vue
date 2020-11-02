@@ -131,11 +131,11 @@
 									<!-- Locale -->
 									<FormGroup label="Location">
 										<div class="form-select-cont form-input">
-											<select class="form-select" v-model="test">
+											<select class="form-select" v-model="computedLocale">
 												<option v-for="location in locale" :value="location" :key="location">{{ location }}</option>
 											</select>
 										</div>
-									</FormGroup><!-- /Request -->
+									</FormGroup><!-- /Locale -->
 								</div>
 							</template>
 						</Collapse><!-- /Title & description -->
@@ -336,7 +336,7 @@ export default {
 		getSiteTitle() {
 			return this.getSite.title === "Verbis" ? "the business" : this.getSite.title;
 		},
-		test: {
+		computedLocale: {
 			/*
 			 * getDefaultLocale()
 			 * Sets the default locale if there is none or returns
