@@ -32,13 +32,13 @@ func (c *SpaController) Serve(g *gin.Context) {
 		path = strings.Replace(path, "/admin", "", -1)
 		extensionArr := strings.Split(path, ".")
 		extension := extensionArr[len(extensionArr)-1]
-		data, _ := ioutil.ReadFile(paths.Admin() + "/dist" + path)
+		data, _ := ioutil.ReadFile(paths.Admin() + path)
 		contentType := mime.TypeByExtension(extension)
 		g.Data(200, contentType, data)
 
 	// Page catching
 	} else {
-		data, _ := ioutil.ReadFile(paths.Admin() + "/dist/index.html")
+		data, _ := ioutil.ReadFile(paths.Admin() + "/index.html")
 		g.Data(200, "text/html; charset=utf-8", data)
 	}
 }

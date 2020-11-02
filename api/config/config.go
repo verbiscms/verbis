@@ -2,13 +2,10 @@ package config
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"gopkg.in/yaml.v3"
-	"os"
-	"path/filepath"
-	"runtime"
 )
 
 
@@ -101,7 +98,7 @@ func (c *Configuration) Init() error {
 	const op = "config.Init"
 
 	// Admin
-	a, err := files.LoadFile(c.getConfigPath() + "/admin.yml")
+	a, err := files.LoadFile(paths.Base() + "/config/admin.yml")
 	if err != nil {
 		return err
 	}
@@ -110,7 +107,7 @@ func (c *Configuration) Init() error {
 	}
 
 	// Media
-	m, err := files.LoadFile(c.getConfigPath() + "/media.yml")
+	m, err := files.LoadFile(paths.Base() + "/config/media.yml")
 	if err != nil {
 		return err
 	}
@@ -119,7 +116,7 @@ func (c *Configuration) Init() error {
 	}
 
 	// Resources
-	t, err := files.LoadFile(c.getConfigPath() + "/template.yml")
+	t, err := files.LoadFile(paths.Base() + "/config/template.yml")
 	if err != nil {
 		return err
 	}
@@ -128,7 +125,7 @@ func (c *Configuration) Init() error {
 	}
 
 	// Logs
-	l, err := files.LoadFile(c.getConfigPath() + "/logs.yml")
+	l, err := files.LoadFile(paths.Base() + "/config/logs.yml")
 	if err != nil {
 		return err
 	}
@@ -154,14 +151,14 @@ func (c *Configuration) CacheClear() {
 }
 
 // getConfigPath obtains the configuration path of the yaml files
-func (c *Configuration) getConfigPath() string {
-	const op = "config.getConfigPath"
-	path := ""
-	if environment.IsProduction() {
-		path, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-	} else {
-		_, b, _, _ := runtime.Caller(0)
-		path = filepath.Join(filepath.Dir(b), "../..")
-	}
-	return path + "/config"
-}
+//func (c *Configuration) getConfigPath() string {
+//	const op = "config.getConfigPath"
+//	path := ""
+//	if environment.IsProduction() {
+//		path, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+//	} else {
+//		_, b, _, _ := runtime.Caller(0)
+//		path = filepath.Join(filepath.Dir(b), "../..")
+//	}
+//	return path + "/config"
+//}
