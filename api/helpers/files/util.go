@@ -109,7 +109,7 @@ func LoadFile(path string) ([]byte, error) {
 	const op = "config.loadConfig"
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not load the  file with the path: %s", path), Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not load the file with the path: %s", path), Operation: op, Err: err}
 	}
 	return data, nil
 }
