@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/yosssi/gohtml"
 	"html/template"
@@ -13,6 +14,7 @@ import (
 // getHeader obtains all of the site and post wide Code Injection
 // as well as any meta information from the page.
 func (t *TemplateFunctions) getHeader() template.HTML {
+	const op = "Templates.getHeader"
 
 	var b bytes.Buffer
 
@@ -37,7 +39,9 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 
 			err := json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
 			if err != nil {
-				log.Error(err)
+				log.WithFields(log.Fields{
+					"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+				}).Error()
 			}
 
 			if meta.Description != "" {

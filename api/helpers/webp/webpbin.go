@@ -40,7 +40,7 @@ func Dest(value string) {
 	dest = value
 }
 
-func createBinWrapper() *binwrapper.BinWrapper {
+func CreateBinWrapper() *binwrapper.BinWrapper {
 	base := "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/"
 
 	b := binwrapper.NewBinWrapper().AutoExe()

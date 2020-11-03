@@ -2,6 +2,7 @@ package frontend
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -26,10 +27,13 @@ func NewCache(o models.OptionsRepository) *Cache {
 }
 
 func (t *Cache) Cache(g *gin.Context) {
+	const op = "Cacheer.Cache"
 
 	options, err := t.options.GetStruct()
 	if err != nil {
-		log.Fatal(options)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
 	}
 
 	// Bail if the cache frontend is disabled

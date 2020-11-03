@@ -8,7 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/slayer/autorestart"
+	"github.com/teamwork/reload"
 )
 
 // OptionsHandler defines methods for Options to interact with the server
@@ -93,7 +93,7 @@ func (c *OptionsController) UpdateCreate(g *gin.Context) {
 
 	Respond(g, 200, "Successfully created/updated options", nil)
 
-	go autorestart.RestartByExec()
+	go reload.Exec()
 }
 
 

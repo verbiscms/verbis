@@ -33,8 +33,8 @@ export default new Vuex.Store({
 	},
 	mutations: {
 		login(state, loginData) {
-			state.apiToken = loginData.token
-			state.auth = true
+			state.apiToken = loginData.token;
+			state.auth = true;
 			state.userInfo =  loginData;
 			axios.defaults.headers.common = {
 				"token": loginData.token,

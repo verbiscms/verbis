@@ -22,7 +22,7 @@ type DWebP struct {
 // NewDWebP creates new WebP instance
 func NewDWebP() *DWebP {
 	bin := &DWebP{
-		BinWrapper: createBinWrapper(),
+		BinWrapper: CreateBinWrapper(),
 	}
 	bin.ExecPath("dwebp")
 
