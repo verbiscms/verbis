@@ -7,6 +7,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -135,14 +136,14 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	// Print any errors if one is set
 	// TODO Fix here
 	// THIS is coming a nil pointer deference!
-	//if reflect.TypeOf(entry.Data["error"]).String() == "*errors.Error" {
-	//	err := entry.Data["error"].(*errors.Error)
-	//	s := f.printError(*err)
-	//	b.Write(s.Bytes())
-	//} else if errorData, ok := entry.Data["error"].(errors.Error); ok {
-	//	s := f.printError(errorData)
-	//	b.Write(s.Bytes())
-	//}
+	if reflect.TypeOf(entry.Data["error"]).String() == "*errors.Error" {
+		err := entry.Data["error"].(*errors.Error)
+		s := f.printError(*err)
+		b.Write(s.Bytes())
+	} else if errorData, ok := entry.Data["error"].(errors.Error); ok {
+		s := f.printError(errorData)
+		b.Write(s.Bytes())
+	}
 
 	b.WriteString("\n")
 
