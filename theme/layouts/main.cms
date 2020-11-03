@@ -26,14 +26,29 @@
 </div>
 <![endif]-->
 <main>
-    <img src="/assets/test.svg">
+{{/*    <img src="/assets/test.svg">*/}}
 {{/*    <img src="/assets/test.jpg">*/}}
 
 {{/*    {{ $m := getMedia 1 }}*/}}
 {{/*    <img src=" {{ $m.Url }}" alt="">*/}}
-    <img src="/assets/test.xml">
+
+
     {{ include "partials/header" }}
     {{ template "content" . }}
+    {{ $page := getPagination }}
+    <h1>{{ $page }}</h1>
+    {{ $query := dict "limit" 100 "resource" "posts" "page" $page }}
+    {{ $posts := getPosts $query }}
+
+    {{ if $posts }}
+        <pre>{{ $posts }}</pre>
+    {{ else }}
+        <h1>No posts found</h1>
+    {{ end }}
+
+
+
+
 </main>
     {{ include "partials/footer" }}
 <!-- Javascript -->
