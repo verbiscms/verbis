@@ -7,7 +7,7 @@
 	$self: &;
 
 	position: relative;
-	display: inline-flex;
+	display: inline-block;
 	justify-content: center;
 	background-color: transparent;
 	padding: $btn-padding-mob;
@@ -53,6 +53,7 @@
 
 	&-icon {
 		padding: 0;
+		display: inline-flex;
 		width: $btn-icon-width;
 		height: $btn-fixed-height-mob;
 		min-width: $btn-icon-width;
@@ -227,6 +228,7 @@
 		}
 	}
 
+
 	// Text Mobile
 	// =========================================================================
 
@@ -268,6 +270,10 @@
 
 		&-margin-left {
 			margin-left: $btn-margin-x - 4px;
+		}
+
+		&-hide-text-mob {
+			display: none;
 		}
 	}
 

@@ -76,13 +76,13 @@ func TestGetPosts_NilQuery(t *testing.T) {
 	runt(t, f, tpl, "")
 }
 
-func TestGetPosts_NilDefault(t *testing.T) {
+func TestGetPosts_DefaultPage(t *testing.T) {
 	mockPosts := mocks.PostsRepository{}
 	f := newTestSuite()
 
 	p := vhttp.Params{
 		Page:           1,
-		Limit:          123,
+		Limit:          15,
 		OrderBy:        "published_at",
 		OrderDirection: "desc",
 		Filters:        nil,
@@ -91,12 +91,32 @@ func TestGetPosts_NilDefault(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("Get", p, "all").Return(nil, nil)
 
-	tpl := `{{ $query := dict "limit" 123 }}{{ getPosts $query }}`
+	tpl := `{{ $query := dict "limit" 15 }}{{ getPosts $query }}`
+	runt(t, f, tpl, "")
+}
+
+func TestGetPosts_DefaultLimit(t *testing.T) {
+	mockPosts := mocks.PostsRepository{}
+	f := newTestSuite()
+
+	p := vhttp.Params{
+		Page:           1,
+		Limit:          15,
+		OrderBy:        "published_at",
+		OrderDirection: "desc",
+		Filters:        nil,
+	}
+
+	f.store.Posts = &mockPosts
+	mockPosts.On("Get", p, "all").Return([]domain.Post{}, nil)
+
+	tpl := `{{ $query := dict "page" 1 }}{{ getPosts $query }}`
 	runt(t, f, tpl, "")
 }
 
 func TestGetPagination(t *testing.T) {
 	f := newTestSuite()
+	gin.SetMode(gin.ReleaseMode)
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get?page=123", nil)
 	f.gin = g
@@ -112,6 +132,7 @@ func TestGetPagination_NoPage(t *testing.T) {
 
 func TestGetPagination_ConvertString(t *testing.T) {
 	f := newTestSuite()
+	gin.SetMode(gin.ReleaseMode)
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get?page=wrongval", nil)
 	f.gin = g

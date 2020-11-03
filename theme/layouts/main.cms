@@ -37,7 +37,7 @@
     {{ template "content" . }}
     {{ $page := getPagination }}
     <h1>{{ $page }}</h1>
-    {{ $query := dict "limit" 100 "resource" "posts" "page" $page }}
+    {{ $query := dict "limit" 100 "resource" "posts" "page" 1 }}
     {{ $posts := getPosts $query }}
 
     {{ if $posts }}

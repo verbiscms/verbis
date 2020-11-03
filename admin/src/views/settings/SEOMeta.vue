@@ -12,7 +12,9 @@
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">Update settings</button>
+							<button class="btn btn-fixed-height btn-orange" @click.prevent="save" :class="{ 'btn-loading' : saving }">
+								Update&nbsp;<span class="btn-hide-text-mob">Settings</span>
+							</button>
 						</div>
 					</header>
 				</div><!-- /Col -->

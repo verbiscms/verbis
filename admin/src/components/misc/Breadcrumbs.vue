@@ -25,6 +25,10 @@ export default {
 	beforeMount() {
 		this.updateList()
 	},
+	created() {
+		const breadcrumbs = this.$options
+		console.log(breadcrumbs)
+	},
 	watch: {
 		'$route'() {
 			this.updateList()
