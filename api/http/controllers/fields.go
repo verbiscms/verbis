@@ -6,7 +6,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -82,12 +81,7 @@ func (c *FieldController) Get(g *gin.Context) {
 	}
 
 	// Get the author associated with the post
-	author, err := c.userModel.GetById(post.UserId)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not get the author of the post", Operation: op, Err: err},
-		}).Fatal()
-	}
+	author, _ := c.userModel.GetById(post.UserId)
 
 	// Get the categories associated with the post
 	categories, err := c.categoriesModel.GetByPost(post.Id)

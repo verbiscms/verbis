@@ -47,7 +47,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible // indirect
 	github.com/lib/pq v1.8.0 // indirect
-	github.com/magiconair/properties v1.8.2 // indirect
+	github.com/magiconair/properties v1.8.2
 	github.com/manifoldco/promptui v0.7.0 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-shellwords v1.0.10 // indirect
@@ -63,7 +63,7 @@ require (
 	github.com/slayer/autorestart v0.0.0-20170706172704-7bc8d250279b
 	github.com/spf13/afero v1.3.5 // indirect
 	github.com/spf13/cobra v1.1.1
-	github.com/stretchr/testify v1.6.1 // indirect
+	github.com/stretchr/testify v1.6.1
 	github.com/tdewolff/minify/v2 v2.9.10
 	github.com/teamwork/reload v1.3.2
 	github.com/ugorji/go v1.1.13 // indirect

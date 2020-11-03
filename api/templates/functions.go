@@ -34,6 +34,7 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 		}
 	}
 
+	// Get the options struct
 	options, err := s.Options.GetStruct()
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -41,6 +42,7 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 		}).Fatal()
 	}
 
+	// New TemplateFunctions
 	return &TemplateFunctions{
 		gin: g,
 		post: p,
@@ -75,6 +77,8 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"isAdmin": t.isAdmin,
 		// Posts
 		"getPost": t.getPost,
+		"getPosts": t.getPosts,
+		"getPagination": t.getPagination,
 		// Media
 		"getMedia": t.getMedia,
 		// Paths
@@ -85,6 +89,8 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Helpers
 		"fullUrl": t.getFullUrl,
 		"escape": t.escape,
+		// Dict
+		"dict": t.dict,
 	}
 
 	return funcMap

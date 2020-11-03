@@ -8,7 +8,7 @@ import (
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/magiconair/properties/assert"
+	"github.com/stretchr/testify/assert"
 	"html"
 	"html/template"
 	"net/http"
@@ -44,6 +44,7 @@ func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 
 	var b bytes.Buffer
 	err := tt.Execute(&b, map[string]string{})
+
 	if err != nil {
 		fmt.Println(err)
 	}
