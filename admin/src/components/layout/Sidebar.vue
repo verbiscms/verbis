@@ -308,7 +308,7 @@ $aside-padding-desk: 26px;
 	left: 0;
 	top: 0;
 	width: $sidebar-width-mob;
-	height: 100vh;
+	height: 100%;
 	overflow-y: scroll;
 	background-color: $bg-color;
 	transform: translateX(-100%);

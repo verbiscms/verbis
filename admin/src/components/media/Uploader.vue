@@ -419,6 +419,12 @@ export default {
 						}, Math.floor(Math.random() * (430 - 200 + 1)) + 200);
 						return;
 					}
+					if (err.response.status === 413) {
+						setTimeout(() => {
+							this.$set(this.media[index], "unsupported", "File too large, check the server settings");
+						}, Math.floor(Math.random() * (430 - 200 + 1)) + 200);
+						return;
+					}
 					this.helpers.handleResponse(err);
 				})
 				.finally(() => {

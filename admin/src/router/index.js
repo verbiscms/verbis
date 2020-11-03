@@ -66,7 +66,9 @@ const routes = [
 	},
 	{ 	path: '/editor',
 		redirect: '/editor/new',
-		meta: { transitionName : 'fade' },
+		meta: {
+			transitionName : 'fade',
+		},
 	},
 	/**
 	 * Content
@@ -126,7 +128,12 @@ const routes = [
 		path: '/settings/general',
 		name: 'settings-general',
 		component: () => import('../views/settings/General.vue'),
-		meta: { transitionName : 'fade' },
+		meta: {
+			transitionName : 'fade',
+			breadcrumbs: [
+				""
+			]
+		},
 	},
 	{
 		path: '/settings/code-injection',

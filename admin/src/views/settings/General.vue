@@ -12,7 +12,9 @@
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">Update settings</button>
+							<button class="btn btn-fixed-height btn-orange" @click.prevent="save" :class="{ 'btn-loading' : saving }">
+								Update&nbsp;<span class="btn-hide-text-mob">Settings</span>
+							</button>
 						</div>
 					</header>
 				</div><!-- /Col -->
@@ -21,7 +23,7 @@
 			<div v-show="doingAxios" class="media-spinner spinner-container">
 				<div class="spinner spinner-large spinner-grey"></div>
 			</div>
-			<div v-show="!doingAxios" class="row trans-fade-in-anim">
+			<div v-if="!doingAxios" class="row trans-fade-in-anim">
 				<!-- =====================
 					Basic Options
 					===================== -->
@@ -98,7 +100,7 @@
 										</div>
 										<div v-show="hasLogo">
 											<ImageWithActions @choose="showImageModal = true" @remove="hasLogo = false">
-												<img :src="getSiteUrl + data['site_logo']" @error="hasLogo = false"/>
+												<img :src="getSiteUrl + data['site_logo']" />
 											</ImageWithActions>
 										</div>
 									</div>
@@ -307,7 +309,7 @@ export default {
 	data: () => ({
 		errorMsg: "Fix the errors before saving settings.",
 		successMsg: "Site options updated successfully.",
-		hasLogo: false,
+		hasLogo: true,
 		showImageModal: false,
 		locale: {},
 	}),
