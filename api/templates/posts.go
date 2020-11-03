@@ -2,6 +2,7 @@ package templates
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -66,7 +67,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) ([]domain.Pos
 	}
 
 	//Set default limit
-	if tmplParams.Page == 0 {
+	if tmplParams.Limit == 0 {
 		tmplParams.Limit = http.PaginationDefault
 	}
 
@@ -92,7 +93,14 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) ([]domain.Pos
 		OrderDirection: tmplParams.OrderDirection,
 	}
 
+	fmt.Println(postParams)
+
+	// Obtain the post and detect if it was not found,
+	// return nil if so.
 	posts, _, err := t.store.Posts.Get(postParams, tmplParams.Resource)
+
+	fmt.Println(postParams)
+
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
 	} else if err != nil {

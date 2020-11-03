@@ -49,8 +49,6 @@ export const optionsMixin = {
 				this.runBeforeSave();
 			}
 
-			console.log(this.data);
-
 			this.axios.post("/options", this.data)
 				.then(() => {
 					this.errors = [];
@@ -70,10 +68,13 @@ export const optionsMixin = {
 					setTimeout(() => {
 						this.saving = false;
 					}, 100);
-					this.axios.get("/site")
-						.then(res => {
-							this.$store.commit('setSite', res.data.data);
-						});
+
+					setTimeout(() => {
+						this.axios.get("/site")
+							.then(res => {
+								this.$store.commit('setSite', res.data.data);
+							});
+					}, 500)
 				});
 		},
 		/*

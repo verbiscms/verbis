@@ -12,9 +12,8 @@
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-fixed-height btn-orange btn-with-icon" @click.prevent="save" :class="{ 'btn-loading' : saving }">
-								<i class="far fa-check"></i>
-								Update settings
+							<button class="btn btn-fixed-height btn-orange" @click.prevent="save" :class="{ 'btn-loading' : saving }">
+								Update&nbsp;<span class="btn-hide-text-mob">Settings</span>
 							</button>
 						</div>
 					</header>
@@ -103,7 +102,7 @@ export default {
 	},
 	data: () => ({
 		errorMsg: "Fix the errors before saving code injection.",
-		successMsg: "Code injection updated successfully."
+		successMsg: "Code injection updated successfully.",
 	}),
 	methods: {
 		/*

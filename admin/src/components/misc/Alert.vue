@@ -57,7 +57,7 @@ export default {
 	position: relative;
 	display: flex;
 	align-items: center;
-	padding: 26px 24px;
+	padding: 18px 20px;
 	margin-bottom: 20px;
 	font-size: 14px;
 	font-weight: 400;
@@ -85,7 +85,7 @@ export default {
 	&-icon {
 		display: flex;
 		align-items: center;
-		margin-right: 24px;
+		margin-right: 18px;
 
 		i {
 			font-size: 24px;
@@ -146,6 +146,24 @@ export default {
 		#{$self}-icon,
 		#{$self}-text h3  {
 			color: $green;
+		}
+	}
+
+	// Tablet
+	// ==========================================================================
+
+	@include media-tab {
+		padding: 26px 24px;
+	}
+
+	// Desktop
+	// ==========================================================================
+
+	@include media-desk {
+		padding: 26px 24px;
+
+		&-icon {
+			margin-right: 24px;
 		}
 	}
 }

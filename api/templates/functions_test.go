@@ -20,6 +20,7 @@ import (
 // newTestSuite - Sets up up a TemplateFunctions with gin read
 // for testing.
 func newTestSuite(args ...string) *TemplateFunctions {
+	gin.SetMode(gin.ReleaseMode)
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get", nil)
 

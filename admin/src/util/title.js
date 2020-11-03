@@ -20,6 +20,8 @@ export default {
 		const title = getTitle(this)
 		if (title) {
 			document.title = "Verbis - " + title
+		} else {
+			document.title = "Verbis"
 		}
 	}
 }
