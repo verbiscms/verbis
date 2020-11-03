@@ -92,6 +92,8 @@ type siteCache struct {
 
 // newSite - Construct
 func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
+	const op = "SiteRepository.newSite"
+
 	s := &SiteStore{
 		db: db,
 		config: config,
@@ -102,7 +104,9 @@ func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
 
 	opts, err := s.optionsModel.GetStruct()
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
 	}
 
 	// Cache the site config JSON file
@@ -125,6 +129,7 @@ func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
 
 // GetGlobalConfig gets the site global config
 func (s *SiteStore) GetGlobalConfig() *domain.Site {
+	const op = "SiteRepository.GetGlobalConfig"
 
 	// If the cache allows for caching of the site config &
 	// if the config has already been cached, return.
@@ -138,7 +143,10 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 
 	opts, err := s.optionsModel.GetStruct()
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
+		return nil
 	}
 
 	ds := domain.Site{

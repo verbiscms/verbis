@@ -1,6 +1,7 @@
 package webp
 
 import (
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -29,26 +30,18 @@ func GetData(g *gin.Context, path string, mime string) []byte {
 
 // Converts an image to webp based on compression and decoded image.
 // Compression level is also set.
-//func Convert(image image.Image, path string, compression int) {
-//	var buf bytes.Buffer
-//	if err := webp.Encode(&buf, image, &webp.Options{Lossless: true}); err != nil {
-//		log.Error(err)
-//	}
-//
-//	if err := ioutil.WriteFile(path + ".webp", buf.Bytes(), 0666); err != nil {
-//		log.Error(err)
-//	}
-//}
-
 func Convert(path string, compression int) {
+	const op = "Webp.Convert"
+
 	err := NewCWebP().
 		Quality(uint(compression)).
 		InputFile(path).
 		OutputFile(path + ".webp").
-		SkipDownload().
 		Run()
 
 	if err != nil {
-		log.Error(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not convert the image to webp", Operation: op, Err: err},
+		}).Error()
 	}
 }

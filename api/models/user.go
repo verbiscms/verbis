@@ -41,6 +41,8 @@ type UserStore struct {
 
 // newUser - Construct
 func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
+	const op = "UserRepository.newUser"
+
 	s := &UserStore{
 		db: db,
 		config: config,
@@ -49,7 +51,9 @@ func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
 	om := newOptions(db)
 	opts, err := om.GetStruct()
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
 	}
 	s.optionsRepo = opts
 

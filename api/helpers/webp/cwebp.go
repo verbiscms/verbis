@@ -31,7 +31,7 @@ type CWebP struct {
 // NewCWebP creates new CWebP instance.
 func NewCWebP() *CWebP {
 	bin := &CWebP{
-		BinWrapper: createBinWrapper(),
+		BinWrapper: CreateBinWrapper(),
 		quality:    -1,
 	}
 	bin.ExecPath("cwebp")
@@ -182,3 +182,4 @@ func (c *CWebP) getOutput() (string, error) {
 		return "", errors.New("Undefined output")
 	}
 }
+

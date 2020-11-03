@@ -149,7 +149,6 @@ var createUserCmd = &cobra.Command{
 			return err
 		}
 
-
 		fmt.Println(user.FirstName + " created successfully!")
 
 		return nil

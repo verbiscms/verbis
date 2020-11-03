@@ -8,8 +8,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/bcrypt"
-	"log"
 )
 
 // AuthRepository defines methods for for Users to gain
@@ -32,6 +32,8 @@ type AuthStore struct {
 
 // newAuth - Construct
 func newAuth(db *sqlx.DB) *AuthStore {
+	const op = "AuthRepository.newAuth"
+
 	a := &AuthStore{
 		db: db,
 	}
@@ -39,7 +41,9 @@ func newAuth(db *sqlx.DB) *AuthStore {
 	om := newOptions(db)
 	opts, err := om.GetStruct()
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
 	}
 	a.optionsRepo = opts
 

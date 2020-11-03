@@ -79,7 +79,6 @@ func (s *RoleStore) Create(r *domain.UserRole) (domain.UserRole, error) {
 
 	id, err := c.LastInsertId()
 	if err != nil {
-		log.Error(err)
 		return domain.UserRole{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post Role ID with the name: %v", r.Name), Operation: op, Err: err}
 	}
 	r.Id = int(id)
