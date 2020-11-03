@@ -6,6 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/frontend"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/minify"
@@ -16,8 +17,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
 	"path/filepath"
 	"strings"
 )
@@ -114,13 +115,17 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 	// Get the options
 	options, err := c.models.Options.GetStruct()
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
 	}
 
 	// Get the site config for serving the assets
 	theme, err := c.models.Site.GetThemeConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get theme config", Operation: op, Err: fmt.Errorf("could not unmarshal the theme config struct")},
+		}).Fatal()
 	}
 
 	// Get the relevant paths
@@ -227,7 +232,9 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	data, err := tf.GetData()
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get template data", Operation: op, Err: err},
+		}).Fatal()
 	}
 
 	var b bytes.Buffer

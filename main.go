@@ -15,9 +15,9 @@ limitations under the License.
 */
 package main
 
-import (
-	"github.com/ainsleyclark/verbis/api/cmd"
-)
+ import (
+	 "github.com/ainsleyclark/verbis/api/cmd"
+ )
 
 func main() {
 	cmd.Execute()

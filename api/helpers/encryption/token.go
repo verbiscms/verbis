@@ -35,9 +35,12 @@ func GenerateEmailToken(email string) (string, error) {
 // GenerateSessionToken returns a session unique token based
 // on the provided email string
 func GenerateSessionToken(email string) string {
+	const op = "encryption.GenerateSessionToken"
 	hash, err := bcrypt.GenerateFromPassword([]byte(email), bcrypt.DefaultCost)
 	if err != nil {
-		log.Error(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not generate the session token.", Operation: op, Err: err},
+		}).Error()
 	}
 	hasher := md5.New()
 	hasher.Write(hash)

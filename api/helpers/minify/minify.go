@@ -69,9 +69,13 @@ func (m *Minify) MinifyBytes(b *bytes.Buffer, mime string) ([]byte, error) {
 // selected the type of minification.
 // It then compares mime's and executes the file to be minified.
 func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error)  {
+	const op = "Minify.Compare"
+
 	options, optsErr := m.options.GetStruct()
 	if optsErr != nil {
-		log.Error(optsErr)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
 	}
 
 	var (

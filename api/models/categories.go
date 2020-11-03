@@ -1,13 +1,12 @@
 package models
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
-	"fmt"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 )
 
 // CategoryRepository defines methods for Categories to interact with the database
@@ -96,7 +95,6 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 
 	id, err := e.LastInsertId()
 	if err != nil {
-		log.Error(err)
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created category ID with the name: %v", c.Name), Operation: op, Err: err}
 	}
 
@@ -198,8 +196,7 @@ func (s *CategoryStore) InsertPostCategories(postId int, ids []int) error {
 func (s *CategoryStore) DeletePostCategories(id int) error {
 	const op = "CategoryRepository.DeletePostCategories"
 	if _, err := s.db.Exec("DELETE FROM post_categories WHERE category_id = ?", id); err != nil {
-		log.Info(err)
-		return fmt.Errorf("Could not delete post category with the ID: %v", id)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the post categories with the ID of: %d", id), Operation: op, Err: err}
 	}
 	return nil
 }
@@ -209,8 +206,7 @@ func (s *CategoryStore) Total() (int, error) {
 	const op = "CategoryRepository.Total"
 	var total int
 	if err := s.db.QueryRow("SELECT COUNT(*) FROM categories").Scan(&total); err != nil {
-		log.Error(err)
-		return -1, fmt.Errorf("Could not get the total number of categories")
+		return -1, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the total number of categories"), Operation: op, Err: err}
 	}
 	return total, nil
 }

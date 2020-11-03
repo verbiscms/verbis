@@ -51,12 +51,14 @@ type FileLine struct {
 }
 
 func Recover(g *gin.Context, err interface{}) {
+	const op = "Server.Recover"
 
 	// IMPORTANT: Do not set anything else to be err here
-
 	cfg, ok := config.New()
 	if ok != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get the configuration", Operation: op, Err: ok},
+		}).Fatal()
 	}
 
 	rc := &Recovery{

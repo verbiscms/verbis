@@ -6,10 +6,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	"github.com/slayer/autorestart"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"log"
+	"os"
 	"strconv"
+	"syscall"
 )
 
 type Server struct {
@@ -42,12 +43,21 @@ func New(m models.OptionsRepository) *Server {
 	return server
 }
 
+func SendRestart() {
+	if proc, err := os.FindProcess(os.Getpid()); err != nil {
+		log.Printf("FindProcess: %s", err)
+		return
+	} else {
+		_ = proc.Signal(syscall.Signal(0x1))
+	}
+}
+
+
 // ListenAndServe runs Verbis on a given port
 // Returns errors.INVALID if the server could not start
 func (s *Server) ListenAndServe(port int) error {
 	const op = "router.ListenAndServe"
 
-	autorestart.StartWatcher()
 	passedPort := strconv.Itoa(port)
 
 	err := s.Run(":" + passedPort)
@@ -65,8 +75,9 @@ func (s *Server) setupGzip(o models.OptionsRepository) {
 
 	options, err := o.GetStruct()
 	if err != nil {
-		// TODO: Need to check here for logging.
-		log.Fatal(&errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Could not get the options struct"), Operation: op, Err: err})
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
 	}
 
 	// Bail if there is no

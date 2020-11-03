@@ -66,9 +66,12 @@ func newMedia(db *sqlx.DB, config config.Configuration) *MediaStore {
 
 // getOptionsStruct - Init the model with options
 func (s *MediaStore) getOptionsStruct() {
+	const op = "MediaRepository.getOptionsStruct"
 	opts, err := s.optionsModel.GetStruct()
 	if err != nil {
-		log.Fatal(err)
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+		}).Fatal()
 	}
 	s.options = opts
 }
@@ -373,7 +376,9 @@ func (s *MediaStore) Delete(id int) error {
 	if m.Url == s.options.SiteLogo {
 		logo, _ := json.Marshal(api.App.Logo)
 		if err := s.optionsModel.Update("site_logo", logo); err != nil {
-			log.Error(err)
+			log.WithFields(log.Fields{
+				"error": errors.Error{Code: errors.INTERNAL, Message: "Could not update the site logo", Operation: op, Err: err},
+			}).Error()
 		}
 	}
 
