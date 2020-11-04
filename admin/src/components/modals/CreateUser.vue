@@ -2,8 +2,8 @@
 	User - Create
 	===================== -->
 <template>
-	<section class="create">
-		<Modal :show.sync="showCreateModal" class="modal-large">
+	<section class="">
+		<Modal :show.sync="showCreateModal" class="modal-large create">
 			<!-- =====================
 				Buttons
 				===================== -->
@@ -54,7 +54,7 @@
 								</FormGroup>
 							</div><!-- /Col -->
 						</div><!-- /Row -->
-						<div class="row">
+						<div class="row create-last-row">
 							<div class="col-12 col-desk-6">
 								<!-- New password -->
 								<FormGroup label="Password*" :error="errors['password']">
@@ -63,7 +63,7 @@
 							</div><!-- /Col -->
 							<div class="col-12 col-desk-6">
 								<!-- Confirm password -->
-								<FormGroup label="Confirm password*" :error="errors['confirm_password']">
+								<FormGroup label="Confirm password*" class="form-group-no-margin" :error="errors['confirm_password']">
 									<input class="form-input form-input-white" :type="isGeneratedPassword ? 'text' : 'password'" v-model="newUser['confirm_password']" tabindex="6">
 								</FormGroup>
 							</div><!-- /Col -->
@@ -159,8 +159,8 @@ export default {
 		 */
 		generatePassword() {
 			const password = this.createPassword();
-			this.newUser['password'] = password;
-			this.newUser['confirm_password'] = password;
+			this.$set(this.newUser, 'password', password);
+			this.$set(this.newUser, 'confirm_password', password);
 			this.isGeneratedPassword = true;
 		},
 	},
@@ -215,6 +215,19 @@ export default {
 		display: flex;
 		justify-content: flex-end;
 		width: 100%;
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+
+		&-last-row {
+
+			.form-group {
+				margin-bottom: 0;
+			}
+		}
 	}
 }
 

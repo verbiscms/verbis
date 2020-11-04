@@ -20,7 +20,7 @@
 								<button v-else class="btn btn-fixed-height btn-margin btn-orange header-hide-mob" @click.prevent="deleting = !deleting">Delete permanently</button>
 								<label for="browse-file" class="btn btn-icon btn-orange btn-text-mob">
 									<i class="fal fa-plus"></i>
-									<span>Add new media</span>
+									<span>Add Item</span>
 								</label>
 							</form>
 						</div><!-- /Actions -->

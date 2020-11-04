@@ -17,7 +17,7 @@ func (s *Seeder) runOptions() error {
 		"site_logo": api.App.Logo,
 		"site_url" : api.App.Url,
 		// General
-		"general_locale" : "en-gb",
+		"general_locale" : "en_GB",
 		// Contact
 		"contact_email" : "",
 		"contact_telephone" : "",

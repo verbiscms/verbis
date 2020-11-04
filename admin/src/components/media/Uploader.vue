@@ -313,6 +313,12 @@ export default {
 		this.getMedia();
 		this.getUsers();
 	},
+	created() {
+		window.addEventListener("resize", this.resizeHandler);
+	},
+	destroyed() {
+		window.removeEventListener("resize", this.resizeHandler);
+	},
 	watch: {
 		deleting: function() {
 			if (!this.checked.length) {
@@ -651,6 +657,16 @@ export default {
 		 */
 		findMediaById(id) {
 			return this.media.find(u => u.id === id);
+		},
+		/*
+		 * resizeHandler()
+		 * Clear bulk mode & checked array for mobile.
+		 */
+		resizeHandler() {
+			if (window.innerWidth <= 568) {
+				this.bulkMode = false;
+				this.checked = [];
+			}
 		},
 	},
 	computed: {
@@ -1000,8 +1016,7 @@ export default {
 	// =========================================================================
 
 	&-side {
-		margin-bottom: 1.6rem;
-
+		margin-bottom: 0;
 	}
 
 	// Information

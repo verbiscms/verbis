@@ -6,9 +6,17 @@
 		<div class="auth-container">
 			<div class="row">
 				<div class="col-12">
-					<h1>Home</h1>
-					<Breadcrumbs></Breadcrumbs>
-					<Alert colour="green">
+					<header class="header">
+						<div class="header-title">
+							<h1>Home</h1>
+							<Breadcrumbs></Breadcrumbs>
+						</div>
+					</header>
+				</div><!-- /Col -->
+			</div><!-- /Row -->
+			<div class="row">
+				<div class="col-12">
+					<Alert colour="green" type="success">
 						<slot><strong>Welcome back {{ getUserInfo['first_name'] }}</strong></slot>
 					</Alert>
 				</div><!-- /Col -->

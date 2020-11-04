@@ -13,7 +13,9 @@
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-orange" @click.prevent="save" :class="{ 'btn-loading' : isSavingUser }">Update profile</button>
+							<button class="btn btn-orange" @click.prevent="save" :class="{ 'btn-loading' : isSavingUser }">
+								Update&nbsp;<span class="btn-hide-text-mob">Profile</span>
+							</button>
 						</div>
 					</header>
 				</div><!-- /Col -->
@@ -150,14 +152,14 @@
 				<!-- =====================
 					Reset Password
 					===================== -->
-				<div class="form-row-group" v-if="isSelf">
+				<div class="form-row-group profile-last-row" v-if="isSelf">
 					<div class="row">
 						<div class="col-12">
 							<div class="profile-reset-password">
 								<h2>Reset password</h2>
 								<div>
 <!--									<button class="btn btn-orange btn-margin-right">Forgot Password?</button>-->
-									<button class="btn btn-orange" @click.prevent="resetPassword" :class="{ 'btn-loading' : isSavingPassword }">Reset password</button>
+									<button class="btn btn-orange" @click.prevent="resetPassword" :class="{ 'btn-loading' : isSavingPassword }">Reset</button>
 								</div>
 							</div>
 						</div><!-- /Col -->
@@ -514,12 +516,11 @@ export default {
 		}
 	}
 
-	// Tablet Down
-	// ========================================================================
+	// Last Row
+	// =========================================================================
 
-	@include media-tab-down {
-
-
+	&-last-row {
+		margin-bottom: 0;
 	}
 
 	// Desktop

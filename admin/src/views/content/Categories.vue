@@ -113,7 +113,7 @@
 							<Alert v-else colour="orange">
 								<slot>
 									<h3>No {{ activeTabName === "all" ? "" : activeTabName }} categories available. </h3>
-									<p>To create a new one, click the plus sign above.</p>
+									<p>To create a new one, click the button above.</p>
 								</slot>
 							</Alert>
 						</transition>
