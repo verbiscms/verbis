@@ -3,84 +3,6 @@
 	===================== -->
 <template>
 	<section>
-		<aside class="editor-sidebar">
-			<div class="editor-sidebar">
-				<div class="card editor-sidebar-options">
-					<div class="card-header card-header-naked">
-						<h3 class="card-title">Options</h3>
-					</div>
-					<div class="card-body">
-						<!-- URL -->
-						<div class="form-group editor-url">
-							<label class="form-label" for="options-url">URL</label>
-							<div class="editor-url-cont">
-								<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
-								<i class="fal fa-edit" @click="slugBtn = !slugBtn"></i>
-							</div>
-							<h4>{{ computedSlug }}</h4>
-							<!-- Message -->
-							<transition name="trans-fade-height">
-								<span class="field-message field-message-warning" v-if="errors.slug">{{ errors.slug }}</span>
-							</transition><!-- /Message -->
-						</div>
-						<!-- Status -->
-						<div class="form-group">
-							<label class="form-label" for="options-status">Status</label>
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="options-status" v-model="data.status">
-									<option value="" disabled selected>Select status</option>
-									<option value="draft">Draft</option>
-									<option value="published">Published</option>
-								</select>
-							</div>
-						</div>
-						<!-- Author -->
-						<div class="form-group">
-							<label class="form-label" for="options-author">Author</label>
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
-									<option value="0" disabled selected>Select author</option>
-									<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
-								</select>
-							</div>
-						</div>
-						<!-- Date -->
-						<div class="form-group">
-							<label class="form-label">Published Date</label>
-							<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
-						</div>
-					</div>
-				</div><!-- /Options -->
-				<!-- Properties -->
-				<div class="card editor-sidebar-properties">
-					<div class="card-header card-header-naked">
-						<h3 class="card-title">Properties</h3>
-					</div>
-					<div class="card-body">
-						<!-- Template -->
-						<div class="form-group">
-							<label class="form-label" for="properties-template">Template</label>
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
-									<option value="" disabled selected>Select template</option>
-									<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
-								</select>
-							</div>
-						</div>
-						<!-- Layout -->
-						<div class="form-group">
-							<label class="form-label" for="properties-layout">Layout</label>
-							<div class="form-select-cont form-input">
-								<select class="form-select" id="properties-layout" v-model="data['layout']" @change="getFieldLayout">
-									<option value="" disabled selected>Select layout</option>
-									<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
-								</select>
-							</div>
-						</div>
-					</div>
-				</div><!-- /Properties -->
-			</div><!-- /Sidebar -->
-		</aside>
 		<div class="auth-container editor-auth-container" v-if="!loadingResourceData">
 			<!-- =====================
 				Header
@@ -97,7 +19,7 @@
 						<!-- Actions -->
 						<div class="header-actions">
 							<form class="form form-actions">
-								<button class="btn btn-icon btn-white btn-margin-right">
+								<button class="btn btn-icon btn-white btn-margin-right" @click.prevent="sidebarOpen = !sidebarOpen">
 									<i class="feather feather-settings"></i>
 								</button>
 								<a :href="getSiteUrl + computedSlug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white btn-flex">Preview</a>
@@ -126,11 +48,11 @@
 					</Tabs>
 					<!-- Content & Fields -->
 					<transition name="trans-fade" mode="out-in">
-
 						<div v-if="activeTab === 0" :key="1">
 							<!-- Title -->
-							<div class="card">
-								<collapse :show="true">
+							<h6 class="margin">General</h6>
+							<div class="card card-small-box-shadow card-expand card-expand-full-width">
+								<collapse :show="true" class="collapse-border-bottom">
 									<template v-slot:header>
 										<div class="card-header">
 											<h3 class="card-title">Title</h3>
@@ -164,14 +86,68 @@
 						<Insights v-if="activeTab === 4" :key="4"></Insights>
 					</transition>
 				</div><!-- /Col -->
-				<!-- =====================
-					Options & Properties
-					===================== -->
-				<div class="col-12 col-desk-3">
-
-				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
+		<!-- =====================
+			Sidebar
+			===================== -->
+		<aside class="editor-sidebar" :class="{ 'editor-sidebar-active' : sidebarOpen }">
+			<div class="editor-sidebar-header">
+				<h3>Page options</h3>
+				<i class="feather feather-x" @click.prevent="sidebarOpen = false"></i>
+			</div>
+			<div class="editor-sidebar-body">
+				<!-- URL -->
+				<FormGroup class="editor-url" label="Url" :error="errors['slug']">
+					<div class="editor-url-cont">
+						<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
+						<i class="feather feather-edit" @click="slugBtn = !slugBtn"></i>
+					</div>
+					<h4>{{ computedSlug }}</h4>
+				</FormGroup><!-- /Url -->
+				<!-- Status -->
+				<FormGroup label="Status">
+					<div class="form-select-cont form-input">
+						<select class="form-select" id="options-status" v-model="data.status">
+							<option value="" disabled selected>Select status</option>
+							<option value="draft">Draft</option>
+							<option value="published">Published</option>
+						</select>
+					</div>
+				</FormGroup><!-- /Status -->
+				<!-- Author -->
+				<FormGroup label="Author">
+					<div class="form-select-cont form-input">
+						<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
+							<option value="0" disabled selected>Select author</option>
+							<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
+						</select>
+					</div>
+				</FormGroup><!-- /Author -->
+				<!-- Published Date -->
+				<FormGroup label="Published date">
+					<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
+				</FormGroup><!-- /Published Date -->
+				<!-- Page Template -->
+				<FormGroup label="Page template">
+					<div class="form-select-cont form-input">
+						<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
+							<option value="" disabled selected>Select template</option>
+							<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
+						</select>
+					</div>
+				</FormGroup><!-- /Page Template -->
+				<!-- Layout -->
+				<FormGroup label="Layout">
+					<div class="form-select-cont form-input">
+						<select class="form-select" id="properties-layout" v-model="data['layout']" @change="getFieldLayout">
+							<option value="" disabled selected>Select layout</option>
+							<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
+						</select>
+					</div>
+				</FormGroup><!-- /Layout -->
+			</div>
+		</aside>
 	</section>
 </template>
 
@@ -190,11 +166,13 @@ import Fields from "@/components/editor/tabs/Fields";
 import slugify from "slugify";
 import Tabs from "@/components/misc/Tabs";
 import Collapse from "@/components/misc/Collapse";
+import FormGroup from "@/components/forms/FormGroup";
 
 export default {
 	name: "Single",
 	title: 'Editor',
 	components: {
+		FormGroup,
 		Tabs,
 		Fields,
 		Breadcrumbs,
@@ -233,6 +211,7 @@ export default {
 		},
 		doingAxios: true,
 		loadingResourceData: true,
+		sidebarOpen: false,
 	}),
 	beforeMount() {
 		this.setResource()
@@ -513,6 +492,7 @@ export default {
 	===================== -->
 <style lang="scss">
 
+	$editor-side-input-height: 50px;
 
 	.editor {
 
@@ -522,8 +502,10 @@ export default {
 		&-url {
 
 			h4 {
-				margin-top: 10px;
+				margin-top: 4px;
 				font-weight: 500;
+				font-size: 0.8rem;
+				color: $secondary;
 			}
 
 			&-cont {
@@ -537,11 +519,11 @@ export default {
 					align-items: center;
 					right: 0;
 					top: 50%;
-					height: 50px;
-					width: 50px;
+					height: $editor-side-input-height;
+					width: 	$editor-side-input-height;
 					transform: translateY(-50%);
-					background-color: $green;
-					color: $white;
+					background-color: $white;
+					color: $secondary;
 					border-top-right-radius: $form-input-border-radius;
 					border-bottom-right-radius: $form-input-border-radius;
 					border: 1px solid $grey-light;
@@ -553,9 +535,57 @@ export default {
 		// =========================================================================
 
 		&-sidebar {
-			position: sticky;
-			top: 100px;
-			background-color: $bg-color;
+			position: fixed;
+			top: 0;
+			right: 0;
+			height: 100%;
+			width: 340px;
+			background-color: $white;
+			z-index: 999;
+			transform: translateX(100%);
+			transition: transform .4s cubic-bezier(.1,.7,.1,1);
+			box-shadow: 0 0 50px 3px rgba(0, 0, 0, 0.11);
+			border-left: 1px solid $grey-light;
+
+			&-active {
+				transform: translateX(0);
+			}
+
+			&-header {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding: 16px 24px;
+
+				i {
+					cursor: pointer;
+					padding: 10px;
+					margin-right: -5px;
+					color: $secondary;
+				}
+
+				h3 {
+					font-weight: 600;
+					font-size: 1.1rem;
+					margin-bottom: 0;
+				}
+			}
+
+			&-body {
+				padding: 0 24px;
+
+				input {
+					height: $editor-side-input-height;
+					min-height: $editor-side-input-height;
+				}
+
+
+				.form-select-cont,
+				.form-select {
+					height: $editor-side-input-height
+				}
+			}
 		}
 	}
 
