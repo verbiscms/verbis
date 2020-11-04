@@ -10,6 +10,15 @@
     width: 100%;
     transition: margin-top 200ms ease;
 
+
+    &-input,
+    &-select {
+        &:active,
+        &:focus {
+            border-color: $primary;
+        }
+    }
+
     // Input
     // =========================================================================
 
@@ -50,6 +59,9 @@
         @include on-event {
             box-shadow: $form-box-shadow;
         }
+
+
+
     }
 
     &-group {
