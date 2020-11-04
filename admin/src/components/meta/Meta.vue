@@ -36,7 +36,7 @@
 		<!-- =====================
 			Facebook
 			===================== -->
-		<Collapse :show="false" class="collapse-border-bottom meta-card">
+		<Collapse :show="false" class="collapse-border-bottom meta-card meta-card-facebook">
 			<template v-slot:header>
 				<div class="card-header">
 					<div>
@@ -93,7 +93,7 @@
 		<!-- =====================
 			Twitter
 			===================== -->
-		<Collapse :show="false" class="collapse-border-bottom meta-card">
+		<Collapse :show="false" class="collapse-border-bottom meta-card meta-card-twitter">
 			<template v-slot:header>
 				<div class="card-header">
 					<div>
@@ -390,6 +390,15 @@ export default {
 
 		&-col-right {
 			padding: 0;
+		}
+
+
+		&-facebook,
+		&-twitter {
+
+			input {
+				width: 100% !important;
+			}
 		}
 
 		@include media-desk {

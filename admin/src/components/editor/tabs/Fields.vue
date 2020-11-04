@@ -4,11 +4,15 @@
 <template>
 	<section>
 		<!-- Field Group -->
-		<div class="card" v-for="(group, groupIndex) in layout" :key="group.uuid">
-			<collapse :show="true" :use-icon="true">
+		<div v-for="(group, groupIndex) in layout" :key="group.uuid">
+			<h6 class="margin">{{  group.title }}</h6>
+			<div class="card card-small-box-shadow card-expand card-expand-margin-small">
+			<Collapse :show="true" :use-icon="true">
 				<template v-slot:header>
 					<div class="card-header">
-						<h3 class="card-title">{{  group.title }}</h3>
+						<div>
+							<h4 class="card-title">{{  group.title }}</h4>
+						</div>
 						<div class="card-controls">
 							<i class="feather feather-arrow-up" @click="moveGroupUp(groupIndex)"></i>
 							<i class="feather feather-arrow-down" @click="moveGroupDown(groupIndex)"></i>
@@ -18,7 +22,7 @@
 				</template>
 				<!-- Field Layout -->
 				<template v-slot:body>
-					<div class="card-body">
+					<div class="card-body" style="padding: 0 !important;">
 						<!-- :style="{ width: layout.wrapper['width'] + '%' }" -->
 						<div class="field" v-for="(layout) in group.fields" :key="layout.uuid" >
 							<transition name="trans-fade" >
@@ -87,7 +91,8 @@
 						</div><!-- /Field Layout -->
 					</div><!-- /Field Group Layout -->
 				</template>
-			</collapse>
+			</Collapse>
+			</div>
 		</div><!-- /Field Group -->
 	</section>
 </template>
