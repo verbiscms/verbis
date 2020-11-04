@@ -121,7 +121,7 @@ $card-padding-x-desk: 24px;
 	// =========================================================================
 
 	&-expand {
-		margin-bottom: 3rem;
+		margin-bottom: 2rem;
 
 		#{$self}-header {
 			max-height: none;
@@ -165,6 +165,10 @@ $card-padding-x-desk: 24px;
 			margin-bottom: 1.6rem;
 		}
 
+		@include media-tab {
+			margin-bottom: 3rem;
+		}
+
 		@include media-desk {
 			margin-bottom: 4rem;
 
@@ -186,7 +190,6 @@ $card-padding-x-desk: 24px;
 
 		}
 	}
-
 
 	// Padding
 	// =========================================================================

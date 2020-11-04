@@ -32,7 +32,6 @@
 		<div v-if="!loadingMeta" class="card card-small-box-shadow card-expand">
 			<MetaForm :meta="metaProcessed" @update="updateMeta"></MetaForm>
 		</div>
-	<pre>	{{ metaProcessed }}</pre>
 	</section>
 </template>
 

@@ -74,7 +74,7 @@
 			margin: 0;
 		}
 
-		&:hover {
+		&:not(#{$self}-white):hover {
 
 			i {
 				color: $white;
@@ -82,26 +82,13 @@
 		}
 	}
 
-	// Popover Icon
+	// Flex
 	// =========================================================================
 
-	&-popover {
-		padding-right: 8px;
-
-		&-icon {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			width: 40px;
-			height: 36px;
-			background-color: $orange-light;
-			border-radius: 4px;
-			margin-left: 16px;
-
-			i {
-				font-weight: 700;
-			}
-		}
+	&-flex {
+		display: inline-flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	// Loading
@@ -154,7 +141,7 @@
 
 	&-white {
 		background-color: $white;
-		color: $secondary;
+		color: $secondary !important;
 
 		&:before {
 			border-color: $secondary;
@@ -163,7 +150,7 @@
 
 	&-orange {
 		background-color: $orange;
-		color: $white;
+		color: $white !important;
 
 		&:before {
 			border-color: $white;
@@ -172,7 +159,7 @@
 
 	&-blue {
 		background-color: $primary;
-		color: $white;
+		color: $white !important;
 
 		&:before {
 			border-color: $white;
@@ -181,7 +168,7 @@
 
 	&-green {
 		background-color: $green;
-		color: $white;
+		color: $white !important;
 
 		&:before {
 			border-color: $white;

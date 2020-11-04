@@ -24,7 +24,7 @@
 								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
 								<div class="btn btn-icon btn-orange btn-text-mob" @click="showCreateModal = true">
 									<i class="fal fa-plus"></i>
-									<span>New user</span>
+									<span>New User</span>
 								</div>
 							</form>
 						</div><!-- /Actions -->
@@ -146,7 +146,7 @@
 							<Alert v-else colour="orange">
 								<slot>
 									<h3>No {{ activeTabName }} users available. </h3>
-									<p>To create a new one, click the plus sign above.</p>
+									<p>To create a new one, click the button above.</p>
 								</slot>
 							</Alert>
 						</transition>
