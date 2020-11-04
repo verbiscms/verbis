@@ -1,8 +1,86 @@
-<!-- =====================
+*<!-- =====================
 	Single
 	===================== -->
 <template>
 	<section>
+		<aside class="editor-sidebar">
+			<div class="editor-sidebar">
+				<div class="card editor-sidebar-options">
+					<div class="card-header card-header-naked">
+						<h3 class="card-title">Options</h3>
+					</div>
+					<div class="card-body">
+						<!-- URL -->
+						<div class="form-group editor-url">
+							<label class="form-label" for="options-url">URL</label>
+							<div class="editor-url-cont">
+								<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
+								<i class="fal fa-edit" @click="slugBtn = !slugBtn"></i>
+							</div>
+							<h4>{{ computedSlug }}</h4>
+							<!-- Message -->
+							<transition name="trans-fade-height">
+								<span class="field-message field-message-warning" v-if="errors.slug">{{ errors.slug }}</span>
+							</transition><!-- /Message -->
+						</div>
+						<!-- Status -->
+						<div class="form-group">
+							<label class="form-label" for="options-status">Status</label>
+							<div class="form-select-cont form-input">
+								<select class="form-select" id="options-status" v-model="data.status">
+									<option value="" disabled selected>Select status</option>
+									<option value="draft">Draft</option>
+									<option value="published">Published</option>
+								</select>
+							</div>
+						</div>
+						<!-- Author -->
+						<div class="form-group">
+							<label class="form-label" for="options-author">Author</label>
+							<div class="form-select-cont form-input">
+								<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
+									<option value="0" disabled selected>Select author</option>
+									<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
+								</select>
+							</div>
+						</div>
+						<!-- Date -->
+						<div class="form-group">
+							<label class="form-label">Published Date</label>
+							<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
+						</div>
+					</div>
+				</div><!-- /Options -->
+				<!-- Properties -->
+				<div class="card editor-sidebar-properties">
+					<div class="card-header card-header-naked">
+						<h3 class="card-title">Properties</h3>
+					</div>
+					<div class="card-body">
+						<!-- Template -->
+						<div class="form-group">
+							<label class="form-label" for="properties-template">Template</label>
+							<div class="form-select-cont form-input">
+								<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
+									<option value="" disabled selected>Select template</option>
+									<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
+								</select>
+							</div>
+						</div>
+						<!-- Layout -->
+						<div class="form-group">
+							<label class="form-label" for="properties-layout">Layout</label>
+							<div class="form-select-cont form-input">
+								<select class="form-select" id="properties-layout" v-model="data['layout']" @change="getFieldLayout">
+									<option value="" disabled selected>Select layout</option>
+									<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
+								</select>
+							</div>
+						</div>
+					</div>
+				</div><!-- /Properties -->
+			</div><!-- /Sidebar -->
+		</aside>
 		<div class="auth-container editor-auth-container" v-if="!loadingResourceData">
 			<!-- =====================
 				Header
@@ -19,13 +97,14 @@
 						<!-- Actions -->
 						<div class="header-actions">
 							<form class="form form-actions">
-								<a :href="getSiteUrl + computedSlug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white">Preview</a>
-								<button class="btn btn-fixed-height btn-orange btn-popover" @click.prevent="save">
+								<button class="btn btn-icon btn-white btn-margin-right">
+									<i class="feather feather-settings"></i>
+								</button>
+								<a :href="getSiteUrl + computedSlug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white btn-flex">Preview</a>
+								<button class="btn btn-fixed-height btn-orange" @click.prevent="save">
 									<span v-if="newItem">Publish</span>
+									<span v-else-if="newItem">Publish</span>
 									<span v-else>Update</span>
-									<span class="btn-popover-icon">
-										<i class="fal fa-chevron-down"></i>
-									</span>
 									<div class="popover"></div>
 								</button>
 							</form>
@@ -37,7 +116,7 @@
 				<!-- =====================
 					Title & Tabs
 					===================== -->
-				<div class="col-12 col-desk-9 editor-main-col">
+				<div class="col-12 col-desk-12 editor-main-col">
 					<Tabs @update="activeTab = $event - 1" :default-tab="activeTab">
 						<template slot="item">Content</template>
 						<template slot="item">Meta</template>
@@ -89,82 +168,7 @@
 					Options & Properties
 					===================== -->
 				<div class="col-12 col-desk-3">
-					<div class="editor-sidebar">
-						<div class="card editor-sidebar-options">
-							<div class="card-header card-header-naked">
-								<h3 class="card-title">Options</h3>
-							</div>
-							<div class="card-body">
-								<!-- URL -->
-								<div class="form-group editor-url">
-									<label class="form-label" for="options-url">URL</label>
-									<div class="editor-url-cont">
-										<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
-										<i class="fal fa-edit" @click="slugBtn = !slugBtn"></i>
-									</div>
-									<h4>{{ computedSlug }}</h4>
-									<!-- Message -->
-									<transition name="trans-fade-height">
-										<span class="field-message field-message-warning" v-if="errors.slug">{{ errors.slug }}</span>
-									</transition><!-- /Message -->
-								</div>
-								<!-- Status -->
-								<div class="form-group">
-									<label class="form-label" for="options-status">Status</label>
-									<div class="form-select-cont form-input">
-										<select class="form-select" id="options-status" v-model="data.status">
-											<option value="" disabled selected>Select status</option>
-											<option value="draft">Draft</option>
-											<option value="published">Published</option>
-										</select>
-									</div>
-								</div>
-								<!-- Author -->
-								<div class="form-group">
-									<label class="form-label" for="options-author">Author</label>
-									<div class="form-select-cont form-input">
-										<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
-											<option value="0" disabled selected>Select author</option>
-											<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
-										</select>
-									</div>
-								</div>
-								<!-- Date -->
-								<div class="form-group">
-									<label class="form-label">Published Date</label>
-									<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
-								</div>
-							</div>
-						</div><!-- /Options -->
-						<!-- Properties -->
-						<div class="card editor-sidebar-properties">
-							<div class="card-header card-header-naked">
-								<h3 class="card-title">Properties</h3>
-							</div>
-							<div class="card-body">
-								<!-- Template -->
-								<div class="form-group">
-									<label class="form-label" for="properties-template">Template</label>
-									<div class="form-select-cont form-input">
-										<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
-											<option value="" disabled selected>Select template</option>
-											<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
-										</select>
-									</div>
-								</div>
-								<!-- Layout -->
-								<div class="form-group">
-									<label class="form-label" for="properties-layout">Layout</label>
-									<div class="form-select-cont form-input">
-										<select class="form-select" id="properties-layout" v-model="data['layout']" @change="getFieldLayout">
-											<option value="" disabled selected>Select layout</option>
-											<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
-										</select>
-									</div>
-								</div>
-							</div>
-						</div><!-- /Properties -->
-					</div><!-- /Sidebar -->
+
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->

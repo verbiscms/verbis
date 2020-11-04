@@ -6,7 +6,7 @@
 		<div class="auth-container">
 			<div class="row">
 				<div class="col-12">
-					<header class="header header-with-actions">
+					<header class="header header-with-actions header-margin-large">
 						<div class="header-title">
 							<h1>Code Injection</h1>
 							<Breadcrumbs></Breadcrumbs>

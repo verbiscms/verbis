@@ -25,10 +25,6 @@ export default {
 	beforeMount() {
 		this.updateList()
 	},
-	created() {
-		const breadcrumbs = this.$options
-		console.log(breadcrumbs)
-	},
 	watch: {
 		'$route'() {
 			this.updateList()
@@ -99,7 +95,7 @@ export default {
 .breadcrumbs {
 	$self: &;
 
-	margin-top: 10px;
+	margin-top: 6px;
 
 	// List
 	// =========================================================================
@@ -120,12 +116,13 @@ export default {
 		display: flex;
 		align-items: center;
 		color: $grey;
+		font-size: 13px;
 
 		&:after {
 			content: url("~@/assets/images/breadcrumb-arrow.svg");
 			position: relative;
 			display: block;
-			margin: 0 10px;
+			margin: 0 8px;
 		}
 
 		&-active {
@@ -134,6 +131,35 @@ export default {
 
 		&:hover {
 			color: $secondary;
+		}
+	}
+
+	// Small Phones
+	// =========================================================================
+
+	@media screen and (max-width: 350px) {
+
+		&-link {
+			font-size: 11px;
+
+			&:after {
+				margin: 0 6px;
+			}
+		}
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+		margin-top: 8px;
+
+		&-link {
+			font-size: 0.875rem;
+
+			&:after {
+				margin: 0 10px;
+			}
 		}
 	}
 }

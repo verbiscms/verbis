@@ -75,8 +75,7 @@ $modal-transition-time: 400ms;
 	right: 0;
 	bottom: 0;
 	left: 0;
-	overflow-y: hidden;
-	padding: 75px 0;
+	overflow-y: scroll;
 	z-index: 9999;
 
 	// Icon
@@ -144,29 +143,16 @@ $modal-transition-time: 400ms;
 		}
 	}
 
-	// Sizes
-	// ==========================================================================
-
-	@include media-desk {
-
-		&-large {
-
-			#{$self}-container {
-				max-width: 700px !important;
-				min-width: 600px !important;
-			}
-		}
-	}
-
-
 	// Container
 	// ==========================================================================
 
 	&-container {
 		position: relative;
+		width: 90vw;
+		height: auto;
+		max-height: 80vh;
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
 		background-color: #fff;
 		box-shadow: 0 0 20px 2px rgba($black, 0.16);
 		border-radius: 6px;
@@ -262,6 +248,32 @@ $modal-transition-time: 400ms;
 
 		#{$self}-warning {
 			display: block;
+		}
+	}
+
+	// Warning
+	// ==========================================================================
+
+	@include media-tab {
+		width: 100%;
+		padding: 75px 0;
+
+		&-container {
+			justify-content: center;
+		}
+	}
+
+	// Desktop
+	// ==========================================================================
+
+	@include media-desk {
+
+		&-large {
+
+			#{$self}-container {
+				max-width: 700px !important;
+				min-width: 600px !important;
+			}
 		}
 	}
 }
