@@ -10,14 +10,13 @@
     width: 100%;
     transition: margin-top 200ms ease;
 
-
-    &-input,
-    &-select {
-        &:active,
-        &:focus {
-            border-color: $primary;
-        }
-    }
+    //&-input,
+    //&-select {
+    //    &:active,
+    //    &:focus {
+    //        border-color: $primary;
+    //    }
+    //}
 
     // Input
     // =========================================================================

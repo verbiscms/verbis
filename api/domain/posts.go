@@ -59,9 +59,8 @@ type PostCategory struct {
 	Slug			string 		`json:"slug"`
 	Name			string 		`json:"name"`
 	Description		*string 	`json:"description"`
-	Hidden 			*bool 		`json:"hidden"`
+	Resource 		string 	`json:"resource"`
 	ParentId 		*int 		`json:"parent_id"`
-	PageTemplate	*string 	`json:"page_template"`
 	UpdatedAt		time.Time	`json:"updated_at"`
 	CreatedAt		time.Time	`json:"created_at"`
 }

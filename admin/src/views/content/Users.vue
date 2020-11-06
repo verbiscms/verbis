@@ -454,8 +454,11 @@ export default {
 		 * getProfilePicture()
 		 */
 		getProfilePicture(id) {
-			const picture = this.media.find(m => m.id === id);
-			return picture ? picture.url : false;
+			console.log(this.media);
+			if (this.media.length) {
+				const picture = this.media.find(m => m.id === id);
+				return picture ? picture.url : false;
+			}
 		}
 	},
 	computed: {

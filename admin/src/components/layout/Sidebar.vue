@@ -3,204 +3,206 @@
 	===================== -->
 <template>
 	<aside class="aside" :class="{ 'aside-active' : open }">
-		<div class="aside-top">
-			<!-- Logo -->
-			<router-link class="aside-logo" :to="{ name: 'home' }" v-if="getSite.logo">
-				<img :src="getSiteUrl + getSite.logo">
-				<h2>Verbis</h2>
-			</router-link>
-			<!-- =====================
-				Resources
-				===================== -->
-			<div class="aside-block">
-				<collapse :use-icon="false">
-					<template v-slot:header>
-						<div class="aside-block-nav">
-							<h6>Resources</h6>
-							<i class="feather feather-chevron-down"></i>
-						</div>
-					</template>
-					<template v-slot:body>
-						<nav class="aside-nav">
-							<ul>
-								<!-- Pages -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'pages' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: 'pages' }}">
-										<i class="feather feather-file"></i>
-										<span>Pages</span>
-									</router-link>
-								</li><!-- /Pages -->
-								<!-- Resources -->
-								<li class="aside-nav-item" v-for="(resource) in getTheme.resources"
-									v-bind:key="resource.name"
-									:class="{ 'aside-nav-item-active' : activePage === resource.name.toLowerCase() }"
-									@click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: resource.name }}">
-										<i v-if="resource.icon" :class="resource.icon"></i>
-										<i v-else class="fal fa-file"></i>
-										<span>{{ resource['friendly_name'] }}</span>
-									</router-link>
-								</li><!-- /Resources -->
-							</ul>
-						</nav>
-					</template>
-				</collapse>
-			</div><!-- /Resources -->
-			<!-- =====================
-				Content
-				===================== -->
-			<div class="aside-block">
-				<collapse :use-icon="false">
-					<template v-slot:header>
-						<div class="aside-block-nav">
-							<h6>Content</h6>
-							<i class="feather feather-chevron-down"></i>
-						</div>
-					</template>
-					<template v-slot:body>
-						<nav class="aside-nav">
-							<ul>
-								<!-- Categories -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'categories' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'categories' }">
-										<i class="feather feather-tag"></i>
-										<span>Categories</span>
-									</router-link>
-								</li><!-- /Categories -->
-								<!-- Media -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'media' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'media' }">
-										<i class="feather feather-image"></i>
-										<span>Media</span>
-									</router-link>
-								</li><!-- /Media -->
-								<!-- Fields -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'fields' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'fields' }">
-										<i class="feather feather-layout"></i>
-										<span>Fields</span>
-									</router-link>
-								</li><!-- /Users -->
-								<!-- Users -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'users' || activePage === 'edit-user' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'users' }">
-										<i class="feather feather-users"></i>
-										<span>Users</span>
-									</router-link>
-								</li><!-- /Users -->
-							</ul>
-						</nav>
-					</template>
-				</collapse>
-			</div><!-- /Content -->
-			<!-- =====================
-				Settings
-				===================== -->
-			<div class="aside-block">
-				<collapse :use-icon="false">
-					<template v-slot:header>
-						<div class="aside-block-nav">
-							<h6>Settings</h6>
-							<i class="feather feather-chevron-down"></i>
-						</div>
-					</template>
-					<template v-slot:body>
-						<nav class="aside-nav">
-							<ul>
-								<!-- General -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-general' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'settings-general' }">
-										<i class="feather feather-settings"></i>
-										<span>General</span>
-									</router-link>
-								</li><!-- /General -->
-								<!-- Code Injection -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-code-injection' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'settings-code-injection' }">
-										<i class="feather feather-code"></i>
-										<span>Code Injection</span>
-									</router-link>
-								</li><!-- /Code Injection -->
-								<!-- Performance -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-performance' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'settings-performance' }">
-										<i class="feather feather-clock"></i>
-										<span>Performance</span>
-									</router-link>
-								</li><!-- /Performance -->
-								<!-- SEO & Meta -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-seo-meta' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'settings-seo-meta' }">
-										<i class="feather feather-search"></i>
-										<span>SEO & Meta</span>
-									</router-link>
-								</li><!-- /Performance -->
-								<!-- Media -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-media' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'settings-media' }">
-										<i class="feather feather-film"></i>
-										<span>Media</span>
-									</router-link>
-								</li><!-- /Media -->
-							</ul>
-						</nav>
-					</template>
-				</collapse>
-			</div><!-- /Content -->
-		</div>
-		<!-- =====================
-			Bottom (User)
-			===================== -->
-		<div class="aside-bottom">
-			<collapse :use-icon="false" :show="false" :reverse="true">
-				<template v-slot:header>
-					<div class="aside-bottom-content" @click="accountActive = !accountActive">
-						<img v-if="getProfilePicture['url']" class="avatar" :src="getSite.url + getProfilePicture.url">
-						<span v-else class="avatar" v-html="getInitials"></span>
-						<!--Aside Bottom User -->
-						<div class="aside-bottom-user">
-							<!-- User Text -->
-							<div class="aside-bottom-user-text">
-								<h4>{{ getUserInfo['first_name'] }} {{ getUserInfo['last_name'] }}</h4>
-								<p>{{ getUserInfo['email'] }}</p>
-							</div><!-- /User Text -->
-							<div class="icon icon-naked aside-bottom-chevron">
-								<i class="feather feather-chevrons-up" :class="{ 'active' : accountActive }"></i>
+		<div class="aside-container">
+			<div class="aside-top">
+				<!-- Logo -->
+				<router-link class="aside-logo" :to="{ name: 'home' }" v-if="getSite.logo">
+					<img :src="getSiteUrl + getSite.logo">
+					<h2>Verbis</h2>
+				</router-link>
+				<!-- =====================
+					Resources
+					===================== -->
+				<div class="aside-block">
+					<collapse :use-icon="false">
+						<template v-slot:header>
+							<div class="aside-block-nav">
+								<h6>Resources</h6>
+								<i class="feather feather-chevron-down"></i>
 							</div>
-						</div><!--/Aside Bottom User -->
-					</div>
-				</template>
-				<template v-slot:body>
-					<!-- =====================
-						Account
-						===================== -->
-					<div class="aside-block aside-block-account">
-						<div class="aside-block-nav">
-							<h6>Account</h6>
+						</template>
+						<template v-slot:body>
+							<nav class="aside-nav">
+								<ul>
+									<!-- Pages -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'pages' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: 'pages' }}">
+											<i class="feather feather-file"></i>
+											<span>Pages</span>
+										</router-link>
+									</li><!-- /Pages -->
+									<!-- Resources -->
+									<li class="aside-nav-item" v-for="(resource) in getTheme.resources"
+										v-bind:key="resource.name"
+										:class="{ 'aside-nav-item-active' : activePage === resource.name.toLowerCase() }"
+										@click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: resource.name }}">
+											<i v-if="resource.icon" :class="resource.icon"></i>
+											<i v-else class="fal fa-file"></i>
+											<span>{{ resource['friendly_name'] }}</span>
+										</router-link>
+									</li><!-- /Resources -->
+								</ul>
+							</nav>
+						</template>
+					</collapse>
+				</div><!-- /Resources -->
+				<!-- =====================
+					Content
+					===================== -->
+				<div class="aside-block">
+					<collapse :use-icon="false">
+						<template v-slot:header>
+							<div class="aside-block-nav">
+								<h6>Content</h6>
+								<i class="feather feather-chevron-down"></i>
+							</div>
+						</template>
+						<template v-slot:body>
+							<nav class="aside-nav">
+								<ul>
+									<!-- Categories -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'categories' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'categories' }">
+											<i class="feather feather-tag"></i>
+											<span>Categories</span>
+										</router-link>
+									</li><!-- /Categories -->
+									<!-- Media -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'media' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'media' }">
+											<i class="feather feather-image"></i>
+											<span>Media</span>
+										</router-link>
+									</li><!-- /Media -->
+									<!-- Fields -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'fields' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'fields' }">
+											<i class="feather feather-layout"></i>
+											<span>Fields</span>
+										</router-link>
+									</li><!-- /Users -->
+									<!-- Users -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'users' || activePage === 'edit-user' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'users' }">
+											<i class="feather feather-users"></i>
+											<span>Users</span>
+										</router-link>
+									</li><!-- /Users -->
+								</ul>
+							</nav>
+						</template>
+					</collapse>
+				</div><!-- /Content -->
+				<!-- =====================
+					Settings
+					===================== -->
+				<div class="aside-block">
+					<collapse :use-icon="false">
+						<template v-slot:header>
+							<div class="aside-block-nav">
+								<h6>Settings</h6>
+								<i class="feather feather-chevron-down"></i>
+							</div>
+						</template>
+						<template v-slot:body>
+							<nav class="aside-nav">
+								<ul>
+									<!-- General -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-general' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'settings-general' }">
+											<i class="feather feather-settings"></i>
+											<span>General</span>
+										</router-link>
+									</li><!-- /General -->
+									<!-- Code Injection -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-code-injection' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'settings-code-injection' }">
+											<i class="feather feather-code"></i>
+											<span>Code Injection</span>
+										</router-link>
+									</li><!-- /Code Injection -->
+									<!-- Performance -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-performance' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'settings-performance' }">
+											<i class="feather feather-clock"></i>
+											<span>Performance</span>
+										</router-link>
+									</li><!-- /Performance -->
+									<!-- SEO & Meta -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-seo-meta' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'settings-seo-meta' }">
+											<i class="feather feather-search"></i>
+											<span>SEO & Meta</span>
+										</router-link>
+									</li><!-- /Performance -->
+									<!-- Media -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-media' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'settings-media' }">
+											<i class="feather feather-film"></i>
+											<span>Media</span>
+										</router-link>
+									</li><!-- /Media -->
+								</ul>
+							</nav>
+						</template>
+					</collapse>
+				</div><!-- /Content -->
+			</div>
+			<!-- =====================
+				Bottom (User)
+				===================== -->
+			<div class="aside-bottom">
+				<collapse :use-icon="false" :show="false" :reverse="true">
+					<template v-slot:header>
+						<div class="aside-bottom-content" @click="accountActive = !accountActive">
+							<img v-if="getProfilePicture['url']" class="avatar" :src="getSite.url + getProfilePicture.url">
+							<span v-else class="avatar" v-html="getInitials"></span>
+							<!--Aside Bottom User -->
+							<div class="aside-bottom-user">
+								<!-- User Text -->
+								<div class="aside-bottom-user-text">
+									<h4>{{ getUserInfo['first_name'] }} {{ getUserInfo['last_name'] }}</h4>
+									<p>{{ getUserInfo['email'] }}</p>
+								</div><!-- /User Text -->
+								<div class="icon icon-naked aside-bottom-chevron">
+									<i class="feather feather-chevrons-up" :class="{ 'active' : accountActive }"></i>
+								</div>
+							</div><!--/Aside Bottom User -->
 						</div>
-						<nav class="aside-nav">
-							<ul>
-								<!-- Profile -->
-								<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'profile' }" @click="$emit('close', true)">
-									<router-link class="aside-nav-link" :to="{ name: 'profile' }">
-										<i class="feather feather-user"></i>
-										<span>Profile</span>
-									</router-link>
-								</li><!-- /Profile -->
-								<!-- Logout -->
-								<li class="aside-nav-item" @click="doLogout">
-									<div class="aside-nav-link">
-										<i class="feather feather-log-out"></i>
-										<span>Logout</span>
-									</div>
-								</li><!-- /Logout -->
-							</ul>
-						</nav>
-					</div><!-- /Account -->
-				</template>
-			</collapse>
-		</div>
-	</aside><!-- /Aside Cont -->
+					</template>
+					<template v-slot:body>
+						<!-- =====================
+							Account
+							===================== -->
+						<div class="aside-block aside-block-account">
+							<div class="aside-block-nav">
+								<h6>Account</h6>
+							</div>
+							<nav class="aside-nav">
+								<ul>
+									<!-- Profile -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'profile' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'profile' }">
+											<i class="feather feather-user"></i>
+											<span>Profile</span>
+										</router-link>
+									</li><!-- /Profile -->
+									<!-- Logout -->
+									<li class="aside-nav-item" @click="doLogout">
+										<div class="aside-nav-link">
+											<i class="feather feather-log-out"></i>
+											<span>Logout</span>
+										</div>
+									</li><!-- /Logout -->
+								</ul>
+							</nav>
+						</div><!-- /Account -->
+					</template>
+				</collapse>
+			</div>
+		</div><!-- Aside Container -->
+	</aside>
 </template>
 
 <!-- =====================
@@ -302,20 +304,31 @@ $aside-padding-desk: 26px;
 	$self: &;
 
 	position: fixed;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
 	left: 0;
 	top: 0;
 	width: $sidebar-width-mob;
 	height: 100%;
-	overflow-y: scroll;
+	overflow: hidden;
 	background-color: $bg-color;
 	transform: translateX(-100%);
 	transition: transform 300ms ease;
 	will-change: transform;
 	z-index: 9998;
 	box-shadow: 0 0 50px 0 rgba(0, 0, 0, 0.11);
+
+	// Container
+	// =========================================================================
+
+	&-container {
+		width: 100%;
+		height: 100%;
+		overflow-y: scroll;
+		padding-right: 17px; /* Increase/decrease this value for cross-browser compatibility */
+		box-sizing: content-box; /* So the width will be 100% + 17px */
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+	}
 
 	// Block
 	// =========================================================================
