@@ -111,9 +111,9 @@
 	"location": [
 		[
 			{
-				"param": "layout",
+				"param": "category",
 				"operator": "==",
-				"value": "main"
+				"value": "news"
 			}
 		]
 	]

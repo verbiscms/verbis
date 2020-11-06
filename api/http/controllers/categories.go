@@ -38,19 +38,22 @@ func (c *CategoriesController) Get(g *gin.Context) {
 	const op = "CategoryHandler.Get"
 
 	params := http.GetParams(g)
-	categories, err := c.model.Get(params)
-
+	categories, total, err := c.model.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	}
-
-	if err != nil {
+	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained categories", categories)
+	pagination := http.GetPagination(params, total)
+
+	Respond(g, 200, "Successfully obtained categories", categories, pagination)
+
 }
 
 // Get By ID

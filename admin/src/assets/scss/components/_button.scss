@@ -32,6 +32,10 @@
 		margin-left: -4px;
 	}
 
+	span {
+		transition: opacity 200ms ease;
+	}
+
 	// Arrow
 	// =========================================================================
 
@@ -98,6 +102,10 @@
 		transition: none;
 		pointer-events: none;
 		color: transparent !important;
+
+		span {
+			opacity: 0;
+		}
 
 		&:before {
 			content: "";
