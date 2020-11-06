@@ -227,9 +227,8 @@ func (c *PostsController) processCategories(dc []domain.Category) []domain.PostC
 				Slug:         v.Slug,
 				Name:         v.Name,
 				Description:  v.Description,
-				Hidden:       v.Hidden,
+				Resource: 	  v.Resource,
 				ParentId:     v.ParentId,
-				PageTemplate: v.PageTemplate,
 				UpdatedAt:    time.Time{},
 				CreatedAt:    time.Time{},
 			})

@@ -67,7 +67,7 @@ export const optionsMixin = {
 				.finally(() => {
 					setTimeout(() => {
 						this.saving = false;
-					}, 100);
+					}, this.timeoutDelay);
 
 					setTimeout(() => {
 						this.axios.get("/site")

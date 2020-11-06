@@ -87,6 +87,7 @@
 					</transition>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
+			<pre>{{ categories }}</pre>
 		</div><!-- /Container -->
 		<!-- =====================
 			Sidebar
@@ -128,6 +129,21 @@
 				<FormGroup label="Published date">
 					<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
 				</FormGroup><!-- /Published Date -->
+				<FormGroup label="Category">
+					<!-- User Tags -->
+					<vue-tags-input
+						v-model="tag"
+						:tags="selectedTags"
+						:autocomplete-items="filteredCategories"
+						@tags-changed="updateCategoriesTags"
+						add-only-from-autocomplete
+						placeholder="Add category"
+					/>
+					<pre>{{ categories }}</pre>
+					<pre>{{ data['categories'] }}</pre>
+				<h1>	{{ tag }} hello</h1>
+					{{ selectedTags }}
+				</FormGroup>
 				<!-- Page Template -->
 				<FormGroup label="Page template">
 					<div class="form-select-cont form-input">
@@ -148,6 +164,7 @@
 				</FormGroup><!-- /Layout -->
 			</div>
 		</aside>
+		{{ categories }}
 	</section>
 </template>
 
@@ -167,6 +184,7 @@ import slugify from "slugify";
 import Tabs from "@/components/misc/Tabs";
 import Collapse from "@/components/misc/Collapse";
 import FormGroup from "@/components/forms/FormGroup";
+import VueTagsInput from '@jack_reddico/vue-tags-input';
 
 export default {
 	name: "Single",
@@ -182,6 +200,7 @@ export default {
 		CodeInjection,
 		Insights,
 		Collapse,
+		VueTagsInput,
 	},
 	data: () => ({
 		activeTab: 0,
@@ -192,6 +211,7 @@ export default {
 		templates: [],
 		layouts: [],
 		resource: {},
+		categories: [],
 		newItem: false,
 		errorTrigger: false,
 		errors: {},
@@ -212,6 +232,8 @@ export default {
 		doingAxios: true,
 		loadingResourceData: true,
 		sidebarOpen: false,
+		tag: "",
+		selectedTags: [],
 	}),
 	beforeMount() {
 		this.setResource()
@@ -225,6 +247,7 @@ export default {
 		this.getUsers();
 		this.getTemplates();
 		this.getLayouts();
+		this.getCategories();
 	},
 	methods: {
 		/*
@@ -287,14 +310,26 @@ export default {
 					// Set author
 					this.data.author = res.data.data.author.id;
 
+					// Set field layouts
 					this.fieldLayout = res.data.data.layout;
 
+					// Set categories
+					res.data.data.categories.forEach(category => {
+						this.selectedTags.push({
+							text: category.name,
+							id: category.id,
+						})
+					});
+
+					// Set date format
 					this.setDates()
 
-					this.loadingResourceData = false;
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
+				})
+				.finally(() => {
+					this.loadingResourceData = false;
 				})
 		},
 		/*
@@ -312,6 +347,23 @@ export default {
 			.then(res => {
 				this.fieldLayout = res.data.data
 			})
+		},
+		/*
+		 * getCategories()
+		 * Obtain the categories.
+		 */
+		getCategories() {
+			this.axios.get(`/categories?filter={"resource":[{"operator":"=", "value": "${this.resource['name']}"}]}`, {
+				paramsSerializer: function (params) {
+					return params;
+				}
+			})
+				.then(res => {
+					this.mapCategories(res.data.data);
+				})
+				.catch(err => {
+					this.helpers.handleResponse(err);
+				})
 		},
 		/*
 		 * getTemplates()
@@ -369,7 +421,7 @@ export default {
 			const isNew = this.$route.params.id === "new"
 			this.newItem = isNew
 			if (!isNew) {
-				this.getResourceData()
+				this.getResourceData();
 			} else {
 				this.loadingResourceData = false;
 			}
@@ -432,6 +484,32 @@ export default {
 			})
 		},
 		/*
+		 * mapCategories()
+		 * Create a new categories array from input & map.
+		 */
+		mapCategories(categories) {
+			if (categories) {
+				this.categories = categories.map(a => {
+					return {
+						text: a.name,
+						id: a.id
+					}
+				});
+			}
+		},
+		/*
+		 * updateTags()
+		 * Updates the categories when the tags changes.
+		 */
+		updateCategoriesTags(categories) {
+			this.$set(this.data, 'categories', []);
+			let catArr = [];
+			categories.forEach(category => {
+				catArr.push(category.id);
+			});
+			this.$set(this.data, 'categories', catArr);
+		},
+		/*
 		 * validate()
 		 * Add errors if the post/put failed.
 		 */
@@ -468,6 +546,14 @@ export default {
 		 */
 		getBaseSlug() {
 			return  this.resource.name === "page" ? "/" : "/" + this.resource.name + "/";
+		},
+		/*
+		 * filteredCategories()
+		 */
+		filteredCategories() {
+			return this.categories.filter(i => {
+				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+			});
 		},
 		/*
 		 * computedSlug()

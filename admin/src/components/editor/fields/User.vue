@@ -30,7 +30,6 @@
 
 import VueTagsInput from '@jack_reddico/vue-tags-input';
 
-
 export default {
 	name: "FieldPostObject",
 	props: {

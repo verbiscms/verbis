@@ -193,6 +193,7 @@ $tabs-underline-height: 3px;
 
 	@include media-desk {
 		margin-bottom: $header-margin-bottom-desk;
+		overflow: hidden;
 
 		&-item {
 			margin: 0 24px;

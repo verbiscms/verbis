@@ -11,7 +11,7 @@ import (
 
 // CategoryRepository defines methods for Categories to interact with the database
 type CategoryRepository interface {
-	Get(meta http.Params) ([]domain.Category, error)
+	Get(meta http.Params) ([]domain.Category, int, error)
 	GetById(id int) (domain.Category, error)
 	GetByPost(pageId int) ([]domain.Category, error)
 	Create(c *domain.Category) (domain.Category, error)
@@ -39,20 +39,41 @@ func newCategories(db *sqlx.DB) *CategoryStore {
 // Get all categories
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
-func (s *CategoryStore) Get(meta http.Params) ([]domain.Category, error) {
+func (s *CategoryStore) Get(meta http.Params) ([]domain.Category, int, error) {
 	const op = "CategoryRepository.Get"
 
 	var c []domain.Category
-	q := fmt.Sprintf("SELECT * FROM categories ORDER BY categories.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, meta.Page * meta.Limit)
+	q := fmt.Sprintf("SELECT * FROM categories")
+	countQ := fmt.Sprintf("SELECT COUNT(*) FROM categories")
+
+	// Apply filters to total and original query
+	filter, err := filterRows(s.db, meta.Filters, "categories")
+	if err != nil {
+		return nil, -1, err
+	}
+	q += filter
+	countQ += filter
+
+	// Apply pagination
+	q += fmt.Sprintf(" ORDER BY categories.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
+
+	// Select media
 	if err := s.db.Select(&c, q); err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
 	}
 
+	// Return not found error if no posts are available
 	if len(c) == 0 {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "No categories available", Operation: op}
+		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No categories available", Operation: op}
 	}
 
-	return c, nil
+	// Count the total number of media
+	var total int
+	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of category items", Operation: op, Err: err}
+	}
+
+	return c, total, nil
 }
 
 // Get the category by Id
@@ -87,14 +108,16 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 		return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op}
 	}
 
-	q := "INSERT INTO categories (uuid, slug, name, description, hidden, parent_id, page_template, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	e, err := s.db.Exec(q, uuid.New().String(), c.Slug, c.Name, c.Description, c.Hidden, c.ParentId, c.PageTemplate)
+	q := "INSERT INTO categories (uuid, slug, name, description, parent_id, resource, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())"
+	e, err := s.db.Exec(q, uuid.New().String(), c.Slug, c.Name, c.Description, c.ParentId, c.Resource)
 	if err != nil {
+		fmt.Println(err)
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the categort with the name: %v", c.Name), Operation: op, Err: err}
 	}
 
 	id, err := e.LastInsertId()
 	if err != nil {
+		fmt.Println(err)
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created category ID with the name: %v", c.Name), Operation: op, Err: err}
 	}
 
@@ -117,8 +140,8 @@ func (s *CategoryStore) Update(c *domain.Category) error {
 		return err
 	}
 
-	q := "UPDATE categories SET slug = ?, name = ? description = ?, hidden = ?, parent_id = ?, page_template = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, c.Slug, c.Name, c.Description, c.Hidden, c.ParentId, c.PageTemplate)
+	q := "UPDATE categories SET slug = ?, name = ?, description = ?, resource = ?, parent_id = ?, updated_at = NOW() WHERE id = ?"
+	_, err = s.db.Exec(q, c.Slug, c.Name, c.Description, c.Resource, c.ParentId, c.Id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the category with the name: %s", c.Name), Operation: op, Err: err}
 	}
@@ -162,31 +185,22 @@ func (s *CategoryStore) ExistsByName(name string) bool {
 	return exists
 }
 
-// TODO, come back too! Maybe this should be in posts?!
-
-// Insert into post categories with array of ID's
+// InsertPostCategories - Insert into post categories with array of ID's.
+// This function deletes all categories from the pivot before
+// inserting again.
 func (s *CategoryStore) InsertPostCategories(postId int, ids []int) error {
 	const op = "CategoryRepository.InsertPostCategories"
 
+	if _, err := s.db.Exec("DELETE FROM post_categories WHERE post_id = ?", postId); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postId), Operation: op, Err: err}
+	}
+
 	for _, id := range ids {
-
-		// Check if the record in post categories already exists
-		pcExists := false
-		_ = s.db.QueryRow("SELECT EXISTS (SELECT category_id FROM post_categories WHERE category_id = ? AND post_id = ?)", id, postId).Scan(&pcExists)
-
-		if !pcExists {
-			// Check if the category in the categories table exists before inserting
-			if s.Exists(id) {
-				q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
-				_, err := s.db.Exec(q, postId, id)
-				if err != nil {
-					return fmt.Errorf("Could not insert to the post categories table with the ID: %v", id)
-				}
-			}
+		q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
+		_, err := s.db.Exec(q, postId, id)
+		if err != nil {
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postId), Operation: op, Err: err}
 		}
-
-		//
-		// Get all the post ids with the category
 	}
 
 	return nil

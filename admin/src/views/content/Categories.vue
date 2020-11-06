@@ -64,14 +64,16 @@
 													</label>
 												</div>
 											</th>
-											<th class="table-order" @click="changeOrderBy('first_name')" :class="{ 'active' : activeOrder === 'first_name' }">
+											<th class="table-order" @click="changeOrderBy('name')" :class="{ 'active' : activeOrder === 'name' }">
 												<span>Name</span>
 												<i class="fas fa-caret-down" :class="{ 'active' : orderBy['first_name'] !== 'asc' }"></i>
 											</th>
-											<!-- @click="changeOrderBy('role.name')" :class="{ 'active' : activeOrder === 'role.name' }" -->
-											<th class="table-order">
-												<span>Role</span>
-												<!--													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['role.name'] !== 'asc' }"></i>-->
+											<th class="table-order" @click="changeOrderBy('resource')" :class="{ 'active' : activeOrder === 'resource' }">
+												<span>Resource</span>
+												<i class="fas fa-caret-down" :class="{ 'active' : orderBy['resource'] !== 'asc' }"></i>
+											</th>
+											<th>
+												<span>Parent</span>
 											</th>
 											<th class="table-order" @click="changeOrderBy('created_at')" :class="{ 'active' : activeOrder === 'created_at' }">
 												<span>Created at</span>
@@ -81,7 +83,7 @@
 										</tr>
 										</thead>
 										<tbody>
-										<tr class="trans-fade-in-anim-slow" v-for="(category) in categories" :key="category.uuid" >
+										<tr class="trans-fade-in-anim-slow" v-for="(category, categoryIndex) in categories" :key="category.uuid" >
 											<!-- Checkbox -->
 											<td class="table-checkbox">
 												<div class="form-checkbox form-checkbox-dark">
@@ -91,19 +93,44 @@
 													</label>
 												</div>
 											</td>
-											<!-- Name, Email & Avatar -->
+											<!-- Name -->
 											<td>
-
+												<router-link :to="{ name: 'categories-single', params: { id: category.id }}">
+													{{ category['name'] }}
+												</router-link>
 											</td>
-											<!-- Role -->
+											<!-- Resource -->
 											<td>
+												<div class="badge badge-green">{{ category.resource }}</div>
 											</td>
-											<!-- Created at -->
+											<!-- Parent -->
 											<td>
-
+												1
+											</td>
+											<td>
+												<span>{{ category['created_at'] | moment("dddd, MMMM Do YYYY") }}</span>
 											</td>
 											<td class="table-actions">
-
+												<Popover :triangle="false"
+														@update="updateActions($event, category.uuid)"
+														:classes="(categoryIndex + 1) > (categories.length - 4) ? 'popover-table popover-table-top' : 'popover-table popover-table-bottom'"
+														:item-key="category.uuid"
+														:active="activeAction">
+													<template slot="items">
+														<router-link class="popover-item popover-item-icon" :to="{ name: 'categories-single', params: { id: category.id }}">
+															<i class="feather feather-edit"></i>
+															<span>Edit</span>
+														</router-link>
+														<div class="popover-line"></div>
+														<div class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="handleDelete(category);">
+															<i class="feather feather-trash-2"></i>
+															<span>Delete</span>
+														</div>
+													</template>
+													<template slot="button">
+														<i class="icon icon-square far fa-ellipsis-h" :class="{'icon-square-active' : activeAction === category.uuid}"></i>
+													</template>
+												</Popover>
 											</td>
 										</tr>
 										</tbody>
@@ -128,6 +155,19 @@
 				</div><!-- /Row -->
 			</transition>
 		</div>
+		<!-- =====================
+			Delete Modal
+			===================== -->
+		<Modal :show.sync="showDeleteModal" class="modal-with-icon modal-with-warning">
+			<template slot="button">
+				<button class="btn" :class="{ 'btn-loading' : isDeleting }" @click="deleteCategory(false);">Delete</button>
+			</template>
+			<template slot="text">
+				<h2>Are you sure?</h2>
+				<p v-if="selectedCategory">Are you sure want to delete this category?</p>
+				<p v-else>Are you sure want to delete {{ checked.length }} categories?</p>
+			</template>
+		</Modal>
 	</section>
 </template>
 
@@ -139,25 +179,31 @@
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Tabs from "@/components/misc/Tabs";
 import Alert from "@/components/misc/Alert";
+import Pagination from "@/components/misc/Pagination";
+import Modal from "@/components/modals/General";
+import Popover from "@/components/misc/Popover";
 
 export default {
 	name: "Categories",
 	components: {
+		Modal,
+		Pagination,
 		Alert,
 		Tabs,
-		Breadcrumbs
+		Breadcrumbs,
+		Popover,
 	},
 	data: () => ({
 		doingAxios: true,
 		categories: [],
+		selectedCategory: false,
 		errors: [],
-		selectecCategory: false,
 		paginationObj: {},
 		activeTab: 1,
 		activeTabName: "all",
 		order: "",
 		orderBy: {
-			title: "asc",
+			name: "asc",
 			user_id: "asc",
 			status: "asc",
 			published_at: "asc",
@@ -184,7 +230,7 @@ export default {
 		 * NOTE: paramsSerializer is required here.
 		 */
 		getCategories() {
-			this.axios.get(`categories?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
+			this.axios.get(`/categories?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
 				paramsSerializer: function(params) {
 					return params;
 				}
@@ -193,7 +239,6 @@ export default {
 					this.categories = [];
 					this.paginationObj = {};
 					this.paginationObj = res.data.meta.pagination;
-					console.log(res);
 					this.categories = res.data.data
 				})
 				.catch(err => {
@@ -202,6 +247,55 @@ export default {
 				.finally(() => {
 					this.doingAxios = false;
 				});
+		},
+		/*
+		 * deleteCategory()
+		 */
+		deleteCategory() {
+			this.isDeleting = true;
+
+			const toDelete = this.selectedCategory ? [this.selectedCategory.id] : this.checked;
+
+			const promises = [];
+			toDelete.forEach(id => {
+				console.log(id);
+				promises.push(this.deleteCategoryAxios(id));
+			});
+
+			// Send all requests
+			Promise.all(promises)
+				.then(() => {
+					const successMsg = toDelete.length === 1 ? `Category deleted successfully.` : `Categories deleted successfully.`
+					this.$noty.success(successMsg);
+					this.getPosts();
+				})
+				.catch(err => {
+					this.helpers.handleResponse(err);
+				})
+				.finally(() => {
+					this.activeAction = "";
+					this.checked = [];
+					this.checkedAll = false;
+					this.showDeleteModal = false;
+					this.bulkType = "";
+					this.isDeleting = false;
+					this.selectedPost = false;
+				});
+		},
+		/*
+		 * async deletePostAxios()
+		 */
+		async deleteCategoryAxios(id) {
+			return await this.axios.delete("/categories/" + id);
+		},
+		/*
+		 * handleDelete()
+		 * Changes the selected category to the given input,
+		 * & show's the delete category modal.
+		 */
+		handleDelete(category) {
+			this.selectedCategory = category;
+			this.showDeleteModal = true;
 		},
 		/*
 		 * changeOrderBy()
@@ -258,6 +352,38 @@ export default {
 			this.activeAction = "";
 			this.pagination = query;
 			this.getCategories();
+		},
+		/*
+		 * doBulkAction()
+		 * When bulk action is clicked, this function will call drafts or delete.
+		 * Validation on bulk type action and checked length performed.
+		 */
+		doBulkAction() {
+			this.isDoingBulk = true;
+
+			// Check if there no items
+			if (!this.checked.length) {
+				this.$noty.warning("Select items in order to apply bulk actions");
+				setTimeout(() => {
+					this.isDoingBulk = false;
+				}, this.timeoutDelay)
+				return
+			}
+
+			// Delete
+			if (this.bulkType === "delete") {
+				setTimeout(() => {
+					this.isDoingBulk = false;
+				}, this.timeoutDelay)
+				this.showDeleteModal = true;
+			}
+		},
+		/*
+		 * updateActions()
+		 *  Update the action uuid for clearing the popover.
+		 */
+		updateActions(e, uuid) {
+			this.activeAction = e ? uuid : "";
 		},
 	},
 	computed: {
