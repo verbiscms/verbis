@@ -99,8 +99,8 @@
 			</div>
 			<div class="editor-sidebar-body">
 				<!-- URL -->
-				<FormGroup class="editor-url" label="Url" :error="errors['slug']">
-					<div class="editor-url-cont">
+				<FormGroup class="form-url" label="Url" :error="errors['slug']">
+					<div class="form-url-cont">
 						<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
 						<i class="feather feather-edit" @click="slugBtn = !slugBtn"></i>
 					</div>
@@ -581,41 +581,6 @@ export default {
 	$editor-side-input-height: 50px;
 
 	.editor {
-
-		// Url
-		// =========================================================================
-
-		&-url {
-
-			h4 {
-				margin-top: 4px;
-				font-weight: 500;
-				font-size: 0.8rem;
-				color: $secondary;
-			}
-
-			&-cont {
-				position: relative;
-				display: flex;
-
-				i {
-					position: absolute;
-					display: flex;
-					justify-content: center;
-					align-items: center;
-					right: 0;
-					top: 50%;
-					height: $editor-side-input-height;
-					width: 	$editor-side-input-height;
-					transform: translateY(-50%);
-					background-color: $white;
-					color: $secondary;
-					border-top-right-radius: $form-input-border-radius;
-					border-bottom-right-radius: $form-input-border-radius;
-					border: 1px solid $grey-light;
-				}
-			}
-		}
 
 		// Sidebar
 		// =========================================================================
