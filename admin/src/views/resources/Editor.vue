@@ -54,30 +54,15 @@
 					<transition v-else name="trans-fade" mode="out-in">
 						<div v-if="activeTab === 0" :key="1">
 							<!-- Title -->
-							<h6 class="margin">General</h6>
-							<div class="card card-small-box-shadow card-expand card-expand-full-width">
-								<collapse :show="true" class="collapse-border-bottom">
-									<template v-slot:header>
-										<div class="card-header">
-											<h3 class="card-title">Title</h3>
-											<div class="card-controls">
-												<i class="feather feather-chevron-down"></i>
-											</div>
-										</div><!-- /Card Header -->
-									</template>
-									<template v-slot:body>
-										<div class="card-body">
-											<div class="card-input">
-												<input class="form-input form-input-white" type="text" placeholder="Add title" v-model="data.title">
-												<!-- Message -->
-												<transition name="trans-fade-height">
-													<span class="field-message field-message-warning" v-if="errors.title">{{ errors.title }}</span>
-												</transition><!-- /Message -->
-											</div>
-										</div><!-- /Card Body -->
-									</template>
-								</collapse>
-							</div><!-- /Card -->
+							<div class="editor-title">
+								<FormGroup class="form-group-no-margin" :error="errors['title']">
+									<input type="text" placeholder="Add title" v-model="data.title">
+								</FormGroup>
+								<div @click="handleSlugClick" class="editor-title-slug">
+									<i class="feather feather-edit-2"></i>
+									<p>{{ computedSlug }}</p>
+								</div>
+							</div>
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
@@ -182,7 +167,6 @@ import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import Fields from "@/components/editor/tabs/Fields";
 import slugify from "slugify";
 import Tabs from "@/components/misc/Tabs";
-import Collapse from "@/components/misc/Collapse";
 import FormGroup from "@/components/forms/FormGroup";
 import VueTagsInput from '@jack_reddico/vue-tags-input';
 
@@ -199,7 +183,6 @@ export default {
 		SeoOptions,
 		CodeInjection,
 		Insights,
-		Collapse,
 		VueTagsInput,
 	},
 	data: () => ({
@@ -427,6 +410,10 @@ export default {
 				this.loadingResourceData = false;
 			}
 		},
+		/*
+		 * setDates()
+		 * Set the dates for moment when getting back from API.
+		 */
 		setDates() {
 			this.data["created_at"] = new Date(this.data['created_at']);
 			this.data["updated_at"] = new Date(this.data['updated_at']);
@@ -511,6 +498,15 @@ export default {
 			this.$set(this.data, 'categories', catArr);
 		},
 		/*
+		 * handleSlugClick()
+		 * Open the sidebar and set to custom slug if the user
+		 * clicks the slug edit button under the title
+		 */
+		handleSlugClick() {
+			this.sidebarOpen = true;
+			this.slugBtn = true;
+		},
+		/*
 		 * validate()
 		 * Add errors if the post/put failed.
 		 */
@@ -582,6 +578,55 @@ export default {
 	$editor-side-input-height: 50px;
 
 	.editor {
+
+		// Title
+		// =========================================================================
+
+		&-title {
+			margin: 3rem 0;
+
+			input {
+				background-color: transparent;
+				outline: none;
+				border: none;
+				width: 100%;
+				font-size: 2rem;
+				color: $black;
+				font-weight: 600;
+			}
+
+			&-slug {
+				display: inline-flex;
+				align-items: center;
+				margin-top: 6px;
+				cursor: pointer;
+
+				p {
+					color: $grey;
+					margin: 0;
+				}
+
+				i {
+					color: $grey;
+					margin-right: 6px;
+					font-size: 14px;
+				}
+
+				p,
+				i {
+					transition: 200ms ease color;
+				}
+
+				&:hover {
+
+					p,
+					i {
+						color: $primary;
+					}
+				}
+			}
+		}
+
 
 		// Sidebar
 		// =========================================================================

@@ -30,12 +30,6 @@ resources:
         singular_name: Post
         slug: /posts
         icon: feather feather-clipboard
-    test:
-        name: test
-        friendly_name: test
-        singular_name: tests
-        slug: /tests
-        icon: feather feather-clipboard
 
 # |
 # |--------------------------------------------------------------------------
@@ -95,9 +89,7 @@ editor:
         ul:
             class: list
         ol:
-            class: list
-        h1:
-            class: test
+            class: list list-ordered
         link:
             rel: noopener noreferrer nofollow
         palette: [
