@@ -16,6 +16,9 @@
 						<!-- Actions -->
 						<div class="header-actions">
 							<form class="form form-actions">
+								<button v-if="!newItem" class="btn btn-fixed-height btn-orange btn-margin-right" @click.prevent="handleDelete" :class="{ 'btn-loading' : isDoingBulk }">
+									<span>Delete</span>
+								</button>
 								<button class="btn btn-fixed-height btn-orange" @click.prevent="save" :class="{ 'btn-loading' : doingAxios }">
 									<span v-if="newItem">Save</span>
 									<span v-else>Update</span>
@@ -25,7 +28,11 @@
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<div class="row">
+			<!-- Spinner -->
+			<div v-show="doingAxios" class="media-spinner spinner-container">
+				<div class="spinner spinner-large spinner-grey"></div>
+			</div>
+			<div v-if="!doingAxios" class="row trans-fade-in-anim">
 				<div class="col-12">
 					<h6 class="margin">General</h6>
 					<div class="card card-small-box-shadow card-expand">
@@ -50,7 +57,7 @@
 									</FormGroup><!-- /Name -->
 									<!-- Description -->
 									<FormGroup label="Description" :error="errors['description']">
-										<input class="form-input form-input-white" type="text" v-model="data['description']">
+										<textarea rows="6" type="text" class="form-textarea form-input form-input-white" v-model="data['description']"></textarea>
 									</FormGroup><!-- /Description -->
 								</div>
 							</template>
@@ -81,7 +88,7 @@
 							</template>
 						</Collapse><!-- /Slug-->
 						<!-- Resource-->
-						<Collapse :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['resource']}">
+						<Collapse v-if="data['parent_id'] === '' || data['parent_id'] === null" :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['resource']}">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>
@@ -95,11 +102,12 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body">
-									<FormGroup v-if="data['parent_id'] === '' || data['parent_id'] === null"   label="Resource*" :error="errors['resource']">
+									<FormGroup label="Resource*" :error="errors['resource']">
 										<div class="form-select-cont form-input">
 											<select class="form-select" v-model="data['resource']">
-												<option disabled selected value=""></option>
-												<option v-for="resource in getTheme['resources']" :value="resource['friendly_name']" :key="resource.name">{{ resource['friendly_name'] }}</option>
+												<option disbaled selected value="">Select resource</option>
+												<option value="page">Pages</option>
+												<option v-for="(resource, resourceKey) in getTheme['resources']" :value="resourceKey" :key="resource.name">{{ resource['friendly_name'] }}</option>
 											</select>
 										</div>
 									</FormGroup>
@@ -136,6 +144,18 @@
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
+		<!-- =====================
+			Delete Modal
+			===================== -->
+		<Modal :show.sync="showDeleteModal" class="modal-with-icon modal-with-warning">
+			<template slot="button">
+				<button class="btn" :class="{ 'btn-loading' : isDeleting }" @click="deleteCategory">Delete</button>
+			</template>
+			<template slot="text">
+				<h2>Are you sure?</h2>
+				<p>Are you sure want to delete this category?</p>
+			</template>
+		</Modal>
 	</section>
 </template>
 
@@ -148,16 +168,18 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Collapse from "@/components/misc/Collapse";
 import FormGroup from "@/components/forms/FormGroup";
 import slugify from "slugify";
+import Modal from "@/components/modals/General";
 
 export default {
 	name: "Categories",
 	components: {
+		Modal,
 		FormGroup,
 		Collapse,
 		Breadcrumbs
 	},
 	data: () => ({
-		doingAxios: false,
+		doingAxios: true,
 		categories: [],
 		errors: {},
 		data: {
@@ -170,6 +192,9 @@ export default {
 		newItem: true,
 		slug: "",
 		slugBtn: false,
+		isDeleting: false,
+		isDoingBulk: false,
+		showDeleteModal: false,
 	}),
 	beforeMount() {
 		this.setNewUpdate();
@@ -216,10 +241,16 @@ export default {
 						this.$router.push({ name : 'not-found' })
 					}
 
+					category['parent_id'] = category['parent_id'] === null ? "" : category['parent_id'];
+					category['resource'] = category['resource'] === null ? "" : category['resource'];
+
 					this.data = category;
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
+				})
+				.finally(() => {
+					this.doingAxios = false;
 				})
 		},
 		/*
@@ -229,9 +260,17 @@ export default {
 		save() {
 			this.doingAxios = true;
 
+			// Set parent to null if empty string
+			// or set the resource if there is a parent association
 			if (this.data['parent_id'] === "") {
 				this.$set(this.data, 'parent_id', null)
+			} else {
+				const parent = this.findParent(this.data['parent_id']);
+				this.$set(this.data, 'resource', parent['resource']);
 			}
+
+			// Set the computed slug
+			this.$set(this.data, 'slug', this.computedSlug);
 
 			if (this.newItem) {
 				this.axios.post('/categories', this.data)
@@ -292,6 +331,36 @@ export default {
 			}
 		},
 		/*
+		 * findParent()
+		 * Find a parent category by given ID.
+		 */
+		findParent(id) {
+			if (this.categories.length) return this.categories.find(c => c.id === id);
+		},
+		/*
+		 * handleDelete()
+		 * Show delete modal and spinner.
+		 */
+		handleDelete() {
+			this.isDoingBulk = true;
+			this.showDeleteModal = true;
+			setTimeout(() => {
+				this.isDoingBulk = false;
+			}, this.timeoutDelay)
+		},
+		/*
+		 * deleteCategory()
+		 */
+		deleteCategory() {
+			this.axios.delete("/categories/" + this.data['id'])
+				.then(() => {
+					this.$router.push({name: 'categories', query: { delete : "true" }})
+				})
+				.catch(err => {
+					this.helpers.handleResponse(err);
+				})
+		},
+		/*
 		 * setNewUpdate()
 		 * Determine if the page is new or if it already exists.
 		 */
@@ -301,7 +370,7 @@ export default {
 			if (!isNew) {
 				this.getCategoryById(this.$route.params.id);
 			} else {
-				//this.loadingResourceData = false;
+				this.doingAxios = false;
 			}
 		},
 		/*
@@ -329,13 +398,22 @@ export default {
 	computed: {
 		computedSlug: {
 			get() {
-
-				getTheme['resources']
-				return  + "/" + this.slugify(this.data['name']);
+				if (this.data['parent_id'] !== "") {
+					const parent = this.findParent(this.data['parent_id']);
+					if (parent) {
+						return parent['slug'] + "/" + this.slugify(this.slug ? this.slug : this.data['name']);
+					}
+				}
+				if (this.data['resource'] === "page") {
+					return "/" + this.slugify(this.slug ? this.slug : this.data['name']);
+				}
+				const resourceSlug = this.data['resource'] === "" ? "/" : "/" + this.data["resource"] + "/";
+				return resourceSlug + this.slugify(this.slug ? this.slug : this.data['name']);
 			},
 			set(value) {
+				console.log("hello")
 				let slug = this.slugify(value);
-				this.data.slug = slug;
+				this.$set(this.data, 'slug', slug);
 				return slug;
 			}
 		}

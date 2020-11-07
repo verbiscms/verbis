@@ -9,7 +9,7 @@
 				===================== -->
 			<template slot="button">
 				<div class="create-buttons">
-					<button class="btn" @click.prevent="generatePassword">Generate password</button>
+					<button class="btn" @click.prevent="generatePassword"><span>Generate password</span></button>
 					<button class="btn btn-blue btn-margin-left" :class="{ 'btn-loading' : doingAxios }" @click="create">Create</button>
 				</div>
 			</template>

@@ -57,13 +57,12 @@ export default {
 	mounted() {
 		this.content = this.$refs.content;
 		this.header = this.$refs.header;
-		this.addListener()
-		this.setDefaults();
-		// this.$nextTick(() => {
-		// 	setTimeout(() => {
-		// 		this.setDefaults();
-		// 	}, 100);
-		// })
+		this.$nextTick(() => {
+			setTimeout(() => {
+				this.addListener()
+				this.setDefaults();
+			}, 0);
+		})
 	},
 	methods: {
 		/*

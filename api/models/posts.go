@@ -48,8 +48,8 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	const op = "PostsRepository.Get"
 
 	var p []domain.Post
-	q := fmt.Sprintf("SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id")
+	q := fmt.Sprintf("SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.page_id")
+	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN post_options ON posts.id = post_options.page_id")
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.db, meta.Filters, "posts")
@@ -108,7 +108,7 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 func (s *PostStore) GetById(id int) (domain.Post, error) {
 	const op = "PostsRepository.GetById"
 	var p domain.Post
-	if err := s.db.Get(&p, "SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id WHERE posts.id = ? LIMIT 1", id); err != nil {
+	if err := s.db.Get(&p, "SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.page_id WHERE posts.id = ? LIMIT 1", id); err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op}
 	}
 	return p, nil
@@ -119,7 +119,7 @@ func (s *PostStore) GetById(id int) (domain.Post, error) {
 func (s *PostStore) GetBySlug(slug string) (domain.Post, error) {
 	const op = "PostsRepository.GetBySlug"
 	var p domain.Post
-	if err := s.db.Get(&p, "SELECT posts.*, seo_meta_options.seo 'options.seo', seo_meta_options.meta 'options.meta' FROM posts LEFT JOIN seo_meta_options ON posts.id = seo_meta_options.page_id WHERE posts.slug = ? LIMIT 1", slug); err != nil {
+	if err := s.db.Get(&p, "SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.page_id WHERE posts.slug = ? LIMIT 1", slug); err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op}
 	}
 	return p, nil
@@ -164,6 +164,12 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	post, err := s.GetById(int(id))
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post with the title: %v", p.Title), Operation: op, Err: err}
+	}
+
+	// Update the categories based on the array of integers that
+	// are passed.
+	if err := s.categoriesModel.InsertPostCategories(int(id), p.Categories); err != nil {
+		return domain.Post{}, err
 	}
 
 	// Convert the PostCreate type to type of Post to be returned
