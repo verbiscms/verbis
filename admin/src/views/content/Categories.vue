@@ -49,7 +49,6 @@
 						Categories
 						===================== -->
 					<div v-else>
-
 						<transition name="trans-fade" mode="out-in">
 							<div class="table-wrapper" v-if="categories.length">
 								<div class="table-scroll table-with-hover">
@@ -74,6 +73,10 @@
 											</th>
 											<th>
 												<span>Parent</span>
+											</th>
+											<th class="table-order" @click="changeOrderBy('updated_at')" :class="{ 'active' : activeOrder === 'updated_at' }">
+												<span>Updated at</span>
+												<i class="fas fa-caret-down" :class="{ 'active' : orderBy['updated_at'] !== 'asc' }"></i>
 											</th>
 											<th class="table-order" @click="changeOrderBy('created_at')" :class="{ 'active' : activeOrder === 'created_at' }">
 												<span>Created at</span>
@@ -105,8 +108,14 @@
 											</td>
 											<!-- Parent -->
 											<td>
-												1
+												<p v-if="filterCategoryById(category['parent_id'])">{{ filterCategoryById(category['parent_id'])['name'] }}</p>
+												<p v-else>No parent</p>
 											</td>
+											<!-- Updated At -->
+											<td>
+												<span>{{ category['updated_at'] | moment("dddd, MMMM Do YYYY") }}</span>
+											</td>
+											<!-- Created At -->
 											<td>
 												<span>{{ category['created_at'] | moment("dddd, MMMM Do YYYY") }}</span>
 											</td>
@@ -222,8 +231,18 @@ export default {
 	}),
 	mounted() {
 		this.getCategories();
+		this.getMessage();
 	},
 	methods: {
+		/*
+		 * getMessage()
+		 * Determine if the category has been deleted.
+		 */
+		getMessage() {
+			if (this.$route.query.delete) {
+				this.$noty.success("Successfully deleted category.")
+			}
+		},
 		/*
 		 * getCategories()
 		 * Obtain the categories & apply query strings.
@@ -267,7 +286,7 @@ export default {
 				.then(() => {
 					const successMsg = toDelete.length === 1 ? `Category deleted successfully.` : `Categories deleted successfully.`
 					this.$noty.success(successMsg);
-					this.getPosts();
+					this.getCategories();
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
@@ -279,11 +298,11 @@ export default {
 					this.showDeleteModal = false;
 					this.bulkType = "";
 					this.isDeleting = false;
-					this.selectedPost = false;
+					this.selectedCategory = false;
 				});
 		},
 		/*
-		 * async deletePostAxios()
+		 * async deleteCategoryAxios()
 		 */
 		async deleteCategoryAxios(id) {
 			return await this.axios.delete("/categories/" + id);
@@ -385,6 +404,19 @@ export default {
 		updateActions(e, uuid) {
 			this.activeAction = e ? uuid : "";
 		},
+		/*
+		 * filterCategoryById()
+		 * Filter all of the categories and get by ID.
+		 */
+		filterCategoryById(id) {
+			let category = false;
+			this.categories.forEach(c => {
+				if (id === c.id) {
+					category = c;
+				}
+			});
+			return category;
+		}
 	},
 	computed: {
 		/*

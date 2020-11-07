@@ -84,6 +84,9 @@
 													<span>Status</span>
 													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['status'] !== 'asc' }"></i>
 												</th>
+												<th>
+													<span>Category</span>
+												</th>
 												<th class="table-order" @click="changeOrderBy('published_at')" :class="{ 'active' : activeOrder === 'published_at' }">
 													<span>Published at</span>
 													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['published_at'] !== 'asc' }"></i>
@@ -104,7 +107,6 @@
 												</td>
 												<!-- Title & Slug -->
 												<td class="archive-table-title">
-													{{ item.post.resource}}
 													<router-link :to="{ name: 'editor', params: { id: item.post.id }, query: {resource: item.post.resource ? item.post.resource : '' }}">
 														<h4>{{ item.post.title }}</h4>
 														<p>{{ item.post.slug }}</p>
@@ -121,6 +123,11 @@
 														'badge-green' : item.post.status  === 'published',
 														'badge-orange' : item.post.status  === 'bin',
 													}">{{ item.post.status }}</div>
+												</td>
+												<!-- Category -->
+												<td>
+													<span v-if="item.categories.length">{{ item.categories[0].name }}</span>
+													<span v-else>No category</span>
 												</td>
 												<!-- Published at -->
 												<td class="archive-table-date">

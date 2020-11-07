@@ -195,11 +195,17 @@ func (s *CategoryStore) InsertPostCategories(postId int, ids []int) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postId), Operation: op, Err: err}
 	}
 
+
 	for _, id := range ids {
+
+		fmt.Println(id)
+		fmt.Println(postId)
+
 		q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
 		_, err := s.db.Exec(q, postId, id)
 		if err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postId), Operation: op, Err: err}
+			fmt.Println(err)
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postId), Operation: op, Err: err}
 		}
 	}
 
