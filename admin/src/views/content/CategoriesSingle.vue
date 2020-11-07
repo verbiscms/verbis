@@ -30,12 +30,12 @@
 					<h6 class="margin">General</h6>
 					<div class="card card-small-box-shadow card-expand">
 						<!-- Title & description -->
-						<Collapse :show="true" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['']}">
+						<Collapse :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['name'] || errors['description']}">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>
-										<h4 class="card-title">Name</h4>
-										<p>Set the site's location.</p>
+										<h4 class="card-title">Name & description</h4>
+										<p>Enter a name and description for the category.</p>
 									</div>
 									<div class="card-controls">
 										<i class="feather feather-chevron-down"></i>
@@ -48,35 +48,90 @@
 									<FormGroup label="Name*" :error="errors['name']">
 										<input class="form-input form-input-white" type="text" v-model="data['name']">
 									</FormGroup><!-- /Name -->
-									<!-- Slug -->
-									<FormGroup label="Slug*" :error="errors['slug']">
-										<input class="form-input form-input-white" type="text" v-model="data['slug']">
-									</FormGroup><!-- /Slug -->
 									<!-- Description -->
 									<FormGroup label="Description" :error="errors['description']">
 										<input class="form-input form-input-white" type="text" v-model="data['description']">
 									</FormGroup><!-- /Description -->
-									<!-- Resource -->
-									<FormGroup v-if="data['parent_id'] === '' || data['parent_id'] === ''"   label="Resource*" :error="errors['resource']">
+								</div>
+							</template>
+						</Collapse><!-- /Title & description -->
+						<!-- Slug-->
+						<Collapse :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['slug']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Slug</h4>
+										<p>Enter a slug for the category, by default it will use the name, and will be assigned after the resource, for example: /news/tech</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<FormGroup class="form-url" label="Slug*" :error="errors['slug']">
+										<div class="form-url-cont">
+											<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
+											<i class="feather feather-edit" @click="slugBtn = !slugBtn"></i>
+										</div>
+										<h4>{{computedSlug }}</h4>
+									</FormGroup>
+								</div>
+							</template>
+						</Collapse><!-- /Slug-->
+						<!-- Resource-->
+						<Collapse :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['resource']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Resource</h4>
+										<p>Choose a resource the category will be assigned too.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<FormGroup v-if="data['parent_id'] === '' || data['parent_id'] === null"   label="Resource*" :error="errors['resource']">
 										<div class="form-select-cont form-input">
 											<select class="form-select" v-model="data['resource']">
 												<option disabled selected value=""></option>
 												<option v-for="resource in getTheme['resources']" :value="resource['friendly_name']" :key="resource.name">{{ resource['friendly_name'] }}</option>
 											</select>
 										</div>
-									</FormGroup><!-- /Resource -->
-									<!-- Parent -->
+									</FormGroup>
+								</div>
+							</template>
+						</Collapse><!-- /Resource-->
+						<!-- Parent -->
+						<Collapse :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['parent']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Parent</h4>
+										<p>Choose a parent category.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
 									<FormGroup label="Parent">
 										<div class="form-select-cont form-input">
 											<select class="form-select" v-model="data['parent_id']">
-												<option selected value="">Default</option>
+												<option selected value="">No parent</option>
 												<option v-for="category in categories" :value="category.id" :key="category.uuid">{{ category['name'] }}</option>
 											</select>
 										</div>
-									</FormGroup><!-- /Resource -->
+									</FormGroup>
 								</div>
 							</template>
-						</Collapse><!-- /Title & description -->
+						</Collapse><!-- /Parent-->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
@@ -92,6 +147,7 @@
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Collapse from "@/components/misc/Collapse";
 import FormGroup from "@/components/forms/FormGroup";
+import slugify from "slugify";
 
 export default {
 	name: "Categories",
@@ -101,14 +157,19 @@ export default {
 		Breadcrumbs
 	},
 	data: () => ({
-		doingAxios: true,
+		doingAxios: false,
 		categories: [],
 		errors: {},
 		data: {
+			name: "",
+			description: "",
+			slug: "",
 			resource: "",
 			parent_id: "",
 		},
 		newItem: true,
+		slug: "",
+		slugBtn: false,
 	}),
 	beforeMount() {
 		this.setNewUpdate();
@@ -142,6 +203,9 @@ export default {
 					this.doingAxios = false;
 				});
 		},
+		/*
+		 * getCategoryById()
+		 */
 		getCategoryById(id) {
 			this.axios.get('/categories/' + id)
 				.then(res => {
@@ -172,6 +236,7 @@ export default {
 			if (this.newItem) {
 				this.axios.post('/categories', this.data)
 					.then(res => {
+						console.log(res);
 						this.errors = {};
 						this.$noty.success("Successfully created category");
 
@@ -249,6 +314,31 @@ export default {
 				this.$set(this.errors, err.key, err.message);
 			})
 		},
+		/*
+		 * slugify()
+		 * Slugify's given input.
+		 */
+		slugify(text) {
+			return slugify(text, {
+				replacement: '-',    // replace spaces with replacement
+				remove: null,        // regex to remove characters
+				lower: true          // result in lower case
+			})
+		},
+	},
+	computed: {
+		computedSlug: {
+			get() {
+
+				getTheme['resources']
+				return  + "/" + this.slugify(this.data['name']);
+			},
+			set(value) {
+				let slug = this.slugify(value);
+				this.data.slug = slug;
+				return slug;
+			}
+		}
 	}
 }
 
@@ -259,7 +349,17 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-// Dummy
-// =========================================================================
+	// URL
+	// =========================================================================
+
+	@include media-desk {
+		.form-url {
+			width: 50%;
+
+			input {
+				width: 100%;
+			}
+		}
+	}
 
 </style>
