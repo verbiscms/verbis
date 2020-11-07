@@ -648,6 +648,7 @@ $richtext-border-radius: 10px;
 		border-bottom-left-radius: $richtext-border-radius;
 		border-bottom-right-radius: $richtext-border-radius;
 		height: 400px;
+		min-height: 400px;
 		padding: 20px;
 		overflow-y: scroll;
 

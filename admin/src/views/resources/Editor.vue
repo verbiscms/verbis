@@ -46,8 +46,12 @@
 						<template slot="item">Code Injection</template>
 						<template slot="item">Insights</template>
 					</Tabs>
+					<!-- Spinner -->
+					<div v-if="loadingResourceData" class="media-spinner spinner-container">
+						<div class="spinner spinner-large spinner-grey"></div>
+					</div>
 					<!-- Content & Fields -->
-					<transition name="trans-fade" mode="out-in">
+					<transition v-else name="trans-fade" mode="out-in">
 						<div v-if="activeTab === 0" :key="1">
 							<!-- Title -->
 							<h6 class="margin">General</h6>
@@ -87,7 +91,6 @@
 					</transition>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<pre>{{ categories }}</pre>
 		</div><!-- /Container -->
 		<!-- =====================
 			Sidebar
@@ -125,10 +128,6 @@
 						</select>
 					</div>
 				</FormGroup><!-- /Author -->
-				<!-- Published Date -->
-				<FormGroup label="Published date">
-					<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
-				</FormGroup><!-- /Published Date -->
 				<FormGroup label="Category">
 					<!-- User Tags -->
 					<vue-tags-input
@@ -137,12 +136,10 @@
 						:autocomplete-items="filteredCategories"
 						@tags-changed="updateCategoriesTags"
 						add-only-from-autocomplete
+						@max-tags-reached="$noty.warning('Only one category per post is permitted')"
 						placeholder="Add category"
+						:max-tags="1"
 					/>
-					<pre>{{ categories }}</pre>
-					<pre>{{ data['categories'] }}</pre>
-				<h1>	{{ tag }} hello</h1>
-					{{ selectedTags }}
 				</FormGroup>
 				<!-- Page Template -->
 				<FormGroup label="Page template">
@@ -162,9 +159,12 @@
 						</select>
 					</div>
 				</FormGroup><!-- /Layout -->
+				<!-- Published Date -->
+				<FormGroup label="Published date">
+					<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
+				</FormGroup><!-- /Published Date -->
 			</div>
 		</aside>
-		{{ categories }}
 	</section>
 </template>
 
@@ -362,6 +362,7 @@ export default {
 					this.mapCategories(res.data.data);
 				})
 				.catch(err => {
+					console.log(err);
 					this.helpers.handleResponse(err);
 				})
 		},
@@ -439,7 +440,7 @@ export default {
 			this.errorTrigger = true;
 			this.$nextTick().then(() => {
 				if (document.querySelectorAll(".field-cont-error").length === 0) {
-					this.data.slug = this.computedSlug;
+					this.$set(this.data, 'slug', this.computedSlug);
 					if (this.resource.name !== "page") {
 						this.data.resource = this.resource.name;
 					}
@@ -459,7 +460,7 @@ export default {
 								this.data.author = res.data.data.author.id;
 								this.newItem = false;
 								this.setDates();
-								this.getSuccessMessage()
+								this.getSuccessMessage();
 							})
 							.catch(err => {
 								this.helpers.checkServer(err);
@@ -488,7 +489,7 @@ export default {
 		 * Create a new categories array from input & map.
 		 */
 		mapCategories(categories) {
-			if (categories) {
+			if (categories && !this.helpers.isEmptyObject(categories)) {
 				this.categories = categories.map(a => {
 					return {
 						text: a.name,
