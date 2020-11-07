@@ -509,6 +509,41 @@
         }
     }
 
+    // Url
+    // =========================================================================
+
+    &-url {
+
+        h4 {
+            margin-top: 4px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: $secondary;
+        }
+
+        &-cont {
+            position: relative;
+            display: flex;
+
+            i {
+                position: absolute;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                right: 0;
+                top: 50%;
+                height: 50px;
+                width: 	50px;
+                transform: translateY(-50%);
+                background-color: $white;
+                color: $secondary;
+                border-top-right-radius: $form-input-border-radius;
+                border-bottom-right-radius: $form-input-border-radius;
+                border: 1px solid $grey-light;
+            }
+        }
+    }
+
     // Autocomplete
     // =========================================================================
 

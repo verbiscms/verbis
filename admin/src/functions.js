@@ -81,9 +81,9 @@ class helpers {
 	// Check if the server is down
 	checkServer(data) {
 		console.log(data.response);
-		if (!data.status && !data.response) {
-			router.push({ "name" : "error" })
-		}
+		// if (!data.status && !data.response) {
+		// 	router.push({ "name" : "error" })
+		// }
 	}
 
 	// Calculate & set height & children of element
