@@ -104,7 +104,6 @@ export default {
 					this.value = defaultVal
 				}
 			} else {
-				console.log(this.value);
 				this.value.forEach(tag => {
 					this.selectedTags.push(tag)
 				});

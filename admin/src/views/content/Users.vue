@@ -145,7 +145,7 @@
 							</div><!-- /Table Wrapper -->
 							<Alert v-else colour="orange">
 								<slot>
-									<h3>No {{ activeTabName === "all" ? "" : activeTabName }} users available. </h3>
+									<h3>No {{ activeTabName === "all" ? "" : activeTabNamem }} users available. </h3>
 									<p>To create a new one, click the button above.</p>
 								</slot>
 							</Alert>

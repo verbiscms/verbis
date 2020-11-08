@@ -270,7 +270,7 @@ export default {
 			}
 
 			// Set the computed slug
-			this.$set(this.data, 'slug', this.computedSlug);
+			this.$set(this.data, 'slug', this.saveSlug);
 
 			if (this.newItem) {
 				this.axios.post('/categories', this.data)
@@ -396,26 +396,29 @@ export default {
 		},
 	},
 	computed: {
-		computedSlug: {
-			get() {
-				if (this.data['parent_id'] !== "") {
-					const parent = this.findParent(this.data['parent_id']);
-					if (parent) {
-						return parent['slug'] + "/" + this.slugify(this.slug ? this.slug : this.data['name']);
-					}
+		/*
+		 * computedSlug()
+		 * Pretty slug for user.
+		 */
+		computedSlug() {
+			if (this.data['parent_id'] !== "") {
+				const parent = this.findParent(this.data['parent_id']);
+				if (parent) {
+					return parent['slug'] + "/" + this.slugify(this.slug ? this.slug : this.data['name']);
 				}
-				if (this.data['resource'] === "page") {
-					return "/" + this.slugify(this.slug ? this.slug : this.data['name']);
-				}
-				const resourceSlug = this.data['resource'] === "" ? "/" : "/" + this.data["resource"] + "/";
-				return resourceSlug + this.slugify(this.slug ? this.slug : this.data['name']);
-			},
-			set(value) {
-				console.log("hello")
-				let slug = this.slugify(value);
-				this.$set(this.data, 'slug', slug);
-				return slug;
 			}
+			if (this.data['resource'] === "page") {
+				return "/" + this.slugify(this.slug ? this.slug : this.data['name']);
+			}
+			const resourceSlug = this.data['resource'] === "" ? "/" : "/" + this.data["resource"] + "/";
+			return resourceSlug + this.slugify(this.slug ? this.slug : this.data['name']);
+		},
+		/*
+		 * saveSlug()
+		 * Slug to be saved in the backend.
+		 */
+		saveSlug() {
+			return this.slugify(this.slug ? this.slug : this.data['name']);
 		}
 	}
 }
