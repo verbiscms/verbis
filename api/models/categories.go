@@ -13,10 +13,10 @@ import (
 type CategoryRepository interface {
 	Get(meta http.Params) ([]domain.Category, int, error)
 	GetById(id int) (domain.Category, error)
-	GetByPost(pageId int) ([]domain.Category, error)
+	GetByPost(pageId int) (*domain.Category, error)
 	Create(c *domain.Category) (domain.Category, error)
 	Update(c *domain.Category) error
-	InsertPostCategories(postId int, ids []int) error
+	InsertPostCategory(postId int, categoryId int) error
 	DeletePostCategories(id int) error
 	Delete(id int) error
 	Exists(id int) bool
@@ -82,20 +82,20 @@ func (s *CategoryStore) GetById(id int) (domain.Category, error) {
 	const op = "CategoryRepository.GetById"
 	var c domain.Category
 	if err := s.db.Get(&c, "SELECT * FROM categories WHERE id = ?", id); err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the ID: %d", id), Operation: op}
+		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the ID: %d", id), Operation: op, Err: err}
 	}
 	return c, nil
 }
 
 // Get the category by post
 // Returns errors.NOTFOUND if the category was not found by the given Post Id.
-func (s *CategoryStore) GetByPost(postId int) ([]domain.Category, error) {
+func (s *CategoryStore) GetByPost(postId int) (*domain.Category, error) {
 	const op = "CategoryRepository.GetByPost"
-	var c []domain.Category
-	if err := s.db.Select(&c, "SELECT * FROM categories c WHERE EXISTS (SELECT post_id FROM post_categories p WHERE p.post_id = ? AND c.id = p.category_id)", postId); err != nil {
-		return []domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the post ID: %d", postId), Operation: op}
+	var c domain.Category
+	if err := s.db.Get(&c, "SELECT * FROM categories c WHERE EXISTS (SELECT post_id FROM post_categories p WHERE p.post_id = ? AND c.id = p.category_id) LIMIT 1", postId); err != nil {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the post ID: %d", postId), Operation: op, Err: err}
 	}
-	return c, nil
+	return &c, nil
 }
 
 // Create a new category
@@ -105,7 +105,7 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 	const op = "CategoryRepository.Create"
 
 	if s.ExistsByName(c.Name) {
-		return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op}
+		return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op, Err: fmt.Errorf("name already exists")}
 	}
 
 	q := "INSERT INTO categories (uuid, slug, name, description, parent_id, resource, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())"
@@ -188,25 +188,18 @@ func (s *CategoryStore) ExistsByName(name string) bool {
 // InsertPostCategories - Insert into post categories with array of ID's.
 // This function deletes all categories from the pivot before
 // inserting again.
-func (s *CategoryStore) InsertPostCategories(postId int, ids []int) error {
+func (s *CategoryStore) InsertPostCategory(postId int, categoryId int) error {
 	const op = "CategoryRepository.InsertPostCategories"
 
 	if _, err := s.db.Exec("DELETE FROM post_categories WHERE post_id = ?", postId); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postId), Operation: op, Err: err}
 	}
 
-
-	for _, id := range ids {
-
-		fmt.Println(id)
-		fmt.Println(postId)
-
-		q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
-		_, err := s.db.Exec(q, postId, id)
-		if err != nil {
-			fmt.Println(err)
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postId), Operation: op, Err: err}
-		}
+	q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
+	_, err := s.db.Exec(q, postId, categoryId)
+	if err != nil {
+		fmt.Println(err)
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postId), Operation: op, Err: err}
 	}
 
 	return nil

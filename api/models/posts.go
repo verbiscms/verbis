@@ -168,7 +168,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 
 	// Update the categories based on the array of integers that
 	// are passed.
-	if err := s.categoriesModel.InsertPostCategories(int(id), p.Categories); err != nil {
+	if err := s.categoriesModel.InsertPostCategory(int(id), p.Category); err != nil {
 		return domain.Post{}, err
 	}
 
@@ -205,7 +205,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 
 	// Update the categories based on the array of integers that
 	// are passed. If the categories
-	if err := s.categoriesModel.InsertPostCategories(p.Id, p.Categories); err != nil {
+	if err := s.categoriesModel.InsertPostCategory(p.Id, p.Category); err != nil {
 		return domain.Post{}, err
 	}
 
