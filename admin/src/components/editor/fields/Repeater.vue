@@ -4,7 +4,7 @@
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
 		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".repeater-handle">
-			<div class="card card-margin-small" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
+			<div class="repeater" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
 				<div class="card-header">
 					<h4>{{ layout.label }} item {{ repeaterIndex + 1 }}</h4>
 					<div class="card-controls">
@@ -175,6 +175,9 @@ export default {
 <style scoped lang="scss">
 
 	.repeater {
+		border: 2px solid $grey-light;
+		margin-bottom: 1.6rem;
+		border-radius: 6px;
 
 		// Item
 		// =========================================================================

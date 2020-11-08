@@ -6,23 +6,66 @@
 .field {
 	$self: &;
 
-	//background: $bg-color;
 	border-bottom: 1px solid $grey-light;
-	//border-radius: 6px;
 	padding: 1.4rem 1.2rem;
-	//margin-bottom: 1.6rem;
+	border-right: 1px solid $grey-light;
+	border-left: 1px solid $grey-light;
+
+	&-group {
+		box-shadow: 0 0 1px rgba(0,0,0,.12), 0 1px 6px rgba(0,0,0,.03), 0 6px 10px -8px rgba(0,0,0,.1);
+		margin-bottom: 3rem;
+		border-radius: 6px;
+		overflow: hidden;
+	}
+
+	// Header
+	// =========================================================================
+
+	&-header {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.4rem;
+		background-color: $white;
+		border: 1px solid $grey-light;
+		border-top-left-radius: 6px;
+		border-top-right-radius: 6px;
+		background-color: $white;
+
+		h4 {
+			font-size: 1rem;
+		}
+	}
+
+	// Header
+	// =========================================================================
+
+
+	&-body {
+		display: flex;
+		flex-wrap: wrap;
+		background-color: $white;
+		border-bottom-left-radius: 6px;
+		border-bottom-right-radius: 6px;
+		border-right-width: 0;
+
+	}
 
 	// Props
 	// =========================================================================
+
 
 	&:last-child {
 		margin-bottom: 0;
 	}
 
+	.form-select-cont,
 	textarea,
 	input {
 		background-color: $white;
 		font-weight: 500 !important;
+		width: 100% !important;
 	}
 
 	// Height
@@ -42,7 +85,7 @@
 
 		h4 {
 			font-weight: bold;
-			font-size: 0.9rem;
+			font-size: 0.85rem;
 		}
 
 		p {
