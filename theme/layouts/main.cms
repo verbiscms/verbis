@@ -41,7 +41,7 @@
     {{ $posts := getPosts $query }}
 
     {{ if $posts }}
-        <pre>{{ $posts }}</pre>
+        <pre>{{ $posts.Pagination }}</pre>
     {{ else }}
         <h1>No posts found</h1>
     {{ end }}

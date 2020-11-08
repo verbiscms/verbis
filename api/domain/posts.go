@@ -78,12 +78,12 @@ type PostMeta struct {
 	Twitter struct {
 		Title       	string `json:"title,omitempty"`
 		Description 	string `json:"description,omitempty"`
-		ImageId      	int `json:"image_id,omitempty"`
+		ImageId      	int `json:"image_id,numeric,omitempty"`
 	} `json:"twitter,omitempty"`
 	Facebook struct {
 		Title       	string `json:"title,omitempty"`
 		Description 	string `json:"description,omitempty"`
-		ImageId      	int `json:"image_id,omitempty"`
+		ImageId      	int `json:"image_id,numeric,omitempty"`
 	} `json:"facebook,omitempty"`
 }
 

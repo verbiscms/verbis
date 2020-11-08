@@ -67,12 +67,12 @@ export default {
 			"facebook": {
 				"title": "",
 				"description": "",
-				"image_id": "",
+				"image_id": null,
 			},
 			"twitter": {
 				"title": "",
 				"description": "",
-				"image_id": "",
+				"image_id": null,
 			}
 		}
 	}),
@@ -140,11 +140,11 @@ export default {
 						meta_title: "",
 						meta_description: "",
 						meta_facebook_title: "",
-						meta_facebook_image_id: "",
+						meta_facebook_image_id: null,
 						meta_facebook_description: "",
 						meta_twitter_title: "",
 						meta_twitter_description: "",
-						meta_twitter_image_id: "",
+						meta_twitter_image_id: null,
 					}
 				} else {
 					return {
