@@ -4,28 +4,23 @@
 <template>
 	<section>
 		<!-- Field Group -->
-		<div v-for="(group, groupIndex) in layout" :key="group.uuid">
-			<h6 class="margin">{{  group.title }}</h6>
-			<div class="card card-small-box-shadow card-expand card-expand-margin-small">
+		<div v-for="(group, groupIndex) in layout" :key="group.uuid" class="field-group">
 			<Collapse :show="true" :use-icon="true">
 				<template v-slot:header>
-					<div class="card-header">
-						<div>
-							<h4 class="card-title">{{  group.title }}</h4>
-						</div>
+					<div class="field-header">
+						<h4 class="card-title">{{  group.title }}</h4>
 						<div class="card-controls">
 							<i class="feather feather-arrow-up" @click="moveGroupUp(groupIndex)"></i>
 							<i class="feather feather-arrow-down" @click="moveGroupDown(groupIndex)"></i>
 							<i class="feather feather-chevron-down" @click="collapseGroup(group.uuid)"></i>
 						</div>
-					</div><!-- /Card Header -->
+					</div>
 				</template>
 				<!-- Field Layout -->
 				<template v-slot:body>
-					<div class="card-body" style="padding: 0 !important;">
-						<!-- :style="{ width: layout.wrapper['width'] + '%' }" -->
-						<div class="field" v-for="(layout) in group.fields" :key="layout.uuid" >
-							<transition name="trans-fade" >
+					<div class="field-body">
+						<div class="field" v-for="(layout) in group.fields" :key="layout.uuid" :style="{ width: layout.wrapper['width'] + '%' }">
+							<transition name="trans-fade">
 								<div v-if="parseLogic(layout, groupIndex)">
 									<!-- Field Title -->
 									<div class="field-title" :class="{ 'field-title-margin-bottom' : layout.type === 'flexible' || layout.type === 'repeater' }">
@@ -92,7 +87,6 @@
 					</div><!-- /Field Group Layout -->
 				</template>
 			</Collapse>
-			</div>
 		</div><!-- /Field Group -->
 	</section>
 </template>
