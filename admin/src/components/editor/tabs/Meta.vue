@@ -12,9 +12,7 @@
 					<div class="card-header">
 						<div>
 							<h4 class="card-title">Serp Preview</h4>
-							<p>Hello</p>
 						</div>
-
 						<div class="card-controls">
 							<i class="feather feather-chevron-down"></i>
 						</div>
