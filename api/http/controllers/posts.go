@@ -7,7 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
-	"time"
 )
 
 // PostHandler defines methods for Posts to interact with the server
@@ -195,45 +194,32 @@ func (c *PostsController) Format(g *gin.Context, post domain.Post) (domain.PostD
 	}
 
 	// Get the categories associated with the post
-	categories, err := c.categoriesModel.GetByPost(post.Id)
-	if err != nil {
-		return domain.PostData{}, err
-	}
+	category, _ := c.categoriesModel.GetByPost(post.Id)
 
 	// Get the layout associated with the post
-	layout, err := c.fieldsModel.GetLayout(post, author, categories)
+	layout, err := c.fieldsModel.GetLayout(post, author, category)
 	if err != nil {
 		return domain.PostData{}, err
 	}
 
-	return domain.PostData{
+	pd := domain.PostData{
 		Post:       post,
 		Layout:     layout,
 		Author:     domain.PostAuthor(author),
-		Categories: c.processCategories(categories),
-	}, nil
-}
+	}
 
-// Process Categories
-func (c *PostsController) processCategories(dc []domain.Category) []domain.PostCategory {
-	var postCategories []domain.PostCategory
-
-	if len(dc) == 0 {
-		return make([]domain.PostCategory, 0)
-	} else {
-		for _, v := range dc {
-			postCategories = append(postCategories, domain.PostCategory{
-				Id:           v.Id,
-				Slug:         v.Slug,
-				Name:         v.Name,
-				Description:  v.Description,
-				Resource: 	  v.Resource,
-				ParentId:     v.ParentId,
-				UpdatedAt:    time.Time{},
-				CreatedAt:    time.Time{},
-			})
+	if category != nil {
+		pd.Categories =  &domain.PostCategory{
+			Id:           category.Id,
+			Slug:         category.Slug,
+			Name:         category.Name,
+			Description:  category.Description,
+			Resource: 	  category.Resource,
+			ParentId:     category.ParentId,
+			UpdatedAt:    category.UpdatedAt,
+			CreatedAt:    category.CreatedAt,
 		}
 	}
 
-	return postCategories
+	return pd, nil
 }

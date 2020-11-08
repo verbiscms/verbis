@@ -18,13 +18,4 @@ type Category struct {
 	CreatedAt		time.Time	`db:"created_at" json:"created_at"`
 }
 
-// master if not parent id
-
-// archive page uuid
-// resource name,
-
-
-// have slug automatically fill out as your typing, dont need forwardslash, do
-// fro
-
 
