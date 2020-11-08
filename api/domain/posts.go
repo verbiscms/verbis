@@ -90,7 +90,7 @@ type PostMeta struct {
 type PostCreate struct {
 	Post
 	Author 			int    		`json:"author,omitempty" binding:"numeric"`
-	Category		int			`json:"categories,omitempty" binding:"unique"`
+	Category		*int		`json:"category,omitempty" binding:"omitempty,numeric"`
 }
 
 //xss in golang implementation

@@ -3,7 +3,7 @@
 	===================== -->
 <template>
 	<section>
-		<div class="auth-container editor-auth-container" v-if="!loadingResourceData">
+		<div class="auth-container editor-auth-container">
 			<!-- =====================
 				Header
 				===================== -->
@@ -13,7 +13,7 @@
 					<header class="header header-with-actions">
 						<div class="header-title">
 							<h1 v-if="newItem">Add a new {{ resource.friendly_name }}</h1>
-							<h1 v-else>Edit {{ resource['singular_name'] ? resource['singular_name'] : resource['friendly_name']  }}</h1>
+							<h1 v-else>Edit {{ resource['singular_name'] ? resource['singular_name'] : resource['friendly_name'] }}</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<!-- Actions -->
@@ -22,12 +22,11 @@
 								<button class="btn btn-icon btn-white btn-margin-right" @click.prevent="sidebarOpen = !sidebarOpen">
 									<i class="feather feather-settings"></i>
 								</button>
-								<a :href="getSiteUrl + computedSlug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white btn-flex">Preview</a>
-								<button class="btn btn-fixed-height btn-orange" @click.prevent="save">
-									<span v-if="newItem">Publish</span>
+								<a :href="getSiteUrl + data.slug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white btn-flex">Preview</a>
+								<button class="btn btn-fixed-height btn-orange" :class="{ 'btn-loading' : isSaving }" @click.prevent="save">
+									<span v-if="data.status === 'draft'">Save draft</span>
 									<span v-else-if="newItem">Publish</span>
 									<span v-else>Update</span>
-									<div class="popover"></div>
 								</button>
 							</form>
 						</div><!-- /Actions -->
@@ -47,7 +46,7 @@
 						<template slot="item">Insights</template>
 					</Tabs>
 					<!-- Spinner -->
-					<div v-if="loadingResourceData" class="media-spinner spinner-container">
+					<div v-if="doingAxios" class="media-spinner spinner-container">
 						<div class="spinner spinner-large spinner-grey"></div>
 					</div>
 					<!-- Content & Fields -->
@@ -56,17 +55,24 @@
 							<!-- Title -->
 							<div class="editor-title">
 								<FormGroup class="form-group-no-margin" :error="errors['title']">
-									<input type="text" placeholder="Add title" v-model="data.title">
+									<input class="editor-title-text" type="text" placeholder="Add title" v-model="data.title">
 								</FormGroup>
-								<div @click="handleSlugClick" class="editor-title-slug">
-									<i class="feather feather-edit-2"></i>
-									<p>{{ computedSlug }}</p>
+								<div class="editor-slug">
+									<div class="editor-slug-text" @click="slugBtn = true">
+										<i class="feather feather-edit-2"></i>
+										<p>{{ computedSlug }}</p>
+									</div>
+									<div class="editor-slug-form" :class="{ 'editor-slug-form-active' : slugBtn }">
+										<input type="text" class="form-input-white" v-model="editSlug">
+										<i class="editor-slug-save feather feather-save" @click.prevent="saveSlug"></i>
+										<i class="editor-slug-close feather feather-x-circle" @click="closeSlug"></i>
+									</div>
 								</div>
 							</div>
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
-						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"></MetaOptions>
+						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="data.slug"></MetaOptions>
 						<!-- Seo Options -->
 						<SeoOptions v-if="activeTab === 2" :key="3"></SeoOptions>
 						<!-- Code Injection -->
@@ -88,19 +94,10 @@
 			<div class="editor-sidebar-body">
 				<div class="editor-sidebar-cont">
 					<h6 class="margin">Properties</h6>
-					<!-- URL -->
-					<FormGroup class="form-url" label="Url" :error="errors['slug']">
-						<div class="form-url-cont">
-							<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
-							<i class="feather feather-edit" @click="slugBtn = !slugBtn"></i>
-						</div>
-						<h4>{{ computedSlug }}</h4>
-					</FormGroup><!-- /Url -->
 					<!-- Status -->
 					<FormGroup label="Status">
 						<div class="form-select-cont form-input">
 							<select class="form-select" id="options-status" v-model="data.status">
-								<option value="" disabled selected>Select status</option>
 								<option value="draft">Draft</option>
 								<option value="published">Published</option>
 							</select>
@@ -197,7 +194,8 @@ export default {
 	data: () => ({
 		activeTab: 0,
 		users: [],
-		slug: "",
+		isCustomSlug: false,
+		editSlug: "",
 		slugBtn: false,
 		fieldLayout: [],
 		templates: [],
@@ -212,36 +210,44 @@ export default {
 			"slug": "/",
 			"fields": {},
 			"author": 0,
-			"status": "",
+			"status": "draft",
 			"page_template": "",
 			"layout": "",
 			"options": {},
-			"categories": [],
+			"category": null,
 			"codeinjection_head": "",
 			"codeinjection_foot": "",
 			"published_at": new Date(),
 		},
+		isSaving: false,
 		doingAxios: true,
-		loadingResourceData: true,
 		sidebarOpen: false,
 		tag: "",
+		tags: [],
 		selectedTags: [],
 	}),
 	beforeMount() {
-		this.setResource()
 		this.setNewUpdate();
-		this.setTab();
 	},
 	mounted() {
-		if (this.newItem) {
-			this.getFieldLayout();
-		}
-		this.getUsers();
-		this.getTemplates();
-		this.getLayouts();
-		this.getCategories();
+		this.init();
 	},
 	methods: {
+		init() {
+			this.setResource();
+			this.setTab();
+			if (this.newItem) {
+				Promise.all([this.getFieldLayout(), this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
+					.then(() => {
+						this.doingAxios = false;
+					})
+			} else {
+				Promise.all([this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
+					.then(() => {
+						this.doingAxios = false;
+					})
+			}
+		},
 		/*
 		 * getSuccessMessage()
 		 * Determine if the page has been created.
@@ -282,9 +288,9 @@ export default {
 		 * getResourceData()
 		 * Get the page data, if none exists return 404.
 		 */
-		getResourceData() {
+		async getResourceData() {
 			const id = this.$route.params.id;
-			this.axios.get(`/posts/${id}`)
+			return await this.axios.get(`/posts/${id}`)
 				.then(res => {
 					const post = res.data.data.post;
 					this.data = post;
@@ -295,9 +301,7 @@ export default {
 					}
 
 					// Compare slugs & set
-					if (this.slugify(this.slug) !== this.slugify(this.data.slug)) {
-						this.slug = this.data.slug;
-					}
+					if (this.data.slug !== this.getBaseSlug + this.slugify(this.data['title'])) this.isCustomSlug = true;
 
 					// Set author
 					this.data.author = res.data.data.author.id;
@@ -305,31 +309,29 @@ export default {
 					// Set field layouts
 					this.fieldLayout = res.data.data.layout;
 
-					// Set categories
-					res.data.data.categories.forEach(category => {
+					// Set category
+					const category = res.data.data.category;
+					if (category) {
+						this.$set(this.data, 'category', category.id)
 						this.selectedTags.push({
 							text: category.name,
 							id: category.id,
-						})
-					});
+						});
+					}
 
 					// Set date format
 					this.setDates()
-
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
-				})
-				.finally(() => {
-					this.loadingResourceData = false;
 				})
 		},
 		/*
 		 * getFieldLayout()
 		 * Obtain the field layout, on change.
 		 */
-		getFieldLayout() {
-			this.axios.get("/fields", {
+		async getFieldLayout() {
+			return await this.axios.get("/fields", {
 				params: {
 					"layout": this.data['layout'],
 					"page_template": this.data['page_template'],
@@ -344,17 +346,18 @@ export default {
 		 * getCategories()
 		 * Obtain the categories.
 		 */
-		getCategories() {
-			this.axios.get(`/categories?filter={"resource":[{"operator":"=", "value": "${this.resource['name']}"}]}`, {
+		async getCategories() {
+			return await this.axios.get(`/categories?filter={"resource":[{"operator":"=", "value": "${this.resource['name']}"}]}`, {
 				paramsSerializer: function (params) {
 					return params;
 				}
 			})
 				.then(res => {
-					this.mapCategories(res.data.data);
+					const categories = res.data.data;
+					this.categories = categories;
+					this.mapCategories(categories);
 				})
 				.catch(err => {
-					console.log(err);
 					this.helpers.handleResponse(err);
 				})
 		},
@@ -362,8 +365,8 @@ export default {
 		 * getTemplates()
 		 * Obtain page templates from API.
 		 */
-		getTemplates() {
-			this.axios.get("/templates")
+		async getTemplates() {
+			await this.axios.get("/templates")
 			.then(res => {
 				this.templates = res.data.data.templates
 			})
@@ -396,8 +399,8 @@ export default {
 		 * Set the resource from the query parameter, if none defined,
 		 * set default page 'resource'.
 		 */
-		setResource() {
-			const resource = this.getTheme['resources'][this.$route.query.resource]
+		async setResource() {
+			const resource = this.getTheme['resources'][this.$route.query.resource];
 			this.resource = resource === undefined ? {
 				"name": "page",
 				"friendly_name": "Page",
@@ -415,8 +418,6 @@ export default {
 			this.newItem = isNew
 			if (!isNew) {
 				this.getResourceData();
-			} else {
-				this.loadingResourceData = false;
 			}
 		},
 		/*
@@ -433,6 +434,7 @@ export default {
 		 * Save the new page, check for field validation.
 		 */
 		save() {
+			this.isSaving = true;
 			this.errorTrigger = true;
 			this.$nextTick().then(() => {
 				if (document.querySelectorAll(".field-cont-error").length === 0) {
@@ -447,16 +449,11 @@ export default {
 								this.$router.push({
 									name: 'editor',
 									params: { id : res.data.data.post.id },
-									query: { success : "true" }
+									query: { success : "true", resource : res.data.data.post.resource }
 								})
 
-								// Set defaults
-								this.data = res.data.data.post;
-
-								this.data.author = res.data.data.author.id;
-								this.newItem = false;
-								this.setDates();
 								this.getSuccessMessage();
+								this.getResourceData();
 							})
 							.catch(err => {
 								this.helpers.checkServer(err);
@@ -469,15 +466,31 @@ export default {
 								}
 								this.helpers.handleResponse(err);
 							})
+							.finally(() => {
+								setTimeout(() => {
+									this.isSaving = false;
+								}, this.timeoutDelay);
+							})
 					} else {
 						this.axios.put("/posts/" + this.$route.params.id, this.data)
 							.then(() => {
 								this.$noty.success("Page updated successfully.")
 							})
 							.catch(err => {
+								if (err.response.status === 400) {
+									const msg = err.response.data.message;
+									if (msg) {
+										this.$noty.error(msg);
+										return;
+									}
+								}
 								this.helpers.handleResponse(err);
-
-							});
+							})
+							.finally(() => {
+								setTimeout(() => {
+									this.isSaving = false;
+								}, this.timeoutDelay);
+							})
 					}
 				} else {
 					this.$noty.error("Fix the errors before saving the post.")
@@ -490,7 +503,7 @@ export default {
 		 */
 		mapCategories(categories) {
 			if (categories && !this.helpers.isEmptyObject(categories)) {
-				this.categories = categories.map(a => {
+				this.tags = categories.map(a => {
 					return {
 						text: a.name,
 						id: a.id
@@ -503,21 +516,12 @@ export default {
 		 * Updates the categories when the tags changes.
 		 */
 		updateCategoriesTags(categories) {
-			this.$set(this.data, 'categories', []);
-			let catArr = [];
-			categories.forEach(category => {
-				catArr.push(category.id);
-			});
-			this.$set(this.data, 'categories', catArr);
-		},
-		/*
-		 * handleSlugClick()
-		 * Open the sidebar and set to custom slug if the user
-		 * clicks the slug edit button under the title
-		 */
-		handleSlugClick() {
-			this.sidebarOpen = true;
-			this.slugBtn = true;
+			this.$set(this.data, 'category', null);
+			if (categories.length) {
+				const category = categories[0];
+				this.$set(this.data, 'category', category.id);
+			}
+			this.computedSlug =  this.getBaseSlug + this.slugify(this.slug ? this.slug : this.data['title']);
 		},
 		/*
 		 * validate()
@@ -550,6 +554,60 @@ export default {
 				lower: true          // result in lower case
 			})
 		},
+		/*
+		 * resolveCategorySlug()
+		 * Find the category by ID and work the way up the tree of categories
+		 * until the parent ID is undefined, reverse the slug array and
+		 * return the nice slug.
+		 */
+		resolveCategorySlug() {
+			let categorySlugs = [];
+
+			if (this.data['category']) {
+				let category = this.categories.find(c => c.id === this.data['category']);
+				categorySlugs.push(category['slug']);
+
+				while (category['parent_id'] !== null) {
+					category = this.categories.find(c => c.id === category['parent_id']);
+					categorySlugs.push(category['slug']);
+				}
+			}
+			categorySlugs = categorySlugs.reverse();
+
+			let slug = '';
+			categorySlugs.forEach(c => {
+				slug += c + "/";
+			});
+
+			return slug;
+		},
+		/*
+		 * saveSlug()
+		 * Slugify the new edited slug and set the custom slug
+		 * to true, close the slug editing area.
+		 */
+		saveSlug() {
+			if (this.editSlug === "") {
+				this.closeSlug();
+				return;
+			}
+			else {
+				const newSlug = this.getBaseSlug + this.slugify(this.editSlug);
+				this.computedSlug = newSlug;
+				this.slugBtn = false;
+				this.isCustomSlug = true;
+			}
+		},
+		/*
+		 * closeSlug()
+		 * Handler for closing the slug edit button,
+		 * restore default values.
+		 */
+		closeSlug() {
+			this.isCustomSlug = false;
+			this.editSlug = "";
+			this.slugBtn = false;
+		}
 	},
 	computed: {
 		/*
@@ -557,28 +615,29 @@ export default {
 		 * Get the base slug (resource).
 		 */
 		getBaseSlug() {
-			return  this.resource.name === "page" ? "/" : "/" + this.resource.name + "/";
+			return this.resource.name === "page" ? "/" + this.resolveCategorySlug() : "/" + this.resource.name + "/" + this.resolveCategorySlug();
 		},
 		/*
 		 * filteredCategories()
 		 */
 		filteredCategories() {
-			return this.categories.filter(i => {
+			return this.tags.filter(i => {
 				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
 			});
 		},
 		/*
 		 * computedSlug()
-		 * Obtain the computed slug from the input & title.
+		 * If the slug is custom, return the slug that is stored in the data.
+		 * Otherwise get the base slug and slugify the title or the slug
+		 * that has been edited.
 		 */
 		computedSlug: {
 			get() {
-				return this.getBaseSlug + this.slugify(this.slug ? this.slug : this.data.title);
+				if (this.isCustomSlug) return this.data.slug;
+				return this.getBaseSlug + this.slugify(this.editSlug ? this.editSlug : this.data['title']);
 			},
 			set(value) {
-				let slug = this.slugify(value)
-				this.data.slug = slug;
-				return slug;
+				this.$set(this.data, 'slug', value)
 			}
 		}
 	}
@@ -600,7 +659,7 @@ export default {
 		&-title {
 			margin: 3rem 0;
 
-			input {
+			&-text {
 				background-color: transparent;
 				outline: none;
 				border: none;
@@ -609,27 +668,37 @@ export default {
 				color: $black;
 				font-weight: 600;
 			}
+		}
 
-			&-slug {
+		// Slug
+		// =========================================================================
+
+		&-slug {
+			display: inline-flex;
+			align-items: center;
+			margin-top: 10px;
+			cursor: pointer;
+			min-height: 25px;
+
+			i {
+				color: $grey;
+				margin-right: 6px;
+				font-size: 16px;
+			}
+
+			p,
+			i {
+				transition: 200ms ease color;
+			}
+
+			&-text {
 				display: inline-flex;
 				align-items: center;
-				margin-top: 6px;
-				cursor: pointer;
 
 				p {
 					color: $grey;
 					margin: 0;
-				}
-
-				i {
-					color: $grey;
-					margin-right: 6px;
-					font-size: 14px;
-				}
-
-				p,
-				i {
-					transition: 200ms ease color;
+					line-height: 1;
 				}
 
 				&:hover {
@@ -640,8 +709,37 @@ export default {
 					}
 				}
 			}
-		}
 
+			&-form {
+				display: flex;
+				align-items: center;
+				opacity: 0;
+				transition: opacity 200ms ease;
+
+				input {
+					border: 1px solid $grey-light;
+					color: $secondary;
+					outline: none;
+					padding: 4px 6px;
+					margin: 0 6px;
+					width: auto;
+					font-size: 0.8rem;
+					border-radius: 4px;
+				}
+
+				&-active {
+					opacity: 1;
+				}
+			}
+
+			&-save:hover {
+				color: $green;
+			}
+
+			&-close:hover {
+				color: $orange;
+			}
+		}
 
 		// Sidebar
 		// =========================================================================

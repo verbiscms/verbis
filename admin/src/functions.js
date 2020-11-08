@@ -52,6 +52,7 @@ class helpers {
 
 	// Handle response data
 	handleResponse(data) {
+		console.log(data);
 		this.checkServer(data);
 		if (store.state.auth) {
 			if (data) {
