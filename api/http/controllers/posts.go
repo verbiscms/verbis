@@ -145,7 +145,7 @@ func (c *PostsController) Update(g *gin.Context) {
 	post.Id = id
 
 	updatedPost, err := c.postModel.Update(&post)
-	if errors.Code(err) == errors.NOTFOUND {
+	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
