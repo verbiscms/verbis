@@ -11,7 +11,7 @@
 			"required": true,
 			"conditional_logic": null,
 			"wrapper": {
-				"width": 100
+				"width": 50
 			},
 			"options": {
 				"maxlength": 10,
@@ -23,6 +23,25 @@
 		},
 		{
 			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
+			"label": "Text",
+			"name": "text",
+			"type": "text",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": 10,
+				"default_value": "default",
+				"placeholder": "Placeholder",
+				"prepend": "",
+				"append": "Append"
+			}
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e1725",
 			"label": "Textarea",
 			"name": "textarea",
 			"type": "textarea",

@@ -4,7 +4,7 @@
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="flexible">
 		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".flexible-handle">
-			<div class="card card-margin-small" v-for="(group, groupIndex) in getFields" :key="groupIndex">
+			<div class="flexible" v-for="(group, groupIndex) in getFields" :key="groupIndex">
 				<div class="card-header">
 					<h4>{{ group.type }}</h4>
 					<div class="card-controls">
@@ -196,35 +196,11 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-// Field
-// =========================================================================
-
-.field {
-
-	&-group {
-		margin-bottom: 1rem;
-		border: 1px solid $grey-light;
-		padding: 15px 0;
-		border-radius: 6px;
-		background-color: $white;
-	}
-
-	&-content {
-		margin-bottom: 1rem;
-		padding: 0 20px;
-
-		&:last-of-type {
-			margin-bottom: 0;
-		}
-	}
-
-	&-title {
-		color: $secondary;
-	}
-}
 
 	.flexible {
-
+		border: 2px solid $grey-light;
+		margin-bottom: 1.6rem;
+		border-radius: 6px;
 
 		// Header
 		// =========================================================================
@@ -241,8 +217,6 @@ export default {
 				margin-bottom: 0;
 			}
 		}
-
-
-
 	}
+
 </style>

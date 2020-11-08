@@ -86,68 +86,77 @@
 				<i class="feather feather-x" @click.prevent="sidebarOpen = false"></i>
 			</div>
 			<div class="editor-sidebar-body">
-				<!-- URL -->
-				<FormGroup class="form-url" label="Url" :error="errors['slug']">
-					<div class="form-url-cont">
-						<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
-						<i class="feather feather-edit" @click="slugBtn = !slugBtn"></i>
-					</div>
-					<h4>{{ computedSlug }}</h4>
-				</FormGroup><!-- /Url -->
-				<!-- Status -->
-				<FormGroup label="Status">
-					<div class="form-select-cont form-input">
-						<select class="form-select" id="options-status" v-model="data.status">
-							<option value="" disabled selected>Select status</option>
-							<option value="draft">Draft</option>
-							<option value="published">Published</option>
-						</select>
-					</div>
-				</FormGroup><!-- /Status -->
-				<!-- Author -->
-				<FormGroup label="Author">
-					<div class="form-select-cont form-input">
-						<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
-							<option value="0" disabled selected>Select author</option>
-							<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
-						</select>
-					</div>
-				</FormGroup><!-- /Author -->
-				<FormGroup label="Category">
-					<!-- User Tags -->
-					<vue-tags-input
-						v-model="tag"
-						:tags="selectedTags"
-						:autocomplete-items="filteredCategories"
-						@tags-changed="updateCategoriesTags"
-						add-only-from-autocomplete
-						@max-tags-reached="$noty.warning('Only one category per post is permitted')"
-						placeholder="Add category"
-						:max-tags="1"
-					/>
-				</FormGroup>
-				<!-- Page Template -->
-				<FormGroup label="Page template">
-					<div class="form-select-cont form-input">
-						<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
-							<option value="" disabled selected>Select template</option>
-							<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
-						</select>
-					</div>
-				</FormGroup><!-- /Page Template -->
-				<!-- Layout -->
-				<FormGroup label="Layout">
-					<div class="form-select-cont form-input">
-						<select class="form-select" id="properties-layout" v-model="data['layout']" @change="getFieldLayout">
-							<option value="" disabled selected>Select layout</option>
-							<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
-						</select>
-					</div>
-				</FormGroup><!-- /Layout -->
+				<div class="editor-sidebar-cont">
+					<h6 class="margin">Properties</h6>
+					<!-- URL -->
+					<FormGroup class="form-url" label="Url" :error="errors['slug']">
+						<div class="form-url-cont">
+							<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
+							<i class="feather feather-edit" @click="slugBtn = !slugBtn"></i>
+						</div>
+						<h4>{{ computedSlug }}</h4>
+					</FormGroup><!-- /Url -->
+					<!-- Status -->
+					<FormGroup label="Status">
+						<div class="form-select-cont form-input">
+							<select class="form-select" id="options-status" v-model="data.status">
+								<option value="" disabled selected>Select status</option>
+								<option value="draft">Draft</option>
+								<option value="published">Published</option>
+							</select>
+						</div>
+					</FormGroup><!-- /Status -->
+					<!-- Author -->
+				</div>
+				<div class="editor-sidebar-cont">
+					<FormGroup label="Author">
+						<div class="form-select-cont form-input">
+							<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
+								<option value="0" disabled selected>Select author</option>
+								<option v-for="user in users" :value="user.id" :key="user.uuid">{{ user.first_name }} {{ user.last_name }}</option>
+							</select>
+						</div>
+					</FormGroup><!-- /Author -->
+					<FormGroup label="Category">
+						<!-- User Tags -->
+						<vue-tags-input
+							v-model="tag"
+							:tags="selectedTags"
+							:autocomplete-items="filteredCategories"
+							@tags-changed="updateCategoriesTags"
+							add-only-from-autocomplete
+							@max-tags-reached="$noty.warning('Only one category per post is permitted')"
+							placeholder="Add category"
+							:max-tags="1"
+						/>
+					</FormGroup>
+				</div>
+				<div class="editor-sidebar-cont">
+					<!-- Page Template -->
+					<FormGroup label="Page template">
+						<div class="form-select-cont form-input">
+							<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
+								<option value="" disabled selected>Select template</option>
+								<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
+							</select>
+						</div>
+					</FormGroup><!-- /Page Template -->
+					<!-- Layout -->
+					<FormGroup label="Layout">
+						<div class="form-select-cont form-input">
+							<select class="form-select" id="properties-layout" v-model="data['layout']" @change="getFieldLayout">
+								<option value="" disabled selected>Select layout</option>
+								<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
+							</select>
+						</div>
+					</FormGroup><!-- /Layout -->
+				</div>
+				<div class="editor-sidebar-cont">
 				<!-- Published Date -->
 				<FormGroup label="Published date">
 					<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
 				</FormGroup><!-- /Published Date -->
+				</div>
 			</div>
 		</aside>
 	</section>
@@ -637,7 +646,7 @@ export default {
 			right: 0;
 			height: 100%;
 			width: 340px;
-			background-color: $white;
+			background-color: $bg-color;
 			z-index: 999;
 			transform: translateX(100%);
 			transition: transform .4s cubic-bezier(.1,.7,.1,1);
@@ -646,6 +655,12 @@ export default {
 
 			&-active {
 				transform: translateX(0);
+			}
+
+
+			.form-label {
+				font-size: 0.7rem;
+				//color: $secondary;
 			}
 
 			&-header {
@@ -670,7 +685,7 @@ export default {
 			}
 
 			&-body {
-				padding: 0 24px;
+				//padding: 0 24px;
 
 				input {
 					height: $editor-side-input-height;
@@ -681,6 +696,15 @@ export default {
 				.form-select-cont,
 				.form-select {
 					height: $editor-side-input-height
+				}
+			}
+
+			&-cont {
+				padding: 24px;
+				border-bottom: 1px solid $grey-light;
+
+				.form-group:last-child {
+					margin-bottom: 0;
 				}
 			}
 		}
