@@ -215,10 +215,12 @@ export default {
 		facebook: {
 			"title": "",
 			"description": "",
+			"image_id": null,
 		},
 		twitter: {
 			"title": "",
 			"description": "",
+			"image_id": null,
 		},
 	}),
 	mounted() {
@@ -266,10 +268,10 @@ export default {
 		removeImage(type) {
 			if (type === "facebook") {
 				this.facebookImage = false;
-				this.meta['meta_facebook_image_id'] = "";
+				this.meta['meta_facebook_image_id'] = null;
 			} else {
 				this.twitterImage = false;
-				this.meta['meta_twitter_image_id'] = "";
+				this.meta['meta_twitter_image_id'] = null;
 			}
 		},
 		/*

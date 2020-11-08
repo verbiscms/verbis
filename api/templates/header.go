@@ -11,6 +11,7 @@ import (
 	"html/template"
 )
 
+
 // getHeader obtains all of the site and post wide Code Injection
 // as well as any meta information from the page.
 func (t *TemplateFunctions) getHeader() template.HTML {
@@ -28,9 +29,8 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 		b.WriteString(t.options.CodeInjectionHead)
 	}
 
-
 	// Check if the site is public
-	if t.options.SitePublic {
+	if t.options.SeoPublic {
 
 		// Obtain Meta
 		var meta domain.PostMeta
@@ -40,7 +40,7 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 			err := json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
 			if err != nil {
 				log.WithFields(log.Fields{
-					"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+					"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 				}).Error()
 			}
 
@@ -124,4 +124,33 @@ func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, desc
 	if foundImage == nil {
 		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:image\" content=\"%s\">", t.options.SiteUrl + image.Url))
 	}
+}
+
+// getMetaTitle obtains the meta title from the post, if there is no
+// title set on the post, it will look for the global title, if
+// none, return empty string.
+func (t *TemplateFunctions) getMetaTitle() string {
+	const op = "Templates.getMetaTitle"
+
+	var meta domain.PostMeta
+	postMeta := t.post.SeoMeta.Meta
+	if postMeta != nil {
+
+		err := json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+			}).Error()
+		}
+	}
+
+	if meta.Title != "" {
+		return meta.Title
+	}
+
+	if t.options.MetaTitle != "" {
+		return t.options.MetaTitle
+	}
+
+	return ""
 }

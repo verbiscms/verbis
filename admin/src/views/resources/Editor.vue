@@ -461,7 +461,10 @@ export default {
 							.catch(err => {
 								this.helpers.checkServer(err);
 								if (err.response.status === 400) {
-									this.validate(err.response.data.data.errors);
+									const msg = err.response.data.message,
+										errors = err.response.data.data.errors;
+									if (msg && !errors) this.$noty.error(msg);
+									this.validate(errors);
 									return;
 								}
 								this.helpers.handleResponse(err);
@@ -473,6 +476,7 @@ export default {
 							})
 							.catch(err => {
 								this.helpers.handleResponse(err);
+
 							});
 					}
 				} else {
@@ -520,10 +524,12 @@ export default {
 		 * Add errors if the post/put failed.
 		 */
 		validate(errors) {
-			this.errors = {}
-			errors.forEach(err => {
-				this.$set(this.errors, err.key, err.message)
-			})
+			if (errors && errors.length) {
+				this.errors = {};
+				errors.forEach(err => {
+					this.$set(this.errors, err.key, err.message);
+				});
+			}
 		},
 		/*
 		 * updateCodeInjection()

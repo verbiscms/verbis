@@ -2,7 +2,6 @@ package templates
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -33,7 +32,7 @@ func (t *TemplateFunctions) getResource() string {
 // array of domain.Post. It sets defaults if some of the param
 // arguments are missing, and returns an error if the data
 // could not be marshalled.
-func (t *TemplateFunctions) getPosts(query map[string]interface{}) ([]domain.Post, error) {
+func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]interface{}, error) {
 
 	type params struct {
 		Page 			int
@@ -93,13 +92,11 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) ([]domain.Pos
 		OrderDirection: tmplParams.OrderDirection,
 	}
 
-	fmt.Println(postParams)
-
 	// Obtain the post and detect if it was not found,
 	// return nil if so.
-	posts, _, err := t.store.Posts.Get(postParams, tmplParams.Resource)
+	posts, total, err := t.store.Posts.Get(postParams, tmplParams.Resource)
 
-	fmt.Println(postParams)
+	pagination := http.GetPagination(postParams, total)
 
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
@@ -107,7 +104,10 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) ([]domain.Pos
 		return nil, err
 	}
 
-	return posts, nil
+	return map[string]interface{}{
+		"Posts": posts,
+		"Pagination": pagination,
+	}, nil
 }
 
 // getPagination gets the page query paramater and returns, if the
