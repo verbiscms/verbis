@@ -10,7 +10,7 @@ import (
 type PostData struct {
 	Post 			Post						`json:"post"`
 	Author 			PostAuthor 					`json:"author"`
-	Categories 		[]PostCategory 				`json:"categories"`
+	Categories 		*PostCategory 				`json:"category"`
 	Layout 			*[]FieldGroup				`json:"layout"`
 }
 
@@ -59,7 +59,7 @@ type PostCategory struct {
 	Slug			string 		`json:"slug"`
 	Name			string 		`json:"name"`
 	Description		*string 	`json:"description"`
-	Resource 		string 	`json:"resource"`
+	Resource 		string 		`json:"resource"`
 	ParentId 		*int 		`json:"parent_id"`
 	UpdatedAt		time.Time	`json:"updated_at"`
 	CreatedAt		time.Time	`json:"created_at"`
@@ -90,7 +90,7 @@ type PostMeta struct {
 type PostCreate struct {
 	Post
 	Author 			int    		`json:"author,omitempty" binding:"numeric"`
-	Categories		[]int		`json:"categories,omitempty" binding:"unique"`
+	Category		int			`json:"categories,omitempty" binding:"unique"`
 }
 
 //xss in golang implementation

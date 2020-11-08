@@ -126,7 +126,7 @@
 												</td>
 												<!-- Category -->
 												<td>
-													<span v-if="item.categories.length">{{ item.categories[0].name }}</span>
+													<span v-if="item.category !== null">{{ item.category.name }}</span>
 													<span v-else>No category</span>
 												</td>
 												<!-- Published at -->

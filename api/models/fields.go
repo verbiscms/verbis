@@ -18,7 +18,7 @@ import (
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
 	GetFieldGroups() (*[]domain.FieldGroup, error)
-	GetLayout(p domain.Post, a domain.User, c []domain.Category) (*[]domain.FieldGroup, error)
+	GetLayout(p domain.Post, a domain.User, c *domain.Category) (*[]domain.FieldGroup, error)
 }
 
 // FieldsStore defines the data layer for Posts
@@ -82,7 +82,7 @@ func (s *FieldsStore) initCache() fieldCache {
 // GetLayout loops over all of the locations within the config json
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
-func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c []domain.Category) (*[]domain.FieldGroup, error) {
+func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category) (*[]domain.FieldGroup, error) {
 	var fg []domain.FieldGroup
 
 	// If the cache allows for caching of layouts & if the
@@ -153,8 +153,8 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c []domain.Categor
 						// Categories
 						case "categories":
 							{
-								for _, category := range c {
-									locationSet = append(locationSet, s.checkLocation(strconv.Itoa(category.Id), rule))
+								if c != nil {
+									locationSet = append(locationSet, s.checkLocation(strconv.Itoa(c.Id), rule))
 								}
 								break
 							}
