@@ -43,11 +43,7 @@
 				},
 				"maximum": 3,
 				"button_label": "",
-				"allow_null": false,
-				"default_value": [
-					"red",
-					"green"
-				]
+				"allow_null": false
 			}
 		},
 		{

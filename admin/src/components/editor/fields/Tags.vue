@@ -12,7 +12,7 @@
 			add-only-from-autocomplete
 			:disabled="disabled"
 			:max-tags="getMaxTags"
-			@max-tags-reached="validate(`Only one post can be inserted in to the ${layout.label}`)"
+			@max-tags-reached="validate(`Only one tag can be inserted in to the ${layout.label}`)"
 			:placeholder="getButtonLabel"
 			@blur="validateRequired"
 		/>
@@ -67,12 +67,12 @@ export default {
 			}
 		},
 		getItems() {
-			const choices = this.getOptions['choices']
+			const choices = this.getOptions['choices'];
 			for (const choice in choices) {
 				this.items.push({
 					text: choices[choice],
 					key: choice,
-				})
+				});
 			}
 		},
 		updateTags(tags) {
@@ -89,9 +89,10 @@ export default {
 			this.value = tagsArr
 		},
 		setDefault() {
-			if (!this.fields.length && this.getOptions['default_value'].length) {
+
+			if (!this.fields.length && this.getOptions['default_value'] && this.getOptions['default_value'].length) {
 				const opts = this.getOptions['default_value'];
-				let defaultVal = []
+				let defaultVal = [];
 				opts.forEach(opt => {
 					defaultVal.push({
 						text: this.getOptions['choices'][opt],
@@ -102,7 +103,13 @@ export default {
 					this.selectedTags = defaultVal;
 					this.value = defaultVal
 				}
+			} else {
+				console.log(this.value);
+				this.value.forEach(tag => {
+					this.selectedTags.push(tag)
+				});
 			}
+
 		}
 	},
 	computed: {

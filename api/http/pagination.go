@@ -9,8 +9,8 @@ type Pagination struct {
 	Pages 		int					`json:"pages"`
 	Limit 		int					`json:"limit"`
 	Total 		int					`json:"total"`
-	Next 		*bool 				`json:"next"`
-	Prev 		*bool 				`json:"prev"`
+	Next 		interface{} 		`json:"next"`
+	Prev 		interface{} 		`json:"prev"`
 }
 
 // Get pagination parameters
@@ -20,16 +20,6 @@ func GetPagination(params Params, total int) *Pagination {
 	var pages int
 	pages = int(math.Ceil(float64(total) / float64(params.Limit)))
 
-	// Calculate prev and next variables
-	var next = false
-	var prev = false
-	if params.Page < pages {
-		next = true
-	}
-	if params.Page > 1 {
-		prev = true
-	}
-
 	// Construct pagination meta
 	var pagination *Pagination
 	pagination = &Pagination{
@@ -37,8 +27,16 @@ func GetPagination(params Params, total int) *Pagination {
 		Pages: pages,
 		Limit: params.Limit,
 		Total: total,
-		Next:  &next,
-		Prev:  &prev,
+		Next:  false,
+		Prev:  false,
+	}
+
+	// Calculate prev and next variables
+	if params.Page < pages {
+		pagination.Next = params.Page + 1
+	}
+	if params.Page > 1 {
+		pagination.Prev = params.Page - 1
 	}
 
 	return pagination

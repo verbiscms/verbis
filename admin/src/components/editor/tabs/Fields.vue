@@ -58,8 +58,8 @@
 											===================== -->
 										<!-- Select -->
 										<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldSelect>
-										<!-- Multi Select -->
-										<FieldTags v-else-if="layout.type === 'multi_select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTags>
+										<!-- Tags -->
+										<FieldTags v-else-if="layout.type === 'tags'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTags>
 										<!-- Checkbox -->
 										<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldCheckbox>
 										<!-- Radio -->

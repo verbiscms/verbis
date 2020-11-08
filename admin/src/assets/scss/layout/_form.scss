@@ -98,7 +98,7 @@
         position: relative;
         width: 100%;
 
-        #{$self}-input {
+        input {
             padding-left: 44px;
         }
 
@@ -249,7 +249,7 @@
 
         &-text {
             color: rgba($secondary, 0.7);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             margin-left: 10px;
         }
 

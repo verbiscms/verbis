@@ -24,7 +24,7 @@
 								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
 								<router-link :to="{ name: 'categories-single', params: { id: 'new' }}"  class="btn btn-icon btn-orange btn-text-mob">
 									<i class="fal fa-plus"></i>
-									<span>New user</span>
+									<span>New Category</span>
 								</router-link>
 							</form>
 						</div><!-- /Actions -->
@@ -57,8 +57,8 @@
 										<tr>
 											<th class="table-header-checkbox">
 												<div class="form-checkbox form-checkbox-dark">
-													<input type="checkbox" id="users-check-all" v-model="checkedAll"/>
-													<label for="users-check-all">
+													<input type="checkbox" id="categories-check-all" v-model="checkedAll"/>
+													<label for="categories-check-all">
 														<i class="fal fa-check"></i>
 													</label>
 												</div>
@@ -104,7 +104,7 @@
 											</td>
 											<!-- Resource -->
 											<td>
-												<div class="badge badge-green">{{ category.resource }}</div>
+												<div class="badge badge-green">{{ capitalize(category.resource) }}</div>
 											</td>
 											<!-- Parent -->
 											<td>
@@ -416,6 +416,13 @@ export default {
 				}
 			});
 			return category;
+		},
+		/*
+ 		 * capitalize()
+		 * Capitalize the first letter of the resource.
+		 */
+		capitalize(str) {
+			return str.replace(/(?:^|\s|["'([{])+\S/g, match => match.toUpperCase());
 		}
 	},
 	computed: {
