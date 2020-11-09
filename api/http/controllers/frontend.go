@@ -116,7 +116,7 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 	options, err := c.models.Options.GetStruct()
 	if err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 		}).Fatal()
 	}
 
@@ -124,7 +124,7 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 	theme, err := c.models.Site.GetThemeConfig()
 	if err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get theme config", Operation: op, Err: fmt.Errorf("could not unmarshal the theme config struct")},
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get theme config", Operation: op, Err: err},
 		}).Fatal()
 	}
 

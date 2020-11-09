@@ -13,7 +13,7 @@
 					<div class="card-header">
 						<div>
 							<h4 class="card-title">Head</h4>
-							<p>Any code inputted here will be injected the <code v-html="'{{ verbisHead }}'"></code> of the site.</p>
+							<p>Any code inputted here will be injected the <br class="d-mob-none"><code v-html="'{{ verbisHead }}'"></code> of the site.</p>
 						</div>
 						<div class="card-controls">
 							<i class="feather feather-chevron-down"></i>
