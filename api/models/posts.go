@@ -207,7 +207,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.Author, p.PublishedAt, p.Id)
+	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId, p.PublishedAt, p.Id)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -292,12 +292,12 @@ func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 // checkOwner Checks if the author is set or if the author does not exist.
 // Returns the owner ID under circumstances.
 func (s *PostStore) checkOwner(p domain.PostCreate) int {
-	if p.UserId == 0 || !s.userModel.Exists(p.Author) {
+	if p.Author == 0 || !s.userModel.Exists(p.Author) {
 		owner, err := s.userModel.GetOwner()
 		if err != nil {
 			log.Panic(err)
 		}
 		return owner.Id
 	}
-	return p.Id
+	return p.Author
 }

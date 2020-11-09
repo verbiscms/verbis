@@ -148,8 +148,7 @@
 					<FormGroup label="Layout">
 						<div class="form-select-cont form-input">
 							<select class="form-select" id="properties-layout" v-model="data['layout']" @change="getFieldLayout">
-								<option value="" disabled selected>Select layout</option>
-								<option v-for="layout in layouts" :value="layout.key" :key="layout.key">{{ layout.name }}</option>
+								<option v-for="(layout, layoutKey) in layouts" :value="layout.key" :key="layout.key" :selected="layoutKey === 1">{{ layout.name }}</option>
 							</select>
 						</div>
 					</FormGroup><!-- /Layout -->
@@ -237,6 +236,9 @@ export default {
 		this.init();
 	},
 	methods: {
+		/*
+		 * init()
+		 */
 		init() {
 			this.setResource();
 			this.setTab();
@@ -244,6 +246,9 @@ export default {
 				Promise.all([this.getFieldLayout(), this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
 					.then(() => {
 						this.doingAxios = false;
+						if (this.layouts.length >= 2) {
+							this.$set(this.data, 'layout', this.layouts[1].key);
+						}
 					})
 			} else {
 				Promise.all([this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
@@ -379,8 +384,8 @@ export default {
 		 * getLayouts()
 		 * Obtain page layouts from API.
 		 */
-		getLayouts() {
-			this.axios.get("/layouts")
+		async getLayouts() {
+			await this.axios.get("/layouts")
 			.then(res => {
 				this.layouts = res.data.data.layouts
 			})
@@ -458,6 +463,7 @@ export default {
 
 								this.getSuccessMessage();
 								this.getResourceData();
+								this.newItem = false;
 							})
 							.catch(err => {
 								this.helpers.checkServer(err);
@@ -502,6 +508,9 @@ export default {
 					}
 				} else {
 					this.$noty.error("Fix the errors before saving the post.")
+					setTimeout(() => {
+						this.isSaving = false;
+					}, this.timeoutDelay);
 				}
 			})
 		},
@@ -559,7 +568,8 @@ export default {
 			return slugify(text, {
 				replacement: '-',    // replace spaces with replacement
 				remove: null,        // regex to remove characters
-				lower: true          // result in lower case
+				lower: true,         // result in lower case
+				strict: true, 		 // strip special characters except replacement, defaults to `false`
 			})
 		},
 		/*

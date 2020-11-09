@@ -30,6 +30,25 @@ resources:
         singular_name: Post
         slug: /posts
         icon: feather feather-clipboard
+    staff:
+        name: staff
+        friendly_name: Staff Members
+        singular_name: Staff
+        slug: /team-members
+        icon: feather feather-user
+    casestudies:
+        name: casestudies
+        friendly_name: Case Studies
+        singular_name: Case Study
+        slug: /case-studies
+        icon: feather feather-book
+    industries:
+        name: industries
+        friendly_name: Industries
+        singular_name: Industry
+        slug: /industries
+        icon: feather feather-inbox
+
 
 # |
 # |--------------------------------------------------------------------------

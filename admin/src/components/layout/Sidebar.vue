@@ -2,7 +2,7 @@
 	Sidebar
 	===================== -->
 <template>
-	<aside class="aside" :class="{ 'aside-active' : open }">
+	<aside class="aside" :class="{ 'aside-active' : open }" v-if="getTheme">
 		<div class="aside-container">
 			<div class="aside-top">
 				<!-- Logo -->
@@ -11,10 +11,36 @@
 					<h2>Verbis</h2>
 				</router-link>
 				<!-- =====================
+					Site
+					===================== -->
+				<div class="aside-block">
+					<collapse :use-icon="false" :open="true">
+						<template v-slot:header>
+							<div class="aside-block-nav">
+								<h6>Site</h6>
+								<i class="feather feather-chevron-down"></i>
+							</div>
+						</template>
+						<template v-slot:body>
+							<nav class="aside-nav">
+								<ul>
+									<!-- Pages -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'site' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'site' }">
+											<i class="feather feather-eye"></i>
+											<span>View Site</span>
+										</router-link>
+									</li><!-- /Pages -->
+								</ul>
+							</nav>
+						</template>
+					</collapse>
+				</div><!-- /Resources -->
+				<!-- =====================
 					Resources
 					===================== -->
 				<div class="aside-block">
-					<collapse :use-icon="false">
+					<collapse :use-icon="false" :open="true">
 						<template v-slot:header>
 							<div class="aside-block-nav">
 								<h6>Resources</h6>
@@ -296,9 +322,9 @@ export default {
 <style scoped lang="scss">
 
 // Variables
-$aside-padding-mob: 18px;
-$aside-padding-tab: 22px;
-$aside-padding-desk: 26px;
+$aside-padding-mob: 16px;
+$aside-padding-tab: 18px;
+$aside-padding-desk: 20px;
 
 .aside {
 	$self: &;
@@ -336,6 +362,10 @@ $aside-padding-desk: 26px;
 	&-block {
 		padding: $aside-padding-mob;
 		border-bottom: 1px solid $grey-light;
+
+		&:first-of-type {
+			padding-top: 0;
+		}
 
 		&-nav {
 			position: relative;
@@ -464,11 +494,12 @@ $aside-padding-desk: 26px;
 
 			span {
 				font-size: 14px;
+				font-weight: 500;
 			}
 
 			span,
 			i {
-				color: rgba($secondary, 0.4);
+				color: rgba($secondary, 0.6);
 				transition: color 400ms ease;
 				will-change: color;
 			}
@@ -495,7 +526,7 @@ $aside-padding-desk: 26px;
 
 			span,
 			i {
-				color: $secondary;
+				color: $primary
 			}
 		}
 

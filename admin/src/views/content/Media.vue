@@ -18,9 +18,8 @@
 								<button v-if="bulkAction" class="btn btn-fixed-height btn-white header-hide-mob" @click.prevent="bulkAction = false">Cancel</button>
 								<button v-if="!bulkAction" class="btn btn-fixed-height btn-margin btn-white header-hide-mob" @click.prevent="bulkAction = true">Bulk select</button>
 								<button v-else class="btn btn-fixed-height btn-margin btn-orange header-hide-mob" @click.prevent="deleting = !deleting">Delete permanently</button>
-								<label for="browse-file" class="btn btn-icon btn-orange btn-text-mob">
-									<i class="fal fa-plus"></i>
-									<span>Add Item</span>
+								<label for="browse-file" class="btn btn-orange btn-flex btn-fixed-height">
+									New Media Item
 								</label>
 							</form>
 						</div><!-- /Actions -->

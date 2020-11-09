@@ -115,7 +115,7 @@
 				<div class="col-12">
 					<h6 class="margin">General</h6>
 					<div class="card card-small-box-shadow card-expand">
-						<!-- Title & description -->
+						<!-- Locale -->
 						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['general_locale']}">
 							<template v-slot:header>
 								<div class="card-header">
@@ -130,17 +130,16 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body">
-									<!-- Locale -->
 									<FormGroup label="Location">
 										<div class="form-select-cont form-input">
 											<select class="form-select" v-model="computedLocale">
 												<option v-for="location in locale" :value="location" :key="location">{{ location }}</option>
 											</select>
 										</div>
-									</FormGroup><!-- /Locale -->
+									</FormGroup>
 								</div>
 							</template>
-						</Collapse><!-- /Title & description -->
+						</Collapse><!-- /Locale -->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
