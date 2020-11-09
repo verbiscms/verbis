@@ -2,7 +2,7 @@
 	Archive
 	===================== -->
 <template>
-	<section>
+	<section class="archive-trans" v-show="!switchingResource">
 		<div class="auth-container">
 			<!-- Header -->
 			<div class="row">
@@ -166,18 +166,22 @@
 																<i class="feather feather-external-link"></i>
 																<span>Meta</span>
 															</router-link>
-															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'seo' }}" >
-																<i class="feather feather-search"></i>
-																<span>SEO</span>
-															</router-link>
+<!--															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'seo' }}" >-->
+<!--																<i class="feather feather-search"></i>-->
+<!--																<span>SEO</span>-->
+<!--															</router-link>-->
 															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'code-injection' }}" >
 																<i class="feather feather-code"></i>
 																<span>Code Injection</span>
 															</router-link>
-															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'insights' }}" >
-																<i class="feather feather-bar-chart-2"></i>
-																<span>Insights</span>
-															</router-link>
+<!--															<router-link class="popover-item popover-item-icon" :to="{ name: 'editor', params: { id: item.post.id }, query: { tab: 'insights' }}" >-->
+<!--																<i class="feather feather-bar-chart-2"></i>-->
+<!--																<span>Insights</span>-->
+<!--															</router-link>-->
+															<div class="popover-item popover-item-icon" @click="clonePost(item)">
+																<i class="feather feather-copy"></i>
+																<span>Clone</span>
+															</div>
 															<div class="popover-line"></div>
 															<div v-if="item.post.status === 'bin'" class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="handleDelete(item.post);">
 																<i class="feather feather-trash-2"></i>
@@ -280,6 +284,7 @@ export default {
 		selectedDeleteId: null,
 		isDoingBulk: false,
 		isDeleting: false,
+		switchingResource: false,
 	}),
 	mounted() {
 		this.filterTabs(1);
@@ -287,9 +292,11 @@ export default {
 	},
 	watch: {
 		'$route.params.resource': function() {
+			this.switchingResource = true;
 			this.setResource();
 			this.getPosts();
 			this.activeTab = 1;
+			this.switchingResource = false;
 		},
 	},
 	methods: {
@@ -535,6 +542,57 @@ export default {
 		getPostsById(id) {
 			return this.posts.find(p => p.post.id === id)
 		},
+		/*
+		 * clonePost()
+		 * Check if the slug already exists, if it does add a number to the
+		 * end, post to the backend to clone and get the posts.
+		 */
+		clonePost(item) {
+
+			let slug = item.post.slug;
+			const pattern = new RegExp("^[0-9]+(-[0-9]+)+$");
+			const hasNumber = pattern.test(slug);
+
+			if (!hasNumber) {
+				slug = slug + "-1";
+			} else {
+				slug = slug.replace(/(\d+)+/g, function(match, number) {
+					return parseInt(number)+1;
+				})
+			}
+
+			this.posts.forEach(post => {
+				if (slug === post.post.slug) {
+					slug = slug.replace(/(\d+)+/g, function(match, number) {
+						return parseInt(number)+1;
+					})
+				}
+			});
+
+			const post = {
+				author: item.author.id,
+				category: item.category.id,
+				fields: item.post.fields,
+				codeinjection_head: item.post.codeinjection_head,
+				codeinjection_foot: item.post.codeinjection_foot,
+				layout: item.post.layout,
+				options: item.post.options,
+				page_template: item.post.page_template,
+				status: "draft",
+				title: item.post.title + " (copy)",
+				slug: slug,
+			}
+
+			this.axios.post("/posts", post)
+				.then(() => {
+					this.getPosts();
+					this.$noty.success(`${this.resource['singular_name']} cloned successfully`);
+				})
+				.catch(err => {
+
+					this.helpers.handleResponse(err);
+				})
+		}
 	},
 	computed: {
 		/*
@@ -588,6 +646,23 @@ export default {
 			&-enter, &-leave-to /* .fade-leave-active below version 2.1.8 */ {
 				opacity: 0;
 				transition-delay: 200ms;
+			}
+		}
+	}
+
+	// Transition
+	// =========================================================================
+
+	&-trans {
+		animation: fadeIn 500ms both cubic-bezier(0.46,0.03,0.52,0.96);
+
+		@keyframes fadeIn {
+			from {
+				opacity: 0;
+			}
+
+			to {
+				opacity: 1;
 			}
 		}
 	}

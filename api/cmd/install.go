@@ -104,7 +104,7 @@ func Install(cmd *cobra.Command, args []string) {
 
 // setUrl
 func setUrl() string {
-	fmt.Println("Enter the url the site will sit on:")
+	fmt.Println("Enter the url the site will sit on, if in development, be sure to append a port (for example: http://127.0.0.1:8080):")
 	reader := bufio.NewReader(os.Stdin)
 
 	// Url

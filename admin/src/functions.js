@@ -71,7 +71,7 @@ class helpers {
 				} else if (data.response.status === 429) {
 					this.noty(data.response.data.message);
 				} else {
-					this.error("Error occurred, please refresh the page.");
+					this.noty("Error occurred, please refresh the page.");
 				}
 			}
 		} else {

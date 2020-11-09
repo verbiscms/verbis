@@ -27,5 +27,8 @@ func (s *Seeder) Seed() error {
 	if err := s.runOptions(); err != nil {
 		return err
 	}
+	//if err := s.runPosts(); err != nil {
+	//	return err
+	//}
 	return nil
 }

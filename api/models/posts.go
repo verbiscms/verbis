@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -225,6 +226,9 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	if err := s.seoMetaModel.UpdateCreate(&convertedPost); err != nil {
 		return domain.Post{}, err
 	}
+
+	// Clear the cache
+	cache.Store.Delete(convertedPost.Slug)
 
 	return convertedPost, nil
 }

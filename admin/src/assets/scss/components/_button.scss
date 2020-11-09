@@ -95,6 +95,45 @@
 		align-items: center;
 	}
 
+	// Colours
+	// =========================================================================
+
+	&-white {
+		background-color: $white;
+		color: $secondary !important;
+
+		&:before {
+			border-color: $secondary;
+		}
+	}
+
+	&-orange {
+		background-color: $orange;
+		color: $white !important;
+
+		&:before {
+			border-color: $white !important;
+		}
+	}
+
+	&-blue {
+		background-color: $primary;
+		color: $white !important;
+
+		&:before {
+			border-color: $white;
+		}
+	}
+
+	&-green {
+		background-color: $green;
+		color: $white !important;
+
+		&:before {
+			border-color: $white;
+		}
+	}
+
 	// Loading
 	// =========================================================================
 
@@ -102,6 +141,7 @@
 		transition: none;
 		pointer-events: none;
 		color: transparent !important;
+		content: "" !important;
 
 		span {
 			opacity: 0;
@@ -142,45 +182,6 @@
 
 	&:hover {
 		box-shadow: 0 0 10px 2px rgba($copy, 0.12);
-	}
-
-	// Colours
-	// =========================================================================
-
-	&-white {
-		background-color: $white;
-		color: $secondary !important;
-
-		&:before {
-			border-color: $secondary;
-		}
-	}
-
-	&-orange {
-		background-color: $orange;
-		color: $white !important;
-
-		&:before {
-			border-color: $white;
-		}
-	}
-
-	&-blue {
-		background-color: $primary;
-		color: $white !important;
-
-		&:before {
-			border-color: $white;
-		}
-	}
-
-	&-green {
-		background-color: $green;
-		color: $white !important;
-
-		&:before {
-			border-color: $white;
-		}
 	}
 
 	// Margin

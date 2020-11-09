@@ -17,13 +17,17 @@
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<!-- Actions -->
-						<div class="header-actions">
+						<div class="header-actions editor-actions">
 							<form class="form form-actions">
 								<button class="btn btn-icon btn-white btn-margin-right" @click.prevent="sidebarOpen = !sidebarOpen">
 									<i class="feather feather-settings"></i>
 								</button>
-								<a :href="getSiteUrl + data.slug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white btn-flex">Preview</a>
-								<button class="btn btn-fixed-height btn-orange" :class="{ 'btn-loading' : isSaving }" @click.prevent="save">
+								<a v-if="!newItem" :href="getSiteUrl + data.slug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white btn-flex btn-icon-mob">
+									<i class="feather feather-eye"></i>
+									<span>Preview</span>
+								</a>
+								<button class="btn btn-fixed-height btn-orange btn-icon-mob" :class="{ 'btn-loading' : isSaving }" @click.prevent="save">
+									<i class="feather feather-save"></i>
 									<span v-if="data.status === 'draft'">Save draft</span>
 									<span v-else-if="newItem">Publish</span>
 									<span v-else>Update</span>
@@ -62,7 +66,7 @@
 										<i class="feather feather-edit-2"></i>
 										<p>{{ computedSlug }}</p>
 									</div>
-									<div class="editor-slug-form" :class="{ 'editor-slug-form-active' : slugBtn }">
+									<div v-if="slugBtn" class="editor-slug-form" :class="{ 'editor-slug-form-active' : slugBtn }">
 										<input type="text" class="form-input-white" v-model="editSlug">
 										<i class="editor-slug-save feather feather-save" @click.prevent="saveSlug"></i>
 										<i class="editor-slug-close feather feather-x-circle" @click="closeSlug"></i>
@@ -93,7 +97,7 @@
 			</div>
 			<div class="editor-sidebar-body">
 				<div class="editor-sidebar-cont">
-					<h6 class="margin">Properties</h6>
+					<h6 class="margin">Publishing</h6>
 					<!-- Status -->
 					<FormGroup label="Status">
 						<div class="form-select-cont form-input">
@@ -106,6 +110,7 @@
 					<!-- Author -->
 				</div>
 				<div class="editor-sidebar-cont">
+					<h6 class="margin">Content</h6>
 					<FormGroup label="Author">
 						<div class="form-select-cont form-input">
 							<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
@@ -129,6 +134,7 @@
 					</FormGroup>
 				</div>
 				<div class="editor-sidebar-cont">
+					<h6 class="margin">Properties</h6>
 					<!-- Page Template -->
 					<FormGroup label="Page template">
 						<div class="form-select-cont form-input">
@@ -147,12 +153,10 @@
 							</select>
 						</div>
 					</FormGroup><!-- /Layout -->
-				</div>
-				<div class="editor-sidebar-cont">
-				<!-- Published Date -->
-				<FormGroup label="Published date">
-					<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
-				</FormGroup><!-- /Published Date -->
+					<!-- Published Date -->
+					<FormGroup label="Published date">
+						<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
+					</FormGroup><!-- /Published Date -->
 				</div>
 			</div>
 		</aside>
@@ -462,6 +466,7 @@ export default {
 										errors = err.response.data.data.errors;
 									if (msg && !errors) this.$noty.error(msg);
 									this.validate(errors);
+									this.$noty.error("Fix the errors before saving the " + this.resource['singular_name'] + ".");
 									return;
 								}
 								this.helpers.handleResponse(err);
@@ -478,11 +483,14 @@ export default {
 							})
 							.catch(err => {
 								if (err.response.status === 400) {
-									const msg = err.response.data.message;
+									const msg = err.response.data.message,
+										errors = err.response.data.data.errors;
 									if (msg) {
 										this.$noty.error(msg);
 										return;
 									}
+									this.validate(errors);
+									this.$noty.error("Fix the errors before saving the " + this.resource['singular_name'] + ".");
 								}
 								this.helpers.handleResponse(err);
 							})
@@ -596,6 +604,7 @@ export default {
 				this.computedSlug = newSlug;
 				this.slugBtn = false;
 				this.isCustomSlug = true;
+				this.editSlug = "";
 			}
 		},
 		/*
@@ -634,6 +643,7 @@ export default {
 		computedSlug: {
 			get() {
 				if (this.isCustomSlug) return this.data.slug;
+				if (this.editSlug !== "") return this.getBaseSlug + this.slugify(this.data['title']);
 				return this.getBaseSlug + this.slugify(this.editSlug ? this.editSlug : this.data['title']);
 			},
 			set(value) {
@@ -652,6 +662,26 @@ export default {
 	$editor-side-input-height: 50px;
 
 	.editor {
+
+		// Actions
+		// =========================================================================
+
+		&-actions {
+
+			@include media-mob-down {
+
+				i {
+					font-size: 1.2rem;
+				}
+			}
+		}
+
+		// Buttons
+		// =========================================================================
+
+		&-save-btn {
+			display: none;
+		}
 
 		// Title
 		// =========================================================================
@@ -676,6 +706,8 @@ export default {
 		&-slug {
 			display: inline-flex;
 			align-items: center;
+			flex-wrap: wrap;
+			width: 100%;
 			margin-top: 10px;
 			cursor: pointer;
 			min-height: 25px;
@@ -694,11 +726,12 @@ export default {
 			&-text {
 				display: inline-flex;
 				align-items: center;
+				min-width: 100%;
 
 				p {
 					color: $grey;
 					margin: 0;
-					line-height: 1;
+					line-height: 1.3;
 				}
 
 				&:hover {
@@ -715,13 +748,14 @@ export default {
 				align-items: center;
 				opacity: 0;
 				transition: opacity 200ms ease;
+				margin-top: 10px;
 
 				input {
 					border: 1px solid $grey-light;
 					color: $secondary;
 					outline: none;
 					padding: 4px 6px;
-					margin: 0 6px;
+					margin-right: 6px;
 					width: auto;
 					font-size: 0.8rem;
 					border-radius: 4px;
@@ -739,6 +773,22 @@ export default {
 			&-close:hover {
 				color: $orange;
 			}
+
+			@include media-tab {
+				flex-wrap: nowrap;
+
+				&-text {
+					min-width: 0;
+				}
+
+				&-form {
+					margin-top: 0;
+
+					input {
+						margin: 0 6px;
+					}
+				}
+			}
 		}
 
 		// Sidebar
@@ -749,22 +799,25 @@ export default {
 			top: 0;
 			right: 0;
 			height: 100%;
-			width: 340px;
+			width: 250px;
 			background-color: $bg-color;
-			z-index: 999;
+			z-index: 999999;
 			transform: translateX(100%);
 			transition: transform .4s cubic-bezier(.1,.7,.1,1);
 			box-shadow: 0 0 50px 3px rgba(0, 0, 0, 0.11);
 			border-left: 1px solid $grey-light;
+			overflow-y: scroll;
+
+			.ti-tags {
+				flex-wrap: nowrap;
+			}
 
 			&-active {
 				transform: translateX(0);
 			}
 
-
 			.form-label {
 				font-size: 0.7rem;
-				//color: $secondary;
 			}
 
 			&-header {
@@ -772,7 +825,7 @@ export default {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				padding: 16px 24px;
+				padding: 16px 24px 16px 24px;
 
 				i {
 					cursor: pointer;
@@ -782,14 +835,13 @@ export default {
 				}
 
 				h3 {
-					font-weight: 600;
-					font-size: 1.1rem;
+					font-weight: 700;
+					font-size: 1.2rem;
 					margin-bottom: 0;
 				}
 			}
 
 			&-body {
-				//padding: 0 24px;
 
 				input {
 					height: $editor-side-input-height;
@@ -810,6 +862,29 @@ export default {
 				.form-group:last-child {
 					margin-bottom: 0;
 				}
+
+				&:first-child {
+					padding-top: 10px;
+				}
+			}
+		}
+
+
+		// Tablet
+		// =========================================================================
+
+		@include media-tab {
+
+			&-sidebar {
+				width: 340px;
+
+				&-header {
+					margin-top: 1rem;
+				}
+			}
+
+			&-save-btn {
+				display: inline;
 			}
 		}
 	}
