@@ -2,7 +2,7 @@
 	Archive
 	===================== -->
 <template>
-	<section class="archive-trans" v-show="!switchingResource">
+	<section class="archive-trans">
 		<div class="auth-container">
 			<!-- Header -->
 			<div class="row">
@@ -34,9 +34,8 @@
 									</select>
 								</div>
 								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
-								<router-link class="btn btn-icon btn-orange btn-text-mob" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
-									<i class="fal fa-plus"></i>
-									<span>New {{ resource['singular_name'] }}</span>
+								<router-link class="btn btn-orange btn-fixed-height btn-flex" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
+									New {{ resource['singular_name'] }}
 								</router-link>
 							</form>
 						</div><!-- /Actions -->
@@ -88,7 +87,7 @@
 													<span>Category</span>
 												</th>
 												<th class="table-order" @click="changeOrderBy('published_at')" :class="{ 'active' : activeOrder === 'published_at' }">
-													<span>Published at</span>
+													<span>Published date</span>
 													<i class="fas fa-caret-down" :class="{ 'active' : orderBy['published_at'] !== 'asc' }"></i>
 												</th>
 												<th></th>
@@ -284,7 +283,6 @@ export default {
 		selectedDeleteId: null,
 		isDoingBulk: false,
 		isDeleting: false,
-		switchingResource: false,
 	}),
 	mounted() {
 		this.filterTabs(1);
@@ -292,11 +290,9 @@ export default {
 	},
 	watch: {
 		'$route.params.resource': function() {
-			this.switchingResource = true;
 			this.setResource();
 			this.getPosts();
 			this.activeTab = 1;
-			this.switchingResource = false;
 		},
 	},
 	methods: {
@@ -395,7 +391,8 @@ export default {
 
 			Promise.all(promises)
 				.then(() => {
-					const successMsg = checkedArr.length === 1 ? `${this.resource['singular_name']} updated successfully.` : `${this.resource['name']} updated successfully.`
+					const plural = checkedArr.length === 1 ? "" : "s";
+					const successMsg = `${checkedArr.length} ${this.resource['singular_name']}${plural} moved to ${status}.`;
 					this.$noty.success(successMsg);
 					this.getPosts();
 				})

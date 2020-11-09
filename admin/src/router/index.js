@@ -49,6 +49,15 @@ const routes = [
 		meta: { transitionName : 'slide' },
 	},
 	/**
+	 * Site
+	 */
+	{
+		path: "/site",
+		name: "site",
+		component: () => import("../views/site/ViewSite.vue"),
+		meta: { transitionName : 'fade' },
+	},
+	/**
 	 * Resources
 	 *
 	 */

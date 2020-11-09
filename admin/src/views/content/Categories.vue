@@ -22,9 +22,8 @@
 									</select>
 								</div>
 								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
-								<router-link :to="{ name: 'categories-single', params: { id: 'new' }}"  class="btn btn-icon btn-orange btn-text-mob">
-									<i class="fal fa-plus"></i>
-									<span>New Category</span>
+								<router-link :to="{ name: 'categories-single', params: { id: 'new' }}"  class="btn btn-orange btn-fixed-height btn-flex">
+									New Category
 								</router-link>
 							</form>
 						</div><!-- /Actions -->

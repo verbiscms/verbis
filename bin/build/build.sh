@@ -94,6 +94,10 @@ function build() {
 	mkdir $path/storage/dumps && touch $path/storage/dumps/.keep
 	mkdir $path/storage/logs && touch $path/storage/logs/.keep
 
+	# Mail
+	mkdir $path/mail
+	rsync -av --quiet api/mail/ $path/mail --exclude mailer.go
+
 	# .gitignore
 	printf 'node_modules\n.env\n.env.local\n.env.*.local\n.idea\n.vscode\n*.suo\n*.ntvs*\n*.njsproj\n*.sln\n*.sw?\n.DS_Store\n' > $path/.gitignore
 

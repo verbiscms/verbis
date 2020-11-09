@@ -9,7 +9,6 @@
 					<header class="header">
 						<div class="header-title">
 							<h1>Home</h1>
-							<Breadcrumbs></Breadcrumbs>
 						</div>
 					</header>
 				</div><!-- /Col -->
@@ -30,14 +29,12 @@
 	===================== -->
 <script>
 
-import Breadcrumbs from "../components/misc/Breadcrumbs";
 import Alert from "@/components/misc/Alert";
 
 export default {
 	name: "Home",
 	components: {
 		Alert,
-		Breadcrumbs
 	},
 	data: () => ({}),
 	methods: {},

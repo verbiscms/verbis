@@ -22,9 +22,8 @@
 									</select>
 								</div>
 								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
-								<div class="btn btn-icon btn-orange btn-text-mob" @click="showCreateModal = true">
-									<i class="fal fa-plus"></i>
-									<span>New User</span>
+								<div class="btn btn-orange btn-fixed-height btn-flex" @click="showCreateModal = true">
+									New User
 								</div>
 							</form>
 						</div><!-- /Actions -->
@@ -454,7 +453,6 @@ export default {
 		 * getProfilePicture()
 		 */
 		getProfilePicture(id) {
-			console.log(this.media);
 			if (this.media.length) {
 				const picture = this.media.find(m => m.id === id);
 				return picture ? picture.url : false;

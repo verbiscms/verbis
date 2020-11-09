@@ -36,7 +36,7 @@
 					</div><!-- /Row -->
 					<!-- First name -->
 					<div class="row form-row form-row-border form-row-border-top">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>First name*</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
@@ -47,7 +47,7 @@
 					</div><!-- /Row -->
 					<!-- Last name -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Last name*</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
@@ -68,7 +68,7 @@
 					</div><!-- /Row -->
 					<!-- Email -->
 					<div class="row form-row form-row-border form-row-border-top">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Email address*</h4>
 							<p>Enter a valid email address, this will be used for signing in to Verbis.</p>
 						</div>
@@ -80,7 +80,7 @@
 					</div><!-- /Row -->
 					<!-- Website -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Website</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
@@ -91,7 +91,7 @@
 					</div><!-- /Row -->
 					<!-- Facebook -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Facebook</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
@@ -102,7 +102,7 @@
 					</div><!-- /Row -->
 					<!-- Twitter -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Twitter</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
@@ -113,7 +113,7 @@
 					</div><!-- /Row -->
 					<!-- LinkedIn -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>LinkedIn</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
@@ -134,7 +134,7 @@
 					</div><!-- /Row -->
 					<!-- Profile Picture -->
 					<div class="row form-row form-row-border form-row-border-top">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Profile picture</h4>
 						</div>
 						<div class="col-12 col-desk-8 col-hd-6">
@@ -166,7 +166,7 @@
 					</div><!-- /Row -->
 					<!-- Current Password -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Current password</h4>
 							<p>Type in your current password.</p>
 						</div>
@@ -178,7 +178,7 @@
 					</div><!-- /Row -->
 					<!-- Password -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Password</h4>
 							<p>Enter a new password, a minimum of 8 alphanumeric characters are required.</p>
 							<button class="btn profile-generate-pass" @click.prevent="generatePassword">Generate password</button>
@@ -191,7 +191,7 @@
 					</div><!-- /Row -->
 					<!-- Confirm Password -->
 					<div class="row form-row form-row-border">
-						<div class="col-12 col-desk-4 col-hd-2">
+						<div class="col-12 col-desk-4 col-hd-3">
 							<h4>Confirm Password</h4>
 							<p>Enter the same password in again.</p>
 						</div>

@@ -1,61 +1,30 @@
 <!DOCTYPE html>
-<html class="no-js" lang="en_GB">
+<html lang="en">
+
 <head>
-    <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Verbis</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>
+        Verbis - {{ getMetaTitle }}
+    </title>
     {{ verbisHead }}
-    <meta name="author" content="Reddico">
-    <meta name="description" content="">
-    <link rel="canonical" href="" />
-    <!-- Open Graph -->
-    <!-- CSS -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="/assets/test.css">
-
-    <!-- Preload JS -->
-{{/*    <link rel="preload" href="/assets/js/app.js" as="script">*/}}
-    <!-- Favicon -->
-
+    <!--     Fonts and icons     -->
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet">
+    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <!-- Nucleo Icons -->
+    <link href="../assets/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <link href="../assets/css/font-awesome.css" rel="stylesheet" />
+    <link href="../assets/css/nucleo-svg.css" rel="stylesheet" />
+    <!-- CSS Files -->
+    <link href="../assets/css/argon-design-system.css?v=1.2.0" rel="stylesheet" />
 </head>
-<body>
-<!--[if lte IE 9]>
-<div class="outdated-browser">
-    <h2>You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</h2>
-</div>
-<![endif]-->
-<main>
-{{/*    <img src="/assets/test.svg">*/}}
-{{/*    <img src="/assets/test.jpg">*/}}
 
-{{/*    {{ $m := getMedia 1 }}*/}}
-{{/*    <img src=" {{ $m.Url }}" alt="">*/}}
-
-
-    {{ include "partials/header" }}
+<body class="landing-page">
     {{ template "content" . }}
-    {{ $page := getPagination }}
-    <h1>{{ $page }}</h1>
-    {{ $query := dict "limit" 100 "resource" "posts" "page" 1 }}
-    {{ $posts := getPosts $query }}
-
-    {{ if $posts }}
-        <pre>{{ $posts.Pagination }}</pre>
-    {{ else }}
-        <h1>No posts found</h1>
-    {{ end }}
-
-
-
-
-</main>
-    {{ include "partials/footer" }}
-<!-- Javascript -->
-{{/*<script src="/assets/js/app.js"></script>*/}}
-<script src="/assets/test.js"></script>
-<!-- Google Transition Fix -->
-<script> </script>
     {{ verbisFoot }}
 </body>
 </html>
+
+

@@ -22,7 +22,7 @@ func FrontEndCache(o models.OptionsRepository) gin.HandlerFunc {
 
 		if err != nil {
 			log.WithFields(log.Fields{
-				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 			}).Fatal()
 		}
 
