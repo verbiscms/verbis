@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/frontend"
@@ -38,15 +39,27 @@ type FrontendController struct {
 	config 			config.Configuration
 	cacher 			frontend.Cacher
 	minify 			minify.Minifier
+	theme 			domain.ThemeConfig
 }
 
 // newFrontend - Construct
 func newFrontend(m *models.Store, config config.Configuration) *FrontendController {
+	const op = "FrontendHandler.newFrontend"
+
+	// Get the site config for serving the assets
+	theme, err := m.Site.GetThemeConfig()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get theme config", Operation: op, Err: err},
+		}).Fatal()
+	}
+
 	return &FrontendController{
 		models: m,
 		config: config,
 		cacher: frontend.NewCache(m.Options),
 		minify: minify.New(m.Options),
+		theme: theme,
 	}
 }
 
@@ -120,16 +133,8 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 		}).Fatal()
 	}
 
-	// Get the site config for serving the assets
-	theme, err := c.models.Site.GetThemeConfig()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get theme config", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	// Get the relevant paths
-	assetsPath := paths.Theme() + theme.AssetsPath
+	assetsPath := paths.Theme() + c.theme.AssetsPath
 	fileName := strings.Replace(url, "/assets", "", 1)
 	mimeType := mime.TypeByExtension(strings.Replace(filepath.Ext(fileName), ".", "", 1))
 
@@ -239,8 +244,6 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	var b bytes.Buffer
   	if err := gvFrontend.RenderWriter(&b, pt, data); err != nil {
-		// TODO: Panic
-  		fmt.Println(err)
   		panic(err)
 	}
 

@@ -107,9 +107,14 @@
 	"location": [
 		[
 			{
-				"param": "category",
+				"param": "layout",
 				"operator": "==",
-				"value": "news"
+				"value": "main"
+			},
+			{
+				"param": "page_template",
+				"operator": "!=",
+				"value": "landing"
 			}
 		]
 	]

@@ -63,7 +63,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Header & Footer
 		"verbisHead": t.getHeader,
 		"verbisFoot": t.getFooter,
-		"getMetaTitlte": t.getMetaTitle,
+		"getMetaTitle": t.getMetaTitle,
 		// Posts
 		"getResource": t.getResource,
 		// Fields

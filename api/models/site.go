@@ -3,10 +3,8 @@ package models
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -133,13 +131,13 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 
 	// If the cache allows for caching of the site config &
 	// if the config has already been cached, return.
-	var found bool
-	if s.cache.Site && environment.IsProduction() {
-		cached, found := cache.Store.Get("site_config")
-		if found {
-			return cached.(*domain.Site)
-		}
-	}
+	//var found bool
+	//if s.cache.Site && environment.IsProduction() {
+	//	cached, found := cache.Store.Get("site_config")
+	//	if found {
+	//		return cached.(*domain.Site)
+	//	}
+	//}
 
 	opts, err := s.optionsModel.GetStruct()
 	if err != nil {
@@ -159,9 +157,9 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 
 	// Set the cache for the site config if the cache was not found
 	// and the options allow.
-	if !found && s.cache.Site {
-		cache.Store.Set("site_config", &ds, cache.RememberForever)
-	}
+	//if !found && s.cache.Site {
+	//	cache.Store.Set("site_config", &ds, cache.RememberForever)
+	//}
 
 	return &ds
 }
@@ -190,13 +188,13 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 
 	// If the cache allows for caching of the site templates &
 	// if the config has already been cached, return.
-	var found bool
-	if s.cache.Templates {
-		cached, found := cache.Store.Get("site_templates")
-		if found {
-			return cached.(*domain.Templates), nil
-		}
-	}
+	//var found bool
+	//if s.cache.Templates {
+	//	cached, found := cache.Store.Get("site_templates")
+	//	if found {
+	//		return cached.(*domain.Templates), nil
+	//	}
+	//}
 
 	files, err := s.walkMatch(paths.Templates(), "*" + s.config.Template.FileExtension)
 	if err != nil {
@@ -232,9 +230,9 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 
 	// Set the cache for the templates if the cache was not found
 	// and the options allow.
-	if !found && s.cache.Templates {
-		cache.Store.Set("site_templates", &t, cache.RememberForever)
-	}
+	//if !found && s.cache.Templates {
+	//	cache.Store.Set("site_templates", &t, cache.RememberForever)
+	//}
 
 	return &t, nil
 }
@@ -246,13 +244,13 @@ func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 
 	// If the cache allows for caching of the site templates &
 	// if the config has already been cached, return.
-	var found bool
-	if s.cache.Templates && environment.IsProduction() {
-		cached, found := cache.Store.Get("site_layouts")
-		if found {
-			return cached.(*domain.Layouts), nil
-		}
-	}
+	//var found bool
+	//if s.cache.Templates && environment.IsProduction() {
+	//	cached, found := cache.Store.Get("site_layouts")
+	//	if found {
+	//		return cached.(*domain.Layouts), nil
+	//	}
+	//}
 
 	files, err := s.walkMatch(paths.Layouts(), "*" + s.config.Template.FileExtension)
 	if err != nil {
@@ -288,9 +286,9 @@ func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 
 	// Set the cache for the templates if the cache was not found
 	// and the options allow.
-	if !found && s.cache.Templates {
-		cache.Store.Set("site_layouts", &t, cache.RememberForever)
-	}
+	//if !found && s.cache.Templates {
+	//	cache.Store.Set("site_layouts", &t, cache.RememberForever)
+	//}
 
 	return &t, nil
 }
