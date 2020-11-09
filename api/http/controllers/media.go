@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -143,6 +144,9 @@ func (c *MediaController) Update(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
+
+	// Clear the cache
+	cache.Store.Delete(media.Url)
 
 	Respond(g, 200, "Successfully updated media item with the ID: " + strconv.Itoa(id), media)
 }
