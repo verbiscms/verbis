@@ -85,11 +85,11 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"storage": t.storagePath,
 		// Partials
 		"partial": t.partial,
+		// Dict
+		"dict": t.dict,
 		// Helpers
 		"fullUrl": t.getFullUrl,
 		"escape": t.escape,
-		// Dict
-		"dict": t.dict,
 	}
 
 	return funcMap
