@@ -51,7 +51,7 @@
 							<nav class="aside-nav">
 								<ul>
 									<!-- Pages -->
-									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'pages' }" @click="$emit('close', true)">
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'pages' || activePage === 'page' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: 'pages' }}">
 											<i class="feather feather-file"></i>
 											<span>Pages</span>
@@ -62,7 +62,7 @@
 										v-bind:key="resource.name"
 										:class="{ 'aside-nav-item-active' : activePage === resource.name.toLowerCase() }"
 										@click="$emit('close', true)">
-										<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: resource.name }}">
+										<router-link class="aside-nav-link" n :to="{ name: 'resources', params: { resource: resource.name }}">
 											<i v-if="resource.icon" :class="resource.icon"></i>
 											<i v-else class="fal fa-file"></i>
 											<span>{{ resource['friendly_name'] }}</span>
@@ -364,7 +364,7 @@ $aside-padding-desk: 20px;
 		border-bottom: 1px solid $grey-light;
 
 		&:first-of-type {
-			padding-top: 0;
+			padding-top: 10px;
 		}
 
 		&-nav {
@@ -553,6 +553,14 @@ $aside-padding-desk: 20px;
 
 	@include media-tab {
 		width: $sidebar-width-tab;
+
+
+		&-block {
+			&:first-of-type {
+				padding-top: 0;
+			}
+		}
+
 
 		&-logo,
 		&-block,

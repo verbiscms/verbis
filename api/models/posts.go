@@ -169,10 +169,8 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 
 	// Update the categories based on the array of integers that
 	// are passed.
-	if p.Category != nil {
-		if err := s.categoriesModel.InsertPostCategory(int(id), *p.Category); err != nil {
-			return domain.Post{}, err
-		}
+	if err := s.categoriesModel.InsertPostCategory(int(id), p.Category); err != nil {
+		return domain.Post{}, err
 	}
 
 	// Convert the PostCreate type to type of Post to be returned
@@ -214,10 +212,8 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 
 	// Update the categories based on the array of integers that
 	// are passed. If the categories
-	if p.Category != nil {
-		if err := s.categoriesModel.InsertPostCategory(p.Id, *p.Category); err != nil {
-			return domain.Post{}, err
-		}
+	if err := s.categoriesModel.InsertPostCategory(p.Id, p.Category); err != nil {
+		return domain.Post{}, err
 	}
 
 	// Convert the PostCreate type to type of Post to be returned

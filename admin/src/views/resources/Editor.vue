@@ -19,18 +19,34 @@
 						<!-- Actions -->
 						<div class="header-actions editor-actions">
 							<form class="form form-actions">
-								<button class="btn btn-icon btn-white btn-margin-right" @click.prevent="sidebarOpen = !sidebarOpen">
-									<i class="feather feather-settings"></i>
-								</button>
-								<a v-if="!newItem" :href="getSiteUrl + data.slug" target="_blank" class="btn btn-fixed-height btn-margin-right btn-white btn-flex btn-icon-mob">
+								<a v-if="!newItem" :href="getSiteUrl + data.slug" target="_blank" class="btn btn-fixed-height btn-margin-right btn0grey btn-flex btn-icon-mob">
 									<i class="feather feather-eye"></i>
 									<span>Preview</span>
 								</a>
-								<button class="btn btn-fixed-height btn-orange btn-icon-mob" :class="{ 'btn-loading' : isSaving }" @click.prevent="save">
-									<i class="feather feather-save"></i>
-									<span v-if="data.status === 'draft'">Save draft</span>
-									<span v-else-if="newItem">Publish</span>
-									<span v-else>Update</span>
+								<button class="btn btn-icon btn-white btn-margin-right" @click.prevent="sidebarOpen = !sidebarOpen">
+									<i class="feather feather-settings"></i>
+								</button>
+								<button class="btn btn-fixed-height btn-orange btn-popover" :class="{ 'btn-loading' : isSaving }" @click.prevent>
+									<span class="btn-popover-text" @click.prevent="save">Publish</span>
+									<Popover :hover="true" :arrow="true">
+										<template slot="button">
+											<i class="btn-popover-click feather feather-chevron-down"></i>
+										</template>
+										<template slot="items">
+											<div class="popover-item popover-item-icon" @click.prevent="saveWithStatus('draft')">
+												<i class="feather feather-edit"></i>
+												<span>Safe draft</span>
+											</div>
+											<div class="popover-item popover-item-icon" @click.prevent="saveWithStatus('private')">
+												<i class="feather feather-lock"></i>
+												<span>Make private</span>
+											</div>
+											<div class="popover-item popover-item-icon" @click.prevent="saveWithStatus('published')">
+												<i class="feather feather-send"></i>
+												<span>Publish</span>
+											</div>
+										</template>
+									</Popover>
 								</button>
 							</form>
 						</div><!-- /Actions -->
@@ -104,6 +120,7 @@
 							<select class="form-select" id="options-status" v-model="data.status">
 								<option value="draft">Draft</option>
 								<option value="published">Published</option>
+								<option value="private">Private</option>
 							</select>
 						</div>
 					</FormGroup><!-- /Status -->
@@ -111,6 +128,7 @@
 				</div>
 				<div class="editor-sidebar-cont">
 					<h6 class="margin">Content</h6>
+					<!-- Author -->
 					<FormGroup label="Author">
 						<div class="form-select-cont form-input">
 							<select class="form-select" id="options-author" v-model="data['author']" @change="getFieldLayout">
@@ -119,19 +137,15 @@
 							</select>
 						</div>
 					</FormGroup><!-- /Author -->
+					<!-- Categories -->
 					<FormGroup label="Category">
-						<!-- User Tags -->
-						<vue-tags-input
-							v-model="tag"
-							:tags="selectedTags"
-							:autocomplete-items="filteredCategories"
-							@tags-changed="updateCategoriesTags"
-							add-only-from-autocomplete
-							@max-tags-reached="$noty.warning('Only one category per post is permitted')"
-							placeholder="Add category"
-							:max-tags="1"
-						/>
-					</FormGroup>
+						<div class="form-select-cont form-input">
+							<select class="form-select" id="options-categories" v-model="data['category']" @change="getFieldLayout">
+								<option :value="null" selected>No category</option>
+								<option v-for="category in categories" :value="category.id" :key="category.uuid">{{ category.name }}</option>
+							</select>
+						</div>
+					</FormGroup><!-- /Categories -->
 				</div>
 				<div class="editor-sidebar-cont">
 					<h6 class="margin">Properties</h6>
@@ -176,8 +190,8 @@ import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import Fields from "@/components/editor/tabs/Fields";
 import slugify from "slugify";
 import Tabs from "@/components/misc/Tabs";
+import Popover from "@/components/misc/Popover";
 import FormGroup from "@/components/forms/FormGroup";
-import VueTagsInput from '@jack_reddico/vue-tags-input';
 
 export default {
 	name: "Single",
@@ -191,8 +205,8 @@ export default {
 		MetaOptions,
 		SeoOptions,
 		CodeInjection,
+		Popover,
 		Insights,
-		VueTagsInput,
 	},
 	data: () => ({
 		activeTab: 0,
@@ -222,12 +236,10 @@ export default {
 			"codeinjection_foot": "",
 			"published_at": new Date(),
 		},
+		defaultLayout: `{"uuid":"6a4d7442-1020-490f-a3e2-436f9135bc24","title":"Default Options","fields":[{"uuid":"39ca0ea0-c911-4eaa-b6e0-67dfd99e1225","label":"RichText","name":"richtext","type":"richtext","instructions":"Add richtext to the page.","required":true,"conditional_logic":null,"wrapper":{"width":100},"options":{"default_value":"","tabs":"all","toolbar":"full","media_upload":1}}]}`,
 		isSaving: false,
 		doingAxios: true,
 		sidebarOpen: false,
-		tag: "",
-		tags: [],
-		selectedTags: [],
 	}),
 	beforeMount() {
 		this.setNewUpdate();
@@ -245,6 +257,7 @@ export default {
 			if (this.newItem) {
 				Promise.all([this.getFieldLayout(), this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
 					.then(() => {
+						this.setDefaultLayout();
 						this.doingAxios = false;
 						if (this.layouts.length >= 2) {
 							this.$set(this.data, 'layout', this.layouts[1].key);
@@ -253,6 +266,7 @@ export default {
 			} else {
 				Promise.all([this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
 					.then(() => {
+						this.setDefaultLayout();
 						this.doingAxios = false;
 					})
 			}
@@ -264,6 +278,15 @@ export default {
 		getSuccessMessage() {
 			if (this.$route.query.success) {
 				this.$noty.success("Successfully created new page.")
+			}
+		},
+		/*
+		 * setDefaultLayout()
+		 * If there are no layouts, add a richtext to the default field layout.
+		 */
+		setDefaultLayout() {
+			if (!this.fieldLayout.length) {
+				this.fieldLayout.push(JSON.parse(this.defaultLayout));
 			}
 		},
 		/*
@@ -322,10 +345,8 @@ export default {
 					const category = res.data.data.category;
 					if (category) {
 						this.$set(this.data, 'category', category.id)
-						this.selectedTags.push({
-							text: category.name,
-							id: category.id,
-						});
+					} else {
+						this.$set(this.data, 'category', null)
 					}
 
 					// Set date format
@@ -362,9 +383,7 @@ export default {
 				}
 			})
 				.then(res => {
-					const categories = res.data.data;
-					this.categories = categories;
-					this.mapCategories(categories);
+					this.categories = res.data.data;
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
@@ -451,6 +470,7 @@ export default {
 					if (this.resource.name !== "page") {
 						this.data.resource = this.resource.name;
 					}
+
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)
 							.then(res => {
@@ -460,10 +480,6 @@ export default {
 									params: { id : res.data.data.post.id },
 									query: { success : "true", resource : res.data.data.post.resource }
 								})
-
-								this.getSuccessMessage();
-								this.getResourceData();
-								this.newItem = false;
 							})
 							.catch(err => {
 								this.helpers.checkServer(err);
@@ -497,6 +513,7 @@ export default {
 									}
 									this.validate(errors);
 									this.$noty.error("Fix the errors before saving the " + this.resource['singular_name'] + ".");
+									return;
 								}
 								this.helpers.handleResponse(err);
 							})
@@ -515,30 +532,12 @@ export default {
 			})
 		},
 		/*
-		 * mapCategories()
-		 * Create a new categories array from input & map.
+ 		 * save()
+		 * Save the new page, with status (for popover).
 		 */
-		mapCategories(categories) {
-			if (categories && !this.helpers.isEmptyObject(categories)) {
-				this.tags = categories.map(a => {
-					return {
-						text: a.name,
-						id: a.id
-					}
-				});
-			}
-		},
-		/*
-		 * updateTags()
-		 * Updates the categories when the tags changes.
-		 */
-		updateCategoriesTags(categories) {
-			this.$set(this.data, 'category', null);
-			if (categories.length) {
-				const category = categories[0];
-				this.$set(this.data, 'category', category.id);
-			}
-			this.computedSlug =  this.getBaseSlug + this.slugify(this.slug ? this.slug : this.data['title']);
+		saveWithStatus(status) {
+			this.$set(this.data, 'status', status);
+			this.save();
 		},
 		/*
 		 * validate()
@@ -637,14 +636,6 @@ export default {
 			return this.resource.name === "page" ? "/" + this.resolveCategorySlug() : "/" + this.resource.name + "/" + this.resolveCategorySlug();
 		},
 		/*
-		 * filteredCategories()
-		 */
-		filteredCategories() {
-			return this.tags.filter(i => {
-				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
-			});
-		},
-		/*
 		 * computedSlug()
 		 * If the slug is custom, return the slug that is stored in the data.
 		 * Otherwise get the base slug and slugify the title or the slug
@@ -707,6 +698,7 @@ export default {
 				font-size: 2rem;
 				color: $black;
 				font-weight: 600;
+				overflow-y: scroll;
 			}
 		}
 
@@ -818,16 +810,8 @@ export default {
 			border-left: 1px solid $grey-light;
 			overflow-y: scroll;
 
-			.ti-tags {
-				flex-wrap: nowrap;
-			}
-
 			&-active {
 				transform: translateX(0);
-			}
-
-			.form-label {
-				font-size: 0.7rem;
 			}
 
 			&-header {
