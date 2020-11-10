@@ -6,7 +6,7 @@ archive pages and display rich data via the `VerbisLoop`. Pagination data can al
 allowing the user to filter through pages of your content.
 
 ## Post Struct
-The post type is what is returned when getting singular or multiple posts from the database/
+The post type is what is returned when getting singular or multiple posts from the database.
 You are able to access any of the properties below to output your desired content.
 
 ```go
@@ -88,15 +88,16 @@ Retrieves multiple post items from the database by a `dict` query.
 
 ### Accepts: 
 
-`Params (dict map[string]interface{})` Query parameters using a `dict` shown below.
+`Params (dict map[string]interface{})` Query parameters using a `dict`with default
+properties shown below.
 
 ```go
-type params struct {
-    Page 		int
-    Limit 		int
-    Resource 		string
-    OrderBy 		string
-    OrderDirection 	string
+type Params struct {
+    Page 		int         `default: 1`
+    Limit 		int         `default: 15`
+    Resource 		string      `default: all`
+    OrderBy 		string      `default: published_at`
+    OrderDirection 	string      `default: desc`
 }
 ```
 
@@ -111,8 +112,27 @@ map[string]interface{}{
 A map containing the pagnation and an array of posts or an error if there was a problem
 unmarshalling to the params type.
 
+### Examples:
 
+**Get a limited number of posts by a resource**
 
+This example demonstrates how to obtain 10 posts with the resource of type posts.
+
+First a query is assigned to type `dict`; here is where we define the type of data we
+expect to receive from the database. A limit of 10 means we will only retrieve 
+
+```gotemplate
+{{ $query := dict "limit" 10 "resource" "posts" }}
+{{ $result := getPosts $query }}
+{{ if $result.Posts }}
+    {{ range $post := $result.Posts }}
+        <h2>{{ $post.Title }}</h2>
+        <a href="{{ $post.Slug }}">Read more</a>
+    {{ end }}
+{{ else }}
+    <h4>No posts found</h4>
+{{ end }}
+```
 
 
 

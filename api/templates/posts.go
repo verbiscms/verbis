@@ -104,7 +104,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	}
 
 	return map[string]interface{}{
-		"Items": posts,
+		"Posts": posts,
 		"Pagination": pagination,
 	}, nil
 }
