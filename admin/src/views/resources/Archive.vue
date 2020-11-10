@@ -2,7 +2,7 @@
 	Archive
 	===================== -->
 <template>
-	<section class="archive-trans">
+	<section :key="$route.params.resource">
 		<div class="auth-container">
 			<!-- Header -->
 			<div class="row">

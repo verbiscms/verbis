@@ -137,12 +137,7 @@ const routes = [
 		path: '/settings/general',
 		name: 'settings-general',
 		component: () => import('../views/settings/General.vue'),
-		meta: {
-			transitionName : 'fade',
-			breadcrumbs: [
-				""
-			]
-		},
+		meta: { transitionName : 'fade' },
 	},
 	{
 		path: '/settings/code-injection',

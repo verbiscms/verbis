@@ -16,7 +16,7 @@ type CategoryRepository interface {
 	GetByPost(pageId int) (*domain.Category, error)
 	Create(c *domain.Category) (domain.Category, error)
 	Update(c *domain.Category) error
-	InsertPostCategory(postId int, categoryId int) error
+	InsertPostCategory(postId int, categoryId *int) error
 	DeletePostCategories(id int) error
 	Delete(id int) error
 	Exists(id int) bool
@@ -188,18 +188,20 @@ func (s *CategoryStore) ExistsByName(name string) bool {
 // InsertPostCategories - Insert into post categories with array of ID's.
 // This function deletes all categories from the pivot before
 // inserting again.
-func (s *CategoryStore) InsertPostCategory(postId int, categoryId int) error {
+func (s *CategoryStore) InsertPostCategory(postId int, categoryId *int) error {
 	const op = "CategoryRepository.InsertPostCategories"
 
 	if _, err := s.db.Exec("DELETE FROM post_categories WHERE post_id = ?", postId); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postId), Operation: op, Err: err}
 	}
 
-	q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
-	_, err := s.db.Exec(q, postId, categoryId)
-	if err != nil {
-		fmt.Println(err)
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postId), Operation: op, Err: err}
+	if categoryId != nil {
+		q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
+		_, err := s.db.Exec(q, postId, categoryId)
+		if err != nil {
+			fmt.Println(err)
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postId), Operation: op, Err: err}
+		}
 	}
 
 	return nil
