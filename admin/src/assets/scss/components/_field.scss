@@ -12,7 +12,8 @@
 	border-left: 1px solid $grey-light;
 
 	&-group {
-		box-shadow: 0 0 1px rgba(0,0,0,.12), 0 1px 6px rgba(0,0,0,.03), 0 6px 10px -8px rgba(0,0,0,.1);
+		//box-shadow: 0 0 1px rgba(0,0,0,.12), 0 1px 6px rgba(0,0,0,.03), 0 6px 10px -8px rgba(0,0,0,.1);
+		box-shadow: 0 0 15px rgba(0, 0, 0, 0.06);
 		margin-bottom: 2.6rem;
 		border-radius: 8px;
 		overflow: hidden;

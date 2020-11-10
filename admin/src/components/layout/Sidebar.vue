@@ -51,21 +51,31 @@
 							<nav class="aside-nav">
 								<ul>
 									<!-- Pages -->
-									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'pages' || activePage === 'page' }" @click="$emit('close', true)">
+									<li class="aside-nav-item aside-nav-item-icon" :class="{ 'aside-nav-item-active' : activePage === 'pages' || activePage === 'page' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: 'pages' }}">
-											<i class="feather feather-file"></i>
-											<span>Pages</span>
+											<div>
+												<i class="feather feather-file"></i>
+												<span>Pages</span>
+											</div>
+											<router-link class="aside-icon" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: 'pages' }}">
+												<i class="feather feather-plus"></i>
+											</router-link>
 										</router-link>
 									</li><!-- /Pages -->
 									<!-- Resources -->
-									<li class="aside-nav-item" v-for="(resource) in getTheme.resources"
+									<li class="aside-nav-item aside-nav-item-icon" v-for="(resource) in getTheme.resources"
 										v-bind:key="resource.name"
 										:class="{ 'aside-nav-item-active' : activePage === resource.name.toLowerCase() }"
 										@click="$emit('close', true)">
-										<router-link class="aside-nav-link" n :to="{ name: 'resources', params: { resource: resource.name }}">
-											<i v-if="resource.icon" :class="resource.icon"></i>
-											<i v-else class="fal fa-file"></i>
-											<span>{{ resource['friendly_name'] }}</span>
+										<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: resource.name }}">
+											<div>
+												<i v-if="resource.icon" :class="resource.icon"></i>
+												<i v-else class="fal fa-file"></i>
+												<span>{{ resource['friendly_name'] }}</span>
+											</div>
+											<router-link class="aside-icon" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource.name }}">
+												<i class="feather feather-plus"></i>
+											</router-link>
 										</router-link>
 									</li><!-- /Resources -->
 								</ul>
@@ -533,7 +543,6 @@ $aside-padding-desk: 20px;
 		// Hover
 		// =========================================================================
 
-		//&-item:not(&-item-active):hover {
 		&-item:hover {
 
 			#{$self}-nav-link {
@@ -545,8 +554,45 @@ $aside-padding-desk: 20px;
 				color: $white;
 			}
 		}
-	}
 
+		// Icon
+		// =========================================================================
+
+		&-item-icon {
+
+			#{$self}-nav-link {
+				width: 100%;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+			}
+
+			#{$self}-icon {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				opacity: 0;
+				margin-right: 0;
+				background-color: rgba($white, 0.2);
+				padding: 4px;
+				border-radius: 2px;
+				z-index: 100;
+				transition: opacity 200ms ease;
+
+				i {
+					margin: 0;
+					width: auto;
+				}
+			}
+
+			&:hover {
+
+				#{$self}-icon {
+					opacity: 1;
+				}
+			}
+		}
+	}
 
 	// Tablet
 	// =========================================================================

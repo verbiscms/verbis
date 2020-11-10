@@ -214,16 +214,16 @@
 			display: inline-flex;
 			justify-content: center;
 			align-items: center;
-			width: 100px;
-			height: 40px;
+			width: 70px;
+			height: 50px;
 		}
 
 		&-click {
 			display: inline-flex;
 			align-items: center;
 			justify-content: center;
-			height: 40px;
-			width: 40px;
+			height: 30px;
+			width: 30px;
 			font-size: 16px;
 			font-weight: bold;
 			background-color: rgba($white, 0.15);
@@ -232,6 +232,18 @@
 
 		&:before {
 			margin-left: -24px;
+		}
+
+		@include media-tab {
+
+			&-click {
+				height: 40px;
+				width: 40px;
+			}
+
+			&-text {
+				width: 100px;
+			}
 		}
 	}
 
@@ -291,6 +303,14 @@
 		}
 	}
 
+	// Block
+	// =========================================================================
+
+	&-block {
+		width: 100%;
+		text-align: center;
+	}
+
 	// Mobile Only
 	// =========================================================================
 
@@ -323,6 +343,7 @@
 			display: none;
 		}
 	}
+
 
 	// Tablet
 	// =========================================================================

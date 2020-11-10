@@ -3,7 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/cache"
+	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
@@ -87,7 +87,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
-	var found bool
+	//var found bool
 	//if s.cache.Layout {
 	//	cached, found := cache.Store.Get("field_layout_" + p.UUID.String())
 	//	if found {
@@ -106,7 +106,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 
 		// Check for empty location
 		if len(group.Locations) == 0 && !s.hasBeenAdded(group.UUID.String(), fg) {
-			fg = append(fg, group)
+			//fg = append(fg, group)
 
 		} else {
 
@@ -147,7 +147,9 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 						// Resources
 						case "resource":
 							{
-								locationSet = append(locationSet, s.checkLocation(*p.Resource, rule))
+								if p.Resource != nil {
+									locationSet = append(locationSet, s.checkLocation(*p.Resource, rule))
+								}
 								break
 							}
 						// Categories
@@ -190,9 +192,9 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 	}
 
 	// Set the cache field layout if the cache was not found
-	if !found && s.cache.Layout {
-		cache.Store.Set("field_layout_" + p.UUID.String(), &fg, cache.RememberForever)
-	}
+	//if !found && s.cache.Layout {
+	//	cache.Store.Set("field_layout_" + p.UUID.String(), &fg, cache.RememberForever)
+	//}
 
 	return &fg, nil
 }
