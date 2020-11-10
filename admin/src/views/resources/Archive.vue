@@ -51,6 +51,7 @@
 						<template slot="item">Show all</template>
 						<template slot="item">Published</template>
 						<template slot="item">Drafts</template>
+						<template slot="item">Private</template>
 						<template slot="item">Bin</template>
 					</Tabs>
 					<!-- =====================
@@ -121,6 +122,7 @@
 														'badge-yellow' : item.post.status  === 'draft',
 														'badge-green' : item.post.status  === 'published',
 														'badge-orange' : item.post.status  === 'bin',
+														'badge-orange' : item.post.status  === 'private',
 													}">{{ item.post.status }}</div>
 												</td>
 												<!-- Category -->
@@ -470,6 +472,11 @@ export default {
 					break;
 				}
 				case 4: {
+					this.activeTabName = "private";
+					filter = '{"status":[{"operator":"=", "value": "private" }]}';
+					break;
+				}
+				case 5: {
 					this.activeTabName = "bin";
 					filter = '{"status":[{"operator":"=", "value": "bin" }]}';
 					break;
