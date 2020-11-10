@@ -13,7 +13,7 @@ Get the value of a specific field specified in the layout.
 
 ### Accepts: 
 
-`string, id (optional)` The field name & optional post ID.
+`string, integer (optional)` The field name & optional post ID.
 
 ### Returns:
 
@@ -25,7 +25,7 @@ Get the value of a specific field specified in the layout.
 
 Obtain the value of a field named `text`.
 
-```
+```gotemplate
 {{ getField "text" }}
 ```
 
@@ -33,7 +33,7 @@ Obtain the value of a field named `text`.
 
 Obtain the value of a field named `text` from the post with the ID of 10.
 
-```
+```gotemplate
 {{ getField "text" 10 }}
 ```
 
@@ -42,7 +42,7 @@ Obtain the value of a field named `text` from the post with the ID of 10.
 As `getField` returns an empty string if the field is not set, you can use it to see if the value exists.
 See also `hasField`.
 
-```
+```gotemplate
 {{ if getField "text" }}
      The field named 'text' exists...
 {{ end }}
@@ -52,7 +52,7 @@ See also `hasField`.
 
 You can also assign the contents of a field to a variable to be used later on in the template.
 
-```
+```gotemplate
 {{ $text := getField "text" }}
 {{ $text }}
 ```
@@ -76,7 +76,7 @@ Check if a field value exists.
 
 See if the field `text` exists.
 
-```
+```gotemplate
 {{ if hasField "text" }}
      The field named 'text' exists...
 {{ end }}
@@ -89,7 +89,7 @@ Get all fields associated with a post. This function is especially useful for de
 
 ### Accepts: 
 
-`id (optional)` Optional post ID.
+`integer (optional)` Optional post ID.
 
 ### Returns:
 
@@ -101,7 +101,7 @@ Get all fields associated with a post. This function is especially useful for de
 
 This example demonstrates how to output all the fields in the current post.
 
-```
+```gotemplate
 {{ getFields }}
 ```
 
@@ -109,7 +109,7 @@ This example demonstrates how to output all the fields in the current post.
 
 This example demonstrates how to output all the fields with the post ID of 10.
 
-```
+```gotemplate
 {{ getFields 10 }}
 ```
 ___
@@ -138,7 +138,7 @@ A loop is used to range over the repeater fields.
 To obtain the value of the repeater field, pass index, the content (dot `.`) and the name of the field.
 If the field does not exist, it will gracefully return an empty string.
 
-```
+```gotemplate
 {{ $repeaterFields := getRepeater "repeater" }}
 {{ if $repeaterFields }}
     {{ range $index, $field := $repeaterFields }}
@@ -174,7 +174,7 @@ The field type (layout) is stored in `$field.type`. The `if eq` function can be 
 
 See `getSubField` for more information on how to output the layouts fields.
 
-```
+```gotemplate
 {{ $flexibleContent := getFlexible "flexible" }}
 {{ if $flexibleContent }}
     {{ range $layout := $flexibleContent }}
@@ -204,7 +204,8 @@ It's important to pass the context of the loop using the dot `.`. If the post da
 This will enable you to still access the post data in the child template.
 
 See `partial` for more details on including child templates.
-```
+
+```gotemplate
 {{ $flexibleContent := getFlexible "flexible" }}
 {{ if $flexibleContent }}
     {{ range $layout := $flexibleContent }}
@@ -220,7 +221,8 @@ In the child template, it is important to assign the layout to a variable using 
 The index number correlates to where you passed the context (dot `.`) in the calling partial function. If you passed the global context before the loop context 
 `{{ partial "blocks/text-block.cms" $ . }}`, the index would be 1.
 From there, it's a simple case of using the `getSubField` function.
-```
+
+```gotemplate
 {{ $layout := index . 0 }}
 <h1>{{ getSubField "text" $layout }}</h1>
 ```
@@ -244,7 +246,7 @@ Get the value of a sub field within a flexible content layout.
 
 Get the value of a field named `"content"` in the layout being ranged.
 
-```
+```gotemplate
 {{ getSubField "content" $layout }}
 ```
 ___

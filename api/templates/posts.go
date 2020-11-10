@@ -18,16 +18,6 @@ func (t *TemplateFunctions) getPost(id float64) *domain.Post {
 	return &p
 }
 
-// getResource obtains the post resource and returns an empty
-// string if there is no resource attached to the post.
-func (t *TemplateFunctions) getResource() string {
-	resource := t.post.Resource
-	if resource == nil {
-		return ""
-	}
-	return *resource
-}
-
 // getPosts accepts a dict (map[string]interface{}) and returns an
 // array of domain.Post. It sets defaults if some of the param
 // arguments are missing, and returns an error if the data

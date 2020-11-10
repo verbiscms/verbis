@@ -64,8 +64,6 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"verbisHead": t.getHeader,
 		"verbisFoot": t.getFooter,
 		"getMetaTitle": t.getMetaTitle,
-		// Posts
-		"getResource": t.getResource,
 		// Fields
 		"getField": t.getField,
 		"getFields": t.getFields,
@@ -107,7 +105,20 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 
 	 data := map[string]interface{}{
 	 	"Site": t.store.Site.GetGlobalConfig(),
-	 	"Post": t.post,
+	 	"Post": map[string]interface{}{
+	 		"Id": t.post.Id,
+	 		"UUID": t.post.UUID,
+	 		"Slug": t.post.Slug,
+	 		"Title": t.post.Title,
+	 		"Status": t.post.Status,
+	 		"Resource": t.post.Resource,
+	 		"PageTemplate": t.post.PageTemplate,
+	 		"Layout": t.post.Layout,
+	 		"UserId": t.post.UserId,
+	 		"PublishedAt": t.post.PublishedAt,
+	 		"UpdatedAt": t.post.UpdatedAt,
+	 		"CreatedAt": t.post.CreatedAt,
+		},
 	 	"Theme": theme.Theme,
 	 }
 
