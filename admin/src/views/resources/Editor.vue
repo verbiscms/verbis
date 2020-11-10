@@ -18,21 +18,21 @@
 						</div>
 						<!-- Actions -->
 						<div class="header-actions editor-actions">
-							<form class="form form-actions">
-								<a v-if="!newItem" :href="getSiteUrl + data.slug" target="_blank" class="btn btn-fixed-height btn-margin-right btn0grey btn-flex btn-icon-mob">
-									<i class="feather feather-eye"></i>
-									<span>Preview</span>
-								</a>
+							<div class="form form-actions">
 								<button class="btn btn-icon btn-white btn-margin-right" @click.prevent="sidebarOpen = !sidebarOpen">
 									<i class="feather feather-settings"></i>
 								</button>
-								<button class="btn btn-fixed-height btn-orange btn-popover" :class="{ 'btn-loading' : isSaving }" @click.prevent>
-									<span class="btn-popover-text" @click.prevent="save">Publish</span>
+								<button class="btn btn-fixed-height btn-orange btn-popover" :class="{ 'btn-loading' : isSaving }">
+									<span class="btn-popover-text" @click.prevent="saveWithStatus('published')">Publish</span>
 									<Popover :hover="true" :arrow="true">
 										<template slot="button">
 											<i class="btn-popover-click feather feather-chevron-down"></i>
 										</template>
 										<template slot="items">
+											<a v-if="!newItem" :href="getSiteUrl + data.slug" class="popover-item popover-item-icon" target="_blank">
+												<i class="feather feather-eye"></i>
+												<span>Preview</span>
+											</a>
 											<div class="popover-item popover-item-icon" @click.prevent="saveWithStatus('draft')">
 												<i class="feather feather-edit"></i>
 												<span>Safe draft</span>
@@ -48,7 +48,7 @@
 										</template>
 									</Popover>
 								</button>
-							</form>
+							</div>
 						</div><!-- /Actions -->
 					</header>
 				</div><!-- /Col -->
@@ -66,12 +66,12 @@
 						<template slot="item">Insights</template>
 					</Tabs>
 					<!-- Spinner -->
-					<div v-if="doingAxios" class="media-spinner spinner-container">
+					<div v-if="doingAxios || loadingLayouts" class="media-spinner spinner-container">
 						<div class="spinner spinner-large spinner-grey"></div>
 					</div>
 					<!-- Content & Fields -->
-					<transition v-else name="trans-fade" mode="out-in">
-						<div v-if="activeTab === 0" :key="1">
+					<transition v-else name="trans-fade-in-anim" mode="out-in">
+						<div v-if="activeTab === 0 && !loadingLayouts" :key="1">
 							<!-- Title -->
 							<div class="editor-title">
 								<FormGroup class="form-group-no-margin" :error="errors['title']">
@@ -139,11 +139,15 @@
 					</FormGroup><!-- /Author -->
 					<!-- Categories -->
 					<FormGroup label="Category">
-						<div class="form-select-cont form-input">
+						<div v-if="categories.length" class="form-select-cont form-input">
 							<select class="form-select" id="options-categories" v-model="data['category']" @change="getFieldLayout">
 								<option :value="null" selected>No category</option>
 								<option v-for="category in categories" :value="category.id" :key="category.uuid">{{ category.name }}</option>
 							</select>
+						</div>
+						<div v-else class="editor-sidebar-category">
+							<p>No categories available, click below to create one</p>
+							<router-link to="/categories/new" class="btn btn-white btn-small btn-block">Create category</router-link>
 						</div>
 					</FormGroup><!-- /Categories -->
 				</div>
@@ -209,6 +213,8 @@ export default {
 		Insights,
 	},
 	data: () => ({
+		doingAxios: true,
+		loadingLayouts: true,
 		activeTab: 0,
 		users: [],
 		isCustomSlug: false,
@@ -238,7 +244,6 @@ export default {
 		},
 		defaultLayout: `{"uuid":"6a4d7442-1020-490f-a3e2-436f9135bc24","title":"Default Options","fields":[{"uuid":"39ca0ea0-c911-4eaa-b6e0-67dfd99e1225","label":"RichText","name":"richtext","type":"richtext","instructions":"Add richtext to the page.","required":true,"conditional_logic":null,"wrapper":{"width":100},"options":{"default_value":"","tabs":"all","toolbar":"full","media_upload":1}}]}`,
 		isSaving: false,
-		doingAxios: true,
 		sidebarOpen: false,
 	}),
 	beforeMount() {
@@ -252,22 +257,24 @@ export default {
 		 * init()
 		 */
 		init() {
+			this.getSuccessMessage();
 			this.setResource();
 			this.setTab();
 			if (this.newItem) {
-				Promise.all([this.getFieldLayout(), this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
+				Promise.all([this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
 					.then(() => {
-						this.setDefaultLayout();
 						this.doingAxios = false;
+						this.loadingLayouts = false;
 						if (this.layouts.length >= 2) {
 							this.$set(this.data, 'layout', this.layouts[1].key);
 						}
+						this.getFieldLayout();
 					})
 			} else {
 				Promise.all([this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
 					.then(() => {
-						this.setDefaultLayout();
 						this.doingAxios = false;
+						this.loadingLayouts = false;
 					})
 			}
 		},
@@ -339,6 +346,8 @@ export default {
 					this.data.author = res.data.data.author.id;
 
 					// Set field layouts
+					console.log(res.data.data.layout);
+
 					this.fieldLayout = res.data.data.layout;
 
 					// Set category
@@ -361,16 +370,24 @@ export default {
 		 * Obtain the field layout, on change.
 		 */
 		async getFieldLayout() {
+			this.loadingLayouts = true;
 			return await this.axios.get("/fields", {
 				params: {
 					"layout": this.data['layout'],
+					"resource": this.resource.name,
 					"page_template": this.data['page_template'],
 					"user_id": this.data['author'],
 				}
 			})
 			.then(res => {
-				this.fieldLayout = res.data.data
+				this.fieldLayout = res.data.data;
+				this.setDefaultLayout();
 			})
+			.finally(() => {
+				setTimeout(() => {
+					this.loadingLayouts = false;
+				}, this.timeoutDelay);
+			});
 		},
 		/*
 		 * getCategories()
@@ -398,6 +415,9 @@ export default {
 			.then(res => {
 				this.templates = res.data.data.templates
 			})
+			.catch(err => {
+				this.helpers.handleResponse(err);
+			})
 		},
 		/*
 		 * getLayouts()
@@ -408,19 +428,22 @@ export default {
 			.then(res => {
 				this.layouts = res.data.data.layouts
 			})
+			.catch(err => {
+				this.helpers.handleResponse(err);
+			})
 		},
 		/*
 		 * getUsers()
 		 * Obtain users from store, if none, dispatch users action.
 		 */
-		getUsers() {
-			this.$store.dispatch("getUsers")
-				.then(users => {
-					this.users = users;
-				})
-				.catch(err => {
-					this.helpers.handleResponse(err);
-				})
+		async getUsers() {
+			await this.$store.dispatch("getUsers")
+			.then(users => {
+				this.users = users;
+			})
+			.catch(err => {
+				this.helpers.handleResponse(err);
+			})
 		},
 		/*
 		 * setResource()
@@ -861,10 +884,29 @@ export default {
 					padding-top: 10px;
 				}
 			}
+
+			&-category {
+
+
+				p {
+					font-size: 0.8rem;
+					margin-bottom: 6px;
+				}
+			}
+		}
+
+		// Mobile Down
+		// =========================================================================
+
+		@include media-mob-down {
+
+			&-preview-btn {
+				display: none;
+			}
 		}
 
 
-		// Tablet
+			// Tablet
 		// =========================================================================
 
 		@include media-tab {

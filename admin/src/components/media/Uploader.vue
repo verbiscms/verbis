@@ -71,7 +71,7 @@
 							</template>
 						</Collapse><!-- /Options -->
 						<!-- Editor -->
-						<Collapse v-if="!modal" :show="false" class="collapse-border-bottom">
+						<Collapse :show="false" class="collapse-border-bottom">
 							<template v-slot:header>
 								<div class="card-header">
 									<h3 class="card-title">Information</h3>
@@ -700,6 +700,7 @@ export default {
 
 	&-row {
 		align-items: flex-start;
+		max-width: none !important;
 	}
 
 	// Placeholder / Dragging Props
@@ -1113,6 +1114,10 @@ export default {
 	&-modal {
 		display: block;
 		height: 70vh;
+
+		#{$self}-side {
+			padding-bottom: 2rem;
+		}
 
 		.pagination {
 			margin-bottom: 1rem;

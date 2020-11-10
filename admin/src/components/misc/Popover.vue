@@ -112,7 +112,6 @@ $popover-triangle-size: 20px;
 				transition: opacity 200ms ease, z-index 200ms step-end !important;
 			}
 
-
 			.icon,
 			i,
 			button {
@@ -132,7 +131,11 @@ $popover-triangle-size: 20px;
 				bottom: 0;
 				left: 0;
 				top: auto;
-				transform: translate(calc(-50% + 2px), 100%);
+				transform: translate(calc(-80% - 6px), 100%);
+
+				@include media-tab {
+					transform: translate(calc(-50% + 2px), 100%);
+				}
 			}
 		}
 	}

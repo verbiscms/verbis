@@ -105,14 +105,18 @@ export default {
 		collapse(chevron) {
 			if (!this.isOpen && this.content.style.maxHeight !== "0px") {
 				this.content.style.maxHeight = "0px";
-				chevron.classList.add("active");
 			} else if (this.isOpen) {
 				this.content.style.maxHeight = "0px";
-				chevron.classList.add("active");
 			} else {
 				this.content.style.maxHeight = this.calcHeight(this.content) + "px";
-				chevron.classList.remove("active");
 			}
+
+			if (chevron.classList.contains("active")) {
+				chevron.classList.remove("active");
+			} else {
+				chevron.classList.add("active");
+			}
+
 			this.isOpen = !this.isOpen;
 		},
 		/*

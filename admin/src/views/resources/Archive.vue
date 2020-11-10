@@ -568,8 +568,8 @@ export default {
 
 			const post = {
 				author: item.author.id,
-				category: item.category.id,
 				fields: item.post.fields,
+				resource: item.post.resource,
 				codeinjection_head: item.post.codeinjection_head,
 				codeinjection_foot: item.post.codeinjection_foot,
 				layout: item.post.layout,
@@ -580,13 +580,16 @@ export default {
 				slug: slug,
 			}
 
+			if (item.category !== null) {
+				post.category = item.category.id;
+			}
+
 			this.axios.post("/posts", post)
 				.then(() => {
 					this.getPosts();
 					this.$noty.success(`${this.resource['singular_name']} cloned successfully`);
 				})
 				.catch(err => {
-
 					this.helpers.handleResponse(err);
 				})
 		}
