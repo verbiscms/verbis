@@ -20,7 +20,7 @@ Check if the current user is logged in to the backend.
 
 **See if the current user is logged in**
 
-```
+```gotemplate
 {{ if isAuth }}
     // Output for logged in users only.
 {{ end }}
@@ -41,7 +41,7 @@ has administrator or owner privileges.
 
 **See if the current user is an adminstrator or owner**
 
-```
+```gotemplate
 {{ if isAdmin }}
     // Output for logged admin users only.
 {{ end }}
