@@ -75,8 +75,8 @@
 				"placeholder": "Enter a number",
 				"prepend": 20,
 				"append": "",
-				"min": 2,
-				"max": 100,
+				"min": "",
+				"max": "",
 				"step": 10
 			}
 		},
@@ -92,7 +92,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "default",
+				"default_value": "default@default.com",
 				"min": 20,
 				"max": 300,
 				"step": 5,
@@ -130,7 +130,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "default",
+				"default_value": "https://google.com",
 				"placeholder": "Placeholder"
 			}
 		},

@@ -16,7 +16,7 @@
 						<div class="header-actions">
 							<form class="form form-actions">
 								<div class="form-select-cont form-input header-hide-mob">
-									<select class="form-select" v-model="bulkType" v-if="activeTab === 4">
+									<select class="form-select" v-model="bulkType" v-if="activeTab === 5">
 										<option value="" disabled selected>Bulk actions</option>
 										<option value="restore">Restore</option>
 										<option value="delete">Delete permanently</option>
