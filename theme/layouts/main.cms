@@ -20,7 +20,6 @@
     <!-- CSS Files -->
     <link href="../assets/css/argon-design-system.css?v=1.2.0" rel="stylesheet" />
 </head>
-
 <body class="landing-page">
     {{ template "content" . }}
     {{ verbisFoot }}

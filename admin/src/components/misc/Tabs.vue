@@ -40,6 +40,12 @@ export default {
 			}, 100);
 		});
 	},
+	created() {
+		window.addEventListener("resize", this.handleResize);
+	},
+	destroyed() {
+		window.removeEventListener("resize", this.handleResize);
+	},
 	methods: {
 		/*
 		 * setUpTabs()
@@ -65,6 +71,10 @@ export default {
 		updatePosition(el = false, index) {
 			this.activeTab = index;
 
+			if (!el) {
+				el = this.$refs.tab[index]
+			}
+
 			const tabs = this.$refs.tabs,
 				indicator = this.$refs.indicator,
 				bounding = el.getBoundingClientRect(),
@@ -77,7 +87,14 @@ export default {
 
 			indicator.style.left = props.left - 8 + "px";
 			indicator.style.width = props.width + 16 + "px";
-		}
+		},
+		/*
+		 * handleResize()
+		 * Update position on resize.
+		 */
+		handleResize() {
+			this.updatePosition(false, this.activeTab);
+		},
 	}
 }
 

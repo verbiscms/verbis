@@ -66,6 +66,12 @@ func (c *FieldController) Get(g *gin.Context) {
 		post.Layout = la[0]
 	}
 
+	// Check for resource
+	if re, ok := query["resource"]; ok {
+		resource := re[0]
+		post.Resource = &resource
+	}
+
 	// Check for user ID
 	// TODO: clean up here
 	if u, ok := query["user_id"]; ok{

@@ -155,14 +155,9 @@
 	"location": [
 		[
 			{
-				"param": "layout",
-				"operator": "==",
-				"value": "main"
-			},
-			{
 				"param": "page_template",
-				"operator": "!=",
-				"value": "landing"
+				"operator": "==",
+				"value": "home"
 			}
 		]
 	]

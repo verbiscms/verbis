@@ -85,11 +85,20 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 		tmplParams.OrderDirection = "desc"
 	}
 
+	f := make(map[string][]http.Filter)
+	f["status"] = []http.Filter{
+		{
+			Operator: "=",
+			Value: "published",
+		},
+	}
+
 	postParams := http.Params{
 		Page:           tmplParams.Page,
 		Limit:          tmplParams.Limit,
 		OrderBy:        tmplParams.OrderBy,
 		OrderDirection: tmplParams.OrderDirection,
+		Filters: 		f,
 	}
 
 	// Obtain the post and detect if it was not found,
@@ -105,7 +114,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	}
 
 	return map[string]interface{}{
-		"Posts": posts,
+		"Items": posts,
 		"Pagination": pagination,
 	}, nil
 }

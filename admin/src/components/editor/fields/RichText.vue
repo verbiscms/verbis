@@ -56,6 +56,21 @@
 			===================== -->
 		<editor-menu-bar :editor="editor" v-slot="{ commands, isActive, focused }">
 			<div>
+				<!-- =====================
+					Insert Media Modal
+					===================== -->
+				<Modal :show.sync="showImageModal" class="modal-full-width modal-hide-close" :editor="editor">
+					<template slot="text">
+						<Uploader :rows="3" :modal="true" :filters="false" class="media-modal" @insert="insertMedia($event, commands.image)" :options="true">
+							<template slot="close">
+								<button class="btn btn-margin-right btn-icon-mob" @click.prevent="showImageModal = false">
+									<i class="feather feather-x"></i>
+									<span>Close</span>
+								</button>
+							</template>
+						</Uploader>
+					</template>
+				</Modal>
 				<div class="richtext-menu" :class="{ 'is-focused fadeInDownXs': focused }">
 					<!-- Paragraph -->
 					<button v-if="getByElement('paragraph')" class="richtext-button" :class="{ 'is-active': isActive.paragraph() }" @click="commands.paragraph">
@@ -122,6 +137,9 @@
 <!--					</button>-->
 					<button v-if="getByElement('code_view')" class="richtext-button" @click="changeCodeView">
 						<i class="fal fa-code"></i>
+					</button>
+					<button class="richtext-button" @click="showImageModal = true">
+						<i class="fal fa-image"></i>
 					</button>
 				</div><!-- /Menu -->
 				<!-- =====================
@@ -190,7 +208,10 @@ import {
 	TableHeader,
 	TableCell,
 	TableRow,
+	Image,
 } from 'tiptap-extensions';
+import Modal from "@/components/modals/General";
+import Uploader from "@/components/media/Uploader";
 
 const Chrome = require('vue-color/src/components/Compact.vue').default;
 
@@ -205,6 +226,8 @@ export default {
 	},
 	mixins: [fieldMixin],
 	components: {
+		Uploader,
+		Modal,
 		EditorContent,
 		EditorMenuBar,
 		EditorMenuBubble,
@@ -220,6 +243,8 @@ export default {
 		textColor: '#000000',
 		code: '',
 		codeView: false,
+		showImageModal: false,
+		charPosition: 0,
 	}),
 	mounted() {
 		this.config = this.getEditorConfig
@@ -246,6 +271,13 @@ export default {
 		}
 	},
 	methods: {
+		insertMedia(media, command) {
+			const src = media.url;
+			if (src !== null) {
+				command({ src })
+			}
+			this.showImageModal = false;
+		},
 		setContent(content) {
 			if (this.editor) this.editor.setContent(content);
 		},
@@ -257,9 +289,12 @@ export default {
 					content: this.value,
 					onUpdate: ({ getHTML }) => {
 						this.errors = [];
-						this.html = getHTML()
-						if (this.html === '<p></p>') this.html = ''
-						this.value = this.html
+						this.html = getHTML();
+						if (this.html === '<p></p>') this.html = '';
+						this.value = this.html;
+					},
+					onTransaction: ({ state }) => {
+						this.charPosition = state.selection.anchor;
 					},
 					extensions: extensions,
 				});
@@ -317,8 +352,11 @@ export default {
 			let extensions = [],
 				headingArr = [];
 
+			extensions.push(new Image())
+
 			this.config.modules.forEach(module => {
 				let node = this.processNode(this.config.options[module]);
+
 				switch (module) {
 					// Nodes
 					case 'blockquote':
@@ -414,6 +452,7 @@ export default {
 						break;
 				}
 			});
+
 
 			// Add heading if any headings exist
 			if (headingArr.length > 0) {
