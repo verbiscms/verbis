@@ -38,6 +38,8 @@ export default {
 		updateList() {
 			this.breadcrumbs = [];
 
+
+
 			const fullPath = this.$route.fullPath,
 				pathArr = fullPath.split("/");
 
@@ -67,13 +69,22 @@ export default {
 
 					path = path.split("?")[0];
 
-					this.breadcrumbs.push({
-						name: path === "" ? "Home" : this.capitalize(path),
-						url: temp,
-						active: this.$route.fullPath === temp,
-					})
+
+					if (path !== "resources" || path !== "settings") {
+						this.breadcrumbs.push({
+							name: path === "" ? "Home" : this.capitalize(path),
+							url: temp,
+							active: this.$route.fullPath === temp,
+						});
+					}
 				});
 			}
+		},
+		addPage() {
+
+		},
+		getRoute(name) {
+			return this.$router.options.routes.find(route => route.name === name)
 		},
 		/*
 		 * capitalize()

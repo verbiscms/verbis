@@ -2,7 +2,7 @@
 	Popover
 	===================== -->
 <template>
-	<div class="popover-cont">
+	<div class="popover-cont" :class="{ 'popover-hover' : hover }">
 		<div class="popover-btn" @click="update">
 			<slot name="button"></slot>
 		</div>
@@ -41,6 +41,10 @@ export default {
 			type: String,
 			default: "",
 		},
+		hover: {
+			type: Boolean,
+			default: false
+		}
 	},
 	data: () => ({
 		show: false,
@@ -51,10 +55,10 @@ export default {
 		 * Show & hide the popover, and emit data.
 		 */
 		update() {
-			//if (!this.$refs.popover.classList.contains("popover-hover")) {
+			if (!this.hover) {
 				this.show = !this.show;
 				this.$emit("update", this.show);
-			//}
+			}
 		},
 	},
 	computed: {
@@ -102,7 +106,12 @@ $popover-triangle-size: 20px;
 		position: relative;
 		width: auto;
 
-		#{$self}-hover {
+		&#{$self}-hover {
+
+			.popover {
+				transition: opacity 200ms ease, z-index 200ms step-end !important;
+			}
+
 
 			.icon,
 			i,
@@ -113,8 +122,17 @@ $popover-triangle-size: 20px;
 			.popover:hover,
 			.icon:hover,
 			i:hover + #{$self},
-			button:hover + #{$self} {
-				opacity: 1;
+			#{$self}-btn:hover + #{$self} {
+				opacity: 1 !important;
+				z-index: 999999;
+				transition: opacity 200ms ease, z-index 200ms step-start !important;
+			}
+
+			#{$self} {
+				bottom: 0;
+				left: 0;
+				top: auto;
+				transform: translate(calc(-50% + 2px), 100%);
 			}
 		}
 	}
@@ -265,6 +283,10 @@ $popover-triangle-size: 20px;
 
 	// Positions
 	// =========================================================================
+
+	&-bottom {
+
+	}
 
 	// Tablet
 	// =========================================================================

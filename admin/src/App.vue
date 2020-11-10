@@ -12,7 +12,7 @@
 			<div class="router">
 				<span class="router-overlay" :class="{ 'router-overlay-active' : sidebarOpen }" @click="sidebarOpen = false"></span>
 				<TransitionPage>
-					<router-view class="router" />
+					<router-view class="router" :key="$route.fullPath" />
 				</TransitionPage>
 			</div>
 		</main>
