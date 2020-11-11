@@ -39,13 +39,13 @@ value. To access the global context we can use `{{ $.Site }}`.
 </ul>
 ```
 
-## Clever Tricks 💡
+## Clever tricks 💡
 
 ### Defining variables
 
 We can assign the global context to a variable at the very top of a template, to preserve the scope
-of the global template data. This preservers the dollar `{{ $ }}` and avoids anyone redefining the
-GoLang templates.
+of the global template data. This preservers the dollar `{{ $ }}` and avoids anyone redefining our 
+magical global context.
 
 ```gotemplate
 {{ $global := $ }}
