@@ -66,19 +66,16 @@
     <div class="section">
        <div class="container">
            <div class="row">
-               {{ $query := dict "limit" 100 "resource" "posts" "page" 1 }}
+
+               {{ $query := dict "limit" 100 "resource" "posts" "limit" 100  }}
                {{ $posts := getPosts $query }}
 
                {{ if $posts }}
-                   {{ range $post := $posts.Items }}
+                   {{ range $post := $posts.Posts }}
                        <div class="col-12 col-lg-4">
                            <a href="{{ $post.Slug }}" class="card shadow mb-4">
                                <div class="card-body">
                                    <div class="" id="myTabContent">
-
-
-
-
                                        <div class="tab-pane fade show active " id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
                                            <h4>{{ $post.Title }}</h4>
                                            <p class="description">{{ getField "excerpt" $post.Id }}</p>
@@ -91,6 +88,7 @@
                {{ else }}
                    <h1>No posts found</h1>
                {{ end }}
+
 
            </div>
        </div>

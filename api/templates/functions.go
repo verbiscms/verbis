@@ -77,7 +77,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Posts
 		"getPost": t.getPost,
 		"getPosts": t.getPosts,
-		"getPagination": t.getPagination,
+		"getPaginationPage": t.getPaginationPage,
 		// Media
 		"getMedia": t.getMedia,
 		// Paths
@@ -104,22 +104,37 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 	 }
 
 	 data := map[string]interface{}{
-	 	"Site": t.store.Site.GetGlobalConfig(),
-	 	"Post": map[string]interface{}{
-	 		"Id": t.post.Id,
-	 		"UUID": t.post.UUID,
-	 		"Slug": t.post.Slug,
-	 		"Title": t.post.Title,
-	 		"Status": t.post.Status,
-	 		"Resource": t.post.Resource,
-	 		"PageTemplate": t.post.PageTemplate,
-	 		"Layout": t.post.Layout,
-	 		"UserId": t.post.UserId,
-	 		"PublishedAt": t.post.PublishedAt,
-	 		"UpdatedAt": t.post.UpdatedAt,
-	 		"CreatedAt": t.post.CreatedAt,
+		"Site": t.store.Site.GetGlobalConfig(),
+		"Theme": theme.Theme,
+		"Post": map[string]interface{}{
+			"Id": t.post.Id,
+			"UUID": t.post.UUID,
+			"Slug": t.post.Slug,
+			"Title": t.post.Title,
+			"Status": t.post.Status,
+			"Resource": t.post.Resource,
+			"PageTemplate": t.post.PageTemplate,
+			"Layout": t.post.Layout,
+			"UserId": t.post.UserId,
+			"PublishedAt": t.post.PublishedAt,
+			"UpdatedAt": t.post.UpdatedAt,
+			"CreatedAt": t.post.CreatedAt,
 		},
-	 	"Theme": theme.Theme,
+		"Options": map[string]interface{}{
+			"Social": map[string]interface{}{
+				"Facebook": t.options.SocialFacebook,
+				"Twitter": t.options.SocialTwitter,
+				"Youtube": t.options.SocialYoutube,
+				"LinkedIn": t.options.SocialLinkedIn,
+				"Instagram": t.options.SocialInstagram,
+				"Pintrest": t.options.SocialPinterest,
+			},
+			"Contact": map[string]interface{}{
+				"Email": t.options.ContactEmail,
+				"Telephone": t.options.ContactTelephone,
+				"Address": t.options.ContactAddress,
+			},
+		},
 	 }
 
 	return data, nil

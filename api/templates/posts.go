@@ -25,11 +25,12 @@ func (t *TemplateFunctions) getPost(id float64) *domain.Post {
 func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]interface{}, error) {
 
 	type params struct {
-		Page 			int
-		Limit 			int
-		Resource 		string
-		OrderBy 		string
-		OrderDirection 	string
+		Page 			int 	`json:"page"`
+		Limit 			int		`json:"limit"`
+		Resource 		string	`json:"resource"`
+		OrderBy 		string	`json:"order_by"`
+		OrderDirection 	string	`json:"order_direction"`
+		Category 		string	`json:"category"`
 	}
 
 	data, _ := json.Marshal(query)
@@ -47,6 +48,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 			Resource:       "all",
 			OrderBy:        "published_at",
 			OrderDirection: "desc",
+			Category: 		"",
 		}
 	}
 
@@ -83,6 +85,14 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 		},
 	}
 
+	// error calling getPosts: Model.filterRows: the category search query does not exists when searching for posts.
+	//f["category"] = []http.Filter{
+	//	{
+	//		Operator: "=",
+	//		Value: tmplParams.Category,
+	//	},
+	//}
+
 	postParams := http.Params{
 		Page:           tmplParams.Page,
 		Limit:          tmplParams.Limit,
@@ -109,18 +119,17 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	}, nil
 }
 
-// getPagination gets the page query paramater and returns, if the
+// getPagination gets the page query parameter and returns, if the
 // page query param wasn't found or the string could not be cast
-// to an integer, it will return 1, along with an error if
-// the cast failed.
-func (t *TemplateFunctions) getPagination() (int, error) {
+// to an integer, it will return 1.
+func (t *TemplateFunctions) getPaginationPage() int {
 	page := t.gin.Query("page")
 	if page == "" {
-		return 1, nil
+		return 1
 	}
 	pageInt, err := strconv.Atoi(page)
 	if err != nil {
-		return 1, err
+		return 1
 	}
-	return pageInt, nil
+	return pageInt
 }

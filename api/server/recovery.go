@@ -74,6 +74,7 @@ func Recover(g *gin.Context, err interface{}) {
 	})
 
 	// Assign the error
+	fmt.Println(err)
 	rc.Err = *rc.setType(err)
 
 	// Set the error for the logger & middleware
