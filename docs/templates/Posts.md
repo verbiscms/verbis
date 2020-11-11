@@ -84,7 +84,8 @@ ___
 
 ## getPosts
 
-Retrieves multiple post items from the database by a `dict` query.
+Retrieves multiple post items from the database by a `dict` query. Default values from the return
+are shown below.
 
 ### Accepts: 
 
@@ -98,6 +99,7 @@ type Params struct {
     Resource 		string      `default: all`
     OrderBy 		string      `default: published_at`
     OrderDirection 	string      `default: desc`
+    Category     	string      `default: nil`
 }
 ```
 
@@ -109,8 +111,8 @@ map[string]interface{}{
     "Posts": []Posts
 }, error
 ``` 
-A map containing the pagnation and an array of posts or an error if there was a problem
-unmarshalling to the params type.
+A map containing the pagination and an array of posts, or an error if there was a problem
+unmarshalling to the params type. By default, only published pages will be returned.
 
 ### Examples:
 
@@ -119,7 +121,15 @@ unmarshalling to the params type.
 This example demonstrates how to obtain 10 posts with the resource of type posts.
 
 First a query is assigned to type `dict`; here is where we define the type of data we
-expect to receive from the database. A limit of 10 means we will only retrieve 
+expect to receive from the database. A limit of 10 means we will only retrieve 10 items.
+
+We then assign the result to a variable and pass the query into the `getPosts` function.
+The `$result` variable will now contain an `map[string]interface{}` of the Pagination 
+& Post types (as shown above).
+
+A good idea is to check if any posts exists by using an `if/else` statement, so a notification
+can be displayed if none were found. A range loop can be used to loop over the posts and 
+output any data.
 
 ```gotemplate
 {{ $query := dict "limit" 10 "resource" "posts" }}
@@ -134,18 +144,99 @@ expect to receive from the database. A limit of 10 means we will only retrieve
 {{ end }}
 ```
 
+**Get posts with a specific order direction**
 
+This example demonstrates how to obtain posts with no particular resource, but order them by
+`title` in `ascending` direction.
 
-
-
-
-    {{ $page := getPagination }}
-    <h1>{{ $page }}</h1>
-    {{ $query := dict "limit" 100 "resource" "posts" "page" 1 }}
-    {{ $posts := getPosts $query }}
-
-    {{ if $posts.Items }}
-        <pre>{{ $posts.Pagination }}</pre>
-    {{ else }}
-        <h1>No posts found</h1>
+```gotemplate
+{{ $query := dict "order_by" "title" "order_direction" "asc" }}
+{{ $result := getPosts $query }}
+{{ if $result.Posts }}
+    {{ range $post := $result.Posts }}
+        <h2>{{ $post.Title }}</h2>
+        <a href="{{ $post.Slug }}">Read more</a>
     {{ end }}
+{{ else }}
+    <h4>No posts found</h4>
+{{ end }}
+```
+
+**Get posts with a specific category**
+
+This example demonstrates how to obtain posts with the resource of type posts that have a category
+of sports.
+
+```gotemplate
+{{ $query := dict "resource" "posts" "category" "sports" }}
+{{ $result := getPosts $query }}
+{{ if $result.Posts }}
+    {{ range $post := $result.Posts }}
+        <h2>{{ $post.Title }}</h2>
+        <a href="{{ $post.Slug }}">Read more</a>
+    {{ end }}
+{{ else }}
+    <h4>No sports found</h4>
+{{ end }}
+```
+
+___
+
+## getPagination
+
+Retrieves the page query parameter, useful for working with the `getPosts` function.
+
+### Returns:
+
+`int` The page query parameter if found or 1 if it wasn't or there was a problem 
+casting the page to an `integer`.
+
+### Examples:
+
+**Get pagination page**
+
+This example demonstrates how to obtain the pagination `page` query parameter assuming
+the url looks similar to `/posts?page=2`, the function will return two.
+
+```gotemplate
+{{ getPaginationPage }}
+```
+
+**Display pagination**
+
+This example demonstrates how to display pagination so users can filter through posts in your theme.
+
+First the `$page` variable is assigned to the `getPaginationPage` which simply returns the page query
+parameter. It's important to pass this variable into your query, this will ensure the correct content is
+returned from the database.
+
+After the loop we can check we can use the Pagination object to determine if there are previous and next 
+pages available. The `Prev`and `Next` variables are an `interface` so they can be an integer (the corresponding)
+ page or a `false` if there is no page available in the given direction.
+ 
+We can check this using a simple`if statement` and output a link with the query parameter, for example:
+`<a href="/posts?page={{ $result.Pagination.Prev }}">Previous Post</a>`
+
+```gotemplate
+{{ $page := getPaginationPage }}
+{{ $query := dict "page" $page "resource" "posts" limit 10 }}
+{{ $result := getPosts $query }}
+
+{{ if $result.Posts }}
+    {{ range $post := $result.Posts }}
+        <h2>{{ $post.Title }}</h2>
+        <a href="{{ $post.Slug }}">Read more</a>
+    {{ end }}
+{{ else }}
+    <h4>No sports found</h4>
+{{ end }}
+
+<div class="pagination">
+   {{ if $result.Pagination.Prev }}
+       <a href="/posts?page={{ $result.Pagination.Prev }}">Previous Post</a>
+   {{ end }}
+   {{ if $result.Pagination.Next }}
+       <a href="/posts?page={{ $result.Pagination.Next }}">Next Post</a>
+   {{ end }}
+</div>
+```
