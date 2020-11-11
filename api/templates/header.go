@@ -19,12 +19,13 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 
 	var b bytes.Buffer
 
-	// Get Code Injection from the Options (globally)
-	if t.options.CodeInjectionFoot != "" {
-		b.WriteString(t.options.CodeInjectionFoot)
+	// Get Code Injection from the Post
+	postCi := t.post.CodeInjectHead
+	if *postCi != "" {
+		b.WriteString(*postCi)
 	}
 
-	// Get Code Injection from the Post
+	// Get Code Injection from the Options (globally)
 	if t.options.CodeInjectionHead != "" {
 		b.WriteString(t.options.CodeInjectionHead)
 	}

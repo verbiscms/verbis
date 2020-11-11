@@ -8,7 +8,7 @@ ___
 
 ## dict
 
-Create's a dictionary of key value pairs, the key must always be a string
+Create's a dictionary of key value pairs, the key must always be a string.
 
 ### Accepts: 
 
