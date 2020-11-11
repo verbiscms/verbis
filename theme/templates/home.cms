@@ -3,4 +3,8 @@
     <h1>The new title</h1>
 {{/*    {{ escape g ("richtext" | getField) }}*/}}
 
+
+
+    {{ $map := dict "colour" "green" "height" 20 }}
+    {{ $map.colour }}
 {{ end }}
