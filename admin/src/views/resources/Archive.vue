@@ -585,6 +585,7 @@ export default {
 				status: "draft",
 				title: item.post.title + " (copy)",
 				slug: slug,
+				published_at: null,
 			}
 
 			if (item.category !== null) {

@@ -2,6 +2,7 @@ package templates
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -88,17 +89,11 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	f["status"] = []http.Filter{
 		{
 			Operator: "=",
-			Value: "published",
+			Value:    "published",
 		},
 	}
 
-	// error calling getPosts: Model.filterRows: the category search query does not exists when searching for posts.
-	//f["category"] = []http.Filter{
-	//	{
-	//		Operator: "=",
-	//		Value: tmplParams.Category,
-	//	},
-	//}
+	fmt.Println(tmplParams.Category)
 
 	postParams := http.Params{
 		Page:           tmplParams.Page,
@@ -122,7 +117,13 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 
 	var returnPosts []ViewPost
 	for _, post := range posts {
-		returnPosts = append(returnPosts, t.formatPost(post))
+		formattedPost := t.formatPost(post)
+		if tmplParams.Category == "" {
+			returnPosts = append(returnPosts, formattedPost)
+		}
+		if formattedPost.Category.Name == tmplParams.Category {
+			returnPosts = append(returnPosts, formattedPost)
+		}
 	}
 
 	return map[string]interface{}{

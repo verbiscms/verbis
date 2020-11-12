@@ -203,6 +203,8 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	p.Author = s.checkOwner(*p)
 	p.UserId = p.Author
 
+	fmt.Println(p.PublishedAt)
+
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
 	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId, p.PublishedAt, p.Id)

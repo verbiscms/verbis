@@ -103,9 +103,9 @@ func (s *CategoryStore) GetByPost(postId int) (*domain.Category, error) {
 // Get the category by slug
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *CategoryStore) GetBySlug(slug string) (domain.Category, error) {
-	const op = "CategoryRepository.GetByPost"
+	const op = "CategoryRepository.GetBySlug"
 	var c domain.Category
-	if err := s.db.Get(&c, "SELECT * FROM categories WHERE slug = ?"); err != nil {
+	if err := s.db.Get(&c, "SELECT * FROM categories WHERE slug = ?", slug); err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the slug: %d", slug), Operation: op, Err: err}
 	}
 	return c, nil

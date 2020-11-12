@@ -2,9 +2,7 @@ package templates
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -37,7 +35,7 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 	if p.Fields != nil {
 		if err := json.Unmarshal(*p.Fields, &f); err != nil {
 			log.WithFields(log.Fields{
-				"error": errors.Error{Code: errors.INTERNAL, Message: "Could not update the site logo", Operation: op, Err: err},
+				"error": errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the post fields", Operation: op, Err: err},
 			}).Error()
 		}
 	}
@@ -119,8 +117,6 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 	 	return nil, err
 	 }
 
-	 fmt.Println(t.orderOfSearch())
-
 	 data := map[string]interface{}{
 	 	"Type": t.orderOfSearch(),
 		"Site": t.store.Site.GetGlobalConfig(),
@@ -160,22 +156,6 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 	return data, nil
 }
 
-// Get the app env
-func (t *TemplateFunctions) appEnv() string {
-	return environment.GetAppEnv()
-}
-
-// If the app is in production or development
-func (t *TemplateFunctions) isProduction() bool {
-	return environment.IsProduction()
-}
-
-// If the app is in debug mode
-func (t *TemplateFunctions) isDebug() bool {
-	return environment.IsDebug()
-}
-
-
 func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
 	const op = "Templates.orderOfSearch"
 
@@ -184,18 +164,26 @@ func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
 		Data: nil,
 	}
 
-	if t.post.Resource == nil {
-		return data
-	}
-
 	slug := t.post.Slug
 	slugArr := strings.Split(slug, "/")
 	last := slugArr[len(slugArr) - 1]
 
+	theme, err := t.store.Site.GetThemeConfig()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not get the theme config ", Operation: op, Err: err},
+		}).Error()
+	}
+
+	if _, ok := theme.Resources[last]; ok {
+		data.PageType = "archive"
+		data.Data = t.post.Resource
+		return data
+	}
 
 	if t.store.Categories.ExistsBySlug(last) {
 
-		cat, err := t.store.Categories.GetBySlug(slug)
+		cat, err := t.store.Categories.GetBySlug(last)
 		if err != nil {
 			return data
 		}
@@ -205,14 +193,11 @@ func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
 			data.PageType = "category_child_archive"
 			data.Data = cat
 			return data
+		} else {
+			data.PageType = "category_archive"
+			data.Data = parentCat
+			return data
 		}
-
-		data.PageType = "category_archive"
-		data.Data = parentCat
-
-	} else {
-		data.PageType = "archive"
-		data.Data = t.post.Resource
 	}
 
 	return data
