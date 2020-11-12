@@ -256,6 +256,10 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	g.Writer.Write(minfied)
 }
 
+
+
+
+
 func (c *FrontendController) NoPageFound(g *gin.Context) {
 	gvError := goview.New(goview.Config{
 		Root:      paths.Theme(),

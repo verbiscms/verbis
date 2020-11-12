@@ -14,6 +14,7 @@ type CategoryRepository interface {
 	Get(meta http.Params) ([]domain.Category, int, error)
 	GetById(id int) (domain.Category, error)
 	GetByPost(pageId int) (*domain.Category, error)
+	GetBySlug(slug string) (domain.Category, error)
 	Create(c *domain.Category) (domain.Category, error)
 	Update(c *domain.Category) error
 	InsertPostCategory(postId int, categoryId *int) error
@@ -21,6 +22,7 @@ type CategoryRepository interface {
 	Delete(id int) error
 	Exists(id int) bool
 	ExistsByName(name string) bool
+	ExistsBySlug(slug string) bool
 	Total() (int, error)
 }
 
@@ -96,6 +98,17 @@ func (s *CategoryStore) GetByPost(postId int) (*domain.Category, error) {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the post ID: %d", postId), Operation: op, Err: err}
 	}
 	return &c, nil
+}
+
+// Get the category by slug
+// Returns errors.NOTFOUND if the category was not found by the given slug.
+func (s *CategoryStore) GetBySlug(slug string) (domain.Category, error) {
+	const op = "CategoryRepository.GetByPost"
+	var c domain.Category
+	if err := s.db.Get(&c, "SELECT * FROM categories WHERE slug = ?"); err != nil {
+		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the slug: %d", slug), Operation: op, Err: err}
+	}
+	return c, nil
 }
 
 // Create a new category
@@ -182,6 +195,13 @@ func (s *CategoryStore) Exists(id int) bool {
 func (s *CategoryStore) ExistsByName(name string) bool {
 	var exists bool
 	_ = s.db.QueryRow("SELECT EXISTS (SELECT name FROM categories WHERE name = ?)", name).Scan(&exists)
+	return exists
+}
+
+// Exists Checks if a category exists by the given slug
+func (s *CategoryStore) ExistsBySlug(slug string) bool {
+	var exists bool
+	_ = s.db.QueryRow("SELECT EXISTS (SELECT name FROM categories WHERE slug = ?)", slug).Scan(&exists)
 	return exists
 }
 
