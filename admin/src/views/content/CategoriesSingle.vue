@@ -107,7 +107,7 @@
 										<div class="form-select-cont form-input">
 											<select class="form-select" v-model="data['resource']" @change="getPosts">
 												<option disbaled selected value="">Select resource</option>
-												<option value="page">Pages</option>
+												<option value="pages">Pages</option>
 												<option v-for="(resource, resourceKey) in getTheme['resources']" :value="resourceKey" :key="resource.name">{{ resource['friendly_name'] }}</option>
 											</select>
 										</div>
@@ -142,7 +142,7 @@
 							</template>
 						</Collapse><!-- /Parent-->
 						<!-- Archive Page -->
-						<Collapse v-if="data['resource'] !== ''" :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['parent']}">
+						<Collapse v-if="data['resource'] !== '' && posts.length" :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['parent']}">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>
@@ -299,31 +299,22 @@ export default {
 		 * Obtain posts for the archive page selection.
 		 */
 		getPosts() {
-
-			const resource = this.data.resource;
-			let filter = `&filter={"resource":[{"operator":"=", "value": "pages"}]}`;
-			if (!resource) {
-				filter = '';
-			}
-
-			console.log(filter);
-
-			this.axios.get(`/posts?limit=all${filter}`, {
-				paramsSerializer: function(params) {
-					return params;
+			this.axios.get(`/posts`, {
+				params: {
+					resource: this.data.resource,
 				}
 			})
 				.then(res => {
 					const posts = res.data.data;
 					this.posts = posts;
-					// console.log(res)
-					console.log(posts);
-					// this.tags = posts.map(a => {
-					// 	return {
-					// 		text: a.post.title,
-					// 		id: a.post.id
-					// 	};
-					// });
+					if (posts.length) {
+						this.tags = posts.map(a => {
+							return {
+								text: a.post.title,
+								id: a.post.id
+							};
+						});
+					}
 				})
 				.catch(err => {
 					console.log(err);
