@@ -7,6 +7,7 @@
 			<!-- Header -->
 			<div class="row">
 				<div class="col-12">
+					<pre>{{ data }}</pre>
 					<header class="header header-with-actions">
 						<div class="header-title">
 							<h1 v-if="newItem">New category</h1>
@@ -104,7 +105,7 @@
 								<div class="card-body">
 									<FormGroup label="Resource*" :error="errors['resource']">
 										<div class="form-select-cont form-input">
-											<select class="form-select" v-model="data['resource']">
+											<select class="form-select" v-model="data['resource']" @change="getPosts">
 												<option disbaled selected value="">Select resource</option>
 												<option value="page">Pages</option>
 												<option v-for="(resource, resourceKey) in getTheme['resources']" :value="resourceKey" :key="resource.name">{{ resource['friendly_name'] }}</option>
@@ -141,7 +142,7 @@
 							</template>
 						</Collapse><!-- /Parent-->
 						<!-- Archive Page -->
-						<Collapse :show="newItem" class="collapse-border-bottom" style="display: none !important;" :class="{ 'card-expand-error' : errors['parent']}">
+						<Collapse v-if="data['resource'] !== ''" :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['parent']}">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>
@@ -154,22 +155,22 @@
 								</div><!-- /Card Header -->
 							</template>
 							<template v-slot:body>
-								<div class="card-body">
+								<div class="card-body" ref="archive">
 									<FormGroup label="Parent">
-										<div class="form-select-cont form-input">
-											<vue-tags-input
-												v-model="tag"
-												:tags="selectedTags"
-												:autocomplete-items="filteredPosts"
-												@tags-changed="updateTags"
-												add-only-from-autocomplete
-											/>
-											//set the prop autocomplete-min-length to 0. I think it's the behaviour you are looking for.
-											<select class="form-select" v-model="data['parent_id']">
-												<option selected value="">No parent</option>
-												<option v-for="item in posts" :value="item.post.id" :key="item.post.uuid">{{ item.post['title'] }}</option>
-											</select>
-										</div>
+										<vue-tags-input
+											v-model="tag"
+											:tags="selectedTags"
+											:autocomplete-always-open="false"
+											:autocomplete-items="filteredPosts"
+											@tags-changed="updateTags"
+											add-only-from-autocomplete
+											:autocomplete-min-length="0"
+											@focus="updateHeight"
+											@blur="updateHeight"
+											:max-tags="1"
+											@max-tags-reached="$noty.warning('Only one archive page can be assigned')"
+											placeholder="Add post"
+										/>
 									</FormGroup>
 								</div>
 							</template>
@@ -194,7 +195,7 @@
 </template>
 
 <!-- =====================
-	Scripts
+	Scripts //set the prop to 0. I think it's the behaviour you are looking for.
 	===================== -->
 <script>
 
@@ -202,6 +203,7 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Collapse from "@/components/misc/Collapse";
 import FormGroup from "@/components/forms/FormGroup";
 import Modal from "@/components/modals/General";
+import VueTagsInput from '@jack_reddico/vue-tags-input';
 
 export default {
 	name: "Categories",
@@ -209,7 +211,8 @@ export default {
 		Modal,
 		FormGroup,
 		Collapse,
-		Breadcrumbs
+		Breadcrumbs,
+		VueTagsInput,
 	},
 	data: () => ({
 		doingAxios: true,
@@ -222,6 +225,7 @@ export default {
 			slug: "",
 			resource: "",
 			parent_id: "",
+			archive_id: null,
 		},
 		newItem: true,
 		slug: "",
@@ -230,6 +234,7 @@ export default {
 		isDoingBulk: false,
 		showDeleteModal: false,
 		selectedTags: [],
+		tags: [],
 		tag: "",
 	}),
 	beforeMount() {
@@ -237,7 +242,6 @@ export default {
 	},
 	mounted() {
 		this.getCategories();
-		this.getPosts();
 	},
 	methods: {
 		/*
@@ -254,7 +258,7 @@ export default {
 		 * Obtain the categories.
 		 */
 		getCategories() {
-			this.axios.get('/categories')
+			this.axios.get(`/categories`)
 				.then(res => {
 					this.categories = res.data.data;
 				})
@@ -295,12 +299,35 @@ export default {
 		 * Obtain posts for the archive page selection.
 		 */
 		getPosts() {
-			this.axios.get('/posts')
+
+			const resource = this.data.resource;
+			let filter = `&filter={"resource":[{"operator":"=", "value": "pages"}]}`;
+			if (!resource) {
+				filter = '';
+			}
+
+			console.log(filter);
+
+			this.axios.get(`/posts?limit=all${filter}`, {
+				paramsSerializer: function(params) {
+					return params;
+				}
+			})
 				.then(res => {
-					this.posts = res.data.data;
+					const posts = res.data.data;
+					this.posts = posts;
+					// console.log(res)
+					console.log(posts);
+					// this.tags = posts.map(a => {
+					// 	return {
+					// 		text: a.post.title,
+					// 		id: a.post.id
+					// 	};
+					// });
 				})
 				.catch(err => {
-					this.handleResponse(err);
+					console.log(err);
+					this.helpers.handleResponse(err);
 				})
 		},
 		/*
@@ -357,7 +384,7 @@ export default {
 						}, this.timeoutDelay);
 					});
 			} else {
-				this.axios.put('/categories/' + this.$route.params.id, this.data)
+				this.axios.put('/categories' + this.$route.params.id, this.data)
 					.then(() => {
 						this.errors = {};
 						this.$noty.success("Successfully updated category");
@@ -425,9 +452,23 @@ export default {
 		},
 		/*
  		 * updateTags()
+ 		 * Assign the new category ID to the data if it exists.
 		 */
-		updateTags() {
-
+		updateTags(category) {
+			if (category.length) {
+				this.$set(this.data, 'archive_id', category[0].id);
+			} else {
+				this.$set(this.data, 'archive_id', null);
+			}
+		},
+		/*
+		 * updateHeight()
+		 * Update archive height on focus.
+		 */
+		updateHeight() {
+			this.$nextTick(() => {
+				this.helpers.setHeight(this.$refs.archive.closest(".collapse-content"));
+			});
 		},
 		/*
  		 * validate()
@@ -441,6 +482,15 @@ export default {
 		},
 	},
 	computed: {
+		/*
+		 * filteredPosts()
+		 * Retrieve the posts for the select tags.
+		 */
+		filteredPosts() {
+			return this.tags.filter(i => {
+				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+			});
+		},
 		/*
 		 * computedSlug()
 		 * Pretty slug for user.
@@ -457,11 +507,6 @@ export default {
 			}
 			const resourceSlug = this.data['resource'] === "" ? "/" : "/" + this.data["resource"] + "/";
 			return resourceSlug + this.slugify(this.slug ? this.slug : this.data['name']);
-		},
-		filteredPosts() {
-			return this.posts.filter(i => {
-				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
-			});
 		},
 		/*
 		 * saveSlug()

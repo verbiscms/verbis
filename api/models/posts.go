@@ -90,6 +90,8 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
+	fmt.Println(q)
+
 	// Return not found error if no posts are available
 	if len(p) == 0 {
 		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
