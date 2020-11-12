@@ -185,6 +185,7 @@ func (c *PostsController) Delete(g *gin.Context) {
 }
 
 // Format
+// TODO Move this to the model
 func (c *PostsController) Format(g *gin.Context, post domain.Post) (domain.PostData, error) {
 
 	// Get the author associated with the post

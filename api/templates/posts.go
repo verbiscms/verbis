@@ -8,14 +8,21 @@ import (
 	"strconv"
 )
 
+type ViewPost struct {
+	Author   *domain.User
+	Category *domain.Category
+	domain.Post
+}
+
 // getPost obtains the post by ID and returns a domain.Post type
 // or nil if not found.
-func (t *TemplateFunctions) getPost(id float64) *domain.Post {
+func (t *TemplateFunctions) getPost(id float64) *ViewPost {
 	p, err := t.store.Posts.GetById(int(id))
 	if err != nil {
 		return nil
 	}
-	return &p
+	vp := t.formatPost(p)
+	return &vp
 }
 
 // getPosts accepts a dict (map[string]interface{}) and returns an
@@ -113,10 +120,40 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 		return nil, err
 	}
 
+	var returnPosts []ViewPost
+	for _, post := range posts {
+		returnPosts = append(returnPosts, t.formatPost(post))
+	}
+
 	return map[string]interface{}{
-		"Posts": posts,
+		"Posts": returnPosts,
 		"Pagination": pagination,
 	}, nil
+}
+
+
+func (t *TemplateFunctions) formatPost(post domain.Post) ViewPost {
+
+	var rp ViewPost
+
+	// Assign the post
+	rp.Post = post
+
+	// Get the author associated with the post
+	author, err := t.store.User.GetById(post.UserId)
+	if err != nil {
+		rp.Author = nil
+	}
+	rp.Author = &author
+
+	// Get the categories associated with the post
+	category, err := t.store.Categories.GetByPost(post.Id)
+	if err != nil {
+		rp.Category = nil
+	}
+	rp.Category = category
+
+	return rp
 }
 
 // getPagination gets the page query parameter and returns, if the

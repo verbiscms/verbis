@@ -106,7 +106,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 
 		// Check for empty location
 		if len(group.Locations) == 0 && !s.hasBeenAdded(group.UUID.String(), fg) {
-			//fg = append(fg, group)
+			fg = append(fg, group)
 
 		} else {
 
@@ -118,6 +118,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 					// Loop over rule sets
 					var locationSet []bool
 					for _, rule := range location {
+
 
 						switch rule.Param {
 						// Status
@@ -149,6 +150,8 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 							{
 								if p.Resource != nil {
 									locationSet = append(locationSet, s.checkLocation(*p.Resource, rule))
+								} else {
+									locationSet = append(locationSet, false)
 								}
 								break
 							}
@@ -157,6 +160,8 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 							{
 								if c != nil {
 									locationSet = append(locationSet, s.checkLocation(strconv.Itoa(c.Id), rule))
+								} else {
+									locationSet = append(locationSet, false)
 								}
 								break
 							}
