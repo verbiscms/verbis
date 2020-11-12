@@ -164,6 +164,7 @@
 												@tags-changed="updateTags"
 												add-only-from-autocomplete
 											/>
+											//set the prop autocomplete-min-length to 0. I think it's the behaviour you are looking for.
 											<select class="form-select" v-model="data['parent_id']">
 												<option selected value="">No parent</option>
 												<option v-for="item in posts" :value="item.post.id" :key="item.post.uuid">{{ item.post['title'] }}</option>
