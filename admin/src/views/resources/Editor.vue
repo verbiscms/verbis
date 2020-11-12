@@ -4,7 +4,6 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
-
 			<!-- =====================
 				Header
 				===================== -->
