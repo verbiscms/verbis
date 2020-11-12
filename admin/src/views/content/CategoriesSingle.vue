@@ -140,6 +140,39 @@
 								</div>
 							</template>
 						</Collapse><!-- /Parent-->
+						<!-- Archive Page -->
+						<Collapse :show="newItem" class="collapse-border-bottom" style="display: none !important;" :class="{ 'card-expand-error' : errors['parent']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Archive page</h4>
+										<p>Choose an archive page for this category.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<FormGroup label="Parent">
+										<div class="form-select-cont form-input">
+											<vue-tags-input
+												v-model="tag"
+												:tags="selectedTags"
+												:autocomplete-items="filteredPosts"
+												@tags-changed="updateTags"
+												add-only-from-autocomplete
+											/>
+											<select class="form-select" v-model="data['parent_id']">
+												<option selected value="">No parent</option>
+												<option v-for="item in posts" :value="item.post.id" :key="item.post.uuid">{{ item.post['title'] }}</option>
+											</select>
+										</div>
+									</FormGroup>
+								</div>
+							</template>
+						</Collapse><!-- /Archive Page -->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
@@ -167,7 +200,6 @@
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import Collapse from "@/components/misc/Collapse";
 import FormGroup from "@/components/forms/FormGroup";
-import slugify from "slugify";
 import Modal from "@/components/modals/General";
 
 export default {
@@ -181,6 +213,7 @@ export default {
 	data: () => ({
 		doingAxios: true,
 		categories: [],
+		posts: [],
 		errors: {},
 		data: {
 			name: "",
@@ -195,12 +228,15 @@ export default {
 		isDeleting: false,
 		isDoingBulk: false,
 		showDeleteModal: false,
+		selectedTags: [],
+		tag: "",
 	}),
 	beforeMount() {
 		this.setNewUpdate();
 	},
 	mounted() {
 		this.getCategories();
+		this.getPosts();
 	},
 	methods: {
 		/*
@@ -251,6 +287,19 @@ export default {
 				})
 				.finally(() => {
 					this.doingAxios = false;
+				})
+		},
+		/*
+		 * getPosts()
+		 * Obtain posts for the archive page selection.
+		 */
+		getPosts() {
+			this.axios.get('/posts')
+				.then(res => {
+					this.posts = res.data.data;
+				})
+				.catch(err => {
+					this.handleResponse(err);
 				})
 		},
 		/*
@@ -374,6 +423,12 @@ export default {
 			}
 		},
 		/*
+ 		 * updateTags()
+		 */
+		updateTags() {
+
+		},
+		/*
  		 * validate()
 		 * Add errors if the post/put failed.
 		 */
@@ -381,17 +436,6 @@ export default {
 			this.errors = {};
 			errors.forEach(err => {
 				this.$set(this.errors, err.key, err.message);
-			})
-		},
-		/*
-		 * slugify()
-		 * Slugify's given input.
-		 */
-		slugify(text) {
-			return slugify(text, {
-				replacement: '-',    // replace spaces with replacement
-				remove: null,        // regex to remove characters
-				lower: true          // result in lower case
 			})
 		},
 	},
@@ -412,6 +456,11 @@ export default {
 			}
 			const resourceSlug = this.data['resource'] === "" ? "/" : "/" + this.data["resource"] + "/";
 			return resourceSlug + this.slugify(this.slug ? this.slug : this.data['name']);
+		},
+		filteredPosts() {
+			return this.posts.filter(i => {
+				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+			});
 		},
 		/*
 		 * saveSlug()
