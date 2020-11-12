@@ -242,7 +242,7 @@ export default {
 			"codeinjection_foot": "",
 			"published_at": new Date(),
 		},
-		defaultLayout: `{"uuid":"6a4d7442-1020-490f-a3e2-436f9135bc24","title":"Default Options","fields":[{"uuid":"39ca0ea0-c911-4eaa-b6e0-67dfd99e1225","label":"RichText","name":"richtext","type":"richtext","instructions":"Add richtext to the page.","required":true,"conditional_logic":null,"wrapper":{"width":100},"options":{"default_value":"","tabs":"all","toolbar":"full","media_upload":1}}]}`,
+		defaultLayout: `{"uuid":"6a4d7442-1020-490f-a3e2-436f9135bc24","title":"Default Options","fields":[{"uuid":"39ca0ea0-c911-4eaa-b6e0-67dfd99e1225","label":"RichText","name":"content","type":"richtext","instructions":"Add content to the page.","required":true,"conditional_logic":null,"wrapper":{"width":100},"options":{"default_value":"","tabs":"all","toolbar":"full","media_upload":1}}]}`,
 		isSaving: false,
 		sidebarOpen: false,
 	}),
@@ -251,6 +251,13 @@ export default {
 	},
 	mounted() {
 		this.init();
+	},
+	watch: {
+		getCategory: function () {
+			if (!this.doingAxios) {
+				this.computedSlug = this.getBaseSlug + this.slugify(this.editSlug);
+			}
+		}
 	},
 	methods: {
 		/*
@@ -293,7 +300,9 @@ export default {
 		 */
 		setDefaultLayout() {
 			if (!this.fieldLayout.length) {
+				console.log(this.fieldLayout);
 				this.fieldLayout.push(JSON.parse(this.defaultLayout));
+				console.log(this.fieldLayout);
 			}
 		},
 		/*
@@ -346,9 +355,8 @@ export default {
 					this.data.author = res.data.data.author.id;
 
 					// Set field layouts
-					console.log(res.data.data.layout);
-
 					this.fieldLayout = res.data.data.layout;
+					this.setDefaultLayout();
 
 					// Set category
 					const category = res.data.data.category;
@@ -657,6 +665,13 @@ export default {
 		 */
 		getBaseSlug() {
 			return this.resource.name === "page" ? "/" + this.resolveCategorySlug() : "/" + this.resource.name + "/" + this.resolveCategorySlug();
+		},
+		/*
+		 * getCategory()
+		 * Get the category from the data.
+		 */
+		getCategory() {
+			return this.data.category;
 		},
 		/*
 		 * computedSlug()

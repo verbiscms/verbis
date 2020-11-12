@@ -2,7 +2,6 @@ package templates
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -15,6 +14,8 @@ import (
 type TemplateFunctions struct {
 	gin *gin.Context
 	post *domain.Post
+	author *domain.User
+	category *domain.Category
 	fields map[string]interface{}
 	store *models.Store
 	options domain.Options
@@ -38,14 +39,23 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 	options, err := s.Options.GetStruct()
 	if err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 		}).Fatal()
 	}
+
+	// Get the author associated with the post
+	author, _ := s.User.GetById(p.UserId)
+
+	// Get the categories associated with the post
+	category, _ := s.Categories.GetByPost(p.Id)
+
 
 	// New TemplateFunctions
 	return &TemplateFunctions{
 		gin: g,
 		post: p,
+		author: &author,
+		category: category,
 		fields: f,
 		store: s,
 		options: options,
@@ -115,10 +125,11 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 			"Resource": t.post.Resource,
 			"PageTemplate": t.post.PageTemplate,
 			"Layout": t.post.Layout,
-			"UserId": t.post.UserId,
 			"PublishedAt": t.post.PublishedAt,
 			"UpdatedAt": t.post.UpdatedAt,
 			"CreatedAt": t.post.CreatedAt,
+			"Author": t.author,
+			"Category": t.category,
 		},
 		"Options": map[string]interface{}{
 			"Social": map[string]interface{}{

@@ -2,7 +2,6 @@ package templates
 
 import (
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"reflect"
 )
 
@@ -54,7 +53,7 @@ func (t *TemplateFunctions) checkFieldType(field interface{}) interface{} {
 	} else if kind == "[]interface {}" {
 		i := field.([]interface{})
 
-		var posts []domain.Post
+		var posts []ViewPost
 		for _, v := range i {
 			m := v.(map[string]interface{})
 			fieldType, found := m["type"]
