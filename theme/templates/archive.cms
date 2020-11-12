@@ -43,7 +43,7 @@
                </div>
            </div>
            <div class="row">
-               {{ $query := dict "limit" 100 "resource" "posts" "limit" 100  }}
+               {{ $query := dict "limit" 100 "resource" "posts" "limit" 100   }}
                {{ $posts := getPosts $query }}
                {{ if $posts }}
                    {{ range $post := $posts.Posts }}
