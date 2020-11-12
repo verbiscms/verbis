@@ -89,7 +89,6 @@ export default {
 			this.value = tagsArr
 		},
 		setDefault() {
-
 			if (!this.fields.length && this.getOptions['default_value'] && this.getOptions['default_value'].length) {
 				const opts = this.getOptions['default_value'];
 				let defaultVal = [];
@@ -108,7 +107,6 @@ export default {
 					this.selectedTags.push(tag)
 				});
 			}
-
 		}
 	},
 	computed: {

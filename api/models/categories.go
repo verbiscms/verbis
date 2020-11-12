@@ -121,8 +121,8 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 		return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op, Err: fmt.Errorf("name already exists")}
 	}
 
-	q := "INSERT INTO categories (uuid, slug, name, description, parent_id, resource, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	e, err := s.db.Exec(q, uuid.New().String(), c.Slug, c.Name, c.Description, c.ParentId, c.Resource)
+	q := "INSERT INTO categories (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
+	e, err := s.db.Exec(q, uuid.New().String(), c.Slug, c.Name, c.Description, c.ParentId, c.ArchiveId, c.Resource)
 	if err != nil {
 		fmt.Println(err)
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the categort with the name: %v", c.Name), Operation: op, Err: err}
@@ -153,8 +153,8 @@ func (s *CategoryStore) Update(c *domain.Category) error {
 		return err
 	}
 
-	q := "UPDATE categories SET slug = ?, name = ?, description = ?, resource = ?, parent_id = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, c.Slug, c.Name, c.Description, c.Resource, c.ParentId, c.Id)
+	q := "UPDATE categories SET slug = ?, name = ?, description = ?, resource = ?, parent_id = ?, archive_id = ?, updated_at = NOW() WHERE id = ?"
+	_, err = s.db.Exec(q, c.Slug, c.Name, c.Description, c.Resource, c.ParentId, c.ArchiveId, c.Id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the category with the name: %s", c.Name), Operation: op, Err: err}
 	}
