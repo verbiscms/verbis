@@ -2,6 +2,7 @@ package templates
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -9,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"html/template"
+	"strings"
 )
 
 type TemplateFunctions struct {
@@ -19,6 +21,11 @@ type TemplateFunctions struct {
 	fields map[string]interface{}
 	store *models.Store
 	options domain.Options
+}
+
+type TypeOfPage struct {
+	PageType string
+	Data interface{}
 }
 
 // Construct
@@ -48,7 +55,6 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 
 	// Get the categories associated with the post
 	category, _ := s.Categories.GetByPost(p.Id)
-
 
 	// New TemplateFunctions
 	return &TemplateFunctions{
@@ -113,7 +119,10 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 	 	return nil, err
 	 }
 
+	 fmt.Println(t.orderOfSearch())
+
 	 data := map[string]interface{}{
+	 	"Type": t.orderOfSearch(),
 		"Site": t.store.Site.GetGlobalConfig(),
 		"Theme": theme.Theme,
 		"Post": map[string]interface{}{
@@ -165,4 +174,48 @@ func (t *TemplateFunctions) isProduction() bool {
 func (t *TemplateFunctions) isDebug() bool {
 	return environment.IsDebug()
 }
+
+
+func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
+	const op = "Templates.orderOfSearch"
+
+	data := TypeOfPage{
+		PageType: "page",
+		Data: nil,
+	}
+
+	if t.post.Resource == nil {
+		return data
+	}
+
+	slug := t.post.Slug
+	slugArr := strings.Split(slug, "/")
+	last := slugArr[len(slugArr) - 1]
+
+
+	if t.store.Categories.ExistsBySlug(last) {
+
+		cat, err := t.store.Categories.GetBySlug(slug)
+		if err != nil {
+			return data
+		}
+
+		parentCat, err := t.store.Categories.GetById(cat.Id)
+		if err != nil {
+			data.PageType = "category_child_archive"
+			data.Data = cat
+			return data
+		}
+
+		data.PageType = "category_archive"
+		data.Data = parentCat
+
+	} else {
+		data.PageType = "archive"
+		data.Data = t.post.Resource
+	}
+
+	return data
+}
+
 
