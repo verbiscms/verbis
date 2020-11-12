@@ -90,8 +90,6 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
-	fmt.Println(q)
-
 	// Return not found error if no posts are available
 	if len(p) == 0 {
 		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
@@ -204,8 +202,6 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	// Check if the author is set assign to owner if not.
 	p.Author = s.checkOwner(*p)
 	p.UserId = p.Author
-
-	fmt.Println(p.PublishedAt)
 
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
