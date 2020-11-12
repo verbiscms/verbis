@@ -4,6 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
+
 			<!-- =====================
 				Header
 				===================== -->
@@ -170,6 +171,16 @@
 							</select>
 						</div>
 					</FormGroup><!-- /Layout -->
+					<!-- Archive -->
+					<FormGroup v-if="resource.name === 'page'" label="Archive">
+						<p>Select an archive, it can be a category or resource type.</p>
+						<div class="form-select-cont form-input">
+							<select class="form-select" id="properties-archive" v-model="data['archive_id']" @change="getFieldLayout">
+								<option value="" disabled selected>Select archive</option>
+								<option v-for="category in categories" :value="category.id" :key="category.uuid">{{ category.name }}</option>
+							</select>
+						</div>
+					</FormGroup><!-- /Layout -->
 					<!-- Published Date -->
 					<FormGroup label="Published date">
 						<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
@@ -232,6 +243,7 @@ export default {
 			"title": "",
 			"slug": "/",
 			"fields": {},
+			"archive_id": "",
 			"author": 0,
 			"status": "draft",
 			"page_template": "",
@@ -486,7 +498,11 @@ export default {
 		setDates() {
 			this.data["created_at"] = new Date(this.data['created_at']);
 			this.data["updated_at"] = new Date(this.data['updated_at']);
-			this.data["published_at"] = new Date(this.data['published_at']);
+			if (this.data.published_at !== null) {
+				this.data["published_at"] = new Date(this.data['published_at']);
+			} else {
+				this.data["published_at"] = new Date();
+			}
 		},
 		/*
 		 * save()
@@ -599,7 +615,7 @@ export default {
 				replacement: '-',    // replace spaces with replacement
 				remove: null,        // regex to remove characters
 				lower: true,         // result in lower case
-				strict: true, 		 // strip special characters except replacement, defaults to `false`
+			//	strict: true, 		 // strip special characters except replacement, defaults to `false`
 			})
 		},
 		/*
@@ -848,6 +864,11 @@ export default {
 			border-left: 1px solid $grey-light;
 			overflow-y: scroll;
 
+			p {
+				font-size: 0.8rem;
+				margin-bottom: 6px;
+			}
+
 			&-active {
 				transform: translateX(0);
 			}
@@ -900,14 +921,6 @@ export default {
 				}
 			}
 
-			&-category {
-
-
-				p {
-					font-size: 0.8rem;
-					margin-bottom: 6px;
-				}
-			}
 		}
 
 		// Mobile Down
