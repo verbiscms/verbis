@@ -93,7 +93,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 		},
 	}
 
-	fmt.Println(tmplParams.Category)
+	fmt.Println(tmplParams)
 
 	postParams := http.Params{
 		Page:           tmplParams.Page,
@@ -118,12 +118,13 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	var returnPosts []ViewPost
 	for _, post := range posts {
 		formattedPost := t.formatPost(post)
-		if tmplParams.Category == "" {
-			returnPosts = append(returnPosts, formattedPost)
-		}
-		if formattedPost.Category.Name == tmplParams.Category {
-			returnPosts = append(returnPosts, formattedPost)
-		}
+		returnPosts = append(returnPosts, formattedPost)
+		//if tmplParams.Category == "" {
+		//	returnPosts = append(returnPosts, formattedPost)
+		//}
+		//if formattedPost.Category.Name == tmplParams.Category {
+		//	returnPosts = append(returnPosts, formattedPost)
+		//}
 	}
 
 	return map[string]interface{}{

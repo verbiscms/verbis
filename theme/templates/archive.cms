@@ -49,7 +49,7 @@
                    {{ $category = .Name }}
                {{ end }}
 
-               {{ $query := dict "limit" 100 "resource" "posts" "limit" 100 "category" $category }}
+               {{ $query := dict "limit" 100 "resource" "posts" "limit" 100 }}
                {{ $posts := getPosts $query }}
                {{ if $posts.Posts }}
                    {{ range $post := $posts.Posts }}

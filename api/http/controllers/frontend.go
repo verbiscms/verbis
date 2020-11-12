@@ -244,6 +244,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	var b bytes.Buffer
   	if err := gvFrontend.RenderWriter(&b, pt, data); err != nil {
+  		fmt.Println(err)
   		panic(err)
 	}
 
