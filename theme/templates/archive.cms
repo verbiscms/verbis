@@ -43,9 +43,15 @@
                </div>
            </div>
            <div class="row">
-               {{ $query := dict "limit" 100 "resource" "posts" "limit" 100   }}
+
+               {{ $category := "" }}
+               {{ with .Type.Data }}
+                   {{ $category = .Name }}
+               {{ end }}
+
+               {{ $query := dict "limit" 100 "resource" "posts" "limit" 100 "category" $category }}
                {{ $posts := getPosts $query }}
-               {{ if $posts }}
+               {{ if $posts.Posts }}
                    {{ range $post := $posts.Posts }}
                        <div class="col-12 col-lg-4">
                            <a href="{{ $post.Slug }}" class="card shadow mb-4">
