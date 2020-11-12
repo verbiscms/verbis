@@ -171,16 +171,6 @@
 							</select>
 						</div>
 					</FormGroup><!-- /Layout -->
-					<!-- Archive -->
-					<FormGroup v-if="resource.name === 'page'" label="Archive">
-						<p>Select an archive, it can be a category or resource type.</p>
-						<div class="form-select-cont form-input">
-							<select class="form-select" id="properties-archive" v-model="data['archive_id']" @change="getFieldLayout">
-								<option value="" disabled selected>Select archive</option>
-								<option v-for="category in categories" :value="category.id" :key="category.uuid">{{ category.name }}</option>
-							</select>
-						</div>
-					</FormGroup><!-- /Layout -->
 					<!-- Published Date -->
 					<FormGroup label="Published date">
 						<DatePicker class="date" color="blue" :value="data['published_at']" v-model="data['published_at']"></DatePicker>
@@ -203,7 +193,7 @@ import CodeInjection from "@/components/editor/tabs/CodeInjection";
 import Insights from "@/components/editor/tabs/Insights";
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import Fields from "@/components/editor/tabs/Fields";
-import slugify from "slugify";
+// import slugify from "slugify";
 import Tabs from "@/components/misc/Tabs";
 import Popover from "@/components/misc/Popover";
 import FormGroup from "@/components/forms/FormGroup";
@@ -605,18 +595,6 @@ export default {
 		updateCodeInjection(e) {
 			this.data['codeinjection_head'] = e.header;
 			this.data['codeinjection_foot'] = e.footer;
-		},
-		/*
-		 * slugify()
-		 * Slugify's given input.
-		 */
-		slugify(text) {
-			return slugify(text, {
-				replacement: '-',    // replace spaces with replacement
-				remove: null,        // regex to remove characters
-				lower: true,         // result in lower case
-			//	strict: true, 		 // strip special characters except replacement, defaults to `false`
-			})
 		},
 		/*
 		 * resolveCategorySlug()

@@ -24,6 +24,7 @@ type Post struct {
 	PageTemplate	string						`db:"page_template" json:"page_template,omitempty" binding:"max=150"`
 	Layout			string						`db:"layout" json:"layout,omitempty" binding:"max=150"`
 	Fields			*json.RawMessage 			`db:"fields" json:"fields"`
+	//IsArchive		bool						`db:"is_archive" json:"is_archive"`
 	CodeInjectHead	*string 					`db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 	CodeInjectFoot	*string 					`db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
 	UserId 			int 						`db:"user_id" json:"-"`
