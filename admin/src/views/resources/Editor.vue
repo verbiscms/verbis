@@ -4,12 +4,12 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
-			{{ categoryArchive }}
 			<!-- =====================
 				Header
 				===================== -->
 			<div class="row">
 				<div class="col-12">
+					{{ data.options.seo }}
 					<!-- Header -->
 					<header class="header header-with-actions">
 						<div class="header-title">
@@ -97,7 +97,7 @@
 						<!-- Meta Options -->
 						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="data.slug"></MetaOptions>
 						<!-- Seo Options -->
-						<SeoOptions v-if="activeTab === 2" :key="3"></SeoOptions>
+						<SeoOptions v-if="activeTab === 2" :key="3" :seo.sync="data.options.seo"></SeoOptions>
 						<!-- Code Injection -->
 						<CodeInjection v-if="activeTab === 3" :key="4" :header="data.codeinjection_head" :footer="data.codeinjection_foot" @update="updateCodeInjection"></CodeInjection>
 						<!-- Seo Options -->
@@ -195,7 +195,6 @@ import CodeInjection from "@/components/editor/tabs/CodeInjection";
 import Insights from "@/components/editor/tabs/Insights";
 import DatePicker from 'v-calendar/lib/components/date-picker.umd'
 import Fields from "@/components/editor/tabs/Fields";
-// import slugify from "slugify";
 import Tabs from "@/components/misc/Tabs";
 import Popover from "@/components/misc/Popover";
 import FormGroup from "@/components/forms/FormGroup";
@@ -415,7 +414,7 @@ export default {
 				.then(res => {
 					const categories = res.data.data;
 					this.categories = categories;
-					if (!this.newItem) {
+					if (!this.newItem && categories.length) {
 						categories.forEach(c => {
 							if (c.archive_id === this.data.id) this.categoryArchive = true;
 						});
