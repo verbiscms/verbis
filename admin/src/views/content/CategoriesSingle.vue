@@ -7,7 +7,7 @@
 			<!-- Header -->
 			<div class="row">
 				<div class="col-12">
-					<pre>{{ data }}</pre>
+					{{ computedSlug }}
 					<header class="header header-with-actions">
 						<div class="header-title">
 							<h1 v-if="newItem">New category</h1>
@@ -20,7 +20,7 @@
 								<button v-if="!newItem" class="btn btn-fixed-height btn-orange btn-margin-right" @click.prevent="handleDelete" :class="{ 'btn-loading' : isDoingBulk }">
 									<span>Delete</span>
 								</button>
-								<button class="btn btn-fixed-height btn-orange" @click.prevent="save" :class="{ 'btn-loading' : doingAxios }">
+								<button class="btn btn-fixed-height btn-orange" @click.prevent="saveHandler" :class="{ 'btn-loading' : doingAxios }">
 									<span v-if="newItem">Save</span>
 									<span v-else>Update</span>
 								</button>
@@ -106,7 +106,7 @@
 									<FormGroup label="Resource*" :error="errors['resource']">
 										<div class="form-select-cont form-input">
 											<select class="form-select" v-model="data['resource']" @change="getPosts">
-												<option disbaled selected value="">Select resource</option>
+												<option disabled selected value="">Select resource</option>
 												<option value="pages">Pages</option>
 												<option v-for="(resource, resourceKey) in getTheme['resources']" :value="resourceKey" :key="resource.name">{{ resource['friendly_name'] }}</option>
 											</select>
@@ -130,10 +130,11 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body">
+									{{ data['parent_id'] }}
 									<FormGroup label="Parent">
 										<div class="form-select-cont form-input">
 											<select class="form-select" v-model="data['parent_id']">
-												<option selected value="">No parent</option>
+												<option selected :value="null">No parent</option>
 												<option v-for="category in categories" :value="category.id" :key="category.uuid">{{ category['name'] }}</option>
 											</select>
 										</div>
@@ -142,7 +143,7 @@
 							</template>
 						</Collapse><!-- /Parent-->
 						<!-- Archive Page -->
-						<Collapse v-if="data['resource'] !== '' && posts.length" :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['parent']}">
+						<Collapse :show="newItem" v-if="(data['resource'] !== '' && !newItem) || (data['resource'] !== '' && posts.length)" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['parent']}">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>
@@ -160,7 +161,6 @@
 										<vue-tags-input
 											v-model="tag"
 											:tags="selectedTags"
-											:autocomplete-always-open="false"
 											:autocomplete-items="filteredPosts"
 											@tags-changed="updateTags"
 											add-only-from-autocomplete
@@ -191,11 +191,34 @@
 				<p>Are you sure want to delete this category?</p>
 			</template>
 		</Modal>
+		<!-- =====================
+			Change Archive ID Modal
+			===================== -->
+		<Modal :show.sync="showWarningModal" class="modal-with-icon modal-with-warning modal-large">
+			<template slot="button">
+				<div class="category-modal-btns">
+					<button class="btn" :class="{ 'btn-loading' : isDeleting }" @click="save(false)">Update</button>
+					<button v-if="warnings['archive']" class="btn" :class="{ 'btn-loading' : isDeleting }" @click="save(true)">Update & delete old archive</button>
+				</div>
+			</template>
+			<template slot="text">
+				<h2>Warnings</h2>
+				<ul class="list">
+					<li v-if="warnings['slug']">
+						Changing the category slug will automatically rename all of the {{ data['resource'] }} slugs from<br /><code>{{ getResourceSlug }}{{ currentSavedSlug }}</code> to <code>{{ computedSlug }}</code>
+					</li>
+					<li v-if="warnings['archive']">
+						Changing the archive page will rename the <span class="t-bold">{{ getPostById(currentSavedArchive)  }}</span> post slug from <code>{{ getPostById(currentSavedArchive)['post']['slug'] }}</code> to <code>/untitled</code>.
+						You may want to change the slug or delete the old archive using the `Update & delete old archive` button below.
+					</li>
+				</ul>
+			</template>
+		</Modal>
 	</section>
 </template>
 
 <!-- =====================
-	Scripts //set the prop to 0. I think it's the behaviour you are looking for.
+	Scripts
 	===================== -->
 <script>
 
@@ -224,7 +247,7 @@ export default {
 			description: "",
 			slug: "",
 			resource: "",
-			parent_id: "",
+			parent_id: null,
 			archive_id: null,
 		},
 		newItem: true,
@@ -233,9 +256,13 @@ export default {
 		isDeleting: false,
 		isDoingBulk: false,
 		showDeleteModal: false,
+		showWarningModal: false,
 		selectedTags: [],
 		tags: [],
 		tag: "",
+		currentSavedSlug: false,
+		currentSavedArchive: false,
+		warnings: {},
 	}),
 	beforeMount() {
 		this.setNewUpdate();
@@ -282,16 +309,17 @@ export default {
 						this.$router.push({ name : 'not-found' })
 					}
 
-					category['parent_id'] = category['parent_id'] === null ? "" : category['parent_id'];
+					//category['parent_id'] = category['parent_id'] === null ? "" : category['parent_id'];
 					category['resource'] = category['resource'] === null ? "" : category['resource'];
+					this.currentSavedSlug = category['slug'];
+					this.currentSavedArchive = category['archive_id'] === null ? false :  category['archive_id']
 
 					this.data = category;
+
+					this.getPosts();
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
-				})
-				.finally(() => {
-					this.doingAxios = false;
 				})
 		},
 		/*
@@ -299,9 +327,9 @@ export default {
 		 * Obtain posts for the archive page selection.
 		 */
 		getPosts() {
-			this.axios.get(`/posts`, {
+			this.axios.get(`/posts?limit=all`, {
 				params: {
-					resource: this.data.resource,
+					resource: "pages",
 				}
 			})
 				.then(res => {
@@ -315,27 +343,30 @@ export default {
 							};
 						});
 					}
+					this.setTags();
 				})
 				.catch(err => {
-					console.log(err);
 					this.helpers.handleResponse(err);
+				})
+				.finally(() => {
+					this.doingAxios = false;
 				})
 		},
 		/*
 		 * save()
 		 * Save or update the new category.
 		 */
-		save() {
+		save(deleteArchive = false) {
 			this.doingAxios = true;
 
 			// Set parent to null if empty string
 			// or set the resource if there is a parent association
-			if (this.data['parent_id'] === "") {
-				this.$set(this.data, 'parent_id', null)
-			} else {
+			if (this.data['parent_id'] !== null) {
 				const parent = this.findParent(this.data['parent_id']);
 				this.$set(this.data, 'resource', parent['resource']);
 			}
+
+			console.log(deleteArchive);
 
 			// Set the computed slug
 			this.$set(this.data, 'slug', this.saveSlug);
@@ -358,7 +389,6 @@ export default {
 						this.newItem = false;
 					})
 					.catch(err => {
-
 						this.helpers.checkServer(err);
 						if (err.response.status === 400) {
 							this.validate(err.response.data.data.errors);
@@ -366,21 +396,34 @@ export default {
 							this.setAllHeight();
 							return;
 						}
-						console.log(err.response)
 						this.$noty.error(err.response.data.message);
 					})
 					.finally(() => {
 						setTimeout(() => {
 							this.doingAxios = false;
+							this.showWarningModal = false;
 						}, this.timeoutDelay);
+						this.getPosts();
 					});
 			} else {
-				this.axios.put('/categories' + this.$route.params.id, this.data)
+				this.axios.put('/categories/' + this.$route.params.id, this.data)
 					.then(() => {
 						this.errors = {};
-						this.$noty.success("Successfully updated category");
+
+						if (!deleteArchive) {
+							this.$noty.success("Successfully updated category");
+						} else {
+							this.deleteArchive()
+								.then(() => {
+									this.$noty.success("Successfully updated category & deleted archive");
+								})
+								.catch(err => {
+									throw err
+								});
+						}
 					})
 					.catch(err => {
+						console.log(err);
 						this.helpers.checkServer(err);
 						if (err.response.status === 400) {
 							this.validate(err.response.data.data.errors);
@@ -388,15 +431,39 @@ export default {
 							this.setAllHeight();
 							return;
 						}
-						console.log(err.response)
 						this.$noty.error(err.response.data.message);
 					})
 					.finally(() => {
-						setTimeout(() => {
-							this.doingAxios = false;
-						}, this.timeoutDelay);
+						this.showWarningModal = false;
+						this.getPosts();
+						if (!deleteArchive) {
+							setTimeout(() => {
+								this.doingAxios = false;
+							}, this.timeoutDelay)
+						}
 					});
 			}
+		},
+		/*
+		 * saveHandler()
+		 */
+		saveHandler() {
+			this.warnings = {};
+
+			if (this.data['slug'] !== '' && !this.newItem && (this.saveSlug !== this.currentSavedSlug)) {
+				this.$set(this.warnings, "slug", true)
+			}
+
+			if (this.data['archive_id'] !== null && this.currentSavedArchive && (this.currentSavedArchive !== this.data['archive_id'])) {
+				this.$set(this.warnings, "archive", true)
+			}
+
+			if (!this.helpers.isEmptyObject(this.warnings)) {
+				this.showWarningModal = true;
+				return
+			}
+
+			this.save(false);
 		},
 		/*
 		 * findParent()
@@ -429,6 +496,12 @@ export default {
 				})
 		},
 		/*
+		 * deleteArchive()
+		 */
+		async deleteArchive() {
+			return this.axios.delete("/posts/" + this.currentSavedArchive)
+		},
+		/*
 		 * setNewUpdate()
 		 * Determine if the page is new or if it already exists.
 		 */
@@ -442,12 +515,28 @@ export default {
 			}
 		},
 		/*
+		 * setTags()
+		 * Push to the selected tags if the archive ID is set.
+		 */
+		setTags() {
+			const archiveId = this.data['archive_id'];
+			if (archiveId && this.posts.length) {
+				const post = this.getPostById(archiveId);
+				if (post) {
+					this.selectedTags.push({
+						text: post.post.title,
+						id: this.data['archive_id'],
+					});
+				}
+			}
+		},
+		/*
  		 * updateTags()
  		 * Assign the new category ID to the data if it exists.
 		 */
 		updateTags(category) {
 			if (category.length) {
-				this.$set(this.data, 'archive_id', category[0].id);
+				this.$set(this.data, 'archive_id', parseInt(category[0].id));
 			} else {
 				this.$set(this.data, 'archive_id', null);
 			}
@@ -462,6 +551,16 @@ export default {
 			});
 		},
 		/*
+		 * getPostById()
+		 */
+		getPostById(id) {
+			return this.posts.find(p => {
+				console.log(id);
+				console.log(p.post.id)
+				return p.post.id === id
+			});
+		},
+		/*
  		 * validate()
 		 * Add errors if the post/put failed.
 		 */
@@ -473,6 +572,18 @@ export default {
 		},
 	},
 	computed: {
+		/*
+		 * getResourceSlug()
+		 * Get resource slug from the data to show in the warnings.
+		 */
+		getResourceSlug() {
+			if (this.data['resource'] === "pages") return "/fuck";
+			const resource = this.getTheme['resources'][this.data.resource]
+			if ('slug' in resource) {
+				return resource.slug + "/";
+			}
+			return "/wank";
+		},
 		/*
 		 * filteredPosts()
 		 * Retrieve the posts for the select tags.
@@ -493,7 +604,7 @@ export default {
 					return parent['slug'] + "/" + this.slugify(this.slug ? this.slug : this.data['name']);
 				}
 			}
-			if (this.data['resource'] === "page") {
+			if (this.data['resource'] === "pages") {
 				return "/" + this.slugify(this.slug ? this.slug : this.data['name']);
 			}
 			const resourceSlug = this.data['resource'] === "" ? "/" : "/" + this.data["resource"] + "/";

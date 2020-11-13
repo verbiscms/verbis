@@ -7,6 +7,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+	"strconv"
 )
 
 // CategoryRepository defines methods for Categories to interact with the database
@@ -17,13 +18,14 @@ type CategoryRepository interface {
 	GetBySlug(slug string) (domain.Category, error)
 	Create(c *domain.Category) (domain.Category, error)
 	Update(c *domain.Category) error
-	InsertPostCategory(postId int, categoryId *int) error
-	DeletePostCategories(id int) error
 	Delete(id int) error
 	Exists(id int) bool
 	ExistsByName(name string) bool
 	ExistsBySlug(slug string) bool
+	InsertPostCategory(postId int, categoryId *int) error
+	DeletePostCategories(id int) error
 	Total() (int, error)
+	changeArchivePostSlug(id int, slug string, resource string) error
 }
 
 // CategoryStore defines the data layer for Categories
@@ -122,16 +124,21 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 	}
 
 	q := "INSERT INTO categories (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	e, err := s.db.Exec(q, uuid.New().String(), c.Slug, c.Name, c.Description, c.ParentId, c.ArchiveId, c.Resource)
+	e, err := s.db.Exec(q, uuid.New().String(), c.Slug, c.Name, c.Description, c.ParentId, c.Resource, c.ArchiveId)
 	if err != nil {
-		fmt.Println(err)
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the categort with the name: %v", c.Name), Operation: op, Err: err}
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the category with the name: %v", c.Name), Operation: op, Err: err}
 	}
 
 	id, err := e.LastInsertId()
 	if err != nil {
-		fmt.Println(err)
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created category ID with the name: %v", c.Name), Operation: op, Err: err}
+	}
+
+	if c.ArchiveId != nil {
+		err := s.changeArchivePostSlug(*c.ArchiveId, c.Slug, c.Resource)
+		if err != nil {
+			return domain.Category{}, err
+		}
 	}
 
 	nc, err := s.GetById(int(id))
@@ -148,7 +155,7 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 func (s *CategoryStore) Update(c *domain.Category) error {
 	const op = "CategoryRepository.Update"
 
-	_, err := s.GetById(c.Id)
+	oldCategory, err := s.GetById(c.Id)
 	if err != nil {
 		return err
 	}
@@ -157,6 +164,28 @@ func (s *CategoryStore) Update(c *domain.Category) error {
 	_, err = s.db.Exec(q, c.Slug, c.Name, c.Description, c.Resource, c.ParentId, c.ArchiveId, c.Id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the category with the name: %s", c.Name), Operation: op, Err: err}
+	}
+
+	if oldCategory.ArchiveId != c.ArchiveId {
+		s.resolveNewPostSlug(*oldCategory.ArchiveId, c.Resource)
+	}
+
+	if oldCategory.Slug != c.Slug {
+		// update the posts
+		var ids []int
+		q := "SELECT id FROM posts WHERE slug LIKE '%" + oldCategory.Slug + "%'"
+		fmt.Println(q)
+		if err := s.db.Select(&ids, q); err != nil {
+			return &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
+		}
+		fmt.Println(ids)
+	}
+
+	if c.ArchiveId != nil {
+		err := s.changeArchivePostSlug(*c.ArchiveId, c.Slug, c.Resource)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -168,7 +197,7 @@ func (s *CategoryStore) Update(c *domain.Category) error {
 func (s *CategoryStore) Delete(id int) error {
 	const op = "CategoryRepository.Delete"
 
-	_, err := s.GetById(id)
+	c, err := s.GetById(id)
 	if err != nil {
 		return err
 	}
@@ -181,8 +210,13 @@ func (s *CategoryStore) Delete(id int) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete post category with the ID: %v", id), Operation: op, Err: err}
 	}
 
+	if c.ArchiveId != nil {
+		s.resolveNewPostSlug(*c.ArchiveId, c.Resource)
+	}
+
 	return nil
 }
+
 
 // Exists Checks if a category exists by the given Id
 func (s *CategoryStore) Exists(id int) bool {
@@ -219,7 +253,6 @@ func (s *CategoryStore) InsertPostCategory(postId int, categoryId *int) error {
 		q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
 		_, err := s.db.Exec(q, postId, categoryId)
 		if err != nil {
-			fmt.Println(err)
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postId), Operation: op, Err: err}
 		}
 	}
@@ -244,4 +277,34 @@ func (s *CategoryStore) Total() (int, error) {
 		return -1, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the total number of categories"), Operation: op, Err: err}
 	}
 	return total, nil
+}
+
+// changeArchivePostSlug changes the archive post slug when updating.
+// Returns errors.INTERNAL if the SQL query was invalid or the new slug exists
+func (s *CategoryStore) changeArchivePostSlug(id int, slug string, resource string) error {
+	const op = "CategoryRepository.ChangeArchivePostSlug"
+	newSlug := ""
+	if resource != "pages" {
+		newSlug += "/" + resource
+	}
+	newSlug += "/" + slug
+	if _, err := s.db.Exec("UPDATE posts SET slug = ? WHERE id = ?", newSlug, id); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the posts table with the new slug: %s", slug), Operation: op, Err: err}
+	}
+	return nil
+}
+
+// resolveNewPostSlug adds untitled to the new slug if it already exists.
+func (s *CategoryStore) resolveNewPostSlug(id int, resource string) {
+	slug := "untitled"
+	counter := 1
+	for {
+		err := s.changeArchivePostSlug(id, slug, resource)
+		if err != nil {
+			slug = "untitled-" + strconv.Itoa(counter)
+			counter ++
+			continue
+		}
+		break
+	}
 }

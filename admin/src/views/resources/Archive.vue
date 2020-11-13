@@ -304,13 +304,10 @@ export default {
 		 * NOTE: paramsSerializer is required here.
 		 */
 		getPosts() {
-			const resource = this.$route.params.resource;
-			const url = /resources/ + resource;
-
-			this.axios.get(`${url}?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
-				paramsSerializer: function(params) {
-					return params;
-				}
+			this.axios.get(`/posts?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
+				params: {
+					resource: this.$route.params.resource,
+				},
 			})
 				.then(res => {
 					this.posts = {};
@@ -426,7 +423,7 @@ export default {
 		setResource() {
 			const resource = this.getResources[this.$route.params.resource]
 			this.resource = resource === undefined ? {
-				"name": "page",
+				"name": "pages",
 				"friendly_name": "Pages",
 				"singular_name": "Page",
 				"slug": "",
