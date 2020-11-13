@@ -240,6 +240,9 @@ export default {
 		getMessage() {
 			if (this.$route.query.delete) {
 				this.$noty.success("Successfully deleted category.")
+				let query = Object.assign({}, this.$route.query);
+				delete query.delete;
+				this.$router.replace({ query });
 			}
 		},
 		/*

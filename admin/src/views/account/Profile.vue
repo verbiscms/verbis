@@ -445,7 +445,7 @@ export default {
 		 * Return media for filtering profile picture.
 		 */
 		async getMedia() {
-			await this.axios.get("/media")
+			await this.axios.get("/media?limit=all")
 				.then(res => {
 					this.media = res.data.data;
 				})
