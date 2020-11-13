@@ -175,7 +175,7 @@ func (s *CategoryStore) Update(c *domain.Category) error {
 		if err := s.db.Select(&posts,"SELECT * FROM posts WHERE slug LIKE '%" + oldCategory.Slug + "%'"); err != nil {
 			return &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
 		}
-		for k, v
+		//for k, v
 	}
 
 	if c.ArchiveId != nil {
