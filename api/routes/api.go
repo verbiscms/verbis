@@ -50,9 +50,6 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 			operator.PUT("/posts/:id", c.Posts.Update)
 			operator.DELETE("/posts/:id", c.Posts.Delete)
 
-			// Resources
-			operator.GET("/resources/:resource", c.Posts.Get)
-
 			// Fields
 			operator.GET("/fields", c.Fields.Get)
 

@@ -4,6 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
+			{{ categoryArchive }}
 			<!-- =====================
 				Header
 				===================== -->
@@ -77,9 +78,10 @@
 								<FormGroup class="form-group-no-margin" :error="errors['title']">
 									<input class="editor-title-text" type="text" placeholder="Add title" v-model="data.title">
 								</FormGroup>
-								<div class="editor-slug">
-									<div class="editor-slug-text" @click="slugBtn = true">
-										<i class="feather feather-edit-2"></i>
+								<div class="editor-slug" :class="{ 'editor-slug-disabled' : categoryArchive }">
+									<div class="editor-slug-text" @click="slugBtn = !categoryArchive ">
+										<i class="feather feather-edit-2" v-if="!categoryArchive"></i>
+										<i class="feather feather-slash" v-else></i>
 										<p>{{ computedSlug }}</p>
 									</div>
 									<div v-if="slugBtn" class="editor-slug-form" :class="{ 'editor-slug-form-active' : slugBtn }">
@@ -87,6 +89,7 @@
 										<i class="editor-slug-save feather feather-save" @click.prevent="saveSlug"></i>
 										<i class="editor-slug-close feather feather-x-circle" @click="closeSlug"></i>
 									</div>
+									<div v-if="categoryArchive" class="badge badge-orange">Category archive</div>
 								</div>
 							</div>
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
@@ -138,7 +141,7 @@
 						</div>
 					</FormGroup><!-- /Author -->
 					<!-- Categories -->
-					<FormGroup label="Category">
+					<FormGroup v-if="!categoryArchive" label="Category">
 						<div v-if="categories.length" class="form-select-cont form-input">
 							<select class="form-select" id="options-categories" v-model="data['category']" @change="getFieldLayout">
 								<option :value="null" selected>No category</option>
@@ -226,6 +229,7 @@ export default {
 		resource: {},
 		categories: [],
 		newItem: false,
+		categoryArchive: false,
 		errorTrigger: false,
 		errors: {},
 		data: {
@@ -279,7 +283,7 @@ export default {
 						this.getFieldLayout();
 					})
 			} else {
-				Promise.all([this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
+				Promise.all([this.getUsers(), this.getLayouts(), this.getTemplates()])
 					.then(() => {
 						this.doingAxios = false;
 						this.loadingLayouts = false;
@@ -301,9 +305,7 @@ export default {
 		 */
 		setDefaultLayout() {
 			if (!this.fieldLayout.length) {
-				console.log(this.fieldLayout);
 				this.fieldLayout.push(JSON.parse(this.defaultLayout));
-				console.log(this.fieldLayout);
 			}
 		},
 		/*
@@ -339,7 +341,7 @@ export default {
 		 */
 		async getResourceData() {
 			const id = this.$route.params.id;
-			return await this.axios.get(`/posts/${id}`)
+			await this.axios.get(`/posts/${id}`)
 				.then(res => {
 					const post = res.data.data.post;
 					this.data = post;
@@ -368,7 +370,9 @@ export default {
 					}
 
 					// Set date format
-					this.setDates()
+					this.setDates();
+
+					this.getCategories();
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
@@ -380,7 +384,7 @@ export default {
 		 */
 		async getFieldLayout() {
 			this.loadingLayouts = true;
-			return await this.axios.get("/fields", {
+			await this.axios.get("/fields", {
 				params: {
 					"layout": this.data['layout'],
 					"resource": this.resource.name,
@@ -403,13 +407,19 @@ export default {
 		 * Obtain the categories.
 		 */
 		async getCategories() {
-			return await this.axios.get(`/categories?filter={"resource":[{"operator":"=", "value": "${this.resource['name']}"}]}`, {
+			await this.axios.get(`/categories?filter={"resource":[{"operator":"=", "value": "${this.resource['name']}"}]}`, {
 				paramsSerializer: function (params) {
 					return params;
 				}
 			})
 				.then(res => {
-					this.categories = res.data.data;
+					const categories = res.data.data;
+					this.categories = categories;
+					if (!this.newItem) {
+						categories.forEach(c => {
+							if (c.archive_id === this.data.id) this.categoryArchive = true;
+						});
+					}
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
@@ -462,7 +472,7 @@ export default {
 		async setResource() {
 			const resource = this.getTheme['resources'][this.$route.query.resource];
 			this.resource = resource === undefined ? {
-				"name": "page",
+				"name": "pages",
 				"friendly_name": "Page",
 				"singular_name": "Page",
 				"slug": "",
@@ -756,6 +766,10 @@ export default {
 				transition: 200ms ease color;
 			}
 
+			.badge {
+				margin-left: 10px;
+			}
+
 			&-text {
 				display: inline-flex;
 				align-items: center;
@@ -766,13 +780,13 @@ export default {
 					margin: 0;
 					line-height: 1.3;
 				}
+			}
 
-				&:hover {
+			&:not(&-disabled) &-text:hover  {
 
-					p,
-					i {
-						color: $primary;
-					}
+				p,
+				i {
+					color: $primary;
 				}
 			}
 
@@ -796,6 +810,13 @@ export default {
 
 				&-active {
 					opacity: 1;
+				}
+			}
+
+			&-disabled {
+
+				i {
+					color: $orange;
 				}
 			}
 

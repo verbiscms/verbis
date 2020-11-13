@@ -1,0 +1,21 @@
+// -----------------------------------------------------------------------------
+// _list.scss
+// This file contains all styles related to the list component.
+// -----------------------------------------------------------------------------
+
+.list {
+	list-style-type: circle;
+	margin-left: 20px;
+	margin-top: 10px;
+
+	li {
+		display: list-item;
+		//width: 100%;
+		text-align: left !important;
+		margin-bottom: 10px;
+		@include px-to-rem(13);
+		color: rgba($secondary, 0.80);
+		font-weight: normal;
+		line-height: 1.6;
+	}
+}
