@@ -9,7 +9,6 @@
 				===================== -->
 			<div class="row">
 				<div class="col-12">
-					{{ data.options.seo }}
 					<!-- Header -->
 					<header class="header header-with-actions">
 						<div class="header-title">

@@ -27,7 +27,7 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 		s.GET("/uploads/*any", c.Frontend.GetUploads)
 
 		// Robots
-		s.StaticFile("/robots.txt", paths.Theme() + "/robots.txt")
+		s.GET("/robots.txt", c.Frontend.Robots)
 
 		// Favicon
 		s.StaticFile("/favicon.ico", paths.Theme() + "/favicon.ico")

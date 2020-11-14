@@ -31,7 +31,6 @@ func (s *Seeder) runOptions() error {
 		"social_pinterest" : "",
 		"footer_text" : "",
 		"footer_disclosure" : "",
-		"seo_public" : false,
 		// Code Injection
 		"codeinjection_head": "",
 		"codeinjection_foot": "",
@@ -44,6 +43,11 @@ func (s *Seeder) runOptions() error {
 		"meta_twitter_title" : "",
 		"meta_twitter_description" : "",
 		"meta_twitter_image_id" : 0,
+		// SEO
+		"seo_public" : false,
+		"seo_sitemap_serve" : true,
+		"seo_sitemap_excluded" : []string{},
+		"seo_robots" : "\"User-Agent: *\\nAllow: /\"",
 		// Media
 		"media_compression": 80,
 		"media_convert_webp": true,

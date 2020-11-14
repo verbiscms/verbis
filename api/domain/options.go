@@ -18,8 +18,6 @@ type Options struct {
 	SiteDescription 		string 					`json:"site_description" binding:"required"`
 	SiteLogo 				string 					`json:"site_logo" binding:"required"`
 	SiteUrl 				string 					`json:"site_url" binding:"required,url"`
-	// SEO
-	SeoPublic 				bool 					`json:"seo_public"`
 	// General
 	GeneralLocale 			string 					`json:"general_locale" binding:"required"`
 	// Contact
@@ -45,6 +43,11 @@ type Options struct {
 	MetaTwitterTitle		string 					`json:"meta_twitter_title" binding:"omitempty"`
 	MetaTwitterDescription	string 					`json:"meta_twitter_description" binding:"omitempty"`
 	MetaTwitterImageId		int 					`json:"meta_twitter_image_id" binding:"omitempty,numeric"`
+	// SEO
+	SeoPublic 				bool 					`json:"seo_public"`
+	SeoSitemapServe			string					`json:"seo_sitemap_serve"`
+	SeoSitemapExcluded		string					`json:"seo_sitemap_excluded"`
+	SeoRobots				string					`json:"seo_robots"`
 	// Media
 	MediaCompression		int 					`json:"media_compression" binding:"required"`
 	MediaConvertWebP 		bool 					`json:"media_convert_webp"`
