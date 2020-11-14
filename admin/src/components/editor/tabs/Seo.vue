@@ -40,7 +40,7 @@
 					<div class="card-header">
 						<div>
 							<h4 class="card-title">Override canonical?</h4>
-							<p>Verbis automatically generates a canonical for the page, if you wish to override it, enter a URL below.</p>
+							<p>Verbis automatically generates a canonical for the page, if you wish to override it, enter a URL below. Ensure to add the entire url, for example <code>https://verbiscms.com/posts</code>.</p>
 						</div>
 						<div class="card-controls">
 							<i class="feather feather-chevron-down"></i>
@@ -50,7 +50,7 @@
 				<template v-slot:body>
 					<div class="card-body">
 						<!-- Url -->
-						<FormGroup label="Site title*" :error="errors['site_url']">
+						<FormGroup label="Url" :error="errors['site_url']">
 							<input class="form-input form-input-white" type="text" v-model="data['canonical']" @keyup="emit">
 						</FormGroup>
 					</div><!-- /Card Body -->
@@ -100,7 +100,14 @@ export default {
 		}
 	},
 	methods: {
+		/*
+		 * emit()
+		 * Update the parent SEO object.
+		 */
 		emit() {
+			if (this.data['canonical'] === "") {
+				this.$set(this.data, 'canonical', null)
+			}
 			this.$emit("update:seo", this.data);
 		}
 	},

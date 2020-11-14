@@ -110,7 +110,7 @@ export default {
 		 * Return html for prism editor.
 		 */
 		highlighter(code) {
-			return highlight(code, languages.html);
+			return highlight(code, languages.html, "html");
 		},
 	}
 }

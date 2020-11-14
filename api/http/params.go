@@ -23,7 +23,7 @@ type Filter struct {
 // PaginationAllLimit defines how many items will be returned if
 // the limit is set to list all
 const (
-	PaginationAllLimit = 999999
+	PaginationAllLimit = 99999999999999
 	PaginationDefault = 15
 )
 

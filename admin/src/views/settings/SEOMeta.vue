@@ -61,20 +61,22 @@
 					<h6 class="margin">Sitemap</h6>
 					<div class="card card-small-box-shadow card-expand">
 						<!-- Serve Sitemap -->
-						<div class="collapse-border-bottom">
-							<div class="card-header card-header-block">
-								<div>
-									<h4 class="card-title">Serve sitemap?</h4>
-									<p>By disabling this selection the <code>/sitemap.xml</code> file will not be automatically served from the Verbis server.</p>
-								</div>
-								<div class="toggle">
-									<input type="checkbox" class="toggle-switch" id="seo-sitemap-serve" v-model="data['seo_serve_sitemap']" checked :true-value="true" :false-value="false" />
-									<label for="seo-serve-sitemap"></label>
-								</div>
-							</div><!-- /Card Header -->
-						</div><!-- /Public -->
-						<!-- View -->
 						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header card-header-block">
+									<div>
+										<h4 class="card-title">Serve sitemap?</h4>
+										<p>By disabling this selection the <code>/sitemap.xml</code> file will not be automatically served from the Verbis server.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="seo-sitemap-serve" v-model="data['seo_sitemap_serve']" checked :true-value="true" :false-value="false" />
+										<label for="seo-sitemap-serve"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Serve Sitemap -->
+						<!-- View -->
+						<Collapse v-if="data['seo_sitemap_serve']" :show="false" class="collapse-border-bottom">
 							<template v-slot:header>
 								<div class="card-header">
 									<div>
@@ -88,8 +90,10 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body">
-									<button class="btn">Open in new tab</button>
-									Sitemap goes here
+									<div class="seo-sitemap-btn">
+										<a :href="getSiteUrl + '/sitemap.xml'" class="btn" target="_blank">Open in new tab</a>
+									</div>
+									<prism-editor class="prism prism-large" v-model="sitemap" :readonly="true" :highlight="highlighter"></prism-editor>
 								</div><!-- /Card Body -->
 							</template>
 						</Collapse><!--/ View -->
@@ -130,7 +134,22 @@
 				<div class="col-12">
 					<h6 class="margin">Robots</h6>
 					<div class="card card-small-box-shadow card-expand">
-						<!-- View -->
+						<!-- Serve Robots -->
+						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header card-header-block">
+									<div>
+										<h4 class="card-title">Serve robots?</h4>
+										<p>By disabling this selection the <code>/robots.text</code> file will not be automatically served from the Verbis server.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="seo-robots-serve" v-model="data['seo_robots_serve']" checked :true-value="true" :false-value="false" />
+										<label for="seo-robots-serve"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Serve Robots -->
+						<!-- Content -->
 						<Collapse :show="false" class="collapse-border-bottom">
 							<template v-slot:header>
 								<div class="card-header">
@@ -150,7 +169,7 @@
 									</FormGroup>
 								</div><!-- /Card Body -->
 							</template>
-						</Collapse><!--/ View -->
+						</Collapse><!--/Content -->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 			</div><!-- /Row -->
@@ -169,6 +188,8 @@ import MetaForm from "@/components/meta/Meta";
 import Collapse from "../../components/misc/Collapse";
 import FormGroup from "../../components/forms/FormGroup";
 import VueTagsInput from '@jack_reddico/vue-tags-input';
+import { highlight, languages } from 'prismjs/components/prism-core';
+import 'prismjs/components/prism-markup';
 
 export default {
 	name: "SeoMeta",
@@ -192,7 +213,11 @@ export default {
 		selectedTags: [],
 		tags: [],
 		tag: "",
+		sitemap: "hey",
 	}),
+	mounted() {
+		this.getSitemap();
+	},
 	methods: {
 		/*
 		 * runAfterGet()
@@ -263,6 +288,25 @@ export default {
 				this.helpers.setHeight(this.$refs.resources.closest(".collapse-content"));
 			});
 		},
+		/*
+		 * getSitemap()
+		 * Obtain the sitemap.xml file from the API.
+		 */
+		getSitemap() {
+			this.axios.get("/sitemap.xml", {
+				baseURL: ""
+			})
+				.then(res => {
+					this.sitemap = res.data;
+				});
+		},
+		/*
+		 * highlighter()
+		 * Return xml for prism editor.
+		 */
+		highlighter(code) {
+			return highlight(code, languages.xml, "xml");
+		},
 	},
 	computed: {
 		/*
@@ -298,3 +342,25 @@ export default {
 }
 
 </script>
+
+<!-- =====================
+	Styles
+	===================== -->
+<style scoped lang="scss">
+
+.seo {
+
+	// Sitemap
+	// =========================================================================
+
+	&-sitemap-btn {
+		top: 0;
+		right: 1.2rem;
+		position: absolute;
+		display: flex;
+		justify-content: flex-end;
+		z-index: 99;
+	}
+}
+
+</style>

@@ -175,7 +175,9 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 
 	// Convert the PostCreate type to type of Post to be returned
 	// to the controller, used for binding & validation.
-	if err := s.seoMetaModel.UpdateCreate(&post); err != nil {
+	convertedPost := s.convertToPost(*p)
+	convertedPost.Id = int(id)
+	if err := s.seoMetaModel.UpdateCreate(&convertedPost); err != nil {
 		return domain.Post{},  err
 	}
 
