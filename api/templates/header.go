@@ -30,47 +30,70 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 		b.WriteString(t.options.CodeInjectionHead)
 	}
 
-	// Check if the site is public
-	if t.options.SeoPublic {
+	// Obtain SEO & set post public
+	var seo domain.PostSeo
+	postSeo := t.post.SeoMeta.Seo
+	postPublic := true
+	if postSeo != nil {
+		err := json.Unmarshal(*t.post.SeoMeta.Seo, &seo)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal post seo", Operation: op, Err: err},
+			}).Error()
+		}
+		if !seo.Public {
+			postPublic = false
+		}
+	}
 
-		// Obtain Meta
-		var meta domain.PostMeta
-		postMeta := t.post.SeoMeta.Meta
-		if postMeta != nil {
+	// Check if the site is public or page is public
+	if !t.options.SeoPublic || !postPublic {
+		b.WriteString(`<meta name="robots" content="noindex">`)
+	}
 
-			err := json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
-			if err != nil {
-				log.WithFields(log.Fields{
-					"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-				}).Error()
-			}
+	// Write the Canonical
+	if seo.Canonical != nil && *seo.Canonical != "" {
+		b.WriteString(fmt.Sprintf("<link rel=\"canonical\" href=\"%s\" />", *seo.Canonical))
+	} else {
+		b.WriteString(fmt.Sprintf("<link rel=\"canonical\" href=\"%s\" />", t.site.Url + t.post.Slug))
+	}
 
-			if meta.Description != "" {
-				t.writeMeta(&b, meta.Description)
-			} else {
-				t.writeMeta(&b, t.options.MetaDescription)
-			}
+	// Obtain Meta
+	var meta domain.PostMeta
+	postMeta := t.post.SeoMeta.Meta
+	if postMeta != nil {
 
-			if meta.Facebook.Title != "" || meta.Facebook.Description != "" {
-				t.writeFacebook(&b, meta.Facebook.Title, meta.Facebook.Title, meta.Facebook.ImageId)
-			} else {
-				t.writeFacebook(&b, t.options.MetaFacebookTitle, t.options.MetaFacebookDescription, t.options.MetaFacebookImageId)
-			}
+		err := json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal post meta", Operation: op, Err: err},
+			}).Error()
+		}
 
-			if meta.Twitter.Title != "" || meta.Twitter.Description != "" {
-				t.writeTwitter(&b, meta.Twitter.Title, meta.Twitter.Description, meta.Twitter.ImageId)
-			} else {
-				t.writeTwitter(&b, t.options.MetaTwitterTitle, t.options.MetaTwitterDescription, t.options.MetaTwitterImageId)
-			}
-
+		if meta.Description != "" {
+			t.writeMeta(&b, meta.Description)
 		} else {
 			t.writeMeta(&b, t.options.MetaDescription)
+		}
+
+		if meta.Facebook.Title != "" || meta.Facebook.Description != "" {
+			t.writeFacebook(&b, meta.Facebook.Title, meta.Facebook.Title, meta.Facebook.ImageId)
+		} else {
 			t.writeFacebook(&b, t.options.MetaFacebookTitle, t.options.MetaFacebookDescription, t.options.MetaFacebookImageId)
+		}
+
+		if meta.Twitter.Title != "" || meta.Twitter.Description != "" {
+			t.writeTwitter(&b, meta.Twitter.Title, meta.Twitter.Description, meta.Twitter.ImageId)
+		} else {
 			t.writeTwitter(&b, t.options.MetaTwitterTitle, t.options.MetaTwitterDescription, t.options.MetaTwitterImageId)
 		}
+
 	} else {
-		b.WriteString("<meta name=\"robots\" content=\"noindex\">")
+		t.writeMeta(&b, t.options.MetaDescription)
+		t.writeFacebook(&b, t.options.MetaFacebookTitle, t.options.MetaFacebookDescription, t.options.MetaFacebookImageId)
+		t.writeTwitter(&b, t.options.MetaTwitterTitle, t.options.MetaTwitterDescription, t.options.MetaTwitterImageId)
 	}
+
 
 	return template.HTML(gohtml.Format(b.String()))
 }

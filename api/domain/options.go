@@ -45,8 +45,9 @@ type Options struct {
 	MetaTwitterImageId		int 					`json:"meta_twitter_image_id" binding:"omitempty,numeric"`
 	// SEO
 	SeoPublic 				bool 					`json:"seo_public"`
-	SeoSitemapServe			string					`json:"seo_sitemap_serve"`
-	SeoSitemapExcluded		string					`json:"seo_sitemap_excluded"`
+	SeoSitemapServe			bool					`json:"seo_sitemap_serve"`
+	SeoSitemapExcluded		[]string				`json:"seo_sitemap_excluded"`
+	SeoRobotsServe			bool					`json:"seo_robots_serve"`
 	SeoRobots				string					`json:"seo_robots"`
 	// Media
 	MediaCompression		int 					`json:"media_compression" binding:"required"`

@@ -94,7 +94,7 @@
 							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
-						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="data.slug"></MetaOptions>
+						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"></MetaOptions>
 						<!-- Seo Options -->
 						<SeoOptions v-if="activeTab === 2" :key="3" :seo.sync="data.options.seo"></SeoOptions>
 						<!-- Code Injection -->
@@ -295,6 +295,9 @@ export default {
 		getSuccessMessage() {
 			if (this.$route.query.success) {
 				this.$noty.success("Successfully created new page.")
+				let query = Object.assign({}, this.$route.query);
+				delete query.success;
+				this.$router.replace({ query });
 			}
 		},
 		/*
@@ -511,8 +514,11 @@ export default {
 			this.$nextTick().then(() => {
 				if (document.querySelectorAll(".field-cont-error").length === 0) {
 					this.$set(this.data, 'slug', this.computedSlug);
-					if (this.resource.name !== "page") {
-						this.data.resource = this.resource.name;
+
+					if (this.resource.name !== "pages") {
+						this.$set(this.data, 'resource', this.resource.name)
+					} else {
+						this.$set(this.data, 'resource', null)
 					}
 
 					if (this.newItem) {

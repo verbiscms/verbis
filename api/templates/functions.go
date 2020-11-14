@@ -17,6 +17,7 @@ type TemplateFunctions struct {
 	author *domain.User
 	category *domain.Category
 	fields map[string]interface{}
+	site *domain.Site
 	store *models.Store
 	options domain.Options
 }
@@ -31,9 +32,9 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 	const op = "Templates.NewFunctions"
 
 	// Unmarshal the fields on the post
-	f := make(map[string]interface{})
+	fields := make(map[string]interface{})
 	if p.Fields != nil {
-		if err := json.Unmarshal(*p.Fields, &f); err != nil {
+		if err := json.Unmarshal(*p.Fields, &fields); err != nil {
 			log.WithFields(log.Fields{
 				"error": errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the post fields", Operation: op, Err: err},
 			}).Error()
@@ -54,13 +55,17 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 	// Get the categories associated with the post
 	category, _ := s.Categories.GetByPost(p.Id)
 
+	// Get the site config
+	site := s.Site.GetGlobalConfig()
+
 	// New TemplateFunctions
 	return &TemplateFunctions{
 		gin: g,
 		post: p,
 		author: &author,
 		category: category,
-		fields: f,
+		fields: fields,
+		site: site,
 		store: s,
 		options: options,
 	}
