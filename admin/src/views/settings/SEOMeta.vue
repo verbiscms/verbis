@@ -176,7 +176,7 @@
 					Redirects
 					===================== -->
 				<div class="col-12">
-					<h6 class="margin">Robots</h6>
+					<h6 class="margin">Redirects</h6>
 					<div class="card card-small-box-shadow card-expand">
 						<!-- Serve Robots -->
 						<Collapse :show="false" class="collapse-border-bottom">
