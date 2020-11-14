@@ -29,6 +29,9 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 		// Robots
 		s.GET("/robots.txt", c.Frontend.Robots)
 
+		// Sitemap
+		s.GET("/sitemap.xml", c.Frontend.SiteMap)
+
 		// Favicon
 		s.StaticFile("/favicon.ico", paths.Theme() + "/favicon.ico")
 

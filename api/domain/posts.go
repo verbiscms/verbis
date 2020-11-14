@@ -34,6 +34,12 @@ type Post struct {
 	SeoMeta			PostSeoMeta					`db:"options" json:"options"`
 }
 
+type PostCreate struct {
+	Post
+	Author 			int    		`json:"author,omitempty" binding:"numeric"`
+	Category		*int		`json:"category,omitempty" binding:"omitempty,numeric"`
+}
+
 type PostAuthor struct {
 	Id					int				`json:"id" binding:"required,numeric"`
 	UUID 				uuid.UUID		`db:"uuid" json:"uuid"`
@@ -88,14 +94,11 @@ type PostMeta struct {
 	} `json:"facebook,omitempty"`
 }
 
-type PostCreate struct {
-	Post
-	Author 			int    		`json:"author,omitempty" binding:"numeric"`
-	Category		*int		`json:"category,omitempty" binding:"omitempty,numeric"`
+type PostSeo struct {
+	Public         bool        `json:"public"`
+	ExcludeSitemap bool        `json:"exclude_sitemap"`
+	Canonical      *string	   `json:"canonical"`
 }
-
-//xss in golang implementation
-
 
 
 

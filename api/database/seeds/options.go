@@ -47,6 +47,7 @@ func (s *Seeder) runOptions() error {
 		"seo_public" : false,
 		"seo_sitemap_serve" : true,
 		"seo_sitemap_excluded" : []string{},
+		"seo_robots_serve": true,
 		"seo_robots" : "\"User-Agent: *\\nAllow: /\"",
 		// Media
 		"media_compression": 80,
