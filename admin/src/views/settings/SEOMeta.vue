@@ -140,7 +140,7 @@
 								<div class="card-header card-header-block">
 									<div>
 										<h4 class="card-title">Serve robots?</h4>
-										<p>By disabling this selection the <code>/robots.text</code> file will not be automatically served from the Verbis server.</p>
+										<p>By disabling this selection the <code>/robots.txt</code> file will not be automatically served from the Verbis server.</p>
 									</div>
 									<div class="toggle">
 										<input type="checkbox" class="toggle-switch" id="seo-robots-serve" v-model="data['seo_robots_serve']" checked :true-value="true" :false-value="false" />
@@ -172,8 +172,84 @@
 						</Collapse><!--/Content -->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
+				<!-- =====================
+					Redirects
+					===================== -->
+				<div class="col-12">
+					<h6 class="margin">Robots</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<!-- Serve Robots -->
+						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Redirects</h4>
+										<p>View the XML sitemap that Verbis generates.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<button class="btn btn-orange" @click="showRedirectModal = true">New Redirect</button>
+								<div class="table-wrapper" v-if="data['seo_redirects'] && data['seo_redirects'].length">
+									<div class="table-scroll table-with-hover">
+										<table class="table archive-table">
+											<thead>
+											<tr>
+												<th>From</th>
+												<th>To</th>
+												<th>Code</th>
+												<th></th>
+											</tr>
+											</thead>
+											<tbody>
+											<tr v-for="(redirect, redirectKey) in data['seo_redirects']" :key="redirectKey">
+												<td>{{ redirect.from }}</td>
+												<td>{{ redirect.to }}</td>
+												<td>{{ redirect.code }}</td>
+												<td class="table-actions">
+													<Popover :triangle="false">
+														<template slot="items">
+															<!-- Edit -->
+															<div class="popover-item popover-item-icon popover-item-border" @click="updateRedirectHandler(redirectKey)">
+																<i class="feather feather-edit"></i>
+																<span>Edit</span>
+															</div><!-- /Edit -->
+															<div class="popover-line"></div>
+															<!-- Delete -->
+															<div class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="deleteRedirect(redirectKey)">
+																<i class="feather feather-trash-2"></i>
+																<span>Delete</span>
+															</div><!-- /Delete -->
+														</template>
+														<template slot="button">
+															<i class="icon icon-square far fa-ellipsis-h"></i>
+														</template>
+													</Popover>
+												</td>
+											</tr>
+											</tbody>
+										</table>
+									</div><!-- /Table Scroll -->
+								</div><!-- /Table Wrapper -->
+								<Alert v-else colour="orange">
+									<slot>
+										<h3>No redirects available available.</h3>
+										<p>To create a new one, click the button above.</p>
+									</slot>
+								</Alert>
+							</template>
+						</Collapse><!-- /Serve Robots -->
+					</div>
+				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
+		<!-- =====================
+			Redirect Modal
+			===================== -->
+		<Redirect :show.sync="showRedirectModal" :redirect-key="selectedRedirectKey" :redirect-update="selectedRedirect" @update="updateRedirect"></Redirect>
 	</section>
 </template>
 
@@ -188,18 +264,24 @@ import MetaForm from "@/components/meta/Meta";
 import Collapse from "../../components/misc/Collapse";
 import FormGroup from "../../components/forms/FormGroup";
 import VueTagsInput from '@jack_reddico/vue-tags-input';
+import Popover from "@/components/misc/Popover";
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-markup';
+import Redirect from "@/components/modals/Redirect";
+import Alert from "@/components/misc/Alert";
 
 export default {
 	name: "SeoMeta",
 	mixins: [optionsMixin],
 	components: {
+		Alert,
+		Redirect,
 		FormGroup,
 		Collapse,
 		MetaForm,
 		Breadcrumbs,
 		VueTagsInput,
+		Popover,
 	},
 	data: () => ({
 		errorMsg: "Fix the errors before saving SEO & Meta settings.",
@@ -213,10 +295,26 @@ export default {
 		selectedTags: [],
 		tags: [],
 		tag: "",
-		sitemap: "hey",
+		sitemap: "",
+		showRedirectModal: false,
+		selectedRedirect: false,
+		selectedRedirectKey: false,
 	}),
 	mounted() {
 		this.getSitemap();
+	},
+	watch: {
+		/*
+		 * show()
+		 * Watch if the model has been closed/opened &
+		 * delete keys & redirect.
+		 */
+		showRedirectModal: function(val) {
+			if (!val) {
+				this.selectedRedirectKey = false;
+				this.selectedRedirect = false;
+			}
+		}
 	},
 	methods: {
 		/*
@@ -296,9 +394,9 @@ export default {
 			this.axios.get("/sitemap.xml", {
 				baseURL: ""
 			})
-				.then(res => {
-					this.sitemap = res.data;
-				});
+			.then(res => {
+				this.sitemap = res.data;
+			});
 		},
 		/*
 		 * highlighter()
@@ -306,6 +404,41 @@ export default {
 		 */
 		highlighter(code) {
 			return highlight(code, languages.xml, "xml");
+		},
+		/*
+		 * updateRedirect()
+		 */
+		updateRedirect(redirect, key) {
+			if (!this.data['seo_redirects']) {
+				this.$set(this.data, 'seo_redirects', []);
+			}
+
+			if (key === "new") {
+				this.data['seo_redirects'].push(redirect);
+			}
+
+			if (Number.isInteger(key)) {
+				this.data['seo_redirects'][key] = redirect;
+			}
+
+			this.showRedirectModal = false;
+		},
+		/*
+		 * updateRedirectHandler()
+		 */
+		updateRedirectHandler(key) {
+			this.selectedRedirectKey = key;
+			this.selectedRedirect = this.data['seo_redirects'][key];
+			this.showRedirectModal = true;
+		},
+		/*
+		 * deleteRedirect()
+		 * Remove a redirect from the array.
+		 */
+		deleteRedirect(index) {
+			if (index > -1) {
+				this.data['seo_redirects'].splice(index, 1);
+			}
 		},
 	},
 	computed: {
@@ -360,6 +493,27 @@ export default {
 		display: flex;
 		justify-content: flex-end;
 		z-index: 99;
+
+		.btn {
+			background-color: $white;
+		}
+	}
+
+	// Redirects
+	// =========================================================================
+
+	&-redirects {
+
+		&-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 1rem;
+
+			p {
+				margin-bottom: 0;
+			}
+		}
 	}
 }
 
