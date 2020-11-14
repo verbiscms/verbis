@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/teamwork/reload"
+	"time"
 )
 
 // OptionsHandler defines methods for Options to interact with the server
@@ -93,7 +94,10 @@ func (c *OptionsController) UpdateCreate(g *gin.Context) {
 
 	Respond(g, 200, "Successfully created/updated options", nil)
 
-	go reload.Exec()
+	go func() {
+		time.Sleep(time.Second * 2)
+		reload.Exec()
+	}()
 }
 
 

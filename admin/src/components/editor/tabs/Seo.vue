@@ -4,7 +4,6 @@
 <template>
 	<section>
 		<div class="card card-small-box-shadow card-expand">
-			{{ value }}
 			<!-- Public -->
 			<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['public'] }">
 				<template v-slot:header>
@@ -14,7 +13,7 @@
 							<p>Disabling public will place a <code>no robots</code> meta tag on the page, so the page is not visible to search engines.</p>
 						</div>
 						<div class="toggle">
-							<input type="checkbox" class="toggle-switch" id="public" checked v-model="value['public']" :true-value="true" :false-value="false" />
+							<input type="checkbox" class="toggle-switch" id="public" checked v-model="data['public']" @change="emit" :true-value="true" :false-value="false" />
 							<label for="public"></label>
 						</div>
 					</div><!-- /Card Header -->
@@ -29,7 +28,7 @@
 							<p>Check this toggle to exclude this page from the dynamically generated sitemap.</p>
 						</div>
 						<div class="toggle">
-							<input type="checkbox" class="toggle-switch" id="exclude_sitemap" checked v-model="value['exclude_sitemap']" :true-value="true" :false-value="false" />
+							<input type="checkbox" class="toggle-switch" id="exclude_sitemap" checked  v-model="data['exclude_sitemap']" @change="emit" :true-value="true" :false-value="false" />
 							<label for="exclude_sitemap"></label>
 						</div>
 					</div><!-- /Card Header -->
@@ -52,7 +51,7 @@
 					<div class="card-body">
 						<!-- Url -->
 						<FormGroup label="Site title*" :error="errors['site_url']">
-							<input class="form-input form-input-white" type="text" v-model="value['canonical']">
+							<input class="form-input form-input-white" type="text" v-model="data['canonical']" @keyup="emit">
 						</FormGroup>
 					</div><!-- /Card Body -->
 				</template>
@@ -79,7 +78,11 @@ export default {
 		seo: {
 			type: Object,
 			default: function () {
-				return {}
+				return {
+					"public": true,
+					"exclude_sitemap": false,
+					"canonical": null,
+				}
 			}
 		}
 	},
@@ -92,33 +95,15 @@ export default {
 		errors: [],
 	}),
 	mounted() {
-		//this.value = this.seo;
+		if (this.seo) {
+			this.data = this.seo;
+		}
 	},
 	methods: {
 		emit() {
-		//	this.value = this.data;
+			this.$emit("update:seo", this.data);
 		}
 	},
-	computed: {
-		value: {
-			get() {
-				if (this.seo === null) {
-					return {
-						"public": true,
-						"exclude_sitemap": false,
-						"canonical": null,
-					}
-				}
-				return this.seo;
-			},
-			set(value) {
-				console.log("----");
-				console.log(value);
-				this.value = value;
-				this.$emit("update:seo", value);
-			},
-		}
-	}
 }
 
 </script>

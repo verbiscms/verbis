@@ -13,6 +13,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/minify"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
+	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/templates"
@@ -30,6 +31,8 @@ type FrontendHandler interface {
 	GetAssets(g *gin.Context)
 	GetCachedAsset(url string) (*[]byte, *string)
 	Serve(g *gin.Context)
+	Robots(g *gin.Context)
+	SiteMap(g *gin.Context)
 }
 
 // FrontendController defines the handler for all frontend routes
@@ -257,6 +260,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	g.Writer.Write(minfied)
 }
 
+// NoPageFound serves to 404 page
 func (c *FrontendController) NoPageFound(g *gin.Context) {
 	gvError := goview.New(goview.Config{
 		Root:      paths.Theme(),
@@ -270,3 +274,57 @@ func (c *FrontendController) NoPageFound(g *gin.Context) {
 	return
 }
 
+
+// Robots - Obtains the Seo Robots field from the Options struct
+// which is set in the settings, and returns the robots.txt
+// file.
+func (c *FrontendController) Robots(g *gin.Context) {
+	const op = "FrontendHandler.Robots"
+
+	options, err := c.models.Options.GetStruct()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+		}).Fatal()
+	}
+
+	g.Data(200, "text/plain", []byte(options.SeoRobots))
+}
+
+func (c *FrontendController) SiteMap(g *gin.Context) {
+
+	tmpl :=  `<?xml version="1.0" encoding="UTF-8"?>
+		<urlset
+			xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+					http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+			<url>
+				<loc>{{ .Home }}</loc>
+				<lastmod>{{ .Home.CreatedAt }}</lastmod>
+				<priority>1.00</priority>
+			</url>
+			{{ range .Posts }}
+				<url>
+					<loc>{{ env('APP_URL') . $page->slug }}</loc>
+					<lastmod>{{\Carbon\Carbon::now()->subDays(1)->toIso8601String()}}</lastmod>
+					<priority>0.80</priority>
+				</url>
+			{{ end }}
+		</urlset>`
+
+	site := c.models.Site.GetGlobalConfig()
+
+	type SitemapViewData struct {
+		Home string
+	}
+
+	viewData := SitemapViewData{
+		Home: site.Url,
+	}
+
+
+	posts, _, err := c.models.Posts.Get(http.Params{}, "all")
+
+	for
+
+}
