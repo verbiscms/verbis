@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
@@ -12,9 +11,10 @@ import (
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/kyokomi/emoji"
+	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
-	"os"
-	"strings"
+	"net/url"
 )
 
 // Add child commands
@@ -42,19 +42,33 @@ func init() {
 
 func Install(cmd *cobra.Command, args []string) {
 
+	//figure := figure.NewColorFigure("Verbis", "cybermedium", "reset", true)
+//	figure.Print()
+
 	// Run doctor
 	db, err := doctor()
 	if err != nil {
 		printError(err.Error())
 	}
 
+	// Check if the database exists.
+	// TODO NOT WORKING
+	err = db.CheckExists()
+	if err != nil {
+		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", environment.GetDatabaseName()))
+	}
+
+	// Get the user & site variables
+	user := createOwner()
+	fmt.Println()
+	url := setUrl()
+
 	// Start the spinner
 	printSpinner("Installing Verbis...")
 
 	// Install the database
 	if err := db.Install(); err != nil {
-		fmt.Println(err)
-		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", environment.GetDatabaseName()))
+		printError(fmt.Sprintf("Error installing the Verbis database: %v", err))
 	}
 
 	// Init Config
@@ -76,14 +90,12 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Create the owner user
-	user := createOwner()
 	if _, err := store.User.Create(user); err != nil {
 		printError(fmt.Sprintf("Error creating the owner", err.Error()))
 	}
 
 	// Insert the site url
 	fmt.Println()
-	url := setUrl()
 	mUrl, _ := json.Marshal(url)
 	if err := store.Options.Update("site_url", mUrl); err != nil {
 		printError(fmt.Sprintf("Error not inserting the site url:", err.Error()))
@@ -104,104 +116,124 @@ func Install(cmd *cobra.Command, args []string) {
 
 // setUrl
 func setUrl() string {
-	fmt.Println("Enter the url the site will sit on, if in development, be sure to append a port (for example: http://127.0.0.1:8080):")
-	reader := bufio.NewReader(os.Stdin)
 
-	// Url
-	url := ""
-	for {
-		fmt.Print("Url: ")
-		url, _ = reader.ReadString('\n')
-		if  url == "" {
-			fmt.Println("Enter a valid url")
-		} else {
-			break
-		}
+	emoji.Println(":backhand_index_pointing_right: Enter the url will sit on:")
+	fmt.Println("If in development, be sure to append a port (for example: http://127.0.0.1:8080):")
+
+	prompt := promptui.Prompt{
+		Label:      "Url",
+		Validate: 	 func(input string) error {
+			if input == "" {
+				return fmt.Errorf("Enter URL")
+			}
+			_, err := url.ParseRequestURI("http://google.com/")
+			if err != nil {
+				return fmt.Errorf("Enter a valid URL")
+			}
+			return nil
+		},
+	}
+	homeUrl, err := prompt.Run()
+	if err != nil {
+		printError(fmt.Sprintf("Install failed: %v\n", err))
 	}
 
-	url = strings.TrimSuffix(url, "\n")
-
-	return url
+	return homeUrl
 }
 
 // createOwner Create's the owner of the site for the install.
 func createOwner() *domain.UserCreate {
-	fmt.Println("Enter the owner's details:")
 
-	reader := bufio.NewReader(os.Stdin)
-	var user domain.UserCreate
+	emoji.Print(":backhand_index_pointing_right: Enter the owner's details:")
 
-	// First name
-	firstName := ""
-	for {
-		fmt.Print("First name: ")
-		firstName, _ = reader.ReadString('\n')
-		user.FirstName = strings.TrimSuffix(firstName, "\n")
-		err := v.CmdCheck("firstname", user)
-		if  err != nil {
-			fmt.Println(err)
-		} else {
-			break
-		}
+	promptFirstName := promptui.Prompt{
+		Label:       "First name",
+		Validate: 	 func(input string) error {
+			if input == "" {
+				return fmt.Errorf("Enter a first name")
+			}
+			return nil
+		},
+	}
+	firstName, err := promptFirstName.Run()
+	if err != nil {
+		printError(fmt.Sprintf("Install failed: %v\n", err))
 	}
 
-	// Last name
-	lastName := ""
-	for {
-		fmt.Print("Last name: ")
-		lastName, _ = reader.ReadString('\n')
-		user.LastName = strings.TrimSuffix(lastName, "\n")
-		err := v.CmdCheck("lastname", user)
-		if  err != nil {
-			fmt.Println(err)
-		} else {
-			break
-		}
+	promptLastName := promptui.Prompt{
+		Label:       "Last name",
+		Validate: 	 func(input string) error {
+			if input == "" {
+				return fmt.Errorf("Enter a last name")
+			}
+			return nil
+		},
+	}
+	lastName, err := promptLastName.Run()
+	if err != nil {
+		printError(fmt.Sprintf("Install failed: %v\n", err))
 	}
 
-	// Email
-	email := ""
-	for {
-		fmt.Print("Email address: ")
-		email, _ = reader.ReadString('\n')
-		user.Email = strings.TrimSuffix(email, "\n")
-		err := v.CmdCheck("email", user)
-		if  err != nil {
-			fmt.Println(err)
-		} else {
-			break
-		}
+
+	promptEmail := promptui.Prompt{
+		Label:       "Email",
+		Validate: 	 func(input string) error {
+			if input == "" {
+				return fmt.Errorf("Enter a email address")
+			}
+			if !isEmailValid(input) {
+				return fmt.Errorf("Enter a valid email address")
+			}
+			return nil
+		},
+	}
+	email, err := promptEmail.Run()
+	if err != nil {
+		printError(fmt.Sprintf("Install failed: %v\n", err))
 	}
 
-	// Password
-	password := ""
-	for {
-		fmt.Print("Password: ")
-		password, _ = reader.ReadString('\n')
-		user.Password = strings.TrimSuffix(password, "\n")
-		err := v.CmdCheck("password", user)
-		if  err != nil {
-			fmt.Println(err)
-		} else {
-			break
-		}
+	promptPassword := promptui.Prompt{
+		Label:    "Password",
+		Validate: func(input string) error {
+			if len(input) < 8 {
+				return fmt.Errorf("Password must have more than 8 characters")
+			}
+			return nil
+		},
+		Mask:     '*',
+	}
+	password, err := promptPassword.Run()
+	if err != nil {
+		printError(fmt.Sprintf("Install failed: %v\n", err))
 	}
 
-	// Password
-	confirmPassword := ""
-	for {
-		fmt.Print("Confirm Password: ")
-		confirmPassword, _ = reader.ReadString('\n')
-		user.ConfirmPassword = strings.TrimSuffix(confirmPassword, "\n")
-		if confirmPassword != password {
-			fmt.Println("Password's dont match! Exit and try again.")
-		} else {
-			break
-		}
+	prompConfirmPassword := promptui.Prompt{
+		Label:    "Password",
+		Validate: func(input string) error {
+			if input != password {
+				return fmt.Errorf("Password and confirm password must match.")
+			}
+			return nil
+		},
+		Mask:     '*',
 	}
-	
-	user.Role = domain.UserRole{
-		Id: 6,
+	confirmPassword, err := prompConfirmPassword.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		printError(fmt.Sprintf("Install failed: %v\n", err))
+	}
+
+	user := domain.UserCreate{
+		User:            domain.User{
+			FirstName:        firstName,
+			LastName:         lastName,
+			Email:            email,
+			Role: domain.UserRole{
+				Id: 6,
+			},
+		},
+		Password:        password,
+		ConfirmPassword: confirmPassword,
 	}
 
 	return &user

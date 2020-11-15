@@ -37,13 +37,13 @@
 					</collapse>
 				</div><!-- /Resources -->
 				<!-- =====================
-					Resources
+					Content
 					===================== -->
 				<div class="aside-block">
 					<collapse :use-icon="false" :open="true">
 						<template v-slot:header>
 							<div class="aside-block-nav">
-								<h6>Resources</h6>
+								<h6>Content</h6>
 								<i class="feather feather-chevron-down"></i>
 							</div>
 						</template>
@@ -84,13 +84,13 @@
 					</collapse>
 				</div><!-- /Resources -->
 				<!-- =====================
-					Content
+					Assets
 					===================== -->
 				<div class="aside-block">
 					<collapse :use-icon="false">
 						<template v-slot:header>
 							<div class="aside-block-nav">
-								<h6>Content</h6>
+								<h6>Assets</h6>
 								<i class="feather feather-chevron-down"></i>
 							</div>
 						</template>
@@ -125,6 +125,32 @@
 											<span>Users</span>
 										</router-link>
 									</li><!-- /Users -->
+								</ul>
+							</nav>
+						</template>
+					</collapse>
+				</div><!-- /Content -->
+				<!-- =====================
+					Integrations
+					===================== -->
+				<div class="aside-block">
+					<collapse :use-icon="false">
+						<template v-slot:header>
+							<div class="aside-block-nav">
+								<h6>Integrations</h6>
+								<i class="feather feather-chevron-down"></i>
+							</div>
+						</template>
+						<template v-slot:body>
+							<nav class="aside-nav">
+								<ul>
+									<!-- Categories -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'console' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'console' }">
+											<i class="feather feather-terminal"></i>
+											<span>Console</span>
+										</router-link>
+									</li><!-- /Categories -->
 								</ul>
 							</nav>
 						</template>
@@ -332,9 +358,9 @@ export default {
 <style scoped lang="scss">
 
 // Variables
-$aside-padding-mob: 16px;
-$aside-padding-tab: 18px;
-$aside-padding-desk: 20px;
+$aside-padding-mob: 10px 15px;
+$aside-padding-tab: 10px 18px;
+$aside-padding-desk: 12px 20px;
 
 .aside {
 	$self: &;

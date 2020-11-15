@@ -5,6 +5,7 @@ import (
 	"github.com/briandowns/spinner"
 	"github.com/gookit/color"
 	"os"
+	"regexp"
 	"time"
 )
 
@@ -47,4 +48,13 @@ func printSpinner(msg string) {
 	s.Start()
 	fmt.Printf("\n")
 	s.Stop()
+}
+
+// isEmailValid checks if the email provided passes the required structure and length.
+func isEmailValid(e string) bool {
+	var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
+	if len(e) < 3 && len(e) > 254 {
+		return false
+	}
+	return emailRegex.MatchString(e)
 }
