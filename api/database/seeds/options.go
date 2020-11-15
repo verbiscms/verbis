@@ -49,6 +49,7 @@ func (s *Seeder) runOptions() error {
 		"seo_sitemap_excluded" : []string{},
 		"seo_robots_serve": true,
 		"seo_robots" : "\"User-Agent: *\\nAllow: /\"",
+		"seo_redirects": nil,
 		// Media
 		"media_compression": 80,
 		"media_convert_webp": true,

@@ -119,8 +119,8 @@
 										@tags-changed="updateTags"
 										add-only-from-autocomplete
 										:autocomplete-min-length="0"
-										@focus="updateHeight"
-										@blur="updateHeight"
+										@focus="updateHeight('resources')"
+										@blur="updateHeight('resources')"
 										placeholder="Add excluded resource"
 									/>
 								</div><!-- /Card Body -->
@@ -177,31 +177,31 @@
 					===================== -->
 				<div class="col-12">
 					<h6 class="margin">Redirects</h6>
-					<div class="card card-small-box-shadow card-expand">
+					<div class="card card-small-box-shadow card-expand seo-redirects">
 						<!-- Serve Robots -->
 						<Collapse :show="false" class="collapse-border-bottom">
 							<template v-slot:header>
-								<div class="card-header">
+								<div class="card-header seo-redirects">
 									<div>
 										<h4 class="card-title">Redirects</h4>
 										<p>View the XML sitemap that Verbis generates.</p>
 									</div>
 									<div class="card-controls">
+										<i class="feather feather-plus" @click="showRedirectModal = true"></i>
 										<i class="feather feather-chevron-down"></i>
 									</div>
 								</div><!-- /Card Header -->
 							</template>
 							<template v-slot:body>
-								<button class="btn btn-orange" @click="showRedirectModal = true">New Redirect</button>
-								<div class="table-wrapper" v-if="data['seo_redirects'] && data['seo_redirects'].length">
-									<div class="table-scroll table-with-hover">
+								<div class="table-wrapper" v-if="data['seo_redirects'] && data['seo_redirects'].length"  ref="redirects">
+									<div class="table-scroll">
 										<table class="table archive-table">
 											<thead>
 											<tr>
 												<th>From</th>
 												<th>To</th>
 												<th>Code</th>
-												<th></th>
+												<th>Update/Delete</th>
 											</tr>
 											</thead>
 											<tbody>
@@ -209,25 +209,11 @@
 												<td>{{ redirect.from }}</td>
 												<td>{{ redirect.to }}</td>
 												<td>{{ redirect.code }}</td>
-												<td class="table-actions">
-													<Popover :triangle="false">
-														<template slot="items">
-															<!-- Edit -->
-															<div class="popover-item popover-item-icon popover-item-border" @click="updateRedirectHandler(redirectKey)">
-																<i class="feather feather-edit"></i>
-																<span>Edit</span>
-															</div><!-- /Edit -->
-															<div class="popover-line"></div>
-															<!-- Delete -->
-															<div class="popover-item popover-item-icon popover-item-border popover-item-orange" @click="deleteRedirect(redirectKey)">
-																<i class="feather feather-trash-2"></i>
-																<span>Delete</span>
-															</div><!-- /Delete -->
-														</template>
-														<template slot="button">
-															<i class="icon icon-square far fa-ellipsis-h"></i>
-														</template>
-													</Popover>
+												<td>
+													<div class="card-controls">
+														<i class="feather feather-trash-2" @click="deleteRedirect(redirectKey)"></i>
+														<i class="feather feather-edit" @click="updateRedirectHandler(redirectKey)"></i>
+													</div>
 												</td>
 											</tr>
 											</tbody>
@@ -264,7 +250,6 @@ import MetaForm from "@/components/meta/Meta";
 import Collapse from "../../components/misc/Collapse";
 import FormGroup from "../../components/forms/FormGroup";
 import VueTagsInput from '@jack_reddico/vue-tags-input';
-import Popover from "@/components/misc/Popover";
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-markup';
 import Redirect from "@/components/modals/Redirect";
@@ -281,7 +266,6 @@ export default {
 		MetaForm,
 		Breadcrumbs,
 		VueTagsInput,
-		Popover,
 	},
 	data: () => ({
 		errorMsg: "Fix the errors before saving SEO & Meta settings.",
@@ -311,6 +295,7 @@ export default {
 		 */
 		showRedirectModal: function(val) {
 			if (!val) {
+				this.selectedRedirect = false;
 				this.selectedRedirectKey = false;
 				this.selectedRedirect = false;
 			}
@@ -381,9 +366,11 @@ export default {
 		 * updateHeight()
 		 * Update excluded resources on focus & blur.
 		 */
-		updateHeight() {
+		updateHeight(ref) {
 			this.$nextTick(() => {
-				this.helpers.setHeight(this.$refs.resources.closest(".collapse-content"));
+				console.log(ref);
+				console.log(this.$refs);
+				this.helpers.setHeight(this.$refs[ref].closest(".collapse-content"));
 			});
 		},
 		/*
@@ -415,10 +402,12 @@ export default {
 
 			if (key === "new") {
 				this.data['seo_redirects'].push(redirect);
+				this.updateHeight('redirects');
 			}
 
 			if (Number.isInteger(key)) {
-				this.data['seo_redirects'][key] = redirect;
+				console.log(redirect, key)
+				this.$set(this.data['seo_redirects'], key, redirect);
 			}
 
 			this.showRedirectModal = false;
@@ -504,16 +493,28 @@ export default {
 
 	&-redirects {
 
-		&-header {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			margin-bottom: 1rem;
 
-			p {
-				margin-bottom: 0;
-			}
+		//.table {
+		//	border-top: 1px solid $grey-light;
+		//}
+
+		.card-controls {
+
 		}
+
+		.feather-trash-2 {
+			color: $orange;
+		}
+		//&-header {
+		//	display: flex;
+		//	align-items: center;
+		//	justify-content: space-between;
+		//	margin-bottom: 1rem;
+		//
+		//	p {
+		//		margin-bottom: 0;
+		//	}
+		//}
 	}
 }
 

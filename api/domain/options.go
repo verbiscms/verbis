@@ -49,6 +49,7 @@ type Options struct {
 	SeoSitemapExcluded		[]string				`json:"seo_sitemap_excluded"`
 	SeoRobotsServe			bool					`json:"seo_robots_serve"`
 	SeoRobots				string					`json:"seo_robots"`
+	SeoRedirects			[]Redirect				`json:"seo_redirects"`
 	// Media
 	MediaCompression		int 					`json:"media_compression" binding:"required"`
 	MediaConvertWebP 		bool 					`json:"media_convert_webp"`
@@ -83,4 +84,10 @@ type Options struct {
 	MinifySVG 				bool 					`json:"minify_svg"`
 	MinifyJSON				bool 					`json:"minify_json"`
 	MinifyXML				bool 					`json:"minify_xml"`
+}
+
+type Redirect struct {
+	To 						string 					`json:"to" binding:"required"`
+	From 					string					`json:"from" binding:"required"`
+	Code 					int 					`json:"code" binding:"required,numeric"`
 }
