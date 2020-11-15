@@ -58,7 +58,7 @@ const routes = [
 		meta: { transitionName : 'fade' },
 	},
 	/**
-	 * Resources
+	 * Content
 	 *
 	 */
 	{
@@ -80,7 +80,7 @@ const routes = [
 		},
 	},
 	/**
-	 * Content
+	 * Assets
 	 *
 	 */
 	{
@@ -111,6 +111,16 @@ const routes = [
 		path: '/users',
 		name: 'users',
 		component: () => import('../views/content/Users.vue'),
+		meta: { transitionName : 'fade' },
+	},
+	/**
+	 * Integrations
+	 *
+	 */
+	{
+		path: '/integrations/console',
+		name: 'console',
+		component: () => import('../views/intergrations/Console.vue'),
 		meta: { transitionName : 'fade' },
 	},
 	/**
