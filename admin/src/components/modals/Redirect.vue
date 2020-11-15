@@ -34,7 +34,7 @@
 							<div class="form-select-cont form-input">
 								<select class="form-select" v-model.number="redirect['code']">
 									<option disabled selected value="">Select a code</option>
-								 	<option v-for="code in codes" :key="code.value" :value="code.value">{{ code.text }}</option>
+									<option v-for="code in codes" :key="code.value" :value="code.value">{{ code.text }}</option>
 								</select>
 							</div>
 						</FormGroup>

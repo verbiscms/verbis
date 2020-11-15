@@ -13,6 +13,7 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 
 	// Set Frontend Middleware
 	s.Use(middleware.Recovery(server.Recover))
+	s.Use(middleware.Redirects(m.Options))
 	s.Use(middleware.FrontEndCache(m.Options))
 
 	_ = s.Group("")
