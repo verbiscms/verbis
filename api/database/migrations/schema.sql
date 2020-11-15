@@ -204,6 +204,7 @@ CREATE TABLE `users` (
   `twitter` text,
   `linked_in` text,
   `instagram` text,
+  `biography` longtext,
   `profile_picture_id` INT NULL,
   `token` varchar(38) NOT NULL,
   `token_last_used` timestamp NULL DEFAULT NULL,

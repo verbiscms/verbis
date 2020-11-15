@@ -47,6 +47,7 @@ type FrontendController struct {
 	cacher 			frontend.Cacher
 	minify 			minify.Minifier
 	theme 			domain.ThemeConfig
+	options 		domain.Options
 }
 
 // newFrontend - Construct
@@ -61,12 +62,21 @@ func newFrontend(m *models.Store, config config.Configuration) *FrontendControll
 		}).Fatal()
 	}
 
+	// Get the options
+	options, err := m.Options.GetStruct()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+		}).Fatal()
+	}
+
 	return &FrontendController{
 		models: m,
 		config: config,
 		cacher: frontend.NewCache(m.Options),
 		minify: minify.New(m.Options),
 		theme: theme,
+		options: options,
 	}
 }
 
@@ -78,10 +88,14 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 	url := g.Request.URL.Path
 
 	// Check if the file has been cached
-	cachedFile, cachedMime := c.GetCachedAsset(url)
-	if cachedFile != nil && cachedMime != nil {
-		fmt.Println("in cache")
-		g.Data(200, *cachedMime, *cachedFile)
+	var cachedFile *[]byte
+	var cachedMime *string
+	if c.options.CacheServerUploads {
+		cachedFile, cachedMime = c.GetCachedAsset(url)
+		if cachedFile != nil && cachedMime != nil {
+			g.Data(200, *cachedMime, *cachedFile)
+			return
+		}
 	}
 
 	// Set cache headers
@@ -96,10 +110,12 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 
 	// Set the cache if the app is in production
 	defer func() {
-		if environment.IsProduction() {
-			cache.Store.Set(url, &file, cache.RememberForever)
-			cache.Store.Set(url + "mimetype",  &mimeType, cache.RememberForever)
-		}
+		go func() {
+			if c.options.CacheServerUploads && cachedFile == nil {
+				cache.Store.Set(url, &file, cache.RememberForever)
+				cache.Store.Set(url + "mimetype",  &mimeType, cache.RememberForever)
+			}
+		}()
 	}()
 
 	// If the minified file is nil or the err is not empty, serve the original data
@@ -127,17 +143,14 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 	url := g.Request.URL.Path
 
 	// Check if the file has been cached
-	cachedFile, cachedMime := c.GetCachedAsset(url)
-	if cachedFile != nil && cachedMime != nil {
-		g.Data(200, *cachedMime, *cachedFile)
-	}
-
-	// Get the options
-	options, err := c.models.Options.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
+	var cachedFile *[]byte
+	var cachedMime *string
+	if c.options.CacheServerAssets {
+		cachedFile, cachedMime = c.GetCachedAsset(url)
+		if cachedFile != nil && cachedMime != nil {
+			g.Data(200, *cachedMime, *cachedFile)
+			return
+		}
 	}
 
 	// Get the relevant paths
@@ -154,10 +167,12 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 
 	// Set the cache if the app is in production
 	defer func() {
-		if environment.IsProduction() {
-			cache.Store.Set(url, &file, cache.RememberForever)
-			cache.Store.Set(url + "mimetype",  &mimeType, cache.RememberForever)
-		}
+		go func() {
+			if c.options.CacheServerAssets && cachedFile == nil {
+				cache.Store.Set(url, &file, cache.RememberForever)
+				cache.Store.Set(url + "mimetype",  &mimeType, cache.RememberForever)
+			}
+		}()
 	}()
 
 	// Set cache headers
@@ -165,7 +180,7 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 
 	// Check if the serving of webp's is allowed & get the
 	// webp images and assign if not nil
-	if options.MediaServeWebP && webp.Accepts(g) {
+	if c.options.MediaServeWebP && webp.Accepts(g) {
 		webpFile := webp.GetData(g, assetsPath + fileName, mimeType)
 		if webpFile != nil {
 			mimeType = "image/webp"
@@ -214,6 +229,19 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		return
 	}
 
+	// Check if the file has been cached
+	var foundCache bool
+	if c.options.CacheServerAssets {
+		var cachedTemplate interface{}
+		cachedTemplate, foundCache = cache.Store.Get(path)
+
+		if cachedTemplate != nil && foundCache {
+			g.Writer.WriteHeader(200)
+			g.Writer.Write(cachedTemplate.([]byte))
+			return
+		}
+	}
+
 	_, err = g.Cookie("verbis-session")
 	if err != nil && post.Status != "published" {
 		c.NoPageFound(g)
@@ -260,6 +288,14 @@ func (c *FrontendController) Serve(g *gin.Context) {
 		g.Writer.Write(b.Bytes())
 	}
 
+	defer func() {
+		go func() {
+			if c.options.CacheServerTemplates && !foundCache {
+				cache.Store.Set(path, minfied, cache.RememberForever)
+			}
+		}()
+	}()
+
 	g.Writer.WriteHeader(200)
 	g.Writer.Write(minfied)
 }
@@ -285,35 +321,20 @@ func (c *FrontendController) NoPageFound(g *gin.Context) {
 func (c *FrontendController) Robots(g *gin.Context) {
 	const op = "FrontendHandler.Robots"
 
-	options, err := c.models.Options.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
-	if options.SeoRobotsServe {
+	if c.options.SeoRobotsServe {
 		c.NoPageFound(g)
 		return
 	}
 
-	g.Data(200, "text/plain", []byte(options.SeoRobots))
+	g.Data(200, "text/plain", []byte(c.options.SeoRobots))
 }
 
 
 func (c *FrontendController) SiteMap(g *gin.Context) {
 	const op = "FrontendHandler.SiteMap"
 
-	// Get the options struct
-	options, err := c.models.Options.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	// Return a 404 if the options dont allow it.
-	if !options.SeoSitemapServe {
+	if !c.options.SeoSitemapServe {
 		c.NoPageFound(g)
 		return
 	}
@@ -395,7 +416,7 @@ func (c *FrontendController) SiteMap(g *gin.Context) {
 				}
 			}
 
-			if !helpers.StringInSlice(resource, options.SeoSitemapExcluded) && !exclude {
+			if !helpers.StringInSlice(resource, c.options.SeoSitemapExcluded) && !exclude {
 				viewData.Posts = append(viewData.Posts, SitemapPosts{
 					Slug:      site.Url + v.Slug,
 					CreatedAt: v.CreatedAt.Format(time.RFC3339),

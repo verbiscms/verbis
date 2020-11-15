@@ -108,6 +108,91 @@
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
+					Cache Control
+					===================== -->
+				<div class="col-12">
+					<h6 class="margin">Server cache</h6>
+					<Alert colour="orange" type="warning">
+						<slot><b>Note:</b> The settings below should only be enabled in production.</slot>
+					</Alert>
+					<div class="card card-small-box-shadow card-expand">
+						<!-- Clear Cache -->
+						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Clear cache</h4>
+										<p>Click the button to the right to clear the entire server cache.</p>
+									</div>
+									<div>
+										<button class="btn" @click="clearCache" :class="{ 'btn-loading' : clearingCache }">Clear</button>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Cache Renderer -->
+						<!-- Cache Renderer -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['cache_server_templates'] }">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Cache templates?</h4>
+										<p>By ticking the box, pages will be served from the cache avoiding multiple page renders, drastically improving speed.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="cache-database-templates" v-model="data['cache_server_templates']" :true-value="true" :false-value="false" />
+										<label for="cache-database-templates"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Cache Renderer -->
+						<!-- Cache Assets -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['cache_server_assets'] }">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Cache assets?</h4>
+										<p>By ticking the box, assets served such as images, CSS & javascript files will be cached and only read from the disk once or until updated.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="cache-database-assets" v-model="data['cache_server_assets']" :true-value="true" :false-value="false" />
+										<label for="cache-database-assets"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Cache Assets -->
+						<!-- Cache Uploads -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['cache_server_uploads'] }">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Cache uploads?</h4>
+										<p>By ticking the box, uploads will be cached and only read from the disk once or until updated.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="cache-database-uploads" v-model="data['cache_server_uploads']" :true-value="true" :false-value="false" />
+										<label for="cache-database-uploads"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- Cache Uploads -->
+						<!-- Cache Field Layouts -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['cache_server_field_layouts'] }">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Cache field layouts?</h4>
+										<p>By ticking the box, field layouts will be cached and only read from thedisk once or until updated.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="cache-database-field-layouts" v-model="data['cache_server_field_layouts']" :true-value="true" :false-value="false" />
+										<label for="cache-database-field-layouts"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Cache Field Layouts -->
+					</div><!-- /Card -->
+				</div><!-- /Col -->
+				<!-- =====================
 					Gzip
 					===================== -->
 				<div class="col-12">
@@ -328,12 +413,14 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import {optionsMixin} from "@/util/options";
 import Collapse from "@/components/misc/Collapse";
 import FormGroup from "@/components/forms/FormGroup";
+import Alert from "@/components/misc/Alert";
 
 export default {
 	name: "Performance",
 	title: 'Performance Settings',
 	mixins: [optionsMixin],
 	components: {
+		Alert,
 		FormGroup,
 		Collapse,
 		Breadcrumbs
@@ -342,7 +429,7 @@ export default {
 		errorMsg: "Fix the errors before saving performance settings.",
 		successMsg: "Performance options updated successfully.",
 		requestMessage: "",
-		serverRestart: true,
+		clearingCache: false,
 	}),
 	methods: {
 		/*
@@ -392,6 +479,25 @@ export default {
 					break;
 				}
 			}
+		},
+		/*
+	 	 * clearCache()
+		 * Clear the server cache.
+		 */
+		clearCache() {
+			this.clearingCache = true;
+			this.axios.post("/cache")
+				.then(res => {
+					this.$noty.success(res.data.message);
+				})
+				.catch(err => {
+					this.handleResponse(err);
+				})
+				.finally(() => {
+					setTimeout(() => {
+						this.clearingCache = false;
+					}, this.timeoutDelay);
+				});
 		},
 	},
 	computed: {

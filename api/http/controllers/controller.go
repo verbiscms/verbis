@@ -15,6 +15,7 @@ import (
 
 type Controller struct {
 	Auth 		AuthHandler
+	Cache 		CacheHandler
 	Categories 	CategoryHandler
 	Fields 		FieldHandler
 	Frontend 	FrontendHandler
@@ -50,6 +51,7 @@ func New(m *models.Store, config config.Configuration) (*Controller, error) {
 
 	c := Controller{
 		Auth: newAuth(m.Auth, m.User, config),
+		Cache: newCache(),
 		Categories: newCategories(m.Categories),
 		Fields: newFields(m.Fields, m.User, m.Categories),
 		Frontend: newFrontend(m, config),

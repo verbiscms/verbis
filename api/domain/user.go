@@ -13,11 +13,12 @@ type User struct {
 	LastName			string 			`db:"last_name" json:"last_name" binding:"required,max=150,alpha"`
 	Email				string			`db:"email" json:"email" binding:"required,email,max=255"`
 	Password			string			`db:"password" json:"password,omitempty" binding:""`
-	Website				string			`db:"website" json:"website,omitempty" binding:"omitempty,url"`
+	Website				*string			`db:"website" json:"website,omitempty" binding:"omitempty,url"`
 	Facebook			*string			`db:"facebook" json:"facebook"`
 	Twitter				*string			`db:"twitter" json:"twitter"`
 	Linkedin			*string			`db:"linked_in" json:"linked_in"`
 	Instagram			*string			`db:"instagram" json:"instagram"`
+	Biography			*string			`db:"biography" json:"biography"`
 	ProfilePictureID	*int			`db:"profile_picture_id" json:"profile_picture_id"`
 	Token				string			`db:"token" json:"token,omitempty"`
 	TokenLastUsed		*time.Time		`db:"token_last_used" json:"token_last_used,omitempty"`
