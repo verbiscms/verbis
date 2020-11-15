@@ -17,6 +17,7 @@
 
 export default {
 	name: "ViewSite",
+	title: "Site",
 	components: {
 	},
 	data: () => ({}),

@@ -1,7 +1,6 @@
 <!-- =====================
 	Archive
 	===================== -->
-<link rel="stylesheet" href="../../../../../../../../Downloads/prism-themes-master/themes/prism-material-oceanic.css">
 <template>
 	<section :key="$route.params.resource">
 		<div class="auth-container">
@@ -250,11 +249,9 @@ import Popover from "@/components/misc/Popover";
 import Pagination from "@/components/misc/Pagination";
 import Tabs from "../../components/misc/Tabs";
 
-let titleResource = '';
-
 export default {
 	name: "Pages",
-	title: titleResource,
+	title: "Archive",
 	components: {
 		Alert,
 		Breadcrumbs,
@@ -432,7 +429,6 @@ export default {
 				"slug": "",
 				"icon": 'fal fa-file'
 			} : resource;
-			titleResource = this.resource.name;
 		},
 		/*
 		 * changeOrderBy()
