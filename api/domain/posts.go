@@ -47,11 +47,12 @@ type PostAuthor struct {
 	LastName			string 			`json:"last_name"`
 	Email				string			`json:"email"`
 	Password			string			`json:"-"`
-	Website				string			`json:"website"`
-	Facebook			*string			`json:"facebook"`
-	Twitter				*string			`json:"twitter"`
-	Linkedin			*string			`json:"linked_in"`
-	Instagram			*string			`json:"instagram"`
+	Website				*string			`db:"website" json:"website,omitempty" binding:"omitempty,url"`
+	Facebook			*string			`db:"facebook" json:"facebook"`
+	Twitter				*string			`db:"twitter" json:"twitter"`
+	Linkedin			*string			`db:"linked_in" json:"linked_in"`
+	Instagram			*string			`db:"instagram" json:"instagram"`
+	Biography			*string			`db:"biography" json:"biography"`
 	ProfilePictureID	*int			`json:"profile_picture_id"`
 	Token				string			`json:"-"`
 	TokenLastUsed		*time.Time		`json:"-"`

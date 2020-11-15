@@ -100,44 +100,12 @@ func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
 	om := newOptions(db)
 	s.optionsModel = om
 
-	opts, err := s.optionsModel.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
-		}).Fatal()
-	}
-
-	// Cache the site config JSON file
-	s.cache.Site = opts.CacheSite
-
-	// Cache the templates, preventing reading from the
-	// templates path when endpoint is hit.
-	s.cache.Templates = opts.CacheTemplates
-
-	// Cache the layouts, preventing reading from the
-	// layouts path when endpoint is hit.
-	s.cache.Layout = opts.CacheLayout
-
-	// Cache the resources, preventing reading from the
-	// config json file in the theme directory.
-	s.cache.Resources = opts.CacheResources
-
 	return s
 }
 
 // GetGlobalConfig gets the site global config
 func (s *SiteStore) GetGlobalConfig() *domain.Site {
 	const op = "SiteRepository.GetGlobalConfig"
-
-	// If the cache allows for caching of the site config &
-	// if the config has already been cached, return.
-	//var found bool
-	//if s.cache.Site && environment.IsProduction() {
-	//	cached, found := cache.Store.Get("site_config")
-	//	if found {
-	//		return cached.(*domain.Site)
-	//	}
-	//}
 
 	opts, err := s.optionsModel.GetStruct()
 	if err != nil {
@@ -154,12 +122,6 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 		Url:         opts.SiteUrl,
 		Version:     api.App.Version,
 	}
-
-	// Set the cache for the site config if the cache was not found
-	// and the options allow.
-	//if !found && s.cache.Site {
-	//	cache.Store.Set("site_config", &ds, cache.RememberForever)
-	//}
 
 	return &ds
 }
@@ -185,16 +147,6 @@ func (s *SiteStore) GetThemeConfig() (domain.ThemeConfig, error) {
 // Returns errors.INTERNAL if the template path is invalid.
 func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 	const op = "SiteRepository.GetTemplates"
-
-	// If the cache allows for caching of the site templates &
-	// if the config has already been cached, return.
-	//var found bool
-	//if s.cache.Templates {
-	//	cached, found := cache.Store.Get("site_templates")
-	//	if found {
-	//		return cached.(*domain.Templates), nil
-	//	}
-	//}
 
 	files, err := s.walkMatch(paths.Templates(), "*" + s.config.Template.FileExtension)
 	if err != nil {
@@ -228,12 +180,6 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 		return &t, nil
 	}
 
-	// Set the cache for the templates if the cache was not found
-	// and the options allow.
-	//if !found && s.cache.Templates {
-	//	cache.Store.Set("site_templates", &t, cache.RememberForever)
-	//}
-
 	return &t, nil
 }
 
@@ -241,16 +187,6 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 // Returns errors.INTERNAL if the layout path is invalid.
 func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
-
-	// If the cache allows for caching of the site templates &
-	// if the config has already been cached, return.
-	//var found bool
-	//if s.cache.Templates && environment.IsProduction() {
-	//	cached, found := cache.Store.Get("site_layouts")
-	//	if found {
-	//		return cached.(*domain.Layouts), nil
-	//	}
-	//}
 
 	files, err := s.walkMatch(paths.Layouts(), "*" + s.config.Template.FileExtension)
 	if err != nil {
@@ -283,12 +219,6 @@ func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 		}
 		return &t, nil
 	}
-
-	// Set the cache for the templates if the cache was not found
-	// and the options allow.
-	//if !found && s.cache.Templates {
-	//	cache.Store.Set("site_layouts", &t, cache.RememberForever)
-	//}
 
 	return &t, nil
 }

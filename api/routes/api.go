@@ -80,6 +80,9 @@ func api(s *server.Server, c *controllers.Controller, m *models.Store) {
 
 			// Roles
 			operator.GET("/roles", c.User.GetRoles)
+
+			// Cache
+			operator.POST("/cache", c.Cache.Clear)
 		}
 
 		// Administrator

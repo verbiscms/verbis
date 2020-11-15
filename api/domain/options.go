@@ -59,13 +59,11 @@ type Options struct {
 	MediaUploadMaxHeight 	int 					`json:"media_upload_max_height" binding:"numeric"`
 	MediaOrganiseDate 		bool 					`json:"media_organise_year_month"`
 	MediaSizes 				MediaSizes 				`json:"media_images_sizes"`
-	// Cache
-	CacheGlobal 			bool 					`json:"cache_global"`
-	CacheLayout 			bool 					`json:"cache_layout"`
-	CacheFields 			bool 					`json:"cache_fields"`
-	CacheSite 				bool 					`json:"cache_site"`
-	CacheTemplates 			bool 					`json:"cache_templates"`
-	CacheResources			bool 					`json:"cache_resources"`
+	// Server Cache
+	CacheServerTemplates 	bool 					`json:"cache_server_templates"`
+	CacheServerAssets 		bool 					`json:"cache_server_assets"`
+	CacheServerUploads 		bool 					`json:"cache_server_uploads"`
+	CacheServerFields 		bool 					`json:"cache_server_field_layouts"`
 	// Frontend Caching
 	CacheFrontend			bool					`json:"cache_frontend"`
 	CacheFrontendRequest	string					`json:"cache_frontend_request"`
