@@ -5,6 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-contrib/gzip"
+	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -32,6 +33,8 @@ func New(m models.OptionsRepository) *Server {
 	r := gin.Default()
 
 	server := &Server{r}
+
+	r.Use(location.Default())
 
 	// Recovery middleware recovers from any panics and writes a 500 if there was one.
 	server.Use(gin.Recovery())

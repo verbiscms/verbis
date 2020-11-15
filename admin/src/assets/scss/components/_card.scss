@@ -228,7 +228,7 @@ $card-padding-x-desk: 24px;
 	// =========================================================================
 
 	&-controls {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		border: 1px solid $grey-light;
 		border-radius: 4px;

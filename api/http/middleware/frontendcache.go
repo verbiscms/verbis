@@ -15,11 +15,9 @@ import (
 
 func FrontEndCache(o models.OptionsRepository) gin.HandlerFunc {
 	const op = "Middleware.FrontEndCache"
-
 	return func(g *gin.Context) {
 
 		options, err := o.GetStruct()
-
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
