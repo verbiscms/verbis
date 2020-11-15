@@ -122,6 +122,28 @@
 							</FormGroup>
 						</div><!-- /Col -->
 					</div><!-- /Row -->
+					<!-- Instagram -->
+					<div class="row form-row form-row-border">
+						<div class="col-12 col-desk-4 col-hd-3">
+							<h4>Instagram</h4>
+						</div>
+						<div class="col-12 col-desk-8 col-hd-6">
+							<FormGroup class="form-group-no-margin" :error="errors['instagram']">
+								<input class="form-input form-input-white" type="text" v-model="data['instagram']">
+							</FormGroup>
+						</div><!-- /Col -->
+					</div><!-- /Row -->
+					<!-- Instagram -->
+					<div class="row form-row form-row-border">
+						<div class="col-12 col-desk-4 col-hd-3">
+							<h4>Bio</h4>
+						</div>
+						<div class="col-12 col-desk-8 col-hd-6">
+							<FormGroup class="form-group-no-margin" :error="errors['biography']">
+								<textarea rows="8" class="form-input form-input-white" type="text" v-model="data['biography']"></textarea>
+							</FormGroup>
+						</div><!-- /Col -->
+					</div><!-- /Row -->
 				</div><!-- Form Group -->
 				<!-- =====================
 					Profile

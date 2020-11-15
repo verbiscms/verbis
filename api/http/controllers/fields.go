@@ -4,7 +4,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -16,11 +15,9 @@ type FieldHandler interface {
 
 // FieldController defines the handler for Fields
 type FieldController struct {
-	controller 			Controller
 	fieldsModel 		models.FieldsRepository
 	userModel 			models.UserRepository
 	categoriesModel		models.CategoryRepository
-	server     			*server.Server
 }
 
 // newFields - Construct

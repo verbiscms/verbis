@@ -3,6 +3,9 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/cache"
+	log "github.com/sirupsen/logrus"
+
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -24,59 +27,30 @@ type FieldsRepository interface {
 // FieldsStore defines the data layer for Posts
 type FieldsStore struct {
 	db *sqlx.DB
-	optionsModel OptionsRepository
-	cache fieldCache
+	options domain.Options
 	jsonPath string
-}
-
-// Defines the options for caching
-type fieldCache struct {
-	All bool
-	Layout bool
-	Fields bool
 }
 
 // newFields - Construct
 func newFields(db *sqlx.DB) *FieldsStore {
+	const op = "FieldsRepository.newFields"
+
+	// Get the options
+	optsModel := newOptions(db)
+	options, err := optsModel.GetStruct()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+		}).Fatal()
+	}
+
 	fs := FieldsStore{
 		db: db,
-		optionsModel: newOptions(db),
+		options: options,
 		jsonPath: paths.Storage() + "/fields",
 	}
-	fs.cache = fs.initCache()
+
 	return &fs
-}
-
-// Init the field cache and obtain options for caching the fields
-func (s *FieldsStore) initCache() fieldCache {
-	fc := fieldCache{}
-
-	// Cache all global
-	all, err := s.optionsModel.GetByName("cache")
-	if err != nil {
-		fc.All = true
-	} else {
-		fc.All = all.(bool)
-	}
-
-	// Cache the layout, this is used for caching the json
-	// files when reading the fields for the post
-	layout, err := s.optionsModel.GetByName("cache_layout")
-	if err != nil {
-		layout = true
-	} else {
-		fc.Layout = layout.(bool)
-	}
-
-	// TODO: Implement
-	fields, err := s.optionsModel.GetByName("cache_fields")
-	if err != nil {
-		fields = true
-	} else {
-		fc.Fields = fields.(bool)
-	}
-
-	return fc
 }
 
 // GetLayout loops over all of the locations within the config json
@@ -87,13 +61,13 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
-	//var found bool
-	//if s.cache.Layout {
-	//	cached, found := cache.Store.Get("field_layout_" + p.UUID.String())
-	//	if found {
-	//		return cached.(*[]domain.FieldGroup)
-	//	}
-	//}
+	var found bool
+	if s.options.CacheServerFields {
+		cached, found := cache.Store.Get("field_layout_" + p.UUID.String())
+		if found {
+			return cached.(*[]domain.FieldGroup), nil
+		}
+	}
 
 	// Obtain json files
 	fieldGroups, err := s.GetFieldGroups()
@@ -197,9 +171,9 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 	}
 
 	// Set the cache field layout if the cache was not found
-	//if !found && s.cache.Layout {
-	//	cache.Store.Set("field_layout_" + p.UUID.String(), &fg, cache.RememberForever)
-	//}
+	if !found && s.options.CacheServerFields {
+		cache.Store.Set("field_layout_" + p.UUID.String(), &fg, cache.RememberForever)
+	}
 
 	return &fg, nil
 }
