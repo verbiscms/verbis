@@ -671,7 +671,7 @@ export default {
 		 * Get the base slug (resource).
 		 */
 		getBaseSlug() {
-			return this.resource.name === "page" ? "/" + this.resolveCategorySlug() : "/" + this.resource.name + "/" + this.resolveCategorySlug();
+			return this.resource.name === "pages" ? "/" + this.resolveCategorySlug() : "/" + this.resource.name + "/" + this.resolveCategorySlug();
 		},
 		/*
 		 * getCategory()
