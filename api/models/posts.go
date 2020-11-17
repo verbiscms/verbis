@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
+	"strings"
 )
 
 // PostsRepository defines methods for Posts to interact with the database
@@ -105,6 +106,7 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 }
 
 // GetById returns a post by Id
+//
 // Returns errors.NOTFOUND if the post was not found by the given Id.
 func (s *PostStore) GetById(id int) (domain.Post, error) {
 	const op = "PostsRepository.GetById"
@@ -133,8 +135,8 @@ func (s *PostStore) GetBySlug(slug string) (domain.Post, error) {
 func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	const op = "PostsRepository.Create"
 
-	if s.Exists(p.Slug) {
-		return domain.Post{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", p.Slug), Operation: op}
+	if err := s.validateUrl(p.Slug); err != nil {
+		return domain.Post{}, err
 	}
 
 	// Check if the author is set assign to owner if not.
@@ -196,8 +198,8 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	}
 
 	if oldPost.Slug != p.Slug {
-		if s.Exists(p.Slug) {
-			return domain.Post{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", p.Slug), Operation: op}
+		if err := s.validateUrl(p.Slug); err != nil {
+			return domain.Post{}, err
 		}
 	}
 
@@ -298,4 +300,26 @@ func (s *PostStore) checkOwner(p domain.PostCreate) int {
 		return owner.Id
 	}
 	return p.Author
+}
+
+// validateUrl checks if the url is valid for creating or updating a new
+// post.
+//
+// Returns errors.CONFLICT if the post slug already exists
+// Or the slug contains the admin path, .i.e /admin
+func (s *PostStore) validateUrl(slug string) error {
+	const op = "PostsRepository.validateUrl"
+
+	if s.Exists(slug) {
+		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", slug), Operation: op}
+	}
+
+	slugArr := strings.Split(slug, "/")
+	if len(slugArr) > 1 {
+		if strings.Contains(slugArr[1], "admin") {
+			return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the path /admin is reserved"), Operation: op}
+		}
+	}
+
+	return nil
 }
