@@ -14,10 +14,15 @@ import (
 	"time"
 )
 
-// Minifier represents functions for executing the minify package.
+// TODO
+//
+// - Add images to the pages array by scanning the getField function as well as the <img>'s
+// - Split the sitemaps up into 49,999 chunks
+// - Add sitemap-index & move to web with XLS.
+
+// SiteMapper represents functions for executing the sitemap data.
 type SiteMapper interface {
 	GetPages() ([]byte, error)
-	//GetImages(b *bytes.Buffer, mime string) ([]byte, error)
 }
 
 // Sitemap represents the generation of sitemap.xml files for use
@@ -184,7 +189,8 @@ func (s *Sitemap) retrieveRedirects() {
 	}
 }
 
-// getHomeCreatedAt - Get the homepage created a.
+// getHomeCreatedAt - Get the homepage created at time or now if it
+// is not set.
 func (s *Sitemap) getHomeCreatedAt() string {
 	home, err := s.models.Posts.GetBySlug("/")
 	createdAt := time.Now().Format(time.RFC3339)

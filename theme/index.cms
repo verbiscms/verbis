@@ -95,4 +95,8 @@
         </footer>
     </div>
 
+
+
+    {{ partial "partials/partialtest.cms" (dict "test" "testing") }}
+
 {{ end }}
