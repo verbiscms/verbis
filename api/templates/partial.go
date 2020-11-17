@@ -20,6 +20,11 @@ import (
 func (t *TemplateFunctions) partial(name string, data ...interface{}) template.HTML {
 	path := paths.Theme() + "/" + name
 
+	var context interface{}
+	if len(data) > 0 {
+		context = data[0]
+	}
+
 	if !files.Exists(path) {
 		panic(fmt.Errorf("No file exists with the path: %s", name))
 	}
@@ -31,7 +36,7 @@ func (t *TemplateFunctions) partial(name string, data ...interface{}) template.H
 	}
 
 	var tpl bytes.Buffer
-	err = file.Execute(&tpl, data)
+	err = file.Execute(&tpl, context)
 	if err != nil {
 		panic(err)
 	}
