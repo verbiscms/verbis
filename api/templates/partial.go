@@ -13,16 +13,14 @@ import (
 // as well as any data to be passed. The template is executed and
 // panics if no file was found or the template could not be
 // executed.
-
-
-// TODO have paths of the tempalte functions struct.
-
 func (t *TemplateFunctions) partial(name string, data ...interface{}) template.HTML {
 	path := paths.Theme() + "/" + name
 
 	var context interface{}
-	if len(data) > 0 {
+	if len(data) > 1 {
 		context = data[0]
+	} else {
+		context = data
 	}
 
 	if !files.Exists(path) {
