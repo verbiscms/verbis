@@ -75,6 +75,21 @@
 								</div><!-- /Card Header -->
 							</template>
 						</Collapse><!-- /Serve Sitemap -->
+						<!-- Include redirects? -->
+						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header card-header-block">
+									<div>
+										<h4 class="card-title">Include redirects?</h4>
+										<p>By disabling this selection the redirects will not be included in the sitemap.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="seo-sitemap-redirects" v-model="data['seo_sitemap_redirects']" checked :true-value="true" :false-value="false" />
+										<label for="seo-sitemap-redirects"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Include redirects? -->
 						<!-- View -->
 						<Collapse v-if="data['seo_sitemap_serve']" :show="false" class="collapse-border-bottom">
 							<template v-slot:header>

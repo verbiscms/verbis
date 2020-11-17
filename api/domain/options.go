@@ -46,6 +46,7 @@ type Options struct {
 	// SEO
 	SeoPublic 				bool 					`json:"seo_public"`
 	SeoSitemapServe			bool					`json:"seo_sitemap_serve"`
+	SeoSitemapRedirects		bool					`json:"seo_sitemap_redirects"`
 	SeoSitemapExcluded		[]string				`json:"seo_sitemap_excluded"`
 	SeoRobotsServe			bool					`json:"seo_robots_serve"`
 	SeoRobots				string					`json:"seo_robots"`
