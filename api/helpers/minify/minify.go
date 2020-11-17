@@ -26,7 +26,7 @@ type Minifier interface {
 // Minify represents the minify type along with the minify package
 // and options to determine whether or not to minify the asset.
 type Minify struct {
-	pkg *min.M
+	pkg     *min.M
 	options models.OptionsRepository
 }
 
@@ -68,7 +68,7 @@ func (m *Minify) MinifyBytes(b *bytes.Buffer, mime string) ([]byte, error) {
 // compare gets the options struct in order to see if the user has
 // selected the type of minification.
 // It then compares mime's and executes the file to be minified.
-func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error)  {
+func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 	const op = "Minify.Compare"
 
 	options, optsErr := m.options.GetStruct()
@@ -80,46 +80,52 @@ func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error)  {
 
 	var (
 		render []byte
-		err 	error
+		err    error
 	)
 
 	switch mime {
-		case "text/html": {
-				render, err = m.execute(b, options.MinifyHTML, mime)
-				if err != nil {
-					return nil, err
-				}
-				break
+	case "text/html":
+		{
+			render, err = m.execute(b, options.MinifyHTML, mime)
+			if err != nil {
+				return nil, err
 			}
-		case "text/css":{
-				render, err = m.execute(b, options.MinifyCSS, mime)
-				if err != nil {
-					return nil, err
-				}
-				return render, nil
+			break
+		}
+	case "text/css":
+		{
+			render, err = m.execute(b, options.MinifyCSS, mime)
+			if err != nil {
+				return nil, err
 			}
-		case "application/javascript" : {
+			return render, nil
+		}
+	case "application/javascript":
+		{
 			render, err = m.execute(b, options.MinifyJS, mime)
 			if err != nil {
 				return nil, err
 			}
 			break
 		}
-		case "image/svg+xml" : {
+	case "image/svg+xml":
+		{
 			render, err = m.execute(b, options.MinifySVG, mime)
 			if err != nil {
 				return nil, err
 			}
 			break
 		}
-		case "application/json" : {
+	case "application/json":
+		{
 			render, err = m.execute(b, options.MinifyJSON, mime)
 			if err != nil {
 				return nil, err
 			}
 			break
 		}
-		case "text/xml" : {
+	case "text/xml":
+		{
 			render, err = m.execute(b, options.MinifyXML, mime)
 			if err != nil {
 				return nil, err
@@ -140,7 +146,7 @@ func (m *Minify) execute(buf *bytes.Buffer, allow bool, mime string) ([]byte, er
 
 	var (
 		render []byte
-		err error
+		err    error
 	)
 
 	if allow {

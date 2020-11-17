@@ -42,7 +42,6 @@ func TestGetField_No_Post(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("No post"))
 
-
 	tpl := `{{ getField "posttext" 1 }}`
 	runt(t, f, tpl, "")
 }
@@ -97,7 +96,6 @@ func TestGetRepeater(t *testing.T) {
 	tpl := `{{ getRepeater "wrongval" }}`
 	runt(t, f, tpl, "[]")
 
-
 	tpl2 := `{{ getRepeater "repeater" }}`
 	runt(t, f, tpl2, "[map[text1:content text2:content] map[text1:content text2:content]]")
 }
@@ -134,7 +132,6 @@ func TestGetFlexible(t *testing.T) {
 
 	tpl := `{{ getFlexible "wrongval" }}`
 	runt(t, f, tpl, "[]")
-
 
 	tpl2 := `{{ getFlexible "flexible" }}`
 	runt(t, f, tpl2, "[map[fields:map[text:content text2:content] type:block1] map[fields:map[repeater:[map[text:content text2:content]] text:content text1:content text2:content] type:block2]]")

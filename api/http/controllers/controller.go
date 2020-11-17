@@ -14,53 +14,53 @@ import (
 )
 
 type Controller struct {
-	Auth 		AuthHandler
-	Cache 		CacheHandler
-	Categories 	CategoryHandler
-	Fields 		FieldHandler
-	Frontend 	FrontendHandler
-	Media 		MediaHandler
-	Options 	OptionsHandler
-	Posts		PostHandler
-	Spa 		SpaHandler
-	Site 		SiteHandler
-	User 		UserHandler
+	Auth       AuthHandler
+	Cache      CacheHandler
+	Categories CategoryHandler
+	Fields     FieldHandler
+	Frontend   FrontendHandler
+	Media      MediaHandler
+	Options    OptionsHandler
+	Posts      PostHandler
+	Spa        SpaHandler
+	Site       SiteHandler
+	User       UserHandler
 }
 
 type RespondJson struct {
-	Status 			int 			`json:"status"`
-	Error 			bool 			`json:"error"`
-	Message			string 			`json:"message"`
-	Meta 			Meta			`json:"meta"`
-	Data 			interface{} 	`json:"data"`
+	Status  int         `json:"status"`
+	Error   bool        `json:"error"`
+	Message string      `json:"message"`
+	Meta    Meta        `json:"meta"`
+	Data    interface{} `json:"data"`
 }
 
 type Meta struct {
-	RequestTime 	string           `json:"request_time"`
-	ResponseTime 	string           `json:"response_time"`
-	LatencyTime 	string           `json:"latency_time"`
-	Pagination 		interface{}		 `json:"pagination,omitempty"`
+	RequestTime  string      `json:"request_time"`
+	ResponseTime string      `json:"response_time"`
+	LatencyTime  string      `json:"latency_time"`
+	Pagination   interface{} `json:"pagination,omitempty"`
 }
 
 type ValidationErrJson struct {
-	Errors 		interface{} 		`json:"errors"`
+	Errors interface{} `json:"errors"`
 }
 
 // Construct
 func New(m *models.Store, config config.Configuration) (*Controller, error) {
 
 	c := Controller{
-		Auth: newAuth(m.Auth, m.User, config),
-		Cache: newCache(),
+		Auth:       newAuth(m.Auth, m.User, config),
+		Cache:      newCache(),
 		Categories: newCategories(m.Categories),
-		Fields: newFields(m.Fields, m.User, m.Categories),
-		Frontend: newFrontend(m, config),
-		Media: newMedia(m.Media, m.User),
-		Options: newOptions(m.Options),
-		Posts: newPosts(m.Posts, m.Fields, m.User, m.Categories),
-		Spa: newSpa(),
-		Site: newSite(m.Site),
-		User: newUser(m.User),
+		Fields:     newFields(m.Fields, m.User, m.Categories),
+		Frontend:   newFrontend(m, config),
+		Media:      newMedia(m.Media, m.User),
+		Options:    newOptions(m.Options),
+		Posts:      newPosts(m.Posts, m.Fields, m.User, m.Categories),
+		Spa:        newSpa(),
+		Site:       newSite(m.Site),
+		User:       newUser(m.User),
 	}
 
 	return &c, nil
@@ -98,11 +98,11 @@ func Respond(g *gin.Context, status int, message string, data interface{}, pagin
 
 	// Set up the response JSON
 	respond := RespondJson{
-		Status: status,
+		Status:  status,
 		Message: message,
-		Error: hasError,
-		Meta: m,
-		Data: data,
+		Error:   hasError,
+		Meta:    m,
+		Data:    data,
 	}
 
 	// Respond
@@ -127,11 +127,11 @@ func AbortJSON(g *gin.Context, status int, message string, data interface{}) {
 
 	// Set up the response JSON
 	respond := RespondJson{
-		Status: status,
-		Error: hasError,
+		Status:  status,
+		Error:   hasError,
 		Message: message,
-		Meta: calculateRequestTime(g),
-		Data: data,
+		Meta:    calculateRequestTime(g),
+		Data:    data,
 	}
 
 	// Respond
@@ -162,7 +162,7 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 			if errData.Err != nil {
 				errType := reflect.TypeOf(errData.Err).String()
 
-				if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID  {
+				if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID {
 					validationErrors, _ := errData.Err.(validator.ValidationErrors)
 					v := validation.New()
 					data = &ValidationErrJson{
@@ -187,7 +187,6 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 		}
 
 		// If data is of type validation errors, pass to validator
-
 
 		// If the data is type unmarshal error
 		if dataType == "*json.UnmarshalTypeError" {
@@ -219,8 +218,8 @@ func calculateRequestTime(g *gin.Context) Meta {
 	latencyTime := time.Since(startTime)
 
 	return Meta{
-		RequestTime: startTime.UTC().String(),
+		RequestTime:  startTime.UTC().String(),
 		ResponseTime: time.Now().UTC().String(),
-		LatencyTime: latencyTime.Round(time.Microsecond).String(),
+		LatencyTime:  latencyTime.Round(time.Microsecond).String(),
 	}
 }

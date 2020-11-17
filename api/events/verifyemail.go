@@ -37,11 +37,11 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 	md5String := encryption.MD5Hash(strconv.Itoa(u.Id) + u.Email)
 
 	data := mail.Data{
-		"AppUrl": environment.GetAppName(),
-		"AppTitle": title,
+		"AppUrl":    environment.GetAppName(),
+		"AppTitle":  title,
 		"AdminPath": e.mailer.Config.Admin.Path,
-		"Token": md5String,
-		"UserName": u.FirstName,
+		"Token":     md5String,
+		"UserName":  u.FirstName,
 	}
 
 	html, err := e.mailer.ExecuteHTML("verify-email.html", data)
@@ -50,9 +50,9 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 	}
 
 	tm := mail.Sender{
-		To:      	[]string{u.Email},
-		Subject: 	"Thanks for signing up " + u.FirstName,
-		HTML: 		html,
+		To:      []string{u.Email},
+		Subject: "Thanks for signing up " + u.FirstName,
+		HTML:    html,
 	}
 
 	_, err = e.mailer.Send(&tm)

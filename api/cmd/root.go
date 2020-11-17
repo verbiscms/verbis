@@ -25,9 +25,9 @@ import (
 // Root represents the base command when called without any subcommands
 var (
 	rootCmd = &cobra.Command{
-		Use:   "Verbis",
-		Short: "Verbis CLI",
-		Long: `Verbis - CHANGE.`,
+		Use:               "Verbis",
+		Short:             "Verbis CLI",
+		Long:              `Verbis - CHANGE.`,
 		DisableAutoGenTag: true,
 	}
 )
@@ -56,4 +56,3 @@ func init() {
 	rootCmd.AddCommand(dumpCmd)
 	rootCmd.AddCommand(testCmd)
 }
-

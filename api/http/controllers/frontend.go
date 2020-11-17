@@ -37,13 +37,13 @@ type FrontendHandler interface {
 
 // FrontendController defines the handler for all frontend routes
 type FrontendController struct {
-	server          *server.Server
-	models 			*models.Store
-	config 			config.Configuration
-	cacher 			frontend.Cacher
-	minify 			minify.Minifier
-	theme 			domain.ThemeConfig
-	options 		domain.Options
+	server  *server.Server
+	models  *models.Store
+	config  config.Configuration
+	cacher  frontend.Cacher
+	minify  minify.Minifier
+	theme   domain.ThemeConfig
+	options domain.Options
 }
 
 // newFrontend - Construct
@@ -67,11 +67,11 @@ func newFrontend(m *models.Store, config config.Configuration) *FrontendControll
 	}
 
 	return &FrontendController{
-		models: m,
-		config: config,
-		cacher: frontend.NewCache(m.Options),
-		minify: minify.New(m.Options),
-		theme: theme,
+		models:  m,
+		config:  config,
+		cacher:  frontend.NewCache(m.Options),
+		minify:  minify.New(m.Options),
+		theme:   theme,
 		options: options,
 	}
 }
@@ -109,13 +109,13 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 		go func() {
 			if c.options.CacheServerUploads && cachedFile == nil {
 				cache.Store.Set(url, &file, cache.RememberForever)
-				cache.Store.Set(url + "mimetype",  &mimeType, cache.RememberForever)
+				cache.Store.Set(url+"mimetype", &mimeType, cache.RememberForever)
 			}
 		}()
 	}()
 
 	// If the minified file is nil or the err is not empty, serve the original data
-	minifiedFile, err :=  c.minify.MinifyBytes(bytes.NewBuffer(file), mimeType)
+	minifiedFile, err := c.minify.MinifyBytes(bytes.NewBuffer(file), mimeType)
 	if err != nil || minifiedFile != nil {
 		file = minifiedFile
 	}
@@ -166,7 +166,7 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 		go func() {
 			if c.options.CacheServerAssets && cachedFile == nil {
 				cache.Store.Set(url, &file, cache.RememberForever)
-				cache.Store.Set(url + "mimetype",  &mimeType, cache.RememberForever)
+				cache.Store.Set(url+"mimetype", &mimeType, cache.RememberForever)
 			}
 		}()
 	}()
@@ -177,7 +177,7 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 	// Check if the serving of webp's is allowed & get the
 	// webp images and assign if not nil
 	if c.options.MediaServeWebP && webp.Accepts(g) {
-		webpFile := webp.GetData(g, assetsPath + fileName, mimeType)
+		webpFile := webp.GetData(g, assetsPath+fileName, mimeType)
 		if webpFile != nil {
 			mimeType = "image/webp"
 			file = webpFile
@@ -258,11 +258,11 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	tf := templates.NewFunctions(g, c.models, &post)
 	gvFrontend := goview.New(goview.Config{
-		Root:      paths.Theme(),
-		Extension: c.models.Config.Template.FileExtension,
-		Master:    master,
-		Partials:  []string{},
-		Funcs: tf.GetFunctions(),
+		Root:         paths.Theme(),
+		Extension:    c.models.Config.Template.FileExtension,
+		Master:       master,
+		Partials:     []string{},
+		Funcs:        tf.GetFunctions(),
 		DisableCache: !environment.IsProduction(),
 	})
 
@@ -274,9 +274,9 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	}
 
 	var b bytes.Buffer
-  	if err := gvFrontend.RenderWriter(&b, pt, data); err != nil {
-  		fmt.Println(err)
-  		panic(err)
+	if err := gvFrontend.RenderWriter(&b, pt, data); err != nil {
+		fmt.Println(err)
+		panic(err)
 	}
 
 	minfied, err := c.minify.MinifyBytes(&b, "text/html")
@@ -299,9 +299,9 @@ func (c *FrontendController) Serve(g *gin.Context) {
 // NoPageFound serves to 404 page
 func (c *FrontendController) NoPageFound(g *gin.Context) {
 	gvError := goview.New(goview.Config{
-		Root:      paths.Theme(),
-		Extension: c.config.Template.FileExtension,
-		Partials:  []string{},
+		Root:         paths.Theme(),
+		Extension:    c.config.Template.FileExtension,
+		Partials:     []string{},
 		DisableCache: true,
 	})
 	if err := gvError.Render(g.Writer, 404, "404", nil); err != nil {
@@ -338,6 +338,3 @@ func (c *FrontendController) SiteMap(g *gin.Context) {
 
 	g.Data(200, "application/xml; charset=utf-8", sitemap)
 }
-
-
-

@@ -1,4 +1,4 @@
- /*
+/*
 Copyright © 2020 NAME HERE ainsley@reddico.co.uk
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,9 +15,9 @@ limitations under the License.
 */
 package main
 
- import (
-	 "github.com/ainsleyclark/verbis/api/cmd"
- )
+import (
+	"github.com/ainsleyclark/verbis/api/cmd"
+)
 
 func main() {
 	cmd.Execute()

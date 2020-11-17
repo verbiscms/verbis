@@ -22,16 +22,16 @@ type MediaHandler interface {
 
 // MediaController defines the handler for Posts
 type MediaController struct {
-	controller	Controller
-	mediaModel 	models.MediaRepository
-	userModel 	models.UserRepository
+	controller Controller
+	mediaModel models.MediaRepository
+	userModel  models.UserRepository
 }
 
 // newMedia - Construct
 func newMedia(m models.MediaRepository, um models.UserRepository) *MediaController {
 	return &MediaController{
 		mediaModel: m,
-		userModel: um,
+		userModel:  um,
 	}
 }
 
@@ -65,7 +65,7 @@ func (c *MediaController) GetById(g *gin.Context) {
 	paramId := g.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		Respond(g, 400,  "Pass a valid number to obtain the media item by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Pass a valid number to obtain the media item by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
@@ -75,7 +75,7 @@ func (c *MediaController) GetById(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained media with the ID: " + paramId, media)
+	Respond(g, 200, "Successfully obtained media with the ID: "+paramId, media)
 }
 
 // Upload
@@ -134,7 +134,7 @@ func (c *MediaController) Update(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500,"A valid ID is required to update the Media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 500, "A valid ID is required to update the Media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	media.Id = id
@@ -148,7 +148,7 @@ func (c *MediaController) Update(g *gin.Context) {
 	// Clear the cache
 	cache.Store.Delete(media.Url)
 
-	Respond(g, 200, "Successfully updated media item with the ID: " + strconv.Itoa(id), media)
+	Respond(g, 200, "Successfully updated media item with the ID: "+strconv.Itoa(id), media)
 }
 
 // Delete
@@ -157,7 +157,7 @@ func (c *MediaController) Delete(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 400,"A valid ID is required to delete a media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to delete a media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	err = c.mediaModel.Delete(id)
@@ -169,5 +169,5 @@ func (c *MediaController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted media item with the ID: " + strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted media item with the ID: "+strconv.Itoa(id), nil)
 }

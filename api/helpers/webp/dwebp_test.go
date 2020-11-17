@@ -1,11 +1,11 @@
 package webp
 
 import (
-	"testing"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"golang.org/x/image/webp"
 	"image/png"
+	"os"
+	"testing"
 )
 
 func TestVersionDWebP(t *testing.T) {

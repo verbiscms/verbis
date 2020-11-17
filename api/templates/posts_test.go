@@ -16,8 +16,8 @@ func TestGetPost(t *testing.T) {
 	f := newTestSuite()
 
 	mockPostItem := domain.Post{
-		Id:          1,
-		Title: 		"test title",
+		Id:    1,
+		Title: "test title",
 	}
 
 	f.store.Posts = &mockPosts
@@ -139,4 +139,3 @@ func TestGetPagination_ConvertString(t *testing.T) {
 	tpl := "{{ getPagination }}"
 	runt(t, f, tpl, "")
 }
-

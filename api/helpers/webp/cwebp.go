@@ -182,4 +182,3 @@ func (c *CWebP) getOutput() (string, error) {
 		return "", errors.New("Undefined output")
 	}
 }
-

@@ -17,7 +17,7 @@ var (
 	startCmd = &cobra.Command{
 		Use:   "start",
 		Short: "Running start will start Verbis project from the current directory and run the CMS project.",
-		Long:  `This command will start Verbis from the current directory. First it will
+		Long: `This command will start Verbis from the current directory. First it will
 run Verbis doctor to see if the environment is configured correctly. It will then start
 up the server on the port specified in the .env file.`,
 		Run: func(cmd *cobra.Command, args []string) {

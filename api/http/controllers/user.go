@@ -57,7 +57,7 @@ func (c *UserController) Get(g *gin.Context) {
 
 	pagination := http.GetPagination(params, total)
 
-	Respond(g, 200,"Successfully obtained users", users, pagination)
+	Respond(g, 200, "Successfully obtained users", users, pagination)
 }
 
 // Get By ID
@@ -68,7 +68,7 @@ func (c *UserController) GetById(g *gin.Context) {
 	paramId := g.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		Respond(g, 400,  "Pass a valid number to obtain the user by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Pass a valid number to obtain the user by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
@@ -81,7 +81,7 @@ func (c *UserController) GetById(g *gin.Context) {
 	user.Password = ""
 	user.Token = ""
 
-	Respond(g, 200, "Successfully obtained user with ID: " + strconv.Itoa(id), user)
+	Respond(g, 200, "Successfully obtained user with ID: "+strconv.Itoa(id), user)
 }
 
 // Get Roles
@@ -120,7 +120,7 @@ func (c *UserController) Create(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully created user with ID: " + strconv.Itoa(user.Id), user)
+	Respond(g, 200, "Successfully created user with ID: "+strconv.Itoa(user.Id), user)
 }
 
 // Update
@@ -136,7 +136,7 @@ func (c *UserController) Update(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 400,"A valid ID is required to update the user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to update the user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	u.Id = id
@@ -150,7 +150,7 @@ func (c *UserController) Update(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully updated user with ID " + strconv.Itoa(u.Id), updatedUser)
+	Respond(g, 200, "Successfully updated user with ID "+strconv.Itoa(u.Id), updatedUser)
 }
 
 // Delete
@@ -161,7 +161,7 @@ func (c *UserController) Delete(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 400,"A valid ID is required to delete a user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to delete a user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	err = c.model.Delete(id)
@@ -173,7 +173,7 @@ func (c *UserController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted user with ID " + strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted user with ID "+strconv.Itoa(id), nil)
 }
 
 // Delete
@@ -183,7 +183,7 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 400,"A valid ID is required to update a user's password", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to update a user's password", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	user, err := c.model.GetById(id)
@@ -203,10 +203,10 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 	if errors.Code(err) == errors.INVALID {
 		Respond(g, 400, errors.Message(err), err)
 		return
-	} else if err != nil  {
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	Respond(g, 200, "Successfully updated password for the user with ID " + strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully updated password for the user with ID "+strconv.Itoa(id), nil)
 }

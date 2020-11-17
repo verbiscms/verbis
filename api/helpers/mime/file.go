@@ -15,13 +15,13 @@ func TypeByFile(file *multipart.FileHeader) (string, error) {
 
 	reader, err := file.Open()
 	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf( "Unable to open file with the name: %s", file.Filename), Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to open file with the name: %s", file.Filename), Operation: op, Err: err}
 	}
 	defer reader.Close()
 
 	mime, err := mimetype.DetectReader(reader)
 	if err != nil {
-		return "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf( "Mime type not found: %s", mime), Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Mime type not found: %s", mime), Operation: op, Err: err}
 	}
 
 	return mime.String(), nil

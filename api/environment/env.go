@@ -14,26 +14,26 @@ import (
 var env envMap
 
 type envMap struct {
-	AppName 			string `json:"APP_NAME"`
-	AppEnv				string `json:"APP_ENV"`
-	AppDebug 			string `json:"APP_DEBUG"`
-	AppPort				string `json:"APP_PORT" binding:"required"`
-	DbHost				string `json:"DB_HOST" binding:"required"`
-	DbPort				string `json:"DB_PORT" binding:"required"`
-	DbDatabase			string `json:"DB_DATABASE" binding:"required"`
-	DbUser				string `json:"DB_USERNAME" binding:"required"`
-	DbPassword			string `json:"DB_PASSWORD" binding:"required"`
-	SparkpostApiKey		string `json:"SPARKPOST_API_KEY"`
-	SparkpostUrl		string `json:"SPARKPOST_URL"`
-	MailFromAddress		string `json:"MAIL_FROM_ADDRESS"`
-	MailFromName		string `json:"MAIL_FROM_NAME"`
+	AppName         string `json:"APP_NAME"`
+	AppEnv          string `json:"APP_ENV"`
+	AppDebug        string `json:"APP_DEBUG"`
+	AppPort         string `json:"APP_PORT" binding:"required"`
+	DbHost          string `json:"DB_HOST" binding:"required"`
+	DbPort          string `json:"DB_PORT" binding:"required"`
+	DbDatabase      string `json:"DB_DATABASE" binding:"required"`
+	DbUser          string `json:"DB_USERNAME" binding:"required"`
+	DbPassword      string `json:"DB_PASSWORD" binding:"required"`
+	SparkpostApiKey string `json:"SPARKPOST_API_KEY"`
+	SparkpostUrl    string `json:"SPARKPOST_URL"`
+	MailFromAddress string `json:"MAIL_FROM_ADDRESS"`
+	MailFromName    string `json:"MAIL_FROM_NAME"`
 }
 
 type Mail struct {
-	SparkpostApiKey		string `json:"SPARKPOST_API_KEY"`
-	SparkpostUrl		string `json:"SPARKPOST_URL"`
-	FromAddress			string `json:"MAIL_FROM_ADDRESS"`
-	FromName			string `json:"MAIL_FROM_NAME"`
+	SparkpostApiKey string `json:"SPARKPOST_API_KEY"`
+	SparkpostUrl    string `json:"SPARKPOST_URL"`
+	FromAddress     string `json:"MAIL_FROM_ADDRESS"`
+	FromName        string `json:"MAIL_FROM_NAME"`
 }
 
 // Load populates environment, loads and validates the environment file.
@@ -43,7 +43,7 @@ func Load() error {
 
 	var (
 		basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-		envPath = ".env"
+		envPath     = ".env"
 	)
 
 	if _, err := os.Stat(basePath + "/.env"); err == nil {
@@ -55,18 +55,18 @@ func Load() error {
 	}
 
 	env = envMap{
-		AppEnv:  	os.Getenv("APP_ENV"),
-		AppDebug:  	os.Getenv("APP_DEBUG"),
-		AppPort:  	os.Getenv("APP_PORT"),
-		DbHost:  	os.Getenv("DB_HOST"),
-		DbPort:  	os.Getenv("DB_PORT"),
-		DbDatabase: os.Getenv("DB_DATABASE"),
-		DbUser: 	os.Getenv("DB_USERNAME"),
-		DbPassword: os.Getenv("DB_PASSWORD"),
+		AppEnv:          os.Getenv("APP_ENV"),
+		AppDebug:        os.Getenv("APP_DEBUG"),
+		AppPort:         os.Getenv("APP_PORT"),
+		DbHost:          os.Getenv("DB_HOST"),
+		DbPort:          os.Getenv("DB_PORT"),
+		DbDatabase:      os.Getenv("DB_DATABASE"),
+		DbUser:          os.Getenv("DB_USERNAME"),
+		DbPassword:      os.Getenv("DB_PASSWORD"),
 		SparkpostApiKey: os.Getenv("SPARKPOST_API_KEY"),
-		SparkpostUrl: os.Getenv("SPARKPOST_URL"),
+		SparkpostUrl:    os.Getenv("SPARKPOST_URL"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
-		MailFromName: os.Getenv("MAIL_FROM_NAME"),
+		MailFromName:    os.Getenv("MAIL_FROM_NAME"),
 	}
 
 	return nil
@@ -112,10 +112,10 @@ func GetDatabaseName() string {
 // Mail - GetMailConfiguration
 func GetMailConfiguration() Mail {
 	return Mail{
-		FromAddress: env.MailFromAddress,
-		FromName: env.MailFromName,
+		FromAddress:     env.MailFromAddress,
+		FromName:        env.MailFromName,
 		SparkpostApiKey: env.SparkpostApiKey,
-		SparkpostUrl: env.SparkpostUrl,
+		SparkpostUrl:    env.SparkpostUrl,
 	}
 }
 
@@ -133,5 +133,3 @@ func IsDevelopment() bool {
 func IsDebug() bool {
 	return env.AppDebug != "false"
 }
-
-

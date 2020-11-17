@@ -8,22 +8,22 @@ import (
 func (s *Seeder) runPosts() error {
 
 	p := domain.PostCreate{
-		Post:     domain.Post{
-			Slug:           "/",
-			Title:          "Welcome to Verbis",
-			Status:         "published",
-			PageTemplate:   "",
-			Layout:         "",
-			UserId: 0,
+		Post: domain.Post{
+			Slug:         "/",
+			Title:        "Welcome to Verbis",
+			Status:       "published",
+			PageTemplate: "",
+			Layout:       "",
+			UserId:       0,
 		},
 		Author:   0,
 		Category: nil,
 	}
 
-	_, err := s.models.Posts.Create(&p); if err != nil {
+	_, err := s.models.Posts.Create(&p)
+	if err != nil {
 		return err
 	}
 
 	return nil
 }
-

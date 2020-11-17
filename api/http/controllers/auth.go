@@ -10,7 +10,7 @@ import (
 type AuthController struct {
 	authModel models.AuthRepository
 	userModel models.UserRepository
-	config 	  config.Configuration
+	config    config.Configuration
 }
 
 type AuthHandler interface {
@@ -37,13 +37,13 @@ func (c *AuthController) Login(g *gin.Context) {
 	const op = "AuthHandler.Login"
 
 	type login struct {
-		Email string `json:"email" binding:"required,email"`
+		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required"`
 	}
 
 	var u login
 	if err := g.ShouldBindJSON(&u); err != nil {
-		Respond(g, 400,  "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
@@ -108,9 +108,9 @@ func (c *AuthController) ResetPassword(g *gin.Context) {
 	const op = "AuthHandler.ResetPassword"
 
 	type resetPassword struct {
-		NewPassword			string			`json:"new_password" binding:"required,min=8,max=60"`
-		ConfirmPassword		string			`json:"confirm_password" binding:"eqfield=NewPassword,required"`
-		Token 				string 			`db:"token" json:"token" binding:"required"`
+		NewPassword     string `json:"new_password" binding:"required,min=8,max=60"`
+		ConfirmPassword string `json:"confirm_password" binding:"eqfield=NewPassword,required"`
+		Token           string `db:"token" json:"token" binding:"required"`
 	}
 
 	var rp resetPassword
@@ -168,4 +168,3 @@ func (c *AuthController) SendResetPassword(g *gin.Context) {
 
 	Respond(g, 200, "A fresh verification link has been sent to your email", nil)
 }
-

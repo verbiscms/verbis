@@ -28,7 +28,7 @@ func Process() {
 				stringSlice := strings.Split(command, ":")
 				argSlice := strings.Split(stringSlice[1], " ")
 
-				if len(argSlice) == 1  {
+				if len(argSlice) == 1 {
 					color.Red.Println("Pass two arguments to make. E.g make:controller filename")
 				} else {
 					command = stringSlice[0]
@@ -39,27 +39,27 @@ func Process() {
 		}
 
 		switch command {
-			case "help":
-				Options()
-				break
-			case "clear":
-				print("\033[H\033[2J")
-				break
-			case "serve":
-				bootstrap.Load()
-				break
-			case "make":
-				make(argument1, argument2)
-				break
-			case "migrate":
-				fmt.Println("in")
-				//migrate.Migrate.Load()
-				//migrate.Migrate.Fresh()
-			case "exit":
-				os.Exit(0)
-				break
-			default:
-				color.Red.Println("Command not found")
+		case "help":
+			Options()
+			break
+		case "clear":
+			print("\033[H\033[2J")
+			break
+		case "serve":
+			bootstrap.Load()
+			break
+		case "make":
+			make(argument1, argument2)
+			break
+		case "migrate":
+			fmt.Println("in")
+			//migrate.Migrate.Load()
+			//migrate.Migrate.Fresh()
+		case "exit":
+			os.Exit(0)
+			break
+		default:
+			color.Red.Println("Command not found")
 		}
 	}
 }

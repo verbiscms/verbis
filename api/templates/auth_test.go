@@ -51,9 +51,9 @@ func TestIsAdmin(t *testing.T) {
 	f.gin.Request.Header.Set("Cookie", "verbis-session=token")
 
 	user := domain.User{
-		Id:     0,
-		Role:   domain.UserRole{
-			Id:          6,
+		Id: 0,
+		Role: domain.UserRole{
+			Id: 6,
 		},
 	}
 
@@ -71,8 +71,8 @@ func TestIsAdmin_NotAdmin(t *testing.T) {
 	f.gin.Request.Header.Set("Cookie", "verbis-session=token")
 
 	user := domain.User{
-		Id:     0,
-		Role:   domain.UserRole{
+		Id: 0,
+		Role: domain.UserRole{
 			Id: 1,
 		},
 	}
@@ -105,6 +105,3 @@ func TestIsAdmin_NoUser(t *testing.T) {
 	tpl := "{{ isAdmin }}"
 	runt(t, f, tpl, false)
 }
-
-
-

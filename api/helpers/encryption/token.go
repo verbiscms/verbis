@@ -15,8 +15,8 @@ import (
 // GenerateUserToken generates a new user token based on name & email.
 func GenerateUserToken(name string, email string) string {
 	emailHash := MD5Hash(email)
-	hash := MD5Hash(name + time.Now().String() + "3de" + strconv.Itoa(rand.Intn(143 - 0) + 0) + emailHash)
-	token := strconv.Itoa(rand.Intn(143 - 0) + 0) + hash + strconv.Itoa(rand.Intn(143 - 0) + 0)
+	hash := MD5Hash(name + time.Now().String() + "3de" + strconv.Itoa(rand.Intn(143-0)+0) + emailHash)
+	token := strconv.Itoa(rand.Intn(143-0)+0) + hash + strconv.Itoa(rand.Intn(143-0)+0)
 	return token
 }
 
@@ -46,4 +46,3 @@ func GenerateSessionToken(email string) string {
 	hasher.Write(hash)
 	return hex.EncodeToString(hasher.Sum(nil))
 }
-

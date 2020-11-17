@@ -10,7 +10,7 @@ import (
 func spa(s *server.Server, c *controllers.Controller, config config.Configuration) {
 	spa := s.Group(config.Admin.Path)
 	{
-		spa.GET("/*any",  c.Spa.Serve)
+		spa.GET("/*any", c.Spa.Serve)
 		spa.GET("", c.Spa.Serve)
 	}
 }

@@ -28,24 +28,24 @@ type SiteMapper interface {
 // Sitemap represents the generation of sitemap.xml files for use
 // with the frontend controller
 type Sitemap struct {
-	models 		*models.Store
-	options 	domain.Options
-	viewData 	*SitemapViewData
-	siteUrl 	string
+	models   *models.Store
+	options  domain.Options
+	viewData *SitemapViewData
+	siteUrl  string
 }
 
 // SitemapPosts defines the array of posts for the sitemap.
 type SitemapPages struct {
-	Slug string
+	Slug      string
 	CreatedAt string
 }
 
 // SitemapViewData defines the data to executed on the sitemap.
 type SitemapViewData struct {
-	Home string
+	Home          string
 	HomeCreatedAt string
-	Pages []SitemapPages
-	Redirects []SitemapPages
+	Pages         []SitemapPages
+	Redirects     []SitemapPages
 }
 
 var (
@@ -88,7 +88,7 @@ func NewSitemap(m *models.Store) *Sitemap {
 	}
 
 	s := &Sitemap{
-		models: m,
+		models:  m,
 		options: options,
 		siteUrl: options.SiteUrl,
 	}
@@ -109,9 +109,9 @@ func (s *Sitemap) GetPages() ([]byte, error) {
 	}
 
 	s.viewData = &SitemapViewData{
-		Home:          	s.siteUrl,
-		HomeCreatedAt: 	s.getHomeCreatedAt(),
-		Pages: 			make([]SitemapPages, 0),
+		Home:          s.siteUrl,
+		HomeCreatedAt: s.getHomeCreatedAt(),
+		Pages:         make([]SitemapPages, 0),
 	}
 
 	s.retrieveRedirects()
@@ -140,7 +140,7 @@ func (s *Sitemap) retrievePages() error {
 		Page:           1,
 		Limit:          http.PaginationAllLimit,
 		OrderDirection: "desc",
-		OrderBy: 		"created_at",
+		OrderBy:        "created_at",
 	}, "all")
 
 	if err != nil {

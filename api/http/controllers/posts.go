@@ -20,18 +20,18 @@ type PostHandler interface {
 
 // PostsController defines the handler for Posts
 type PostsController struct {
-	postModel   	models.PostsRepository
-	fieldsModel 	models.FieldsRepository
-	userModel 		models.UserRepository
-	categoriesModel	models.CategoryRepository
+	postModel       models.PostsRepository
+	fieldsModel     models.FieldsRepository
+	userModel       models.UserRepository
+	categoriesModel models.CategoryRepository
 }
 
 // newPosts - Construct
 func newPosts(m models.PostsRepository, f models.FieldsRepository, u models.UserRepository, c models.CategoryRepository) *PostsController {
 	return &PostsController{
-		postModel: m,
-		fieldsModel: f,
-		userModel: u,
+		postModel:       m,
+		fieldsModel:     f,
+		userModel:       u,
 		categoriesModel: c,
 	}
 }
@@ -78,7 +78,7 @@ func (c *PostsController) GetById(g *gin.Context) {
 	paramId := g.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		Respond(g, 400,  "Pass a valid number to obtain the post by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Pass a valid number to obtain the post by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
@@ -94,7 +94,7 @@ func (c *PostsController) GetById(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained post with the ID: " + paramId, formatPost)
+	Respond(g, 200, "Successfully obtained post with the ID: "+paramId, formatPost)
 }
 
 // Create
@@ -123,7 +123,7 @@ func (c *PostsController) Create(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 201, "Successfully created post with the ID: " + strconv.Itoa(newPost.Id), formatPost)
+	Respond(g, 201, "Successfully created post with the ID: "+strconv.Itoa(newPost.Id), formatPost)
 }
 
 // Update
@@ -139,7 +139,7 @@ func (c *PostsController) Update(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 400,"A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	post.Id = id
@@ -159,7 +159,7 @@ func (c *PostsController) Update(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully updated post with the ID: " + strconv.Itoa(updatedPost.Id), formatPost)
+	Respond(g, 200, "Successfully updated post with the ID: "+strconv.Itoa(updatedPost.Id), formatPost)
 }
 
 // Delete
@@ -169,7 +169,7 @@ func (c *PostsController) Delete(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 400,"A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	err = c.postModel.Delete(id)
@@ -181,7 +181,7 @@ func (c *PostsController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted post with the ID: " + strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted post with the ID: "+strconv.Itoa(id), nil)
 }
 
 // Format
@@ -204,21 +204,21 @@ func (c *PostsController) Format(g *gin.Context, post domain.Post) (domain.PostD
 	}
 
 	pd := domain.PostData{
-		Post:       post,
-		Layout:     layout,
-		Author:     domain.PostAuthor(author),
+		Post:   post,
+		Layout: layout,
+		Author: domain.PostAuthor(author),
 	}
 
 	if category != nil {
-		pd.Categories =  &domain.PostCategory{
-			Id:           category.Id,
-			Slug:         category.Slug,
-			Name:         category.Name,
-			Description:  category.Description,
-			Resource: 	  category.Resource,
-			ParentId:     category.ParentId,
-			UpdatedAt:    category.UpdatedAt,
-			CreatedAt:    category.CreatedAt,
+		pd.Categories = &domain.PostCategory{
+			Id:          category.Id,
+			Slug:        category.Slug,
+			Name:        category.Name,
+			Description: category.Description,
+			Resource:    category.Resource,
+			ParentId:    category.ParentId,
+			UpdatedAt:   category.UpdatedAt,
+			CreatedAt:   category.CreatedAt,
 		}
 	}
 

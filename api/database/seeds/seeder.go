@@ -6,14 +6,14 @@ import (
 )
 
 type Seeder struct {
-	db *sqlx.DB
+	db     *sqlx.DB
 	models *models.Store
 }
 
 // Construct
 func New(db *sqlx.DB, s *models.Store) *Seeder {
 	return &Seeder{
-		db: db,
+		db:     db,
 		models: s,
 	}
 }

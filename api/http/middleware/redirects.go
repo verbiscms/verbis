@@ -30,4 +30,3 @@ func Redirects(o models.OptionsRepository) gin.HandlerFunc {
 		g.Next()
 	}
 }
-

@@ -53,7 +53,7 @@ func OperatorTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
 }
 
 // Check if the token exists in the header
-func checkTokenExists(g *gin.Context) error  {
+func checkTokenExists(g *gin.Context) error {
 	token := g.Request.Header.Get("token")
 	if token == "" {
 		controllers.AbortJSON(g, 401, "Missing token in the request header", nil)
@@ -63,12 +63,12 @@ func checkTokenExists(g *gin.Context) error  {
 }
 
 // Check the user token and return the user if passes
-func checkUserToken(g *gin.Context, m models.UserRepository) (*domain.User, error)  {
+func checkUserToken(g *gin.Context, m models.UserRepository) (*domain.User, error) {
 	token := g.Request.Header.Get("token")
 
 	u, err := m.CheckToken(token)
 	if err != nil {
-		controllers.AbortJSON(g, 401,"Invalid token in the request header", nil)
+		controllers.AbortJSON(g, 401, "Invalid token in the request header", nil)
 		return &domain.User{}, err
 	}
 
