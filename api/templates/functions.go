@@ -27,11 +27,11 @@ type TypeOfPage struct {
 	Data interface{}
 }
 
-// Construct
+// NewFunctions - Construct
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunctions {
 	const op = "Templates.NewFunctions"
 
-	// Unmarshal the fields on the post
+	// TODO - This needs to be in the posts
 	fields := make(map[string]interface{})
 	if p.Fields != nil {
 		if err := json.Unmarshal(*p.Fields, &fields); err != nil {
@@ -41,7 +41,6 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 		}
 	}
 
-	// Get the options struct
 	options, err := s.Options.GetStruct()
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -49,16 +48,12 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 		}).Fatal()
 	}
 
-	// Get the author associated with the post
 	author, _ := s.User.GetById(p.UserId)
 
-	// Get the categories associated with the post
 	category, _ := s.Categories.GetByPost(p.Id)
 
-	// Get the site config
 	site := s.Site.GetGlobalConfig()
 
-	// New TemplateFunctions
 	return &TemplateFunctions{
 		gin: g,
 		post: p,
