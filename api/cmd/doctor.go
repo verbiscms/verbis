@@ -17,10 +17,10 @@ var (
 	doctorCmd = &cobra.Command{
 		Use:   "doctor",
 		Short: "Running doctor will check the system for any potential hiccups when installing, updating or running Verbis.",
-		Long:  `This command is a diagnostic tool to find any potential issues for your
+		Long: `This command is a diagnostic tool to find any potential issues for your
 Verbis install. It will check if the database has been set up correctly as well as the
 environment.`,
-		Run: func(cmd *cobra.Command, args []string)  {
+		Run: func(cmd *cobra.Command, args []string) {
 			if _, err := doctor(); err != nil {
 				return
 			}

@@ -56,7 +56,6 @@ func SendRestart() {
 	}
 }
 
-
 // ListenAndServe runs Verbis on a given port
 // Returns errors.INVALID if the server could not start
 func (s *Server) ListenAndServe(port int) error {
@@ -92,11 +91,13 @@ func (s *Server) setupGzip(o models.OptionsRepository) {
 	/// Set the default compression & check options
 	compression := gzip.DefaultCompression
 	switch options.GzipCompression {
-		case "best-compression": {
+	case "best-compression":
+		{
 			compression = gzip.BestCompression
 			break
 		}
-		case "best-speed": {
+	case "best-speed":
+		{
 			compression = gzip.BestSpeed
 			break
 		}
@@ -104,7 +105,7 @@ func (s *Server) setupGzip(o models.OptionsRepository) {
 
 	// If the use paths is not set, use the excluded extensions
 	// or use the excluded paths.
-	if (!options.GzipUsePaths) {
+	if !options.GzipUsePaths {
 		if len(options.GzipExcludedExtensions) > 0 {
 			s.Use(gzip.Gzip(compression, gzip.WithExcludedExtensions(options.GzipExcludedExtensions)))
 			return

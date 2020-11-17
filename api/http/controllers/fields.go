@@ -15,16 +15,16 @@ type FieldHandler interface {
 
 // FieldController defines the handler for Fields
 type FieldController struct {
-	fieldsModel 		models.FieldsRepository
-	userModel 			models.UserRepository
-	categoriesModel		models.CategoryRepository
+	fieldsModel     models.FieldsRepository
+	userModel       models.UserRepository
+	categoriesModel models.CategoryRepository
 }
 
 // newFields - Construct
 func newFields(f models.FieldsRepository, u models.UserRepository, c models.CategoryRepository) *FieldController {
 	return &FieldController{
-		fieldsModel: f,
-		userModel: u,
+		fieldsModel:     f,
+		userModel:       u,
 		categoriesModel: c,
 	}
 }
@@ -71,7 +71,7 @@ func (c *FieldController) Get(g *gin.Context) {
 
 	// Check for user ID
 	// TODO: clean up here
-	if u, ok := query["user_id"]; ok{
+	if u, ok := query["user_id"]; ok {
 		id, err := strconv.Atoi(u[0])
 		if err != nil {
 			owner, _ := c.userModel.GetOwner()

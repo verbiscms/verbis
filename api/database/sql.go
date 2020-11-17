@@ -13,7 +13,7 @@ import (
 
 // MySql defines the driver for the database
 type MySql struct {
-	Sqlx 	*sqlx.DB
+	Sqlx *sqlx.DB
 }
 
 // New - Creates a new MySql instance.
@@ -116,7 +116,7 @@ func (db *MySql) Dump(path string, filename string) error {
 
 	_, err = dumper.Dump()
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not dump the database with the path and filename: %s", path + filename), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not dump the database with the path and filename: %s", path+filename), Operation: op, Err: err}
 	}
 
 	if err := dumper.Close(); err != nil {
@@ -125,6 +125,3 @@ func (db *MySql) Dump(path string, filename string) error {
 
 	return nil
 }
-
-
-

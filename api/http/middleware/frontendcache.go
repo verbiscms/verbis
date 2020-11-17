@@ -53,7 +53,7 @@ func FrontEndCache(o models.OptionsRepository) gin.HandlerFunc {
 		// Check if the extensions
 		if len(extensionsAllowed) > 0 {
 			for _, v := range extensionsAllowed {
-				if extension == "." + v {
+				if extension == "."+v {
 					cache := ""
 					if request == "max-age" || request == "min-fresh" || request == "max-stale" {
 						cache = fmt.Sprintf("%s=%s, %s", request, strconv.FormatInt(expiration, 10), "public")
@@ -68,4 +68,3 @@ func FrontEndCache(o models.OptionsRepository) gin.HandlerFunc {
 		g.Next()
 	}
 }
-

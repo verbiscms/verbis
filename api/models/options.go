@@ -80,7 +80,7 @@ func (s *OptionsStore) GetStruct() (domain.Options, error) {
 
 	var opts []domain.OptionDB
 	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
-		return domain.Options{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not get options", Operation: op, Err: err,}
+		return domain.Options{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not get options", Operation: op, Err: err}
 	}
 
 	unOpts := make(domain.OptionsDB)
@@ -179,4 +179,3 @@ func (s *OptionsStore) marshalValue(optValue interface{}) (json.RawMessage, erro
 	}
 	return m, nil
 }
-

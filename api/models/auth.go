@@ -26,7 +26,7 @@ type AuthRepository interface {
 
 // AuthStore defines the data layer for Authentication
 type AuthStore struct {
-	db *sqlx.DB
+	db          *sqlx.DB
 	optionsRepo domain.Options
 }
 
@@ -85,11 +85,11 @@ func (s *AuthStore) Logout(token string) (int, error) {
 		return -1, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get user with token: %v", token), Operation: op, Err: err}
 	}
 
-	newToken := encryption.GenerateUserToken(u.FirstName + u.LastName, u.Email)
+	newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 	q := "UPDATE users SET token = ?, updated_at = NOW() WHERE token = token"
 	_, err := s.db.Exec(q, newToken)
 	if err != nil {
-		return -1, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user's token with the name: %v", u.FirstName + " " + u.LastName), Operation: op, Err: err}
+		return -1, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user's token with the name: %v", u.FirstName+" "+u.LastName), Operation: op, Err: err}
 	}
 
 	return u.Id, nil
@@ -176,9 +176,9 @@ func (s *AuthStore) SendResetPassword(email string) error {
 func (s *AuthStore) VerifyEmail(md5String string) error {
 	const op = "AuthRepository.VerifyEmail"
 
-	var userVerified = struct{
-		Id   	int		`db:"id"`
-		Hash 	string	`db:"hash"`
+	var userVerified = struct {
+		Id   int    `db:"id"`
+		Hash string `db:"hash"`
 	}{}
 
 	if err := s.db.Get(&userVerified, "SELECT id AS id, MD5(CONCAT(id, email)) AS hash FROM users WHERE MD5(CONCAT(id, email)) = ?", md5String); err != nil {

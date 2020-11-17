@@ -24,29 +24,29 @@ const (
 )
 
 type Recovery struct {
-	Err errors.Error
+	Err        errors.Error
 	SubMessage string
-	Path string
-	Line int
-	Contents string
-	Language string
-	Stack []Stack
-	Highlight int
-	config config.Configuration
+	Path       string
+	Line       int
+	Contents   string
+	Language   string
+	Stack      []Stack
+	Highlight  int
+	config     config.Configuration
 }
 
 // TemplateStack defines the stack used for the error page
 type Stack struct {
-	File string
-	Line int
-	Name string
+	File    string
+	Line    int
+	Name    string
 	Message string
 }
 
 // FileLine defines the error for templating it includes the
 // line & content of the error file.
 type FileLine struct {
-	Line int
+	Line    int
 	Content string
 }
 
@@ -67,9 +67,9 @@ func Recover(g *gin.Context, err interface{}) {
 
 	// Load up the Verbis error pages
 	gvRecovery := goview.New(goview.Config{
-		Root:      paths.Web(),
-		Extension: ".html",
-		Master: "layouts/main",
+		Root:         paths.Web(),
+		Extension:    ".html",
+		Master:       "layouts/main",
 		DisableCache: true,
 	})
 
@@ -92,17 +92,17 @@ func Recover(g *gin.Context, err interface{}) {
 
 	// Return the error page
 	if err := gvRecovery.Render(g.Writer, http.StatusOK, "/templates/error", gin.H{
-		"Error": rc.Err,
-		"Stack": rc.Stack,
-		"SubMessage": rc.SubMessage,
+		"Error":         rc.Err,
+		"Stack":         rc.Stack,
+		"SubMessage":    rc.SubMessage,
 		"RequestMethod": g.Request.Method,
-		"File": rc.getFileLines(rc.Contents, rc.Line, 10),
-		"Highlight": rc.Highlight,
-		"LineNumber": rc.Line,
-		"FileLanguage": rc.Language,
-		"Url": g.Request.URL.Path,
-		"Ip": g.ClientIP(),
-		"DataLength": g.Writer.Size(),
+		"File":          rc.getFileLines(rc.Contents, rc.Line, 10),
+		"Highlight":     rc.Highlight,
+		"LineNumber":    rc.Line,
+		"FileLanguage":  rc.Language,
+		"Url":           g.Request.URL.Path,
+		"Ip":            g.ClientIP(),
+		"DataLength":    g.Writer.Size(),
 	}); err != nil {
 		log.Panic(err)
 	}
@@ -139,14 +139,14 @@ func (r *Recovery) setType(err interface{}) *errors.Error {
 				Code:      errors.TEMPLATE,
 				Message:   fmt.Sprintf("Could not render the template %s: ", r.Path),
 				Operation: "RenderTemplate",
-				Err: fmt.Errorf(e.Error()),
+				Err:       fmt.Errorf(e.Error()),
 			}
 			r.SubMessage = e.Error()
 		} else {
 			errData = errors.Error{
-				Code:      errors.INTERNAL,
-				Message:   "Internal Verbis error, please report.",
-				Err: fmt.Errorf(e.Error()),
+				Code:    errors.INTERNAL,
+				Message: "Internal Verbis error, please report.",
+				Err:     fmt.Errorf(e.Error()),
 			}
 		}
 		r.Highlight = -1
@@ -237,11 +237,8 @@ func (r *Recovery) getFileLines(file string, line int, limit int) []FileLine {
 				Content: html.UnescapeString(strings.Replace(split[counter], " ", "&nbsp;", -1)),
 			})
 		}
-		counter ++
+		counter++
 	}
 
 	return fileLines
 }
-
-
-

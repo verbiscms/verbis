@@ -59,13 +59,13 @@ func Save(file *multipart.FileHeader, dst string) error {
 
 	src, err := file.Open()
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf( "Unable to open file with the name: %s", file.Filename), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to open file with the name: %s", file.Filename), Operation: op, Err: err}
 	}
 	defer src.Close()
 
 	out, err := os.Create(dst)
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf( "Unable to create a file with the name: %s", file.Filename), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to create a file with the name: %s", file.Filename), Operation: op, Err: err}
 	}
 	defer out.Close()
 
@@ -75,7 +75,7 @@ func Save(file *multipart.FileHeader, dst string) error {
 
 // Remove the file extension from a file
 func RemoveFileExtension(file string) string {
-	return file[0:len(file)-len(GetFileExtension(file))]
+	return file[0 : len(file)-len(GetFileExtension(file))]
 }
 
 // Get the file extension from a file
@@ -98,7 +98,7 @@ func GetFileContents(path string) (string, error) {
 	const op = "files.GetFileContents"
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
-		return "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf( "Could not get the file contents with the path: %s", path), Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the file contents with the path: %s", path), Operation: op, Err: err}
 	}
 	return string(contents), nil
 }

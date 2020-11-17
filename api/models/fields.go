@@ -26,8 +26,8 @@ type FieldsRepository interface {
 
 // FieldsStore defines the data layer for Posts
 type FieldsStore struct {
-	db *sqlx.DB
-	options domain.Options
+	db       *sqlx.DB
+	options  domain.Options
 	jsonPath string
 }
 
@@ -45,8 +45,8 @@ func newFields(db *sqlx.DB) *FieldsStore {
 	}
 
 	fs := FieldsStore{
-		db: db,
-		options: options,
+		db:       db,
+		options:  options,
 		jsonPath: paths.Storage() + "/fields",
 	}
 
@@ -92,7 +92,6 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 					// Loop over rule sets
 					var locationSet []bool
 					for _, rule := range location {
-
 
 						switch rule.Param {
 						// Status
@@ -172,7 +171,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 
 	// Set the cache field layout if the cache was not found
 	if !found && s.options.CacheServerFields {
-		cache.Store.Set("field_layout_" + p.UUID.String(), &fg, cache.RememberForever)
+		cache.Store.Set("field_layout_"+p.UUID.String(), &fg, cache.RememberForever)
 	}
 
 	return &fg, nil
@@ -219,13 +218,15 @@ func (s *FieldsStore) GetFieldGroups() (*[]domain.FieldGroup, error) {
 func (s *FieldsStore) checkLocation(check string, location domain.FieldLocation) bool {
 	var match = false
 
-	switch location.Operator  {
-		case "==": {
+	switch location.Operator {
+	case "==":
+		{
 			if check == location.Value {
 				match = true
 			}
 		}
-		case "!=": {
+	case "!=":
+		{
 			if check != location.Value {
 				match = true
 			}
@@ -258,4 +259,3 @@ func (s *FieldsStore) hasBeenAdded(key string, fg []domain.FieldGroup) bool {
 	}
 	return false
 }
-

@@ -12,10 +12,9 @@ import (
 	"time"
 )
 
-
 // Formatter implements logrus.Formatter interface.
 type Formatter struct {
-	Colours bool
+	Colours         bool
 	TimestampFormat string
 }
 
@@ -59,19 +58,23 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	// Get level the colour
 	lc := color.Style{}
 	switch entry.Level {
-		case logrus.DebugLevel: {
+	case logrus.DebugLevel:
+		{
 			lc = color.Style{color.FgGray, color.OpBold}
 			break
 		}
-		case logrus.WarnLevel: {
+	case logrus.WarnLevel:
+		{
 			lc = color.Style{color.FgYellow, color.OpBold}
 			break
 		}
-		case logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel: {
+	case logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel:
+		{
 			lc = color.Style{color.FgRed, color.OpBold}
 			break
 		}
-		default: {
+	default:
+		{
 			lc = color.Style{color.FgBlue, color.OpBold}
 		}
 	}
@@ -149,7 +152,6 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	return b.Bytes(), nil
 }
-
 
 func (f *Formatter) printError(errorData errors.Error) *bytes.Buffer {
 	b := &bytes.Buffer{}

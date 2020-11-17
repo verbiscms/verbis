@@ -62,7 +62,7 @@ func (c *CategoriesController) GetById(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 400,"Pass a valid number to obtain the category by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Pass a valid number to obtain the category by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
@@ -72,7 +72,7 @@ func (c *CategoriesController) GetById(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained category with ID " + string(rune(id)), category)
+	Respond(g, 200, "Successfully obtained category with ID "+string(rune(id)), category)
 }
 
 // Create
@@ -91,7 +91,7 @@ func (c *CategoriesController) Create(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully created category with ID " + string(rune(newCategory.Id)), newCategory)
+	Respond(g, 200, "Successfully created category with ID "+string(rune(newCategory.Id)), newCategory)
 }
 
 // Update
@@ -107,7 +107,7 @@ func (c *CategoriesController) Update(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500,"A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 500, "A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	category.Id = id
@@ -121,7 +121,7 @@ func (c *CategoriesController) Update(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully updated category with ID " + string(rune(category.Id)), category)
+	Respond(g, 200, "Successfully updated category with ID "+string(rune(category.Id)), category)
 }
 
 // Delete
@@ -131,7 +131,7 @@ func (c *CategoriesController) Delete(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500,"A valid ID is required to delete a category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 500, "A valid ID is required to delete a category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
 	err = c.model.Delete(id)
@@ -143,5 +143,5 @@ func (c *CategoriesController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted category with ID " + string(rune(id)), nil)
+	Respond(g, 200, "Successfully deleted category with ID "+string(rune(id)), nil)
 }

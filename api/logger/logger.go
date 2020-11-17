@@ -16,7 +16,7 @@ import (
 // logFiles defines the files to be written to when app debug is set to false
 type logFiles struct {
 	accessLog io.Writer
-	errorLog io.Writer
+	errorLog  io.Writer
 }
 
 // Init will determine if SuperAdmin and set logging levels
@@ -35,7 +35,7 @@ func Init(config config.Configuration) error {
 	if environment.IsDebug() {
 		log.SetFormatter(&Formatter{
 			TimestampFormat: "2006-01-02 15:04:05",
-			Colours: 		true,
+			Colours:         true,
 		})
 	} else {
 		logs, err := getLogFiles(config)
@@ -140,4 +140,3 @@ func setupLogs(logs *logFiles) {
 		},
 	})
 }
-

@@ -50,4 +50,3 @@ func (s *Seeder) runRoles() error {
 
 	return nil
 }
-

@@ -1,6 +1,6 @@
 package console
 
-import  (
+import (
 	"fmt"
 	"github.com/common-nighthawk/go-figure"
 	"github.com/gookit/color"

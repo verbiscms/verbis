@@ -12,8 +12,8 @@ func TestGetMedia(t *testing.T) {
 	f := newTestSuite()
 
 	mockMediaItem := domain.Media{
-		Id:          1,
-		Url:         "/uploads/test.jpg",
+		Id:  1,
+		Url: "/uploads/test.jpg",
 	}
 
 	f.store.Media = &mockMedia
@@ -35,4 +35,3 @@ func TestGetMedia_NoItem(t *testing.T) {
 	tpl := "{{ getMedia 1 }}"
 	runt(t, f, tpl, nil)
 }
-

@@ -5,12 +5,12 @@ import (
 )
 
 type Pagination struct {
-	Page 		int					`json:"page"`
-	Pages 		int					`json:"pages"`
-	Limit 		int					`json:"limit"`
-	Total 		int					`json:"total"`
-	Next 		interface{} 		`json:"next"`
-	Prev 		interface{} 		`json:"prev"`
+	Page  int         `json:"page"`
+	Pages int         `json:"pages"`
+	Limit int         `json:"limit"`
+	Total int         `json:"total"`
+	Next  interface{} `json:"next"`
+	Prev  interface{} `json:"prev"`
 }
 
 // Get pagination parameters

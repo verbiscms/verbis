@@ -33,12 +33,12 @@ func (t *TemplateFunctions) getPost(id float64) *ViewPost {
 func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]interface{}, error) {
 
 	type params struct {
-		Page 			int 	`json:"page"`
-		Limit 			int		`json:"limit"`
-		Resource 		string	`json:"resource"`
-		OrderBy 		string	`json:"order_by"`
-		OrderDirection 	string	`json:"order_direction"`
-		Category 		string	`json:"category"`
+		Page           int    `json:"page"`
+		Limit          int    `json:"limit"`
+		Resource       string `json:"resource"`
+		OrderBy        string `json:"order_by"`
+		OrderDirection string `json:"order_direction"`
+		Category       string `json:"category"`
 	}
 
 	data, _ := json.Marshal(query)
@@ -56,7 +56,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 			Resource:       "all",
 			OrderBy:        "published_at",
 			OrderDirection: "desc",
-			Category: 		"",
+			Category:       "",
 		}
 	}
 
@@ -100,7 +100,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 		Limit:          tmplParams.Limit,
 		OrderBy:        tmplParams.OrderBy,
 		OrderDirection: tmplParams.OrderDirection,
-		Filters: 		f,
+		Filters:        f,
 	}
 
 	// Obtain the post and detect if it was not found,
@@ -128,11 +128,10 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	}
 
 	return map[string]interface{}{
-		"Posts": returnPosts,
+		"Posts":      returnPosts,
 		"Pagination": pagination,
 	}, nil
 }
-
 
 func (t *TemplateFunctions) formatPost(post domain.Post) ViewPost {
 

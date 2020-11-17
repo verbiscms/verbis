@@ -13,10 +13,9 @@ func ReadJson(path string) ([]byte, error) {
 	const op = "files.ReadJson"
 	jsonFile, err := os.Open(path)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf( "Unable to open file with the path: %s", path), Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to open file with the path: %s", path), Operation: op, Err: err}
 	}
 	defer jsonFile.Close()
 	byteValue, _ := ioutil.ReadAll(jsonFile)
 	return byteValue, nil
 }
-

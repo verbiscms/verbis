@@ -59,7 +59,7 @@ func (s *CategoryStore) Get(meta http.Params) ([]domain.Category, int, error) {
 	countQ += filter
 
 	// Apply pagination
-	q += fmt.Sprintf(" ORDER BY categories.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
+	q += fmt.Sprintf(" ORDER BY categories.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page-1)*meta.Limit)
 
 	// Select media
 	if err := s.db.Select(&c, q); err != nil {
@@ -172,7 +172,7 @@ func (s *CategoryStore) Update(c *domain.Category) error {
 
 	if oldCategory.Slug != c.Slug {
 		var posts []domain.Post
-		if err := s.db.Select(&posts,"SELECT * FROM posts WHERE slug LIKE '%" + oldCategory.Slug + "%'"); err != nil {
+		if err := s.db.Select(&posts, "SELECT * FROM posts WHERE slug LIKE '%"+oldCategory.Slug+"%'"); err != nil {
 			return &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
 		}
 		//for k, v
@@ -213,7 +213,6 @@ func (s *CategoryStore) Delete(id int) error {
 
 	return nil
 }
-
 
 // Exists Checks if a category exists by the given Id
 func (s *CategoryStore) Exists(id int) bool {
@@ -299,7 +298,7 @@ func (s *CategoryStore) resolveNewPostSlug(id int, resource string) {
 		err := s.changeArchivePostSlug(id, slug, resource)
 		if err != nil {
 			slug = "untitled-" + strconv.Itoa(counter)
-			counter ++
+			counter++
 			continue
 		}
 		break

@@ -39,7 +39,7 @@ func (c *SiteController) GetTheme(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
-	Respond(g, 200,"Successfully obtained theme config", config)
+	Respond(g, 200, "Successfully obtained theme config", config)
 }
 
 // GetTemplates gets all templates
@@ -50,7 +50,7 @@ func (c *SiteController) GetTemplates(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
-	Respond(g, 200,"Successfully obtained templates", templates)
+	Respond(g, 200, "Successfully obtained templates", templates)
 }
 
 // GetTemplates gets al layouts
@@ -61,5 +61,5 @@ func (c *SiteController) GetLayouts(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
-	Respond(g, 200,"Successfully obtained layouts", templates)
+	Respond(g, 200, "Successfully obtained layouts", templates)
 }

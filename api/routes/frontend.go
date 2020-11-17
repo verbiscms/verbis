@@ -22,7 +22,7 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 		s.GET("/assets/*any", c.Frontend.GetAssets)
 
 		// Serve Verbis Assets
-		s.Static("/verbis", paths.Api() + "/web/public")
+		s.Static("/verbis", paths.Api()+"/web/public")
 
 		// Serve uploads
 		s.GET("/uploads/*any", c.Frontend.GetUploads)
@@ -34,7 +34,7 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 		s.GET("/sitemap.xml", c.Frontend.SiteMap)
 
 		// Favicon
-		s.StaticFile("/favicon.ico", paths.Theme() + "/favicon.ico")
+		s.StaticFile("/favicon.ico", paths.Theme()+"/favicon.ico")
 
 		// Serve the front end
 		s.NoRoute(c.Frontend.Serve)
