@@ -7,17 +7,16 @@ var SuperAdmin = true
 
 // App defines default values before the the user has defined
 // any custom properties by updating the database.
-var App = struct{
-	Title   		string
-	Description 	string
-	Url 			string
-	Logo 			string
-	Version         string
+var App = struct {
+	Title       string
+	Description string
+	Url         string
+	Logo        string
+	Version     string
 }{
-	Title: "Verbis",
+	Title:       "Verbis",
 	Description: "A Verbis website. Publish online, build a business, work from home",
-	Url: "http://127.0.0.1:8080",
-	Logo: "/verbis/images/verbis-logo.svg",
-	Version: "0.0.1",
+	Url:         "http://127.0.0.1:8080",
+	Logo:        "/verbis/images/verbis-logo.svg",
+	Version:     "0.0.1",
 }
-

@@ -23,13 +23,13 @@ func (hook *WriterHook) Fire(entry *log.Entry) error {
 			e := entry.Data["error"].(errors.Error)
 
 			m, err := json.Marshal(log.Fields{
-				"level":	 entry.Level,
+				"level":     entry.Level,
 				"code":      e.Code,
 				"message":   e.Message,
 				"operation": e.Operation,
 				"err":       e.Err.Error(),
 				"stack":     errors.Stack(&e),
-				"time": 	 entry.Time.Format("2006-01-02 15:04:05"),
+				"time":      entry.Time.Format("2006-01-02 15:04:05"),
 			})
 
 			if err != nil {
@@ -54,6 +54,3 @@ func (hook *WriterHook) Fire(entry *log.Entry) error {
 func (hook *WriterHook) Levels() []log.Level {
 	return hook.LogLevels
 }
-
-
-

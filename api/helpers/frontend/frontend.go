@@ -65,7 +65,7 @@ func (t *Cache) Cache(g *gin.Context) {
 	// Check if the extensions
 	if len(extensionsAllowed) > 0 {
 		for _, v := range extensionsAllowed {
-			if extension == "." + v {
+			if extension == "."+v {
 				cache := ""
 				if request == "max-age" || request == "min-fresh" || request == "max-stale" {
 					cache = fmt.Sprintf("%s=%s, %s", request, strconv.FormatInt(expiration, 10), "public")

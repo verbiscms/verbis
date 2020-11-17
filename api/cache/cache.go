@@ -16,6 +16,5 @@ const (
 
 // Init set-ups go-cache with defaults
 func Init() {
-	Store = cache.New(5 * time.Minute, 10 *time.Minute)
+	Store = cache.New(5*time.Minute, 10*time.Minute)
 }
-

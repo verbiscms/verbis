@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"encoding/json"
+	"github.com/ainsleyclark/verbis/api/http/controllers"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 )
@@ -38,7 +38,7 @@ func EmptyBody() gin.HandlerFunc {
 
 // Checks if the request is empty
 func isEmpty(g *gin.Context, body []byte) bool {
-	_ = g.Request.Body.Close()  //  must close
+	_ = g.Request.Body.Close() //  must close
 	g.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	return len(body) == 0
 }

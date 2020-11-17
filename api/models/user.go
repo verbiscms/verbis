@@ -34,8 +34,8 @@ type UserRepository interface {
 
 // UserStore defines the data layer for Users
 type UserStore struct {
-	db *sqlx.DB
-	config config.Configuration
+	db          *sqlx.DB
+	config      config.Configuration
 	optionsRepo domain.Options
 }
 
@@ -44,7 +44,7 @@ func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
 	const op = "UserRepository.newUser"
 
 	s := &UserStore{
-		db: db,
+		db:     db,
 		config: config,
 	}
 
@@ -93,7 +93,7 @@ func (s *UserStore) Get(meta http.Params) ([]domain.User, int, error) {
 	countQ += filter
 
 	// Apply pagination
-	q += fmt.Sprintf(" ORDER BY users.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
+	q += fmt.Sprintf(" ORDER BY users.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page-1)*meta.Limit)
 
 	// Select users
 	if err := s.db.Select(&u, q); err != nil {
@@ -130,7 +130,7 @@ func (s *UserStore) GetById(id int) (domain.User, error) {
 func (s *UserStore) GetOwner() (domain.User, error) {
 	const op = "UserRepository.GetOwner"
 	var u domain.User
-	if err := s.db.Get(&u,"SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
+	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the owner of the site", Operation: op, Err: err}
 	}
 	return u, nil
@@ -141,7 +141,7 @@ func (s *UserStore) GetOwner() (domain.User, error) {
 func (s *UserStore) GetByToken(token string) (domain.User, error) {
 	const op = "UserRepository.GetOwner"
 	var u domain.User
-	if err := s.db.Get(&u,"SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE token = ? LIMIT 1", token); err != nil {
+	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE token = ? LIMIT 1", token); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the token: %s", token), Operation: op, Err: err}
 	}
 	return u, nil
@@ -152,7 +152,7 @@ func (s *UserStore) GetByToken(token string) (domain.User, error) {
 func (s *UserStore) GetRoles() ([]domain.UserRole, error) {
 	const op = "UserRepository.GetRoles"
 	var r []domain.UserRole
-	if err := s.db.Select(&r,"SELECT * FROM roles"); err != nil {
+	if err := s.db.Select(&r, "SELECT * FROM roles"); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the user roles", Operation: op, Err: err}
 	}
 	return r, nil
@@ -174,7 +174,7 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 		return domain.User{}, err
 	}
 
-	token := encryption.GenerateUserToken(u.FirstName + u.LastName, u.Email)
+	token := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
 	userQ := "INSERT INTO users (uuid, first_name, last_name, email, password, website, facebook, twitter, linked_in, instagram, biography, profile_picture_id, token, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(userQ, uuid.New().String(), u.FirstName, u.LastName, u.Email, hashedPassword, u.Website, u.Facebook, u.Twitter, u.Linkedin, u.Instagram, u.Biography, u.ProfilePictureID, token)
@@ -362,5 +362,3 @@ func (s *UserStore) Total() (int, error) {
 	}
 	return total, nil
 }
-
-

@@ -23,7 +23,7 @@ var (
 		Theme:      domain.Theme{},
 		Resources:  nil,
 		AssetsPath: "/assets",
-		Editor:     domain.Editor{
+		Editor: domain.Editor{
 			Modules: []string{
 				"blockquote",
 				"code_block",
@@ -74,18 +74,18 @@ type SiteRepository interface {
 
 // SiteStore defines the data layer for Posts
 type SiteStore struct {
-	db *sqlx.DB
-	config config.Configuration
+	db           *sqlx.DB
+	config       config.Configuration
 	optionsModel OptionsRepository
-	cache siteCache
+	cache        siteCache
 }
 
 // siteCache defines the options for caching
 type siteCache struct {
-	Site bool
+	Site      bool
 	Templates bool
 	Resources bool
-	Layout bool
+	Layout    bool
 }
 
 // newSite - Construct
@@ -93,7 +93,7 @@ func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
 	const op = "SiteRepository.newSite"
 
 	s := &SiteStore{
-		db: db,
+		db:     db,
 		config: config,
 	}
 
@@ -142,27 +142,26 @@ func (s *SiteStore) GetThemeConfig() (domain.ThemeConfig, error) {
 	return themeConfig, nil
 }
 
-
 // Get all templates stored within the templates directory
 // Returns errors.INTERNAL if the template path is invalid.
 func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 	const op = "SiteRepository.GetTemplates"
 
-	files, err := s.walkMatch(paths.Templates(), "*" + s.config.Template.FileExtension)
+	files, err := s.walkMatch(paths.Templates(), "*"+s.config.Template.FileExtension)
 	if err != nil {
-		return &domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & file extension: %s, %s", paths.Templates(), "*" + s.config.Template.FileExtension), Operation: op}
+		return &domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & file extension: %s, %s", paths.Templates(), "*"+s.config.Template.FileExtension), Operation: op}
 	}
 
 	var templates []map[string]interface{}
 	templates = append(templates, map[string]interface{}{
-		"key": "default",
+		"key":  "default",
 		"name": "Default",
 	})
 
 	for _, file := range files {
 		name := strings.Title(strings.ToLower(strings.Replace(file, "-", " ", -1)))
 		t := map[string]interface{}{
-			"key": file,
+			"key":  file,
 			"name": name,
 		}
 		templates = append(templates, t)
@@ -188,21 +187,21 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
-	files, err := s.walkMatch(paths.Layouts(), "*" + s.config.Template.FileExtension)
+	files, err := s.walkMatch(paths.Layouts(), "*"+s.config.Template.FileExtension)
 	if err != nil {
-		return &domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get layouts from the path & file extension: %s, %s", paths.Templates(), "*" + s.config.Template.FileExtension), Operation: op}
+		return &domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get layouts from the path & file extension: %s, %s", paths.Templates(), "*"+s.config.Template.FileExtension), Operation: op}
 	}
 
 	var layouts []map[string]interface{}
 	layouts = append(layouts, map[string]interface{}{
-		"key": "default",
+		"key":  "default",
 		"name": "Default",
 	})
 
 	for _, file := range files {
 		name := strings.Title(strings.ToLower(strings.Replace(file, "-", " ", -1)))
 		t := map[string]interface{}{
-			"key": file,
+			"key":  file,
 			"name": name,
 		}
 		layouts = append(layouts, t)

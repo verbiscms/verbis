@@ -8,40 +8,40 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-
 // Global Configuration, sets defaults to ensure that there are no
 // empty values within the configuration to prevent any errors.
 type Configuration struct {
-	Admin admin
-	Media media
+	Admin    admin
+	Media    media
 	Template template
-	Logs logs
+	Logs     logs
 }
 
 // Admin
 type admin struct {
-	Path string `yaml:"admin_path,omitempty"`
-	InactiveSessionTime int `yaml:"inactive_session_time,omitempty"`
+	Path                string `yaml:"admin_path,omitempty"`
+	InactiveSessionTime int    `yaml:"inactive_session_time,omitempty"`
 }
 
 // Media
 type media struct {
-	UploadPath string `yaml:"upload_path"`
+	UploadPath       string   `yaml:"upload_path"`
 	AllowedFileTypes []string `yaml:"allowed_file_types"`
 }
 
 // Template
 type template struct {
 	FileExtension string `yaml:"file_extension"`
-	TemplateDir string `yaml:"template_dir"`
-	LayoutDir string `yaml:"layout_dir"`
+	TemplateDir   string `yaml:"template_dir"`
+	LayoutDir     string `yaml:"layout_dir"`
 }
 
 // Logs
 type logs struct {
 	AccessLog string `yaml:"access_log"`
-	ErrorLog string `yaml:"error_log"`
+	ErrorLog  string `yaml:"error_log"`
 }
+
 //
 //var (
 //	Admin = admin{
@@ -65,11 +65,11 @@ type logs struct {
 
 func New() (*Configuration, error) {
 	c := &Configuration{
-		Admin:    admin{
+		Admin: admin{
 			Path:                "admin",
 			InactiveSessionTime: 60,
 		},
-		Media:    media{
+		Media: media{
 			UploadPath:       "",
 			AllowedFileTypes: nil,
 		},
@@ -78,7 +78,7 @@ func New() (*Configuration, error) {
 			TemplateDir:   "templates",
 			LayoutDir:     "layouts",
 		},
-		Logs:     logs{
+		Logs: logs{
 			AccessLog: "default",
 			ErrorLog:  "default",
 		},

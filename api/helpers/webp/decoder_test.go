@@ -1,10 +1,10 @@
 package webp
 
 import (
-	"testing"
-	"os"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/image/webp"
+	"os"
+	"testing"
 )
 
 func TestDecode(t *testing.T) {

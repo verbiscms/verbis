@@ -9,23 +9,21 @@ import (
 
 // Application error codes.
 const (
-	CONFLICT   = "conflict"   // Action cannot be performed
-	INTERNAL   = "internal"   // Internal error
-	INVALID    = "invalid"    // Validation failed
-	NOTFOUND   = "not_found"  // Entity does not exist
-	TEMPLATE   = "template"   // Templating error
+	CONFLICT = "conflict"  // Action cannot be performed
+	INTERNAL = "internal"  // Internal error
+	INVALID  = "invalid"   // Validation failed
+	NOTFOUND = "not_found" // Entity does not exist
+	TEMPLATE = "template"  // Templating error
 )
 
 // Error defines a standard application error.
 type Error struct {
-	Code    	string		`json:"code"`
-	Message 	string	   	`json:"message"`
-	Operation 	string	   	`json:"operation"`
-	Err      	error      	`json:"error"`
-	Stack 		[]string	`json:"stack"`
+	Code      string   `json:"code"`
+	Message   string   `json:"message"`
+	Operation string   `json:"operation"`
+	Err       error    `json:"error"`
+	Stack     []string `json:"stack"`
 }
-
-
 
 // Error returns the string representation of the error message.
 func (e *Error) Error() string {
@@ -92,15 +90,16 @@ func Report(err error) {
 		returnErr = err.Error()
 	}
 
-	e, ok := err.(*Error); if !ok {
+	e, ok := err.(*Error)
+	if !ok {
 		return
 	}
 
 	log.WithFields(log.Fields{
-		"code"		: Code(err),
-		"message"	: err.Error(),
-		"operation" : e.Operation,
-		"err"		: returnErr,
-		"stack"		: Stack(e),
+		"code":      Code(err),
+		"message":   err.Error(),
+		"operation": e.Operation,
+		"err":       returnErr,
+		"stack":     Stack(e),
 	}).Error()
 }

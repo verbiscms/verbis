@@ -57,7 +57,7 @@ func (c *OptionsController) GetByName(g *gin.Context) {
 
 	name := g.Param("name")
 	if name == "" {
-		Respond(g, 400,  "A name is required to obtain the option by name", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("no name passed"), Operation: op})
+		Respond(g, 400, "A name is required to obtain the option by name", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("no name passed"), Operation: op})
 		return
 	}
 
@@ -67,7 +67,7 @@ func (c *OptionsController) GetByName(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained option with name: " + name, option)
+	Respond(g, 200, "Successfully obtained option with name: "+name, option)
 }
 
 // Update & Create options
@@ -99,5 +99,3 @@ func (c *OptionsController) UpdateCreate(g *gin.Context) {
 		reload.Exec()
 	}()
 }
-
-

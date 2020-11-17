@@ -23,11 +23,11 @@ func init() {
 }
 
 var (
-	v validation.Validator
+	v          validation.Validator
 	installCmd = &cobra.Command{
 		Use:   "install",
 		Short: "Install will run the doctor command and then run database schema and insert any data dependant on Verbis.",
-		Long:  `This command will install first run Verbis doctor to see if the database,
+		Long: `This command will install first run Verbis doctor to see if the database,
 exists and is passable. Install will then run the migration to insert into the schema.
 Seeds are also run, inserting options and any necessary configuration into the 
 database.`,
@@ -43,7 +43,7 @@ func init() {
 func Install(cmd *cobra.Command, args []string) {
 
 	//figure := figure.NewColorFigure("Verbis", "cybermedium", "reset", true)
-//	figure.Print()
+	//	figure.Print()
 
 	// Run doctor
 	db, err := doctor()
@@ -121,8 +121,8 @@ func setUrl() string {
 	fmt.Println("If in development, be sure to append a port (for example: http://127.0.0.1:8080):")
 
 	prompt := promptui.Prompt{
-		Label:      "Url",
-		Validate: 	 func(input string) error {
+		Label: "Url",
+		Validate: func(input string) error {
 			if input == "" {
 				return fmt.Errorf("Enter URL")
 			}
@@ -147,8 +147,8 @@ func createOwner() *domain.UserCreate {
 	emoji.Print(":backhand_index_pointing_right: Enter the owner's details:")
 
 	promptFirstName := promptui.Prompt{
-		Label:       "First name",
-		Validate: 	 func(input string) error {
+		Label: "First name",
+		Validate: func(input string) error {
 			if input == "" {
 				return fmt.Errorf("Enter a first name")
 			}
@@ -161,8 +161,8 @@ func createOwner() *domain.UserCreate {
 	}
 
 	promptLastName := promptui.Prompt{
-		Label:       "Last name",
-		Validate: 	 func(input string) error {
+		Label: "Last name",
+		Validate: func(input string) error {
 			if input == "" {
 				return fmt.Errorf("Enter a last name")
 			}
@@ -174,10 +174,9 @@ func createOwner() *domain.UserCreate {
 		printError(fmt.Sprintf("Install failed: %v\n", err))
 	}
 
-
 	promptEmail := promptui.Prompt{
-		Label:       "Email",
-		Validate: 	 func(input string) error {
+		Label: "Email",
+		Validate: func(input string) error {
 			if input == "" {
 				return fmt.Errorf("Enter a email address")
 			}
@@ -193,14 +192,14 @@ func createOwner() *domain.UserCreate {
 	}
 
 	promptPassword := promptui.Prompt{
-		Label:    "Password",
+		Label: "Password",
 		Validate: func(input string) error {
 			if len(input) < 8 {
 				return fmt.Errorf("Password must have more than 8 characters")
 			}
 			return nil
 		},
-		Mask:     '*',
+		Mask: '*',
 	}
 	password, err := promptPassword.Run()
 	if err != nil {
@@ -208,14 +207,14 @@ func createOwner() *domain.UserCreate {
 	}
 
 	prompConfirmPassword := promptui.Prompt{
-		Label:    "Password",
+		Label: "Password",
 		Validate: func(input string) error {
 			if input != password {
 				return fmt.Errorf("Password and confirm password must match.")
 			}
 			return nil
 		},
-		Mask:     '*',
+		Mask: '*',
 	}
 	confirmPassword, err := prompConfirmPassword.Run()
 	if err != nil {
@@ -224,10 +223,10 @@ func createOwner() *domain.UserCreate {
 	}
 
 	user := domain.UserCreate{
-		User:            domain.User{
-			FirstName:        firstName,
-			LastName:         lastName,
-			Email:            email,
+		User: domain.User{
+			FirstName: firstName,
+			LastName:  lastName,
+			Email:     email,
 			Role: domain.UserRole{
 				Id: 6,
 			},

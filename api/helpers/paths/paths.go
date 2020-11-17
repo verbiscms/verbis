@@ -31,19 +31,19 @@ func BaseCheck() error {
 	}
 
 	if !files.DirectoryExists(basePath + "/admin") {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis admin folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath + "/admin")}
+		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis admin folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath+"/admin")}
 	}
 
 	if !files.DirectoryExists(basePath + "/storage") {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis storage folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath + "/storage")}
+		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis storage folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath+"/storage")}
 	}
 
 	if !files.DirectoryExists(basePath + "/config") {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis config folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath + "/config")}
+		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis config folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath+"/config")}
 	}
 
 	if !files.DirectoryExists(basePath + "/storage") {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis storage folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath + "/storage")}
+		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis storage folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath+"/storage")}
 	}
 
 	return nil

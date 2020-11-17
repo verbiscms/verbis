@@ -47,17 +47,17 @@ type MediaRepository interface {
 
 // MediaStore defines the data layer for Media
 type MediaStore struct {
-	db          	*sqlx.DB
-	config 			config.Configuration
-	optionsModel 	OptionsRepository
-	options 		domain.Options
+	db           *sqlx.DB
+	config       config.Configuration
+	optionsModel OptionsRepository
+	options      domain.Options
 }
 
 // newMedia - Construct
 func newMedia(db *sqlx.DB, config config.Configuration) *MediaStore {
 	ms := &MediaStore{
-		db: db,
-		config: config,
+		db:           db,
+		config:       config,
 		optionsModel: newOptions(db),
 	}
 	ms.getOptionsStruct()
@@ -93,9 +93,9 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 	}
 	q += filter
 	countQ += filter
-	
+
 	// Apply pagination
-	q += fmt.Sprintf(" ORDER BY media.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
+	q += fmt.Sprintf(" ORDER BY media.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page-1)*meta.Limit)
 
 	// Select media
 	if err := s.db.Select(&m, q); err != nil {
@@ -150,7 +150,7 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 	}
 
 	// Test Sizes
-	if err := s.db.Get(&m, "SELECT * FROM media WHERE sizes LIKE '%" + url + "%' LIMIT 1"); err == nil {
+	if err := s.db.Get(&m, "SELECT * FROM media WHERE sizes LIKE '%"+url+"%' LIMIT 1"); err == nil {
 		for _, v := range m.Sizes {
 			if v.Url == url {
 				return m.FilePath + "/" + v.FilePath + "/" + v.UUID.String(), m.Type, nil
@@ -221,20 +221,20 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 	mimeType, _ := mime.TypeByFile(file)
 
 	// Save the uploaded file
-	if err := files.Save(file, path + "/" + key.String() + extension); err != nil {
+	if err := files.Save(file, path+"/"+key.String()+extension); err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not save the media file, please try again", Operation: op}
 	}
 
 	// Convert to WebP
-	if s.options.MediaConvertWebP && mimeType == "image/jpeg" || mimeType == "image/png"  {
-		go webp.Convert(path + "/" + key.String() + extension, s.options.MediaCompression)
+	if s.options.MediaConvertWebP && mimeType == "image/jpeg" || mimeType == "image/png" {
+		go webp.Convert(path+"/"+key.String()+extension, s.options.MediaCompression)
 	}
 
 	// Resize
 	sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
 
 	// Insert into the database
-	dm, err := s.insert(key, cleanName + extension, path, int(file.Size), mimeType, sizes, userId)
+	dm, err := s.insert(key, cleanName+extension, path, int(file.Size), mimeType, sizes, userId)
 	if err != nil {
 		return domain.Media{}, err
 	}
@@ -273,7 +273,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 
 	defer io.Close()
 
-	if img.Bounds().Max.X > s.options.MediaUploadMaxWidth && s.options.MediaUploadMaxWidth != 0  {
+	if img.Bounds().Max.X > s.options.MediaUploadMaxWidth && s.options.MediaUploadMaxWidth != 0 {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max width of %vpx.", s.options.MediaUploadMaxWidth), Operation: op, Err: err}
 	}
 
@@ -290,17 +290,17 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 	const op = "MediaRepository.insert"
 
 	m := domain.Media{
-		UUID: 			uuid,
-		Url:			s.getUrl() + "/" + name,
-		Title: 			nil,
-		Description:	nil,
-		Alt: 			nil,
-		FilePath:    	filePath,
-		FileSize:    	fileSize,
-		FileName:    	name,
-		Sizes:       	sizes,
-		Type:        	mime,
-		UserID:      	userId,
+		UUID:        uuid,
+		Url:         s.getUrl() + "/" + name,
+		Title:       nil,
+		Description: nil,
+		Alt:         nil,
+		FilePath:    filePath,
+		FileSize:    fileSize,
+		FileName:    name,
+		Sizes:       sizes,
+		Type:        mime,
+		UserID:      userId,
 	}
 
 	q := "INSERT INTO media (uuid, url, title, alt, description, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
@@ -417,17 +417,17 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, 
 			mediaUUID := uuid.New()
 			fileName := name + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + extension
 
-			if err := s.processImageSize(file, path + "/" + mediaUUID.String(), mime, size); err == nil {
+			if err := s.processImageSize(file, path+"/"+mediaUUID.String(), mime, size); err == nil {
 				savedSizes[key] = domain.MediaSize{
 					FilePath: path,
-					UUID: mediaUUID,
-					Url: s.getUrl() + "/" + fileName,
-					Name: fileName,
+					UUID:     mediaUUID,
+					Url:      s.getUrl() + "/" + fileName,
+					Name:     fileName,
 					SizeName: size.Name,
 					FileSize: files.GetFileSize(path + "/" + mediaUUID.String() + extension),
-					Width: size.Width,
-					Height: size.Height,
-					Crop: size.Crop,
+					Width:    size.Width,
+					Height:   size.Height,
+					Crop:     size.Crop,
 				}
 			}
 		}
@@ -447,7 +447,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 	if mime == "image/png" {
 		filePath = filePath + ".png"
 
-		decodedImage, err  := s.decodeImage(file, mime)
+		decodedImage, err := s.decodeImage(file, mime)
 		if err != nil {
 			return err
 		}
@@ -555,7 +555,6 @@ func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) (*imag
 	return nil, &errors.Error{Code: errors.INTERNAL, Message: "Something went wrong decoding the image", Operation: op, Err: err}
 }
 
-
 // Process file name
 func (s *MediaStore) processFileName(file string, extension string) string {
 
@@ -587,4 +586,3 @@ func (s *MediaStore) processFileName(file string, extension string) string {
 
 	return cleanedFile
 }
-

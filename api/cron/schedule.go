@@ -30,7 +30,5 @@ func (s *Scheduler) Run() {
 	}
 
 	// Start all the pending jobs
-	<- gocron.Start()
+	<-gocron.Start()
 }
-
-

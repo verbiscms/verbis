@@ -12,7 +12,7 @@ var (
 	uninstallCmd = &cobra.Command{
 		Use:   "uninstall",
 		Short: "Use with caution! This will drop the Verbis database entirely, it should only be used in development.",
-		Long:  `This command will drop the database that is provided in the environment file.
+		Long: `This command will drop the database that is provided in the environment file.
 It will first run Verbis doctor to ensure the database connection is passable and then 
 continue to drop the database. Use with caution!`,
 		Run: func(cmd *cobra.Command, args []string) {

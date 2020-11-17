@@ -31,7 +31,6 @@ func StringsSplitLeft(str string, delim string) string {
 	return strings.Split(str, delim)[0]
 }
 
-
 // Split everything after deliminator
 func StringsSplitRight(str string, delim string) string {
 	return strings.Join(strings.Split(str, delim)[1:], delim)
@@ -66,4 +65,3 @@ func StringsAddSpace(s string) string {
 	}
 	return buf.String()
 }
-

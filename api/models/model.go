@@ -14,16 +14,16 @@ import (
 
 // Store defines all of the repositories used to interact with the database
 type Store struct {
-	Auth       		AuthRepository
-	Categories 		CategoryRepository
-	Fields     		FieldsRepository
-	Media 			MediaRepository
-	Options 		OptionsRepository
-	Posts      		PostsRepository
-	Roles      		RoleRepository
-	Site      		SiteRepository
-	User       		UserRepository
-	Config 			config.Configuration
+	Auth       AuthRepository
+	Categories CategoryRepository
+	Fields     FieldsRepository
+	Media      MediaRepository
+	Options    OptionsRepository
+	Posts      PostsRepository
+	Roles      RoleRepository
+	Site       SiteRepository
+	User       UserRepository
+	Config     config.Configuration
 }
 
 // Create a new database instance, connect to database.
@@ -32,13 +32,13 @@ func New(db *database.MySql, config config.Configuration) *Store {
 		Auth:       newAuth(db.Sqlx),
 		Categories: newCategories(db.Sqlx),
 		Fields:     newFields(db.Sqlx),
-		Media: 		newMedia(db.Sqlx, config),
+		Media:      newMedia(db.Sqlx, config),
 		Options:    newOptions(db.Sqlx),
-		Posts:     	newPosts(db.Sqlx, config),
+		Posts:      newPosts(db.Sqlx, config),
 		Roles:      newRoles(db.Sqlx),
-		Site:     	newSite(db.Sqlx, config),
+		Site:       newSite(db.Sqlx, config),
 		User:       newUser(db.Sqlx, config),
-		Config: 	config,
+		Config:     config,
 	}
 }
 
@@ -63,10 +63,10 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 			_ = db.QueryRow(fmt.Sprintf("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s' AND COLUMN_NAME = '%s'", table, column)).Scan(&exists)
 			if !exists {
 				return "", &errors.Error{
-					Code: errors.INVALID,
-					Message: fmt.Sprintf("The %s search query does not exist", column),
+					Code:      errors.INVALID,
+					Message:   fmt.Sprintf("The %s search query does not exist", column),
 					Operation: op,
-					Err: fmt.Errorf("the %s search query does not exists when searching for %s", column, table)}
+					Err:       fmt.Errorf("the %s search query does not exists when searching for %s", column, table)}
 			}
 
 			if table != "" {
@@ -80,17 +80,17 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 				value := stripAlphaNum(filter.Value)
 
 				// Account for like or not like values
-				if operator == "like" || operator == "LIKE" || operator == "not like" || operator == "NOT LIKE"  {
+				if operator == "like" || operator == "LIKE" || operator == "not like" || operator == "NOT LIKE" {
 					value = "%" + value + "%"
 				}
 
 				// Check if the operator exists before continuing
 				if opExists := helpers.StringInSlice(operator, operators); !opExists {
 					return "", &errors.Error{
-						Code: errors.INVALID,
-						Message: fmt.Sprintf("The %s operator does not exist", operator),
+						Code:      errors.INVALID,
+						Message:   fmt.Sprintf("The %s operator does not exist", operator),
 						Operation: op,
-						Err: fmt.Errorf("the %s operator does not exists when searching for the %s", operator, table)}
+						Err:       fmt.Errorf("the %s operator does not exists when searching for the %s", operator, table)}
 				}
 
 				if counter > 0 {

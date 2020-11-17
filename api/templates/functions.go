@@ -12,19 +12,19 @@ import (
 )
 
 type TemplateFunctions struct {
-	gin *gin.Context
-	post *domain.Post
-	author *domain.User
+	gin      *gin.Context
+	post     *domain.Post
+	author   *domain.User
 	category *domain.Category
-	fields map[string]interface{}
-	site *domain.Site
-	store *models.Store
-	options domain.Options
+	fields   map[string]interface{}
+	site     *domain.Site
+	store    *models.Store
+	options  domain.Options
 }
 
 type TypeOfPage struct {
 	PageType string
-	Data interface{}
+	Data     interface{}
 }
 
 // NewFunctions - Construct
@@ -55,14 +55,14 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 	site := s.Site.GetGlobalConfig()
 
 	return &TemplateFunctions{
-		gin: g,
-		post: p,
-		author: &author,
+		gin:      g,
+		post:     p,
+		author:   &author,
 		category: category,
-		fields: fields,
-		site: site,
-		store: s,
-		options: options,
+		fields:   fields,
+		site:     site,
+		store:    s,
+		options:  options,
 	}
 }
 
@@ -73,29 +73,29 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Env
 		//"appEnv": t.appEnv,
 		"isProduction": t.isProduction,
-		"isDebug": t.isDebug,
+		"isDebug":      t.isDebug,
 		// Header & Footer
-		"verbisHead": t.getHeader,
-		"verbisFoot": t.getFooter,
+		"verbisHead":   t.getHeader,
+		"verbisFoot":   t.getFooter,
 		"getMetaTitle": t.getMetaTitle,
 		// Fields
-		"getField": t.getField,
-		"getFields": t.getFields,
-		"hasField": t.hasField,
+		"getField":    t.getField,
+		"getFields":   t.getFields,
+		"hasField":    t.hasField,
 		"getRepeater": t.getRepeater,
 		"getFlexible": t.getFlexible,
 		"getSubField": t.getSubField,
 		// Auth
-		"isAuth": t.isAuth,
+		"isAuth":  t.isAuth,
 		"isAdmin": t.isAdmin,
 		// Posts
-		"getPost": t.getPost,
-		"getPosts": t.getPosts,
+		"getPost":           t.getPost,
+		"getPosts":          t.getPosts,
 		"getPaginationPage": t.getPaginationPage,
 		// Media
 		"getMedia": t.getMedia,
 		// Paths
-		"assets": t.assetsPath,
+		"assets":  t.assetsPath,
 		"storage": t.storagePath,
 		// Partials
 		"partial": t.partial,
@@ -103,7 +103,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"dict": t.dict,
 		// Helpers
 		"fullUrl": t.getFullUrl,
-		"escape": t.escape,
+		"escape":  t.escape,
 	}
 
 	return funcMap
@@ -112,46 +112,46 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 // GetData - Returns all the necessary data for template usage.
 func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 
-	 theme, err := t.store.Site.GetThemeConfig()
-	 if err != nil {
-	 	return nil, err
-	 }
+	theme, err := t.store.Site.GetThemeConfig()
+	if err != nil {
+		return nil, err
+	}
 
-	 data := map[string]interface{}{
-	 	"Type": t.orderOfSearch(),
-		"Site": t.store.Site.GetGlobalConfig(),
+	data := map[string]interface{}{
+		"Type":  t.orderOfSearch(),
+		"Site":  t.store.Site.GetGlobalConfig(),
 		"Theme": theme.Theme,
 		"Post": map[string]interface{}{
-			"Id": t.post.Id,
-			"UUID": t.post.UUID,
-			"Slug": t.post.Slug,
-			"Title": t.post.Title,
-			"Status": t.post.Status,
-			"Resource": t.post.Resource,
+			"Id":           t.post.Id,
+			"UUID":         t.post.UUID,
+			"Slug":         t.post.Slug,
+			"Title":        t.post.Title,
+			"Status":       t.post.Status,
+			"Resource":     t.post.Resource,
 			"PageTemplate": t.post.PageTemplate,
-			"Layout": t.post.Layout,
-			"PublishedAt": t.post.PublishedAt,
-			"UpdatedAt": t.post.UpdatedAt,
-			"CreatedAt": t.post.CreatedAt,
-			"Author": t.author,
-			"Category": t.category,
+			"Layout":       t.post.Layout,
+			"PublishedAt":  t.post.PublishedAt,
+			"UpdatedAt":    t.post.UpdatedAt,
+			"CreatedAt":    t.post.CreatedAt,
+			"Author":       t.author,
+			"Category":     t.category,
 		},
 		"Options": map[string]interface{}{
 			"Social": map[string]interface{}{
-				"Facebook": t.options.SocialFacebook,
-				"Twitter": t.options.SocialTwitter,
-				"Youtube": t.options.SocialYoutube,
-				"LinkedIn": t.options.SocialLinkedIn,
+				"Facebook":  t.options.SocialFacebook,
+				"Twitter":   t.options.SocialTwitter,
+				"Youtube":   t.options.SocialYoutube,
+				"LinkedIn":  t.options.SocialLinkedIn,
 				"Instagram": t.options.SocialInstagram,
-				"Pintrest": t.options.SocialPinterest,
+				"Pintrest":  t.options.SocialPinterest,
 			},
 			"Contact": map[string]interface{}{
-				"Email": t.options.ContactEmail,
+				"Email":     t.options.ContactEmail,
 				"Telephone": t.options.ContactTelephone,
-				"Address": t.options.ContactAddress,
+				"Address":   t.options.ContactAddress,
 			},
 		},
-	 }
+	}
 
 	return data, nil
 }
@@ -161,12 +161,12 @@ func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
 
 	data := TypeOfPage{
 		PageType: "page",
-		Data: nil,
+		Data:     nil,
 	}
 
 	slug := t.post.Slug
 	slugArr := strings.Split(slug, "/")
-	last := slugArr[len(slugArr) - 1]
+	last := slugArr[len(slugArr)-1]
 
 	theme, err := t.store.Site.GetThemeConfig()
 	if err != nil {
@@ -202,5 +202,3 @@ func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
 
 	return data
 }
-
-

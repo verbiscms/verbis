@@ -8,23 +8,23 @@ import (
 )
 
 type Params struct {
-	Page 			int
-	Limit 			int
-	OrderBy 		string
-	OrderDirection 	string
-	Filters 		map[string][]Filter
+	Page           int
+	Limit          int
+	OrderBy        string
+	OrderDirection string
+	Filters        map[string][]Filter
 }
 
 type Filter struct {
-	Operator string  `json:"operator"`
-	Value    string  `json:"value"`
+	Operator string `json:"operator"`
+	Value    string `json:"value"`
 }
 
 // PaginationAllLimit defines how many items will be returned if
 // the limit is set to list all
 const (
 	PaginationAllLimit = 99999999999999
-	PaginationDefault = 15
+	PaginationDefault  = 15
 )
 
 // Get query Parameters
@@ -81,12 +81,10 @@ func GetParams(g *gin.Context) Params {
 	}
 
 	return Params{
-		Page:  page,
-		Limit: limit,
-		OrderBy: orderParams[0],
+		Page:           page,
+		Limit:          limit,
+		OrderBy:        orderParams[0],
 		OrderDirection: orderParams[1],
-		Filters: filters,
+		Filters:        filters,
 	}
 }
-
-

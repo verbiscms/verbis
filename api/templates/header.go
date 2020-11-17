@@ -11,7 +11,6 @@ import (
 	"html/template"
 )
 
-
 // getHeader obtains all of the site and post wide Code Injection
 // as well as any meta information from the page.
 func (t *TemplateFunctions) getHeader() template.HTML {
@@ -55,7 +54,7 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 	if seo.Canonical != nil && *seo.Canonical != "" {
 		b.WriteString(fmt.Sprintf("<link rel=\"canonical\" href=\"%s\" />", *seo.Canonical))
 	} else {
-		b.WriteString(fmt.Sprintf("<link rel=\"canonical\" href=\"%s\" />", t.site.Url + t.post.Slug))
+		b.WriteString(fmt.Sprintf("<link rel=\"canonical\" href=\"%s\" />", t.site.Url+t.post.Slug))
 	}
 
 	// Obtain Meta
@@ -94,10 +93,8 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 		t.writeTwitter(&b, t.options.MetaTwitterTitle, t.options.MetaTwitterDescription, t.options.MetaTwitterImageId)
 	}
 
-
 	return template.HTML(gohtml.Format(b.String()))
 }
-
 
 func (t *TemplateFunctions) writeMeta(bytes *bytes.Buffer, description string) {
 	if description != "" {
@@ -105,7 +102,6 @@ func (t *TemplateFunctions) writeMeta(bytes *bytes.Buffer, description string) {
 	}
 	bytes.WriteString(fmt.Sprintf("<meta property=\"article:modified_time\" content=\"%s\" />", t.post.PublishedAt))
 }
-
 
 // Facebook
 func (t *TemplateFunctions) writeFacebook(bytes *bytes.Buffer, title string, description string, imageId int) {
@@ -126,7 +122,7 @@ func (t *TemplateFunctions) writeFacebook(bytes *bytes.Buffer, title string, des
 
 	image, foundImage := t.store.Media.GetById(imageId)
 	if foundImage == nil {
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:image\" content=\"%s\">", t.options.SiteUrl + image.Url))
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:image\" content=\"%s\">", t.options.SiteUrl+image.Url))
 	}
 }
 
@@ -146,7 +142,7 @@ func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, desc
 
 	image, foundImage := t.store.Media.GetById(imageId)
 	if foundImage == nil {
-		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:image\" content=\"%s\">", t.options.SiteUrl + image.Url))
+		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:image\" content=\"%s\">", t.options.SiteUrl+image.Url))
 	}
 }
 

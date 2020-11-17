@@ -130,5 +130,3 @@ func (s *RoleStore) Exists(name string) bool {
 	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM roles WHERE name = ?)", name).Scan(&exists)
 	return exists
 }
-
-

@@ -42,7 +42,7 @@ func (t *TemplateFunctions) getField(field string, id ...int) interface{} {
 func (t *TemplateFunctions) checkFieldType(field interface{}) interface{} {
 	kind := reflect.TypeOf(field).String()
 
-	if kind  == "map[string]interface {}" {
+	if kind == "map[string]interface {}" {
 		m := field.(map[string]interface{})
 		fieldType, found := m["type"]
 		if found {

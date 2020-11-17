@@ -27,9 +27,9 @@ type Validation struct {
 // ValidationError defines the structure when returning
 // validation errors.
 type ValidationError struct {
-	Key     string	`json:"key"`
-	Type	string	`json:"type"`
-	Message string	`json:"message"`
+	Key     string `json:"key"`
+	Type    string `json:"type"`
+	Message string `json:"message"`
 }
 
 // New - Construct & set tag name
@@ -47,9 +47,8 @@ func New() *Validation {
 	return v
 }
 
-
 // Process handles validation errors and passes back to respond.
-func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationError {
+func (v *Validation) Process(errors pkgValidate.ValidationErrors) []ValidationError {
 
 	var returnErrors []ValidationError
 	for _, e := range errors {
@@ -59,7 +58,7 @@ func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 
 		// TODO: Clean up here
 		if len(result) > 2 && !strings.Contains(e.Namespace(), "PostCreate") || !strings.Contains(e.Namespace(), "UserCreate") {
-			field = "";
+			field = ""
 			for i := 1; i < len(result); i++ {
 				field += result[i]
 			}
@@ -77,8 +76,8 @@ func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 		}
 
 		returnErrors = append(returnErrors, ValidationError{
-			Key: strings.TrimRight(fieldString, "_"),
-			Type: e.Tag(),
+			Key:     strings.TrimRight(fieldString, "_"),
+			Type:    e.Tag(),
 			Message: v.message(e.Tag(), field, e.Param()),
 		})
 	}
@@ -87,7 +86,7 @@ func (v* Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 }
 
 // CmdCheck is a function for checking validation by struct on the command line.
-func (v* Validation) CmdCheck(key string, data interface{}) error {
+func (v *Validation) CmdCheck(key string, data interface{}) error {
 
 	err := v.Package.Struct(data)
 
@@ -107,7 +106,7 @@ func (v* Validation) CmdCheck(key string, data interface{}) error {
 
 // message checks the kind, field and parameters and binds custom
 // error messages.
-func (v* Validation) message(kind string, field string, param string) string {
+func (v *Validation) message(kind string, field string, param string) string {
 	var errorMsg string
 
 	field = helpers.StringsAddSpace(field)

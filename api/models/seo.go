@@ -69,8 +69,3 @@ func (s *SeoMetaStore) update(p *domain.Post) error {
 	}
 	return nil
 }
-
-
-
-
-

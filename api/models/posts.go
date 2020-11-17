@@ -27,18 +27,18 @@ type PostsRepository interface {
 
 // PostStore defines the data layer for Posts
 type PostStore struct {
-	db *sqlx.DB
-	seoMetaModel 	SeoMetaRepository
-	userModel 	 	UserRepository
+	db              *sqlx.DB
+	seoMetaModel    SeoMetaRepository
+	userModel       UserRepository
 	categoriesModel CategoryRepository
 }
 
 // newPosts - Construct
 func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 	return &PostStore{
-		db: db,
-		seoMetaModel: newSeoMeta(db),
-		userModel: newUser(db, config),
+		db:              db,
+		seoMetaModel:    newSeoMeta(db),
+		userModel:       newUser(db, config),
 		categoriesModel: newCategories(db),
 	}
 }
@@ -62,7 +62,7 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	countQ += filter
 
 	// Get by resource
-	if resource != "all" && resource != ""{
+	if resource != "all" && resource != "" {
 		if len(meta.Filters) > 0 {
 			q += fmt.Sprintf(" AND")
 			countQ += fmt.Sprintf(" AND")
@@ -84,7 +84,7 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 	}
 
 	// Apply pagination
-	q += fmt.Sprintf(" ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page - 1) * meta.Limit)
+	q += fmt.Sprintf(" ORDER BY posts.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page-1)*meta.Limit)
 
 	// Select posts
 	if err := s.db.Select(&p, q); err != nil {
@@ -180,7 +180,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	convertedPost := s.convertToPost(*p)
 	convertedPost.Id = int(id)
 	if err := s.seoMetaModel.UpdateCreate(&convertedPost); err != nil {
-		return domain.Post{},  err
+		return domain.Post{}, err
 	}
 
 	return post, nil
@@ -273,7 +273,7 @@ func (s *PostStore) Exists(slug string) bool {
 func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 	return domain.Post{
 		Id:             c.Id,
-		UUID:  			c.UUID,
+		UUID:           c.UUID,
 		Slug:           c.Slug,
 		Title:          c.Title,
 		Status:         c.Status,

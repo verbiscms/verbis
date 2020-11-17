@@ -11,17 +11,17 @@ import (
 )
 
 type Mailer struct {
-	client sp.Client
-	Config config.Configuration
+	client       sp.Client
+	Config       config.Configuration
 	Transmission Sender
-	FromAddress string
-	FromName string
+	FromAddress  string
+	FromName     string
 }
 
 type Sender struct {
-	To		[]string
-	Subject	string
-	HTML	string
+	To      []string
+	Subject string
+	HTML    string
 }
 
 type Data map[string]interface{}
@@ -63,7 +63,6 @@ func (m *Mailer) load() error {
 	return nil
 }
 
-
 // Create a Transmission using an inline Recipient List
 // and inline email Content.
 // Returns errors.INVALID if the mail failed to send via sparkpost.
@@ -93,7 +92,7 @@ func (m *Mailer) Send(t *Sender) (string, error) {
 func (m *Mailer) ExecuteHTML(file string, data interface{}) (string, error) {
 	const op = "mail.ExecuteHTML"
 	path := paths.Api() + "/mail/" + file
-	tmpl, err := html.RenderTemplate("main", data, paths.Api() + "/mail/main-layout.html", path)
+	tmpl, err := html.RenderTemplate("main", data, paths.Api()+"/mail/main-layout.html", path)
 	if err != nil {
 		fmt.Println(err)
 		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to render the template: %s", path), Operation: op, Err: err}

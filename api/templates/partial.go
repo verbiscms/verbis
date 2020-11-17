@@ -28,7 +28,7 @@ func (t *TemplateFunctions) partial(name string, data ...interface{}) template.H
 	}
 
 	pathArr := strings.Split(path, "/")
-	file, err := template.New(pathArr[len(pathArr) - 1]).Funcs(t.GetFunctions()).ParseFiles(path)
+	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(t.GetFunctions()).ParseFiles(path)
 	if err != nil {
 		panic(fmt.Errorf("Unable to create a new partial file: %v", err))
 	}
