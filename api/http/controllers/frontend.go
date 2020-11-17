@@ -2,31 +2,27 @@ package controllers
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/frontend"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/minify"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
-	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/seo"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"html/template"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
-	"time"
 )
 
 // FrontendHandler defines methods for the frontend to interact with the server
@@ -314,7 +310,6 @@ func (c *FrontendController) NoPageFound(g *gin.Context) {
 	return
 }
 
-
 // Robots - Obtains the Seo Robots field from the Options struct
 // which is set in the settings, and returns the robots.txt
 // file.
@@ -329,113 +324,20 @@ func (c *FrontendController) Robots(g *gin.Context) {
 	g.Data(200, "text/plain", []byte(c.options.SeoRobots))
 }
 
-
+// SiteMap - Creates a new seo.Sitemap instance and passes the
+// store. GetPages obtains the []bytes to send back as xml
+// when /sitemap.xml is visited.
 func (c *FrontendController) SiteMap(g *gin.Context) {
 	const op = "FrontendHandler.SiteMap"
 
-	// Return a 404 if the options dont allow it.
-	if !c.options.SeoSitemapServe {
-		c.NoPageFound(g)
-		return
-	}
-
-	// SitemapPosts defines the array of posts for the sitemap.
-	type SitemapPosts struct {
-		Slug string
-		CreatedAt string
-	}
-
-	// SitemapViewData defines the data to executed on the sitemap.
-	type SitemapViewData struct {
-		Home string
-		HomeCreatedAt string
-		Posts []SitemapPosts
-	}
-
-	// Template data for the sitemap.
-	tmpl :=  `<urlset
-			xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-					http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-			<url>
-				<loc>{{ .Home }}</loc>
-				<lastmod>{{ .HomeCreatedAt }}</lastmod>
-				<priority>1.00</priority>
-			</url>
-			{{ range .Posts }}
-				<url>
-					<loc>{{ .Slug }}</loc>
-					<lastmod>{{ .CreatedAt }}</lastmod>
-					<priority>0.80</priority>
-				</url>
-			{{ end }}
-		</urlset>`
-
-
-	// Get the homepage created at & site object
-	site := c.models.Site.GetGlobalConfig()
-	home, err := c.models.Posts.GetBySlug("/")
-	homeCreatedAt := time.Now().Format(time.RFC3339)
-	if err == nil {
-		homeCreatedAt = home.CreatedAt.Format(time.RFC3339)
-	}
-
-	// Set up the view data
-	viewData := SitemapViewData{
-		Home: site.Url,
-		HomeCreatedAt: homeCreatedAt,
-		Posts: []SitemapPosts{},
-	}
-
-	// Get posts
-	posts, _, err := c.models.Posts.Get(http.Params{
-		Page:           1,
-		Limit:          http.PaginationAllLimit,
-		OrderDirection: "desc",
-		OrderBy: 		"created_at",
-	}, "all")
-
-	// Loop through the posts & add to the ViewData array,
-	// if the post is excluded from the sitemap or in
-	// the excluded resources slice it wont be added.
-	if err == nil {
-		for _, v := range posts {
-			resource := ""
-			if v.Resource == nil {
-				resource = "pages"
-			} else {
-				resource = *v.Resource
-			}
-
-			exclude := false
-			if v.SeoMeta.Seo != nil {
-				var seo *domain.PostSeo
-				err := json.Unmarshal(*v.SeoMeta.Seo, &seo)
-				if err == nil {
-					exclude = seo.ExcludeSitemap
-				}
-			}
-
-			if !helpers.StringInSlice(resource, c.options.SeoSitemapExcluded) && !exclude {
-				viewData.Posts = append(viewData.Posts, SitemapPosts{
-					Slug:      site.Url + v.Slug,
-					CreatedAt: v.CreatedAt.Format(time.RFC3339),
-				})
-			}
-		}
-	}
-
-	// Execute template
-	t := template.Must(template.New("sitemap").Parse(tmpl))
-	var b bytes.Buffer
-	err = t.Execute(&b, viewData)
+	sitemap, err := seo.NewSitemap(c.models).GetPages()
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to render xml sitemap.", Operation: op, Err: err},
-		}).Error()
+		fmt.Println(err)
 		c.NoPageFound(g)
 	}
 
-	// Return the XML sitemap
-	g.Data(200, "application/xml; charset=utf-8", b.Bytes())
+	g.Data(200, "application/xml; charset=utf-8", sitemap)
 }
+
+
+

@@ -12,43 +12,44 @@ func (s *Seeder) runOptions() error {
 
 	optionsSeed := domain.OptionsDB{
 		// Site
-		"site_title" : api.App.Title,
+		"site_title": api.App.Title,
 		"site_description": api.App.Description,
 		"site_logo": api.App.Logo,
-		"site_url" : api.App.Url,
+		"site_url": api.App.Url,
 		// General
-		"general_locale" : "en_GB",
+		"general_locale": "en_GB",
 		// Contact
-		"contact_email" : "",
-		"contact_telephone" : "",
-		"contact_address" : "",
+		"contact_email": "",
+		"contact_telephone": "",
+		"contact_address": "",
 		// Social
-		"social_facebook" : "",
-		"social_twitter" : "",
-		"social_instagram" : "",
-		"social_linkedin" : "",
-		"social_youtube" : "",
-		"social_pinterest" : "",
-		"footer_text" : "",
-		"footer_disclosure" : "",
+		"social_facebook": "",
+		"social_twitter": "",
+		"social_instagram": "",
+		"social_linkedin": "",
+		"social_youtube": "",
+		"social_pinterest": "",
+		"footer_text": "",
+		"footer_disclosure": "",
 		// Code Injection
 		"codeinjection_head": "",
 		"codeinjection_foot": "",
 		// Meta
-		"meta_title" : "",
-		"meta_description" : "",
-		"meta_facebook_title" : "",
-		"meta_facebook_description" : "",
-		"meta_facebook_image_id" : 0,
-		"meta_twitter_title" : "",
-		"meta_twitter_description" : "",
-		"meta_twitter_image_id" : 0,
+		"meta_title": "",
+		"meta_description": "",
+		"meta_facebook_title": "",
+		"meta_facebook_description": "",
+		"meta_facebook_image_id": 0,
+		"meta_twitter_title": "",
+		"meta_twitter_description": "",
+		"meta_twitter_image_id": 0,
 		// SEO
-		"seo_public" : false,
-		"seo_sitemap_serve" : true,
-		"seo_sitemap_excluded" : []string{},
+		"seo_public": false,
+		"seo_sitemap_serve": true,
+		"seo_sitemap_redirects": true,
+		"seo_sitemap_excluded": []string{},
 		"seo_robots_serve": true,
-		"seo_robots" : "\"User-Agent: *\\nAllow: /\"",
+		"seo_robots": "\"User-Agent: *\\nAllow: /\"",
 		"seo_redirects": nil,
 		// Media
 		"media_compression": 80,
@@ -111,7 +112,7 @@ func (s *Seeder) runOptions() error {
 		"minify_xml": false,
 	}
 
-	err := s.models.Options.UpdateCreate(optionsSeed); if err != nil {
+	err:= s.models.Options.UpdateCreate(optionsSeed); if err != nil {
 		return err
 	}
 
