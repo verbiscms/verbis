@@ -116,15 +116,19 @@ func (s *Sitemap) GetIndex() ([]byte, error) {
 	}
 
 	fmt.Println(len(data))
-	fmt.Println((paths.Api() + "/web/sitemap/indfx.html"))
+	fmt.Println((paths.Api() + "/web/sitemaps/index.html"))
 
 	t := template.Must(template.New("").Parse(paths.Api() + "/web/sitemaps/index.html"))
 	var b bytes.Buffer
+
+
 	err = t.Execute(&b, data)
 	if err != nil {
 		fmt.Println(err)
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to execute sitemap template.", Operation: op, Err: err}
 	}
+
+	fmt.Println("gogle er")
 
 	return nil, nil
 }
