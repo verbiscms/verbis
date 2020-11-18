@@ -31,10 +31,11 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 		s.GET("/robots.txt", c.Frontend.Robots)
 
 		// Sitemap
-		s.GET("/sitemap.xml", c.Frontend.SiteMap)
+		s.GET("/sitemap.xml", c.Frontend.SiteMapIndex)
+		s.GET("/sitemaps/:resource/sitemap.xml", c.Frontend.SiteMap)
 
 		// Favicon
-		s.StaticFile("/favicon.ico", paths.Theme()+"/favicon.ico")
+		s.StaticFile("/favicon.ico", paths.Theme() + "/favicon.ico")
 
 		// Serve the front end
 		s.NoRoute(c.Frontend.Serve)
