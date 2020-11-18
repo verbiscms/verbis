@@ -350,6 +350,7 @@ func (c *FrontendController) SiteMap(g *gin.Context) {
 
 	sitemap, err := seo.NewSitemap(c.models).GetPages(g.Param("resource"))
 	if err != nil {
+		fmt.Println(err)
 		c.NoPageFound(g)
 	}
 
