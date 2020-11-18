@@ -33,49 +33,20 @@ type SiteMapper interface {
 type Sitemap struct {
 	models   *models.Store
 	options  domain.Options
-	viewData *SitemapViewData
-	siteUrl  string
+	resources map[string]domain.Resource
+	templatePath string
 }
 
 // SitemapPosts defines the array of posts for the sitemap.
-type SitemapViewItem struct {
+type sitemapViewItem struct {
 	Slug      string
 	CreatedAt string
 }
 
-// SitemapViewData defines the data to executed on the sitemap.
-type SitemapViewData struct {
-	Home          string
-	HomeCreatedAt string
-	Items         []SitemapViewItem
-}
-
-var (
-	// Template data for the pages sitemap.
-	pageTmpl = `<urlset
-			xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-					http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-			<url>
-				<loc>{{ .Home }}</loc>
-				<lastmod>{{ .HomeCreatedAt }}</lastmod>
-				<priority>1.00</priority>
-			</url>
-			{{ range .Pages }}
-			<url>
-				<loc>{{ .Slug }}</loc>
-				<lastmod>{{ .CreatedAt }}</lastmod>
-				<priority>0.80</priority>
-			</url>
-			{{ end }}
-			{{ range .Redirects }}
-			<url>
-				<loc>{{ .Slug }}</loc>
-				<lastmod>{{ .CreatedAt }}</lastmod>
-				<priority>0.60</priority>
-			</url>
-			{{ end }}
-		</urlset>`
+const (
+	// MAPLIMIT defines how many items can be used within a
+	// sitemap.xml before splitting into a new one.
+	MAPLIMIT = 49999
 )
 
 // NewSitemap - Construct
@@ -85,59 +56,76 @@ func NewSitemap(m *models.Store) *Sitemap {
 	options, err := m.Options.GetStruct()
 	if err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+		}).Fatal()
+	}
+
+	theme, err := m.Site.GetThemeConfig()
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get resources", Operation: op, Err: err},
 		}).Fatal()
 	}
 
 	s := &Sitemap{
 		models:  m,
 		options: options,
-		siteUrl: options.SiteUrl,
+		resources: theme.Resources,
+		templatePath: paths.Api() + "/web/sitemaps/",
 	}
 
 	return s
 }
 
-
+// GetIndex first checks to see if the sitemap serving is enabled in the
+// options, then goes on to retrieve the pages. Template data is then
+// constructed and executed.
+//
+// Returns errors.CONFLICT if the sitemap serve options was not enabled.
 func (s *Sitemap) GetIndex() ([]byte, error) {
 	const op = "SiteMapper.GetIndex"
 
-	theme, err := s.models.Site.GetThemeConfig()
-	if err != nil {
-		return nil, err
+	if !s.options.SeoSitemapServe {
+		return nil, &errors.Error{Code: errors.CONFLICT, Message: "Sitemap should not be served due to user options preferences", Operation: op, Err: fmt.Errorf("sitemap could not be served due to preferences")}
 	}
 
-	var data []SitemapViewItem
-	for _, v := range theme.Resources {
-		data = append(data, SitemapViewItem{
-			Slug:      v.Slug,
+	var data []sitemapViewItem
+	for _, v := range s.resources {
+		posts, err := s.retrievePages(v.Name)
+		if err != nil || len(posts) == 0 {
+			continue
+		}
+
+		data = append(data, sitemapViewItem{
+			Slug:      s.options.SiteUrl + "/sitemaps" + v.Slug + "/sitemap.xml",
+			CreatedAt: time.Now().Format(time.RFC3339),
+		})
+
+		if len(posts) > MAPLIMIT {
+			// do something
+		}
+	}
+	
+	if s.hasRedirects() {
+		data = append(data, sitemapViewItem{
+			Slug:     s.options.SiteUrl + "/sitemaps/redirects/sitemap.xml",
 			CreatedAt: time.Now().Format(time.RFC3339),
 		})
 	}
 
-	fmt.Println(len(data))
-	fmt.Println((paths.Api() + "/web/sitemaps/index.html"))
-
-	t := template.Must(template.New("").Parse(paths.Api() + "/web/sitemaps/index.html"))
-	var b bytes.Buffer
-
-
-	err = t.Execute(&b, data)
-	if err != nil {
-		fmt.Println(err)
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to execute sitemap template.", Operation: op, Err: err}
-	}
-
-	fmt.Println("gogle er")
-
-	return nil, nil
+	return s.executeTemplate("index.html", map[string]interface{}{
+		"Items" : data,
+	})
 }
+
 
 // GetPages first checks to see if the sitemap serving is enabled in the
 // options, then goes on to retrieve the pages. Template data is then
 // constructed and executed.
+//
 // Returns errors.CONFLICT if the sitemap serve options was not enabled.
 // Returns errors.INTERNAL if the pages template was unable to be executed.
+// Returns errors.NOTFOUND if the given resource was not found within the resource or redirects.
 func (s *Sitemap) GetPages(resource string) ([]byte, error) {
 	const op = "SiteMapper.GetPages"
 
@@ -145,33 +133,47 @@ func (s *Sitemap) GetPages(resource string) ([]byte, error) {
 		return nil, &errors.Error{Code: errors.CONFLICT, Message: "Sitemap should not be served due to user options preferences", Operation: op, Err: fmt.Errorf("sitemap could not be served due to preferences")}
 	}
 
-	s.viewData = &SitemapViewData{
-		Home:          s.siteUrl,
-		HomeCreatedAt: s.getHomeCreatedAt(),
-		Items:         make([]SitemapViewItem, 0),
+	found := false
+	for _, v := range s.resources {
+		if v.Name == resource {
+			found = true
+		}
 	}
 
-	s.retrieveRedirects()
-	err := s.retrievePages(resource)
+	if resource == "redirects" {
+		found = true
+	}
+
+	if !found {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No resource available with the name: %s", resource), Operation: op, Err: fmt.Errorf("no resource found")}
+	}
+
+	var items []sitemapViewItem
+	if resource == "redirects" {
+		return s.executeTemplate("resource.html", map[string]interface{}{
+			"Home": s.options.SiteUrl,
+			"HomeCreatedAt": s.getHomeCreatedAt(),
+			"Items": items,
+		})
+	}
+
+	items, err := s.retrievePages(resource)
 	if err != nil {
 		return nil, err
 	}
 
-	t := template.Must(template.New("sitemap").Parse(pageTmpl))
-	var b bytes.Buffer
-	err = t.Execute(&b, s.viewData)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to execute sitemap template.", Operation: op, Err: err}
-	}
-
-	return b.Bytes(), nil
+	return s.executeTemplate("resource.html", map[string]interface{}{
+		"Home": s.options.SiteUrl,
+		"HomeCreatedAt": s.getHomeCreatedAt(),
+		"Items": items,
+	})
 }
 
 // getPosts obtains all of the posts for the sitemap in created at
 // descending order.
 // Returns errors.INTERNAL if the posts could not be retrieved from the store.
-func (s *Sitemap) retrievePages(resource string) error {
-	const op = "SiteMapper.getPosts"
+func (s *Sitemap) retrievePages(resource string) ([]sitemapViewItem, error) {
+	const op = "SiteMapper.retrievePages"
 
 	posts, _, err := s.models.Posts.Get(http.Params{
 		Page:           1,
@@ -181,9 +183,10 @@ func (s *Sitemap) retrievePages(resource string) error {
 	}, resource)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	var items []sitemapViewItem
 	for _, v := range posts {
 		resource := ""
 		if v.Resource == nil {
@@ -202,28 +205,39 @@ func (s *Sitemap) retrievePages(resource string) error {
 		}
 
 		if !helpers.StringInSlice(resource, s.options.SeoSitemapExcluded) && !exclude && v.Status == "published" {
-			s.viewData.Items = append(s.viewData.Items, SitemapViewItem{
-				Slug:      s.siteUrl + v.Slug,
+			items = append(items, sitemapViewItem{
+				Slug:      s.options.SiteUrl + v.Slug,
 				CreatedAt: v.CreatedAt.Format(time.RFC3339),
 			})
 		}
 	}
 
-	return nil
+	return items, nil
 }
 
-// retrieveRedirects first checks to see if the sitemap redirect serving
+// getRedirects first checks to see if the sitemap redirect serving
 // is enabled in the options and the sets the view data to the range
 // loop.
-func (s *Sitemap) retrieveRedirects() {
+//
+// Returns []sitemapViewItem containing slug & created at date.
+func (s *Sitemap) getRedirects() []sitemapViewItem {
+	var data []sitemapViewItem
 	if s.options.SeoSitemapRedirects {
-		//for _, v := range s.options.SeoRedirects {
-		//	s.viewData.Redirects = append(s.viewData.Redirects, SitemapViewItem{
-		//		Slug:      v.From,
-		//		CreatedAt: time.Now().Format(time.RFC3339),
-		//	})
-		//}
+		for _, v := range s.options.SeoRedirects {
+			data = append(data, sitemapViewItem{
+				Slug:      v.From,
+				CreatedAt: time.Now().Format(time.RFC3339),
+			})
+		}
 	}
+	return data
+}
+
+// hasRedirects determines if there is any redirects set in the options.
+//
+// Returns true if found.
+func (s *Sitemap) hasRedirects() bool {
+	return len(s.getRedirects()) > 0
 }
 
 // getHomeCreatedAt - Get the homepage created at time or now if it
@@ -235,4 +249,21 @@ func (s *Sitemap) getHomeCreatedAt() string {
 		createdAt = home.CreatedAt.Format(time.RFC3339)
 	}
 	return createdAt
+}
+
+// ExecuteTemplate - Execute the given file name along with any data passed
+// to it.
+//
+// Returns errors.INTERNAL if the template failed to execute.
+func (s *Sitemap) executeTemplate(file string, data interface{}) ([]byte, error) {
+	const op = "SiteMapper.ExecuteTemplate"
+
+	t := template.Must(template.New(file).ParseFiles(s.templatePath + file))
+	var b bytes.Buffer
+	err := t.Execute(&b, data)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to execute sitemap template.", Operation: op, Err: err}
+	}
+
+	return b.Bytes(), nil
 }
