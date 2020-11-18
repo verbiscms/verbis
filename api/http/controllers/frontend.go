@@ -32,6 +32,7 @@ type FrontendHandler interface {
 	GetCachedAsset(url string) (*[]byte, *string)
 	Serve(g *gin.Context)
 	Robots(g *gin.Context)
+	SiteMapIndex(g *gin.Context)
 	SiteMap(g *gin.Context)
 }
 
@@ -197,6 +198,8 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 // GetCachedAsset checks to see if there is a cached version of the file
 // and mimetypes, returns nil for both if nothing was found.
 func (c *FrontendController) GetCachedAsset(url string) (*[]byte, *string) {
+
+	// DONT NEED THIS change to options
 	if environment.IsProduction() {
 		return nil, nil
 	}
@@ -324,15 +327,29 @@ func (c *FrontendController) Robots(g *gin.Context) {
 	g.Data(200, "text/plain", []byte(c.options.SeoRobots))
 }
 
+
+// SiteMap - Creates a new seo.Sitemap instance and passes the
+// store. GetPages obtains the []bytes to send back as xml
+// when /sitemap.xml is visited.
+func (c *FrontendController) SiteMapIndex(g *gin.Context) {
+	const op = "FrontendHandler.SiteMapIndex"
+
+	sitemap, err := seo.NewSitemap(c.models).GetIndex()
+	if err != nil {
+		c.NoPageFound(g)
+	}
+
+	g.Data(200, "application/xml; charset=utf-8", sitemap)
+}
+
 // SiteMap - Creates a new seo.Sitemap instance and passes the
 // store. GetPages obtains the []bytes to send back as xml
 // when /sitemap.xml is visited.
 func (c *FrontendController) SiteMap(g *gin.Context) {
 	const op = "FrontendHandler.SiteMap"
 
-	sitemap, err := seo.NewSitemap(c.models).GetPages()
+	sitemap, err := seo.NewSitemap(c.models).GetPages(g.Param("resource"))
 	if err != nil {
-		fmt.Println(err)
 		c.NoPageFound(g)
 	}
 
