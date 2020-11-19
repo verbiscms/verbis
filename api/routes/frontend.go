@@ -7,6 +7,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
+	"github.com/gin-gonic/gin"
 )
 
 func frontend(s *server.Server, c *controllers.Controller, m *models.Store, config config.Configuration) {
@@ -28,11 +29,17 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 		s.GET("/uploads/*any", c.Frontend.GetUploads)
 
 		// Robots
-		s.GET("/robots.txt", c.Frontend.Robots)
+		s.GET("/robots.txt", c.SEO.Robots)
 
 		// Sitemap
-		s.GET("/sitemap.xml", c.Frontend.SiteMapIndex)
-		s.GET("/sitemaps/:resource/sitemap.xml", c.Frontend.SiteMap)
+		s.GET("/sitemap.xml", c.SEO.SiteMapIndex)
+		s.GET("/sitemaps/:resource/sitemap.xml", c.SEO.SiteMapResource)
+		s.GET("/resource-sitemap.xsl", func(g *gin.Context) {
+			c.SEO.SiteMapXSL(g, true)
+		})
+		s.GET("/main-sitemap.xsl", func(g *gin.Context) {
+			c.SEO.SiteMapXSL(g, false)
+		})
 
 		// Favicon
 		s.StaticFile("/favicon.ico", paths.Theme() + "/favicon.ico")

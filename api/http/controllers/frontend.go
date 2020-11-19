@@ -8,13 +8,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/frontend"
+	"github.com/ainsleyclark/verbis/api/frontend"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/minify"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/seo"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
@@ -31,9 +30,6 @@ type FrontendHandler interface {
 	GetAssets(g *gin.Context)
 	GetCachedAsset(url string) (*[]byte, *string)
 	Serve(g *gin.Context)
-	Robots(g *gin.Context)
-	SiteMapIndex(g *gin.Context)
-	SiteMap(g *gin.Context)
 }
 
 // FrontendController defines the handler for all frontend routes
@@ -101,7 +97,7 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 	// Get the data & mime type from the media store
 	file, mimeType, err := c.models.Media.Serve(url, webp.Accepts(g))
 	if err != nil {
-		c.NoPageFound(g)
+		frontend.Error(g, c.config)
 		return
 	}
 
@@ -158,7 +154,7 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 	// Open the file.
 	file, err := ioutil.ReadFile(assetsPath + fileName)
 	if err != nil {
-		c.NoPageFound(g)
+		frontend.Error(g, c.config)
 		return
 	}
 
@@ -224,7 +220,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	post, err := c.models.Posts.GetBySlug(path)
 
 	if err != nil {
-		c.NoPageFound(g)
+		frontend.Error(g, c.config)
 		return
 	}
 
@@ -243,7 +239,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	_, err = g.Cookie("verbis-session")
 	if err != nil && post.Status != "published" {
-		c.NoPageFound(g)
+		frontend.Error(g, c.config)
 		return
 	}
 
@@ -299,60 +295,4 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	g.Writer.Write(minfied)
 }
 
-// NoPageFound serves to 404 page
-func (c *FrontendController) NoPageFound(g *gin.Context) {
-	gvError := goview.New(goview.Config{
-		Root:         paths.Theme(),
-		Extension:    c.config.Template.FileExtension,
-		Partials:     []string{},
-		DisableCache: true,
-	})
-	if err := gvError.Render(g.Writer, 404, "404", nil); err != nil {
-		panic(err)
-	}
-	return
-}
 
-// Robots - Obtains the Seo Robots field from the Options struct
-// which is set in the settings, and returns the robots.txt
-// file.
-func (c *FrontendController) Robots(g *gin.Context) {
-	const op = "FrontendHandler.Robots"
-
-	if c.options.SeoRobotsServe {
-		c.NoPageFound(g)
-		return
-	}
-
-	g.Data(200, "text/plain", []byte(c.options.SeoRobots))
-}
-
-
-// SiteMap - Creates a new seo.Sitemap instance and passes the
-// store. GetPages obtains the []bytes to send back as xml
-// when /sitemap.xml is visited.
-func (c *FrontendController) SiteMapIndex(g *gin.Context) {
-	const op = "FrontendHandler.SiteMapIndex"
-
-	sitemap, err := seo.NewSitemap(c.models).GetIndex()
-	if err != nil {
-		c.NoPageFound(g)
-	}
-
-	g.Data(200, "application/xml; charset=utf-8", sitemap)
-}
-
-// SiteMap - Creates a new seo.Sitemap instance and passes the
-// store. GetPages obtains the []bytes to send back as xml
-// when /sitemap.xml is visited.
-func (c *FrontendController) SiteMap(g *gin.Context) {
-	const op = "FrontendHandler.SiteMap"
-
-	sitemap, err := seo.NewSitemap(c.models).GetPages(g.Param("resource"))
-	if err != nil {
-		fmt.Println(err)
-		c.NoPageFound(g)
-	}
-
-	g.Data(200, "application/xml; charset=utf-8", sitemap)
-}
