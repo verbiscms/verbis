@@ -23,7 +23,7 @@ type Controller struct {
 	Options    OptionsHandler
 	Posts      PostHandler
 	Spa        SpaHandler
-	SEO 	   SEOHandler
+	SEO        SEOHandler
 	Site       SiteHandler
 	User       UserHandler
 }

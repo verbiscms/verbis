@@ -15,7 +15,6 @@ func Error(g *gin.Context, config config.Configuration) {
 		DisableCache: true,
 	})
 
-
 	// need to log here?!
 
 	if err := gvError.Render(g.Writer, 404, "404", nil); err != nil {
