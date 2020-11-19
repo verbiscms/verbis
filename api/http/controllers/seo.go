@@ -41,7 +41,7 @@ func newSEO(m *models.Store, config config.Configuration) *SEOController {
 
 	return &SEOController{
 		models:  m,
-		config: config,
+		config:  config,
 		options: options,
 		sitemap: sitemap,
 	}
@@ -50,6 +50,8 @@ func newSEO(m *models.Store, config config.Configuration) *SEOController {
 // Robots - Obtains the Seo Robots field from the Options struct
 // which is set in the settings, and returns the robots.txt
 // file.
+//
+// Returns a 404 if the options don't allow serving of robots.txt
 func (c *SEOController) Robots(g *gin.Context) {
 	const op = "FrontendHandler.Robots"
 
@@ -61,9 +63,12 @@ func (c *SEOController) Robots(g *gin.Context) {
 	g.Data(200, "text/plain", []byte(c.options.SeoRobots))
 }
 
-// SiteMap - Creates a new frontend.Sitemap instance and passes the
-// store. GetPages obtains the []bytes to send back as xml
-// when /sitemap.xml is visited.
+// SiteMapIndex obtains the sitemap index file from the sitemap
+// model Obtains the []bytes to send back as data when
+// /sitemap.xml is visited.
+//
+// Returns a 404 if there was an error obtaining the XML file.
+// or there was no resource items found.
 func (c *SEOController) SiteMapIndex(g *gin.Context) {
 	const op = "FrontendHandler.SiteMapIndex"
 
@@ -75,9 +80,12 @@ func (c *SEOController) SiteMapIndex(g *gin.Context) {
 	g.Data(200, "application/xml; charset=utf-8", sitemap)
 }
 
-// SiteMap - Creates a new frontend.Sitemap instance and passes the
-// store. GetPages obtains the []bytes to send back as xml
-// when /sitemap.xml is visited.
+// SiteMapResource obtains the sitemap pages from the sitemap model
+// by using the resource in the URL. Obtains the []bytes to send
+// back as data when /:resource/sitemap.xml is visited.
+//
+// Returns a 404 if there was an error obtaining the XML file.
+// or there was no resource items found.
 func (c *SEOController) SiteMapResource(g *gin.Context) {
 	const op = "FrontendHandler.SiteMap"
 
@@ -89,9 +97,10 @@ func (c *SEOController) SiteMapResource(g *gin.Context) {
 	g.Data(200, "application/xml; charset=utf-8", sitemap)
 }
 
-// SiteMap - Creates a new frontend.Sitemap instance and passes the
-// store. GetPages obtains the []bytes to send back as xml
-// when /sitemap.xml is visited.
+// SiteMapXSL - Serves the XSL files for use with any .xml file that
+// is used to serve the sitemap.
+//
+// Returns a 404 if there was an error obtaining the XSL.
 func (c *SEOController) SiteMapXSL(g *gin.Context, index bool) {
 	const op = "FrontendHandler.SiteMapIndexXSL"
 

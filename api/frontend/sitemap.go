@@ -2,7 +2,6 @@ package frontend
 
 import (
 	"bytes"
-	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
@@ -35,27 +34,27 @@ type SiteMapper interface {
 // Sitemap represents the generation of sitemap.xml files for use
 // with the sitemap controller.
 type Sitemap struct {
-	models   *models.Store
-	options  domain.Options
-	resources map[string]domain.Resource
+	models       *models.Store
+	options      domain.Options
+	resources    map[string]domain.Resource
 	templatePath string
-	indexXSL string
-	resourceXSL string
+	indexXSL     string
+	resourceXSL  string
 }
 
 // index defines the the XML data for rendering a the main (index) sitemap.
 type index struct {
-	XMLName xml.Name `xml:"http://www.sitemaps.org/schemas/sitemap/0.9 sitemapindex"`
+	XMLName xml.Name   `xml:"http://www.sitemaps.org/schemas/sitemap/0.9 sitemapindex"`
 	Items   []viewItem `xml:"sitemap"`
 }
 
 // resources defines the the XML data for rendering a resource sitemap.
 type resources struct {
-	XMLName xml.Name `xml:"http://www.sitemaps.org/schemas/sitemap/0.9 urlset"`
-	XMLNSImage 	string  `xml:"xmlns:image,attr"`
-	XSI 	string  `xml:"xmlns:xsi,attr"`
-	XSISchemaLocation 	string  `xml:"xsi:schemaLocation,attr"`
-	Items   []viewItem `xml:"url"`
+	XMLName           xml.Name   `xml:"http://www.sitemaps.org/schemas/sitemap/0.9 urlset"`
+	XMLNSImage        string     `xml:"xmlns:image,attr"`
+	XSI               string     `xml:"xmlns:xsi,attr"`
+	XSISchemaLocation string     `xml:"xsi:schemaLocation,attr"`
+	Items             []viewItem `xml:"url"`
 }
 
 // TODO! Add images
@@ -67,9 +66,9 @@ type image struct {
 // sitemapViewItem defines the array of posts or items for both
 // the index sitemap & resources sitemap.
 type viewItem struct {
-	Slug      string `xml:"loc"`
-	CreatedAt string `xml:"lastmod"`
-	Image 	  *[]image  `xml:"image"`
+	Slug      string   `xml:"loc"`
+	CreatedAt string   `xml:"lastmod"`
+	Image     *[]image `xml:"image"`
 }
 
 const (
@@ -97,12 +96,12 @@ func NewSitemap(m *models.Store) *Sitemap {
 	}
 
 	s := &Sitemap{
-		models:  m,
-		options: options,
-		resources: theme.Resources,
+		models:       m,
+		options:      options,
+		resources:    theme.Resources,
 		templatePath: paths.Api() + "/web/sitemaps/",
-		indexXSL: "main-sitemap.xsl",
-		resourceXSL: "resource-sitemap.xsl",
+		indexXSL:     "main-sitemap.xsl",
+		resourceXSL:  "resource-sitemap.xsl",
 	}
 
 	return s
@@ -136,10 +135,10 @@ func (s *Sitemap) GetIndex() ([]byte, error) {
 			CreatedAt: time.Now().Format(time.RFC3339),
 		})
 	}
-	
+
 	if s.hasRedirects() {
 		viewData.Items = append(viewData.Items, viewItem{
-			Slug:     s.options.SiteUrl + "/sitemaps/redirects/sitemap.xml",
+			Slug:      s.options.SiteUrl + "/sitemaps/redirects/sitemap.xml",
 			CreatedAt: time.Now().Format(time.RFC3339),
 		})
 	}
@@ -205,7 +204,7 @@ func (s *Sitemap) GetPages(resource string) ([]byte, error) {
 
 	posts, err := s.retrievePages(resource)
 	if err != nil {
-		 return nil, err
+		return nil, err
 	}
 
 	if len(posts) == 0 {
@@ -260,11 +259,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 
 		exclude := false
 		if v.SeoMeta.Seo != nil {
-			var seo *domain.PostSeo
-			err := json.Unmarshal(*v.SeoMeta.Seo, &seo)
-			if err == nil {
-				exclude = seo.ExcludeSitemap
-			}
+			exclude = v.SeoMeta.Seo.ExcludeSitemap
 		}
 
 		if !helpers.StringInSlice(resource, s.options.SeoSitemapExcluded) && !exclude && v.Status == "published" {
@@ -357,9 +352,9 @@ func (s *Sitemap) formatXML(data interface{}, index bool) ([]byte, error) {
 	b.WriteString(xml.Header)
 
 	if index {
-		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/main-sitemap.xsl"?>` + "\n", s.options.SiteUrl))
+		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/main-sitemap.xsl"?>`+"\n", s.options.SiteUrl))
 	} else {
-		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/resources-sitemap.xsl"?>` + "\n", s.options.SiteUrl))
+		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/resources-sitemap.xsl"?>`+"\n", s.options.SiteUrl))
 	}
 
 	b.Write(xmlString)
