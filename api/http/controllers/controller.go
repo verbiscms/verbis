@@ -23,6 +23,7 @@ type Controller struct {
 	Options    OptionsHandler
 	Posts      PostHandler
 	Spa        SpaHandler
+	SEO 	   SEOHandler
 	Site       SiteHandler
 	User       UserHandler
 }
@@ -59,6 +60,7 @@ func New(m *models.Store, config config.Configuration) (*Controller, error) {
 		Options:    newOptions(m.Options),
 		Posts:      newPosts(m.Posts, m.Fields, m.User, m.Categories),
 		Spa:        newSpa(),
+		SEO:        newSEO(m, config),
 		Site:       newSite(m.Site),
 		User:       newUser(m.User),
 	}
