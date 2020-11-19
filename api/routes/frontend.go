@@ -42,7 +42,7 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 		})
 
 		// Favicon
-		s.StaticFile("/favicon.ico", paths.Theme() + "/favicon.ico")
+		s.StaticFile("/favicon.ico", paths.Theme()+"/favicon.ico")
 
 		// Serve the front end
 		s.NoRoute(c.Frontend.Serve)

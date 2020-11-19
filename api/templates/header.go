@@ -34,12 +34,6 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 	postSeo := t.post.SeoMeta.Seo
 	postPublic := true
 	if postSeo != nil {
-		err := json.Unmarshal(*t.post.SeoMeta.Seo, &seo)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal post seo", Operation: op, Err: err},
-			}).Error()
-		}
 		if !seo.Public {
 			postPublic = false
 		}
@@ -61,14 +55,6 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 	var meta domain.PostMeta
 	postMeta := t.post.SeoMeta.Meta
 	if postMeta != nil {
-
-		err := json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal post meta", Operation: op, Err: err},
-			}).Error()
-		}
-
 		if meta.Description != "" {
 			t.writeMeta(&b, meta.Description)
 		} else {

@@ -1,7 +1,9 @@
 package domain
 
 import (
+	"database/sql/driver"
 	"encoding/json"
+	"fmt"
 	"github.com/google/uuid"
 	"time"
 )
@@ -73,9 +75,9 @@ type PostCategory struct {
 }
 
 type PostSeoMeta struct {
-	Id     int              `json:"-"`
-	PageId int              `json:"-" binding:"required|numeric"`
-	Seo    *json.RawMessage `db:"seo" json:"seo"`
+	Id     int      `json:"-"`
+	PageId int      `json:"-" binding:"required|numeric"`
+	Seo    *PostSeo  `db:"seo" json:"seo"`
 	Meta   *json.RawMessage `db:"meta" json:"meta"`
 }
 
@@ -98,4 +100,26 @@ type PostSeo struct {
 	Public         bool    `json:"public"`
 	ExcludeSitemap bool    `json:"exclude_sitemap"`
 	Canonical      *string `json:"canonical"`
+}
+
+func (m *PostSeo) Scan(value interface{}) error {
+	if value == nil {
+		return nil
+	}
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("scan not supported")
+	}
+	if bytes == nil {
+		return nil
+	}
+	return json.Unmarshal(bytes, &m)
+}
+
+func (m *PostSeo) Value() (driver.Value, error) {
+	j, err := json.Marshal(m)
+	if err != nil {
+		return nil, fmt.Errorf("could not unmarshal to domain.MediaSizes")
+	}
+	return driver.Value(j), nil
 }

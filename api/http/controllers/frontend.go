@@ -294,5 +294,3 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	g.Writer.WriteHeader(200)
 	g.Writer.Write(minfied)
 }
-
-
