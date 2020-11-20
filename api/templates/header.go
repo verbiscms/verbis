@@ -2,11 +2,8 @@ package templates
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	log "github.com/sirupsen/logrus"
 	"github.com/yosssi/gohtml"
 	"html/template"
 )
@@ -138,20 +135,10 @@ func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, desc
 func (t *TemplateFunctions) getMetaTitle() string {
 	const op = "Templates.getMetaTitle"
 
-	var meta domain.PostMeta
 	postMeta := t.post.SeoMeta.Meta
-	if postMeta != nil {
 
-		err := json.Unmarshal(*t.post.SeoMeta.Meta, &meta)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-			}).Error()
-		}
-	}
-
-	if meta.Title != "" {
-		return meta.Title
+	if postMeta.Title != "" {
+		return postMeta.Title
 	}
 
 	if t.options.MetaTitle != "" {

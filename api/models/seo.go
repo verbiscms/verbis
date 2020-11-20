@@ -3,6 +3,7 @@ package models
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
 )

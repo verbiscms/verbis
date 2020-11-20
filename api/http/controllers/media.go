@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -22,29 +23,32 @@ type MediaHandler interface {
 
 // MediaController defines the handler for Posts
 type MediaController struct {
-	controller Controller
-	mediaModel models.MediaRepository
-	userModel  models.UserRepository
+	store *models.Store
+	config    config.Configuration
 }
 
 // newMedia - Construct
-func newMedia(m models.MediaRepository, um models.UserRepository) *MediaController {
+func newMedia(m *models.Store, config config.Configuration) *MediaController {
 	return &MediaController{
-		mediaModel: m,
-		userModel:  um,
+		store: m,
+		config:    config,
 	}
 }
 
 // Get all media items
+//
+// Returns 200 if there are no media items or success.
+// Returns 500 if there was an error getting the media items.
+// Returns 400 if there was conflict or the request was invalid.
 func (c *MediaController) Get(g *gin.Context) {
 	const op = "MediaHandler.Get"
 
 	params := http.GetParams(g)
-	media, total, err := c.mediaModel.Get(params)
+	media, total, err := c.store.Media.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	} else if errors.Code(err) == errors.INVALID {
+	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -58,7 +62,10 @@ func (c *MediaController) Get(g *gin.Context) {
 }
 
 // Get By ID
-// Returns errors.INVALID if the Id is not a string or passed.
+//
+// Returns 200 if the media items were obtained.
+// Returns 400 if the ID wasn't passed or failed to convert.
+// Returns 500 if there as an error obtaining the media items.
 func (c *MediaController) GetById(g *gin.Context) {
 	const op = "MediaHandler.GetById"
 
@@ -69,18 +76,23 @@ func (c *MediaController) GetById(g *gin.Context) {
 		return
 	}
 
-	media, err := c.mediaModel.GetById(id)
+	media, err := c.store.Media.GetById(id)
 	if err != nil {
-		Respond(g, 400, err.Error(), nil)
+		Respond(g, 500, err.Error(), nil)
 		return
 	}
 
 	Respond(g, 200, "Successfully obtained media with the ID: "+paramId, media)
 }
 
-// Upload
-// Returns errors.INVALID if there were no files attached to the body,
+// Upload - if there were no files attached to the body,
 // more than 1 attached to the body or the validation failed.
+//
+// Returns 401 if the user wasn't authenticated.
+// Returns 415 if the media item failed to validate.
+// Returns 200 if the media item was successfully uploaded.
+// Returns 500 if there as an error uploading the media item.
+// Returns 400 if the file length was incorrect or there were no files.
 func (c *MediaController) Upload(g *gin.Context) {
 	const op = "MediaHandler.Upload"
 
@@ -101,19 +113,19 @@ func (c *MediaController) Upload(g *gin.Context) {
 		return
 	}
 
-	if err := c.mediaModel.Validate(files[0]); err != nil {
+	if err := c.store.Media.Validate(files[0]); err != nil {
 		Respond(g, 415, errors.Message(err), err)
 		return
 	}
 
 	token := g.Request.Header.Get("token")
-	user, err := c.userModel.CheckToken(token)
+	user, err := c.store.User.CheckToken(token)
 	if err != nil {
-		Respond(g, 400, errors.Message(err), err)
+		Respond(g, 401, errors.Message(err), err)
 		return
 	}
 
-	media, err := c.mediaModel.Upload(files[0], user.Id)
+	media, err := c.store.Media.Upload(files[0], user.Id)
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -123,6 +135,10 @@ func (c *MediaController) Upload(g *gin.Context) {
 }
 
 // Update
+//
+// Returns 200 if the media item was updated successfully.
+// Returns 400 if the ID wasn't passed or failed to convert.
+// Returns 500 if there was an error updating the media item.
 func (c *MediaController) Update(g *gin.Context) {
 	const op = "MediaHandler.Update"
 
@@ -139,7 +155,7 @@ func (c *MediaController) Update(g *gin.Context) {
 	}
 	media.Id = id
 
-	err = c.mediaModel.Update(&media)
+	err = c.store.Media.Update(&media)
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -152,6 +168,10 @@ func (c *MediaController) Update(g *gin.Context) {
 }
 
 // Delete
+//
+// Returns 200 if the media item was deleted.
+// Returns 500 if there was an error updating the media item.
+// Returns 400 if the the media item wasn't found or no ID was passed.
 func (c *MediaController) Delete(g *gin.Context) {
 	const op = "MediaHandler.Delete"
 
@@ -160,7 +180,7 @@ func (c *MediaController) Delete(g *gin.Context) {
 		Respond(g, 400, "A valid ID is required to delete a media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
-	err = c.mediaModel.Delete(id)
+	err = c.store.Media.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return

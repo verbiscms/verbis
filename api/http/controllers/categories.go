@@ -1,11 +1,11 @@
 package controllers
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -21,24 +21,28 @@ type CategoryHandler interface {
 
 // CategoriesController defines the handler for Categories
 type CategoriesController struct {
-	controller Controller
-	model      models.CategoryRepository
-	server     *server.Server
+	store *models.Store
+	config    config.Configuration
 }
 
 // newCategories - Construct
-func newCategories(m models.CategoryRepository) *CategoriesController {
+func newCategories(m *models.Store, config config.Configuration) *CategoriesController {
 	return &CategoriesController{
-		model: m,
+		store: m,
+		config:    config,
 	}
 }
 
 // Get all categories
+//
+// Returns 200 if there are no categories or success.
+// Returns 500 if there was an error getting the categories.
+// Returns 400 if there was conflict or the request was invalid.
 func (c *CategoriesController) Get(g *gin.Context) {
 	const op = "CategoryHandler.Get"
 
 	params := http.GetParams(g)
-	categories, total, err := c.model.Get(params)
+	categories, total, err := c.store.Categories.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -53,10 +57,13 @@ func (c *CategoriesController) Get(g *gin.Context) {
 	pagination := http.GetPagination(params, total)
 
 	Respond(g, 200, "Successfully obtained categories", categories, pagination)
-
 }
 
 // Get By ID
+//
+// Returns 200 if the category was obtained.
+// Returns 500 if there as an error obtaining the category.
+// Returns 400 if the ID wasn't passed or failed to convert.
 func (c *CategoriesController) GetById(g *gin.Context) {
 	const op = "CategoryHandler.GetById"
 
@@ -66,9 +73,9 @@ func (c *CategoriesController) GetById(g *gin.Context) {
 		return
 	}
 
-	category, err := c.model.GetById(id)
+	category, err := c.store.Categories.GetById(id)
 	if err != nil {
-		Respond(g, 200, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
@@ -76,6 +83,10 @@ func (c *CategoriesController) GetById(g *gin.Context) {
 }
 
 // Create
+//
+// Returns 200 if the category was created.
+// Returns 400 if the the validation failed.
+// Returns 500 if there was an error creating the category.
 func (c *CategoriesController) Create(g *gin.Context) {
 	const op = "CategoryHandler.Create"
 
@@ -85,7 +96,7 @@ func (c *CategoriesController) Create(g *gin.Context) {
 		return
 	}
 
-	newCategory, err := c.model.Create(&category)
+	newCategory, err := c.store.Categories.Create(&category)
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -95,7 +106,10 @@ func (c *CategoriesController) Create(g *gin.Context) {
 }
 
 // Update
-// Returns errors.INVALID if validation failed or the Id is not a string or passed.
+//
+// Returns 200 if the category was updated.
+// Returns 500 if there was an error updating the category.
+// Returns 400 if the the validation failed or the category wasn't found.
 func (c *CategoriesController) Update(g *gin.Context) {
 	const op = "CategoryHandler.Update"
 
@@ -112,7 +126,7 @@ func (c *CategoriesController) Update(g *gin.Context) {
 	}
 	category.Id = id
 
-	err = c.model.Update(&category)
+	err = c.store.Categories.Update(&category)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -125,16 +139,19 @@ func (c *CategoriesController) Update(g *gin.Context) {
 }
 
 // Delete
-// Returns errors.INVALID if the Id is not a string or passed
+//
+// Returns 200 if the category was deleted.
+// Returns 500 if there was an error deleting the category.
+// Returns 400 if the the category wasn't found or no ID was passed.
 func (c *CategoriesController) Delete(g *gin.Context) {
 	const op = "CategoryHandler.Delete"
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500, "A valid ID is required to delete a category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to delete a category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
-	err = c.model.Delete(id)
+	err = c.store.Categories.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return

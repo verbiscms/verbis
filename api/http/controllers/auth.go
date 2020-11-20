@@ -7,12 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type AuthController struct {
-	authModel models.AuthRepository
-	userModel models.UserRepository
-	config    config.Configuration
-}
-
+// AuthHandler defines methods for auth methods to interact with the server
 type AuthHandler interface {
 	Login(g *gin.Context)
 	Logout(g *gin.Context)
@@ -22,17 +17,25 @@ type AuthHandler interface {
 	SendResetPassword(g *gin.Context)
 }
 
-// Construct
-func newAuth(m models.AuthRepository, u models.UserRepository, config config.Configuration) *AuthController {
+// AuthController defines the handler for Authentication methods
+type AuthController struct {
+	store *models.Store
+	config    config.Configuration
+}
+
+// newAuth - Construct
+func newAuth(m *models.Store, config config.Configuration) *AuthController {
 	return &AuthController{
-		authModel: m,
-		userModel: u,
+		store: m,
 		config:    config,
 	}
 }
 
 // Login the user
-// Returns errors.INVALID if validation failed
+//
+// Returns 200 if login was successful.
+// Returns 400 if the validation failed.
+// Returns 401 if the credentials didn't match.
 func (c *AuthController) Login(g *gin.Context) {
 	const op = "AuthHandler.Login"
 
@@ -47,37 +50,36 @@ func (c *AuthController) Login(g *gin.Context) {
 		return
 	}
 
-	// Auth user
-	lu, err := c.authModel.Authenticate(u.Email, u.Password)
+	lu, err := c.store.Auth.Authenticate(u.Email, u.Password)
 	if err != nil {
 		Respond(g, 401, errors.Message(err), err)
 		return
 	}
 
-	// Get the user & role
-	user, err := c.userModel.GetById(lu.Id)
+	user, err := c.store.User.GetById(lu.Id)
 	if err != nil {
 		Respond(g, 401, errors.Message(err), err)
 		return
 	}
-
-	// Remove the password
 	user.Password = ""
 
-	// Set the verbis cookie
 	g.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true)
 
 	Respond(g, 200, "Successfully logged in & session started", user)
 }
 
 // Logout the user
+//
+// Returns 200 if logout was successful.
+// Returns 400 if the user wasn't found.
+// Returns 500 if there was an error logging out.
 func (c *AuthController) Logout(g *gin.Context) {
 	const op = "AuthHandler.Logout"
 
 	token := g.Request.Header.Get("token")
-	_, err := c.authModel.Logout(token)
+	_, err := c.store.Auth.Logout(token)
 	if errors.Code(err) == errors.NOTFOUND {
-		Respond(g, 200, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
@@ -86,15 +88,17 @@ func (c *AuthController) Logout(g *gin.Context) {
 
 	g.SetCookie("verbis-session", "", -1, "/", "", false, true)
 
-	return
+	Respond(g, 200, "Successfully logged out", nil)
 }
 
 // Verify email
+//
+// TODO
 func (c *AuthController) VerifyEmail(g *gin.Context) {
 	const op = "AuthHandler.VerifyEmail"
 
 	token := g.Param("token")
-	err := c.authModel.VerifyEmail(token)
+	err := c.store.Auth.VerifyEmail(token)
 	if err != nil {
 		NoPageFound(g)
 		return
@@ -104,6 +108,9 @@ func (c *AuthController) VerifyEmail(g *gin.Context) {
 }
 
 // Reset password
+//
+// Returns 200 if successful.
+// Returns 400 if the ID wasn't passed or failed to convert.
 func (c *AuthController) ResetPassword(g *gin.Context) {
 	const op = "AuthHandler.ResetPassword"
 
@@ -119,7 +126,7 @@ func (c *AuthController) ResetPassword(g *gin.Context) {
 		return
 	}
 
-	if err := c.authModel.ResetPassword(rp.Token, rp.NewPassword); err != nil {
+	if err := c.store.Auth.ResetPassword(rp.Token, rp.NewPassword); err != nil {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	}
@@ -128,12 +135,14 @@ func (c *AuthController) ResetPassword(g *gin.Context) {
 }
 
 // VerifyPasswordToken
-// Returns errors.INVALID if validation failed.
+//
+// Returns 200 if successful.
+// Returns 404 if the token does not exist.
 func (c *AuthController) VerifyPasswordToken(g *gin.Context) {
 	const op = "AuthHandler.VerifyPasswordToken"
 
 	token := g.Param("token")
-	err := c.authModel.VerifyPasswordToken(token)
+	err := c.store.Auth.VerifyPasswordToken(token)
 	if err != nil {
 		Respond(g, 404, errors.Message(err), err)
 		return
@@ -143,6 +152,9 @@ func (c *AuthController) VerifyPasswordToken(g *gin.Context) {
 }
 
 // SendResetPassword reset password email & generate token
+//
+// Returns 200 if successful.
+// Returns 400 if validation failed the user wasn't found.
 func (c *AuthController) SendResetPassword(g *gin.Context) {
 	const op = "AuthHandler.SendResetPassword"
 
@@ -156,7 +168,7 @@ func (c *AuthController) SendResetPassword(g *gin.Context) {
 		return
 	}
 
-	err := c.authModel.SendResetPassword(srp.Email)
+	err := c.store.Auth.SendResetPassword(srp.Email)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return

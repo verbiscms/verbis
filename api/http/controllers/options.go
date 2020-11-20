@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/teamwork/reload"
@@ -21,23 +21,26 @@ type OptionsHandler interface {
 
 // OptionsController defines the handler for Options
 type OptionsController struct {
-	controller Controller
-	model      models.OptionsRepository
-	server     *server.Server
+	store *models.Store
+	config    config.Configuration
 }
 
 // newOptions - Construct
-func newOptions(m models.OptionsRepository) *OptionsController {
+func newOptions(m *models.Store, config config.Configuration) *OptionsController {
 	return &OptionsController{
-		model: m,
+		store: m,
+		config:    config,
 	}
 }
 
 // Get All
+//
+// Returns 200 if there are no options or success.
+// Returns 500 if there was an error getting the options.
 func (c *OptionsController) Get(g *gin.Context) {
 	const op = "OptionsHandler.Delete"
 
-	options, err := c.model.Get()
+	options, err := c.store.Options.Get()
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -51,7 +54,10 @@ func (c *OptionsController) Get(g *gin.Context) {
 }
 
 // Get By name
-// Returns errors.INVALID if the name was not passed.
+//
+// Returns 200 if there are no options or success.
+// Returns 400 if there was name param was missing.
+// Returns 500 if there was an error getting the options.
 func (c *OptionsController) GetByName(g *gin.Context) {
 	const op = "OptionsHandler.GetByName"
 
@@ -61,17 +67,21 @@ func (c *OptionsController) GetByName(g *gin.Context) {
 		return
 	}
 
-	option, err := c.model.GetByName(name)
+	option, err := c.store.Options.GetByName(name)
 	if err != nil {
-		Respond(g, 400, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	Respond(g, 200, "Successfully obtained option with name: "+name, option)
 }
 
-// Update & Create options
-// Returns errors.INVALID if validation failed.
+// UpdateCreate - Restarts the server at the end of the
+// request to flush options.
+//
+// Returns 200 if the options was created/updated.
+// Returns 400 if the validation failed on both structs.
+// Returns 500 if there was an error updating/creating the options.
 func (c *OptionsController) UpdateCreate(g *gin.Context) {
 	const op = "OptionsHandler.UpdateCreate"
 
@@ -87,7 +97,7 @@ func (c *OptionsController) UpdateCreate(g *gin.Context) {
 		return
 	}
 
-	if err := c.model.UpdateCreate(options); err != nil {
+	if err := c.store.Options.UpdateCreate(options); err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
