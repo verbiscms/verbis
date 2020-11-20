@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"encoding/json"
 	"reflect"
 )
 
@@ -17,11 +16,7 @@ func (t *TemplateFunctions) getField(field string, id ...int) interface{} {
 		if err != nil {
 			return ""
 		}
-		var m map[string]interface{}
-		if err := json.Unmarshal(*post.Fields, &m); err != nil {
-			return ""
-		}
-		fields = m
+		fields = post.Fields
 	}
 
 	// Retrieve the value of the field
@@ -85,11 +80,7 @@ func (t *TemplateFunctions) getFields(id ...int) map[string]interface{} {
 		if err != nil {
 			return nil
 		}
-		var m map[string]interface{}
-		if err := json.Unmarshal(*post.Fields, &m); err != nil {
-			return nil
-		}
-		fields = m
+		fields = post.Fields
 	}
 
 	return fields

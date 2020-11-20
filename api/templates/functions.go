@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -31,16 +30,6 @@ type TypeOfPage struct {
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunctions {
 	const op = "Templates.NewFunctions"
 
-	// TODO - This needs to be in the posts
-	fields := make(map[string]interface{})
-	if p.Fields != nil {
-		if err := json.Unmarshal(*p.Fields, &fields); err != nil {
-			log.WithFields(log.Fields{
-				"error": errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the post fields", Operation: op, Err: err},
-			}).Error()
-		}
-	}
-
 	options, err := s.Options.GetStruct()
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -59,7 +48,7 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 		post:     p,
 		author:   &author,
 		category: category,
-		fields:   fields,
+		fields:   p.Fields,
 		site:     site,
 		store:    s,
 		options:  options,

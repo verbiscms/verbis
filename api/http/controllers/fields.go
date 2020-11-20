@@ -43,7 +43,7 @@ func (c *FieldController) Get(g *gin.Context) {
 		Resource:       nil,
 		PageTemplate:   "",
 		Layout:         "",
-		Fields:         nil,
+		Fields:     nil,
 		CodeInjectHead: nil,
 		CodeInjectFoot: nil,
 		UserId:         0,

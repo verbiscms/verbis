@@ -2,6 +2,7 @@ package frontend
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -12,32 +13,42 @@ import (
 	"strings"
 )
 
+// Cacher represents the cache function to set cache headers.
 type Cacher interface {
 	Cache(g *gin.Context)
 }
 
+// Cache represents the the cache struct for setting gin headers
+// for frontend caching.
 type Cache struct {
-	options models.OptionsRepository
+	options domain.Options
 }
 
+// NewCache - Construct
 func NewCache(o models.OptionsRepository) *Cache {
-	return &Cache{
-		options: o,
-	}
-}
 
-func (t *Cache) Cache(g *gin.Context) {
-	const op = "Cacheer.Cache"
-
-	options, err := t.options.GetStruct()
+	options, err := o.GetStruct()
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
 		}).Fatal()
 	}
 
+	return &Cache{
+		options: options,
+	}
+}
+
+// Cache
+//
+// Returns if the asset is with path of admin or the caching
+// is disabled in the options.
+// Sets the gin headers if extensions are allowed.
+func (t *Cache) Cache(g *gin.Context) {
+	const op = "Cacheer.Cache"
+
 	// Bail if the cache frontend is disabled
-	if !options.CacheFrontend {
+	if !t.options.CacheFrontend {
 		return
 	}
 
@@ -49,17 +60,17 @@ func (t *Cache) Cache(g *gin.Context) {
 	}
 
 	// Get the expiration
-	expiration := options.CacheFrontendSeconds
+	expiration := t.options.CacheFrontendSeconds
 
 	// Get the request type
-	request := options.CacheFrontendRequest
+	request :=  t.options.CacheFrontendRequest
 	allowedRequest := []string{"max-age", "max-stale", "min-fresh", "no-cache", "no-store", "no-transform", "only-if-cached"}
 	if request == "" || !helpers.StringInSlice(request, allowedRequest) {
 		request = "max-age"
 	}
 
 	// Get the extensions to be cached
-	extensionsAllowed := options.CacheFrontendExtension
+	extensionsAllowed := t.options.CacheFrontendExtension
 	extension := filepath.Ext(path)
 
 	// Check if the extensions
