@@ -284,7 +284,7 @@ func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 		Status:         c.Status,
 		Resource:       c.Resource,
 		PageTemplate:   c.PageTemplate,
-		Fields:         c.Fields,
+		Fields:     c.Fields,
 		CodeInjectHead: c.CodeInjectHead,
 		CodeInjectFoot: c.CodeInjectFoot,
 		UserId:         c.UserId,
