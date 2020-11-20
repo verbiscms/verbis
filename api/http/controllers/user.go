@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -22,26 +23,32 @@ type UserHandler interface {
 
 // UserController defines the handler for Users
 type UserController struct {
-	model models.UserRepository
+	store *models.Store
+	config    config.Configuration
 }
 
 // newUser - Construct
-func newUser(m models.UserRepository) *UserController {
+func newUser(m *models.Store, config config.Configuration) *UserController {
 	return &UserController{
-		model: m,
+		store: m,
+		config:    config,
 	}
 }
 
 // Get all users
+//
+// Returns 200 if the users were obtained successfully.
+// Returns 500 if there was an error getting the users.
+// Returns 400 if there was conflict or the request was invalid.
 func (c *UserController) Get(g *gin.Context) {
 	const op = "UserHandler.Get"
 
 	params := http.GetParams(g)
-	users, total, err := c.model.Get(params)
+	users, total, err := c.store.User.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	} else if errors.Code(err) == errors.INVALID {
+	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -50,6 +57,7 @@ func (c *UserController) Get(g *gin.Context) {
 	}
 
 	// Remove the token and password
+	// TODO: Move to model
 	for k, _ := range users {
 		users[k].Password = ""
 		users[k].Token = ""
@@ -61,23 +69,26 @@ func (c *UserController) Get(g *gin.Context) {
 }
 
 // Get By ID
-// Returns errors.INVALID if the Id is not a string or passed.
+//
+// Returns 200 if the user was obtained.
+// Returns 500 if there as an error obtaining the user.
+// Returns 400 if the ID wasn't passed or failed to convert.
 func (c *UserController) GetById(g *gin.Context) {
 	const op = "UserHandler.GetById"
 
-	paramId := g.Param("id")
-	id, err := strconv.Atoi(paramId)
+	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
 		Respond(g, 400, "Pass a valid number to obtain the user by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	user, err := c.model.GetById(id)
+	user, err := c.store.User.GetById(id)
 	if err != nil {
-		Respond(g, 200, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
+	// TODO: Move to model
 	user.Password = ""
 	user.Token = ""
 
@@ -85,10 +96,13 @@ func (c *UserController) GetById(g *gin.Context) {
 }
 
 // Get Roles
+//
+// Returns 200 if the user roles were obtained.
+// Returns 500 if there as an error obtaining the user roles.
 func (c *UserController) GetRoles(g *gin.Context) {
 	const op = "UserHandler.GetRoles"
 
-	roles, err := c.model.GetRoles()
+	roles, err := c.store.User.GetRoles()
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -98,7 +112,10 @@ func (c *UserController) GetRoles(g *gin.Context) {
 }
 
 // Create
-// Returns errors.INVALID if validation failed.
+//
+// Returns 200 if the user was created.
+// Returns 500 if there was an error creating the user.
+// Returns 400 if the the validation failed or a user already exists.
 func (c *UserController) Create(g *gin.Context) {
 	const op = "UserHandler.Create"
 
@@ -108,11 +125,8 @@ func (c *UserController) Create(g *gin.Context) {
 		return
 	}
 
-	user, err := c.model.Create(&u)
-	if errors.Code(err) == errors.CONFLICT {
-		Respond(g, 409, errors.Message(err), err)
-		return
-	} else if errors.Code(err) == errors.INVALID {
+	user, err := c.store.User.Create(&u)
+	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -124,7 +138,10 @@ func (c *UserController) Create(g *gin.Context) {
 }
 
 // Update
-// Returns errors.INVALID if validation failed or the Id is not a string or passed.
+//
+// Returns 200 if the user was updated.
+// Returns 500 if there was an error updating the user.
+// Returns 400 if the the validation failed or the user wasn't found.
 func (c *UserController) Update(g *gin.Context) {
 	const op = "UserHandler.Update"
 
@@ -141,7 +158,7 @@ func (c *UserController) Update(g *gin.Context) {
 	}
 	u.Id = id
 
-	updatedUser, err := c.model.Update(&u)
+	updatedUser, err := c.store.User.Update(&u)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -154,8 +171,10 @@ func (c *UserController) Update(g *gin.Context) {
 }
 
 // Delete
-// Returns errors.INVALID if the Id is not a string or passed
-// Also returns errors.INVALID if the owner was tried to be deleted.
+//
+// Returns 200 if the user was deleted.
+// Returns 500 if there was an error deleting the user.
+// Returns 400 if the the user wasn't found or no ID was passed.
 func (c *UserController) Delete(g *gin.Context) {
 	const op = "UserHandler.Delete"
 
@@ -164,7 +183,7 @@ func (c *UserController) Delete(g *gin.Context) {
 		Respond(g, 400, "A valid ID is required to delete a user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
-	err = c.model.Delete(id)
+	err = c.store.User.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.INVALID {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -176,8 +195,11 @@ func (c *UserController) Delete(g *gin.Context) {
 	Respond(g, 200, "Successfully deleted user with ID "+strconv.Itoa(id), nil)
 }
 
-// Delete
-// Returns errors.INVALID if validation failed or the Id is not a string or passed
+// ResetPassword
+//
+// Returns 200 if the reset password was successful.
+// Returns 500 if there was an error resetting the user failed.
+// Returns 400 if the the user wasn't found, no ID was passed or validation failed.
 func (c *UserController) ResetPassword(g *gin.Context) {
 	const op = "UserHandler.ResetPassword"
 
@@ -186,7 +208,7 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 		Respond(g, 400, "A valid ID is required to update a user's password", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
-	user, err := c.model.GetById(id)
+	user, err := c.store.User.GetById(id)
 	if err != nil {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -199,7 +221,7 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 		return
 	}
 
-	err = c.model.ResetPassword(id, reset)
+	err = c.store.User.ResetPassword(id, reset)
 	if errors.Code(err) == errors.INVALID {
 		Respond(g, 400, errors.Message(err), err)
 		return

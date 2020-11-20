@@ -16,6 +16,8 @@ import (
 // PostsRepository defines methods for Posts to interact with the database
 type PostsRepository interface {
 	Get(meta http.Params, resource string) ([]domain.Post, int, error)
+	Format(post domain.Post) (domain.PostData, error)
+	FormatMultiple(posts []domain.Post) ([]domain.PostData, error)
 	GetById(id int) (domain.Post, error)
 	GetBySlug(slug string) (domain.Post, error)
 	Create(p *domain.PostCreate) (domain.Post, error)
@@ -31,6 +33,7 @@ type PostStore struct {
 	seoMetaModel    SeoMetaRepository
 	userModel       UserRepository
 	categoriesModel CategoryRepository
+	fieldsModel FieldsRepository
 }
 
 // newPosts - Construct
@@ -40,6 +43,7 @@ func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 		seoMetaModel:    newSeoMeta(db),
 		userModel:       newUser(db, config),
 		categoriesModel: newCategories(db),
+		fieldsModel:    newFields(db),
 	}
 }
 
@@ -104,6 +108,7 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 
 	return p, total, nil
 }
+
 
 // GetById returns a post by Id
 //
@@ -322,4 +327,60 @@ func (s *PostStore) validateUrl(slug string) error {
 	}
 
 	return nil
+}
+
+// Format formats the post into as domain.PostData type which contains
+// the category, author & fields associated with the post.
+func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
+
+
+	author, err := s.userModel.GetById(post.UserId)
+	if err != nil {
+		return domain.PostData{}, err
+	}
+
+	// Get the categories associated with the post
+	category, err := s.categoriesModel.GetByPost(post.Id)
+
+	// Get the layout associated with the post
+	layout, err := s.fieldsModel.GetLayout(post, author, category)
+	if err != nil {
+		return domain.PostData{}, err
+	}
+
+	pd := domain.PostData{
+		Post:   post,
+		Layout: layout,
+		Author: domain.PostAuthor(author),
+	}
+
+	if category != nil {
+		pd.Categories = &domain.PostCategory{
+			Id:          category.Id,
+			Slug:        category.Slug,
+			Name:        category.Name,
+			Description: category.Description,
+			Resource:    category.Resource,
+			ParentId:    category.ParentId,
+			UpdatedAt:   category.UpdatedAt,
+			CreatedAt:   category.CreatedAt,
+		}
+	}
+
+	return pd, nil
+}
+
+// FormatMultiple formats an array of posts to return categories,
+// fields and author.
+func (s *PostStore) FormatMultiple(posts []domain.Post) ([]domain.PostData, error) {
+	var postData []domain.PostData
+	for _, post := range posts {
+		formatted, err := s.Format(post)
+		if err != nil {
+			return nil, err
+		} else {
+			postData = append(postData, formatted)
+		}
+	}
+	return postData, nil
 }
