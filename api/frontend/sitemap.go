@@ -148,9 +148,7 @@ func (s *Sitemap) GetIndex() ([]byte, error) {
 		return nil, err
 	}
 
-	go func() {
-		cache.Store.Set("sitemap-index", &xmlData, cache.RememberForever)
-	}()
+	go cache.Store.Set("sitemap-index", &xmlData, cache.RememberForever)
 
 	return xmlData, nil
 }
@@ -177,9 +175,7 @@ func (s *Sitemap) GetXSL(index bool) ([]byte, error) {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the xsl file with the path: %s", path), Operation: op, Err: err}
 	}
 
-	go func() {
-		cache.Store.Set(fileName, &data, cache.RememberForever)
-	}()
+	go cache.Store.Set(fileName, &data, cache.RememberForever)
 
 	return data, nil
 }

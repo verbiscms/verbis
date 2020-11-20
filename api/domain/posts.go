@@ -15,6 +15,7 @@ type PostData struct {
 	Layout     *[]FieldGroup `json:"layout"`
 }
 
+
 type Post struct {
 	Id           int              `db:"id" json:"id" binding:"numeric"`
 	UUID         uuid.UUID        `db:"uuid" json:"uuid"`
@@ -24,7 +25,7 @@ type Post struct {
 	Resource     *string          `db:"resource" json:"resource,max=150"`
 	PageTemplate string           `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
 	Layout       string           `db:"layout" json:"layout,omitempty" binding:"max=150"`
-	*PostFields
+	Fields 		 PostFields  	  `db:"fields" json:"fields"`
 	//IsArchive		bool						`db:"is_archive" json:"is_archive"`
 	CodeInjectHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 	CodeInjectFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
@@ -80,7 +81,6 @@ type PostSeoMeta struct {
 	Meta   *PostMeta `db:"meta" json:"meta"`
 	Seo    *PostSeo  `db:"seo" json:"seo"`
 }
-
 type PostMeta struct {
 	Title       string `json:"title,omitempty"`
 	Description string `json:"description,omitempty"`
@@ -96,14 +96,29 @@ type PostMeta struct {
 	} `json:"facebook,omitempty"`
 }
 
+func (m *PostMeta) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return fmt.Errorf("scan not supported")
+	}
+	if bytes == nil || value == nil {
+		return nil
+	}
+	return json.Unmarshal(bytes, &m)
+}
+
+func (m *PostMeta) Value() (driver.Value, error) {
+	j, err := json.Marshal(m)
+	if err != nil {
+		return nil, fmt.Errorf("could not unmarshal to domain.PostMeta")
+	}
+	return driver.Value(j), nil
+}
+
 type PostSeo struct {
 	Public         bool    `json:"public"`
 	ExcludeSitemap bool    `json:"exclude_sitemap"`
 	Canonical      *string `json:"canonical"`
-}
-
-type PostFields struct {
-	Fields map[string]interface{} `json:"fields"`
 }
 
 func (m *PostSeo) Scan(value interface{}) error {
@@ -125,24 +140,7 @@ func (m *PostSeo) Value() (driver.Value, error) {
 	return driver.Value(j), nil
 }
 
-func (m *PostMeta) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("scan not supported")
-	}
-	if bytes == nil || value == nil {
-		return nil
-	}
-	return json.Unmarshal(bytes, &m)
-}
-
-func (m *PostMeta) Value() (driver.Value, error) {
-	j, err := json.Marshal(m)
-	if err != nil {
-		return nil, fmt.Errorf("could not unmarshal to domain.PostMeta")
-	}
-	return driver.Value(j), nil
-}
+type PostFields map[string]interface{}
 
 func (m PostFields) Scan(value interface{}) error {
 	bytes, ok := value.([]byte)
