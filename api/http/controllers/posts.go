@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -20,32 +21,33 @@ type PostHandler interface {
 
 // PostsController defines the handler for Posts
 type PostsController struct {
-	postModel       models.PostsRepository
-	fieldsModel     models.FieldsRepository
-	userModel       models.UserRepository
-	categoriesModel models.CategoryRepository
+	store *models.Store
+	config    config.Configuration
 }
 
 // newPosts - Construct
-func newPosts(m models.PostsRepository, f models.FieldsRepository, u models.UserRepository, c models.CategoryRepository) *PostsController {
+func newPosts(m *models.Store, config config.Configuration) *PostsController {
 	return &PostsController{
-		postModel:       m,
-		fieldsModel:     f,
-		userModel:       u,
-		categoriesModel: c,
+		store: m,
+		config:    config,
 	}
 }
 
-// Get all posts
+// Get all posts, obtain resource param to pass to the get
+// function.
+//
+// Returns 200 if there are no posts or success.
+// Returns 400 if there was conflict or the request was invalid.
+// Returns 500 if there was an error getting or formatting the posts.
 func (c *PostsController) Get(g *gin.Context) {
 	const op = "PostHandler.Get"
 
 	params := http.GetParams(g)
-	posts, total, err := c.postModel.Get(params, g.Query("resource"))
+	posts, total, err := c.store.Posts.Get(params, g.Query("resource"))
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	} else if errors.Code(err) == errors.INVALID {
+	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -53,25 +55,21 @@ func (c *PostsController) Get(g *gin.Context) {
 		return
 	}
 
-	// Loop over all posts and obtain data
-	var returnData []domain.PostData
-	for _, post := range posts {
-		formatted, err := c.Format(g, post)
-		if err != nil {
-			Respond(g, 500, errors.Message(err), err)
-			return
-		} else {
-			returnData = append(returnData, formatted)
-		}
+	postData, err := c.store.Posts.FormatMultiple(posts)
+	if err != nil {
+		Respond(g, 500, errors.Message(err), err)
 	}
 
 	pagination := http.GetPagination(params, total)
 
-	Respond(g, 200, "Successfully obtained posts", returnData, pagination)
+	Respond(g, 200, "Successfully obtained posts", postData, pagination)
 }
 
 // Get By ID
-// Returns errors.INVALID if the Id is not a string or passed.
+//
+// Returns 200 if the posts were obtained.
+// Returns 400 if the ID wasn't passed or failed to convert.
+// Returns 500 if there as an error obtaining or formatting the post.
 func (c *PostsController) GetById(g *gin.Context) {
 	const op = "PostHandler.GetById"
 
@@ -82,13 +80,13 @@ func (c *PostsController) GetById(g *gin.Context) {
 		return
 	}
 
-	post, err := c.postModel.GetById(id)
+	post, err := c.store.Posts.GetById(id)
 	if err != nil {
 		Respond(g, 200, errors.Message(err), err)
 		return
 	}
 
-	formatPost, err := c.Format(g, post)
+	formatPost, err := c.store.Posts.Format(post)
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -98,7 +96,10 @@ func (c *PostsController) GetById(g *gin.Context) {
 }
 
 // Create
-// Returns errors.INVALID if validation failed.
+//
+// Returns 200 if the post was created.
+// Returns 500 if there was an error creating or formatting the post.
+// Returns 400 if the the validation failed or there was a conflict with the post.
 func (c *PostsController) Create(g *gin.Context) {
 	const op = "PostHandler.Create"
 
@@ -108,7 +109,7 @@ func (c *PostsController) Create(g *gin.Context) {
 		return
 	}
 
-	newPost, err := c.postModel.Create(&post)
+	newPost, err := c.store.Posts.Create(&post)
 	if errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -117,7 +118,7 @@ func (c *PostsController) Create(g *gin.Context) {
 		return
 	}
 
-	formatPost, err := c.Format(g, newPost)
+	formatPost, err := c.store.Posts.Format(newPost)
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -127,7 +128,10 @@ func (c *PostsController) Create(g *gin.Context) {
 }
 
 // Update
-// Returns errors.INVALID if validation failed or the Id is not a string or passed.
+//
+// Returns 200 if the post was updated.
+// Returns 500 if there was an error updating or formatting the post.
+// Returns 400 if the the validation failed, there was a conflict, or the post wasn't found.
 func (c *PostsController) Update(g *gin.Context) {
 	const op = "PostHandler.Update"
 
@@ -144,7 +148,7 @@ func (c *PostsController) Update(g *gin.Context) {
 	}
 	post.Id = id
 
-	updatedPost, err := c.postModel.Update(&post)
+	updatedPost, err := c.store.Posts.Update(&post)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -153,7 +157,7 @@ func (c *PostsController) Update(g *gin.Context) {
 		return
 	}
 
-	formatPost, err := c.Format(g, updatedPost)
+	formatPost, err := c.store.Posts.Format(updatedPost)
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -163,7 +167,10 @@ func (c *PostsController) Update(g *gin.Context) {
 }
 
 // Delete
-// Returns errors.INVALID if the Id is not a string or passed
+//
+// Returns 200 if the post was deleted.
+// Returns 500 if there was an error deleting the post.
+// Returns 400 if the the post wasn't found or no ID was passed.
 func (c *PostsController) Delete(g *gin.Context) {
 	const op = "PostHandler.Delete"
 
@@ -172,7 +179,7 @@ func (c *PostsController) Delete(g *gin.Context) {
 		Respond(g, 400, "A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 	}
 
-	err = c.postModel.Delete(id)
+	err = c.store.Posts.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -182,45 +189,4 @@ func (c *PostsController) Delete(g *gin.Context) {
 	}
 
 	Respond(g, 200, "Successfully deleted post with the ID: "+strconv.Itoa(id), nil)
-}
-
-// Format
-// TODO Move this to the model
-func (c *PostsController) Format(g *gin.Context, post domain.Post) (domain.PostData, error) {
-
-	// Get the author associated with the post
-	author, err := c.userModel.GetById(post.UserId)
-	if err != nil {
-		return domain.PostData{}, err
-	}
-
-	// Get the categories associated with the post
-	category, _ := c.categoriesModel.GetByPost(post.Id)
-
-	// Get the layout associated with the post
-	layout, err := c.fieldsModel.GetLayout(post, author, category)
-	if err != nil {
-		return domain.PostData{}, err
-	}
-
-	pd := domain.PostData{
-		Post:   post,
-		Layout: layout,
-		Author: domain.PostAuthor(author),
-	}
-
-	if category != nil {
-		pd.Categories = &domain.PostCategory{
-			Id:          category.Id,
-			Slug:        category.Slug,
-			Name:        category.Name,
-			Description: category.Description,
-			Resource:    category.Resource,
-			ParentId:    category.ParentId,
-			UpdatedAt:   category.UpdatedAt,
-			CreatedAt:   category.CreatedAt,
-		}
-	}
-
-	return pd, nil
 }

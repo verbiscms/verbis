@@ -51,18 +51,18 @@ type ValidationErrJson struct {
 func New(m *models.Store, config config.Configuration) (*Controller, error) {
 
 	c := Controller{
-		Auth:       newAuth(m.Auth, m.User, config),
+		Auth:       newAuth(m, config),
 		Cache:      newCache(),
-		Categories: newCategories(m.Categories),
-		Fields:     newFields(m.Fields, m.User, m.Categories),
+		Categories: newCategories(m, config),
+		Fields:     newFields(m, config),
 		Frontend:   newFrontend(m, config),
-		Media:      newMedia(m.Media, m.User),
-		Options:    newOptions(m.Options),
-		Posts:      newPosts(m.Posts, m.Fields, m.User, m.Categories),
+		Media:      newMedia(m, config),
+		Options:    newOptions(m, config),
+		Posts:      newPosts(m, config),
 		Spa:        newSpa(),
 		SEO:        newSEO(m, config),
-		Site:       newSite(m.Site),
-		User:       newUser(m.User),
+		Site:       newSite(m, config),
+		User:       newUser(m, config),
 	}
 
 	return &c, nil

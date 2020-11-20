@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -15,21 +16,22 @@ type FieldHandler interface {
 
 // FieldController defines the handler for Fields
 type FieldController struct {
-	fieldsModel     models.FieldsRepository
-	userModel       models.UserRepository
-	categoriesModel models.CategoryRepository
+	store *models.Store
+	config    config.Configuration
 }
 
 // newFields - Construct
-func newFields(f models.FieldsRepository, u models.UserRepository, c models.CategoryRepository) *FieldController {
+func newFields(m *models.Store, config config.Configuration) *FieldController {
 	return &FieldController{
-		fieldsModel:     f,
-		userModel:       u,
-		categoriesModel: c,
+		store: m,
+		config:    config,
 	}
 }
 
-// Filter fields
+// Get - Filter fields and get layouts based on query params.
+//
+// Returns 200 if login was successful.
+// Returns 500 if the layouts failed to be obtained.
 func (c *FieldController) Get(g *gin.Context) {
 	const op = "FieldHandler.Get"
 
@@ -45,9 +47,6 @@ func (c *FieldController) Get(g *gin.Context) {
 		CodeInjectHead: nil,
 		CodeInjectFoot: nil,
 		UserId:         0,
-		CreatedAt:      nil,
-		UpdatedAt:      nil,
-		SeoMeta:        domain.PostSeoMeta{},
 	}
 
 	// Get the request query
@@ -74,25 +73,25 @@ func (c *FieldController) Get(g *gin.Context) {
 	if u, ok := query["user_id"]; ok {
 		id, err := strconv.Atoi(u[0])
 		if err != nil {
-			owner, _ := c.userModel.GetOwner()
+			owner, _ := c.store.User.GetOwner()
 			post.UserId = owner.Id
 		}
 		post.UserId = id
 	} else {
-		owner, _ := c.userModel.GetOwner()
+		owner, _ := c.store.User.GetOwner()
 		post.UserId = owner.Id
 	}
 
 	// Get the author associated with the post
-	author, _ := c.userModel.GetById(post.UserId)
+	author, _ := c.store.User.GetById(post.UserId)
 
 	// Get the categories associated with the post
-	categories, err := c.categoriesModel.GetByPost(post.Id)
+	categories, err := c.store.Categories.GetByPost(post.Id)
 	if err != nil {
 		categories = nil
 	}
 
-	fields, err := c.fieldsModel.GetLayout(post, author, categories)
+	fields, err := c.store.Fields.GetLayout(post, author, categories)
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
