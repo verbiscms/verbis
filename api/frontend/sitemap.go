@@ -34,7 +34,7 @@ type SiteMapper interface {
 // Sitemap represents the generation of sitemap.xml files for use
 // with the sitemap controller.
 type Sitemap struct {
-	models       *models.Store
+	store       *models.Store
 	options      domain.Options
 	resources    map[string]domain.Resource
 	templatePath string
@@ -95,8 +95,13 @@ func NewSitemap(m *models.Store) *Sitemap {
 		}).Fatal()
 	}
 
+	theme.Resources["pages"] = domain.Resource{
+		Name:         "pages",
+		Slug: 			"/pages",
+	}
+
 	s := &Sitemap{
-		models:       m,
+		store:       m,
 		options:      options,
 		resources:    theme.Resources,
 		templatePath: paths.Api() + "/web/sitemaps/",
@@ -198,25 +203,29 @@ func (s *Sitemap) GetPages(resource string) ([]byte, error) {
 		return nil, err
 	}
 
-	posts, err := s.retrievePages(resource)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(posts) == 0 {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No resource items available with the name: %s", resource), Operation: op, Err: fmt.Errorf("no resource items found")}
-	}
-
 	viewData := resources{}
 	viewData.XSI = "http://www.w3.org/2001/XMLSchema-instance"
 	viewData.XMLNSImage = "http://www.google.com/schemas/sitemap-image/1.1"
 	viewData.XSISchemaLocation = "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd http://www.google.com/schemas/sitemap-image/1.1 http://www.google.com/schemas/sitemap-image/1.1/sitemap-image.xsd"
 
-	for _, v := range posts {
-		viewData.Items = append(viewData.Items, viewItem{
-			Slug:      v.Slug,
-			CreatedAt: time.Now().Format(time.RFC3339),
-		})
+	if resource == "redirects" {
+		viewData.Items = s.getRedirects()
+	} else {
+		posts, err := s.retrievePages(resource)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(posts) == 0 {
+			return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No resource items available with the name: %s", resource), Operation: op, Err: fmt.Errorf("no resource items found")}
+		}
+
+		for _, v := range posts {
+			viewData.Items = append(viewData.Items, viewItem{
+				Slug:      v.Slug,
+				CreatedAt: time.Now().Format(time.RFC3339),
+			})
+		}
 	}
 
 	xmlData, err := s.formatXML(viewData, true)
@@ -227,13 +236,24 @@ func (s *Sitemap) GetPages(resource string) ([]byte, error) {
 	return xmlData, nil
 }
 
+// ClearCache - Clears all of the cached data from the index.xml file
+// as well as the resources xml files.
+//
+// Returns no error.
+func (s *Sitemap) ClearCache() {
+	cache.Store.Delete("sitemap-index")
+	for _, v := range s.resources {
+		cache.Store.Delete("sitemap-" + v.Name)
+	}
+}
+
 // getPosts obtains all of the posts for the sitemap in created at
 // descending order.
 // Returns errors.INTERNAL if the posts could not be retrieved from the store.
 func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 	const op = "SiteMapper.retrievePages"
 
-	posts, _, err := s.models.Posts.Get(http.Params{
+	posts, _, err := s.store.Posts.Get(http.Params{
 		Page:           1,
 		Limit:          http.PaginationAllLimit,
 		OrderDirection: "desc",
@@ -323,7 +343,7 @@ func (s *Sitemap) canServeResource(resource string) error {
 // getHomeCreatedAt - Get the homepage created at time or now if it
 // is not set.
 func (s *Sitemap) getHomeCreatedAt() string {
-	home, err := s.models.Posts.GetBySlug("/")
+	home, err := s.store.Posts.GetBySlug("/")
 	createdAt := time.Now().Format(time.RFC3339)
 	if err == nil {
 		createdAt = home.CreatedAt.Format(time.RFC3339)
@@ -370,15 +390,4 @@ func (s *Sitemap) getCachedFile(key string) []byte {
 		return *cachedBytes
 	}
 	return nil
-}
-
-// ClearCache - Clears all of the cached data from the index.xml file
-// as well as the resources xml files.
-//
-// Returns no error.
-func (s *Sitemap) ClearCache() {
-	cache.Store.Delete("sitemap-index")
-	for _, v := range s.resources {
-		cache.Store.Delete("sitemap-" + v.Name)
-	}
 }

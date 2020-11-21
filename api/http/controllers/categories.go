@@ -41,7 +41,7 @@ func newCategories(m *models.Store, config config.Configuration) *CategoriesCont
 func (c *CategoriesController) Get(g *gin.Context) {
 	const op = "CategoryHandler.Get"
 
-	params := http.GetParams(g)
+	params := http.NewParams(g).Get()
 	categories, total, err := c.store.Categories.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
@@ -54,7 +54,7 @@ func (c *CategoriesController) Get(g *gin.Context) {
 		return
 	}
 
-	pagination := http.GetPagination(params, total)
+	pagination := http.NewPagination().GetPagination(params, total)
 
 	Respond(g, 200, "Successfully obtained categories", categories, pagination)
 }

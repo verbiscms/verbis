@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/gin-gonic/gin"
@@ -27,8 +28,11 @@ func (c *SpaController) Serve(g *gin.Context) {
 
 	path := g.Request.URL.Path
 
+	fmt.Println(path)
+
 	// If the path is a file
 	if strings.Contains(path, ".") {
+
 		path = strings.Replace(path, "/admin", "", -1)
 		extensionArr := strings.Split(path, ".")
 		extension := extensionArr[len(extensionArr)-1]

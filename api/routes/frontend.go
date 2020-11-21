@@ -33,7 +33,7 @@ func frontend(s *server.Server, c *controllers.Controller, m *models.Store, conf
 
 		// Sitemap
 		s.GET("/sitemap.xml", c.SEO.SiteMapIndex)
-		s.GET("/sitemaps/:resource/sitemap.xml", c.SEO.SiteMapResource)
+		s.GET("/sitemaps/:resource/:map", c.SEO.SiteMapResource)
 		s.GET("/resource-sitemap.xsl", func(g *gin.Context) {
 			c.SEO.SiteMapXSL(g, true)
 		})

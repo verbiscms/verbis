@@ -27,6 +27,7 @@ type Render struct {
 
 // NewRender - Construct
 func NewRender(g *gin.Context, m *models.Store, config config.Configuration) *Render {
+	const op = "Renderer.NewRender"
 
 	options, err := m.Options.GetStruct()
 	if err != nil {
@@ -73,11 +74,11 @@ func (c *Render) checkCache() {
 	var foundCache bool
 	if c.options.CacheServerAssets {
 		var cachedTemplate interface{}
-		cachedTemplate, foundCache = cache.Store.Get(path)
+		cachedTemplate, foundCache = cache.Store.Get(c.path)
 
 		if cachedTemplate != nil && foundCache {
-			g.Writer.WriteHeader(200)
-			g.Writer.Write(cachedTemplate.([]byte))
+			c.gin.Writer.WriteHeader(200)
+			c.gin.Writer.Write(cachedTemplate.([]byte))
 			return
 		}
 	}
