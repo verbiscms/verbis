@@ -67,7 +67,7 @@
 										v-bind:key="resource.name"
 										:class="{ 'aside-nav-item-active' : activePage === resource.name.toLowerCase() }"
 										@click="$emit('close', true)">
-										<router-link class="aside-nav-link" :to="{ name: 'resources', params: { resource: resource.name }}">
+										<router-link v-if="resource.name !== ''" class="aside-nav-link" :to="{ name: 'resources', params: { resource: resource.name }}">
 											<div>
 												<i v-if="resource.icon" :class="resource.icon"></i>
 												<i v-else class="fal fa-file"></i>
@@ -297,6 +297,9 @@ export default {
 		'$route'() {
 			this.setActivePage();
 		}
+	},
+	mounted() {
+		console.log(this.getTheme.resources)
 	},
 	methods: {
 		/*

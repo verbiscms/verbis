@@ -55,6 +55,7 @@ func (c *UserController) Get(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
+	users.HideCredentials()
 
 	pagination := http.NewPagination().GetPagination(params, total)
 
@@ -80,10 +81,7 @@ func (c *UserController) GetById(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
-
-	// TODO: Move to model
-	user.Password = ""
-	user.Token = ""
+	user.HideCredentials()
 
 	Respond(g, 200, "Successfully obtained user with ID: "+strconv.Itoa(id), user)
 }
