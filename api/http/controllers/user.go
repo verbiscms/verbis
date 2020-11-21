@@ -43,7 +43,7 @@ func newUser(m *models.Store, config config.Configuration) *UserController {
 func (c *UserController) Get(g *gin.Context) {
 	const op = "UserHandler.Get"
 
-	params := http.GetParams(g)
+	params := http.NewParams(g).Get()
 	users, total, err := c.store.User.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
@@ -63,7 +63,7 @@ func (c *UserController) Get(g *gin.Context) {
 		users[k].Token = ""
 	}
 
-	pagination := http.GetPagination(params, total)
+	pagination := http.NewPagination().GetPagination(params, total)
 
 	Respond(g, 200, "Successfully obtained users", users, pagination)
 }

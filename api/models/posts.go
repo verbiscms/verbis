@@ -274,61 +274,6 @@ func (s *PostStore) Exists(slug string) bool {
 	return exists
 }
 
-// convertToPost converts are post create into a standard post
-func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
-	return domain.Post{
-		Id:             c.Id,
-		UUID:           c.UUID,
-		Slug:           c.Slug,
-		Title:          c.Title,
-		Status:         c.Status,
-		Resource:       c.Resource,
-		PageTemplate:   c.PageTemplate,
-		Fields:     c.Fields,
-		CodeInjectHead: c.CodeInjectHead,
-		CodeInjectFoot: c.CodeInjectFoot,
-		UserId:         c.UserId,
-		CreatedAt:      c.CreatedAt,
-		UpdatedAt:      c.UpdatedAt,
-		SeoMeta:        c.SeoMeta,
-	}
-}
-
-// checkOwner Checks if the author is set or if the author does not exist.
-// Returns the owner ID under circumstances.
-func (s *PostStore) checkOwner(p domain.PostCreate) int {
-	if p.Author == 0 || !s.userModel.Exists(p.Author) {
-		owner, err := s.userModel.GetOwner()
-		if err != nil {
-			log.Panic(err)
-		}
-		return owner.Id
-	}
-	return p.Author
-}
-
-// validateUrl checks if the url is valid for creating or updating a new
-// post.
-//
-// Returns errors.CONFLICT if the post slug already exists
-// Or the slug contains the admin path, .i.e /admin
-func (s *PostStore) validateUrl(slug string) error {
-	const op = "PostsRepository.validateUrl"
-
-	if s.Exists(slug) {
-		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", slug), Operation: op}
-	}
-
-	slugArr := strings.Split(slug, "/")
-	if len(slugArr) > 1 {
-		if strings.Contains(slugArr[1], "admin") {
-			return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the path /admin is reserved"), Operation: op}
-		}
-	}
-
-	return nil
-}
-
 // Format formats the post into as domain.PostData type which contains
 // the category, author & fields associated with the post.
 func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
@@ -383,4 +328,59 @@ func (s *PostStore) FormatMultiple(posts []domain.Post) ([]domain.PostData, erro
 		}
 	}
 	return postData, nil
+}
+
+// convertToPost converts are post create into a standard post
+func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
+	return domain.Post{
+		Id:             c.Id,
+		UUID:           c.UUID,
+		Slug:           c.Slug,
+		Title:          c.Title,
+		Status:         c.Status,
+		Resource:       c.Resource,
+		PageTemplate:   c.PageTemplate,
+		Fields:     c.Fields,
+		CodeInjectHead: c.CodeInjectHead,
+		CodeInjectFoot: c.CodeInjectFoot,
+		UserId:         c.UserId,
+		CreatedAt:      c.CreatedAt,
+		UpdatedAt:      c.UpdatedAt,
+		SeoMeta:        c.SeoMeta,
+	}
+}
+
+// checkOwner Checks if the author is set or if the author does not exist.
+// Returns the owner ID under circumstances.
+func (s *PostStore) checkOwner(p domain.PostCreate) int {
+	if p.Author == 0 || !s.userModel.Exists(p.Author) {
+		owner, err := s.userModel.GetOwner()
+		if err != nil {
+			log.Panic(err)
+		}
+		return owner.Id
+	}
+	return p.Author
+}
+
+// validateUrl checks if the url is valid for creating or updating a new
+// post.
+//
+// Returns errors.CONFLICT if the post slug already exists
+// Or the slug contains the admin path, .i.e /admin
+func (s *PostStore) validateUrl(slug string) error {
+	const op = "PostsRepository.validateUrl"
+
+	if s.Exists(slug) {
+		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", slug), Operation: op}
+	}
+
+	slugArr := strings.Split(slug, "/")
+	if len(slugArr) > 1 {
+		if strings.Contains(slugArr[1], "admin") {
+			return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the path /admin is reserved"), Operation: op}
+		}
+	}
+
+	return nil
 }

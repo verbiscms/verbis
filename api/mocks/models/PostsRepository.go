@@ -63,6 +63,50 @@ func (_m *PostsRepository) Exists(slug string) bool {
 	return r0
 }
 
+// Format provides a mock function with given fields: post
+func (_m *PostsRepository) Format(post domain.Post) (domain.PostData, error) {
+	ret := _m.Called(post)
+
+	var r0 domain.PostData
+	if rf, ok := ret.Get(0).(func(domain.Post) domain.PostData); ok {
+		r0 = rf(post)
+	} else {
+		r0 = ret.Get(0).(domain.PostData)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(domain.Post) error); ok {
+		r1 = rf(post)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// FormatMultiple provides a mock function with given fields: posts
+func (_m *PostsRepository) FormatMultiple(posts []domain.Post) ([]domain.PostData, error) {
+	ret := _m.Called(posts)
+
+	var r0 []domain.PostData
+	if rf, ok := ret.Get(0).(func([]domain.Post) []domain.PostData); ok {
+		r0 = rf(posts)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.PostData)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func([]domain.Post) error); ok {
+		r1 = rf(posts)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Get provides a mock function with given fields: meta, resource
 func (_m *PostsRepository) Get(meta http.Params, resource string) ([]domain.Post, int, error) {
 	ret := _m.Called(meta, resource)

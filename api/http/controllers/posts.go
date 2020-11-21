@@ -42,7 +42,7 @@ func newPosts(m *models.Store, config config.Configuration) *PostsController {
 func (c *PostsController) Get(g *gin.Context) {
 	const op = "PostHandler.Get"
 
-	params := http.GetParams(g)
+	params := http.NewParams(g).Get()
 	posts, total, err := c.store.Posts.Get(params, g.Query("resource"))
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
@@ -60,7 +60,7 @@ func (c *PostsController) Get(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 	}
 
-	pagination := http.GetPagination(params, total)
+	pagination := http.NewPagination().GetPagination(params, total)
 
 	Respond(g, 200, "Successfully obtained posts", postData, pagination)
 }

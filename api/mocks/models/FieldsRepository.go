@@ -36,11 +36,11 @@ func (_m *FieldsRepository) GetFieldGroups() (*[]domain.FieldGroup, error) {
 }
 
 // GetLayout provides a mock function with given fields: p, a, c
-func (_m *FieldsRepository) GetLayout(p domain.Post, a domain.User, c []domain.Category) (*[]domain.FieldGroup, error) {
+func (_m *FieldsRepository) GetLayout(p domain.Post, a domain.User, c *domain.Category) (*[]domain.FieldGroup, error) {
 	ret := _m.Called(p, a, c)
 
 	var r0 *[]domain.FieldGroup
-	if rf, ok := ret.Get(0).(func(domain.Post, domain.User, []domain.Category) *[]domain.FieldGroup); ok {
+	if rf, ok := ret.Get(0).(func(domain.Post, domain.User, *domain.Category) *[]domain.FieldGroup); ok {
 		r0 = rf(p, a, c)
 	} else {
 		if ret.Get(0) != nil {
@@ -49,7 +49,7 @@ func (_m *FieldsRepository) GetLayout(p domain.Post, a domain.User, c []domain.C
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(domain.Post, domain.User, []domain.Category) error); ok {
+	if rf, ok := ret.Get(1).(func(domain.Post, domain.User, *domain.Category) error); ok {
 		r1 = rf(p, a, c)
 	} else {
 		r1 = ret.Error(1)
