@@ -95,6 +95,7 @@ func NewSitemap(m *models.Store) *Sitemap {
 		}).Fatal()
 	}
 
+	// TODO: Causing issue! Returning pages to frontend?
 	//resources := theme.Resources
 	//resources["pages"] = domain.Resource{
 	//	Name:         "pages",
