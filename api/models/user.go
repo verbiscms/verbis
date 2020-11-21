@@ -16,7 +16,7 @@ import (
 
 // UserRepository defines methods for Users to interact with the database
 type UserRepository interface {
-	Get(meta http.Params) ([]domain.User, int, error)
+	Get(meta http.Params) (domain.Users, int, error)
 	GetById(id int) (domain.User, error)
 	GetOwner() (domain.User, error)
 	GetByToken(token string) (domain.User, error)
@@ -38,6 +38,7 @@ type UserStore struct {
 	config      config.Configuration
 	optionsRepo domain.Options
 }
+
 
 // newUser - Construct
 func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
@@ -63,10 +64,10 @@ func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
 // Get all users
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no users available.
-func (s *UserStore) Get(meta http.Params) ([]domain.User, int, error) {
+func (s *UserStore) Get(meta http.Params) (domain.Users, int, error) {
 	const op = "UserRepository.Get"
 
-	var u []domain.User
+	var u domain.Users
 	q := fmt.Sprintf("SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id")
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id")
 
@@ -102,18 +103,13 @@ func (s *UserStore) Get(meta http.Params) ([]domain.User, int, error) {
 
 	// Return not found error if no users are available
 	if len(u) == 0 {
-		return []domain.User{}, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No users available", Operation: op}
+		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No users available", Operation: op}
 	}
 
 	// Count the total number of users
 	var total int
 	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
-	}
-
-	for k, _ := range u {
-		u[k].Password = ""
-		u[k].Token = ""
 	}
 
 	return u, total, nil
@@ -127,6 +123,8 @@ func (s *UserStore) GetById(id int) (domain.User, error) {
 	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE users.id = ?", id); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the ID: %d", id), Operation: op, Err: err}
 	}
+	//u.Password = ""
+	//u.Token = ""
 	return u, nil
 }
 
@@ -138,6 +136,8 @@ func (s *UserStore) GetOwner() (domain.User, error) {
 	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the owner of the site", Operation: op, Err: err}
 	}
+	//u.Password = ""
+	//u.Token = ""
 	return u, nil
 }
 
