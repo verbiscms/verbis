@@ -56,13 +56,6 @@ func (c *UserController) Get(g *gin.Context) {
 		return
 	}
 
-	// Remove the token and password
-	// TODO: Move to model
-	for k, _ := range users {
-		users[k].Password = ""
-		users[k].Token = ""
-	}
-
 	pagination := http.NewPagination().GetPagination(params, total)
 
 	Respond(g, 200, "Successfully obtained users", users, pagination)

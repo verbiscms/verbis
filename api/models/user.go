@@ -111,6 +111,11 @@ func (s *UserStore) Get(meta http.Params) ([]domain.User, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
 	}
 
+	for k, _ := range u {
+		u[k].Password = ""
+		u[k].Token = ""
+	}
+
 	return u, total, nil
 }
 
