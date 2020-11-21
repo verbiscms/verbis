@@ -28,6 +28,15 @@ type User struct {
 	UpdatedAt        time.Time  `db:"updated_at" json:"updated_at"`
 }
 
+type Users []User
+
+func (u Users) HideCredentials() {
+	for _, v := range u {
+		v.Password = ""
+		v.Token = ""
+	}
+}
+
 type UserCreate struct {
 	User
 	Password        string `db:"password" json:"password,omitempty" binding:"required,min=8,max=60"`
@@ -45,4 +54,9 @@ type UserRole struct {
 	Id          int    `db:"id" json:"id" binding:"required,numeric"`
 	Name        string `db:"name" json:"name"`
 	Description string `db:"description" json:"description"`
+}
+
+func (u *User) HideCredentials() {
+	u.Password = ""
+	u.Token = ""
 }

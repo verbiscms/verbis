@@ -95,10 +95,11 @@ func NewSitemap(m *models.Store) *Sitemap {
 		}).Fatal()
 	}
 
-	theme.Resources["pages"] = domain.Resource{
-		Name:         "pages",
-		Slug: 			"/pages",
-	}
+	//resources := theme.Resources
+	//resources["pages"] = domain.Resource{
+	//	Name:         "pages",
+	//	Slug: 			"/pages",
+	//}
 
 	s := &Sitemap{
 		store:       m,
