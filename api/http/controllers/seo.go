@@ -24,6 +24,7 @@ type SEOController struct {
 	config  config.Configuration
 	sitemap frontend.SiteMapper
 	options domain.Options
+	frontend.ErrorHandler
 }
 
 // newSEO - Construct
@@ -37,13 +38,12 @@ func newSEO(m *models.Store, config config.Configuration) *SEOController {
 		}).Fatal()
 	}
 
-	sitemap := frontend.NewSitemap(m)
-
 	return &SEOController{
 		models:  m,
 		config:  config,
 		options: options,
-		sitemap: sitemap,
+		sitemap: frontend.NewSitemap(m),
+		ErrorHandler: &frontend.Errors{},
 	}
 }
 
@@ -55,8 +55,8 @@ func newSEO(m *models.Store, config config.Configuration) *SEOController {
 func (c *SEOController) Robots(g *gin.Context) {
 	const op = "FrontendHandler.Robots"
 
-	if c.options.SeoRobotsServe {
-		frontend.Error(g, c.config)
+	if !c.options.SeoRobotsServe {
+		c.NotFound(g, c.config)
 		return
 	}
 
@@ -74,7 +74,7 @@ func (c *SEOController) SiteMapIndex(g *gin.Context) {
 
 	sitemap, err := c.sitemap.GetIndex()
 	if err != nil {
-		frontend.Error(g, c.config)
+		c.NotFound(g, c.config)
 	}
 
 	g.Data(200, "application/xml; charset=utf-8", sitemap)
@@ -91,7 +91,7 @@ func (c *SEOController) SiteMapResource(g *gin.Context) {
 
 	sitemap, err := c.sitemap.GetPages(g.Param("resource"))
 	if err != nil {
-		frontend.Error(g, c.config)
+		c.NotFound(g, c.config)
 	}
 
 	g.Data(200, "application/xml; charset=utf-8", sitemap)
@@ -106,7 +106,7 @@ func (c *SEOController) SiteMapXSL(g *gin.Context, index bool) {
 
 	sitemap, err := c.sitemap.GetXSL(index)
 	if err != nil {
-		frontend.Error(g, c.config)
+		c.NotFound(g, c.config)
 	}
 
 	g.Data(200, "application/xml; charset=utf-8", sitemap)

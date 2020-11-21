@@ -42,12 +42,14 @@ func (c *SiteController) GetSite(g *gin.Context) {
 // Returns 500 if there was an error getting the theme config.
 func (c *SiteController) GetTheme(g *gin.Context) {
 	const op = "SiteHandler.GetTheme"
-	config, err := c.store.Site.GetThemeConfig()
+
+	theme, err := c.store.Site.GetThemeConfig()
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
-	Respond(g, 200, "Successfully obtained theme config", config)
+
+	Respond(g, 200, "Successfully obtained theme config", theme)
 }
 
 // GetTemplates gets all page templates
@@ -56,11 +58,13 @@ func (c *SiteController) GetTheme(g *gin.Context) {
 // Returns 500 if there was an error getting the templates.
 func (c *SiteController) GetTemplates(g *gin.Context) {
 	const op = "SiteHandler.GetTemplates"
+
 	templates, err := c.store.Site.GetTemplates()
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
+
 	Respond(g, 200, "Successfully obtained templates", templates)
 }
 

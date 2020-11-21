@@ -4,6 +4,13 @@ import (
 	"math"
 )
 
+// ParameterHandler defines the function for getting http params
+type PaginationHandler interface  {
+	Get() Params
+}
+
+// Pagination represents the data to be sent back from the API on
+// get routes
 type Pagination struct {
 	Page  int         `json:"page"`
 	Pages int         `json:"pages"`
@@ -13,8 +20,13 @@ type Pagination struct {
 	Prev  interface{} `json:"prev"`
 }
 
+// NewPagination - create a new pagination type
+func NewPagination() *Pagination {
+	return &Pagination{}
+}
+
 // Get pagination parameters
-func GetPagination(params Params, total int) *Pagination {
+func (p *Pagination) GetPagination(params Params, total int) *Pagination {
 
 	// Calculate total pages
 	var pages int

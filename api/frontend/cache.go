@@ -26,11 +26,12 @@ type Cache struct {
 
 // NewCache - Construct
 func NewCache(o models.OptionsRepository) *Cache {
+	const op = "Cacher.NewCache"
 
 	options, err := o.GetStruct()
 	if err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 		}).Fatal()
 	}
 
@@ -45,7 +46,7 @@ func NewCache(o models.OptionsRepository) *Cache {
 // is disabled in the options.
 // Sets the gin headers if extensions are allowed.
 func (t *Cache) Cache(g *gin.Context) {
-	const op = "Cacheer.Cache"
+	const op = "Cacher.Cache"
 
 	// Bail if the cache frontend is disabled
 	if !t.options.CacheFrontend {

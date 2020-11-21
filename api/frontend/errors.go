@@ -7,7 +7,13 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func Error(g *gin.Context, config config.Configuration) {
+type ErrorHandler interface {
+	NotFound(g *gin.Context, config config.Configuration)
+}
+
+type Errors struct {}
+
+func (e *Errors) NotFound(g *gin.Context, config config.Configuration) {
 	gvError := goview.New(goview.Config{
 		Root:         paths.Theme(),
 		Extension:    config.Template.FileExtension,

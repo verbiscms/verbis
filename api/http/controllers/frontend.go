@@ -41,6 +41,7 @@ type FrontendController struct {
 	minify  minify.Minifier
 	theme   domain.ThemeConfig
 	options domain.Options
+	frontend.ErrorHandler
 }
 
 // newFrontend - Construct
@@ -70,6 +71,7 @@ func newFrontend(m *models.Store, config config.Configuration) *FrontendControll
 		minify:  minify.New(m.Options),
 		theme:   theme,
 		options: options,
+		ErrorHandler: &frontend.Errors{},
 	}
 }
 
@@ -97,7 +99,7 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 	// Get the data & mime type from the media store
 	file, mimeType, err := c.models.Media.Serve(url, webp.Accepts(g))
 	if err != nil {
-		frontend.Error(g, c.config)
+		c.NotFound(g, c.config)
 		return
 	}
 
@@ -154,7 +156,7 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 	// Open the file.
 	file, err := ioutil.ReadFile(assetsPath + fileName)
 	if err != nil {
-		frontend.Error(g, c.config)
+		c.NotFound(g, c.config)
 		return
 	}
 
@@ -220,7 +222,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 	post, err := c.models.Posts.GetBySlug(path)
 
 	if err != nil {
-		frontend.Error(g, c.config)
+		c.NotFound(g, c.config)
 		return
 	}
 
@@ -239,7 +241,7 @@ func (c *FrontendController) Serve(g *gin.Context) {
 
 	_, err = g.Cookie("verbis-session")
 	if err != nil && post.Status != "published" {
-		frontend.Error(g, c.config)
+		c.NotFound(g, c.config)
 		return
 	}
 

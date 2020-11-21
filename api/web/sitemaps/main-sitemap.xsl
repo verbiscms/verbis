@@ -33,16 +33,17 @@
                         margin: 0 auto;
                         width: 1000px;
                     }
+                    
                     .expl {
                         margin: 18px 3px;
                         line-height: 1.2em;
                     }
                     .expl a {
-                        color: #da3114;
+                        color: #3c59c8;
                         font-weight: 600;
                     }
                     .expl a:visited {
-                        color: #da3114;
+                        color: #3c59c8;
                     }
                     a {
                         color: #000;

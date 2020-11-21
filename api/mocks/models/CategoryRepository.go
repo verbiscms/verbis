@@ -91,8 +91,22 @@ func (_m *CategoryRepository) ExistsByName(name string) bool {
 	return r0
 }
 
+// ExistsBySlug provides a mock function with given fields: slug
+func (_m *CategoryRepository) ExistsBySlug(slug string) bool {
+	ret := _m.Called(slug)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(string) bool); ok {
+		r0 = rf(slug)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	return r0
+}
+
 // Get provides a mock function with given fields: meta
-func (_m *CategoryRepository) Get(meta http.Params) ([]domain.Category, error) {
+func (_m *CategoryRepository) Get(meta http.Params) ([]domain.Category, int, error) {
 	ret := _m.Called(meta)
 
 	var r0 []domain.Category
@@ -104,14 +118,21 @@ func (_m *CategoryRepository) Get(meta http.Params) ([]domain.Category, error) {
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(http.Params) error); ok {
+	var r1 int
+	if rf, ok := ret.Get(1).(func(http.Params) int); ok {
 		r1 = rf(meta)
 	} else {
-		r1 = ret.Error(1)
+		r1 = ret.Get(1).(int)
 	}
 
-	return r0, r1
+	var r2 error
+	if rf, ok := ret.Get(2).(func(http.Params) error); ok {
+		r2 = rf(meta)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // GetById provides a mock function with given fields: id
@@ -136,15 +157,15 @@ func (_m *CategoryRepository) GetById(id int) (domain.Category, error) {
 }
 
 // GetByPost provides a mock function with given fields: pageId
-func (_m *CategoryRepository) GetByPost(pageId int) ([]domain.Category, error) {
+func (_m *CategoryRepository) GetByPost(pageId int) (*domain.Category, error) {
 	ret := _m.Called(pageId)
 
-	var r0 []domain.Category
-	if rf, ok := ret.Get(0).(func(int) []domain.Category); ok {
+	var r0 *domain.Category
+	if rf, ok := ret.Get(0).(func(int) *domain.Category); ok {
 		r0 = rf(pageId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Category)
+			r0 = ret.Get(0).(*domain.Category)
 		}
 	}
 
@@ -158,13 +179,34 @@ func (_m *CategoryRepository) GetByPost(pageId int) ([]domain.Category, error) {
 	return r0, r1
 }
 
-// InsertPostCategories provides a mock function with given fields: postId, ids
-func (_m *CategoryRepository) InsertPostCategories(postId int, ids []int) error {
-	ret := _m.Called(postId, ids)
+// GetBySlug provides a mock function with given fields: slug
+func (_m *CategoryRepository) GetBySlug(slug string) (domain.Category, error) {
+	ret := _m.Called(slug)
+
+	var r0 domain.Category
+	if rf, ok := ret.Get(0).(func(string) domain.Category); ok {
+		r0 = rf(slug)
+	} else {
+		r0 = ret.Get(0).(domain.Category)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(slug)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// InsertPostCategory provides a mock function with given fields: postId, categoryId
+func (_m *CategoryRepository) InsertPostCategory(postId int, categoryId *int) error {
+	ret := _m.Called(postId, categoryId)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int, []int) error); ok {
-		r0 = rf(postId, ids)
+	if rf, ok := ret.Get(0).(func(int, *int) error); ok {
+		r0 = rf(postId, categoryId)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -200,6 +242,20 @@ func (_m *CategoryRepository) Update(c *domain.Category) error {
 	var r0 error
 	if rf, ok := ret.Get(0).(func(*domain.Category) error); ok {
 		r0 = rf(c)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// changeArchivePostSlug provides a mock function with given fields: id, slug, resource
+func (_m *CategoryRepository) changeArchivePostSlug(id int, slug string, resource string) error {
+	ret := _m.Called(id, slug, resource)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int, string, string) error); ok {
+		r0 = rf(id, slug, resource)
 	} else {
 		r0 = ret.Error(0)
 	}

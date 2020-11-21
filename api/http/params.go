@@ -7,7 +7,14 @@ import (
 	"strings"
 )
 
+// ParameterHandler defines the function for getting http params
+type ParameterHandler interface  {
+	Get() Params
+}
+
+// Params represents the http params for interacting with the DB
 type Params struct {
+	gin *gin.Context
 	Page           int
 	Limit          int
 	OrderBy        string
@@ -15,6 +22,7 @@ type Params struct {
 	Filters        map[string][]Filter
 }
 
+// Filter represents the searching fields for searching through records.
 type Filter struct {
 	Operator string `json:"operator"`
 	Value    string `json:"value"`
@@ -27,12 +35,19 @@ const (
 	PaginationDefault  = 15
 )
 
+// NewParams - create a new parameter type
+func NewParams(g *gin.Context) *Params {
+	return &Params{
+		gin: g,
+	}
+}
+
 // Get query Parameters
-func GetParams(g *gin.Context) Params {
+func (p *Params) Get() Params {
 
 	// Get page and set default
 	var page int
-	pageStr := g.Query("page")
+	pageStr := p.gin.Query("page")
 	page, err := strconv.Atoi(pageStr)
 	if err != nil || page == 0 {
 		page = 1
@@ -40,7 +55,7 @@ func GetParams(g *gin.Context) Params {
 
 	// Get limit & calculate if list all
 	var limit int
-	limitStr := g.Query("limit")
+	limitStr := p.gin.Query("limit")
 	if limitStr == "all" {
 		limit = PaginationAllLimit
 	} else {
@@ -54,7 +69,7 @@ func GetParams(g *gin.Context) Params {
 	}
 
 	// Get order and set defaults
-	order := g.Query("order")
+	order := p.gin.Query("order")
 	if order == "" {
 		order = "id,asc"
 	}
@@ -71,7 +86,7 @@ func GetParams(g *gin.Context) Params {
 	}
 
 	// Get the filters
-	filtersParam := g.Query("filter")
+	filtersParam := p.gin.Query("filter")
 	var filters map[string][]Filter
 	if filtersParam != "" {
 		err := json.Unmarshal([]byte(filtersParam), &filters)

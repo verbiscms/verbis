@@ -43,7 +43,7 @@ func newMedia(m *models.Store, config config.Configuration) *MediaController {
 func (c *MediaController) Get(g *gin.Context) {
 	const op = "MediaHandler.Get"
 
-	params := http.GetParams(g)
+	params := http.NewParams(g).Get()
 	media, total, err := c.store.Media.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
@@ -56,7 +56,7 @@ func (c *MediaController) Get(g *gin.Context) {
 		return
 	}
 
-	pagination := http.GetPagination(params, total)
+	pagination := http.NewPagination().GetPagination(params, total)
 
 	Respond(g, 200, "Successfully obtained media", media, pagination)
 }
