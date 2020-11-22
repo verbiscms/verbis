@@ -1,7 +1,8 @@
 package controllers
 
 import (
-	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/frontend"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/gin-gonic/gin"
@@ -15,11 +16,17 @@ type SpaHandler interface {
 }
 
 // SpaController defines the handler for the SPA
-type SpaController struct{}
+type SpaController struct{
+	config  config.Configuration
+	frontend.ErrorHandler
+}
 
 // newSpa - Construct
-func newSpa() *SpaController {
-	return &SpaController{}
+func newSpa(config config.Configuration) *SpaController {
+	return &SpaController{
+		config: config,
+		ErrorHandler: &frontend.Errors{},
+	}
 }
 
 var (
@@ -35,21 +42,32 @@ func (c *SpaController) Serve(g *gin.Context) {
 
 	path := g.Request.URL.Path
 
-	fmt.Println(path)
-
 	// If the path is a file
 	if strings.Contains(path, ".") {
 
 		path = strings.Replace(path, "/admin", "", -1)
 		extensionArr := strings.Split(path, ".")
 		extension := extensionArr[len(extensionArr)-1]
-		data, _ := ioutil.ReadFile(basePath + path)
+		data, err := ioutil.ReadFile(adminPath + path)
+
+		if err != nil {
+			// TODO, log here! Error getting admin file
+			c.ErrorHandler.NotFound(g, c.config)
+			return
+		}
+
 		contentType := mime.TypeByExtension(extension)
 		g.Data(200, contentType, data)
 
 	// Page catching
 	} else {
-		data, _ := ioutil.ReadFile(adminPath + "/index.html")
+		data, err := ioutil.ReadFile(adminPath + "/index.html")
+
+		if err != nil {
+			// TODO, log here! Error getting admin file
+			c.ErrorHandler.NotFound(g, c.config)
+		}
+
 		g.Data(200, "text/html; charset=utf-8", data)
 	}
 }

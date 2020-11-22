@@ -59,7 +59,7 @@ func New(m *models.Store, config config.Configuration) (*Controller, error) {
 		Media:      newMedia(m, config),
 		Options:    newOptions(m, config),
 		Posts:      newPosts(m, config),
-		Spa:        newSpa(),
+		Spa:        newSpa(config),
 		SEO:        newSEO(m, config),
 		Site:       newSite(m, config),
 		User:       newUser(m, config),
