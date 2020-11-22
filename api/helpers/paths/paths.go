@@ -11,13 +11,10 @@ import (
 
 // Base path of project
 func Base() string {
-	//basePath := ""
-
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		return ""
 	}
-
 	return dir
 }
 

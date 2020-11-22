@@ -60,7 +60,7 @@ func (c *PostsController) Get(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 	}
 
-	pagination := http.NewPagination().GetPagination(params, total)
+	pagination := http.NewPagination().Get(params, total)
 
 	Respond(g, 200, "Successfully obtained posts", postData, pagination)
 }

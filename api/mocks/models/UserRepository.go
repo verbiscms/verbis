@@ -113,15 +113,15 @@ func (_m *UserRepository) ExistsByEmail(email string) bool {
 }
 
 // Get provides a mock function with given fields: meta
-func (_m *UserRepository) Get(meta http.Params) ([]domain.User, int, error) {
+func (_m *UserRepository) Get(meta http.Params) (domain.Users, int, error) {
 	ret := _m.Called(meta)
 
-	var r0 []domain.User
-	if rf, ok := ret.Get(0).(func(http.Params) []domain.User); ok {
+	var r0 domain.Users
+	if rf, ok := ret.Get(0).(func(http.Params) domain.Users); ok {
 		r0 = rf(meta)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.User)
+			r0 = ret.Get(0).(domain.Users)
 		}
 	}
 

@@ -2,13 +2,14 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
 )
 
-// ParameterHandler defines the function for getting http params
-type ParameterHandler interface  {
+// Parameterize defines the function for getting http params
+type Parameterize interface  {
 	Get() Params
 }
 
@@ -44,6 +45,8 @@ func NewParams(g *gin.Context) *Params {
 
 // Get query Parameters
 func (p *Params) Get() Params {
+
+	fmt.Println(p.gin.Params)
 
 	// Get page and set default
 	var page int

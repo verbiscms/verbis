@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/frontend"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
-	"github.com/ainsleyclark/verbis/api/helpers/minify"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -38,7 +37,7 @@ type FrontendController struct {
 	models  *models.Store
 	config  config.Configuration
 	cacher  frontend.Cacher
-	minify  minify.Minifier
+	minify  frontend.Minifier
 	theme   domain.ThemeConfig
 	options domain.Options
 	frontend.ErrorHandler
@@ -65,12 +64,12 @@ func newFrontend(m *models.Store, config config.Configuration) *FrontendControll
 	}
 
 	return &FrontendController{
-		models:  m,
-		config:  config,
-		cacher:  frontend.NewCache(m.Options),
-		minify:  minify.New(m.Options),
-		theme:   theme,
-		options: options,
+		models:       m,
+		config:       config,
+		cacher:       frontend.NewCache(m.Options),
+		minify:       frontend.New(m.Options),
+		theme:        theme,
+		options:      options,
 		ErrorHandler: &frontend.Errors{},
 	}
 }

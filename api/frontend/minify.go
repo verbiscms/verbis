@@ -1,4 +1,4 @@
-package minify
+package frontend
 
 import (
 	"bytes"
