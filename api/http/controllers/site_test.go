@@ -32,7 +32,7 @@ func TestSiteController_GetSite(t *testing.T) {
 
 		siteController.GetSite(test.gin)
 
-		test.runSuccess(site)
+		test.RunSuccess(site)
 	})
 }
 
@@ -60,7 +60,7 @@ func TestSiteController_GetTheme(t *testing.T) {
 
 		siteController.GetTheme(test.gin)
 
-		test.runSuccess(theme)
+		test.RunSuccess(theme)
 	})
 
 	t.Run("Error", func(t *testing.T) {
@@ -77,7 +77,7 @@ func TestSiteController_GetTheme(t *testing.T) {
 
 		siteController.GetTheme(test.gin)
 
-		test.runInternalError()
+		test.RunInternalError()
 	})
 }
 
@@ -105,7 +105,7 @@ func TestSiteController_GetTemplates(t *testing.T) {
 
 		siteController.GetTemplates(test.gin)
 
-		test.runSuccess(templates)
+		test.RunSuccess(templates)
 	})
 
 	t.Run("Error", func(t *testing.T) {
@@ -122,7 +122,7 @@ func TestSiteController_GetTemplates(t *testing.T) {
 
 		siteController.GetTemplates(test.gin)
 
-		test.runInternalError()
+		test.RunInternalError()
 	})
 }
 
@@ -150,7 +150,7 @@ func TestSiteController_GetLayouts(t *testing.T) {
 
 		siteController.GetLayouts(test.gin)
 
-		test.runSuccess(layouts)
+		test.RunSuccess(layouts)
 	})
 
 	t.Run("Error", func(t *testing.T) {
@@ -167,6 +167,6 @@ func TestSiteController_GetLayouts(t *testing.T) {
 
 		siteController.GetLayouts(test.gin)
 
-		test.runInternalError()
+		test.RunInternalError()
 	})
 }

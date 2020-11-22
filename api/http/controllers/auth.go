@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -78,7 +77,6 @@ func (c *AuthController) Logout(g *gin.Context) {
 	const op = "AuthHandler.Logout"
 
 	token := g.Request.Header.Get("token")
-	fmt.Println(token)
 	_, err := c.store.Auth.Logout(token)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
