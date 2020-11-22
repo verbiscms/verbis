@@ -17,12 +17,12 @@ type Renderer interface {
 
 // Render
 type Render struct {
-	gin *gin.Context
-	store *models.Store
+	gin     *gin.Context
+	store   *models.Store
 	config  config.Configuration
 	options domain.Options
-	post *domain.Post
-	path string
+	post    *domain.Post
+	path    string
 }
 
 // NewRender - Construct
@@ -37,10 +37,10 @@ func NewRender(g *gin.Context, m *models.Store, config config.Configuration) *Re
 	}
 
 	return &Render{
-		store: m,
+		store:   m,
 		options: options,
 		config:  config,
-		path: g.Request.URL.Path,
+		path:    g.Request.URL.Path,
 	}
 }
 

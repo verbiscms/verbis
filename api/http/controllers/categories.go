@@ -21,15 +21,15 @@ type CategoryHandler interface {
 
 // CategoriesController defines the handler for Categories
 type CategoriesController struct {
-	store *models.Store
-	config    config.Configuration
+	store  *models.Store
+	config config.Configuration
 }
 
 // newCategories - Construct
 func newCategories(m *models.Store, config config.Configuration) *CategoriesController {
 	return &CategoriesController{
-		store: m,
-		config:    config,
+		store:  m,
+		config: config,
 	}
 }
 

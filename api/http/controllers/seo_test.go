@@ -12,12 +12,11 @@ import (
 	"testing"
 )
 
-
 func TestSEOController_Robots(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
 
-	t.Run("Success", func (t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -25,7 +24,7 @@ func TestSEOController_Robots(t *testing.T) {
 		seoSuccess := SEOController{
 			options: domain.Options{
 				SeoRobotsServe: true,
-				SeoRobots:  "test",
+				SeoRobots:      "test",
 			},
 		}
 
@@ -36,7 +35,7 @@ func TestSEOController_Robots(t *testing.T) {
 		assert.Equal(t, r.Header().Get("Content-Type"), "text/plain")
 	})
 
-	t.Run("Error", func (t *testing.T) {
+	t.Run("Error", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -60,7 +59,7 @@ func TestSEOController_Robots(t *testing.T) {
 func TestSEOController_SiteMapIndex(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	t.Run("Success", func (t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -79,7 +78,7 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 		sitemapMock.AssertExpectations(t)
 	})
 
-	t.Run("Fail", func (t *testing.T) {
+	t.Run("Fail", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -91,7 +90,7 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 		sitemapMock.On("GetIndex").Return(nil, fmt.Errorf("error"))
 
 		seoError := SEOController{
-			sitemap: sitemapMock,
+			sitemap:      sitemapMock,
 			ErrorHandler: errorMock,
 		}
 
@@ -106,7 +105,7 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 func TestSEOController_SiteMapResource(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	t.Run("Success", func (t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -125,7 +124,7 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 		sitemapMock.AssertExpectations(t)
 	})
 
-	t.Run("Fail", func (t *testing.T) {
+	t.Run("Fail", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -137,7 +136,7 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 		sitemapMock.On("GetPages", mock.Anything).Return(nil, fmt.Errorf("error"))
 
 		seoError := SEOController{
-			sitemap: sitemapMock,
+			sitemap:      sitemapMock,
 			ErrorHandler: errorMock,
 		}
 
@@ -149,11 +148,10 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 	})
 }
 
-
 func TestSEOController_SiteMapXSL(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	t.Run("Success", func (t *testing.T) {
+	t.Run("Success", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -173,7 +171,7 @@ func TestSEOController_SiteMapXSL(t *testing.T) {
 		sitemapMock.AssertExpectations(t)
 	})
 
-	t.Run("Fail", func (t *testing.T) {
+	t.Run("Fail", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -185,7 +183,7 @@ func TestSEOController_SiteMapXSL(t *testing.T) {
 		sitemapMock.On("GetXSL", mock.Anything).Return(nil, fmt.Errorf("error"))
 
 		seoError := SEOController{
-			sitemap: sitemapMock,
+			sitemap:      sitemapMock,
 			ErrorHandler: errorMock,
 		}
 

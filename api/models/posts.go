@@ -33,7 +33,7 @@ type PostStore struct {
 	seoMetaModel    SeoMetaRepository
 	userModel       UserRepository
 	categoriesModel CategoryRepository
-	fieldsModel FieldsRepository
+	fieldsModel     FieldsRepository
 }
 
 // newPosts - Construct
@@ -43,7 +43,7 @@ func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 		seoMetaModel:    newSeoMeta(db),
 		userModel:       newUser(db, config),
 		categoriesModel: newCategories(db),
-		fieldsModel:    newFields(db),
+		fieldsModel:     newFields(db),
 	}
 }
 
@@ -108,7 +108,6 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 
 	return p, total, nil
 }
-
 
 // GetById returns a post by Id
 //
@@ -278,7 +277,6 @@ func (s *PostStore) Exists(slug string) bool {
 // the category, author & fields associated with the post.
 func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
 
-
 	author, err := s.userModel.GetById(post.UserId)
 	if err != nil {
 		return domain.PostData{}, err
@@ -340,7 +338,7 @@ func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 		Status:         c.Status,
 		Resource:       c.Resource,
 		PageTemplate:   c.PageTemplate,
-		Fields:     c.Fields,
+		Fields:         c.Fields,
 		CodeInjectHead: c.CodeInjectHead,
 		CodeInjectFoot: c.CodeInjectFoot,
 		UserId:         c.UserId,

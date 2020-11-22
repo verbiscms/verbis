@@ -23,15 +23,15 @@ type MediaHandler interface {
 
 // MediaController defines the handler for Posts
 type MediaController struct {
-	store *models.Store
-	config    config.Configuration
+	store  *models.Store
+	config config.Configuration
 }
 
 // newMedia - Construct
 func newMedia(m *models.Store, config config.Configuration) *MediaController {
 	return &MediaController{
-		store: m,
-		config:    config,
+		store:  m,
+		config: config,
 	}
 }
 

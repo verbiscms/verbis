@@ -11,7 +11,7 @@ type ErrorHandler interface {
 	NotFound(g *gin.Context, config config.Configuration)
 }
 
-type Errors struct {}
+type Errors struct{}
 
 func (e *Errors) NotFound(g *gin.Context, config config.Configuration) {
 	gvError := goview.New(goview.Config{

@@ -39,7 +39,6 @@ type UserStore struct {
 	optionsRepo domain.Options
 }
 
-
 // newUser - Construct
 func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
 	const op = "UserRepository.newUser"

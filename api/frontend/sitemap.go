@@ -34,7 +34,7 @@ type SiteMapper interface {
 // Sitemap represents the generation of sitemap.xml files for use
 // with the sitemap controller.
 type Sitemap struct {
-	store       *models.Store
+	store        *models.Store
 	options      domain.Options
 	resources    map[string]domain.Resource
 	templatePath string
@@ -103,7 +103,7 @@ func NewSitemap(m *models.Store) *Sitemap {
 	//}
 
 	s := &Sitemap{
-		store:       m,
+		store:        m,
 		options:      options,
 		resources:    theme.Resources,
 		templatePath: paths.Api() + "/web/sitemaps/",
