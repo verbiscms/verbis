@@ -5,7 +5,7 @@ import (
 )
 
 // Paginate defines the function for getting http params
-type Paginate interface  {
+type Paginate interface {
 	Get() Params
 }
 

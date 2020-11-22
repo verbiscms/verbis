@@ -64,7 +64,7 @@ func (t *Cache) Cache(g *gin.Context) {
 	expiration := t.options.CacheFrontendSeconds
 
 	// Get the request type
-	request :=  t.options.CacheFrontendRequest
+	request := t.options.CacheFrontendRequest
 	allowedRequest := []string{"max-age", "max-stale", "min-fresh", "no-cache", "no-store", "no-transform", "only-if-cached"}
 	if request == "" || !helpers.StringInSlice(request, allowedRequest) {
 		request = "max-age"

@@ -25,8 +25,8 @@ func TestSiteController_GetSite(t *testing.T) {
 		siteMock.On("GetGlobalConfig").Return(site)
 
 		siteController := SiteController{
-			store:  &models.Store{
-				Site:       &siteMock,
+			store: &models.Store{
+				Site: &siteMock,
 			},
 		}
 
@@ -43,7 +43,7 @@ func TestSiteController_GetTheme(t *testing.T) {
 		test := newResponseRecorder(t)
 
 		theme := domain.ThemeConfig{
-			Theme:     domain.Theme{
+			Theme: domain.Theme{
 				Title:       "Verbis",
 				Description: "VerbisCMS",
 				Version:     "0.1",
@@ -53,8 +53,8 @@ func TestSiteController_GetTheme(t *testing.T) {
 		siteMock.On("GetThemeConfig").Return(theme, nil)
 
 		siteController := SiteController{
-			store:  &models.Store{
-				Site:       siteMock,
+			store: &models.Store{
+				Site: siteMock,
 			},
 		}
 
@@ -70,8 +70,8 @@ func TestSiteController_GetTheme(t *testing.T) {
 		siteMock := &mocks.SiteRepository{}
 		siteMock.On("GetThemeConfig").Return(domain.ThemeConfig{}, fmt.Errorf("error"))
 		siteController := SiteController{
-			store:  &models.Store{
-				Site:       siteMock,
+			store: &models.Store{
+				Site: siteMock,
 			},
 		}
 
@@ -98,8 +98,8 @@ func TestSiteController_GetTemplates(t *testing.T) {
 		siteMock.On("GetTemplates").Return(&templates, nil)
 
 		siteController := SiteController{
-			store:  &models.Store{
-				Site:       siteMock,
+			store: &models.Store{
+				Site: siteMock,
 			},
 		}
 
@@ -115,8 +115,8 @@ func TestSiteController_GetTemplates(t *testing.T) {
 		siteMock := &mocks.SiteRepository{}
 		siteMock.On("GetTemplates").Return(&domain.Templates{}, fmt.Errorf("error"))
 		siteController := SiteController{
-			store:  &models.Store{
-				Site:       siteMock,
+			store: &models.Store{
+				Site: siteMock,
 			},
 		}
 
@@ -143,8 +143,8 @@ func TestSiteController_GetLayouts(t *testing.T) {
 		siteMock.On("GetLayouts").Return(&layouts, nil)
 
 		siteController := SiteController{
-			store:  &models.Store{
-				Site:       siteMock,
+			store: &models.Store{
+				Site: siteMock,
 			},
 		}
 
@@ -160,8 +160,8 @@ func TestSiteController_GetLayouts(t *testing.T) {
 		siteMock := &mocks.SiteRepository{}
 		siteMock.On("GetLayouts").Return(&domain.Layouts{}, fmt.Errorf("error"))
 		siteController := SiteController{
-			store:  &models.Store{
-				Site:       siteMock,
+			store: &models.Store{
+				Site: siteMock,
 			},
 		}
 
@@ -170,5 +170,3 @@ func TestSiteController_GetLayouts(t *testing.T) {
 		test.runInternalError()
 	})
 }
-
-

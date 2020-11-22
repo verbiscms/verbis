@@ -20,12 +20,9 @@ func TestUserController_Get(t *testing.T) {
 
 	t.Run("Success", func(t *testing.T) {
 
-		user := domain.Users{
-			{
-				Id:        123,
-				FirstName: "Test",
-				LastName:  "test",
-			},
+		users := domain.Users{
+			{Id: 123, FirstName: "Verbis", LastName: "CMS"},
+			{Id: 124, FirstName: "Verbis", LastName: "CMS"},
 		}
 		userMock := modelMocks.UserRepository{}
 		userMock.On("Get", http.Params{
@@ -34,11 +31,11 @@ func TestUserController_Get(t *testing.T) {
 			OrderBy:        "id",
 			OrderDirection: "asc",
 			Filters:        nil,
-		}).Return(user, 1, nil)
+		}).Return(users, 1, nil)
 
 		userController := UserController{
-			store:  &models.Store{
-				User:       &userMock,
+			store: &models.Store{
+				User: &userMock,
 			},
 		}
 
@@ -50,10 +47,10 @@ func TestUserController_Get(t *testing.T) {
 
 		userController.Get(test.gin)
 
-		test.runSuccess(user)
+		test.runSuccess(users)
+		assert.Equal(test.testing, test.GetMessage(), "Successfully obtained users")
 	})
 }
-
 
 func TestUserController_GetById(t *testing.T) {
 
@@ -70,8 +67,8 @@ func TestUserController_GetById(t *testing.T) {
 		userMock.On("GetById", 123).Return(user, nil)
 
 		userController := UserController{
-			store:  &models.Store{
-				User:       &userMock,
+			store: &models.Store{
+				User: &userMock,
 			},
 		}
 
@@ -93,8 +90,8 @@ func TestUserController_GetById(t *testing.T) {
 		userMock := modelMocks.UserRepository{}
 		userMock.On("GetById", 123).Return(domain.User{}, fmt.Errorf("error"))
 		userController := UserController{
-			store:  &models.Store{
-				User:       &userMock,
+			store: &models.Store{
+				User: &userMock,
 			},
 		}
 
@@ -115,8 +112,8 @@ func TestUserController_GetById(t *testing.T) {
 		userMock := modelMocks.UserRepository{}
 		userMock.On("GetById", 123).Return(domain.User{}, fmt.Errorf("error"))
 		userController := UserController{
-			store:  &models.Store{
-				User:       &userMock,
+			store: &models.Store{
+				User: &userMock,
 			},
 		}
 

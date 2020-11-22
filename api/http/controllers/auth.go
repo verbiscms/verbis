@@ -20,15 +20,15 @@ type AuthHandler interface {
 
 // AuthController defines the handler for Authentication methods
 type AuthController struct {
-	store *models.Store
-	config    config.Configuration
+	store  *models.Store
+	config config.Configuration
 }
 
 // newAuth - Construct
 func newAuth(m *models.Store, config config.Configuration) *AuthController {
 	return &AuthController{
-		store: m,
-		config:    config,
+		store:  m,
+		config: config,
 	}
 }
 

@@ -16,15 +16,15 @@ type FieldHandler interface {
 
 // FieldController defines the handler for Fields
 type FieldController struct {
-	store *models.Store
-	config    config.Configuration
+	store  *models.Store
+	config config.Configuration
 }
 
 // newFields - Construct
 func newFields(m *models.Store, config config.Configuration) *FieldController {
 	return &FieldController{
-		store: m,
-		config:    config,
+		store:  m,
+		config: config,
 	}
 }
 
@@ -43,7 +43,7 @@ func (c *FieldController) Get(g *gin.Context) {
 		Resource:       nil,
 		PageTemplate:   "",
 		Layout:         "",
-		Fields:     nil,
+		Fields:         nil,
 		CodeInjectHead: nil,
 		CodeInjectFoot: nil,
 		UserId:         0,
