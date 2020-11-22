@@ -61,6 +61,29 @@ func (c *controllerTest) runInternalError() {
 	assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 }
 
+func (c *controllerTest) runValidationError() {
+	got := c.getResponseData()
+
+	assert.JSONEq(c.testing, "{}", got)
+	assert.Equal(c.testing, 400, c.recorder.Code)
+	assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+}
+
+func (c *controllerTest) GetMessage() string {
+
+	responseBody := map[string]interface{}{}
+	if err := json.Unmarshal(c.recorder.Body.Bytes(), &responseBody); err != nil {
+		c.testing.Fatal(fmt.Sprintf("error unmarshalling body %v", err))
+	}
+
+	b, ok := responseBody["message"]
+	if !ok {
+		c.testing.Fatal("no data within the response")
+	}
+
+	return b.(string)
+}
+
 // getResponseData nmarshalls the response body, checks if the data key
 // exists and then marshalls the data key to form a string.
 //
@@ -69,17 +92,17 @@ func (c *controllerTest) getResponseData() string {
 
 	responseBody := map[string]interface{}{}
 	if err := json.Unmarshal(c.recorder.Body.Bytes(), &responseBody); err != nil {
-		c.testing.Error(fmt.Sprintf("error unmarshalling body %v", err))
+		c.testing.Fatal(fmt.Sprintf("error unmarshalling body %v", err))
 	}
 
 	b, ok := responseBody["data"]
 	if !ok {
-		c.testing.Error("no data within the response")
+		c.testing.Fatal("no data within the response")
 	}
 
 	got, err := json.Marshal(b)
 	if err != nil {
-		c.testing.Error(fmt.Sprintf("error marshalling data %v", err))
+		c.testing.Fatal(fmt.Sprintf("error marshalling data %v", err))
 	}
 
 	return string(got)

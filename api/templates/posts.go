@@ -107,7 +107,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	// return nil if so.
 	posts, total, err := t.store.Posts.Get(postParams, tmplParams.Resource)
 
-	pagination := http.NewPagination().GetPagination(postParams, total)
+	pagination := http.NewPagination().Get(postParams, total)
 
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil

@@ -17,7 +17,7 @@ live-test:
 	HOST="localhost" gin -i --port=8080 --laddr=127.0.0.1 --all run test
 
 mock:
-	cd api && mockery --all --keeptree
+	cd api && rm -rf mocks && mockery --all --keeptree
 
 install:
 	go install cms
