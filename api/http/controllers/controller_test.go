@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"io"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 )
@@ -36,9 +38,9 @@ func newResponseRecorder(t *testing.T) *controllerTest {
 // the given data to a string it then asserts that the data matches
 // if the status code is 200 & the content type is
 // application/json
-func (c *controllerTest) runSuccess(data interface{}) {
+func (c *controllerTest) RunSuccess(data interface{}) {
 
-	got := c.getResponseData()
+	got := c.Data()
 
 	want, err := json.Marshal(data)
 	if err != nil {
@@ -50,52 +52,78 @@ func (c *controllerTest) runSuccess(data interface{}) {
 	assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 }
 
-// runInternalError gets the response data from the recorder and asserts
+// RunInternalError gets the response data from the recorder and asserts
 // that the data is empty, if the status code is 500 & the content
 // type is application/json
-func (c *controllerTest) runInternalError() {
-	got := c.getResponseData()
+func (c *controllerTest) RunInternalError() {
+	got := c.Data()
 
 	assert.JSONEq(c.testing, "{}", got)
 	assert.Equal(c.testing, 500, c.recorder.Code)
 	assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 }
 
-func (c *controllerTest) runValidationError() {
-	got := c.getResponseData()
+// RunValidationError gets the response data from the recorder and asserts
+// that the data is is empty, if the status code is 400 & the content
+// type is application/json
+func (c *controllerTest) RunValidationError() {
+	b, ok := c.Body()["data"]
+	if !ok {
+		c.testing.Fatal("no data within the response")
+	}
+
+	dict := b.(map[string]interface{})
+	_, ok = dict["errors"]
+	if !ok {
+		c.testing.Error("no errors within the response")
+	}
+
+	dictE, ok := b.(map[string]interface{})
+	if !ok {
+		c.testing.Error("no errors within the response")
+	}
+
+	assert.Greater(c.testing, len(dictE), 0)
+	assert.Equal(c.testing, 400, c.recorder.Code)
+	assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+}
+
+// RunParamError gets the response data from the recorder and asserts
+// that the data is is empty, if the status code is 400 & the content
+// type is application/json
+func (c *controllerTest) RunParamError() {
+	got := c.Data()
 
 	assert.JSONEq(c.testing, "{}", got)
 	assert.Equal(c.testing, 400, c.recorder.Code)
 	assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 }
 
-func (c *controllerTest) GetMessage() string {
-
-	responseBody := map[string]interface{}{}
-	if err := json.Unmarshal(c.recorder.Body.Bytes(), &responseBody); err != nil {
-		c.testing.Fatal(fmt.Sprintf("error unmarshalling body %v", err))
-	}
-
-	b, ok := responseBody["message"]
+// Message gets the response message from the body
+func (c *controllerTest) Message() string {
+	b, ok := c.Body()["message"]
 	if !ok {
-		c.testing.Fatal("no data within the response")
+		c.testing.Error("no message within the response")
 	}
-
 	return b.(string)
 }
 
-// getResponseData nmarshalls the response body, checks if the data key
+// Body gets the response body from the request
+func (c *controllerTest) Body() map[string]interface{} {
+	body := map[string]interface{}{}
+	if err := json.Unmarshal(c.recorder.Body.Bytes(), &body); err != nil {
+		c.testing.Fatal(fmt.Sprintf("error unmarshalling body %v", err))
+	}
+	return body
+}
+
+// getResponseData gets the response body & checks if the data key
 // exists and then marshalls the data key to form a string.
 //
 // Returns a string of the marshalled data
-func (c *controllerTest) getResponseData() string {
+func (c *controllerTest) Data() string {
 
-	responseBody := map[string]interface{}{}
-	if err := json.Unmarshal(c.recorder.Body.Bytes(), &responseBody); err != nil {
-		c.testing.Fatal(fmt.Sprintf("error unmarshalling body %v", err))
-	}
-
-	b, ok := responseBody["data"]
+	b, ok := c.Body()["data"]
 	if !ok {
 		c.testing.Fatal("no data within the response")
 	}
@@ -106,4 +134,14 @@ func (c *controllerTest) getResponseData() string {
 	}
 
 	return string(got)
+}
+
+// NewRequest makes a new http.Request and assigns the gin testing
+// the request.
+func (c *controllerTest) NewRequest(method string, url string, body io.Reader) {
+	req, err := http.NewRequest(method, url, body)
+	if err != nil {
+		c.testing.Fatal(err)
+	}
+	c.gin.Request = req
 }
