@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/routes"
 	"github.com/ainsleyclark/verbis/api/server"
+	"github.com/kyokomi/emoji"
 	"github.com/spf13/cobra"
 )
 
@@ -57,8 +58,16 @@ up the server on the port specified in the .env file.`,
 			// Load the routes
 			routes.Load(serve, controllers, store, *cfg)
 
+			// Get options
+			opts, err := store.Options.GetStruct()
+			if err != nil {
+				printError(err.Error())
+			}
+
 			// Print listening success
-			printSuccess(fmt.Sprintf("Verbis listening on port: %d", environment.GetPort()))
+			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", environment.GetPort()))
+			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", opts.SiteUrl)
+			emoji.Printf(":key: Or visit the admin area at:  %s \n", opts.SiteUrl + "/admin")
 			fmt.Println()
 
 			// Listen & serve.

@@ -16,7 +16,7 @@ import (
 )
 
 // getUserMock is a helper to obtain a mock user controller
-// for testing
+// for testing.
 func getUserMock(userMock models.UserRepository) *UserController {
 	return &UserController{
 		store: &models.Store{
