@@ -25,6 +25,7 @@ type UserHandler interface {
 type UserController struct {
 	store *models.Store
 	config    config.Configuration
+	params http.Params
 }
 
 // newUser - Construct
@@ -57,7 +58,7 @@ func (c *UserController) Get(g *gin.Context) {
 	}
 	users.HideCredentials()
 
-	pagination := http.NewPagination().GetPagination(params, total)
+	pagination := http.NewPagination().Get(params, total)
 
 	Respond(g, 200, "Successfully obtained users", users, pagination)
 }

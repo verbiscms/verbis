@@ -54,7 +54,7 @@ func (c *CategoriesController) Get(g *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().GetPagination(params, total)
+	pagination := http.NewPagination().Get(params, total)
 
 	Respond(g, 200, "Successfully obtained categories", categories, pagination)
 }

@@ -4,8 +4,8 @@ import (
 	"math"
 )
 
-// ParameterHandler defines the function for getting http params
-type PaginationHandler interface  {
+// Paginate defines the function for getting http params
+type Paginate interface  {
 	Get() Params
 }
 
@@ -26,7 +26,7 @@ func NewPagination() *Pagination {
 }
 
 // Get pagination parameters
-func (p *Pagination) GetPagination(params Params, total int) *Pagination {
+func (p *Pagination) Get(params Params, total int) *Pagination {
 
 	// Calculate total pages
 	var pages int
