@@ -11,15 +11,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/magiconair/properties/assert"
 	gohttp "net/http"
-	"net/http/httptest"
 	"testing"
 )
 
 func TestUserController_Get(t *testing.T) {
 
-	t.Run("Success", func(t *testing.T) {
+	test := newResponseRecorder(t)
 
-		gin.SetMode(gin.TestMode)
+	t.Run("Success", func(t *testing.T) {
 
 		user := domain.Users{
 			{
@@ -43,18 +42,15 @@ func TestUserController_Get(t *testing.T) {
 			},
 		}
 
-		rr := httptest.NewRecorder()
-		testcontext, _ := gin.CreateTestContext(rr)
 		req, err := gohttp.NewRequest("GET", "/users", nil)
 		if err != nil {
 			t.Fatal(err)
 		}
-		testcontext.Request = req
+		test.gin.Request = req
 
-		userController.Get(testcontext)
+		userController.Get(test.gin)
 
-		fmt.Println(rr.Body.String()) // is nil
-
+		test.runSuccess(user)
 	})
 }
 
