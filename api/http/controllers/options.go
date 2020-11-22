@@ -21,15 +21,15 @@ type OptionsHandler interface {
 
 // OptionsController defines the handler for Options
 type OptionsController struct {
-	store *models.Store
-	config    config.Configuration
+	store  *models.Store
+	config config.Configuration
 }
 
 // newOptions - Construct
 func newOptions(m *models.Store, config config.Configuration) *OptionsController {
 	return &OptionsController{
-		store: m,
-		config:    config,
+		store:  m,
+		config: config,
 	}
 }
 

@@ -11,10 +11,10 @@ import (
 
 // controllerTest represents the suite of testing methods for controllers.
 type controllerTest struct {
-	testing *testing.T
+	testing  *testing.T
 	recorder *httptest.ResponseRecorder
 	gin      *gin.Context
-	engine *gin.Engine
+	engine   *gin.Engine
 }
 
 // newResponseRecorder - New recorder for testing
@@ -25,10 +25,10 @@ func newResponseRecorder(t *testing.T) *controllerTest {
 	gin, engine := gin.CreateTestContext(rr)
 
 	return &controllerTest{
-		testing: t,
+		testing:  t,
 		recorder: rr,
 		gin:      gin,
-		engine: engine,
+		engine:   engine,
 	}
 }
 

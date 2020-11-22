@@ -22,5 +22,3 @@ func TestSpaController_Serve(t *testing.T) {
 	test.engine.ServeHTTP(w, req)
 
 }
-
-

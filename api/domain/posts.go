@@ -15,17 +15,16 @@ type PostData struct {
 	Layout     *[]FieldGroup `json:"layout"`
 }
 
-
 type Post struct {
-	Id           int              `db:"id" json:"id" binding:"numeric"`
-	UUID         uuid.UUID        `db:"uuid" json:"uuid"`
-	Slug         string           `db:"slug" json:"slug" binding:"required,max=150"`
-	Title        string           `db:"title" json:"title" binding:"required,max=500"`
-	Status       string           `db:"status" json:"status,omitempty"`
-	Resource     *string          `db:"resource" json:"resource,max=150"`
-	PageTemplate string           `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
-	Layout       string           `db:"layout" json:"layout,omitempty" binding:"max=150"`
-	Fields 		 PostFields  	  `db:"fields" json:"fields"`
+	Id           int        `db:"id" json:"id" binding:"numeric"`
+	UUID         uuid.UUID  `db:"uuid" json:"uuid"`
+	Slug         string     `db:"slug" json:"slug" binding:"required,max=150"`
+	Title        string     `db:"title" json:"title" binding:"required,max=500"`
+	Status       string     `db:"status" json:"status,omitempty"`
+	Resource     *string    `db:"resource" json:"resource,max=150"`
+	PageTemplate string     `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
+	Layout       string     `db:"layout" json:"layout,omitempty" binding:"max=150"`
+	Fields       PostFields `db:"fields" json:"fields"`
 	//IsArchive		bool						`db:"is_archive" json:"is_archive"`
 	CodeInjectHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 	CodeInjectFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
@@ -76,8 +75,8 @@ type PostCategory struct {
 }
 
 type PostSeoMeta struct {
-	Id     int      `json:"-"`
-	PageId int      `json:"-" binding:"required|numeric"`
+	Id     int       `json:"-"`
+	PageId int       `json:"-" binding:"required|numeric"`
 	Meta   *PostMeta `db:"meta" json:"meta"`
 	Seo    *PostSeo  `db:"seo" json:"seo"`
 }

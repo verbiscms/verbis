@@ -23,16 +23,16 @@ type UserHandler interface {
 
 // UserController defines the handler for Users
 type UserController struct {
-	store *models.Store
-	config    config.Configuration
+	store  *models.Store
+	config config.Configuration
 	params http.Params
 }
 
 // newUser - Construct
 func newUser(m *models.Store, config config.Configuration) *UserController {
 	return &UserController{
-		store: m,
-		config:    config,
+		store:  m,
+		config: config,
 	}
 }
 

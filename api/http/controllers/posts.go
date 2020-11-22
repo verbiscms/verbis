@@ -21,15 +21,15 @@ type PostHandler interface {
 
 // PostsController defines the handler for Posts
 type PostsController struct {
-	store *models.Store
-	config    config.Configuration
+	store  *models.Store
+	config config.Configuration
 }
 
 // newPosts - Construct
 func newPosts(m *models.Store, config config.Configuration) *PostsController {
 	return &PostsController{
-		store: m,
-		config:    config,
+		store:  m,
+		config: config,
 	}
 }
 

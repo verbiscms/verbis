@@ -9,13 +9,13 @@ import (
 )
 
 // Parameterize defines the function for getting http params
-type Parameterize interface  {
+type Parameterize interface {
 	Get() Params
 }
 
 // Params represents the http params for interacting with the DB
 type Params struct {
-	gin *gin.Context
+	gin            *gin.Context
 	Page           int
 	Limit          int
 	OrderBy        string

@@ -39,10 +39,10 @@ func newSEO(m *models.Store, config config.Configuration) *SEOController {
 	}
 
 	return &SEOController{
-		models:  m,
-		config:  config,
-		options: options,
-		sitemap: frontend.NewSitemap(m),
+		models:       m,
+		config:       config,
+		options:      options,
+		sitemap:      frontend.NewSitemap(m),
 		ErrorHandler: &frontend.Errors{},
 	}
 }

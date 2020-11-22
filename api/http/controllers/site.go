@@ -17,15 +17,15 @@ type SiteHandler interface {
 
 // SiteController defines the handler for Posts
 type SiteController struct {
-	store *models.Store
-	config    config.Configuration
+	store  *models.Store
+	config config.Configuration
 }
 
 // newSite - Construct
 func newSite(m *models.Store, config config.Configuration) *SiteController {
 	return &SiteController{
-		store: m,
-		config:    config,
+		store:  m,
+		config: config,
 	}
 }
 
