@@ -11,6 +11,12 @@ func TestSpaController_Serve(t *testing.T) {
 
 	test := newResponseRecorder(t)
 
+	// Save current function and restore at the end:
+	old := adminPath
+	defer func() { adminPath = old }()
+
+	adminPath = "/Users/Hello"
+
 	spaController := SpaController{}
 	test.engine.GET("/admin/file.jpg", func(g *gin.Context) {
 		spaController.Serve(g)
