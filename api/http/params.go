@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
@@ -45,8 +44,6 @@ func NewParams(g *gin.Context) *Params {
 
 // Get query Parameters
 func (p *Params) Get() Params {
-
-	fmt.Println(p.gin.Params)
 
 	// Get page and set default
 	var page int

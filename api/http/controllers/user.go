@@ -159,7 +159,7 @@ func (c *UserController) Update(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully updated user with ID "+strconv.Itoa(u.Id), updatedUser)
+	Respond(g, 200, "Successfully updated user with ID: "+strconv.Itoa(u.Id), updatedUser)
 }
 
 // Delete
