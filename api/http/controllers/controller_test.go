@@ -40,8 +40,12 @@ func newResponseRecorder(t *testing.T) *controllerTest {
 // application/json
 func (c *controllerTest) RunSuccess(data interface{}) {
 
-	got := c.Data()
+	if data == nil {
+		assert.Equal(c.testing, 200, c.recorder.Code)
+		assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+	}
 
+	got := c.Data()
 	want, err := json.Marshal(data)
 	if err != nil {
 		c.testing.Error(fmt.Sprintf("error marshalling struct %v", err))
@@ -144,4 +148,24 @@ func (c *controllerTest) NewRequest(method string, url string, body io.Reader) {
 		c.testing.Fatal(err)
 	}
 	c.gin.Request = req
+}
+
+
+func (c *controllerTest) RequestAndServe(method string, url string, engineUrl string, body io.Reader,  handler func(ctx *gin.Context)) {
+	switch method {
+	case "GET": {
+		c.engine.GET(engineUrl, handler)
+	}
+	case "POST": {
+		c.engine.POST(engineUrl, handler)
+	}
+	case "PUT": {
+		c.engine.PUT(engineUrl, handler)
+	}
+	case "DELETE": {
+		c.engine.DELETE(engineUrl, handler)
+	}
+	}
+	c.NewRequest(method, url, body)
+	c.engine.ServeHTTP(c.recorder, c.gin.Request)
 }

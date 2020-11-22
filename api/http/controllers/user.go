@@ -25,7 +25,6 @@ type UserHandler interface {
 type UserController struct {
 	store  *models.Store
 	config config.Configuration
-	params http.Params
 }
 
 // newUser - Construct
@@ -173,6 +172,7 @@ func (c *UserController) Delete(g *gin.Context) {
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
 		Respond(g, 400, "A valid ID is required to delete a user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
 	}
 
 	err = c.store.User.Delete(id)
