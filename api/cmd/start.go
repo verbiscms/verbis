@@ -67,7 +67,7 @@ up the server on the port specified in the .env file.`,
 			// Print listening success
 			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", environment.GetPort()))
 			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", opts.SiteUrl)
-			emoji.Printf(":key: Or visit the admin area at:  %s \n", opts.SiteUrl + "/admin")
+			emoji.Printf(":key: Or visit the admin area at:  %s \n", opts.SiteUrl+"/admin")
 			fmt.Println()
 
 			// Listen & serve.

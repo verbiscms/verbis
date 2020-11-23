@@ -77,7 +77,10 @@ func (c *UserController) GetById(g *gin.Context) {
 	}
 
 	user, err := c.store.User.GetById(id)
-	if err != nil {
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
@@ -176,7 +179,7 @@ func (c *UserController) Delete(g *gin.Context) {
 	}
 
 	err = c.store.User.Delete(id)
-	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.INVALID {
+	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -184,7 +187,7 @@ func (c *UserController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted user with ID "+strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted user with ID: "+strconv.Itoa(id), nil)
 }
 
 // ResetPassword
@@ -202,7 +205,7 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 
 	user, err := c.store.User.GetById(id)
 	if err != nil {
-		Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, "No user has been found with the ID:" + strconv.Itoa(id), err)
 		return
 	}
 
@@ -222,5 +225,5 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully updated password for the user with ID "+strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully updated password for the user with ID: "+strconv.Itoa(id), nil)
 }

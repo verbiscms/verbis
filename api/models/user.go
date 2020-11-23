@@ -248,7 +248,8 @@ func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 }
 
 // Delete user
-// Returns errors.INVALID if role ID is thw owner
+// Returns errors.NOTFOUND if user wanst found.
+// Returns errors.CONFLICT if role ID is thE owner
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *UserStore) Delete(id int) error {
 	const op = "UserRepository.Delete"
@@ -259,7 +260,7 @@ func (s *UserStore) Delete(id int) error {
 	}
 
 	if u.Role.Name == "Owner" {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The owner of the site cannot be deleted."), Operation: op, Err: err}
+		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("The owner of the site cannot be deleted."), Operation: op, Err: err}
 	}
 
 	if _, err := s.db.Exec("DELETE FROM users WHERE id = ?", id); err != nil {

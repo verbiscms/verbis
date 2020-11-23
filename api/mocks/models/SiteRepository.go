@@ -29,16 +29,14 @@ func (_m *SiteRepository) GetGlobalConfig() *domain.Site {
 }
 
 // GetLayouts provides a mock function with given fields:
-func (_m *SiteRepository) GetLayouts() (*domain.Layouts, error) {
+func (_m *SiteRepository) GetLayouts() (domain.Layouts, error) {
 	ret := _m.Called()
 
-	var r0 *domain.Layouts
-	if rf, ok := ret.Get(0).(func() *domain.Layouts); ok {
+	var r0 domain.Layouts
+	if rf, ok := ret.Get(0).(func() domain.Layouts); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Layouts)
-		}
+		r0 = ret.Get(0).(domain.Layouts)
 	}
 
 	var r1 error
@@ -52,16 +50,14 @@ func (_m *SiteRepository) GetLayouts() (*domain.Layouts, error) {
 }
 
 // GetTemplates provides a mock function with given fields:
-func (_m *SiteRepository) GetTemplates() (*domain.Templates, error) {
+func (_m *SiteRepository) GetTemplates() (domain.Templates, error) {
 	ret := _m.Called()
 
-	var r0 *domain.Templates
-	if rf, ok := ret.Get(0).(func() *domain.Templates); ok {
+	var r0 domain.Templates
+	if rf, ok := ret.Get(0).(func() domain.Templates); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Templates)
-		}
+		r0 = ret.Get(0).(domain.Templates)
 	}
 
 	var r1 error
