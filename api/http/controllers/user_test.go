@@ -11,7 +11,7 @@ import (
 	modelMocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/magiconair/properties/assert"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
@@ -29,7 +29,6 @@ func getUserMock(userMock models.UserRepository) *UserController {
 func Test_NewUser(t *testing.T) {
 	store := models.Store{}
 	config := config.Configuration{}
-
 	want := &UserController{
 		store:  &store,
 		config: config,
@@ -38,139 +37,163 @@ func Test_NewUser(t *testing.T) {
 	assert.Equal(t, got, want)
 }
 
-// TestUserController_Get - Test get all users endpoint
+// TestUserController_Get - Test Get route
 func TestUserController_Get(t *testing.T) {
 
 	users := domain.Users{
 		{Id: 123, FirstName: "Verbis", LastName: "CMS"},
 		{Id: 124, FirstName: "Verbis", LastName: "CMS"},
 	}
+	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "asc", Filters: nil}
 
-	pagination := http.Params{
-		Page:           1,
-		Limit:          15,
-		OrderBy:        "id",
-		OrderDirection: "asc",
-		Filters:        nil,
+	tt := []struct {
+		name       string
+		want       string
+		status     int
+		message    string
+		mock func(u *modelMocks.UserRepository)
+	}{
+		{
+			name:       "Success",
+			want:       `[{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":123,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":124,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"}]`,
+			status:     200,
+			message:    "Successfully obtained users",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Get", pagination).Return(users, 1, nil)
+			},
+		},
+		{
+			name:       "Not Found",
+			want:       `{}`,
+			status:     200,
+			message:    "no users found",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
+			},
+		},
+		{
+			name:       "Conflict",
+			want:       `{}`,
+			status:     400,
+			message:    "conflict",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			},
+		},
+		{
+			name:       "Invalid",
+			want:       `{}`,
+			status:     400,
+			message:    "invalid",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			},
+		},
+		{
+			name:       "Internal Error",
+			want:       `{}`,
+			status:     500,
+			message:    "internal",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+		},
 	}
 
-	// Test success
-	t.Run("Success", func(t *testing.T) {
-		test := newResponseRecorder(t)
+	for _, test := range tt {
 
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Get", pagination).Return(users, 1, nil)
+		t.Run(test.name, func(t *testing.T) {
+			rr := newResponseRecorder(t)
+			mock := &modelMocks.UserRepository{}
+			test.mock(mock)
 
-		test.NewRequest("GET", "/users", nil)
-		getUserMock(&userMock).Get(test.gin)
+			rr.RequestAndServe("GET", "/users", "/users", nil, func(g *gin.Context) {
+				getUserMock(mock).Get(g)
+			})
 
-		test.RunSuccess(users)
-		assert.Equal(test.testing, test.Message(), "Successfully obtained users")
-	})
-
-	// Test errors.NOTFOUND
-	t.Run("Not Found", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND})
-
-		test.NewRequest("GET", "/users", nil)
-		getUserMock(&userMock).Get(test.gin)
-
-		assert.Equal(t, 200, test.recorder.Code)
-	})
-
-	// Test errors.CONFLICT
-	t.Run("Conflict", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.CONFLICT})
-
-		test.NewRequest("GET", "/users", nil)
-		getUserMock(&userMock).Get(test.gin)
-
-		assert.Equal(t, 400, test.recorder.Code)
-	})
-
-	// Test errors.INVALID
-	t.Run("Invalid", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INVALID})
-
-		test.NewRequest("GET", "/users", nil)
-		getUserMock(&userMock).Get(test.gin)
-
-		assert.Equal(t, 400, test.recorder.Code)
-	})
-
-	// Test errors.INTERNAL
-	t.Run("Internal Server Error", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INTERNAL})
-
-		test.NewRequest("GET", "/users", nil)
-		getUserMock(&userMock).Get(test.gin)
-
-		test.RunInternalError()
-	})
+			assert.JSONEq(t, test.want, rr.Data())
+			assert.Equal(t, test.status, rr.recorder.Code)
+			assert.Equal(t, test.message, rr.Message())
+			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+		})
+	}
 }
 
-// TestUserController_GetById - Test get by ID endpoint
+// TestUserController_GetById - Test GetByID route
 func TestUserController_GetById(t *testing.T) {
 
-	// Test success
-	t.Run("Success", func(t *testing.T) {
-		test := newResponseRecorder(t)
+	user := domain.User{Id: 123, FirstName: "Verbis", LastName: "CMS"}
 
-		user := domain.User{Id: 123, FirstName: "Verbis", LastName: "CMS"}
-		userMock := modelMocks.UserRepository{}
-		userMock.On("GetById", 123).Return(user, nil)
+	tt := []struct {
+		name       string
+		want       string
+		status     int
+		message    string
+		mock func(u *modelMocks.UserRepository)
+		url string
+	}{
+		{
+			name:       "Success",
+			want:       `{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":123,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"}`,
+			status:     200,
+			message:    "Successfully obtained user with ID: 123",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(user, nil)
+			},
+			url: "/users/123",
+		},
+		{
+			name:       "Invalid ID",
+			want:       `{}`,
+			status:     400,
+			message:    "Pass a valid number to obtain the user by ID",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, fmt.Errorf("error"))
+			},
+			url: "/users/wrongid",
+		},
+		{
+			name:       "Not Found",
+			want:       `{}`,
+			status:     200,
+			message:    "no users found",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
+			},
+			url: "/users/123",
+		},
+		{
+			name:       "Internal Error",
+			want:       `{}`,
+			status:     500,
+			message:    "internal",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+			url: "/users/123",
+		},
+	}
 
-		test.RequestAndServe("GET", "/users/123", "/users/:id", nil, func(g *gin.Context) {
-			getUserMock(&userMock).GetById(g)
+	for _, test := range tt {
+
+		t.Run(test.name, func(t *testing.T) {
+			rr := newResponseRecorder(t)
+			mock := &modelMocks.UserRepository{}
+			test.mock(mock)
+
+			rr.RequestAndServe("GET", test.url, "/users/:id", nil, func(g *gin.Context) {
+				getUserMock(mock).GetById(g)
+			})
+
+			assert.JSONEq(t, test.want, rr.Data())
+			assert.Equal(t, test.status, rr.recorder.Code)
+			assert.Equal(t, test.message, rr.Message())
+			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 		})
-
-		test.RunSuccess(&user)
-		assert.Equal(test.testing, test.Message(), "Successfully obtained user with ID: 123")
-	})
-
-	// Test errors.INTERNAL
-	t.Run("Internal Server Error", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("GetById", 123).Return(domain.User{}, fmt.Errorf("error"))
-
-		test.RequestAndServe("GET", "/users/123", "/users/:id", nil, func(g *gin.Context) {
-			getUserMock(&userMock).GetById(g)
-		})
-
-		test.RunInternalError()
-	})
-
-	// Test invalid ID passed
-	t.Run("Invalid ID", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("GetById", 123).Return(domain.User{}, fmt.Errorf("error"))
-
-		test.RequestAndServe("GET", "/users/wrongid", "/users/:id", nil, func(g *gin.Context) {
-			getUserMock(&userMock).GetById(g)
-		})
-
-		test.RunParamError()
-		assert.Equal(test.testing, test.Message(), "Pass a valid number to obtain the user by ID")
-	})
+	}
 }
 
-// TestUserController_GetRoles - Test get roles endpoint
+// TestUserController_GetRoles - Test GetRoles route
 func TestUserController_GetRoles(t *testing.T) {
 
 	roles := []domain.UserRole{
@@ -178,36 +201,53 @@ func TestUserController_GetRoles(t *testing.T) {
 		{Id: 2, Name: "Administrator", Description: "Administrator Role"},
 	}
 
-	// Test success
-	t.Run("Success", func(t *testing.T) {
-		test := newResponseRecorder(t)
+	tt := []struct {
+		name       string
+		want       string
+		status     int
+		message    string
+		mock func(u *modelMocks.UserRepository)
+	}{
+		{
+			name:       "Success",
+			want:       `[{"description":"Banned Role","id":1,"name":"Banned"},{"description":"Administrator Role","id":2,"name":"Administrator"}]`,
+			status:     200,
+			message:    "Successfully obtained user roles",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetRoles").Return(roles, nil)
+			},
+		},
+		{
+			name:       "Internal Error",
+			want:       `{}`,
+			status:     500,
+			message:    "internal",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetRoles").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+		},
+	}
 
-		userMock := modelMocks.UserRepository{}
-		userMock.On("GetRoles").Return(roles, nil)
+	for _, test := range tt {
 
-		test.NewRequest("GET", "/roles", nil)
-		getUserMock(&userMock).GetRoles(test.gin)
+		t.Run(test.name, func(t *testing.T) {
+			rr := newResponseRecorder(t)
+			mock := &modelMocks.UserRepository{}
+			test.mock(mock)
 
-		test.RunSuccess(&roles)
-		assert.Equal(test.testing, test.Message(), "Successfully obtained user roles")
-	})
+			rr.RequestAndServe("GET", "/roles", "/roles", nil, func(g *gin.Context) {
+				getUserMock(mock).GetRoles(g)
+			})
 
-	// Test errors.INTERNAL
-	t.Run("Fail", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("GetRoles").Return(nil, fmt.Errorf("err"))
-
-		test.NewRequest("GET", "/roles", nil)
-
-		getUserMock(&userMock).GetRoles(test.gin)
-
-		test.RunInternalError()
-	})
+			assert.JSONEq(t, test.want, rr.Data())
+			assert.Equal(t, test.status, rr.recorder.Code)
+			assert.Equal(t, test.message, rr.Message())
+			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+		})
+	}
 }
 
-// TestUserController_Create - Test create endpoint
+// TestUserController_Create - Test Create route
 func TestUserController_Create(t *testing.T) {
 
 	userCreate := &domain.UserCreate{
@@ -216,7 +256,7 @@ func TestUserController_Create(t *testing.T) {
 			LastName:  "CMS",
 			Email:     "verbis@verbiscms.com",
 			Role: domain.UserRole{
-				Id: 1,
+				Id: 123,
 			},
 		},
 		Password:        "password",
@@ -224,7 +264,7 @@ func TestUserController_Create(t *testing.T) {
 	}
 
 	user := domain.User{
-		Id:        1,
+		Id:        123,
 		FirstName: "Verbis",
 		LastName:  "CMS",
 		Email:     "verbis@verbiscms.com",
@@ -240,99 +280,91 @@ func TestUserController_Create(t *testing.T) {
 		ConfirmPassword: "password",
 	}
 
-	// Test success
-	t.Run("Success", func(t *testing.T) {
-		test := newResponseRecorder(t)
+	tt := []struct {
+		name       string
+		want       string
+		status     int
+		message    string
+		input interface{}
+		mock func(u *modelMocks.UserRepository)
+	}{
+		{
+			name:       "Success",
+			want:       `{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"verbis@verbiscms.com","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":123,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"}`,
+			status:     200,
+			message:    "Successfully created user with ID: 123",
+			input: userCreate,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Create", userCreate).Return(user, nil)
+			},
+		},
+		{
+			name:       "Validation Failed",
+			want:       `{"errors":[{"key":"role_id","message":"User Role Id is required.","type":"required"}]}`,
+			status:     400,
+			message:    "Validation failed",
+			input: userBadValidation,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Create", userBadValidation).Return(domain.User{}, fmt.Errorf("error"))
+			},
+		},
+		{
+			name:       "Invalid",
+			want:       `{}`,
+			status:     400,
+			message:    "invalid",
+			input: userCreate,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Create", userCreate).Return(domain.User{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			},
+		},
+		{
+			name:       "Conflict",
+			want:       `{}`,
+			status:     400,
+			message:    "conflict",
+			input: userCreate,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Create", userCreate).Return(domain.User{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			},
+		},
+		{
+			name:       "Internal Error",
+			want:       `{}`,
+			status:     500,
+			message:    "internal",
+			input: userCreate,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Create", userCreate).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+		},
+	}
 
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Create", userCreate).Return(user, nil)
+	for _, test := range tt {
 
-		userString, err := json.Marshal(userCreate)
-		if err != nil {
-			t.Fatal(err)
-		}
+		t.Run(test.name, func(t *testing.T) {
+			rr := newResponseRecorder(t)
+			mock := &modelMocks.UserRepository{}
+			test.mock(mock)
 
-		test.NewRequest("POST", "/users", bytes.NewBuffer(userString))
-		getUserMock(&userMock).Create(test.gin)
+			body, err := json.Marshal(test.input)
+			if err != nil {
+				t.Fatal(err)
+			}
 
-		test.RunSuccess(&user)
-		assert.Equal(test.testing, test.Message(), "Successfully created user with ID: 1")
-	})
+			rr.RequestAndServe("POST", "/users", "/users", bytes.NewBuffer(body), func(g *gin.Context) {
+				getUserMock(mock).Create(g)
+			})
 
-	// Test bad validation
-	t.Run("Validation Failed", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Create", userBadValidation).Return(nil, fmt.Errorf("error"))
-
-		userString, err := json.Marshal(userBadValidation)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		test.NewRequest("POST", "/users", bytes.NewBuffer(userString))
-		getUserMock(&userMock).Create(test.gin)
-
-		test.RunValidationError()
-		assert.Equal(test.testing, test.Message(), "Validation failed")
-	})
-
-	// Test errors.INVALID
-	t.Run("Internal Server Error", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Create", userCreate).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL})
-
-		userString, err := json.Marshal(userCreate)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		test.NewRequest("POST", "/users", bytes.NewBuffer(userString))
-		getUserMock(&userMock).Create(test.gin)
-		test.RunInternalError()
-	})
-
-	// Test errors.CONFLICT
-	t.Run("Conflict", func(t *testing.T) {
-		test := newResponseRecorder(t)
-		userMock := modelMocks.UserRepository{}
-
-		userMock.On("Create", userCreate).Return(domain.User{}, &errors.Error{Code: errors.CONFLICT})
-
-		userString, err := json.Marshal(userCreate)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		test.NewRequest("POST", "/users", bytes.NewBuffer(userString))
-
-		getUserMock(&userMock).Create(test.gin)
-		assert.Equal(t, 400, test.recorder.Code)
-	})
-
-	// Test errors.INVALID
-	t.Run("Invalid", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Create", userCreate).Return(domain.User{}, &errors.Error{Code: errors.INVALID, Message: "error", Err: fmt.Errorf("err")})
-
-		userString, err := json.Marshal(userCreate)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		test.NewRequest("POST", "/users", bytes.NewBuffer(userString))
-		getUserMock(&userMock).Create(test.gin)
-
-		assert.Equal(t, 400, test.recorder.Code)
-	})
+			assert.JSONEq(t, test.want, rr.Data())
+			assert.Equal(t, test.status, rr.recorder.Code)
+			assert.Equal(t, test.message, rr.Message())
+			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+		})
+	}
 }
 
-// TestUserController_Update - Test update endpoint
+// TestUserController_Update - Test Update route
 func TestUserController_Update(t *testing.T) {
 
 	user := domain.User{
@@ -351,173 +383,280 @@ func TestUserController_Update(t *testing.T) {
 		Email:     "verbis@verbiscms.com",
 	}
 
-	// Test success
-	t.Run("Success", func(t *testing.T) {
-		test := newResponseRecorder(t)
+	tt := []struct {
+		name       string
+		want       string
+		status     int
+		message    string
+		input interface{}
+		mock func(u *modelMocks.UserRepository)
+		url string
+	}{
+		{
+			name:       "Success",
+			want:       `{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"verbis@verbiscms.com","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":123,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":1,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"}`,
+			status:     200,
+			message:    "Successfully updated user with ID: 123",
+			input: user,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Update", &user).Return(user, nil)
+			},
+			url: "/users/123",
+		},
+		{
+			name:       "Validation Failed",
+			want:       `{"errors":[{"key":"role_id","message":"Role Id is required.","type":"required"}]}`,
+			status:     400,
+			message:    "Validation failed",
+			input: userBadValidation,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Update", userBadValidation).Return(domain.User{}, fmt.Errorf("error"))
+			},
+			url: "/users/123",
+		},
+		{
+			name:       "Invalid ID",
+			want:       `{}`,
+			status:     400,
+			message:    "A valid ID is required to update the user",
+			input: user,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Update", userBadValidation).Return(domain.User{}, fmt.Errorf("error"))
+			},
+			url: "/users/wrongid",
+		},
+		{
+			name:       "Not Found",
+			want:       `{}`,
+			status:     400,
+			message:    "not found",
+			input: user,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Update", &user).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			},
+			url: "/users/123",
+		},
+		{
+			name:       "Internal",
+			want:       `{}`,
+			status:     500,
+			message:    "internal",
+			input: user,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Update", &user).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+			url: "/users/123",
+		},
 
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Update", &user).Return(user, nil)
-		userString, err := json.Marshal(user)
-		if err != nil {
-			t.Fatal(err)
-		}
+	}
 
-		test.RequestAndServe("PUT", "/users/123", "/users/:id", bytes.NewBuffer(userString), func(g *gin.Context) {
-			getUserMock(&userMock).Update(g)
+	for _, test := range tt {
+
+		t.Run(test.name, func(t *testing.T) {
+			rr := newResponseRecorder(t)
+			mock := &modelMocks.UserRepository{}
+			test.mock(mock)
+
+			body, err := json.Marshal(test.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			rr.RequestAndServe("PUT", test.url, "/users/:id", bytes.NewBuffer(body), func(g *gin.Context) {
+				getUserMock(mock).Update(g)
+			})
+
+			assert.JSONEq(t, test.want, rr.Data())
+			assert.Equal(t, test.status, rr.recorder.Code)
+			assert.Equal(t, test.message, rr.Message())
+			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 		})
-
-		test.RunSuccess(&user)
-		assert.Equal(test.testing, test.Message(), "Successfully updated user with ID: 123")
-	})
-
-	// Test bad validation
-	t.Run("Validation Failed", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Update", userBadValidation).Return(nil, fmt.Errorf("error"))
-		userString, err := json.Marshal(userBadValidation)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		test.RequestAndServe("PUT", "/users/123", "/users/:id", bytes.NewBuffer(userString), func(g *gin.Context) {
-			getUserMock(&userMock).Update(g)
-		})
-
-		test.RunValidationError()
-		assert.Equal(test.testing, test.Message(), "Validation failed")
-	})
-
-	// Test invalid ID passed
-	t.Run("Invalid ID", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Update", 123).Return(domain.User{}, fmt.Errorf("error"))
-		userString, err := json.Marshal(user)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		test.RequestAndServe("PUT", "/users/wrongid", "/users/:id", bytes.NewBuffer(userString), func(g *gin.Context) {
-			getUserMock(&userMock).Update(g)
-		})
-
-		test.RunParamError()
-		assert.Equal(test.testing, test.Message(), "A valid ID is required to update the user")
-	})
-
-	// Test errors.NOTFOUND
-	t.Run("Not Found", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Update", userBadValidation).Return(nil, errors.Error{Code:      errors.NOTFOUND})
-		userString, err := json.Marshal(userBadValidation)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		test.RequestAndServe("PUT", "/users/123", "/users/:id", bytes.NewBuffer(userString), func(g *gin.Context) {
-			getUserMock(&userMock).Update(g)
-		})
-
-		getUserMock(&userMock).Create(test.gin)
-		assert.Equal(t, 400, test.recorder.Code)
-	})
-
-	// Test errors.INVALID
-	t.Run("Internal Server Error", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Update", &user).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL})
-
-		userString, err := json.Marshal(user)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		test.RequestAndServe("PUT", "/users/123", "/users/:id", bytes.NewBuffer(userString), func(g *gin.Context) {
-			getUserMock(&userMock).Update(g)
-		})
-
-		test.RunInternalError()
-	})
+	}
 }
 
-// TestUserController_Delete - Test delete endpoint
+// TestUserController_Delete - Test Delete route
 func TestUserController_Delete(t *testing.T) {
 
-	// Test invalid ID passed
-	t.Run("Success", func(t *testing.T) {
-		test := newResponseRecorder(t)
+	tt := []struct {
+		name       string
+		want       string
+		status     int
+		message    string
+		mock func(u *modelMocks.UserRepository)
+		url string
+	}{
+		{
+			name:       "Success",
+			want:       `null`,
+			status:     200,
+			message:    "Successfully deleted user with ID: 123",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("Delete", 123).Return(nil)
+			},
+			url: "/users/123",
+		},
+		{
+			name:       "Invalid ID",
+			want:       `{}`,
+			status:     400,
+			message:    "A valid ID is required to delete a user",
+			mock:  func(u *modelMocks.UserRepository) {
+				u.On("Delete", 123).Return(nil)
+			},
+			url: "/users/wrongid",
+		},
+		{
+			name:       "Not Found",
+			want:       `{}`,
+			status:     400,
+			message:    "not found",
+			mock:  func(u *modelMocks.UserRepository) {
+				u.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			},
+			url: "/users/123",
+		},
+		{
+			name:       "Conflict",
+			want:       `{}`,
+			status:     400,
+			message:    "conflict",
+			mock:  func(u *modelMocks.UserRepository) {
+				u.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			},
+			url: "/users/123",
+		},
+		{
+			name:       "Internal",
+			want:       `{}`,
+			status:     500,
+			message:    "internal",
+			mock:  func(u *modelMocks.UserRepository) {
+				u.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+			url: "/users/123",
+		},
+	}
 
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Delete", 123).Return(nil)
+	for _, test := range tt {
 
-		test.RequestAndServe("DELETE", "/users/123", "/users/:id", nil, func(g *gin.Context) {
-			getUserMock(&userMock).Delete(g)
+		t.Run(test.name, func(t *testing.T) {
+			rr := newResponseRecorder(t)
+			mock := &modelMocks.UserRepository{}
+			test.mock(mock)
+
+			rr.RequestAndServe("DELETE", test.url, "/users/:id", nil, func(g *gin.Context) {
+				getUserMock(mock).Delete(g)
+			})
+
+			assert.JSONEq(t, test.want, rr.Data())
+			assert.Equal(t, test.status, rr.recorder.Code)
+			assert.Equal(t, test.message, rr.Message())
+			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 		})
+	}
+}
 
-		test.RunSuccess(nil)
-	})
+// TestUserController_ResetPassword - Test Reset Password route
+func TestUserController_ResetPassword(t *testing.T) {
 
-	// Test invalid ID passed
-	t.Run("Invalid ID", func(t *testing.T) {
-		test := newResponseRecorder(t)
+	reset := &domain.UserPasswordReset{
+		DBPassword: "password",
+		CurrentPassword: "password",
+		NewPassword:     "verbiscms",
+		ConfirmPassword: "verbiscms",
+	}
 
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Delete", 0).Return(fmt.Errorf("error"))
+	//resetBadValidation := &domain.UserPasswordReset{
+	//	CurrentPassword: "password",
+	//	NewPassword:     "verbis",
+	//	ConfirmPassword: "verbisc",
+	//}
 
-		test.RequestAndServe("DELETE", "/users/wrongval", "/users/:id", nil, func(g *gin.Context) {
-			getUserMock(&userMock).Delete(g)
+	tt := []struct {
+		name       string
+		want       string
+		status     int
+		message    string
+		input interface{}
+		mock func(u *modelMocks.UserRepository)
+		url string
+	}{
+		{
+			name:       "Success",
+			want:       `{}`,
+			status:     200,
+			message:    "Successfully updated password for the user with ID: 123",
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, nil)
+				u.On("ResetPassword", reset).Return(nil)
+			},
+			input: reset,
+			url: "/users/reset/123",
+		},
+		//{
+		//	name:       "Invalid ID",
+		//	want:       `{}`,
+		//	status:     400,
+		//	message:    "A valid ID is required to update a user's password",
+		//	mock:  func(u *modelMocks.UserRepository) {
+		//		u.On("ResetPassword", 123).Return(nil)
+		//		u.On("GetById", )
+		//	},
+		//	input: reset,
+		//	url: "/users/wrongid",
+		//},
+		//{
+		//	name:       "Not Found",
+		//	want:       `{}`,
+		//	status:     400,
+		//	message:    "not found",
+		//	mock:  func(u *modelMocks.UserRepository) {
+		//		u.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+		//	},
+		//	url: "/users/123",
+		//},
+		//{
+		//	name:       "Conflict",
+		//	want:       `{}`,
+		//	status:     400,
+		//	message:    "conflict",
+		//	mock:  func(u *modelMocks.UserRepository) {
+		//		u.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+		//	},
+		//	url: "/users/123",
+		//},
+		//{
+		//	name:       "Internal",
+		//	want:       `{}`,
+		//	status:     500,
+		//	message:    "internal",
+		//	mock:  func(u *modelMocks.UserRepository) {
+		//		u.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+		//	},
+		//	url: "/users/123",
+		//},
+	}
+
+	for _, test := range tt {
+
+		t.Run(test.name, func(t *testing.T) {
+			rr := newResponseRecorder(t)
+			mock := &modelMocks.UserRepository{}
+			test.mock(mock)
+
+			body, err := json.Marshal(test.input)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			rr.RequestAndServe("DELETE", test.url, "/users/reset/:id", bytes.NewBuffer(body), func(g *gin.Context) {
+				getUserMock(mock).ResetPassword(g)
+			})
+
+			//assert.JSONEq(t, test.want, rr.Data())
+			//assert.Equal(t, test.status, rr.recorder.Code)
+			//assert.Equal(t, test.message, rr.Message())
+			//assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 		})
-
-		test.RunParamError()
-		assert.Equal(test.testing, test.Message(), "A valid ID is required to delete a user")
-	})
-
-	// Test errors.NOTFOUND
-	t.Run("Not Found", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND})
-
-		test.RequestAndServe("DELETE", "/users/123", "/users/:id", nil, func(g *gin.Context) {
-			getUserMock(&userMock).Delete(g)
-		})
-
-		assert.Equal(t, 400, test.recorder.Code)
-	})
-
-	// Test errors.INVALID
-	t.Run("Invalid", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Delete", 123).Return(&errors.Error{Code: errors.INVALID})
-
-		test.RequestAndServe("DELETE", "/users/123", "/users/:id", nil, func(g *gin.Context) {
-			getUserMock(&userMock).Delete(g)
-		})
-
-		assert.Equal(t, 400, test.recorder.Code)
-	})
-
-	// Test errors.INVALID
-	t.Run("Internal Server Error", func(t *testing.T) {
-		test := newResponseRecorder(t)
-
-		userMock := modelMocks.UserRepository{}
-		userMock.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL})
-
-		test.RequestAndServe("DELETE", "/users/123", "/users/:id", nil, func(g *gin.Context) {
-			getUserMock(&userMock).Delete(g)
-		})
-
-		test.RunInternalError()
-	})
+	}
 }

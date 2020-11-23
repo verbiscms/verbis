@@ -68,8 +68,8 @@ var (
 type SiteRepository interface {
 	GetGlobalConfig() *domain.Site
 	GetThemeConfig() (domain.ThemeConfig, error)
-	GetTemplates() (*domain.Templates, error)
-	GetLayouts() (*domain.Layouts, error)
+	GetTemplates() (domain.Templates, error)
+	GetLayouts() (domain.Layouts, error)
 }
 
 // SiteStore defines the data layer for Posts
@@ -144,12 +144,12 @@ func (s *SiteStore) GetThemeConfig() (domain.ThemeConfig, error) {
 
 // Get all templates stored within the templates directory
 // Returns errors.INTERNAL if the template path is invalid.
-func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
+func (s *SiteStore) GetTemplates() (domain.Templates, error) {
 	const op = "SiteRepository.GetTemplates"
 
 	files, err := s.walkMatch(paths.Templates(), "*"+s.config.Template.FileExtension)
 	if err != nil {
-		return &domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & file extension: %s, %s", paths.Templates(), "*"+s.config.Template.FileExtension), Operation: op}
+		return domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & file extension: %s, %s", paths.Templates(), "*"+s.config.Template.FileExtension), Operation: op}
 	}
 
 	var templates []map[string]interface{}
@@ -172,24 +172,20 @@ func (s *SiteStore) GetTemplates() (*domain.Templates, error) {
 	}
 
 	if len(t.Template) == 0 {
-		var m = make([]map[string]interface{}, 0)
-		t := domain.Templates{
-			Template: m,
-		}
-		return &t, nil
+		return domain.Templates{}, &errors.Error{Code: errors.NOTFOUND, Message: "No page templates available", Err: fmt.Errorf("no page templates available"), Operation: op}
 	}
 
-	return &t, nil
+	return t, nil
 }
 
 // Get all layouts stored within the layouts directory
 // Returns errors.INTERNAL if the layout path is invalid.
-func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
+func (s *SiteStore) GetLayouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
 	files, err := s.walkMatch(paths.Layouts(), "*"+s.config.Template.FileExtension)
 	if err != nil {
-		return &domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get layouts from the path & file extension: %s, %s", paths.Templates(), "*"+s.config.Template.FileExtension), Operation: op}
+		return domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get layouts from the path & file extension: %s, %s", paths.Templates(), "*"+s.config.Template.FileExtension), Operation: op}
 	}
 
 	var layouts []map[string]interface{}
@@ -212,14 +208,10 @@ func (s *SiteStore) GetLayouts() (*domain.Layouts, error) {
 	}
 
 	if len(t.Layout) == 0 {
-		var m = make([]map[string]interface{}, 0)
-		t := domain.Layouts{
-			Layout: m,
-		}
-		return &t, nil
+		return domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "No layouts available", Err: fmt.Errorf("no layouts available"), Operation: op}
 	}
 
-	return &t, nil
+	return t, nil
 }
 
 // walkMatch Walk through root and return array of strings

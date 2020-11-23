@@ -16,15 +16,15 @@ type SpaHandler interface {
 }
 
 // SpaController defines the handler for the SPA
-type SpaController struct{
-	config  config.Configuration
+type SpaController struct {
+	config config.Configuration
 	frontend.ErrorHandler
 }
 
 // newSpa - Construct
 func newSpa(config config.Configuration) *SpaController {
 	return &SpaController{
-		config: config,
+		config:       config,
 		ErrorHandler: &frontend.Errors{},
 	}
 }
@@ -59,7 +59,7 @@ func (c *SpaController) Serve(g *gin.Context) {
 		contentType := mime.TypeByExtension(extension)
 		g.Data(200, contentType, data)
 
-	// Page catching
+		// Page catching
 	} else {
 		data, err := ioutil.ReadFile(adminPath + "/index.html")
 
