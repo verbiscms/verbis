@@ -11,18 +11,26 @@ import (
 	modelMocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	pkgValidate "github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 // getUserMock is a helper to obtain a mock user controller
 // for testing.
-func getUserMock(userMock models.UserRepository) *UserController {
+func getUserMock(m models.UserRepository) *UserController {
 	return &UserController{
 		store: &models.Store{
-			User: userMock,
+			User: m,
 		},
 	}
+}
+
+// mockComparePassword for the password field on the domain.UserPasswordReset
+// (custom validation)
+func mockComparePassword(fl pkgValidate.FieldLevel) bool {
+	return true
 }
 
 // Test_NewUser - Test construct
@@ -447,7 +455,6 @@ func TestUserController_Update(t *testing.T) {
 			},
 			url: "/users/123",
 		},
-
 	}
 
 	for _, test := range tt {
@@ -559,18 +566,18 @@ func TestUserController_Delete(t *testing.T) {
 // TestUserController_ResetPassword - Test Reset Password route
 func TestUserController_ResetPassword(t *testing.T) {
 
-	reset := &domain.UserPasswordReset{
-		DBPassword: "password",
+	reset := domain.UserPasswordReset{
+		DBPassword: "",
 		CurrentPassword: "password",
 		NewPassword:     "verbiscms",
 		ConfirmPassword: "verbiscms",
 	}
 
-	//resetBadValidation := &domain.UserPasswordReset{
-	//	CurrentPassword: "password",
-	//	NewPassword:     "verbis",
-	//	ConfirmPassword: "verbisc",
-	//}
+	resetBadValidation := &domain.UserPasswordReset{
+		CurrentPassword: "password",
+		NewPassword:     "verbiscms",
+		ConfirmPassword: "verbiscmss",
+	}
 
 	tt := []struct {
 		name       string
@@ -583,58 +590,76 @@ func TestUserController_ResetPassword(t *testing.T) {
 	}{
 		{
 			name:       "Success",
-			want:       `{}`,
+			want:       `null`,
 			status:     200,
 			message:    "Successfully updated password for the user with ID: 123",
 			mock: func(u *modelMocks.UserRepository) {
 				u.On("GetById", 123).Return(domain.User{}, nil)
-				u.On("ResetPassword", reset).Return(nil)
+				u.On("ResetPassword", 123, reset).Return(nil)
 			},
 			input: reset,
 			url: "/users/reset/123",
 		},
-		//{
-		//	name:       "Invalid ID",
-		//	want:       `{}`,
-		//	status:     400,
-		//	message:    "A valid ID is required to update a user's password",
-		//	mock:  func(u *modelMocks.UserRepository) {
-		//		u.On("ResetPassword", 123).Return(nil)
-		//		u.On("GetById", )
-		//	},
-		//	input: reset,
-		//	url: "/users/wrongid",
-		//},
-		//{
-		//	name:       "Not Found",
-		//	want:       `{}`,
-		//	status:     400,
-		//	message:    "not found",
-		//	mock:  func(u *modelMocks.UserRepository) {
-		//		u.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
-		//	},
-		//	url: "/users/123",
-		//},
-		//{
-		//	name:       "Conflict",
-		//	want:       `{}`,
-		//	status:     400,
-		//	message:    "conflict",
-		//	mock:  func(u *modelMocks.UserRepository) {
-		//		u.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
-		//	},
-		//	url: "/users/123",
-		//},
-		//{
-		//	name:       "Internal",
-		//	want:       `{}`,
-		//	status:     500,
-		//	message:    "internal",
-		//	mock:  func(u *modelMocks.UserRepository) {
-		//		u.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
-		//	},
-		//	url: "/users/123",
-		//},
+		{
+			name:       "Invalid ID",
+			want:       `{}`,
+			status:     400,
+			message:    "A valid ID is required to update a user's password",
+			mock:  func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, nil)
+				u.On("ResetPassword", 123, reset).Return(nil)
+			},
+			input: reset,
+			url: "/users/reset/wrongid",
+		},
+		{
+			name:       "Not found",
+			want:       `{}`,
+			status:     400,
+			message:    "No user has been found with the ID: 123",
+			input: reset,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				u.On("ResetPassword", 123, reset).Return(nil)
+			},
+			url: "/users/reset/123",
+		},
+		{
+			name:       "Validation Failed",
+			want:       `{"errors":[{"key":"confirm_password", "message":"Confirm Password must equal the New Password.", "type":"eqfield"}]}`,
+			status:     400,
+			message:    "Validation failed",
+			input: resetBadValidation,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, nil)
+				u.On("ResetPassword", 123, reset).Return(nil)
+			},
+			url: "/users/reset/123",
+		},
+		{
+			name:       "Invalid",
+			want:       `{}`,
+			status:     400,
+			message:    "invalid",
+			input: reset,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, nil)
+				u.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
+			},
+			url: "/users/reset/123",
+		},
+		{
+			name:       "Internal",
+			want:       `{}`,
+			status:     500,
+			message:    "internal",
+			input: reset,
+			mock: func(u *modelMocks.UserRepository) {
+				u.On("GetById", 123).Return(domain.User{}, nil)
+				u.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+			url: "/users/reset/123",
+		},
 	}
 
 	for _, test := range tt {
@@ -643,6 +668,10 @@ func TestUserController_ResetPassword(t *testing.T) {
 			rr := newResponseRecorder(t)
 			mock := &modelMocks.UserRepository{}
 			test.mock(mock)
+
+			if v, ok := binding.Validator.Engine().(*pkgValidate.Validate); ok {
+				v.RegisterValidation("password", mockComparePassword)
+			}
 
 			body, err := json.Marshal(test.input)
 			if err != nil {
@@ -653,10 +682,11 @@ func TestUserController_ResetPassword(t *testing.T) {
 				getUserMock(mock).ResetPassword(g)
 			})
 
-			//assert.JSONEq(t, test.want, rr.Data())
-			//assert.Equal(t, test.status, rr.recorder.Code)
-			//assert.Equal(t, test.message, rr.Message())
-			//assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+			assert.JSONEq(t, test.want, rr.Data())
+			assert.Equal(t, test.status, rr.recorder.Code)
+			assert.Equal(t, test.message, rr.Message())
+			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 		})
 	}
 }
+
