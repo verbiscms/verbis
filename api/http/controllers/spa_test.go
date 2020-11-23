@@ -16,7 +16,7 @@ func getSPAMock() *SpaController {
 	mockError := mocks.ErrorHandler{}
 	mockError.On("NotFound", mock.Anything, mock.Anything).Return(mock.Anything)
 	return &SpaController{
-		config: config.Configuration{},
+		config:       config.Configuration{},
 		ErrorHandler: &mockError,
 	}
 }
@@ -41,13 +41,13 @@ func TestSpaController_Serve(t *testing.T) {
 	t.Run("Invalid", func(t *testing.T) {
 		test := newResponseRecorder(t)
 
-		test.RequestAndServe("GET", "/admin" + imagePath, "/admin" + imagePath, nil, func(g *gin.Context) {
+		test.RequestAndServe("GET", "/admin"+imagePath, "/admin"+imagePath, nil, func(g *gin.Context) {
 			getSPAMock().Serve(g)
 		})
 
 		data, err := ioutil.ReadFile(basePath + imagePath)
 		if err != nil {
-			t.Errorf("could not open file with the path %s", basePath + adminPath)
+			t.Errorf("could not open file with the path %s", basePath+adminPath)
 		}
 
 		assert.Equal(t, test.recorder.Body.Bytes(), data)
@@ -55,12 +55,11 @@ func TestSpaController_Serve(t *testing.T) {
 		assert.Equal(t, test.recorder.Header().Get("Content-Type"), "image/svg+xml")
 	})
 
-
 	// Test 404 of file
 	t.Run("404", func(t *testing.T) {
 		test := newResponseRecorder(t)
 
-		test.RequestAndServe("GET", "/admin" + imagePath, "/admin/wrongimage.svg", nil, func(g *gin.Context) {
+		test.RequestAndServe("GET", "/admin"+imagePath, "/admin/wrongimage.svg", nil, func(g *gin.Context) {
 			getSPAMock().Serve(g)
 		})
 
@@ -77,7 +76,7 @@ func TestSpaController_Serve(t *testing.T) {
 
 		data, err := ioutil.ReadFile(basePath + "/html/index.html")
 		if err != nil {
-			t.Errorf("could not open file with the path %s", basePath + adminPath)
+			t.Errorf("could not open file with the path %s", basePath+adminPath)
 		}
 
 		assert.Equal(t, test.recorder.Body.String(), string(data))

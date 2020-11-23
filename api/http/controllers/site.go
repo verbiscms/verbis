@@ -60,7 +60,10 @@ func (c *SiteController) GetTemplates(g *gin.Context) {
 	const op = "SiteHandler.GetTemplates"
 
 	templates, err := c.store.Site.GetTemplates()
-	if err != nil {
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
@@ -74,10 +77,15 @@ func (c *SiteController) GetTemplates(g *gin.Context) {
 // Returns 500 if there was an error getting the layouts.
 func (c *SiteController) GetLayouts(g *gin.Context) {
 	const op = "SiteHandler.GetLayouts"
+
 	templates, err := c.store.Site.GetLayouts()
-	if err != nil {
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
+
 	Respond(g, 200, "Successfully obtained layouts", templates)
 }
