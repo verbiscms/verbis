@@ -33,7 +33,6 @@ func newResponseRecorder(t *testing.T) *controllerTest {
 	}
 }
 
-
 // Message gets the response message from the body
 func (c *controllerTest) Message() string {
 	b, ok := c.Body()["message"]
@@ -47,6 +46,7 @@ func (c *controllerTest) Message() string {
 func (c *controllerTest) Body() map[string]interface{} {
 	body := map[string]interface{}{}
 	if err := json.Unmarshal(c.recorder.Body.Bytes(), &body); err != nil {
+		fmt.Println(c.recorder.Body.String())
 		c.testing.Fatal(fmt.Sprintf("error unmarshalling body %v", err))
 	}
 	return body

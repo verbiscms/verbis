@@ -201,11 +201,12 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
 		Respond(g, 400, "A valid ID is required to update a user's password", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
 	}
 
 	user, err := c.store.User.GetById(id)
 	if err != nil {
-		Respond(g, 200, "No user has been found with the ID:" + strconv.Itoa(id), err)
+		Respond(g, 400, "No user has been found with the ID: " + strconv.Itoa(id), err)
 		return
 	}
 
