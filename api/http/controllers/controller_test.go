@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -18,9 +19,9 @@ type controllerTest struct {
 	engine   *gin.Engine
 }
 
-// newResponseRecorder - New recorder for testing
+// newTestSuite - New recorder for testing
 // controllers, initalises gin & sets gin mode.
-func newResponseRecorder(t *testing.T) *controllerTest {
+func newTestSuite(t *testing.T) *controllerTest {
 	gin.SetMode(gin.TestMode)
 	rr := httptest.NewRecorder()
 	gin, engine := gin.CreateTestContext(rr)
@@ -31,6 +32,14 @@ func newResponseRecorder(t *testing.T) *controllerTest {
 		gin:      gin,
 		engine:   engine,
 	}
+}
+
+// Run the API test.
+func (c *controllerTest) Run(want string, status int, message string) {
+	assert.JSONEq(c.testing, want, c.Data())
+	assert.Equal(c.testing, status, c.recorder.Code)
+	assert.Equal(c.testing, message, c.Message())
+	assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
 }
 
 // Message gets the response message from the body
@@ -54,8 +63,6 @@ func (c *controllerTest) Body() map[string]interface{} {
 
 // getResponseData gets the response body & checks if the data key
 // exists and then marshalls the data key to form a string.
-//
-// Returns a string of the marshalled data
 func (c *controllerTest) Data() string {
 
 	b, ok := c.Body()["data"]
@@ -81,6 +88,8 @@ func (c *controllerTest) NewRequest(method string, url string, body io.Reader) {
 	c.gin.Request = req
 }
 
+// NewRequest makes a new http.Request and assigns the gin testing
+// the request, serves HTTP.
 func (c *controllerTest) RequestAndServe(method string, url string, engineUrl string, body io.Reader, handler func(ctx *gin.Context)) {
 	switch method {
 	case "GET":
