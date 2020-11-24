@@ -115,9 +115,6 @@ func (c *MediaController) Upload(g *gin.Context) {
 		return
 	}
 
-	fmt.Println(files[0].Header)
-	fmt.Println(files[0].Filename)
-
 	if err := c.store.Media.Validate(files[0]); err != nil {
 		Respond(g, 415, errors.Message(err), err)
 		return
