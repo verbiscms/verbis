@@ -39,7 +39,7 @@ func TestSpaController_Serve(t *testing.T) {
 
 	// Test success getting svg file
 	t.Run("Invalid", func(t *testing.T) {
-		test := newResponseRecorder(t)
+		test := newTestSuite(t)
 
 		test.RequestAndServe("GET", "/admin"+imagePath, "/admin"+imagePath, nil, func(g *gin.Context) {
 			getSPAMock().Serve(g)
@@ -57,7 +57,7 @@ func TestSpaController_Serve(t *testing.T) {
 
 	// Test 404 of file
 	t.Run("404", func(t *testing.T) {
-		test := newResponseRecorder(t)
+		test := newTestSuite(t)
 
 		test.RequestAndServe("GET", "/admin"+imagePath, "/admin/wrongimage.svg", nil, func(g *gin.Context) {
 			getSPAMock().Serve(g)
@@ -68,7 +68,7 @@ func TestSpaController_Serve(t *testing.T) {
 
 	// Test success getting html file
 	t.Run("Invalid", func(t *testing.T) {
-		test := newResponseRecorder(t)
+		test := newTestSuite(t)
 
 		test.RequestAndServe("GET", "/admin/html/index.html", "/admin/html/index.html", nil, func(g *gin.Context) {
 			getSPAMock().Serve(g)

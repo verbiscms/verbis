@@ -37,7 +37,7 @@ func Test_NewSite(t *testing.T) {
 // TestSiteController_GetSite - Test GetSite route
 func TestSiteController_GetSite(t *testing.T) {
 
-	rr := newResponseRecorder(t)
+	rr := newTestSuite(t)
 
 	t.Run("Success", func(t *testing.T) {
 
@@ -64,10 +64,7 @@ func TestSiteController_GetSite(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		assert.JSONEq(t, string(want), rr.Data())
-		assert.Equal(t,  200, rr.recorder.Code)
-		assert.Equal(t, "Successfully obtained site config", rr.Message())
-		assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+		rr.Run(string(want), 200, "Successfully obtained site config")
 	})
 }
 
@@ -82,15 +79,13 @@ func TestSiteController_GetTheme(t *testing.T) {
 		},
 	}
 
-	tt := []struct {
-		name       string
+	tt := map[string]struct {
 		want       string
 		status     int
 		message    string
 		mock func(u *mocks.SiteRepository)
 	}{
-		{
-			name: "Success",
+		"Success": {
 			want: `{"assets_path":"","editor":{"modules":null,"options":null},"resources":null,"theme":{"description":"VerbisCMS","title":"Verbis","version":"0.1"}}`,
 			status: 200,
 			message: "Successfully obtained theme config",
@@ -98,8 +93,7 @@ func TestSiteController_GetTheme(t *testing.T) {
 				m.On("GetThemeConfig").Return(theme, nil)
 			},
 		},
-		{
-			name:       "Internal Error",
+		"Internal Error": {
 			want:       `{}`,
 			status:     500,
 			message:    "internal",
@@ -109,10 +103,10 @@ func TestSiteController_GetTheme(t *testing.T) {
 		},
 	}
 
-	for _, test := range tt {
+	for name, test := range tt {
 
-		t.Run(test.name, func(t *testing.T) {
-			rr := newResponseRecorder(t)
+		t.Run(name, func(t *testing.T) {
+			rr := newTestSuite(t)
 			mock := &mocks.SiteRepository{}
 			test.mock(mock)
 
@@ -120,10 +114,7 @@ func TestSiteController_GetTheme(t *testing.T) {
 				getSiteMock(mock).GetTheme(g)
 			})
 
-			assert.JSONEq(t, test.want, rr.Data())
-			assert.Equal(t, test.status, rr.recorder.Code)
-			assert.Equal(t, test.message, rr.Message())
-			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+			rr.Run(test.want, test.status, test.message)
 		})
 	}
 }
@@ -139,15 +130,13 @@ func TestSiteController_GetTemplates(t *testing.T) {
 		},
 	}
 
-	tt := []struct {
-		name       string
+	tt := map[string]struct {
 		want       string
 		status     int
 		message    string
 		mock func(u *mocks.SiteRepository)
 	}{
-		{
-			name: "Success",
+		"Success": {
 			want: `{"templates":[{"test":"testing"}]}`,
 			status: 200,
 			message: "Successfully obtained templates",
@@ -155,8 +144,7 @@ func TestSiteController_GetTemplates(t *testing.T) {
 				m.On("GetTemplates").Return(templates, nil)
 			},
 		},
-		{
-			name:       "Not Found",
+		"Not Found": {
 			want:       `{}`,
 			status:     200,
 			message:    "not found",
@@ -164,8 +152,7 @@ func TestSiteController_GetTemplates(t *testing.T) {
 				m.On("GetTemplates").Return(domain.Templates{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
-		{
-			name:       "Internal Error",
+		"Internal Error": {
 			want:       `{}`,
 			status:     500,
 			message:    "internal",
@@ -175,10 +162,10 @@ func TestSiteController_GetTemplates(t *testing.T) {
 		},
 	}
 
-	for _, test := range tt {
+	for name, test := range tt {
 
-		t.Run(test.name, func(t *testing.T) {
-			rr := newResponseRecorder(t)
+		t.Run(name, func(t *testing.T) {
+			rr := newTestSuite(t)
 			mock := &mocks.SiteRepository{}
 			test.mock(mock)
 
@@ -186,10 +173,7 @@ func TestSiteController_GetTemplates(t *testing.T) {
 				getSiteMock(mock).GetTemplates(g)
 			})
 
-			assert.JSONEq(t, test.want, rr.Data())
-			assert.Equal(t, test.status, rr.recorder.Code)
-			assert.Equal(t, test.message, rr.Message())
-			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+			rr.Run(test.want, test.status, test.message)
 		})
 	}
 }
@@ -205,15 +189,13 @@ func TestSiteController_GetLayouts(t *testing.T) {
 		},
 	}
 
-	tt := []struct {
-		name       string
+	tt := map[string]struct {
 		want       string
 		status     int
 		message    string
 		mock func(u *mocks.SiteRepository)
 	}{
-		{
-			name: "Success",
+		"Success": {
 			want: `{"layouts":[{"test":"testing"}]}`,
 			status: 200,
 			message: "Successfully obtained layouts",
@@ -221,8 +203,7 @@ func TestSiteController_GetLayouts(t *testing.T) {
 				m.On("GetLayouts").Return(layouts, nil)
 			},
 		},
-		{
-			name:       "Not Found",
+		"Not Found": {
 			want:       `{}`,
 			status:     200,
 			message:    "not found",
@@ -230,8 +211,7 @@ func TestSiteController_GetLayouts(t *testing.T) {
 				m.On("GetLayouts").Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
-		{
-			name:       "Internal Error",
+		"Internal Error": {
 			want:       `{}`,
 			status:     500,
 			message:    "internal",
@@ -241,10 +221,10 @@ func TestSiteController_GetLayouts(t *testing.T) {
 		},
 	}
 
-	for _, test := range tt {
+	for name, test := range tt {
 
-		t.Run(test.name, func(t *testing.T) {
-			rr := newResponseRecorder(t)
+		t.Run(name, func(t *testing.T) {
+			rr := newTestSuite(t)
 			mock := &mocks.SiteRepository{}
 			test.mock(mock)
 
@@ -252,10 +232,7 @@ func TestSiteController_GetLayouts(t *testing.T) {
 				getSiteMock(mock).GetLayouts(g)
 			})
 
-			assert.JSONEq(t, test.want, rr.Data())
-			assert.Equal(t, test.status, rr.recorder.Code)
-			assert.Equal(t, test.message, rr.Message())
-			assert.Equal(t, rr.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+			rr.Run(test.want, test.status, test.message)
 		})
 	}
 }

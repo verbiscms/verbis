@@ -151,58 +151,60 @@ func NoPageFound(g *gin.Context) {
 // Returns true if the data has changed.
 func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 
-	if data != nil {
+	if data == nil {
+		return gin.H{}, true
+	}
 
-		// Get the type of data
-		dataType := reflect.TypeOf(data).String()
+	// Get the type of data
+	dataType := reflect.TypeOf(data).String()
 
-		// Report to the log if data is an error
-		if dataType == "*errors.Error" {
-			errData := data.(*errors.Error)
-			g.Set("verbis_error", errData)
+	// Report to the log if data is an error
+	if dataType == "*errors.Error" {
+		errData := data.(*errors.Error)
+		g.Set("verbis_error", errData)
 
-			if errData.Err != nil {
-				errType := reflect.TypeOf(errData.Err).String()
+		if errData.Err != nil {
+			errType := reflect.TypeOf(errData.Err).String()
 
-				if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID {
-					validationErrors, _ := errData.Err.(validator.ValidationErrors)
-					v := validation.New()
-					data = &ValidationErrJson{
-						Errors: v.Process(validationErrors),
-					}
-					return data, true
-				} else {
-					return gin.H{}, true
+			if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID {
+				validationErrors, _ := errData.Err.(validator.ValidationErrors)
+				v := validation.New()
+				data = &ValidationErrJson{
+					Errors: v.Process(validationErrors),
 				}
-			}
-
-			return gin.H{}, true
-		}
-
-		// Check if data is nil or an empty slice, if it is return empty object
-		if reflect.TypeOf(data).Kind().String() == "slice" {
-			s := reflect.ValueOf(data)
-			ret := make([]interface{}, s.Len())
-			if len(ret) == 0 {
+				return data, true
+			} else {
 				return gin.H{}, true
 			}
 		}
 
-		// If data is of type validation errors, pass to validator
+		return gin.H{}, true
+	}
 
-		// If the data is type unmarshal error
-		if dataType == "*json.UnmarshalTypeError" {
-			e, _ := data.(*json.UnmarshalTypeError)
-			data = &ValidationErrJson{
-				Errors: validation.ValidationError{
-					Key:     e.Field,
-					Type:    "Unmarshal error",
-					Message: "Invalid type passed to " + e.Struct + " struct.",
-				},
-			}
-			return data, true
+	// Check if data is nil or an empty slice, if it is return empty object
+	if reflect.TypeOf(data).Kind().String() == "slice" {
+		s := reflect.ValueOf(data)
+		ret := make([]interface{}, s.Len())
+		if len(ret) == 0 {
+			return gin.H{}, true
 		}
 	}
+
+	// If data is of type validation errors, pass to validator
+
+	// If the data is type unmarshal error
+	if dataType == "*json.UnmarshalTypeError" {
+		e, _ := data.(*json.UnmarshalTypeError)
+		data = &ValidationErrJson{
+			Errors: validation.ValidationError{
+				Key:     e.Field,
+				Type:    "Unmarshal error",
+				Message: "Invalid type passed to " + e.Struct + " struct.",
+			},
+		}
+		return data, true
+	}
+
 
 	return gin.H{}, false
 }
