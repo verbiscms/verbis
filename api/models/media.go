@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 
 	"fmt"
@@ -336,6 +337,9 @@ func (s *MediaStore) Update(m *domain.Media) error {
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the media item with the ID: %v", m.Id), Operation: op, Err: err}
 	}
+
+	// Clear the cache
+	cache.Store.Delete(m.Url)
 
 	return nil
 }

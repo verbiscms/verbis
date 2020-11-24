@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -77,12 +76,15 @@ func (c *MediaController) GetById(g *gin.Context) {
 	}
 
 	media, err := c.store.Media.GetById(id)
-	if err != nil {
-		Respond(g, 500, err.Error(), nil)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	} else if err != nil {
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained media with the ID: "+paramId, media)
+	Respond(g, 200, "Successfully obtained media item with ID: "+paramId, media)
 }
 
 // Upload - if there were no files attached to the body,
@@ -113,6 +115,9 @@ func (c *MediaController) Upload(g *gin.Context) {
 		return
 	}
 
+	fmt.Println(files[0].Header)
+	fmt.Println(files[0].Filename)
+
 	if err := c.store.Media.Validate(files[0]); err != nil {
 		Respond(g, 415, errors.Message(err), err)
 		return
@@ -142,29 +147,29 @@ func (c *MediaController) Upload(g *gin.Context) {
 func (c *MediaController) Update(g *gin.Context) {
 	const op = "MediaHandler.Update"
 
-	var media domain.Media
-	if err := g.ShouldBindJSON(&media); err != nil {
+	var m domain.Media
+	if err := g.ShouldBindJSON(&m); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500, "A valid ID is required to update the Media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to update the media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	media.Id = id
+	m.Id = id
 
-	err = c.store.Media.Update(&media)
-	if err != nil {
+	err = c.store.Media.Update(&m)
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	// Clear the cache
-	cache.Store.Delete(media.Url)
-
-	Respond(g, 200, "Successfully updated media item with the ID: "+strconv.Itoa(id), media)
+	Respond(g, 200, "Successfully updated media item with ID: "+strconv.Itoa(id), m)
 }
 
 // Delete
@@ -178,10 +183,11 @@ func (c *MediaController) Delete(g *gin.Context) {
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
 		Respond(g, 400, "A valid ID is required to delete a media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
 	}
 
 	err = c.store.Media.Delete(id)
-	if errors.Code(err) == errors.NOTFOUND {
+	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -189,5 +195,5 @@ func (c *MediaController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted media item with the ID: "+strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted media item with ID: "+strconv.Itoa(id), nil)
 }
