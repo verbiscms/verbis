@@ -7,6 +7,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	gohttp "net/http"
+
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -276,6 +278,36 @@ func TestMediaController_Update(t *testing.T) {
 	}
 }
 
+// Creates a new file upload http request with optional extra params
+func newfileUploadRequest(uri string, params map[string]string, paramName, path string) (*gohttp.Request, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, err := writer.CreateFormFile(paramName, filepath.Base(path))
+	if err != nil {
+		return nil, err
+	}
+	_, err = io.Copy(part, file)
+
+	for key, val := range params {
+		_ = writer.WriteField(key, val)
+	}
+	err = writer.Close()
+	if err != nil {
+		return nil, err
+	}
+
+
+	req, err := gohttp.NewRequest("POST", uri, body)
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+	return req, err
+}
+
 
 // TestMediaController_Upload - Test Upload route
 func TestMediaController_Upload(t *testing.T) {
@@ -299,16 +331,26 @@ func TestMediaController_Upload(t *testing.T) {
 
 
 
+	mr := multipart.NewReader(body, w.Boundary())
+	mt, err := mr.ReadForm(99999)
+
+	ft := mt.File["file"][0]
+
+	hello := *ft
+
 	m := &mocks.MediaRepository{}
 	m.On("Upload", body).Return(domain.Media{}, nil)
-	m.On("Validate", mock.Anything).Return(nil)
+	m.On("Validate", &hello).Return(nil)
 
 	u := &mocks.UserRepository{}
 	u.On("CheckToken", mock.Anything).Return(domain.User{}, nil)
 
-	rr.NewRequest("POST", "/media", body)
-	rr.gin.Request.Header.Set("Content-Type", w.FormDataContentType())
+	fmt.Println(body)
 
+
+	request, err := newfileUploadRequest("https://google.com/upload", nil, "file", path)
+
+	rr.gin.Request = request
 
 	mc := &MediaController{
 		store: &models.Store{
@@ -318,7 +360,7 @@ func TestMediaController_Upload(t *testing.T) {
 	}
 
 
-
+	mc.Upload(rr.gin)
 
 	fmt.Println(rr.Body())
 	fmt.Println(rr.recorder.Body.String())
