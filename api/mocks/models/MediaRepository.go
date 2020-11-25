@@ -209,20 +209,20 @@ func (_m *MediaRepository) Update(m *domain.Media) error {
 	return r0
 }
 
-// Upload provides a mock function with given fields: file, userId
-func (_m *MediaRepository) Upload(file *multipart.FileHeader, userId int) (domain.Media, error) {
-	ret := _m.Called(file, userId)
+// Upload provides a mock function with given fields: file, token
+func (_m *MediaRepository) Upload(file *multipart.FileHeader, token string) (domain.Media, error) {
+	ret := _m.Called(file, token)
 
 	var r0 domain.Media
-	if rf, ok := ret.Get(0).(func(*multipart.FileHeader, int) domain.Media); ok {
-		r0 = rf(file, userId)
+	if rf, ok := ret.Get(0).(func(*multipart.FileHeader, string) domain.Media); ok {
+		r0 = rf(file, token)
 	} else {
 		r0 = ret.Get(0).(domain.Media)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*multipart.FileHeader, int) error); ok {
-		r1 = rf(file, userId)
+	if rf, ok := ret.Get(1).(func(*multipart.FileHeader, string) error); ok {
+		r1 = rf(file, token)
 	} else {
 		r1 = ret.Error(1)
 	}

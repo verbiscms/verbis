@@ -120,20 +120,13 @@ func (c *MediaController) Upload(g *gin.Context) {
 		return
 	}
 
-	token := g.Request.Header.Get("token")
-	user, err := c.store.User.CheckToken(token)
-	if err != nil {
-		Respond(g, 401, errors.Message(err), err)
-		return
-	}
-
-	media, err := c.store.Media.Upload(files[0], user.Id)
+	media, err := c.store.Media.Upload(files[0], g.Request.Header.Get("token"))
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	Respond(g, 200, "Successfully uploaded media", media)
+	Respond(g, 200, "Successfully uploaded media item", media)
 }
 
 // Update
