@@ -236,29 +236,22 @@ func (_m *CategoryRepository) Total() (int, error) {
 }
 
 // Update provides a mock function with given fields: c
-func (_m *CategoryRepository) Update(c *domain.Category) error {
+func (_m *CategoryRepository) Update(c *domain.Category) (domain.Category, error) {
 	ret := _m.Called(c)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*domain.Category) error); ok {
+	var r0 domain.Category
+	if rf, ok := ret.Get(0).(func(*domain.Category) domain.Category); ok {
 		r0 = rf(c)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(domain.Category)
 	}
 
-	return r0
-}
-
-// changeArchivePostSlug provides a mock function with given fields: id, slug, resource
-func (_m *CategoryRepository) changeArchivePostSlug(id int, slug string, resource string) error {
-	ret := _m.Called(id, slug, resource)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(int, string, string) error); ok {
-		r0 = rf(id, slug, resource)
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*domain.Category) error); ok {
+		r1 = rf(c)
 	} else {
-		r0 = ret.Error(0)
+		r1 = ret.Error(1)
 	}
 
-	return r0
+	return r0, r1
 }

@@ -36,6 +36,7 @@ func newTestSuite(t *testing.T) *controllerTest {
 
 // Run the API test.
 func (c *controllerTest) Run(want string, status int, message string) {
+	 //fmt.Println(c.Data())
 	assert.JSONEq(c.testing, want, c.Data())
 	assert.Equal(c.testing, status, c.recorder.Code)
 	assert.Equal(c.testing, message, c.Message())
