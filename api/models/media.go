@@ -38,7 +38,7 @@ type MediaRepository interface {
 	GetByName(name string) (domain.Media, error)
 	GetByUrl(url string) (string, string, error)
 	Serve(uploadPath string, acceptWeb bool) ([]byte, string, error)
-	Upload(file *multipart.FileHeader, userId int) (domain.Media, error)
+	Upload(file *multipart.FileHeader, token string) (domain.Media, error)
 	Validate(file *multipart.FileHeader) error
 	Update(m *domain.Media) error
 	Delete(id int) error
@@ -51,6 +51,7 @@ type MediaStore struct {
 	db           *sqlx.DB
 	config       config.Configuration
 	optionsModel OptionsRepository
+	userModel 	UserRepository
 	options      domain.Options
 }
 
@@ -60,6 +61,7 @@ func newMedia(db *sqlx.DB, config config.Configuration) *MediaStore {
 		db:           db,
 		config:       config,
 		optionsModel: newOptions(db),
+		userModel: newUser(db, config),
 	}
 	ms.getOptionsStruct()
 	return ms
@@ -199,10 +201,16 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, 
 
 // Upload the media files, return bool is for server or user error
 // Returns errors.INTERNAL if the uploaded file failed to save.
-func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Media, error) {
+func (s *MediaStore) Upload(file *multipart.FileHeader, token string) (domain.Media, error) {
 	const op = "MediaRepository.Upload"
 
 	s.getOptionsStruct()
+
+	// Get the current logged in user
+	user, err := s.userModel.CheckToken(token)
+	if err != nil {
+		return domain.Media{}, nil
+	}
 
 	// E.G  /Users/admin/cms/storage/uploads
 	path := s.createDirectory()
@@ -236,7 +244,7 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, userId int) (domain.Medi
 	sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
 
 	// Insert into the database
-	dm, err := s.insert(key, cleanName+extension, path, int(file.Size), mimeType, sizes, userId)
+	dm, err := s.insert(key, cleanName+extension, path, int(file.Size), mimeType, sizes, user.Id)
 	if err != nil {
 		return domain.Media{}, err
 	}

@@ -7,16 +7,14 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	gohttp "net/http"
-
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"io"
 	"mime/multipart"
+	gohttp "net/http"
 	"os"
 	"path/filepath"
 	"testing"
@@ -278,94 +276,150 @@ func TestMediaController_Update(t *testing.T) {
 	}
 }
 
-// Creates a new file upload http request with optional extra params
-func newfileUploadRequest(uri string, params map[string]string, paramName, path string) (*gohttp.Request, error) {
-	file, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, err := writer.CreateFormFile(paramName, filepath.Base(path))
-	if err != nil {
-		return nil, err
-	}
-	_, err = io.Copy(part, file)
-
-	for key, val := range params {
-		_ = writer.WriteField(key, val)
-	}
-	err = writer.Close()
-	if err != nil {
-		return nil, err
-	}
-
-
-	req, err := gohttp.NewRequest("POST", uri, body)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
-	return req, err
-}
-
-
 // TestMediaController_Upload - Test Upload route
 func TestMediaController_Upload(t *testing.T) {
 
-	rr := newTestSuite(t)
-
 	path := "/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/images/gopher.svg"
 
-	body := new(bytes.Buffer)
-	w := multipart.NewWriter(body)
-	part, err := w.CreateFormFile("file", filepath.Base(path))
-	assert.NoError(t, err)
+	tt := map[string]struct {
+		want       string
+		status     int
+		message    string
+		files int
+		mock func(u *mocks.MediaRepository, multi []multipart.FileHeader)
+		url string
+	}{
+		"Success": {
+			want:    `{"alt":null,"created_at":"0001-01-01T00:00:00Z","description":null,"file_name":"","file_size":0,"id":0,"sizes":null,"title":null,"type":"","updated_at":"0001-01-01T00:00:00Z","url":"","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"}`,
+			status:  200,
+			message: "Successfully uploaded media item",
+			files: 1,
+			mock: func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+				m.On("Upload", &multi[0], "").Return(domain.Media{}, nil)
+				m.On("Validate", &multi[0]).Return(nil)
+			},
+			url: "/media",
+		},
+		"No Form": {
+			want:    `{}`,
+			status:  400,
+			message: "No files attached to the upload",
+			files: 0,
+			mock: func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+				m.On("Upload", multipart.FileHeader{}, "").Return(domain.Media{}, nil)
+				m.On("Validate", multipart.FileHeader{}).Return(nil)
+			},
+			url: "/media",
+		},
+		"No Files": {
+			want:    `{}`,
+			status:  400,
+			message: "Attach a file to the request to be uploaded",
+			files: 0,
+			mock: func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+				m.On("Upload", multipart.FileHeader{}, "").Return(domain.Media{}, nil)
+				m.On("Validate", multipart.FileHeader{}).Return(nil)
+			},
+			url: "/media",
+		},
+		"Too Many Files": {
+			want:    `{}`,
+			status:  400,
+			message: "Files are only permitted to be uploaded one at a time",
+			files: 5,
+			mock: func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+				m.On("Upload", &multi[0], "").Return(domain.Media{}, nil)
+				m.On("Validate", &multi[0]).Return(nil)
+			},
+			url: "/media",
+		},
+		"Invalid": {
+			want:    `{}`,
+			status:  415,
+			message: "invalid",
+			files: 1,
+			mock: func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+				m.On("Upload", &multi[0], "").Return(domain.Media{}, nil)
+				m.On("Validate", &multi[0]).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
+			},
+			url: "/media",
+		},
+		"Internal": {
+			want:    `{}`,
+			status:  500,
+			message: "internal",
+			files: 1,
+			mock: func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+				m.On("Upload", &multi[0], "").Return(domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Validate", &multi[0]).Return(nil)
+			},
+			url: "/media",
+		},
+	}
 
+	for name, test := range tt {
+
+		t.Run(name, func(t *testing.T) {
+			rr := newTestSuite(t)
+
+			request, multi := newfileUploadRequest(t, test.files, "https://google.com/upload", path)
+
+			mock := &mocks.MediaRepository{}
+			test.mock(mock, multi)
+			rr.gin.Request = request
+
+			if name == "No Form" {
+				rr.RequestAndServe("POST", test.url, "/media", nil, func(g *gin.Context) {
+					getMediaMock(mock).Upload(rr.gin)
+				})
+				return
+			}
+
+			getMediaMock(mock).Upload(rr.gin)
+			rr.Run(test.want, test.status, test.message)
+		})
+	}
+}
+
+// newfileUploadRequest - is a helper for setting up test files for the upload
+// endpoint. Creates a new file upload http request with optional
+// extra params
+func newfileUploadRequest(t *testing.T, filesAmount int, uri string, path string) (*gohttp.Request, []multipart.FileHeader) {
 	file, err := os.Open(path)
 	assert.NoError(t, err)
 	defer file.Close()
 
-	_, err = io.Copy(part, file)
-	assert.NoError(t, err)
-	assert.NoError(t, w.Close())
+	reqBody := bytes.Buffer{}
+	var multi []multipart.FileHeader
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
 
-
-
-	mr := multipart.NewReader(body, w.Boundary())
-	mt, err := mr.ReadForm(99999)
-
-	ft := mt.File["file"][0]
-
-	hello := *ft
-
-	m := &mocks.MediaRepository{}
-	m.On("Upload", body).Return(domain.Media{}, nil)
-	m.On("Validate", &hello).Return(nil)
-
-	u := &mocks.UserRepository{}
-	u.On("CheckToken", mock.Anything).Return(domain.User{}, nil)
-
-	fmt.Println(body)
-
-
-	request, err := newfileUploadRequest("https://google.com/upload", nil, "file", path)
-
-	rr.gin.Request = request
-
-	mc := &MediaController{
-		store: &models.Store{
-			Media: m,
-			User: u,
-		},
+	for i := 0; i < filesAmount; i++ {
+		part, err := writer.CreateFormFile("file", filepath.Base(path))
+		assert.NoError(t, err)
+		_, err = io.Copy(part, file)
+		assert.NoError(t, err)
 	}
 
+	err = writer.Close()
+	assert.NoError(t, err)
 
-	mc.Upload(rr.gin)
+	reqBody.Write(body.Bytes())
 
-	fmt.Println(rr.Body())
-	fmt.Println(rr.recorder.Body.String())
+	if filesAmount != 0 {
+		mr := multipart.NewReader(body, writer.Boundary())
+		mt, err := mr.ReadForm(99999)
+		assert.NoError(t, err)
+		ft := mt.File["file"][0]
+		multi = append(multi, *ft)
+	}
 
+	//&{map[] map[file:[0xc0002783c0 0xc000278410]]}
 
+	req, err := gohttp.NewRequest("POST", uri, bytes.NewBuffer(reqBody.Bytes()))
+	req.Header.Set("Content-Type", writer.FormDataContentType())
+
+	return req, multi
 }
 
 // TestMediaController_Delete - Test Delete route
