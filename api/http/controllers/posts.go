@@ -58,6 +58,7 @@ func (c *PostsController) Get(g *gin.Context) {
 	postData, err := c.store.Posts.FormatMultiple(posts)
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
+		return
 	}
 
 	pagination := http.NewPagination().Get(params, total)
@@ -81,8 +82,11 @@ func (c *PostsController) GetById(g *gin.Context) {
 	}
 
 	post, err := c.store.Posts.GetById(id)
-	if err != nil {
+	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
+		return
+	} else if err != nil {
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
@@ -92,7 +96,7 @@ func (c *PostsController) GetById(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained post with the ID: "+paramId, formatPost)
+	Respond(g, 200, "Successfully obtained post with ID: "+paramId, formatPost)
 }
 
 // Create

@@ -17,7 +17,7 @@ type CategoryRepository interface {
 	GetByPost(pageId int) (*domain.Category, error)
 	GetBySlug(slug string) (domain.Category, error)
 	Create(c *domain.Category) (domain.Category, error)
-	Update(c *domain.Category) error
+	Update(c *domain.Category) (domain.Category, error)
 	Delete(id int) error
 	Exists(id int) bool
 	ExistsByName(name string) bool
@@ -25,7 +25,6 @@ type CategoryRepository interface {
 	InsertPostCategory(postId int, categoryId *int) error
 	DeletePostCategories(id int) error
 	Total() (int, error)
-	changeArchivePostSlug(id int, slug string, resource string) error
 }
 
 // CategoryStore defines the data layer for Categories
@@ -152,18 +151,18 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 // Update category
 // Returns errors.NOTFOUND if the category was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *CategoryStore) Update(c *domain.Category) error {
+func (s *CategoryStore) Update(c *domain.Category) (domain.Category, error) {
 	const op = "CategoryRepository.Update"
 
 	oldCategory, err := s.GetById(c.Id)
 	if err != nil {
-		return err
+		return domain.Category{}, err
 	}
 
 	q := "UPDATE categories SET slug = ?, name = ?, description = ?, resource = ?, parent_id = ?, archive_id = ?, updated_at = NOW() WHERE id = ?"
 	_, err = s.db.Exec(q, c.Slug, c.Name, c.Description, c.Resource, c.ParentId, c.ArchiveId, c.Id)
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the category with the name: %s", c.Name), Operation: op, Err: err}
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the category with the name: %s", c.Name), Operation: op, Err: err}
 	}
 
 	if oldCategory.ArchiveId != c.ArchiveId {
@@ -173,19 +172,18 @@ func (s *CategoryStore) Update(c *domain.Category) error {
 	if oldCategory.Slug != c.Slug {
 		var posts []domain.Post
 		if err := s.db.Select(&posts, "SELECT * FROM posts WHERE slug LIKE '%"+oldCategory.Slug+"%'"); err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
+			return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
 		}
-		//for k, v
 	}
 
 	if c.ArchiveId != nil {
 		err := s.changeArchivePostSlug(*c.ArchiveId, c.Slug, c.Resource)
 		if err != nil {
-			return err
+			return domain.Category{}, err
 		}
 	}
 
-	return nil
+	return *c, nil
 }
 
 // Delete category from categories and post categories table
