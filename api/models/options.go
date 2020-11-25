@@ -2,11 +2,10 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-
-	//"encoding/json"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -78,6 +77,11 @@ func (s *OptionsStore) GetByName(name string) (interface{}, error) {
 func (s *OptionsStore) GetStruct() (domain.Options, error) {
 	const op = "OptionsRepository.GetStruct"
 
+	cachedOpts, found := cache.Store.Get("options-struct")
+	if found {
+		return cachedOpts.(domain.Options), nil
+	}
+
 	var opts []domain.OptionDB
 	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
 		return domain.Options{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not get options", Operation: op, Err: err}
@@ -100,6 +104,10 @@ func (s *OptionsStore) GetStruct() (domain.Options, error) {
 	var options domain.Options
 	if err := json.Unmarshal(mOpts, &options); err != nil {
 		return domain.Options{}, err
+	}
+
+	if !found {
+		go cache.Store.Set("options-struct", options, cache.RememberForever)
 	}
 
 	return options, nil

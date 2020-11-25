@@ -19,49 +19,7 @@ import (
 // Global Configuration, sets defaults to ensure that there are no
 // empty values within the themes config to prevent any errors.
 var (
-	themeConfig = domain.ThemeConfig{
-		Theme:      domain.Theme{},
-		Resources:  nil,
-		AssetsPath: "/assets",
-		Editor: domain.Editor{
-			Modules: []string{
-				"blockquote",
-				"code_block",
-				"code_block_highlight",
-				"hardbreak",
-				"h1",
-				"h2",
-				"h3",
-				"h4",
-				"h5",
-				"h6",
-				"paragraph",
-				"hr",
-				"ul",
-				"ol",
-				"bold",
-				"code",
-				"italic",
-				"link",
-				"strike",
-				"underline",
-				"history",
-				"search",
-				"trailing_node",
-				"color",
-			},
-			Options: map[string]interface{}{
-				"palette": []string{
-					"#4D4D4D", "#999999", "#FFFFFF", "#F44E3B", "#FE9200", "#FCDC00",
-					"#DBDF00", "#A4DD00", "#68CCCA", "#73D8FF", "#AEA1FF", "#FDA1FF",
-					"#333333", "#808080", "#CCCCCC", "#D33115", "#E27300", "#FCC400",
-					"#B0BC00", "#68BC00", "#16A5A5", "#009CE0", "#7B64FF", "#FA28FF",
-					"#000000", "#666666", "#B3B3B3", "#9F0500", "#C45100", "#FB9E00",
-					"#808900", "#194D33", "#0C797D", "#0062B1", "#653294", "#AB149E",
-				},
-			},
-		},
-	}
+
 )
 
 // SiteRepository defines methods for Posts to interact with the database
@@ -131,15 +89,62 @@ func (s *SiteStore) GetGlobalConfig() *domain.Site {
 func (s *SiteStore) GetThemeConfig() (domain.ThemeConfig, error) {
 	const op = "SiteRepository.GetThemeConfig"
 
+	var dc = getDefaultThemeConfig()
 	y, err := files.LoadFile(paths.Theme() + "/config.yml")
 	if err != nil {
 		return domain.ThemeConfig{}, err
 	}
-	if err := yaml.Unmarshal(y, &themeConfig); err != nil {
+	if err := yaml.Unmarshal(y, &dc); err != nil {
 		return domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the config.yml file", Operation: op, Err: err}
 	}
 
-	return themeConfig, nil
+	return dc, nil
+}
+
+func getDefaultThemeConfig() domain.ThemeConfig {
+	return domain.ThemeConfig{
+		Theme:      domain.Theme{},
+		Resources:  nil,
+		AssetsPath: "/assets",
+		Editor: domain.Editor{
+			Modules: []string{
+				"blockquote",
+				"code_block",
+				"code_block_highlight",
+				"hardbreak",
+				"h1",
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"paragraph",
+				"hr",
+				"ul",
+				"ol",
+				"bold",
+				"code",
+				"italic",
+				"link",
+				"strike",
+				"underline",
+				"history",
+				"search",
+				"trailing_node",
+				"color",
+			},
+			Options: map[string]interface{}{
+				"palette": []string{
+					"#4D4D4D", "#999999", "#FFFFFF", "#F44E3B", "#FE9200", "#FCDC00",
+					"#DBDF00", "#A4DD00", "#68CCCA", "#73D8FF", "#AEA1FF", "#FDA1FF",
+					"#333333", "#808080", "#CCCCCC", "#D33115", "#E27300", "#FCC400",
+					"#B0BC00", "#68BC00", "#16A5A5", "#009CE0", "#7B64FF", "#FA28FF",
+					"#000000", "#666666", "#B3B3B3", "#9F0500", "#C45100", "#FB9E00",
+					"#808900", "#194D33", "#0C797D", "#0062B1", "#653294", "#AB149E",
+				},
+			},
+		},
+	}
 }
 
 // Get all templates stored within the templates directory

@@ -3,6 +3,7 @@ package controllers
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -78,6 +79,11 @@ func newFrontend(m *models.Store, config config.Configuration) *FrontendControll
 func (c *FrontendController) GetUploads(g *gin.Context) {
 	const op = "FrontendHandler.GetUploads"
 
+	api.UploadChan <- 1
+	defer func() {
+		<-api.UploadChan
+	}()
+
 	// Get the base url e.g /uploads/2020/10/test.png
 	url := g.Request.URL.Path
 
@@ -85,6 +91,7 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 	var cachedFile *[]byte
 	var cachedMime *string
 	if c.options.CacheServerUploads {
+		fmt.Println("in upload cache")
 		cachedFile, cachedMime = c.GetCachedAsset(url)
 		if cachedFile != nil && cachedMime != nil {
 			g.Data(200, *cachedMime, *cachedFile)
@@ -215,6 +222,12 @@ func (c *FrontendController) GetCachedAsset(url string) (*[]byte, *string) {
 
 // Serve the front end website
 func (c *FrontendController) Serve(g *gin.Context) {
+
+	api.ServeChan <- 1
+	defer func() {
+		<-api.ServeChan
+	}()
+
 	const op = "FrontendHandler.Serve"
 
 	path := g.Request.URL.Path

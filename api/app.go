@@ -20,3 +20,7 @@ var App = struct {
 	Logo:        "/verbis/images/verbis-logo.svg",
 	Version:     "0.0.1",
 }
+
+// 50
+var UploadChan = make(chan int, 10)
+var ServeChan = make(chan int, 50)

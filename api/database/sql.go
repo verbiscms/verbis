@@ -42,6 +42,8 @@ func (db *MySql) GetDatabase() (*sqlx.DB, error) {
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not establish a database connection", Operation: op, Err: err}
 	}
+	driver.SetMaxIdleConns(5)
+	driver.SetMaxOpenConns(100)
 	return driver, nil
 }
 
