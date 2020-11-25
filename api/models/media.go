@@ -167,7 +167,8 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, error) {
 	const op = "MediaRepository.Serve"
 
-	s.getOptionsStruct()
+	// NOTE: Not concurrent safe
+	//s.getOptionsStruct()
 
 	path, mimeType, err := s.GetByUrl(uploadPath)
 	if err != nil {
