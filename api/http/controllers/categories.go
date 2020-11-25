@@ -74,19 +74,22 @@ func (c *CategoriesController) GetById(g *gin.Context) {
 	}
 
 	category, err := c.store.Categories.GetById(id)
-	if err != nil {
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained category with ID "+string(rune(id)), category)
+	Respond(g, 200, "Successfully obtained category with ID: "+ strconv.Itoa(id), category)
 }
 
 // Create
 //
 // Returns 200 if the category was created.
-// Returns 400 if the the validation failed.
 // Returns 500 if there was an error creating the category.
+// Returns 400 if the the validation failed or there was a conflict.
 func (c *CategoriesController) Create(g *gin.Context) {
 	const op = "CategoryHandler.Create"
 
@@ -97,12 +100,15 @@ func (c *CategoriesController) Create(g *gin.Context) {
 	}
 
 	newCategory, err := c.store.Categories.Create(&category)
-	if err != nil {
+	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	Respond(g, 200, "Successfully created category with ID "+string(rune(newCategory.Id)), newCategory)
+	Respond(g, 200, "Successfully created category with ID: "+strconv.Itoa(category.Id), newCategory)
 }
 
 // Update
@@ -121,12 +127,12 @@ func (c *CategoriesController) Update(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		Respond(g, 500, "A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	category.Id = id
 
-	err = c.store.Categories.Update(&category)
+	updatedCategory, err := c.store.Categories.Update(&category)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -135,7 +141,7 @@ func (c *CategoriesController) Update(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully updated category with ID "+string(rune(category.Id)), category)
+	Respond(g, 200, "Successfully updated category with ID: "+ strconv.Itoa(category.Id), updatedCategory)
 }
 
 // Delete
@@ -149,10 +155,11 @@ func (c *CategoriesController) Delete(g *gin.Context) {
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
 		Respond(g, 400, "A valid ID is required to delete a category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
 	}
 
 	err = c.store.Categories.Delete(id)
-	if errors.Code(err) == errors.NOTFOUND {
+	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -160,5 +167,5 @@ func (c *CategoriesController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted category with ID "+string(rune(id)), nil)
+	Respond(g, 200, "Successfully deleted category with ID: "+ strconv.Itoa(id), nil)
 }
