@@ -11,7 +11,8 @@ type CacheHandler interface {
 }
 
 // CacheController defines the handler for Cache
-type CacheController struct{}
+type CacheController struct{
+}
 
 // newCache - Construct
 func newCache() *CacheController {

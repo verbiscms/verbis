@@ -60,3 +60,8 @@ func (u *User) HideCredentials() {
 	u.Password = ""
 	u.Token = ""
 }
+
+func (u *User) HidePassword() {
+	u.Password = ""
+}
+

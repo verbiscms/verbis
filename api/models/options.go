@@ -14,7 +14,7 @@ type OptionsRepository interface {
 	Get() (domain.OptionsDB, error)
 	GetByName(name string) (interface{}, error)
 	GetStruct() (domain.Options, error)
-	UpdateCreate(options domain.OptionsDB) error
+	UpdateCreate(options *domain.OptionsDB) error
 	Create(name string, value interface{}) error
 	Update(name string, value interface{}) error
 	Exists(name string) bool
@@ -78,7 +78,7 @@ func (s *OptionsStore) GetStruct() (domain.Options, error) {
 	const op = "OptionsRepository.GetStruct"
 
 	cachedOpts, found := cache.Store.Get("options-struct")
-	if found {
+	if found  {
 		return cachedOpts.(domain.Options), nil
 	}
 
@@ -114,9 +114,9 @@ func (s *OptionsStore) GetStruct() (domain.Options, error) {
 }
 
 // UpdateCreate update's or create options depending on Exists check
-func (s *OptionsStore) UpdateCreate(options domain.OptionsDB) error {
+func (s *OptionsStore) UpdateCreate(options *domain.OptionsDB) error {
 	const op = "OptionsRepository.UpdateCreate"
-	for name, value := range options {
+	for name, value := range *options {
 		jsonValue, err := s.marshalValue(value)
 		if err != nil {
 			return err

@@ -114,7 +114,7 @@ func (c *PostsController) Create(g *gin.Context) {
 	}
 
 	newPost, err := c.store.Posts.Create(&post)
-	if errors.Code(err) == errors.CONFLICT {
+	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -128,7 +128,7 @@ func (c *PostsController) Create(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 201, "Successfully created post with the ID: "+strconv.Itoa(newPost.Id), formatPost)
+	Respond(g, 200, "Successfully created post with ID: "+strconv.Itoa(newPost.Id), formatPost)
 }
 
 // Update
@@ -167,7 +167,7 @@ func (c *PostsController) Update(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully updated post with the ID: "+strconv.Itoa(updatedPost.Id), formatPost)
+	Respond(g, 200, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.Id), formatPost)
 }
 
 // Delete
@@ -181,10 +181,11 @@ func (c *PostsController) Delete(g *gin.Context) {
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
 		Respond(g, 400, "A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
 	}
 
 	err = c.store.Posts.Delete(id)
-	if errors.Code(err) == errors.NOTFOUND {
+	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
@@ -192,5 +193,5 @@ func (c *PostsController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted post with the ID: "+strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted post with ID: "+strconv.Itoa(id), nil)
 }
