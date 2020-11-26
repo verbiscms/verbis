@@ -82,7 +82,7 @@ func (c *CategoriesController) GetById(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully obtained category with ID: "+ strconv.Itoa(id), category)
+	Respond(g, 200, "Successfully obtained category with ID: "+strconv.Itoa(id), category)
 }
 
 // Create
@@ -141,7 +141,7 @@ func (c *CategoriesController) Update(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully updated category with ID: "+ strconv.Itoa(category.Id), updatedCategory)
+	Respond(g, 200, "Successfully updated category with ID: "+strconv.Itoa(category.Id), updatedCategory)
 }
 
 // Delete
@@ -167,5 +167,5 @@ func (c *CategoriesController) Delete(g *gin.Context) {
 		return
 	}
 
-	Respond(g, 200, "Successfully deleted category with ID: "+ strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted category with ID: "+strconv.Itoa(id), nil)
 }

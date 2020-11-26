@@ -206,7 +206,7 @@ func (c *UserController) ResetPassword(g *gin.Context) {
 
 	user, err := c.store.User.GetById(id)
 	if err != nil {
-		Respond(g, 400, "No user has been found with the ID: " + strconv.Itoa(id), err)
+		Respond(g, 400, "No user has been found with the ID: "+strconv.Itoa(id), err)
 		return
 	}
 

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -44,8 +43,10 @@ func (c *OptionsController) Get(g *gin.Context) {
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
-	}
-	if err != nil {
+	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
+		Respond(g, 400, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
@@ -62,13 +63,11 @@ func (c *OptionsController) GetByName(g *gin.Context) {
 	const op = "OptionsHandler.GetByName"
 
 	name := g.Param("name")
-	if name == "" {
-		Respond(g, 400, "A name is required to obtain the option by name", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("no name passed"), Operation: op})
-		return
-	}
-
 	option, err := c.store.Options.GetByName(name)
-	if err != nil {
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	} else if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
@@ -85,19 +84,19 @@ func (c *OptionsController) GetByName(g *gin.Context) {
 func (c *OptionsController) UpdateCreate(g *gin.Context) {
 	const op = "OptionsHandler.UpdateCreate"
 
-	var vOptions domain.Options
-	if err := g.ShouldBindBodyWith(&vOptions, binding.JSON); err != nil {
-		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
-		return
-	}
-
 	var options domain.OptionsDB
 	if err := g.ShouldBindBodyWith(&options, binding.JSON); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	if err := c.store.Options.UpdateCreate(options); err != nil {
+	var vOptions domain.Options
+	if err := g.ShouldBindBodyWith(&vOptions, binding.JSON); err != nil {
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
+	}
+
+	if err := c.store.Options.UpdateCreate(&options); err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}

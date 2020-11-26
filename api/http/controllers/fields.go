@@ -35,55 +35,41 @@ func newFields(m *models.Store, config config.Configuration) *FieldController {
 func (c *FieldController) Get(g *gin.Context) {
 	const op = "FieldHandler.Get"
 
+	resource := g.Query("resource")
+	user, err := strconv.Atoi(g.Query("user_id"))
+	if err != nil {
+		Respond(g, 400, "Field search failed, wrong type passed to user id", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
+	}
+
+	if user == 0 {
+		owner, err := c.store.User.GetOwner()
+		if err != nil {
+			Respond(g, 500, errors.Message(err), err)
+		}
+		user = owner.Id
+	}
+
 	post := domain.Post{
 		Id:             0,
 		Slug:           "",
 		Title:          "",
 		Status:         "",
-		Resource:       nil,
-		PageTemplate:   "",
-		Layout:         "",
+		Resource:       &resource,
+		PageTemplate:   g.Query("page_template"),
+		Layout:         g.Query("layout"),
 		Fields:         nil,
 		CodeInjectHead: nil,
 		CodeInjectFoot: nil,
-		UserId:         0,
-	}
-
-	// Get the request query
-	query := g.Request.URL.Query()
-
-	// Check for page template
-	if pt, ok := query["page_template"]; ok {
-		post.PageTemplate = pt[0]
-	}
-
-	// Check for layout
-	if la, ok := query["layout"]; ok {
-		post.Layout = la[0]
-	}
-
-	// Check for resource
-	if re, ok := query["resource"]; ok {
-		resource := re[0]
-		post.Resource = &resource
-	}
-
-	// Check for user ID
-	// TODO: clean up here
-	if u, ok := query["user_id"]; ok {
-		id, err := strconv.Atoi(u[0])
-		if err != nil {
-			owner, _ := c.store.User.GetOwner()
-			post.UserId = owner.Id
-		}
-		post.UserId = id
-	} else {
-		owner, _ := c.store.User.GetOwner()
-		post.UserId = owner.Id
+		UserId:         user,
 	}
 
 	// Get the author associated with the post
-	author, _ := c.store.User.GetById(post.UserId)
+	author, err := c.store.User.GetById(post.UserId)
+	if err != nil {
+		Respond(g, 500, errors.Message(err), err)
+		return
+	}
 
 	// Get the categories associated with the post
 	categories, err := c.store.Categories.GetByPost(post.Id)
