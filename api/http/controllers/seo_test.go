@@ -12,6 +12,16 @@ import (
 	"testing"
 )
 
+// getFieldsMock is a helper to obtain a mock fields controller
+// for testing.
+//func getSeoMock(m models.SeoMetaRepository) *SEOController {
+//	return &SEOController{
+//		store: &models.Store{
+//			SEOController{}: m,
+//		},
+//	}
+//}
+
 func TestSEOController_Robots(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
