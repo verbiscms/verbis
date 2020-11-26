@@ -112,7 +112,7 @@ func (s *Seeder) runOptions() error {
 		"minify_xml":  false,
 	}
 
-	err := s.models.Options.UpdateCreate(optionsSeed)
+	err := s.models.Options.UpdateCreate(&optionsSeed)
 	if err != nil {
 		return err
 	}

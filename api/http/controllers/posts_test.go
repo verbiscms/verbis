@@ -41,71 +41,71 @@ func Test_NewPosts(t *testing.T) {
 func TestPostsController_Get(t *testing.T) {
 
 	posts := []domain.Post{
-		{Id:          123, Slug:        "/post", Title:        "post"},
-		{Id:          124, Slug:        "/post1", Title:        "post1"},
+		{Id: 123, Slug: "/post", Title: "post"},
+		{Id: 124, Slug: "/post1", Title: "post1"},
 	}
 	postData := []domain.PostData{
-		{Post:       posts[0]},
-		{Post:       posts[1]},
+		{Post: posts[0]},
+		{Post: posts[1]},
 	}
 	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "asc", Filters: nil}
 
 	tt := map[string]struct {
-		name       string
-		want       string
-		status     int
-		message    string
-		mock func(m *mocks.PostsRepository)
+		name    string
+		want    string
+		status  int
+		message string
+		mock    func(m *mocks.PostsRepository)
 	}{
 		"Success": {
-			want:       `[{"author":{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"","id":0,"instagram":null,"last_name":"","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},"category":null,"layout":null,"post":{"created_at":null,"fields":null,"id":123,"options":{"meta":null,"seo":null},"published_at":null,"resource":null,"slug":"/post","title":"post","updated_at":null,"uuid":"00000000-0000-0000-0000-000000000000"}},{"author":{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"","id":0,"instagram":null,"last_name":"","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},"category":null,"layout":null,"post":{"created_at":null,"fields":null,"id":124,"options":{"meta":null,"seo":null},"published_at":null,"resource":null,"slug":"/post1","title":"post1","updated_at":null,"uuid":"00000000-0000-0000-0000-000000000000"}}]`,
-			status:     200,
-			message:    "Successfully obtained posts",
+			want:    `[{"author":{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"","id":0,"instagram":null,"last_name":"","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},"category":null,"layout":null,"post":{"created_at":null,"fields":null,"id":123,"options":{"meta":null,"seo":null},"published_at":null,"resource":null,"slug":"/post","title":"post","updated_at":null,"uuid":"00000000-0000-0000-0000-000000000000"}},{"author":{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"","id":0,"instagram":null,"last_name":"","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},"category":null,"layout":null,"post":{"created_at":null,"fields":null,"id":124,"options":{"meta":null,"seo":null},"published_at":null,"resource":null,"slug":"/post1","title":"post1","updated_at":null,"uuid":"00000000-0000-0000-0000-000000000000"}}]`,
+			status:  200,
+			message: "Successfully obtained posts",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", pagination, "").Return(posts, 2, nil)
 				m.On("FormatMultiple", posts).Return(postData, nil)
 			},
 		},
 		"Not Found": {
-			want:       `{}`,
-			status:     200,
-			message:    "no posts found",
+			want:    `{}`,
+			status:  200,
+			message: "no posts found",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", pagination, "").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 				m.On("FormatMultiple", posts).Return(postData, nil)
 			},
 		},
 		"Conflict": {
-			want:       `{}`,
-			status:     400,
-			message:    "conflict",
+			want:    `{}`,
+			status:  400,
+			message: "conflict",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", pagination, "").Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 				m.On("FormatMultiple", posts).Return(postData, nil)
 			},
 		},
 		"Invalid": {
-			want:       `{}`,
-			status:     400,
-			message:    "invalid",
+			want:    `{}`,
+			status:  400,
+			message: "invalid",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", pagination, "").Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 				m.On("FormatMultiple", posts).Return(postData, nil)
 			},
 		},
 		"Internal Error": {
-			want:       `{}`,
-			status:     500,
-			message:    "internal",
+			want:    `{}`,
+			status:  500,
+			message: "internal",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", pagination, "").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 				m.On("FormatMultiple", posts).Return(postData, nil)
 			},
 		},
 		"Format Error": {
-			want:       `{}`,
-			status:     500,
-			message:    "format",
+			want:    `{}`,
+			status:  500,
+			message: "format",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", pagination, "").Return(posts, 2, nil)
 				m.On("FormatMultiple", posts).Return(postData, &errors.Error{Code: errors.INTERNAL, Message: "format"})
@@ -132,20 +132,20 @@ func TestPostsController_Get(t *testing.T) {
 // TestPostsController_GetById - Test GetByID route
 func TestPostsController_GetById(t *testing.T) {
 
-	post := domain.Post{Id:          123, Slug:        "/post", Title:        "post"}
-	postData := domain.PostData{Post:     domain.Post{Id:          123, Slug:        "/post", Title:        "post"}  }
+	post := domain.Post{Id: 123, Slug: "/post", Title: "post"}
+	postData := domain.PostData{Post: domain.Post{Id: 123, Slug: "/post", Title: "post"}}
 
 	tt := map[string]struct {
-		want       string
-		status     int
-		message    string
-		mock func(m *mocks.PostsRepository)
-		url string
+		want    string
+		status  int
+		message string
+		mock    func(m *mocks.PostsRepository)
+		url     string
 	}{
 		"Success": {
-			want:       `{"author":{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"","id":0,"instagram":null,"last_name":"","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},"category":null,"layout":null,"post":{"created_at":null,"fields":null,"id":123,"options":{"meta":null,"seo":null},"published_at":null,"resource":null,"slug":"/post","title":"post","updated_at":null,"uuid":"00000000-0000-0000-0000-000000000000"}}`,
-			status:     200,
-			message:    "Successfully obtained post with ID: 123",
+			want:    `{"author":{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"","id":0,"instagram":null,"last_name":"","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},"category":null,"layout":null,"post":{"created_at":null,"fields":null,"id":123,"options":{"meta":null,"seo":null},"published_at":null,"resource":null,"slug":"/post","title":"post","updated_at":null,"uuid":"00000000-0000-0000-0000-000000000000"}}`,
+			status:  200,
+			message: "Successfully obtained post with ID: 123",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("GetById", 123).Return(post, nil)
 				m.On("Format", post).Return(postData, nil)
@@ -153,9 +153,9 @@ func TestPostsController_GetById(t *testing.T) {
 			url: "/posts/123",
 		},
 		"Invalid ID": {
-			want:       `{}`,
-			status:     400,
-			message:    "Pass a valid number to obtain the post by ID",
+			want:    `{}`,
+			status:  400,
+			message: "Pass a valid number to obtain the post by ID",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("GetById", 123).Return(domain.Post{}, fmt.Errorf("error"))
 				m.On("Format", post).Return(postData, nil)
@@ -163,9 +163,9 @@ func TestPostsController_GetById(t *testing.T) {
 			url: "/posts/wrongid",
 		},
 		"Not Found": {
-			want:       `{}`,
-			status:     200,
-			message:    "no posts found",
+			want:    `{}`,
+			status:  200,
+			message: "no posts found",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("GetById", 123).Return(domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 				m.On("Format", post).Return(postData, nil)
@@ -173,9 +173,9 @@ func TestPostsController_GetById(t *testing.T) {
 			url: "/posts/123",
 		},
 		"Internal Error": {
-			want:       `{}`,
-			status:     500,
-			message:    "internal",
+			want:    `{}`,
+			status:  500,
+			message: "internal",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("GetById", 123).Return(domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 				m.On("Format", post).Return(postData, nil)
@@ -183,9 +183,9 @@ func TestPostsController_GetById(t *testing.T) {
 			url: "/posts/123",
 		},
 		"Format Error": {
-			want:       `{}`,
-			status:     500,
-			message:    "format",
+			want:    `{}`,
+			status:  500,
+			message: "format",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("GetById", 123).Return(post, nil)
 				m.On("Format", post).Return(postData, &errors.Error{Code: errors.INTERNAL, Message: "format"})
@@ -213,59 +213,76 @@ func TestPostsController_GetById(t *testing.T) {
 // TestPostsController_Create - Test Create route
 func TestPostsController_Create(t *testing.T) {
 
-	post := domain.Post{Id:          123, Slug:        "/post", Title:        "post"}
-	postBadValidation := domain.Post{Id:          123, Title:        "post"}
+	post := domain.Post{Id: 123, Slug: "/post", Title: "post"}
+	postCreate := domain.PostCreate{Post: post}
+	postBadValidation := domain.PostCreate{Post: domain.Post{Id: 123, Title: "post"}}
+	postData := domain.PostData{Post: domain.Post{Id: 123, Slug: "/post", Title: "post"}}
 
 	tt := map[string]struct {
-		want       string
-		status     int
-		message    string
-		input interface{}
-		mock func(m *mocks.PostsRepository)
+		want    string
+		status  int
+		message string
+		input   interface{}
+		mock    func(m *mocks.PostsRepository)
 	}{
 		"Success": {
-			want:       `{"archive_id":null,"created_at":"0001-01-01T00:00:00Z","description":null,"id":123,"name":"post","parent_id":null,"resource":"test","slug":"/cat","updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"}`,
-			status:     200,
-			message:    "Successfully created post with ID: 123",
-			input: post,
+			want:    `{"author":{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"","id":0,"instagram":null,"last_name":"","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},"category":null,"layout":null,"post":{"created_at":null,"fields":null,"id":123,"options":{"meta":null,"seo":null},"published_at":null,"resource":null,"slug":"/post","title":"post","updated_at":null,"uuid":"00000000-0000-0000-0000-000000000000"}}`,
+			status:  200,
+			message: "Successfully created post with ID: 123",
+			input:   post,
 			mock: func(m *mocks.PostsRepository) {
-				m.On("Create", &post).Return(post, nil)
+				m.On("Create", &postCreate).Return(post, nil)
+				m.On("Format", post).Return(postData, nil)
 			},
 		},
 		"Validation Failed": {
-			want:       `{"errors":[{"key":"slug","message":"Slug is required.","type":"required"}]}`,
-			status:     400,
-			message:    "Validation failed",
-			input: postBadValidation,
+			want:    `{"errors":[{"key":"slug","message":"Post Slug is required.","type":"required"}]}`,
+			status:  400,
+			message: "Validation failed",
+			input:   postBadValidation,
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Create", &postBadValidation).Return(domain.Post{}, fmt.Errorf("error"))
+				m.On("Format", post).Return(postData, &errors.Error{Code: errors.INTERNAL, Message: "format"})
 			},
 		},
 		"Invalid": {
-			want:       `{}`,
-			status:     400,
-			message:    "invalid",
-			input: post,
+			want:    `{}`,
+			status:  400,
+			message: "invalid",
+			input:   post,
 			mock: func(m *mocks.PostsRepository) {
-				m.On("Create", &post).Return(domain.Post{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Create", &postCreate).Return(domain.Post{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Format", post).Return(postData, nil)
 			},
 		},
 		"Conflict": {
-			want:       `{}`,
-			status:     400,
-			message:    "conflict",
-			input: post,
+			want:    `{}`,
+			status:  400,
+			message: "conflict",
+			input:   post,
 			mock: func(m *mocks.PostsRepository) {
-				m.On("Create", &post).Return(domain.Post{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Create", &postCreate).Return(domain.Post{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Format", post).Return(postData, nil)
 			},
 		},
 		"Internal Error": {
-			want:       `{}`,
-			status:     500,
-			message:    "internal",
-			input: post,
+			want:    `{}`,
+			status:  500,
+			message: "internal",
+			input:   post,
 			mock: func(m *mocks.PostsRepository) {
-				m.On("Create", &post).Return(domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Create", &postCreate).Return(domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Format", post).Return(postData, nil)
+			},
+		},
+		"Format Error": {
+			want:    `{}`,
+			status:  500,
+			message: "format",
+			input:   post,
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Create", &postCreate).Return(post, nil)
+				m.On("Format", post).Return(postData, &errors.Error{Code: errors.INTERNAL, Message: "format"})
 			},
 		},
 	}
@@ -294,64 +311,82 @@ func TestPostsController_Create(t *testing.T) {
 // TestPostsController_Update - Test Update route
 func TestPostsController_Update(t *testing.T) {
 
-	post := domain.Post{Id:          123, Slug:        "/post", Title:        "post"}
-	postBadValidation := domain.Post{Id:          123, Title:        "post"}
+	post := domain.Post{Id: 123, Slug: "/post", Title: "post"}
+	postCreate := domain.PostCreate{Post: post}
+	postBadValidation := domain.PostCreate{Post: domain.Post{Id: 123, Title: "post"}}
+	postData := domain.PostData{Post: domain.Post{Id: 123, Slug: "/post", Title: "post"}}
 
 	tt := map[string]struct {
-		want       string
-		status     int
-		message    string
-		input interface{}
-		mock func(m *mocks.PostsRepository)
-		url string
+		want    string
+		status  int
+		message string
+		input   interface{}
+		mock    func(m *mocks.PostsRepository)
+		url     string
 	}{
 		"Success": {
-			want:       `{"archive_id":null,"created_at":"0001-01-01T00:00:00Z","description":null,"id":123,"name":"post","parent_id":null,"resource":"test","slug":"/cat","updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"}`,
-			status:     200,
-			message:    "Successfully updated post with ID: 123",
-			input: post,
+			want:    `{"author":{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"","id":0,"instagram":null,"last_name":"","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},"category":null,"layout":null,"post":{"created_at":null,"fields":null,"id":123,"options":{"meta":null,"seo":null},"published_at":null,"resource":null,"slug":"/post","title":"post","updated_at":null,"uuid":"00000000-0000-0000-0000-000000000000"}}`,
+			status:  200,
+			message: "Successfully updated post with ID: 123",
+			input:   post,
 			mock: func(m *mocks.PostsRepository) {
-				m.On("Update", &post).Return(post, nil)
+				m.On("Update", &postCreate).Return(post, nil)
+				m.On("Format", post).Return(postData, nil)
 			},
 			url: "/posts/123",
 		},
 		"Validation Failed": {
-			want:       `{"errors":[{"key":"slug","message":"Slug is required.","type":"required"}]}`,
-			status:     400,
-			message:    "Validation failed",
-			input: postBadValidation,
+			want:    `{"errors":[{"key":"slug","message":"Post Slug is required.","type":"required"}]}`,
+			status:  400,
+			message: "Validation failed",
+			input:   postBadValidation,
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Update", postBadValidation).Return(domain.Post{}, fmt.Errorf("error"))
+				m.On("Format", post).Return(postData, nil)
 			},
 			url: "/posts/123",
 		},
 		"Invalid ID": {
-			want:       `{}`,
-			status:     400,
-			message:    "A valid ID is required to update the post",
-			input: post,
+			want:    `{}`,
+			status:  400,
+			message: "A valid ID is required to update the post",
+			input:   post,
 			mock: func(m *mocks.PostsRepository) {
-				m.On("Update", postBadValidation).Return(domain.Post{}, fmt.Errorf("error"))
+				m.On("Update", &postCreate).Return(domain.Post{}, fmt.Errorf("error"))
+				m.On("Format", post).Return(postData, nil)
 			},
 			url: "/posts/wrongid",
 		},
 		"Not Found": {
-			want:       `{}`,
-			status:     400,
-			message:    "not found",
-			input: post,
+			want:    `{}`,
+			status:  400,
+			message: "not found",
+			input:   post,
 			mock: func(m *mocks.PostsRepository) {
-				m.On("Update", &post).Return(domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Update", &postCreate).Return(domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Format", post).Return(postData, nil)
 			},
 			url: "/posts/123",
 		},
 		"Internal": {
-			want:       `{}`,
-			status:     500,
-			message:    "internal",
-			input: post,
+			want:    `{}`,
+			status:  500,
+			message: "internal",
+			input:   post,
 			mock: func(m *mocks.PostsRepository) {
-				m.On("Update", &post).Return(domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Update", &postCreate).Return(domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Format", post).Return(postData, nil)
+			},
+			url: "/posts/123",
+		},
+		"Format Error": {
+			want:    `{}`,
+			status:  500,
+			message: "format",
+			input:   post,
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Update", &postCreate).Return(post, nil)
+				m.On("Format", post).Return(postData, &errors.Error{Code: errors.INTERNAL, Message: "format"})
 			},
 			url: "/posts/123",
 		},
@@ -382,53 +417,53 @@ func TestPostsController_Update(t *testing.T) {
 func TestPostsController_Delete(t *testing.T) {
 
 	tt := map[string]struct {
-		want       string
-		status     int
-		message    string
-		mock func(m *mocks.PostsRepository)
-		url string
+		want    string
+		status  int
+		message string
+		mock    func(m *mocks.PostsRepository)
+		url     string
 	}{
 		"Success": {
-			want:       `{}`,
-			status:     200,
-			message:    "Successfully deleted post with ID: 123",
+			want:    `{}`,
+			status:  200,
+			message: "Successfully deleted post with ID: 123",
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			url: "/posts/123",
 		},
 		"Invalid ID": {
-			want:       `{}`,
-			status:     400,
-			message:    "A valid ID is required to delete a post",
-			mock:  func(m *mocks.PostsRepository) {
-				m.On("Delete", 123).Return(nil)
+			want:    `{}`,
+			status:  400,
+			message: "A valid ID is required to delete a post",
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Delete", 0).Return(nil)
 			},
 			url: "/posts/wrongid",
 		},
 		"Not Found": {
-			want:       `{}`,
-			status:     400,
-			message:    "not found",
-			mock:  func(m *mocks.PostsRepository) {
+			want:    `{}`,
+			status:  400,
+			message: "not found",
+			mock: func(m *mocks.PostsRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			url: "/posts/123",
 		},
 		"Conflict": {
-			want:       `{}`,
-			status:     400,
-			message:    "conflict",
-			mock:  func(m *mocks.PostsRepository) {
+			want:    `{}`,
+			status:  400,
+			message: "conflict",
+			mock: func(m *mocks.PostsRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			url: "/posts/123",
 		},
 		"Internal": {
-			want:       `{}`,
-			status:     500,
-			message:    "internal",
-			mock:  func(m *mocks.PostsRepository) {
+			want:    `{}`,
+			status:  500,
+			message: "internal",
+			mock: func(m *mocks.PostsRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			url: "/posts/123",

@@ -80,23 +80,23 @@ func TestSiteController_GetTheme(t *testing.T) {
 	}
 
 	tt := map[string]struct {
-		want       string
-		status     int
-		message    string
-		mock func(u *mocks.SiteRepository)
+		want    string
+		status  int
+		message string
+		mock    func(u *mocks.SiteRepository)
 	}{
 		"Success": {
-			want: `{"assets_path":"","editor":{"modules":null,"options":null},"resources":null,"theme":{"description":"VerbisCMS","title":"Verbis","version":"0.1"}}`,
-			status: 200,
+			want:    `{"assets_path":"","editor":{"modules":null,"options":null},"resources":null,"theme":{"description":"VerbisCMS","title":"Verbis","version":"0.1"}}`,
+			status:  200,
 			message: "Successfully obtained theme config",
 			mock: func(m *mocks.SiteRepository) {
 				m.On("GetThemeConfig").Return(theme, nil)
 			},
 		},
 		"Internal Error": {
-			want:       `{}`,
-			status:     500,
-			message:    "internal",
+			want:    `{}`,
+			status:  500,
+			message: "internal",
 			mock: func(m *mocks.SiteRepository) {
 				m.On("GetThemeConfig").Return(domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
@@ -131,31 +131,31 @@ func TestSiteController_GetTemplates(t *testing.T) {
 	}
 
 	tt := map[string]struct {
-		want       string
-		status     int
-		message    string
-		mock func(u *mocks.SiteRepository)
+		want    string
+		status  int
+		message string
+		mock    func(u *mocks.SiteRepository)
 	}{
 		"Success": {
-			want: `{"templates":[{"test":"testing"}]}`,
-			status: 200,
+			want:    `{"templates":[{"test":"testing"}]}`,
+			status:  200,
 			message: "Successfully obtained templates",
 			mock: func(m *mocks.SiteRepository) {
 				m.On("GetTemplates").Return(templates, nil)
 			},
 		},
 		"Not Found": {
-			want:       `{}`,
-			status:     200,
-			message:    "not found",
+			want:    `{}`,
+			status:  200,
+			message: "not found",
 			mock: func(m *mocks.SiteRepository) {
 				m.On("GetTemplates").Return(domain.Templates{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
-			want:       `{}`,
-			status:     500,
-			message:    "internal",
+			want:    `{}`,
+			status:  500,
+			message: "internal",
 			mock: func(m *mocks.SiteRepository) {
 				m.On("GetTemplates").Return(domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
@@ -190,31 +190,31 @@ func TestSiteController_GetLayouts(t *testing.T) {
 	}
 
 	tt := map[string]struct {
-		want       string
-		status     int
-		message    string
-		mock func(u *mocks.SiteRepository)
+		want    string
+		status  int
+		message string
+		mock    func(u *mocks.SiteRepository)
 	}{
 		"Success": {
-			want: `{"layouts":[{"test":"testing"}]}`,
-			status: 200,
+			want:    `{"layouts":[{"test":"testing"}]}`,
+			status:  200,
 			message: "Successfully obtained layouts",
 			mock: func(m *mocks.SiteRepository) {
 				m.On("GetLayouts").Return(layouts, nil)
 			},
 		},
 		"Not Found": {
-			want:       `{}`,
-			status:     200,
-			message:    "not found",
+			want:    `{}`,
+			status:  200,
+			message: "not found",
 			mock: func(m *mocks.SiteRepository) {
 				m.On("GetLayouts").Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
-			want:       `{}`,
-			status:     500,
-			message:    "internal",
+			want:    `{}`,
+			status:  500,
+			message: "internal",
 			mock: func(m *mocks.SiteRepository) {
 				m.On("GetLayouts").Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},

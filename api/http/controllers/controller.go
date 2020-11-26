@@ -205,7 +205,6 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 		return data, true
 	}
 
-
 	return gin.H{}, false
 }
 

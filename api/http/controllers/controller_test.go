@@ -36,7 +36,6 @@ func newTestSuite(t *testing.T) *controllerTest {
 
 // Run the API test.
 func (c *controllerTest) Run(want string, status int, message string) {
-	 //fmt.Println(c.Data())
 	assert.JSONEq(c.testing, want, c.Data())
 	assert.Equal(c.testing, status, c.recorder.Code)
 	assert.Equal(c.testing, message, c.Message())
@@ -56,7 +55,6 @@ func (c *controllerTest) Message() string {
 func (c *controllerTest) Body() map[string]interface{} {
 	body := map[string]interface{}{}
 	if err := json.Unmarshal(c.recorder.Body.Bytes(), &body); err != nil {
-		fmt.Println(c.recorder.Body.String())
 		c.testing.Fatal(fmt.Sprintf("error unmarshalling body %v", err))
 	}
 	return body

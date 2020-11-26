@@ -122,11 +122,11 @@ func (_m *OptionsRepository) Update(name string, value interface{}) error {
 }
 
 // UpdateCreate provides a mock function with given fields: options
-func (_m *OptionsRepository) UpdateCreate(options domain.OptionsDB) error {
+func (_m *OptionsRepository) UpdateCreate(options *domain.OptionsDB) error {
 	ret := _m.Called(options)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(domain.OptionsDB) error); ok {
+	if rf, ok := ret.Get(0).(func(*domain.OptionsDB) error); ok {
 		r0 = rf(options)
 	} else {
 		r0 = ret.Error(0)
