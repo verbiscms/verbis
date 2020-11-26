@@ -3,17 +3,13 @@ package controllers
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"net/http"
 	"testing"
-	"time"
 )
 
 // getFieldsMock is a helper to obtain a mock fields controller
