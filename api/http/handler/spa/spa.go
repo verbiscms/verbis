@@ -1,29 +1,29 @@
-package controllers
+package spa
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"strings"
 )
 
-// SpaHandler defines methods for the SPA (Vue) to interact with the server
-type SpaHandler interface {
+// SPAHandler defines methods for the SPA (Vue) to interact with the server
+type SPAHandler interface {
 	Serve(g *gin.Context)
 }
 
-// SpaController defines the handler for the SPA
-type SpaController struct {
+// SPA defines the handler for the SPA
+type SPA struct {
 	config config.Configuration
 	render.ErrorHandler
 }
 
 // newSpa - Construct
-func newSpa(config config.Configuration) *SpaController {
-	return &SpaController{
+func NewSpa(config config.Configuration) *SPA {
+	return &SPA{
 		config:       config,
 		ErrorHandler: &render.Errors{},
 	}
@@ -38,7 +38,7 @@ var (
 
 // Serve all of the administrator & operator assets and serve the
 // file extension based on the content type.
-func (c *SpaController) Serve(g *gin.Context) {
+func (c *SPA) Serve(g *gin.Context) {
 
 	path := g.Request.URL.Path
 

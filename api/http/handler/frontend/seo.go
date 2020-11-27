@@ -1,4 +1,4 @@
-package controllers
+package frontend
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
@@ -18,8 +18,8 @@ type SEOHandler interface {
 	SiteMapXSL(g *gin.Context, index bool)
 }
 
-// SEOController defines the handler for all SEO Routes (sitemaps & robots)
-type SEOController struct {
+// SEO defines the handler for all SEO Routes (sitemaps & robots)
+type SEO struct {
 	models  *models.Store
 	config  config.Configuration
 	sitemap render.SiteMapper
@@ -28,7 +28,7 @@ type SEOController struct {
 }
 
 // newSEO - Construct
-func newSEO(m *models.Store, config config.Configuration) *SEOController {
+func NewSEO(m *models.Store, config config.Configuration) *SEO {
 	const op = "SEOHandler.newSEO"
 
 	options, err := m.Options.GetStruct()
@@ -38,7 +38,7 @@ func newSEO(m *models.Store, config config.Configuration) *SEOController {
 		}).Fatal()
 	}
 
-	return &SEOController{
+	return &SEO{
 		models:       m,
 		config:       config,
 		options:      options,
@@ -52,7 +52,7 @@ func newSEO(m *models.Store, config config.Configuration) *SEOController {
 // file.
 //
 // Returns a 404 if the options don't allow serving of robots.txt
-func (c *SEOController) Robots(g *gin.Context) {
+func (c *SEO) Robots(g *gin.Context) {
 	const op = "FrontendHandler.Robots"
 
 	if !c.options.SeoRobotsServe {
@@ -69,7 +69,7 @@ func (c *SEOController) Robots(g *gin.Context) {
 //
 // Returns a 404 if there was an error obtaining the XML file.
 // or there was no resource items found.
-func (c *SEOController) SiteMapIndex(g *gin.Context) {
+func (c *SEO) SiteMapIndex(g *gin.Context) {
 	const op = "FrontendHandler.SiteMapIndex"
 
 	sitemap, err := c.sitemap.GetIndex()
@@ -86,7 +86,7 @@ func (c *SEOController) SiteMapIndex(g *gin.Context) {
 //
 // Returns a 404 if there was an error obtaining the XML file.
 // or there was no resource items found.
-func (c *SEOController) SiteMapResource(g *gin.Context) {
+func (c *SEO) SiteMapResource(g *gin.Context) {
 	const op = "FrontendHandler.SiteMap"
 
 	sitemap, err := c.sitemap.GetPages(g.Param("resource"))
@@ -101,7 +101,7 @@ func (c *SEOController) SiteMapResource(g *gin.Context) {
 // is used to serve the sitemap.
 //
 // Returns a 404 if there was an error obtaining the XSL.
-func (c *SEOController) SiteMapXSL(g *gin.Context, index bool) {
+func (c *SEO) SiteMapXSL(g *gin.Context, index bool) {
 	const op = "FrontendHandler.SiteMapIndexXSL"
 
 	sitemap, err := c.sitemap.GetXSL(index)
