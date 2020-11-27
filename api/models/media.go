@@ -51,7 +51,7 @@ type MediaStore struct {
 	db           *sqlx.DB
 	config       config.Configuration
 	optionsModel OptionsRepository
-	userModel 	UserRepository
+	userModel    UserRepository
 	options      domain.Options
 }
 
@@ -61,7 +61,7 @@ func newMedia(db *sqlx.DB, config config.Configuration) *MediaStore {
 		db:           db,
 		config:       config,
 		optionsModel: newOptions(db),
-		userModel: newUser(db, config),
+		userModel:    newUser(db, config),
 	}
 	ms.getOptionsStruct()
 	return ms

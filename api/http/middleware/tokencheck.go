@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -24,7 +24,7 @@ func AdminTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
 		if u.Role.Id > 1 {
 			g.Next()
 		} else {
-			controllers.AbortJSON(g, 403, "You must have access level of administrator to access this endpoint.", nil)
+			api.AbortJSON(g, 403, "You must have access level of administrator to access this endpoint.", nil)
 			return
 		}
 	}
@@ -46,7 +46,7 @@ func OperatorTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
 		if u.Role.Id > 0 {
 			g.Next()
 		} else {
-			controllers.AbortJSON(g, 403, "You must have access level of operator to access this endpoint.", nil)
+			api.AbortJSON(g, 403, "You must have access level of operator to access this endpoint.", nil)
 			return
 		}
 	}
@@ -56,7 +56,7 @@ func OperatorTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
 func checkTokenExists(g *gin.Context) error {
 	token := g.Request.Header.Get("token")
 	if token == "" {
-		controllers.AbortJSON(g, 401, "Missing token in the request header", nil)
+		api.AbortJSON(g, 401, "Missing token in the request header", nil)
 		return fmt.Errorf("Missing token")
 	}
 	return nil
@@ -68,12 +68,12 @@ func checkUserToken(g *gin.Context, m models.UserRepository) (*domain.User, erro
 
 	u, err := m.CheckToken(token)
 	if err != nil {
-		controllers.AbortJSON(g, 401, "Invalid token in the request header", nil)
+		api.AbortJSON(g, 401, "Invalid token in the request header", nil)
 		return &domain.User{}, err
 	}
 
 	if u.Role.Id == 0 {
-		controllers.AbortJSON(g, 403, "Your account has been suspended by the administration team", nil)
+		api.AbortJSON(g, 403, "Your account has been suspended by the administration team", nil)
 		return &domain.User{}, err
 	}
 

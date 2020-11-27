@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +13,7 @@ func SessionCheck(m models.UserRepository) gin.HandlerFunc {
 
 		if err := m.CheckSession(token); err != nil {
 			g.SetCookie("verbis-session", "", -1, "/", "", false, true)
-			controllers.AbortJSON(g, 401, "Session expired, please login again.", gin.H{
+			api.AbortJSON(g, 401, "Session expired, please login again.", gin.H{
 				"errors": gin.H{
 					"session": "expired",
 				},

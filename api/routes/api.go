@@ -1,13 +1,13 @@
 package routes
 
 import (
-	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 )
 
-func api(s *server.Server, c *controllers.Controller, m *models.Store) {
+func api(s *server.Server, c *handler.Handler, m *models.Store) {
 
 	// Auth routes outside of admin
 

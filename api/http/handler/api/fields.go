@@ -4,7 +4,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -39,14 +38,14 @@ func (c *Fields) Get(g *gin.Context) {
 	resource := g.Query("resource")
 	user, err := strconv.Atoi(g.Query("user_id"))
 	if err != nil {
-		handler.Respond(g, 400, "Field search failed, wrong type passed to user id", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Field search failed, wrong type passed to user id", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	if user == 0 {
 		owner, err := c.store.User.GetOwner()
 		if err != nil {
-			handler.Respond(g, 500, errors.Message(err), err)
+			Respond(g, 500, errors.Message(err), err)
 		}
 		user = owner.Id
 	}
@@ -68,7 +67,7 @@ func (c *Fields) Get(g *gin.Context) {
 	// Get the author associated with the post
 	author, err := c.store.User.GetById(post.UserId)
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
@@ -80,9 +79,9 @@ func (c *Fields) Get(g *gin.Context) {
 
 	fields, err := c.store.Fields.GetLayout(post, author, categories)
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained fields", fields)
+	Respond(g, 200, "Successfully obtained fields", fields)
 }
