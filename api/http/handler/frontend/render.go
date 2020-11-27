@@ -1,4 +1,4 @@
-package controllers
+package frontend
 
 import (
 	"bytes"
@@ -9,11 +9,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
@@ -24,16 +24,16 @@ import (
 	"strings"
 )
 
-// FrontendHandler defines methods for the frontend to interact with the server
-type FrontendHandler interface {
+// PublicHandler defines methods for the frontend to interact with the server
+type PublicHandler interface {
 	GetUploads(g *gin.Context)
 	GetAssets(g *gin.Context)
 	GetCachedAsset(url string) (*[]byte, *string)
 	Serve(g *gin.Context)
 }
 
-// FrontendController defines the handler for all frontend routes
-type FrontendController struct {
+// Public defines the handler for all frontend routes
+type Public struct {
 	server  *server.Server
 	models  *models.Store
 	config  config.Configuration
@@ -44,8 +44,8 @@ type FrontendController struct {
 	render.ErrorHandler
 }
 
-// newFrontend - Construct
-func newFrontend(m *models.Store, config config.Configuration) *FrontendController {
+// NewPublic - Construct
+func NewPublic(m *models.Store, config config.Configuration) *Public {
 	const op = "FrontendHandler.newFrontend"
 
 	// Get the site config for serving the assets
@@ -64,7 +64,7 @@ func newFrontend(m *models.Store, config config.Configuration) *FrontendControll
 		}).Fatal()
 	}
 
-	return &FrontendController{
+	return &Public{
 		models:       m,
 		config:       config,
 		cacher:       render.NewCache(m.Options),
@@ -76,7 +76,7 @@ func newFrontend(m *models.Store, config config.Configuration) *FrontendControll
 }
 
 // GetUploads retrieves images in the uploads folder, returns webp if accepts
-func (c *FrontendController) GetUploads(g *gin.Context) {
+func (c *Public) GetUploads(g *gin.Context) {
 	const op = "FrontendHandler.GetUploads"
 
 	api.UploadChan <- 1
@@ -137,7 +137,7 @@ func (c *FrontendController) GetUploads(g *gin.Context) {
 // It then sets cache headers using the cacher interface & checks if a webp
 // image is available with the path of .jpg.webp. The minify is the used
 // to see if the file can be minfied.
-func (c *FrontendController) GetAssets(g *gin.Context) {
+func (c *Public) GetAssets(g *gin.Context) {
 	const op = "FrontendHandler.GetAssets"
 
 	// Get the base url e.g /assets/images/test.png
@@ -201,7 +201,7 @@ func (c *FrontendController) GetAssets(g *gin.Context) {
 
 // GetCachedAsset checks to see if there is a cached version of the file
 // and mimetypes, returns nil for both if nothing was found.
-func (c *FrontendController) GetCachedAsset(url string) (*[]byte, *string) {
+func (c *Public) GetCachedAsset(url string) (*[]byte, *string) {
 
 	// DONT NEED THIS change to options
 	if environment.IsProduction() {
@@ -221,7 +221,7 @@ func (c *FrontendController) GetCachedAsset(url string) (*[]byte, *string) {
 }
 
 // Serve the front end website
-func (c *FrontendController) Serve(g *gin.Context) {
+func (c *Public) Serve(g *gin.Context) {
 
 	api.ServeChan <- 1
 	defer func() {
