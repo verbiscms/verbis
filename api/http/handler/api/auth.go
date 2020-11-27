@@ -4,7 +4,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -43,20 +42,20 @@ func (c *Auth) Login(g *gin.Context) {
 
 	var l domain.Login
 	if err := g.ShouldBindJSON(&l); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	user, err := c.store.Auth.Authenticate(l.Email, l.Password)
 	if err != nil {
-		handler.Respond(g, 401, errors.Message(err), err)
+		Respond(g, 401, errors.Message(err), err)
 		return
 	}
 	user.HidePassword()
 
 	g.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true)
 
-	handler.Respond(g, 200, "Successfully logged in & session started", user)
+	Respond(g, 200, "Successfully logged in & session started", user)
 }
 
 // Logout the user
@@ -70,16 +69,16 @@ func (c *Auth) Logout(g *gin.Context) {
 	token := g.Request.Header.Get("token")
 	_, err := c.store.Auth.Logout(token)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	g.SetCookie("verbis-session", "", -1, "/", "", false, true)
 
-	handler.Respond(g, 200, "Successfully logged out", nil)
+	Respond(g, 200, "Successfully logged out", nil)
 }
 
 // Verify email
@@ -91,7 +90,7 @@ func (c *Auth) VerifyEmail(g *gin.Context) {
 	token := g.Param("token")
 	err := c.store.Auth.VerifyEmail(token)
 	if err != nil {
-		handler.NoPageFound(g)
+		NoPageFound(g)
 		return
 	}
 
@@ -107,20 +106,20 @@ func (c *Auth) ResetPassword(g *gin.Context) {
 
 	var rp domain.ResetPassword
 	if err := g.ShouldBindJSON(&rp); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	err := c.store.Auth.ResetPassword(rp.Token, rp.NewPassword)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully reset password", nil)
+	Respond(g, 200, "Successfully reset password", nil)
 }
 
 // VerifyPasswordToken
@@ -132,11 +131,11 @@ func (c *Auth) VerifyPasswordToken(g *gin.Context) {
 
 	err := c.store.Auth.VerifyPasswordToken(g.Param("token"))
 	if err != nil {
-		handler.Respond(g, 404, errors.Message(err), err)
+		Respond(g, 404, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully verified token", nil)
+	Respond(g, 200, "Successfully verified token", nil)
 }
 
 // SendResetPassword reset password email & generate token
@@ -148,19 +147,19 @@ func (c *Auth) SendResetPassword(g *gin.Context) {
 
 	var srp domain.SendResetPassword
 	if err := g.ShouldBindJSON(&srp); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	err := c.store.Auth.SendResetPassword(srp.Email)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	}
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "A fresh verification link has been sent to your email", nil)
+	Respond(g, 200, "A fresh verification link has been sent to your email", nil)
 }

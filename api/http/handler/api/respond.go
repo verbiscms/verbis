@@ -1,32 +1,15 @@
-package controllers
+package api
 
 import (
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"reflect"
 	"time"
 )
-
-type Controller struct {
-	Auth       AuthHandler
-	Cache      CacheHandler
-	Categories CategoryHandler
-	Fields     FieldHandler
-	Frontend   FrontendHandler
-	Media      MediaHandler
-	Options    OptionsHandler
-	Posts      PostHandler
-	Spa        SpaHandler
-	SEO        SEOHandler
-	Site       SiteHandler
-	User       UserHandler
-}
 
 type RespondJson struct {
 	Status  int         `json:"status"`
@@ -45,27 +28,6 @@ type Meta struct {
 
 type ValidationErrJson struct {
 	Errors interface{} `json:"errors"`
-}
-
-// Construct
-func New(m *models.Store, config config.Configuration) (*Controller, error) {
-
-	c := Controller{
-		Auth:       newAuth(m, config),
-		Cache:      newCache(),
-		Categories: newCategories(m, config),
-		Fields:     newFields(m, config),
-		Frontend:   newFrontend(m, config),
-		Media:      newMedia(m, config),
-		Options:    newOptions(m, config),
-		Posts:      newPosts(m, config),
-		Spa:        newSpa(config),
-		SEO:        newSEO(m, config),
-		Site:       newSite(m, config),
-		User:       newUser(m, config),
-	}
-
-	return &c, nil
 }
 
 // Main JSON responder.

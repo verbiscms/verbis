@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"encoding/json"
@@ -14,8 +14,8 @@ import (
 
 // getSiteMock is a helper to obtain a mock site controller
 // for testing.
-func getSiteMock(m models.SiteRepository) *SiteController {
-	return &SiteController{
+func getSiteMock(m models.SiteRepository) *Site {
+	return &Site{
 		store: &models.Store{
 			Site: m,
 		},
@@ -26,16 +26,16 @@ func getSiteMock(m models.SiteRepository) *SiteController {
 func Test_NewSite(t *testing.T) {
 	store := models.Store{}
 	config := config.Configuration{}
-	want := &SiteController{
+	want := &Site{
 		store:  &store,
 		config: config,
 	}
-	got := newSite(&store, config)
+	got := NewSite(&store, config)
 	assert.Equal(t, got, want)
 }
 
-// TestSiteController_GetSite - Test GetSite route
-func TestSiteController_GetSite(t *testing.T) {
+// TestSite_GetSite - Test GetSite route
+func TestSite_GetSite(t *testing.T) {
 
 	rr := newTestSuite(t)
 
@@ -51,13 +51,13 @@ func TestSiteController_GetSite(t *testing.T) {
 		siteMock := mocks.SiteRepository{}
 		siteMock.On("GetGlobalConfig").Return(site)
 
-		siteController := SiteController{
+		Site := Site{
 			store: &models.Store{
 				Site: &siteMock,
 			},
 		}
 
-		siteController.GetSite(rr.gin)
+		Site.GetSite(rr.gin)
 
 		want, err := json.Marshal(site)
 		if err != nil {
@@ -68,8 +68,8 @@ func TestSiteController_GetSite(t *testing.T) {
 	})
 }
 
-// TestSiteController_GetTheme - Test GetTheme route
-func TestSiteController_GetTheme(t *testing.T) {
+// TestSite_GetTheme - Test GetTheme route
+func TestSite_GetTheme(t *testing.T) {
 
 	theme := domain.ThemeConfig{
 		Theme: domain.Theme{
@@ -119,8 +119,8 @@ func TestSiteController_GetTheme(t *testing.T) {
 	}
 }
 
-// TestSiteController_GetTemplates - Test GetTemplates route
-func TestSiteController_GetTemplates(t *testing.T) {
+// TestSite_GetTemplates - Test GetTemplates route
+func TestSite_GetTemplates(t *testing.T) {
 
 	templates := domain.Templates{
 		Template: []map[string]interface{}{
@@ -178,8 +178,8 @@ func TestSiteController_GetTemplates(t *testing.T) {
 	}
 }
 
-// TestSiteController_GetLayouts - Test GetLayouts route
-func TestSiteController_GetLayouts(t *testing.T) {
+// TestSite_GetLayouts - Test GetLayouts route
+func TestSite_GetLayouts(t *testing.T) {
 
 	layouts := domain.Layouts{
 		Layout: []map[string]interface{}{

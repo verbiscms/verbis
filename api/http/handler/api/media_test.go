@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"bytes"
@@ -22,8 +22,8 @@ import (
 
 // getMediaMock is a helper to obtain a mock user controller
 // for testing.
-func getMediaMock(m models.MediaRepository) *MediaController {
-	return &MediaController{
+func getMediaMock(m models.MediaRepository) *Media {
+	return &Media{
 		store: &models.Store{
 			Media: m,
 		},
@@ -34,16 +34,16 @@ func getMediaMock(m models.MediaRepository) *MediaController {
 func Test_NewMedia(t *testing.T) {
 	store := models.Store{}
 	config := config.Configuration{}
-	want := &MediaController{
+	want := &Media{
 		store:  &store,
 		config: config,
 	}
-	got := newMedia(&store, config)
+	got := NewMedia(&store, config)
 	assert.Equal(t, got, want)
 }
 
-// TestMediaController_Get - Test Get route
-func TestMediaController_Get(t *testing.T) {
+// TestMedia_Get - Test Get route
+func TestMedia_Get(t *testing.T) {
 
 	media := []domain.Media{
 		{Id: 123, Url: "/logo.svg"},
@@ -52,7 +52,6 @@ func TestMediaController_Get(t *testing.T) {
 	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "asc", Filters: nil}
 
 	tt := map[string]struct {
-		name    string
 		want    string
 		status  int
 		message string
@@ -116,8 +115,8 @@ func TestMediaController_Get(t *testing.T) {
 	}
 }
 
-// TestMediaController_GetById - Test GetByID route
-func TestMediaController_GetById(t *testing.T) {
+// TestMedia_GetById - Test GetByID route
+func TestMedia_GetById(t *testing.T) {
 
 	media := domain.Media{
 		Id:  123,
@@ -185,8 +184,8 @@ func TestMediaController_GetById(t *testing.T) {
 	}
 }
 
-// TestMediaController_Update - Test Update route
-func TestMediaController_Update(t *testing.T) {
+// TestMedia_Update - Test Update route
+func TestMedia_Update(t *testing.T) {
 
 	media := domain.Media{
 		Id:  123,
@@ -276,8 +275,8 @@ func TestMediaController_Update(t *testing.T) {
 	}
 }
 
-// TestMediaController_Upload - Test Upload route
-func TestMediaController_Upload(t *testing.T) {
+// TestMedia_Upload - Test Upload route
+func TestMedia_Upload(t *testing.T) {
 
 	path := "/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/images/gopher.svg"
 
@@ -422,8 +421,8 @@ func newfileUploadRequest(t *testing.T, filesAmount int, uri string, path string
 	return req, multi
 }
 
-// TestMediaController_Delete - Test Delete route
-func TestMediaController_Delete(t *testing.T) {
+// TestMedia_Delete - Test Delete route
+func TestMedia_Delete(t *testing.T) {
 
 	tt := map[string]struct {
 		want    string

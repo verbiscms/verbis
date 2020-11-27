@@ -3,7 +3,7 @@ package middleware
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 )
@@ -19,12 +19,12 @@ func EmptyBody() gin.HandlerFunc {
 				bodyBytes, _ := ioutil.ReadAll(g.Request.Body)
 
 				if isEmpty(g, bodyBytes) {
-					controllers.AbortJSON(g, 401, "Empty JSON body", nil)
+					api.AbortJSON(g, 401, "Empty JSON body", nil)
 					return
 				}
 
 				if !isJSON(string(bodyBytes)) {
-					controllers.AbortJSON(g, 401, "Invalid JSON", nil)
+					api.AbortJSON(g, 401, "Invalid JSON", nil)
 					return
 				}
 			}

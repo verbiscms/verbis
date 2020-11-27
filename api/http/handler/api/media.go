@@ -6,7 +6,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -46,19 +45,19 @@ func (c *Media) Get(g *gin.Context) {
 	params := http.NewParams(g).Get()
 	media, total, err := c.store.Media.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	pagination := http.NewPagination().Get(params, total)
 
-	handler.Respond(g, 200, "Successfully obtained media", media, pagination)
+	Respond(g, 200, "Successfully obtained media", media, pagination)
 }
 
 // Get By ID
@@ -72,20 +71,20 @@ func (c *Media) GetById(g *gin.Context) {
 	paramId := g.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		handler.Respond(g, 400, "Pass a valid number to obtain the media item by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Pass a valid number to obtain the media item by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	media, err := c.store.Media.GetById(id)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained media item with ID: "+paramId, media)
+	Respond(g, 200, "Successfully obtained media item with ID: "+paramId, media)
 }
 
 // Upload - if there were no files attached to the body,
@@ -101,33 +100,33 @@ func (c *Media) Upload(g *gin.Context) {
 
 	form, err := g.MultipartForm()
 	if err != nil {
-		handler.Respond(g, 400, "No files attached to the upload", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "No files attached to the upload", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	files := form.File["file"]
 
 	if len(files) > 1 {
-		handler.Respond(g, 400, "Files are only permitted to be uploaded one at a time", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("too many files uploaded at once"), Operation: op})
+		Respond(g, 400, "Files are only permitted to be uploaded one at a time", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("too many files uploaded at once"), Operation: op})
 		return
 	}
 
 	if len(files) == 0 {
-		handler.Respond(g, 400, "Attach a file to the request to be uploaded", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("no files attached to upload"), Operation: op})
+		Respond(g, 400, "Attach a file to the request to be uploaded", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("no files attached to upload"), Operation: op})
 		return
 	}
 
 	if err := c.store.Media.Validate(files[0]); err != nil {
-		handler.Respond(g, 415, errors.Message(err), err)
+		Respond(g, 415, errors.Message(err), err)
 		return
 	}
 
 	media, err := c.store.Media.Upload(files[0], g.Request.Header.Get("token"))
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully uploaded media item", media)
+	Respond(g, 200, "Successfully uploaded media item", media)
 }
 
 // Update
@@ -140,27 +139,27 @@ func (c *Media) Update(g *gin.Context) {
 
 	var m domain.Media
 	if err := g.ShouldBindJSON(&m); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		handler.Respond(g, 400, "A valid ID is required to update the media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to update the media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	m.Id = id
 
 	err = c.store.Media.Update(&m)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully updated media item with ID: "+strconv.Itoa(id), m)
+	Respond(g, 200, "Successfully updated media item with ID: "+strconv.Itoa(id), m)
 }
 
 // Delete
@@ -173,18 +172,18 @@ func (c *Media) Delete(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		handler.Respond(g, 400, "A valid ID is required to delete a media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to delete a media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	err = c.store.Media.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully deleted media item with ID: "+strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted media item with ID: "+strconv.Itoa(id), nil)
 }

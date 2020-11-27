@@ -78,7 +78,7 @@ func (s *OptionsStore) GetStruct() (domain.Options, error) {
 	const op = "OptionsRepository.GetStruct"
 
 	cachedOpts, found := cache.Store.Get("options-struct")
-	if found  {
+	if found {
 		return cachedOpts.(domain.Options), nil
 	}
 

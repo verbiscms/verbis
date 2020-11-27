@@ -3,14 +3,14 @@ package routes
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 )
 
-func frontend(s *server.Server, c *controllers.Controller, m *models.Store, config config.Configuration) {
+func frontend(s *server.Server, c *handler.Handler, m *models.Store, config config.Configuration) {
 
 	// Set Frontend Middleware
 	s.Use(middleware.Recovery(server.Recover))

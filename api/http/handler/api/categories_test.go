@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"bytes"
@@ -17,8 +17,8 @@ import (
 
 // getCategoriesMock is a helper to obtain a mock categories controller
 // for testing.
-func getCategoriesMock(m models.CategoryRepository) *CategoriesController {
-	return &CategoriesController{
+func getCategoriesMock(m models.CategoryRepository) *Categories {
+	return &Categories{
 		store: &models.Store{
 			Categories: m,
 		},
@@ -29,16 +29,16 @@ func getCategoriesMock(m models.CategoryRepository) *CategoriesController {
 func Test_NewCategories(t *testing.T) {
 	store := models.Store{}
 	config := config.Configuration{}
-	want := &CategoriesController{
+	want := &Categories{
 		store:  &store,
 		config: config,
 	}
-	got := newCategories(&store, config)
+	got := NewCategories(&store, config)
 	assert.Equal(t, got, want)
 }
 
-// TestCategoriesController_Get - Test Get route
-func TestCategoriesController_Get(t *testing.T) {
+// TestCategories_Get - Test Get route
+func TestCategories_Get(t *testing.T) {
 
 	categories := []domain.Category{
 		{Id: 123, Slug: "/cat", Name: "Category"},
@@ -111,8 +111,8 @@ func TestCategoriesController_Get(t *testing.T) {
 	}
 }
 
-// TestCategoriesController_GetById - Test GetByID route
-func TestCategoriesController_GetById(t *testing.T) {
+// TestCategories_GetById - Test GetByID route
+func TestCategories_GetById(t *testing.T) {
 
 	category := domain.Category{Id: 123, Slug: "/cat", Name: "Category"}
 
@@ -177,8 +177,8 @@ func TestCategoriesController_GetById(t *testing.T) {
 	}
 }
 
-// TestCategoriesController_Create - Test Create route
-func TestCategoriesController_Create(t *testing.T) {
+// TestCategories_Create - Test Create route
+func TestCategories_Create(t *testing.T) {
 
 	category := domain.Category{Id: 123, Slug: "/cat", Name: "Category", Resource: "test"}
 	categoryBadValidation := domain.Category{Id: 123, Name: "Category", Resource: "test"}
@@ -258,8 +258,8 @@ func TestCategoriesController_Create(t *testing.T) {
 	}
 }
 
-// TestCategoriesController_Update - Test Update route
-func TestCategoriesController_Update(t *testing.T) {
+// TestCategories_Update - Test Update route
+func TestCategories_Update(t *testing.T) {
 
 	category := domain.Category{Id: 123, Slug: "/cat", Name: "Category", Resource: "test"}
 	categoryBadValidation := domain.Category{Id: 123, Name: "Category", Resource: "test"}
@@ -345,8 +345,8 @@ func TestCategoriesController_Update(t *testing.T) {
 	}
 }
 
-// TestCategoriesController_Delete - Test Delete route
-func TestCategoriesController_Delete(t *testing.T) {
+// TestCategories_Delete - Test Delete route
+func TestCategories_Delete(t *testing.T) {
 
 	tt := map[string]struct {
 		want    string

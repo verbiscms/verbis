@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"bytes"
@@ -19,8 +19,8 @@ import (
 
 // getUserMock is a helper to obtain a mock user controller
 // for testing.
-func getUserMock(m models.UserRepository) *UserController {
-	return &UserController{
+func getUserMock(m models.UserRepository) *User {
+	return &User{
 		store: &models.Store{
 			User: m,
 		},
@@ -37,16 +37,16 @@ func mockComparePassword(fl pkgValidate.FieldLevel) bool {
 func Test_NewUser(t *testing.T) {
 	store := models.Store{}
 	config := config.Configuration{}
-	want := &UserController{
+	want := &User{
 		store:  &store,
 		config: config,
 	}
-	got := newUser(&store, config)
+	got := NewUser(&store, config)
 	assert.Equal(t, got, want)
 }
 
-// TestUserController_Get - Test Get route
-func TestUserController_Get(t *testing.T) {
+// TestUser_Get - Test Get route
+func TestUser_Get(t *testing.T) {
 
 	users := domain.Users{
 		{Id: 123, FirstName: "Verbis", LastName: "CMS"},
@@ -119,8 +119,8 @@ func TestUserController_Get(t *testing.T) {
 	}
 }
 
-// TestUserController_GetById - Test GetByID route
-func TestUserController_GetById(t *testing.T) {
+// TestUser_GetById - Test GetByID route
+func TestUser_GetById(t *testing.T) {
 
 	user := domain.User{Id: 123, FirstName: "Verbis", LastName: "CMS"}
 
@@ -185,8 +185,8 @@ func TestUserController_GetById(t *testing.T) {
 	}
 }
 
-// TestUserController_GetRoles - Test GetRoles route
-func TestUserController_GetRoles(t *testing.T) {
+// TestUser_GetRoles - Test GetRoles route
+func TestUser_GetRoles(t *testing.T) {
 
 	roles := []domain.UserRole{
 		{Id: 1, Name: "Banned", Description: "Banned Role"},
@@ -233,8 +233,8 @@ func TestUserController_GetRoles(t *testing.T) {
 	}
 }
 
-// TestUserController_Create - Test Create route
-func TestUserController_Create(t *testing.T) {
+// TestUser_Create - Test Create route
+func TestUser_Create(t *testing.T) {
 
 	userCreate := &domain.UserCreate{
 		User: domain.User{
@@ -341,8 +341,8 @@ func TestUserController_Create(t *testing.T) {
 	}
 }
 
-// TestUserController_Update - Test Update route
-func TestUserController_Update(t *testing.T) {
+// TestUser_Update - Test Update route
+func TestUser_Update(t *testing.T) {
 
 	user := domain.User{
 		Id:        123,
@@ -441,8 +441,8 @@ func TestUserController_Update(t *testing.T) {
 	}
 }
 
-// TestUserController_Delete - Test Delete route
-func TestUserController_Delete(t *testing.T) {
+// TestUser_Delete - Test Delete route
+func TestUser_Delete(t *testing.T) {
 
 	tt := map[string]struct {
 		want    string
@@ -514,8 +514,8 @@ func TestUserController_Delete(t *testing.T) {
 	}
 }
 
-// TestUserController_ResetPassword - Test Reset Password route
-func TestUserController_ResetPassword(t *testing.T) {
+// TestUser_ResetPassword - Test Reset Password route
+func TestUser_ResetPassword(t *testing.T) {
 
 	reset := domain.UserPasswordReset{
 		DBPassword:      "",

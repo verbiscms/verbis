@@ -1,4 +1,4 @@
-package controllers
+package spa
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
@@ -12,17 +12,17 @@ import (
 
 // getSPAMock is a helper to obtain a mock SPA controller
 // for testing.
-func getSPAMock() *SpaController {
+func getSPAMock() *SPA {
 	mockError := mocks.ErrorHandler{}
 	mockError.On("NotFound", mock.Anything, mock.Anything).Return(mock.Anything)
-	return &SpaController{
+	return &SPA{
 		config:       config.Configuration{},
 		ErrorHandler: &mockError,
 	}
 }
 
-// TestSpaController_Serve - Test serving of files for SPA handler.
-func TestSpaController_Serve(t *testing.T) {
+// TestSPA_Serve - Test serving of files for SPA handler.
+func TestSPA_Serve(t *testing.T) {
 
 	// Save current function and restore at the end:
 	oldBasePath := basePath

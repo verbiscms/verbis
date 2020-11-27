@@ -5,7 +5,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -46,25 +45,25 @@ func (c *Posts) Get(g *gin.Context) {
 	params := http.NewParams(g).Get()
 	posts, total, err := c.store.Posts.Get(params, g.Query("resource"))
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	postData, err := c.store.Posts.FormatMultiple(posts)
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	pagination := http.NewPagination().Get(params, total)
 
-	handler.Respond(g, 200, "Successfully obtained posts", postData, pagination)
+	Respond(g, 200, "Successfully obtained posts", postData, pagination)
 }
 
 // Get By ID
@@ -78,26 +77,26 @@ func (c *Posts) GetById(g *gin.Context) {
 	paramId := g.Param("id")
 	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		handler.Respond(g, 400, "Pass a valid number to obtain the post by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Pass a valid number to obtain the post by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	post, err := c.store.Posts.GetById(id)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	formatPost, err := c.store.Posts.Format(post)
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained post with ID: "+paramId, formatPost)
+	Respond(g, 200, "Successfully obtained post with ID: "+paramId, formatPost)
 }
 
 // Create
@@ -110,26 +109,26 @@ func (c *Posts) Create(g *gin.Context) {
 
 	var post domain.PostCreate
 	if err := g.ShouldBindJSON(&post); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	newPost, err := c.store.Posts.Create(&post)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	formatPost, err := c.store.Posts.Format(newPost)
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully created post with ID: "+strconv.Itoa(newPost.Id), formatPost)
+	Respond(g, 200, "Successfully created post with ID: "+strconv.Itoa(newPost.Id), formatPost)
 }
 
 // Update
@@ -142,33 +141,33 @@ func (c *Posts) Update(g *gin.Context) {
 
 	var post domain.PostCreate
 	if err := g.ShouldBindJSON(&post); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		handler.Respond(g, 400, "A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	post.Id = id
 
 	updatedPost, err := c.store.Posts.Update(&post)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	formatPost, err := c.store.Posts.Format(updatedPost)
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.Id), formatPost)
+	Respond(g, 200, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.Id), formatPost)
 }
 
 // Delete
@@ -181,18 +180,18 @@ func (c *Posts) Delete(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		handler.Respond(g, 400, "A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to delete a post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	err = c.store.Posts.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully deleted post with ID: "+strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted post with ID: "+strconv.Itoa(id), nil)
 }

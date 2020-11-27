@@ -5,7 +5,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -45,19 +44,19 @@ func (c *Categories) Get(g *gin.Context) {
 	params := http.NewParams(g).Get()
 	categories, total, err := c.store.Categories.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
 	pagination := http.NewPagination().Get(params, total)
 
-	handler.Respond(g, 200, "Successfully obtained categories", categories, pagination)
+	Respond(g, 200, "Successfully obtained categories", categories, pagination)
 }
 
 // Get By ID
@@ -70,20 +69,20 @@ func (c *Categories) GetById(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		handler.Respond(g, 400, "Pass a valid number to obtain the category by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Pass a valid number to obtain the category by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	category, err := c.store.Categories.GetById(id)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained category with ID: "+strconv.Itoa(id), category)
+	Respond(g, 200, "Successfully obtained category with ID: "+strconv.Itoa(id), category)
 }
 
 // Create
@@ -96,20 +95,20 @@ func (c *Categories) Create(g *gin.Context) {
 
 	var category domain.Category
 	if err := g.ShouldBindJSON(&category); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	newCategory, err := c.store.Categories.Create(&category)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully created category with ID: "+strconv.Itoa(category.Id), newCategory)
+	Respond(g, 200, "Successfully created category with ID: "+strconv.Itoa(category.Id), newCategory)
 }
 
 // Update
@@ -122,27 +121,27 @@ func (c *Categories) Update(g *gin.Context) {
 
 	var category domain.Category
 	if err := g.ShouldBindJSON(&category); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		handler.Respond(g, 400, "A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	category.Id = id
 
 	updatedCategory, err := c.store.Categories.Update(&category)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully updated category with ID: "+strconv.Itoa(category.Id), updatedCategory)
+	Respond(g, 200, "Successfully updated category with ID: "+strconv.Itoa(category.Id), updatedCategory)
 }
 
 // Delete
@@ -155,18 +154,18 @@ func (c *Categories) Delete(g *gin.Context) {
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {
-		handler.Respond(g, 400, "A valid ID is required to delete a category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "A valid ID is required to delete a category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	err = c.store.Categories.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully deleted category with ID: "+strconv.Itoa(id), nil)
+	Respond(g, 200, "Successfully deleted category with ID: "+strconv.Itoa(id), nil)
 }

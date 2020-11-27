@@ -9,7 +9,6 @@ var (
 	Store *cache.Cache
 )
 
-
 type Cacher interface {
 	Get(k string) (interface{}, bool)
 	Set(k string, x interface{}, d time.Duration)

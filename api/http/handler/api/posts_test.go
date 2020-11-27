@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"bytes"
@@ -17,8 +17,8 @@ import (
 
 // getPostsMock is a helper to obtain a mock posts controller
 // for testing.
-func getPostsMock(m models.PostsRepository) *PostsController {
-	return &PostsController{
+func getPostsMock(m models.PostsRepository) *Posts {
+	return &Posts{
 		store: &models.Store{
 			Posts: m,
 		},
@@ -29,16 +29,16 @@ func getPostsMock(m models.PostsRepository) *PostsController {
 func Test_NewPosts(t *testing.T) {
 	store := models.Store{}
 	config := config.Configuration{}
-	want := &PostsController{
+	want := &Posts{
 		store:  &store,
 		config: config,
 	}
-	got := newPosts(&store, config)
+	got := NewPosts(&store, config)
 	assert.Equal(t, got, want)
 }
 
-// TestPostsController_Get - Test Get route
-func TestPostsController_Get(t *testing.T) {
+// TestPosts_Get - Test Get route
+func TestPosts_Get(t *testing.T) {
 
 	posts := []domain.Post{
 		{Id: 123, Slug: "/post", Title: "post"},
@@ -129,8 +129,8 @@ func TestPostsController_Get(t *testing.T) {
 	}
 }
 
-// TestPostsController_GetById - Test GetByID route
-func TestPostsController_GetById(t *testing.T) {
+// TestPosts_GetById - Test GetByID route
+func TestPosts_GetById(t *testing.T) {
 
 	post := domain.Post{Id: 123, Slug: "/post", Title: "post"}
 	postData := domain.PostData{Post: domain.Post{Id: 123, Slug: "/post", Title: "post"}}
@@ -210,8 +210,8 @@ func TestPostsController_GetById(t *testing.T) {
 	}
 }
 
-// TestPostsController_Create - Test Create route
-func TestPostsController_Create(t *testing.T) {
+// TestPosts_Create - Test Create route
+func TestPosts_Create(t *testing.T) {
 
 	post := domain.Post{Id: 123, Slug: "/post", Title: "post"}
 	postCreate := domain.PostCreate{Post: post}
@@ -308,8 +308,8 @@ func TestPostsController_Create(t *testing.T) {
 	}
 }
 
-// TestPostsController_Update - Test Update route
-func TestPostsController_Update(t *testing.T) {
+// TestPosts_Update - Test Update route
+func TestPosts_Update(t *testing.T) {
 
 	post := domain.Post{Id: 123, Slug: "/post", Title: "post"}
 	postCreate := domain.PostCreate{Post: post}
@@ -413,8 +413,8 @@ func TestPostsController_Update(t *testing.T) {
 	}
 }
 
-// TestPostsController_Delete - Test Delete route
-func TestPostsController_Delete(t *testing.T) {
+// TestPosts_Delete - Test Delete route
+func TestPosts_Delete(t *testing.T) {
 
 	tt := map[string]struct {
 		want    string

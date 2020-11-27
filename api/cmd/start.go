@@ -6,7 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/cron"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/controllers"
+	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/routes"
 	"github.com/ainsleyclark/verbis/api/server"
@@ -49,7 +49,7 @@ up the server on the port specified in the .env file.`,
 			serve := server.New(store.Options)
 
 			// Pass the stores to the controllers
-			controllers, err := controllers.New(store, *cfg)
+			controllers, err := handler.New(store, *cfg)
 			if err != nil {
 				fmt.Println(err)
 				printError(err.Error())
