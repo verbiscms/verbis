@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"bytes"
@@ -15,8 +15,8 @@ import (
 
 // getPostsMock is a helper to obtain a mock options controller
 // for testing.
-func getOptionsMock(m models.OptionsRepository) *OptionsController {
-	return &OptionsController{
+func getOptionsMock(m models.OptionsRepository) *Options {
+	return &Options{
 		store: &models.Store{
 			Options: m,
 		},
@@ -27,16 +27,16 @@ func getOptionsMock(m models.OptionsRepository) *OptionsController {
 func Test_NewOptions(t *testing.T) {
 	store := models.Store{}
 	config := config.Configuration{}
-	want := &OptionsController{
+	want := &Options{
 		store:  &store,
 		config: config,
 	}
-	got := newOptions(&store, config)
+	got := NewwOptions(&store, config)
 	assert.Equal(t, got, want)
 }
 
-// TestOptionsController_Get - Test Get route
-func TestOptionsController_Get(t *testing.T) {
+// TestOptions_Get - Test Get route
+func TestOptions_Get(t *testing.T) {
 
 	options := domain.OptionsDB{
 		"test1": domain.OptionDB{ID: 123, Name: "test"},
@@ -108,8 +108,8 @@ func TestOptionsController_Get(t *testing.T) {
 	}
 }
 
-// TestOptionsController_GetByName - Test GetByName route
-func TestOptionsController_GetByName(t *testing.T) {
+// TestOptions_GetByName - Test GetByName route
+func TestOptions_GetByName(t *testing.T) {
 
 	tt := map[string]struct {
 		want    string
@@ -163,8 +163,8 @@ func TestOptionsController_GetByName(t *testing.T) {
 	}
 }
 
-// TestOptionsController_UpdateCreate - Test UpdateCreate route
-func TestOptionsController_UpdateCreate(t *testing.T) {
+// TestOptions_UpdateCreate - Test UpdateCreate route
+func TestOptions_UpdateCreate(t *testing.T) {
 
 	vOptions := domain.Options{
 		SiteTitle:        "test",

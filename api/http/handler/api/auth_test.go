@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"bytes"
@@ -18,8 +18,8 @@ import (
 
 // getAuthMock is a helper to obtain a mock auth controller
 // for testing.
-func getAuthMock(m models.AuthRepository) *AuthController {
-	return &AuthController{
+func getAuthMock(m models.AuthRepository) *Auth {
+	return &Auth{
 		store: &models.Store{
 			Auth: m,
 		},
@@ -30,18 +30,18 @@ func getAuthMock(m models.AuthRepository) *AuthController {
 func Test_NewAuth(t *testing.T) {
 	store := models.Store{}
 	config := config.Configuration{}
-	want := &AuthController{
+	want := &Auth{
 		store:  &store,
 		config: config,
 	}
-	got := newAuth(&store, config)
+	got := NewAuth(&store, config)
 	assert.Equal(t, got, want)
 }
 
-// TestAuthController_Get - Test Login route
-func TestAuthController_Login(t *testing.T) {
+// TestAuth_Get - Test Login route
+func TestAuth_Login(t *testing.T) {
 
-	login := domain.Login{Email:    "info@verbiscms.com", Password: "password",}
+	login := domain.Login{Email: "info@verbiscms.com", Password: "password"}
 	loginBadValidation := domain.Login{Password: "password"}
 
 	tt := map[string]struct {
@@ -50,7 +50,7 @@ func TestAuthController_Login(t *testing.T) {
 		status  int
 		message string
 		input   interface{}
-		cookie bool
+		cookie  bool
 		mock    func(m *mocks.AuthRepository)
 	}{
 		"Success": {
@@ -58,7 +58,7 @@ func TestAuthController_Login(t *testing.T) {
 			status:  200,
 			message: "Successfully logged in & session started",
 			input:   login,
-			cookie: true,
+			cookie:  true,
 			mock: func(m *mocks.AuthRepository) {
 				m.On("Authenticate", login.Email, login.Password).Return(domain.User{}, nil)
 			},
@@ -68,7 +68,7 @@ func TestAuthController_Login(t *testing.T) {
 			status:  400,
 			message: "Validation failed",
 			input:   loginBadValidation,
-			cookie: false,
+			cookie:  false,
 			mock: func(m *mocks.AuthRepository) {
 				m.On("Authenticate", loginBadValidation.Email, loginBadValidation.Email).Return(domain.User{}, fmt.Errorf("error"))
 			},
@@ -78,7 +78,7 @@ func TestAuthController_Login(t *testing.T) {
 			status:  401,
 			message: "unauthorised",
 			input:   login,
-			cookie: false,
+			cookie:  false,
 			mock: func(m *mocks.AuthRepository) {
 				m.On("Authenticate", login.Email, login.Password).Return(domain.User{}, &errors.Error{Code: errors.INVALID, Message: "unauthorised"})
 			},
@@ -104,12 +104,12 @@ func TestAuthController_Login(t *testing.T) {
 			rr.Run(test.want, test.status, test.message)
 
 			if test.cookie {
-				cookie :=http.Cookie{
-					Name:       "verbis-session",
-					Expires:    time.Time{},
-					MaxAge:     172800,
-					Path: "/",
-					Raw: "verbis-session=; Path=/; Max-Age=172800; HttpOnly",
+				cookie := http.Cookie{
+					Name:     "verbis-session",
+					Expires:  time.Time{},
+					MaxAge:   172800,
+					Path:     "/",
+					Raw:      "verbis-session=; Path=/; Max-Age=172800; HttpOnly",
 					HttpOnly: true,
 				}
 				assert.Equal(t, rr.recorder.Result().Cookies()[0], &cookie)
@@ -118,8 +118,8 @@ func TestAuthController_Login(t *testing.T) {
 	}
 }
 
-// TestAuthController_Logout - Test Logout route
-func TestAuthController_Logout(t *testing.T) {
+// TestAuth_Logout - Test Logout route
+func TestAuth_Logout(t *testing.T) {
 
 	token := "test"
 
@@ -129,7 +129,7 @@ func TestAuthController_Logout(t *testing.T) {
 		status  int
 		message string
 		input   string
-		cookie bool
+		cookie  bool
 		mock    func(m *mocks.AuthRepository)
 	}{
 		"Success": {
@@ -137,7 +137,7 @@ func TestAuthController_Logout(t *testing.T) {
 			status:  200,
 			message: "Successfully logged out",
 			input:   "test",
-			cookie: true,
+			cookie:  true,
 			mock: func(m *mocks.AuthRepository) {
 				m.On("Logout", token).Return(-1, nil)
 			},
@@ -147,7 +147,7 @@ func TestAuthController_Logout(t *testing.T) {
 			status:  400,
 			message: "not found",
 			input:   token,
-			cookie: false,
+			cookie:  false,
 			mock: func(m *mocks.AuthRepository) {
 				m.On("Logout", token).Return(-1, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
@@ -157,7 +157,7 @@ func TestAuthController_Logout(t *testing.T) {
 			status:  500,
 			message: "internal",
 			input:   token,
-			cookie: false,
+			cookie:  false,
 			mock: func(m *mocks.AuthRepository) {
 				m.On("Logout", token).Return(-1, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
@@ -171,7 +171,7 @@ func TestAuthController_Logout(t *testing.T) {
 			mock := &mocks.AuthRepository{}
 			test.mock(mock)
 
-			rr.NewRequest("POST", "/logout",  nil)
+			rr.NewRequest("POST", "/logout", nil)
 			rr.gin.Request.Header.Set("token", test.input)
 
 			getAuthMock(mock).Logout(rr.gin)
@@ -179,12 +179,12 @@ func TestAuthController_Logout(t *testing.T) {
 			rr.Run(test.want, test.status, test.message)
 
 			if test.cookie {
-				cookie :=http.Cookie{
-					Name:       "verbis-session",
-					Expires:    time.Time{},
-					MaxAge:     -1,
-					Path: "/",
-					Raw: "verbis-session=; Path=/; Max-Age=0; HttpOnly",
+				cookie := http.Cookie{
+					Name:     "verbis-session",
+					Expires:  time.Time{},
+					MaxAge:   -1,
+					Path:     "/",
+					Raw:      "verbis-session=; Path=/; Max-Age=0; HttpOnly",
 					HttpOnly: true,
 				}
 				assert.Equal(t, rr.recorder.Result().Cookies()[0], &cookie)
@@ -193,8 +193,8 @@ func TestAuthController_Logout(t *testing.T) {
 	}
 }
 
-// TestAuthController_ResetPassword - Test ResetPassword route
-func TestAuthController_ResetPassword(t *testing.T) {
+// TestAuth_ResetPassword - Test ResetPassword route
+func TestAuth_ResetPassword(t *testing.T) {
 
 	rp := domain.ResetPassword{
 		NewPassword:     "password",
@@ -203,8 +203,8 @@ func TestAuthController_ResetPassword(t *testing.T) {
 	}
 
 	rpdBadValidation := domain.ResetPassword{
-		NewPassword:     "password",
-		Token:           "token",
+		NewPassword: "password",
+		Token:       "token",
 	}
 
 	tt := map[string]struct {
@@ -230,7 +230,7 @@ func TestAuthController_ResetPassword(t *testing.T) {
 			message: "Validation failed",
 			input:   rpdBadValidation,
 			mock: func(m *mocks.AuthRepository) {
-				m.On("ResetPassword",  rpdBadValidation.Token, rpdBadValidation.NewPassword).Return(nil)
+				m.On("ResetPassword", rpdBadValidation.Token, rpdBadValidation.NewPassword).Return(nil)
 			},
 		},
 		"Not Found": {
@@ -274,8 +274,8 @@ func TestAuthController_ResetPassword(t *testing.T) {
 	}
 }
 
-// TestAuthController_VerifyPasswordToken - Test VerifyPasswordToken route
-func TestAuthController_VerifyPasswordToken(t *testing.T) {
+// TestAuth_VerifyPasswordToken - Test VerifyPasswordToken route
+func TestAuth_VerifyPasswordToken(t *testing.T) {
 
 	token := "test"
 
@@ -286,7 +286,7 @@ func TestAuthController_VerifyPasswordToken(t *testing.T) {
 		message string
 		input   string
 		mock    func(m *mocks.AuthRepository)
-		url string
+		url     string
 	}{
 		"Success": {
 			want:    `{}`,
@@ -326,8 +326,8 @@ func TestAuthController_VerifyPasswordToken(t *testing.T) {
 	}
 }
 
-// TestAuthController_SendResetPassword - Test endResetPassword route
-func TestAuthController_SendResetPassword(t *testing.T) {
+// TestAuth_SendResetPassword - Test endResetPassword route
+func TestAuth_SendResetPassword(t *testing.T) {
 
 	srp := domain.SendResetPassword{Email: "info@verbiscms.com"}
 	srpBadvalidation := domain.SendResetPassword{}
@@ -355,7 +355,7 @@ func TestAuthController_SendResetPassword(t *testing.T) {
 			message: "Validation failed",
 			input:   srpBadvalidation,
 			mock: func(m *mocks.AuthRepository) {
-				m.On("SendResetPassword",  srpBadvalidation.Email).Return(nil)
+				m.On("SendResetPassword", srpBadvalidation.Email).Return(nil)
 			},
 		},
 		"Not Found": {

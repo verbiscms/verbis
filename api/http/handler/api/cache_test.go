@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
@@ -10,13 +10,13 @@ import (
 // Test_NewCache - Test construct
 func Test_NewCache(t *testing.T) {
 	cache.Init()
-	want := &CacheController{}
-	got := newCache()
+	want := &Cache{}
+	got := NewCache()
 	assert.Equal(t, got, want)
 }
 
-// TestCacheController_Clear - Test Clear route
-func TestCacheController_Clear(t *testing.T) {
+// TestCache_Clear - Test Clear route
+func TestCache_Clear(t *testing.T) {
 
 	cache.Init()
 
@@ -38,7 +38,7 @@ func TestCacheController_Clear(t *testing.T) {
 
 		t.Run(name, func(t *testing.T) {
 			rr := newTestSuite(t)
-			mock := &CacheController{}
+			mock := &Cache{}
 
 			rr.RequestAndServe("POST", "/reset", "/reset", nil, func(g *gin.Context) {
 				mock.Clear(g)

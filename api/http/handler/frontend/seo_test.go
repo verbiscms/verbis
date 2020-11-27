@@ -1,4 +1,4 @@
-package controllers
+package frontend
 
 import (
 	"fmt"
@@ -22,16 +22,61 @@ import (
 //	}
 //}
 
+// controllerTest represents the suite of testing methods for controllers.
+type controllerTest struct {
+	testing  *testing.T
+	recorder *httptest.ResponseRecorder
+	gin      *gin.Context
+	engine   *gin.Engine
+}
+
 func TestSEOController_Robots(t *testing.T) {
 
 	gin.SetMode(gin.TestMode)
+
+	tt := map[string]struct {
+		want    string
+		status  int
+		options  domain.Options
+	}{
+		"Success": {
+			want:    `test`,
+			status:  200,
+			options: domain.Options{
+				SeoRobotsServe: true,
+				SeoRobots:      "test",
+			},
+		},
+		"Error": {
+			want:    `test`,
+			status:  200,
+			options: domain.Options{
+				SeoRobotsServe: false,
+			},
+		},
+	}
+
+	for name, test := range tt {
+
+		t.Run(name, func(t *testing.T) {
+			//rr := newTestSuite(t)
+			//mock := &mocks.MediaRepository{}
+			//test.mock(mock)
+			//
+			//rr.RequestAndServe("GET", "/users", "/users", nil, func(g *gin.Context) {
+			//	getMediaMock(mock).Get(g)
+			//})
+			//
+			//rr.Run(test.want, test.status, test.message)
+		})
+	}
 
 	t.Run("Success", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
 
-		seoSuccess := SEOController{
+		seoSuccess := SEO{
 			options: domain.Options{
 				SeoRobotsServe: true,
 				SeoRobots:      "test",
@@ -52,7 +97,7 @@ func TestSEOController_Robots(t *testing.T) {
 		errorMock := &mocks.ErrorHandler{}
 		errorMock.On("NotFound", g, config.Configuration{}).Return("error")
 
-		seoError := SEOController{
+		seoError := SEO{
 			options: domain.Options{
 				SeoRobotsServe: false,
 			},
@@ -76,7 +121,7 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 		sitemapMock := &mocks.SiteMapper{}
 		sitemapMock.On("GetIndex").Return([]byte("test"), nil)
 
-		seoSuccess := SEOController{
+		seoSuccess := SEO{
 			sitemap: sitemapMock,
 		}
 
@@ -99,7 +144,7 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 		sitemapMock := &mocks.SiteMapper{}
 		sitemapMock.On("GetIndex").Return(nil, fmt.Errorf("error"))
 
-		seoError := SEOController{
+		seoError := SEO{
 			sitemap:      sitemapMock,
 			ErrorHandler: errorMock,
 		}
@@ -122,7 +167,7 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 		sitemapMock := &mocks.SiteMapper{}
 		sitemapMock.On("GetPages", mock.Anything).Return([]byte("test"), nil)
 
-		seoSuccess := SEOController{
+		seoSuccess := SEO{
 			sitemap: sitemapMock,
 		}
 
@@ -145,7 +190,7 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 		sitemapMock := &mocks.SiteMapper{}
 		sitemapMock.On("GetPages", mock.Anything).Return(nil, fmt.Errorf("error"))
 
-		seoError := SEOController{
+		seoError := SEO{
 			sitemap:      sitemapMock,
 			ErrorHandler: errorMock,
 		}
@@ -169,7 +214,7 @@ func TestSEOController_SiteMapXSL(t *testing.T) {
 
 		sitemapMock.On("GetXSL", mock.Anything).Return([]byte("test"), nil)
 
-		seoSuccess := SEOController{
+		seoSuccess := SEO{
 			sitemap: sitemapMock,
 		}
 
@@ -192,7 +237,7 @@ func TestSEOController_SiteMapXSL(t *testing.T) {
 		sitemapMock := &mocks.SiteMapper{}
 		sitemapMock.On("GetXSL", mock.Anything).Return(nil, fmt.Errorf("error"))
 
-		seoError := SEOController{
+		seoError := SEO{
 			sitemap:      sitemapMock,
 			ErrorHandler: errorMock,
 		}

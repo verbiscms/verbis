@@ -18,9 +18,7 @@ import (
 
 // Global Configuration, sets defaults to ensure that there are no
 // empty values within the themes config to prevent any errors.
-var (
-
-)
+var ()
 
 // SiteRepository defines methods for Posts to interact with the database
 type SiteRepository interface {

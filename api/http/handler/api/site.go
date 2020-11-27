@@ -3,7 +3,6 @@ package api
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 )
@@ -34,7 +33,7 @@ func NewSite(m *models.Store, config config.Configuration) *Site {
 //
 // Returns 200 if site config was obtained successfully.
 func (c *Site) GetSite(g *gin.Context) {
-	handler.Respond(g, 200, "Successfully obtained site config", c.store.Site.GetGlobalConfig())
+	Respond(g, 200, "Successfully obtained site config", c.store.Site.GetGlobalConfig())
 }
 
 // GetTheme gets the theme's config from the theme path
@@ -46,11 +45,11 @@ func (c *Site) GetTheme(g *gin.Context) {
 
 	theme, err := c.store.Site.GetThemeConfig()
 	if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained theme config", theme)
+	Respond(g, 200, "Successfully obtained theme config", theme)
 }
 
 // GetTemplates gets all page templates
@@ -62,14 +61,14 @@ func (c *Site) GetTemplates(g *gin.Context) {
 
 	templates, err := c.store.Site.GetTemplates()
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained templates", templates)
+	Respond(g, 200, "Successfully obtained templates", templates)
 }
 
 // GetTemplates gets all layouts
@@ -81,12 +80,12 @@ func (c *Site) GetLayouts(g *gin.Context) {
 
 	templates, err := c.store.Site.GetLayouts()
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained layouts", templates)
+	Respond(g, 200, "Successfully obtained layouts", templates)
 }

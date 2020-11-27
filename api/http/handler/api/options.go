@@ -4,7 +4,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -42,17 +41,17 @@ func (c *Options) Get(g *gin.Context) {
 
 	options, err := c.store.Options.Get()
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
-		handler.Respond(g, 400, errors.Message(err), err)
+		Respond(g, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained options", options)
+	Respond(g, 200, "Successfully obtained options", options)
 }
 
 // Get By name
@@ -66,14 +65,14 @@ func (c *Options) GetByName(g *gin.Context) {
 	name := g.Param("name")
 	option, err := c.store.Options.GetByName(name)
 	if errors.Code(err) == errors.NOTFOUND {
-		handler.Respond(g, 200, errors.Message(err), err)
+		Respond(g, 200, errors.Message(err), err)
 		return
 	} else if err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully obtained option with name: "+name, option)
+	Respond(g, 200, "Successfully obtained option with name: "+name, option)
 }
 
 // UpdateCreate - Restarts the server at the end of the
@@ -87,22 +86,22 @@ func (c *Options) UpdateCreate(g *gin.Context) {
 
 	var options domain.OptionsDB
 	if err := g.ShouldBindBodyWith(&options, binding.JSON); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	var vOptions domain.Options
 	if err := g.ShouldBindBodyWith(&vOptions, binding.JSON); err != nil {
-		handler.Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	if err := c.store.Options.UpdateCreate(&options); err != nil {
-		handler.Respond(g, 500, errors.Message(err), err)
+		Respond(g, 500, errors.Message(err), err)
 		return
 	}
 
-	handler.Respond(g, 200, "Successfully created/updated options", nil)
+	Respond(g, 200, "Successfully created/updated options", nil)
 
 	go func() {
 		time.Sleep(time.Second * 2)

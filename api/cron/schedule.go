@@ -1,8 +1,8 @@
 package cron
 
 import (
-	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/jasonlvhit/gocron"
 	log "github.com/sirupsen/logrus"
 )

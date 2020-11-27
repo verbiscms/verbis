@@ -64,4 +64,3 @@ func (u *User) HideCredentials() {
 func (u *User) HidePassword() {
 	u.Password = ""
 }
-
