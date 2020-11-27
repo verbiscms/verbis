@@ -1,4 +1,4 @@
-package frontend
+package render
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
