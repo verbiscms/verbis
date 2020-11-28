@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
-	log "github.com/sirupsen/logrus"
 	min "github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"github.com/tdewolff/minify/v2/html"
@@ -71,12 +70,7 @@ func (m *Minify) MinifyBytes(b *bytes.Buffer, mime string) ([]byte, error) {
 func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 	const op = "Minify.Compare"
 
-	options, optsErr := m.options.GetStruct()
-	if optsErr != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
-		}).Fatal()
-	}
+	options := m.options.GetStruct()
 
 	var (
 		render []byte

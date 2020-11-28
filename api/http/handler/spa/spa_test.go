@@ -3,7 +3,7 @@ package spa
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/frontend"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"

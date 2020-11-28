@@ -11,25 +11,25 @@ import (
 func EmptyBody() gin.HandlerFunc {
 	return func(g *gin.Context) {
 
-		method := g.Request.Method
 		contentType := g.Request.Header.Get("Content-Type")
+		if contentType != "application/json" && contentType !=  "application/json; charset=utf-8" {
+			g.Next()
+			return
+		}
 
-		if contentType == "application/json" {
-			if method == "POST" || method == "PUT" {
-				bodyBytes, _ := ioutil.ReadAll(g.Request.Body)
+		method := g.Request.Method
+		if method == "POST" || method == "PUT" {
+			bodyBytes, _ := ioutil.ReadAll(g.Request.Body)
 
-				if isEmpty(g, bodyBytes) {
-					api.AbortJSON(g, 401, "Empty JSON body", nil)
-					return
-				}
-
-				if !isJSON(string(bodyBytes)) {
-					api.AbortJSON(g, 401, "Invalid JSON", nil)
-					return
-				}
+			if isEmpty(g, bodyBytes) {
+				api.AbortJSON(g, 401, "Empty JSON body", nil)
+				return
 			}
 
-			g.Next()
+			if !isJSON(string(bodyBytes)) {
+				api.AbortJSON(g, 401, "Invalid JSON", nil)
+				return
+			}
 		}
 
 		g.Next()

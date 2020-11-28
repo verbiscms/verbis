@@ -56,21 +56,13 @@ func NewPublic(m *models.Store, config config.Configuration) *Public {
 		}).Fatal()
 	}
 
-	// Get the options
-	options, err := m.Options.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	return &Public{
 		models:       m,
 		config:       config,
 		cacher:       render.NewCache(m.Options),
 		minify:       render.New(m.Options),
 		theme:        theme,
-		options:      options,
+		options:      m.Options.GetStruct(),
 		ErrorHandler: &render.Errors{},
 	}
 }

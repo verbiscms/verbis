@@ -70,13 +70,7 @@ func newMedia(db *sqlx.DB, config config.Configuration) *MediaStore {
 // getOptionsStruct - Init the model with options
 func (s *MediaStore) getOptionsStruct() {
 	const op = "MediaRepository.getOptionsStruct"
-	opts, err := s.optionsModel.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
-		}).Fatal()
-	}
-	s.options = opts
+	s.options = s.optionsModel.GetStruct()
 }
 
 // Get all media

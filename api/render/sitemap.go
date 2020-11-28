@@ -81,13 +81,6 @@ const (
 func NewSitemap(m *models.Store) *Sitemap {
 	const op = "SiteMapper.NewSitemap"
 
-	options, err := m.Options.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	theme, err := m.Site.GetThemeConfig()
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -104,7 +97,7 @@ func NewSitemap(m *models.Store) *Sitemap {
 
 	s := &Sitemap{
 		store:        m,
-		options:      options,
+		options:      m.Options.GetStruct(),
 		resources:    theme.Resources,
 		templatePath: paths.Api() + "/web/sitemaps/",
 		indexXSL:     "main-sitemap.xsl",

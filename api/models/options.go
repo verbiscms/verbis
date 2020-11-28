@@ -7,13 +7,14 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
+	log "github.com/sirupsen/logrus"
 )
 
 // OptionsRepository defines methods for Options to interact with the database
 type OptionsRepository interface {
 	Get() (domain.OptionsDB, error)
 	GetByName(name string) (interface{}, error)
-	GetStruct() (domain.Options, error)
+	GetStruct() (domain.Options)
 	UpdateCreate(options *domain.OptionsDB) error
 	Create(name string, value interface{}) error
 	Update(name string, value interface{}) error
@@ -74,43 +75,55 @@ func (s *OptionsStore) GetByName(name string) (interface{}, error) {
 
 // GetStruct gets the options struct for use in the API
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *OptionsStore) GetStruct() (domain.Options, error) {
+func (s *OptionsStore) GetStruct() (domain.Options) {
 	const op = "OptionsRepository.GetStruct"
 
 	cachedOpts, found := cache.Store.Get("options-struct")
 	if found {
-		return cachedOpts.(domain.Options), nil
+		return cachedOpts.(domain.Options)
 	}
 
 	var opts []domain.OptionDB
 	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
-		return domain.Options{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not get options", Operation: op, Err: err}
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+		}).Fatal()
+		return domain.Options{}
 	}
 
 	unOpts := make(domain.OptionsDB)
 	for _, v := range opts {
 		unValue, err := s.unmarshalValue(v.Value)
 		if err != nil {
-			return domain.Options{}, err
+			log.WithFields(log.Fields{
+				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+			}).Fatal()
+			return domain.Options{}
 		}
 		unOpts[v.Name] = unValue
 	}
 
 	mOpts, err := json.Marshal(unOpts)
 	if err != nil {
-		return domain.Options{}, err
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+		}).Fatal()
+		return domain.Options{}
 	}
 
 	var options domain.Options
 	if err := json.Unmarshal(mOpts, &options); err != nil {
-		return domain.Options{}, err
+		log.WithFields(log.Fields{
+			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+		}).Fatal()
+		return domain.Options{}
 	}
 
 	if !found {
 		go cache.Store.Set("options-struct", options, cache.RememberForever)
 	}
 
-	return options, nil
+	return options
 }
 
 // UpdateCreate update's or create options depending on Exists check

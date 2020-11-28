@@ -3,11 +3,9 @@ package frontend
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 // SEOHandler defines methods for SEO routes to interact with the server
@@ -29,19 +27,10 @@ type SEO struct {
 
 // newSEO - Construct
 func NewSEO(m *models.Store, config config.Configuration) *SEO {
-	const op = "SEOHandler.newSEO"
-
-	options, err := m.Options.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	return &SEO{
 		models:       m,
 		config:       config,
-		options:      options,
+		options:      m.Options.GetStruct(),
 		sitemap:      render.NewSitemap(m),
 		ErrorHandler: &render.Errors{},
 	}
