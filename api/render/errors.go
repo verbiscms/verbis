@@ -14,6 +14,7 @@ type ErrorHandler interface {
 type Errors struct{}
 
 func (e *Errors) NotFound(g *gin.Context, config config.Configuration) {
+
 	gvError := goview.New(goview.Config{
 		Root:         paths.Theme(),
 		Extension:    config.Template.FileExtension,
@@ -21,8 +22,7 @@ func (e *Errors) NotFound(g *gin.Context, config config.Configuration) {
 		DisableCache: true,
 	})
 
-	// need to log here?!
-
+	// TODO: need to log here?!
 	if err := gvError.Render(g.Writer, 404, "404", nil); err != nil {
 		panic(err)
 	}

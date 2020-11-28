@@ -57,10 +57,15 @@ func (s *CategoryStore) Get(meta http.Params) ([]domain.Category, int, error) {
 	q += filter
 	countQ += filter
 
-	// Apply pagination
-	q += fmt.Sprintf(" ORDER BY categories.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page-1)*meta.Limit)
+	// Apply order
+	q += fmt.Sprintf(" ORDER BY categories.%s %s", meta.OrderBy, meta.OrderDirection)
 
-	// Select media
+	// Apply pagination
+	if !meta.LimitAll {
+		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
+	}
+
+	// Select categories
 	if err := s.db.Select(&c, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
 	}

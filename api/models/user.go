@@ -92,8 +92,13 @@ func (s *UserStore) Get(meta http.Params) (domain.Users, int, error) {
 	q += filter
 	countQ += filter
 
+	// Apply order
+	q += fmt.Sprintf(" ORDER BY users.%s %s", meta.OrderBy, meta.OrderDirection)
+
 	// Apply pagination
-	q += fmt.Sprintf(" ORDER BY users.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page-1)*meta.Limit)
+	if !meta.LimitAll {
+		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
+	}
 
 	// Select users
 	if err := s.db.Select(&u, q); err != nil {
