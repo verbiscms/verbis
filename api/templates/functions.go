@@ -30,17 +30,8 @@ type TypeOfPage struct {
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunctions {
 	const op = "Templates.NewFunctions"
 
-	options, err := s.Options.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	author, _ := s.User.GetById(p.UserId)
-
 	category, _ := s.Categories.GetByPost(p.Id)
-
 	site := s.Site.GetGlobalConfig()
 
 	return &TemplateFunctions{
@@ -51,7 +42,7 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunc
 		fields:   p.Fields,
 		site:     site,
 		store:    s,
-		options:  options,
+		options:  s.Options.GetStruct(),
 	}
 }
 

@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"
 )
@@ -41,23 +40,11 @@ type UserStore struct {
 
 // newUser - Construct
 func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
-	const op = "UserRepository.newUser"
-
-	s := &UserStore{
+	return &UserStore{
 		db:     db,
 		config: config,
+		optionsRepo: newOptions(db).GetStruct(),
 	}
-
-	om := newOptions(db)
-	opts, err := om.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
-		}).Fatal()
-	}
-	s.optionsRepo = opts
-
-	return s
 }
 
 // Get all users

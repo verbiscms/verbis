@@ -59,15 +59,12 @@ up the server on the port specified in the .env file.`,
 			routes.Load(serve, controllers, store, *cfg)
 
 			// Get options
-			opts, err := store.Options.GetStruct()
-			if err != nil {
-				printError(err.Error())
-			}
+			options := store.Options.GetStruct()
 
 			// Print listening success
 			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", environment.GetPort()))
-			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", opts.SiteUrl)
-			emoji.Printf(":key: Or visit the admin area at:  %s \n", opts.SiteUrl+"/admin")
+			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", options.SiteUrl)
+			emoji.Printf(":key: Or visit the admin area at:  %s \n", options.SiteUrl+"/admin")
 			fmt.Println()
 
 			// Listen & serve.

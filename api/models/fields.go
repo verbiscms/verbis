@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
-	log "github.com/sirupsen/logrus"
-
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -35,18 +33,9 @@ type FieldsStore struct {
 func newFields(db *sqlx.DB) *FieldsStore {
 	const op = "FieldsRepository.newFields"
 
-	// Get the options
-	optsModel := newOptions(db)
-	options, err := optsModel.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	fs := FieldsStore{
 		db:       db,
-		options:  options,
+		options:  newOptions(db).GetStruct(),
 		jsonPath: paths.Storage() + "/fields",
 	}
 
