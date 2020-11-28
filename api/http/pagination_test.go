@@ -16,12 +16,9 @@ func TestNewPagination(t *testing.T) {
 func TestPagination_Get(t *testing.T) {
 
 	tt := map[string]struct {
-		params  Params
-		total   int
-		name    string
-		want    *Pagination
-		status  int
-		message string
+		params Params
+		total  int
+		want   *Pagination
 	}{
 		"Normal": {
 			total:  10,
@@ -47,6 +44,11 @@ func TestPagination_Get(t *testing.T) {
 			total:  600,
 			params: Params{Page: 99, Limit: 4, OrderBy: "order", OrderDirection: "asc", Filters: nil},
 			want:   &Pagination{Page: 99, Pages: 150, Limit: 4, Total: 600, Next: 100, Prev: 98},
+		},
+		"Limit All": {
+			total:  100,
+			params: Params{Page: 1, Limit: 0, LimitAll: true, OrderBy: "order", OrderDirection: "asc", Filters: nil},
+			want:   &Pagination{Page: 1, Pages: 1, Limit: "all", Total: 100, Next: false, Prev: false},
 		},
 	}
 

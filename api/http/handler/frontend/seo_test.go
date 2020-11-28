@@ -12,64 +12,9 @@ import (
 	"testing"
 )
 
-// getFieldsMock is a helper to obtain a mock fields controller
-// for testing.
-//func getSeoMock(m models.SeoMetaRepository) *SEOController {
-//	return &SEOController{
-//		store: &models.Store{
-//			SEOController{}: m,
-//		},
-//	}
-//}
-
-// controllerTest represents the suite of testing methods for controllers.
-type controllerTest struct {
-	testing  *testing.T
-	recorder *httptest.ResponseRecorder
-	gin      *gin.Context
-	engine   *gin.Engine
-}
-
+// TestSEOController_Robots - Test robots.txt route
 func TestSEOController_Robots(t *testing.T) {
-
 	gin.SetMode(gin.TestMode)
-
-	tt := map[string]struct {
-		want    string
-		status  int
-		options  domain.Options
-	}{
-		"Success": {
-			want:    `test`,
-			status:  200,
-			options: domain.Options{
-				SeoRobotsServe: true,
-				SeoRobots:      "test",
-			},
-		},
-		"Error": {
-			want:    `test`,
-			status:  200,
-			options: domain.Options{
-				SeoRobotsServe: false,
-			},
-		},
-	}
-
-	for name, test := range tt {
-
-		t.Run(name, func(t *testing.T) {
-			//rr := newTestSuite(t)
-			//mock := &mocks.MediaRepository{}
-			//test.mock(mock)
-			//
-			//rr.RequestAndServe("GET", "/users", "/users", nil, func(g *gin.Context) {
-			//	getMediaMock(mock).Get(g)
-			//})
-			//
-			//rr.Run(test.want, test.status, test.message)
-		})
-	}
 
 	t.Run("Success", func(t *testing.T) {
 
@@ -111,6 +56,7 @@ func TestSEOController_Robots(t *testing.T) {
 	})
 }
 
+// TestSEOController_SiteMapIndex - Test /sitemap.xml route
 func TestSEOController_SiteMapIndex(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
@@ -157,6 +103,7 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 	})
 }
 
+// TestSEOController_SiteMapResource - Test /sitemaps/:resource route
 func TestSEOController_SiteMapResource(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
@@ -203,6 +150,7 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 	})
 }
 
+// TestSEOController_SiteMapXSL - Test .xsl files for styling XML.
 func TestSEOController_SiteMapXSL(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 

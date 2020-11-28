@@ -8,19 +8,20 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 )
 
+// Handler defines all of handler funcs for the app.
 type Handler struct {
 	Auth       api.AuthHandler
 	Cache      api.CacheHandler
 	Categories api.CategoryHandler
-	Fields     api.FieldHandler
-	Frontend   frontend.PublicHandler
 	Media      api.MediaHandler
 	Options    api.OptionsHandler
 	Posts      api.PostHandler
-	SPA        spa.SPAHandler
-	SEO        frontend.SEOHandler
 	Site       api.SiteHandler
 	User       api.UserHandler
+	Fields     api.FieldHandler
+	Frontend   frontend.PublicHandler
+	SEO        frontend.SEOHandler
+	SPA        spa.SPAHandler
 }
 
 // Construct
@@ -31,14 +32,14 @@ func New(m *models.Store, config config.Configuration) (*Handler, error) {
 		Cache:      api.NewCache(),
 		Categories: api.NewCategories(m, config),
 		Fields:     api.NewFields(m, config),
-		Frontend:   frontend.NewPublic(m, config),
 		Media:      api.NewMedia(m, config),
 		Options:    api.NewwOptions(m, config),
 		Posts:      api.NewPosts(m, config),
-		SPA:        spa.NewSpa(config),
-		SEO:        frontend.NewSEO(m, config),
 		Site:       api.NewSite(m, config),
 		User:       api.NewUser(m, config),
+		SPA:        spa.NewSpa(config),
+		Frontend:   frontend.NewPublic(m, config),
+		SEO:        frontend.NewSEO(m, config),
 	}
 
 	return &c, nil

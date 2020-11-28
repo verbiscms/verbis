@@ -97,8 +97,13 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 	q += filter
 	countQ += filter
 
+	// Apply order
+	q += fmt.Sprintf(" ORDER BY media.%s %s", meta.OrderBy, meta.OrderDirection)
+
 	// Apply pagination
-	q += fmt.Sprintf(" ORDER BY media.%s %s LIMIT %v OFFSET %v", meta.OrderBy, meta.OrderDirection, meta.Limit, (meta.Page-1)*meta.Limit)
+	if !meta.LimitAll {
+		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
+	}
 
 	// Select media
 	if err := s.db.Select(&m, q); err != nil {
