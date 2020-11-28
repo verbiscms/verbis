@@ -76,12 +76,7 @@ func (s *Server) ListenAndServe(port int) error {
 func (s *Server) setupGzip(o models.OptionsRepository) {
 	const op = "router.ListenAndServe"
 
-	options, err := o.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
-		}).Fatal()
-	}
+	options := o.GetStruct()
 
 	// Bail if there is no
 	if !options.Gzip {

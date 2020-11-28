@@ -7,7 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 // Renderer
@@ -27,18 +26,9 @@ type Render struct {
 
 // NewRender - Construct
 func NewRender(g *gin.Context, m *models.Store, config config.Configuration) *Render {
-	const op = "Renderer.NewRender"
-
-	options, err := m.Options.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	return &Render{
 		store:   m,
-		options: options,
+		options: m.Options.GetStruct(),
 		config:  config,
 		path:    g.Request.URL.Path,
 	}

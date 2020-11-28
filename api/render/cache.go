@@ -3,11 +3,9 @@ package render
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -26,17 +24,8 @@ type Cache struct {
 
 // NewCache - Construct
 func NewCache(o models.OptionsRepository) *Cache {
-	const op = "Cacher.NewCache"
-
-	options, err := o.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	return &Cache{
-		options: options,
+		options: o.GetStruct(),
 	}
 }
 

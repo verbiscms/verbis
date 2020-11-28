@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ghodss/yaml"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 	"strings"
@@ -63,13 +62,7 @@ func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
 func (s *SiteStore) GetGlobalConfig() *domain.Site {
 	const op = "SiteRepository.GetGlobalConfig"
 
-	opts, err := s.optionsModel.GetStruct()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: fmt.Errorf("could not get the options struct")},
-		}).Fatal()
-		return nil
-	}
+	opts := s.optionsModel.GetStruct()
 
 	ds := domain.Site{
 		Title:       opts.SiteTitle,
