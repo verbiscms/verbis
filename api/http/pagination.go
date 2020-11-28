@@ -14,7 +14,7 @@ type Paginate interface {
 type Pagination struct {
 	Page  int         `json:"page"`
 	Pages int         `json:"pages"`
-	Limit int         `json:"limit"`
+	Limit interface{} `json:"limit"`
 	Total int         `json:"total"`
 	Next  interface{} `json:"next"`
 	Prev  interface{} `json:"prev"`
@@ -32,12 +32,21 @@ func (p *Pagination) Get(params Params, total int) *Pagination {
 	var pages int
 	pages = int(math.Ceil(float64(total) / float64(params.Limit)))
 
+	// Set page to 1 if the user has passed "?limit=all"
+	var limit interface{}
+	if params.LimitAll {
+		pages = 1
+		limit = "all"
+	} else {
+		limit = params.Limit
+	}
+
 	// Construct pagination meta
 	var pagination *Pagination
 	pagination = &Pagination{
 		Page:  params.Page,
 		Pages: pages,
-		Limit: params.Limit,
+		Limit: limit,
 		Total: total,
 		Next:  false,
 		Prev:  false,

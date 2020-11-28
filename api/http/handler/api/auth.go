@@ -90,7 +90,7 @@ func (c *Auth) VerifyEmail(g *gin.Context) {
 	token := g.Param("token")
 	err := c.store.Auth.VerifyEmail(token)
 	if err != nil {
-		NoPageFound(g)
+		notFound(g)
 		return
 	}
 

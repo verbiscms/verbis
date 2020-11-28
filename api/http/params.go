@@ -17,6 +17,7 @@ type Params struct {
 	gin            *gin.Context
 	Page           int
 	Limit          int
+	LimitAll       bool
 	OrderBy        string
 	OrderDirection string
 	Filters        map[string][]Filter
@@ -31,8 +32,8 @@ type Filter struct {
 // PaginationAllLimit defines how many items will be returned if
 // the limit is set to list all
 const (
-	PaginationAllLimit = 99999999999999
-	PaginationDefault  = 15
+	PaginationDefault      = 15
+	PaginationDefaultOrder = "id,ASC"
 )
 
 // NewParams - create a new parameter type
@@ -55,13 +56,14 @@ func (p *Params) Get() Params {
 
 	// Get limit & calculate if list all
 	var limit int
+	var limitAll bool
 	limitStr := p.gin.Query("limit")
 	if limitStr == "all" {
-		limit = PaginationAllLimit
+		limitAll = true
 	} else {
 		limit, err = strconv.Atoi(limitStr)
 		if err != nil {
-			limit = PaginationAllLimit
+			limit = PaginationDefault
 		}
 		if limit == 0 || limitStr == "" {
 			limit = PaginationDefault
@@ -71,18 +73,24 @@ func (p *Params) Get() Params {
 	// Get order and set defaults
 	order := p.gin.Query("order")
 	if order == "" {
-		order = "id,asc"
+		order = PaginationDefaultOrder
 	}
 
 	// Get order and set defaults
 	orderArr := strings.Split(order, ",")
-	var orderParams [3]string
-	if len(orderArr) == 1 {
+	var orderParams [2]string
+
+	if len(orderArr) != 2 {
 		orderParams[0] = "id"
 		orderParams[1] = "ASC"
 	} else {
-		orderParams[0] = orderArr[0]
-		orderParams[1] = orderArr[1]
+		if orderArr[1] == "" {
+			orderParams[0] = "id"
+			orderParams[1] = "ASC"
+		} else {
+			orderParams[0] = orderArr[0]
+			orderParams[1] = orderArr[1]
+		}
 	}
 
 	// Get the filters
@@ -98,6 +106,7 @@ func (p *Params) Get() Params {
 	return Params{
 		Page:           page,
 		Limit:          limit,
+		LimitAll:       limitAll,
 		OrderBy:        orderParams[0],
 		OrderDirection: orderParams[1],
 		Filters:        filters,

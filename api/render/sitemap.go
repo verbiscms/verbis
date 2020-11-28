@@ -257,7 +257,8 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 
 	posts, _, err := s.store.Posts.Get(http.Params{
 		Page:           1,
-		Limit:          http.PaginationAllLimit,
+		Limit:          0,
+		LimitAll:       true,
 		OrderDirection: "desc",
 		OrderBy:        "created_at",
 	}, resource)

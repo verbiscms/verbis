@@ -66,6 +66,7 @@ func (c *SPA) Serve(g *gin.Context) {
 		if err != nil {
 			// TODO, log here! Error getting admin file
 			c.ErrorHandler.NotFound(g, c.config)
+			return
 		}
 
 		g.Data(200, "text/html; charset=utf-8", data)

@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -103,9 +104,8 @@ func AbortJSON(g *gin.Context, status int, message string, data interface{}) {
 }
 
 // Handle 404s.
-func NoPageFound(g *gin.Context) {
-	// TODO make 404 dynamic
-	g.HTML(404, "404", gin.H{})
+func notFound(g *gin.Context) {
+	g.AbortWithError(404, fmt.Errorf("Page not found"))
 }
 
 // checkResponseData checks what type of data is passed and processes it
@@ -173,12 +173,12 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 // calculateRequestTime processes the request and response time and works out latency time.
 // Returns Meta
 func calculateRequestTime(g *gin.Context) Meta {
-	var startTime time.Time
+	var startTime = time.Now()
+
+	fmt.Println(g.Get("request_time"))
 
 	if t, exists := g.Get("request_time"); exists {
 		startTime = t.(time.Time)
-	} else {
-		startTime = time.Now()
 	}
 	latencyTime := time.Since(startTime)
 
