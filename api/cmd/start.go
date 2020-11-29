@@ -49,14 +49,10 @@ up the server on the port specified in the .env file.`,
 			serve := server.New(store.Options)
 
 			// Pass the stores to the controllers
-			controllers, err := handler.New(store, *cfg)
-			if err != nil {
-				fmt.Println(err)
-				printError(err.Error())
-			}
+			handler := handler.New(store, *cfg)
 
 			// Load the routes
-			routes.Load(serve, controllers, store, *cfg)
+			routes.Load(serve, handler, store, *cfg)
 
 			// Get options
 			options := store.Options.GetStruct()

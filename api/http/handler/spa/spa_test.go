@@ -1,7 +1,6 @@
 package spa
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
 	"github.com/gin-gonic/gin"
@@ -84,7 +83,6 @@ func TestSPA_Serve(t *testing.T) {
 
 		data, err := ioutil.ReadFile(basePath + imagePath)
 		if err != nil {
-			fmt.Println(err)
 			t.Errorf("could not open file with the path %s", basePath+imagePath)
 		}
 

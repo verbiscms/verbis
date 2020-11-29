@@ -49,7 +49,7 @@ func TestMedia_Get(t *testing.T) {
 		{Id: 123, Url: "/logo.svg"},
 		{Id: 124, Url: "/logo.png"},
 	}
-	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "asc", Filters: nil}
+	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "ASC", Filters: nil}
 
 	tt := map[string]struct {
 		want    string
@@ -278,7 +278,10 @@ func TestMedia_Update(t *testing.T) {
 // TestMedia_Upload - Test Upload route
 func TestMedia_Upload(t *testing.T) {
 
-	path := "/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/images/gopher.svg"
+	wd, err := os.Getwd()
+	assert.NoError(t, err)
+	apiPath := filepath.Join(filepath.Dir(wd), "../..")
+	path := apiPath + "/test/testdata/spa/images/gopher.svg"
 
 	tt := map[string]struct {
 		want    string

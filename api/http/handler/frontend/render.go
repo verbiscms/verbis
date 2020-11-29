@@ -2,7 +2,6 @@ package frontend
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
@@ -83,7 +82,6 @@ func (c *Public) GetUploads(g *gin.Context) {
 	var cachedFile *[]byte
 	var cachedMime *string
 	if c.options.CacheServerUploads {
-		fmt.Println("in upload cache")
 		cachedFile, cachedMime = c.GetCachedAsset(url)
 		if cachedFile != nil && cachedMime != nil {
 			g.Data(200, *cachedMime, *cachedFile)
@@ -280,7 +278,6 @@ func (c *Public) Serve(g *gin.Context) {
 
 	var b bytes.Buffer
 	if err := gvFrontend.RenderWriter(&b, pt, data); err != nil {
-		fmt.Println(err)
 		panic(err)
 	}
 

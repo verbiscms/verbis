@@ -25,9 +25,8 @@ type Handler struct {
 }
 
 // Construct
-func New(m *models.Store, config config.Configuration) (*Handler, error) {
-
-	c := Handler{
+func New(m *models.Store, config config.Configuration) *Handler {
+	return &Handler{
 		Auth:       api.NewAuth(m, config),
 		Cache:      api.NewCache(),
 		Categories: api.NewCategories(m, config),
@@ -41,6 +40,4 @@ func New(m *models.Store, config config.Configuration) (*Handler, error) {
 		Frontend:   frontend.NewPublic(m, config),
 		SEO:        frontend.NewSEO(m, config),
 	}
-
-	return &c, nil
 }

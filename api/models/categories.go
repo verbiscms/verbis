@@ -112,7 +112,7 @@ func (s *CategoryStore) GetBySlug(slug string) (domain.Category, error) {
 	const op = "CategoryRepository.GetBySlug"
 	var c domain.Category
 	if err := s.db.Get(&c, "SELECT * FROM categories WHERE slug = ?", slug); err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the slug: %d", slug), Operation: op, Err: err}
+		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the slug: %v", slug), Operation: op, Err: err}
 	}
 	return c, nil
 }

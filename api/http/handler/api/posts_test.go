@@ -48,7 +48,7 @@ func TestPosts_Get(t *testing.T) {
 		{Post: posts[0]},
 		{Post: posts[1]},
 	}
-	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "asc", Filters: nil}
+	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "ASC", Filters: nil}
 
 	tt := map[string]struct {
 		name    string

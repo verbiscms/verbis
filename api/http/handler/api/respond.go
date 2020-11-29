@@ -175,8 +175,6 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 func calculateRequestTime(g *gin.Context) Meta {
 	var startTime = time.Now()
 
-	fmt.Println(g.Get("request_time"))
-
 	if t, exists := g.Get("request_time"); exists {
 		startTime = t.(time.Time)
 	}

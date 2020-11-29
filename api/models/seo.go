@@ -54,7 +54,7 @@ func (s *SeoMetaStore) create(p *domain.Post) error {
 	_, err := s.db.Exec("INSERT INTO post_options (page_id, seo, meta) VALUES (?, ?, ?)", p.Id, p.SeoMeta.Seo, p.SeoMeta.Meta)
 	if err != nil {
 		fmt.Println(err)
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the seo meta options record for post title: %v"), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the seo meta options record for post title: %v", p.Title), Operation: op, Err: err}
 	}
 	return nil
 }

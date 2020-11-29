@@ -44,7 +44,7 @@ func TestCategories_Get(t *testing.T) {
 		{Id: 123, Slug: "/cat", Name: "Category"},
 		{Id: 124, Slug: "/cat1", Name: "Category1"},
 	}
-	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "asc", Filters: nil}
+	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "ASC", Filters: nil}
 
 	tt := map[string]struct {
 		name    string
