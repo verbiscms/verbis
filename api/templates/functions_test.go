@@ -27,8 +27,13 @@ func newTestSuite(args ...string) *TemplateFunctions {
 	p := &domain.Post{}
 	if len(args) == 1 {
 		data := []byte(args[0])
+		var m map[string]interface{}
+		err := json.Unmarshal(data, &m)
+		if err != nil {
+			fmt.Println(err)
+		}
 		p = &domain.Post{
-			Fields: (*json.RawMessage)(&data),
+			Fields: m,
 		}
 	}
 

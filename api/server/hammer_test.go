@@ -72,4 +72,5 @@ func runHammer(i int) {
 
 	var b = body
 	var bHtml = bodyHtml
-	fmt.Sprintf("", b, bHtml)
+	_ = fmt.Errorf("%s%s", b, bHtml)
+}

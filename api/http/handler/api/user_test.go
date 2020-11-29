@@ -52,7 +52,7 @@ func TestUser_Get(t *testing.T) {
 		{Id: 123, FirstName: "Verbis", LastName: "CMS"},
 		{Id: 124, FirstName: "Verbis", LastName: "CMS"},
 	}
-	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "asc", Filters: nil}
+	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "ASC", Filters: nil}
 
 	tt := map[string]struct {
 		name    string

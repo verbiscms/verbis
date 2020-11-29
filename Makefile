@@ -19,5 +19,8 @@ live-test:
 mock:
 	cd api && rm -rf mocks && mockery --all --keeptree
 
+test:
+	go test -v -coverprofile cover.out ./api/...
+
 install:
 	go install cms

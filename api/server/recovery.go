@@ -210,7 +210,7 @@ func (r *Recovery) handleTemplate(err error) error {
 	if len(lineStr) > 0 {
 		l, err := strconv.Atoi(lineStr[0])
 		if err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert %s to int", line), Operation: op, Err: err}
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert %v to int", line), Operation: op, Err: err}
 		}
 		line = l
 		file = paths.Theme() + "/" + tmpl + r.config.Template.FileExtension
