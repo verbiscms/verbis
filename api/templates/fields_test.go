@@ -1,7 +1,6 @@
 package templates
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
@@ -22,10 +21,11 @@ func TestGetField_Post(t *testing.T) {
 	f := newTestSuite(`{"text": "content"}`)
 
 	mockPosts := mocks.PostsRepository{}
-	data := []byte(`{"posttext": "postcontent"}`)
 	mockPost := domain.Post{
 		Id:     1,
-		Fields: (*json.RawMessage)(&data),
+		Fields: map[string]interface{}{
+			"poststext": "postcontent",
+		},
 	}
 
 	mockPosts.On("GetById", 1).Return(mockPost, nil)
@@ -50,10 +50,11 @@ func TestGetField_Invalid_Json(t *testing.T) {
 	f := newTestSuite("{}")
 
 	mockPosts := mocks.PostsRepository{}
-	data := []byte(`"text "content"`)
 	mockPost := domain.Post{
 		Id:     1,
-		Fields: (*json.RawMessage)(&data),
+		Fields: map[string]interface{}{
+			"test" : "content",
+		},
 	}
 
 	mockPosts.On("GetById", 1).Return(mockPost, nil)

@@ -91,21 +91,21 @@ func Install(cmd *cobra.Command, args []string) {
 
 	// Create the owner user
 	if _, err := store.User.Create(user); err != nil {
-		printError(fmt.Sprintf("Error creating the owner", err.Error()))
+		printError(fmt.Sprintf("Error creating the owner: %s", err.Error()))
 	}
 
 	// Insert the site url
 	fmt.Println()
 	mUrl, _ := json.Marshal(url)
 	if err := store.Options.Update("site_url", mUrl); err != nil {
-		printError(fmt.Sprintf("Error not inserting the site url:", err.Error()))
+		printError(fmt.Sprintf("Error not inserting the site url: %s", err.Error()))
 	}
 
 	// Get webp executables
 	bin := webp.CreateBinWrapper()
 	bin.ExecPath("cwebp")
 	if err := bin.Run(); err != nil {
-		printError(fmt.Sprintf("Error downloading webp executables, are you connected to the internet? ", err.Error()))
+		// TODO: Log here, dont print error. doesnt work on GCP
 	}
 
 	// Print success

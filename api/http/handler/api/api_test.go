@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -23,6 +24,7 @@ type controllerTest struct {
 // controllers, initalises gin & sets gin mode.
 func newTestSuite(t *testing.T) *controllerTest {
 	gin.SetMode(gin.TestMode)
+	gin.DefaultWriter = ioutil.Discard
 	rr := httptest.NewRecorder()
 	gin, engine := gin.CreateTestContext(rr)
 
@@ -63,7 +65,6 @@ func (c *controllerTest) Body() map[string]interface{} {
 // getResponseData gets the response body & checks if the data key
 // exists and then marshalls the data key to form a string.
 func (c *controllerTest) Data() string {
-
 	b, ok := c.Body()["data"]
 	if !ok {
 		c.testing.Fatal("no data within the response")
