@@ -14,7 +14,7 @@ import (
 type OptionsRepository interface {
 	Get() (domain.OptionsDB, error)
 	GetByName(name string) (interface{}, error)
-	GetStruct() (domain.Options)
+	GetStruct() domain.Options
 	UpdateCreate(options *domain.OptionsDB) error
 	Create(name string, value interface{}) error
 	Update(name string, value interface{}) error
@@ -75,7 +75,7 @@ func (s *OptionsStore) GetByName(name string) (interface{}, error) {
 
 // GetStruct gets the options struct for use in the API
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *OptionsStore) GetStruct() (domain.Options) {
+func (s *OptionsStore) GetStruct() domain.Options {
 	const op = "OptionsRepository.GetStruct"
 
 	cachedOpts, found := cache.Store.Get("options-struct")

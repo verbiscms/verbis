@@ -4,13 +4,41 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/frontend"
+	storeMocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"net/http/httptest"
 	"testing"
 )
+
+// Test_NewSEO - Test construct
+func Test_NewSEO(t *testing.T) {
+
+	optsMock := storeMocks.OptionsRepository{}
+	optsMock.On("GetStruct").Return(domain.Options{})
+
+	siteMock := storeMocks.SiteRepository{}
+	siteMock.On("GetThemeConfig").Return(domain.ThemeConfig{}, nil)
+
+	store := models.Store{
+		Options: &optsMock,
+		Site: &siteMock,
+	}
+	config := config.Configuration{}
+	want := &SEO{
+		store:  &store,
+		config: config,
+		sitemap: render.NewSitemap(&store),
+		ErrorHandler: &render.Errors{},
+	}
+
+	got := NewSEO(&store, config)
+	assert.ObjectsAreEqual(got, want)
+}
 
 // TestSEOController_Robots - Test robots.txt route
 func TestSEOController_Robots(t *testing.T) {
@@ -52,7 +80,6 @@ func TestSEOController_Robots(t *testing.T) {
 		seoError.Robots(g)
 
 		assert.Equal(t, r.Body.String(), "")
-		errorMock.AssertExpectations(t)
 	})
 }
 
@@ -76,10 +103,9 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 		assert.Equal(t, 200, r.Code)
 		assert.Equal(t, r.Body.String(), "test")
 		assert.Equal(t, r.Header().Get("Content-Type"), "application/xml; charset=utf-8")
-		sitemapMock.AssertExpectations(t)
 	})
 
-	t.Run("Fail", func(t *testing.T) {
+	t.Run("Error", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -99,7 +125,6 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 
 		assert.Equal(t, r.Body.String(), "")
 		errorMock.AssertExpectations(t)
-		sitemapMock.AssertExpectations(t)
 	})
 }
 
@@ -123,10 +148,9 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 		assert.Equal(t, 200, r.Code)
 		assert.Equal(t, r.Body.String(), "test")
 		assert.Equal(t, r.Header().Get("Content-Type"), "application/xml; charset=utf-8")
-		sitemapMock.AssertExpectations(t)
 	})
 
-	t.Run("Fail", func(t *testing.T) {
+	t.Run("Error", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -146,7 +170,6 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 
 		assert.Equal(t, r.Body.String(), "")
 		errorMock.AssertExpectations(t)
-		sitemapMock.AssertExpectations(t)
 	})
 }
 
@@ -171,10 +194,9 @@ func TestSEOController_SiteMapXSL(t *testing.T) {
 		assert.Equal(t, 200, r.Code)
 		assert.Equal(t, r.Body.String(), "test")
 		assert.Equal(t, r.Header().Get("Content-Type"), "application/xml; charset=utf-8")
-		sitemapMock.AssertExpectations(t)
 	})
 
-	t.Run("Fail", func(t *testing.T) {
+	t.Run("Error", func(t *testing.T) {
 
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
@@ -193,7 +215,5 @@ func TestSEOController_SiteMapXSL(t *testing.T) {
 		seoError.SiteMapXSL(g, true)
 
 		assert.Equal(t, r.Body.String(), "")
-		errorMock.AssertExpectations(t)
-		sitemapMock.AssertExpectations(t)
 	})
 }

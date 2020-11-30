@@ -16,6 +16,9 @@ live-serve:
 live-test:
 	HOST="localhost" gin -i --port=8080 --laddr=127.0.0.1 --all run test
 
+format:
+	go fmt ./api/...
+
 mock:
 	cd api && rm -rf mocks && mockery --all --keeptree
 
