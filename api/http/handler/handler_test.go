@@ -20,7 +20,7 @@ func Test_New(t *testing.T) {
 	mockOptions.On("GetStruct").Return(domain.Options{})
 	m := &models.Store{
 		Options: &mockOptions,
-		Site: &mockSite,
+		Site:    &mockSite,
 	}
 	c := config.Configuration{}
 	want := &Handler{

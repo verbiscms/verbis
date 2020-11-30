@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"path/filepath"
 	"strconv"
@@ -12,20 +11,20 @@ import (
 )
 
 // Cacher represents the cache function to set cache headers.
-type Cacher interface {
+type headerWriter interface {
 	Cache(g *gin.Context)
 }
 
-// Cache represents the the cache struct for setting gin headers
+// Headers represents the the header struct for setting gin headers
 // for frontend caching.
-type Cache struct {
+type headers struct {
 	options domain.Options
 }
 
 // NewCache - Construct
-func NewCache(o models.OptionsRepository) *Cache {
-	return &Cache{
-		options: o.GetStruct(),
+func newHeaders(o domain.Options) *headers {
+	return &headers{
+		options: o,
 	}
 }
 
@@ -34,11 +33,11 @@ func NewCache(o models.OptionsRepository) *Cache {
 // Returns if the asset is with path of admin or the caching
 // is disabled in the options.
 // Sets the gin headers if extensions are allowed.
-func (t *Cache) Cache(g *gin.Context) {
+func (c *headers) Cache(g *gin.Context) {
 	const op = "Cacher.Cache"
 
 	// Bail if the cache frontend is disabled
-	if !t.options.CacheFrontend {
+	if !c.options.CacheFrontend {
 		return
 	}
 
@@ -50,17 +49,17 @@ func (t *Cache) Cache(g *gin.Context) {
 	}
 
 	// Get the expiration
-	expiration := t.options.CacheFrontendSeconds
+	expiration := c.options.CacheFrontendSeconds
 
 	// Get the request type
-	request := t.options.CacheFrontendRequest
+	request := c.options.CacheFrontendRequest
 	allowedRequest := []string{"max-age", "max-stale", "min-fresh", "no-cache", "no-store", "no-transform", "only-if-cached"}
 	if request == "" || !helpers.StringInSlice(request, allowedRequest) {
 		request = "max-age"
 	}
 
 	// Get the extensions to be cached
-	extensionsAllowed := t.options.CacheFrontendExtension
+	extensionsAllowed := c.options.CacheFrontendExtension
 	extension := filepath.Ext(path)
 
 	// Check if the extensions

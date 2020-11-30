@@ -12,7 +12,89 @@ type Renderer struct {
 	mock.Mock
 }
 
-// Cache provides a mock function with given fields: g
-func (_m *Renderer) Cache(g *gin.Context) {
-	_m.Called(g)
+// Asset provides a mock function with given fields: g
+func (_m *Renderer) Asset(g *gin.Context) (*string, *[]byte, error) {
+	ret := _m.Called(g)
+
+	var r0 *string
+	if rf, ok := ret.Get(0).(func(*gin.Context) *string); ok {
+		r0 = rf(g)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*string)
+		}
+	}
+
+	var r1 *[]byte
+	if rf, ok := ret.Get(1).(func(*gin.Context) *[]byte); ok {
+		r1 = rf(g)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*[]byte)
+		}
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gin.Context) error); ok {
+		r2 = rf(g)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
+// Page provides a mock function with given fields: g
+func (_m *Renderer) Page(g *gin.Context) ([]byte, error) {
+	ret := _m.Called(g)
+
+	var r0 []byte
+	if rf, ok := ret.Get(0).(func(*gin.Context) []byte); ok {
+		r0 = rf(g)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]byte)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(*gin.Context) error); ok {
+		r1 = rf(g)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Upload provides a mock function with given fields: g
+func (_m *Renderer) Upload(g *gin.Context) (*string, *[]byte, error) {
+	ret := _m.Called(g)
+
+	var r0 *string
+	if rf, ok := ret.Get(0).(func(*gin.Context) *string); ok {
+		r0 = rf(g)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*string)
+		}
+	}
+
+	var r1 *[]byte
+	if rf, ok := ret.Get(1).(func(*gin.Context) *[]byte); ok {
+		r1 = rf(g)
+	} else {
+		if ret.Get(1) != nil {
+			r1 = ret.Get(1).(*[]byte)
+		}
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gin.Context) error); ok {
+		r2 = rf(g)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }

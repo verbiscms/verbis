@@ -31,13 +31,13 @@ func TestRedirects(t *testing.T) {
 			},
 		},
 		"300": {
-			status: 300,
-			url: "/page/test",
+			status:      300,
+			url:         "/page/test",
 			redirectUrl: "/page",
 			mock: func(m *mocks.OptionsRepository) {
 				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects:           []domain.Redirect{
-						{To:   "/page", From: "http://localhost:8080/page/test", Code: 300},
+					SeoRedirects: []domain.Redirect{
+						{To: "/page", From: "http://localhost:8080/page/test", Code: 300},
 					},
 				})
 			},

@@ -17,31 +17,6 @@ func (_m *PublicHandler) GetAssets(g *gin.Context) {
 	_m.Called(g)
 }
 
-// GetCachedAsset provides a mock function with given fields: url
-func (_m *PublicHandler) GetCachedAsset(url string) (*[]byte, *string) {
-	ret := _m.Called(url)
-
-	var r0 *[]byte
-	if rf, ok := ret.Get(0).(func(string) *[]byte); ok {
-		r0 = rf(url)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]byte)
-		}
-	}
-
-	var r1 *string
-	if rf, ok := ret.Get(1).(func(string) *string); ok {
-		r1 = rf(url)
-	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*string)
-		}
-	}
-
-	return r0, r1
-}
-
 // GetUploads provides a mock function with given fields: g
 func (_m *PublicHandler) GetUploads(g *gin.Context) {
 	_m.Called(g)

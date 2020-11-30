@@ -1,5 +1,4 @@
 {{ define "content" }}
-
 <!-- End Navbar -->
 <div class="wrapper">
     <div class="section section-hero section-shaped">

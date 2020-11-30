@@ -3,6 +3,7 @@ package spa
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
+	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -14,7 +15,7 @@ import (
 	"testing"
 )
 
-// getSPAMock is a helper to obtain a mock SPA controller
+// getSPAMock is a helper to obtain a mock SPA handler
 // for testing.
 func getSPAMock() *SPA {
 	mockError := mocks.ErrorHandler{}
@@ -45,6 +46,17 @@ func setup(t *testing.T) *spaTest {
 		gin:      g,
 		engine:   engine,
 	}
+}
+
+// Test_NewSPA - Test construct
+func Test_NewSPA(t *testing.T) {
+	config := config.Configuration{}
+	want := &SPA{
+		config: config,
+		ErrorHandler: &render.Errors{},
+	}
+	got := NewSpa(config)
+	assert.ObjectsAreEqual(got, want)
 }
 
 // TestSPA_Serve - Test serving of files for SPA handler.
@@ -95,7 +107,7 @@ func TestSPA_Serve(t *testing.T) {
 	t.Run("404 File", func(t *testing.T) {
 		rr := setup(t)
 
-		req, err := http.NewRequest("GET", "/admin"+imagePath, nil)
+		req, err := http.NewRequest("GET", "/admin/wrongimage.svg", nil)
 		assert.NoError(t, err)
 
 		rr.engine.GET("/admin/wrongimage.svg", func(g *gin.Context) {

@@ -45,7 +45,6 @@ func TestAuth_Login(t *testing.T) {
 	loginBadValidation := domain.Login{Password: "password"}
 
 	tt := map[string]struct {
-		name    string
 		want    string
 		status  int
 		message string
@@ -124,7 +123,6 @@ func TestAuth_Logout(t *testing.T) {
 	token := "test"
 
 	tt := map[string]struct {
-		name    string
 		want    string
 		status  int
 		message string
@@ -208,7 +206,6 @@ func TestAuth_ResetPassword(t *testing.T) {
 	}
 
 	tt := map[string]struct {
-		name    string
 		want    string
 		status  int
 		message string
@@ -280,7 +277,6 @@ func TestAuth_VerifyPasswordToken(t *testing.T) {
 	token := "test"
 
 	tt := map[string]struct {
-		name    string
 		want    string
 		status  int
 		message string
@@ -333,7 +329,6 @@ func TestAuth_SendResetPassword(t *testing.T) {
 	srpBadvalidation := domain.SendResetPassword{}
 
 	tt := map[string]struct {
-		name    string
 		want    string
 		status  int
 		message string

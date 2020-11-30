@@ -3,8 +3,8 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/models"
 	min "github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"github.com/tdewolff/minify/v2/html"
@@ -17,20 +17,20 @@ import (
 )
 
 // Minifier represents functions for executing the minify package.
-type Minifier interface {
+type minifier interface {
 	Minify(f *os.File, mime string) ([]byte, error)
 	MinifyBytes(b *bytes.Buffer, mime string) ([]byte, error)
 }
 
 // Minify represents the minify type along with the minify package
 // and options to determine whether or not to minify the asset.
-type Minify struct {
+type minify struct {
 	pkg     *min.M
-	options models.OptionsRepository
+	options domain.Options
 }
 
 // New - Construct, sets minify functions
-func New(o models.OptionsRepository) *Minify {
+func newMinify(o domain.Options) *minify {
 	m := min.New()
 
 	m.AddFunc("text/css", css.Minify)
@@ -40,7 +40,7 @@ func New(o models.OptionsRepository) *Minify {
 	m.AddFuncRegexp(regexp.MustCompile("[/+]json$"), json.Minify)
 	m.AddFuncRegexp(regexp.MustCompile("[/+]xml$"), xml.Minify)
 
-	return &Minify{
+	return &minify{
 		pkg:     m,
 		options: o,
 	}
@@ -48,7 +48,7 @@ func New(o models.OptionsRepository) *Minify {
 
 // Minify minifies a file & calls the compare function to render
 // the file.
-func (m *Minify) Minify(f *os.File, mime string) ([]byte, error) {
+func (m *minify) Minify(f *os.File, mime string) ([]byte, error) {
 	var buf bytes.Buffer
 	_, err := buf.ReadFrom(f)
 	if err != nil {
@@ -60,17 +60,15 @@ func (m *Minify) Minify(f *os.File, mime string) ([]byte, error) {
 // MinifyBytes minifies existing bytes.Buffer & calls the compare
 // function to render the file.
 // Usually used for HTML files.
-func (m *Minify) MinifyBytes(b *bytes.Buffer, mime string) ([]byte, error) {
+func (m *minify) MinifyBytes(b *bytes.Buffer, mime string) ([]byte, error) {
 	return m.compare(b, mime)
 }
 
 // compare gets the options struct in order to see if the user has
 // selected the type of minification.
 // It then compares mime's and executes the file to be minified.
-func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
+func (m *minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 	const op = "Minify.Compare"
-
-	options := m.options.GetStruct()
 
 	var (
 		render []byte
@@ -80,7 +78,7 @@ func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 	switch mime {
 	case "text/html":
 		{
-			render, err = m.execute(b, options.MinifyHTML, mime)
+			render, err = m.execute(b, m.options.MinifyHTML, mime)
 			if err != nil {
 				return nil, err
 			}
@@ -88,7 +86,7 @@ func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 		}
 	case "text/css":
 		{
-			render, err = m.execute(b, options.MinifyCSS, mime)
+			render, err = m.execute(b, m.options.MinifyCSS, mime)
 			if err != nil {
 				return nil, err
 			}
@@ -96,7 +94,7 @@ func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 		}
 	case "application/javascript":
 		{
-			render, err = m.execute(b, options.MinifyJS, mime)
+			render, err = m.execute(b, m.options.MinifyJS, mime)
 			if err != nil {
 				return nil, err
 			}
@@ -104,7 +102,7 @@ func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 		}
 	case "image/svg+xml":
 		{
-			render, err = m.execute(b, options.MinifySVG, mime)
+			render, err = m.execute(b, m.options.MinifySVG, mime)
 			if err != nil {
 				return nil, err
 			}
@@ -112,7 +110,7 @@ func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 		}
 	case "application/json":
 		{
-			render, err = m.execute(b, options.MinifyJSON, mime)
+			render, err = m.execute(b, m.options.MinifyJSON, mime)
 			if err != nil {
 				return nil, err
 			}
@@ -120,7 +118,7 @@ func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 		}
 	case "text/xml":
 		{
-			render, err = m.execute(b, options.MinifyXML, mime)
+			render, err = m.execute(b, m.options.MinifyXML, mime)
 			if err != nil {
 				return nil, err
 			}
@@ -135,7 +133,7 @@ func (m *Minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 // table.
 // Returns the original bytes if the minification failed.
 // Returns errors.INTERNAL if something went wrong minifying the file.
-func (m *Minify) execute(buf *bytes.Buffer, allow bool, mime string) ([]byte, error) {
+func (m *minify) execute(buf *bytes.Buffer, allow bool, mime string) ([]byte, error) {
 	const op = "Minifier.execute"
 
 	var (
