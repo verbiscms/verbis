@@ -21,46 +21,46 @@ func handler(g *gin.Context) {
 func TestEmptyBody(t *testing.T) {
 
 	tt := map[string]struct {
-		method string
-		header string
-		input string
-		message string
-		status int
+		method        string
+		header        string
+		input         string
+		message       string
+		status        int
 		returnContent string
-		want   string
+		want          string
 	}{
 		"Valid": {
-			want:   "verbis",
-			input: `{verbis: "cms"}`,
-			method: http.MethodDelete,
-			status: 200,
-			header:  "application/json",
+			want:          "verbis",
+			input:         `{verbis: "cms"}`,
+			method:        http.MethodDelete,
+			status:        200,
+			header:        "application/json",
 			returnContent: "text/plain; charset=utf-8",
 		},
 		"Not JSON": {
-			want:   "verbis",
-			input: "",
-			method: http.MethodGet,
-			status: 200,
-			header: "text/plain; charset=utf-8",
+			want:          "verbis",
+			input:         "",
+			method:        http.MethodGet,
+			status:        200,
+			header:        "text/plain; charset=utf-8",
 			returnContent: "text/plain; charset=utf-8",
 		},
 		"Empty Body": {
-			want:   "",
-			input: "",
-			message: "Empty JSON body",
-			method: http.MethodPost,
-			status: 401,
-			header: "application/json; charset=utf-8",
+			want:          "",
+			input:         "",
+			message:       "Empty JSON body",
+			method:        http.MethodPost,
+			status:        401,
+			header:        "application/json; charset=utf-8",
 			returnContent: "application/json; charset=utf-8",
 		},
 		"Invalid JSON": {
-			want:   "",
-			input: "notjson",
-			message: "Invalid JSON",
-			method: http.MethodPost,
-			status: 401,
-			header: "application/json; charset=utf-8",
+			want:          "",
+			input:         "notjson",
+			message:       "Invalid JSON",
+			method:        http.MethodPost,
+			status:        401,
+			header:        "application/json; charset=utf-8",
 			returnContent: "application/json; charset=utf-8",
 		},
 	}
@@ -102,19 +102,19 @@ func TestEmptyBody(t *testing.T) {
 func Test_isEmpty(t *testing.T) {
 
 	tt := map[string]struct {
-		want bool
+		want  bool
 		input string
 	}{
 		"Empty": {
-			want: true,
+			want:  true,
 			input: "",
 		},
 		"With Body": {
-			want: false,
+			want:  false,
 			input: "{}",
 		},
 		"With Body JSON": {
-			want: false,
+			want:  false,
 			input: `{body: "verbis"}`,
 		},
 	}
@@ -145,19 +145,19 @@ func Test_isEmpty(t *testing.T) {
 func Test_isJSON(t *testing.T) {
 
 	tt := map[string]struct {
-		want bool
+		want  bool
 		input string
 	}{
 		"Empty": {
-			want: false,
+			want:  false,
 			input: "",
 		},
 		"With Body": {
-			want: true,
+			want:  true,
 			input: "{}",
 		},
 		"With Body JSON": {
-			want: true,
+			want:  true,
 			input: `{"body": "verbis"}`,
 		},
 	}

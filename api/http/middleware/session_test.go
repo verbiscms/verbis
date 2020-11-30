@@ -44,14 +44,14 @@ func Test_SessionCheck(t *testing.T) {
 		assert.Equal(t, "Session expired, please login again", body["message"])
 		assert.Equal(t, 401, rr.Code)
 		assert.Equal(t, &http.Cookie{
-			Name:       "verbis-session",
-			Value:      "",
-			Path:       "/",
-			Raw: "verbis-session=; Path=/; Max-Age=0; HttpOnly",
-			Domain:     "",
-			MaxAge:     -1,
-			Secure:     false,
-			HttpOnly:   true,
+			Name:     "verbis-session",
+			Value:    "",
+			Path:     "/",
+			Raw:      "verbis-session=; Path=/; Max-Age=0; HttpOnly",
+			Domain:   "",
+			MaxAge:   -1,
+			Secure:   false,
+			HttpOnly: true,
 		}, rr.Result().Cookies()[0])
 	})
 

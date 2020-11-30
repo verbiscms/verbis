@@ -22,7 +22,7 @@ func TestGetField_Post(t *testing.T) {
 
 	mockPosts := mocks.PostsRepository{}
 	mockPost := domain.Post{
-		Id:     1,
+		Id: 1,
 		Fields: map[string]interface{}{
 			"poststext": "postcontent",
 		},
@@ -51,9 +51,9 @@ func TestGetField_Invalid_Json(t *testing.T) {
 
 	mockPosts := mocks.PostsRepository{}
 	mockPost := domain.Post{
-		Id:     1,
+		Id: 1,
 		Fields: map[string]interface{}{
-			"test" : "content",
+			"test": "content",
 		},
 	}
 
