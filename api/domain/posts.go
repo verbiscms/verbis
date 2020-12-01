@@ -9,9 +9,9 @@ import (
 )
 
 type PostData struct {
-	Post       Post          `json:"post"`
+	Post          `json:"post"`
 	Author     PostAuthor    `json:"author"`
-	Categories *PostCategory `json:"category"`
+	Category *PostCategory `json:"category"`
 	Layout     *[]FieldGroup `json:"layout"`
 }
 

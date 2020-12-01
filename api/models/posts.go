@@ -303,7 +303,7 @@ func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
 	}
 
 	if category != nil {
-		pd.Categories = &domain.PostCategory{
+		pd.Category = &domain.PostCategory{
 			Id:          category.Id,
 			Slug:        category.Slug,
 			Name:        category.Name,
