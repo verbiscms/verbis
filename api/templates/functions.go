@@ -12,13 +12,12 @@ import (
 
 type TemplateFunctions struct {
 	gin      *gin.Context
-	post     *domain.Post
-	author   *domain.User
-	category *domain.Category
+	post     *domain.PostData
 	fields   map[string]interface{}
 	site     *domain.Site
 	store    *models.Store
 	options  domain.Options
+	test *domain.PostData
 }
 
 type TypeOfPage struct {
@@ -27,20 +26,12 @@ type TypeOfPage struct {
 }
 
 // NewFunctions - Construct
-func NewFunctions(g *gin.Context, s *models.Store, p *domain.Post) *TemplateFunctions {
-	const op = "Templates.NewFunctions"
-
-	author, _ := s.User.GetById(p.UserId)
-	category, _ := s.Categories.GetByPost(p.Id)
-	site := s.Site.GetGlobalConfig()
-
+func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData) *TemplateFunctions {
 	return &TemplateFunctions{
 		gin:      g,
 		post:     p,
-		author:   &author,
-		category: category,
 		fields:   p.Fields,
-		site:     site,
+		site:     s.Site.GetGlobalConfig(),
 		store:    s,
 		options:  s.Options.GetStruct(),
 	}
@@ -113,8 +104,8 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 			"PublishedAt":  t.post.PublishedAt,
 			"UpdatedAt":    t.post.UpdatedAt,
 			"CreatedAt":    t.post.CreatedAt,
-			"Author":       t.author,
-			"Category":     t.category,
+			"Author":       t.post.Author,
+			"Category":     t.post.Category,
 		},
 		"Options": map[string]interface{}{
 			"Social": map[string]interface{}{
@@ -157,7 +148,7 @@ func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
 
 	if _, ok := theme.Resources[last]; ok {
 		data.PageType = "archive"
-		data.Data = t.post.Resource
+		data.Data = t.post.Post.Resource
 		return data
 	}
 
