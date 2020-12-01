@@ -24,9 +24,13 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 
 	url := g.Request.URL.Path
 	post, err := r.store.Posts.GetBySlug(url)
-
 	if err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No page found with the url: %s", url), Operation: op, Err: err}
+	}
+
+	postData, err := r.store.Posts.Format(post)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not format post data", Operation: op, Err: err}
 	}
 
 	// Check if the file has been cached
@@ -57,7 +61,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		pt = pt + r.config.Template.FileExtension
 	}
 
-	tf := templates.NewFunctions(g, r.store, &post)
+	tf := templates.NewFunctions(g, r.store, &postData)
 	gvFrontend := goview.New(goview.Config{
 		Root:         paths.Theme(),
 		Extension:    r.store.Config.Template.FileExtension,
