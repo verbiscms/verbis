@@ -1,5 +1,22 @@
 {
-	"public": true,
-	"exclude_sitemap": false,
-	"canonical": ""
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc22",
+	"title": "Global Options",
+	"fields": [
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-67dfd99e5275",
+			"label": "Test",
+			"name": "test",
+			"type": "richtext",
+			"instructions": "Richtext",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"default_value": "",
+				"allow_null": false
+			}
+		}
+	]
 }
