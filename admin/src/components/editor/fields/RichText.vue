@@ -88,7 +88,6 @@
 					<button v-if="getByElement('h3')" class="richtext-button" :class="{ 'is-active': isActive.heading({ level: 3 }) }" @click="commands.heading({ level: 3 })">
 						<span>H3</span>
 					</button>
-					<!-- H4 -->
 					<button v-if="getByElement('h4')" class="richtext-button" :class="{ 'is-active': isActive.heading({ level: 4 }) }" @click="commands.heading({ level: 4 })">
 						<span>H4</span>
 					</button>
@@ -111,6 +110,10 @@
 					<!-- Blockquote -->
 					<button v-if="getByElement('blockquote')" class="richtext-button" :class="{ 'is-active': isActive.blockquote() }" @click="commands.blockquote">
 						<i class="fal fa-quote-right"></i>
+					</button>
+					<!-- HR -->
+					<button v-if="getByElement('hr')" class="richtext-button" :class="{ 'is-active': isActive.horizontal_rule() }" @click="commands.horizontal_rule">
+						<span class="richtext-button-hr"></span>
 					</button>
 					<!-- Table -->
 					<div v-if="getByElement('table')">
@@ -453,7 +456,6 @@ export default {
 				}
 			});
 
-
 			// Add heading if any headings exist
 			if (headingArr.length > 0) {
 				extensions.push(new VerbisHeading(headingArr, {
@@ -500,6 +502,7 @@ $richtext-border-radius: 10px;
 		display: flex;
 		flex-wrap: nowrap;
 		overflow-x: scroll;
+		overflow: visible;
 		width: 100%;
 		background-color: $white;
 		border-top-left-radius: $richtext-border-radius;
@@ -547,6 +550,14 @@ $richtext-border-radius: 10px;
 			span {
 				color: $primary;
 			}
+		}
+
+		&-hr {
+			display: block;
+			width: 60%;
+			height: 2px;
+			background-color: $grey;
+			border-radius: 10px;
 		}
 	}
 
@@ -751,14 +762,24 @@ $richtext-border-radius: 10px;
 			font-weight: bold;
 		}
 
-		ul {
-			display: flex;
-			align-items: center;
-			list-style: none;
+		ul,
+		ol {
+			margin: 0 0 0 10px;
+			padding: 0;
+			list-style-position: outside;
 
 			li {
 				line-height: 1;
 			}
+
+			p {
+				display: inline-block;
+				margin-bottom: 0;
+			}
+		}
+
+		ul {
+			list-style: none;
 
 			&:before {
 				position: relative;
@@ -767,18 +788,16 @@ $richtext-border-radius: 10px;
 				font-weight: bold;
 				display: inline-block;
 				width: 1em;
-				margin-right: 5px;
 			}
 
-			p {
-				margin-bottom: 0;
+			li {
+				display: inline-block;
 			}
-
 		}
 
 		ol {
-			margin: 0;
-			padding: 0;
+			list-style-type: decimal;
+			list-style-position: inside;
 		}
 
 		table {
