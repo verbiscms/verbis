@@ -15,7 +15,6 @@ func frontend(s *server.Server, c *handler.Handler, m *models.Store, config conf
 	// Set Frontend Middleware
 	s.Use(middleware.Recovery(server.Recover))
 	s.Use(middleware.Redirects(m.Options))
-	//s.Use(middleware.FrontEndCache(m.Options))
 
 	_ = s.Group("")
 	{

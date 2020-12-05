@@ -11,13 +11,13 @@ import (
 )
 
 type TemplateFunctions struct {
-	gin      *gin.Context
-	post     *domain.PostData
-	fields   map[string]interface{}
-	site     *domain.Site
-	store    *models.Store
-	options  domain.Options
-	test *domain.PostData
+	gin     *gin.Context
+	post    *domain.PostData
+	fields  map[string]interface{}
+	site    *domain.Site
+	store   *models.Store
+	options domain.Options
+	test    *domain.PostData
 }
 
 type TypeOfPage struct {
@@ -28,12 +28,12 @@ type TypeOfPage struct {
 // NewFunctions - Construct
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData) *TemplateFunctions {
 	return &TemplateFunctions{
-		gin:      g,
-		post:     p,
-		fields:   p.Fields,
-		site:     s.Site.GetGlobalConfig(),
-		store:    s,
-		options:  s.Options.GetStruct(),
+		gin:     g,
+		post:    p,
+		fields:  p.Fields,
+		site:    s.Site.GetGlobalConfig(),
+		store:   s,
+		options: s.Options.GetStruct(),
 	}
 }
 

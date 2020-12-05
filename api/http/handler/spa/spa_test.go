@@ -52,7 +52,7 @@ func setup(t *testing.T) *spaTest {
 func Test_NewSPA(t *testing.T) {
 	config := config.Configuration{}
 	want := &SPA{
-		config: config,
+		config:       config,
 		ErrorHandler: &render.Errors{},
 	}
 	got := NewSpa(config)

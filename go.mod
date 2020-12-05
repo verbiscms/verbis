@@ -57,6 +57,7 @@ require (
 	github.com/nickalie/go-binwrapper v0.0.0-20190114141239-525121d43c84
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
+	github.com/ompluscator/dynamic-struct v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/roberthodgen/spa-server v0.0.0-20171007154335-bb87b4ff3253 // indirect
