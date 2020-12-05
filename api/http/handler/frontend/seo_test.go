@@ -26,13 +26,13 @@ func Test_NewSEO(t *testing.T) {
 
 	store := models.Store{
 		Options: &optsMock,
-		Site: &siteMock,
+		Site:    &siteMock,
 	}
 	config := config.Configuration{}
 	want := &SEO{
-		store:  &store,
-		config: config,
-		sitemap: render.NewSitemap(&store),
+		store:        &store,
+		config:       config,
+		sitemap:      render.NewSitemap(&store),
 		ErrorHandler: &render.Errors{},
 	}
 

@@ -16,7 +16,7 @@ type PublicHandler interface {
 
 // Public defines the handler for all frontend routes
 type Public struct {
-	store *models.Store
+	store  *models.Store
 	config config.Configuration
 	render render.Renderer
 	render.ErrorHandler
@@ -27,7 +27,7 @@ func NewPublic(m *models.Store, config config.Configuration) *Public {
 	const op = "FrontendHandler.newFrontend"
 
 	return &Public{
-		store:       m,
+		store:        m,
 		config:       config,
 		render:       render.NewRender(m, config),
 		ErrorHandler: &render.Errors{},

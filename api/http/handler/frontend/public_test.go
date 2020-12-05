@@ -32,7 +32,7 @@ func getPublicMock(r render.Renderer, gin *gin.Context) *Public {
 	return &Public{
 		config:       config.Configuration{},
 		ErrorHandler: &mockError,
-		render: r,
+		render:       r,
 	}
 }
 
@@ -76,13 +76,13 @@ func Test_NewFrontend(t *testing.T) {
 
 	store := models.Store{
 		Options: &optsMock,
-		Site: &siteMock,
+		Site:    &siteMock,
 	}
 	config := config.Configuration{}
 	want := &Public{
-		store:  &store,
-		config: config,
-		render: render.NewRender(&store, config),
+		store:        &store,
+		config:       config,
+		render:       render.NewRender(&store, config),
 		ErrorHandler: &render.Errors{},
 	}
 
@@ -126,7 +126,7 @@ func TestPublic_GetUploads(t *testing.T) {
 		assert.NoError(t, err)
 
 		renderMock := mocks.Renderer{}
-		renderMock.On("Upload", rr.gin).Return(nil, nil, &errors.Error{Code:     errors.NOTFOUND, Message:   "not found"})
+		renderMock.On("Upload", rr.gin).Return(nil, nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 
 		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
 			getPublicMock(&renderMock, rr.gin).GetUploads(rr.gin)
@@ -136,7 +136,6 @@ func TestPublic_GetUploads(t *testing.T) {
 		assert.Equal(t, 404, rr.recorder.Code)
 	})
 }
-
 
 // TestPublic_GetAssets - Test serving of assets (under theme path)
 func TestPublic_GetAssets(t *testing.T) {
@@ -174,7 +173,7 @@ func TestPublic_GetAssets(t *testing.T) {
 		assert.NoError(t, err)
 
 		renderMock := mocks.Renderer{}
-		renderMock.On("Asset", rr.gin).Return(nil, nil, &errors.Error{Code:     errors.NOTFOUND, Message:   "not found"})
+		renderMock.On("Asset", rr.gin).Return(nil, nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 
 		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
 			getPublicMock(&renderMock, rr.gin).GetAssets(rr.gin)
@@ -221,7 +220,7 @@ func TestPublic_Serve(t *testing.T) {
 		assert.NoError(t, err)
 
 		renderMock := mocks.Renderer{}
-		renderMock.On("Page", rr.gin).Return(nil, &errors.Error{Code:     errors.NOTFOUND, Message:   "not found"})
+		renderMock.On("Page", rr.gin).Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 
 		rr.engine.GET("/page", func(g *gin.Context) {
 			getPublicMock(&renderMock, rr.gin).Serve(rr.gin)

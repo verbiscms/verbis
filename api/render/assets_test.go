@@ -11,7 +11,6 @@ import (
 	"testing"
 )
 
-
 func TestRender_GetAsset(t *testing.T) {
 
 	cache.Init()
