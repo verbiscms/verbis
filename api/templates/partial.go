@@ -26,7 +26,7 @@ func (t *TemplateFunctions) partial(name string, data ...interface{}) template.H
 	path := themePath + "/" + name
 
 	var context interface{}
-	if len(data) > 1 {
+	if len(data) == 1 {
 		context = data[0]
 	} else {
 		context = data

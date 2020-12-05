@@ -9,8 +9,6 @@ import (
 
 func api(s *server.Server, c *handler.Handler, m *models.Store) {
 
-	// Auth routes outside of admin
-
 	// API Routes
 	api := s.Group("/api/v1")
 	{
@@ -27,6 +25,9 @@ func api(s *server.Server, c *handler.Handler, m *models.Store) {
 		api.POST("/password/email", c.Auth.SendResetPassword)
 		api.GET("/password/verify/:token", c.Auth.VerifyPasswordToken)
 		api.GET("/email/verify/:token", c.Auth.VerifyEmail)
+
+		// Forms
+		api.POST("/forms/:uuid", c.Forms.Send)
 
 		// Operator
 		operator := api.Group("")

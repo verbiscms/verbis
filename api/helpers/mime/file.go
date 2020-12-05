@@ -35,4 +35,3 @@ func IsValidMime(allowed []string, mime string) bool {
 	}
 	return false
 }
-

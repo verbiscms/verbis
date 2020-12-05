@@ -127,6 +127,7 @@ func (s *PostStore) GetById(id int) (domain.Post, error) {
 }
 
 // GetBySlug returns a a post by slug
+//
 // Returns errors.NOTFOUND if the post was not found by the given slug.
 func (s *PostStore) GetBySlug(slug string) (domain.Post, error) {
 	const op = "PostsRepository.GetBySlug"

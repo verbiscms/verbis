@@ -1,0 +1,16 @@
+{
+	"FirstName": {
+		"name": "First name",
+		"key": "first_name",
+		"validation": "",
+		"required": true,
+		"type": "text"
+	},
+	"LastName": {
+		"name": "Last name",
+		"key": "last_name",
+		"validation": "",
+		"required": true,
+		"type": "text"
+	}
+}

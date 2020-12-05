@@ -224,6 +224,7 @@
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 				</div><!-- Form Group -->
+				{{ data }}
 			</form>
 		</div><!-- /Container -->
 		<!-- =====================
@@ -316,7 +317,7 @@ export default {
 				this.userId = this.data.id;
 				this.isSelf = true;
 				this.doingAxios = false;
-				this.getMedia().then(() => this.getProfilePicture())
+				Promise.all([this.getMedia(), this.getUser()]).then(() => this.getProfilePicture())
 			} else {
 				Promise.all([this.getMedia(), this.getUser()]).then(() => this.getProfilePicture())
 			}
@@ -422,6 +423,8 @@ export default {
 					if (this.helpers.isEmptyObject(user)) {
 						this.$router.push({ name : 'not-found' })
 					}
+
+					console.log(user);
 
 					this.data = user;
 				})

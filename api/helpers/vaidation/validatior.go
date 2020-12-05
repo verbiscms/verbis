@@ -50,6 +50,7 @@ func New() *Validation {
 // Process handles validation errors and passes back to respond.
 func (v *Validation) Process(errors pkgValidate.ValidationErrors) []ValidationError {
 
+
 	var returnErrors []ValidationError
 	for _, e := range errors {
 
@@ -66,6 +67,10 @@ func (v *Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 
 		reg := regexp.MustCompile(`[A-Z][^A-Z]*`)
 		fieldString := ""
+
+		if field == "" {
+			field = e.StructField()
+		}
 
 		submatchall := reg.FindAllString(field, -1)
 		for _, element := range submatchall {

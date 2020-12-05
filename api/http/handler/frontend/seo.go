@@ -18,7 +18,7 @@ type SEOHandler interface {
 
 // SEO defines the handler for all SEO Routes (sitemaps & robots)
 type SEO struct {
-	store  *models.Store
+	store   *models.Store
 	config  config.Configuration
 	sitemap render.SiteMapper
 	options domain.Options
@@ -28,7 +28,7 @@ type SEO struct {
 // newSEO - Construct
 func NewSEO(m *models.Store, config config.Configuration) *SEO {
 	return &SEO{
-		store:       m,
+		store:        m,
 		config:       config,
 		options:      m.Options.GetStruct(),
 		sitemap:      render.NewSitemap(m),

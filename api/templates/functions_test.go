@@ -45,7 +45,7 @@ func newTestSuite(args ...string) *TemplateFunctions {
 
 	return NewFunctions(g, &models.Store{
 		Options: &mockOptions,
-		Site: &mockSite,
+		Site:    &mockSite,
 	}, p)
 }
 

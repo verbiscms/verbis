@@ -156,6 +156,7 @@ func (s *SiteStore) GetTemplates() (domain.Templates, error) {
 
 	for _, file := range files {
 		name := strings.Title(strings.ToLower(strings.Replace(file, "-", " ", -1)))
+		fmt.Println(name)
 		t := map[string]interface{}{
 			"key":  file,
 			"name": name,
@@ -225,8 +226,7 @@ func (s *SiteStore) walkMatch(root, pattern string) ([]string, error) {
 		if matched, err := filepath.Match(pattern, filepath.Base(path)); err != nil {
 			return err
 		} else if matched {
-			str := strings.Split(path, "/")
-			template := str[len(str)-1]
+			template := strings.Replace(path, root+"/", "", 1)
 			template = strings.Replace(template, s.config.Template.FileExtension, "", -1)
 			matches = append(matches, template)
 		}

@@ -21,17 +21,17 @@ func Test_Partial(t *testing.T) {
 	themePath = apiPath + "/test/testdata"
 
 	tt := map[string]struct {
-		name    string
-		input    string
-		want string
+		name  string
+		input string
+		want  string
 	}{
 		"Success": {
 			input: `{{ partial "html/partial.cms" }}`,
-			want:   `<h1>This is a partial file.</h1>`,
+			want:  `<h1>This is a partial file.</h1>`,
 		},
 		"Wrong Path": {
 			input: `{{ partial "html/wrongpath.cms" }}`,
-			want:   `<h1>This is a partial file.</h1>`,
+			want:  `<h1>This is a partial file.</h1>`,
 		},
 	}
 

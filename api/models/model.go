@@ -17,6 +17,7 @@ type Store struct {
 	Auth       AuthRepository
 	Categories CategoryRepository
 	Fields     FieldsRepository
+	Forms      FormsRepository
 	Media      MediaRepository
 	Options    OptionsRepository
 	Posts      PostsRepository
@@ -31,6 +32,7 @@ func New(db *database.MySql, config config.Configuration) *Store {
 	return &Store{
 		Auth:       newAuth(db.Sqlx),
 		Categories: newCategories(db.Sqlx),
+		Forms:      newForms(db.Sqlx),
 		Fields:     newFields(db.Sqlx),
 		Media:      newMedia(db.Sqlx, config),
 		Options:    newOptions(db.Sqlx),
