@@ -27,7 +27,7 @@ type FieldsRepository interface {
 // FieldsStore defines the data layer for Posts
 type FieldsStore struct {
 	db       *sqlx.DB
-	config       config.Configuration
+	config   config.Configuration
 	options  domain.Options
 	jsonPath string
 }
@@ -38,7 +38,7 @@ func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 
 	fs := FieldsStore{
 		db:       db,
-		config: config,
+		config:   config,
 		options:  newOptions(db, config).GetStruct(),
 		jsonPath: paths.Storage() + "/fields",
 	}

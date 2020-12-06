@@ -24,14 +24,14 @@ type OptionsRepository interface {
 
 // OptionsStore defines the data layer for Posts
 type OptionsStore struct {
-	db *sqlx.DB
-	config       config.Configuration
+	db     *sqlx.DB
+	config config.Configuration
 }
 
 // newOptions - Construct
 func newOptions(db *sqlx.DB, config config.Configuration) *OptionsStore {
 	return &OptionsStore{
-		db: db,
+		db:     db,
 		config: config,
 	}
 }
