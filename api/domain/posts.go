@@ -16,15 +16,15 @@ type PostData struct {
 }
 
 type Post struct {
-	Id           int        `db:"id" json:"id" binding:"numeric"`
-	UUID         uuid.UUID  `db:"uuid" json:"uuid"`
-	Slug         string     `db:"slug" json:"slug" binding:"required,max=150"`
-	Title        string     `db:"title" json:"title" binding:"required,max=500"`
-	Status       string     `db:"status" json:"status,omitempty"`
-	Resource     *string    `db:"resource" json:"resource,max=150"`
-	PageTemplate string     `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
-	Layout       string     `db:"layout" json:"layout,omitempty" binding:"max=150"`
-	Fields       PostFields `db:"fields" json:"fields"`
+	Id           int       `db:"id" json:"id" binding:"numeric"`
+	UUID         uuid.UUID `db:"uuid" json:"uuid"`
+	Slug         string    `db:"slug" json:"slug" binding:"required,max=150"`
+	Title        string    `db:"title" json:"title" binding:"required,max=500"`
+	Status       string    `db:"status" json:"status,omitempty"`
+	Resource     *string   `db:"resource" json:"resource,max=150"`
+	PageTemplate string    `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
+	Layout       string    `db:"layout" json:"layout,omitempty" binding:"max=150"`
+	Fields       DBMap     `db:"fields" json:"fields"`
 	//IsArchive		bool						`db:"is_archive" json:"is_archive"`
 	CodeInjectHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 	CodeInjectFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
@@ -139,23 +139,24 @@ func (m *PostSeo) Value() (driver.Value, error) {
 	return driver.Value(j), nil
 }
 
-type PostFields map[string]interface{}
-
-func (m PostFields) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("scan not supported")
-	}
-	if bytes == nil || value == nil {
-		return nil
-	}
-	return json.Unmarshal(bytes, &m)
-}
-
-func (m PostFields) Value() (driver.Value, error) {
-	j, err := json.Marshal(m)
-	if err != nil {
-		return nil, fmt.Errorf("could not unmarshal to domain.PostFields")
-	}
-	return driver.Value(j), nil
-}
+//
+//type PostFields map[string]interface{}
+//
+//func (m PostFields) Scan(value interface{}) error {
+//	bytes, ok := value.([]byte)
+//	if !ok {
+//		return fmt.Errorf("scan not supported")
+//	}
+//	if bytes == nil || value == nil {
+//		return nil
+//	}
+//	return json.Unmarshal(bytes, &m)
+//}
+//
+//func (m PostFields) Value() (driver.Value, error) {
+//	j, err := json.Marshal(m)
+//	if err != nil {
+//		return nil, fmt.Errorf("could not unmarshal to domain.PostFields")
+//	}
+//	return driver.Value(j), nil
+//}

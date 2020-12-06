@@ -91,8 +91,8 @@ func (m *Mailer) Send(t *Sender) (string, error) {
 // Returns errors.INTERNAL if the render failed
 func (m *Mailer) ExecuteHTML(file string, data interface{}) (string, error) {
 	const op = "mail.ExecuteHTML"
-	path := paths.Api() + "/mail/" + file
-	tmpl, err := html.RenderTemplate("main", data, paths.Api()+"/mail/main-layout.html", path)
+	path := paths.Web() + "/mail/" + file
+	tmpl, err := html.RenderTemplate("main", data, paths.Web()+"/mail/main-layout.html", path)
 	if err != nil {
 		fmt.Println(err)
 		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to render the template: %s", path), Operation: op, Err: err}

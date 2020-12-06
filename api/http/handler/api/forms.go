@@ -1,12 +1,10 @@
 package api
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/ompluscator/dynamic-struct"
 )
 
 // FormHandler defines methods for Form routes to interact with the server
@@ -40,24 +38,14 @@ func (c *Forms) Send(g *gin.Context) {
 		return
 	}
 
-	instance := dynamicstruct.NewStruct()
-	for k, v := range form.Fields {
-		tag := fmt.Sprintf(`json:"%s" binding:"required"`, v.Key)
-		instance.AddField(k, "", tag)
-	}
-
-	test := instance.Build().New()
-
-	if err := g.ShouldBindJSON(test); err != nil {
+	if err := g.ShouldBindJSON(form.Body); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
+	if err := c.store.Forms.Send(&form, g.ClientIP(), g.Request.UserAgent()); err != nil {
+		Respond(g, 500, errors.Message(err), err)
+	}
 
-	fmt.Println(instance.GetField("FirstName"))
-
-
-	Respond(g, 200, "Passed", nil)
+	Respond(g, 200, "Form submitted & sent successfully", nil)
 }
-
-

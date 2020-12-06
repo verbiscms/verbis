@@ -46,10 +46,50 @@ CREATE TABLE `forms` (
   `id` int NOT NULL AUTO_INCREMENT,
   `uuid` varchar(36) NOT NULL,
   `name` varchar(150) NOT NULL,
-  `fields` json,
-  `event`  varchar(150) NULL,
+  `email_send` bit DEFAULT 0 NOT NULL,
+  `email_message` mediumtext NULL,
+   `email_subject` varchar(78) NOT NULL,
+  `store_db` bit DEFAULT 0 NOT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `form_fields`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `form_fields` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(36) NOT NULL,
+  `form_id` int NOT NULL,
+  `key` varchar(150) NOT NULL,
+  `label` varchar(150) NOT NULL,
+  `type` varchar(150) NOT NULL,
+  `validation` varchar(500) NULL,
+  `required` bit DEFAULT 0 NOT NULL,
+  `options` json,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `form_submissions`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `form_submissions` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(36) NOT NULL,
+  `form_id` int NOT NULL,
+  `fields` json,
+  `ip_address` varchar(20) NOT NULL,
+  `user_agent` varchar(36) NOT NULL,
+  `sent_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

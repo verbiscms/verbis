@@ -60,7 +60,7 @@ func newMedia(db *sqlx.DB, config config.Configuration) *MediaStore {
 	ms := &MediaStore{
 		db:           db,
 		config:       config,
-		optionsModel: newOptions(db),
+		optionsModel: newOptions(db, config),
 		userModel:    newUser(db, config),
 	}
 	ms.getOptionsStruct()
