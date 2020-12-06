@@ -50,7 +50,6 @@ func New() *Validation {
 // Process handles validation errors and passes back to respond.
 func (v *Validation) Process(errors pkgValidate.ValidationErrors) []ValidationError {
 
-
 	var returnErrors []ValidationError
 	for _, e := range errors {
 

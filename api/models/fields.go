@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/config"
+
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -25,17 +27,19 @@ type FieldsRepository interface {
 // FieldsStore defines the data layer for Posts
 type FieldsStore struct {
 	db       *sqlx.DB
+	config       config.Configuration
 	options  domain.Options
 	jsonPath string
 }
 
 // newFields - Construct
-func newFields(db *sqlx.DB) *FieldsStore {
+func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 	const op = "FieldsRepository.newFields"
 
 	fs := FieldsStore{
 		db:       db,
-		options:  newOptions(db).GetStruct(),
+		config: config,
+		options:  newOptions(db, config).GetStruct(),
 		jsonPath: paths.Storage() + "/fields",
 	}
 

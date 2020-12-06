@@ -18,7 +18,7 @@ type Handler struct {
 	Posts      api.PostHandler
 	Site       api.SiteHandler
 	User       api.UserHandler
-	Forms 	   api.FormHandler
+	Forms      api.FormHandler
 	Fields     api.FieldHandler
 	Frontend   frontend.PublicHandler
 	SEO        frontend.SEOHandler
@@ -32,7 +32,7 @@ func New(m *models.Store, config config.Configuration) *Handler {
 		Cache:      api.NewCache(),
 		Categories: api.NewCategories(m, config),
 		Fields:     api.NewFields(m, config),
-		Forms: 		api.NewForms(m, config),
+		Forms:      api.NewForms(m, config),
 		Media:      api.NewMedia(m, config),
 		Options:    api.NewwOptions(m, config),
 		Posts:      api.NewPosts(m, config),

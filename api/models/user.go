@@ -43,7 +43,7 @@ func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
 	return &UserStore{
 		db:          db,
 		config:      config,
-		optionsRepo: newOptions(db).GetStruct(),
+		optionsRepo: newOptions(db, config).GetStruct(),
 	}
 }
 

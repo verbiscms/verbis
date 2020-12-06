@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -30,12 +31,14 @@ type CategoryRepository interface {
 // CategoryStore defines the data layer for Categories
 type CategoryStore struct {
 	db *sqlx.DB
+	config config.Configuration
 }
 
 // newCategories - Construct
-func newCategories(db *sqlx.DB) *CategoryStore {
+func newCategories(db *sqlx.DB, config config.Configuration) *CategoryStore {
 	return &CategoryStore{
 		db: db,
+		config: config,
 	}
 }
 

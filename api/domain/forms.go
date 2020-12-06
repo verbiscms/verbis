@@ -1,49 +1,55 @@
 package domain
 
 import (
-	"database/sql/driver"
-	"encoding/json"
-	"fmt"
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx/types"
+	"strings"
 	"time"
 )
 
 // Form defines the form for sending form the API.
 type Form struct {
-	Id        int              `db:"id" json:"id" binding:"numeric"`
-	UUID      uuid.UUID        `db:"uuid" json:"uuid"`
-	Name      string           `db:"name" json:"name" binding:"required,max=500"`
-	Fields    FormFields       `db:"fields" json:"fields"`
-	Event     *string           `db:"event" json:"event"`
-	CreatedAt *time.Time       `db:"created_at" json:"created_at"`
-	UpdatedAt *time.Time       `db:"updated_at" json:"updated_at"`
+	Id           int           `db:"id" json:"id" binding:"numeric"`
+	UUID         uuid.UUID     `db:"uuid" json:"uuid"`
+	Name         string        `db:"name" json:"name" binding:"required,max=500"`
+	Fields       []FormField   `db:"fields" json:"fields"`
+	EmailSend    types.BitBool `db:"email_send" json:"email_send"`
+	EmailMessage string        `db:"email_message" json:"email_message"`
+	EmailSubject string        `db:"email_subject" json:"email_subjectclea"`
+	StoreDB      types.BitBool `db:"store_db" json:"store_db"`
+	Body         interface{}   `db:"-" json:"-"`
+	CreatedAt    *time.Time    `db:"created_at" json:"created_at"`
+	UpdatedAt    *time.Time    `db:"updated_at" json:"updated_at"`
 }
 
-type FormFields map[string]FormField
-
+// FormField defines a field from the pivot table.
 type FormField struct {
-	Name      	string           `db:"name" json:"name"`
-	Key      	string           `db:"key" json:"key"`
-	Type      	string           `db:"type" json:"type"`
-	Validation 	string           `db:"validation" json:"validation"`
-	Required 	bool           `db:"required" json:"required"`
+	Id         int            `db:"id" json:"id" binding:"numeric"`
+	UUID       uuid.UUID      `db:"uuid" json:"uuid"`
+	FormId     int            `db:"form_id" json:"-"`
+	Key        string         `db:"key" json:"key"`
+	Label      FormLabel      `db:"label" json:"label"`
+	Type       string         `db:"type" json:"type"`
+	Validation string         `db:"validation" json:"validation"`
+	Required   types.BitBool  `db:"required" json:"required"`
+	Options    types.JSONText `db:"options" json:"options"`
 }
 
-func (m FormFields) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("scan not supported")
-	}
-	if bytes == nil || value == nil {
-		return nil
-	}
-	return json.Unmarshal(bytes, &m)
+// FormSubmission defines a submission of the form.
+type FormSubmission struct {
+	Id        int        `db:"id" json:"id" binding:"numeric"`
+	UUID      uuid.UUID  `db:"uuid" json:"uuid"`
+	FormId    int        `db:"form_id" json:"form_id"`
+	Fields    DBMap      `db:"fields" json:"fields"`
+	IpAddress string     `db:"ip_address" json:"ip_address"`
+	UserAgent string     `db:"user_agent" json:"user_agent"`
+	SentAt    *time.Time `db:"sent_at" json:"sent_at"`
 }
 
-func (m FormFields) Value() (driver.Value, error) {
-	j, err := json.Marshal(m)
-	if err != nil {
-		return nil, fmt.Errorf("could not unmarshal to domain.FormFields")
-	}
-	return driver.Value(j), nil
+// FormLabel defines the label/name for form fields.
+type FormLabel string
+
+// Name converts the label to a dynamic-struct friendly name.
+func (f FormLabel) Name() string {
+	return strings.ReplaceAll(string(f), " ", "")
 }

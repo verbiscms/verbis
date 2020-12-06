@@ -52,7 +52,7 @@ func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
 		config: config,
 	}
 
-	om := newOptions(db)
+	om := newOptions(db, config)
 	s.optionsModel = om
 
 	return s
