@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
@@ -21,12 +22,14 @@ type RoleRepository interface {
 // PostStore defines the data layer for Posts
 type RoleStore struct {
 	db *sqlx.DB
+	config       config.Configuration
 }
 
 // newRoles - Construct
-func newRoles(db *sqlx.DB) *RoleStore {
+func newRoles(db *sqlx.DB, config config.Configuration) *RoleStore {
 	return &RoleStore{
 		db: db,
+		config: config,
 	}
 }
 

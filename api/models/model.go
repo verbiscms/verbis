@@ -30,14 +30,14 @@ type Store struct {
 // Create a new database instance, connect to database.
 func New(db *database.MySql, config config.Configuration) *Store {
 	return &Store{
-		Auth:       newAuth(db.Sqlx),
-		Categories: newCategories(db.Sqlx),
-		Forms:      newForms(db.Sqlx),
-		Fields:     newFields(db.Sqlx),
+		Auth:       newAuth(db.Sqlx, config),
+		Categories: newCategories(db.Sqlx, config),
+		Forms:      newForms(db.Sqlx, config),
+		Fields:     newFields(db.Sqlx, config),
 		Media:      newMedia(db.Sqlx, config),
-		Options:    newOptions(db.Sqlx),
+		Options:    newOptions(db.Sqlx, config),
 		Posts:      newPosts(db.Sqlx, config),
-		Roles:      newRoles(db.Sqlx),
+		Roles:      newRoles(db.Sqlx, config),
 		Site:       newSite(db.Sqlx, config),
 		User:       newUser(db.Sqlx, config),
 		Config:     config,

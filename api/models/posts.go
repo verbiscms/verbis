@@ -42,8 +42,8 @@ func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 		db:              db,
 		seoMetaModel:    newSeoMeta(db),
 		userModel:       newUser(db, config),
-		categoriesModel: newCategories(db),
-		fieldsModel:     newFields(db),
+		categoriesModel: newCategories(db, config),
+		fieldsModel:     newFields(db, config),
 	}
 }
 

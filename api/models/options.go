@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
@@ -24,12 +25,14 @@ type OptionsRepository interface {
 // OptionsStore defines the data layer for Posts
 type OptionsStore struct {
 	db *sqlx.DB
+	config       config.Configuration
 }
 
 // newOptions - Construct
-func newOptions(db *sqlx.DB) *OptionsStore {
+func newOptions(db *sqlx.DB, config config.Configuration) *OptionsStore {
 	return &OptionsStore{
 		db: db,
+		config: config,
 	}
 }
 
