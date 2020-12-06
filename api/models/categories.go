@@ -30,14 +30,14 @@ type CategoryRepository interface {
 
 // CategoryStore defines the data layer for Categories
 type CategoryStore struct {
-	db *sqlx.DB
+	db     *sqlx.DB
 	config config.Configuration
 }
 
 // newCategories - Construct
 func newCategories(db *sqlx.DB, config config.Configuration) *CategoryStore {
 	return &CategoryStore{
-		db: db,
+		db:     db,
 		config: config,
 	}
 }

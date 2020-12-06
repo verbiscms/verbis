@@ -17,7 +17,7 @@ type Store struct {
 	Auth       AuthRepository
 	Categories CategoryRepository
 	Fields     FieldsRepository
-	Forms      FormsRepository
+	Forms      FormRepository
 	Media      MediaRepository
 	Options    OptionsRepository
 	Posts      PostsRepository

@@ -21,14 +21,14 @@ type RoleRepository interface {
 
 // PostStore defines the data layer for Posts
 type RoleStore struct {
-	db *sqlx.DB
-	config       config.Configuration
+	db     *sqlx.DB
+	config config.Configuration
 }
 
 // newRoles - Construct
 func newRoles(db *sqlx.DB, config config.Configuration) *RoleStore {
 	return &RoleStore{
-		db: db,
+		db:     db,
 		config: config,
 	}
 }
