@@ -15,7 +15,7 @@ type Form struct {
 	Fields       []FormField   `db:"fields" json:"fields"`
 	EmailSend    types.BitBool `db:"email_send" json:"email_send"`
 	EmailMessage string        `db:"email_message" json:"email_message"`
-	EmailSubject string        `db:"email_subject" json:"email_subjectclea"`
+	EmailSubject string        `db:"email_subject" json:"email_subject"`
 	StoreDB      types.BitBool `db:"store_db" json:"store_db"`
 	Body         interface{}   `db:"-" json:"-"`
 	CreatedAt    *time.Time    `db:"created_at" json:"created_at"`
@@ -24,15 +24,15 @@ type Form struct {
 
 // FormField defines a field from the pivot table.
 type FormField struct {
-	Id         int            `db:"id" json:"id" binding:"numeric"`
-	UUID       uuid.UUID      `db:"uuid" json:"uuid"`
-	FormId     int            `db:"form_id" json:"-"`
-	Key        string         `db:"key" json:"key"`
-	Label      FormLabel      `db:"label" json:"label"`
-	Type       string         `db:"type" json:"type"`
-	Validation string         `db:"validation" json:"validation"`
-	Required   types.BitBool  `db:"required" json:"required"`
-	Options    types.JSONText `db:"options" json:"options"`
+	Id         int           `db:"id" json:"id" binding:"numeric"`
+	UUID       uuid.UUID     `db:"uuid" json:"uuid"`
+	FormId     int           `db:"form_id" json:"-"`
+	Key        string        `db:"key" json:"key" binding:"required"`
+	Label      FormLabel     `db:"label" json:"label" binding:"required"`
+	Type       string        `db:"type" json:"type" binding:"required"`
+	Validation *string       `db:"validation" json:"validation"`
+	Required   types.BitBool `db:"required" json:"required"`
+	Options    DBMap         `db:"options" json:"options"`
 }
 
 // FormSubmission defines a submission of the form.

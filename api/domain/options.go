@@ -85,9 +85,9 @@ type Options struct {
 	MinifyXML  bool `json:"minify_xml"`
 	// Forms
 	FormSendEmailAddresses []string `json:"form_send_email_addresses"`
-	FormFromEmailAddress string `json:"form_from_email_addresses"`
-	FormIncludeLogo bool `json:"form_email_include_logo"`
-	FormEmailDisclosure string   `json:"form_email_disclosure"`
+	FormFromEmailAddress   string   `json:"form_from_email_addresses"`
+	FormIncludeLogo        bool     `json:"form_email_include_logo"`
+	FormEmailDisclosure    string   `json:"form_email_disclosure"`
 }
 
 type Redirect struct {

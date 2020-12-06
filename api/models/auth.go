@@ -27,7 +27,7 @@ type AuthRepository interface {
 // AuthStore defines the data layer for Authentication
 type AuthStore struct {
 	db          *sqlx.DB
-	config config.Configuration
+	config      config.Configuration
 	optionsRepo domain.Options
 }
 

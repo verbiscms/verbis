@@ -104,7 +104,7 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get media", Operation: op, Err: err}
 	}
 
-	// Return not found error if no posts are available
+	// Return not found error if no forms are available
 	if len(m) == 0 {
 		return []domain.Media{}, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No media available", Operation: op}
 	}
