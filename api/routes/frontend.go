@@ -47,3 +47,5 @@ func frontend(s *server.Server, c *handler.Handler, m *models.Store, config conf
 		s.NoRoute(c.Frontend.Serve)
 	}
 }
+
+
