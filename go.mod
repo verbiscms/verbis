@@ -9,10 +9,11 @@ require (
 	github.com/SparkPost/gosparkpost v0.2.0
 	github.com/ainsleyclark/golang-sql-migrate v1.0.1 // indirect
 	github.com/briandowns/spinner v1.11.1
-	github.com/chai2010/webp v1.1.0
+	github.com/chai2010/webp v1.1.0 // indirect
 	github.com/codegangsta/envy v0.0.0-20141216192214-4b78388c8ce4 // indirect
 	github.com/codegangsta/gin v0.0.0-20171026143024-cafe2ce98974 // indirect
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
+	github.com/dchest/uniuri v0.0.0-20200228104902-7aecb25e1fe5
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/fatih/color v1.9.0 // indirect
@@ -23,7 +24,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
-	github.com/gin-contrib/sessions v0.0.3 // indirect
+	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/contrib v0.0.0-20200810162008-6dee08bf958e // indirect
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-openapi/strfmt v0.19.5 // indirect
@@ -48,7 +49,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/lib/pq v1.8.0 // indirect
-	github.com/magiconair/properties v1.8.2
+	github.com/magiconair/properties v1.8.2 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-shellwords v1.0.10 // indirect
@@ -62,7 +63,7 @@ require (
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/roberthodgen/spa-server v0.0.0-20171007154335-bb87b4ff3253 // indirect
 	github.com/sirupsen/logrus v1.7.0
-	github.com/slayer/autorestart v0.0.0-20170706172704-7bc8d250279b
+	github.com/slayer/autorestart v0.0.0-20170706172704-7bc8d250279b // indirect
 	github.com/spf13/afero v1.3.5 // indirect
 	github.com/spf13/cobra v1.1.1
 	github.com/stretchr/testify v1.6.1
@@ -71,6 +72,7 @@ require (
 	github.com/ugorji/go v1.1.13 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/unrolled/render v1.0.3 // indirect
+	github.com/utrack/gin-csrf v0.0.0-20190424104817-40fb8d2c8fca
 	github.com/vektra/mockery/v2 v2.3.0 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yosssi/gohtml v0.0.0-20201013000340-ee4748c638f4
