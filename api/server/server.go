@@ -3,9 +3,13 @@ package server
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
+	//"github.com/ainsleyclark/verbis/api/http/csrf"
+	//"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/location"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -42,6 +46,10 @@ func New(m models.OptionsRepository) *Server {
 
 	// Set up Gzip compression
 	server.setupGzip(m)
+
+	store := cookie.NewStore([]byte("verbis"))
+	r.Use(sessions.Sessions("csrf", store))
+
 
 	// Instantiate the server.
 	return server

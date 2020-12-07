@@ -3,6 +3,7 @@ package templates
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/http/csrf"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -17,6 +18,7 @@ type TemplateFunctions struct {
 	site    *domain.Site
 	store   *models.Store
 	options domain.Options
+	token   string
 	test    *domain.PostData
 }
 
@@ -27,6 +29,7 @@ type TypeOfPage struct {
 
 // NewFunctions - Construct
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData) *TemplateFunctions {
+
 	return &TemplateFunctions{
 		gin:     g,
 		post:    p,
@@ -92,6 +95,7 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 		"Type":  t.orderOfSearch(),
 		"Site":  t.store.Site.GetGlobalConfig(),
 		"Theme": theme.Theme,
+		"Token": csrf.GetToken(t.gin),
 		"Post": map[string]interface{}{
 			"Id":           t.post.Id,
 			"UUID":         t.post.UUID,

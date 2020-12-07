@@ -236,7 +236,7 @@ func (s *FormsStore) Delete(id int) error {
 
 func (s *FormsStore) Send(form *domain.Form, ip string, agent string) error {
 	const op = "FormsRepository.GetFields"
-	//form.Reader = dynamicstruct.NewReader(body)
+	//reader := dynamicstruct.NewReader(form.Body)
 	if form.StoreDB {
 		if err := s.storeSubmission(form, ip, agent); err != nil {
 			return err

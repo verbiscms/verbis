@@ -1,10 +1,13 @@
 package routes
 
 import (
+	"github.com/ainsleyclark/verbis/api/http/csrf"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
+	"github.com/gin-gonic/gin"
+	respond "github.com/ainsleyclark/verbis/api/http/handler/api"
 )
 
 func api(s *server.Server, c *handler.Handler, m *models.Store) {
@@ -27,7 +30,16 @@ func api(s *server.Server, c *handler.Handler, m *models.Store) {
 		api.GET("/email/verify/:token", c.Auth.VerifyEmail)
 
 		// Forms
-		api.POST("/forms/:uuid", c.Forms.Send)
+		forms := api.Group("/forms")
+		forms.Use(csrf.Middleware(csrf.Options{
+			Secret: "verbis",
+			ErrorFunc: func(g *gin.Context) {
+				respond.AbortJSON(g, 400, "CSRF token mismatch", nil)
+				return
+			},
+		}))
+
+		forms.POST("/:uuid", c.Forms.Send)
 
 		// Operator
 		operator := api.Group("")
