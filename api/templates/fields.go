@@ -4,7 +4,9 @@ import (
 	"reflect"
 )
 
-// getField - Get field based on input return empty string if not found.
+// getField
+//
+// Get field based on input return empty string if not found.
 // Uses check field type to obtain if the kind of field is a media or
 // post item.
 func (t *TemplateFunctions) getField(field string, id ...int) interface{} {

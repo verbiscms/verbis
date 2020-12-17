@@ -120,13 +120,13 @@ func TestGetPagination(t *testing.T) {
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get?page=123", nil)
 	f.gin = g
-	tpl := "{{ getPagination }}"
+	tpl := "{{ getPaginationPage }}"
 	runt(t, f, tpl, 123)
 }
 
 func TestGetPagination_NoPage(t *testing.T) {
 	f := newTestSuite()
-	tpl := "{{ getPagination }}"
+	tpl := "{{ getPaginationPage }}"
 	runt(t, f, tpl, 1)
 }
 
@@ -136,6 +136,6 @@ func TestGetPagination_ConvertString(t *testing.T) {
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get?page=wrongval", nil)
 	f.gin = g
-	tpl := "{{ getPagination }}"
-	runt(t, f, tpl, "")
+	tpl := "{{ getPaginationPage }}"
+	runt(t, f, tpl, "1")
 }

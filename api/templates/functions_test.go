@@ -9,9 +9,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"html"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -49,7 +51,28 @@ func newTestSuite(args ...string) *TemplateFunctions {
 	}, p)
 }
 
-// runt - Run the template test by executing the tpl give.
+// runtv
+//
+// Run the template test by executing the tpl given
+// with data.
+func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, data interface{}) {
+	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
+
+	var b bytes.Buffer
+	err := tt.Execute(&b, data)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
+
+	assert.Equal(t, got, b.String())
+}
+
+// runt
+//
+//Run the template test by executing the tpl given
 func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
 
@@ -60,8 +83,7 @@ func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 		fmt.Println(err)
 	}
 
-	//got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
+	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
 
-	//fmt.Println(b.String())
-	assert.Equal(t, b.String(), b.String())
+	assert.Equal(t, got, b.String())
 }
