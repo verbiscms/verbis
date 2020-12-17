@@ -75,6 +75,13 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"partial": t.partial,
 		// Dict
 		"dict": t.dict,
+		// Date
+		"date": t.date,
+		"dateInZone": t.dateInZone,
+		"ago": t.ago,
+		"htmlDate": t.htmlDate,
+		"htmlDateInZone": t.htmlDateInZone,
+		"duration": t.duration,
 		// Helpers
 		"fullUrl": t.getFullUrl,
 		"escape":  t.escape,
