@@ -2,7 +2,10 @@ package spa
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
+	siteMock "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -55,7 +58,13 @@ func Test_NewSPA(t *testing.T) {
 		config:       config,
 		ErrorHandler: &render.Errors{},
 	}
-	got := NewSpa(config)
+	mockSite := siteMock.SiteRepository{}
+	mockSite.On("GetThemeConfig").Return(domain.ThemeConfig{})
+	models := models.Store{
+		Site: &mockSite,
+	}
+
+	got := NewSpa(&models, config)
 	assert.ObjectsAreEqual(got, want)
 }
 

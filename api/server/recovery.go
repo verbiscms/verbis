@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
@@ -33,6 +34,7 @@ type Recovery struct {
 	Stack      []Stack
 	Highlight  int
 	config     config.Configuration
+	theme domain.ThemeConfig
 }
 
 // TemplateStack defines the stack used for the error page
@@ -213,7 +215,7 @@ func (r *Recovery) handleTemplate(err error) error {
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert %v to int", line), Operation: op, Err: err}
 		}
 		line = l
-		file = paths.Theme() + "/" + tmpl + r.config.Template.FileExtension
+		file = paths.Theme() + "/" + tmpl + r.theme.FileExtension
 	}
 
 	r.Path = file

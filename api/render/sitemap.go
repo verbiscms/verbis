@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"time"
 )
@@ -81,12 +80,7 @@ const (
 func NewSitemap(m *models.Store) *Sitemap {
 	const op = "SiteMapper.NewSitemap"
 
-	theme, err := m.Site.GetThemeConfig()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get resources", Operation: op, Err: err},
-		}).Fatal()
-	}
+	theme := m.Site.GetThemeConfig()
 
 	// TODO: Causing issue! Returning pages to frontend?
 	//resources := theme.Resources

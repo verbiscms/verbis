@@ -7,31 +7,104 @@ import (
 	"testing"
 )
 
-func TestGetMedia(t *testing.T) {
-	mockMedia := mocks.MediaRepository{}
-	f := newTestSuite()
+func Test_GetMedia(t *testing.T) {
 
-	mockMediaItem := domain.Media{
+	media := domain.Media{
 		Id:  1,
 		Url: "/uploads/test.jpg",
 	}
 
-	f.store.Media = &mockMedia
-	mockMedia.On("GetById", 1).Return(mockMediaItem, nil)
+	id := 1
+	idFloat32 := float32(1)
+	idFloat64 := float64(1)
 
-	tpl := "{{ media 1 }}"
-	runt(t, f, tpl, mockMediaItem)
-}
+	tt := map[string]struct {
+		input interface{}
+		mock func(m *mocks.MediaRepository)
+		want interface{}
+	}{
+		"Success": {
+			input: 1,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(media, nil)
+			},
+			want: media,
+		},
+		"No Item": {
+			input: 1,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("no media"))
+			},
+			want: nil,
+		},
+		"nil": {
+			input: nil,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", nil).Return(domain.Media{}, fmt.Errorf("no media"))
+			},
+			want: nil,
+		},
+		"int": {
+			input: id,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(media, nil)
+			},
+			want: media,
+		},
+		"*int": {
+			input: &id,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(media, nil)
+			},
+			want: media,
+		},
+		"float32": {
+			input: idFloat32,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(media, nil)
+			},
+			want: media,
+		},
+		"*float32": {
+			input: &idFloat32,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(media, nil)
+			},
+			want: media,
+		},
+		"float64": {
+			input: idFloat64,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(media, nil)
+			},
+			want: media,
+		},
+		"*float64": {
+			input: &idFloat64,
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(media, nil)
+			},
+			want: media,
+		},
+		"string": {
+			input: "wrongval",
+			mock: func(m *mocks.MediaRepository) {
+				m.On("GetById", 1).Return(nil, fmt.Errorf("no media"))
+			},
+			want: nil,
+		},
+	}
 
-func TestGetMedia_NoItem(t *testing.T) {
-	mockMedia := mocks.MediaRepository{}
-	f := newTestSuite()
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			f := newTestSuite()
+			mock := mocks.MediaRepository{}
 
-	f.store.Media = &mockMedia
-	mockMedia.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("No media item"))
+			test.mock(&mock)
+			f.store.Media = &mock
 
-	_ = f.getMedia(1)
-
-	tpl := "{{ media 1 }}"
-	runt(t, f, tpl, nil)
+			tpl := `{{ media .MediaId }}`
+			runtv(t, f, tpl, test.want, map[string]interface{}{"MediaId": test.input})
+		})
+	}
 }

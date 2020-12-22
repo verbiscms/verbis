@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// Test_Date - Test standard date function
 func Test_Date(t *testing.T) {
 	f := newTestSuite()
 
@@ -18,7 +17,6 @@ func Test_Date(t *testing.T) {
 	runtv(t, f, tpl, "22/05/1990", map[string]interface{}{"Time": tm})
 }
 
-// Test_DateInZone - Test date in zone function
 func Test_DateInZone(t *testing.T) {
 	f := newTestSuite()
 
@@ -88,7 +86,6 @@ func Test_DateInZone(t *testing.T) {
 	})
 }
 
-// Test_Ago - Test seconds ago function
 func Test_Ago(t *testing.T) {
 	f := newTestSuite()
 
@@ -126,21 +123,18 @@ func Test_Ago(t *testing.T) {
 	}
 }
 
-// Test_HTMLDate - Test HTML date function
 func Test_HTMLDate(t *testing.T) {
 	f := newTestSuite()
 	tpl := `{{ htmlDate 0 }}`
 	runt(t, f, tpl, "1970-01-01")
 }
 
-// Test_HTMLDateInZone - Test HTML date in zone function
 func Test_HTMLDateInZone(t *testing.T) {
 	f := newTestSuite()
 	tpl := `{{ htmlDateInZone 0 "GMT" }}`
 	runt(t, f, tpl, "1970-01-01")
 }
 
-// Test_Duration - Test duration function
 func Test_Duration(t *testing.T) {
 	f := newTestSuite()
 
