@@ -7,7 +7,7 @@ import (
 )
 
 // getFooter obtains all of the site and post wide Code Injection
-func (t *TemplateFunctions) getFooter() template.HTML {
+func (t *TemplateFunctions) footer() template.HTML {
 	var b bytes.Buffer
 
 	// Get Global Foot (Code Injection)

@@ -8,17 +8,18 @@ import (
 	"html/template"
 )
 
-// getHeader obtains all of the site and post wide Code Injection
+// header
+//
+// Header obtains all of the site and post wide Code Injection
 // as well as any meta information from the page.
-func (t *TemplateFunctions) getHeader() template.HTML {
+func (t *TemplateFunctions) header() template.HTML {
 	const op = "Templates.getHeader"
 
 	var b bytes.Buffer
 
 	// Get Code Injection from the Post
-	postCi := t.post.CodeInjectHead
-	if *postCi != "" {
-		b.WriteString(*postCi)
+	if t.post.CodeInjectHead != nil {
+		b.WriteString(*t.post.CodeInjectHead)
 	}
 
 	// Get Code Injection from the Options (globally)
@@ -27,13 +28,19 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 	}
 
 	// Obtain SEO & set post public
-	var seo domain.PostSeo
-	postSeo := t.post.SeoMeta.Seo
+	seo := domain.PostSeo{
+		Public:         false,
+		ExcludeSitemap: true,
+		Canonical:      nil,
+	}
+
+	if t.post.SeoMeta.Seo != nil {
+		seo = *t.post.SeoMeta.Seo
+	}
+
 	postPublic := true
-	if postSeo != nil {
-		if !seo.Public {
-			postPublic = false
-		}
+	if !seo.Public {
+		postPublic = false
 	}
 
 	// Check if the site is public or page is public
@@ -43,15 +50,15 @@ func (t *TemplateFunctions) getHeader() template.HTML {
 
 	// Write the Canonical
 	if seo.Canonical != nil && *seo.Canonical != "" {
-		b.WriteString(fmt.Sprintf("<link rel=\"canonical\" href=\"%s\" />", *seo.Canonical))
+		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s" />`, *seo.Canonical))
 	} else {
-		b.WriteString(fmt.Sprintf("<link rel=\"canonical\" href=\"%s\" />", t.site.Url+t.post.Slug))
+		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s" />`, t.site.Url+t.post.Slug))
 	}
 
 	// Obtain Meta
-	var meta domain.PostMeta
-	postMeta := t.post.SeoMeta.Meta
-	if postMeta != nil {
+	meta := t.post.SeoMeta.Meta
+	if meta != nil {
+
 		if meta.Description != "" {
 			t.writeMeta(&b, meta.Description)
 		} else {
@@ -83,7 +90,9 @@ func (t *TemplateFunctions) writeMeta(bytes *bytes.Buffer, description string) {
 	if description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", description))
 	}
-	bytes.WriteString(fmt.Sprintf("<meta property=\"article:modified_time\" content=\"%s\" />", t.post.PublishedAt))
+	if t.post.PublishedAt != nil {
+		bytes.WriteString(fmt.Sprintf("<meta property=\"article:modified_time\" content=\"%s\" />", t.post.PublishedAt))
+	}
 }
 
 // Facebook
@@ -129,10 +138,12 @@ func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, desc
 	}
 }
 
-// getMetaTitle obtains the meta title from the post, if there is no
+// metaTitle
+//
+// metaTitle obtains the meta title from the post, if there is no
 // title set on the post, it will look for the global title, if
 // none, return empty string.
-func (t *TemplateFunctions) getMetaTitle() string {
+func (t *TemplateFunctions) metaTitle() string {
 	const op = "Templates.getMetaTitle"
 
 	postMeta := t.post.SeoMeta.Meta

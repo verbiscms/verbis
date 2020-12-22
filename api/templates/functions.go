@@ -43,16 +43,16 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
 		// Env
-		"env": t.env,
+		"env":       t.env,
 		"expandEnv": t.expandEnv,
 		// Header & Footer
-		"verbisHead":   t.getHeader,
-		"verbisFoot":   t.getFooter,
-		"metaTitle": t.getMetaTitle,
+		"verbisHead": t.header,
+		"verbisFoot": t.footer,
+		"metaTitle":  t.metaTitle,
 		// Fields
 		"field":    t.getField,
 		"fields":   t.getFields,
-		"hasField":    t.hasField,
+		"hasField": t.hasField,
 		"repeater": t.getRepeater,
 		"flexible": t.getFlexible,
 		"subfield": t.getSubField,

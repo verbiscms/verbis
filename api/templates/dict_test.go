@@ -16,17 +16,17 @@ func Test_Dict(t *testing.T) {
 		"Valid": {
 			tmpl: `{{ dict "test" 123 }}`,
 			want: "map[test:123]",
-			err: fmt.Errorf(""),
+			err:  fmt.Errorf(""),
 		},
 		"Odd Value": {
 			tmpl: `{{ dict "test" }}`,
 			want: "",
-			err: fmt.Errorf("Invalid dict call"),
+			err:  fmt.Errorf("Invalid dict call"),
 		},
 		"Not a String": {
 			tmpl: `{{ dict 2 2 }}`,
 			want: "",
-			err: fmt.Errorf("Dict keys must be strings"),
+			err:  fmt.Errorf("Dict keys must be strings"),
 		},
 	}
 
