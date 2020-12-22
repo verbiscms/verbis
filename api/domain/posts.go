@@ -25,8 +25,8 @@ type Post struct {
 	PageTemplate string    `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
 	Layout       string    `db:"layout" json:"layout,omitempty" binding:"max=150"`
 	Fields       DBMap     `db:"fields" json:"fields"`
-	CodeInjectHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
-	CodeInjectFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
+	CodeInjectionHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
+	CodeInjectionFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
 	UserId         int         `db:"user_id" json:"-"`
 	PublishedAt    *time.Time  `db:"published_at" json:"published_at"`
 	CreatedAt      *time.Time  `db:"created_at" json:"created_at"`

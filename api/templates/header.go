@@ -18,8 +18,8 @@ func (t *TemplateFunctions) header() template.HTML {
 	var b bytes.Buffer
 
 	// Get Code Injection from the Post
-	if t.post.CodeInjectHead != nil {
-		b.WriteString(*t.post.CodeInjectHead)
+	if t.post.CodeInjectionHead != nil {
+		b.WriteString(*t.post.CodeInjectionHead)
 	}
 
 	// Get Code Injection from the Options (globally)
@@ -86,6 +86,10 @@ func (t *TemplateFunctions) header() template.HTML {
 	return template.HTML(gohtml.Format(b.String()))
 }
 
+// writeMeta
+//
+// Writes to the given *bytes.Buffer with meta description
+// and article published time if they are not nil.
 func (t *TemplateFunctions) writeMeta(bytes *bytes.Buffer, description string) {
 	if description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", description))
@@ -95,13 +99,17 @@ func (t *TemplateFunctions) writeMeta(bytes *bytes.Buffer, description string) {
 	}
 }
 
-// Facebook
+// writeFacebook
+//
+// Opengraph writing to the given *bytes.Bufffer, this function
+// will write website, site name, locale from options, title,
+// description & post image if there is one.
 func (t *TemplateFunctions) writeFacebook(bytes *bytes.Buffer, title string, description string, imageId int) {
+
 	if title != "" || description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
 		bytes.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", t.options.SiteTitle))
 		bytes.WriteString(fmt.Sprintf("<meta property=\"og:locale\" content=\"%s\">", t.options.GeneralLocale))
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\" />"))
 	}
 
 	if title != "" {
@@ -118,7 +126,11 @@ func (t *TemplateFunctions) writeFacebook(bytes *bytes.Buffer, title string, des
 	}
 }
 
-// Twitter
+// writeTwitter
+//
+// Twitter card writing to the given *bytes.Bufffer, this function
+// will write the title, description & post image if there is
+// one.
 func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, description string, imageId int) {
 	if title != "" || description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:card\" content=\"summary\">"))
@@ -144,8 +156,6 @@ func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, desc
 // title set on the post, it will look for the global title, if
 // none, return empty string.
 func (t *TemplateFunctions) metaTitle() string {
-	const op = "Templates.getMetaTitle"
-
 	postMeta := t.post.SeoMeta.Meta
 
 	if postMeta.Title != "" {

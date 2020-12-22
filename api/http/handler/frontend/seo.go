@@ -32,7 +32,9 @@ func NewSEO(m *models.Store, config config.Configuration) *SEO {
 		config:       config,
 		options:      m.Options.GetStruct(),
 		sitemap:      render.NewSitemap(m),
-		ErrorHandler: &render.Errors{},
+		ErrorHandler: &render.Errors{
+			ThemeConfig: m.Site.GetThemeConfig(),
+		},
 	}
 }
 
@@ -45,7 +47,7 @@ func (c *SEO) Robots(g *gin.Context) {
 	const op = "FrontendHandler.Robots"
 
 	if !c.options.SeoRobotsServe {
-		c.NotFound(g, c.config)
+		c.NotFound(g)
 		return
 	}
 
@@ -63,7 +65,8 @@ func (c *SEO) SiteMapIndex(g *gin.Context) {
 
 	sitemap, err := c.sitemap.GetIndex()
 	if err != nil {
-		c.NotFound(g, c.config)
+		c.NotFound(g)
+		return
 	}
 
 	g.Data(200, "application/xml; charset=utf-8", sitemap)
@@ -80,7 +83,8 @@ func (c *SEO) SiteMapResource(g *gin.Context) {
 
 	sitemap, err := c.sitemap.GetPages(g.Param("resource"))
 	if err != nil {
-		c.NotFound(g, c.config)
+		c.NotFound(g)
+		return
 	}
 
 	g.Data(200, "application/xml; charset=utf-8", sitemap)
@@ -95,7 +99,8 @@ func (c *SEO) SiteMapXSL(g *gin.Context, index bool) {
 
 	sitemap, err := c.sitemap.GetXSL(index)
 	if err != nil {
-		c.NotFound(g, c.config)
+		c.NotFound(g)
+		return
 	}
 
 	g.Data(200, "application/xml; charset=utf-8", sitemap)

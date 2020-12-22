@@ -164,7 +164,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	}
 
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, fields, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId, p.PublishedAt)
+	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -219,7 +219,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectHead, p.CodeInjectFoot, p.UserId, p.PublishedAt, p.Id)
+	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -342,8 +342,8 @@ func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 		Resource:       c.Resource,
 		PageTemplate:   c.PageTemplate,
 		Fields:         c.Fields,
-		CodeInjectHead: c.CodeInjectHead,
-		CodeInjectFoot: c.CodeInjectFoot,
+		CodeInjectionHead: c.CodeInjectionHead,
+		CodeInjectionFoot: c.CodeInjectionFoot,
 		UserId:         c.UserId,
 		CreatedAt:      c.CreatedAt,
 		UpdatedAt:      c.UpdatedAt,

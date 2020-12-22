@@ -68,7 +68,7 @@ func TestSEOController_Robots(t *testing.T) {
 		r := httptest.NewRecorder()
 		g, _ := gin.CreateTestContext(r)
 		errorMock := &mocks.ErrorHandler{}
-		errorMock.On("NotFound", g, config.Configuration{}).Return("error")
+		errorMock.On("NotFound", g).Return("error")
 
 		seoError := SEO{
 			options: domain.Options{
@@ -77,7 +77,7 @@ func TestSEOController_Robots(t *testing.T) {
 			ErrorHandler: errorMock,
 		}
 
-		seoError.Robots(g)
+ 		seoError.Robots(g)
 
 		assert.Equal(t, r.Body.String(), "")
 	})
@@ -111,7 +111,7 @@ func TestSEOController_SiteMapIndex(t *testing.T) {
 		g, _ := gin.CreateTestContext(r)
 
 		errorMock := &mocks.ErrorHandler{}
-		errorMock.On("NotFound", g, config.Configuration{}).Return("error")
+		errorMock.On("NotFound", g).Return("error")
 
 		sitemapMock := &mocks.SiteMapper{}
 		sitemapMock.On("GetIndex").Return(nil, fmt.Errorf("error"))
@@ -156,7 +156,7 @@ func TestSEOController_SiteMapResource(t *testing.T) {
 		g, _ := gin.CreateTestContext(r)
 
 		errorMock := &mocks.ErrorHandler{}
-		errorMock.On("NotFound", g, config.Configuration{}).Return("error")
+		errorMock.On("NotFound", g).Return("error")
 
 		sitemapMock := &mocks.SiteMapper{}
 		sitemapMock.On("GetPages", mock.Anything).Return(nil, fmt.Errorf("error"))
@@ -202,7 +202,7 @@ func TestSEOController_SiteMapXSL(t *testing.T) {
 		g, _ := gin.CreateTestContext(r)
 
 		errorMock := &mocks.ErrorHandler{}
-		errorMock.On("NotFound", g, config.Configuration{}).Return("error")
+		errorMock.On("NotFound", g).Return("error")
 
 		sitemapMock := &mocks.SiteMapper{}
 		sitemapMock.On("GetXSL", mock.Anything).Return(nil, fmt.Errorf("error"))

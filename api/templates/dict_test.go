@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// Test_Dict - Test dict function
 func Test_Dict(t *testing.T) {
 
 	tt := map[string]struct {

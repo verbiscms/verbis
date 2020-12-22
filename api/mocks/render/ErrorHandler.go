@@ -3,9 +3,7 @@
 package mocks
 
 import (
-	config "github.com/ainsleyclark/verbis/api/config"
 	gin "github.com/gin-gonic/gin"
-
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -14,7 +12,7 @@ type ErrorHandler struct {
 	mock.Mock
 }
 
-// NotFound provides a mock function with given fields: g, _a1
-func (_m *ErrorHandler) NotFound(g *gin.Context, _a1 config.Configuration) {
-	_m.Called(g, _a1)
+// NotFound provides a mock function with given fields: g
+func (_m *ErrorHandler) NotFound(g *gin.Context) {
+	_m.Called(g)
 }

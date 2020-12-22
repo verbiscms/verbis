@@ -40,7 +40,7 @@ func (c *Public) GetUploads(g *gin.Context) {
 
 	mimeType, file, err := c.render.Upload(g)
 	if err != nil {
-		c.NotFound(g, c.config)
+		c.NotFound(g)
 		return
 	}
 
@@ -53,7 +53,7 @@ func (c *Public) GetAssets(g *gin.Context) {
 
 	mimeType, file, err := c.render.Asset(g)
 	if err != nil {
-		c.NotFound(g, c.config)
+		c.NotFound(g)
 		return
 	}
 
@@ -66,7 +66,7 @@ func (c *Public) Serve(g *gin.Context) {
 
 	page, err := c.render.Page(g)
 	if err != nil {
-		c.NotFound(g, c.config)
+		c.NotFound(g)
 		return
 	}
 

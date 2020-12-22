@@ -33,7 +33,7 @@ func Test_New(t *testing.T) {
 		Posts:      api.NewPosts(m, c),
 		Site:       api.NewSite(m, c),
 		User:       api.NewUser(m, c),
-		SPA:        spa.NewSpa(c),
+		SPA:        spa.NewSpa(m, c),
 		Frontend:   frontend.NewPublic(m, c),
 		SEO:        frontend.NewSEO(m, c),
 	}

@@ -25,7 +25,7 @@ import (
 // handler for testing.
 func getPublicMock(r render.Renderer, gin *gin.Context) *Public {
 	mockError := mocks.ErrorHandler{}
-	mockError.On("NotFound", gin, config.Configuration{}).Run(func(args mock.Arguments) {
+	mockError.On("NotFound", gin).Run(func(args mock.Arguments) {
 		gin.AbortWithStatus(404)
 		return
 	})

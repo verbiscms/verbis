@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// Test_Env - Test env function
 func Test_Env(t *testing.T) {
 
 	tt := map[string]struct {
@@ -43,7 +42,6 @@ func Test_Env(t *testing.T) {
 	}
 }
 
-// Test_Env - Test env function
 func Test_ExpandEnv(t *testing.T) {
 
 	tt := map[string]struct {

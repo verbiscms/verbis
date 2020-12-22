@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -44,11 +45,12 @@ func newTestSuite(args ...string) *TemplateFunctions {
 
 	mockSite := mocks.SiteRepository{}
 	mockSite.On("GetGlobalConfig").Return(&domain.Site{}, nil)
+	mockSite.On("GetThemeConfig").Return(domain.ThemeConfig{})
 
 	return NewFunctions(g, &models.Store{
 		Options: &mockOptions,
 		Site:    &mockSite,
-	}, p)
+	}, p, config.Configuration{})
 }
 
 // runtv
