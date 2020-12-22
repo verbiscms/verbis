@@ -1,11 +1,10 @@
 package templates
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"html/template"
 	"strings"
 )
@@ -17,6 +16,8 @@ type TemplateFunctions struct {
 	site    *domain.Site
 	store   *models.Store
 	options domain.Options
+	config config.Configuration
+	themeConfig domain.ThemeConfig
 	token   string
 }
 
@@ -26,7 +27,7 @@ type TypeOfPage struct {
 }
 
 // NewFunctions - Construct
-func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData) *TemplateFunctions {
+func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateFunctions {
 
 	return &TemplateFunctions{
 		gin:     g,
@@ -35,6 +36,8 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData) *Template
 		site:    s.Site.GetGlobalConfig(),
 		store:   s,
 		options: s.Options.GetStruct(),
+		themeConfig: s.Site.GetThemeConfig(),
+		config: c,
 	}
 }
 
@@ -66,8 +69,15 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Media
 		"media": t.getMedia,
 		// Paths
-		"assets":  t.assetsPath,
-		"storage": t.storagePath,
+		"basePath":  t.basePath,
+		"adminPath":  t.adminPath,
+		"apiPath":  t.apiPath,
+		"themePath":  t.themePath,
+		"uploadsPath":  t.uploadsPath,
+		"assetsPath":  t.assetsPath,
+		"storagePath": t.storagePath,
+		"templatesPath": t.templatesPath,
+		"layoutsPath": t.layoutsPath,
 		// Body
 		"body": t.body,
 		// Partials
@@ -92,10 +102,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 // GetData - Returns all the necessary data for template usage.
 func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 
-	theme, err := t.store.Site.GetThemeConfig()
-	if err != nil {
-		return nil, err
-	}
+	theme := t.store.Site.GetThemeConfig()
 
 	data := map[string]interface{}{
 		"Type":  t.orderOfSearch(),
@@ -149,12 +156,7 @@ func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
 	slugArr := strings.Split(slug, "/")
 	last := slugArr[len(slugArr)-1]
 
-	theme, err := t.store.Site.GetThemeConfig()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not get the theme config ", Operation: op, Err: err},
-		}).Error()
-	}
+	theme := t.store.Site.GetThemeConfig()
 
 	if _, ok := theme.Resources[last]; ok {
 		data.PageType = "archive"

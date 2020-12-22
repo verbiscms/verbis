@@ -38,7 +38,7 @@ func New(m *models.Store, config config.Configuration) *Handler {
 		Posts:      api.NewPosts(m, config),
 		Site:       api.NewSite(m, config),
 		User:       api.NewUser(m, config),
-		SPA:        spa.NewSpa(config),
+		SPA:        spa.NewSpa(m, config),
 		Frontend:   frontend.NewPublic(m, config),
 		SEO:        frontend.NewSEO(m, config),
 	}

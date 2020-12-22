@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// Test_Auth - Test is logged in function
 func Test_Auth(t *testing.T) {
 
 	tt := map[string]struct {
@@ -53,7 +52,6 @@ func Test_Auth(t *testing.T) {
 	}
 }
 
-// Test_Admin - Test is admin function
 func Test_Admin(t *testing.T) {
 
 	tt := map[string]struct {

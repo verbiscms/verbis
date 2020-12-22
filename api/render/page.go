@@ -51,20 +51,20 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 
 	pt := "index"
 	if post.PageTemplate != "default" {
-		pt = r.config.Template.TemplateDir + "/" + post.PageTemplate
+		pt = r.theme.TemplateDir + "/" + post.PageTemplate
 	}
 
 	master := ""
 	if post.Layout != "default" {
-		master = r.config.Template.LayoutDir + "/" + post.Layout
+		master = r.theme.LayoutDir + "/" + post.Layout
 	} else {
-		pt = pt + r.config.Template.FileExtension
+		pt = pt + r.theme.FileExtension
 	}
 
-	tf := templates.NewFunctions(g, r.store, &postData)
+	tf := templates.NewFunctions(g, r.store, &postData, r.config)
 	gvFrontend := goview.New(goview.Config{
 		Root:         paths.Theme(),
-		Extension:    r.store.Config.Template.FileExtension,
+		Extension:    r.theme.FileExtension,
 		Master:       master,
 		Partials:     []string{},
 		Funcs:        tf.GetFunctions(),

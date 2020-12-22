@@ -4,6 +4,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -22,10 +23,12 @@ type SPA struct {
 }
 
 // newSpa - Construct
-func NewSpa(config config.Configuration) *SPA {
+func NewSpa(m *models.Store, config config.Configuration) *SPA {
 	return &SPA{
 		config:       config,
-		ErrorHandler: &render.Errors{},
+		ErrorHandler: &render.Errors{
+			ThemeConfig: m.Site.GetThemeConfig(),
+		},
 	}
 }
 
@@ -52,7 +55,7 @@ func (c *SPA) Serve(g *gin.Context) {
 
 		if err != nil {
 			// TODO, log here! Error getting admin file
-			c.ErrorHandler.NotFound(g, c.config)
+			c.ErrorHandler.NotFound(g)
 			return
 		}
 
@@ -65,7 +68,7 @@ func (c *SPA) Serve(g *gin.Context) {
 
 		if err != nil {
 			// TODO, log here! Error getting admin file
-			c.ErrorHandler.NotFound(g, c.config)
+			c.ErrorHandler.NotFound(g)
 			return
 		}
 

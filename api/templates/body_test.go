@@ -7,7 +7,6 @@ import (
 	"testing"
 )
 
-// Test_Body - Test body class functionality
 func Test_Body(t *testing.T) {
 
 	resource := "resource"
@@ -83,7 +82,6 @@ func Test_Body(t *testing.T) {
 	}
 }
 
-// Test_CSSValidString - Test stripping of strings
 func Test_CSSValidString(t *testing.T) {
 
 	tt := map[string]struct {

@@ -13,7 +13,6 @@ import (
 type Configuration struct {
 	Admin    admin
 	Media    media
-	Template template
 	Logs     logs
 }
 
@@ -27,13 +26,6 @@ type admin struct {
 type media struct {
 	UploadPath       string   `yaml:"upload_path"`
 	AllowedFileTypes []string `yaml:"allowed_file_types"`
-}
-
-// Template
-type template struct {
-	FileExtension string `yaml:"file_extension"`
-	TemplateDir   string `yaml:"template_dir"`
-	LayoutDir     string `yaml:"layout_dir"`
 }
 
 // Logs
@@ -73,11 +65,6 @@ func New() (*Configuration, error) {
 			UploadPath:       "",
 			AllowedFileTypes: nil,
 		},
-		Template: template{
-			FileExtension: ".cms",
-			TemplateDir:   "templates",
-			LayoutDir:     "layouts",
-		},
 		Logs: logs{
 			AccessLog: "default",
 			ErrorLog:  "default",
@@ -115,15 +102,6 @@ func (c *Configuration) Init() error {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the media.yml file", Operation: op, Err: err}
 	}
 
-	// Resources
-	t, err := files.LoadFile(paths.Base() + "/config/template.yml")
-	if err != nil {
-		return err
-	}
-	if err := yaml.Unmarshal(t, &c.Template); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the template.yml file", Operation: op, Err: err}
-	}
-
 	// Logs
 	l, err := files.LoadFile(paths.Base() + "/config/logs.yml")
 	if err != nil {
@@ -140,7 +118,6 @@ func (c *Configuration) Init() error {
 func (c *Configuration) Cache() {
 	cache.Store.Set("config_admin", c.Admin, cache.RememberForever)
 	cache.Store.Set("config_media", c.Media, cache.RememberForever)
-	cache.Store.Set("config_template", c.Template, cache.RememberForever)
 }
 
 // CacheClear - Clear the configuration

@@ -16,8 +16,8 @@ func (t *TemplateFunctions) footer() template.HTML {
 	}
 
 	// Get Code Injection for the Post
-	if *t.post.CodeInjectFoot != "" {
-		b.WriteString(*t.post.CodeInjectFoot)
+	if *t.post.CodeInjectionFoot != "" {
+		b.WriteString(*t.post.CodeInjectionFoot)
 	}
 
 	return template.HTML(gohtml.Format(b.String()))
