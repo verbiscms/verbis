@@ -5,27 +5,37 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/spf13/cast"
 	"strconv"
 )
 
 type ViewPost struct {
-	Author   *domain.User
-	Category *domain.Category
+	Author   *domain.PostAuthor
+	Category *domain.PostCategory
 	domain.Post
 }
 
-// getPost obtains the post by ID and returns a domain.Post type
+// getPost
+//
+// Obtains the post by ID and returns a domain.Post type
 // or nil if not found.
-func (t *TemplateFunctions) getPost(id float64) *ViewPost {
-	p, err := t.store.Posts.GetById(int(id))
+func (t *TemplateFunctions) getPost(i interface{}) *ViewPost {
+	p, err := t.store.Posts.GetById(cast.ToInt(i))
 	if err != nil {
 		return nil
 	}
-	vp := t.formatPost(p)
+
+	vp, err := t.formatPost(p)
+	if err != nil {
+		return nil
+	}
+
 	return &vp
 }
 
-// getPosts accepts a dict (map[string]interface{}) and returns an
+// getPosts
+//
+// Accepts a dict (map[string]interface{}) and returns an
 // array of domain.Post. It sets defaults if some of the param
 // arguments are missing, and returns an error if the data
 // could not be marshalled.
@@ -114,7 +124,10 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 
 	var returnPosts []ViewPost
 	for _, post := range posts {
-		formattedPost := t.formatPost(post)
+		formattedPost, err := t.formatPost(post)
+		if err != nil {
+
+		}
 		returnPosts = append(returnPosts, formattedPost)
 		//if tmplParams.Category == "" {
 		//	returnPosts = append(returnPosts, formattedPost)
@@ -130,28 +143,18 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	}, nil
 }
 
-func (t *TemplateFunctions) formatPost(post domain.Post) ViewPost {
+func (t *TemplateFunctions) formatPost(post domain.Post) (ViewPost, error) {
 
-	var rp ViewPost
-
-	// Assign the post
-	rp.Post = post
-
-	// Get the author associated with the post
-	author, err := t.store.User.GetById(post.UserId)
+	fp, err := t.store.Posts.Format(post)
 	if err != nil {
-		rp.Author = nil
+		return ViewPost{}, err
 	}
-	rp.Author = &author
 
-	// Get the categories associated with the post
-	category, err := t.store.Categories.GetByPost(post.Id)
-	if err != nil {
-		rp.Category = nil
-	}
-	rp.Category = category
-
-	return rp
+	return ViewPost{
+		Author: fp.Author,
+		Category: fp.Category,
+		Post: fp.Post,
+	}, nil
 }
 
 // getPagination gets the page query parameter and returns, if the
