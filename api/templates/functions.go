@@ -44,28 +44,28 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 	funcMap := template.FuncMap{
 		// Env
 		//"appEnv": t.appEnv,
-		"isProduction": t.isProduction,
-		"isDebug":      t.isDebug,
+		"production": t.isProduction,
+		"debug":      t.isDebug,
 		// Header & Footer
 		"verbisHead":   t.getHeader,
 		"verbisFoot":   t.getFooter,
-		"getMetaTitle": t.getMetaTitle,
+		"metaTitle": t.getMetaTitle,
 		// Fields
-		"getField":    t.getField,
-		"getFields":   t.getFields,
+		"field":    t.getField,
+		"fields":   t.getFields,
 		"hasField":    t.hasField,
-		"getRepeater": t.getRepeater,
-		"getFlexible": t.getFlexible,
-		"getSubField": t.getSubField,
+		"repeater": t.getRepeater,
+		"flexible": t.getFlexible,
+		"subfield": t.getSubField,
 		// Auth
-		"isAuth":  t.isAuth,
-		"isAdmin": t.isAdmin,
+		"auth":  t.isAuth,
+		"admin": t.isAdmin,
 		// Posts
-		"getPost":           t.getPost,
-		"getPosts":          t.getPosts,
-		"getPaginationPage": t.getPaginationPage,
+		"post":           t.getPost,
+		"posts":          t.getPosts,
+		"paginationPage": t.getPaginationPage,
 		// Media
-		"getMedia": t.getMedia,
+		"media": t.getMedia,
 		// Paths
 		"assets":  t.assetsPath,
 		"storage": t.storagePath,
