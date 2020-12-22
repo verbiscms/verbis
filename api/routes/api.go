@@ -3,11 +3,11 @@ package routes
 import (
 	"github.com/ainsleyclark/verbis/api/http/csrf"
 	"github.com/ainsleyclark/verbis/api/http/handler"
+	respond "github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
-	respond "github.com/ainsleyclark/verbis/api/http/handler/api"
 )
 
 func api(s *server.Server, c *handler.Handler, m *models.Store) {

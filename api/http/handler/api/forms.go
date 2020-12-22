@@ -171,7 +171,6 @@ func (c *Forms) Delete(g *gin.Context) {
 	Respond(g, 200, "Successfully deleted form with ID: "+strconv.Itoa(id), nil)
 }
 
-
 //
 
 func (c *Forms) Send(g *gin.Context) {
@@ -179,7 +178,6 @@ func (c *Forms) Send(g *gin.Context) {
 
 	g.String(200, csrf.GetToken(g))
 	return
-
 
 	//form, err := c.store.Forms.GetByUUID(g.Param("uuid"))
 	//if errors.Code(err) == errors.NOTFOUND {

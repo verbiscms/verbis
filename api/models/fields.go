@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
+	log "github.com/sirupsen/logrus"
 
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -21,7 +22,7 @@ import (
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
 	GetFieldGroups() (*[]domain.FieldGroup, error)
-	GetLayout(p domain.Post, a domain.User, c *domain.Category) (*[]domain.FieldGroup, error)
+	GetLayout(p domain.Post, a domain.User, c *domain.Category) *[]domain.FieldGroup
 }
 
 // FieldsStore defines the data layer for Posts
@@ -49,7 +50,7 @@ func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 // GetLayout loops over all of the locations within the config json
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
-func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category) (*[]domain.FieldGroup, error) {
+func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category) *[]domain.FieldGroup {
 	var fg []domain.FieldGroup
 
 	// If the cache allows for caching of layouts & if the
@@ -58,14 +59,14 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 	if s.options.CacheServerFields {
 		cached, found := cache.Store.Get("field_layout_" + p.UUID.String())
 		if found {
-			return cached.(*[]domain.FieldGroup), nil
+			return cached.(*[]domain.FieldGroup)
 		}
 	}
 
 	// Obtain json files
 	fieldGroups, err := s.GetFieldGroups()
 	if err != nil {
-		return nil, err
+		log.WithFields(log.Fields{"error": err}).Error()
 	}
 
 	// Loop over the groups
@@ -167,7 +168,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 		cache.Store.Set("field_layout_"+p.UUID.String(), &fg, cache.RememberForever)
 	}
 
-	return &fg, nil
+	return &fg
 }
 
 // GetFieldGroups will loop over all of the json files that have been

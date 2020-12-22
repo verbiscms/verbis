@@ -77,11 +77,7 @@ func (c *Fields) Get(g *gin.Context) {
 		categories = nil
 	}
 
-	fields, err := c.store.Fields.GetLayout(post, author, categories)
-	if err != nil {
-		Respond(g, 500, errors.Message(err), err)
-		return
-	}
+	fields := c.store.Fields.GetLayout(post, author, categories)
 
 	Respond(g, 200, "Successfully obtained fields", fields)
 }
