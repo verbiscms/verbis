@@ -11,27 +11,27 @@ import (
 func Test_Auth(t *testing.T) {
 
 	tt := map[string]struct {
-		want  interface{}
+		want   interface{}
 		cookie string
-		mock func(m *mocks.UserRepository)
+		mock   func(m *mocks.UserRepository)
 	}{
 		"Logged In": {
-			want:  true,
+			want:   true,
 			cookie: "verbis-session=token",
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetByToken", "token").Return(domain.User{}, nil)
 			},
 		},
 		"No Cookie": {
-			want:  false,
+			want:   false,
 			cookie: "",
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetByToken", "token").Return(domain.User{}, nil)
 			},
 		},
 		"No User": {
-			want:  false,
-			cookie: "",
+			want:   false,
+			cookie: "verbis-session=token",
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
 			},
@@ -84,7 +84,7 @@ func Test_Admin(t *testing.T) {
 		},
 		"No User": {
 			want:   false,
-			cookie: "",
+			cookie: "verbis-session=token",
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
 			},
