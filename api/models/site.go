@@ -15,10 +15,6 @@ import (
 	"strings"
 )
 
-// Global Configuration, sets defaults to ensure that there are no
-// empty values within the themes config to prevent any errors.
-var ()
-
 // SiteRepository defines methods for Posts to interact with the database
 type SiteRepository interface {
 	GetGlobalConfig() *domain.Site
@@ -92,6 +88,10 @@ func (s *SiteStore) GetThemeConfig() (domain.ThemeConfig, error) {
 	return dc, nil
 }
 
+// getDefaultThemeConfig
+//
+// Global Configuration, sets defaults to ensure that there are no
+// empty values within the themes config to prevent any errors.
 func getDefaultThemeConfig() domain.ThemeConfig {
 	return domain.ThemeConfig{
 		Theme:      domain.Theme{},
@@ -138,6 +138,8 @@ func getDefaultThemeConfig() domain.ThemeConfig {
 	}
 }
 
+// GetTemplates
+//
 // Get all templates stored within the templates directory
 // Returns errors.INTERNAL if the template path is invalid.
 func (s *SiteStore) GetTemplates() (domain.Templates, error) {
@@ -174,6 +176,8 @@ func (s *SiteStore) GetTemplates() (domain.Templates, error) {
 	return t, nil
 }
 
+// GetLayouts
+//
 // Get all layouts stored within the layouts directory
 // Returns errors.INTERNAL if the layout path is invalid.
 func (s *SiteStore) GetLayouts() (domain.Layouts, error) {
@@ -210,7 +214,10 @@ func (s *SiteStore) GetLayouts() (domain.Layouts, error) {
 	return t, nil
 }
 
-// walkMatch Walk through root and return array of strings
+// walkMatch
+//
+// Walk through root and return array of strings
+// to the file path.
 func (s *SiteStore) walkMatch(root, pattern string) ([]string, error) {
 	const op = "SiteRepository.walkMatch"
 
@@ -233,7 +240,7 @@ func (s *SiteStore) walkMatch(root, pattern string) ([]string, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to find page templates", Err: err, Operation: op}
 	}
 
 	return matches, nil

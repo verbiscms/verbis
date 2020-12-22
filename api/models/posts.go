@@ -292,10 +292,7 @@ func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
 	category, err := s.categoriesModel.GetByPost(post.Id)
 
 	// Get the layout associated with the post
-	layout, err := s.fieldsModel.GetLayout(post, author, category)
-	if err != nil {
-		return domain.PostData{}, err
-	}
+	layout := s.fieldsModel.GetLayout(post, author, category)
 
 	pd := domain.PostData{
 		Post:   post,

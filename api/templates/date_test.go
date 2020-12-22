@@ -22,9 +22,9 @@ func Test_Date(t *testing.T) {
 func Test_DateInZone(t *testing.T) {
 	f := newTestSuite()
 
-	tt := map[string]struct{
-		zone  	string
-		time  	 func(tm time.Time) interface{}
+	tt := map[string]struct {
+		zone string
+		time func(tm time.Time) interface{}
 	}{
 		"time.Time": {
 			zone: "UTC",
@@ -92,9 +92,9 @@ func Test_DateInZone(t *testing.T) {
 func Test_Ago(t *testing.T) {
 	f := newTestSuite()
 
-	tt := map[string]struct{
-		input  	interface{}
-		want    string
+	tt := map[string]struct {
+		input interface{}
+		want  string
 	}{
 		"Default": {
 			input: "defaultval",
@@ -144,9 +144,9 @@ func Test_HTMLDateInZone(t *testing.T) {
 func Test_Duration(t *testing.T) {
 	f := newTestSuite()
 
-	tt := map[string]struct{
-		input  interface{}
-		want   string
+	tt := map[string]struct {
+		input interface{}
+		want  string
 	}{
 		"Minutes": {
 			input: "90",

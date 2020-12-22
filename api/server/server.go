@@ -50,7 +50,6 @@ func New(m models.OptionsRepository) *Server {
 	store := cookie.NewStore([]byte("verbis"))
 	r.Use(sessions.Sessions("csrf", store))
 
-
 	// Instantiate the server.
 	return server
 }
