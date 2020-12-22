@@ -32,10 +32,6 @@ func Test_Dict(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			f := newTestSuite()
-			if test.err.Error() != "" {
-				rune(t, f, test.tmpl, test.want, test.err)
-				return
-			}
 			runt(t, f, test.tmpl, test.want)
 		})
 	}

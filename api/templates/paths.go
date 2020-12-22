@@ -5,12 +5,12 @@ import "github.com/ainsleyclark/verbis/api/helpers/paths"
 // Obtain all of the paths in to variables
 // for testing.
 var (
-	basePath = paths.Base()
-	adminPath = paths.Admin()
-	apiPath = paths.Api()
+	basePath      = paths.Base()
+	adminPath     = paths.Admin()
+	apiPath       = paths.Api()
 	tmplThemePath = paths.Theme()
-	storagePath = paths.Storage()
-	uploadsPath = paths.Uploads()
+	storagePath   = paths.Storage()
+	uploadsPath   = paths.Uploads()
 )
 
 // basePath

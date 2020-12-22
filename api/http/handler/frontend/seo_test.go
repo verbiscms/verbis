@@ -77,7 +77,7 @@ func TestSEOController_Robots(t *testing.T) {
 			ErrorHandler: errorMock,
 		}
 
- 		seoError.Robots(g)
+		seoError.Robots(g)
 
 		assert.Equal(t, r.Body.String(), "")
 	})

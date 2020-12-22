@@ -51,17 +51,17 @@ func (c *Fields) Get(g *gin.Context) {
 	}
 
 	post := domain.Post{
-		Id:             0,
-		Slug:           "",
-		Title:          "",
-		Status:         "",
-		Resource:       &resource,
-		PageTemplate:   g.Query("page_template"),
-		Layout:         g.Query("layout"),
-		Fields:         nil,
+		Id:                0,
+		Slug:              "",
+		Title:             "",
+		Status:            "",
+		Resource:          &resource,
+		PageTemplate:      g.Query("page_template"),
+		Layout:            g.Query("layout"),
+		Fields:            nil,
 		CodeInjectionHead: nil,
 		CodeInjectionFoot: nil,
-		UserId:         user,
+		UserId:            user,
 	}
 
 	// Get the author associated with the post

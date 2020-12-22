@@ -24,11 +24,11 @@ func Test_Header(t *testing.T) {
 	}{
 		"Success": {
 			post: domain.Post{
-				Id:             123,
-				Title:          "title",
-				Resource:       nil,
-				PageTemplate:   "template",
-				Layout:         "layout",
+				Id:                123,
+				Title:             "title",
+				Resource:          nil,
+				PageTemplate:      "template",
+				Layout:            "layout",
 				CodeInjectionHead: &code,
 			},
 			options: domain.Options{},
@@ -53,9 +53,9 @@ func Test_Header(t *testing.T) {
 		},
 		"Not Public for Post": {
 			post: domain.Post{
-				SeoMeta:        domain.PostSeoMeta{
-					Seo:    &domain.PostSeo{
-						Public:         false,
+				SeoMeta: domain.PostSeoMeta{
+					Seo: &domain.PostSeo{
+						Public: false,
 					},
 				},
 			},
@@ -66,36 +66,36 @@ func Test_Header(t *testing.T) {
 		},
 		"Public": {
 			post: domain.Post{
-				SeoMeta:        domain.PostSeoMeta{
-					Seo:    &domain.PostSeo{
-						Public:         true,
-					},
-				},
-			},
-			options: domain.Options{SeoPublic: true},
-			site:    domain.Site{Url: "https://verbiscms.com"},
-			want: `<link rel="canonical" href="https://verbiscms.com" />`,
-		},
-		"Canonical": {
-			post: domain.Post{
-				SeoMeta:        domain.PostSeoMeta{
-					Seo:    &domain.PostSeo{
-						Canonical: &cannonical,
+				SeoMeta: domain.PostSeoMeta{
+					Seo: &domain.PostSeo{
 						Public: true,
 					},
 				},
 			},
 			options: domain.Options{SeoPublic: true},
 			site:    domain.Site{Url: "https://verbiscms.com"},
-			want: `<link rel="canonical" href="test" />`,
+			want:    `<link rel="canonical" href="https://verbiscms.com" />`,
+		},
+		"Canonical": {
+			post: domain.Post{
+				SeoMeta: domain.PostSeoMeta{
+					Seo: &domain.PostSeo{
+						Canonical: &cannonical,
+						Public:    true,
+					},
+				},
+			},
+			options: domain.Options{SeoPublic: true},
+			site:    domain.Site{Url: "https://verbiscms.com"},
+			want:    `<link rel="canonical" href="test" />`,
 		},
 		"Meta with Post Description": {
 			post: domain.Post{
-				SeoMeta:        domain.PostSeoMeta{
+				SeoMeta: domain.PostSeoMeta{
 					Meta: &domain.PostMeta{
 						Description: "description",
 					},
-					Seo:   &domain.PostSeo{
+					Seo: &domain.PostSeo{
 						Public: true,
 					},
 				},
@@ -107,11 +107,11 @@ func Test_Header(t *testing.T) {
 		},
 		"Meta with Global Description": {
 			post: domain.Post{
-				SeoMeta:        domain.PostSeoMeta{
+				SeoMeta: domain.PostSeoMeta{
 					Meta: &domain.PostMeta{
 						Description: "",
 					},
-					Seo:   &domain.PostSeo{
+					Seo: &domain.PostSeo{
 						Public: true,
 					},
 				},
@@ -123,7 +123,7 @@ func Test_Header(t *testing.T) {
 		},
 		"Meta with Facebook Post Description": {
 			post: domain.Post{
-				SeoMeta:        domain.PostSeoMeta{
+				SeoMeta: domain.PostSeoMeta{
 					Meta: &domain.PostMeta{
 						Title:       "",
 						Description: "",
@@ -135,7 +135,7 @@ func Test_Header(t *testing.T) {
 							Description: "description",
 						},
 					},
-					Seo:   &domain.PostSeo{
+					Seo: &domain.PostSeo{
 						Public: true,
 					},
 				},
@@ -147,7 +147,7 @@ func Test_Header(t *testing.T) {
 		},
 		"Meta with Twitter Post Description": {
 			post: domain.Post{
-				SeoMeta:        domain.PostSeoMeta{
+				SeoMeta: domain.PostSeoMeta{
 					Meta: &domain.PostMeta{
 						Title:       "",
 						Description: "",
@@ -159,7 +159,7 @@ func Test_Header(t *testing.T) {
 							Description: "description",
 						},
 					},
-					Seo:   &domain.PostSeo{
+					Seo: &domain.PostSeo{
 						Public: true,
 					},
 				},
@@ -199,25 +199,25 @@ func Test_WriteMeta(t *testing.T) {
 	tt := map[string]struct {
 		description string
 		publishedAt *time.Time
-		want string
+		want        string
 	}{
 		"With Description": {
 			publishedAt: nil,
 			description: "verbis",
-			want: `<meta name="description" content="verbis">`,
+			want:        `<meta name="description" content="verbis">`,
 		},
 		"Without Description": {
 			publishedAt: nil,
 			description: "",
-			want: ``,
+			want:        ``,
 		},
 		"With Time": {
 			publishedAt: &tm,
-			want: `<meta property="article:modified_time" content="1990-05-22 21:39:39 +0100 BST" />`,
+			want:        `<meta property="article:modified_time" content="1990-05-22 21:39:39 +0100 BST" />`,
 		},
 		"Nothing": {
 			publishedAt: nil,
-			want: ``,
+			want:        ``,
 		},
 	}
 
@@ -240,43 +240,43 @@ func Test_WriteMeta(t *testing.T) {
 func Test_WriteFacebook(t *testing.T) {
 
 	media := domain.Media{
-		Id:          1,
-		Url:         "/media/url",
+		Id:  1,
+		Url: "/media/url",
 	}
 	opts := domain.Options{
-		SiteTitle: "verbis",
+		SiteTitle:     "verbis",
 		GeneralLocale: "en-gb",
 	}
 
 	tt := map[string]struct {
-		title string
+		title       string
 		description string
-		mock func(m *mocks.MediaRepository)
-		options domain.Options
-		want string
+		mock        func(m *mocks.MediaRepository)
+		options     domain.Options
+		want        string
 	}{
 		"With Title & Description": {
-			title: "cms",
+			title:       "cms",
 			description: "verbis",
-			options: opts,
+			options:     opts,
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
 			},
 			want: `<meta property="og:type" content="website"><meta property="og:site_name" content="verbis"><meta property="og:locale" content="en-gb"><meta property="og:title" content="cms"><meta property="og:description" content="verbis"><meta property="og:image" content="/media/url">`,
 		},
 		"Without Title & Description": {
-			title: "",
+			title:       "",
 			description: "",
-			options: opts,
+			options:     opts,
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
 			},
 			want: ``,
 		},
 		"No Image": {
-			title: "cms",
+			title:       "cms",
 			description: "verbis",
-			options: opts,
+			options:     opts,
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
 			},
@@ -304,18 +304,18 @@ func Test_WriteFacebook(t *testing.T) {
 func Test_WriteTwitter(t *testing.T) {
 
 	media := domain.Media{
-		Id:          1,
-		Url:         "/media/url",
+		Id:  1,
+		Url: "/media/url",
 	}
 
 	tt := map[string]struct {
-		title string
+		title       string
 		description string
-		mock func(m *mocks.MediaRepository)
-		want string
+		mock        func(m *mocks.MediaRepository)
+		want        string
 	}{
 		"With Title & Description": {
-			title: "cms",
+			title:       "cms",
 			description: "verbis",
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
@@ -323,7 +323,7 @@ func Test_WriteTwitter(t *testing.T) {
 			want: `<meta name="twitter:card" content="summary"><meta name="twitter:title" content="cms"><meta name="twitter:description" content="cms"><meta name="twitter:image" content="/media/url">`,
 		},
 		"Without Title & Description": {
-			title: "",
+			title:       "",
 			description: "",
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
@@ -331,7 +331,7 @@ func Test_WriteTwitter(t *testing.T) {
 			want: ``,
 		},
 		"No Image": {
-			title: "cms",
+			title:       "cms",
 			description: "verbis",
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
@@ -359,24 +359,24 @@ func Test_WriteTwitter(t *testing.T) {
 func Test_MetaTitle(t *testing.T) {
 
 	tt := map[string]struct {
-		meta domain.PostMeta
+		meta    domain.PostMeta
 		options domain.Options
-		want string
+		want    string
 	}{
 		"With Post Title": {
-			meta: domain.PostMeta{Title:       "post-title-verbis"},
+			meta:    domain.PostMeta{Title: "post-title-verbis"},
 			options: domain.Options{},
-			want: "post-title-verbis",
+			want:    "post-title-verbis",
 		},
 		"With Options": {
-			meta: domain.PostMeta{Title:       ""},
+			meta:    domain.PostMeta{Title: ""},
 			options: domain.Options{MetaTitle: "post-title-verbis"},
-			want: "post-title-verbis",
+			want:    "post-title-verbis",
 		},
 		"None": {
-			meta: domain.PostMeta{Title:       ""},
+			meta:    domain.PostMeta{Title: ""},
 			options: domain.Options{MetaTitle: ""},
-			want: "",
+			want:    "",
 		},
 	}
 
@@ -385,7 +385,7 @@ func Test_MetaTitle(t *testing.T) {
 			f := newTestSuite()
 
 			f.post.Post = domain.Post{
-				SeoMeta:        domain.PostSeoMeta{
+				SeoMeta: domain.PostSeoMeta{
 					Meta: &test.meta,
 				},
 			}

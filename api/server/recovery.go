@@ -34,7 +34,7 @@ type Recovery struct {
 	Stack      []Stack
 	Highlight  int
 	config     config.Configuration
-	theme domain.ThemeConfig
+	theme      domain.ThemeConfig
 }
 
 // TemplateStack defines the stack used for the error page
