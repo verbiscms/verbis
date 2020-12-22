@@ -25,7 +25,6 @@ type Post struct {
 	PageTemplate string    `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
 	Layout       string    `db:"layout" json:"layout,omitempty" binding:"max=150"`
 	Fields       DBMap     `db:"fields" json:"fields"`
-	//IsArchive		bool						`db:"is_archive" json:"is_archive"`
 	CodeInjectHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 	CodeInjectFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
 	UserId         int         `db:"user_id" json:"-"`
@@ -138,25 +137,3 @@ func (m *PostSeo) Value() (driver.Value, error) {
 	}
 	return driver.Value(j), nil
 }
-
-//
-//type PostFields map[string]interface{}
-//
-//func (m PostFields) Scan(value interface{}) error {
-//	bytes, ok := value.([]byte)
-//	if !ok {
-//		return fmt.Errorf("scan not supported")
-//	}
-//	if bytes == nil || value == nil {
-//		return nil
-//	}
-//	return json.Unmarshal(bytes, &m)
-//}
-//
-//func (m PostFields) Value() (driver.Value, error) {
-//	j, err := json.Marshal(m)
-//	if err != nil {
-//		return nil, fmt.Errorf("could not unmarshal to domain.PostFields")
-//	}
-//	return driver.Value(j), nil
-//}
