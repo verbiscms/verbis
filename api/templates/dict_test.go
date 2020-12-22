@@ -1,23 +1,43 @@
 package templates
 
 import (
+	"fmt"
 	"testing"
 )
 
-func TestDic(t *testing.T) {
-	f := newTestSuite()
-	tpl := `{{ dict "test" 123 }}`
-	runt(t, f, tpl, "map[test:123]")
-}
+// Test_Dict - Test dict function
+func Test_Dict(t *testing.T) {
 
-func TestDic_Invalid(t *testing.T) {
-	f := newTestSuite()
-	tpl := `{{ dict "test" }}`
-	runt(t, f, tpl, "")
-}
+	tt := map[string]struct {
+		tmpl string
+		want string
+		err  error
+	}{
+		"Valid": {
+			tmpl: `{{ dict "test" 123 }}`,
+			want: "map[test:123]",
+			err: fmt.Errorf(""),
+		},
+		"Odd Value": {
+			tmpl: `{{ dict "test" }}`,
+			want: "",
+			err: fmt.Errorf("Invalid dict call"),
+		},
+		"Not a String": {
+			tmpl: `{{ dict 2 2 }}`,
+			want: "",
+			err: fmt.Errorf("Dict keys must be strings"),
+		},
+	}
 
-func TestDic_InvalidString(t *testing.T) {
-	f := newTestSuite()
-	tpl := `{{ dict 2 3 }}`
-	runt(t, f, tpl, "")
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			f := newTestSuite()
+			if test.err.Error() != "" {
+				rune(t, f, test.tmpl, test.want, test.err)
+				return
+			}
+			runt(t, f, test.tmpl, test.want)
+		})
+	}
 }

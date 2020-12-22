@@ -7,101 +7,101 @@ import (
 	"testing"
 )
 
-func TestIsAuth(t *testing.T) {
-	mockUsers := mocks.UserRepository{}
-	f := newTestSuite()
+// Test_Auth - Test is logged in function
+func Test_Auth(t *testing.T) {
 
-	f.store.User = &mockUsers
-	f.gin.Request.Header.Set("Cookie", "verbis-session=token")
-
-	mockUsers.On("GetByToken", "token").Return(domain.User{}, nil)
-
-	tpl := "{{ isAuth }}"
-	runt(t, f, tpl, true)
-}
-
-func TestIsAuth_NoCookie(t *testing.T) {
-	mockUsers := mocks.UserRepository{}
-
-	f := newTestSuite()
-	f.store.User = &mockUsers
-
-	tpl := "{{ isAuth }}"
-	runt(t, f, tpl, false)
-}
-
-func TestIsAuth_NoUser(t *testing.T) {
-	mockUsers := mocks.UserRepository{}
-
-	f := newTestSuite()
-	f.store.User = &mockUsers
-	f.gin.Request.Header.Set("Cookie", "verbis-session=token")
-
-	mockUsers.On("GetByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
-
-	tpl := "{{ isAuth }}"
-	runt(t, f, tpl, false)
-}
-
-func TestIsAdmin(t *testing.T) {
-	mockUsers := mocks.UserRepository{}
-
-	f := newTestSuite()
-	f.store.User = &mockUsers
-	f.gin.Request.Header.Set("Cookie", "verbis-session=token")
-
-	user := domain.User{
-		Id: 0,
-		Role: domain.UserRole{
-			Id: 6,
+	tt := map[string]struct {
+		want  interface{}
+		cookie string
+		mock func(m *mocks.UserRepository)
+	}{
+		"Logged In": {
+			want:  true,
+			cookie: "verbis-session=token",
+			mock: func(m *mocks.UserRepository) {
+				m.On("GetByToken", "token").Return(domain.User{}, nil)
+			},
+		},
+		"No Cookie": {
+			want:  false,
+			cookie: "",
+			mock: func(m *mocks.UserRepository) {
+				m.On("GetByToken", "token").Return(domain.User{}, nil)
+			},
+		},
+		"No User": {
+			want:  false,
+			cookie: "",
+			mock: func(m *mocks.UserRepository) {
+				m.On("GetByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
+			},
 		},
 	}
 
-	mockUsers.On("GetByToken", "token").Return(user, nil)
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			mock := mocks.UserRepository{}
+			f := newTestSuite()
 
-	tpl := "{{ isAuth }}"
-	runt(t, f, tpl, true)
+			test.mock(&mock)
+			f.store.User = &mock
+			f.gin.Request.Header.Set("Cookie", test.cookie)
+
+			tpl := "{{ auth }}"
+			runt(t, f, tpl, test.want)
+		})
+	}
 }
 
-func TestIsAdmin_NotAdmin(t *testing.T) {
-	mockUsers := mocks.UserRepository{}
+// Test_Admin - Test is admin function
+func Test_Admin(t *testing.T) {
 
-	f := newTestSuite()
-	f.store.User = &mockUsers
-	f.gin.Request.Header.Set("Cookie", "verbis-session=token")
-
-	user := domain.User{
-		Id: 0,
-		Role: domain.UserRole{
-			Id: 1,
+	tt := map[string]struct {
+		want   interface{}
+		cookie string
+		mock   func(m *mocks.UserRepository)
+	}{
+		"Is Admin": {
+			want:   true,
+			cookie: "verbis-session=token",
+			mock: func(m *mocks.UserRepository) {
+				m.On("GetByToken", "token").Return(domain.User{Id: 0, Role: domain.UserRole{Id: 6}}, nil)
+			},
+		},
+		"Not Admin": {
+			want:   false,
+			cookie: "verbis-session=token",
+			mock: func(m *mocks.UserRepository) {
+				m.On("GetByToken", "token").Return(domain.User{Id: 0, Role: domain.UserRole{Id: 1}}, nil)
+			},
+		},
+		"No Cookie": {
+			want:   false,
+			cookie: "",
+			mock: func(m *mocks.UserRepository) {
+				m.On("GetByToken", "token").Return(domain.User{}, nil)
+			},
+		},
+		"No User": {
+			want:   false,
+			cookie: "",
+			mock: func(m *mocks.UserRepository) {
+				m.On("GetByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
+			},
 		},
 	}
 
-	mockUsers.On("GetByToken", "token").Return(user, nil)
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			mock := mocks.UserRepository{}
+			f := newTestSuite()
 
-	tpl := "{{ isAdmin }}"
-	runt(t, f, tpl, false)
-}
+			test.mock(&mock)
+			f.store.User = &mock
+			f.gin.Request.Header.Set("Cookie", test.cookie)
 
-func TestIsAdmin_NoCookie(t *testing.T) {
-	mockUsers := mocks.UserRepository{}
-
-	f := newTestSuite()
-	f.store.User = &mockUsers
-
-	tpl := "{{ isAdmin }}"
-	runt(t, f, tpl, false)
-}
-
-func TestIsAdmin_NoUser(t *testing.T) {
-	mockUsers := mocks.UserRepository{}
-
-	f := newTestSuite()
-	f.store.User = &mockUsers
-	f.gin.Request.Header.Set("Cookie", "verbis-session=token")
-
-	mockUsers.On("GetByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
-
-	tpl := "{{ isAdmin }}"
-	runt(t, f, tpl, false)
+			tpl := "{{ admin }}"
+			runt(t, f, tpl, test.want)
+		})
+	}
 }

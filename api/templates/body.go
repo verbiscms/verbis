@@ -35,7 +35,7 @@ func (t *TemplateFunctions) body() string {
 	body.WriteString(fmt.Sprintf("page-layout-%s", cssValidString(p.Layout)))
 
 	// Logged in (e.g. logged-in) if auth
-	if t.isAuth() {
+	if t.auth() {
 		body.WriteString(" logged-in")
 	}
 

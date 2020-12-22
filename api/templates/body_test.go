@@ -44,7 +44,7 @@ func Test_Body(t *testing.T) {
 				Id:           1,
 				Title:        "title",
 				Resource:     &resource,
-				PageTemplate: "%$££@template*&/",
+				PageTemplate: "%$££@template*&",
 				Layout:       "layout",
 			},
 			cookie: false,

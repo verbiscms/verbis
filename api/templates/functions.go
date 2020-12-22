@@ -43,9 +43,8 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
 		// Env
-		//"appEnv": t.appEnv,
-		"production": t.isProduction,
-		"debug":      t.isDebug,
+		"env": t.env,
+		"expandEnv": t.expandEnv,
 		// Header & Footer
 		"verbisHead":   t.getHeader,
 		"verbisFoot":   t.getFooter,
@@ -58,8 +57,8 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"flexible": t.getFlexible,
 		"subfield": t.getSubField,
 		// Auth
-		"auth":  t.isAuth,
-		"admin": t.isAdmin,
+		"auth":  t.auth,
+		"admin": t.admin,
 		// Posts
 		"post":           t.getPost,
 		"posts":          t.getPosts,
