@@ -6,7 +6,11 @@ import (
 	"html/template"
 )
 
-// getFooter obtains all of the site and post wide Code Injection
+// footer
+//
+// Obtains all of the site and post wide Code Injection
+// Returns formatted HTML template for use after the
+// closing `</body>`.
 func (t *TemplateFunctions) footer() template.HTML {
 	var b bytes.Buffer
 

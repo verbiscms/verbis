@@ -14,15 +14,13 @@ var (
 	themePath = paths.Theme()
 )
 
-func errorTest() (string, error) {
-	return "", fmt.Errorf("baddy")
-}
-
-// partial - Takes in the name of a template relative to the theme
-// as well as any data to be passed. The template is executed and
-// panics if no file was found or the template could not be
-// executed.
-func (t *TemplateFunctions) partial(name string, data ...interface{}) template.HTML {
+// partial
+//
+// Takes in the name of a template relative to the theme as well
+// as any data to be passed. The template is executed and
+// returns an error if no file was found or the template
+// could not be executed.
+func (t *TemplateFunctions) partial(name string, data ...interface{}) (template.HTML, error) {
 	path := themePath + "/" + name
 
 	var context interface{}
@@ -33,20 +31,20 @@ func (t *TemplateFunctions) partial(name string, data ...interface{}) template.H
 	}
 
 	if !files.Exists(path) {
-		panic(fmt.Errorf("No file exists with the path: %s", name))
+		return "", fmt.Errorf("No file exists with the path: %s", name)
 	}
 
 	pathArr := strings.Split(path, "/")
 	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(t.GetFunctions()).ParseFiles(path)
 	if err != nil {
-		panic(fmt.Errorf("Unable to create a new partial file: %v", err))
+		return "", fmt.Errorf("Unable to execute partial file: %v", err)
 	}
 
 	var tpl bytes.Buffer
 	err = file.Execute(&tpl, context)
 	if err != nil {
-		panic(err)
+		return "", fmt.Errorf("Unable to execute partial file: %v", err)
 	}
 
-	return template.HTML(tpl.String())
+	return template.HTML(tpl.String()), nil
 }
