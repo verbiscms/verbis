@@ -3,7 +3,6 @@ package templates
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/csrf"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -75,7 +74,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"partial": t.partial,
 		// Dict
 		"dict": t.dict,
-		// Date
+		// Dates
 		"date": t.date,
 		"dateInZone": t.dateInZone,
 		"ago": t.ago,
@@ -102,7 +101,7 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 		"Type":  t.orderOfSearch(),
 		"Site":  t.store.Site.GetGlobalConfig(),
 		"Theme": theme.Theme,
-		"Token": csrf.GetToken(t.gin),
+		//"Token": csrf.GetToken(t.gin),
 		"Post": map[string]interface{}{
 			"Id":           t.post.Id,
 			"UUID":         t.post.UUID,

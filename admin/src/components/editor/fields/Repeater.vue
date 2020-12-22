@@ -42,6 +42,8 @@
 						===================== -->
 					<!-- Richtext -->
 					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldRichText>
+					<!-- Image -->
+					<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldImage>
 					<!-- =====================
 						Choice
 						===================== -->
@@ -92,6 +94,7 @@ import FieldTextarea from "@/components/editor/fields/Textarea";
 import FieldNumber from "@/components/editor/fields/Number";
 import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
+import FieldImage from "@/components/editor/fields/Image";
 import FieldRichText from "@/components/editor/fields/RichText";
 import FieldRepeater from "@/components/editor/fields/Repeater";
 import draggable from 'vuedraggable'
@@ -114,6 +117,7 @@ export default {
 		FieldEmail,
 		FieldRichText,
 		FieldRepeater,
+		FieldImage,
 		draggable,
 	},
 	data: () => ({
@@ -175,7 +179,7 @@ export default {
 <style scoped lang="scss">
 
 	.repeater {
-		border: 2px solid $grey-light;
+		border: 1px solid $grey-light;
 		margin-bottom: 1.6rem;
 		border-radius: 6px;
 
@@ -183,7 +187,7 @@ export default {
 		// =========================================================================
 
 		&-item {
-			border: 2px solid $grey-light;
+			border: 1px solid $grey-light;
 			padding: 10px;
 			margin-bottom: 1rem;
 			border-radius: 4px;

@@ -156,7 +156,6 @@ func (s *SiteStore) GetTemplates() (domain.Templates, error) {
 
 	for _, file := range files {
 		name := strings.Title(strings.ToLower(strings.Replace(file, "-", " ", -1)))
-		fmt.Println(name)
 		t := map[string]interface{}{
 			"key":  file,
 			"name": name,

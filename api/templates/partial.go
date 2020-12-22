@@ -32,8 +32,6 @@ func (t *TemplateFunctions) partial(name string, data ...interface{}) template.H
 		context = data
 	}
 
-	fmt.Println(path)
-
 	if !files.Exists(path) {
 		panic(fmt.Errorf("No file exists with the path: %s", name))
 	}
