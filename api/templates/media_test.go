@@ -19,7 +19,7 @@ func TestGetMedia(t *testing.T) {
 	f.store.Media = &mockMedia
 	mockMedia.On("GetById", 1).Return(mockMediaItem, nil)
 
-	tpl := "{{ getMedia 1 }}"
+	tpl := "{{ media 1 }}"
 	runt(t, f, tpl, mockMediaItem)
 }
 
@@ -32,6 +32,6 @@ func TestGetMedia_NoItem(t *testing.T) {
 
 	_ = f.getMedia(1)
 
-	tpl := "{{ getMedia 1 }}"
+	tpl := "{{ media 1 }}"
 	runt(t, f, tpl, nil)
 }

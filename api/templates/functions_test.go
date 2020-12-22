@@ -87,3 +87,16 @@ func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 
 	assert.Equal(t, got, b.String())
 }
+
+// CLEAN UP
+
+func rune(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, e error) {
+	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
+
+	var b bytes.Buffer
+	err := tt.Execute(&b, map[string]string{})
+	assert.Contains(t, err.Error(), e.Error())
+
+	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
+	assert.Equal(t, got, b.String())
+}
