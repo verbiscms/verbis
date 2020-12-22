@@ -23,7 +23,7 @@ func TestGetPost(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("GetById", 1).Return(mockPostItem, nil)
 
-	tpl := "{{ getPost 1 }}"
+	tpl := "{{ post 1 }}"
 	runt(t, f, tpl, mockPostItem)
 }
 
@@ -34,7 +34,7 @@ func TestGetPost_NoItem(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("No post item"))
 
-	tpl := "{{ getPost 1 }}"
+	tpl := "{{ post 1 }}"
 	runt(t, f, tpl, nil)
 }
 
@@ -53,7 +53,7 @@ func TestGetPosts_UnmarshalError(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("Get", p, "all").Return(nil, nil)
 
-	tpl := `{{ $query := dict "534534" 5345345 }}{{ getPosts $query }}`
+	tpl := `{{ $query := dict "534534" 5345345 }}{{ posts $query }}`
 	runt(t, f, tpl, "")
 }
 
@@ -72,7 +72,7 @@ func TestGetPosts_NilQuery(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("Get", p, "all").Return(nil, nil)
 
-	tpl := `{{ $query := dict "wrongval" 123 }}{{ getPosts $query }}`
+	tpl := `{{ $query := dict "wrongval" 123 }}{{ posts $query }}`
 	runt(t, f, tpl, "")
 }
 
@@ -91,7 +91,7 @@ func TestGetPosts_DefaultPage(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("Get", p, "all").Return(nil, nil)
 
-	tpl := `{{ $query := dict "limit" 15 }}{{ getPosts $query }}`
+	tpl := `{{ $query := dict "limit" 15 }}{{ posts $query }}`
 	runt(t, f, tpl, "")
 }
 
@@ -110,7 +110,7 @@ func TestGetPosts_DefaultLimit(t *testing.T) {
 	f.store.Posts = &mockPosts
 	mockPosts.On("Get", p, "all").Return([]domain.Post{}, nil)
 
-	tpl := `{{ $query := dict "page" 1 }}{{ getPosts $query }}`
+	tpl := `{{ $query := dict "page" 1 }}{{ posts $query }}`
 	runt(t, f, tpl, "")
 }
 
@@ -120,13 +120,13 @@ func TestGetPagination(t *testing.T) {
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get?page=123", nil)
 	f.gin = g
-	tpl := "{{ getPaginationPage }}"
+	tpl := "{{ paginationPage }}"
 	runt(t, f, tpl, 123)
 }
 
 func TestGetPagination_NoPage(t *testing.T) {
 	f := newTestSuite()
-	tpl := "{{ getPaginationPage }}"
+	tpl := "{{ paginationPage }}"
 	runt(t, f, tpl, 1)
 }
 
@@ -136,6 +136,6 @@ func TestGetPagination_ConvertString(t *testing.T) {
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get?page=wrongval", nil)
 	f.gin = g
-	tpl := "{{ getPaginationPage }}"
+	tpl := "{{ paginationPage }}"
 	runt(t, f, tpl, "1")
 }
