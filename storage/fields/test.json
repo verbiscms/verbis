@@ -1,22 +1,85 @@
 {
-	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc22",
-	"title": "Global Options",
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc94",
+	"title": "Hero",
 	"fields": [
 		{
-			"uuid": "32ca0ba0-c911-2eaa-b6e0-67dfd99e5275",
-			"label": "Test",
-			"name": "test",
-			"type": "richtext",
-			"instructions": "Richtext",
-			"required": true,
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5715",
+			"label": "Title",
+			"name": "hero_title",
+			"type": "textarea",
+			"instructions": "Add a title for the home page.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "line_break"
+			}
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
+			"label": "Lead",
+			"name": "hero_lead",
+			"type": "textarea",
+			"instructions": "Add lead text for the home page which will appear beneath the title.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4
+			}
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5782",
+			"label": "Logos",
+			"name": "repeater",
+			"type": "repeater",
+			"instructions": "Add logo's to appear at the bottom of the hero.",
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
 			},
 			"options": {
-				"default_value": "",
-				"allow_null": false
-			}
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": ""
+			},
+			"sub_fields": [
+				{
+					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5135",
+					"label": "Logo",
+					"name": "logo",
+					"type": "image",
+					"instructions": "Add a logo",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {
+						"tabs": "all",
+						"toolbar": "full",
+						"media_upload": 1
+					}
+				}
+			]
 		}
 	]
 }

@@ -2,7 +2,6 @@ package templates
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -92,8 +91,6 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 			Value:    "published",
 		},
 	}
-
-	fmt.Println(tmplParams)
 
 	postParams := http.Params{
 		Page:           tmplParams.Page,

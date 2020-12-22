@@ -299,7 +299,7 @@ export default {
 		}
 	},
 	mounted() {
-		console.log(this.getTheme.resources)
+		//console.log(this.getTheme.resources)
 	},
 	methods: {
 		/*

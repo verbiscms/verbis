@@ -63,9 +63,14 @@ export default {
 		},
 		value: {
 			get() {
-				return this.fields;
+				return this.fields.replaceAll('</p>', '').replaceAll('<p>', '').replaceAll('<br />', '\n');
 			},
 			set(value) {
+				if (this.getOptions.format === "paragraph") {
+					value = value.split('\n').map(str => `<p>${str}</p>`).join('\n');
+				} else if (this.getOptions.format === "line_break") {
+					value = value.replace(/(?:\r\n|\r|\n)/g, '<br />')
+				}
 				this.$emit("update:fields", value)
 			}
 		},
