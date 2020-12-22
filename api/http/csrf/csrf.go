@@ -45,7 +45,7 @@ type Options struct {
 	Secret        string
 	IgnoreMethods []string
 	ErrorFunc     gin.HandlerFunc
-	Routes 	      []string
+	Routes        []string
 	TokenGetter   func(c *gin.Context) string
 }
 

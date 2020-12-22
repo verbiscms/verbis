@@ -18,7 +18,6 @@ type TemplateFunctions struct {
 	store   *models.Store
 	options domain.Options
 	token   string
-	test    *domain.PostData
 }
 
 type TypeOfPage struct {
@@ -70,17 +69,19 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		// Paths
 		"assets":  t.assetsPath,
 		"storage": t.storagePath,
+		// Body
+		"body": t.body,
 		// Partials
 		"partial": t.partial,
 		// Dict
 		"dict": t.dict,
 		// Dates
-		"date": t.date,
-		"dateInZone": t.dateInZone,
-		"ago": t.ago,
-		"htmlDate": t.htmlDate,
+		"date":           t.date,
+		"dateInZone":     t.dateInZone,
+		"ago":            t.ago,
+		"htmlDate":       t.htmlDate,
 		"htmlDateInZone": t.htmlDateInZone,
-		"duration": t.duration,
+		"duration":       t.duration,
 		// Helpers
 		"fullUrl": t.getFullUrl,
 		"escape":  t.escape,

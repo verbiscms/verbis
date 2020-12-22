@@ -21,12 +21,13 @@ func (t *TemplateFunctions) getMedia(i interface{}) *domain.Media {
 		if p != nil {
 			id = *p
 		}
-	case *float64: {
-		p := i.(*float64)
-		if p != nil {
-			id = int(*p)
+	case *float64:
+		{
+			p := i.(*float64)
+			if p != nil {
+				id = int(*p)
+			}
 		}
-	}
 	case float64:
 		id = int(i.(float64))
 	}
