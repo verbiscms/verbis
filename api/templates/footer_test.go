@@ -12,19 +12,19 @@ func Test_Footer(t *testing.T) {
 	code := `codeinjection `
 
 	tt := map[string]struct {
-		post domain.Post
+		post    domain.Post
 		options domain.Options
-		want template.HTML
+		want    template.HTML
 	}{
 		"CodeInjection Options & Post": {
-			post: domain.Post{CodeInjectionFoot: &code},
+			post:    domain.Post{CodeInjectionFoot: &code},
 			options: domain.Options{CodeInjectionFoot: code},
-			want: "codeinjection codeinjection ",
+			want:    "codeinjection codeinjection ",
 		},
 		"CodeInjection Post": {
-			post: domain.Post{CodeInjectionFoot: &code},
+			post:    domain.Post{CodeInjectionFoot: &code},
 			options: domain.Options{},
-			want: "codeinjection ",
+			want:    "codeinjection ",
 		},
 	}
 

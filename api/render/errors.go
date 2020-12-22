@@ -11,7 +11,7 @@ type ErrorHandler interface {
 	NotFound(g *gin.Context)
 }
 
-type Errors struct{
+type Errors struct {
 	ThemeConfig domain.ThemeConfig
 }
 

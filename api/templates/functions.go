@@ -10,15 +10,15 @@ import (
 )
 
 type TemplateFunctions struct {
-	gin     *gin.Context
-	post    *domain.PostData
-	fields  map[string]interface{}
-	site    *domain.Site
-	store   *models.Store
-	options domain.Options
-	config config.Configuration
+	gin         *gin.Context
+	post        *domain.PostData
+	fields      map[string]interface{}
+	site        *domain.Site
+	store       *models.Store
+	options     domain.Options
+	config      config.Configuration
 	themeConfig domain.ThemeConfig
-	token   string
+	token       string
 }
 
 type TypeOfPage struct {
@@ -30,14 +30,14 @@ type TypeOfPage struct {
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateFunctions {
 
 	return &TemplateFunctions{
-		gin:     g,
-		post:    p,
-		fields:  p.Fields,
-		site:    s.Site.GetGlobalConfig(),
-		store:   s,
-		options: s.Options.GetStruct(),
+		gin:         g,
+		post:        p,
+		fields:      p.Fields,
+		site:        s.Site.GetGlobalConfig(),
+		store:       s,
+		options:     s.Options.GetStruct(),
 		themeConfig: s.Site.GetThemeConfig(),
-		config: c,
+		config:      c,
 	}
 }
 
@@ -45,13 +45,21 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData, c config.
 func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
-		// Env
-		"env":       t.env,
-		"expandEnv": t.expandEnv,
-		// Header & Footer
-		"verbisHead": t.header,
-		"verbisFoot": t.footer,
-		"metaTitle":  t.metaTitle,
+		// Auth
+		"auth":  t.auth,
+		"admin": t.admin,
+		// Body
+		"body": t.body,
+		// Categories
+		// Date & Time
+		"date":           t.date,
+		"dateInZone":     t.dateInZone,
+		"ago":            t.ago,
+		"htmlDate":       t.htmlDate,
+		"htmlDateInZone": t.htmlDateInZone,
+		"duration":       t.duration,
+		// Dict
+		"dict": t.dict,
 		// Fields
 		"field":    t.getField,
 		"fields":   t.getFields,
@@ -59,41 +67,40 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"repeater": t.getRepeater,
 		"flexible": t.getFlexible,
 		"subfield": t.getSubField,
-		// Auth
-		"auth":  t.auth,
-		"admin": t.admin,
+		// Header & Footer
+		"verbisHead": t.header,
+		"verbisFoot": t.footer,
+		"metaTitle":  t.metaTitle,
+		// Media
+		"media": t.getMedia,
+		// OS
+		"env":       t.env,
+		"expandEnv": t.expandEnv,
+		// Partials
+		"partial": t.partial,
 		// Posts
 		"post":           t.getPost,
 		"posts":          t.getPosts,
 		"paginationPage": t.getPaginationPage,
-		// Media
-		"media": t.getMedia,
 		// Paths
-		"basePath":  t.basePath,
-		"adminPath":  t.adminPath,
-		"apiPath":  t.apiPath,
-		"themePath":  t.themePath,
-		"uploadsPath":  t.uploadsPath,
-		"assetsPath":  t.assetsPath,
-		"storagePath": t.storagePath,
+		"basePath":      t.basePath,
+		"adminPath":     t.adminPath,
+		"apiPath":       t.apiPath,
+		"themePath":     t.themePath,
+		"uploadsPath":   t.uploadsPath,
+		"assetsPath":    t.assetsPath,
+		"storagePath":   t.storagePath,
 		"templatesPath": t.templatesPath,
-		"layoutsPath": t.layoutsPath,
-		// Body
-		"body": t.body,
-		// Partials
-		"partial": t.partial,
-		// Dict
-		"dict": t.dict,
-		// Dates
-		"date":           t.date,
-		"dateInZone":     t.dateInZone,
-		"ago":            t.ago,
-		"htmlDate":       t.htmlDate,
-		"htmlDateInZone": t.htmlDateInZone,
-		"duration":       t.duration,
+		"layoutsPath":   t.layoutsPath,
+		// Safe
+		"safeHTML":     t.safeHTML,
+		"safeHTMLAttr": t.safeHTMLAttr,
+		"safeCSS":      t.safeCSS,
+		"safeJS":       t.safeJS,
+		"safeJSStr":    t.safeJSStr,
+		"safeURL":      t.safeUrl,
 		// Helpers
 		"fullUrl": t.getFullUrl,
-		"escape":  t.escape,
 	}
 
 	return funcMap

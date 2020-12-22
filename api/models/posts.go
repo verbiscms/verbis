@@ -334,20 +334,20 @@ func (s *PostStore) FormatMultiple(posts []domain.Post) ([]domain.PostData, erro
 // convertToPost converts are post create into a standard post
 func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 	return domain.Post{
-		Id:             c.Id,
-		UUID:           c.UUID,
-		Slug:           c.Slug,
-		Title:          c.Title,
-		Status:         c.Status,
-		Resource:       c.Resource,
-		PageTemplate:   c.PageTemplate,
-		Fields:         c.Fields,
+		Id:                c.Id,
+		UUID:              c.UUID,
+		Slug:              c.Slug,
+		Title:             c.Title,
+		Status:            c.Status,
+		Resource:          c.Resource,
+		PageTemplate:      c.PageTemplate,
+		Fields:            c.Fields,
 		CodeInjectionHead: c.CodeInjectionHead,
 		CodeInjectionFoot: c.CodeInjectionFoot,
-		UserId:         c.UserId,
-		CreatedAt:      c.CreatedAt,
-		UpdatedAt:      c.UpdatedAt,
-		SeoMeta:        c.SeoMeta,
+		UserId:            c.UserId,
+		CreatedAt:         c.CreatedAt,
+		UpdatedAt:         c.UpdatedAt,
+		SeoMeta:           c.SeoMeta,
 	}
 }
 

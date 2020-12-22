@@ -11,9 +11,9 @@ import (
 // Global Configuration, sets defaults to ensure that there are no
 // empty values within the configuration to prevent any errors.
 type Configuration struct {
-	Admin    admin
-	Media    media
-	Logs     logs
+	Admin admin
+	Media media
+	Logs  logs
 }
 
 // Admin

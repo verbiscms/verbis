@@ -11,13 +11,13 @@ type Site struct {
 
 // Theme
 type ThemeConfig struct {
-	Theme      Theme               `yaml:"theme" json:"theme"`
-	Resources  map[string]Resource `yaml:"resources" json:"resources"`
-	AssetsPath string              `yaml:"assets_path" json:"assets_path"`
-	FileExtension string `yaml:"file_extension" json:"file_extension"`
-	TemplateDir   string `yaml:"template_dir" json:"template_dir"`
-	LayoutDir     string `yaml:"layout_dir" json:"layout_dir"`
-	Editor     Editor              `yaml:"editor" json:"editor"`
+	Theme         Theme               `yaml:"theme" json:"theme"`
+	Resources     map[string]Resource `yaml:"resources" json:"resources"`
+	AssetsPath    string              `yaml:"assets_path" json:"assets_path"`
+	FileExtension string              `yaml:"file_extension" json:"file_extension"`
+	TemplateDir   string              `yaml:"template_dir" json:"template_dir"`
+	LayoutDir     string              `yaml:"layout_dir" json:"layout_dir"`
+	Editor        Editor              `yaml:"editor" json:"editor"`
 }
 
 type Theme struct {

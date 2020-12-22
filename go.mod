@@ -65,6 +65,7 @@ require (
 	github.com/sirupsen/logrus v1.7.0
 	github.com/slayer/autorestart v0.0.0-20170706172704-7bc8d250279b // indirect
 	github.com/spf13/afero v1.3.5 // indirect
+	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.1
 	github.com/stretchr/testify v1.6.1
 	github.com/tdewolff/minify/v2 v2.9.10
