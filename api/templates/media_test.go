@@ -20,8 +20,8 @@ func Test_GetMedia(t *testing.T) {
 
 	tt := map[string]struct {
 		input interface{}
-		mock func(m *mocks.MediaRepository)
-		want interface{}
+		mock  func(m *mocks.MediaRepository)
+		want  interface{}
 	}{
 		"Success": {
 			input: 1,

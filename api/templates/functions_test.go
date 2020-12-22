@@ -64,7 +64,8 @@ func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, 
 	err := tt.Execute(&b, data)
 
 	if err != nil {
-		fmt.Println(err)
+		assert.Contains(t, err.Error(), expect.(string))
+		return
 	}
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
@@ -82,23 +83,11 @@ func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 	err := tt.Execute(&b, map[string]string{})
 
 	if err != nil {
-		fmt.Println(err)
+		assert.Contains(t, err.Error(), expect.(string))
+		return
 	}
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
 
-	assert.Equal(t, got, b.String())
-}
-
-// CLEAN UP
-
-func rune(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, e error) {
-	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
-
-	var b bytes.Buffer
-	err := tt.Execute(&b, map[string]string{})
-	assert.Contains(t, err.Error(), e.Error())
-
-	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
 	assert.Equal(t, got, b.String())
 }

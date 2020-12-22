@@ -28,10 +28,10 @@ type SEO struct {
 // newSEO - Construct
 func NewSEO(m *models.Store, config config.Configuration) *SEO {
 	return &SEO{
-		store:        m,
-		config:       config,
-		options:      m.Options.GetStruct(),
-		sitemap:      render.NewSitemap(m),
+		store:   m,
+		config:  config,
+		options: m.Options.GetStruct(),
+		sitemap: render.NewSitemap(m),
 		ErrorHandler: &render.Errors{
 			ThemeConfig: m.Site.GetThemeConfig(),
 		},

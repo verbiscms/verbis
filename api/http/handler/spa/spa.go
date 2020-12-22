@@ -25,7 +25,7 @@ type SPA struct {
 // newSpa - Construct
 func NewSpa(m *models.Store, config config.Configuration) *SPA {
 	return &SPA{
-		config:       config,
+		config: config,
 		ErrorHandler: &render.Errors{
 			ThemeConfig: m.Site.GetThemeConfig(),
 		},
