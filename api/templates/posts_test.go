@@ -3,6 +3,7 @@ package templates
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	vhttp "github.com/ainsleyclark/verbis/api/http"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -10,31 +11,67 @@ import (
 	"testing"
 )
 
-func TestGetPost(t *testing.T) {
-	mockPosts := mocks.PostsRepository{}
-	f := newTestSuite()
+func Test_GetPost(t *testing.T) {
 
-	mockPostItem := domain.Post{
+	post := domain.Post{
 		Id:    1,
 		Title: "test title",
+		UserId: 1,
 	}
 
-	f.store.Posts = &mockPosts
-	mockPosts.On("GetById", 1).Return(mockPostItem, nil)
+	author := &domain.PostAuthor{}
+	category := &domain.PostCategory{}
 
-	tpl := "{{ post 1 }}"
-	runt(t, f, tpl, mockPostItem)
-}
+	viewData := ViewPost{
+		Author:   author,
+		Category: category,
+		Post:     post,
+	}
 
-func TestGetPost_NoItem(t *testing.T) {
-	mockPosts := mocks.PostsRepository{}
-	f := newTestSuite()
+	tt := map[string]struct {
+		input interface{}
+		mock  func(m *mocks.PostsRepository)
+		want  interface{}
+	}{
+		"Success": {
+			input: 1,
+			mock: func(m *mocks.PostsRepository) {
+				m.On("GetById", 1).Return(post, nil)
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
+			},
+			want: viewData,
+		},
+		"Format Error": {
+			input: 1,
+			mock: func(m *mocks.PostsRepository) {
+				m.On("GetById", 1).Return(post, nil)
+				m.On("Format", post).Return(domain.PostData{}, fmt.Errorf("error"))
+			},
+			want: nil,
+		},
+		"Not Found": {
+			input: 1,
+			mock: func(m *mocks.PostsRepository) {
+				m.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
+			},
+			want: nil,
+		},
+	}
 
-	f.store.Posts = &mockPosts
-	mockPosts.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("No post item"))
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			f := newTestSuite()
+			postsMock := mocks.PostsRepository{}
 
-	tpl := "{{ post 1 }}"
-	runt(t, f, tpl, nil)
+			test.mock(&postsMock)
+			f.store.Posts = &postsMock
+
+			tpl := `{{ post .PostId }}`
+
+			runtv(t, f, tpl, test.want, map[string]interface{}{"PostId": test.input})
+		})
+	}
 }
 
 func TestGetPosts_UnmarshalError(t *testing.T) {

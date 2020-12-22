@@ -10,7 +10,7 @@ import (
 
 type PostData struct {
 	Post     `json:"post"`
-	Author   PostAuthor    `json:"author"`
+	Author   *PostAuthor    `json:"author"`
 	Category *PostCategory `json:"category"`
 	Layout   *[]FieldGroup `json:"layout"`
 }
