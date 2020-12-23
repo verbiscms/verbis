@@ -69,6 +69,9 @@ Generates a random alpha string using `a-zA-Z` from a given length.
 {{ randAlpha 20 }}
 ```
 
+This would produce something similar to:
+`EsRZeHmmFcOpsyWrNCeT`
+
 ___
 
 ## randAlphaNum
@@ -90,5 +93,8 @@ Generates a random alphanumeric string using `a-zA-Z0-9` from a given length.
 ```gotemplate
 {{ randAlphaNum 20 }}
 ```
+
+This would produce something similar to:
+`QO57mDsdThGb59ewu1lK`
 
 ___
