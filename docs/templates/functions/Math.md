@@ -1,0 +1,238 @@
+# Math
+
+
+___
+
+## add
+
+Add two or more numbers together.
+
+### Accepts: 
+
+`numbers ...interface{}` Two or more values to be added.
+
+### Returns:
+
+`int64` The sum of the input.
+
+### Examples:
+
+**Add 2 numbers together results in `4`**
+
+```gotemplate
+{{ add 2 2 }}
+```
+
+**Add 3 numbers together results in `10`**
+
+```gotemplate
+{{ add 2 4 4 }}
+```
+___
+
+## subtract
+
+Subtract one value from another.
+
+### Accepts: 
+
+`a, b interface{}` The values to be subtracted 
+
+### Returns:
+
+`int64` The subtracted value.
+
+### Examples:
+
+**Subtract, results in `100`**
+
+```gotemplate
+{{ subtract 100 10 }}
+```
+
+___
+
+## divide
+
+Divide one value into another.
+
+### Accepts: 
+
+`a, b interface{}` The values to be divided 
+
+### Returns:
+
+`int64` The divided value.
+
+### Examples:
+
+**Divide, results in `4`**
+
+```gotemplate
+{{ divide 16 4 }}
+```
+
+___
+
+## multiply
+
+Multiply two or more numbers together.
+
+### Accepts: 
+
+`numbers ...interface{}` Two or more values to be multiplied.
+
+### Returns:
+
+`int64` The multiplied value.
+
+### Examples:
+
+**Multiply 2 numbers together results in `16`**
+
+```gotemplate
+{{ add 4 4 }}
+```
+
+**Multiply 3 numbers together results in `8`**
+
+```gotemplate
+{{ add 2 2 2 }}
+```
+
+___
+
+## mod
+
+Calculates the remainder after dividing one number by another.
+
+### Accepts: 
+
+`a, b interface{}` The values to be reduced to a range. 
+
+### Returns:
+
+`int64` The remainder value.
+
+### Examples:
+
+**Obtain the remainder, results in `1`**
+
+```gotemplate
+{{ mod 10 9 }}
+```
+
+___
+
+## round
+
+Round to the nearest integer, rounding halfway from zero.
+
+### Accepts: 
+
+`number interface{}` The number to be rounded.
+
+### Returns:
+
+`int64` The rounded value.
+
+### Examples:
+
+**Round a float value (down), results in `10`**
+
+```gotemplate
+{{ round 10.2 }}
+```
+
+**Round a float value (up), results in `11`**
+
+```gotemplate
+{{ round 10.6 }}
+```
+
+___
+
+## ceil
+
+Ceil rounds a number up to the next largest integer.
+
+### Accepts: 
+
+`number interface{}` The number to be rounded.
+
+### Returns:
+
+`float64` The rounded value.
+
+### Examples:
+
+**Ceil a float value, results in `10`**
+
+```gotemplate
+{{ ceil 9.32 }}
+```
+___
+
+## floor
+
+Floor rounds a number down to the next largest integer.
+
+### Accepts: 
+
+`number interface{}` The number to be rounded.
+
+### Returns:
+
+`float64` The rounded value.
+
+### Examples:
+
+**Ceil a float value, results in `9`**
+
+```gotemplate
+{{ floor 9.62 }}
+```
+
+___
+
+## min
+
+Min returns the lowest integer in a slice of numbers.
+
+### Accepts: 
+
+`numbers interface{}` The slice of integers.
+
+### Returns:
+
+`int64` The lowest value.
+
+### Examples:
+
+**Obtain the smallest number, results in `1`**
+
+```gotemplate
+{{ min 20 1 100 }}
+```
+
+___
+
+## max
+
+Max returns the highest integer in a slice of numbers.
+
+### Accepts: 
+
+`numbers interface{}` The slice of integers.
+
+### Returns:
+
+`int64` The highest value.
+
+### Examples:
+
+**Obtain the largest number, results in `100`**
+
+```gotemplate
+{{ max 20 1 100 }}
+```
