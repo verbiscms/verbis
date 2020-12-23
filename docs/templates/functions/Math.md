@@ -18,13 +18,13 @@ Add two or more numbers together.
 
 ### Examples:
 
-**Adding 2 numbers together, results in `4`**
+**Adding 2 numbers together results in `4`**
 
 ```gotemplate
 {{ add 2 2 }}
 ```
 
-**Adding 3 numbers together, results in `10`**
+**Adding 3 numbers together results in `10`**
 
 ```gotemplate
 {{ add 2 4 4 }}
@@ -45,7 +45,7 @@ Subtract one value from another.
 
 ### Examples:
 
-**Subtracting, results in `100`**
+**Subtracting results in `100`**
 
 ```gotemplate
 {{ subtract 100 10 }}
@@ -67,7 +67,7 @@ Divide one value into another.
 
 ### Examples:
 
-**Dividing, results in `4`**
+**Dividing results in `4`**
 
 ```gotemplate
 {{ divide 16 4 }}
@@ -117,7 +117,7 @@ Calculates the remainder after dividing one number by another.
 
 ### Examples:
 
-**Obtain the remainder, results in `1`**
+**Obtain the remainder results in `1`**
 
 ```gotemplate
 {{ mod 10 9 }}
@@ -139,13 +139,13 @@ Round to the nearest integer, rounding halfway from zero.
 
 ### Examples:
 
-**Rounding a float value (down), results in `10`**
+**Rounding a float value (down) results in `10`**
 
 ```gotemplate
 {{ round 10.2 }}
 ```
 
-**Rounding a float value (up), results in `11`**
+**Rounding a float value (up) results in `11`**
 
 ```gotemplate
 {{ round 10.6 }}
@@ -167,7 +167,7 @@ Ceil rounds a number up to the next largest integer.
 
 ### Examples:
 
-**Ceil a float value, results in `10`**
+**Ceil a float value results in `10`**
 
 ```gotemplate
 {{ ceil 9.32 }}
@@ -188,7 +188,7 @@ Floor rounds a number down to the next largest integer.
 
 ### Examples:
 
-**Ceil a float value, results in `9`**
+**Ceil a float value results in `9`**
 
 ```gotemplate
 {{ floor 9.62 }}
@@ -210,7 +210,7 @@ Min returns the lowest integer in a slice of numbers.
 
 ### Examples:
 
-**Obtain the smallest number, results in `1`**
+**Obtain the smallest number results in `1`**
 
 ```gotemplate
 {{ min 20 1 100 }}
@@ -232,7 +232,7 @@ Max returns the highest integer in a slice of numbers.
 
 ### Examples:
 
-**Obtain the largest number, results in `100`**
+**Obtain the largest number results in `100`**
 
 ```gotemplate
 {{ max 20 1 100 }}
