@@ -58,16 +58,28 @@ func newTestSuite(args ...string) *TemplateFunctions {
 	}, p, config.Configuration{})
 }
 
+// execute
+//
+// Executes the templates with functions and returns the resulting
+// html or an error if there was a problem executing the template.
+func execute(tf *TemplateFunctions, tpl string, data interface{}) (string, error) {
+	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
+
+	var b bytes.Buffer
+	err := tt.Execute(&b, data)
+	if err != nil {
+		return "", err
+	}
+
+	return b.String(), nil
+}
+
 // runtv
 //
 // Run the template test by executing the tpl given
 // with data.
 func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, data interface{}) {
-	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
-
-	var b bytes.Buffer
-	err := tt.Execute(&b, data)
-
+	b, err := execute(tf, tpl, data)
 	if err != nil {
 		assert.Contains(t, err.Error(), expect.(string))
 		return
@@ -75,18 +87,14 @@ func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, 
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
 
-	assert.Equal(t, got, b.String())
+	assert.Equal(t, got, b)
 }
 
 // runt
 //
 //Run the template test by executing the tpl given
 func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
-	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
-
-	var b bytes.Buffer
-	err := tt.Execute(&b, map[string]string{})
-
+	b, err := execute(tf, tpl, map[string]string{})
 	if err != nil {
 		assert.Contains(t, err.Error(), expect.(string))
 		return
@@ -94,7 +102,7 @@ func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
 
-	assert.Equal(t, got, b.String())
+	assert.Equal(t, got, b)
 }
 
 func Test_GetData(t *testing.T) {
