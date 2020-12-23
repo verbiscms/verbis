@@ -1,5 +1,6 @@
 # Math
 
+Hello
 
 ___
 
@@ -17,13 +18,13 @@ Add two or more numbers together.
 
 ### Examples:
 
-**Add 2 numbers together results in `4`**
+**Adding 2 numbers together, results in `4`**
 
 ```gotemplate
 {{ add 2 2 }}
 ```
 
-**Add 3 numbers together results in `10`**
+**Adding 3 numbers together, results in `10`**
 
 ```gotemplate
 {{ add 2 4 4 }}
@@ -44,7 +45,7 @@ Subtract one value from another.
 
 ### Examples:
 
-**Subtract, results in `100`**
+**Subtracting, results in `100`**
 
 ```gotemplate
 {{ subtract 100 10 }}
@@ -66,7 +67,7 @@ Divide one value into another.
 
 ### Examples:
 
-**Divide, results in `4`**
+**Dividing, results in `4`**
 
 ```gotemplate
 {{ divide 16 4 }}
@@ -88,13 +89,13 @@ Multiply two or more numbers together.
 
 ### Examples:
 
-**Multiply 2 numbers together results in `16`**
+**Multiplying 2 numbers together results in `16`**
 
 ```gotemplate
 {{ add 4 4 }}
 ```
 
-**Multiply 3 numbers together results in `8`**
+**Multiplying 3 numbers together results in `8`**
 
 ```gotemplate
 {{ add 2 2 2 }}
@@ -138,13 +139,13 @@ Round to the nearest integer, rounding halfway from zero.
 
 ### Examples:
 
-**Round a float value (down), results in `10`**
+**Rounding a float value (down), results in `10`**
 
 ```gotemplate
 {{ round 10.2 }}
 ```
 
-**Round a float value (up), results in `11`**
+**Rounding a float value (up), results in `11`**
 
 ```gotemplate
 {{ round 10.6 }}
