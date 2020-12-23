@@ -1,6 +1,7 @@
 # Math
 
-Hello
+The math functions can handle values within the range of integer and float types allowing easy integration into templates.
+The functions below mostly operate on a `int64` values which are returned from the function.
 
 ___
 
