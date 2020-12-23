@@ -33,7 +33,7 @@ func (t *TemplateFunctions) body() string {
 	body.WriteString(fmt.Sprintf("page-template-%s ", cssValidString(p.PageTemplate)))
 
 	// Layout (e.g page-layout-test)
-	body.WriteString(fmt.Sprintf("page-layout-%s", cssValidString(p.Layout)))
+	body.WriteString(fmt.Sprintf("page-layout-%s", cssValidString(p.PageLayout)))
 
 	// Logged in (e.g. logged-in) if auth
 	if t.auth() {

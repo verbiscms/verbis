@@ -107,7 +107,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 }
 
 // GetData - Returns all the necessary data for template usage.
-func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
+func (t *TemplateFunctions) GetData() map[string]interface{} {
 
 	theme := t.store.Site.GetThemeConfig()
 
@@ -124,7 +124,7 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 			"Status":       t.post.Status,
 			"Resource":     t.post.Resource,
 			"PageTemplate": t.post.PageTemplate,
-			"Layout":       t.post.Layout,
+			"PageLayout":   t.post.PageLayout,
 			"PublishedAt":  t.post.PublishedAt,
 			"UpdatedAt":    t.post.UpdatedAt,
 			"CreatedAt":    t.post.CreatedAt,
@@ -148,7 +148,7 @@ func (t *TemplateFunctions) GetData() (map[string]interface{}, error) {
 		},
 	}
 
-	return data, nil
+	return data
 }
 
 func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
