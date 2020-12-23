@@ -3,6 +3,7 @@ package templates
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"html/template"
@@ -21,6 +22,8 @@ var (
 // returns an error if no file was found or the template
 // could not be executed.
 func (t *TemplateFunctions) partial(name string, data ...interface{}) (template.HTML, error) {
+	const op = "Templates.partial"
+
 	path := themePath + "/" + name
 
 	var context interface{}
@@ -31,13 +34,13 @@ func (t *TemplateFunctions) partial(name string, data ...interface{}) (template.
 	}
 
 	if !files.Exists(path) {
-		return "", fmt.Errorf("No file exists with the path: %s", name)
+		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Partial file does not exist", Operation: op, Err: fmt.Errorf("no file exists with the path: %s", name)}
 	}
 
 	pathArr := strings.Split(path, "/")
 	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(t.GetFunctions()).ParseFiles(path)
 	if err != nil {
-		return "", fmt.Errorf("Unable to execute partial file: %v", err)
+		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to parse partial file", Operation: op, Err: err}
 	}
 
 	var tpl bytes.Buffer

@@ -33,7 +33,9 @@ func (t *TemplateFunctions) getField(field string, id ...int) interface{} {
 	return val
 }
 
-// checkFieldType checks to see if the field passed to it was a post, or image.
+// checkFieldType
+//
+// Checks to see if the field passed to it was a post, or image.
 // If it was get from the getMedia or getPost functions and assign the new
 // value
 func (t *TemplateFunctions) checkFieldType(field interface{}) interface{} {
@@ -74,7 +76,9 @@ func (t *TemplateFunctions) checkFieldType(field interface{}) interface{} {
 	return field
 }
 
-// getFields - Get all fields for the given template.
+// getFields
+//
+// Get all fields for the given template.
 func (t *TemplateFunctions) getFields(id ...int) map[string]interface{} {
 	fields := t.fields
 	if len(id) > 0 {
@@ -88,7 +92,9 @@ func (t *TemplateFunctions) getFields(id ...int) map[string]interface{} {
 	return fields
 }
 
-// hasField - Determine if the given field exists
+// hasField
+//
+// Determine if the given field exists
 func (t *TemplateFunctions) hasField(field string) bool {
 	if _, found := t.fields[field]; found {
 		return true
@@ -96,7 +102,9 @@ func (t *TemplateFunctions) hasField(field string) bool {
 	return false
 }
 
-// getRepeater - Accepts a field and checks to see if the repeater exists.
+// getRepeater
+//
+// Accepts a field and checks to see if the repeater exists.
 // If it exists, build an array of map[string]interface to return to
 // the template.
 func (t *TemplateFunctions) getRepeater(field string) []map[string]interface{} {
@@ -114,9 +122,11 @@ func (t *TemplateFunctions) getRepeater(field string) []map[string]interface{} {
 	return nil
 }
 
-// getFlexible - Accepts a field and checks to see if the flexible content
-// exists. build an array of map[string]interface to return to
-//// the template.
+// getFlexible
+//
+// Accepts a field and checks to see if the flexible content
+// exists. Build an array of map[string]interface to return to
+// the template.
 func (t *TemplateFunctions) getFlexible(field string) []map[string]interface{} {
 	if _, found := t.fields[field]; found {
 		fields, ok := t.fields[field].([]interface{})
@@ -132,7 +142,9 @@ func (t *TemplateFunctions) getFlexible(field string) []map[string]interface{} {
 	return nil
 }
 
-// getSubField - Looks for a given field from the input & compares against
+// getSubField
+//
+// Looks for a given field from the input & compares against
 // the layout. Returns the sub field value in the layout if found.
 func (t *TemplateFunctions) getSubField(field string, layout map[string]interface{}) interface{} {
 	block := layout["fields"]

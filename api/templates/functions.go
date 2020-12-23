@@ -100,7 +100,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"safeJSStr":    t.safeJSStr,
 		"safeURL":      t.safeUrl,
 		// Helpers
-		"fullUrl": t.getFullUrl,
+		//"fullUrl": t.getFullUrl,
 	}
 
 	return funcMap

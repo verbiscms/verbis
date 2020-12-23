@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
 	"strconv"
 	"strings"
@@ -15,12 +16,20 @@ type Parameterize interface {
 // Params represents the http params for interacting with the DB
 type Params struct {
 	gin            *gin.Context
-	Page           int
-	Limit          int
-	LimitAll       bool
-	OrderBy        string
-	OrderDirection string
-	Filters        map[string][]Filter
+	Page            int    `json:"page"`
+	Limit           int    `json:"limit"`
+	LimitAll        bool   `json:"all"`
+	OrderBy         string `json:"order_by"`
+	OrderDirection string `json:"order_direction"`
+	Filters        map[string][]Filter `json:"-"`
+}
+
+// TemplateParams represents the template params for use with the
+// posts function.
+type TemplateParams struct {
+	Params
+	Resource       string `json:"resource"`
+	Category       string `json:"category"`
 }
 
 // Filter represents the searching fields for searching through records.
@@ -43,7 +52,7 @@ func NewParams(g *gin.Context) *Params {
 	}
 }
 
-// Get query Parameters
+// Get query Parameters for http API routes
 func (p *Params) Get() Params {
 
 	// Get page and set default
@@ -111,4 +120,46 @@ func (p *Params) Get() Params {
 		OrderDirection: orderParams[1],
 		Filters:        filters,
 	}
+}
+
+// GetTemplateParams query Parameters for templates
+func GetTemplateParams(query map[string]interface{}) (TemplateParams, error) {
+	const op = "http.GetTemplateParams"
+
+	data, err := json.Marshal(query)
+	if err != nil {
+		return TemplateParams{}, &errors.Error{Code: errors.INVALID, Message: "Could not convert query to Template Params", Operation: op, Err: err}
+	}
+
+	var params TemplateParams
+	if err = json.Unmarshal(data, &params); err != nil {
+		return TemplateParams{}, &errors.Error{Code: errors.INVALID, Message: "Could not convert query to Template Params", Operation: op, Err: err}
+	}
+
+	// Set default page
+	if params.Page == 0 {
+		params.Page = 1
+	}
+
+	//Set default limit
+	if params.Limit == 0 {
+		params.Limit = PaginationDefault
+	}
+
+	// Set default resource
+	if params.Resource == "" {
+		params.Resource = "all"
+	}
+
+	// Set default order by
+	if params.OrderBy == "" {
+		params.OrderBy = "published_at"
+	}
+
+	// Set default order direction
+	if params.OrderDirection == "" {
+		params.OrderDirection = "desc"
+	}
+
+	return params, nil
 }

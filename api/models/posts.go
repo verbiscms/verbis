@@ -15,7 +15,7 @@ import (
 
 // PostsRepository defines methods for Posts to interact with the database
 type PostsRepository interface {
-	Get(meta http.Params, resource string) ([]domain.Post, int, error)
+	Get(meta http.Params, resource string, status string) ([]domain.Post, int, error)
 	Format(post domain.Post) (domain.PostData, error)
 	FormatMultiple(posts []domain.Post) ([]domain.PostData, error)
 	GetById(id int) (domain.Post, error)
@@ -50,7 +50,7 @@ func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 // Get all posts
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no posts available.
-func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, error) {
+func (s *PostStore) Get(meta http.Params, resource string, status string) ([]domain.Post, int, error) {
 	const op = "PostsRepository.Get"
 
 	var p []domain.Post
@@ -85,6 +85,12 @@ func (s *PostStore) Get(meta http.Params, resource string) ([]domain.Post, int, 
 
 		q += resourceQ
 		countQ += resourceQ
+	}
+
+	// Get Category
+	if status != "" {
+		q += fmt.Sprintf(" WHERE status '%s'", status)
+		countQ += fmt.Sprintf(" WHERE status '%s'", status)
 	}
 
 	// Apply order

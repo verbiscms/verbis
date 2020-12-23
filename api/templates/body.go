@@ -9,8 +9,9 @@ import (
 
 // body
 //
-// Retrieve class names for the body element.
-// To include:
+// Returns class names for the body element. Includes the
+// resource, page ID, page title, page template, page
+// layout and if the user is logged in or not.
 func (t *TemplateFunctions) body() string {
 	body := new(bytes.Buffer)
 	p := t.post.Post
