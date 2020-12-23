@@ -103,47 +103,47 @@ func TestGetTemplateParams(t *testing.T) {
 	}{
 		"Nil": {
 			input:  nil,
-			params: TemplateParams{Params:   Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc",}, Resource: "all", Category: ""},
+			params: TemplateParams{Params: Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: ""},
 			err:    "",
 		},
 		"Page": {
 			input:  map[string]interface{}{"page": 3},
-			params: TemplateParams{Params:   Params{Page: 3, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc",}, Resource: "all", Category: ""},
+			params: TemplateParams{Params: Params{Page: 3, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: ""},
 			err:    "",
 		},
 		"Page 0": {
 			input:  map[string]interface{}{"page": 0},
-			params: TemplateParams{Params:   Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: ""},
+			params: TemplateParams{Params: Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: ""},
 			err:    "",
 		},
 		"Limit": {
 			input:  map[string]interface{}{"limit": 10},
-			params: TemplateParams{Params:   Params{Page: 1, Limit: 10, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: ""},
+			params: TemplateParams{Params: Params{Page: 1, Limit: 10, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: ""},
 			err:    "",
 		},
 		"Limit All": {
 			input:  map[string]interface{}{"all": true},
-			params: TemplateParams{Params:   Params{Page: 1, Limit: 15, LimitAll: true, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: ""},
+			params: TemplateParams{Params: Params{Page: 1, Limit: 15, LimitAll: true, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: ""},
 			err:    "",
 		},
 		"Category": {
 			input:  map[string]interface{}{"category": "cat"},
-			params: TemplateParams{Params:   Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: "cat"},
+			params: TemplateParams{Params: Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "all", Category: "cat"},
 			err:    "",
 		},
 		"Resource": {
-			input:  map[string]interface{}{"resource": "res" },
-			params: TemplateParams{Params:   Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "res", Category: ""},
+			input:  map[string]interface{}{"resource": "res"},
+			params: TemplateParams{Params: Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, Resource: "res", Category: ""},
 			err:    "",
 		},
 		"Order By": {
-			input:  map[string]interface{}{"order_by": "title" },
-			params: TemplateParams{Params:   Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "title", OrderDirection: "desc"}, Resource: "all", Category: ""},
+			input:  map[string]interface{}{"order_by": "title"},
+			params: TemplateParams{Params: Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "title", OrderDirection: "desc"}, Resource: "all", Category: ""},
 			err:    "",
 		},
 		"Order Direction": {
-			input:  map[string]interface{}{"order_direction": "asc" },
-			params: TemplateParams{Params:   Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "asc"}, Resource: "all", Category: ""},
+			input:  map[string]interface{}{"order_direction": "asc"},
+			params: TemplateParams{Params: Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "asc"}, Resource: "all", Category: ""},
 			err:    "",
 		},
 		"Marshal Error": {
@@ -152,7 +152,7 @@ func TestGetTemplateParams(t *testing.T) {
 			err:    "Could not convert query to Template Params",
 		},
 		"Unmarshal Error": {
-			input:  map[string]interface{}{"order_direction": 123 },
+			input:  map[string]interface{}{"order_direction": 123},
 			params: TemplateParams{},
 			err:    "Could not convert query to Template Params",
 		},
@@ -168,7 +168,7 @@ func TestGetTemplateParams(t *testing.T) {
 				return
 			}
 
-			assert.Equal(t,nil, err,)
+			assert.Equal(t, nil, err)
 		})
 	}
 }

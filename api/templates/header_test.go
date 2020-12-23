@@ -28,7 +28,7 @@ func Test_Header(t *testing.T) {
 				Title:             "title",
 				Resource:          nil,
 				PageTemplate:      "template",
-				Layout:            "layout",
+				PageLayout:        "layout",
 				CodeInjectionHead: &code,
 			},
 			options: domain.Options{},

@@ -13,7 +13,7 @@ func (s *Seeder) runPosts() error {
 			Title:        "Welcome to Verbis",
 			Status:       "published",
 			PageTemplate: "",
-			Layout:       "",
+			PageLayout:   "",
 			UserId:       0,
 		},
 		Author:   0,

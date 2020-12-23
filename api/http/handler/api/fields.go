@@ -57,7 +57,7 @@ func (c *Fields) Get(g *gin.Context) {
 		Status:            "",
 		Resource:          &resource,
 		PageTemplate:      g.Query("page_template"),
-		Layout:            g.Query("layout"),
+		PageLayout:        g.Query("layout"),
 		Fields:            nil,
 		CodeInjectionHead: nil,
 		CodeInjectionFoot: nil,

@@ -16,11 +16,11 @@ type Parameterize interface {
 // Params represents the http params for interacting with the DB
 type Params struct {
 	gin            *gin.Context
-	Page            int    `json:"page"`
-	Limit           int    `json:"limit"`
-	LimitAll        bool   `json:"all"`
-	OrderBy         string `json:"order_by"`
-	OrderDirection string `json:"order_direction"`
+	Page           int                 `json:"page"`
+	Limit          int                 `json:"limit"`
+	LimitAll       bool                `json:"all"`
+	OrderBy        string              `json:"order_by"`
+	OrderDirection string              `json:"order_direction"`
 	Filters        map[string][]Filter `json:"-"`
 }
 
@@ -28,8 +28,8 @@ type Params struct {
 // posts function.
 type TemplateParams struct {
 	Params
-	Resource       string `json:"resource"`
-	Category       string `json:"category"`
+	Resource string `json:"resource"`
+	Category string `json:"category"`
 }
 
 // Filter represents the searching fields for searching through records.
