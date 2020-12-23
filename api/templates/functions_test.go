@@ -18,7 +18,9 @@ import (
 	"testing"
 )
 
-// newTestSuite - Sets up up a TemplateFunctions with gin read
+// newTestSuite
+//
+// Sets up up a TemplateFunctions with gin read
 // for testing.
 func newTestSuite(args ...string) *TemplateFunctions {
 	gin.SetMode(gin.TestMode)

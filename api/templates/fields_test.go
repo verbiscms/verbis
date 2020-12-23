@@ -129,11 +129,27 @@ func TestGetFlexible(t *testing.T) {
       	]
    	}`
 
-	f := newTestSuite(str)
+	tt := map[string]struct {
+		tpl    string
+		input    string
+		want  string
+	}{
+		"Success": {
+			tpl: `{{ flexible "flexible" }}`,
+			input: str,
+			want: `[map[fields:map[text:content text2:content] type:block1] map[fields:map[repeater:[map[text:content text2:content]] text:content text1:content text2:content] type:block2]]`,
+		},
+		"Wrong Key": {
+			tpl: `{{ flexible "wrongval" }}`,
+			input: str,
+			want: `[]`,
+		},
+	}
 
-	tpl := `{{ flexible "wrongval" }}`
-	runt(t, f, tpl, "[]")
-
-	tpl2 := `{{ flexible "flexible" }}`
-	runt(t, f, tpl2, "[map[fields:map[text:content text2:content] type:block1] map[fields:map[repeater:[map[text:content text2:content]] text:content text1:content text2:content] type:block2]]")
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			f := newTestSuite(test.input)
+			runt(t, f, test.tpl, test.want)
+		})
+	}
 }

@@ -107,13 +107,13 @@ func (_m *PostsRepository) FormatMultiple(posts []domain.Post) ([]domain.PostDat
 	return r0, r1
 }
 
-// Get provides a mock function with given fields: meta, resource
-func (_m *PostsRepository) Get(meta http.Params, resource string) ([]domain.Post, int, error) {
-	ret := _m.Called(meta, resource)
+// Get provides a mock function with given fields: meta, resource, status
+func (_m *PostsRepository) Get(meta http.Params, resource string, status string) ([]domain.Post, int, error) {
+	ret := _m.Called(meta, resource, status)
 
 	var r0 []domain.Post
-	if rf, ok := ret.Get(0).(func(http.Params, string) []domain.Post); ok {
-		r0 = rf(meta, resource)
+	if rf, ok := ret.Get(0).(func(http.Params, string, string) []domain.Post); ok {
+		r0 = rf(meta, resource, status)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.Post)
@@ -121,15 +121,15 @@ func (_m *PostsRepository) Get(meta http.Params, resource string) ([]domain.Post
 	}
 
 	var r1 int
-	if rf, ok := ret.Get(1).(func(http.Params, string) int); ok {
-		r1 = rf(meta, resource)
+	if rf, ok := ret.Get(1).(func(http.Params, string, string) int); ok {
+		r1 = rf(meta, resource, status)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(http.Params, string) error); ok {
-		r2 = rf(meta, resource)
+	if rf, ok := ret.Get(2).(func(http.Params, string, string) error); ok {
+		r2 = rf(meta, resource, status)
 	} else {
 		r2 = ret.Error(2)
 	}

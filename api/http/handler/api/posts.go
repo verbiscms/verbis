@@ -43,7 +43,7 @@ func (c *Posts) Get(g *gin.Context) {
 	const op = "PostHandler.Get"
 
 	params := http.NewParams(g).Get()
-	posts, total, err := c.store.Posts.Get(params, g.Query("resource"))
+	posts, total, err := c.store.Posts.Get(params, g.Query("resource"), g.Query("status"))
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return

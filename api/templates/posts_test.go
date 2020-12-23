@@ -3,9 +3,13 @@ package templates
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	vhttp "github.com/ainsleyclark/verbis/api/http"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+
+	//"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -14,8 +18,8 @@ import (
 func Test_GetPost(t *testing.T) {
 
 	post := domain.Post{
-		Id:    1,
-		Title: "test title",
+		Id:     1,
+		Title:  "test title",
 		UserId: 1,
 	}
 
@@ -74,105 +78,148 @@ func Test_GetPost(t *testing.T) {
 	}
 }
 
-func TestGetPosts_UnmarshalError(t *testing.T) {
-	mockPosts := mocks.PostsRepository{}
-	f := newTestSuite()
+func Test_GetPosts(t *testing.T) {
 
-	p := vhttp.Params{
-		Page:           1,
-		Limit:          15,
-		LimitAll:       false,
-		OrderBy:        "published_at",
-		OrderDirection: "desc",
-		Filters:        map[string][]vhttp.Filter{
-			"status": {
-				{
-					Operator: "=",
-					Value:    "published",
+	post := domain.Post{Id: 1, Title: "Title"}
+	posts := []domain.Post{
+		post, post,
+	}
+
+	author := &domain.PostAuthor{}
+	category := &domain.PostCategory{}
+	viewData := []ViewPost{
+		{
+			Author:   author,
+			Category: category,
+			Post:     post,
+		},
+		{
+			Author:   author,
+			Category: category,
+			Post:     post,
+		},
+	}
+
+
+	categoryTest := &domain.PostCategory{
+		Name: "cat",
+	}
+	viewDataCategory := []ViewPost{
+		{
+			Author:   author,
+			Category: categoryTest,
+			Post:     post,
+		},
+		{
+			Author:   author,
+			Category: categoryTest,
+			Post:     post,
+		},
+	}
+
+	tt := map[string]struct {
+		input   map[string]interface{}
+		mock   func(m *mocks.PostsRepository)
+		want   interface{}
+	}{
+		"Success": {
+			input:   map[string]interface{}{"limit": 15},
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
+			},
+			want: map[string]interface{}{
+				"Posts":      viewData,
+				"Pagination": &vhttp.Pagination{
+					Page:  1,
+					Pages: 1,
+					Limit: 15,
+					Total: 5,
+					Next:  false,
+					Prev:  false,
+				},
+			},
+		},
+		"Failed Params": {
+			input:   map[string]interface{}{"limit": "wrongval"},
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
+			},
+			want: "cannot unmarshal string into Go struct field TemplateParams.limit",
+		},
+		"Not Found": {
+			input:   map[string]interface{}{"limit": 15},
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
+			},
+			want:  map[string]interface{}(nil),
+		},
+		"Internal Error": {
+			input:   map[string]interface{}{"limit": 15},
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"})
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
+			},
+			want: "internal error",
+		},
+		"Format Error": {
+			input:   map[string]interface{}{"limit": 15},
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, fmt.Errorf("error"))
+			},
+			want: map[string]interface{}{
+				"Posts":      []ViewPost(nil),
+				"Pagination": &vhttp.Pagination{
+					Page:  1,
+					Pages: 1,
+					Limit: 15,
+					Total: 5,
+					Next:  false,
+					Prev:  false,
+				},
+			},
+		},
+		"Category": {
+			input:   map[string]interface{}{"limit": 15, "category": "cat"},
+			mock: func(m *mocks.PostsRepository) {
+				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 2, nil)
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: categoryTest}, nil)
+			},
+			want: map[string]interface{}{
+				"Posts":      viewDataCategory,
+				"Pagination": &vhttp.Pagination{
+					Page:  1,
+					Pages: 1,
+					Limit: 15,
+					Total: 2,
+					Next:  false,
+					Prev:  false,
 				},
 			},
 		},
 	}
 
-	f.store.Posts = &mockPosts
-	mockPosts.On("Get", p, "all").Return(nil, nil)
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			f := newTestSuite()
+			postsMock := mocks.PostsRepository{}
 
-	tpl := `{{ $query := dict "534534" 5345345 }}{{ posts $query }}`
-	runt(t, f, tpl, "")
-}
+			test.mock(&postsMock)
+			f.store.Posts = &postsMock
 
-func TestGetPosts_NilQuery(t *testing.T) {
-	mockPosts := mocks.PostsRepository{}
-	f := newTestSuite()
+			p, err := f.getPosts(test.input)
 
-	p := vhttp.Params{
-		Page:           1,
-		Limit:          15,
-		LimitAll:       false,
-		OrderBy:        "published_at",
-		OrderDirection: "desc",
-		Filters:        map[string][]vhttp.Filter{
-			"status": {
-				{
-					Operator: "=",
-					Value:    "published",
-				},
-			},
-		},
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
+				return
+			}
+
+			assert.EqualValues(t, test.want, p)
+		})
 	}
-
-	f.store.Posts = &mockPosts
-	mockPosts.On("Get", p, "all").Return(nil, nil)
-
-	tpl := `{{ $query := dict "wrongval" 123 }}{{ posts $query }}`
-	runt(t, f, tpl, "")
-}
-
-func TestGetPosts_DefaultPage(t *testing.T) {
-	mockPosts := mocks.PostsRepository{}
-	f := newTestSuite()
-
-	p := vhttp.Params{
-		Page:           1,
-		Limit:          15,
-		LimitAll:       false,
-		OrderBy:        "published_at",
-		OrderDirection: "desc",
-		Filters:        nil,
-	}
-
-	f.store.Posts = &mockPosts
-	mockPosts.On("Get", p, "all").Return(nil, nil)
-
-	tpl := `{{ $query := dict "limit" 15 }}{{ posts $query }}`
-	runt(t, f, tpl, "")
-}
-
-func TestGetPosts_DefaultLimit(t *testing.T) {
-	mockPosts := mocks.PostsRepository{}
-	f := newTestSuite()
-
-	p := vhttp.Params{
-		Page:           1,
-		Limit:          15,
-		LimitAll:       false,
-		OrderBy:        "published_at",
-		OrderDirection: "desc",
-		Filters:        map[string][]vhttp.Filter{
-			"status": {
-				{
-					Operator: "=",
-					Value:    "published",
-				},
-			},
-		},
-	}
-
-	f.store.Posts = &mockPosts
-	mockPosts.On("Get", p, "all").Return([]domain.Post{}, nil)
-
-	tpl := `{{ $query := dict "page" 1 }}{{ posts $query }}`
-	runt(t, f, tpl, "")
 }
 
 func TestGetPagination(t *testing.T) {
