@@ -248,7 +248,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 		LimitAll:       true,
 		OrderDirection: "desc",
 		OrderBy:        "created_at",
-	}, resource)
+	}, resource, "published")
 
 	if err != nil {
 		return nil, err
@@ -268,7 +268,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 			exclude = v.SeoMeta.Seo.ExcludeSitemap
 		}
 
-		if !helpers.StringInSlice(resource, s.options.SeoSitemapExcluded) && !exclude && v.Status == "published" {
+		if !helpers.StringInSlice(resource, s.options.SeoSitemapExcluded) && !exclude {
 			items = append(items, viewItem{
 				Slug:      s.options.SiteUrl + v.Slug,
 				CreatedAt: v.CreatedAt.Format(time.RFC3339),

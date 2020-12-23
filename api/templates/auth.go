@@ -2,8 +2,8 @@ package templates
 
 // auth
 //
-// If the user is authenticated (logged in) return false
-// if the cookie was not found or not authenticated.
+// If the user is authenticated (logged in).
+// Return false if the cookie was not found or not authenticated.
 func (t *TemplateFunctions) auth() bool {
 	cookie, err := t.gin.Cookie("verbis-session")
 
@@ -21,8 +21,8 @@ func (t *TemplateFunctions) auth() bool {
 
 // admin
 //
-// If the user is authenticated (logged in) & an admin user. Returns
-// false if the cookie was not found or not authenticated.
+// If the user is authenticated (logged in) & an admin user.
+// Returns false if the cookie was not found or not authenticated.
 func (t *TemplateFunctions) admin() bool {
 	cookie, err := t.gin.Cookie("verbis-session")
 
