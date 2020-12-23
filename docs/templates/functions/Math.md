@@ -210,7 +210,7 @@ Min returns the lowest integer in a slice of numbers.
 
 ### Examples:
 
-**Obtain the smallest number results in `1`**
+**Obtain the smallest number which results in `1`**
 
 ```gotemplate
 {{ min 20 1 100 }}
@@ -232,7 +232,7 @@ Max returns the highest integer in a slice of numbers.
 
 ### Examples:
 
-**Obtain the largest number results in `100`**
+**Obtain the largest number which results in `100`**
 
 ```gotemplate
 {{ max 20 1 100 }}
