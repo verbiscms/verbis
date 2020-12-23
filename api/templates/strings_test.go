@@ -124,6 +124,10 @@ func Test_Ellipsis(t *testing.T) {
 			tmpl: `{{ ellipsis 11 "hello world this is Verbis CMS" }}`,
 			want: "hello world...",
 		},
+		"Short String": {
+			tmpl: `{{ ellipsis 3 "cms" }}`,
+			want: "cms",
+		},
 	}
 
 	for name, test := range tt {

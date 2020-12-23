@@ -103,6 +103,11 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"storagePath":   t.storagePath,
 		"templatesPath": t.templatesPath,
 		"layoutsPath":   t.layoutsPath,
+		// Rand
+		"randInt": t.randInt,
+		"randFloat": t.randFloat,
+		"randAlpha": t.randAlpha,
+		"randAlphaNum": t.randAlphaNum,
 		// Safe
 		"safeHTML":     t.safeHTML,
 		"safeHTMLAttr": t.safeHTMLAttr,
