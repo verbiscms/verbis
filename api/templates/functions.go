@@ -71,6 +71,17 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"verbisHead": t.header,
 		"verbisFoot": t.footer,
 		"metaTitle":  t.metaTitle,
+		// Math
+		"add":      t.add,
+		"subtract": t.subtract,
+		"divide":   t.divide,
+		"multiply": t.multiply,
+		"mod":      t.modulus,
+		"round":    t.round,
+		"ceil":     t.ceil,
+		"floor":    t.floor,
+		"min":      t.min,
+		"max":      t.max,
 		// Media
 		"media": t.getMedia,
 		// OS
@@ -99,6 +110,16 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"safeJS":       t.safeJS,
 		"safeJSStr":    t.safeJSStr,
 		"safeURL":      t.safeUrl,
+		// Strings
+		"trim":  strings.TrimSpace,
+		"upper": strings.ToUpper,
+		"lower": strings.ToLower,
+		"title": strings.Title,
+		"len": t.len,
+		"replace": t.replace,
+		"substr": t.substr,
+		"trunc": t.trunc,
+		"ellipsis": t.ellipsis,
 		// Helpers
 		//"fullUrl": t.getFullUrl,
 	}
