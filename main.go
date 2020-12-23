@@ -20,5 +20,6 @@ import (
 )
 
 func main() {
+	// Execute Verbis
 	cmd.Execute()
 }
