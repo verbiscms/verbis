@@ -100,7 +100,6 @@ func Test_GetPosts(t *testing.T) {
 		},
 	}
 
-
 	categoryTest := &domain.PostCategory{
 		Name: "cat",
 	}
@@ -118,18 +117,18 @@ func Test_GetPosts(t *testing.T) {
 	}
 
 	tt := map[string]struct {
-		input   map[string]interface{}
-		mock   func(m *mocks.PostsRepository)
-		want   interface{}
+		input map[string]interface{}
+		mock  func(m *mocks.PostsRepository)
+		want  interface{}
 	}{
 		"Success": {
-			input:   map[string]interface{}{"limit": 15},
+			input: map[string]interface{}{"limit": 15},
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
 				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
 			},
 			want: map[string]interface{}{
-				"Posts":      viewData,
+				"Posts": viewData,
 				"Pagination": &vhttp.Pagination{
 					Page:  1,
 					Pages: 1,
@@ -141,7 +140,7 @@ func Test_GetPosts(t *testing.T) {
 			},
 		},
 		"Failed Params": {
-			input:   map[string]interface{}{"limit": "wrongval"},
+			input: map[string]interface{}{"limit": "wrongval"},
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
 				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
@@ -149,15 +148,15 @@ func Test_GetPosts(t *testing.T) {
 			want: "cannot unmarshal string into Go struct field TemplateParams.limit",
 		},
 		"Not Found": {
-			input:   map[string]interface{}{"limit": 15},
+			input: map[string]interface{}{"limit": 15},
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
 			},
-			want:  map[string]interface{}(nil),
+			want: map[string]interface{}(nil),
 		},
 		"Internal Error": {
-			input:   map[string]interface{}{"limit": 15},
+			input: map[string]interface{}{"limit": 15},
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"})
 				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
@@ -165,13 +164,13 @@ func Test_GetPosts(t *testing.T) {
 			want: "internal error",
 		},
 		"Format Error": {
-			input:   map[string]interface{}{"limit": 15},
+			input: map[string]interface{}{"limit": 15},
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
 				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, fmt.Errorf("error"))
 			},
 			want: map[string]interface{}{
-				"Posts":      []ViewPost(nil),
+				"Posts": []ViewPost(nil),
 				"Pagination": &vhttp.Pagination{
 					Page:  1,
 					Pages: 1,
@@ -183,13 +182,13 @@ func Test_GetPosts(t *testing.T) {
 			},
 		},
 		"Category": {
-			input:   map[string]interface{}{"limit": 15, "category": "cat"},
+			input: map[string]interface{}{"limit": 15, "category": "cat"},
 			mock: func(m *mocks.PostsRepository) {
 				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 2, nil)
 				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: categoryTest}, nil)
 			},
 			want: map[string]interface{}{
-				"Posts":      viewDataCategory,
+				"Posts": viewDataCategory,
 				"Pagination": &vhttp.Pagination{
 					Page:  1,
 					Pages: 1,

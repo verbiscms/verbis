@@ -159,8 +159,8 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	p.UserId = s.checkOwner(*p)
 
 	// TODO: Work out why sql defaults arent working!
-	if p.Layout == "" {
-		p.Layout = "default"
+	if p.PageLayout == "" {
+		p.PageLayout = "default"
 	}
 	if p.PageTemplate == "" {
 		p.PageTemplate = "default"
@@ -170,7 +170,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	}
 
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, fields, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
+	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.Fields, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -225,7 +225,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.Layout, p.Fields, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
+	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.Fields, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}

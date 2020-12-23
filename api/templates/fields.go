@@ -109,10 +109,7 @@ func (t *TemplateFunctions) hasField(field string) bool {
 // the template.
 func (t *TemplateFunctions) getRepeater(field string) []map[string]interface{} {
 	if _, found := t.fields[field]; found {
-		fields, ok := t.fields[field].([]interface{})
-		if !ok {
-			return nil
-		}
+		fields := t.fields[field].([]interface{})
 		var f []map[string]interface{}
 		for _, v := range fields {
 			f = append(f, v.(map[string]interface{}))
@@ -129,10 +126,7 @@ func (t *TemplateFunctions) getRepeater(field string) []map[string]interface{} {
 // the template.
 func (t *TemplateFunctions) getFlexible(field string) []map[string]interface{} {
 	if _, found := t.fields[field]; found {
-		fields, ok := t.fields[field].([]interface{})
-		if !ok {
-			return nil
-		}
+		fields := t.fields[field].([]interface{})
 		var f []map[string]interface{}
 		for _, v := range fields {
 			f = append(f, v.(map[string]interface{}))

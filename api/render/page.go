@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/templates"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 func (r *Render) Page(g *gin.Context) ([]byte, error) {
@@ -55,8 +54,8 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	}
 
 	master := ""
-	if post.Layout != "default" {
-		master = r.theme.LayoutDir + "/" + post.Layout
+	if post.PageLayout != "default" {
+		master = r.theme.LayoutDir + "/" + post.PageLayout
 	} else {
 		pt = pt + r.theme.FileExtension
 	}
@@ -71,15 +70,8 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		DisableCache: !environment.IsProduction(),
 	})
 
-	data, err := tf.GetData()
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get template data", Operation: op, Err: err},
-		}).Fatal()
-	}
-
 	var b bytes.Buffer
-	if err := gvFrontend.RenderWriter(&b, pt, data); err != nil {
+	if err := gvFrontend.RenderWriter(&b, pt, tf.GetData()); err != nil {
 		panic(err)
 	}
 

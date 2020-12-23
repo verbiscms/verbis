@@ -23,7 +23,7 @@ type Post struct {
 	Status            string      `db:"status" json:"status,omitempty"`
 	Resource          *string     `db:"resource" json:"resource,max=150"`
 	PageTemplate      string      `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
-	Layout            string      `db:"layout" json:"layout,omitempty" binding:"max=150"`
+	PageLayout        string      `db:"layout" json:"layout,omitempty" binding:"max=150"`
 	Fields            DBMap       `db:"fields" json:"fields"`
 	CodeInjectionHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 	CodeInjectionFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`

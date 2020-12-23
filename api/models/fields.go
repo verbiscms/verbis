@@ -109,7 +109,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 						// Layout
 						case "layout":
 							{
-								locationSet = append(locationSet, s.checkLocation(p.Layout, rule))
+								locationSet = append(locationSet, s.checkLocation(p.PageLayout, rule))
 								break
 							}
 						// Resources

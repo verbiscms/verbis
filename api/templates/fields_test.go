@@ -68,17 +68,37 @@ func TestCheckFieldType(t *testing.T) {
 
 }
 
-func TestHasField(t *testing.T) {
-	f := newTestSuite(`{"text": "content"}`)
+func Test_HasField(t *testing.T) {
 
-	tpl := `{{ hasField "text" }}`
-	runt(t, f, tpl, true)
+	str := `{"text": "content"}`
 
-	tpl2 := `{{ hasField "wrongval" }}`
-	runt(t, f, tpl2, false)
+	tt := map[string]struct {
+		tpl   string
+		input string
+		want  interface{}
+	}{
+		"Success": {
+			tpl:   `{{ hasField "text" }}`,
+			input: str,
+			want:  true,
+		},
+		"Wrong Key": {
+			tpl:   `{{ hasField "wrongval" }}`,
+			input: str,
+			want:  false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			f := newTestSuite(test.input)
+			runt(t, f, test.tpl, test.want)
+		})
+	}
 }
 
-func TestGetRepeater(t *testing.T) {
+func Test_GetRepeater(t *testing.T) {
+
 	str := `{
 		"repeater":[
 			{
@@ -92,16 +112,32 @@ func TestGetRepeater(t *testing.T) {
 		]
 	}`
 
-	f := newTestSuite(str)
+	tt := map[string]struct {
+		tpl   string
+		input string
+		want  string
+	}{
+		"Success": {
+			tpl:   `{{ repeater "repeater" }}`,
+			input: str,
+			want:  "[map[text1:content text2:content] map[text1:content text2:content]]",
+		},
+		"Wrong Key": {
+			tpl:   `{{ repeater "wrongval" }}`,
+			input: str,
+			want:  `[]`,
+		},
+	}
 
-	tpl := `{{ repeater "wrongval" }}`
-	runt(t, f, tpl, "[]")
-
-	tpl2 := `{{ repeater "repeater" }}`
-	runt(t, f, tpl2, "[map[text1:content text2:content] map[text1:content text2:content]]")
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			f := newTestSuite(test.input)
+			runt(t, f, test.tpl, test.want)
+		})
+	}
 }
 
-func TestGetFlexible(t *testing.T) {
+func Test_GetFlexible(t *testing.T) {
 
 	str := `{
 		"flexible": [
@@ -130,19 +166,59 @@ func TestGetFlexible(t *testing.T) {
    	}`
 
 	tt := map[string]struct {
-		tpl    string
-		input    string
+		tpl   string
+		input string
 		want  string
 	}{
 		"Success": {
-			tpl: `{{ flexible "flexible" }}`,
+			tpl:   `{{ flexible "flexible" }}`,
 			input: str,
-			want: `[map[fields:map[text:content text2:content] type:block1] map[fields:map[repeater:[map[text:content text2:content]] text:content text1:content text2:content] type:block2]]`,
+			want:  `[map[fields:map[text:content text2:content] type:block1] map[fields:map[repeater:[map[text:content text2:content]] text:content text1:content text2:content] type:block2]]`,
 		},
 		"Wrong Key": {
-			tpl: `{{ flexible "wrongval" }}`,
+			tpl:   `{{ flexible "wrongval" }}`,
 			input: str,
-			want: `[]`,
+			want:  `[]`,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			f := newTestSuite(test.input)
+			runt(t, f, test.tpl, test.want)
+		})
+	}
+}
+
+func Test_GetSubField(t *testing.T) {
+
+	str := `{
+		"repeater":[
+			{
+				"text1":"content",
+				"text2":"content"
+			},
+			{
+				 "text1":"content",
+				 "text2":"content"
+			}
+		]
+	}`
+
+	tt := map[string]struct {
+		tpl   string
+		input string
+		want  string
+	}{
+		"Success": {
+			tpl:   `{{ repeater "repeater" }}`,
+			input: str,
+			want:  "[map[text1:content text2:content] map[text1:content text2:content]]",
+		},
+		"Wrong Key": {
+			tpl:   `{{ repeater "wrongval" }}`,
+			input: str,
+			want:  `[]`,
 		},
 	}
 

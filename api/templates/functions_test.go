@@ -9,13 +9,16 @@ import (
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 	"html"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 // newTestSuite
@@ -92,4 +95,102 @@ func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
 
 	assert.Equal(t, got, b.String())
+}
+
+func Test_GetData(t *testing.T) {
+	f := newTestSuite()
+
+	categoryMock := mocks.CategoryRepository{}
+	categoryMock.On("ExistsBySlug", mock.Anything).Return(false)
+	f.store.Categories = &categoryMock
+
+	uuid := uuid.New()
+	time := time.Now()
+
+	site := domain.Site{}
+	siteMock := mocks.SiteRepository{}
+	siteMock.On("GetGlobalConfig").Return(&site)
+
+	theme := domain.ThemeConfig{Theme: domain.Theme{}}
+	siteMock.On("GetThemeConfig").Return(&theme)
+
+	f.options = domain.Options{
+		ContactEmail:     "email",
+		ContactTelephone: "phone",
+		ContactAddress:   "address",
+		SocialFacebook:   "facebook",
+		SocialTwitter:    "twitter",
+		SocialInstagram:  "instagram",
+		SocialLinkedIn:   "linkedin",
+		SocialYoutube:    "youtube",
+		SocialPinterest:  "pinterest",
+	}
+
+	author := &domain.PostAuthor{}
+	category := &domain.PostCategory{}
+	resource := "resource"
+
+	f.post = &domain.PostData{
+		Post: domain.Post{
+			Id:                1,
+			UUID:              uuid,
+			Slug:              "/slug",
+			Title:             "Verbis",
+			Status:            "published",
+			Resource:          &resource,
+			PageTemplate:      "pagetemplate",
+			PageLayout:        "pagelayout",
+			Fields:            nil,
+			CodeInjectionHead: nil,
+			CodeInjectionFoot: nil,
+			UserId:            0,
+			PublishedAt:       &time,
+			CreatedAt:         &time,
+			UpdatedAt:         &time,
+			SeoMeta:           domain.PostSeoMeta{},
+		},
+		Author:   author,
+		Category: category,
+	}
+
+	want := map[string]interface{}{
+		"Type": TypeOfPage{
+			PageType: "page",
+			Data:     nil,
+		},
+		"Site":  &site,
+		"Theme": theme.Theme,
+		"Post": map[string]interface{}{
+			"Id":           1,
+			"UUID":         uuid,
+			"Slug":         "/slug",
+			"Title":        "Verbis",
+			"Status":       "published",
+			"Resource":     &resource,
+			"PageTemplate": "pagetemplate",
+			"PageLayout":   "pagelayout",
+			"PublishedAt":  &time,
+			"UpdatedAt":    &time,
+			"CreatedAt":    &time,
+			"Author":       author,
+			"Category":     category,
+		},
+		"Options": map[string]interface{}{
+			"Social": map[string]interface{}{
+				"Facebook":  "facebook",
+				"Twitter":   "twitter",
+				"Youtube":   "youtube",
+				"LinkedIn":  "linkedin",
+				"Instagram": "instagram",
+				"Pintrest":  "pinterest",
+			},
+			"Contact": map[string]interface{}{
+				"Email":     "email",
+				"Telephone": "phone",
+				"Address":   "address",
+			},
+		},
+	}
+
+	assert.EqualValues(t, want, f.GetData())
 }
