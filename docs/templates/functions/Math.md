@@ -90,7 +90,7 @@ Multiply two or more numbers together.
 
 ### Accepts: 
 
-`numbers ...interface{}` Two or more values to be multiplied.
+`...interface{}` Two or more values to be multiplied.
 
 ### Returns:
 

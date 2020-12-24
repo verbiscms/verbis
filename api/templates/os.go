@@ -4,15 +4,19 @@ import "os"
 
 // env
 //
-// Retrieve a environment variable by key
+// Retrieve an environment variable by key
+//
+// Example: {{ env "APP_DEBUG" }}
 func (t *TemplateFunctions) env(key string) string {
 	return os.Getenv(key)
 }
 
 // expandEnv
 //
-// Retrieve a environment variable by key and
+// Retrieve an environment variable by key and
 // substitute variables in a string.
-func (t *TemplateFunctions) expandEnv(key string) string {
-	return os.ExpandEnv(key)
+//
+//
+func (t *TemplateFunctions) expandEnv(str string) string {
+	return os.ExpandEnv(str)
 }

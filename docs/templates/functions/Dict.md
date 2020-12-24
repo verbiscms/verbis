@@ -2,7 +2,8 @@
 
 As there is no built in support from GoLang's template system for `map[string]interface{}`, the dict
 helper function allows you to create a dictionary for a list of key value pairs. 
-This function is particularly useful for passing data to the `getPosts` function.
+This function is particularly useful for passing data to the `getPosts` function as query arguments,
+or passing multiple arguments to a partial fi.e
 
 ___
 
@@ -39,7 +40,7 @@ Create a new map with key value pairs and assign to a variable
 Here we use the partial function with a `dict` to pass properties to render an SVG.
 
 ```gotemplate
-{{ partial dict "colour" "green" "width" 50 "height" 50 }}
+{{ partial (dict "colour" "green" "width" 50 "height" 50) }}
 ```
 
 **Partial definition**
@@ -52,7 +53,4 @@ a specific colour, width and height.
   <circle cx="{{ .width }}" cy="{{ .height }}" r="40" stroke-width="4" fill="{{ .colour }}" />
 </svg>
 ```
-
-
-
 ___

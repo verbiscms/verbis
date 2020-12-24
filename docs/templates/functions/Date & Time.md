@@ -1,7 +1,8 @@
 # Date & Time
 
-Golang's date formatting is a little different in that it doesn't use
-any special codes (e.g `%Y` for Year). Instead it uses a standard time which is:
+These functions aid the formatting of date and time variables. Golang's date formatting is a little different 
+to other languages in that it doesn't use any special codes (e.g `%Y` for Year). Onstead it uses a standard 
+time, which is:
 
 `Mon Jan 2 15:04:05 MST 2006  (MST is GMT-0700)`
 
@@ -36,7 +37,7 @@ Formats the given date with a string.
 
 ### Accepts: 
 
-`format string, date interface{}` The format and date.
+`format string, interface{}` The format and date.
 
 ### Returns:
 
@@ -156,7 +157,7 @@ Formats a given date for use with HTML date pickers.
 Results in something similar to `2020-05-01`
 
 ```gotemplate
-<input type="date" value="{{ htmlDate now }}1">
+<input type="date" value="{{ htmlDate now }}">
 ```
 
 ___
