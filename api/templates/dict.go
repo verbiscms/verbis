@@ -13,6 +13,8 @@ import (
 //
 // Returns error if the values are not divisible by 2 or the
 // map keys were not strings.
+//
+// Example: {{ $map := dict "colour" "green" "height" 20 }}
 func (t *TemplateFunctions) dict(values ...interface{}) (map[string]interface{}, error) {
 	const op = "Templates.dict"
 
