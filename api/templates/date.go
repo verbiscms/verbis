@@ -9,6 +9,8 @@ import (
 //
 // Format date by `interface{}` input, a date can be
 // a `time.Time` or an `int, int32, int64`.
+//
+// Example: {{ date "02/01/2006" now }}
 func (t *TemplateFunctions) date(fmt string, date interface{}) string {
 	return t.dateInZone(fmt, date, "Local")
 }
@@ -17,6 +19,8 @@ func (t *TemplateFunctions) date(fmt string, date interface{}) string {
 //
 // Takes a format, the date and zone. Casts the
 // date to the correct format.
+//
+// Example: {{ dateInZone "02/01/2006" now "Europe/London" }}
 func (t *TemplateFunctions) dateInZone(format string, date interface{}, zone string) string {
 	var tm time.Time
 
@@ -48,6 +52,8 @@ func (t *TemplateFunctions) dateInZone(format string, date interface{}, zone str
 // Returns a duration from the given time input
 // in seconds. a date can be a `time.Time` or
 // an `int, int64`.
+//
+// Example: {{ ago .UpdatedAt }}
 func (t *TemplateFunctions) ago(i interface{}) string {
 	var tm time.Time
 
@@ -69,6 +75,8 @@ func (t *TemplateFunctions) ago(i interface{}) string {
 //
 // Formats a given amount of seconds as a `time.Duration`
 // For example `duration 85` will return `1m25s`.
+//
+// Example: {{ duration 85 }}
 func (t *TemplateFunctions) duration(sec interface{}) string {
 	var n int64
 	switch value := sec.(type) {
@@ -86,6 +94,8 @@ func (t *TemplateFunctions) duration(sec interface{}) string {
 //
 // Format's a date for inserting into a HTML date
 // picker input field.
+//
+// Example: {{ htmlDate now }}
 func (t *TemplateFunctions) htmlDate(date interface{}) string {
 	return t.dateInZone("2006-01-02", date, "Local")
 }
@@ -93,6 +103,8 @@ func (t *TemplateFunctions) htmlDate(date interface{}) string {
 // htmlDateInZone
 //
 // Returns HTML date with a timezone
+//
+// Example: {{ htmlDateInZone now "Europe/London" }}
 func (t *TemplateFunctions) htmlDateInZone(date interface{}, zone string) string {
 	return t.dateInZone("2006-01-02", date, zone)
 }
