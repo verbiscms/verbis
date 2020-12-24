@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"strings"
+	"time"
 )
 
 type TemplateFunctions struct {
@@ -45,19 +46,21 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData, c config.
 func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
+		// Attributes
+		"body": t.body,
+		"lang": t.lang,
 		// Auth
 		"auth":  t.auth,
 		"admin": t.admin,
-		// Body
-		"body": t.body,
 		// Categories
 		// Date & Time
+		"now":            time.Now,
 		"date":           t.date,
 		"dateInZone":     t.dateInZone,
 		"ago":            t.ago,
+		"duration":       t.duration,
 		"htmlDate":       t.htmlDate,
 		"htmlDateInZone": t.htmlDateInZone,
-		"duration":       t.duration,
 		// Dict
 		"dict": t.dict,
 		// Fields

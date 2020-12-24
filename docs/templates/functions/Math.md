@@ -19,13 +19,17 @@ Add two or more numbers together.
 
 ### Examples:
 
-**Adding 2 numbers together results in `4`**
+**Adding 2 numbers together**
+
+Results in `4`
 
 ```gotemplate
 {{ add 2 2 }}
 ```
 
-**Adding 3 numbers together results in `10`**
+**Adding 3 numbers together**
+
+Results in `10`
 
 ```gotemplate
 {{ add 2 4 4 }}
@@ -46,7 +50,9 @@ Subtract one value from another.
 
 ### Examples:
 
-**Subtracting results in `100`**
+**Subtracting two numbers**
+
+Results in `100`
 
 ```gotemplate
 {{ subtract 100 10 }}
@@ -68,7 +74,9 @@ Divide one value into another.
 
 ### Examples:
 
-**Dividing results in `4`**
+**Dividing two numbers**
+
+rRsults in `4`
 
 ```gotemplate
 {{ divide 16 4 }}
@@ -90,13 +98,17 @@ Multiply two or more numbers together.
 
 ### Examples:
 
-**Multiplying 2 numbers together results in `16`**
+**Multiplying 2 numbers together**
+
+Results in `16`
 
 ```gotemplate
 {{ add 4 4 }}
 ```
 
-**Multiplying 3 numbers together results in `8`**
+**Multiplying 3 numbers together**
+
+Results in `8`
 
 ```gotemplate
 {{ add 2 2 2 }}
@@ -118,7 +130,9 @@ Calculates the remainder after dividing one number by another.
 
 ### Examples:
 
-**Obtain the remainder results in `1`**
+**Obtain the remainder from two numbers**
+
+Results in `1`
 
 ```gotemplate
 {{ mod 10 9 }}
@@ -140,7 +154,9 @@ Round to the nearest integer, rounding halfway from zero.
 
 ### Examples:
 
-**Rounding a float value (down) results in `10`**
+**Rounding a float value (down)**
+
+Results in `10`
 
 ```gotemplate
 {{ round 10.2 }}
@@ -168,7 +184,9 @@ Ceil rounds a number up to the next largest integer.
 
 ### Examples:
 
-**Ceil a float value results in `10`**
+**Ceil a float value**
+
+Results in `10`
 
 ```gotemplate
 {{ ceil 9.32 }}
@@ -189,7 +207,9 @@ Floor rounds a number down to the next largest integer.
 
 ### Examples:
 
-**Ceil a float value results in `9`**
+**Ceil a float value**
+
+Results in `9`
 
 ```gotemplate
 {{ floor 9.62 }}
@@ -211,7 +231,9 @@ Min returns the lowest integer in a slice of numbers.
 
 ### Examples:
 
-**Obtain the smallest number which results in `1`**
+**Obtain the smallest number from a slice**
+
+Results in `1`
 
 ```gotemplate
 {{ min 20 1 100 }}
@@ -233,7 +255,9 @@ Max returns the highest integer in a slice of numbers.
 
 ### Examples:
 
-**Obtain the largest number which results in `100`**
+**Obtain the largest number from a slice**
+
+Results in `100`
 
 ```gotemplate
 {{ max 20 1 100 }}

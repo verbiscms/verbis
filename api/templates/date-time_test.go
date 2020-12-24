@@ -13,7 +13,7 @@ func Test_Date(t *testing.T) {
 		t.Error(err)
 	}
 
-	tpl := `{{ date  "02/01/2006" .Time }}`
+	tpl := `{{ date "02/01/2006" .Time }}`
 	runtv(t, f, tpl, "22/05/1990", map[string]interface{}{"Time": tm})
 }
 
@@ -123,18 +123,6 @@ func Test_Ago(t *testing.T) {
 	}
 }
 
-func Test_HTMLDate(t *testing.T) {
-	f := newTestSuite()
-	tpl := `{{ htmlDate 0 }}`
-	runt(t, f, tpl, "1970-01-01")
-}
-
-func Test_HTMLDateInZone(t *testing.T) {
-	f := newTestSuite()
-	tpl := `{{ htmlDateInZone 0 "GMT" }}`
-	runt(t, f, tpl, "1970-01-01")
-}
-
 func Test_Duration(t *testing.T) {
 	f := newTestSuite()
 
@@ -182,4 +170,16 @@ func Test_Duration(t *testing.T) {
 			runtv(t, f, tpl, test.want, map[string]interface{}{"Secs": test.input})
 		})
 	}
+}
+
+func Test_HTMLDate(t *testing.T) {
+	f := newTestSuite()
+	tpl := `{{ htmlDate 0 }}`
+	runt(t, f, tpl, "1970-01-01")
+}
+
+func Test_HTMLDateInZone(t *testing.T) {
+	f := newTestSuite()
+	tpl := `{{ htmlDateInZone 0 "GMT" }}`
+	runt(t, f, tpl, "1970-01-01")
 }
