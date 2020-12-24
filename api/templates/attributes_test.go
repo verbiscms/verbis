@@ -116,3 +116,9 @@ func Test_CSSValidString(t *testing.T) {
 		})
 	}
 }
+
+func Test_Lang(t *testing.T) {
+	f := newTestSuite()
+	f.options.GeneralLocale = "en-gb"
+	runt(t, f, `{{ lang }}`, "en-gb")
+}

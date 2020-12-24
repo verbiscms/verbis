@@ -43,7 +43,7 @@ func (t *TemplateFunctions) multiply(a interface{}, i ...interface{}) int64 {
 
 // modulus
 //
-// Returns divisible by two numbers in `int64`
+// Returns remainder of two numbers in `int64`
 func (t *TemplateFunctions) modulus(a, b interface{}) int64 {
 	return cast.ToInt64(a) % cast.ToInt64(b)
 }
