@@ -48,10 +48,10 @@ func (t *TemplateFunctions) dateInZone(format string, date interface{}, zone str
 // Returns a duration from the given time input
 // in seconds. a date can be a `time.Time` or
 // an `int, int64`.
-func (t *TemplateFunctions) ago(date interface{}) string {
+func (t *TemplateFunctions) ago(i interface{}) string {
 	var tm time.Time
 
-	switch date := date.(type) {
+	switch date := i.(type) {
 	default:
 		tm = time.Now()
 	case time.Time:
@@ -63,21 +63,6 @@ func (t *TemplateFunctions) ago(date interface{}) string {
 	}
 
 	return time.Since(tm).Round(time.Second).String()
-}
-
-// htmlDate
-//
-// Format's a date for inserting into a HTML date
-// picker input field.
-func (t *TemplateFunctions) htmlDate(date interface{}) string {
-	return t.dateInZone("2006-01-02", date, "Local")
-}
-
-// htmlDateInZone
-//
-// Returns HTML date with a timezone
-func (t *TemplateFunctions) htmlDateInZone(date interface{}, zone string) string {
-	return t.dateInZone("2006-01-02", date, zone)
 }
 
 // duration
@@ -95,4 +80,19 @@ func (t *TemplateFunctions) duration(sec interface{}) string {
 		n = value
 	}
 	return (time.Duration(n) * time.Second).String()
+}
+
+// htmlDate
+//
+// Format's a date for inserting into a HTML date
+// picker input field.
+func (t *TemplateFunctions) htmlDate(date interface{}) string {
+	return t.dateInZone("2006-01-02", date, "Local")
+}
+
+// htmlDateInZone
+//
+// Returns HTML date with a timezone
+func (t *TemplateFunctions) htmlDateInZone(date interface{}, zone string) string {
+	return t.dateInZone("2006-01-02", date, zone)
 }

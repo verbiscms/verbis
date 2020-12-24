@@ -92,7 +92,7 @@ func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, 
 
 // runt
 //
-//Run the template test by executing the tpl given
+// Run the template test by executing the tpl given
 func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 	b, err := execute(tf, tpl, map[string]string{})
 	if err != nil {
@@ -101,7 +101,7 @@ func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 	}
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
-
+	fmt.Println(got)
 	assert.Equal(t, got, b)
 }
 
