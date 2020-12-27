@@ -156,6 +156,27 @@ func (_m *CategoryRepository) GetById(id int) (domain.Category, error) {
 	return r0, r1
 }
 
+// GetByName provides a mock function with given fields: name
+func (_m *CategoryRepository) GetByName(name string) (domain.Category, error) {
+	ret := _m.Called(name)
+
+	var r0 domain.Category
+	if rf, ok := ret.Get(0).(func(string) domain.Category); ok {
+		r0 = rf(name)
+	} else {
+		r0 = ret.Get(0).(domain.Category)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(name)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetByPost provides a mock function with given fields: pageId
 func (_m *CategoryRepository) GetByPost(pageId int) (*domain.Category, error) {
 	ret := _m.Called(pageId)

@@ -10,6 +10,7 @@ import (
 // safeHTML
 //
 // Returns a given string as html/template HTML content
+// Returns errors.TEMPLATE if the inputted interface failed to be cast.
 //
 // Example: {{ "richtext" | getField | safeHTML }}
 func (t *TemplateFunctions) safeHTML(i interface{}) (template.HTML, error) {
@@ -23,7 +24,8 @@ func (t *TemplateFunctions) safeHTML(i interface{}) (template.HTML, error) {
 
 // safeHTMLAttr
 //
-// Returns a given string as html/template HTMLAttr content
+// Returns a given string as html/template HTMLAttr content.
+// Returns errors.TEMPLATE if the inputted interface failed to be cast.
 func (t *TemplateFunctions) safeHTMLAttr(i interface{}) (template.HTMLAttr, error) {
 	const op = "Templates.safeHTMLAttr"
 	s, err := cast.ToStringE(i)
@@ -35,7 +37,8 @@ func (t *TemplateFunctions) safeHTMLAttr(i interface{}) (template.HTMLAttr, erro
 
 // safeCSS
 //
-// Returns a given string as html/template HTML content
+// Returns a given string as html/template HTML content.
+// Returns errors.TEMPLATE if the inputted interface failed to be cast.
 func (t *TemplateFunctions) safeCSS(i interface{}) (template.CSS, error) {
 	const op = "Templates.safeCSS"
 	s, err := cast.ToStringE(i)
@@ -47,7 +50,8 @@ func (t *TemplateFunctions) safeCSS(i interface{}) (template.CSS, error) {
 
 // safeJS
 //
-// Returns a given string as html/template HTML content
+// Returns a given string as html/template HTML content.
+// Returns errors.TEMPLATE if the inputted interface failed to be cast.
 func (t *TemplateFunctions) safeJS(i interface{}) (template.JS, error) {
 	const op = "Templates.safeJS"
 	s, err := cast.ToStringE(i)
@@ -59,7 +63,8 @@ func (t *TemplateFunctions) safeJS(i interface{}) (template.JS, error) {
 
 // safeJSStr
 //
-// Returns the given string as a html/template JSStr content
+// Returns the given string as a html/template JSStr content.
+// Returns errors.TEMPLATE if the inputted interface failed to be cast.
 func (t *TemplateFunctions) safeJSStr(i interface{}) (template.JSStr, error) {
 	const op = "Templates.safeJSStr"
 	s, err := cast.ToStringE(i)
@@ -71,7 +76,8 @@ func (t *TemplateFunctions) safeJSStr(i interface{}) (template.JSStr, error) {
 
 // safeUrl
 //
-// Returns a given string as html/template URL content
+// Returns a given string as html/template URL content.
+// Returns errors.TEMPLATE if the inputted interface failed to be cast.
 func (t *TemplateFunctions) safeUrl(i interface{}) (template.URL, error) {
 	const op = "Templates.safeUrl"
 	s, err := cast.ToStringE(i)
