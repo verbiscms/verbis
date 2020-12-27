@@ -17,7 +17,8 @@ Creates a dictionary of key value pairs, the key must always be a string.
 
 ### Returns:
 
-`map[string]interface{}, error` A new map or an error if a key was not of type `string`.
+`map[string]interface{}, error` A new map or an error if a key was not of type `string` or there
+was an odd number of values.
 
 ### Examples:
 

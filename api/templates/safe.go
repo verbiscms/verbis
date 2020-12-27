@@ -10,6 +10,8 @@ import (
 // safeHTML
 //
 // Returns a given string as html/template HTML content
+//
+// Example: {{ "richtext" | getField | safeHTML }}
 func (t *TemplateFunctions) safeHTML(i interface{}) (template.HTML, error) {
 	const op = "Templates.safeHTML"
 	s, err := cast.ToStringE(i)

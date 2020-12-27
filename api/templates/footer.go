@@ -11,6 +11,8 @@ import (
 // Obtains all of the site and post wide Code Injection
 // Returns formatted HTML template for use after the
 // closing `</body>`.
+//
+// Example: {{ verbisFoot }}
 func (t *TemplateFunctions) footer() template.HTML {
 	var b bytes.Buffer
 

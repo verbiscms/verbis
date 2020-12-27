@@ -52,7 +52,7 @@ Subtract one value from another.
 
 **Subtracting two numbers**
 
-Results in `100`
+Results in `90`
 
 ```gotemplate
 {{ subtract 100 10 }}

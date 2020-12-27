@@ -7,7 +7,12 @@ import (
 // getMedia
 //
 // Obtains the media by ID and returns a domain.Media type
-// or nil if not found.
+// or nil if not found or the ID parameter failed to be
+// parsed.
+//
+// Example:
+// {{ $image := media 10 }}
+// {{ $image.Url }}
 func (t *TemplateFunctions) getMedia(i interface{}) *domain.Media {
 	var id int
 

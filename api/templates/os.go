@@ -16,7 +16,7 @@ func (t *TemplateFunctions) env(key string) string {
 // Retrieve an environment variable by key and
 // substitute variables in a string.
 //
-//
+// {{ expandEnv "Welcome to $APP_NAME" }}
 func (t *TemplateFunctions) expandEnv(str string) string {
 	return os.ExpandEnv(str)
 }
