@@ -21,7 +21,7 @@ Add two or more numbers together.
 
 **Adding 2 numbers together**
 
-Results in `4`
+Returns `4`
 
 ```gotemplate
 {{ add 2 2 }}
@@ -29,7 +29,7 @@ Results in `4`
 
 **Adding 3 numbers together**
 
-Results in `10`
+Returns `10`
 
 ```gotemplate
 {{ add 2 4 4 }}
@@ -52,7 +52,7 @@ Subtract one value from another.
 
 **Subtracting two numbers**
 
-Results in `90`
+Returns `90`
 
 ```gotemplate
 {{ subtract 100 10 }}
@@ -76,7 +76,7 @@ Divide one value into another.
 
 **Dividing two numbers**
 
-Results in `4`
+Returns `4`
 
 ```gotemplate
 {{ divide 16 4 }}
@@ -100,7 +100,7 @@ Multiply two or more numbers together.
 
 **Multiplying 2 numbers together**
 
-Results in `16`
+Returns `16`
 
 ```gotemplate
 {{ add 4 4 }}
@@ -108,7 +108,7 @@ Results in `16`
 
 **Multiplying 3 numbers together**
 
-Results in `8`
+Returns `8`
 
 ```gotemplate
 {{ add 2 2 2 }}
@@ -132,7 +132,7 @@ Calculates the remainder after dividing one number by another.
 
 **Obtain the remainder from two numbers**
 
-Results in `1`
+Returns `1`
 
 ```gotemplate
 {{ mod 10 9 }}
@@ -156,13 +156,13 @@ Round to the nearest integer, rounding halfway from zero.
 
 **Rounding a float value (down)**
 
-Results in `10`
+Returns `10`
 
 ```gotemplate
 {{ round 10.2 }}
 ```
 
-**Rounding a float value (up) results in `11`**
+**Rounding a float value (up) Returns `11`**
 
 ```gotemplate
 {{ round 10.6 }}
@@ -186,7 +186,7 @@ Ceil rounds a number up to the next largest integer.
 
 **Ceil a float value**
 
-Results in `10`
+Returns `10`
 
 ```gotemplate
 {{ ceil 9.32 }}
@@ -209,7 +209,7 @@ Floor rounds a number down to the next largest integer.
 
 **Ceil a float value**
 
-Results in `9`
+Returns `9`
 
 ```gotemplate
 {{ floor 9.62 }}
@@ -233,7 +233,7 @@ Min returns the lowest integer in a slice of numbers.
 
 **Obtain the smallest number from a slice**
 
-Results in `1`
+Returns `1`
 
 ```gotemplate
 {{ min 20 1 100 }}
@@ -257,7 +257,7 @@ Max returns the highest integer in a slice of numbers.
 
 **Obtain the largest number from a slice**
 
-Results in `100`
+Returns `100`
 
 ```gotemplate
 {{ max 20 1 100 }}
