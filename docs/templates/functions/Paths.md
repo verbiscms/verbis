@@ -37,7 +37,7 @@ ___
 
 ## apiPath
 
-Returns the api path of the project, where backend logic is stored.
+Returns the API path of the project, where backend logic is stored.
 
 ### Returns:
 
@@ -83,9 +83,9 @@ Returns the uploads path of the project.
 
 ___
 
-## uploadsPath
+## storagePath
 
-Returns the uploads path of the project.
+Returns the storage path of the project, where fields, uploads and logs are stored.
 
 ### Returns:
 
@@ -95,4 +95,36 @@ Returns the uploads path of the project.
 
 ```gotemplate
 {{ uploadsPath }}
+```
+
+___
+
+## templatesPath
+
+Returns the directory where page templates are stored.
+
+### Returns:
+
+`string` The path.
+
+### Example:
+
+```gotemplate
+{{ templatesPath }}
+```
+
+___
+
+## layoutsPath
+
+Returns the directory where page layouts are stored.
+
+### Returns:
+
+`string` The path.
+
+### Example:
+
+```gotemplate
+{{ layoutsPath }}
 ```

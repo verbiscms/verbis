@@ -80,23 +80,6 @@ func Uploads() string {
 	return Storage() + "/uploads"
 }
 
-// PublicUploads Path
-//func PublicUploads() string {
-//	return config.Media.UploadPath
-//}
-
-//// Templates path
-//func Templates() string {
-//	// TODO - Make dynamic based on config
-//	return Theme() + "/templates"
-//}
-//
-//// Layouts path
-//func Layouts() string {
-//	// TODO - Make dynamic based on config
-//	return Theme() + "/layouts"
-//}
-
 // Web (Verbis specific)
 func Web() string {
 	return Api() + "/web"

@@ -64,7 +64,7 @@ func (t *TemplateFunctions) storagePath() string {
 
 // templatesPath
 //
-// Returns the directory where the templates
+// Returns the directory where page templates
 // are stored.
 func (t *TemplateFunctions) templatesPath() string {
 	return tmplThemePath + t.themeConfig.TemplateDir
@@ -72,7 +72,7 @@ func (t *TemplateFunctions) templatesPath() string {
 
 // layoutsPath
 //
-// Returns the directory where the layouts
+// Returns the directory where page layouts
 // are stored.
 func (t *TemplateFunctions) layoutsPath() string {
 	return tmplThemePath + t.themeConfig.LayoutDir

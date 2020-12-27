@@ -76,7 +76,7 @@ Divide one value into another.
 
 **Dividing two numbers**
 
-rRsults in `4`
+Results in `4`
 
 ```gotemplate
 {{ divide 16 4 }}
