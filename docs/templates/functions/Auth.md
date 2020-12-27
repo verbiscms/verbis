@@ -1,7 +1,7 @@
 # Auth
 
 The auth functions used within templates are used to establish if the user is logged in to the backend of the
-Verbis website. These functions rely on the `verbis-cookie` with a value of the current user's token. 
+Verbis website and check role's of the user. These functions rely on the `verbis-cookie` with a value of the current user's token. 
 If the user clears their cookies, usage may vary until the user logs out and in again.
 
 These functions can be handy to display hidden content or media to logged in users.

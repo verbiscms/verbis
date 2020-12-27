@@ -12,9 +12,9 @@ import (
 //
 // Header obtains all of the site and post wide Code Injection
 // as well as any meta information from the page.
+//
+// Example: {{ verbisHead }}
 func (t *TemplateFunctions) header() template.HTML {
-	const op = "Templates.getHeader"
-
 	var b bytes.Buffer
 
 	// Get Code Injection from the Post
@@ -155,6 +155,8 @@ func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, desc
 // metaTitle obtains the meta title from the post, if there is no
 // title set on the post, it will look for the global title, if
 // none, return empty string.
+//
+// Example: <title>Verbis - {{ metaTitle }}</title>
 func (t *TemplateFunctions) metaTitle() string {
 	postMeta := t.post.SeoMeta.Meta
 

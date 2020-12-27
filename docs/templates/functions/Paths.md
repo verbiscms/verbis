@@ -1,5 +1,8 @@
 # Paths
 
+These functions return useful path information of the Verbis project.
+**Use with caution** exposing sensitive information to the frontend of the website
+can be dangerous.
 
 ___
 
@@ -70,6 +73,22 @@ ___
 ## uploadsPath
 
 Returns the uploads path of the project.
+
+### Returns:
+
+`string` The path.
+
+### Example:
+
+```gotemplate
+{{ uploadsPath }}
+```
+
+___
+
+## assetsPath
+
+Returns the assets URL for the theme, for example "/assets".
 
 ### Returns:
 

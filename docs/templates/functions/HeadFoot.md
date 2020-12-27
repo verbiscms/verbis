@@ -14,7 +14,7 @@ outputted in the `<head></head>`.
 
 - Global Code injection header.
 - Post code injection header.
-- `norobots` if the site is set to private.
+- `norobots` if the site is not public or the post is set to private.
 - Meta description (Post description overrides global).
 - Twitter & Facebook cards (Post social cards overrides global).
 - Canonical link.
@@ -51,7 +51,7 @@ outputted just before the closing `<body>`.
 </body>
 ```
 
-## getMetaTitle
+## metaTitle
 
 Retrieve the meta title for use in the `<title></title>` element.
 
@@ -66,5 +66,5 @@ could not be found.
 **Output the verbis footer**
 
 ```gotemplate
-<title>Verbis - {{ getMetaTitle }}</title>
+<title>Verbis - {{ metaTitle }}</title>
 ```

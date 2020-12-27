@@ -5,7 +5,7 @@ to output any type of media file into your template.
 See below for respective return types & data.
 
 ## Media Struct
-The media type is what is returned when calling `getMedia`. You are able to access any of the
+The media type is what is returned when calling `media`. You are able to access any of the
 properties below to output your desired content. 
 
 ```go
@@ -46,17 +46,18 @@ type MediaSize struct {
 ```
 ___
 
-## getMedia
+## media
 
-Get the media item from the library.
+Returns a media item from the library.
 
 ### Accepts: 
 
-`float64` The media item ID.
+`id interface{}` The media item ID.
 
 ### Returns:
 
-`Media` A media struct.
+`Media` A media type or nil if the ID parameter failed to convert to an integer, or no
+media item was found.
 
 ### Examples:
 
@@ -65,7 +66,7 @@ Get the media item from the library.
 Get the media item with the ID of 10.
 
 ```gotemplate
-{{ getMedia 10 }}
+{{ media 10 }}
 ```
 
 **Assign to a variable:**
@@ -73,7 +74,7 @@ Get the media item with the ID of 10.
 You can also assign the contents of a media item to a variable to be used later on in the template.
 
 ```gotemplate
-{{ $image := getMedia 10 }}
+{{ $image := media 10 }}
 {{ $image.Url }}
 ```
 
