@@ -3,13 +3,13 @@
 As there is no built in support from GoLang's template system for `map[string]interface{}`, the dict
 helper function allows you to create a dictionary for a list of key value pairs. 
 This function is particularly useful for passing data to the `getPosts` function as query arguments,
-or passing multiple arguments to a partial fi.e
+or passing multiple arguments to a partial file.
 
 ___
 
 ## dict
 
-Create's a dictionary of key value pairs, the key must always be a string.
+Creates a dictionary of key value pairs, the key must always be a string.
 
 ### Accepts: 
 
