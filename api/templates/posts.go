@@ -41,6 +41,8 @@ func (t *TemplateFunctions) getPost(i interface{}) *ViewPost {
 // array of domain.Post. It sets defaults if some of the param
 // arguments are missing, and returns an error if the data
 // could not be marshalled.
+
+// Returns errors.TEMPLATE if the template post params failed to parse.
 //
 // Example:
 // {{ $result := post (dict "limit" 10 "resource" "posts") }}

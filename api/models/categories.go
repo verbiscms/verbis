@@ -17,6 +17,7 @@ type CategoryRepository interface {
 	GetById(id int) (domain.Category, error)
 	GetByPost(pageId int) (*domain.Category, error)
 	GetBySlug(slug string) (domain.Category, error)
+	GetByName(name string) (domain.Category, error)
 	Create(c *domain.Category) (domain.Category, error)
 	Update(c *domain.Category) (domain.Category, error)
 	Delete(id int) error
@@ -116,6 +117,17 @@ func (s *CategoryStore) GetBySlug(slug string) (domain.Category, error) {
 	var c domain.Category
 	if err := s.db.Get(&c, "SELECT * FROM categories WHERE slug = ?", slug); err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the slug: %v", slug), Operation: op, Err: err}
+	}
+	return c, nil
+}
+
+// Get the category by slug
+// Returns errors.NOTFOUND if the category was not found by the given slug.
+func (s *CategoryStore) GetByName(name string) (domain.Category, error) {
+	const op = "CategoryRepository.GetByName"
+	var c domain.Category
+	if err := s.db.Get(&c, "SELECT * FROM categories WHERE name = ?", name); err != nil {
+		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the name: %v", name), Operation: op, Err: err}
 	}
 	return c, nil
 }
