@@ -37,24 +37,24 @@ func (t *TemplateFunctions) substr(str string, start, end interface{}) string {
 // trunc
 //
 // Returns a truncated string with no suffix, negatives apply.
-func (t *TemplateFunctions) trunc(s string, a interface{}) string {
+func (t *TemplateFunctions) trunc(str string, a interface{}) string {
 	i := cast.ToInt(a)
-	if i < 0 && len(s)+i > 0 {
-		return s[len(s)+i:]
+	if i < 0 && len(str)+i > 0 {
+		return str[len(str)+i:]
 	}
-	if i >= 0 && len(s) > i {
-		return s[:i]
+	if i >= 0 && len(str) > i {
+		return str[:i]
 	}
-	return s
+	return str
 }
 
 // ellipsis
 //
 // Returns a ellipsis (...) string from the given length
-func (t *TemplateFunctions) ellipsis(len int, s string) string {
+func (t *TemplateFunctions) ellipsis(str string, len int) string {
 	marker := "..."
 	if len < 4 {
-		return s
+		return str
 	}
-	return t.substr(s, 0, len) + marker
+	return t.substr(str, 0, len) + marker
 }
