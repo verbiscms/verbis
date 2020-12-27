@@ -16,7 +16,7 @@ for escaping the Verbis editor content.
 
 ### Accepts: 
 
-`interface{}` The string to be unescaped.
+`str interface{}` The string to be unescaped.
 
 ### Returns:
 
@@ -48,7 +48,7 @@ HTMLAttr encapsulates an HTML attribute from a trusted source, for example, ` di
 
 ### Accepts: 
 
-`interface{}` The string to be unescaped.
+`str interface{}` The string to be unescaped.
 
 ### Returns:
 
@@ -69,7 +69,7 @@ CSS encapsulates known safe content that matches any of:
 
 ### Accepts: 
 
-`interface{}` The string to be unescaped.
+`str interface{}` The string to be unescaped.
 
 ### Returns:
 
@@ -101,7 +101,7 @@ safeJS encapsulates a known safe EcmaScript5 Expression, for example `(x + y * z
 
 ### Accepts: 
 
-`interface{}` The string to be unescaped.
+`str interface{}` The string to be unescaped.
 
 ### Returns:
 
@@ -121,7 +121,7 @@ JSStr("foo\\nbar") is fine, but JSStr("foo\\\nbar") is not.
 
 ### Accepts: 
 
-`interface{}` The string to be unescaped.
+`str interface{}` The string to be unescaped.
 
 ### Returns:
 
@@ -136,7 +136,7 @@ Declares the provided string as a `safe URL` or URL substring.
 
 ### Accepts: 
 
-`interface{}` The string to be unescaped.
+`str interface{}` The string to be unescaped.
 
 ### Returns:
 

@@ -5,14 +5,8 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"html/template"
 	"strings"
-)
-
-var (
-	// Theme path of the app
-	themePath = paths.Theme()
 )
 
 // partial
@@ -21,6 +15,9 @@ var (
 // as any data to be passed. The template is executed and
 // returns an error if no file was found or the template
 // could not be executed.
+//
+// Example:
+// {{ partial "partials/circle.svg" (dict "radius" 50 "fill" "red") }}
 func (t *TemplateFunctions) partial(name string, data ...interface{}) (template.HTML, error) {
 	const op = "Templates.partial"
 
