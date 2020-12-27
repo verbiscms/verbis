@@ -24,11 +24,6 @@ The following is outputted when the `{{ body }}` function is called.
 | Page Template                | `page-template-news-archive`         |
 | Page Layout                  | `page-layout-main`                   |
 | Logged In                    | `logged-in` if user is authenticated |
- 
-The resulting call would result in something similar to below.
-
-`page page-id-4 page-title page-template-news-archive page-layout-main logged-in`
-
 
 ### Returns:
 
@@ -37,6 +32,10 @@ The resulting call would result in something similar to below.
 ### Examples:
 
 **Output body classes for a layout**
+
+The resulting call would result in something similar to below.
+
+`page page-id-4 page-title page-template-news-archive page-layout-main logged-in`
 
 ```gotemplate
 <body class="{{ body }} custom-class">

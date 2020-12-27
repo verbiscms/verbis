@@ -13,7 +13,7 @@ by a key.
 
 ### Accepts: 
 
-`string` The environment variable key.
+`key string` The environment variable key.
 
 ### Returns:
 
@@ -38,7 +38,7 @@ Substitutes environment variables in a string using the `$` dollar symbol.
 
 ### Accepts: 
 
-`string` The string to be expanded.
+`str string` The string to be expanded.
 
 ### Returns:
 

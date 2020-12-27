@@ -8,6 +8,9 @@ time, which is:
 
 You can read more about GoLang time and date formatting [here](https://yourbasic.org/golang/format-parse-string-time-date-example/).
 
+These functions can be useful for formatting post's `CreatedAt` and `UpdatedAt` fields to a user
+friendly format.
+
 ___
 
 ## now
@@ -37,7 +40,7 @@ Formats the given date with a string.
 
 ### Accepts: 
 
-`format string, interface{}` The format and date.
+`format string, date interface{}` The format and date.
 
 ### Returns:
 
@@ -91,11 +94,11 @@ ___
 
 ## ago
 
-Calculates the duration from the current `time.Now` in seconds resolution
+Calculates the duration from the current `time.Now` in seconds resolution.
 
-### Accepts: 
+### Accepts:  
 
-`time interface` The time to be calculated.
+`time interface{}` The time to be calculated.
 
 ### Returns:
 
@@ -116,7 +119,7 @@ ___
 
 ## duration
 
-Formats a given amount of seconds as a `time.Duration`
+Formats a given number of seconds as a `time.Duration`.
 
 ### Accepts: 
 
