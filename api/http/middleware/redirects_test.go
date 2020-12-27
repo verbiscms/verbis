@@ -13,7 +13,7 @@ import (
 
 // TestRedirects - Test redirects from options are working correctly
 // with correct code & location.
-func TestRedirects(t *testing.T) {
+func Test_Redirects(t *testing.T) {
 
 	tt := map[string]struct {
 		status      int

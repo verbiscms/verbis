@@ -154,11 +154,11 @@ func (s *SiteStore) GetTemplates() (domain.Templates, error) {
 	const op = "SiteRepository.GetTemplates"
 
 	themeConfig := s.GetThemeConfig()
-	templateDir := paths.Theme() + themeConfig.TemplateDir
+	templateDir := paths.Theme() + "/" + themeConfig.TemplateDir
 
 	files, err := s.walkMatch(templateDir, "*"+themeConfig.FileExtension)
 	if err != nil {
-		return domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path & file extension: %s, %s", templateDir, "*"+themeConfig.FileExtension), Operation: op}
+		return domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path: %s, with the file extension: %s", templateDir, "*"+themeConfig.FileExtension), Operation: op}
 	}
 
 	var templates []map[string]interface{}
@@ -195,11 +195,11 @@ func (s *SiteStore) GetLayouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
 	themeConfig := s.GetThemeConfig()
-	layoutDir := paths.Theme() + themeConfig.LayoutDir
+	layoutDir := paths.Theme() + "/" + themeConfig.LayoutDir
 
 	files, err := s.walkMatch(layoutDir, "*"+themeConfig.FileExtension)
 	if err != nil {
-		return domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get layouts from the path & file extension: %s, %s", layoutDir, "*"+themeConfig.FileExtension), Operation: op}
+		return domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get templates from the path: %s, with the file extension: %s", layoutDir, "*"+themeConfig.FileExtension), Operation: op}
 	}
 
 	var layouts []map[string]interface{}

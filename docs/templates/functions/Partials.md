@@ -16,7 +16,6 @@ any of the global Verbis data such as `Post` or `Media`.
 
 Render's a child component with given data.
 
-
 ### Returns:
 
 `template.HTML, error` The rendered html or an error if the file was not found or could not be executed.

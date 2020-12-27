@@ -42,12 +42,12 @@ func Test_APIPath(t *testing.T) {
 
 func Test_ThemePath(t *testing.T) {
 	f := newTestSuite()
-	oldThemePath := tmplThemePath
+	oldThemePath := themePath
 	defer func() {
-		tmplThemePath = oldThemePath
+		themePath = oldThemePath
 	}()
 
-	tmplThemePath = "test"
+	themePath = "test"
 	tmpl := "{{ themePath }}"
 	runt(t, f, tmpl, "test")
 }
@@ -87,12 +87,12 @@ func Test_TemplatesPath(t *testing.T) {
 	f := newTestSuite()
 	f.themeConfig.TemplateDir = "/dir"
 
-	oldThemePath := tmplThemePath
+	oldThemePath := themePath
 	defer func() {
-		tmplThemePath = oldThemePath
+		themePath = oldThemePath
 	}()
 
-	tmplThemePath = "test"
+	themePath = "test"
 	tmpl := "{{ templatesPath }}"
 	runt(t, f, tmpl, "test/dir")
 }
@@ -101,12 +101,12 @@ func Test_LayoutsPath(t *testing.T) {
 	f := newTestSuite()
 	f.themeConfig.LayoutDir = "/dir"
 
-	oldThemePath := tmplThemePath
+	oldThemePath := themePath
 	defer func() {
-		tmplThemePath = oldThemePath
+		themePath = oldThemePath
 	}()
 
-	tmplThemePath = "test"
+	themePath = "test"
 	tmpl := "{{ layoutsPath }}"
 	runt(t, f, tmpl, "test/dir")
 }

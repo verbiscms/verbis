@@ -3,6 +3,7 @@ package templates
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"html/template"
@@ -26,6 +27,17 @@ type TypeOfPage struct {
 	PageType string
 	Data     interface{}
 }
+
+// Obtain all of the paths in to variables
+// for use with testing
+var (
+	themePath     =  paths.Theme()
+	basePath      = paths.Base()
+	adminPath     = paths.Admin()
+	apiPath       = paths.Api()
+	storagePath   = paths.Storage()
+	uploadsPath   = paths.Uploads()
+)
 
 // NewFunctions - Construct
 func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateFunctions {
@@ -111,6 +123,14 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"randFloat": t.randFloat,
 		"randAlpha": t.randAlpha,
 		"randAlphaNum": t.randAlphaNum,
+		// Regex"
+		"regexMatch": t.regexMatch,
+		"regexFindAll": t.regexFindAll,
+		"regexFind": t.regexFind,
+		"regexReplaceAll": t.regexReplaceAll,
+		"regexReplaceAllLiteral": t.regexReplaceAllLiteral,
+		"regexSplit": t.regexSplit,
+		"regexQuoteMeta": t.regexQuoteMeta,
 		// Safe
 		"safeHTML":     t.safeHTML,
 		"safeHTMLAttr": t.safeHTMLAttr,
@@ -128,6 +148,13 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"substr":   t.substr,
 		"trunc":    t.trunc,
 		"ellipsis": t.ellipsis,
+		// URL
+		"baseUrl": t.getBaseURL,
+		"scheme": t.getScheme,
+		"host": t.getHost,
+		"fullUrl": t.getFullURL,
+		"url": t.getURL,
+		"query": t.getQueryParams,
 		// Helpers
 		//"fullUrl": t.getFullUrl,
 	}

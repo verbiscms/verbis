@@ -19,6 +19,8 @@ type ViewPost struct {
 //
 // Obtains the post by ID and returns a domain.Post type
 // or nil if not found.
+//
+// Example: {{ post 123 }}
 func (t *TemplateFunctions) getPost(i interface{}) *ViewPost {
 	p, err := t.store.Posts.GetById(cast.ToInt(i))
 	if err != nil {
@@ -39,6 +41,17 @@ func (t *TemplateFunctions) getPost(i interface{}) *ViewPost {
 // array of domain.Post. It sets defaults if some of the param
 // arguments are missing, and returns an error if the data
 // could not be marshalled.
+//
+// Example:
+// {{ $result := post (dict "limit" 10 "resource" "posts") }}
+// {{ with $result.Posts }}
+//     {{ range $post := . }}
+//         <h2>{{ $post.Title }}</h2>
+//         <a href="{{ $post.Slug }}">Read more</a>
+//     {{ end }}
+//     {{ else }}
+//         <h4>No posts found</h4>
+// {{ end }}
 func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]interface{}, error) {
 
 	p, err := http.GetTemplateParams(query)
@@ -80,6 +93,25 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 	}, nil
 }
 
+// getPagination
+//
+// Gets the page query parameter and returns, if the page
+// query param wasn't found or the string could
+// not be cast to an integer, it will return 1.
+//
+// Example: {{ paginationPage }}
+func (t *TemplateFunctions) getPaginationPage() int {
+	page := t.gin.Query("page")
+	if page == "" {
+		return 1
+	}
+	pageInt, err := cast.ToIntE(page)
+	if err != nil {
+		return 1
+	}
+	return pageInt
+}
+
 // formatPost
 //
 // Format's from the posts store and creates a new ViewPost
@@ -98,21 +130,4 @@ func (t *TemplateFunctions) formatPost(post domain.Post) (ViewPost, error) {
 		Category: fp.Category,
 		Post:     fp.Post,
 	}, nil
-}
-
-// getPagination
-//
-// Gets the page query parameter and returns, if the page
-// query param wasn't found or the string could
-// not be cast to an integer, it will return 1.
-func (t *TemplateFunctions) getPaginationPage() int {
-	page := t.gin.Query("page")
-	if page == "" {
-		return 1
-	}
-	pageInt, err := cast.ToIntE(page)
-	if err != nil {
-		return 1
-	}
-	return pageInt
 }

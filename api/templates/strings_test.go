@@ -100,6 +100,10 @@ func Test_Trunc(t *testing.T) {
 			tmpl: `{{ trunc "hello world" "-5" }}`,
 			want: "world",
 		},
+		"Original": {
+			tmpl: `{{ trunc "hello world" -1000 }}`,
+			want: "hello world",
+		},
 	}
 
 	for name, test := range tt {
@@ -117,15 +121,15 @@ func Test_Ellipsis(t *testing.T) {
 		want interface{}
 	}{
 		"Valid": {
-			tmpl: `{{ ellipsis 5 "hello world" }}`,
+			tmpl: `{{ ellipsis "hello world" 5 }}`,
 			want: "hello...",
 		},
-		"Valid2": {
-			tmpl: `{{ ellipsis 11 "hello world this is Verbis CMS" }}`,
+		"Valid 2": {
+			tmpl: `{{ ellipsis "hello world this is Verbis CMS" 11 }}`,
 			want: "hello world...",
 		},
 		"Short String": {
-			tmpl: `{{ ellipsis 3 "cms" }}`,
+			tmpl: `{{ ellipsis "cms" 3 }}`,
 			want: "cms",
 		},
 	}

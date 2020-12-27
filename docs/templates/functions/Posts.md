@@ -133,7 +133,7 @@ output any data.
 
 ```gotemplate
 {{ $query := dict "limit" 10 "resource" "posts" }}
-{{ $result := post $query }}
+{{ $result := post (dict "limit" 10 "resource" "posts") }}
 {{ with $result.Posts }}
     {{ range $post := . }}
         <h2>{{ $post.Title }}</h2>
@@ -199,7 +199,7 @@ This example demonstrates how to obtain the pagination `page` query parameter as
 the url looks similar to `/posts?page=2`, the function will return two.
 
 ```gotemplate
-{{ getPaginationPage }}
+{{ paginationPage }}
 ```
 
 **Display pagination**
