@@ -1,18 +1,5 @@
 package templates
 
-import "github.com/ainsleyclark/verbis/api/helpers/paths"
-
-// Obtain all of the paths in to variables
-// for testing.
-var (
-	basePath      = paths.Base()
-	adminPath     = paths.Admin()
-	apiPath       = paths.Api()
-	tmplThemePath = paths.Theme()
-	storagePath   = paths.Storage()
-	uploadsPath   = paths.Uploads()
-)
-
 // basePath
 //
 // Returns the base path of the project
@@ -38,7 +25,7 @@ func (t *TemplateFunctions) apiPath() string {
 //
 // Returns the currently active theme path
 func (t *TemplateFunctions) themePath() string {
-	return tmplThemePath
+	return themePath
 }
 
 // uploadsPath
@@ -67,7 +54,7 @@ func (t *TemplateFunctions) storagePath() string {
 // Returns the directory where page templates
 // are stored.
 func (t *TemplateFunctions) templatesPath() string {
-	return tmplThemePath + t.themeConfig.TemplateDir
+	return themePath + t.themeConfig.TemplateDir
 }
 
 // layoutsPath
@@ -75,5 +62,5 @@ func (t *TemplateFunctions) templatesPath() string {
 // Returns the directory where page layouts
 // are stored.
 func (t *TemplateFunctions) layoutsPath() string {
-	return tmplThemePath + t.themeConfig.LayoutDir
+	return themePath + t.themeConfig.LayoutDir
 }

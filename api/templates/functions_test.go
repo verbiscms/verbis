@@ -86,7 +86,6 @@ func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, 
 	}
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
-
 	assert.Equal(t, got, b)
 }
 
@@ -96,12 +95,12 @@ func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, 
 func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
 	b, err := execute(tf, tpl, map[string]string{})
 	if err != nil {
+		fmt.Println(err)
 		assert.Contains(t, err.Error(), expect.(string))
 		return
 	}
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
-	fmt.Println(got)
 	assert.Equal(t, got, b)
 }
 
