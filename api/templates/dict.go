@@ -11,8 +11,8 @@ import (
 // template call for use with the post loop or partial
 // calls.
 //
-// Returns error if the values are not divisible by 2 or the
-// map keys were not strings.
+// Returns errors.TEMPLATE if the dict values are not divisible by two or
+// any dict keys were not strings.
 //
 // Example: {{ $map := dict "colour" "green" "height" 20 }}
 func (t *TemplateFunctions) dict(values ...interface{}) (map[string]interface{}, error) {

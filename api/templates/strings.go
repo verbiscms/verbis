@@ -8,6 +8,8 @@ import (
 // len
 //
 // Returns length of given interface{} in `int`.
+//
+
 func (t *TemplateFunctions) len(a interface{}) int {
 	return len(cast.ToString(a))
 }
@@ -15,6 +17,8 @@ func (t *TemplateFunctions) len(a interface{}) int {
 // replace
 //
 // Returns new replaced string with all matches.
+//
+// Example: {{ replace "" "-" "hello verbis cms" }} Returns `hello-verbis-cms`
 func (t *TemplateFunctions) replace(old, new, src string) string {
 	return strings.Replace(old, new, src, -1)
 }
@@ -22,6 +26,8 @@ func (t *TemplateFunctions) replace(old, new, src string) string {
 // substr
 //
 // Returns new substring of the given string.
+//
+// Example: {{ substr "hello verbis" 0 5 }} Returns `hello`
 func (t *TemplateFunctions) substr(str string, start, end interface{}) string {
 	st := cast.ToInt(start)
 	en := cast.ToInt(end)
@@ -37,6 +43,8 @@ func (t *TemplateFunctions) substr(str string, start, end interface{}) string {
 // trunc
 //
 // Returns a truncated string with no suffix, negatives apply.
+//
+// Example: {{ trunc "hello verbis" -5 }} Returns `verbis`
 func (t *TemplateFunctions) trunc(str string, a interface{}) string {
 	i := cast.ToInt(a)
 	if i < 0 && len(str)+i > 0 {
@@ -50,7 +58,9 @@ func (t *TemplateFunctions) trunc(str string, a interface{}) string {
 
 // ellipsis
 //
-// Returns a ellipsis (...) string from the given length
+// Returns a ellipsis (...) string from the given length.
+//
+// Example: {{ ellipsis "hello verbis cms!" 11 }} Returns `hello verbis...`
 func (t *TemplateFunctions) ellipsis(str string, len int) string {
 	marker := "..."
 	if len < 4 {

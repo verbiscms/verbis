@@ -20,7 +20,7 @@ Strips trailing white space from the beginning and end of a string.
 
 **Replace a string with dashes**
 
-Results in `hello verbis`
+Returns `hello verbis`
 
 ```gotemplate
 {{ trim "    hello verbis     " }}
@@ -44,7 +44,7 @@ Converts an entire string to uppercase characters.
 
 **Convert a string to uppercase characters**
 
-Results in `HELLO VERBIS`
+Returns `HELLO VERBIS`
 
 ```gotemplate
 {{ upper "hello verbis" }}
@@ -68,7 +68,7 @@ Converts an entire string to lowercase characters.
 
 **Convert a string to lowercase characters**
 
-Results in `hello verbis`
+Returns `hello verbis`
 
 ```gotemplate
 {{ lower "hELLo VERBIS" }}
@@ -92,7 +92,7 @@ Converts an entire string to title case.
 
 **Convert a string to title case**
 
-Results in `Hello Verbis`
+Returns `Hello Verbis`
 
 ```gotemplate
 {{ title "hello verbis" }}
@@ -116,7 +116,7 @@ Replaces a sub string with a new string with all matches.
 
 **Replace a string with dashes**
 
-Results in `hello-verbis-cms`
+Returns `hello-verbis-cms`
 
 ```gotemplate
 {{ replace "" "-" "hello verbis cms" }}
@@ -124,7 +124,7 @@ Results in `hello-verbis-cms`
 
 **Replace part of a string**
 
-Results in `hello world!`
+Returns `hello world!`
 
 ```gotemplate
 {{ replace "verbis cms" "world!" "hello verbis cms" }}
@@ -148,7 +148,7 @@ Extracts characters from a string, between two specified indices, and returns th
 
 **Cut out part of a string**
 
-Results in `hello`
+Returns `hello`
 
 ```gotemplate
 {{ substr "hello verbis" 0 5 }}
@@ -173,7 +173,7 @@ be used.
 
 **Cut out part of a string (positive)**
 
-Results in `hello`
+Returns `hello`
 
 ```gotemplate
 {{ trunc "hello verbis" 5 }}
@@ -181,7 +181,7 @@ Results in `hello`
 
 **Cut out part of a string (negative)**
 
-Results in `verbis`
+Returns `verbis`
 
 ```gotemplate
 {{ trunc "hello verbis" -5 }}
@@ -205,7 +205,7 @@ Truncates a string with ellipsis `(...)` from a given len
 
 **Replace a sentence with ellipsis**
 
-Results in `hello verbis...`
+Returns `hello verbis...`
 
 ```gotemplate
 {{ ellipsis "hello verbis cms!" 11 }}
