@@ -5,7 +5,6 @@ import (
 	"github.com/spf13/cast"
 )
 
-
 func (t *TemplateManager) getCategoryByName(name string) *domain.Category {
 	c, err := t.store.Categories.GetByName(name)
 	if err != nil {

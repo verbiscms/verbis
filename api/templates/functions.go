@@ -32,12 +32,12 @@ type TypeOfPage struct {
 // Obtain all of the paths in to variables
 // for use with testing
 var (
-	themePath     =  paths.Theme()
-	basePath      = paths.Base()
-	adminPath     = paths.Admin()
-	apiPath       = paths.Api()
-	storagePath   = paths.Storage()
-	uploadsPath   = paths.Uploads()
+	themePath   = paths.Theme()
+	basePath    = paths.Base()
+	adminPath   = paths.Admin()
+	apiPath     = paths.Api()
+	storagePath = paths.Storage()
+	uploadsPath = paths.Uploads()
 )
 
 // NewManager - Construct
@@ -67,22 +67,22 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"admin": t.admin,
 		// Categories
 		// Cast
-		"toBool": cast.ToBool,
-		"toTime": cast.ToTime,
+		"toBool":     cast.ToBool,
+		"toTime":     cast.ToTime,
 		"toDuration": cast.ToDuration,
-		"toString": cast.ToString,
-		"toInt": cast.ToInt,
-		"toInt8": cast.ToInt8,
-		"toInt16": cast.ToInt16,
-		"toInt32": cast.ToInt32,
-		"toInt64": cast.ToInt64,
-		"toUInt": cast.ToUint,
-		"toUInt8": cast.ToUint8,
-		"toUInt16": cast.ToUint16,
-		"toUInt32": cast.ToUint32,
-		"toUInt64": cast.ToUint64,
-		"toFloat32": cast.ToFloat32,
-		"toFloat64": cast.ToFloat64,
+		"toString":   cast.ToString,
+		"toInt":      cast.ToInt,
+		"toInt8":     cast.ToInt8,
+		"toInt16":    cast.ToInt16,
+		"toInt32":    cast.ToInt32,
+		"toInt64":    cast.ToInt64,
+		"toUInt":     cast.ToUint,
+		"toUInt8":    cast.ToUint8,
+		"toUInt16":   cast.ToUint16,
+		"toUInt32":   cast.ToUint32,
+		"toUInt64":   cast.ToUint64,
+		"toFloat32":  cast.ToFloat32,
+		"toFloat64":  cast.ToFloat64,
 		// Date & Time
 		"now":            time.Now,
 		"date":           t.date,
@@ -137,18 +137,24 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"templatesPath": t.templatesPath,
 		"layoutsPath":   t.layoutsPath,
 		// Rand
-		"randInt": t.randInt,
-		"randFloat": t.randFloat,
-		"randAlpha": t.randAlpha,
+		"randInt":      t.randInt,
+		"randFloat":    t.randFloat,
+		"randAlpha":    t.randAlpha,
 		"randAlphaNum": t.randAlphaNum,
+		// Reflect
+		"kindIs":     t.kindIs,
+		"kindOf":     t.kindOf,
+		"typeOf":     t.typeOf,
+		"typeIs":     t.typeIs,
+		"typeIsLike": t.typeIsLike,
 		// Regex"
-		"regexMatch": t.regexMatch,
-		"regexFindAll": t.regexFindAll,
-		"regexFind": t.regexFind,
-		"regexReplaceAll": t.regexReplaceAll,
+		"regexMatch":             t.regexMatch,
+		"regexFindAll":           t.regexFindAll,
+		"regexFind":              t.regexFind,
+		"regexReplaceAll":        t.regexReplaceAll,
 		"regexReplaceAllLiteral": t.regexReplaceAllLiteral,
-		"regexSplit": t.regexSplit,
-		"regexQuoteMeta": t.regexQuoteMeta,
+		"regexSplit":             t.regexSplit,
+		"regexQuoteMeta":         t.regexQuoteMeta,
 		// Safe
 		"safeHTML":     t.safeHTML,
 		"safeHTMLAttr": t.safeHTMLAttr,
@@ -168,11 +174,11 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"ellipsis": t.ellipsis,
 		// URL
 		"baseUrl": t.getBaseURL,
-		"scheme": t.getScheme,
-		"host": t.getHost,
+		"scheme":  t.getScheme,
+		"host":    t.getHost,
 		"fullUrl": t.getFullURL,
-		"url": t.getURL,
-		"query": t.getQueryParams,
+		"url":     t.getURL,
+		"query":   t.getQueryParams,
 		// Helpers
 		//"fullUrl": t.getFullUrl,
 	}

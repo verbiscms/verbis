@@ -1,4 +1,4 @@
- package templates
+package templates
 
 import (
 	"bytes"
@@ -65,13 +65,13 @@ func cssValidString(str string) string {
 	return strings.ToLower(str)
 }
 
- // lang
- //
- // Returns language attributes set in the options for
- // use with the `<html lang="">` attribute.
- //
- // Example:
- // `{{ lang }}` would return 'en-gb`
+// lang
+//
+// Returns language attributes set in the options for
+// use with the `<html lang="">` attribute.
+//
+// Example:
+// `{{ lang }}` would return 'en-gb`
 func (t *TemplateManager) lang() string {
 	return t.options.GeneralLocale
 }

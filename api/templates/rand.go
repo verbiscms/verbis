@@ -14,7 +14,7 @@ func (t *TemplateManager) randInt(a, b interface{}) int {
 	min := cast.ToInt(a)
 	max := cast.ToInt(b)
 	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(max - min) + min
+	return rand.Intn(max-min) + min
 }
 
 // randFloat
@@ -24,7 +24,7 @@ func (t *TemplateManager) randFloat(a, b interface{}) float64 {
 	min := cast.ToFloat64(a)
 	max := cast.ToFloat64(b)
 	rand.Seed(time.Now().UnixNano())
-	return min + rand.Float64() * (max - min)
+	return min + rand.Float64()*(max-min)
 }
 
 // randAlpha
