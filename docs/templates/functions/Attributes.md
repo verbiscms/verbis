@@ -19,7 +19,7 @@ The following is outputted when the `{{ body }}` function is called.
 | Description                  | Example                              |
 | ---------------------------- | ------------------------------------ |
 | Resource type                | `page` or `posts`                    |
-| Page ID                      | `page-id-4`                           |
+| Page ID                      | `page-id-4`                          |
 | Title                        | `Page Title` becomes `page-title`    |
 | Page Template                | `page-template-news-archive`         |
 | Page Layout                  | `page-layout-main`                   |

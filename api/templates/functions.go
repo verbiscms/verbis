@@ -163,18 +163,17 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"safeJSStr":    t.safeJSStr,
 		"safeURL":      t.safeUrl,
 		// Slice
-		"slice": t.slice,
-		"append": t.append,
+		"slice":   t.slice,
+		"append":  t.append,
 		"prepend": t.prepend,
-		"first": t.first,
-		"last": t.last,
+		"first":   t.first,
+		"last":    t.last,
 		"reverse": t.reverse,
 		// Strings
 		"trim":     strings.TrimSpace,
 		"upper":    strings.ToUpper,
 		"lower":    strings.ToLower,
 		"title":    strings.Title,
-		"len":      t.len,
 		"replace":  t.replace,
 		"substr":   t.substr,
 		"trunc":    t.trunc,
@@ -186,8 +185,10 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"fullUrl": t.getFullURL,
 		"url":     t.getURL,
 		"query":   t.getQueryParams,
-		// Helpers
-		//"fullUrl": t.getFullUrl,
+		// Util
+		"len": t.len,
+		"explode": t.explode,
+		"implode": t.implode,
 	}
 
 	return funcMap

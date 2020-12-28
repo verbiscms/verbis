@@ -2,33 +2,6 @@ package templates
 
 import "testing"
 
-func Test_Len(t *testing.T) {
-
-	tt := map[string]struct {
-		tmpl string
-		want interface{}
-	}{
-		"Valid": {
-			tmpl: `{{ len "verbis" }}`,
-			want: "6",
-		},
-		"Valid 2": {
-			tmpl: `{{ len "verbis cms" }}`,
-			want: "10",
-		},
-		"Int": {
-			tmpl: `{{ len 1234 }}`,
-			want: 4,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			runt(t, newTestSuite(), test.tmpl, test.want)
-		})
-	}
-}
-
 func Test_Replace(t *testing.T) {
 
 	tt := map[string]struct {
@@ -69,6 +42,14 @@ func Test_Substr(t *testing.T) {
 		"Strings as Params": {
 			tmpl: `{{ substr "hello world" "0" "5" }}`,
 			want: "hello",
+		},
+		"Negative Start": {
+			tmpl: `{{ substr "hello world" "-1" "5" }}`,
+			want: "hello",
+		},
+		"Negative End": {
+			tmpl: `{{ substr "hello world" "5" "-1" }}`,
+			want: " world",
 		},
 	}
 

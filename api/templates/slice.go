@@ -36,7 +36,7 @@ func (t *TemplateManager) append(slice interface{}, i interface{}) ([]interface{
 		val := reflect.ValueOf(slice)
 
 		ret := make([]interface{}, val.Len())
-		for i := 0; i< val.Len(); i++ {
+		for i := 0; i < val.Len(); i++ {
 			ret[i] = val.Index(i).Interface()
 		}
 
@@ -63,7 +63,7 @@ func (t *TemplateManager) prepend(slice interface{}, i interface{}) ([]interface
 		val := reflect.ValueOf(slice)
 
 		ret := make([]interface{}, val.Len())
-		for i := 0; i< val.Len(); i++ {
+		for i := 0; i < val.Len(); i++ {
 			ret[i] = val.Index(i).Interface()
 		}
 
@@ -136,6 +136,8 @@ func (t *TemplateManager) reverse(slice interface{}) ([]interface{}, error) {
 	typ := reflect.TypeOf(slice).Kind()
 
 	switch typ {
+	default:
+		return nil, &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Cannot get the last element on type: %s", typ), Operation: op, Err: fmt.Errorf("unable to get reverse slice of type: %s", typ)}
 	case reflect.Slice, reflect.Array:
 		val := reflect.ValueOf(slice)
 
@@ -145,7 +147,5 @@ func (t *TemplateManager) reverse(slice interface{}) ([]interface{}, error) {
 		}
 
 		return reversed, nil
-	default:
-		return nil, &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Cannot get the last element on type: %s", typ), Operation: op, Err: fmt.Errorf("unable to get reverse slice of type: %s", typ)}
 	}
 }
