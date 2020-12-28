@@ -66,6 +66,10 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"auth":  t.auth,
 		"admin": t.admin,
 		// Categories
+		"category":         t.getCategory,
+		"categoryByName":   t.getCategoryByName,
+		"categoryByParent": t.getCategoryByParent,
+		"categories":       t.getCategories,
 		// Cast
 		"toBool":     cast.ToBool,
 		"toTime":     cast.ToTime,
@@ -185,6 +189,9 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"fullUrl": t.getFullURL,
 		"url":     t.getURL,
 		"query":   t.getQueryParams,
+		// Users
+		"user":  t.getUser,
+		"users":  t.getUsers,
 		// Util
 		"len":     t.len,
 		"explode": t.explode,
