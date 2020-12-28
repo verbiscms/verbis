@@ -191,7 +191,7 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"query":   t.getQueryParams,
 		// Users
 		"user":  t.getUser,
-		"users":  t.getUsers,
+		"users": t.getUsers,
 		// Util
 		"len":     t.len,
 		"explode": t.explode,

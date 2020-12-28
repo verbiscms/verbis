@@ -56,7 +56,7 @@ func (t *TemplateManager) getCategories(query map[string]interface{}) (map[strin
 	}
 
 	return map[string]interface{}{
-		"Categories":      categories,
+		"Categories": categories,
 		"Pagination": http.NewPagination().Get(p.Params, total),
 	}, nil
 }
