@@ -32,7 +32,6 @@ func (t *TemplateManager) typeOf(src interface{}) string {
 	return fmt.Sprintf("%T", src)
 }
 
-
 // typeIs
 //
 // Similar to `kindIs` but its used for types, instead of primitives.
@@ -41,7 +40,6 @@ func (t *TemplateManager) typeOf(src interface{}) string {
 func (t *TemplateManager) typeIs(target string, src interface{}) bool {
 	return target == t.typeOf(src)
 }
-
 
 // typeIsLike
 //

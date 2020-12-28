@@ -81,6 +81,7 @@ func execute(tf *TemplateManager, tpl string, data interface{}) (string, error) 
 func runtv(t *testing.T, tf *TemplateManager, tpl string, expect interface{}, data interface{}) {
 	b, err := execute(tf, tpl, data)
 	if err != nil {
+		//fmt.Println(err.Error())
 		assert.Contains(t, err.Error(), expect.(string))
 		return
 	}
