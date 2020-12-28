@@ -177,5 +177,3 @@ Returns `321`
 {{ $mySlice := slice 1 2 3 }}
 {{ reverse $mySlice }}
 ```
-
-___
