@@ -61,6 +61,14 @@ func Test_GetPost(t *testing.T) {
 			},
 			want: nil,
 		},
+		"No Stringer": {
+			input: noStringer{},
+			mock: func(m *mocks.PostsRepository) {
+				m.On("GetById", 1).Return(post, nil)
+				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
+			},
+			want: nil,
+		},
 	}
 
 	for name, test := range tt {
@@ -210,7 +218,6 @@ func Test_GetPosts(t *testing.T) {
 			f.store.Posts = &postsMock
 
 			p, err := f.getPosts(test.input)
-
 			if err != nil {
 				assert.Contains(t, err.Error(), test.want)
 				return
