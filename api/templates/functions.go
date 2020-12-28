@@ -6,12 +6,13 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/cast"
 	"html/template"
 	"strings"
 	"time"
 )
 
-type TemplateFunctions struct {
+type TemplateManager struct {
 	gin         *gin.Context
 	post        *domain.PostData
 	fields      map[string]interface{}
@@ -39,10 +40,10 @@ var (
 	uploadsPath   = paths.Uploads()
 )
 
-// NewFunctions - Construct
-func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateFunctions {
+// NewManager - Construct
+func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateManager {
 
-	return &TemplateFunctions{
+	return &TemplateManager{
 		gin:         g,
 		post:        p,
 		fields:      p.Fields,
@@ -55,7 +56,7 @@ func NewFunctions(g *gin.Context, s *models.Store, p *domain.PostData, c config.
 }
 
 // Get all template functions
-func (t *TemplateFunctions) GetFunctions() template.FuncMap {
+func (t *TemplateManager) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
 		// Attributes
@@ -65,6 +66,23 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 		"auth":  t.auth,
 		"admin": t.admin,
 		// Categories
+		// Cast
+		"toBool": cast.ToBool,
+		"toTime": cast.ToTime,
+		"toDuration": cast.ToDuration,
+		"toString": cast.ToString,
+		"toInt": cast.ToInt,
+		"toInt8": cast.ToInt8,
+		"toInt16": cast.ToInt16,
+		"toInt32": cast.ToInt32,
+		"toInt64": cast.ToInt64,
+		"toUInt": cast.ToUint,
+		"toUInt8": cast.ToUint8,
+		"toUInt16": cast.ToUint16,
+		"toUInt32": cast.ToUint32,
+		"toUInt64": cast.ToUint64,
+		"toFloat32": cast.ToFloat32,
+		"toFloat64": cast.ToFloat64,
 		// Date & Time
 		"now":            time.Now,
 		"date":           t.date,
@@ -163,7 +181,7 @@ func (t *TemplateFunctions) GetFunctions() template.FuncMap {
 }
 
 // GetData - Returns all the necessary data for template usage.
-func (t *TemplateFunctions) GetData() map[string]interface{} {
+func (t *TemplateManager) GetData() map[string]interface{} {
 
 	theme := t.store.Site.GetThemeConfig()
 
@@ -207,7 +225,7 @@ func (t *TemplateFunctions) GetData() map[string]interface{} {
 	return data
 }
 
-func (t *TemplateFunctions) orderOfSearch() TypeOfPage {
+func (t *TemplateManager) orderOfSearch() TypeOfPage {
 	const op = "Templates.orderOfSearch"
 
 	data := TypeOfPage{

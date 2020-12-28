@@ -20,7 +20,7 @@ import (
 //
 // Example:
 // {{ partial "partials/circle.svg" (dict "radius" 50 "fill" "red") }}
-func (t *TemplateFunctions) partial(name string, data ...interface{}) (template.HTML, error) {
+func (t *TemplateManager) partial(name string, data ...interface{}) (template.HTML, error) {
 	const op = "Templates.partial"
 
 	path := themePath + "/" + name

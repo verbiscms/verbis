@@ -7,7 +7,7 @@ import "os"
 // Retrieve an environment variable by key
 //
 // Example: {{ env "APP_DEBUG" }}
-func (t *TemplateFunctions) env(key string) string {
+func (t *TemplateManager) env(key string) string {
 	return os.Getenv(key)
 }
 
@@ -17,6 +17,6 @@ func (t *TemplateFunctions) env(key string) string {
 // substitute variables in a string.
 //
 // {{ expandEnv "Welcome to $APP_NAME" }}
-func (t *TemplateFunctions) expandEnv(str string) string {
+func (t *TemplateManager) expandEnv(str string) string {
 	return os.ExpandEnv(str)
 }

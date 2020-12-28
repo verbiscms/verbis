@@ -23,9 +23,9 @@ import (
 
 // newTestSuite
 //
-// Sets up up a TemplateFunctions with gin read
+// Sets up up a TemplateManager with gin read
 // for testing.
-func newTestSuite(args ...string) *TemplateFunctions {
+func newTestSuite(args ...string) *TemplateManager {
 	gin.SetMode(gin.TestMode)
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get", nil)
@@ -52,7 +52,7 @@ func newTestSuite(args ...string) *TemplateFunctions {
 	mockSite.On("GetGlobalConfig").Return(&domain.Site{}, nil)
 	mockSite.On("GetThemeConfig").Return(domain.ThemeConfig{})
 
-	return NewFunctions(g, &models.Store{
+	return NewManager(g, &models.Store{
 		Options: &mockOptions,
 		Site:    &mockSite,
 	}, p, config.Configuration{})
@@ -62,7 +62,7 @@ func newTestSuite(args ...string) *TemplateFunctions {
 //
 // Executes the templates with functions and returns the resulting
 // html or an error if there was a problem executing the template.
-func execute(tf *TemplateFunctions, tpl string, data interface{}) (string, error) {
+func execute(tf *TemplateManager, tpl string, data interface{}) (string, error) {
 	tt := template.Must(template.New("test").Funcs(tf.GetFunctions()).Parse(tpl))
 
 	var b bytes.Buffer
@@ -78,7 +78,7 @@ func execute(tf *TemplateFunctions, tpl string, data interface{}) (string, error
 //
 // Run the template test by executing the tpl given
 // with data.
-func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, data interface{}) {
+func runtv(t *testing.T, tf *TemplateManager, tpl string, expect interface{}, data interface{}) {
 	b, err := execute(tf, tpl, data)
 	if err != nil {
 		assert.Contains(t, err.Error(), expect.(string))
@@ -92,7 +92,7 @@ func runtv(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}, 
 // runt
 //
 // Run the template test by executing the tpl given
-func runt(t *testing.T, tf *TemplateFunctions, tpl string, expect interface{}) {
+func runt(t *testing.T, tf *TemplateManager, tpl string, expect interface{}) {
 	b, err := execute(tf, tpl, map[string]string{})
 	if err != nil {
 		fmt.Println(err)

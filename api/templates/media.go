@@ -13,7 +13,7 @@ import (
 // Example:
 // {{ $image := media 10 }}
 // {{ $image.Url }}
-func (t *TemplateFunctions) getMedia(i interface{}) *domain.Media {
+func (t *TemplateManager) getMedia(i interface{}) *domain.Media {
 	var id int
 
 	if i == nil {

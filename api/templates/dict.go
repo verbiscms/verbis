@@ -15,7 +15,7 @@ import (
 // any dict keys were not strings.
 //
 // Example: {{ $map := dict "colour" "green" "height" 20 }}
-func (t *TemplateFunctions) dict(values ...interface{}) (map[string]interface{}, error) {
+func (t *TemplateManager) dict(values ...interface{}) (map[string]interface{}, error) {
 	const op = "Templates.dict"
 
 	if len(values)%2 != 0 {
