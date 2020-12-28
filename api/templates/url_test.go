@@ -73,30 +73,30 @@ func Test_GetFullURL(t *testing.T) {
 func Test_GetQueryParams(t *testing.T) {
 
 	tt := map[string]struct {
-		url string
-		data interface{}
-		input  string
+		url   string
+		data  interface{}
+		input string
 		want  interface{}
 	}{
 		"Int Param": {
-			url: "/?test=123",
+			url:   "/?test=123",
 			input: `{{ query "test" }}`,
-			want: "123",
+			want:  "123",
 		},
 		"String Param": {
-			url: "/?test=hello",
+			url:   "/?test=hello",
 			input: `{{ query "test" }}`,
-			want: "hello",
+			want:  "hello",
 		},
 		"No Value": {
-			url: "/?test=hello",
+			url:   "/?test=hello",
 			input: `{{ query "wrongval" }}`,
-			want: "",
+			want:  "",
 		},
 		"Nasty Value": {
-			url: "/?test=<script>alert('hacked!')</script>",
+			url:   "/?test=<script>alert('hacked!')</script>",
 			input: `{{ query "test" }}`,
-			want: "&lt;script&gt;alert(&#39;hacked!&#39;)&lt;/script&gt;",
+			want:  "&lt;script&gt;alert(&#39;hacked!&#39;)&lt;/script&gt;",
 		},
 		"Bad Cast": {
 			url: "/?test=test",
@@ -104,7 +104,7 @@ func Test_GetQueryParams(t *testing.T) {
 				"Data": noStringer{},
 			},
 			input: `{{ query .Data }}`,
-			want: "",
+			want:  "",
 		},
 	}
 

@@ -75,19 +75,19 @@ func Test_RandAlpha(t *testing.T) {
 
 	tt := map[string]struct {
 		tmpl string
-		len int
+		len  int
 	}{
 		"Valid": {
 			tmpl: `{{ randAlpha 5  }}`,
-			len: 5,
+			len:  5,
 		},
 		"Valid 2": {
 			tmpl: `{{ randAlpha 10  }}`,
-			len: 10,
+			len:  10,
 		},
 		"Valid 3": {
 			tmpl: `{{ randAlpha 100  }}`,
-			len: 100,
+			len:  100,
 		},
 	}
 
@@ -104,19 +104,19 @@ func Test_RandAlphaNum(t *testing.T) {
 
 	tt := map[string]struct {
 		tmpl string
-		len int
+		len  int
 	}{
 		"Valid": {
 			tmpl: `{{ randAlphaNum 5  }}`,
-			len: 5,
+			len:  5,
 		},
 		"Valid 2": {
 			tmpl: `{{ randAlphaNum 10  }}`,
-			len: 10,
+			len:  10,
 		},
 		"Valid 3": {
 			tmpl: `{{ randAlphaNum 100  }}`,
-			len: 100,
+			len:  100,
 		},
 	}
 
