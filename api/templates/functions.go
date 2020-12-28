@@ -162,6 +162,13 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"safeJS":       t.safeJS,
 		"safeJSStr":    t.safeJSStr,
 		"safeURL":      t.safeUrl,
+		// Slice
+		"slice": t.slice,
+		"append": t.append,
+		"prepend": t.prepend,
+		"first": t.first,
+		"last": t.last,
+		"reverse": t.reverse,
 		// Strings
 		"trim":     strings.TrimSpace,
 		"upper":    strings.ToUpper,

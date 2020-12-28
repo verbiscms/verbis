@@ -24,8 +24,7 @@ func Test_Len(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := newTestSuite()
-			runt(t, f, test.tmpl, test.want)
+			runt(t, newTestSuite(), test.tmpl, test.want)
 		})
 	}
 }
@@ -48,8 +47,7 @@ func Test_Replace(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := newTestSuite()
-			runt(t, f, test.tmpl, test.want)
+			runt(t, newTestSuite(), test.tmpl, test.want)
 		})
 	}
 }
@@ -76,8 +74,7 @@ func Test_Substr(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := newTestSuite()
-			runt(t, f, test.tmpl, test.want)
+			runt(t, newTestSuite(), test.tmpl, test.want)
 		})
 	}
 }
@@ -108,8 +105,7 @@ func Test_Trunc(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := newTestSuite()
-			runt(t, f, test.tmpl, test.want)
+			runt(t, newTestSuite(), test.tmpl, test.want)
 		})
 	}
 }
@@ -136,8 +132,7 @@ func Test_Ellipsis(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := newTestSuite()
-			runt(t, f, test.tmpl, test.want)
+			runt(t, newTestSuite(), test.tmpl, test.want)
 		})
 	}
 }
