@@ -186,7 +186,7 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"url":     t.getURL,
 		"query":   t.getQueryParams,
 		// Util
-		"len": t.len,
+		"len":     t.len,
 		"explode": t.explode,
 		"implode": t.implode,
 	}
