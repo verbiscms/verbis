@@ -11,7 +11,7 @@ import (
 // a `time.Time` or an `int, int32, int64`.
 //
 // Example: {{ date "02/01/2006" now }}
-func (t *TemplateFunctions) date(fmt string, date interface{}) string {
+func (t *TemplateManager) date(fmt string, date interface{}) string {
 	return t.dateInZone(fmt, date, "Local")
 }
 
@@ -21,7 +21,7 @@ func (t *TemplateFunctions) date(fmt string, date interface{}) string {
 // date to the correct format.
 //
 // Example: {{ dateInZone "02/01/2006" now "Europe/London" }}
-func (t *TemplateFunctions) dateInZone(format string, date interface{}, zone string) string {
+func (t *TemplateManager) dateInZone(format string, date interface{}, zone string) string {
 	var tm time.Time
 
 	switch date := date.(type) {
@@ -54,7 +54,7 @@ func (t *TemplateFunctions) dateInZone(format string, date interface{}, zone str
 // an `int, int64`.
 //
 // Example: {{ ago .UpdatedAt }}
-func (t *TemplateFunctions) ago(i interface{}) string {
+func (t *TemplateManager) ago(i interface{}) string {
 	var tm time.Time
 
 	switch date := i.(type) {
@@ -77,7 +77,7 @@ func (t *TemplateFunctions) ago(i interface{}) string {
 // For example `duration 85` will return `1m25s`.
 //
 // Example: {{ duration 85 }}
-func (t *TemplateFunctions) duration(sec interface{}) string {
+func (t *TemplateManager) duration(sec interface{}) string {
 	var n int64
 	switch value := sec.(type) {
 	default:
@@ -96,7 +96,7 @@ func (t *TemplateFunctions) duration(sec interface{}) string {
 // picker input field.
 //
 // Example: {{ htmlDate now }}
-func (t *TemplateFunctions) htmlDate(date interface{}) string {
+func (t *TemplateManager) htmlDate(date interface{}) string {
 	return t.dateInZone("2006-01-02", date, "Local")
 }
 
@@ -105,6 +105,6 @@ func (t *TemplateFunctions) htmlDate(date interface{}) string {
 // Returns HTML date with a timezone
 //
 // Example: {{ htmlDateInZone now "Europe/London" }}
-func (t *TemplateFunctions) htmlDateInZone(date interface{}, zone string) string {
+func (t *TemplateManager) htmlDateInZone(date interface{}, zone string) string {
 	return t.dateInZone("2006-01-02", date, zone)
 }

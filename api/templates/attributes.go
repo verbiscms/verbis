@@ -16,7 +16,7 @@ import (
 // Example:
 // `{{ body }}` would return
 // `page page-id-4 page-title page-template-news-archive page-layout-main logged-in`
-func (t *TemplateFunctions) body() string {
+func (t *TemplateManager) body() string {
 	body := new(bytes.Buffer)
 	p := t.post.Post
 
@@ -72,6 +72,6 @@ func cssValidString(str string) string {
  //
  // Example:
  // `{{ lang }}` would return 'en-gb`
-func (t *TemplateFunctions) lang() string {
+func (t *TemplateManager) lang() string {
 	return t.options.GeneralLocale
 }

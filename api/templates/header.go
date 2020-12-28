@@ -14,7 +14,7 @@ import (
 // as well as any meta information from the page.
 //
 // Example: {{ verbisHead }}
-func (t *TemplateFunctions) header() template.HTML {
+func (t *TemplateManager) header() template.HTML {
 	var b bytes.Buffer
 
 	// Get Code Injection from the Post
@@ -90,7 +90,7 @@ func (t *TemplateFunctions) header() template.HTML {
 //
 // Writes to the given *bytes.Buffer with meta description
 // and article published time if they are not nil.
-func (t *TemplateFunctions) writeMeta(bytes *bytes.Buffer, description string) {
+func (t *TemplateManager) writeMeta(bytes *bytes.Buffer, description string) {
 	if description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", description))
 	}
@@ -104,7 +104,7 @@ func (t *TemplateFunctions) writeMeta(bytes *bytes.Buffer, description string) {
 // Opengraph writing to the given *bytes.Bufffer, this function
 // will write website, site name, locale from options, title,
 // description & post image if there is one.
-func (t *TemplateFunctions) writeFacebook(bytes *bytes.Buffer, title string, description string, imageId int) {
+func (t *TemplateManager) writeFacebook(bytes *bytes.Buffer, title string, description string, imageId int) {
 
 	if title != "" || description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
@@ -131,7 +131,7 @@ func (t *TemplateFunctions) writeFacebook(bytes *bytes.Buffer, title string, des
 // Twitter card writing to the given *bytes.Bufffer, this function
 // will write the title, description & post image if there is
 // one.
-func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, description string, imageId int) {
+func (t *TemplateManager) writeTwitter(bytes *bytes.Buffer, title string, description string, imageId int) {
 	if title != "" || description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:card\" content=\"summary\">"))
 	}
@@ -157,7 +157,7 @@ func (t *TemplateFunctions) writeTwitter(bytes *bytes.Buffer, title string, desc
 // none, return empty string.
 //
 // Example: <title>Verbis - {{ metaTitle }}</title>
-func (t *TemplateFunctions) metaTitle() string {
+func (t *TemplateManager) metaTitle() string {
 	postMeta := t.post.SeoMeta.Meta
 
 	if postMeta.Title != "" {

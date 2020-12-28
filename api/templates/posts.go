@@ -21,7 +21,7 @@ type ViewPost struct {
 // or nil if not found.
 //
 // Example: {{ post 123 }}
-func (t *TemplateFunctions) getPost(i interface{}) *ViewPost {
+func (t *TemplateManager) getPost(i interface{}) *ViewPost {
 	p, err := t.store.Posts.GetById(cast.ToInt(i))
 	if err != nil {
 		return nil
@@ -54,7 +54,7 @@ func (t *TemplateFunctions) getPost(i interface{}) *ViewPost {
 //     {{ else }}
 //         <h4>No posts found</h4>
 // {{ end }}
-func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]interface{}, error) {
+func (t *TemplateManager) getPosts(query map[string]interface{}) (map[string]interface{}, error) {
 
 	p, err := http.GetTemplateParams(query)
 	if err != nil {
@@ -102,7 +102,7 @@ func (t *TemplateFunctions) getPosts(query map[string]interface{}) (map[string]i
 // not be cast to an integer, it will return 1.
 //
 // Example: {{ paginationPage }}
-func (t *TemplateFunctions) getPaginationPage() int {
+func (t *TemplateManager) getPaginationPage() int {
 	page := t.gin.Query("page")
 	if page == "" {
 		return 1
@@ -120,7 +120,7 @@ func (t *TemplateFunctions) getPaginationPage() int {
 // ready to be returned to the template. It removes
 // layouts from the formatting as it is not
 // needed in the frontend.
-func (t *TemplateFunctions) formatPost(post domain.Post) (ViewPost, error) {
+func (t *TemplateManager) formatPost(post domain.Post) (ViewPost, error) {
 
 	fp, err := t.store.Posts.Format(post)
 	if err != nil {

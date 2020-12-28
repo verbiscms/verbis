@@ -13,7 +13,7 @@ import (
 // closing `</body>`.
 //
 // Example: {{ verbisFoot }}
-func (t *TemplateFunctions) footer() template.HTML {
+func (t *TemplateManager) footer() template.HTML {
 	var b bytes.Buffer
 
 	// Get Global Foot (Code Injection)
