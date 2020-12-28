@@ -95,7 +95,6 @@ func runtv(t *testing.T, tf *TemplateManager, tpl string, expect interface{}, da
 func runt(t *testing.T, tf *TemplateManager, tpl string, expect interface{}) {
 	b, err := execute(tf, tpl, map[string]string{})
 	if err != nil {
-		fmt.Println(err)
 		assert.Contains(t, err.Error(), expect.(string))
 		return
 	}
