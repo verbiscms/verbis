@@ -8,7 +8,7 @@ import "regexp"
 // matches of the regular expression pattern.
 //
 // Example: {{ regexMatch "^Verbis" "Verbis CMS" }} Returns true
-func (t *TemplateFunctions) regexMatch(regex string, str string) bool {
+func (t *TemplateManager) regexMatch(regex string, str string) bool {
 	match, _ := regexp.MatchString(regex, str)
 	return match
 }
@@ -19,7 +19,7 @@ func (t *TemplateFunctions) regexMatch(regex string, str string) bool {
 // expressions with the given input string.
 //
 // Example: {{ regexFindAll "[1,3,5,7]" "123456789" -1 }} Returns [1 3 5 7]
-func (t *TemplateFunctions) regexFindAll(regex string, str string, i int) []string {
+func (t *TemplateManager) regexFindAll(regex string, str string, i int) []string {
 	r := regexp.MustCompile(regex)
 	return r.FindAllString(str, i)
 }
@@ -30,7 +30,7 @@ func (t *TemplateFunctions) regexFindAll(regex string, str string, i int) []stri
 // regular expression in the input string
 //
 // Example: {{ regexFind "verbis.?" "verbiscms" }} Returns verbisc
-func (t *TemplateFunctions) regexFind(regex string, str string) string {
+func (t *TemplateManager) regexFind(regex string, str string) string {
 	r := regexp.MustCompile(regex)
 	return r.FindString(str)
 }
@@ -42,7 +42,7 @@ func (t *TemplateFunctions) regexFind(regex string, str string) string {
 // represents the first submatch.
 //
 // Example:
-func (t *TemplateFunctions) regexReplaceAll(regex string, str string, repl string) string {
+func (t *TemplateManager) regexReplaceAll(regex string, str string, repl string) string {
 	r := regexp.MustCompile(regex)
 	return r.ReplaceAllString(str, repl)
 }
@@ -53,7 +53,7 @@ func (t *TemplateFunctions) regexReplaceAll(regex string, str string, repl strin
 // replacement. The replacement string is substituted directly, without using Expand.
 //
 // Example: {{ regexReplaceAllLiteral "a(x*)b" "-ab-axxb-" "${1}" }} Returns `-${1}-${1}-`
-func (t *TemplateFunctions) regexReplaceAllLiteral(regex string, str string, repl string) string {
+func (t *TemplateManager) regexReplaceAllLiteral(regex string, str string, repl string) string {
 	r := regexp.MustCompile(regex)
 	return r.ReplaceAllLiteralString(str, repl)
 }
@@ -65,7 +65,7 @@ func (t *TemplateFunctions) regexReplaceAllLiteral(regex string, str string, rep
 // substrings to return, where `-1` returns all matches.
 //
 // Example: {{ regexSplit "b+" "verbis" -1 }} Returns `[ver  s]`
-func (t *TemplateFunctions) regexSplit(regex string, str string, i int) []string {
+func (t *TemplateManager) regexSplit(regex string, str string, i int) []string {
 	r := regexp.MustCompile(regex)
 	return r.Split(str, i)
 }
@@ -77,6 +77,6 @@ func (t *TemplateFunctions) regexSplit(regex string, str string, i int) []string
 // the literal text.
 //
 // Example: {{ regexQuoteMeta "verbis+?" }} Returns `verbis`
-func (t *TemplateFunctions) regexQuoteMeta(str string) string {
+func (t *TemplateManager) regexQuoteMeta(str string) string {
 	return regexp.QuoteMeta(str)
 }

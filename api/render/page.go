@@ -60,18 +60,18 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		pt = pt + r.theme.FileExtension
 	}
 
-	tf := templates.NewFunctions(g, r.store, &postData, r.config)
+	tm := templates.NewManager(g, r.store, &postData, r.config)
 	gvFrontend := goview.New(goview.Config{
 		Root:         paths.Theme(),
 		Extension:    r.theme.FileExtension,
 		Master:       master,
 		Partials:     []string{},
-		Funcs:        tf.GetFunctions(),
+		Funcs:        tm.GetFunctions(),
 		DisableCache: !environment.IsProduction(),
 	})
 
 	var b bytes.Buffer
-	if err := gvFrontend.RenderWriter(&b, pt, tf.GetData()); err != nil {
+	if err := gvFrontend.RenderWriter(&b, pt, tm.GetData()); err != nil {
 		panic(err)
 	}
 

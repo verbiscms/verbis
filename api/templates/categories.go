@@ -6,7 +6,7 @@ import (
 )
 
 
-func (t *TemplateFunctions) getCategoryByName(name string) *domain.Category {
+func (t *TemplateManager) getCategoryByName(name string) *domain.Category {
 	c, err := t.store.Categories.GetByName(name)
 	if err != nil {
 		return nil
@@ -14,7 +14,7 @@ func (t *TemplateFunctions) getCategoryByName(name string) *domain.Category {
 	return &c
 }
 
-func (t *TemplateFunctions) getCategoryByID(i interface{}) *domain.Category {
+func (t *TemplateManager) getCategoryByID(i interface{}) *domain.Category {
 	id := cast.ToInt(i)
 	c, err := t.store.Categories.GetById(id)
 	if err != nil {

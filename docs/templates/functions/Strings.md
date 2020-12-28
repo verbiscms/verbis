@@ -191,7 +191,7 @@ ___
 
 ## ellipsis
 
-Truncates a string with ellipsis `(...)` from a given len
+Truncates a string with ellipsis `(...)` from a given length.
 
 ### Accepts: 
 
