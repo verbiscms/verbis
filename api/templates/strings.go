@@ -5,15 +5,6 @@ import (
 	"strings"
 )
 
-// len
-//
-// Returns length of given interface{} in `int`.
-//
-
-func (t *TemplateManager) len(a interface{}) int {
-	return len(cast.ToString(a))
-}
-
 // replace
 //
 // Returns new replaced string with all matches.
