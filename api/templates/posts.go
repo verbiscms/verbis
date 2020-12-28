@@ -21,8 +21,13 @@ type ViewPost struct {
 // or nil if not found.
 //
 // Example: {{ post 123 }}
-func (t *TemplateManager) getPost(i interface{}) *ViewPost {
-	p, err := t.store.Posts.GetById(cast.ToInt(i))
+func (t *TemplateManager) getPost(id interface{}) *ViewPost {
+	i, err := cast.ToIntE(id)
+	if err != nil {
+		return nil
+	}
+
+	p, err := t.store.Posts.GetById(i)
 	if err != nil {
 		return nil
 	}
@@ -55,17 +60,12 @@ func (t *TemplateManager) getPost(i interface{}) *ViewPost {
 //         <h4>No posts found</h4>
 // {{ end }}
 func (t *TemplateManager) getPosts(query map[string]interface{}) (map[string]interface{}, error) {
-
 	p, err := http.GetTemplateParams(query)
 	if err != nil {
 		return nil, err
 	}
 
-	// Obtain the post and detect if it was not found,
-	// return nil if so.
 	posts, total, err := t.store.Posts.Get(p.Params, p.Resource, "published")
-	pagination := http.NewPagination().Get(p.Params, total)
-
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
 	} else if err != nil {
@@ -91,7 +91,7 @@ func (t *TemplateManager) getPosts(query map[string]interface{}) (map[string]int
 
 	return map[string]interface{}{
 		"Posts":      returnPosts,
-		"Pagination": pagination,
+		"Pagination": http.NewPagination().Get(p.Params, total),
 	}, nil
 }
 
