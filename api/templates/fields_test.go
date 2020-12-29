@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/gookit/color"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -172,45 +173,49 @@ func Test_GetRepeater(t *testing.T) {
 
 	tt := map[string]struct {
 		fields string
-		input    string
+		input  string
 		want   interface{}
 	}{
-		"Success": {
-			fields: `{
-				"repeater":[
-					{
-						"text1":"content",
-						"text2":"content"
-					},
-					{
-						 "text1":"content",
-						 "text2":"content"
-					}
-				]
-			}`,
-			input:  `repeater`,
-			want: "[map[text1:content text2:content] map[text1:content text2:content]]",
-		},
-		"Wrong Key": {
-			fields: `{
-				"repeater":[
-					{
-						"text1":"content",
-						"text2":"content"
-					},
-					{
-						 "text1":"content",
-						 "text2":"content"
-					}
-				]
-			}`,
-			input:  `wrongval`,
-			want: `[]`,
-		},
+		//"Success": {
+		//	fields: `{
+		//		"repeater":[
+		//			{
+		//				"text1":"content",
+		//				"text2":"content"
+		//			},
+		//			{
+		//				 "text1":"content",
+		//				 "text2":"content"
+		//			}
+		//		]
+		//	}`,
+		//	input: `repeater`,
+		//	want: []map[string]interface{}{
+		//		{"text1": "content", "text2": "content"},
+		//		{"text1": "content", "text2": "content"},
+		//	},
+		//},
+		//"Wrong Key": {
+		//	fields: `{
+		//		"repeater":[
+		//			{
+		//				"text1":"content",
+		//				"text2":"content"
+		//			},
+		//			{
+		//				 "text1":"content",
+		//				 "text2":"content"
+		//			}
+		//		]
+		//	}`,
+		//	input: `wrongval`,
+		//	want:  make([]map[string]interface{}, 0),
+		//},
 		"With Types": {
 			fields: `{
 				"repeater":[
 					{
+						"kkk": "test",
 						"category": [
 							{
 								"id": 1,
@@ -236,7 +241,7 @@ func Test_GetRepeater(t *testing.T) {
 					}
 				]
 			}`,
-			input:  `repeater`,
+			input: `repeater`,
 			want: []map[string]interface{}{
 				{
 					"category": &category,
@@ -246,88 +251,126 @@ func Test_GetRepeater(t *testing.T) {
 				},
 			},
 		},
-		"Nested Slices": {
-			fields: `{
-				"repeater":[
-					{
-						"users": [
-							{
-								"id": 1,
-								"type": "user"
-							},
-							{
-								"id": 1,
-								"type": "user"
-							}
-						]
-					}
-				]
-			}`,
-			input:  `repeater`,
-			want: []map[string]interface{}{
-				{
-					"users": []interface{}{&user, &user},
-				},
-			},
-		},
+		//"Nested Slices": {
+		//	fields: `{
+		//		"repeater":[
+		//			{
+		//				"users": [
+		//					{
+		//						"id": 1,
+		//						"type": "user"
+		//					},
+		//					{
+		//						"id": 1,
+		//						"type": "user"
+		//					}
+		//				]
+		//			}
+		//		]
+		//	}`,
+		//	input: `repeater`,
+		//	want: []map[string]interface{}{
+		//		{
+		//			"users": []interface{}{&user, &user},
+		//		},
+		//	},
+		//},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, newFieldTestSuite(test.fields).getRepeater(test.input), test.want)
+			//assert.Equal(t, test.want, newFieldTestSuite(test.fields).getRepeater(test.input))
+
+			f := newFieldTestSuite(test.fields)
+
+			i, found := Find(f.fields, "", func(key interface{}, value interface{}) {
+				fmt.Println(key)
+				fmt.Println(value)
+			})
+			if found {
+				color.Red.Println(i)
+			}
 		})
 	}
 }
 
 func Test_GetFlexible(t *testing.T) {
 
-	str := `{
-		"flexible": [
-			{
-				 "type": "block1",
-				 "fields": {
-					"text": "content",
-					"text2": "content"
-				 }
-			},
-			{
-				"type": "block2",
-				"fields": {
-					"text": "content",
-					"text1": "content",
-					"text2": "content",
-					"repeater": [
-						{
-						  "text":"content",
-						  "text2":"content"
-						}
-					]
-				}
-			}
-      	]
-   	}`
+//fields: `{
+//				"flexible": [
+//					{
+//						 "block": "block1",
+//						 "fields": {
+//							"text": "content",
+//							"text2": "content"
+//						 }
+//					},
+//					{
+//						"block": "block2",
+//						"fields": {
+//							"text": "content",
+//							"text1": "content"
+//						}
+//					}
+//				]
+//			}`,
 
 	tt := map[string]struct {
-		tpl   string
-		input string
-		want  string
+		fields string
+		input  string
+		want   interface{}
 	}{
-		"Success": {
-			tpl:   `{{ flexible "flexible" }}`,
-			input: str,
-			want:  `[map[fields:map[text:content text2:content] type:block1] map[fields:map[repeater:[map[text:content text2:content]] text:content text1:content text2:content] type:block2]]`,
+		"Simple": {
+			fields: `{
+				"flexible": [
+					{
+						 "block": "block",
+						 "fields": {
+							"text": "content",
+							"text2": "content"
+						 }
+					}
+				]
+			}`,
+			input: `flexible`,
+			want: []map[string]interface{}{
+				{
+					"block": "block",
+					"fields": map[string]interface{}{"text": "content", "text2": "content"},
+				},
+			},
 		},
-		"Wrong Key": {
-			tpl:   `{{ flexible "wrongval" }}`,
-			input: str,
-			want:  `[]`,
+		"Category": {
+			fields: `{
+				"flexible": [
+					{
+						 "block": "block",
+						 "fields": {
+							"text": "content",
+							"category": [
+								{
+									"id": 1,
+									"type":"category"
+								}
+							]
+						 }
+					}
+				]
+			}`,
+			input: `flexible`,
+			want: []map[string]interface{}{
+				{
+					"block": "block",
+					"fields": map[string]interface{}{"category": &category, "text2": "content"},
+				},
+			},
 		},
+
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := newTestSuite(test.input)
-			runt(t, f, test.tpl, test.want)
+			assert.Equal(t, test.want, newFieldTestSuite(test.fields).getFlexible(test.input))
 		})
 	}
 }
