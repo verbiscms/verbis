@@ -7,6 +7,9 @@ import (
 	"github.com/spf13/cast"
 )
 
+type ViewUser struct {
+}
+
 func (t *TemplateManager) getUser(id interface{}) *domain.User {
 	i, err := cast.ToIntE(id)
 	if err != nil {
