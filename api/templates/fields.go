@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"fmt"
 	"github.com/spf13/cast"
 	"reflect"
 )
@@ -164,10 +165,10 @@ func (t *TemplateManager) getRepeater(field string) []map[string]interface{} {
 				}
 			}
 		}
-
 		return repeater
 	}
-	return nil
+
+	return make([]map[string]interface{}, 0)
 }
 
 // getFlexible
@@ -176,6 +177,48 @@ func (t *TemplateManager) getRepeater(field string) []map[string]interface{} {
 // exists. Build an array of map[string]interface to return to
 // the template.
 func (t *TemplateManager) getFlexible(field string) []map[string]interface{} {
+	if f, found := t.fields[field]; found {
+		items := f.([]interface{})
+		repeater := make([]map[string]interface{}, len(items))
+
+		// Loop over items in the repeater
+		for index, item := range items {
+			repeater[index] = make(map[string]interface{})
+
+			// Loop sub over elements in the repeater map
+			if reflect.TypeOf(item).Kind() == reflect.Map {
+
+				for k, sub := range item.(map[string]interface{}) {
+
+					// Account for sub arrays
+					if reflect.TypeOf(sub).Kind() == reflect.Slice {
+						subSlice := sub.([]interface{})
+						subRepeater := make([]interface{}, len(subSlice))
+						for k1, sub2 := range subSlice {
+							subRepeater[k1] = t.checkFieldType(sub2)
+						}
+
+						if len(subRepeater) == 1 {
+							repeater[index][k] = subRepeater[0]
+							continue
+						}
+						repeater[index][k] = subRepeater
+						continue
+					}
+					repeater[index][k] = t.checkFieldType(sub)
+				}
+			}
+		}
+		return repeater
+	}
+
+	return make([]map[string]interface{}, 0)
+}
+
+// Accepts a field and checks to see if the flexible content
+// exists. Build an array of map[string]interface to return to
+// the template.
+func (t *TemplateManager) getFlexibleOLD(field string) []map[string]interface{} {
 	if _, found := t.fields[field]; found {
 		fields := t.fields[field].([]interface{})
 		var f []map[string]interface{}
@@ -202,4 +245,49 @@ func (t *TemplateManager) getSubField(field string, layout map[string]interface{
 		return nil
 	}
 	return val
+}
+
+
+
+// Find key in interface (recursively) and return value as interface
+func Find(obj interface{}, path string, fn func(key interface{}, value interface{})) (interface{}, bool) {
+
+
+	//if the argument is not a map, ignore it
+	mobj, ok := obj.(map[string]interface{})
+	if !ok {
+		fn("d", mobj)
+		return nil, false
+	}
+
+	for k, v := range mobj {
+
+		// key match, return value
+		if k == "type" {
+			fn(v, mobj)
+			//return v, true
+		}
+
+		// if the value is a map, search recursively
+		if m, ok := v.(map[string]interface{}); ok {
+			if res, ok := Find(m, fmt.Sprintf("%s.%s", path, k), fn); ok {
+				fn(res, m)
+				//return res, true
+			}
+		}
+
+		// if the value is an array, search recursively
+		// from each element
+		if va, ok := v.([]interface{}); ok {
+			for _, a := range va {
+				if _, ok := Find(a, fmt.Sprintf("%s.%s", path, k), fn); ok {
+					fn(a, va)
+					//return res,true
+				}
+			}
+		}
+	}
+
+	// element not found
+	return nil,false
 }
