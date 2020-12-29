@@ -1,0 +1,110 @@
+{
+	"category":[
+		{
+			"id": 1,
+			"type":"category"
+		}
+	],
+	"image":{
+		"id": 1,
+		"type": "image"
+	},
+	"user":[
+		{
+			"id": 1,
+			"type": "user"
+		}
+	],
+	"post":[
+		{
+			"id": 1,
+			"type": "post"
+		}
+	],
+	"repeater":[
+		{
+			"category": [
+				{
+					"id": 1,
+					"type":"category"
+				}
+			],
+			"image": {
+				"id": 1,
+				"type": "image"
+			},
+			"user": [
+				{
+					"id": 1,
+					"type": "user"
+				}
+			],
+			"post": [
+				{
+					"id": 1,
+					"type": "post"
+				}
+			]
+		}
+	],
+"flexible":[
+	{
+		"type":"normal",
+		"fields":{
+			"category": [
+				{
+					"id": 1,
+					"type":"category"
+				}
+			],
+				"image": {
+					"id": 1,
+					"type": "image"
+				},
+				"user": [
+					{
+						"id": 1,
+						"type": "user"
+					}
+				],
+				"post": [
+					{
+						"id": 1,
+						"type": "post"
+					}
+				]
+			}
+		},
+		{
+			"type":"repeater",
+			"fields":{
+				"repeater":[
+					{
+						"category": [
+							{
+								"id": 1,
+								"type":"category"
+							}
+						],
+						"image": {
+							"id": 1,
+							"type": "image"
+						},
+						"user": [
+							{
+								"id": 1,
+								"type": "user"
+							}
+						],
+						"post": [
+							{
+								"id": 1,
+								"type": "post"
+							}
+						]
+					}
+				]
+			}
+		}
+	]
+}

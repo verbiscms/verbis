@@ -1,6 +1,7 @@
 package templates
 
 import (
+	"github.com/spf13/cast"
 	"reflect"
 )
 
@@ -16,7 +17,7 @@ func (t *TemplateManager) getField(field string, id ...int) interface{} {
 	if len(id) > 0 {
 		post, err := t.store.Posts.GetById(id[0])
 		if err != nil {
-			return ""
+			return nil
 		}
 		fields = post.Fields
 	}
@@ -24,7 +25,7 @@ func (t *TemplateManager) getField(field string, id ...int) interface{} {
 	// Retrieve the value of the field
 	val, found := fields[field]
 	if !found {
-		return ""
+		return nil
 	}
 
 	// Check if the field is a post, or media item
@@ -39,41 +40,64 @@ func (t *TemplateManager) getField(field string, id ...int) interface{} {
 // If it was get from the getMedia or getPost functions and assign the new
 // value
 func (t *TemplateManager) checkFieldType(field interface{}) interface{} {
-	kind := reflect.TypeOf(field).String()
+	typ := reflect.TypeOf(field)
 
-	if kind == "map[string]interface {}" {
-		m := field.(map[string]interface{})
-		fieldType, found := m["type"]
-		if found {
-			if fieldType == "image" {
-				field = t.getMedia(m["id"].(float64))
-			}
-		}
-	} else if kind == "[]interface {}" {
-		i := field.([]interface{})
-
-		var posts []ViewPost
-		for _, v := range i {
-			m := v.(map[string]interface{})
-			fieldType, found := m["type"]
-			if found {
-				if fieldType == "post" {
-					post := t.getPost(m["id"].(float64))
-					if post != nil {
-						posts = append(posts, *post)
-					}
-				}
-			}
-		}
-
-		if len(posts) == 1 {
-			return posts[0]
-		} else if len(posts) > 1 {
-			field = &posts
+	switch typ.Kind() {
+		case reflect.Array, reflect.Slice:
+			field = t.fieldSliceResolver(field.([]interface{}), field)
+		case reflect.Map: {
+			field = t.fieldMapResolver(field.(map[string]interface{}), field)
 		}
 	}
 
 	return field
+}
+
+func (t *TemplateManager) fieldSliceResolver(i []interface{}, field interface{}) interface{} {
+	for _, v := range i {
+		typ := reflect.TypeOf(v)
+		switch typ.Kind() {
+		case reflect.Map:
+			field = t.fieldMapResolver(v.(map[string]interface{}), field)
+		}
+	}
+
+	return field
+}
+
+func (t *TemplateManager) fieldMapResolver(m map[string]interface{}, field interface{}) interface{} {
+	if fieldType, found := m["type"]; found {
+		field = t.resolveField(fieldType, m)
+	} else {
+		for _, v := range m {
+			typ := reflect.TypeOf(v)
+			switch typ.Kind() {
+			case reflect.Map:
+				field = t.fieldMapResolver(v.(map[string]interface{}), field)
+			case reflect.Array, reflect.Slice:
+				field = t.fieldSliceResolver(v.([]interface{}), field)
+			}
+		}
+	}
+
+	return field
+}
+
+// resolveField
+func (t *TemplateManager) resolveField(typ interface{}, fields map[string]interface{}) interface{} {
+
+	switch cast.ToString(typ) {
+	case "category":
+		return *t.getCategory(fields["id"])
+	case "image":
+		return *t.getMedia(fields["id"])
+	case "post":
+		return *t.getPost(fields["id"])
+	case "user":
+		return *t.getUser(fields["id"])
+	default:
+		return nil
+	}
 }
 
 // getFields
@@ -108,13 +132,39 @@ func (t *TemplateManager) hasField(field string) bool {
 // If it exists, build an array of map[string]interface to return to
 // the template.
 func (t *TemplateManager) getRepeater(field string) []map[string]interface{} {
-	if _, found := t.fields[field]; found {
-		fields := t.fields[field].([]interface{})
-		var f []map[string]interface{}
-		for _, v := range fields {
-			f = append(f, v.(map[string]interface{}))
+	if f, found := t.fields[field]; found {
+		items := f.([]interface{})
+		repeater := make([]map[string]interface{}, len(items))
+
+		// Loop over items in the repeater
+		for index, item := range items {
+			repeater[index] = make(map[string]interface{})
+
+			// Loop sub over elements in the repeater map
+			if reflect.TypeOf(item).Kind() == reflect.Map {
+				for k, sub := range item.(map[string]interface{}) {
+
+					// Account for sub arrays
+					if reflect.TypeOf(sub).Kind() == reflect.Slice {
+						subSlice := sub.([]interface{})
+						subRepeater := make([]interface{}, len(subSlice))
+						for k1, sub2 := range subSlice {
+							subRepeater[k1] = t.checkFieldType(sub2)
+						}
+
+						if len(subRepeater) == 1 {
+							repeater[index][k] = subRepeater[0]
+						} else {
+							repeater[index][k] = subRepeater
+						}
+					} else {
+						repeater[index][k] = t.checkFieldType(sub)
+					}
+				}
+			}
 		}
-		return f
+
+		return repeater
 	}
 	return nil
 }
