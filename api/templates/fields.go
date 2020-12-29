@@ -43,9 +43,10 @@ func (t *TemplateManager) checkFieldType(field interface{}) interface{} {
 	typ := reflect.TypeOf(field)
 
 	switch typ.Kind() {
-		case reflect.Array, reflect.Slice:
-			field = t.fieldSliceResolver(field.([]interface{}), field)
-		case reflect.Map: {
+	case reflect.Array, reflect.Slice:
+		field = t.fieldSliceResolver(field.([]interface{}), field)
+	case reflect.Map:
+		{
 			field = t.fieldMapResolver(field.(map[string]interface{}), field)
 		}
 	}
@@ -88,13 +89,13 @@ func (t *TemplateManager) resolveField(typ interface{}, fields map[string]interf
 
 	switch cast.ToString(typ) {
 	case "category":
-		return *t.getCategory(fields["id"])
+		return t.getCategory(fields["id"])
 	case "image":
-		return *t.getMedia(fields["id"])
+		return t.getMedia(fields["id"])
 	case "post":
-		return *t.getPost(fields["id"])
+		return t.getPost(fields["id"])
 	case "user":
-		return *t.getUser(fields["id"])
+		return t.getUser(fields["id"])
 	default:
 		return nil
 	}
@@ -154,12 +155,12 @@ func (t *TemplateManager) getRepeater(field string) []map[string]interface{} {
 
 						if len(subRepeater) == 1 {
 							repeater[index][k] = subRepeater[0]
-						} else {
-							repeater[index][k] = subRepeater
+							continue
 						}
-					} else {
-						repeater[index][k] = t.checkFieldType(sub)
+						repeater[index][k] = subRepeater
+						continue
 					}
+					repeater[index][k] = t.checkFieldType(sub)
 				}
 			}
 		}
