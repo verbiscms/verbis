@@ -91,13 +91,7 @@ export default {
 		setTags() {
 			this.value.forEach(val => {
 				this.users.forEach(user => {
-
-					const id = val.replace("verbis_user_", "");
-					// if (this.hasRole(user)) {
-					//
-					// }
-
-					if (parseInt(id) === user.id) {
+					if (val.id === user.id) {
 						this.selectedTags.push({
 							text: user.text,
 							id: user.id,
@@ -113,7 +107,10 @@ export default {
 			this.validateRequired()
 			let tagsArr = []
 			tags.forEach(tag => {
-				tagsArr.push("verbis_user_" + tag.id)
+				tagsArr.push({
+					id: tag.id,
+					type: "user",
+				})
 			})
 			this.value = tagsArr
 		},

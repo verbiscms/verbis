@@ -87,6 +87,8 @@ func runtv(t *testing.T, tf *TemplateManager, tpl string, expect interface{}, da
 	}
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
+
+
 	assert.Equal(t, got, b)
 }
 
@@ -101,6 +103,7 @@ func runt(t *testing.T, tf *TemplateManager, tpl string, expect interface{}) {
 	}
 
 	got := strings.ReplaceAll(html.EscapeString(fmt.Sprintf("%v", expect)), "+", "&#43;")
+
 	assert.Equal(t, got, b)
 }
 

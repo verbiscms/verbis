@@ -14,6 +14,8 @@ import (
 func Test_GetUser(t *testing.T) {
 
 	user := domain.User{Id: 1, FirstName: "verbis"}
+	user.HideCredentials()
+	//fmt.Printf("%+v\n", user)
 
 	tt := map[string]struct {
 		input interface{}

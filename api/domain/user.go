@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+//https://godoc.org/github.com/diamondburned/smolboard/smolboard#UserPart
+
 // Return error is email is not verified, don't send the email verified at back to vue.
 type User struct {
 	Id               int        `db:"id" json:"id"`
@@ -32,8 +34,7 @@ type Users []User
 
 func (u Users) HideCredentials() {
 	for _, v := range u {
-		v.Password = ""
-		v.Token = ""
+		v.HideCredentials()
 	}
 }
 
