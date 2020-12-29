@@ -5,8 +5,46 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
+
+type FieldsTestSuite struct {
+	TemplateManager *TemplateManager
+}
+
+var (
+	postAuthor   = domain.PostAuthor{Id: 1, FirstName: "verbis"}
+	postCategory = domain.PostCategory{Id: 1, Name: "category"}
+	category     = domain.Category{Id: 1, Name: "category"}
+	media        = domain.Media{Id: 1, Url: "/media"}
+	post         = domain.Post{Id: 1, Title: "post title"}
+	user         = domain.User{Id: 1, FirstName: "verbis"}
+	viewP        = ViewPost{Author: &postAuthor, Category: &postCategory, Post: post}
+)
+
+func newFieldTestSuite(fields string) *TemplateManager {
+
+	f := newTestSuite(fields)
+
+	categoryMock := &mocks.CategoryRepository{}
+	mediaMock := &mocks.MediaRepository{}
+	postMock := &mocks.PostsRepository{}
+	userMock := &mocks.UserRepository{}
+
+	categoryMock.On("GetById", 1).Return(category, nil)
+	mediaMock.On("GetById", 1).Return(media, nil)
+	postMock.On("GetById", 1).Return(post, nil)
+	postMock.On("Format", post).Return(domain.PostData{Post: post, Author: &postAuthor, Category: &postCategory}, nil).Once()
+	userMock.On("GetById", 1).Return(user, nil).Times(10)
+
+	f.store.Categories = categoryMock
+	f.store.Media = mediaMock
+	f.store.Posts = postMock
+	f.store.User = userMock
+
+	return f
+}
 
 func Test_GetField(t *testing.T) {
 
@@ -132,40 +170,111 @@ func Test_HasField(t *testing.T) {
 
 func Test_GetRepeater(t *testing.T) {
 
-	str := `{
-		"repeater":[
-			{
-				"text1":"content",
-				"text2":"content"
-			},
-			{
-				 "text1":"content",
-				 "text2":"content"
-			}
-		]
-	}`
-
 	tt := map[string]struct {
-		tpl   string
-		input string
-		want  string
+		fields string
+		input    string
+		want   interface{}
 	}{
 		"Success": {
-			tpl:   `{{ repeater "repeater" }}`,
-			input: str,
-			want:  "[map[text1:content text2:content] map[text1:content text2:content]]",
+			fields: `{
+				"repeater":[
+					{
+						"text1":"content",
+						"text2":"content"
+					},
+					{
+						 "text1":"content",
+						 "text2":"content"
+					}
+				]
+			}`,
+			input:  `repeater`,
+			want: "[map[text1:content text2:content] map[text1:content text2:content]]",
 		},
 		"Wrong Key": {
-			tpl:   `{{ repeater "wrongval" }}`,
-			input: str,
-			want:  `[]`,
+			fields: `{
+				"repeater":[
+					{
+						"text1":"content",
+						"text2":"content"
+					},
+					{
+						 "text1":"content",
+						 "text2":"content"
+					}
+				]
+			}`,
+			input:  `wrongval`,
+			want: `[]`,
+		},
+		"With Types": {
+			fields: `{
+				"repeater":[
+					{
+						"category": [
+							{
+								"id": 1,
+								"type":"category"
+							}
+						],
+						"image": {
+							"id": 1,
+							"type": "image"
+						},
+						"post": [
+							{
+								"id": 1,
+								"type": "post"
+							}
+						],
+						"user": [
+							{
+								"id": 1,
+								"type": "user"
+							}
+						]
+					}
+				]
+			}`,
+			input:  `repeater`,
+			want: []map[string]interface{}{
+				{
+					"category": &category,
+					"image":    &media,
+					"post":     &viewP,
+					"user":     &user,
+				},
+			},
+		},
+		"Nested Slices": {
+			fields: `{
+				"repeater":[
+					{
+						"users": [
+							{
+								"id": 1,
+								"type": "user"
+							},
+							{
+								"id": 1,
+								"type": "user"
+							}
+						]
+					}
+				]
+			}`,
+			input:  `repeater`,
+			want: []map[string]interface{}{
+				{
+					"users": []interface{}{&user, &user},
+				},
+			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := newTestSuite(test.input)
-			runt(t, f, test.tpl, test.want)
+			assert.Equal(t, newFieldTestSuite(test.fields).getRepeater(test.input), test.want)
 		})
 	}
 }
@@ -265,18 +374,8 @@ func Test_GetSubField(t *testing.T) {
 
 func Test_CheckField(t *testing.T) {
 
-	postCategory := domain.PostCategory{Id:          1, Name:        "category"}
-	postAuthor := domain.PostAuthor{Id:               1, FirstName:        "verbis"}
-
-	category := domain.Category{Id: 1, Name: "category"}
-	media := domain.Media{Id: 1, Url: "/media"}
-	post := domain.Post{Id: 1, Title: "post title"}
-	viewPost := ViewPost{Author:   &postAuthor, Category: &postCategory, Post:     post,}
-	user := domain.User{Id: 1, FirstName: "verbis"}
-
 	tt := map[string]struct {
 		fields string
-		tpl    string
 		want   interface{}
 	}{
 		"Nil": {
@@ -286,8 +385,7 @@ func Test_CheckField(t *testing.T) {
 					"type":"wrongval"
 				}
 			}`,
-			tpl:  `{{ field "user" }}`,
-			want: "",
+			want: nil,
 		},
 		"Category": {
 			fields: `{
@@ -298,8 +396,7 @@ func Test_CheckField(t *testing.T) {
 					}
 				]
 			}`,
-			tpl:  `{{ field "category" }}`,
-			want: category,
+			want: &category,
 		},
 		"Image": {
 			fields: `{
@@ -308,8 +405,7 @@ func Test_CheckField(t *testing.T) {
 					"type":"image"
 				}
 			}`,
-			tpl:  `{{ field "image" }}`,
-			want: media,
+			want: &media,
 		},
 		"Post": {
 			fields: `{
@@ -320,35 +416,7 @@ func Test_CheckField(t *testing.T) {
 					}
 				]
 			}`,
-			tpl:  `{{ field "post" }}`,
-			want: viewPost,
-		},
-		"Users": {
-			fields: `{
-				"repeater":[
-					{
-						"users": [
-							{
-								"id": 1,
-								"type": "user"
-							},
-							{
-								"id": 1,
-								"type": "user"
-							}
-						]
-					}
-				]
-			}`,
-			tpl:  `{{ repeater "repeater" }}`,
-			want: []map[string]interface{}{
-				{
-					"users": []domain.User{
-						user,
-						user,
-					},
-				},
-			},
+			want: &viewP,
 		},
 		"User": {
 			fields: `{
@@ -357,80 +425,17 @@ func Test_CheckField(t *testing.T) {
 					"type":"user"
 				}
 			}`,
-			tpl:  `{{ field "user" }}`,
-			want: user,
-		},
-		"Repeater": {
-			fields: `{
-				"repeater":[
-					{
-						"category": [
-							{
-								"id": 1,
-								"type":"category"
-							}
-						],
-						"image": {
-							"id": 1,
-							"type": "image"
-						},
-						"post": [
-							{
-								"id": 1,
-								"type": "post"
-							}
-						],
-						"user": [
-							{
-								"id": 1,
-								"type": "user"
-							}
-						]
-					}
-				]
-			}`,
-			tpl:  `{{ repeater "repeater" }}`,
-			want: []map[string]interface{}{
-				{
-					"category": category,
-					"image":    media,
-					"post":     viewPost,
-					"user":     user,
-				},
-			},
+			want: &user,
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			f := newTestSuite(test.fields)
-
-			var m interface{}
-			err := json.Unmarshal([]byte(test.fields), &m)
-			if err != nil {
-				t.Error(err)
-			}
-
-			categoryMock := &mocks.CategoryRepository{}
-			mediaMock := &mocks.MediaRepository{}
-			postMock := &mocks.PostsRepository{}
-			userMock := &mocks.UserRepository{}
-
-			categoryMock.On("GetById", 1).Return(category, nil)
-
-			mediaMock.On("GetById", 1).Return(media, nil)
-
-			postMock.On("GetById", 1).Return(post, nil)
-			postMock.On("Format", post).Return(domain.PostData{Post: post, Author: &postAuthor, Category: &postCategory}, nil).Once()
-
-			userMock.On("GetById", 1).Return(user, nil).Times(10)
-
-			f.store.Categories = categoryMock
-			f.store.Media = mediaMock
-			f.store.Posts = postMock
-			f.store.User = userMock
-
-			runt(t, f, test.tpl, test.want)
+			f := newFieldTestSuite("{}")
+			var d interface{}
+			err := json.Unmarshal([]byte(test.fields), &d)
+			assert.NoError(t, err)
+			assert.Equal(t, test.want, f.checkFieldType(d))
 		})
 	}
 }
