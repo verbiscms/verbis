@@ -5,26 +5,28 @@ import (
 	"time"
 )
 
-//https://godoc.org/github.com/diamondburned/smolboard/smolboard#UserPart
-
-// Return error is email is not verified, don't send the email verified at back to vue.
 type User struct {
+	UserPart
+	Password         string     `db:"password" json:"password,omitempty" binding:""`
+	Token            string     `db:"token" json:"token,omitempty"`
+	TokenLastUsed    *time.Time `db:"token_last_used" json:"token_last_used,omitempty"`
+}
+
+// UserPart defines the User with non-sensitive information
+type UserPart struct {
 	Id               int        `db:"id" json:"id"`
 	UUID             uuid.UUID  `db:"uuid" json:"uuid"`
 	FirstName        string     `db:"first_name" json:"first_name" binding:"required,max=150,alpha"`
 	LastName         string     `db:"last_name" json:"last_name" binding:"required,max=150,alpha"`
 	Email            string     `db:"email" json:"email" binding:"required,email,max=255"`
-	Password         string     `db:"password" json:"password,omitempty" binding:""`
 	Website          *string    `db:"website" json:"website,omitempty" binding:"omitempty,url"`
 	Facebook         *string    `db:"facebook" json:"facebook"`
 	Twitter          *string    `db:"twitter" json:"twitter"`
 	Linkedin         *string    `db:"linked_in" json:"linked_in"`
 	Instagram        *string    `db:"instagram" json:"instagram"`
 	Biography        *string    `db:"biography" json:"biography"`
-	ProfilePictureID *int       `db:"profile_picture_id" json:"profile_picture_id"`
-	Token            string     `db:"token" json:"token,omitempty"`
-	TokenLastUsed    *time.Time `db:"token_last_used" json:"token_last_used,omitempty"`
 	Role             UserRole   `db:"roles" json:"role"`
+	ProfilePictureID *int       `db:"profile_picture_id" json:"profile_picture_id"`
 	EmailVerifiedAt  *time.Time `db:"email_verified_at" json:"email_verified_at"`
 	CreatedAt        time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt        time.Time  `db:"updated_at" json:"updated_at"`
@@ -32,10 +34,14 @@ type User struct {
 
 type Users []User
 
-func (u Users) HideCredentials() {
-	for _, v := range u {
-		v.HideCredentials()
+type UsersParts []*UserPart
+
+func (u *Users) HideCredentials() UsersParts {
+	var p UsersParts
+	for _, v := range *u {
+		p = append(p, v.HideCredentials())
 	}
+	return p
 }
 
 type UserCreate struct {
@@ -57,11 +63,48 @@ type UserRole struct {
 	Description string `db:"description" json:"description"`
 }
 
-func (u *User) HideCredentials() {
-	u.Password = ""
-	u.Token = ""
-}
-
 func (u *User) HidePassword() {
 	u.Password = ""
+}
+
+func (u *User) HideCredentials() *UserPart {
+	return &UserPart{
+		Id:               u.Id,
+		UUID:             u.UUID,
+		FirstName:        u.FirstName,
+		LastName:         u.LastName,
+		Email:            u.Email,
+		Website:          u.Website,
+		Facebook:         u.Facebook,
+		Twitter:          u.Twitter,
+		Linkedin:         u.Linkedin,
+		Instagram:        u.Instagram,
+		Biography:        u.Biography,
+		Role:             u.Role,
+		ProfilePictureID: u.ProfilePictureID,
+		EmailVerifiedAt:  u.EmailVerifiedAt,
+		CreatedAt:        u.CreatedAt,
+		UpdatedAt:        u.UpdatedAt,
+	}
+}
+
+func (u *User) Author() PostAuthor {
+	return PostAuthor{
+		Id:               u.Id,
+		UUID:             u.UUID,
+		FirstName:        u.FirstName,
+		LastName:         u.LastName,
+		Email:            u.Email,
+		Website:          u.Website,
+		Facebook:         u.Facebook,
+		Twitter:          u.Twitter,
+		Linkedin:         u.Linkedin,
+		Instagram:        u.Instagram,
+		Biography:        u.Biography,
+		Role:             u.Role,
+		ProfilePictureID: u.ProfilePictureID,
+		EmailVerifiedAt:  u.EmailVerifiedAt,
+		CreatedAt:        u.CreatedAt,
+		UpdatedAt:        u.UpdatedAt,
+	}
 }

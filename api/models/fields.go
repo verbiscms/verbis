@@ -210,6 +210,7 @@ func (s *FieldsStore) GetFieldGroups() (*[]domain.FieldGroup, error) {
 			var fields domain.FieldGroup
 			err = json.Unmarshal(file, &fields)
 			if err != nil {
+				fmt.Println(err)
 				return &errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal the field struct", Operation: op, Err: err}
 			}
 
