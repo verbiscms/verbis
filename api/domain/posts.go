@@ -73,6 +73,17 @@ type PostCategory struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
+type PostField struct {
+	Id                int         	`db:"id" json:"id" binding:"numeric"`
+	PostId            int         	`db:"post_id" json:"post_id" binding:"numeric"`
+	UUID              uuid.UUID   	`db:"uuid" json:"uuid"`
+	Type     		  string 		`db:"type" json:"type"`
+	Key     		  string 		`db:"field_key" json:"key"`
+	Value 			  *string 		`db:"value" json:"value"`
+	ParentKey		  *string 		`db:"parent" json:"parent"`
+	Index             int			`db:"index" json:"index"`
+}
+
 type PostSeoMeta struct {
 	Id     int       `json:"-"`
 	PageId int       `json:"-" binding:"required|numeric"`

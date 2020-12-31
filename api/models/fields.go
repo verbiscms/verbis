@@ -21,6 +21,8 @@ import (
 
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
+	GetByPost(postId int) ([]domain.PostField, error)
+	GetByPostAndKey(key string, postId int) (domain.PostField, error)
 	GetFieldGroups() (*[]domain.FieldGroup, error)
 	GetLayout(p domain.Post, a domain.User, c *domain.Category) *[]domain.FieldGroup
 }
@@ -45,6 +47,24 @@ func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 	}
 
 	return &fs
+}
+
+func (s *FieldsStore) GetByPost(postId int) ([]domain.PostField, error) {
+	const op = "FieldsRepository.GetByPost"
+	var f []domain.PostField
+	if err := s.db.Get(&f, "SELECT * FROM post_fields WHERE page_id = ?", postId); err != nil {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the key: %d", postId), Operation: op, Err: err}
+	}
+	return f, nil
+}
+
+func (s *FieldsStore) GetByPostAndKey(key string, postId int) (domain.PostField, error) {
+	const op = "FieldsRepository.GetByPostAndKey"
+	var f domain.PostField
+	if err := s.db.Get(&f, "SELECT * FROM post_fields WHERE page_id = ? AND field_key = ? LIMIT = 1", postId, key); err != nil {
+		return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the page ID: %d and key: %s", postId, key), Operation: op, Err: err}
+	}
+	return f, nil
 }
 
 // GetLayout loops over all of the locations within the config json
