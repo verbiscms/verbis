@@ -7,6 +7,7 @@ import (
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/gookit/color"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"testing"
 )
 
@@ -211,55 +212,27 @@ func Test_GetRepeater(t *testing.T) {
 		//	input: `wrongval`,
 		//	want:  make([]map[string]interface{}, 0),
 		//},
-		"With Types": {
-			fields: `{
-				"repeater":[
-					{
-						"kkk": "test",
-						"category": [
-							{
-								"id": 1,
-								"type":"category"
-							}
-						],
-						"image": {
-							"id": 1,
-							"type": "image"
-						},
-						"post": [
-							{
-								"id": 1,
-								"type": "post"
-							}
-						],
-						"user": [
-							{
-								"id": 1,
-								"type": "user"
-							}
-						]
-					}
-				]
-			}`,
-			input: `repeater`,
-			want: []map[string]interface{}{
-				{
-					"category": &category,
-					"image":    &media,
-					"post":     &viewP,
-					"user":     &user,
-				},
-			},
-		},
-		//"Nested Slices": {
+		//"With Types": {
 		//	fields: `{
 		//		"repeater":[
 		//			{
-		//				"users": [
+		//				"category": [
 		//					{
 		//						"id": 1,
-		//						"type": "user"
-		//					},
+		//						"type":"category"
+		//					}
+		//				],
+		//				"image": {
+		//					"id": 1,
+		//					"type": "image"
+		//				},
+		//				"post": [
+		//					{
+		//						"id": 1,
+		//						"type": "post"
+		//					}
+		//				],
+		//				"user": [
 		//					{
 		//						"id": 1,
 		//						"type": "user"
@@ -271,25 +244,109 @@ func Test_GetRepeater(t *testing.T) {
 		//	input: `repeater`,
 		//	want: []map[string]interface{}{
 		//		{
-		//			"users": []interface{}{&user, &user},
+		//			"category": &category,
+		//			"image":    &media,
+		//			"post":     &viewP,
+		//			"user":     &user,
 		//		},
 		//	},
 		//},
+		//"Nested Slices": {
+		//	fields: `{
+		//		"repeater":[
+		//			{
+		//				"users": [
+		//					{
+		//						"id": 1,
+		//						"type": "user"
+		//					},
+		//					{
+		//						"id": 1,
+		//						"type": "category"
+		//					}
+		//				]
+		//			}
+		//		]
+		//	}`,
+		//	input: `repeater`,
+		//	want: []map[string]interface{}{
+		//		{
+		//			"users": []interface{}{&user, &category},
+		//		},
+		//	},
+		//},
+		"Nested Slices 2": {
+			fields: `{
+				"repeater":[
+					{
+						"ext": "text",
+						"image": {
+							"id": 1,
+							"type": "image"
+						},
+						"users": [
+							{
+								"id": 1,
+								"type": "user"
+							},
+							{
+								"id": 1,
+								"type": "user"
+							}
+						],
+						"nested":[
+							{
+								"nestedtext": "text",
+								"nestedimage": {
+									"id": 1,
+									"type": "image"
+								},
+								"nestedusers": [
+									{
+										"id": 1,
+										"type": "user"
+									}
+								]
+							}
+						]
+					}
+				]
+			}`,
+			input: `repeater`,
+			want: []map[string]interface{}{
+				{
+					"users": []interface{}{&user},
+				},
+			},
+		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			//assert.Equal(t, test.want, newFieldTestSuite(test.fields).getRepeater(test.input))
 
 			f := newFieldTestSuite(test.fields)
 
-			i, found := Find(f.fields, "", func(key interface{}, value interface{}) {
-				fmt.Println(key)
-				fmt.Println(value)
-			})
-			if found {
-				color.Red.Println(i)
-			}
+			layout, err := ioutil.ReadFile("/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/fields/layout.json")
+			assert.NoError(t, err)
+
+			var fields domain.FieldGroup
+			err = json.Unmarshal(layout, &fields)
+			assert.NoError(t, err)
+
+			fg := make([]domain.FieldGroup, 1)
+			fg[0] = fields
+			f.post.Layout = &fg
+
+
+			repeater, err := f.getRepeater(test.input)
+
+			color.Yellow.Println(repeater)
+
+			tem, err := execute(f, `{{ $test := repeater "repeater" }}
+				{{ $nest := index $test 0 }}
+				{{ repeater $nest.nested }}`, nil)
+			fmt.Println(err)
+			fmt.Println(tem)
 		})
 	}
 }
