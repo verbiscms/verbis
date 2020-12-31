@@ -1,7 +1,7 @@
 package fields
 
 import (
-	"fmt"
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -10,17 +10,66 @@ import (
 	"testing"
 )
 
-func Test_NewLocation(t *testing.T) {
-
-	m := NewLocation()
-
-	fmt.Println(m)
-
+func setupLocationTest(t *testing.T) string {
+	wd, err := os.Getwd()
+	assert.NoError(t, err)
+	return filepath.Join(filepath.Dir(wd)) + "/test/testdata/fields"
 }
 
-func Test_GroupResolver(t *testing.T) {
+func TestNewLocation(t *testing.T) {
+	oldStoragePath := storagePath
+	defer func() {
+		storagePath = oldStoragePath
+	}()
+	storagePath = "test"
+
+	assert.Equal(t, &Location{JsonPath: "test/fields"}, NewLocation())
+}
+
+func TestLocation_GetLayout(t *testing.T) {
+
+	cache.Init()
+	testPath := setupLocationTest(t) + "/test-get-layout"
+
+	tt := map[string]struct {
+		cacheable bool
+		jsonPath string
+		want      interface{}
+	}{
+		"Bad Path": {
+			cacheable: false,
+			jsonPath: "wrongval",
+			want: []domain.FieldGroup{},
+		},
+		"Not Cached": {
+			cacheable: false,
+			jsonPath: testPath,
+			want: []domain.FieldGroup{{Title: "title"}},
+		},
+		"Cacheable Nil": {
+			cacheable: true,
+			jsonPath: testPath,
+			want: []domain.FieldGroup{{Title: "title"}},
+		},
+		"Cacheable": {
+			cacheable: true,
+			jsonPath: testPath,
+			want: []domain.FieldGroup{{Title: "title"}},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			l := &Location{JsonPath: test.jsonPath}
+			assert.Equal(t, test.want, l.GetLayout(domain.Post{}, domain.User{}, &domain.Category{}, test.cacheable))
+		})
+	}
+}
+
+func TestLocation_GroupResolver(t *testing.T) {
 
 	r := "resource"
+	uu := uuid.New()
 
 	tt := map[string]struct {
 		post      domain.Post
@@ -31,6 +80,14 @@ func Test_GroupResolver(t *testing.T) {
 	}{
 		"None": {
 			want: []domain.FieldGroup{},
+		},
+		"Already Added": {
+			post: domain.Post{Id: 1, Title: "title", Status: "published"},
+			groups: []domain.FieldGroup{
+				{Title: "status", UUID: uu,},
+				{Title: "status", UUID: uu,},
+			},
+			want: []domain.FieldGroup{{Title:     "status", UUID: uu}},
 		},
 		"Status": {
 			post: domain.Post{Id: 1, Title: "title", Status: "published"},
@@ -168,35 +225,39 @@ func Test_GroupResolver(t *testing.T) {
 	}
 }
 
-func Test_GetFieldGroups(t *testing.T) {
+func TestLocation_fieldGroupWalker(t *testing.T) {
 
-	// Set api path
-	wd, err := os.Getwd()
-	assert.NoError(t, err)
-	apiPath := filepath.Join(filepath.Dir(wd))
-	testPath := apiPath + "/test/testdata/fields/test-field-groups/"
+	testPath := setupLocationTest(t) + "/test-field-groups/"
 
 	id, err := uuid.Parse("6a4d7442-1020-490f-a3e2-436f9135bc24")
 	assert.NoError(t, err)
 
-	// For bad pa
+	// For bad path
 	err = os.Chmod(testPath+"open-error/json.txt", 000)
 	assert.NoError(t, err)
+	defer func() {
+		err = os.Chmod(testPath+"open-error/json.txt", 777)
+		assert.NoError(t, err)
+	}()
 
 	tt := map[string]struct {
 		path string
 		want interface{}
 	}{
 		"Success": {
-			path: "success",
+			path: testPath + "/success",
 			want: []domain.FieldGroup{{UUID: id, Title: "Title"}, {UUID: id, Title: "Title"}},
 		},
+		"Bad Path": {
+			path: testPath + "/wrongval",
+			want: "no such file or directory",
+		},
 		"Unmarshal Error": {
-			path: "unmarshal",
+			path: testPath + "/unmarshal",
 			want: "json: cannot unmarshal number into Go struct field FieldGroup.title of type string",
 		},
 		"Open Error": {
-			path: "open-error",
+			path: testPath + "/open-error",
 			want: "permission denied",
 		},
 	}
@@ -205,9 +266,9 @@ func Test_GetFieldGroups(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 
 			l := &Location{
-				JsonPath: testPath + test.path,
+				JsonPath: test.path,
 			}
-			got, err := l.GetFieldGroups()
+			got, err := l.fieldGroupWalker()
 
 			if err != nil {
 				assert.Contains(t, err.Error(), test.want)
