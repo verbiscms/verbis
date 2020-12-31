@@ -15,7 +15,7 @@
 			},
 			"layouts": {
 				"layoutkey1": {
-					"key": "layout_5f737e6211824",
+					"uuid": "39ca0ea0-c911-4eaa-b4e0-67dfd99e5735",
 					"name": "layoutkey1",
 					"label": "layoutlabel",
 					"display": "block",
@@ -42,7 +42,7 @@
 					}
 				},
 				"layoutkey2": {
-					"key": "layout_5f737e6211824",
+					"key": "39ca0ea0-c911-4eab-b6e0-67dfd99e5735",
 					"name": "layoutkey2",
 					"label": "layoutlabel",
 					"display": "block",

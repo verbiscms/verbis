@@ -46,7 +46,6 @@ type PostAuthor struct {
 	FirstName        string     `json:"first_name"`
 	LastName         string     `json:"last_name"`
 	Email            string     `json:"email"`
-	Password         string     `json:"-"`
 	Website          *string    `db:"website" json:"website,omitempty" binding:"omitempty,url"`
 	Facebook         *string    `db:"facebook" json:"facebook"`
 	Twitter          *string    `db:"twitter" json:"twitter"`
@@ -54,8 +53,6 @@ type PostAuthor struct {
 	Instagram        *string    `db:"instagram" json:"instagram"`
 	Biography        *string    `db:"biography" json:"biography"`
 	ProfilePictureID *int       `json:"profile_picture_id"`
-	Token            string     `json:"-"`
-	TokenLastUsed    *time.Time `json:"-"`
 	Role             UserRole   `json:"role"`
 	EmailVerifiedAt  *time.Time `json:"email_verified_at"`
 	CreatedAt        time.Time  `json:"created_at"`

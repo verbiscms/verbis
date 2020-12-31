@@ -289,7 +289,7 @@ func (s *PostStore) Exists(slug string) bool {
 // the category, author & fields associated with the post.
 func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
 
-	author, err := s.userModel.GetById(post.UserId)
+	user, err := s.userModel.GetById(post.UserId)
 	if err != nil {
 		return domain.PostData{}, err
 	}
@@ -298,13 +298,14 @@ func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
 	category, err := s.categoriesModel.GetByPost(post.Id)
 
 	// Get the layout associated with the post
-	layout := s.fieldsModel.GetLayout(post, author, category)
+	layout := s.fieldsModel.GetLayout(post, user, category)
 
-	pAuthor := domain.PostAuthor(author)
+	author := user.Author()
+
 	pd := domain.PostData{
 		Post:   post,
 		Layout: layout,
-		Author: &pAuthor,
+		Author: &author,
 	}
 
 	if category != nil {

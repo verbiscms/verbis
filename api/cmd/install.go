@@ -222,13 +222,16 @@ func createOwner() *domain.UserCreate {
 		printError(fmt.Sprintf("Install failed: %v\n", err))
 	}
 
+	
 	user := domain.UserCreate{
-		User: domain.User{
-			FirstName: firstName,
-			LastName:  lastName,
-			Email:     email,
-			Role: domain.UserRole{
-				Id: 6,
+		User:            domain.User{
+			UserPart:      domain.UserPart{
+				FirstName: firstName,
+				LastName:  lastName,
+				Email:     email,
+				Role: domain.UserRole{
+					Id: 6,
+				},
 			},
 		},
 		Password:        password,

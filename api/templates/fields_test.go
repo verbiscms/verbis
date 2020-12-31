@@ -21,7 +21,9 @@ var (
 	category     = domain.Category{Id: 1, Name: "category"}
 	media        = domain.Media{Id: 1, Url: "/media"}
 	post         = domain.Post{Id: 1, Title: "post title"}
-	user         = domain.User{Id: 1, FirstName: "verbis"}
+	user         = domain.User{
+		UserPart: domain.UserPart{Id: 1, FirstName: "verbis"},
+	}
 	viewP        = ViewPost{Author: &postAuthor, Category: &postCategory, Post: post}
 )
 
