@@ -64,6 +64,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/roberthodgen/spa-server v0.0.0-20171007154335-bb87b4ff3253 // indirect
+	github.com/rs/zerolog v1.18.0
 	github.com/sirupsen/logrus v1.7.0
 	github.com/slayer/autorestart v0.0.0-20170706172704-7bc8d250279b // indirect
 	github.com/spf13/afero v1.3.5 // indirect
