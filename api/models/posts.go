@@ -304,7 +304,7 @@ func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
 
 	pd := domain.PostData{
 		Post:   post,
-		Layout: layout,
+		Layout: &layout,
 		Author: &author,
 	}
 

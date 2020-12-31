@@ -12,29 +12,6 @@ type FieldsRepository struct {
 	mock.Mock
 }
 
-// GetFieldGroups provides a mock function with given fields:
-func (_m *FieldsRepository) GetFieldGroups() (*[]domain.FieldGroup, error) {
-	ret := _m.Called()
-
-	var r0 *[]domain.FieldGroup
-	if rf, ok := ret.Get(0).(func() *[]domain.FieldGroup); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]domain.FieldGroup)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
 // GetLayout provides a mock function with given fields: p, a, c
 func (_m *FieldsRepository) GetLayout(p domain.Post, a domain.User, c *domain.Category) *[]domain.FieldGroup {
 	ret := _m.Called(p, a, c)
