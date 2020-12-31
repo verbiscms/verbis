@@ -15,6 +15,11 @@ import (
 	"strings"
 )
 
+var (
+	// Storage path of the application.
+	storagePath = paths.Storage()
+)
+
 // Location defines
 type Location struct {
 	// Groups defines the current field groups that
@@ -23,31 +28,22 @@ type Location struct {
 	// jsonPath defines where JSON files containing
 	// domain.FieldGroups are kept
 	JsonPath string
+
 }
 
 // NewLocation - Construct
 func NewLocation() *Location {
-	l := &Location{
-		JsonPath: paths.Storage() + "/fields",
-	}
-
-	fg, err := l.GetFieldGroups()
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
-	}
-
 	return &Location{
-		Groups: fg,
+		JsonPath: storagePath + "/fields",
 	}
 }
 
 // GetLayout
 //
-// Loops over all of the locations within the config json
-// file that is defined. Produces an array of field groups that
-// can be returned for the post
-//
-// Returns
+// Obtains layouts specific for the arguments passed. If
+// caching allows and the domain.FieldGroups have
+// been cached, it will return the cached
+// version
 func (l *Location) GetLayout(p domain.Post, a domain.User, c *domain.Category, cacheable bool) []domain.FieldGroup {
 
 	// If the cache allows for caching of layouts & if the
@@ -60,32 +56,37 @@ func (l *Location) GetLayout(p domain.Post, a domain.User, c *domain.Category, c
 		}
 	}
 
+	fg, err := l.fieldGroupWalker()
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error()
+	}
+	l.Groups = fg
+
 	// Get the groups from the resolver
 	groups := l.groupResolver(p, a, c)
 
 	// Set the cache field layout if the cache was not found
 	if !found && cacheable {
-		cache.Store.Set("field_layout_"+p.UUID.String(), &groups, cache.RememberForever)
+		cache.Store.Set("field_layout_"+p.UUID.String(), groups, cache.RememberForever)
 	}
 
 	return groups
 }
 
-// GroupResolver
+// groupResolver
 //
-// Loops over all of the locations within the config json
-// file that is defined. Produces an array of field groups that
-// can be returned for the post
-//
-// Returns
+// Loops over all of the locations within the config json file
+// that is defined. Compares the location sets with with
+// properties of the post, user and category passed.
+// Produces an array of field groups that can be
+// returned for the post.
 func (l *Location) groupResolver(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup {
-
 	var fg []domain.FieldGroup
 
 	// Loop over the groups
 	for _, group := range l.Groups {
 
-		// Check for empty locationjson
+		// Check for empty locations json
 		if len(group.Locations) == 0 && !hasBeenAdded(group.UUID.String(), fg) {
 			fg = append(fg, group)
 
@@ -155,18 +156,23 @@ func (l *Location) groupResolver(p domain.Post, a domain.User, c *domain.Categor
 	return fg
 }
 
-// GetFieldGroups
+// FieldGroupWalker
 //
 // This function will loop over all of the json files that have been
 // stored in /storage/fields and append them to the array to be
 // returned.
 //
 // Returns errors.INTERNAL if the path file not be read or be unmarshalled
-func (l *Location) GetFieldGroups() ([]domain.FieldGroup, error) {
+func (l *Location) fieldGroupWalker() ([]domain.FieldGroup, error) {
 	const op = "Fields.GetFieldGroups"
 
 	var fg []domain.FieldGroup
 	err := filepath.Walk(l.JsonPath, func(path string, info os.FileInfo, err error) error {
+
+		if err != nil {
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No file or directory with the path: %s", path), Operation: op, Err: err}
+		}
+
 		if strings.Contains(info.Name(), "json") {
 
 			file, err := ioutil.ReadFile(path)
@@ -182,6 +188,7 @@ func (l *Location) GetFieldGroups() ([]domain.FieldGroup, error) {
 
 			fg = append(fg, fields)
 		}
+
 		return nil
 	})
 
@@ -217,9 +224,9 @@ func checkLocation(check string, location domain.FieldLocation) bool {
 // checkMatch
 //
 // Checks to see if the there has been a match within
-// the locationjson block by using an array of booleans, if there
+// the location json block by using an array of booleans, if there
 // has already been a match, it will return false. Useful
-// for and locationjson blocks not or.
+// for and location json blocks not or.
 func checkMatch(matches []bool) bool {
 	for _, a := range matches {
 		if !a {
