@@ -24,7 +24,7 @@ var (
 	user         = domain.User{
 		UserPart: domain.UserPart{Id: 1, FirstName: "verbis"},
 	}
-	viewP        = ViewPost{Author: &postAuthor, Category: &postCategory, Post: post}
+	viewP = ViewPost{Author: &postAuthor, Category: &postCategory, Post: post}
 )
 
 func newFieldTestSuite(fields string) *TemplateManager {
@@ -339,7 +339,6 @@ func Test_GetRepeater(t *testing.T) {
 			fg[0] = fields
 			f.post.Layout = &fg
 
-
 			repeater, err := f.getRepeater(test.input)
 
 			color.Yellow.Println(repeater)
@@ -355,24 +354,24 @@ func Test_GetRepeater(t *testing.T) {
 
 func Test_GetFlexible(t *testing.T) {
 
-//fields: `{
-//				"flexible": [
-//					{
-//						 "block": "block1",
-//						 "fields": {
-//							"text": "content",
-//							"text2": "content"
-//						 }
-//					},
-//					{
-//						"block": "block2",
-//						"fields": {
-//							"text": "content",
-//							"text1": "content"
-//						}
-//					}
-//				]
-//			}`,
+	//fields: `{
+	//				"flexible": [
+	//					{
+	//						 "block": "block1",
+	//						 "fields": {
+	//							"text": "content",
+	//							"text2": "content"
+	//						 }
+	//					},
+	//					{
+	//						"block": "block2",
+	//						"fields": {
+	//							"text": "content",
+	//							"text1": "content"
+	//						}
+	//					}
+	//				]
+	//			}`,
 
 	tt := map[string]struct {
 		fields string
@@ -394,7 +393,7 @@ func Test_GetFlexible(t *testing.T) {
 			input: `flexible`,
 			want: []map[string]interface{}{
 				{
-					"block": "block",
+					"block":  "block",
 					"fields": map[string]interface{}{"text": "content", "text2": "content"},
 				},
 			},
@@ -419,12 +418,11 @@ func Test_GetFlexible(t *testing.T) {
 			input: `flexible`,
 			want: []map[string]interface{}{
 				{
-					"block": "block",
+					"block":  "block",
 					"fields": map[string]interface{}{"category": &category, "text2": "content"},
 				},
 			},
 		},
-
 	}
 
 	for name, test := range tt {

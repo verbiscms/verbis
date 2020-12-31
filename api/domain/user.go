@@ -7,9 +7,9 @@ import (
 
 type User struct {
 	UserPart
-	Password         string     `db:"password" json:"password,omitempty" binding:""`
-	Token            string     `db:"token" json:"token,omitempty"`
-	TokenLastUsed    *time.Time `db:"token_last_used" json:"token_last_used,omitempty"`
+	Password      string     `db:"password" json:"password,omitempty" binding:""`
+	Token         string     `db:"token" json:"token,omitempty"`
+	TokenLastUsed *time.Time `db:"token_last_used" json:"token_last_used,omitempty"`
 }
 
 // UserPart defines the User with non-sensitive information

@@ -73,7 +73,7 @@ func Test_Admin(t *testing.T) {
 			cookie: "verbis-session=token",
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetByToken", "token").Return(domain.User{
-					UserPart:      domain.UserPart{Id: 0, Role: domain.UserRole{Id: 1}},
+					UserPart: domain.UserPart{Id: 0, Role: domain.UserRole{Id: 1}},
 				}, nil)
 			},
 		},

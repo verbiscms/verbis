@@ -37,8 +37,6 @@ func (t *TemplateManager) getField(field string, id ...int) interface{} {
 	return val
 }
 
-
-
 // resolveField
 func (t *TemplateManager) resolveField(typ interface{}, fields map[string]interface{}) interface{} {
 
@@ -158,8 +156,7 @@ func (t *TemplateManager) getSubField(field string, layout map[string]interface{
 	return val
 }
 
-
-func (t *TemplateManager) getLayoutFields() map[string]domain.Field  {
+func (t *TemplateManager) getLayoutFields() map[string]domain.Field {
 	var fg = make(map[string]domain.Field)
 	for _, layouts := range *t.post.Layout {
 		for _, field := range *layouts.Fields {
@@ -169,13 +166,12 @@ func (t *TemplateManager) getLayoutFields() map[string]domain.Field  {
 	return fg
 }
 
-
 // getRepeater
 //
 // Accepts a field and checks to see if the repeater exists.
 // If it exists, build an array of map[string]interface to return to
 // the template.
-func (t *TemplateManager) getRepeater(field string) ([]map[string]interface{}, error){
+func (t *TemplateManager) getRepeater(field string) ([]map[string]interface{}, error) {
 	const op = "Templates.getRepeater"
 
 	fields := t.getLayoutFields()
@@ -205,7 +201,6 @@ func (t *TemplateManager) getRepeater(field string) ([]map[string]interface{}, e
 			rt[index][key] = t.checkFieldType(item)
 		}
 	}
-
 
 	return rt, nil
 }
@@ -245,4 +240,3 @@ func (t *TemplateManager) checkFieldType(field interface{}) interface{} {
 
 	return field
 }
-
