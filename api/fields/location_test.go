@@ -2,17 +2,28 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
 func setupLocationTest(t *testing.T) string {
+	cache.Init()
+
+	err := logger.Init(config.Configuration{})
+	log.SetOutput(ioutil.Discard)
+	assert.NoError(t, err)
+
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
+
 	return filepath.Join(filepath.Dir(wd)) + "/test/testdata/fields"
 }
 
@@ -28,7 +39,6 @@ func TestNewLocation(t *testing.T) {
 
 func TestLocation_GetLayout(t *testing.T) {
 
-	cache.Init()
 	testPath := setupLocationTest(t) + "/test-get-layout"
 
 	tt := map[string]struct {
