@@ -43,28 +43,28 @@ func TestLocation_GetLayout(t *testing.T) {
 
 	tt := map[string]struct {
 		cacheable bool
-		jsonPath string
+		jsonPath  string
 		want      interface{}
 	}{
 		"Bad Path": {
 			cacheable: false,
-			jsonPath: "wrongval",
-			want: []domain.FieldGroup{},
+			jsonPath:  "wrongval",
+			want:      []domain.FieldGroup{},
 		},
 		"Not Cached": {
 			cacheable: false,
-			jsonPath: testPath,
-			want: []domain.FieldGroup{{Title: "title"}},
+			jsonPath:  testPath,
+			want:      []domain.FieldGroup{{Title: "title"}},
 		},
 		"Cacheable Nil": {
 			cacheable: true,
-			jsonPath: testPath,
-			want: []domain.FieldGroup{{Title: "title"}},
+			jsonPath:  testPath,
+			want:      []domain.FieldGroup{{Title: "title"}},
 		},
 		"Cacheable": {
 			cacheable: true,
-			jsonPath: testPath,
-			want: []domain.FieldGroup{{Title: "title"}},
+			jsonPath:  testPath,
+			want:      []domain.FieldGroup{{Title: "title"}},
 		},
 	}
 
@@ -82,11 +82,11 @@ func TestLocation_GroupResolver(t *testing.T) {
 	uu := uuid.New()
 
 	tt := map[string]struct {
-		post      domain.Post
-		author    domain.User
-		category  *domain.Category
-		groups []domain.FieldGroup
-		want      interface{}
+		post     domain.Post
+		author   domain.User
+		category *domain.Category
+		groups   []domain.FieldGroup
+		want     interface{}
 	}{
 		"None": {
 			want: []domain.FieldGroup{},
@@ -94,10 +94,10 @@ func TestLocation_GroupResolver(t *testing.T) {
 		"Already Added": {
 			post: domain.Post{Id: 1, Title: "title", Status: "published"},
 			groups: []domain.FieldGroup{
-				{Title: "status", UUID: uu,},
-				{Title: "status", UUID: uu,},
+				{Title: "status", UUID: uu},
+				{Title: "status", UUID: uu},
 			},
-			want: []domain.FieldGroup{{Title:     "status", UUID: uu}},
+			want: []domain.FieldGroup{{Title: "status", UUID: uu}},
 		},
 		"Status": {
 			post: domain.Post{Id: 1, Title: "title", Status: "published"},
@@ -105,11 +105,11 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "status",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "status", Operator: "==", Value:    "published"}},
+						{{Param: "status", Operator: "==", Value: "published"}},
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title:     "status"}},
+			want: []domain.FieldGroup{{Title: "status"}},
 		},
 		"Post": {
 			post: domain.Post{Id: 1},
@@ -117,11 +117,11 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "post", Operator: "==", Value: "1"}},
+						{{Param: "post", Operator: "==", Value: "1"}},
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title:     "post"}},
+			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Page Template": {
 			post: domain.Post{PageTemplate: "template"},
@@ -129,11 +129,11 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "page_template", Operator: "==", Value: "template"}},
+						{{Param: "page_template", Operator: "==", Value: "template"}},
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title:     "post"}},
+			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Layout": {
 			post: domain.Post{PageLayout: "layout"},
@@ -141,11 +141,11 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "page_layout", Operator: "==", Value: "layout"}},
+						{{Param: "page_layout", Operator: "==", Value: "layout"}},
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title:     "post"}},
+			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Resource": {
 			post: domain.Post{Resource: &r},
@@ -153,11 +153,11 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "resource", Operator: "==", Value: r }},
+						{{Param: "resource", Operator: "==", Value: r}},
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title:     "post"}},
+			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Nil Resource": {
 			post: domain.Post{Resource: nil},
@@ -165,7 +165,7 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "resource", Operator: "==", Value: "false" }},
+						{{Param: "resource", Operator: "==", Value: "false"}},
 					},
 				},
 			},
@@ -177,11 +177,11 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "category",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "category", Operator: "==", Value: "1" }},
+						{{Param: "category", Operator: "==", Value: "1"}},
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title:     "category"}},
+			want: []domain.FieldGroup{{Title: "category"}},
 		},
 		"Nil Category": {
 			category: nil,
@@ -189,7 +189,7 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "category",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "category", Operator: "==", Value: "false" }},
+						{{Param: "category", Operator: "==", Value: "false"}},
 					},
 				},
 			},
@@ -201,16 +201,16 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "author", Operator: "==", Value: "1"}},
+						{{Param: "author", Operator: "==", Value: "1"}},
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title:     "post"}},
+			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Role": {
 			author: domain.User{
-				UserPart:      domain.UserPart{
-					Role:             domain.UserRole{
+				UserPart: domain.UserPart{
+					Role: domain.UserRole{
 						Id: 1,
 					},
 				},
@@ -219,17 +219,17 @@ func TestLocation_GroupResolver(t *testing.T) {
 				{
 					Title: "role",
 					Locations: [][]domain.FieldLocation{
-						{{Param:    "role", Operator: "==", Value: "1"}},
+						{{Param: "role", Operator: "==", Value: "1"}},
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title:     "role"}},
+			want: []domain.FieldGroup{{Title: "role"}},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			l := &Location{Groups:  test.groups}
+			l := &Location{Groups: test.groups}
 			assert.Equal(t, test.want, l.groupResolver(test.post, test.author, test.category))
 		})
 	}
