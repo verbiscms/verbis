@@ -29,7 +29,6 @@ func (s *Service) GetRepeater(key string) (Repeater, error) {
 	return repeater, nil
 }
 
-
 // HasRows
 //
 func (r Repeater) HasRows() bool {

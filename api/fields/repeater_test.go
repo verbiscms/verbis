@@ -19,11 +19,11 @@ func TestService_GetRepeater(t *testing.T) {
 		"Success": {
 			fields: []domain.PostField{
 				{Id: 1, Type: "repeater", UUID: uniq, Key: "key1", Value: 1, Parent: nil},
-				{Id: 2, Type: "text", Key: "key2", Value: 2, Parent: &uniq,},
+				{Id: 2, Type: "text", Key: "key2", Value: 2, Parent: &uniq},
 				{Id: 3, Type: "text", Key: "key3", Value: 3, Parent: &uniq},
 				{Id: 4, Type: "text", Key: "key4", Value: 4, Parent: &uniq},
 			},
-			key:  "key1",
+			key: "key1",
 			want: Repeater{
 				{Id: 2, Type: "text", Key: "key2", Value: 2, Parent: &uniq},
 				{Id: 3, Type: "text", Key: "key3", Value: 3, Parent: &uniq},
@@ -37,7 +37,7 @@ func TestService_GetRepeater(t *testing.T) {
 				{Id: 3, Type: "text", Key: "key3", Value: 3, Parent: &uniq, Index: 0},
 				{Id: 4, Type: "text", Key: "key4", Value: 4, Parent: &uniq, Index: 1},
 			},
-			key:  "key1",
+			key: "key1",
 			want: Repeater{
 				{Id: 3, Type: "text", Key: "key3", Value: 3, Parent: &uniq, Index: 0},
 				{Id: 4, Type: "text", Key: "key4", Value: 4, Parent: &uniq, Index: 1},
@@ -46,8 +46,8 @@ func TestService_GetRepeater(t *testing.T) {
 		},
 		"Not Found": {
 			fields: []domain.PostField{},
-			key:  "wrongval",
-			want: "Fields.findByKey: no field exists with the key: wrongval",
+			key:    "wrongval",
+			want:   "Fields.findByKey: no field exists with the key: wrongval",
 		},
 		"Invalid Type": {
 			fields: []domain.PostField{
