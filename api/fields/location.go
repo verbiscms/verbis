@@ -28,7 +28,6 @@ type Location struct {
 	// jsonPath defines where JSON files containing
 	// domain.FieldGroups are kept
 	JsonPath string
-
 }
 
 // NewLocation - Construct
@@ -39,6 +38,7 @@ func NewLocation() *Location {
 }
 
 // GetLayout
+//
 //
 // Obtains layouts specific for the arguments passed. If
 // caching allows and the domain.FieldGroups have

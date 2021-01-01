@@ -3,7 +3,6 @@ package models
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/fields"
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -63,5 +62,6 @@ func (s *FieldsStore) GetByPostAndKey(key string, postId int) (domain.PostField,
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
 func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup {
-	return fields.NewLocation().GetLayout(p, a, c, s.options.CacheServerFields)
+	//return fields.NewLocation().GetLayout(p, a, c, s.options.CacheServerFields)
+	return nil
 }
