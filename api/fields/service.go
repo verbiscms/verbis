@@ -15,51 +15,74 @@ type Service struct {
 	store  *models.Store
 	postId int
 	Fields []domain.PostField
+	Layout *[]domain.FieldGroup
 }
 
-func (s *Service) handleArgs(args ...interface{}) []domain.PostField {
-	const op = "FieldsService.handleArgs"
+func (s *Service) handleArgs(args []interface{}) ([]domain.PostField, bool) {
 
-	if len(args) == 0 {
-		return s.Fields
-	}
-
-	if len(args) == 1 {
-		id, err := cast.ToIntE(args[0])
-		if err != nil {
-			return s.Fields
+	switch len(args) {
+	case 1:
+		fields := s.getFieldsByPost(args[0])
+		if fields == nil {
+			return s.Fields, true
 		}
-
-		fields, err := s.store.Fields.GetByPost(id)
+		return fields, true
+	case 2:
+		format, err := cast.ToBoolE(args[1])
 		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error()
-			return s.Fields
+			format = true
 		}
-		return fields
+		fields := s.getFieldsByPost(args[0])
+		if fields == nil {
+			return s.Fields, true
+		}
+		return fields, format
+	default:
+		return s.Fields, true
 	}
-
-	return s.Fields
 }
 
-func (s *Service) findFieldByKey(key string, fields []domain.PostField) (domain.PostField, error) {
-	const op = "FieldsService.findByKey"
+func (s *Service) getFieldsByPost(id interface{}) []domain.PostField {
+	const op = "FieldsService.getFieldsByPost"
+
+	i, err := cast.ToIntE(id)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err},
+		}).Error()
+		fmt.Println(err)
+		return nil
+	}
+
+	fields, err := s.store.Fields.GetByPost(i)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error()
+		return nil
+	}
+
+	return fields
+}
+
+func (s *Service) findFieldByName(name string, fields []domain.PostField) (domain.PostField, error) {
+	const op = "FieldsService.findFieldByName"
 	for _, field := range fields {
-		if key == field.Key {
+		if name == field.Name {
 			return field, nil
 		}
 	}
-	return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: "Field does not exist", Operation: op, Err: fmt.Errorf("no field exists with the key: %s", key)}
+	return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: "Field does not exist", Operation: op, Err: fmt.Errorf("no field exists with the name: %s", name)}
 }
 
-func (s *Service) getFieldChildren(uniq uuid.UUID, fields []domain.PostField) []domain.PostField {
+func (s *Service) getFieldChildren(uniq uuid.UUID, fields []domain.PostField, format bool) []domain.PostField {
 	var pf []domain.PostField
 	for _, field := range fields {
 		parent := field.Parent
 		if parent != nil && uniq == *parent {
-			f := s.resolveField(field)
-			if f.Value != nil {
-				pf = append(pf, f)
+			if !format {
+				pf = append(pf, field)
+				continue
 			}
+			pf = append(pf, s.resolveField(field))
 		}
 	}
 	return s.sortFields(pf)

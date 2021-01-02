@@ -1,4 +1,4 @@
-package fields
+package location
 
 import (
 	"encoding/json"
