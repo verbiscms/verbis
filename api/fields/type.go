@@ -35,18 +35,14 @@ func (s *Service) resolveValue(value interface{}, typ string) interface{} {
 		category, err := s.store.Categories.GetById(cast.ToInt(value))
 		if err != nil {
 			e = err
-			break
 		}
 		r = category
-		break
 	case "image":
 		media, err := s.store.Media.GetById(cast.ToInt(value))
 		if err != nil {
 			e = err
-			break
 		}
 		r = media
-		break
 	case "post":
 		post, err := s.store.Posts.GetById(cast.ToInt(value))
 		if err != nil {
@@ -56,18 +52,14 @@ func (s *Service) resolveValue(value interface{}, typ string) interface{} {
 		formatPost, err := s.store.Posts.Format(post)
 		if err != nil {
 			e = err
-			break
 		}
 		r = formatPost
-		break
 	case "user":
 		user, err := s.store.User.GetById(cast.ToInt(value))
 		if err != nil {
 			e = err
-			break
 		}
 		r = *user.HideCredentials()
-		break
 	default:
 		return value
 	}
