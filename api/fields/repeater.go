@@ -12,10 +12,16 @@ type Repeater []domain.PostField
 
 // GetRepeater
 //
-func (s *Service) GetRepeater(key string) (Repeater, error) {
-	const op = "Fields.GetRepeater"
+// Obtains the collection of children from the given key and returns
+// a new Repeater.
+// Returns errors.INVALID if the field type is not a repeater.
+// Returns errors.NOTFOUND if the field was not found by the given key.
+func (s *Service) GetRepeater(key string, args ...interface{}) (Repeater, error) {
+	const op = "FieldService.GetRepeater"
 
-	field, err := s.findByKey(key)
+	fields := s.handleArgs(args)
+
+	field, err := s.findFieldByKey(key, fields)
 	if err != nil {
 		return nil, err
 	}
@@ -24,19 +30,19 @@ func (s *Service) GetRepeater(key string) (Repeater, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the key: %s, is not a repeater", key)}
 	}
 
-	var repeater Repeater = s.getChildren(field.UUID)
-
-	return repeater, nil
+	return s.getFieldChildren(field.UUID, fields), nil
 }
 
 // HasRows
 //
+// Determines if the Repeater has any rows.
 func (r Repeater) HasRows() bool {
 	return len(r) != 0
 }
 
 // SubField
 //
+// Returns a sub field by key or nil if it wasn't found.
 func (r Repeater) SubField(key string) interface{} {
 	for _, sub := range r {
 		if key == sub.Key {
@@ -48,6 +54,8 @@ func (r Repeater) SubField(key string) interface{} {
 
 // First
 //
+// Returns the first element in the repeater, or nil if
+// the length of the repeater is zero.
 func (r Repeater) First() interface{} {
 	if len(r) == 0 {
 		return nil
@@ -57,6 +65,8 @@ func (r Repeater) First() interface{} {
 
 // Last
 //
+// Returns the last element in the repeater, or nil if
+// the length of the repeater is zero.
 func (r Repeater) Last() interface{} {
 	if len(r) == 0 {
 		return nil

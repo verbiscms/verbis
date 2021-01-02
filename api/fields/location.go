@@ -104,36 +104,28 @@ func (l *Location) groupResolver(p domain.Post, a domain.User, c *domain.Categor
 						switch rule.Param {
 						case "status":
 							locationSet = append(locationSet, checkLocation(p.Status, rule))
-							break
 						case "post":
 							locationSet = append(locationSet, checkLocation(strconv.Itoa(p.Id), rule))
-							break
 						case "page_template":
 							locationSet = append(locationSet, checkLocation(p.PageTemplate, rule))
-							break
 						case "page_layout":
 							locationSet = append(locationSet, checkLocation(p.PageLayout, rule))
-							break
 						case "resource":
 							if p.Resource != nil {
 								locationSet = append(locationSet, checkLocation(*p.Resource, rule))
 							} else {
 								locationSet = append(locationSet, false)
 							}
-							break
 						case "category":
 							if c != nil {
 								locationSet = append(locationSet, checkLocation(strconv.Itoa(c.Id), rule))
 							} else {
 								locationSet = append(locationSet, false)
 							}
-							break
 						case "author":
 							locationSet = append(locationSet, checkLocation(strconv.Itoa(p.UserId), rule))
-							break
 						case "role":
 							locationSet = append(locationSet, checkLocation(strconv.Itoa(a.Role.Id), rule))
-							break
 						}
 					}
 

@@ -12,7 +12,7 @@ import (
 
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
-	//GetByPost(postId int) ([]domain.PostField, error)
+	GetByPost(postId int) ([]domain.PostField, error)
 	//GetByPostAndKey(key string, postId int) (domain.PostField, error)
 	//GetFieldGroups() (*[]domain.FieldGroup, error)
 	GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup
