@@ -6,6 +6,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"sort"
 )
 
@@ -15,9 +17,33 @@ type Service struct {
 	Fields []domain.PostField
 }
 
-func (s *Service) findByKey(key string) (domain.PostField, error) {
-	const op = "Fields.findByKey"
-	for _, field := range s.Fields {
+func (s *Service) handleArgs(args ...interface{}) []domain.PostField {
+	const op = "FieldsService.handleArgs"
+
+	if len(args) == 0 {
+		return s.Fields
+	}
+
+	if len(args) == 1 {
+		id, err := cast.ToIntE(args[0])
+		if err != nil {
+			return s.Fields
+		}
+
+		fields, err := s.store.Fields.GetByPost(id)
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error()
+			return s.Fields
+		}
+		return fields
+	}
+
+	return s.Fields
+}
+
+func (s *Service) findFieldByKey(key string, fields []domain.PostField) (domain.PostField, error) {
+	const op = "FieldsService.findByKey"
+	for _, field := range fields {
 		if key == field.Key {
 			return field, nil
 		}
@@ -25,9 +51,9 @@ func (s *Service) findByKey(key string) (domain.PostField, error) {
 	return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: "Field does not exist", Operation: op, Err: fmt.Errorf("no field exists with the key: %s", key)}
 }
 
-func (s *Service) getChildren(uniq uuid.UUID) []domain.PostField {
+func (s *Service) getFieldChildren(uniq uuid.UUID, fields []domain.PostField) []domain.PostField {
 	var pf []domain.PostField
-	for _, field := range s.Fields {
+	for _, field := range fields {
 		parent := field.Parent
 		if parent != nil && uniq == *parent {
 			f := s.resolveField(field)

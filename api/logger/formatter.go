@@ -59,24 +59,13 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	lc := color.Style{}
 	switch entry.Level {
 	case logrus.DebugLevel:
-		{
-			lc = color.Style{color.FgGray, color.OpBold}
-			break
-		}
+		lc = color.Style{color.FgGray, color.OpBold}
 	case logrus.WarnLevel:
-		{
-			lc = color.Style{color.FgYellow, color.OpBold}
-			break
-		}
+		lc = color.Style{color.FgYellow, color.OpBold}
 	case logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel:
-		{
-			lc = color.Style{color.FgRed, color.OpBold}
-			break
-		}
+		lc = color.Style{color.FgRed, color.OpBold}
 	default:
-		{
-			lc = color.Style{color.FgBlue, color.OpBold}
-		}
+		lc = color.Style{color.FgBlue, color.OpBold}
 	}
 
 	// Print the level
