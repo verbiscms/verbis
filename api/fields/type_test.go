@@ -2,18 +2,11 @@ package fields
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
-	log "github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"testing"
 )
 
-func TestService_ResolveField(t *testing.T) {
+func (t *FieldTestSuite) TestService_ResolveField() {
 
 	tt := map[string]struct {
 		field  domain.PostField
@@ -21,6 +14,20 @@ func TestService_ResolveField(t *testing.T) {
 		want   interface{}
 		hasErr bool
 	}{
+		"Nil Value": {
+			field: domain.PostField{
+				Id:    1,
+				Type:  "text",
+				Value: nil,
+			},
+			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {},
+			want: domain.PostField{
+				Id:   1,
+				Type: "text",
+				Value: nil,
+			},
+			hasErr: false,
+		},
 		"Category Array": {
 			field: domain.PostField{
 				Id:    1,
@@ -115,40 +122,21 @@ func TestService_ResolveField(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-
-			c := &mocks.CategoryRepository{}
-			m := &mocks.MediaRepository{}
-			p := &mocks.PostsRepository{}
-			u := &mocks.UserRepository{}
-
-			test.mock(c, m, p, u)
-
-			s := &Service{
-				store: &models.Store{
-					Categories: c,
-					Media:      m,
-					Posts:      p,
-					User:       u,
-				},
-			}
+		t.Run(name, func() {
+			s := t.GetTypeMockService(test.mock)
 
 			got := s.resolveField(test.field)
 			if test.hasErr {
-				assert.Nil(t, got.Value)
+				t.Nil(t, got.Value)
 				return
 			}
 
-			assert.Equal(t, test.want, got)
+			t.Equal(test.want, got)
 		})
 	}
 }
 
-func TestService_ResolveValue(t *testing.T) {
-
-	err := logger.Init(config.Configuration{})
-	log.SetOutput(ioutil.Discard)
-	assert.NoError(t, err)
+func (t *FieldTestSuite) TestService_ResolveValue() {
 
 	tt := map[string]struct {
 		field  domain.PostField
@@ -286,31 +274,16 @@ func TestService_ResolveValue(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-
-			c := &mocks.CategoryRepository{}
-			m := &mocks.MediaRepository{}
-			p := &mocks.PostsRepository{}
-			u := &mocks.UserRepository{}
-
-			test.mock(c, m, p, u)
-
-			s := &Service{
-				store: &models.Store{
-					Categories: c,
-					Media:      m,
-					Posts:      p,
-					User:       u,
-				},
-			}
+		t.Run(name, func() {
+			s := t.GetTypeMockService(test.mock)
 
 			got := s.resolveField(test.field)
 			if test.hasErr {
-				assert.Nil(t, got.Value)
+				t.Nil(got.Value)
 				return
 			}
 
-			assert.Equal(t, test.want, got)
+			t.Equal(test.want, got)
 		})
 	}
 }

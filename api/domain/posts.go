@@ -75,9 +75,10 @@ type PostField struct {
 	PostId int         `db:"post_id" json:"post_id" binding:"numeric"`
 	UUID   uuid.UUID   `db:"uuid" json:"uuid"`
 	Type   string      `db:"type" json:"type"`
-	Key    string      `db:"field_key" json:"key"`
+	Name   string      `db:"name" json:"name"`
 	Value  interface{} `db:"value" json:"value"`
 	Parent *uuid.UUID  `db:"parent" json:"parent"`
+	Layout *string     `db:"layout" json:"layout"`
 	Index  int         `db:"index" json:"index"`
 }
 

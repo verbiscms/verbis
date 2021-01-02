@@ -16,21 +16,21 @@ type Repeater []domain.PostField
 // a new Repeater.
 // Returns errors.INVALID if the field type is not a repeater.
 // Returns errors.NOTFOUND if the field was not found by the given key.
-func (s *Service) GetRepeater(key string, args ...interface{}) (Repeater, error) {
-	const op = "FieldService.GetRepeater"
+func (s *Service) GetRepeater(name string, args ...interface{}) (Repeater, error) {
+	const op = "FieldsService.GetRepeater"
 
-	fields := s.handleArgs(args)
+	fields, format := s.handleArgs(args)
 
-	field, err := s.findFieldByKey(key, fields)
+	field, err := s.findFieldByName(name, fields)
 	if err != nil {
 		return nil, err
 	}
 
 	if field.Type != "repeater" {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the key: %s, is not a repeater", key)}
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the name: %s, is not a repeater", name)}
 	}
 
-	return s.getFieldChildren(field.UUID, fields), nil
+	return s.getFieldChildren(field.UUID, fields, format), nil
 }
 
 // HasRows
@@ -43,9 +43,9 @@ func (r Repeater) HasRows() bool {
 // SubField
 //
 // Returns a sub field by key or nil if it wasn't found.
-func (r Repeater) SubField(key string) interface{} {
+func (r Repeater) SubField(name string) interface{} {
 	for _, sub := range r {
-		if key == sub.Key {
+		if name == sub.Name {
 			return sub.Value
 		}
 	}

@@ -7,9 +7,17 @@ import (
 	"reflect"
 )
 
+// resolveField
+//
+// Determines if the given field values is a slice or array or singular
+// and returns a resolved field value or a slice of interfaces.
 func (s *Service) resolveField(field domain.PostField) domain.PostField {
-	typ := reflect.TypeOf(field.Value)
 
+	if field.Value == nil {
+		return field
+	}
+
+	typ := reflect.TypeOf(field.Value)
 	if typ.Kind() != reflect.Slice && typ.Kind() != reflect.Array {
 		field.Value = s.resolveValue(field.Value, field.Type)
 		return field
@@ -26,6 +34,13 @@ func (s *Service) resolveField(field domain.PostField) domain.PostField {
 	return field
 }
 
+// resolveValue
+//
+// Switches the fields type and resolves the field value accordingly.
+// If there was an error resolving the value, the original field
+// will be returned.
+// Resolves categories, images, posts and users from the ID
+// to the type.
 func (s *Service) resolveValue(value interface{}, typ string) interface{} {
 	var e error
 	var r = value

@@ -1,4 +1,4 @@
-package fields
+package location
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
@@ -24,7 +24,7 @@ func setupLocationTest(t *testing.T) string {
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
 
-	return filepath.Join(filepath.Dir(wd)) + "/test/testdata/fields"
+	return filepath.Join(filepath.Dir(wd)+"./..") + "/test/testdata/fields"
 }
 
 func TestNewLocation(t *testing.T) {

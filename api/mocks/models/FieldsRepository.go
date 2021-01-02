@@ -12,16 +12,39 @@ type FieldsRepository struct {
 	mock.Mock
 }
 
+// GetByPost provides a mock function with given fields: postId
+func (_m *FieldsRepository) GetByPost(postId int) ([]domain.PostField, error) {
+	ret := _m.Called(postId)
+
+	var r0 []domain.PostField
+	if rf, ok := ret.Get(0).(func(int) []domain.PostField); ok {
+		r0 = rf(postId)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]domain.PostField)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(int) error); ok {
+		r1 = rf(postId)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetLayout provides a mock function with given fields: p, a, c
-func (_m *FieldsRepository) GetLayout(p domain.Post, a domain.User, c *domain.Category) *[]domain.FieldGroup {
+func (_m *FieldsRepository) GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup {
 	ret := _m.Called(p, a, c)
 
-	var r0 *[]domain.FieldGroup
-	if rf, ok := ret.Get(0).(func(domain.Post, domain.User, *domain.Category) *[]domain.FieldGroup); ok {
+	var r0 []domain.FieldGroup
+	if rf, ok := ret.Get(0).(func(domain.Post, domain.User, *domain.Category) []domain.FieldGroup); ok {
 		r0 = rf(p, a, c)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*[]domain.FieldGroup)
+			r0 = ret.Get(0).([]domain.FieldGroup)
 		}
 	}
 
