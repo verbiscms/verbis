@@ -14,9 +14,10 @@ import (
 type Service struct {
 	store  *models.Store
 	postId int
-	Fields []domain.PostField
-	Layout *[]domain.FieldGroup
+	fields []domain.PostField
+	layout *[]domain.FieldGroup
 }
+
 
 func (s *Service) handleArgs(args []interface{}) ([]domain.PostField, bool) {
 
@@ -24,7 +25,7 @@ func (s *Service) handleArgs(args []interface{}) ([]domain.PostField, bool) {
 	case 1:
 		fields := s.getFieldsByPost(args[0])
 		if fields == nil {
-			return s.Fields, true
+			return s.fields, true
 		}
 		return fields, true
 	case 2:
@@ -34,11 +35,11 @@ func (s *Service) handleArgs(args []interface{}) ([]domain.PostField, bool) {
 		}
 		fields := s.getFieldsByPost(args[0])
 		if fields == nil {
-			return s.Fields, true
+			return s.fields, true
 		}
 		return fields, format
 	default:
-		return s.Fields, true
+		return s.fields, true
 	}
 }
 
