@@ -22,7 +22,7 @@ func ByUUID(uuid uuid.UUID, groups []domain.FieldGroup) (domain.Field, error) {
 
 	for _, g := range groups {
 		for _, f := range *g.Fields {
-			field, found := walkerByUUID(uuid, f);
+			field, found := walkerByUUID(uuid, f)
 			if !found {
 				continue
 			}
