@@ -15,10 +15,10 @@ import (
 	"strings"
 )
 
-var (
-	// Storage path of the application.
-	storagePath = paths.Storage()
-)
+// Finder defines the method for obtaining field layouts.
+type Finder interface {
+	GetLayout(p domain.Post, a domain.User, c *domain.Category, cacheable bool) []domain.FieldGroup
+}
 
 // Location defines
 type Location struct {
@@ -29,6 +29,11 @@ type Location struct {
 	// domain.FieldGroups are kept
 	JsonPath string
 }
+
+var (
+	// Storage path of the application.
+	storagePath = paths.Storage()
+)
 
 // NewLocation - Construct
 func NewLocation() *Location {

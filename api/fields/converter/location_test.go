@@ -20,7 +20,7 @@ type LocationTestSuite struct {
 	Path string
 }
 
-func TestExampleTestSuite(t *testing.T) {
+func TestLocation(t *testing.T) {
 	suite.Run(t, new(LocationTestSuite))
 }
 

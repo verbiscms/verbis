@@ -13,6 +13,7 @@ type PostData struct {
 	Author   *PostAuthor   `json:"author"`
 	Category *PostCategory `json:"category"`
 	Layout   *[]FieldGroup `json:"layout"`
+	Fields 	 *[]PostField  `json:"fields"`
 }
 
 type Post struct {
