@@ -1,6 +1,8 @@
 package walker
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import (
+	"github.com/ainsleyclark/verbis/api/domain"
+)
 
 // walkerByName
 //

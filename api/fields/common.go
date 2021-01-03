@@ -17,7 +17,7 @@ import (
 // [1] for formatting the field, for example, a field with type of Post
 // with the value of 1, will automatically be resolved to a domain.Post,
 // if this is set to false, the value will only be 1.
-
+//
 // Returns the fields to be modified and whether or not they should be formatted.
 // Logs errors.INVALID if the format interface{} could not to be cast to a bool.
 func (s *Service) handleArgs(args []interface{}) ([]domain.PostField, bool) {
@@ -65,37 +65,6 @@ func (s *Service) getFieldsByPost(id interface{}) []domain.PostField {
 	}
 
 	return fields
-}
-
-// getLayoutByPost
-//
-// Returns the layout by Post with the given ID.
-// Logs errors.INVALID if the id failed to be cast to an int.
-// Logs if the post if was not found or there was an error obtaining/formatting the post.
-func (s *Service) getLayoutByPost(id interface{}) []domain.FieldGroup {
-	const op = "FieldsService.getFieldsByPost"
-
-	i, err := cast.ToIntE(id)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err},
-		}).Error()
-		return nil
-	}
-
-	p, err := s.store.Posts.GetById(i)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
-		return nil
-	}
-
-	t, err := s.store.Posts.Format(p)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
-		return nil
-	}
-
-	return *t.Layout
 }
 
 // findFieldByName

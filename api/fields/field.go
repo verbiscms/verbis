@@ -18,14 +18,3 @@ func (s *Service) GetField(name string, args ...interface{}) (interface{}, error
 
 	return s.resolveField(field).Value, nil
 }
-
-//// GetFieldLayout
-////
-//func (s *Service) GetFieldLayout(name string, args ...interface{}) (*domain.Field, error) {
-//	layout, err := walker.ByName(name, s.layout)
-//	if err != nil {
-//		return nil, err
-//	}
-//
-//	return &layout, nil
-//}

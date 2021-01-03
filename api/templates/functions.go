@@ -100,6 +100,8 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		// Fields
 		"field":    t.fieldService.GetField,
 		"fields":   t.fieldService.GetFields,
+		"layout":   t.fieldService.GetLayout,
+		"layouts":  t.fieldService.GetLayouts,
 		"repeater": t.fieldService.GetRepeater,
 		"flexible": t.fieldService.GetFlexible,
 		// Header & Footer
