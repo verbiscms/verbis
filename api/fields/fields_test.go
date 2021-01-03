@@ -60,7 +60,7 @@ func (t *FieldTestSuite) TestService_GetFields() {
 				"key1": 1,
 				"key2": []interface{}{
 					Layout{
-						Name:      "layout",
+						Name: "layout",
 						SubFields: SubFields{
 							domain.PostField{Id: 3, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: 0},
 							domain.PostField{Id: 4, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: 0},
@@ -135,19 +135,19 @@ func (t *FieldTestSuite) TestService_Mapper() {
 
 	tt := map[string]struct {
 		fields []domain.PostField
-		want    interface{}
+		want   interface{}
 	}{
 		"Simple": {
 			fields: []domain.PostField{{Id: 1, Type: "text", Name: "key1", Value: 1, Parent: nil}},
-			want: domain.PostField{Id: 1, Type: "text", Name: "key1", Value: 1, Parent: nil},
+			want:   domain.PostField{Id: 1, Type: "text", Name: "key1", Value: 1, Parent: nil},
 		},
 		"Parent": {
 			fields: []domain.PostField{{Id: 1, Type: "text", Name: "key1", Value: 1, Parent: &uniq}},
-			want: nil,
+			want:   nil,
 		},
 		"Layout": {
 			fields: []domain.PostField{{Id: 1, Type: "text", Name: "key1", Value: 1, Layout: &layout}},
-			want: nil,
+			want:   nil,
 		},
 		"Repeater": {
 			fields: []domain.PostField{
@@ -158,7 +158,7 @@ func (t *FieldTestSuite) TestService_Mapper() {
 			},
 			want: domain.PostField{
 				Id: 1, Type: "repeater", UUID: uniq, Name: "key1", Parent: nil,
-				Value:  Repeater{
+				Value: Repeater{
 					{Id: 2, Type: "text", Name: "key2", Value: 2, Parent: &uniq},
 					{Id: 3, Type: "text", Name: "key3", Value: 3, Parent: &uniq},
 					{Id: 4, Type: "text", Name: "key4", Value: 4, Parent: &uniq},
@@ -173,9 +173,9 @@ func (t *FieldTestSuite) TestService_Mapper() {
 			},
 			want: domain.PostField{
 				Id: 1, Type: "flexible", Name: "key1", Parent: nil, Layout: nil, Index: 0,
-				Value:  Flexible{
+				Value: Flexible{
 					Layout{
-						Name:      "layout",
+						Name: "layout",
 						SubFields: SubFields{
 							domain.PostField{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: 0},
 							domain.PostField{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: 0},
@@ -196,4 +196,3 @@ func (t *FieldTestSuite) TestService_Mapper() {
 		})
 	}
 }
-

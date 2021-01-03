@@ -22,10 +22,10 @@ type FieldsRepository interface {
 
 // FieldsStore defines the data layer for Posts
 type FieldsStore struct {
-	db       *sqlx.DB
-	config   config.Configuration
-	options  domain.Options
-	finder   location.Finder
+	db      *sqlx.DB
+	config  config.Configuration
+	options domain.Options
+	finder  location.Finder
 }
 
 // newFields - Construct
@@ -33,10 +33,10 @@ func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 	const op = "FieldsRepository.newFields"
 
 	fs := FieldsStore{
-		db:       db,
-		config:   config,
-		options:  newOptions(db, config).GetStruct(),
-		finder: location.NewLocation(),
+		db:      db,
+		config:  config,
+		options: newOptions(db, config).GetStruct(),
+		finder:  location.NewLocation(),
 	}
 
 	return &fs
