@@ -50,7 +50,6 @@ func (s *Service) getFieldsByPost(id interface{}) []domain.PostField {
 		log.WithFields(log.Fields{
 			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err},
 		}).Error()
-		fmt.Println(err)
 		return nil
 	}
 
@@ -61,6 +60,31 @@ func (s *Service) getFieldsByPost(id interface{}) []domain.PostField {
 	}
 
 	return fields
+}
+
+func (s *Service) getLayoutByPost(id interface{}) []domain.FieldGroup {
+	const op = "FieldsService.getFieldsByPost"
+
+	i, err := cast.ToIntE(id)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err},
+		}).Error()
+	}
+
+	p, err := s.store.Posts.GetById(i)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error()
+		return nil
+	}
+
+	t, err := s.store.Posts.Format(p)
+	if err != nil {
+		log.WithFields(log.Fields{"error": err}).Error()
+		return nil
+	}
+
+	return *t.Layout
 }
 
 func (s *Service) findFieldByName(name string, fields []domain.PostField) (domain.PostField, error) {

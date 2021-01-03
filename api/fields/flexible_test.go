@@ -24,7 +24,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 				{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &l1, Index: 0},
 				{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &l1, Index: 0},
 			},
-			key: "flex",
+			key:  "flex",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args: nil,
 			want: Flexible{
@@ -39,10 +39,10 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 		},
 		"No Field": {
 			fields: nil,
-			key: "wrongval",
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
-			args: nil,
-			want: "no field exists with the name: wrongval",
+			key:    "wrongval",
+			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
+			args:   nil,
+			want:   "no field exists with the name: wrongval",
 		},
 		"Multiple Layouts": {
 			fields: []domain.PostField{
@@ -51,27 +51,27 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 				{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &l2, Index: 0},
 				{Id: 4, Type: "text", Name: "text 3", Value: "text", Layout: &l3, Index: 0},
 			},
-			key: "flex",
+			key:  "flex",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args: nil,
 			want: Flexible{
 				{
-					Name: "layout1",
+					Name:      "layout1",
 					SubFields: SubFields{{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &l1, Index: 0}},
 				},
 				{
-					Name: "layout2",
+					Name:      "layout2",
 					SubFields: SubFields{{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &l2, Index: 0}},
 				},
 				{
-					Name: "layout3",
+					Name:      "layout3",
 					SubFields: SubFields{{Id: 4, Type: "text", Name: "text 3", Value: "text", Layout: &l3, Index: 0}},
 				},
 			},
 		},
 		"Format": {
 			fields: nil,
-			key: "flex",
+			key:    "flex",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{
 					{Id: 1, Type: "flexible", Name: "flex", Value: []string{"layout1"}, Parent: nil, Layout: nil, Index: 0},
@@ -82,14 +82,14 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 			args: []interface{}{1, false},
 			want: Flexible{
 				{
-					Name: "layout1",
+					Name:      "layout1",
 					SubFields: SubFields{{Id: 2, Type: "category", Name: "text 1", Value: 1, Layout: &l1, Index: 0}},
 				},
 			},
 		},
 		"Without Format": {
 			fields: nil,
-			key: "flex",
+			key:    "flex",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{
 					{Id: 1, Type: "flexible", Name: "flex", Value: []string{"layout1"}, Parent: nil, Layout: nil, Index: 0},
@@ -100,22 +100,22 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 			args: []interface{}{1, true},
 			want: Flexible{
 				{
-					Name: "layout1",
+					Name:      "layout1",
 					SubFields: SubFields{{Id: 2, Type: "category", Name: "text 1", Value: domain.Category{Id: 1, Name: "cat"}, Layout: &l1, Index: 0}},
 				},
 			},
 		},
 		"Invalid Type": {
-			fields: []domain.PostField{{Id: 1, Type: "text", Name: "flex", Value: 1, Parent: nil},},
-			key:  "flex",
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
-			want: "field with the name: flex, is not flexible content",
+			fields: []domain.PostField{{Id: 1, Type: "text", Name: "flex", Value: 1, Parent: nil}},
+			key:    "flex",
+			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
+			want:   "field with the name: flex, is not flexible content",
 		},
 		"Bad Cast to Layouts": {
-			fields: []domain.PostField{{Id: 1, Type: "flexible", Name: "flex", Value: noStringer{}, Parent: nil},},
-			key:  "flex",
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
-			want: "unable to cast fields.noStringer{} of type fields.noStringer",
+			fields: []domain.PostField{{Id: 1, Type: "flexible", Name: "flex", Value: noStringer{}, Parent: nil}},
+			key:    "flex",
+			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
+			want:   "unable to cast fields.noStringer{} of type fields.noStringer",
 		},
 	}
 
@@ -142,7 +142,7 @@ func (t *FieldTestSuite) TestFlexible_HasRows() {
 	}{
 		"With Rows": {
 			flexible: Flexible{
-				{Name: "layout", SubFields: SubFields{domain.PostField{Id:     1, Name:   "test"}},},
+				{Name: "layout", SubFields: SubFields{domain.PostField{Id: 1, Name: "test"}}},
 			},
 			want: true,
 		},
@@ -162,9 +162,9 @@ func (t *FieldTestSuite) TestFlexible_HasRows() {
 func (t *FieldTestSuite) TestSubFields_SubField() {
 
 	subfield := SubFields{
-		{Id:     1, Name:   "test1", Value: 1},
-		{Id:     2, Name:   "test2",  Value: 2},
-		{Id:     3, Name:   "test3",  Value: 3},
+		{Id: 1, Name: "test1", Value: 1},
+		{Id: 2, Name: "test2", Value: 2},
+		{Id: 3, Name: "test3", Value: 3},
 	}
 
 	tt := map[string]struct {
@@ -192,7 +192,7 @@ func (t *FieldTestSuite) TestSubFields_First() {
 
 	tt := map[string]struct {
 		subfields SubFields
-		want     interface{}
+		want      interface{}
 	}{
 		"Found": {
 			subfields: SubFields{
@@ -204,7 +204,7 @@ func (t *FieldTestSuite) TestSubFields_First() {
 		},
 		"Not Found": {
 			subfields: SubFields{},
-			want:     nil,
+			want:      nil,
 		},
 	}
 
@@ -219,7 +219,7 @@ func (t *FieldTestSuite) TestSubFields_Last() {
 
 	tt := map[string]struct {
 		subfields SubFields
-		want     interface{}
+		want      interface{}
 	}{
 		"Found": {
 			subfields: SubFields{
@@ -231,7 +231,7 @@ func (t *FieldTestSuite) TestSubFields_Last() {
 		},
 		"Not Found": {
 			subfields: SubFields{},
-			want:     nil,
+			want:      nil,
 		},
 	}
 

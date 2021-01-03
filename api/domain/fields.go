@@ -26,11 +26,11 @@ type Field struct {
 }
 
 type FieldLayout struct {
-	//UUID         uuid.UUID              `json:"uuid"`
-	Name      string   `json:"name"`
-	Label     string   `json:"label"`
-	Display   string   `json:"didpslay"`
-	SubFields *[]Field `json:"sub_fields,omitempty"`
+	UUID      uuid.UUID `json:"uuid"`
+	Name      string    `json:"name"`
+	Label     string    `json:"label"`
+	Display   string    `json:"didpslay"`
+	SubFields *[]Field  `json:"sub_fields,omitempty"`
 }
 
 type FieldFilter struct {

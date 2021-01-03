@@ -2,14 +2,13 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 )
 
-func (t *FieldTestSuite) TestService_GetField() {
+func (t *FieldTestSuite) TestService_GetFields() {
 
 	tt := map[string]struct {
 		fields []domain.PostField
-		key    string
 		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
 		args   []interface{}
 		want   interface{}
@@ -18,23 +17,20 @@ func (t *FieldTestSuite) TestService_GetField() {
 			fields: []domain.PostField{
 				{Id: 1, Type: "text", Name: "key1", Value: 1, Parent: nil},
 			},
-			key:  "key1",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args: nil,
 			want: 1,
 		},
 		"No Field": {
 			fields: nil,
-			key:  "wrongval",
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
-			args: nil,
-			want: "no field exists with the name: wrongval",
+			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
+			args:   nil,
+			want:   "no field exists with the name: wrongval",
 		},
 		"Post": {
 			fields: []domain.PostField{
 				{Id: 1, Type: "text", Name: "key1", Value: 1, Parent: nil},
 			},
-			key:  "key2",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 2).Return([]domain.PostField{{Id: 2, Type: "text", Name: "key2", Value: 2, Parent: nil}}, nil)
 			},
@@ -43,7 +39,6 @@ func (t *FieldTestSuite) TestService_GetField() {
 		},
 		"With Format": {
 			fields: nil,
-			key:  "key1",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{{Id: 1, Type: "category", Name: "key1", Value: 1, Parent: nil}}, nil)
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
@@ -53,7 +48,6 @@ func (t *FieldTestSuite) TestService_GetField() {
 		},
 		"Without Format": {
 			fields: nil,
-			key:  "key1",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{{Id: 1, Type: "category", Name: "key1", Value: 1, Parent: nil}}, nil)
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
@@ -67,7 +61,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 		t.Run(name, func() {
 			s := t.GetMockService(test.fields, test.mock)
 
-			got, err := s.GetField(test.key, test.args...)
+			got, err := s.GetFields(test.args...)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return
