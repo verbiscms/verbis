@@ -9,6 +9,8 @@ import (
 type FieldService interface {
 	GetField(name string, args ...interface{}) (interface{}, error)
 	GetFields(args ...interface{}) (Fields, error)
+	GetLayout(name string, args ...interface{}) (domain.Field, error)
+	GetLayouts(args ...interface{}) []domain.FieldGroup
 	GetRepeater(name string, args ...interface{}) (Repeater, error)
 	GetFlexible(name string, args ...interface{}) (Flexible, error)
 }
