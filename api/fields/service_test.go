@@ -11,11 +11,11 @@ func (t *FieldTestSuite) TestNewService() {
 	var f []domain.PostField
 
 	pd := domain.PostData{
-		Post:     domain.Post{
+		Post: domain.Post{
 			Id: 1,
 		},
-		Layout:   &l,
-		Fields:   &f,
+		Layout: &l,
+		Fields: &f,
 	}
 
 	service := &Service{

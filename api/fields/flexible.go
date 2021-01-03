@@ -7,15 +7,28 @@ import (
 	"github.com/spf13/cast"
 )
 
+// Flexible represents the collection of layouts used
+// for the flexible content function in templates.
 type Flexible []Layout
 
+// Layout represents the collection of subfield's and
+// layout's name.
 type Layout struct {
 	Name      string
 	SubFields SubFields
 }
 
+// Subfields represents the collection of fields used
+// for templates. It has various functions attached
+// to it making it easier to loop over.
 type SubFields []domain.PostField
 
+// GetFlexible
+//
+// Returns the collection of Layouts from the given key and returns
+// a new Flexible.
+// Returns errors.INVALID if the field type is not flexible content.
+// Returns errors.INTERNAL if the layouts could not be cast to a string slice.
 func (s *Service) GetFlexible(name string, args ...interface{}) (Flexible, error) {
 	const op = "FieldsService.GetFlexible"
 
@@ -38,6 +51,13 @@ func (s *Service) GetFlexible(name string, args ...interface{}) (Flexible, error
 	return s.getLayouts(fields, layouts, format), nil
 }
 
+// getLayouts
+//
+// Loops over the given layouts (e.g ["layout1","layout2"] and builds up
+// an array of SUbFields if the SubField layout matches the ranged
+// layout.
+// Fields are resolved dependant on the format parameter.
+// Returns a new Flexible.
 func (s *Service) getLayouts(fields []domain.PostField, layouts []string, format bool) Flexible {
 	var flexible []Layout
 	for _, v := range layouts {

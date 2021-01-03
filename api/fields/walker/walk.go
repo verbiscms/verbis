@@ -50,5 +50,3 @@ func ByName(name string, groups []domain.FieldGroup) (domain.Field, error) {
 
 	return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "No groups exists", Operation: op, Err: fmt.Errorf("no groups exist, unable to range over groups and find fields")}
 }
-
-
