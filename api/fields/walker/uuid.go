@@ -13,10 +13,12 @@ import (
 // Returns a domain.Field and true if it was found.
 // Returns false if it wasn't.
 func walkerByUUID(uuid uuid.UUID, field domain.Field) (domain.Field, bool) {
+
 	// Account for normal field
 	if field.UUID == uuid {
 		return field, true
 	}
+
 	// Account for repeaters
 	if field.SubFields != nil {
 		for _, subField := range *field.SubFields {
@@ -25,6 +27,7 @@ func walkerByUUID(uuid uuid.UUID, field domain.Field) (domain.Field, bool) {
 			}
 		}
 	}
+
 	// Account for flexible content
 	if len(field.Layouts) != 0 {
 		for _, layout := range field.Layouts {
@@ -35,6 +38,7 @@ func walkerByUUID(uuid uuid.UUID, field domain.Field) (domain.Field, bool) {
 			}
 		}
 	}
+
 	// Field not found
 	return domain.Field{}, false
 }

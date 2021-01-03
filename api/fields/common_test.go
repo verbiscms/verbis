@@ -11,58 +11,58 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 
 	tt := map[string]struct {
 		fields []domain.PostField
-		args  []interface{}
-		mock  func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		args   []interface{}
+		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
 		format bool
 		want   []domain.PostField
 	}{
 		"Default": {
 			fields: []domain.PostField{{Name: "test"}},
-			args: nil,
+			args:   nil,
 			format: true,
-			want: []domain.PostField{{Name: "test"}},
+			want:   []domain.PostField{{Name: "test"}},
 		},
 		"1 Args (Post)": {
 			fields: nil,
-			args: []interface{}{1},
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository){
+			args:   []interface{}{1},
+			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{
 					{Id: 1, Type: "text", Name: "post"},
 				}, nil)
 			},
 			format: true,
-			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"1 Args (Post Error)": {
 			fields: []domain.PostField{{Name: "test"}},
-			args: []interface{}{1},
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository){
+			args:   []interface{}{1},
+			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
 			},
 			format: true,
-			want: nil,
+			want:   nil,
 		},
 		"2 Args (Post & Format)": {
 			fields: nil,
-			args: []interface{}{1, false},
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository){
+			args:   []interface{}{1, false},
+			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{
 					{Id: 1, Type: "text", Name: "post"},
 				}, nil)
 			},
 			format: false,
-			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"Cast to Bool Error": {
 			fields: nil,
-			args: []interface{}{1, noStringer{}},
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository){
+			args:   []interface{}{1, noStringer{}},
+			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{
 					{Id: 1, Type: "text", Name: "post"},
 				}, nil)
 			},
 			format: true,
-			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
 		},
 	}
 
@@ -79,9 +79,9 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 
 	tt := map[string]struct {
-		id interface{}
-		mock  func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
-		want   []domain.PostField
+		id   interface{}
+		mock func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		want []domain.PostField
 	}{
 		"Success": {
 			id: 1,
@@ -93,7 +93,7 @@ func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"Cast Error": {
-			id: noStringer{},
+			id:   noStringer{},
 			want: nil,
 		},
 		"Get Error": {
@@ -118,23 +118,23 @@ func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 	fg := &[]domain.FieldGroup{{Title: "test"}}
 
 	tt := map[string]struct {
-		id interface{}
-		mock  func(p *mocks.PostsRepository)
-		want  []domain.FieldGroup
+		id   interface{}
+		mock func(p *mocks.PostsRepository)
+		want []domain.FieldGroup
 	}{
 		"Success": {
 			id: 1,
 			mock: func(p *mocks.PostsRepository) {
 				p.On("GetById", 1).Return(post, nil)
 				p.On("Format", post).Return(domain.PostData{
-					Post:     domain.Post{Id: 1, Title: "post"},
-					Layout:   fg,
+					Post:   domain.Post{Id: 1, Title: "post"},
+					Layout: fg,
 				}, nil)
 			},
 			want: *fg,
 		},
 		"Cast Error": {
-			id: noStringer{},
+			id:   noStringer{},
 			want: nil,
 		},
 		"Not Found": {
@@ -166,11 +166,11 @@ func (t *FieldTestSuite) TestService_GetChildren() {
 	id := uuid.New()
 
 	tt := map[string]struct {
-		uuid uuid.UUID
+		uuid   uuid.UUID
 		fields []domain.PostField
 		format bool
-		mock  func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
-		want []domain.PostField
+		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		want   []domain.PostField
 	}{
 		"Not Formatted": {
 			uuid: id,

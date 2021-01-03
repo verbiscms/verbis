@@ -19,7 +19,7 @@ type FieldService interface {
 type Service struct {
 	// Used for obtaining categories, media items, posts and
 	// users from the database when resolving fields.
-	store  *models.Store
+	store *models.Store
 	// The original post ID.
 	postId int
 	// The slice of domain.PostField to create repeaters,

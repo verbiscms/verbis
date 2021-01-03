@@ -6,13 +6,13 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// Repeater represents the collection of fields for use
-// with templates.
+// Repeater represents the collection of fields fused
+// for the repeater function in templates.
 type Repeater []domain.PostField
 
 // GetRepeater
 //
-// Obtains the collection of children from the given key and returns
+// Returns the collection of children from the given key and returns
 // a new Repeater.
 // Returns errors.INVALID if the field type is not a repeater.
 // Returns errors.NOTFOUND if the field was not found by the given key.

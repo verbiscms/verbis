@@ -14,15 +14,15 @@ import (
 )
 
 type TemplateManager struct {
-	gin         *gin.Context
-	post        *domain.PostData
-	site        *domain.Site
-	store       *models.Store
-	options     domain.Options
-	config      config.Configuration
-	themeConfig domain.ThemeConfig
+	gin          *gin.Context
+	post         *domain.PostData
+	site         *domain.Site
+	store        *models.Store
+	options      domain.Options
+	config       config.Configuration
+	themeConfig  domain.ThemeConfig
 	fieldService fields.FieldService
-	token       string
+	token        string
 }
 
 type TypeOfPage struct {
@@ -44,14 +44,14 @@ var (
 // NewManager - Construct
 func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateManager {
 	return &TemplateManager{
-		gin:         g,
-		post:        p,
-		site:        s.Site.GetGlobalConfig(),
-		store:       s,
-		options:     s.Options.GetStruct(),
-		themeConfig: s.Site.GetThemeConfig(),
-		fieldService:fields.NewService(s, *p),
-		config:      c,
+		gin:          g,
+		post:         p,
+		site:         s.Site.GetGlobalConfig(),
+		store:        s,
+		options:      s.Options.GetStruct(),
+		themeConfig:  s.Site.GetThemeConfig(),
+		fieldService: fields.NewService(s, *p),
+		config:       c,
 	}
 }
 
