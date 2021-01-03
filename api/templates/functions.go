@@ -3,6 +3,7 @@ package templates
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/fields"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -15,12 +16,12 @@ import (
 type TemplateManager struct {
 	gin         *gin.Context
 	post        *domain.PostData
-	fields      map[string]interface{}
 	site        *domain.Site
 	store       *models.Store
 	options     domain.Options
 	config      config.Configuration
 	themeConfig domain.ThemeConfig
+	fieldService fields.FieldService
 	token       string
 }
 
@@ -42,15 +43,14 @@ var (
 
 // NewManager - Construct
 func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateManager {
-
 	return &TemplateManager{
 		gin:         g,
 		post:        p,
-		fields:      p.Fields,
 		site:        s.Site.GetGlobalConfig(),
 		store:       s,
 		options:     s.Options.GetStruct(),
 		themeConfig: s.Site.GetThemeConfig(),
+		fieldService:fields.NewService(s, *p),
 		config:      c,
 	}
 }
@@ -98,12 +98,10 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		// Dict
 		"dict": t.dict,
 		// Fields
-		"field":    t.getField,
-		"fields":   t.getFields,
-		"hasField": t.hasField,
-		"repeater": t.getRepeater,
-		"flexible": t.getFlexible,
-		"subfield": t.getSubField,
+		"field":    t.fieldService.GetField,
+		"fields":   t.fieldService.GetFields,
+		"repeater": t.fieldService.GetRepeater,
+		"flexible": t.fieldService.GetFlexible,
 		// Header & Footer
 		"verbisHead": t.header,
 		"verbisFoot": t.footer,

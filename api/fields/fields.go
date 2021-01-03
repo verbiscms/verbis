@@ -13,12 +13,12 @@ func (s *Service) GetFields(args ...interface{}) (Fields, error) {
 	fields, format := s.handleArgs(args)
 
 	f := make(Fields, len(fields))
-	Walker(s, fields, func(field domain.PostField) {
+	s.mapper(fields, func(field domain.PostField) {
 		if !format {
 			f[field.Name] = field.Value
 			return
 		}
-		f[field.Name] = s.resolveField(field)
+		f[field.Name] = s.resolveField(field).Value
 	})
 
 	return f, nil
@@ -26,21 +26,30 @@ func (s *Service) GetFields(args ...interface{}) (Fields, error) {
 
 type WalkerFunc func(field domain.PostField)
 
-func Walker(service *Service, fields []domain.PostField, walkerFunc WalkerFunc) {
+func (s *Service) mapper(fields []domain.PostField, walkerFunc WalkerFunc) {
 	for _, field := range fields {
-		// The type is not a repeater of flexible content
-		if field.Parent == nil || field.Layout != nil {
-			walkerFunc(field)
+
+		if field.Parent != nil || field.Layout != nil {
+			continue
 		}
-		// Check repeater values
-		if repeater, err := service.GetRepeater(field.Name); err != nil {
-			field.Value = repeater
-			walkerFunc(field)
+
+		if field.Type == "repeater" {
+			if repeater, err := s.GetRepeater(field.Name); err == nil {
+				field.Value = repeater
+				walkerFunc(field)
+				continue
+			}
 		}
-		// Check flexible content
-		if flexible, err := service.GetFlexible(field.Name); err != nil {
-			field.Value = flexible
-			walkerFunc(field)
+
+		if field.Type == "flexible" {
+			repeater, err := s.GetFlexible(field.Name); if err == nil {
+				field.Value = repeater
+				walkerFunc(field)
+				continue
+			}
 		}
+
+		walkerFunc(field)
 	}
+	return
 }

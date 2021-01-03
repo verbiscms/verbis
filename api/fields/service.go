@@ -1,121 +1,41 @@
 package fields
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cast"
-	"sort"
 )
 
+// FieldService defines methods for obtaining fields for the front end templates
+type FieldService interface {
+	GetField(name string, args ...interface{}) (interface{}, error)
+	GetFields(args ...interface{}) (Fields, error)
+	GetRepeater(name string, args ...interface{}) (Repeater, error)
+	GetFlexible(name string, args ...interface{}) (Flexible, error)
+}
+
+// Service
+//
+// Defines the helper for obtaining fields for front end templates.
 type Service struct {
+	// Used for obtaining categories, media items, posts and
+	// users from the database when resolving fields.
 	store  *models.Store
+	// The original post ID.
 	postId int
+	// The slice of domain.PostField to create repeaters,
+	// flexible content and resolving normal fields.
 	fields []domain.PostField
-	layout *[]domain.FieldGroup
+	// The slice of domain.FieldGroup to iterate over
+	// groups and layouts.
+	layout []domain.FieldGroup
 }
 
-
-func (s *Service) handleArgs(args []interface{}) ([]domain.PostField, bool) {
-
-	switch len(args) {
-	case 1:
-		fields := s.getFieldsByPost(args[0])
-		if fields == nil {
-			return s.fields, true
-		}
-		return fields, true
-	case 2:
-		format, err := cast.ToBoolE(args[1])
-		if err != nil {
-			format = true
-		}
-		fields := s.getFieldsByPost(args[0])
-		if fields == nil {
-			return s.fields, true
-		}
-		return fields, format
-	default:
-		return s.fields, true
+// NewService - Construct
+func NewService(s *models.Store, d domain.PostData) *Service {
+	return &Service{
+		store:  s,
+		postId: d.Id,
+		fields: *d.Fields,
+		layout: *d.Layout,
 	}
-}
-
-func (s *Service) getFieldsByPost(id interface{}) []domain.PostField {
-	const op = "FieldsService.getFieldsByPost"
-
-	i, err := cast.ToIntE(id)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err},
-		}).Error()
-		return nil
-	}
-
-	fields, err := s.store.Fields.GetByPost(i)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
-		return nil
-	}
-
-	return fields
-}
-
-func (s *Service) getLayoutByPost(id interface{}) []domain.FieldGroup {
-	const op = "FieldsService.getFieldsByPost"
-
-	i, err := cast.ToIntE(id)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err},
-		}).Error()
-	}
-
-	p, err := s.store.Posts.GetById(i)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
-		return nil
-	}
-
-	t, err := s.store.Posts.Format(p)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
-		return nil
-	}
-
-	return *t.Layout
-}
-
-func (s *Service) findFieldByName(name string, fields []domain.PostField) (domain.PostField, error) {
-	const op = "FieldsService.findFieldByName"
-	for _, field := range fields {
-		if name == field.Name {
-			return field, nil
-		}
-	}
-	return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: "Field does not exist", Operation: op, Err: fmt.Errorf("no field exists with the name: %s", name)}
-}
-
-func (s *Service) getFieldChildren(uniq uuid.UUID, fields []domain.PostField, format bool) []domain.PostField {
-	var pf []domain.PostField
-	for _, field := range fields {
-		parent := field.Parent
-		if parent != nil && uniq == *parent {
-			if !format {
-				pf = append(pf, field)
-				continue
-			}
-			pf = append(pf, s.resolveField(field))
-		}
-	}
-	return s.sortFields(pf)
-}
-
-func (s *Service) sortFields(pf []domain.PostField) []domain.PostField {
-	sort.SliceStable(pf, func(i, j int) bool {
-		return pf[i].Index < pf[j].Index
-	})
-	return pf
 }
