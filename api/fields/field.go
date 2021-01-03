@@ -1,10 +1,5 @@
 package fields
 
-import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/fields/walker"
-)
-
 // GetField
 //
 // Returns the value of a specific field.
@@ -25,15 +20,13 @@ func (s *Service) GetField(name string, args ...interface{}) (interface{}, error
 }
 
 
-// GetFieldLayout
+//// GetFieldLayout
+////
+//func (s *Service) GetFieldLayout(name string, args ...interface{}) (*domain.Field, error) {
+//	layout, err := walker.ByName(name, s.layout)
+//	if err != nil {
+//		return nil, err
+//	}
 //
-func (s *Service) GetFieldLayout(name string, args ...interface{}) (*domain.Field, error) {
-	layout, err := walker.ByName(name, *s.layout)
-	if err != nil {
-		return nil, err
-	}
-
-
-
-	return &layout, nil
-}
+//	return &layout, nil
+//}

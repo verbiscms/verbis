@@ -3,10 +3,11 @@ package models
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
+	location "github.com/ainsleyclark/verbis/api/fields/converter"
+
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -16,6 +17,7 @@ type FieldsRepository interface {
 	//GetByPostAndKey(key string, postId int) (domain.PostField, error)
 	//GetFieldGroups() (*[]domain.FieldGroup, error)
 	GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup
+	//GetByParent(uuid uuid.UUID) []domain.FieldGroup
 }
 
 // FieldsStore defines the data layer for Posts
@@ -23,7 +25,7 @@ type FieldsStore struct {
 	db       *sqlx.DB
 	config   config.Configuration
 	options  domain.Options
-	jsonPath string
+	finder   location.Finder
 }
 
 // newFields - Construct
@@ -34,7 +36,7 @@ func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 		db:       db,
 		config:   config,
 		options:  newOptions(db, config).GetStruct(),
-		jsonPath: paths.Storage() + "/fields",
+		finder: location.NewLocation(),
 	}
 
 	return &fs
@@ -62,6 +64,5 @@ func (s *FieldsStore) GetByPostAndKey(key string, postId int) (domain.PostField,
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
 func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup {
-	//return fields.NewLocation().GetLayout(p, a, c, s.options.CacheServerFields)
-	return nil
+	return s.finder.GetLayout(p, a, c, s.options.CacheServerFields)
 }
