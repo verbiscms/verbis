@@ -20,10 +20,11 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 				Type:  "text",
 				Value: nil,
 			},
-			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {},
+			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
+			},
 			want: domain.PostField{
-				Id:   1,
-				Type: "text",
+				Id:    1,
+				Type:  "text",
 				Value: nil,
 			},
 			hasErr: false,
