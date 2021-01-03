@@ -9,34 +9,34 @@ import (
 func (t *FieldTestSuite) TestService_GetLayout() {
 
 	tt := map[string]struct {
-		id   interface{}
-		name string
+		id     interface{}
+		name   string
 		layout []domain.FieldGroup
-		args []interface{}
-		want interface{}
+		args   []interface{}
+		want   interface{}
 	}{
 		"Success": {
-			id: 1,
+			id:   1,
 			name: "key3",
 			layout: []domain.FieldGroup{
 				{
-					Title:     "test1",
-					Fields:    &[]domain.Field{{Name: "key1"},{Name: "key2"}},
+					Title:  "test1",
+					Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}},
 				},
 				{
-					Title:     "test2",
-					Fields:    &[]domain.Field{{Name: "key3"},{Name: "key4"}},
+					Title:  "test2",
+					Fields: &[]domain.Field{{Name: "key3"}, {Name: "key4"}},
 				},
 			},
 			args: nil,
 			want: domain.Field{Name: "key3"},
 		},
 		"Error": {
-			id: 1,
-			name: "key3",
+			id:     1,
+			name:   "key3",
 			layout: nil,
-			args: nil,
-			want: "no groups exist",
+			args:   nil,
+			want:   "no groups exist",
 		},
 	}
 
