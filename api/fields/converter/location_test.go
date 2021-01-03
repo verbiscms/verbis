@@ -8,23 +8,32 @@ import (
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
-func setupLocationTest(t *testing.T) string {
+type LocationTestSuite struct {
+	suite.Suite
+	Path string
+}
+
+func TestExampleTestSuite(t *testing.T) {
+	suite.Run(t, new(LocationTestSuite))
+}
+
+func (t *LocationTestSuite) BeforeTest(suiteName, testName string) {
 	cache.Init()
 
 	err := logger.Init(config.Configuration{})
 	log.SetOutput(ioutil.Discard)
-	assert.NoError(t, err)
+	t.NoError(err)
 
 	wd, err := os.Getwd()
-	assert.NoError(t, err)
-
-	return filepath.Join(filepath.Dir(wd)+"./..") + "/test/testdata/fields"
+	t.NoError(err)
+	t.Path = filepath.Join(filepath.Dir(wd)+"./..") + "/test/testdata/fields"
 }
 
 func TestNewLocation(t *testing.T) {
@@ -37,9 +46,7 @@ func TestNewLocation(t *testing.T) {
 	assert.Equal(t, &Location{JsonPath: "test/fields"}, NewLocation())
 }
 
-func TestLocation_GetLayout(t *testing.T) {
-
-	testPath := setupLocationTest(t) + "/test-get-layout"
+func (t *LocationTestSuite) TestLocation_GetLayout() {
 
 	tt := map[string]struct {
 		cacheable bool
@@ -53,30 +60,30 @@ func TestLocation_GetLayout(t *testing.T) {
 		},
 		"Not Cached": {
 			cacheable: false,
-			jsonPath:  testPath,
+			jsonPath:  "/test-get-layout",
 			want:      []domain.FieldGroup{{Title: "title"}},
 		},
 		"Cacheable Nil": {
 			cacheable: true,
-			jsonPath:  testPath,
+			jsonPath:  "/test-get-layout",
 			want:      []domain.FieldGroup{{Title: "title"}},
 		},
 		"Cacheable": {
 			cacheable: true,
-			jsonPath:  testPath,
+			jsonPath:  "/test-get-layout",
 			want:      []domain.FieldGroup{{Title: "title"}},
 		},
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			l := &Location{JsonPath: test.jsonPath}
-			assert.Equal(t, test.want, l.GetLayout(domain.Post{}, domain.User{}, &domain.Category{}, test.cacheable))
+		t.Run(name, func() {
+			l := &Location{JsonPath: t.Path + test.jsonPath}
+			t.Equal(test.want, l.GetLayout(domain.Post{}, domain.User{}, &domain.Category{}, test.cacheable))
 		})
 	}
 }
 
-func TestLocation_GroupResolver(t *testing.T) {
+func (t *LocationTestSuite) TestLocation_GroupResolver() {
 
 	r := "resource"
 	uu := uuid.New()
@@ -228,26 +235,26 @@ func TestLocation_GroupResolver(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			l := &Location{Groups: test.groups}
-			assert.Equal(t, test.want, l.groupResolver(test.post, test.author, test.category))
+			t.Equal(test.want, l.groupResolver(test.post, test.author, test.category))
 		})
 	}
 }
 
-func TestLocation_fieldGroupWalker(t *testing.T) {
+func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 
-	testPath := setupLocationTest(t) + "/test-field-groups/"
+	testPath := "/test-field-groups/"
 
 	id, err := uuid.Parse("6a4d7442-1020-490f-a3e2-436f9135bc24")
-	assert.NoError(t, err)
+	t.NoError(err)
 
 	// For bad path
-	err = os.Chmod(testPath+"open-error/json.txt", 000)
-	assert.NoError(t, err)
+	err = os.Chmod(t.Path+testPath+"open-error/json.txt", 000)
+	t.NoError(err)
 	defer func() {
-		err = os.Chmod(testPath+"open-error/json.txt", 777)
-		assert.NoError(t, err)
+		err = os.Chmod(t.Path+testPath+"open-error/json.txt", 777)
+		t.NoError(err)
 	}()
 
 	tt := map[string]struct {
@@ -273,24 +280,24 @@ func TestLocation_fieldGroupWalker(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 
 			l := &Location{
-				JsonPath: test.path,
+				JsonPath: t.Path + test.path,
 			}
 			got, err := l.fieldGroupWalker()
 
 			if err != nil {
-				assert.Contains(t, err.Error(), test.want)
+				t.Contains(err.Error(), test.want)
 				return
 			}
 
-			assert.Equal(t, test.want, got)
+			t.Equal(test.want, got)
 		})
 	}
 }
 
-func Test_CheckLocation(t *testing.T) {
+func (t *LocationTestSuite) Test_CheckLocation() {
 
 	tt := map[string]struct {
 		check    string
@@ -325,13 +332,13 @@ func Test_CheckLocation(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, test.want, checkLocation(test.check, test.location))
+		t.Run(name, func() {
+			t.Equal(test.want, checkLocation(test.check, test.location))
 		})
 	}
 }
 
-func Test_CheckMatch(t *testing.T) {
+func (t *LocationTestSuite) Test_CheckMatch() {
 
 	tt := map[string]struct {
 		matches []bool
@@ -348,13 +355,13 @@ func Test_CheckMatch(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, test.want, checkMatch(test.matches))
+		t.Run(name, func() {
+			t.Equal(test.want, checkMatch(test.matches))
 		})
 	}
 }
 
-func Test_HasBeenAdded(t *testing.T) {
+func (t *LocationTestSuite) Test_HasBeenAdded() {
 
 	key := uuid.New()
 
@@ -376,8 +383,8 @@ func Test_HasBeenAdded(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			assert.Equal(t, test.want, hasBeenAdded(test.key, test.fg))
+		t.Run(name, func() {
+			t.Equal(test.want, hasBeenAdded(test.key, test.fg))
 		})
 	}
 }

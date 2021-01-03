@@ -16,6 +16,8 @@ type FieldTestSuite struct {
 	suite.Suite
 }
 
+type noStringer struct{}
+
 func TestExampleTestSuite(t *testing.T) {
 	suite.Run(t, new(FieldTestSuite))
 }
@@ -53,19 +55,16 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository
 	s := t.GetService(nil)
 	s.store = &models.Store{
 		Categories: categoryMock,
-		Media: mediaMock,
-		Posts: postsMock,
-		User: userMock,
+		Media:      mediaMock,
+		Posts:      postsMock,
+		User:       userMock,
 	}
 
 	return s
 }
 
-func (t *FieldTestSuite) GetService(fields []domain.PostField, ) *Service {
+func (t *FieldTestSuite) GetService(fields []domain.PostField) *Service {
 	return &Service{
 		Fields: fields,
-
 	}
 }
-
-type noStringer struct{}
