@@ -24,7 +24,6 @@ func (s *Service) GetLayouts(args ...interface{}) []domain.FieldGroup {
 	return s.handleLayoutArgs(args)
 }
 
-
 // handleLayoutArgs
 //
 func (s *Service) handleLayoutArgs(args []interface{}) []domain.FieldGroup {
