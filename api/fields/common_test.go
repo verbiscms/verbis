@@ -112,55 +112,6 @@ func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 	}
 }
 
-func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
-
-	post := domain.Post{Id: 1, Title: "post"}
-	fg := &[]domain.FieldGroup{{Title: "test"}}
-
-	tt := map[string]struct {
-		id   interface{}
-		mock func(p *mocks.PostsRepository)
-		want []domain.FieldGroup
-	}{
-		"Success": {
-			id: 1,
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(post, nil)
-				p.On("Format", post).Return(domain.PostData{
-					Post:   domain.Post{Id: 1, Title: "post"},
-					Layout: fg,
-				}, nil)
-			},
-			want: *fg,
-		},
-		"Cast Error": {
-			id:   noStringer{},
-			want: nil,
-		},
-		"Not Found": {
-			id: 1,
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
-			},
-			want: nil,
-		},
-		"Format Error": {
-			id: 1,
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(post, nil)
-				p.On("Format", post).Return(domain.PostData{}, fmt.Errorf("error"))
-			},
-			want: nil,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func() {
-			t.Equal(test.want, t.GetPostsMockService(nil, test.mock).getLayoutByPost(test.id))
-		})
-	}
-}
-
 func (t *FieldTestSuite) TestService_GetChildren() {
 
 	id := uuid.New()

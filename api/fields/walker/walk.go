@@ -16,17 +16,21 @@ import (
 func ByUUID(uuid uuid.UUID, groups []domain.FieldGroup) (domain.Field, error) {
 	const op = "Fields.Walker.ByUUID"
 
+	if len(groups) == 0 {
+		return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "No groups exists", Operation: op, Err: fmt.Errorf("no groups exist, unable to range over groups and find fields")}
+	}
+
 	for _, g := range groups {
 		for _, f := range *g.Fields {
-			field, found := walkerByUUID(uuid, f)
+			field, found := walkerByUUID(uuid, f);
 			if !found {
-				return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "Unable to find field", Operation: op, Err: fmt.Errorf("unable to find field with UUID of: %v", uuid)}
+				continue
 			}
 			return field, nil
 		}
 	}
 
-	return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "No groups exists", Operation: op, Err: fmt.Errorf("no groups exist, unable to range over groups and find fields")}
+	return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "Unable to find field", Operation: op, Err: fmt.Errorf("unable to find field with UUID of: %v", uuid)}
 }
 
 // ByName
@@ -38,15 +42,20 @@ func ByUUID(uuid uuid.UUID, groups []domain.FieldGroup) (domain.Field, error) {
 func ByName(name string, groups []domain.FieldGroup) (domain.Field, error) {
 	const op = "Fields.Walker.ByUUID"
 
+	if len(groups) == 0 {
+		return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "No groups exists", Operation: op, Err: fmt.Errorf("no groups exist, unable to range over groups and find fields")}
+	}
+
 	for _, g := range groups {
 		for _, f := range *g.Fields {
 			field, found := walkerByName(name, f)
 			if !found {
-				return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "Unable to find field", Operation: op, Err: fmt.Errorf("unable to find field with name of: %s", name)}
+				continue
 			}
 			return field, nil
 		}
+
 	}
 
-	return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "No groups exists", Operation: op, Err: fmt.Errorf("no groups exist, unable to range over groups and find fields")}
+	return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "Unable to find field", Operation: op, Err: fmt.Errorf("unable to find field with name of: %s", name)}
 }
