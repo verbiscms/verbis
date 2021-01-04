@@ -89,8 +89,8 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 
 	// Get Category
 	if status != "" {
-		q += fmt.Sprintf(" WHERE status '%s'", status)
-		countQ += fmt.Sprintf(" WHERE status '%s'", status)
+		q += fmt.Sprintf(" WHERE status = '%s'", status)
+		countQ += fmt.Sprintf(" WHERE status = '%s'", status)
 	}
 
 	// Apply order
