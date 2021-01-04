@@ -91,7 +91,7 @@
 									<div v-if="categoryArchive" class="badge badge-orange">Category archive</div>
 								</div>
 							</div>
-							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
+							<Fields :layout="fieldLayout" :fields.sync="fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"></MetaOptions>
@@ -233,7 +233,6 @@ export default {
 		data: {
 			"title": "",
 			"slug": "/",
-			"fields": {},
 			"archive_id": "",
 			"author": 0,
 			"status": "draft",
@@ -245,6 +244,7 @@ export default {
 			"codeinjection_foot": "",
 			"published_at": new Date(),
 		},
+		fields: {},
 		defaultLayout: `{"uuid":"6a4d7442-1020-490f-a3e2-436f9135bc24","title":"Default Options","fields":[{"uuid":"39ca0ea0-c911-4eaa-b6e0-67dfd99e1225","label":"RichText","name":"content","type":"richtext","instructions":"Add content to the page.","required":true,"conditional_logic":null,"wrapper":{"width":100},"options":{"default_value":"","tabs":"all","toolbar":"full","media_upload":1}}]}`,
 		isSaving: false,
 		sidebarOpen: false,
@@ -369,6 +369,16 @@ export default {
 					} else {
 						this.$set(this.data, 'category', null)
 					}
+
+					// Set field values
+					this.fields = res.data.data.fields;
+					if (!this.fields) {
+						this.fields = [];
+					}
+
+					console.log(res.data.data.fields);
+
+					console.log(this.fields);
 
 					// Set date format
 					this.setDates();
