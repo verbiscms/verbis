@@ -46,7 +46,7 @@ func (s *FieldsStore) GetByPost(postId int) ([]domain.PostField, error) {
 	const op = "FieldsRepository.GetByPost"
 	var f []domain.PostField
 	if err := s.db.Get(&f, "SELECT * FROM post_fields WHERE page_id = ?", postId); err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the key: %d", postId), Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the ID: %d", postId), Operation: op, Err: err}
 	}
 	return f, nil
 }

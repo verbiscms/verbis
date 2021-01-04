@@ -56,55 +56,48 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 	}
 }
 
-//func (t *FieldTestSuite) TestService_GetLayouts() {
-//
-//	tt := map[string]struct {
-//		id   interface{}
-//		name string
-//		layout []domain.FieldGroup
-//		args []interface{}
-//		want interface{}
-//	}{
-//		"Success": {
-//			id: 1,
-//			name: "key3",
-//			layout: []domain.FieldGroup{
-//				{
-//					Title:     "test1",
-//					Fields:    &[]domain.Field{{Name: "key1"},{Name: "key2"}},
-//				},
-//				{
-//					Title:     "test2",
-//					Fields:    &[]domain.Field{{Name: "key3"},{Name: "key4"}},
-//				},
-//			},
-//			args: nil,
-//			want: domain.Field{Name: "key3"},
-//		},
-//		"Error": {
-//			id: 1,
-//			name: "key3",
-//			layout: nil,
-//			args: nil,
-//			want: "no groups exist",
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			s := t.GetService(nil)
-//			s.layout = test.layout
-//
-//			got, err := s.GetLayout(test.name, test.args...)
-//			if err != nil {
-//				t.Contains(err.Error(), test.want)
-//				return
-//			}
-//
-//			t.Equal(test.want, got)
-//		})
-//	}
-//}
+func (t *FieldTestSuite) TestService_GetLayouts() {
+
+	fg := []domain.FieldGroup{
+		{
+			Title:     "test1",
+			Fields:    &[]domain.Field{{Name: "key1"},{Name: "key2"}},
+		},
+		{
+			Title:     "test2",
+			Fields:    &[]domain.Field{{Name: "key3"},{Name: "key4"}},
+		},
+	}
+
+	tt := map[string]struct {
+		id   interface{}
+		layout []domain.FieldGroup
+		args []interface{}
+		want interface{}
+	}{
+		"Success": {
+			id: 1,
+			layout: fg,
+			args: nil,
+			want: fg,
+		},
+		//"Error": {
+		//	id: 1,
+		//	layout: nil,
+		//	args: nil,
+		//	want: []domain.FieldGroup{},
+		//},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.GetService(nil)
+			s.layout = test.layout
+
+			t.Equal(test.want,  s.GetLayouts(test.args...))
+		})
+	}
+}
 
 func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 

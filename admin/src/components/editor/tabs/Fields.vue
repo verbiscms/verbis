@@ -3,6 +3,10 @@
 	===================== -->
 <template>
 	<section>
+		Fields:
+		<pre>
+			{{ fields }}
+		</pre>
 		<!-- Field Group -->
 		<div v-for="(group, groupIndex) in layout" :key="group.uuid" class="field-group">
 			<Collapse :show="true" :use-icon="true">
@@ -33,53 +37,55 @@
 											Basic
 											===================== -->
 										<!-- Text -->
-										<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldText>
-										<!-- Textarea -->
-										<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTextarea>
-										<!-- Number -->
-										<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldNumber>
-										<!-- Range -->
-										<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRange>
-										<!-- Email -->
-										<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldEmail>
-										<!-- Url -->
-										<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUrl>
-										<!-- Password -->
-										<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPassword>
-										<!-- =====================
-											Content
-											===================== -->
-										<!-- Richtext -->
-										<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRichText>
-										<!-- Image -->
-										<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldImage>
-										<!-- =====================
-											Choice
-											===================== -->
-										<!-- Select -->
-										<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldSelect>
-										<!-- Tags -->
-										<FieldTags v-else-if="layout.type === 'tags'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTags>
-										<!-- Checkbox -->
-										<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldCheckbox>
-										<!-- Radio -->
-										<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRadio>
-										<!-- Button Group -->
-										<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldButtonGroup>
-										<!-- =====================
-											Relational
-											===================== -->
-										<!-- Post Object -->
-										<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPost>
-										<!-- User -->
-										<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUser>
-										<!-- =====================
-											Layout
-											===================== -->
-										<!-- Repeater -->
-										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRepeater>
-										<!-- Flexible -->
-										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>
+										{{ layout }}
+<!--										<FieldText v-if="layout.type === 'text'" :layout="layout" :fields="testValue(layout.uuid)" @update="test($event, layout.uuid)" :error-trigger="errorTrigger"></FieldText>-->
+										<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldText>
+<!--										&lt;!&ndash; Textarea &ndash;&gt;-->
+<!--										<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTextarea>-->
+<!--										&lt;!&ndash; Number &ndash;&gt;-->
+<!--										<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldNumber>-->
+<!--										&lt;!&ndash; Range &ndash;&gt;-->
+<!--										<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRange>-->
+<!--										&lt;!&ndash; Email &ndash;&gt;-->
+<!--										<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldEmail>-->
+<!--										&lt;!&ndash; Url &ndash;&gt;-->
+<!--										<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUrl>-->
+<!--										&lt;!&ndash; Password &ndash;&gt;-->
+<!--										<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPassword>-->
+<!--										&lt;!&ndash; =====================-->
+<!--											Content-->
+<!--											===================== &ndash;&gt;-->
+<!--										&lt;!&ndash; Richtext &ndash;&gt;-->
+<!--										<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRichText>-->
+<!--										&lt;!&ndash; Image &ndash;&gt;-->
+<!--										<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldImage>-->
+<!--										&lt;!&ndash; =====================-->
+<!--											Choice-->
+<!--											===================== &ndash;&gt;-->
+<!--										&lt;!&ndash; Select &ndash;&gt;-->
+<!--										<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldSelect>-->
+<!--										&lt;!&ndash; Tags &ndash;&gt;-->
+<!--										<FieldTags v-else-if="layout.type === 'tags'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTags>-->
+<!--										&lt;!&ndash; Checkbox &ndash;&gt;-->
+<!--										<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldCheckbox>-->
+<!--										&lt;!&ndash; Radio &ndash;&gt;-->
+<!--										<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRadio>-->
+<!--										&lt;!&ndash; Button Group &ndash;&gt;-->
+<!--										<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldButtonGroup>-->
+<!--										&lt;!&ndash; =====================-->
+<!--											Relational-->
+<!--											===================== &ndash;&gt;-->
+<!--										&lt;!&ndash; Post Object &ndash;&gt;-->
+<!--										<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPost>-->
+<!--										&lt;!&ndash; User &ndash;&gt;-->
+<!--										<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUser>-->
+<!--										&lt;!&ndash; =====================-->
+<!--											Layout-->
+<!--											===================== &ndash;&gt;-->
+<!--										&lt;!&ndash; Repeater &ndash;&gt;-->
+<!--										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRepeater>-->
+<!--										&lt;!&ndash; Flexible &ndash;&gt;-->
+<!--										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>-->
 									</div><!-- /Field Content -->
 								</div>
 							</transition>
@@ -98,33 +104,33 @@
 
 // Basic
 import FieldText from "@/components/editor/fields/Text";
-import FieldTextarea from "@/components/editor/fields/Textarea";
-import FieldNumber from "@/components/editor/fields/Number";
-import FieldRange from "@/components/editor/fields/Range";
-import FieldEmail from "@/components/editor/fields/Email";
-import FieldUrl from "@/components/editor/fields/Url";
-import FieldPassword from "@/components/editor/fields/Password";
+// import FieldTextarea from "@/components/editor/fields/Textarea";
+// import FieldNumber from "@/components/editor/fields/Number";
+// import FieldRange from "@/components/editor/fields/Range";
+// import FieldEmail from "@/components/editor/fields/Email";
+// import FieldUrl from "@/components/editor/fields/Url";
+// import FieldPassword from "@/components/editor/fields/Password";
 
 // Content
-import FieldRichText from "@/components/editor/fields/RichText";
+//import FieldRichText from "@/components/editor/fields/RichText";
 
 // Choice
-import FieldSelect from "@/components/editor/fields/Select";
-import FieldTags from "@/components/editor/fields/Tags";
-import FieldCheckbox from "@/components/editor/fields/Checkbox";
-import FieldRadio from "@/components/editor/fields/Radio";
-import FieldButtonGroup from "@/components/editor/fields/ButtonGroup";
+// import FieldSelect from "@/components/editor/fields/Select";
+// import FieldTags from "@/components/editor/fields/Tags";
+// import FieldCheckbox from "@/components/editor/fields/Checkbox";
+// import FieldRadio from "@/components/editor/fields/Radio";
+// import FieldButtonGroup from "@/components/editor/fields/ButtonGroup";
 
 // Relational
-import FieldPost from "@/components/editor/fields/Post";
-import FieldUser from "@/components/editor/fields/User";
+// import FieldPost from "@/components/editor/fields/Post";
+// import FieldUser from "@/components/editor/fields/User";
 
 // Layout
-import FieldRepeater from "@/components/editor/fields/Repeater";
-import FieldFlexible from "@/components/editor/fields/FlexibleContent";
-
+// import FieldRepeater from "@/components/editor/fields/Repeater";
+// import FieldFlexible from "@/components/editor/fields/FlexibleContent";
+//
 import Collapse from "@/components/misc/Collapse";
-import FieldImage from "@/components/editor/fields/Image";
+// import FieldImage from "@/components/editor/fields/Image";
 
 export default {
 	name: "Fields",
@@ -132,7 +138,7 @@ export default {
 		layout: Array,
 		fields: {
 			required: true,
-			type: Object
+			type: [Array, Boolean, Object],
 		},
 		errorTrigger: {
 			type: Boolean,
@@ -140,30 +146,31 @@ export default {
 		},
 	},
 	components: {
-		FieldImage,
-		Collapse,
-		// Basic
 		FieldText,
-		FieldTextarea,
-		FieldNumber,
-		FieldRange,
-		FieldEmail,
-		FieldUrl,
-		FieldPassword,
-		// Content
-		FieldRichText,
-		// Choice
-		FieldSelect,
-		FieldTags,
-		FieldCheckbox,
-		FieldRadio,
-		FieldButtonGroup,
-		// Relational
-		FieldPost,
-		FieldUser,
-		// Layout
-		FieldRepeater,
-		FieldFlexible,
+		// FieldImage,
+		Collapse,
+		// // Basic
+		// FieldText,
+		// FieldTextarea,
+		// FieldNumber,
+		// FieldRange,
+		// FieldEmail,
+		// FieldUrl,
+		// FieldPassword,
+		// // Content
+		// FieldRichText,
+		// // Choice
+		// FieldSelect,
+		// FieldTags,
+		// FieldCheckbox,
+		// FieldRadio,
+		// FieldButtonGroup,
+		// // Relational
+		// FieldPost,
+		// FieldUser,
+		// // Layout
+		// FieldRepeater,
+		// FieldFlexible,
 	},
 	data: () => ({
 		heights: {},
@@ -191,6 +198,20 @@ export default {
 				this.$set(this.computedHeights, uuid, "0px")
 			}
 		},
+		// test(value, uuid) {
+		// 	let obj = {
+		// 		uuid: uuid,
+		// 		value: value,
+		// 	}
+		// 	this.$set(this.ff, uuid, obj);
+		// },
+		// testValue(uuid) {
+		// 	this.fields.forEach(field => {
+		// 		if (field.uuid === uuid) {
+		// 			return field.value;
+		// 		}
+		// 	});
+		// },
 		parseLogic(layout, groupIndex) {
 			const logic = layout['conditional_logic']
 			let passed = true
@@ -246,6 +267,14 @@ export default {
 		getLayout() {
 			return this.layout
 		},
+		// ff: {
+		// 	get() {
+		// 		return this.fields;
+		// 	},
+		// 	set(value) {
+		// 		console.log(value);
+		// 	}
+		// }
 		getFields() {
 			return this.fields
 		}
