@@ -119,13 +119,13 @@ func (l *Location) groupResolver(p domain.Post, a domain.User, c *domain.Categor
 							if p.Resource != nil {
 								locationSet = append(locationSet, checkLocation(*p.Resource, rule))
 							} else {
-								locationSet = append(locationSet, false)
+								locationSet = append(locationSet, checkLocation("", rule))
 							}
 						case "category":
 							if c != nil {
 								locationSet = append(locationSet, checkLocation(strconv.Itoa(c.Id), rule))
 							} else {
-								locationSet = append(locationSet, false)
+								locationSet = append(locationSet, checkLocation("", rule))
 							}
 						case "author":
 							locationSet = append(locationSet, checkLocation(strconv.Itoa(p.UserId), rule))
