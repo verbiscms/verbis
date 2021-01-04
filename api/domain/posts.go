@@ -25,7 +25,6 @@ type Post struct {
 	Resource          *string     `db:"resource" json:"resource,max=150"`
 	PageTemplate      string      `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
 	PageLayout        string      `db:"layout" json:"layout,omitempty" binding:"max=150"`
-	Fields            DBMap       `db:"fields" json:"fields"`
 	CodeInjectionHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 	CodeInjectionFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
 	UserId            int         `db:"user_id" json:"-"`
@@ -39,6 +38,7 @@ type PostCreate struct {
 	Post
 	Author   int  `json:"author,omitempty" binding:"numeric"`
 	Category *int `json:"category,omitempty" binding:"omitempty,numeric"`
+	Fields   []PostField `json:"fields,omitempty"`
 }
 
 type PostAuthor struct {
@@ -72,15 +72,15 @@ type PostCategory struct {
 }
 
 type PostField struct {
-	Id     int         `db:"id" json:"id" binding:"numeric"`
-	PostId int         `db:"post_id" json:"post_id" binding:"numeric"`
-	UUID   uuid.UUID   `db:"uuid" json:"uuid"`
-	Type   string      `db:"type" json:"type"`
-	Name   string      `db:"name" json:"name"`
+	Id     int         `db:"id" json:"-"`
+	PostId int         `db:"post_id" json:"-"`
+	UUID   uuid.UUID   `db:"uuid" json:"uuid" binding:"required"`
+	Type   string      `db:"type" json:"-"`
+	Name   string      `db:"name" json:"-"`
 	Value  interface{} `db:"value" json:"value"`
-	Parent *uuid.UUID  `db:"parent" json:"parent"`
-	Layout *string     `db:"layout" json:"layout"`
-	Index  int         `db:"index" json:"index"`
+	Parent *uuid.UUID  `db:"parent" json:"parent,omitempty"`
+	Layout *string     `db:"layout" json:"layout,omitempty"`
+	Index  int         `db:"index" json:"index,omitempty"`
 }
 
 type PostSeoMeta struct {

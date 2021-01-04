@@ -1,12 +1,14 @@
 package templates
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/fields"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/color"
 	"github.com/spf13/cast"
 	"html/template"
 	"strings"
@@ -43,6 +45,13 @@ var (
 
 // NewManager - Construct
 func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateManager {
+
+
+
+	fs := fields.NewService(s, *p)
+	fmt.Println(fs)
+	color.Red.Println(p)
+
 	return &TemplateManager{
 		gin:          g,
 		post:         p,
@@ -50,7 +59,7 @@ func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Co
 		store:        s,
 		options:      s.Options.GetStruct(),
 		themeConfig:  s.Site.GetThemeConfig(),
-		fieldService: fields.NewService(s, *p),
+		//fieldService:,
 		config:       c,
 	}
 }
@@ -98,12 +107,12 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		// Dict
 		"dict": t.dict,
 		// Fields
-		"field":    t.fieldService.GetField,
-		"fields":   t.fieldService.GetFields,
-		"layout":   t.fieldService.GetLayout,
-		"layouts":  t.fieldService.GetLayouts,
-		"repeater": t.fieldService.GetRepeater,
-		"flexible": t.fieldService.GetFlexible,
+		//"field":    t.fieldService.GetField,
+		//"fields":   t.fieldService.GetFields,
+		//"layout":   t.fieldService.GetLayout,
+		//"layouts":  t.fieldService.GetLayouts,
+		//"repeater": t.fieldService.GetRepeater,
+		//"flexible": t.fieldService.GetFlexible,
 		// Header & Footer
 		"verbisHead": t.header,
 		"verbisFoot": t.footer,

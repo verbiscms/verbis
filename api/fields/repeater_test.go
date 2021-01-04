@@ -8,6 +8,7 @@ import (
 func (t *FieldTestSuite) TestService_GetRepeater() {
 
 	uniq := uuid.New()
+	uniq2 := uuid.New()
 
 	tt := map[string]struct {
 		fields []domain.PostField
@@ -40,6 +41,20 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 				{Id: 3, Type: "text", Name: "key3", Value: 3, Parent: &uniq, Index: 0},
 				{Id: 4, Type: "text", Name: "key4", Value: 4, Parent: &uniq, Index: 1},
 				{Id: 2, Type: "text", Name: "key2", Value: 2, Parent: &uniq, Index: 2},
+			},
+		},
+		"Parent": {
+			fields: []domain.PostField{
+				{Id: 1, Type: "repeater", UUID: uniq2, Name: "key1", Value: 1, Parent: &uniq},
+				{Id: 2, Type: "text", Name: "key2", Value: 2, Parent: &uniq2, Index: 2},
+				{Id: 3, Type: "text", Name: "key3", Value: 3, Parent: &uniq2, Index: 0},
+				{Id: 4, Type: "text", Name: "key4", Value: 4, Parent: &uniq2, Index: 1},
+			},
+			key: "key1",
+			want: Repeater{
+				{Id: 3, Type: "text", Name: "key3", Value: 3, Parent: &uniq2, Index: 0},
+				{Id: 4, Type: "text", Name: "key4", Value: 4, Parent: &uniq2, Index: 1},
+				{Id: 2, Type: "text", Name: "key2", Value: 2, Parent: &uniq2, Index: 2},
 			},
 		},
 		"Not Found": {
