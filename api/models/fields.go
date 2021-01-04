@@ -138,7 +138,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 								if p.Resource != nil {
 									locationSet = append(locationSet, s.checkLocation(*p.Resource, rule))
 								} else {
-									locationSet = append(locationSet, false)
+									locationSet = append(locationSet, s.checkLocation("", rule))
 								}
 								break
 							}
@@ -148,7 +148,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 								if c != nil {
 									locationSet = append(locationSet, s.checkLocation(strconv.Itoa(c.Id), rule))
 								} else {
-									locationSet = append(locationSet, false)
+									locationSet = append(locationSet, s.checkLocation("", rule))
 								}
 								break
 							}
