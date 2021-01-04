@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"strings"
@@ -89,8 +90,8 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 
 	// Get Category
 	if status != "" {
-		q += fmt.Sprintf(" WHERE status '%s'", status)
-		countQ += fmt.Sprintf(" WHERE status '%s'", status)
+		q += fmt.Sprintf(" WHERE status = '%s'", status)
+		countQ += fmt.Sprintf(" WHERE status = '%s'", status)
 	}
 
 	// Apply order
@@ -100,6 +101,9 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 	if !meta.LimitAll {
 		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
 	}
+
+	color.Green.Println(q)
+	color.Green.Println(countQ)
 
 	// Select posts
 	if err := s.db.Select(&p, q); err != nil {
