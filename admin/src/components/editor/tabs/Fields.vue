@@ -76,8 +76,8 @@
 										<!-- =====================
 											Layout
 											===================== -->
-<!--										&lt;!&ndash; Repeater &ndash;&gt;-->
-<!--										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRepeater>-->
+										<!-- Repeater -->
+										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields="getRepeaterChildren(layout.uuid)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldRepeater>
 <!--										&lt;!&ndash; Flexible &ndash;&gt;-->
 <!--										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>-->
 									</div><!-- /Field Content -->
@@ -120,7 +120,7 @@ import FieldPost from "@/components/editor/fields/Post";
 import FieldUser from "@/components/editor/fields/User";
 
 // Layout
-// import FieldRepeater from "@/components/editor/fields/Repeater";
+import FieldRepeater from "@/components/editor/fields/Repeater";
 // import FieldFlexible from "@/components/editor/fields/FlexibleContent";
 //
 import Collapse from "@/components/misc/Collapse";
@@ -162,7 +162,7 @@ export default {
 		FieldPost,
 		FieldUser,
 		// Layout
-		// FieldRepeater,
+		FieldRepeater,
 		// FieldFlexible,
 	},
 	data: () => ({
@@ -215,6 +215,9 @@ export default {
 			if (fieldData.length) {
 				return fieldData[0].value;
 			}
+		},
+		getRepeaterChildren(uuid) {
+			return this.fields.filter(field => field.parent === uuid);
 		},
 		parseLogic(layout, groupIndex) {
 			const logic = layout['conditional_logic']

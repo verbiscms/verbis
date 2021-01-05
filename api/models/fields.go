@@ -5,8 +5,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	location "github.com/ainsleyclark/verbis/api/fields/converter"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
-
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -99,7 +97,6 @@ func (s *FieldsStore) GetByPost(postId int) ([]domain.PostField, error) {
 	if err := s.db.Select(&f, "SELECT * FROM post_fields WHERE post_id = ?", postId); err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the ID: %d", postId), Operation: op, Err: err}
 	}
-	color.Yellow.Println(f)
 	return f, nil
 }
 
