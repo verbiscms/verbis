@@ -12,6 +12,7 @@
 			add-only-from-autocomplete
 			:disabled="disabled"
 			:max-tags="getMaxTags"
+			:autocomplete-min-length="0"
 			@max-tags-reached="validate(`Only one user can be inserted in to the ${layout.label}`)"
 			placeholder="Add User"
 			@blur="validateRequired"
@@ -34,7 +35,11 @@ export default {
 	name: "FieldPostObject",
 	props: {
 		layout: Object,
-		fields: Array,
+		fields: {
+			required: false,
+			type: String,
+			default: "",
+		},
 	},
 	components: {
 		VueTagsInput,
@@ -89,28 +94,28 @@ export default {
 			return !!(roles.length && roles.includes(user.role));
 		},
 		setTags() {
-			this.value.forEach(val => {
-				this.users.forEach(user => {
-					if (val.id === user.id) {
-						this.selectedTags.push({
-							text: user.text,
-							id: user.id,
-							role: user.role.name
-						})
-					}
+			console.log(this.value);
+			if (this.value !== "") {
+				this.value.split(",").forEach(val => {
+					this.users.forEach(user => {
+						if (parseInt(val) === user.id) {
+							this.selectedTags.push({
+								text: user.text,
+								id: user.id,
+								role: user.role.name
+							})
+						}
+					});
 				});
-			});
+			}
 		},
 		updateTags(tags) {
 			this.errors = [];
 			this.selectedTags = tags;
 			this.validateRequired()
-			let tagsArr = []
+			let tagsArr = "";
 			tags.forEach(tag => {
-				tagsArr.push({
-					id: tag.id,
-					type: "user",
-				})
+				tagsArr += tag.id + ","
 			})
 			this.value = tagsArr
 		},

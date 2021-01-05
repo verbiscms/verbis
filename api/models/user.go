@@ -191,7 +191,6 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 
 	newUser, err := s.GetById(int(id))
 	if err != nil {
-		fmt.Println(err)
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created user with the id: %v", u.Id), Operation: op, Err: err}
 	}
 

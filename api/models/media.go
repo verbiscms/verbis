@@ -316,7 +316,6 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 	c, err := s.db.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
 
 	if err != nil {
-		fmt.Println(err)
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the new media item with the name: %v", name), Operation: op, Err: err}
 	}
 
