@@ -1,10 +1,9 @@
 <!-- =====================
-	Field - Post Object
+	Field - Category
 	===================== -->
 <template>
-	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
-		<pre>{{ layout }}</pre>
-		<!-- Post Tags -->
+	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" v-if="!loadingUsers">
+		<!-- User Tags -->
 		<vue-tags-input
 			v-model="tag"
 			:tags="selectedTags"
@@ -14,10 +13,9 @@
 			:disabled="disabled"
 			:max-tags="getMaxTags"
 			:autocomplete-min-length="0"
-			@max-tags-reached="validate(`Only one post can be inserted in to the ${layout.label}`)"
-			placeholder="Add Post"
+			@max-tags-reached="validate(`Only one user can be inserted in to the ${layout.label}`)"
+			placeholder="Add User"
 			@blur="validateRequired"
-			:add-on-key="[13, ':', ';']"
 		/>
 		<!-- Message -->
 		<transition name="trans-fade-height">
@@ -34,7 +32,7 @@
 import VueTagsInput from '@jack_reddico/vue-tags-input';
 
 export default {
-	name: "FieldPost",
+	name: "FieldCategoryObject",
 	props: {
 		layout: Object,
 		fields: {
@@ -49,14 +47,16 @@ export default {
 	data: () => ({
 		errors: [],
 		selectedTags: [],
-		posts: [],
-		post: '',
+		users: [],
+		focused: false,
+		user: '',
 		tag: '',
 		tags: [],
 		disabled: false,
+		loadingUsers: true,
 	}),
 	mounted() {
-		this.getPosts();
+		this.getUsers()
 	},
 	methods: {
 		validate(msg) {
@@ -65,45 +65,54 @@ export default {
 		},
 		validateRequired() {
 			if (!this.selectedTags.length && !this.getOptions["allow_null"]) {
-				this.errors.push(`The ${this.layout.label} field is required.`)
+				this.errors.push(`The ${this.layout.label.toLowerCase()} field is required.`)
 			}
 		},
-		getPosts() {
-			this.axios.get("/posts")
-				.then(res => {
-					const posts = res.data.data
-					if (posts === undefined || Object.keys(posts).length === 0 && posts.constructor === Object) {
-						// TODO: Handle
-					} else {
-						this.posts = posts.map(a => {
-							return {
-								text: a.post.title,
-								id: a.post.id
-							};
-						});
-					}
-					this.setTags()
+		getUsers() {
+			this.$store.dispatch("getUsers")
+				.then(users => {
+					this.users = users;
+					this.mapUsers()
+					this.loadingUsers = false;
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
-				});
+				})
+		},
+		mapUsers() {
+			this.users = this.users.map(a => {
+				return {
+					text: a['first_name'] + " " + a['last_name'],
+					id: a.id,
+					role: a.role.name,
+				};
+			});
+			this.setTags();
+		},
+		hasRole(user) {
+			const roles = this.getOptions['role']
+			return !!(roles.length && roles.includes(user.role));
 		},
 		setTags() {
-			this.value.split(",").forEach(val => {
-				this.posts.forEach(post => {
-					if (parseInt(val) === post.id) {
-						this.selectedTags.push({
-							text: post.text,
-							id: post.id
-						})
-					}
+			console.log(this.value);
+			if (this.value !== "") {
+				this.value.split(",").forEach(val => {
+					this.users.forEach(user => {
+						if (parseInt(val) === user.id) {
+							this.selectedTags.push({
+								text: user.text,
+								id: user.id,
+								role: user.role.name
+							})
+						}
+					});
 				});
-			});
+			}
 		},
 		updateTags(tags) {
 			this.errors = [];
 			this.selectedTags = tags;
-			this.validateRequired();
+			this.validateRequired()
 			let tagsArr = "";
 			tags.forEach(tag => {
 				tagsArr += tag.id + ","
@@ -119,7 +128,7 @@ export default {
 			return this.layout.options['multiple'] ? 999999999999999999 : 1;
 		},
 		filteredItems() {
-			return this.posts.filter(i => {
+			return this.users.filter(i => {
 				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
 			});
 		},
