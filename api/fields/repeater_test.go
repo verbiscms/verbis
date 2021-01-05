@@ -20,7 +20,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 	}{
 		"Success": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "repeater", UUID: uniq, Name: "key1", Value: 1, Parent: nil},
+				{Id: 1, Type: "repeater", UUID: uniq, Name: "key1", OriginalValue: "", Parent: nil},
 				{Id: 2, Type: "text", Name: "key2", Value: 2, Parent: &uniq},
 				{Id: 3, Type: "text", Name: "key3", Value: 3, Parent: &uniq},
 				{Id: 4, Type: "text", Name: "key4", Value: 4, Parent: &uniq},
@@ -34,7 +34,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 		},
 		"Sorted Index": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "repeater", UUID: uniq, Name: "key1", Value: 1, Parent: nil},
+				{Id: 1, Type: "repeater", UUID: uniq, Name: "key1", OriginalValue: "", Parent: nil},
 				{Id: 2, Type: "text", Name: "key2", Value: 2, Parent: &uniq, Index: &two},
 				{Id: 3, Type: "text", Name: "key3", Value: 3, Parent: &uniq, Index: &zero},
 				{Id: 4, Type: "text", Name: "key4", Value: 4, Parent: &uniq, Index: &one},
