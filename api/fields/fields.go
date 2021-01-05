@@ -16,6 +16,10 @@ func (s *Service) GetFields(args ...interface{}) (Fields, error) {
 	f := make(Fields, len(fields))
 	s.mapper(fields, func(field domain.PostField) {
 		if !format {
+			f[field.Name] = field.OriginalValue.String()
+			return
+		}
+		if field.Type == "repeater" || field.Type == "flexible" {
 			f[field.Name] = field.Value
 			return
 		}
@@ -51,9 +55,9 @@ func (s *Service) mapper(fields []domain.PostField, walkerFunc WalkerFunc) {
 		}
 
 		if field.Type == "flexible" {
-			repeater, err := s.GetFlexible(field.Name)
+			flexible, err := s.GetFlexible(field.Name)
 			if err == nil {
-				field.Value = repeater
+				field.Value = flexible
 				walkerFunc(field)
 				continue
 			}

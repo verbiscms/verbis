@@ -7,7 +7,7 @@ type FieldGroup struct {
 	UUID      uuid.UUID         `json:"uuid"`
 	Title     string            `json:"title"`
 	Fields    *[]Field          `json:"fields,omitempty"`
-	Locations [][]FieldLocation `json:"locationjson,omitempty"`
+	Locations [][]FieldLocation `json:"location,omitempty"`
 }
 
 // Field defines an individual field type

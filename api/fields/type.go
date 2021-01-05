@@ -4,7 +4,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
-	"reflect"
 )
 
 // resolveField
@@ -12,22 +11,20 @@ import (
 // Determines if the given field values is a slice or array or singular
 // and returns a resolved field value or a slice of interfaces.
 func (s *Service) resolveField(field domain.PostField) domain.PostField {
+	original := field.OriginalValue
 
-	if field.Value == nil {
+	if original.IsEmpty() {
 		return field
 	}
 
-	typ := reflect.TypeOf(field.Value)
-	if typ.Kind() != reflect.Slice && typ.Kind() != reflect.Array {
-		field.Value = s.resolveValue(field.Value, field.Type)
+	if !original.IsArray() {
+		field.Value = s.resolveValue(original.String(), field.Type)
 		return field
 	}
 
-	val := reflect.ValueOf(field.Value)
 	var items []interface{}
-	for i := 0; i < val.Len(); i++ {
-		element := val.Index(i)
-		items = append(items, s.resolveValue(element.Interface(), field.Type))
+	for _, v := range original.Array() {
+		items = append(items, s.resolveValue(v, field.Type))
 	}
 	field.Value = items
 
@@ -41,11 +38,12 @@ func (s *Service) resolveField(field domain.PostField) domain.PostField {
 // will be returned.
 // Resolves categories, images, posts and users from the ID
 // to the type.
-func (s *Service) resolveValue(value interface{}, typ string) interface{} {
+func (s *Service) resolveValue(value string, typ string) interface{} {
 	var e error
-	var r = value
+	var r interface{} = value
 
 	switch typ {
+	// TODO: Need to cast numbers to integers
 	case "category":
 		category, err := s.store.Categories.GetById(cast.ToInt(value))
 		if err != nil {

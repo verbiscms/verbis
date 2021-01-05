@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/spf13/cast"
 )
 
 // Flexible represents the collection of layouts used
@@ -43,12 +42,7 @@ func (s *Service) GetFlexible(name string, args ...interface{}) (Flexible, error
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)}
 	}
 
-	layouts, err := cast.ToStringSliceE(field.Value)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to obtain field layouts", Operation: op, Err: err}
-	}
-
-	return s.getLayouts(fields, layouts, format), nil
+	return s.getLayouts(fields, field.OriginalValue.Array(), format), nil
 }
 
 // getLayouts

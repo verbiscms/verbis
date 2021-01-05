@@ -44,7 +44,6 @@ func NewLocation() *Location {
 
 // GetLayout
 //
-//
 // Obtains layouts specific for the arguments passed. If
 // caching allows and the domain.FieldGroups have
 // been cached, it will return the cached

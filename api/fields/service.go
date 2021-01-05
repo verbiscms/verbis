@@ -39,7 +39,7 @@ func NewService(s *models.Store, d domain.PostData) *Service {
 		fields = *d.Fields
 	}
 
-	layouts :=  make([]domain.FieldGroup, 0)
+	layouts := make([]domain.FieldGroup, 0)
 	if d.Layout != nil {
 		layouts = *d.Layout
 	}

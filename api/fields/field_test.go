@@ -45,7 +45,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			fields: nil,
 			key:    "key1",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 1).Return([]domain.PostField{{Id: 1, Type: "category", Name: "key1", Value: 1, Parent: nil}}, nil)
+				f.On("GetByPost", 1).Return([]domain.PostField{{Id: 1, Type: "category", OriginalValue: "1", Name: "key1", Parent: nil}}, nil)
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
 			},
 			args: []interface{}{1, true},
@@ -55,7 +55,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			fields: nil,
 			key:    "key1",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 1).Return([]domain.PostField{{Id: 1, Type: "category", Name: "key1", Value: 1, Parent: nil}}, nil)
+				f.On("GetByPost", 1).Return([]domain.PostField{{Id: 1, Type: "category", OriginalValue: "1", Name: "key1", Value: 1, Parent: nil}}, nil)
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
 			},
 			args: []interface{}{1, false},

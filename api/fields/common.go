@@ -109,7 +109,16 @@ func (s *Service) getFieldChildren(uuid uuid.UUID, fields []domain.PostField, fo
 // the service.GetRepeater function
 func (s *Service) sortFields(pf []domain.PostField) []domain.PostField {
 	sort.SliceStable(pf, func(i, j int) bool {
-		return pf[i].Index < pf[j].Index
+		lt := pf[i].Index
+		gt := pf[j].Index
+		zero := 0
+		if lt == nil {
+			lt = &zero
+		}
+		if gt == nil {
+			gt = &zero
+		}
+		return *lt < *gt
 	})
 	return pf
 }

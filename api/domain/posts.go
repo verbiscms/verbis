@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"strings"
 	"time"
 )
 
@@ -36,8 +37,8 @@ type Post struct {
 
 type PostCreate struct {
 	Post
-	Author   int  `json:"author,omitempty" binding:"numeric"`
-	Category *int `json:"category,omitempty" binding:"omitempty,numeric"`
+	Author   int         `json:"author,omitempty" binding:"numeric"`
+	Category *int        `json:"category,omitempty" binding:"omitempty,numeric"`
 	Fields   []PostField `json:"fields,omitempty"`
 }
 
@@ -72,15 +73,34 @@ type PostCategory struct {
 }
 
 type PostField struct {
-	Id     int         `db:"id" json:"-"`
-	PostId int         `db:"post_id" json:"-"`
-	UUID   uuid.UUID   `db:"uuid" json:"uuid" binding:"required"`
-	Type   string      `db:"type" json:"-"`
-	Name   string      `db:"name" json:"-"`
-	Value  interface{} `db:"value" json:"value"`
-	Parent *uuid.UUID  `db:"parent" json:"parent,omitempty"`
-	Layout *string     `db:"layout" json:"layout,omitempty"`
-	Index  int         `db:"index" json:"index,omitempty"`
+	Id            int         `db:"id" json:"-"`
+	PostId        int         `db:"post_id" json:"-"`
+	UUID          uuid.UUID   `db:"uuid" json:"uuid" binding:"required"`
+	Type          string      `db:"type" json:"type"`
+	Name          string      `db:"name" json:"name"`
+	Value         interface{} `json:"-"`
+	OriginalValue FieldValue  `db:"value" json:"value"`
+	Parent        *uuid.UUID  `db:"parent" json:"parent,omitempty"`
+	Layout        *string     `db:"layout" json:"layout,omitempty"`
+	Index         *int         `db:"row_index" json:"index,omitempty"`
+}
+
+type FieldValue string
+
+func (f FieldValue) IsArray() bool {
+	return strings.Contains(string(f), ",")
+}
+
+func (f FieldValue) Array() []string {
+	return strings.Split(string(f), ",")
+}
+
+func (f FieldValue) IsEmpty() bool {
+	return string(f) == ""
+}
+
+func (f FieldValue) String() string {
+	return string(f)
 }
 
 type PostSeoMeta struct {
