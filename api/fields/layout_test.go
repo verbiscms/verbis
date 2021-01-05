@@ -60,26 +60,26 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 
 	fg := []domain.FieldGroup{
 		{
-			Title:     "test1",
-			Fields:    &[]domain.Field{{Name: "key1"},{Name: "key2"}},
+			Title:  "test1",
+			Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}},
 		},
 		{
-			Title:     "test2",
-			Fields:    &[]domain.Field{{Name: "key3"},{Name: "key4"}},
+			Title:  "test2",
+			Fields: &[]domain.Field{{Name: "key3"}, {Name: "key4"}},
 		},
 	}
 
 	tt := map[string]struct {
-		id   interface{}
+		id     interface{}
 		layout []domain.FieldGroup
-		args []interface{}
-		want interface{}
+		args   []interface{}
+		want   interface{}
 	}{
 		"Success": {
-			id: 1,
+			id:     1,
 			layout: fg,
-			args: nil,
-			want: fg,
+			args:   nil,
+			want:   fg,
 		},
 		//"Error": {
 		//	id: 1,
@@ -94,7 +94,7 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 			s := t.GetService(nil)
 			s.layout = test.layout
 
-			t.Equal(test.want,  s.GetLayouts(test.args...))
+			t.Equal(test.want, s.GetLayouts(test.args...))
 		})
 	}
 }

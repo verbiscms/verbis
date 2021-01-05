@@ -18,7 +18,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "text",
-				Value: nil,
+				OriginalValue: "",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 			},
@@ -33,7 +33,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "category",
-				Value: []int{1, 2, 3},
+				OriginalValue: "1,2,3",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil).Once()
@@ -43,6 +43,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			want: domain.PostField{
 				Id:   1,
 				Type: "category",
+				OriginalValue: "1,2,3",
 				Value: []interface{}{
 					domain.Category{Id: 1, Name: "cat"},
 					domain.Category{Id: 2, Name: "cat"},
@@ -55,7 +56,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "image",
-				Value: []int{1, 2, 3},
+				OriginalValue: "1,2,3",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				m.On("GetById", 1).Return(domain.Media{Id: 1, Url: "image"}, nil).Once()
@@ -65,6 +66,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			want: domain.PostField{
 				Id:   1,
 				Type: "image",
+				OriginalValue: "1,2,3",
 				Value: []interface{}{
 					domain.Media{Id: 1, Url: "image"},
 					domain.Media{Id: 2, Url: "image"},
@@ -77,7 +79,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "post",
-				Value: []int{1, 2, 3},
+				OriginalValue: "1,2,3",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				p.On("GetById", 1).Return(domain.Post{Id: 1, Title: "post"}, nil).Once()
@@ -90,6 +92,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			want: domain.PostField{
 				Id:   1,
 				Type: "post",
+				OriginalValue: "1,2,3",
 				Value: []interface{}{
 					domain.PostData{Post: domain.Post{Id: 1, Title: "post"}},
 					domain.PostData{Post: domain.Post{Id: 2, Title: "post"}},
@@ -102,7 +105,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "user",
-				Value: []int{1, 2, 3},
+				OriginalValue: "1,2,3",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				u.On("GetById", 1).Return(domain.User{UserPart: domain.UserPart{Id: 1, FirstName: "user"}}, nil).Once()
@@ -112,6 +115,7 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 			want: domain.PostField{
 				Id:   1,
 				Type: "user",
+				OriginalValue: "1,2,3",
 				Value: []interface{}{
 					domain.UserPart{Id: 1, FirstName: "user"},
 					domain.UserPart{Id: 2, FirstName: "user"},
@@ -149,7 +153,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "category",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				c.On("GetById", 1).Return(domain.Category{Name: "cat"}, nil)
@@ -158,6 +162,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 				Id:    1,
 				Type:  "category",
 				Value: domain.Category{Name: "cat"},
+				OriginalValue: "1",
 			},
 			hasErr: false,
 		},
@@ -165,7 +170,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "category",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				c.On("GetById", 1).Return(domain.Category{}, fmt.Errorf("not found"))
@@ -176,7 +181,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "image",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				m.On("GetById", 1).Return(domain.Media{Url: "image"}, nil)
@@ -185,6 +190,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 				Id:    1,
 				Type:  "image",
 				Value: domain.Media{Url: "image"},
+				OriginalValue: "1",
 			},
 			hasErr: false,
 		},
@@ -192,7 +198,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "image",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("not found"))
@@ -203,7 +209,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "post",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				p.On("GetById", 1).Return(domain.Post{Title: "post"}, nil)
@@ -217,6 +223,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 				Value: domain.PostData{
 					Post: domain.Post{Title: "post"},
 				},
+				OriginalValue: "1",
 			},
 			hasErr: false,
 		},
@@ -224,7 +231,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "post",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				p.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("not found"))
@@ -235,7 +242,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "post",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				p.On("GetById", 1).Return(domain.Post{Title: "post"}, nil)
@@ -247,7 +254,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "user",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				u.On("GetById", 1).Return(domain.User{
@@ -258,6 +265,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 				Id:    1,
 				Type:  "user",
 				Value: domain.UserPart{FirstName: "user"},
+				OriginalValue: "1",
 			},
 			hasErr: false,
 		},
@@ -265,7 +273,7 @@ func (t *FieldTestSuite) TestService_ResolveValue() {
 			field: domain.PostField{
 				Id:    1,
 				Type:  "user",
-				Value: 1,
+				OriginalValue: "1",
 			},
 			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
 				u.On("GetById", 1).Return(domain.User{}, fmt.Errorf("not found"))

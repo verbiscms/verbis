@@ -9,7 +9,7 @@ import (
 func (t *FieldTestSuite) TestService_GetFields() {
 
 	uniq := uuid.New()
-	layout := "layout"
+	layout := "layout1"
 
 	tt := map[string]struct {
 		fields []domain.PostField
@@ -41,7 +41,7 @@ func (t *FieldTestSuite) TestService_GetFields() {
 			args: nil,
 			want: Fields{
 				"key1": 1,
-				"key2": []interface{}{
+				"key2": Repeater{
 					domain.PostField{Id: 3, Type: "text", Name: "key3", Value: 2, Parent: &uniq},
 					domain.PostField{Id: 4, Type: "text", Name: "key4", Value: 3, Parent: &uniq},
 					domain.PostField{Id: 5, Type: "text", Name: "key5", Value: 4, Parent: &uniq},
@@ -50,20 +50,20 @@ func (t *FieldTestSuite) TestService_GetFields() {
 		},
 		"Flexible Content": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "text", Name: "key1", Value: 1, Parent: nil},
-				{Id: 2, Type: "flexible", Name: "key2", Value: []string{"layout"}, Parent: nil, Layout: nil, Index: 0},
-				{Id: 3, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: 0},
-				{Id: 4, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: 0},
+				{Id: 1, Type: "text", Name: "key1", OriginalValue: "1", Parent: nil},
+				{Id: 1, Type: "flexible", Name: "key2", OriginalValue: "layout1", Parent: nil, Layout: nil, Index: nil},
+				{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: nil},
+				{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: nil},
 			},
 			args: nil,
 			want: Fields{
-				"key1": 1,
-				"key2": []interface{}{
-					Layout{
-						Name: "layout",
+				"key1": "1",
+				"key2": Flexible{
+					{
+						Name: "layout1",
 						SubFields: SubFields{
-							domain.PostField{Id: 3, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: 0},
-							domain.PostField{Id: 4, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: 0},
+							{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: nil},
+							{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: nil},
 						},
 					},
 				},
@@ -73,7 +73,7 @@ func (t *FieldTestSuite) TestService_GetFields() {
 			fields: nil,
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{
-					{Id: 1, Type: "category", Name: "key1", Value: 1, Parent: nil},
+					{Id: 1, Type: "category", Name: "key1", OriginalValue: "1", Parent: nil},
 				}, nil)
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
 			},
@@ -86,18 +86,18 @@ func (t *FieldTestSuite) TestService_GetFields() {
 			fields: nil,
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return([]domain.PostField{
-					{Id: 1, Type: "category", Name: "key1", Value: 1, Parent: nil},
+					{Id: 1, Type: "category", Name: "key1", OriginalValue: "1"},
 				}, nil)
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
 			},
 			args: []interface{}{1, false},
 			want: Fields{
-				"key1": 1,
+				"key1": "1",
 			},
 		},
 		"Category Array": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "category", Name: "key1", Value: []int{1, 2}, Parent: nil},
+				{Id: 1, Type: "category", Name: "key1", OriginalValue: "1,2", Parent: nil},
 			},
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil).Once()
@@ -112,7 +112,6 @@ func (t *FieldTestSuite) TestService_GetFields() {
 			},
 		},
 	}
-
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.GetMockService(test.fields, test.mock)
@@ -167,18 +166,18 @@ func (t *FieldTestSuite) TestService_Mapper() {
 		},
 		"Flexible": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "flexible", Name: "key1", Value: []string{"layout"}, Parent: nil, Layout: nil, Index: 0},
-				{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: 0},
-				{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: 0},
+				{Id: 1, Type: "flexible", Name: "key1", OriginalValue: "layout", Parent: nil, Layout: nil, Index: nil},
+				{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: nil},
+				{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: nil},
 			},
 			want: domain.PostField{
-				Id: 1, Type: "flexible", Name: "key1", Parent: nil, Layout: nil, Index: 0,
+				Id: 1, Type: "flexible", Name: "key1", Parent: nil, Layout: nil, Index: nil,  OriginalValue: "layout",
 				Value: Flexible{
 					Layout{
 						Name: "layout",
 						SubFields: SubFields{
-							domain.PostField{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: 0},
-							domain.PostField{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: 0},
+							domain.PostField{Id: 2, Type: "text", Name: "text 1", Value: "text", Layout: &layout, Index: nil},
+							domain.PostField{Id: 3, Type: "text", Name: "text 2", Value: "text", Layout: &layout, Index: nil},
 						},
 					},
 				},

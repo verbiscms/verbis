@@ -46,6 +46,7 @@ export default {
 		},
 	},
 	mounted() {
+		console.log(this.fields);
 		this.setDefaultValue()
 	},
 	computed: {

@@ -153,13 +153,5 @@
 			}
 		}
 	],
-	"location": [
-		[
-			{
-				"param": "page_template",
-				"operator": "==",
-				"value": "home"
-			}
-		]
-	]
+	"location": []
 }
