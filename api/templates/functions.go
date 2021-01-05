@@ -46,21 +46,19 @@ var (
 // NewManager - Construct
 func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateManager {
 
-
-
 	fs := fields.NewService(s, *p)
 	fmt.Println(fs)
 	color.Red.Println(p)
 
 	return &TemplateManager{
-		gin:          g,
-		post:         p,
-		site:         s.Site.GetGlobalConfig(),
-		store:        s,
-		options:      s.Options.GetStruct(),
-		themeConfig:  s.Site.GetThemeConfig(),
+		gin:         g,
+		post:        p,
+		site:        s.Site.GetGlobalConfig(),
+		store:       s,
+		options:     s.Options.GetStruct(),
+		themeConfig: s.Site.GetThemeConfig(),
 		//fieldService:,
-		config:       c,
+		config: c,
 	}
 }
 

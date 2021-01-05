@@ -191,6 +191,11 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 		return domain.Post{}, err
 	}
 
+	// Update or create the fields
+	if err := s.fieldsModel.UpdateCreate(int(id), p.Fields); err != nil {
+		return domain.Post{}, err
+	}
+
 	// Convert the PostCreate type to type of Post to be returned
 	// to the controller, used for binding & validation.
 	convertedPost := s.convertToPost(*p)
@@ -233,6 +238,11 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	// Update the categories based on the array of integers that
 	// are passed. If the categories
 	if err := s.categoriesModel.InsertPostCategory(p.Id, p.Category); err != nil {
+		return domain.Post{}, err
+	}
+
+	// Update or create the fields
+	if err := s.fieldsModel.UpdateCreate(p.Id, p.Fields); err != nil {
 		return domain.Post{}, err
 	}
 

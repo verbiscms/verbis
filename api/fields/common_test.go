@@ -142,14 +142,14 @@ func (t *FieldTestSuite) TestService_GetChildren() {
 			uuid: id,
 			fields: []domain.PostField{
 				{Id: 1, Parent: nil},
-				{Id: 2, Parent: &id, Value: 1, Type: "category"},
+				{Id: 2, Parent: &id, OriginalValue: "1", Type: "category"},
 			},
 			format: true,
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
 			},
 			want: []domain.PostField{
-				{Id: 2, Parent: &id, Value: domain.Category{Id: 1, Name: "cat"}, Type: "category"},
+				{Id: 2, Parent: &id, OriginalValue: "1", Value: domain.Category{Id: 1, Name: "cat"}, Type: "category"},
 			},
 		},
 	}
@@ -164,20 +164,24 @@ func (t *FieldTestSuite) TestService_GetChildren() {
 
 func (t *FieldTestSuite) TestService_SortFields() {
 
+	one := 1
+	two := 2
+	three := 3
+
 	tt := map[string]struct {
 		fields []domain.PostField
 		want   []domain.PostField
 	}{
 		"Simple": {
 			fields: []domain.PostField{
-				{Id: 1, Index: 3},
-				{Id: 2, Index: 2},
-				{Id: 3, Index: 1},
+				{Id: 1, Index: &three},
+				{Id: 2, Index: &two},
+				{Id: 3, Index: &one},
 			},
 			want: []domain.PostField{
-				{Id: 3, Index: 1},
-				{Id: 2, Index: 2},
-				{Id: 1, Index: 3},
+				{Id: 3, Index: &one},
+				{Id: 2, Index: &two},
+				{Id: 1, Index: &three},
 			},
 		},
 	}

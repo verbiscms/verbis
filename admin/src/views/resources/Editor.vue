@@ -1,4 +1,4 @@
-*<!-- =====================
+<!-- =====================
 	Single
 	===================== -->
 <template>
@@ -8,6 +8,7 @@
 				Header
 				===================== -->
 			<div class="row">
+				<pre>		{{ fields }}</pre>
 				<div class="col-12">
 					<!-- Header -->
 					<header class="header header-with-actions">
@@ -244,8 +245,8 @@ export default {
 			"codeinjection_foot": "",
 			"published_at": new Date(),
 		},
-		fields: {},
 		defaultLayout: `{"uuid":"6a4d7442-1020-490f-a3e2-436f9135bc24","title":"Default Options","fields":[{"uuid":"39ca0ea0-c911-4eaa-b6e0-67dfd99e1225","label":"RichText","name":"content","type":"richtext","instructions":"Add content to the page.","required":true,"conditional_logic":null,"wrapper":{"width":100},"options":{"default_value":"","tabs":"all","toolbar":"full","media_upload":1}}]}`,
+		fields: [],
 		isSaving: false,
 		sidebarOpen: false,
 	}),
@@ -375,10 +376,6 @@ export default {
 					if (!this.fields) {
 						this.fields = [];
 					}
-
-					console.log(res.data.data.fields);
-
-					console.log(this.fields);
 
 					// Set date format
 					this.setDates();
@@ -530,6 +527,8 @@ export default {
 					} else {
 						this.$set(this.data, 'resource', null)
 					}
+
+					this.$set(this.data, 'fields', this.fields)
 
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)

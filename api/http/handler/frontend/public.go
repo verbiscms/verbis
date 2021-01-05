@@ -28,9 +28,9 @@ func NewPublic(m *models.Store, config config.Configuration) *Public {
 	const op = "FrontendHandler.newFrontend"
 
 	return &Public{
-		store:        m,
-		config:       config,
-		render:       render.NewRender(m, config),
+		store:  m,
+		config: config,
+		render: render.NewRender(m, config),
 		ErrorHandler: &render.Errors{
 			ThemeConfig: m.Site.GetThemeConfig(),
 		},

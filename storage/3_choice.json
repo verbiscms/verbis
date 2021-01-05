@@ -1,0 +1,116 @@
+{
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9125bc23",
+	"title": "Choice Verbis Options",
+	"fields": [
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-67dfd99e5775",
+			"label": "Select",
+			"name": "select",
+			"type": "select",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"choices": {
+					"red": "Red",
+					"orange": "Orangey"
+				},
+				"default_value": ["red"],
+				"allow_null": false,
+				"placeholder": "Placeholder"
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-62dfd99e2735",
+			"label": "Tags",
+			"name": "tags",
+			"type": "tags",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"choices": {
+					"red": "Red",
+					"green": "Green",
+					"blue": "Blue",
+					"yellow": "yellow"
+				},
+				"maximum": 3,
+				"button_label": "",
+				"allow_null": false
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e5775",
+			"label": "Checkbox",
+			"name": "checkbox",
+			"type": "checkbox",
+			"instructions": "Instructions",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"default_value": true,
+				"message": "Message next to checkbox"
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e2775",
+			"label": "Radio",
+			"name": "radio",
+			"type": "radio",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"choices": {
+					"red": "Red",
+					"blue": "Blue"
+				},
+				"default_value": ["blue"],
+				"allow_null": false,
+				"placeholder": "Placeholder"
+			}
+		},
+		{
+			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e2735",
+			"label": "Button Group",
+			"name": "button_group",
+			"type": "button_group",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"choices": {
+					"red": "Red",
+					"green": "Green"
+				},
+				"allow_null": false,
+				"default_value": ["red"]
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "home"
+			}
+		]
+	]
+}
