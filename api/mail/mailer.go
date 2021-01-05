@@ -52,7 +52,6 @@ func (m *Mailer) load() error {
 	var client sp.Client
 	err := client.Init(config)
 	if err != nil {
-		fmt.Println(err)
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not create a new mailer instance", Operation: op, Err: err}
 	}
 	m.client = client
@@ -80,7 +79,6 @@ func (m *Mailer) Send(t *Sender) (string, error) {
 
 	id, _, err := m.client.Send(tx)
 	if err != nil {
-		fmt.Println(err)
 		return id, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err}
 	}
 
@@ -94,7 +92,6 @@ func (m *Mailer) ExecuteHTML(file string, data interface{}) (string, error) {
 	path := paths.Web() + "/mail/" + file
 	tmpl, err := html.RenderTemplate("main", data, paths.Web()+"/mail/main-layout.html", path)
 	if err != nil {
-		fmt.Println(err)
 		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to render the template: %s", path), Operation: op, Err: err}
 	}
 	return tmpl, nil

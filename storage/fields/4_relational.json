@@ -42,14 +42,5 @@
 				"multiple": false
 			}
 		}
-	],
-	"location": [
-		[
-			{
-				"param": "page_template",
-				"operator": "==",
-				"value": "home"
-			}
-		]
 	]
 }

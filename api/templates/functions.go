@@ -1,14 +1,12 @@
 package templates
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/fields"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
 	"github.com/spf13/cast"
 	"html/template"
 	"strings"
@@ -45,11 +43,6 @@ var (
 
 // NewManager - Construct
 func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateManager {
-
-	fs := fields.NewService(s, *p)
-	fmt.Println(fs)
-	color.Red.Println(p)
-
 	return &TemplateManager{
 		gin:         g,
 		post:        p,
@@ -57,7 +50,7 @@ func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Co
 		store:       s,
 		options:     s.Options.GetStruct(),
 		themeConfig: s.Site.GetThemeConfig(),
-		//fieldService:,
+		fieldService: fields.NewService(s, *p),
 		config: c,
 	}
 }
