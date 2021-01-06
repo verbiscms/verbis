@@ -23,8 +23,8 @@
 			"sub_fields": [
 				{
 					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
-					"label": "Text",
-					"name": "text",
+					"label": "Text 1",
+					"name": "text1",
 					"type": "text",
 					"instructions": "Instructions",
 					"required": false,
@@ -42,7 +42,7 @@
 				},
 				{
 					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
-					"label": "Text",
+					"label": "Text 2",
 					"name": "text2",
 					"type": "text",
 					"instructions": "Instructions",

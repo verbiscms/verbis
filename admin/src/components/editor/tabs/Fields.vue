@@ -77,7 +77,7 @@
 											Layout
 											===================== -->
 										<!-- Repeater -->
-										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields="getRepeaterChildren(layout.uuid)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldRepeater>
+										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields="getRepeaterChildren(layout.uuid)" @update:fields="pushMultiple" :error-trigger="errorTrigger"></FieldRepeater>
 <!--										&lt;!&ndash; Flexible &ndash;&gt;-->
 <!--										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>-->
 									</div><!-- /Field Content -->
@@ -191,13 +191,31 @@ export default {
 				this.$set(this.computedHeights, uuid, "0px")
 			}
 		},
-		pushValue(value, layout) {
-			const fieldData = this.fields.filter(function(field) {
-				return field.uuid === layout.uuid;
-			});
+		pushMultiple(subFields, index) {
 
-			if (fieldData.length) {
-				fieldData[0].value = value;
+			console.log(index);
+			subFields.forEach((sub) => {
+
+				// let field = this.fields.find(field => {
+				// 	return field.uuid === sub.uuid
+				// });
+
+				let field = this.fields.find(field => {
+					return field.uuid === sub.uuid
+				})
+
+				if (field) {
+					field.value = sub.value
+					return;
+				}
+				this.fields.push(sub);
+			});
+		},
+		pushValue(value, layout) {
+			let fieldData = this.fields.find(field => field.uuid === layout.uuid);
+
+			if (fieldData) {
+				fieldData.value = value;
 				return
 			}
 
