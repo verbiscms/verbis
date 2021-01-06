@@ -2,10 +2,11 @@
 	Field - Repeater
 	===================== -->
 <template>
-	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
+	<div  class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
+		<h2>Repeater Fields</h2>
 		<pre>{{ repeaterFields }}</pre>
 		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".repeater-handle">
-			<div class="repeater" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
+			<div class="repeater" v-for="(repeater, repeaterIndex) in getRepeaterValues" :key="repeaterIndex">
 				<div class="card-header">
 					<h4>{{ layout.label }} item {{ repeaterIndex + 1 }}</h4>
 					<div class="card-controls">
@@ -25,7 +26,7 @@
 						Basic
 						===================== -->
 					<!-- Text -->
-					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldText>
+					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields="getValue(layout.uuid, repeaterIndex)" @update:fields="pushValue($event, layout, repeaterIndex)" :error-trigger="errorTrigger"></FieldText>
 <!--					&lt;!&ndash; Textarea &ndash;&gt;-->
 <!--					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldTextarea>-->
 <!--					&lt;!&ndash; Number &ndash;&gt;-->
@@ -123,22 +124,28 @@ export default {
 	},
 	data: () => ({
 		errors: [],
-		repeaters: [],
 		repeaterFields: [],
 	}),
-	mounted() {
-		if (this.repeaterFields !== undefined) {
-			this.repeaterFields = this.getFields
-		}
-	},
 	methods: {
 		deleteRow(index) {
 			this.fields.splice(index, 1);
 			this.repeaters.splice(index, 1);
 		},
 		addRow() {
-			console.log("cliocked");
-			this.repeaterFields.push({})
+			let arr = [];
+			this.getSubFields.forEach((field) => {
+				arr.push({
+					uuid: field.uuid,
+					value: "",
+					name: field.name,
+					type: field.type,
+					index: this.repeaterFields.length,
+					parent: this.layout.uuid,
+				});
+			});
+			this.repeaterFields.push(arr);
+			this.emit();
+
 			this.$nextTick(() => {
 				this.helpers.setHeight(this.$refs.repeater.closest(".collapse-content"));
 			});
@@ -152,30 +159,18 @@ export default {
 		moveItem(from, to) {
 			this.repeaterFields.splice(to, 0, this.repeaterFields.splice(from, 1)[0]);
 		},
-		pushValue(value, layout) {
-			const fieldData = this.fields.filter(function(field) {
-				return field.uuid === layout.uuid;
-			});
-
-			if (fieldData.length) {
-				fieldData[0].value = value;
-				return
+		pushValue(value, layout, index) {
+			const fieldData = this.getRepeaterValues[index].find(field => field.uuid === layout.uuid);
+			if (fieldData) {
+				fieldData.value = value;
+				this.emit();
 			}
-
-			this.fields.push({
-				uuid: layout.uuid,
-				value: value,
-				name: layout.name,
-				type: layout.type,
-			});
 		},
-		getValue(layout) {
-			const fieldData = this.fields.filter(function(field) {
-				return field.uuid === layout.uuid;
-			});
-			if (fieldData.length) {
-				return fieldData[0].value;
-			}
+		getValue(uuid, index) {
+			return this.getRepeaterValues[index].find(field => field.uuid === uuid).value
+		},
+		emit() {
+			this.$emit("update:fields", [].concat.apply([], this.repeaterFields), this.repeaterFields.length - 1)
 		},
 	},
 	computed: {
@@ -185,17 +180,12 @@ export default {
 		getSubFields() {
 			return this.layout['sub_fields'];
 		},
-		getFields() {
-			return this.fields
+		getRepeaterValues() {
+			return this.fields.reduce((acc, cur) => {
+				acc[cur["index"]] = [...acc[cur["index"]] || [], cur];
+				return acc;
+			}, []);
 		},
-		// repeaterFields: {
-		// 	get() {
-		// 		return this.fields === undefined ? [{}] : this.fields
-		// 	},
-		// 	set() {
-		// 		this.$emit("update:fields", this.repeaterFields)
-		// 	}
-		// }
 	}
 }
 

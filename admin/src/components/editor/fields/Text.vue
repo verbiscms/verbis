@@ -46,8 +46,7 @@ export default {
 		},
 	},
 	mounted() {
-		console.log(this.fields);
-		this.setDefaultValue()
+		this.setDefaultValue();
 	},
 	computed: {
 		getOptions() {
