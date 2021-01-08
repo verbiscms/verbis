@@ -80,9 +80,9 @@ type PostField struct {
 	Name          string      `db:"name" json:"name"`
 	Value         interface{} `json:"-"`
 	OriginalValue FieldValue  `db:"value" json:"value"`
-	Parent        *uuid.UUID  `db:"parent" json:"parent,omitempty"`
-	Layout        *string     `db:"layout" json:"layout,omitempty"`
-	Index         *int         `db:"row_index" json:"index,omitempty"`
+	Parent        *uuid.UUID  `db:"parent" json:"parent"`
+	Layout        *string     `db:"layout" json:"layout"`
+	Index         *int         `db:"row_index" json:"index"`
 }
 
 type FieldValue string

@@ -4,7 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
-			<pre>{{ fields }}</pre>
+			<pre style="font-size: 14px; line-height: 1.2">{{ fields }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
@@ -92,7 +92,7 @@
 									<div v-if="categoryArchive" class="badge badge-orange">Category archive</div>
 								</div>
 							</div>
-							<Fields :layout="fieldLayout" :fields.sync="fields" :error-trigger="errorTrigger"></Fields>
+							<Fields  :layout="fieldLayout" :fields.sync="fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"></MetaOptions>
@@ -250,6 +250,7 @@ export default {
 		isSaving: false,
 		sidebarOpen: false,
 		flatFields: [],
+		loadingFields: true,
 	}),
 	beforeMount() {
 		this.setNewUpdate();
@@ -374,6 +375,7 @@ export default {
 
 					// Set field values
 					this.fields = this.expandFields(res.data.data.fields);
+					this.loadingFields = false;
 
 					// Set date format
 					this.setDates();
@@ -517,27 +519,70 @@ export default {
 				return {};
 			}
 
-			fields.forEach(field => {
-				// Not a repeater
-				if (!field.parent && field.type !== "repeater") {
-					obj[field.uuid] = field;
-				}
+			this.fieldLayout.forEach(layout => {
+				layout.fields.forEach(field => {
 
-				// Is a repeater
-				if (field.parent) {
-					if (!obj[field.parent]) {
-						obj[field.parent] = [];
+					if (field.type !== "repeater" && field.type !== "flexible") {
+						let f = fields.find(f => f.uuid === field.uuid)
+						if (f) {
+							obj[field.uuid] = f;
+						}
 					}
-					if (!obj[field.parent][field.index]) {
-						obj[field.parent][field.index] = {};
+
+					if (field.type === "repeater") {
+						let f = fields.find(f => f.uuid === field.uuid)
+						if (f) {
+							obj[field.uuid] = [];
+							obj[field.uuid].push(f)
+						}
+
+						field['sub_fields'].forEach((sub) => {
+
+							if (sub.type !== "repeater" && sub.type !== "flexible") {
+								fields.filter(s => s.uuid === sub.uuid).forEach(s => {
+									obj[field.uuid][s.index + 1] = obj[field.uuid][s.index + 1] || {};
+									obj[field.uuid][s.index + 1][s.uuid] = s;
+								})
+							}
+
+							if (sub.type === "repeater") {
+
+								// Heres the problem
+								console.log(f.index);
+								console.log(sub.index);
+								let p = fields.find(x => x.uuid === sub.uuid)
+								if (p) {
+									obj[field.uuid][f.index + 1][sub.uuid] = [];
+									obj[field.uuid][f.index + 1][sub.uuid].push(p)
+								}
+
+								console.log(p);
+
+								sub['sub_fields'].forEach((sub2) => {
+									if (sub2.type !== "repeater" && sub2.type !== "flexible") {
+										fields.filter(f => f.uuid === sub2.uuid).forEach(k => {
+
+											let p = fields.find(x => x.uuid === sub.uuid && x.index === k.uuid)
+
+											obj[field.uuid][p.index + 1][p.uuid][k.index + 1] = obj[field.uuid][p.index + 1][p.uuid][k.index + 1] || {}
+											obj[field.uuid][p.index + 1][p.uuid][k.index + 1][k.uuid] = obj[field.uuid][p.index + 1][p.uuid][k.index + 1][k.uuid] || {}
+											obj[field.uuid][p.index + 1][p.uuid][k.index + 1][k.uuid] = k
+										})
+									}
+								});
+							}
+						});
 					}
-					obj[field.parent][field.index][field.uuid] = field || {};
-
-
-
-				}
+				});
 			});
+
+			console.log(JSON.stringify(obj, null, 4));
+
 			return obj;
+		},
+
+		findField(fields, uuid) {
+			return fields.find(f => f.uuid === uuid)
 		},
 		fieldWalker(o) {
 			if (Object.prototype.hasOwnProperty.call(o, "name")){
@@ -555,8 +600,6 @@ export default {
 			this.fieldWalker(this.fields);
 			let fields = this.flatFields;
 			this.flatFields = [];
-			console.log(fields);
-			console.log(fields.length);
 			return fields;
 		},
 		/*
@@ -720,6 +763,41 @@ export default {
 			this.isCustomSlug = false;
 			this.editSlug = "";
 			this.slugBtn = false;
+		},
+		old() {
+
+			// fields.forEach(field => {
+			// 	// Not a repeater
+			// 	if (!field.parent && field.type !== "repeater") {
+			// 		obj[field.uuid] = field;
+			// 	}
+			//
+			// 	// Is repeater children
+			// 	if (field.parent) {
+			// 		if (!obj[field.parent]) {
+			// 			obj[field.parent] = [];
+			// 		}
+			// 		if (!obj[field.parent][field.index]) {
+			// 			obj[field.parent][field.index] = {};
+			// 		}
+			// 		console.log(field.name, field.index)
+			//
+			// 		if (field.type !== "repeater") {
+			// 			obj[field.parent][field.index][field.uuid] = field || {};
+			// 		} else {
+			// 			console.log(field);
+			// 		}
+			// 	}
+			//
+			// 	// Is parent repeater
+			// 	if (field.type === "repeater" && !field.index) {
+			// 		if (!obj[field.uuid]) {
+			// 			obj[field.uuid] = [];
+			// 		}
+			// 		obj[field.uuid].push(field)
+			// 	}
+			// });
+			// return obj;
 		}
 	},
 	computed: {
