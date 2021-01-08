@@ -43,7 +43,7 @@
 				{
 					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
 					"label": "Text 1",
-					"name": "reptext1",
+					"name": "PARENTTEXT",
 					"type": "text",
 					"instructions": "Instructions",
 					"required": false,
@@ -81,7 +81,7 @@
 						{
 							"uuid": "2a07ae74-51cc-11eb-ae93-0242ac130002",
 							"label": "Text 1",
-							"name": "reptext1",
+							"name": "NESTEDTEXT",
 							"type": "text",
 							"instructions": "Instructions",
 							"required": false,
@@ -103,3 +103,4 @@
 		}
 	]
 }
+

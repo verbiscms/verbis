@@ -9,7 +9,7 @@
 			<div class="repeater" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
 				<div v-if="repeater.uuid !== getLayout.uuid">
 					<div class="card-header">
-						<h4>{{ layout.label }} item {{ repeaterIndex + 1 }}</h4>
+						<h4>{{ layout.label }} item {{ repeaterIndex }}</h4>
 						<div class="card-controls">
 							<i class="feather feather-trash-2" @click="deleteRow(repeaterIndex)"></i>
 							<i class="feather feather-arrow-up" @click="moveUp(repeaterIndex)"></i>
@@ -27,7 +27,7 @@
 							Basic
 							===================== -->
 						<!-- Text -->
-						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldText>
+						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex - 1" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldText>
 						<!-- Textarea -->
 						<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldTextarea>
 						<!-- Number -->
@@ -71,7 +71,7 @@
 							Layout
 							===================== -->
 						<!-- Repeater -->
-						<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :index="repeaterIndex" :parent="getLayout.name" :error-trigger="errorTrigger"></FieldRepeater>
+						<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex - 1" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldRepeater>
 						<!-- Flexible -->
 						<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldFlexible>
 					</div><!-- /Card Body -->
@@ -138,16 +138,17 @@ export default {
 		if (this.repeaterFields !== undefined) {
 			this.repeaterFields = this.getFields
 
-
-			this.repeaterFields.push({
-				uuid: this.getLayout.uuid,
-				value: "",
-				name: this.getLayout.name,
-				type: this.getLayout.type,
-				index: this.index,
-				parent: this.parent,
-				layout: this.parentLayout,
-			})
+			if (!this.repeaterFields.find(f => f.uuid === this.getLayout.uuid)) {
+				this.repeaterFields.push({
+					uuid: this.getLayout.uuid,
+					value: "",
+					name: this.getLayout.name,
+					type: this.getLayout.type,
+					index: this.index,
+					parent: this.parent,
+					layout: this.parentLayout,
+				});
+			}
 		}
 	},
 	methods: {
