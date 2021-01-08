@@ -10,6 +10,13 @@ import (
 // for the repeater function in templates.
 type Repeater []domain.PostField
 
+// TODO: We no longer need the format paramater
+// TODO: The repeater needs to be an array of arrays.
+// Get repeater
+// if (type is repeater)
+// return repeater
+// All values must be resolved beforr passing back.
+
 // GetRepeater
 //
 // Returns the collection of children from the given key and returns
