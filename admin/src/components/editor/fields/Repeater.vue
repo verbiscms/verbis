@@ -2,11 +2,11 @@
 	Field - Repeater
 	===================== -->
 <template>
-	<div  class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
-		<h2>Repeater Fields</h2>
-		<pre>{{ repeaterFields }}</pre>
+	<div v-if="!loading" class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
+		<h2>Fields</h2>
+		<pre>{{ fields }}</pre>
 		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".repeater-handle">
-			<div class="repeater" v-for="(repeater, repeaterIndex) in getRepeaterValues" :key="repeaterIndex">
+			<div class="repeater" v-for="(repeater, repeaterIndex) in fields" :key="repeaterIndex">
 				<div class="card-header">
 					<h4>{{ layout.label }} item {{ repeaterIndex + 1 }}</h4>
 					<div class="card-controls">
@@ -26,7 +26,7 @@
 						Basic
 						===================== -->
 					<!-- Text -->
-					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields="getValue(layout.uuid, repeaterIndex)" @update:fields="pushValue($event, layout, repeaterIndex)" :error-trigger="errorTrigger"></FieldText>
+					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid].value" :error-trigger="errorTrigger"></FieldText>
 <!--					&lt;!&ndash; Textarea &ndash;&gt;-->
 <!--					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :error-trigger="errorTrigger"></FieldTextarea>-->
 <!--					&lt;!&ndash; Number &ndash;&gt;-->
@@ -105,7 +105,12 @@ export default {
 	name: "FieldRepeater",
 	props: {
 		layout: Object,
-		fields: Array,
+		fields: {
+			type: Array,
+			default: () => {
+				return []
+			},
+		},
 		errorTrigger: {
 			type: Boolean,
 			default: false,
@@ -125,11 +130,15 @@ export default {
 	data: () => ({
 		errors: [],
 		repeaterFields: [],
+		loading: true,
 	}),
+	mounted() {
+		this.loading = false;
+	},
 	methods: {
 		deleteRow(index) {
-			this.fields.splice(index, 1);
-			this.repeaters.splice(index, 1);
+			this.repeaterFields.splice(index, 1);
+			this.emit();
 		},
 		addRow() {
 			let arr = [];
@@ -159,18 +168,33 @@ export default {
 		moveItem(from, to) {
 			this.repeaterFields.splice(to, 0, this.repeaterFields.splice(from, 1)[0]);
 		},
-		pushValue(value, layout, index) {
-			const fieldData = this.getRepeaterValues[index].find(field => field.uuid === layout.uuid);
-			if (fieldData) {
-				fieldData.value = value;
-				this.emit();
-			}
-		},
-		getValue(uuid, index) {
-			return this.getRepeaterValues[index].find(field => field.uuid === uuid).value
-		},
+		// pushValue(value, layout, index) {
+		// 	if (this.getRepeaterValues[index]) {
+		// 		const fieldData = this.getRepeaterValues[index].find(field => field.uuid === layout.uuid);
+		// 		if (fieldData) {
+		// 			fieldData.value = value;
+		// 			this.emit();
+		// 		}
+		// 	}
+		// },
+		// getValue(uuid, index) {
+		// 	if (this.getRepeaterValues[index]) {
+		// 		return this.getRepeaterValues[index].find(field => field.uuid === uuid).value
+		// 	}
+		// },
 		emit() {
-			this.$emit("update:fields", [].concat.apply([], this.repeaterFields), this.repeaterFields.length - 1)
+			// // TODO: We need to store the repeater in the database.
+			// this.repeaterFields.forEach((row, index) => {
+			// 	row.forEach(subField => {
+			// 		const field = this.fields.find(field => field.uuid === subField.uuid && field.index === index);
+			// 		if (field) {
+			// 			field.value = subField.value
+			// 			return;
+			// 		}
+			// 		this.fields.push(subField);
+			// 	});
+			// });
+			// this.$emit("update:fields", this.fields);
 		},
 	},
 	computed: {
@@ -179,12 +203,6 @@ export default {
 		},
 		getSubFields() {
 			return this.layout['sub_fields'];
-		},
-		getRepeaterValues() {
-			return this.fields.reduce((acc, cur) => {
-				acc[cur["index"]] = [...acc[cur["index"]] || [], cur];
-				return acc;
-			}, []);
 		},
 	}
 }
