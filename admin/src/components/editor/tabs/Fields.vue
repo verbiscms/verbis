@@ -77,7 +77,8 @@
 											Layout
 											===================== -->
 										<!-- Repeater -->
-										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields="getRepeaterChildren(layout.uuid)" @update:fields="pushMultiple" :error-trigger="errorTrigger"></FieldRepeater>
+										{{ fields[layout.uuid ]}}
+										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldRepeater>
 <!--										&lt;!&ndash; Flexible &ndash;&gt;-->
 <!--										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>-->
 									</div><!-- /Field Content -->
@@ -132,7 +133,7 @@ export default {
 		layout: Array,
 		fields: {
 			required: true,
-			type: [Array],
+			type: Object,
 		},
 		errorTrigger: {
 			type: Boolean,
@@ -170,6 +171,7 @@ export default {
 		computedHeights: {},
 		isActive: true,
 		errors: {},
+		test: {},
 	}),
 	methods: {
 		getLayoutByName(groupIndex, name) {
@@ -190,26 +192,6 @@ export default {
 			} else {
 				this.$set(this.computedHeights, uuid, "0px")
 			}
-		},
-		pushMultiple(subFields, index) {
-
-			console.log(index);
-			subFields.forEach((sub) => {
-
-				// let field = this.fields.find(field => {
-				// 	return field.uuid === sub.uuid
-				// });
-
-				let field = this.fields.find(field => {
-					return field.uuid === sub.uuid
-				})
-
-				if (field) {
-					field.value = sub.value
-					return;
-				}
-				this.fields.push(sub);
-			});
 		},
 		pushValue(value, layout) {
 			let fieldData = this.fields.find(field => field.uuid === layout.uuid);
@@ -233,9 +215,6 @@ export default {
 			if (fieldData.length) {
 				return fieldData[0].value;
 			}
-		},
-		getRepeaterChildren(uuid) {
-			return this.fields.filter(field => field.parent === uuid);
 		},
 		parseLogic(layout, groupIndex) {
 			const logic = layout['conditional_logic']
@@ -291,14 +270,6 @@ export default {
 	computed: {
 		getLayout() {
 			return this.layout
-		},
-		value: {
-			get() {
-				return this.fields;
-			},
-			set(value) {
-				this.$emit("update:fields", value);
-			}
 		},
 		getFields() {
 			return this.fields

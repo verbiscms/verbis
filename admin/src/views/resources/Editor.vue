@@ -8,7 +8,7 @@
 				Header
 				===================== -->
 			<div class="row">
-				<pre>		{{ fields }}</pre>
+				<pre>{{ fields }}</pre>
 				<div class="col-12">
 					<!-- Header -->
 					<header class="header header-with-actions">
@@ -246,9 +246,10 @@ export default {
 			"published_at": new Date(),
 		},
 		defaultLayout: `{"uuid":"6a4d7442-1020-490f-a3e2-436f9135bc24","title":"Default Options","fields":[{"uuid":"39ca0ea0-c911-4eaa-b6e0-67dfd99e1225","label":"RichText","name":"content","type":"richtext","instructions":"Add content to the page.","required":true,"conditional_logic":null,"wrapper":{"width":100},"options":{"default_value":"","tabs":"all","toolbar":"full","media_upload":1}}]}`,
-		fields: [],
+		fields: {},
 		isSaving: false,
 		sidebarOpen: false,
+		flatFields: [],
 	}),
 	beforeMount() {
 		this.setNewUpdate();
@@ -372,10 +373,7 @@ export default {
 					}
 
 					// Set field values
-					this.fields = res.data.data.fields;
-					if (!this.fields) {
-						this.fields = [];
-					}
+					this.fields = this.expandFields(res.data.data.fields);
 
 					// Set date format
 					this.setDates();
@@ -383,6 +381,7 @@ export default {
 					this.getCategories();
 				})
 				.catch(err => {
+					console.log(err);
 					this.helpers.handleResponse(err);
 				})
 		},
@@ -511,6 +510,44 @@ export default {
 				this.data["published_at"] = new Date();
 			}
 		},
+		expandFields(fields) {
+			let obj = {};
+			console.log(fields);
+			fields.forEach(field => {
+				// Not a repeater
+				if (!field.parent && field.type !== "repeater") {
+					obj[field.uuid] = field;
+				}
+
+				// Is a repeater
+				if (field.parent) {
+					if (!obj[field.parent]) {
+						obj[field.parent] = [];
+					}
+					if (!obj[field.parent][field.index]) {
+						obj[field.parent][field.index] = {};
+					}
+					obj[field.parent][field.index][field.uuid] = field || {};
+				}
+			});
+			return obj;
+		},
+		fieldWalker(o) {
+			if (Object.prototype.hasOwnProperty.call(o, "name")){
+				this.flatFields.push(o);
+			}
+			for (const p in o) {
+				if (Object.prototype.hasOwnProperty.call(o, p) && typeof o[p] === 'object' ) {
+					this.fieldWalker(o[p]);
+				}
+			}
+		},
+		flattenFields() {
+			this.fieldWalker(this.fields);
+			let fields = this.flatFields;
+			this.flatFields = [];
+			return fields;
+		},
 		/*
 		 * save()
 		 * Save the new page, check for field validation.
@@ -528,7 +565,8 @@ export default {
 						this.$set(this.data, 'resource', null)
 					}
 
-					this.$set(this.data, 'fields', this.fields)
+					console.log(this.flattenFields());
+					this.$set(this.data, 'fields', this.flattenFields())
 
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)
@@ -965,3 +1003,4 @@ export default {
 	}
 
 </style>
+

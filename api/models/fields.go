@@ -16,7 +16,7 @@ type FieldsRepository interface {
 	UpdateCreate(postId int, f []domain.PostField) error
 	Create(f domain.PostField) (domain.PostField, error)
 	Update(f domain.PostField) (domain.PostField, error)
-	Exists(uuid uuid.UUID) bool
+	Exists(uuid uuid.UUID, index *int) bool
 	GetByPost(postId int) ([]domain.PostField, error)
 	GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup
 }
@@ -43,10 +43,9 @@ func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 // or creating the new record.
 func (s *FieldsStore) UpdateCreate(postId int, f []domain.PostField) error {
 
-	fmt.Println(postId)
 	for _, v := range f {
 		v.PostId = postId
-		if s.Exists(v.UUID) {
+		if s.Exists(v.UUID, v.Index) {
 			_, err := s.Update(v)
 			if err != nil {
 				return err
@@ -85,9 +84,12 @@ func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
 }
 
 // Exists Checks if a post field exists by the given UUID
-func (s *FieldsStore) Exists(uuid uuid.UUID) bool {
+func (s *FieldsStore) Exists(uuid uuid.UUID, index *int) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ?)", uuid.String()).Scan(&exists)
+	fmt.Println(index)
+	err := s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND row_index = ?)", uuid.String(), index).Scan(&exists)
+	fmt.Println(err)
+	fmt.Println(exists)
 	return exists
 }
 
