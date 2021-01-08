@@ -10,8 +10,22 @@ export const fieldMixin = {
 	props: {
 		layout: Object,
 		fields: {
+			type: Object,
+			default: () => {
+				return {}
+			}
+		},
+		index: {
+			type: Number,
+			default: null,
+		},
+		parent: {
 			type: String,
-			default: ''
+			default: null,
+		},
+		parentLayout: {
+			type: String,
+			default: null,
 		},
 		errorTrigger: Boolean,
 	},
@@ -20,13 +34,50 @@ export const fieldMixin = {
 		typed: false,
 	}),
 	watch: {
+		/*
+		 * errorTrigger()
+		 * Checks if the validation function is defined within the
+		 * field and calls.
+		 */
 		errorTrigger: function() {
 			if (typeof this.validate !== "undefined") {
 				this.validate();
 			}
 		}
 	},
+	computed: {
+		/*
+		 * getOptions()
+		 * Returns the fields layout.
+		 */
+		getLayout() {
+			return this.layout;
+		},
+		/*
+		 * getOptions()
+		 * Returns the fields layout options.
+		 */
+		getOptions() {
+			return this.layout.options;
+		},
+	},
 	methods: {
+		/*
+		 * getFieldObject()
+		 * Returns the field object for emitting back to the parent.
+		 * Index, Parent & Layout are automatically set to null.
+		 */
+		getFieldObject(value) {
+			return {
+				uuid: this.getLayout.uuid,
+				value: value,
+				name: this.getLayout.name,
+				type: this.getLayout.type,
+				index: this.index,
+				parent: this.parent,
+				layout: this.parentLayout,
+			};
+		},
 		/*
 		 * setPrependAppend()
 		 * Set the prepend and value options back for setting the field.
@@ -46,8 +97,8 @@ export const fieldMixin = {
 		 */
 		setDefaultValue() {
 			const defaultVal = this.getOptions['default_value'];
-			if (this.value === "" && defaultVal !== "" && defaultVal !== undefined) {
-				this.value = this.getOptions['default_value'];
+			if (this.field === "" && defaultVal !== "" && defaultVal !== undefined) {
+				this.field = this.getOptions['default_value'];
 			}
 		},
 		/*
@@ -62,25 +113,28 @@ export const fieldMixin = {
 					defaultVal = this.getOptions['choices'][opt]
 				});
 				if (defaultVal !== "") {
-					this.value = defaultVal;
+					this.field.value = defaultVal;
 					return
 				}
 			}
-			this.value = this.fields;
+			this.field = this.fields;
 		},
 		/*
 		 * replacePrependAppend()
 		 * Replace the field value with empty strings.
 		 */
 		replacePrependAppend() {
-			return this.fields.toString().replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+			if (!this.fields.value) {
+				return "";
+			}
+			return this.fields.value.toString().replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
 		},
 		/*
 		 * validateRequired()
 		 * Return a error message if the options are required & the value is nil.
 		 */
 		validateRequired() {
-			if (this.value === "" && this.getLayout["required"]) {
+			if (this.field === "" && this.getLayout["required"]) {
 				this.errors.push(`The ${this.getLayout.label.toLowerCase()} field is required.`);
 			}
 		},
@@ -90,7 +144,7 @@ export const fieldMixin = {
 		 */
 		validateMaxLength(length = false) {
 			const maxLength = length ? length : this.getOptions['maxlength'];
-			if (maxLength !== "" && (this.value.length === maxLength)) {
+			if (maxLength !== "" && (this.field.length === maxLength)) {
 				this.errors.push(`The maximum length of the ${this.getLayout.label.toLowerCase()} can not exceed ${maxLength} characters.`);
 			}
 		},

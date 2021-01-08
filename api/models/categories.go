@@ -278,7 +278,7 @@ func (s *CategoryStore) InsertPostCategory(postId int, categoryId *int) error {
 func (s *CategoryStore) DeletePostCategories(id int) error {
 	const op = "CategoryRepository.DeletePostCategories"
 	if _, err := s.db.Exec("DELETE FROM post_categories WHERE category_id = ?", id); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the post categories with the ID of: %d", id), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the post categories with the post ID of: %d", id), Operation: op, Err: err}
 	}
 	return nil
 }
