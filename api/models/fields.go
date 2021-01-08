@@ -43,25 +43,48 @@ func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 // or creating the new record.
 func (s *FieldsStore) UpdateCreate(postId int, f []domain.PostField) error {
 
+	err := s.deleteFieldsByPostId(postId)
+	if err != nil {
+		return err
+	}
+
 	for _, v := range f {
 		v.PostId = postId
-		if s.Exists(v.UUID, v.Index) {
-			_, err := s.Update(v)
-			if err != nil {
-				return err
-			}
-		} else {
-			_, err := s.Create(v)
-			if err != nil {
-				return err
-			}
+		_, err := s.Create(v)
+		if err != nil {
+			return err
 		}
+	}
+
+	//for _, v := range f {
+	//	v.PostId = postId
+	//	if s.Exists(v.UUID, v.Index) {
+	//		_, err := s.Update(v)
+	//		if err != nil {
+	//			return err
+	//		}
+	//	} else {
+	//		_, err := s.Create(v)
+	//		if err != nil {
+	//			return err
+	//		}
+	//	}
+	//}
+	return nil
+}
+
+// Delete all fields from the post fields with the associated ID.
+// Returns errors.INTERNAL if the SQL query was invalid.
+func (s *FieldsStore) deleteFieldsByPostId(id int) error {
+	const op = "FieldsStore.DeleteFieldsByPostId"
+	if _, err := s.db.Exec("DELETE FROM post_fields WHERE post_id = ?", id); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the post fields with the post ID of: %d", id), Operation: op, Err: err}
 	}
 	return nil
 }
 
 // Update a post field by Id
-//Returns errors.INTERNAL if the SQL query was invalid.
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *FieldsStore) Create(f domain.PostField) (domain.PostField, error) {
 	const op = "FieldsRepository.Update"
 	q := "INSERT INTO post_fields (uuid, post_id, type, name, value, parent, layout, row_index) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
@@ -86,10 +109,13 @@ func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
 // Exists Checks if a post field exists by the given UUID
 func (s *FieldsStore) Exists(uuid uuid.UUID, index *int) bool {
 	var exists bool
-	fmt.Println(index)
-	err := s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND row_index = ?)", uuid.String(), index).Scan(&exists)
-	fmt.Println(err)
-	fmt.Println(exists)
+
+	if index == nil {
+		_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ?)", uuid.String()).Scan(&exists)
+		return exists
+	}
+
+	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND row_index = ?)", uuid.String(), index).Scan(&exists)
 	return exists
 }
 

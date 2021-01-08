@@ -6,7 +6,7 @@
 		<div class="field-prepend-append" :class="{ 'field-focused' : focused }">
 			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
 			<input class="form-input form-input-white" type="text"
-				v-model="value"
+				v-model="field"
 				@keyup="validate"
 				@blur="handleBlur"
 				@focus="focused = true"
@@ -35,11 +35,20 @@ export default {
 		focused: false,
 	}),
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
 		validate() {
 			this.errors = [];
 			this.typed = true;
 			this.validateMaxLength();
 		},
+		/*
+		 * handleBlur()
+		 * Inline validation when user has clicked off the field.
+		 * And removes focus class.
+		 */
 		handleBlur() {
 			this.focused = false;
 			this.validateRequired();
@@ -49,18 +58,17 @@ export default {
 		this.setDefaultValue();
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options;
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Replaces and sets the prepend and append values
+		 * Fire's back up to the parent
+		 */
+		field: {
 			get() {
 				return this.replacePrependAppend();
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value));
+				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value)));
 			}
 		}
 	}
