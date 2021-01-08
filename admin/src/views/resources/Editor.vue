@@ -4,11 +4,11 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
+			<pre>{{ fields }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
 			<div class="row">
-				<pre>{{ fields }}</pre>
 				<div class="col-12">
 					<!-- Header -->
 					<header class="header header-with-actions">
@@ -512,7 +512,11 @@ export default {
 		},
 		expandFields(fields) {
 			let obj = {};
-			console.log(fields);
+
+			if (fields === null) {
+				return {};
+			}
+
 			fields.forEach(field => {
 				// Not a repeater
 				if (!field.parent && field.type !== "repeater") {
@@ -528,6 +532,9 @@ export default {
 						obj[field.parent][field.index] = {};
 					}
 					obj[field.parent][field.index][field.uuid] = field || {};
+
+
+
 				}
 			});
 			return obj;
@@ -538,7 +545,9 @@ export default {
 			}
 			for (const p in o) {
 				if (Object.prototype.hasOwnProperty.call(o, p) && typeof o[p] === 'object' ) {
-					this.fieldWalker(o[p]);
+					if (o[p] !== null) {
+						this.fieldWalker(o[p]);
+					}
 				}
 			}
 		},
@@ -546,6 +555,8 @@ export default {
 			this.fieldWalker(this.fields);
 			let fields = this.flatFields;
 			this.flatFields = [];
+			console.log(fields);
+			console.log(fields.length);
 			return fields;
 		},
 		/*
@@ -565,7 +576,6 @@ export default {
 						this.$set(this.data, 'resource', null)
 					}
 
-					console.log(this.flattenFields());
 					this.$set(this.data, 'fields', this.flattenFields())
 
 					if (this.newItem) {

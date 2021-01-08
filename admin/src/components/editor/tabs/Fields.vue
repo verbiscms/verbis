@@ -33,39 +33,39 @@
 											Basic
 											===================== -->
 										<!-- Text -->
-										<FieldText v-if="layout.type === 'text'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldText>
+										<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldText>
 										<!-- Textarea -->
-										<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldTextarea>
+										<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" ::fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldTextarea>
 										<!-- Number -->
-										<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldNumber>
+										<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldNumber>
 										<!-- Range -->
-										<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldRange>
+										<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldRange>
 										<!-- Email -->
-										<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldEmail>
+										<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldEmail>
 										<!-- Url -->
-										<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldUrl>
+										<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldUrl>
 										<!-- Password -->
-										<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldPassword>
+										<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldPassword>
 										<!-- =====================
 											Content
 											===================== -->
 										<!-- Richtext -->
-										<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldRichText>
+										<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldRichText>
 										<!-- Image -->
-										<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldImage>
+										<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldImage>
 										<!-- =====================
 											Choice
 											===================== -->
 										<!-- Select -->
-										<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldSelect>
+										<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldSelect>
 										<!-- Tags -->
-										<FieldTags v-else-if="layout.type === 'tags'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldTags>
+										<FieldTags v-else-if="layout.type === 'tags'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldTags>
 										<!-- Checkbox -->
-										<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldCheckbox>
+										<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldCheckbox>
 										<!-- Radio -->
-										<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldRadio>
+										<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldRadio>
 										<!-- Button Group -->
-										<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields="getValue(layout)" @update:fields="pushValue($event, layout)" :error-trigger="errorTrigger"></FieldButtonGroup>
+										<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldButtonGroup>
 										<!-- =====================
 											Relational
 											===================== -->
@@ -77,7 +77,6 @@
 											Layout
 											===================== -->
 										<!-- Repeater -->
-										{{ fields[layout.uuid ]}}
 										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldRepeater>
 <!--										&lt;!&ndash; Flexible &ndash;&gt;-->
 <!--										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>-->
@@ -171,7 +170,6 @@ export default {
 		computedHeights: {},
 		isActive: true,
 		errors: {},
-		test: {},
 	}),
 	methods: {
 		getLayoutByName(groupIndex, name) {
@@ -191,29 +189,6 @@ export default {
 				this.$set(this.computedHeights, uuid, this.heights[uuid])
 			} else {
 				this.$set(this.computedHeights, uuid, "0px")
-			}
-		},
-		pushValue(value, layout) {
-			let fieldData = this.fields.find(field => field.uuid === layout.uuid);
-
-			if (fieldData) {
-				fieldData.value = value;
-				return
-			}
-
-			this.fields.push({
-				uuid: layout.uuid,
-				value: value,
-				name: layout.name,
-				type: layout.type,
-			});
-		},
-		getValue(layout) {
-			const fieldData = this.fields.filter(function(field) {
-				return field.uuid === layout.uuid;
-			});
-			if (fieldData.length) {
-				return fieldData[0].value;
 			}
 		},
 		parseLogic(layout, groupIndex) {

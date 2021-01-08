@@ -37,7 +37,7 @@ export default {
 			this.updatePosition(firstTab, this.defaultTab);
 			setTimeout(() => {
 				this.loading = false;
-			}, 100);
+			}, 200);
 		});
 	},
 	created() {
