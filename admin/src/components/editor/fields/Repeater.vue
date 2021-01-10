@@ -3,13 +3,10 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
-		<h3>Index {{ index }}</h3>
-		<h3>Parent {{ parent }}</h3>
-		<draggable @start="drag=true" :list="fields" :group="fields" :sort="true" handle=".repeater-handle">
-			<div class="repeater" v-for="(repeater, repeaterIndex) in getFields" :key="repeaterIndex">
-				<div v-if="repeater.uuid !== getLayout.uuid">
+		<draggable @start="drag=true" :list="getChildren" :group="getChildren" :sort="true" handle=".repeater-handle">
+			<div class="repeater" v-for="(repeater, repeaterIndex) in getChildren" :key="repeaterIndex">
 					<div class="card-header">
-						<h4>{{ layout.label }} item {{ repeaterIndex }}</h4>
+						<h4>{{ layout.label }} item {{ repeaterIndex + 1 }}</h4>
 						<div class="card-controls">
 							<i class="feather feather-trash-2" @click="deleteRow(repeaterIndex)"></i>
 							<i class="feather feather-arrow-up" @click="moveUp(repeaterIndex)"></i>
@@ -27,7 +24,8 @@
 							Basic
 							===================== -->
 						<!-- Text -->
-						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex - 1" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldText>
+						{{ repeaterIndex }}
+						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldText>
 						<!-- Textarea -->
 						<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldTextarea>
 						<!-- Number -->
@@ -71,12 +69,11 @@
 							Layout
 							===================== -->
 						<!-- Repeater -->
-						<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex - 1" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldRepeater>
+						<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldRepeater>
 						<!-- Flexible -->
 						<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldFlexible>
 					</div><!-- /Card Body -->
 				</div><!-- /Card -->
-			</div>
 		</draggable>
 		<div class="field-btn">
 			<button class="btn btn-blue" @click="addRow"><i class="fal fa-plus-circle"></i>Add Row</button>
@@ -99,13 +96,19 @@ import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldImage from "@/components/editor/fields/Image";
 import FieldRichText from "@/components/editor/fields/RichText";
-import FieldRepeater from "@/components/editor/fields/Repeater";
+//import FieldRepeater from "@/components/editor/fields/Repeater";
 import draggable from 'vuedraggable'
+
 export default {
 	name: "FieldRepeater",
 	props: {
 		layout: Object,
-		fields: Array,
+		fields: {
+			type: Object,
+			default: () => {
+				return {};
+			}
+		},
 		errorTrigger: {
 			type: Boolean,
 			default: false,
@@ -126,7 +129,7 @@ export default {
 		FieldRange,
 		FieldEmail,
 		FieldRichText,
-		FieldRepeater,
+		//FieldRepeater,
 		FieldImage,
 		draggable,
 	},
@@ -136,10 +139,10 @@ export default {
 	}),
 	mounted() {
 		if (this.repeaterFields !== undefined) {
-			this.repeaterFields = this.getFields
+			this.repeaterFields = this.getFields;
 
-			if (!this.repeaterFields.find(f => f.uuid === this.getLayout.uuid)) {
-				this.repeaterFields.push({
+			if (!this.repeaterFields['repeater']) {
+				this.$set(this.repeaterFields, 'parent', {
 					uuid: this.getLayout.uuid,
 					value: "",
 					name: this.getLayout.name,
@@ -149,15 +152,17 @@ export default {
 					layout: this.parentLayout,
 				});
 			}
+			if (!this.repeaterFields['children']) {
+				this.$set(this.repeaterFields, 'children', [])
+			}
 		}
 	},
 	methods: {
 		deleteRow(index) {
-			this.fields.splice(index, 1);
-			this.repeaters.splice(index, 1);
+			this.fields['children'].splice(index, 1);
 		},
 		addRow() {
-			this.repeaterFields.push({})
+			this.repeaterFields['children'].push({})
 			this.$nextTick(() => {
 				this.helpers.setHeight(this.$refs.repeater.closest(".collapse-content"));
 			});
@@ -169,7 +174,15 @@ export default {
 			this.moveItem(index, index + 1)
 		},
 		moveItem(from, to) {
-			this.repeaterFields.splice(to, 0, this.repeaterFields.splice(from, 1)[0]);
+			this.getChildren.splice(to, 0, this.repeaterFields['children'].splice(from, 1)[0]);
+			this.repeaterFields['children'].forEach((child, index) => {
+				for (const key in child) {
+					// eslint-disable-next-line no-prototype-builtins
+					if (child.hasOwnProperty(key)) {
+						child[key].index = index
+					}
+				}
+			})
 		},
 	},
 	computed: {
@@ -185,9 +198,12 @@ export default {
 		getFields() {
 			return this.fields
 		},
+		getChildren() {
+			return this.getFields['children'] === undefined ? [] : this.getFields['children'];
+		},
 		repeaterFields: {
 			get() {
-				return this.fields === undefined ? [] : this.fields
+				return this.fields;
 			},
 			set() {
 				this.$emit("update:fields", this.repeaterFields)
