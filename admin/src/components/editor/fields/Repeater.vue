@@ -3,8 +3,8 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
-		<draggable @start="drag=true" :list="getChildren" :group="getChildren" :sort="true" handle=".repeater-handle">
-			<div class="repeater" v-for="(repeater, repeaterIndex) in getChildren" :key="repeaterIndex">
+		<draggable @start="drag=true" :list="repeaterFields" :group="repeaterFields" :sort="true" handle=".repeater-handle">
+			<div class="repeater" v-for="(repeater, repeaterIndex) in repeaterFields" :key="repeaterIndex">
 					<div class="card-header">
 						<h4>{{ layout.label }} item {{ repeaterIndex + 1 }}</h4>
 						<div class="card-controls">
@@ -24,8 +24,7 @@
 							Basic
 							===================== -->
 						<!-- Text -->
-						{{ repeaterIndex }}
-						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldText>
+						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldText>
 						<!-- Textarea -->
 						<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldTextarea>
 						<!-- Number -->
@@ -62,16 +61,16 @@
 							Relational
 							===================== -->
 						<!-- Post Object -->
-						<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldPost>
+						<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldPost>
 						<!-- User -->
 						<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldUser>
 						<!-- =====================
 							Layout
 							===================== -->
 						<!-- Repeater -->
-						<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldRepeater>
+						<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldRepeater>
 						<!-- Flexible -->
-						<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]" :index="repeaterIndex" :parent="getLayout.uuid" :error-trigger="errorTrigger"></FieldFlexible>
+						<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[repeaterIndex][layout.uuid]"  :error-trigger="errorTrigger"></FieldFlexible>
 					</div><!-- /Card Body -->
 				</div><!-- /Card -->
 		</draggable>
@@ -96,7 +95,7 @@ import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldImage from "@/components/editor/fields/Image";
 import FieldRichText from "@/components/editor/fields/RichText";
-//import FieldRepeater from "@/components/editor/fields/Repeater";
+import FieldRepeater from "@/components/editor/fields/Repeater";
 import draggable from 'vuedraggable'
 
 export default {
@@ -104,22 +103,18 @@ export default {
 	props: {
 		layout: Object,
 		fields: {
-			type: Object,
+			type: Array,
 			default: () => {
-				return {};
+				return [];
 			}
 		},
 		errorTrigger: {
 			type: Boolean,
 			default: false,
 		},
-		index: {
-			type: Number,
-			default: null,
-		},
-		parent: {
+		fieldKey: {
 			type: String,
-			default: null,
+			default: "",
 		},
 	},
 	components: {
@@ -129,40 +124,42 @@ export default {
 		FieldRange,
 		FieldEmail,
 		FieldRichText,
-		//FieldRepeater,
+		FieldRepeater,
 		FieldImage,
 		draggable,
 	},
 	data: () => ({
 		errors: [],
-		repeaters: [],
 	}),
 	mounted() {
 		if (this.repeaterFields !== undefined) {
 			this.repeaterFields = this.getFields;
-
-			if (!this.repeaterFields['repeater']) {
-				this.$set(this.repeaterFields, 'parent', {
-					uuid: this.getLayout.uuid,
-					value: "",
-					name: this.getLayout.name,
-					type: this.getLayout.type,
-					index: this.index,
-					parent: this.parent,
-					layout: this.parentLayout,
-				});
-			}
-			if (!this.repeaterFields['children']) {
-				this.$set(this.repeaterFields, 'children', [])
-			}
+			//
+			// if (!this.repeaterFields['repeater']) {
+			// 	this.$set(this.repeaterFields, 'parent', {
+			// 		uuid: this.getLayout.uuid,
+			// 		value: "",
+			// 		name: this.getLayout.name,
+			// 		type: this.getLayout.type,
+			// 	});
+			// }
+			// if (!this.repeaterFields['children']) {
+			// 	this.$set(this.repeaterFields, 'children', [])
+			// }
 		}
 	},
 	methods: {
+		getKey(index, name) {
+			if (this.fieldKey === "") {
+				return this.getLayout.name + "_" + index + "_" + name;
+			}
+			return this.fieldKey + "_" + index + "_" + name
+		},
 		deleteRow(index) {
 			this.fields['children'].splice(index, 1);
 		},
 		addRow() {
-			this.repeaterFields['children'].push({})
+			this.repeaterFields.push({})
 			this.$nextTick(() => {
 				this.helpers.setHeight(this.$refs.repeater.closest(".collapse-content"));
 			});
@@ -174,16 +171,19 @@ export default {
 			this.moveItem(index, index + 1)
 		},
 		moveItem(from, to) {
-			this.getChildren.splice(to, 0, this.repeaterFields['children'].splice(from, 1)[0]);
-			this.repeaterFields['children'].forEach((child, index) => {
+			this.repeaterFields.splice(to, 0, this.repeaterFields.splice(from, 1)[0]);
+			this.repeaterFields.forEach((child, index) => {
 				for (const key in child) {
 					// eslint-disable-next-line no-prototype-builtins
 					if (child.hasOwnProperty(key)) {
-						child[key].index = index
+						child[key].key = this.getKey(index, child[key].name)
 					}
 				}
 			})
 		},
+		updateKeys() {
+
+		}
 	},
 	computed: {
 		getOptions() {
@@ -197,9 +197,6 @@ export default {
 		},
 		getFields() {
 			return this.fields
-		},
-		getChildren() {
-			return this.getFields['children'] === undefined ? [] : this.getFields['children'];
 		},
 		repeaterFields: {
 			get() {

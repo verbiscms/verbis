@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	location "github.com/ainsleyclark/verbis/api/fields/converter"
-	"github.com/google/uuid"
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -15,8 +14,8 @@ import (
 type FieldsRepository interface {
 	UpdateCreate(postId int, f []domain.PostField) error
 	Create(f domain.PostField) (domain.PostField, error)
-	Update(f domain.PostField) (domain.PostField, error)
-	Exists(uuid uuid.UUID, index *int) bool
+	//Update(f domain.PostField) (domain.PostField, error)
+//	Exists(uuid uuid.UUID, index *int) bool
 	GetByPost(postId int) ([]domain.PostField, error)
 	GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup
 }
@@ -86,9 +85,9 @@ func (s *FieldsStore) deleteFieldsByPostId(id int) error {
 // Update a post field by Id
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *FieldsStore) Create(f domain.PostField) (domain.PostField, error) {
-	const op = "FieldsRepository.Update"
-	q := "INSERT INTO post_fields (uuid, post_id, type, name, value, parent, layout, row_index) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-	_, err := s.db.Exec(q, f.UUID.String(), f.PostId, f.Type, f.Name, f.OriginalValue, f.Parent, f.Layout, f.Index)
+	const op = "FieldsRepository.Create"
+	q := "INSERT INTO post_fields (uuid, post_id, type, name, value, field_key) VALUES (?, ?, ?, ?, ?, ?)"
+	_, err := s.db.Exec(q, f.UUID.String(), f.PostId, f.Type, f.Name, f.OriginalValue, f.Key)
 	if err != nil {
 		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post field wuth the name: %s", f.Name), Operation: op, Err: err}
 	}
@@ -97,27 +96,27 @@ func (s *FieldsStore) Create(f domain.PostField) (domain.PostField, error) {
 
 // Update a post field by Id
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
-	const op = "FieldsRepository.Update"
-	_, err := s.db.Exec("UPDATE post_fields SET type = ?, name = ?, value = ?, parent = ?, layout = ?, row_index = ? WHERE uuid = ?", f.Type, f.Name, f.OriginalValue, f.Parent, f.Layout, f.Index, f.UUID.String())
-	if err != nil {
-		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post field wuth the uuid: %s", f.UUID.String()), Operation: op, Err: err}
-	}
-	return f, nil
-}
+//func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
+//	const op = "FieldsRepository.Update"
+//	_, err := s.db.Exec("UPDATE post_fields SET type = ?, name = ?, value = ?, parent = ?, layout = ?, row_index = ? WHERE uuid = ?", f.Type, f.Name, f.OriginalValue, f.Parent, f.Layout, f.Index, f.UUID.String())
+//	if err != nil {
+//		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post field wuth the uuid: %s", f.UUID.String()), Operation: op, Err: err}
+//	}
+//	return f, nil
+//}
 
 // Exists Checks if a post field exists by the given UUID
-func (s *FieldsStore) Exists(uuid uuid.UUID, index *int) bool {
-	var exists bool
-
-	if index == nil {
-		_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ?)", uuid.String()).Scan(&exists)
-		return exists
-	}
-
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND row_index = ?)", uuid.String(), index).Scan(&exists)
-	return exists
-}
+//func (s *FieldsStore) Exists(uuid uuid.UUID, index *int) bool {
+//	var exists bool
+//
+//	if index == nil {
+//		_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ?)", uuid.String()).Scan(&exists)
+//		return exists
+//	}
+//
+//	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND row_index = ?)", uuid.String(), index).Scan(&exists)
+//	return exists
+//}
 
 func (s *FieldsStore) GetByPost(postId int) ([]domain.PostField, error) {
 	const op = "FieldsStore.GetByPost"
