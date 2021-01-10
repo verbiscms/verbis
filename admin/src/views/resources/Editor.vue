@@ -92,7 +92,7 @@
 									<div v-if="categoryArchive" class="badge badge-orange">Category archive</div>
 								</div>
 							</div>
-							<Fields  :layout="fieldLayout" :fields.sync="fields" :error-trigger="errorTrigger"></Fields>
+							<Fields :layout="fieldLayout" :fields.sync="fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"></MetaOptions>
@@ -198,6 +198,7 @@ import Fields from "@/components/editor/tabs/Fields";
 import Tabs from "@/components/misc/Tabs";
 import Popover from "@/components/misc/Popover";
 import FormGroup from "@/components/forms/FormGroup";
+import FieldParser from "@/util/fieldParser"
 
 export default {
 	name: "Single",
@@ -374,7 +375,9 @@ export default {
 					}
 
 					// Set field values
-					this.fields = this.expandFields(res.data.data.fields);
+					//this.fields = this.expandFields(res.data.data.fields);
+					// eslint-disable-next-line no-undef
+					this.fields = new FieldParser(res.data.data.fields, this.fieldLayout).expandFields()
 					this.loadingFields = false;
 
 					// Set date format
