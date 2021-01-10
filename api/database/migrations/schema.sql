@@ -172,10 +172,8 @@ CREATE TABLE `post_fields` (
   `uuid` varchar(36) NOT NULL,
   `type` varchar(250) NOT NULL,
   `name` varchar(250) NOT NULL,
+  `field_key` varchar(500) NOT NULL,
   `value` longtext NULL,
-  `parent` varchar(36) NULL,
-  `layout` varchar(250) NULL,
-  `row_index` int NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

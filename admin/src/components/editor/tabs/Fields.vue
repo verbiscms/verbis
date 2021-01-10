@@ -33,7 +33,7 @@
 											Basic
 											===================== -->
 										<!-- Text -->
-										<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldText>
+										<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldText>
 										<!-- Textarea -->
 										<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" ::fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldTextarea>
 										<!-- Number -->
@@ -77,7 +77,7 @@
 											Layout
 											===================== -->
 										<!-- Repeater -->
-										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.uuid]" :error-trigger="errorTrigger"></FieldRepeater>
+										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRepeater>
 <!--										&lt;!&ndash; Flexible &ndash;&gt;-->
 <!--										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>-->
 									</div><!-- /Field Content -->

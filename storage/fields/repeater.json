@@ -3,6 +3,25 @@
 	"title": "Layout Verbis Options",
 	"fields": [
 		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+			"label": "Normal",
+			"name": "text",
+			"type": "text",
+			"instructions": "Instructions",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"maxlength": "20",
+				"default_value": "",
+				"placeholder": "Placeholder",
+				"prepend": "",
+				"append": ""
+			}
+		},
+		{
 			"uuid": "b5435bd0-51ba-11eb-ae93-0242ac130002",
 			"label": "Repeater",
 			"name": "repeater",

@@ -78,11 +78,12 @@ type PostField struct {
 	UUID          uuid.UUID   `db:"uuid" json:"uuid" binding:"required"`
 	Type          string      `db:"type" json:"type"`
 	Name          string      `db:"name" json:"name"`
+	Key           string      `db:"field_key" json:"key"`
 	Value         interface{} `json:"-"`
 	OriginalValue FieldValue  `db:"value" json:"value"`
-	Parent        *uuid.UUID  `db:"parent" json:"parent"`
-	Layout        *string     `db:"layout" json:"layout"`
-	Index         *int         `db:"row_index" json:"index"`
+	//Parent        *uuid.UUID  `db:"parent" json:"parent"`
+	//Layout        *string     `db:"layout" json:"layout"`
+	//Index         *int         `db:"row_index" json:"index"`
 }
 
 type FieldValue string

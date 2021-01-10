@@ -15,17 +15,9 @@ export const fieldMixin = {
 				return {}
 			}
 		},
-		index: {
-			type: Number,
-			default: null,
-		},
-		parent: {
+		fieldKey: {
 			type: String,
-			default: null,
-		},
-		parentLayout: {
-			type: String,
-			default: null,
+			default: "",
 		},
 		errorTrigger: Boolean,
 	},
@@ -73,9 +65,7 @@ export const fieldMixin = {
 				value: value,
 				name: this.getLayout.name,
 				type: this.getLayout.type,
-				index: this.index,
-				parent: this.parent,
-				layout: this.parentLayout,
+				key: this.fieldKey,
 			};
 		},
 		/*

@@ -68,7 +68,6 @@ export default {
 				return this.replacePrependAppend();
 			},
 			set(value) {
-				console.log(this.getFieldObject(value).index, value)
 				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value)));
 			}
 		}
