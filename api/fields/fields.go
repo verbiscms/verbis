@@ -42,9 +42,9 @@ type WalkerFunc func(field domain.PostField)
 func (s *Service) mapper(fields []domain.PostField, walkerFunc WalkerFunc) {
 	for _, field := range fields {
 
-		if field.Parent != nil || field.Layout != nil {
-			continue
-		}
+		//if field.Parent != nil || field.Layout != nil {
+		//	continue
+		//}
 
 		if field.Type == "repeater" {
 			if repeater, err := s.GetRepeater(field.Name); err == nil {

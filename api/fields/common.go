@@ -4,10 +4,8 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
-	"sort"
 )
 
 // handleArgs
@@ -88,37 +86,38 @@ func (s *Service) findFieldByName(name string, fields []domain.PostField) (domai
 // It's not necessary to use a database call for this look up, as we will
 // be looping through them anyway to append and format the fields.
 // Returns the sorted slice of fields.
-func (s *Service) getFieldChildren(uuid uuid.UUID, fields []domain.PostField, format bool) []domain.PostField {
-	var pf []domain.PostField
-	for _, field := range fields {
-		parent := field.Parent
-		if parent != nil && uuid == *parent {
-			if !format {
-				pf = append(pf, field)
-				continue
-			}
-			pf = append(pf, s.resolveField(field))
-		}
-	}
-	return s.sortFields(pf)
-}
+//func (s *Service) getFieldChildren(uuid uuid.UUID, fields []domain.PostField, format bool) []domain.PostField {
+	//var pf []domain.PostField
+	//for _, field := range fields {
+	//	parent := field.Parent
+	//	if parent != nil && uuid == *parent {
+	//		if !format {
+	//			pf = append(pf, field)
+	//			continue
+	//		}
+	//		pf = append(pf, s.resolveField(field))
+	//	}
+	//}
+	//return nil
+	//return s.sortFields(pf)
+//}
 
 // sortFields
 //
 // Sort's the slice of domain.PostFields by Index, used for
 // the service.GetRepeater function
-func (s *Service) sortFields(pf []domain.PostField) []domain.PostField {
-	sort.SliceStable(pf, func(i, j int) bool {
-		lt := pf[i].Index
-		gt := pf[j].Index
-		zero := 0
-		if lt == nil {
-			lt = &zero
-		}
-		if gt == nil {
-			gt = &zero
-		}
-		return *lt < *gt
-	})
-	return pf
-}
+//func (s *Service) sortFields(pf []domain.PostField) []domain.PostField {
+//	sort.SliceStable(pf, func(i, j int) bool {
+//		lt := pf[i].Index
+//		gt := pf[j].Index
+//		zero := 0
+//		if lt == nil {
+//			lt = &zero
+//		}
+//		if gt == nil {
+//			gt = &zero
+//		}
+//		return *lt < *gt
+//	})
+//	return pf
+//}

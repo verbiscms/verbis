@@ -26,73 +26,33 @@ export default class FieldParser {
             return {}
         }
 
-        this.layout.forEach(layout => {
-            layout.fields.forEach(f => {
-                this.resolveType(f)
-            });
+        this.fields.forEach(field => {
+
+            // Normal
+            if (field.key === "" && field.type !== "repeater") {
+                this.parsed[field.name] = field;
+                return
+            }
+
+            this.set(this.parsed, field.key, field)
         });
 
         return this.parsed;
     }
 
-    // Resolve
-    resolveType(field) {
-        switch (field.type) {
-
-            // Repeaters
-            case "repeater": {
-                this.parsed[field.uuid] = this.getRepeater(field.uuid);
-                break;
-            }
-
-            // Flexible
-            case "flexible": {
-
-                break;
-            }
-
-            // Default fields
-            default: {
-                const val = this.findByUUID(field.uuid)
-                if (val) {
-                   this.parsed[field.uuid] = val
-                }
-                break
-            }
-        }
-    }
-
-    findByUUID(uuid) {
-        return this.fields.find(f => f.uuid === uuid)
-    }
-
-    getRepeater(uuid, index = null) {
-        const repeater = this.fields.find(f => f.uuid === uuid && f.index === index);
-        return {
-            repeater: repeater,
-            children: this.getRepeaterChildren(repeater.uuid, index)
-        }
-    }
-
-    getRepeaterChildren(parent, index = null) {
-        let arr = [];
-
-        this.fields.filter(f => f.parent === parent).forEach(f => {
-            arr[f.index] = arr[f.index] || {}
-            if (f.type === "repeater") {
-
-                const r = this.fields.find(t => t.uuid === f.uuid && t.index === f.index)
-                arr[f.index][f.uuid] = {
-                    repeater: r,
-                    children: this.fields.filter(t => t.parent === f.uuid && r.index === f.index)
-                }
-
-                console.log(this.fields.filter(t => t.parent === f.uuid && r.index === f.index))
-                return;
-            }
-            arr[f.index][f.uuid] = f;
-        })
-        console.log('IGNORE', index);
-        return arr;
+    set(obj, path, value){
+        if (Object(obj) !== obj) return obj; // When obj is not an object
+        // If not yet an array, get the keys from the string-path
+        if (!Array.isArray(path)) path = path.toString().match(/[^_[\]]+/g) || [];
+        path.slice(0,-1).reduce((a, c, i) => // Iterate all of them except the last one
+                Object(a[c]) === a[c] // Does the key exist and is its value an object?
+                    // Yes: then follow that path
+                    ? a[c]
+                    // No: create the key. Is the next key a potential array-index?
+                    : a[c] = Math.abs(path[i+1])>>0 === +path[i+1]
+                    ? [] // Yes: assign a new array object
+                    : {}, // No: assign a new plain object
+            obj)[path[path.length-1]] = value; // Finally assign the value to the last key
+        return obj; // Return the top-level object to allow chaining
     }
 }
