@@ -23,7 +23,8 @@ currently being run. For example: `/api/v1/posts`
 
 ### Endpoints
 
-As Verbis follows RESTful principles, the following methods are accepted for each endpoint.
+As Verbis follows RESTful principles, the following methods are accepted for each endpoint. Unless specified within the
+documentation all endpoints receive JSON encoded data.
 
 - `GET`: for browsing entities, `/api/{version}/posts` or reading an entity by a particular
   key, `/api/{version}/posts/1`
@@ -224,15 +225,16 @@ Logging in requires an email and password to be sent, if the user is authenticat
 for future requests**.
 
 Required fields:
+
 - `email`
 - `password`
-  
+
 👉 `POST` to `/login`
 
 ```json
 {
-    "email": "hello@verbiscms.com",
-    "password": "mypassword"
+	"email": "hello@verbiscms.com",
+	"password": "mypassword"
 }
 ```
 
@@ -240,37 +242,37 @@ Required fields:
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully logged in & session started",
-    "meta": {
-	"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
-	"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
-	"latency_time": "20.000ms"
-    },
-    "data": {
-        "id": 1,
-        "uuid": "7d14f9da-5412-11eb-ae93-0242ac130002",
-        "first_name": "Verbis",
-        "last_name": "CMS",
-        "email": "hello@verbiscms.com",
-        "facebook": null,
-        "twitter": null,
-        "linked_in": null,
-        "instagram": null,
-        "biography": null,
-        "role": {
-            "id": 0,
-            "name": "",
-            "description": ""
-        },
-        "profile_picture_id": null,
-        "email_verified_at": null,
-        "created_at": "2020-01-01T12:00:00Z",
-        "updated_at": "2020-01-01T12:00:00Z",
-        "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-        "token_last_used": "2020-01-01T12:00:00Z"
-    }
+	"status": 200,
+	"error": false,
+	"message": "Successfully logged in & session started",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+	},
+	"data": {
+		"id": 1,
+		"uuid": "7d14f9da-5412-11eb-ae93-0242ac130002",
+		"first_name": "Verbis",
+		"last_name": "CMS",
+		"email": "hello@verbiscms.com",
+		"facebook": null,
+		"twitter": null,
+		"linked_in": null,
+		"instagram": null,
+		"biography": null,
+		"role": {
+			"id": 0,
+			"name": "",
+			"description": ""
+		},
+		"profile_picture_id": null,
+		"email_verified_at": null,
+		"created_at": "2020-01-01T12:00:00Z",
+		"updated_at": "2020-01-01T12:00:00Z",
+		"token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+		"token_last_used": "2020-01-01T12:00:00Z"
+	}
 }
 ```
 
@@ -284,27 +286,29 @@ Logs the user out everywhere by obtaining the `token` key. As such, it doesn't r
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully logged out",
-    "meta": {
+	"status": 200,
+	"error": false,
+	"message": "Successfully logged out",
+	"meta": {
 		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
 		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
 		"latency_time": "20.000ms"
-    },
-    "data": {}
+	},
+	"data": {}
 }
 ```
 
 Required fields:
+
 - `token`
 
 ### Send Password Reset
 
-Sends a password reset email to the user if they have forgotten their password. This route creates a unique token 
-within the database for secure verification.
+Sends a password reset email to the user if they have forgotten their password. This route creates a unique token within
+the database for secure verification.
 
 Required fields:
+
 - `email`
 
 ```json
@@ -319,15 +323,15 @@ Required fields:
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "A fresh verification link has been sent to your email",
-    "meta": {
+	"status": 200,
+	"error": false,
+	"message": "A fresh verification link has been sent to your email",
+	"meta": {
 		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
 		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
 		"latency_time": "20.000ms"
-    },
-    "data": {}
+	},
+	"data": {}
 }
 ```
 
@@ -343,26 +347,26 @@ not be verified.
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully verified token",
-    "meta": {
+	"status": 200,
+	"error": false,
+	"message": "Successfully verified token",
+	"meta": {
 		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
 		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
 		"latency_time": "20.000ms"
-    },
-    "data": {}
+	},
+	"data": {}
 }
 ```
-
 
 ### Password Reset
 
 Resets a users' password, after they have clicked the verification email link. `new_password` and `confirm_password`
-need to be equal and at least 8 characters in length. The token passed from the email also needs to be valid in order
-to reset.
+need to be equal and at least 8 characters in length. The token passed from the email also needs to be valid in order to
+reset.
 
 Required fields:
+
 - `new_password`
 - `confirm_password`
 - `token`
@@ -371,9 +375,9 @@ Required fields:
 
 ```json
 {
-    "new_password": "mypassword",
-    "confirm_password": "mypassword",
-    "token": "f60a267969416107c68c6133ff00d88b"
+	"new_password": "mypassword",
+	"confirm_password": "mypassword",
+	"token": "f60a267969416107c68c6133ff00d88b"
 }
 ```
 
@@ -381,26 +385,17 @@ Required fields:
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully reset password",
-    "meta": {
+	"status": 200,
+	"error": false,
+	"message": "Successfully reset password",
+	"meta": {
 		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
 		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
 		"latency_time": "20.000ms"
-    },
-    "data": {}
+	},
+	"data": {}
 }
 ```
-
-
-## Site
-
-The `/site` endpoint is used to retrieve the global Site object which contains important information about the Verbis
-installation. Apart from the `Auth` routes, this is the **only endpoint that does not require authentication**.
-
-- The `title`, `description`, `logo`, `url` can all be updated in the admin interface.
-- The `url` contains the current version of Verbis.
 
 ## Endpoints
 
@@ -419,9 +414,17 @@ included detailing what the endpoint can do.
 | Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
 | Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
 
-**Example Response:**
+## Site
+
+The `/site` endpoint is used to retrieve the global Site object which contains important information about the Verbis
+installation. Apart from the `Auth` routes, this is the **only endpoint that does not require authentication**.
+
+- The `title`, `description`, `logo`, `url` can all be updated in the admin interface.
+- The `url` contains the current version of Verbis.
 
 👉 `GET` to `/api/{version}/site`
+
+**Example Response:**
 
 ```json
 {
@@ -449,9 +452,9 @@ The `/theme` endpoint is used to retrieve the theme's `config.yml` file within t
 particularly useful for establishing what resources the current theme has, and general information about the currently
 activated theme including a title, description and theme version.
 
-**Example Response:**
-
 👉 `GET` to `/api/{version}/theme`
+
+**Example Response:**
 
 ```json
 {
@@ -461,7 +464,15 @@ activated theme including a title, description and theme version.
 	"meta": {
 		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
 		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
-		"latency_time": "20.000ms"
+		"latency_time": "20.000ms",
+		"pagination": {
+			"page": 1,
+			"pages": 1,
+			"limit": 15,
+			"total": 1,
+			"next": false,
+			"prev": false
+		}
 	},
 	"data": {
 		"theme": {
@@ -541,9 +552,9 @@ reside in the templates' folder set in the `config.yml`.
 - `key`: represents the page template file name.
 - `name`: is a friendly name for the page template.
 
-**Example Response:**
-
 👉 `GET` to `/api/{version}/templates`
+
+**Example Response:**
 
 ```json
 {
@@ -582,9 +593,9 @@ in the layouts' folder set in the `config.yml`.
 - `key`: represents the page layout file name.
 - `name`: is a friendly name for the page layout.
 
-**Example Response:**
-
 👉 `GET` to `/api/{version}/layouts`
+
+**Example Response:**
 
 ```json
 {
@@ -614,7 +625,7 @@ in the layouts' folder set in the `config.yml`.
 ## Posts
 
 Posts are the main entity of Verbis, and it contains vital data to use for theme development and filtering through
-content via the API.
+content via the API. All post endpoints are prefixed with `/posts`.
 
 ### The Post object
 
@@ -628,9 +639,9 @@ the following:
 - `layout`: contains the page layout as an array of field groups, these are key settings for the `fields`.
 - `fields`: contains an array of fields that are associated with the layout.
 
-**Example Response:**
-
 👉 `GET` to `/api/{version}/posts`
+
+**Example Response:**
 
 ```json
 {
@@ -655,9 +666,9 @@ the following:
 				"layout": "main",
 				"codeinjection_head": "",
 				"codeinjection_foot": "",
-				"published_at": "2021-01-11T10:42:16Z",
-				"created_at": "2021-01-11T10:42:26Z",
-				"updated_at": "2021-01-11T10:42:26Z",
+				"published_at": "2020-01-01T12:00:00Z",
+				"created_at": "2020-01-01T12:00:00Z",
+				"updated_at": "2020-01-01T12:00:00Z",
 				"options": {
 					"meta": {
 						"twitter": {},
@@ -688,8 +699,8 @@ the following:
 					"description": "The user is a special user with all of the permissions as an Administrator however they cannot be deleted"
 				},
 				"email_verified_at": null,
-				"created_at": "2021-01-11T10:41:43Z",
-				"updated_at": "2021-01-11T10:41:43Z"
+				"created_at": "2020-01-01T12:00:00Z",
+				"updated_at": "2020-01-01T12:00:00Z"
 			},
 			"category": {
 				"id": 1,
@@ -698,8 +709,8 @@ the following:
 				"description": "Technology category for posts.",
 				"resource": "posts",
 				"parent_id": null,
-				"updated_at": "2021-01-11T10:42:12Z",
-				"created_at": "2021-01-11T10:42:12Z"
+				"created_at": "2020-01-01T12:00:00Z",
+				"updated_at": "2020-01-01T12:00:00Z"
 			},
 			"layout": [
 				{
@@ -757,35 +768,41 @@ The Posts endpoint allows you to filter through posts with query parameters and 
 
 **Retrieve all posts with the resource of `news`**
 
-🔗 `GET` to `/posts?resource=news`
+🔗 `GET` to `/api/{version}/posts?resource=news`
 
 **Retrieve all posts with a status of `published`**
 
-🔗 `GET` to `/posts?status=published`
+🔗 `GET` to `/api/{version}/posts?status=published`
 
 **Retrieve all posts with a status of `published` and with a limit of `10`**
 
-🔗 `GET` to `/posts?status=published&limit=10`
+🔗 `GET` to `/api/{version}/posts?status=published&limit=10`
+
+___
 
 ### Retrieve a specific Post
 
 To retrieve a specific post, an ID parameter is passed after `/posts` URL, the following URL will retrieve the post with
 an ID of 10.
+
+👉 `GET` to `/api/{version}/posts/1`
+
 ___
 
 ### Creating a post
 
-To create a post a slug and title is required to avoid any collisions and detect if the slug is already being used by an
-existing post. If no author ID is passed, the owner will automatically be assigned. You can optionally pass a category
-ID.
+To create a post a `slug` and `title` is required to avoid any collisions and detect if the slug is already being used
+by an existing post. If no author ID is passed, the owner will automatically be assigned. You can optionally pass a
+category ID.
 
 Required fields:
+
 - `slug`
 - `title`
 
 Below is a minimal example of creating a post.
 
-👉 `POST` to `/posts`
+👉 `POST` to `/api/{version}/posts`
 
 ```json
 {
@@ -801,9 +818,9 @@ ___
 ### Updating a Post
 
 To update a post, an ID parameter is passed after the `/posts` URL, the body is exactly the same as the `POST` route. If
-no post is found with the given ID a response of 400 will be returned.
+no post is found with the given ID, a response of 400 will be returned.
 
-👉 `PUT` to `/posts/1`
+👉 `PUT` to `/api/{version}/posts/1`
 
 ```json
 {
@@ -820,11 +837,125 @@ ___
 To delete a post, an ID parameter is passed after the `/posts` URL. If no post is found with the given ID a response of
 400 will be returned.
 
-👉 `DELETE` to `/posts/1`
+👉 `DELETE` to `/api/{version}/posts/1`
+
+## Categories
+
+These routes allow you to browse, read, update and delete categories through the Verbis API easily. All post endpoints
+are prefixed with `/categories`.
+
+### The Category object
+
+When you retrieve categories from the API, an array of Category objects will be returned that holds information about
+the category.
+
+👉 `GET` to `/api/{version}/categories`
+
+**Example Response:**
+
+```json
+{
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained categories",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms",
+		"pagination": {
+			"page": 1,
+			"pages": 1,
+			"limit": 15,
+			"total": 1,
+			"next": false,
+			"prev": false
+		}
+	},
+	"data": [
+		{
+			"id": 1,
+			"uuid": "0eb7db58-5415-11eb-ae93-0242ac130002",
+			"slug": "tech",
+			"name": "Tech",
+			"description": "Technology category for posts.",
+			"resource": "posts",
+			"parent_id": null,
+			"archive_id": null,
+			"created_at": "2020-01-01T12:00:00Z",
+			"updated_at": "2020-01-01T12:00:00Z"
+		},
+		{
+			"id": 2,
+			"uuid": "0eb7de14-5415-11eb-ae93-0242ac130002",
+			"slug": "sports",
+			"name": "Sports",
+			"description": "Sports category for posts.",
+			"resource": "posts",
+			"parent_id": null,
+			"archive_id": null,
+			"created_at": "2020-01-01T12:00:00Z",
+			"updated_at": "2020-01-01T12:00:00Z"
+		}
+	]
+}
+```
 
 ___
 
-## Categories
+### Retrieve a specific Category
+
+To retrieve a specific category, an ID parameter is passed after `/categories` URL, the following URL will retrieve
+category post with an ID of 10.
+
+👉 `GET` to `/api/{version}/categories/1`
+
+___
+
+### Creating a category
+
+To create a category a `slug`, `name` and `resource` are required, as a category has to be attached to a resource.
+
+Required fields:
+
+- `slug`
+- `name`
+- `resource`
+
+Below is a minimal example of creating a category.
+
+👉 `POST` to `/api/{version}/categories`
+
+```json
+{
+	"slug": "/tech",
+	"name": "Tech",
+	"resource": "posts"
+}
+```
+
+___
+
+### Updating a Category
+
+To update a category, an ID parameter is passed after the `/categories` URL, the body is exactly the same as the `POST`
+route. If no category is found with the given ID, a response of 400 will be returned.
+
+👉 `PUT` to `/api/{version}/categories/1`
+
+```json
+{
+	"name": "Updated category name"
+}
+```
+
+___
+
+### Deleting a Category
+
+To delete a category, an ID parameter is passed after the `/category` URL. If no category is found with the given ID a
+response of 400 will be returned.
+
+👉 `DELETE` to `/api/{version}/categories/1`
 
 ## Media
 
