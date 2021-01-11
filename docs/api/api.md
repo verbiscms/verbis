@@ -257,10 +257,10 @@ what resources the current theme has, and general information about the currentl
                 "key": "archive",
                 "name": "Archive"
             },
-			{
-				"key": "archive-single",
-				"name": "Archive Single"
-			}
+            {
+                "key": "archive-single",
+                "name": "Archive Single"
+            }
         ]
     }
 }
