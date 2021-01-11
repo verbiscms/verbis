@@ -1,34 +1,35 @@
 # Admin API
 
-The Verbis API allows you to create and manage your content easily using wide variety of different endpoints. 
-Everything you are able to do in the admin interface you are able to achieve with the admin API, which makes it incredibly flexible and
-dynamic. 
+The Verbis API allows you to create and manage your content easily using wide variety of different endpoints. Everything
+you are able to do in the admin interface you are able to achieve with the admin API, which makes it incredibly flexible
+and dynamic.
 
-All the Verbis endpoints follow REST principles, if you've interacted with a RESTful API already, many of the concepts will be familiar to you.
-Requests and responses are JSON encoded throughout with different query parameters available to filter and search through content easily and
-quickly. 
+All the Verbis endpoints follow REST principles, if you've interacted with a RESTful API already, many of the concepts
+will be familiar to you. Requests and responses are JSON encoded throughout with different query parameters available to
+filter and search through content easily and quickly.
 
 ## Structure
 
 ### Base URL:
+
 The following URL is used for all API endpoints.
 
 `/api/{version}/`
 
 ### Version
 
-After the `/api` segment of the base URL, a version is prefixed with a `v`, dependent on what version of Verbis is currently being run.
-For example: `/api/v1/posts`
+After the `/api` segment of the base URL, a version is prefixed with a `v`, dependent on what version of Verbis is
+currently being run. For example: `/api/v1/posts`
 
 ### Endpoints
 
 As Verbis follows RESTful principles, the following methods are accepted for each endpoint.
 
-- `GET`: for browsing entities, `/api/{version}/posts` or reading an entity by a particular key, `/api/{version}/posts/1`
+- `GET`: for browsing entities, `/api/{version}/posts` or reading an entity by a particular
+  key, `/api/{version}/posts/1`
 - `POST`: for adding entities, `/api/{version}/posts`
 - `PUT`: for updating an entity usually by ID, `/api/{version}/posts/1`
 - `DELETE`: for deleting an entity, usually by ID `/api/{version}/posts/1`
-
 
 ## JSON Responses
 
@@ -47,63 +48,66 @@ All endpoints respond with a JSON encoded response, which contains the following
 - `status`: contains an integer of the resulting http status code of the call.
 - `error`: contains a boolean to signify if there was an error calling the endpoint.
 - `message`: contains a brief message about the status of the call, and a useful description if there was an error.
-- `meta`: includes Pagination if the route is a `GET` (browse) endpoint. It also includes `request_time`, `response_time` and `latency` times.
-- `data`: contains the main body of the call, usually this is an array, but sometimes it can be an object depending on the endpoint.
-
+- `meta`: includes Pagination if the route is a `GET` (browse) endpoint. It also includes `request_time`
+  , `response_time` and `latency` times.
+- `data`: contains the main body of the call, usually this is an array, but sometimes it can be an object depending on
+  the endpoint.
 
 ## Errors
 
-If the resulting status code of an endpoint is a validation error, the API will respond with some useful information about what keys are
-required as an object in the `data` key under `errors`.
+If the resulting status code of an endpoint is a validation error, the API will respond with some useful information
+about what keys are required as an object in the `data` key under `errors`.
 
 ```json
 {
-    "status": 400,
-    "error": true,
-    "message": "Validation failed",
-    "meta": {
+	"status": 400,
+	"error": true,
+	"message": "Validation failed",
+	"meta": {
 		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
 		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
 		"latency_time": "20.000ms"
-    },
-    "data": {
-        "errors": [
-            {
-                "key": "slug",
-                "type": "required",
-                "message": "Post Slug is required."
-            },
-            {
-                "key": "title",
-                "type": "required",
-                "message": "Post Title is required."
-            }
-        ]
-    }
+	},
+	"data": {
+		"errors": [
+			{
+				"key": "slug",
+				"type": "required",
+				"message": "Post Slug is required."
+			},
+			{
+				"key": "title",
+				"type": "required",
+				"message": "Post Title is required."
+			}
+		]
+	}
 }
 ```
 
 The error object contains the following:
 
 - `key`: the key that contains an error.
-- `type`: the type of validation error, for example `required` means it's missing from the body and `email` would mean that an invalid email address has been provided.
-- `message`: contains a brief message to illustrate what is required for a successful `POST`, this can be especially useful for display information back to the user.
-
+- `type`: the type of validation error, for example `required` means it's missing from the body and `email` would mean
+  that an invalid email address has been provided.
+- `message`: contains a brief message to illustrate what is required for a successful `POST`, this can be especially
+  useful for display information back to the user.
 
 ## Pagination
 
-By default, Verbis limit's all `GET` requests to 15 by default. The `Pagination` object appears under the `meta` key in the response for browse endpoints.
+By default, Verbis limit's all `GET` requests to 15 by default. The `Pagination` object appears under the `meta` key in
+the response for browse endpoints.
 
 ```json
 "meta": {
-    "pagination": {
-        "page": 1,
-        "pages": 1,
-        "limit": 15,
-        "total": 11,
-        "next": false,
-        "prev": false
-    }
+"pagination": {
+"page": 1,
+"pages": 1,
+"limit": 15,
+"total": 11,
+"next": false,
+"prev": false
+}
 }
 ```
 
@@ -118,7 +122,8 @@ The pagination object contains the following:
 
 ## Endpoints
 
-Below is a table listing the current endpoints for each resource that's available in Verbis. A brief description is included detailing what the endpoint can do.
+Below is a table listing the current endpoints for each resource that's available in Verbis. A brief description is
+included detailing what the endpoint can do.
 
 | Resource            | Methods                              | Description                                                    |
 | ------------------- | ------------------------------------ | -------------------------------------------------------------- |
@@ -132,7 +137,8 @@ Below is a table listing the current endpoints for each resource that's availabl
 | Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
 | Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
 
-#TODO
+# TODO
+
 // Set page to 1 if the user has passed "?limit=all"
 
 ### Auth
@@ -141,8 +147,9 @@ Below is a table listing the current endpoints for each resource that's availabl
 
 ### Theme
 
-The `/theme` endpoint is used to retrieve the theme's `config.yml` file within the theme directory. This can be particularly useful for establishing
-what resources the current theme has, and general information about the currently activated theme including a title, description and theme version.
+The `/theme` endpoint is used to retrieve the theme's `config.yml` file within the theme directory. This can be
+particularly useful for establishing what resources the current theme has, and general information about the currently
+activated theme including a title, description and theme version.
 
 **Example Response:**
 
@@ -150,87 +157,88 @@ what resources the current theme has, and general information about the currentl
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully obtained theme config",
-    "meta": {
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained theme config",
+	"meta": {
 		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
 		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
 		"latency_time": "20.000ms"
-    },
-    "data": {
-        "theme": {
-            "title": "A Verbis Theme",
-            "description": "Stock theme for verbis",
-            "version": "0.0.1"
-        },
-        "resources": {
-            "posts": {
-                "name": "posts",
-                "friendly_name": "Posts",
-                "singular_name": "Post",
-                "slug": "/posts",
-                "icon": "feather feather-clipboard"
-            }
-        },
-        "assets_path": "/assets",
-        "file_extension": ".cms",
-        "template_dir": "templates",
-        "layout_dir": "layouts",
-        "editor": {
-            "modules": [
-                "blockquote",
-                "code_block",
-                "code_block_highlight",
-                "code_view",
-                "hardbreak",
-                "h1",
-                "h2",
-                "h3",
-                "h4",
-                "h5",
-                "h6",
-                "paragraph",
-                "hr",
-                "ul",
-                "ol",
-                "bold",
-                "code",
-                "italic",
-                "link",
-                "strike",
-                "underline",
-                "history",
-                "search",
-                "trailing_node",
-                "color",
-                "table"
-            ],
-            "options": {
-                "link": {
-                    "rel": "noopener noreferrer nofollow"
-                },
-                "ol": {
-                    "class": "list list-ordered"
-                },
-                "palette": [
-                    "#fad839",
-                    "#ca1f26",
-                    "#1b3990",
-                    "#333"
-                ],
-                "ul": {
-                    "class": "list"
-                }
-            }
-        }
-    }
+	},
+	"data": {
+		"theme": {
+			"title": "A Verbis Theme",
+			"description": "Stock theme for verbis",
+			"version": "0.0.1"
+		},
+		"resources": {
+			"posts": {
+				"name": "posts",
+				"friendly_name": "Posts",
+				"singular_name": "Post",
+				"slug": "/posts",
+				"icon": "feather feather-clipboard"
+			}
+		},
+		"assets_path": "/assets",
+		"file_extension": ".cms",
+		"template_dir": "templates",
+		"layout_dir": "layouts",
+		"editor": {
+			"modules": [
+				"blockquote",
+				"code_block",
+				"code_block_highlight",
+				"code_view",
+				"hardbreak",
+				"h1",
+				"h2",
+				"h3",
+				"h4",
+				"h5",
+				"h6",
+				"paragraph",
+				"hr",
+				"ul",
+				"ol",
+				"bold",
+				"code",
+				"italic",
+				"link",
+				"strike",
+				"underline",
+				"history",
+				"search",
+				"trailing_node",
+				"color",
+				"table"
+			],
+			"options": {
+				"link": {
+					"rel": "noopener noreferrer nofollow"
+				},
+				"ol": {
+					"class": "list list-ordered"
+				},
+				"palette": [
+					"#fad839",
+					"#ca1f26",
+					"#1b3990",
+					"#333"
+				],
+				"ul": {
+					"class": "list"
+				}
+			}
+		}
+	}
 }
 ```
 
 ### Templates
 
-The `/templates` endpoint is used to retrieve the theme's all page templates for the currently activated theme that reside in the templates' folder set in the `config.yml`.
+The `/templates` endpoint is used to retrieve the theme's all page templates for the currently activated theme that
+reside in the templates' folder set in the `config.yml`.
 
 - `key`: represents the page template file name.
 - `name`: is a friendly name for the page template.
@@ -241,36 +249,37 @@ The `/templates` endpoint is used to retrieve the theme's all page templates for
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully obtained templates",
-    "meta": {
-        "request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
-        "response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
-        "latency_time": "20.000ms"
-    },
-    "data": {
-        "templates": [
-            {
-                "key": "default",
-                "name": "Default"
-            },
-            {
-                "key": "archive",
-                "name": "Archive"
-            },
-            {
-                "key": "archive-single",
-                "name": "Archive Single"
-            }
-        ]
-    }
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained templates",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+	},
+	"data": {
+		"templates": [
+			{
+				"key": "default",
+				"name": "Default"
+			},
+			{
+				"key": "archive",
+				"name": "Archive"
+			},
+			{
+				"key": "archive-single",
+				"name": "Archive Single"
+			}
+		]
+	}
 }
 ```
 
 ### Layouts
 
-The `/layoutds` endpoint is used to retrieve the theme's all page layouts for the currently activated theme that reside in the layouts' folder set in the `config.yml`.
+The `/layoutds` endpoint is used to retrieve the theme's all page layouts for the currently activated theme that reside
+in the layouts' folder set in the `config.yml`.
 
 - `key`: represents the page layout file name.
 - `name`: is a friendly name for the page layout.
@@ -281,43 +290,40 @@ The `/layoutds` endpoint is used to retrieve the theme's all page layouts for th
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully obtained layouts",
-    "meta": {
-        "request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
-        "response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
-        "latency_time": "20.000ms"
-    },
-    "data": {
-        "layouts": [
-            {
-                "key": "default",
-                "name": "Default"
-            },
-            {
-                "key": "main",
-                "name": "Main"
-            }
-        ]
-    }
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained layouts",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+	},
+	"data": {
+		"layouts": [
+			{
+				"key": "default",
+				"name": "Default"
+			},
+			{
+				"key": "main",
+				"name": "Main"
+			}
+		]
+	}
 }
 ```
 
 ### Posts
 
-The `/layoutds` endpoint is used to retrieve the theme's all page layouts for the currently activated theme that reside in the layouts' folder set in the `config.yml`.
+Posts are the main entity of Verbis, and it contains vital data to use for theme development and filtering through content via the API.
 
-- `key`: represents the page layout file name.
-- `name`: is a friendly name for the page layout.
-
-Retrieving posts:
+#### The Post object.
 
 **Example Response:**
 
-👉 `GET` to `/api/{version}/layouts`
+👉 `GET` to `/api/{version}/posts`
 
-```javascript
+```json
 {
 	"status": 200,
 	"error": false,
@@ -358,9 +364,9 @@ Retrieving posts:
 			"author": {
 				"id": 1,
 				"uuid": "d83f45c1-1a92-4cff-88c7-545c2017cb7b",
-				"first_name": "Ainsley",
-				"last_name": "Clark",
-				"email": "ainsley@reddico.co.uk",
+				"first_name": "Verbis",
+				"last_name": "CMS",
+				"email": "hello@verbiscms.com",
 				"facebook": null,
 				"twitter": null,
 				"linked_in": null,
@@ -388,29 +394,29 @@ Retrieving posts:
 			},
 			"layout": [
 				{
-                                    "uuid": "6a4d7442-1020-490f-a3e2-436f9135bc72",
-                                    "title": "Text Group",
-                                    "fields": [
-                                        {
-                                            "uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
-                                            "label": "Normal",
-                                            "name": "text",
-                                            "type": "text",
-                                            "instructions": "Add a text field",
-                                            "required": false,
-                                            "conditional_logic": null,
-                                            "wrapper": {
-                                                "width": 100
-                                            },
-                                            "options": {
-                                                "append": "",
-                                                "default_value": "",
-                                                "maxlength": "20",
-                                                "placeholder": "Placeholder",
-                                                "prepend": ""
-                                            }
-                                        }
-                                    ]
+					"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc72",
+					"title": "Text Group",
+					"fields": [
+						{
+							"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+							"label": "Normal",
+							"name": "text",
+							"type": "text",
+							"instructions": "Add a text field",
+							"required": false,
+							"conditional_logic": null,
+							"wrapper": {
+								"width": 100
+							},
+							"options": {
+								"append": "",
+								"default_value": "",
+								"maxlength": "20",
+								"placeholder": "Placeholder",
+								"prepend": ""
+							}
+						}
+					]
 				}
 			],
 			"fields": [
@@ -427,8 +433,7 @@ Retrieving posts:
 }
 ```
 
-Retrieving a specific post:
-
+#### The Post object.
 
 ### Fields
 
