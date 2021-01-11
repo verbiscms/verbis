@@ -98,20 +98,20 @@ The error object contains the following:
 By default, Verbis limit's all `GET` requests to 15 by default. The `Pagination` object appears under the `meta` key in
 the response for browse endpoints.
 
+### The Pagination object
+
 ```json
 "meta": {
-"pagination": {
-"page": 1,
-"pages": 1,
-"limit": 15,
-"total": 11,
-"next": false,
-"prev": false
-}
+	"pagination": {
+		"page": 1,
+		"pages": 1,
+		"limit": 15,
+		"total": 11,
+		"next": false,
+		"prev": false
+	}
 }
 ```
-
-// Set page to 1 if the user has passed "?limit=all"
 
 The pagination object contains the following:
 
@@ -122,22 +122,33 @@ The pagination object contains the following:
 - `next`: is either a boolean set to `false` if there is no next page, or an integer of page number of if there is.
 - `prev`: is either a boolean set to `false` if there is no previous page, or an integer of page number of if there is.
 
-## Endpoints
 
-Below is a table listing the current endpoints for each resource that's available in Verbis. A brief description is
-included detailing what the endpoint can do.
+### Pagination parameters for requests
 
-| Resource            | Methods                              | Description                                                    |
-| ------------------- | ------------------------------------ | -------------------------------------------------------------- |
-| Theme               | Read                                 | Retrieves the theme's configuration file.                      |
-| Templates           | Browse                               | Retrieves all page templates for the current theme.            |
-| Layouts             | Browse                               | Retrieves all page layouts for the current theme.              |
-| Posts               | Browse, Read, Add, Edit, Delete      | Allows for the modification and reading of posts.              |
-| Categories          | Browse, Read, Add, Edit, Delete      | Allows for the modification and reading of categories.         |
-| Media               | Browse, Read, Upload, Edit, Delete   | Allows media to be uploaded and read.                          |
-| Users               | Browse, Add, Edit, Delete            | Allows for the modification and reading of users.              |
-| Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
-| Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
+The Verbis API allows you to navigate through paginated content easily with the query parameters described below:
+
+| Query Parameter     | Description                                                                  |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `page`              | The page number of the query.                                                |
+| `limit`             | Allows you to limit the number of records returned `all` for every record.   |
+| `order_by`          | Order by a particular column.                                                |
+| `order_direction`   | Establish the order direction of the query.                                  |
+
+
+## Examples
+
+**Set a custom limit and page**
+
+This example demonstrates how to obtain posts in batches of ten, and display the second page.
+
+`/posts?limit=10&page=2`
+
+**Retrieve all rows**
+
+This example demonstrates how to obtain all posts with no paging.
+⚠️ **Be careful** when setting the `limit` to `all` it may slow down requests depending on how big your website is.
+
+`/posts?limit=all`
 
 ## Filtering
 
@@ -181,13 +192,19 @@ This example demonstrates how to search through posts with a title that iS `LIKE
 
 **Filter through posts by title and page template**
 
-This example demonstrates how to search through posts with a title that iS `LIKE` `verbis` 
+This example demonstrates how to search through posts with a title that is `LIKE` `verbis` OR if the post has a page template `LIKE` `archive`.
 
 `/posts&filter={"title":[{"operator":"LIKE", "value":"verbis"}], "page_template":[{"operator":"LIKE", "value":"archive"}]}`
 
+**Filter through posts with and conditional**
 
+This example demonstrates how to search through posts with a slug that is `LIKE` `verbis` AND `LIKE` `cms`.
+
+`/posts&filter={"slug":[{"operator":"LIKE", "value":"verbis"},{"operator":"LIKE", "value":"cms"}]}`
 
 ## Auth
+
+
 
 ## Site
 
@@ -196,6 +213,23 @@ installation.
 
 - The `title`, `description`, `logo`, `url` can all be updated in the admin interface.
 - The `url` contains the current version of Verbis.
+
+## Endpoints
+
+Below is a table listing the current endpoints for each resource that's available in Verbis. A brief description is
+included detailing what the endpoint can do.
+
+| Resource            | Methods                              | Description                                                    |
+| ------------------- | ------------------------------------ | -------------------------------------------------------------- |
+| Theme               | Read                                 | Retrieves the theme's configuration file.                      |
+| Templates           | Browse                               | Retrieves all page templates for the current theme.            |
+| Layouts             | Browse                               | Retrieves all page layouts for the current theme.              |
+| Posts               | Browse, Read, Add, Edit, Delete      | Allows for the modification and reading of posts.              |
+| Categories          | Browse, Read, Add, Edit, Delete      | Allows for the modification and reading of categories.         |
+| Media               | Browse, Read, Upload, Edit, Delete   | Allows media to be uploaded and read.                          |
+| Users               | Browse, Add, Edit, Delete            | Allows for the modification and reading of users.              |
+| Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
+| Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
 
 **Example Response:**
 
@@ -526,7 +560,7 @@ ___
 
 The Posts endpoint allows you to filter through posts with query parameters and [filtering](#Filtering) shown below.
 
-| Parameter           | Description                                                                 |
+| Query Parameter     | Description                                                                 |
 | ------------------- | --------------------------------------------------------------------------- |
 | Resource            | The posts resource, `posts` or `pages` if there is no resource attached.    | 
 | Status              | The status of the post, `published`, `draft` or `private`.                  |
