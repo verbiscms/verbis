@@ -146,7 +146,7 @@ what resources the current theme has, and general information about the currentl
 
 **Example Response:**
 
-`GET` to `/api/{version}/theme`
+👉 `GET` to `/api/{version}/theme`
 
 ```json
 {
@@ -230,12 +230,14 @@ what resources the current theme has, and general information about the currentl
 
 ### Templates
 
-The `/templates` endpoint is used to retrieve the theme's `config.yml` file within the theme directory. This can be particularly useful for establishing
-what resources the current theme has, and general information about the currently activated theme including a title, description and theme version.
+The `/templates` endpoint is used to retrieve the theme's all page templates for the currently activated theme that reside in the templates' folder set in the `config.yml`.
+
+- `key`: represents the page template file name.
+- `name`: is a friendly name for the page template.
 
 **Example Response:**
 
-`GET` to `/api/{version}/templates`
+👉 `GET` to `/api/{version}/templates`
 
 ```json
 {
@@ -265,11 +267,150 @@ what resources the current theme has, and general information about the currentl
     }
 }
 ```
+
 ### Layouts
+
+The `/layoutds` endpoint is used to retrieve the theme's all page layouts for the currently activated theme that reside in the layouts' folder set in the `config.yml`.
+
+- `key`: represents the page layout file name.
+- `name`: is a friendly name for the page layout.
+
+**Example Response:**
+
+👉 `GET` to `/api/{version}/layouts`
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully obtained layouts",
+    "meta": {
+        "request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+        "response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+        "latency_time": "20.000ms"
+    },
+    "data": {
+        "layouts": [
+            {
+                "key": "default",
+                "name": "Default"
+            },
+            {
+                "key": "main",
+                "name": "Main"
+            }
+        ]
+    }
+}
+```
 
 ### Posts
 
+The `/layoutds` endpoint is used to retrieve the theme's all page layouts for the currently activated theme that reside in the layouts' folder set in the `config.yml`.
 
+- `key`: represents the page layout file name.
+- `name`: is a friendly name for the page layout.
+
+Retrieving posts:
+
+**Example Response:**
+
+👉 `GET` to `/api/{version}/layouts`
+
+```json
+{
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained posts",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+	},
+	"data": [
+		{
+			"post": {
+				"id": 1,
+				"uuid": "360b2851-196e-40c0-b7ed-64b76ecc258a",
+				"slug": "/posts/post",
+				"title": "Verbis",
+				"status": "published",
+				"resource": "posts",
+				"page_template": "default",
+				"layout": "main",
+				"codeinjection_head": "",
+				"codeinjection_foot": "",
+				"published_at": "2021-01-05T20:02:05Z",
+				"created_at": "2021-01-05T20:02:13Z",
+				"updated_at": "2021-01-05T20:14:42Z",
+				"options": {
+					"meta": {
+						"twitter": {},
+						"facebook": {}
+					},
+					"seo": {
+						"public": false,
+						"exclude_sitemap": false,
+						"canonical": null
+					}
+				}
+			},
+			"author": {
+				"id": 1,
+				"uuid": "13d6038f-752c-41e6-8e5d-4b7887990e62",
+				"first_name": "Verbis",
+				"last_name": "CMS",
+				"email": "hello@verbiscms.com",
+				"facebook": null,
+				"twitter": null,
+				"linked_in": null,
+				"instagram": null,
+				"biography": null,
+				"profile_picture_id": null,
+				"role": {
+					"id": 6,
+					"name": "Owner",
+					"description": "The user is a special user with all of the permissions as an Administrator however they cannot be deleted"
+				},
+				"email_verified_at": null,
+				"created_at": "2021-01-05T17:43:59Z",
+				"updated_at": "2021-01-08T15:56:14Z"
+			},
+			"category": null,
+			"layout": [
+				{
+					"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc72",
+					"title": "Layout Verbis Options",
+					"fields": [
+						{
+							"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+							"label": "Normal",
+							"name": "text",
+							"type": "text",
+							"instructions": "Instructions",
+							"required": false,
+							"conditional_logic": null,
+							"wrapper": {
+								"width": 100
+							},
+							"options": {
+								"append": "",
+								"default_value": "",
+								"maxlength": "20",
+								"placeholder": "Placeholder",
+								"prepend": ""
+							}
+						}
+					]
+				}
+			],
+			"fields": null
+		}
+	]
+}
+```
+
+Retrieving a specific post:
 
 
 ### Fields
