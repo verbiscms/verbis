@@ -412,7 +412,9 @@ included detailing what the endpoint can do.
 | Media               | Browse, Read, Upload, Edit, Delete   | Allows media to be uploaded and read.                          |
 | Users               | Browse, Add, Edit, Delete            | Allows for the modification and reading of users.              |
 | Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
+| Roles               | Browse                               | Retrieves all current user roles.                              |
 | Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
+| Cache               | Clear                                | Clear's system cache.                                          |
 
 ## Site
 
@@ -959,12 +961,98 @@ response of 400 will be returned.
 
 ## Media
 
+
+
+## Users
+
 ## Fields
 
 ## Options
 
-## Users
 
 ## Roles
 
+The `/roles` endpoint is used to retrieve the all roles that a user can be assigned to. This is especially useful for
+the `POST` endpoint to create new users, as you can display what roles thew user can be assigned to before creating
+a new user. 
+
+- `id`: the ID of the role stored in the database.
+- `name`: the name of the role.
+- `description`: a brief description of the role and the role's permissions.
+
+👉 `GET` to `/api/{version}/roles`
+
+**Example Response:**
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully obtained user roles",
+    "meta": {
+        "request_time": "2021-01-11 14:20:32.511791 +0000 UTC",
+        "response_time": "2021-01-11 14:20:32.552466 +0000 UTC",
+        "latency_time": "40.672ms"
+    },
+    "data": [
+        {
+            "id": 1,
+            "name": "Banned",
+            "description": "The user has been banned from the system."
+        },
+        {
+            "id": 2,
+            "name": "Contributor",
+            "description": "The user can create and edit their own draft posts, but they are unable to edit drafts of users or published posts."
+        },
+        {
+            "id": 3,
+            "name": "Author",
+            "description": "The user can write, edit and publish their own posts."
+        },
+        {
+            "id": 4,
+            "name": "Editor",
+            "description": "The user can do everything defined in the Author role but they can also edit and publish posts of others, as well as their own."
+        },
+        {
+            "id": 5,
+            "name": "Administrator",
+            "description": "The user can do everything defined in the Editor role but they can also edit site settings and data. Additionally they can manage users"
+        },
+        {
+            "id": 6,
+            "name": "Owner",
+            "description": "The user is a special user with all of the permissions as an Administrator however they cannot be deleted"
+        }
+    ]
+}
+```
+
 ## Cache
+
+The `/cache` endpoint is used to clear system cache in production. No body is needed for this endpoint.
+The following is cleared when you post a request to `/cache`:
+
+- Templates
+- Assets
+- Uploads
+- Field layouts
+
+👉 `POST` to `/api/{version}/cache`
+
+**Example Response:**
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully cleared server cache",
+    "meta": {
+        "request_time": "2021-01-11 14:26:02.015268 +0000 UTC",
+        "response_time": "2021-01-11 14:26:02.05654 +0000 UTC",
+        "latency_time": "41.267ms"
+    },
+    "data": {}
+}
+```
