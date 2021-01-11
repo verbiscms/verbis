@@ -317,7 +317,7 @@ Retrieving posts:
 
 👉 `GET` to `/api/{version}/layouts`
 
-```json
+```javascript
 {
 	"status": 200,
 	"error": false,
@@ -331,18 +331,18 @@ Retrieving posts:
 		{
 			"post": {
 				"id": 1,
-				"uuid": "360b2851-196e-40c0-b7ed-64b76ecc258a",
-				"slug": "/posts/post",
-				"title": "Verbis",
+				"uuid": "648f289b-6997-46df-a44f-d16eee44d0c8",
+				"slug": "/posts/post-title",
+				"title": "Post Title",
 				"status": "published",
 				"resource": "posts",
 				"page_template": "default",
 				"layout": "main",
 				"codeinjection_head": "",
 				"codeinjection_foot": "",
-				"published_at": "2021-01-05T20:02:05Z",
-				"created_at": "2021-01-05T20:02:13Z",
-				"updated_at": "2021-01-05T20:14:42Z",
+				"published_at": "2021-01-11T10:42:16Z",
+				"created_at": "2021-01-11T10:42:26Z",
+				"updated_at": "2021-01-11T10:42:26Z",
 				"options": {
 					"meta": {
 						"twitter": {},
@@ -357,10 +357,10 @@ Retrieving posts:
 			},
 			"author": {
 				"id": 1,
-				"uuid": "13d6038f-752c-41e6-8e5d-4b7887990e62",
-				"first_name": "Verbis",
-				"last_name": "CMS",
-				"email": "hello@verbiscms.com",
+				"uuid": "d83f45c1-1a92-4cff-88c7-545c2017cb7b",
+				"first_name": "Ainsley",
+				"last_name": "Clark",
+				"email": "ainsley@reddico.co.uk",
 				"facebook": null,
 				"twitter": null,
 				"linked_in": null,
@@ -373,38 +373,55 @@ Retrieving posts:
 					"description": "The user is a special user with all of the permissions as an Administrator however they cannot be deleted"
 				},
 				"email_verified_at": null,
-				"created_at": "2021-01-05T17:43:59Z",
-				"updated_at": "2021-01-08T15:56:14Z"
+				"created_at": "2021-01-11T10:41:43Z",
+				"updated_at": "2021-01-11T10:41:43Z"
 			},
-			"category": null,
+			"category": {
+				"id": 1,
+				"slug": "tech",
+				"name": "Tech",
+				"description": "Technology category for posts.",
+				"resource": "posts",
+				"parent_id": null,
+				"updated_at": "2021-01-11T10:42:12Z",
+				"created_at": "2021-01-11T10:42:12Z"
+			},
 			"layout": [
 				{
-					"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc72",
-					"title": "Layout Verbis Options",
-					"fields": [
-						{
-							"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
-							"label": "Normal",
-							"name": "text",
-							"type": "text",
-							"instructions": "Instructions",
-							"required": false,
-							"conditional_logic": null,
-							"wrapper": {
-								"width": 100
-							},
-							"options": {
-								"append": "",
-								"default_value": "",
-								"maxlength": "20",
-								"placeholder": "Placeholder",
-								"prepend": ""
-							}
-						}
-					]
+                                    "uuid": "6a4d7442-1020-490f-a3e2-436f9135bc72",
+                                    "title": "Text Group",
+                                    "fields": [
+                                        {
+                                            "uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+                                            "label": "Normal",
+                                            "name": "text",
+                                            "type": "text",
+                                            "instructions": "Add a text field",
+                                            "required": false,
+                                            "conditional_logic": null,
+                                            "wrapper": {
+                                                "width": 100
+                                            },
+                                            "options": {
+                                                "append": "",
+                                                "default_value": "",
+                                                "maxlength": "20",
+                                                "placeholder": "Placeholder",
+                                                "prepend": ""
+                                            }
+                                        }
+                                    ]
 				}
 			],
-			"fields": null
+			"fields": [
+				{
+					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+					"type": "text",
+					"name": "text",
+					"key": "",
+					"value": "My text field"
+				}
+			]
 		}
 	]
 }
