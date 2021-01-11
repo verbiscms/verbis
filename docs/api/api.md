@@ -136,11 +136,9 @@ included detailing what the endpoint can do.
 | Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
 | Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
 
-# TODO
+## Filtering
 
 // Set page to 1 if the user has passed "?limit=all"
-
-## Filtering
 
 ## Auth
 
@@ -444,13 +442,32 @@ When you retrieve posts from the API, a Post object will be returned that holds 
 
 ### Retrieving Posts
 
-The Posts endpoint allows you to filter through posts with `quer` [Hello](#Filtering)
+The Posts endpoint allows you to filter through posts with query parameters and [filtering](#Filtering) shown below.
 
-Query params: resource, status
+| Parameter           | Description                                                                 |
+| ------------------- | --------------------------------------------------------------------------- |
+| Resource            | The posts resource, `posts` or `pages` if there is no resource attached.    | 
+| Status              | The status of the post, `published`, `draft` or `private`.                  |
 
+### Examples
 
+**Retrieve all posts with the resource of `news`**
+
+👉 `api/v1/posts?resource=news` 
+
+**Retrieve all posts with a status of `published`**
+
+👉 `api/v1/posts?status=published`
+
+**Retrieve all posts with a status of `published` and with a limit of `10`**
+
+👉 `api/v1/posts?status=published&limit=10`
 
 ### Retrieve a specific Post
+
+To retrieve a specific post, an ID parameter is passed after `/posts` URL.
+
+
 
 ### Updating a Post
 
