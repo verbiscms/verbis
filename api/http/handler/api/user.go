@@ -55,11 +55,10 @@ func (c *User) Get(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
-	users.HideCredentials()
 
 	pagination := http.NewPagination().Get(params, total)
 
-	Respond(g, 200, "Successfully obtained users", users, pagination)
+	Respond(g, 200, "Successfully obtained users", users.HideCredentials(), pagination)
 }
 
 // Get By ID
@@ -84,9 +83,8 @@ func (c *User) GetById(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
-	user.HideCredentials()
 
-	Respond(g, 200, "Successfully obtained user with ID: "+strconv.Itoa(id), user)
+	Respond(g, 200, "Successfully obtained user with ID: "+strconv.Itoa(id), user.HideCredentials())
 }
 
 // Get Roles
