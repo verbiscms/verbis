@@ -6,7 +6,7 @@
 		<div class="form-checkbox checkbox-cont">
 			<input type="checkbox"
 				:id="layout.uuid"
-				v-model="value"
+				v-model="field"
 				:true-value="true"
 				:false-value="false">
 			<label :for="layout.uuid">
@@ -27,32 +27,27 @@ import { fieldMixin } from "@/util/fields"
 export default {
 	name: "FieldText",
 	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: Boolean,
-		},
-	},
 	computed: {
-		getOptions() {
-			return this.layout.options;
-		},
-		getLayout() {
-			return this.layout;
-		},
+		/*
+		 * getMessage()
+		 * Get's the check box message from the options
+		 * if there is one.
+		 */
 		getMessage() {
 			const msg = this.getOptions['message'];
 			return msg === undefined || msg === "" ? false : msg;
 		},
-		value: {
+		/*
+		 * field()
+		 * Returns the default value if there is none.
+		 * Fire's value back up to the parent.
+		 */
+		field: {
 			get() {
-				if (this.fields === undefined) {
-					return this.getOptions['default_value']
-				}
-				return this.fields;
+				return this.getValue === "" ? this.getOptions['default_value'] : this.getValue
 			},
 			set(value) {
-				this.$emit("update:fields", value);
+				this.$emit("update:fields", this.getFieldObject(value));
 			}
 		}
 	}

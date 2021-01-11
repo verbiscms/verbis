@@ -7,7 +7,7 @@
 			<!-- =====================
 				No Image
 				===================== -->
-			<div v-if="!value">
+			<div v-if="!field">
 				<button class="btn" @click="showImageModal = true;">Add image</button>
 			</div>
 			<!-- =====================
@@ -16,7 +16,7 @@
 			<div v-else class="image-wrapper">
 				<div class="image-cont">
 					<ImageWithActions class="image-cover" @choose="showImageModal = true" @remove="remove">
-						<img :src="getSiteUrl + media['url']">
+						<img :src="getSiteUrl + media['url']" @error="handleError">
 					</ImageWithActions>
 				</div>
 				<div class="image-content">
@@ -27,7 +27,7 @@
 						<!-- Url -->
 						<div class="text-cont">
 							<h6>Url:</h6>
-							<p><a :href="getSiteUrl + value.url" target="_blank">{{ value.url }}</a></p>
+							<p><a :href="getSiteUrl + field.url" target="_blank">{{ field.url }}</a></p>
 						</div>
 						<!-- Title -->
 						<div class="text-cont" v-if="media['title']">
@@ -88,6 +88,7 @@
 import Uploader from "@/components/media/Uploader";
 import Modal from "@/components/modals/General";
 import { mediaMixin } from "@/util/media"
+import {fieldMixin} from "@/util/fields"
 import ImageWithActions from "@/components/misc/ImageWithActions";
 
 export default {
@@ -97,34 +98,33 @@ export default {
 		Modal,
 		Uploader
 	},
-	mixins: [mediaMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: [Object, Boolean],
-			default: false,
-		},
-	},
+	mixins: [mediaMixin,fieldMixin],
 	data: () => ({
-		errors: [],
 		media: {},
 		showImageModal: false,
 		selectedImage: {},
 	}),
 	mounted() {
-		if (this.value) {
+		if (this.getValue !== "") {
 			this.getMediaById();
 		}
 	},
 	methods: {
-		validate() {
-
+		/*
+		 * handleError()
+		 * If there was an error getting the media file,
+		 * defaults will be set and no broken image will be displayed.
+		 */
+		handleError() {
+			this.media = {};
+			this.field = "";
 		},
+		/*
+		 * insertMedia()
+		 * Insert a new media item when clicked.
+		 */
 		insertMedia(e) {
-			this.value = {
-				id: e.id,
-				type: "image"
-			};
+			this.field = e.id;
 			this.$nextTick(() => {
 				this.showImageModal = false;
 				this.getMediaById();
@@ -133,34 +133,41 @@ export default {
 				}, 200);
 			});
 		},
+		/*
+		 * remove()
+		 * Remove's a media item when clicked.
+		 */
 		getMediaById() {
-			this.axios.get('/media/' + this.value.id)
+			this.axios.get('/media/' + this.field)
 				.then(res => {
-					this.$set(this.media, {})
 					this.media = res.data.data;
 				})
 				.catch(() => {
-					this.value = false;
-				})
+					this.field = "";
+				});
 		},
+		/*
+		 * remove()
+		 * Remove's a media item when clicked.
+		 */
 		remove() {
-			this.value = false;
+			this.field = false;
 			this.media = {};
 		}
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Cast the ID to a string on emitting
+		 * and parses the ID back to an integer when retrieving.
+		 * Fire's back up to the parent.
+		 */
+		field: {
 			get() {
-				return this.fields;
+				return this.getValue !== "" ? parseInt(this.getValue) : false;
 			},
 			set(value) {
-				this.$emit("update:fields", value)
+				this.$emit("update:fields", this.getFieldObject(value.toString()));
 			}
 		}
 	}

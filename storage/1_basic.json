@@ -3,25 +3,6 @@
 	"title": "Basic Verbis Options",
 	"fields": [
 		{
-			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
-			"label": "Text",
-			"name": "text",
-			"type": "text",
-			"instructions": "Instructions",
-			"required": true,
-			"conditional_logic": null,
-			"wrapper": {
-				"width": 50
-			},
-			"options": {
-				"maxlength": 10,
-				"default_value": "default",
-				"placeholder": "Placeholder",
-				"prepend": "",
-				"append": "Append"
-			}
-		},
-		{
 			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
 			"label": "Text",
 			"name": "text",
@@ -93,7 +74,7 @@
 				"width": 100
 			},
 			"options": {
-				"default_value": "default@default.com",
+				"default_value": 10,
 				"min": 20,
 				"max": 300,
 				"step": 5,
