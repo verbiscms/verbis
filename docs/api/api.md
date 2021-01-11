@@ -141,11 +141,11 @@ included detailing what the endpoint can do.
 
 // Set page to 1 if the user has passed "?limit=all"
 
-### Auth
+## Auth
 
-### Site
+## Site
 
-### Theme
+## Theme
 
 The `/theme` endpoint is used to retrieve the theme's `config.yml` file within the theme directory. This can be
 particularly useful for establishing what resources the current theme has, and general information about the currently
@@ -235,7 +235,7 @@ activated theme including a title, description and theme version.
 }
 ```
 
-### Templates
+## Templates
 
 The `/templates` endpoint is used to retrieve the theme's all page templates for the currently activated theme that
 reside in the templates' folder set in the `config.yml`.
@@ -276,7 +276,7 @@ reside in the templates' folder set in the `config.yml`.
 }
 ```
 
-### Layouts
+## Layouts
 
 The `/layoutds` endpoint is used to retrieve the theme's all page layouts for the currently activated theme that reside
 in the layouts' folder set in the `config.yml`.
@@ -313,11 +313,11 @@ in the layouts' folder set in the `config.yml`.
 }
 ```
 
-### Posts
+## Posts
 
 Posts are the main entity of Verbis, and it contains vital data to use for theme development and filtering through content via the API.
 
-#### The Post object.
+### The Post object.
 
 **Example Response:**
 
@@ -433,18 +433,18 @@ Posts are the main entity of Verbis, and it contains vital data to use for theme
 }
 ```
 
-#### The Post object.
+### The Post object.
 
-### Fields
+## Fields
 
-### Categories
+## Categories
 
-### Media
+## Media
 
-### Options
+## Options
 
-### Users
+## Users
 
-### Roles
+## Roles
 
-### Cache
+## Cache
