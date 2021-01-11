@@ -32,7 +32,7 @@ As Verbis follows RESTful principles, the following methods are accepted for eac
 
 ## JSON Responses
 
-All endpoints respond with a JSON encoded response, which contain the following:
+All endpoints respond with a JSON encoded response, which contains the following:
 
 ```json
 {
@@ -95,21 +95,48 @@ The error object contains the following:
 By default, Verbis limit's all `GET` requests to 15 by default. The `Pagination` object appears under the `meta` key in the response for browse endpoints.
 
 ```json
-"pagination": {
-    "page": 1,
-    "pages": 1,
-    "limit": 15,
-    "total": 11,
-    "next": false,
-    "prev": false
+"meta": {
+    "pagination": {
+        "page": 1,
+        "pages": 1,
+        "limit": 15,
+        "total": 11,
+        "next": false,
+        "prev": false
+    }
 }
 ```
 
+The pagination object contains the following:
+
+- `page`: the current page.
+- `pages`: how many pages there are in total.
+- `limit`: how many items are displayed at once.
+- `total`: how many items there are in total.
+- `next`: is either a boolean set to `false` if there is no next page, or an integer of page number of if there is.
+- `prev`: is either a boolean set to `false` if there is no previous page, or an integer of page number of if there is.
 
 ## Endpoints
 
+Below is a table listing the current endpoints for each resource that's available in Verbis. A brief description is included detailing what the endpoint can do.
+
+| Resource            | Methods                              | Description                                                    |
+| ------------------- | ------------------------------------ | -------------------------------------------------------------- |
+| Theme               | Read                                 | Retrieves the theme's configuration file.                      |
+| Templates           | Browse                               | Retrieves all page templates for the current theme.            |
+| Layouts             | Browse                               | Retrieves all page layouts for the current theme.              |
+| Posts               | Browse, Read, Add, Edit, Delete      | Allows for the modification and reading of posts.              |
+| Categories          | Browse, Read, Add, Edit, Delete      | Allows for the modification and reading of categories.         |
+| Media               | Browse, Read, Upload, Edit Delete    | Allows media to be uploaded and read.                          |
+| Users               | Browse, Add, Edit, Delete            | Allows for the modification and reading of users.              |
+| Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
+| Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
+
 Brief intro
 Table of endpoints
+
+
+	// Set page to 1 if the user has passed "?limit=all"
 
 ### Auth
 
