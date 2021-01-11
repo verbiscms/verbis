@@ -785,7 +785,7 @@ ___
 ### Retrieve a specific Post
 
 To retrieve a specific post, an ID parameter is passed after `/posts` URL, the following URL will retrieve the post with
-an ID of 10.
+an ID of 1.
 
 👉 `GET` to `/api/{version}/posts/1`
 
@@ -843,7 +843,7 @@ To delete a post, an ID parameter is passed after the `/posts` URL. If no post i
 
 ## Categories
 
-These routes allow you to browse, read, update and delete categories through the Verbis API easily. All post endpoints
+These routes allow you to browse, read, create, update and delete categories through the Verbis API. All post endpoints
 are prefixed with `/categories`.
 
 ### The Category object
@@ -906,8 +906,8 @@ ___
 
 ### Retrieve a specific Category
 
-To retrieve a specific category, an ID parameter is passed after `/categories` URL, the following URL will retrieve
-category post with an ID of 10.
+To retrieve a specific category, an ID parameter is passed after `/categories` URL, the following URL will retrieve a
+category with an ID of 1.
 
 👉 `GET` to `/api/{version}/categories/1`
 
@@ -961,20 +961,290 @@ response of 400 will be returned.
 
 ## Media
 
+These routes allow you to browse, read, upload, update and delete media items through the Verbis API. All media
+endpoints are prefixed with `/media`.
 
+### The Media object
+
+When you retrieve media items from the API, an array of Media object's will be returned that holds information about the
+media item. It contains the following:
+
+- `url`: the public url of the media item.
+- `title`, `alt` and `description`: contains useful meta information about the media item.
+- `file_size`: the size (in bytes) of the item.
+- `file_name`: the public file name of the item.
+- `sizes`: contains an object of sizes that are specified within the `Media Options` of the admin interface, along with
+  `size_name`.
+- `type`: the MIME type of the file.
+
+👉 `GET` to `/api/{version}/media`
+
+**Example Response:**
+
+```json
+
+{
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained media",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms",
+		"pagination": {
+			"page": 1,
+			"pages": 1,
+			"limit": 15,
+			"total": 1,
+			"next": false,
+			"prev": false
+		}
+	},
+	"data": [
+		{
+			"id": 1,
+			"uuid": "a9322f12-541a-11eb-ae93-0242ac130002",
+			"url": "/uploads/2021/01/verbis-logo.jpg",
+			"title": null,
+			"alt": null,
+			"description": null,
+			"file_size": 182674,
+			"file_name": "verbis-logo.jpg",
+			"sizes": {
+				"hd": {
+					"uuid": "a932314c-541a-11eb-ae93-0242ac130002",
+					"url": "/uploads/2021/01/verbis-logo-1920x0.jpg",
+					"name": "verbis-logo-1920x0.jpg",
+					"size_name": "HD Size",
+					"file_size": 212,
+					"width": 1920,
+					"height": 0,
+					"crop": false
+				},
+				"large": {
+					"uuid": "a932348a-541a-11eb-ae93-0242ac130002",
+					"url": "/uploads/2021/01/verbis-logo-1280x0.jpg",
+					"name": "verbis-logo-1280x0.jpg",
+					"size_name": "Large Size",
+					"file_size": 114,
+					"width": 1280,
+					"height": 0,
+					"crop": false
+				},
+				"medium": {
+					"uuid": "a93235a2-541a-11eb-ae93-0242ac130002",
+					"url": "/uploads/2021/01/verbis-logo-992x0.jpg",
+					"name": "verbis-logo-992x0.jpg",
+					"size_name": "Medium Size",
+					"file_size": 76,
+					"width": 992,
+					"height": 0,
+					"crop": false
+				},
+				"thumbnail": {
+					"uuid": "a932366a-541a-11eb-ae93-0242ac130002",
+					"url": "/uploads/2021/01/verbis-logo-550x300.jpg",
+					"name": "verbis-logo-550x300.jpg",
+					"size_name": "Thumbnail Size",
+					"file_size": 28,
+					"width": 550,
+					"height": 300,
+					"crop": true
+				}
+			},
+			"type": "image/jpeg",
+			"user_id": 1,
+			"created_at": "2020-01-01T12:00:00Z",
+			"updated_at": "2020-01-01T12:00:00Z"
+		}
+	]
+}
+```
+
+___
+
+### Retrieve a specific Media Item
+
+To retrieve a specific media item, an ID parameter is passed after `/media` URL, the following URL will retrieve a media
+item with an ID of 1.
+
+👉 `GET` to `/api/{version}/media/1`
+
+___
+
+### Uploading a Media Item
+
+Media items are only permitted to be uploaded one at a time, and encoded as multipart form data, the media item should
+reside under the `file` key. The API will validate MIME types, file sizes, maximum image widths and heights. If
+validation failed, a 400 response will be sent. If the Admin options allow for it, images will also be converted
+to `webp` file formats.
+
+⚠️ This endpoint should be encoded as `multipart/form-data`
+
+Required fields:
+
+- `file`
+
+👉 `POST` to `/api/{version}/media`
+
+___
+
+### Updating a Media Item
+
+To update a media item, an ID parameter is passed after the `/media` URL. Whilst you can't update any of the paths or
+core media item, you are able to edit some key meta data as shown below.
+
+👉 `PUT` to `/api/{version}/media/1`
+
+```json
+{
+	"title": "Verbis",
+	"alt": "Verbis Logo",
+	"description": "A Verbis CMS"
+}
+```
+
+___
+
+### Deleting a Media Item
+
+To delete a media item from the library, an ID parameter is passed after the `/media` URL. If no media item is found
+with the given ID a response of 400 will be returned.
+
+👉 `DELETE` to `/api/{version}/media/1`
 
 ## Users
+
+These routes allow you to browse, read, create, update and delete Users through the Verbis API. All post endpoints are
+prefixed with `/users`.
+
+### The User object
+
+When you retrieve categories from the API, an array of User objects will be returned that holds information about the
+user.
+
+👉 `GET` to `/api/{version}/users`
+
+**Example Response:**
+
+```json
+{
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained categories",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms",
+		"pagination": {
+			"page": 1,
+			"pages": 1,
+			"limit": 15,
+			"total": 1,
+			"next": false,
+			"prev": false
+		}
+	},
+	"data": [
+		{
+			"id": 1,
+			"uuid": "266c51ee-53fb-11eb-ae93-0242ac130002",
+			"first_name": "Verbis",
+			"last_name": "CMS",
+			"email": "hello@verbiscms.com",
+			"facebook": null,
+			"twitter": null,
+			"linked_in": null,
+			"instagram": null,
+			"biography": null,
+			"profile_picture_id": null,
+			"role": {
+				"id": 6,
+				"name": "Owner",
+				"description": "The user is a special user with all of the permissions as an Administrator however they cannot be deleted"
+			},
+			"email_verified_at": null,
+			"created_at": "2020-01-01T12:00:00Z",
+			"updated_at": "2020-01-01T12:00:00Z"
+		}
+	]
+}
+```
+
+___
+
+### Retrieve a specific User
+
+To retrieve a specific user, an ID parameter is passed after `/users` URL, the following URL will retrieve a user with
+an ID of 1.
+
+👉 `GET` to `/api/{version}/users/1`
+
+___
+
+### Creating a User
+
+To create a user multiple fields are required as shown below. A `role_id` needs to be attached to the request to assign
+the newly created user a role. A response 400 will be returned if the user already exists or validation failed.
+
+Required fields:
+
+- `first_name`
+- `last_name`
+- `email`
+- `role_id`
+- `password`
+- `confirm_password`
+
+Below is a minimal example of creating a user.
+
+👉 `POST` to `/api/{version}/categories`
+
+```json
+{
+	"first_name": "Verbis",
+	"last_name": "CMS",
+	"email": "hello@verbiscms.com",
+	"role_id": 2,
+	"password": "mypassword",
+	"confirm_password": "mypassword"
+}
+```
+
+___
+
+### Updating a User
+
+To update a user, an ID parameter is passed after the `/users` URL, the body is exactly the same as the `POST`
+route. If no user is found with the given ID, a response of 400 will be returned.
+
+👉 `PUT` to `/api/{version}/users/1`
+
+```json
+{
+	"first_name": "CMS"
+}
+```
+
+___
+
+### Deleting a User
+
+To delete a user, an ID parameter is passed after the `/users` URL. If no user is found with the given ID a
+response of 400 will be returned.
+
+👉 `DELETE` to `/api/{version}/users/1`
+
 
 ## Fields
 
 ## Options
 
-
 ## Roles
 
 The `/roles` endpoint is used to retrieve the all roles that a user can be assigned to. This is especially useful for
-the `POST` endpoint to create new users, as you can display what roles thew user can be assigned to before creating
-a new user. 
+the `POST` endpoint to create new users, as you can display what roles thew user can be assigned to before creating a
+new user.
 
 - `id`: the ID of the role stored in the database.
 - `name`: the name of the role.
@@ -986,53 +1256,53 @@ a new user.
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully obtained user roles",
-    "meta": {
-        "request_time": "2021-01-11 14:20:32.511791 +0000 UTC",
-        "response_time": "2021-01-11 14:20:32.552466 +0000 UTC",
-        "latency_time": "40.672ms"
-    },
-    "data": [
-        {
-            "id": 1,
-            "name": "Banned",
-            "description": "The user has been banned from the system."
-        },
-        {
-            "id": 2,
-            "name": "Contributor",
-            "description": "The user can create and edit their own draft posts, but they are unable to edit drafts of users or published posts."
-        },
-        {
-            "id": 3,
-            "name": "Author",
-            "description": "The user can write, edit and publish their own posts."
-        },
-        {
-            "id": 4,
-            "name": "Editor",
-            "description": "The user can do everything defined in the Author role but they can also edit and publish posts of others, as well as their own."
-        },
-        {
-            "id": 5,
-            "name": "Administrator",
-            "description": "The user can do everything defined in the Editor role but they can also edit site settings and data. Additionally they can manage users"
-        },
-        {
-            "id": 6,
-            "name": "Owner",
-            "description": "The user is a special user with all of the permissions as an Administrator however they cannot be deleted"
-        }
-    ]
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained user roles",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+	},
+	"data": [
+		{
+			"id": 1,
+			"name": "Banned",
+			"description": "The user has been banned from the system."
+		},
+		{
+			"id": 2,
+			"name": "Contributor",
+			"description": "The user can create and edit their own draft posts, but they are unable to edit drafts of users or published posts."
+		},
+		{
+			"id": 3,
+			"name": "Author",
+			"description": "The user can write, edit and publish their own posts."
+		},
+		{
+			"id": 4,
+			"name": "Editor",
+			"description": "The user can do everything defined in the Author role but they can also edit and publish posts of others, as well as their own."
+		},
+		{
+			"id": 5,
+			"name": "Administrator",
+			"description": "The user can do everything defined in the Editor role but they can also edit site settings and data. Additionally they can manage users"
+		},
+		{
+			"id": 6,
+			"name": "Owner",
+			"description": "The user is a special user with all of the permissions as an Administrator however they cannot be deleted"
+		}
+	]
 }
 ```
 
 ## Cache
 
-The `/cache` endpoint is used to clear system cache in production. No body is needed for this endpoint.
-The following is cleared when you post a request to `/cache`:
+The `/cache` endpoint is used to clear system cache in production. No body is needed for this endpoint. The following is
+cleared when you post a request to `/cache`:
 
 - Templates
 - Assets
@@ -1045,14 +1315,14 @@ The following is cleared when you post a request to `/cache`:
 
 ```json
 {
-    "status": 200,
-    "error": false,
-    "message": "Successfully cleared server cache",
-    "meta": {
-        "request_time": "2021-01-11 14:26:02.015268 +0000 UTC",
-        "response_time": "2021-01-11 14:26:02.05654 +0000 UTC",
-        "latency_time": "41.267ms"
-    },
-    "data": {}
+	"status": 200,
+	"error": false,
+	"message": "Successfully cleared server cache",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+	},
+	"data": {}
 }
 ```

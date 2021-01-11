@@ -64,6 +64,9 @@ func (v *Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 			}
 		}
 
+		field = strings.Replace(field, "Part", "", -1)
+		field = strings.Replace(field, "User", "", -1)
+
 		reg := regexp.MustCompile(`[A-Z][^A-Z]*`)
 		fieldString := ""
 
