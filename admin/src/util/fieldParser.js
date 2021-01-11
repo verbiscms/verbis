@@ -18,6 +18,7 @@ export default class FieldParser {
         this.fields = fields;
         this.layout = layout;
         this.parsed = {};
+        this.flatFields = [];
     }
 
     // Expand
@@ -34,12 +35,40 @@ export default class FieldParser {
                 return
             }
 
+            // if ( field.type === "repeater") {
+            //
+            // }
+
             this.set(this.parsed, field.key, field)
         });
 
         return this.parsed;
     }
 
+
+    // Flatten
+    flattenFields() {
+        this.walker(this.fields);
+        let fields = this.flatFields;
+        this.flatFields = [];
+        return fields;
+    }
+
+    // Walker
+    walker(o) {
+        if (Object.prototype.hasOwnProperty.call(o, "name")){
+            this.flatFields.push(o);
+        }
+        for (const p in o) {
+            if (Object.prototype.hasOwnProperty.call(o, p) && typeof o[p] === 'object' ) {
+                if (o[p] !== null) {
+                    this.walker(o[p]);
+                }
+            }
+        }
+    }
+
+    // Set
     set(obj, path, value){
         if (Object(obj) !== obj) return obj; // When obj is not an object
         // If not yet an array, get the keys from the string-path
@@ -55,4 +84,6 @@ export default class FieldParser {
             obj)[path[path.length-1]] = value; // Finally assign the value to the last key
         return obj; // Return the top-level object to allow chaining
     }
+
+    //
 }

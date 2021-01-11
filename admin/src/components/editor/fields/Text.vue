@@ -26,7 +26,7 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import {fieldMixin} from "@/util/fields"
 
 export default {
 	name: "FieldText",
@@ -34,6 +34,9 @@ export default {
 	data: () => ({
 		focused: false,
 	}),
+	mounted() {
+		this.setDefaultValue();
+	},
 	methods: {
 		/*
 		 * validate()
@@ -54,14 +57,11 @@ export default {
 			this.validateRequired();
 		},
 	},
-	mounted() {
-		this.setDefaultValue();
-	},
 	computed: {
 		/*
 		 * field()
 		 * Replaces and sets the prepend and append values
-		 * Fire's back up to the parent
+		 * Fire's back up to the parent.
 		 */
 		field: {
 			get() {

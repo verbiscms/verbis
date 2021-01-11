@@ -156,7 +156,7 @@ export default {
 			return this.fieldKey + "_" + index + "_" + name
 		},
 		deleteRow(index) {
-			this.fields['children'].splice(index, 1);
+			this.fields.splice(index, 1);
 		},
 		addRow() {
 			this.repeaterFields.push({})

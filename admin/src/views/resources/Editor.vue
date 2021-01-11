@@ -250,7 +250,6 @@ export default {
 		fields: {},
 		isSaving: false,
 		sidebarOpen: false,
-		flatFields: [],
 		loadingFields: true,
 	}),
 	beforeMount() {
@@ -515,96 +514,6 @@ export default {
 				this.data["published_at"] = new Date();
 			}
 		},
-		expandFields(fields) {
-			let obj = {};
-
-			if (fields === null) {
-				return {};
-			}
-
-			this.fieldLayout.forEach(layout => {
-				layout.fields.forEach(field => {
-
-					if (field.type !== "repeater" && field.type !== "flexible") {
-						let f = fields.find(f => f.uuid === field.uuid)
-						if (f) {
-							obj[field.uuid] = f;
-						}
-					}
-
-					if (field.type === "repeater") {
-						let f = fields.find(f => f.uuid === field.uuid)
-						if (f) {
-							obj[field.uuid] = [];
-							obj[field.uuid].push(f)
-						}
-
-						field['sub_fields'].forEach((sub) => {
-
-							if (sub.type !== "repeater" && sub.type !== "flexible") {
-								fields.filter(s => s.uuid === sub.uuid).forEach(s => {
-									obj[field.uuid][s.index + 1] = obj[field.uuid][s.index + 1] || {};
-									obj[field.uuid][s.index + 1][s.uuid] = s;
-								})
-							}
-
-							if (sub.type === "repeater") {
-
-								// Heres the problem
-								console.log(f.index);
-								console.log(sub.index);
-								let p = fields.find(x => x.uuid === sub.uuid)
-								if (p) {
-									obj[field.uuid][f.index + 1][sub.uuid] = [];
-									obj[field.uuid][f.index + 1][sub.uuid].push(p)
-								}
-
-								console.log(p);
-
-								sub['sub_fields'].forEach((sub2) => {
-									if (sub2.type !== "repeater" && sub2.type !== "flexible") {
-										fields.filter(f => f.uuid === sub2.uuid).forEach(k => {
-
-											let p = fields.find(x => x.uuid === sub.uuid && x.index === k.uuid)
-
-											obj[field.uuid][p.index + 1][p.uuid][k.index + 1] = obj[field.uuid][p.index + 1][p.uuid][k.index + 1] || {}
-											obj[field.uuid][p.index + 1][p.uuid][k.index + 1][k.uuid] = obj[field.uuid][p.index + 1][p.uuid][k.index + 1][k.uuid] || {}
-											obj[field.uuid][p.index + 1][p.uuid][k.index + 1][k.uuid] = k
-										})
-									}
-								});
-							}
-						});
-					}
-				});
-			});
-
-			console.log(JSON.stringify(obj, null, 4));
-
-			return obj;
-		},
-
-		findField(fields, uuid) {
-			return fields.find(f => f.uuid === uuid)
-		},
-		fieldWalker(o) {
-			if (Object.prototype.hasOwnProperty.call(o, "name")){
-				this.flatFields.push(o);
-			}
-			for (const p in o) {
-				if (Object.prototype.hasOwnProperty.call(o, p) && typeof o[p] === 'object' ) {
-					if (o[p] !== null) {
-						this.fieldWalker(o[p]);
-					}
-				}
-			}
-		},
-		flattenFields() {
-			this.fieldWalker(this.fields);
-			let fields = this.flatFields;
-			this.flatFields = [];
-			return fields;
-		},
 		/*
 		 * save()
 		 * Save the new page, check for field validation.
@@ -622,7 +531,7 @@ export default {
 						this.$set(this.data, 'resource', null)
 					}
 
-					this.$set(this.data, 'fields', this.flattenFields())
+					this.$set(this.data, 'fields', new FieldParser(this.fields, this.fieldLayout).flattenFields())
 
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)

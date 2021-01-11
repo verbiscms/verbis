@@ -52,6 +52,13 @@ export const fieldMixin = {
 		getOptions() {
 			return this.layout.options;
 		},
+		/*
+		 * getValue()
+		 * Returns the fields value.
+		 */
+		getValue() {
+			return this.fields.value ? this.fields.value : "";
+		},
 	},
 	methods: {
 		/*
@@ -96,14 +103,14 @@ export const fieldMixin = {
 		 * Set the default value for choices if there is no field data.
 		 */
 		setDefaultValueChoices() {
-			if (this.fields === "" && this.getOptions['default_value'] !== "") {
+			if (this.getValue === "" && this.getOptions['default_value'] !== "") {
 				const opts = this.getOptions['default_value'];
 				let defaultVal = ""
 				opts.forEach(opt => {
 					defaultVal = this.getOptions['choices'][opt]
 				});
 				if (defaultVal !== "") {
-					this.field.value = defaultVal;
+					this.field = defaultVal;
 					return
 				}
 			}
@@ -114,10 +121,7 @@ export const fieldMixin = {
 		 * Replace the field value with empty strings.
 		 */
 		replacePrependAppend() {
-			if (!this.fields.value) {
-				return "";
-			}
-			return this.fields.value.toString().replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
+			return this.getValue.toString().replace(this.getOptions['prepend'], "").replace(this.getOptions['append'], "");
 		},
 		/*
 		 * validateRequired()
@@ -134,7 +138,7 @@ export const fieldMixin = {
 		 */
 		validateMaxLength(length = false) {
 			const maxLength = length ? length : this.getOptions['maxlength'];
-			if (maxLength !== "" && (this.field.length === maxLength)) {
+			if (maxLength !== "" && (this.getValue.length === maxLength)) {
 				this.errors.push(`The maximum length of the ${this.getLayout.label.toLowerCase()} can not exceed ${maxLength} characters.`);
 			}
 		},

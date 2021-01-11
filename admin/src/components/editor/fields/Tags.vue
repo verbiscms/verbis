@@ -110,12 +110,6 @@ export default {
 		}
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options;
-		},
-		getLayout() {
-			return this.layout;
-		},
 		getMaxTags() {
 			return !this.getOptions['maximum'] ? 999999999999999999 :  this.getOptions['maximum'];
 		},
@@ -132,7 +126,7 @@ export default {
 				return this.fields;
 			},
 			set(value) {
-				this.$emit("update:fields", value);
+				this.$emit("update:fields", this.getFieldObject(value));
 			}
 		}
 	}
