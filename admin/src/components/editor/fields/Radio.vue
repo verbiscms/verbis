@@ -9,7 +9,7 @@
 				<input type="radio"
 					:id="getLayout.uuid + '-' + choiceIndex"
 					:name="getLayout.uuid"
-					v-model="value"
+					v-model="field"
 					:value="choice">
 				<label :for="getLayout.uuid + '-' + choiceIndex"></label>
 				<div class="form-radio-text">{{ choice }}</div>
@@ -32,40 +32,35 @@ import { fieldMixin } from "@/util/fields"
 export default {
 	name: "FieldRadio",
 	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: ''
-		},
-	},
 	data: () => ({
 		errors: [],
 	}),
 	mounted() {
-		this.setDefaultValueChoices()
+		this.setDefaultValueChoices();
 	},
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
 		validate() {
 			this.errors = [];
 			if (!this.getOptions["allow_null"]) {
-				this.validateRequired()
+				this.validateRequired();
 			}
 		},
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options;
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Fire's value back up to the parent.
+		 */
+		field: {
 			get() {
 				return this.fields;
 			},
 			set(value) {
-				this.$emit("update:fields", value);
+				this.$emit("update:fields", this.getFieldObject(value));
 			}
 		}
 	}

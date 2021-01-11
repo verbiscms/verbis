@@ -4,7 +4,7 @@
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<textarea class="form-input form-input-white form-textarea"
-			v-model="value"
+			v-model="field"
 			@keyup="validate"
 			@blur="validateRequired"
 			:rows="getRows"
@@ -28,42 +28,43 @@ import { fieldMixin } from "@/util/fields"
 export default {
 	name: "FieldTextarea",
 	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: ''
-		},
-	},
-	data: () => ({
-		errors: [],
-	}),
 	mounted() {
-		this.setDefaultValue()
+		this.setDefaultValue();
 	},
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
 		validate() {
 			this.errors = [];
 			this.validateMaxLength()
 		},
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options
-		},
-		getLayout() {
-			return this.layout;
-		},
+		/*
+		 * getResize()
+		 * Returns true if the textarea can be resized.
+		 */
 		getResize() {
 			return this.layout.options["resize"] ? '' : "none !important"
 		},
+		/*
+		 * getRows()
+		 * Obtains the amount of textarea rows set in the options.
+		 */
 		getRows() {
-			const rows = this.layout.options['rows']
-			return rows ? rows : 8
+			const rows = this.getOptions['rows'];
+			return rows ? rows : 8;
 		},
-		value: {
+		/*
+		 * field()
+		 * Replaces and sets the prepend and append values,
+		 * Fire's back up to the parent
+		 */
+		field: {
 			get() {
-				return this.fields.replaceAll('</p>', '').replaceAll('<p>', '').replaceAll('<br />', '\n');
+				return this.getValue.replaceAll('</p>', '').replaceAll('<p>', '').replaceAll('<br />', '\n');
 			},
 			set(value) {
 				if (this.getOptions.format === "paragraph") {
@@ -71,7 +72,7 @@ export default {
 				} else if (this.getOptions.format === "line_break") {
 					value = value.replace(/(?:\r\n|\r|\n)/g, '<br />')
 				}
-				this.$emit("update:fields", value)
+				this.$emit("update:fields", this.getFieldObject(value));
 			}
 		},
 	}

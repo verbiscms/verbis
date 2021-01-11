@@ -18,7 +18,8 @@
 					"red": "Red",
 					"orange": "Orangey"
 				},
-				"default_value": ["red"],
+				"return_format": "value OR key OR array",
+				"default_value": "Red",
 				"allow_null": false,
 				"placeholder": "Placeholder"
 			}
@@ -104,13 +105,5 @@
 			}
 		}
 	],
-	"location": [
-		[
-			{
-				"param": "page_template",
-				"operator": "==",
-				"value": "home"
-			}
-		]
-	]
+	"location": []
 }
