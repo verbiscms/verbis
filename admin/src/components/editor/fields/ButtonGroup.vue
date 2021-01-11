@@ -54,7 +54,7 @@ export default {
 		 */
 		field: {
 			get() {
-				return this.fields;
+				return this.getValue;
 			},
 			set(value) {
 				this.$emit("update:fields", this.getFieldObject(value));
