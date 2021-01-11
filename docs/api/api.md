@@ -8,8 +8,6 @@ All the Verbis endpoints follow REST principles, if you've interacted with a RES
 will be familiar to you. Requests and responses are JSON encoded throughout with different query parameters available to
 filter and search through content easily and quickly.
 
-___
-
 ## Structure
 
 ### Base URL:
@@ -55,8 +53,6 @@ All endpoints respond with a JSON encoded response, which contains the following
 - `data`: contains the main body of the call, usually this is an array, but sometimes it can be an object depending on
   the endpoint.
 
-___
-
 ## Errors
 
 If the resulting status code of an endpoint is a validation error, the API will respond with some useful information
@@ -97,8 +93,6 @@ The error object contains the following:
 - `message`: contains a brief message to illustrate what is required for a successful `POST`, this can be especially
   useful for display information back to the user.
 
-___
-
 ## Pagination
 
 By default, Verbis limit's all `GET` requests to 15 by default. The `Pagination` object appears under the `meta` key in
@@ -106,16 +100,18 @@ the response for browse endpoints.
 
 ```json
 "meta": {
-	"pagination": {
-		"page": 1,
-		"pages": 1,
-		"limit": 15,
-		"total": 11,
-		"next": false,
-		"prev": false
-	}
+"pagination": {
+"page": 1,
+"pages": 1,
+"limit": 15,
+"total": 11,
+"next": false,
+"prev": false
+}
 }
 ```
+
+// Set page to 1 if the user has passed "?limit=all"
 
 The pagination object contains the following:
 
@@ -125,42 +121,6 @@ The pagination object contains the following:
 - `total`: how many items there are in total.
 - `next`: is either a boolean set to `false` if there is no next page, or an integer of page number of if there is.
 - `prev`: is either a boolean set to `false` if there is no previous page, or an integer of page number of if there is.
-
-___
-
-## Filtering
-
-When requesting a list of resources via the API through browse endpoints, you can apply filters to search through the array of entities.
-
-`/posts&filter={"resource":[{"operator":"=", "value":"verbis"}]}`
-
-In the above url:
-
-- `resource` can be any property attached to the object.
-- `operator`: is an allowed operator detailed in the table below.
-- `value`: is a value whose type corresponds to the allowed type detailed below.
-
-This call will search all posts that are equal to verbis.
-
-### Available operators:
-
-You can search through a list of entities in Verbis with the following operators:
-
-| Operator      | Description                                                             |
-| ------------- | ----------------------------------------------------------------------- |
-| `=`           | Equal to.                                                               |
-| `>`           | Greater than.                                                           |
-| `>=`          | Greater than or equal to.                                               |
-| `<`           | Less than.                                                              |
-| `<=`          | Less than or equal to.                                                  |
-| `<>`          | Not equal to.                                                           | 
-| `LIKE`        | True if the operand matches a pattern.                                  |
-| `IN`          | True if the operand is equal to one of a list of expressions.           |
-| `NOT LIKE`    | True if the operand does not match a pattern.                           |
-
-___
-
-// Set page to 1 if the user has passed "?limit=all"
 
 ## Endpoints
 
@@ -179,13 +139,60 @@ included detailing what the endpoint can do.
 | Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
 | Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
 
+## Filtering
+
+When requesting a list of resources via the API through browse endpoints, you can apply filters to search through the
+array of entities.
+
+`/posts&filter={"resource":[{"operator":"=", "value":"verbis"}]}`
+
+In the above url:
+
+- `resource` can be any property attached to the object.
+- `operator`: is an allowed operator detailed in the table below.
+- `value`: is a value whose type corresponds to the allowed type detailed below.
+
+This call will search all posts that are equal to verbis. You can use `AND`'s for each parameter by appending another
+object to the filter array.
+
+### Available operators:
+
+You can search through a list of entities in Verbis with the following operators:
+
+| Operator      | Description                                                             |
+| ------------- | ----------------------------------------------------------------------- |
+| `=`           | Equal to.                                                               |
+| `>`           | Greater than.                                                           |
+| `>=`          | Greater than or equal to.                                               |
+| `<`           | Less than.                                                              |
+| `<=`          | Less than or equal to.                                                  |
+| `<>`          | Not equal to.                                                           | 
+| `LIKE`        | True if the operand matches a pattern.                                  |
+| `IN`          | True if the operand is equal to one of a list of expressions.           |
+| `NOT LIKE`    | True if the operand does not match a pattern.                           |
+
+## Examples
+
+**Filter through posts by title**
+
+This example demonstrates how to search through posts with a title that iS `LIKE` `verbis`.
+
+`/posts&filter={"title":[{"operator":"LIKE", "value":"verbis"}]}`
+
+**Filter through posts by title and page template**
+
+This example demonstrates how to search through posts with a title that iS `LIKE` `verbis` 
+
+`/posts&filter={"title":[{"operator":"LIKE", "value":"verbis"}], "page_template":[{"operator":"LIKE", "value":"archive"}]}`
+
 
 
 ## Auth
 
 ## Site
 
-The `/site` endpoint is used to retrieve the global Site object which contains important information about the Verbis installation.
+The `/site` endpoint is used to retrieve the global Site object which contains important information about the Verbis
+installation.
 
 - The `title`, `description`, `logo`, `url` can all be updated in the admin interface.
 - The `url` contains the current version of Verbis.
@@ -598,28 +605,14 @@ ___
 
 ## Categories
 
-___
-
 ## Media
-
-___
 
 ## Fields
 
-___
-
 ## Options
-
-___
 
 ## Users
 
-___
-
 ## Roles
 
-___
-
 ## Cache
-
-___
