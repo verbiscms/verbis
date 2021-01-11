@@ -101,14 +101,16 @@ the response for browse endpoints.
 ### The Pagination object
 
 ```json
-"meta": {
-	"pagination": {
-		"page": 1,
-		"pages": 1,
-		"limit": 15,
-		"total": 11,
-		"next": false,
-		"prev": false
+{
+	"meta": {
+		"pagination": {
+			"page": 1,
+			"pages": 1,
+			"limit": 15,
+			"total": 11,
+			"next": false,
+			"prev": false
+		}
 	}
 }
 ```
@@ -122,18 +124,16 @@ The pagination object contains the following:
 - `next`: is either a boolean set to `false` if there is no next page, or an integer of page number of if there is.
 - `prev`: is either a boolean set to `false` if there is no previous page, or an integer of page number of if there is.
 
-
 ### Pagination parameters for requests
 
 The Verbis API allows you to navigate through paginated content easily with the query parameters described below:
 
-| Query Parameter     | Description                                                                  |
-| ------------------- | ---------------------------------------------------------------------------- |
-| `page`              | The page number of the query.                                                |
-| `limit`             | Allows you to limit the number of records returned `all` for every record.   |
-| `order_by`          | Order by a particular column.                                                |
-| `order_direction`   | Establish the order direction of the query.                                  |
-
+| Query Parameter     | Default      | Description                                                                     |
+| ------------------- | ------------ | ------------------------------------------------------------------------------- |
+| `page`              | `1`          | The page number of the query.                                                   |
+| `limit`             | `15`         | Allows you to limit the number of records returned `all` for every record.      |
+| `order_by`          | `asc`        | Order by a particular column.                                                    |
+| `order_direction`   | `id`         | Establish the order direction of the query.                                     |
 
 ## Examples
 
@@ -145,10 +145,16 @@ This example demonstrates how to obtain posts in batches of ten, and display the
 
 **Retrieve all rows**
 
-This example demonstrates how to obtain all posts with no paging.
-⚠️ **Be careful** when setting the `limit` to `all` it may slow down requests depending on how big your website is.
+This example demonstrates how to obtain all posts with no paging. ⚠️ **Be careful** when setting the `limit` to `all` it
+may slow down requests depending on how big your website is.
 
 `/posts?limit=all`
+
+**Change order by and direction**
+
+This example demonstrates how to order posts by title in descending order.
+
+`/posts?order_by=title&order_direction=desc`
 
 ## Filtering
 
@@ -192,7 +198,8 @@ This example demonstrates how to search through posts with a title that iS `LIKE
 
 **Filter through posts by title and page template**
 
-This example demonstrates how to search through posts with a title that is `LIKE` `verbis` OR if the post has a page template `LIKE` `archive`.
+This example demonstrates how to search through posts with a title that is `LIKE` `verbis` OR if the post has a page
+template `LIKE` `archive`.
 
 `/posts&filter={"title":[{"operator":"LIKE", "value":"verbis"}], "page_template":[{"operator":"LIKE", "value":"archive"}]}`
 
@@ -204,12 +211,193 @@ This example demonstrates how to search through posts with a slug that is `LIKE`
 
 ## Auth
 
+Verbis uses secure token authentication for all routes that are not public. Fresh tokens are generated when after a
+successful login and will be regenerated once the user logs out, or the session expires.
+
+📢 **Storing the token:** Private endpoints should feature a header with the key `token` to authorise requests
+
+There are a collection of `Auth` endpoints described below that help with password resets as wells as authentication.
+
+### Login
+
+Logging in requires an email and password to be sent, if the user is authenticated a token will be sent back to **store
+for future requests**.
+
+Required fields:
+- `email`
+- `password`
+  
+👉 `POST` to `/login`
+
+```json
+{
+    "email": "hello@verbiscms.com",
+    "password": "mypassword"
+}
+```
+
+**Example Response**
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully logged in & session started",
+    "meta": {
+	"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+	"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+	"latency_time": "20.000ms"
+    },
+    "data": {
+        "id": 1,
+        "uuid": "7d14f9da-5412-11eb-ae93-0242ac130002",
+        "first_name": "Verbis",
+        "last_name": "CMS",
+        "email": "hello@verbiscms.com",
+        "facebook": null,
+        "twitter": null,
+        "linked_in": null,
+        "instagram": null,
+        "biography": null,
+        "role": {
+            "id": 0,
+            "name": "",
+            "description": ""
+        },
+        "profile_picture_id": null,
+        "email_verified_at": null,
+        "created_at": "2020-01-01T12:00:00Z",
+        "updated_at": "2020-01-01T12:00:00Z",
+        "token": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+        "token_last_used": "2020-01-01T12:00:00Z"
+    }
+}
+```
+
+### Logout
+
+Logs the user out everywhere by obtaining the `token` key. As such, it doesn't require any JSON body.
+
+👉 `POST` to `/logout`
+
+**Example Response**
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully logged out",
+    "meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+    },
+    "data": {}
+}
+```
+
+Required fields:
+- `token`
+
+### Send Password Reset
+
+Sends a password reset email to the user if they have forgotten their password. This route creates a unique token 
+within the database for secure verification.
+
+Required fields:
+- `email`
+
+```json
+{
+	"email": "hello@verbiscms.com"
+}
+```
+
+👉 `POST` to `/password/email`
+
+**Example Response**
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "A fresh verification link has been sent to your email",
+    "meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+    },
+    "data": {}
+}
+```
+
+### Verify Password Token
+
+As Verbis is headless, meaning a completely separate admin interface is used to interact with the API, password token's
+can be verified using this endpoint. The token is passed in the URL, and the endpoint returns a 404 if the token could
+not be verified.
+
+👉 `POST` to `password/verify/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+
+**Example Response**
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully verified token",
+    "meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+    },
+    "data": {}
+}
+```
+
+
+### Password Reset
+
+Resets a users' password, after they have clicked the verification email link. `new_password` and `confirm_password`
+need to be equal and at least 8 characters in length. The token passed from the email also needs to be valid in order
+to reset.
+
+Required fields:
+- `new_password`
+- `confirm_password`
+- `token`
+
+👉 `POST` to `/password/reset`
+
+```json
+{
+    "new_password": "mypassword",
+    "confirm_password": "mypassword",
+    "token": "f60a267969416107c68c6133ff00d88b"
+}
+```
+
+**Example Response**
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully reset password",
+    "meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+    },
+    "data": {}
+}
+```
 
 
 ## Site
 
 The `/site` endpoint is used to retrieve the global Site object which contains important information about the Verbis
-installation.
+installation. Apart from the `Auth` routes, this is the **only endpoint that does not require authentication**.
 
 - The `title`, `description`, `logo`, `url` can all be updated in the admin interface.
 - The `url` contains the current version of Verbis.
@@ -388,7 +576,7 @@ reside in the templates' folder set in the `config.yml`.
 
 ## Layouts
 
-The `/layoutds` endpoint is used to retrieve the theme's all page layouts for the currently activated theme that reside
+The `/layouts` endpoint is used to retrieve the theme's all page layouts for the currently activated theme that reside
 in the layouts' folder set in the `config.yml`.
 
 - `key`: represents the page layout file name.
@@ -592,7 +780,6 @@ existing post. If no author ID is passed, the owner will automatically be assign
 ID.
 
 Required fields:
-
 - `slug`
 - `title`
 
