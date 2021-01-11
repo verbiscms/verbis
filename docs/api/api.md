@@ -48,8 +48,7 @@ All endpoints respond with a JSON encoded response, which contains the following
 - `status`: contains an integer of the resulting http status code of the call.
 - `error`: contains a boolean to signify if there was an error calling the endpoint.
 - `message`: contains a brief message about the status of the call, and a useful description if there was an error.
-- `meta`: includes Pagination if the route is a `GET` (browse) endpoint. It also includes `request_time`
-  , `response_time` and `latency` times.
+- `meta`: includes Pagination if the route is a `GET` (browse) endpoint. It also includes `request_time`, `response_time` and `latency` times.
 - `data`: contains the main body of the call, usually this is an array, but sometimes it can be an object depending on
   the endpoint.
 
@@ -100,14 +99,14 @@ the response for browse endpoints.
 
 ```json
 "meta": {
-"pagination": {
-"page": 1,
-"pages": 1,
-"limit": 15,
-"total": 11,
-"next": false,
-"prev": false
-}
+	"pagination": {
+		"page": 1,
+		"pages": 1,
+		"limit": 15,
+		"total": 11,
+		"next": false,
+		"prev": false
+	}
 }
 ```
 
@@ -140,6 +139,8 @@ included detailing what the endpoint can do.
 # TODO
 
 // Set page to 1 if the user has passed "?limit=all"
+
+## Filtering
 
 ## Auth
 
@@ -317,7 +318,15 @@ in the layouts' folder set in the `config.yml`.
 
 Posts are the main entity of Verbis, and it contains vital data to use for theme development and filtering through content via the API.
 
-### The Post object.
+### The Post object
+
+When you retrieve posts from the API, a Post object will be returned that holds information about the post. It contains the following:
+
+- `post`: contains details about the post including the `slug`, `title`, page attributes such as `page_template` and any options that are attached including SEO and Meta information
+- `author`: contains the post category author, including the `first_name`, `last_name` and `role`.
+- `category`: contains the post category information, including the `slug`, `name` and `description`.
+- `layout`: contains the page layout as an array of field groups, these are key settings for the `fields`.
+- `fields`: contains an array of fields that are associated with the layout.
 
 **Example Response:**
 
@@ -337,7 +346,7 @@ Posts are the main entity of Verbis, and it contains vital data to use for theme
 		{
 			"post": {
 				"id": 1,
-				"uuid": "648f289b-6997-46df-a44f-d16eee44d0c8",
+				"uuid": "266c4f82-53fb-11eb-ae93-0242ac130002",
 				"slug": "/posts/post-title",
 				"title": "Post Title",
 				"status": "published",
@@ -363,7 +372,7 @@ Posts are the main entity of Verbis, and it contains vital data to use for theme
 			},
 			"author": {
 				"id": 1,
-				"uuid": "d83f45c1-1a92-4cff-88c7-545c2017cb7b",
+				"uuid": "266c51ee-53fb-11eb-ae93-0242ac130002",
 				"first_name": "Verbis",
 				"last_name": "CMS",
 				"email": "hello@verbiscms.com",
@@ -394,15 +403,15 @@ Posts are the main entity of Verbis, and it contains vital data to use for theme
 			},
 			"layout": [
 				{
-					"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc72",
+					"uuid": "266c52d4-53fb-11eb-ae93-0242ac130002",
 					"title": "Text Group",
 					"fields": [
 						{
-							"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+							"uuid": "266c53a6-53fb-11eb-ae93-0242ac130002",
 							"label": "Normal",
 							"name": "text",
 							"type": "text",
-							"instructions": "Add a text field",
+							"instructions": "Add a text field.",
 							"required": false,
 							"conditional_logic": null,
 							"wrapper": {
@@ -421,7 +430,7 @@ Posts are the main entity of Verbis, and it contains vital data to use for theme
 			],
 			"fields": [
 				{
-					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+					"uuid": "266c548c-53fb-11eb-ae93-0242ac130002",
 					"type": "text",
 					"name": "text",
 					"key": "",
@@ -433,7 +442,19 @@ Posts are the main entity of Verbis, and it contains vital data to use for theme
 }
 ```
 
-### The Post object.
+### Retrieving Posts
+
+The Posts endpoint allows you to filter through posts with `quer` [Hello](#Filtering)
+
+Query params: resource, status
+
+
+
+### Retrieve a specific Post
+
+### Updating a Post
+
+### Deleting a Post
 
 ## Fields
 
