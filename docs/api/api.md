@@ -48,7 +48,8 @@ All endpoints respond with a JSON encoded response, which contains the following
 - `status`: contains an integer of the resulting http status code of the call.
 - `error`: contains a boolean to signify if there was an error calling the endpoint.
 - `message`: contains a brief message about the status of the call, and a useful description if there was an error.
-- `meta`: includes Pagination if the route is a `GET` (browse) endpoint. It also includes `request_time`, `response_time` and `latency` times.
+- `meta`: includes Pagination if the route is a `GET` (browse) endpoint. It also includes `request_time`
+  , `response_time` and `latency` times.
 - `data`: contains the main body of the call, usually this is an array, but sometimes it can be an object depending on
   the endpoint.
 
@@ -131,18 +132,60 @@ included detailing what the endpoint can do.
 | Layouts             | Browse                               | Retrieves all page layouts for the current theme.              |
 | Posts               | Browse, Read, Add, Edit, Delete      | Allows for the modification and reading of posts.              |
 | Categories          | Browse, Read, Add, Edit, Delete      | Allows for the modification and reading of categories.         |
-| Media               | Browse, Read, Upload, Edit Delete    | Allows media to be uploaded and read.                          |
+| Media               | Browse, Read, Upload, Edit, Delete   | Allows media to be uploaded and read.                          |
 | Users               | Browse, Add, Edit, Delete            | Allows for the modification and reading of users.              |
 | Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
 | Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
 
 ## Filtering
 
+When requesting a list of resources via the API through browse endpoints, you can apply filters to search through the array of entities.
+
+`/posts&filter={"resource":[{"operator":"=", "value":"verbis"}]}`
+
+In the above url:
+
+- `resource` can be any property attached to the object.
+- `operator`: is an allowed operator detailed in the table below.
+- `value`: is a value whose type corresponds to the allowed type detailed below.
+
+This call will 
+
+
 // Set page to 1 if the user has passed "?limit=all"
 
 ## Auth
 
 ## Site
+
+The `/site` endpoint is used to retrieve the global Site object which contains important information about the Verbis installation.
+
+- The `title`, `description`, `logo`, `url` can all be updated in the admin interface.
+- The `url` contains the current version of Verbis.
+
+**Example Response:**
+
+👉 `GET` to `/api/{version}/site`
+
+```json
+{
+	"status": 200,
+	"error": false,
+	"message": "Successfully obtained site config",
+	"meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+	},
+	"data": {
+		"title": "Verbis",
+		"description": "A Verbis website. Publish online, build a business, work from home",
+		"logo": "/verbis/images/verbis-logo.svg",
+		"url": "http://127.0.0.1:8080",
+		"version": "0.0.1"
+	}
+}
+```
 
 ## Theme
 
@@ -314,13 +357,16 @@ in the layouts' folder set in the `config.yml`.
 
 ## Posts
 
-Posts are the main entity of Verbis, and it contains vital data to use for theme development and filtering through content via the API.
+Posts are the main entity of Verbis, and it contains vital data to use for theme development and filtering through
+content via the API.
 
 ### The Post object
 
-When you retrieve posts from the API, a Post object will be returned that holds information about the post. It contains the following:
+When you retrieve posts from the API, a Post object will be returned that holds information about the post. It contains
+the following:
 
-- `post`: contains details about the post including the `slug`, `title`, page attributes such as `page_template` and any options that are attached including SEO and Meta information
+- `post`: contains details about the post including the `slug`, `title`, page attributes such as `page_template` and any
+  options that are attached including SEO and Meta information
 - `author`: contains the post category author, including the `first_name`, `last_name` and `role`.
 - `category`: contains the post category information, including the `slug`, `name` and `description`.
 - `layout`: contains the page layout as an array of field groups, these are key settings for the `fields`.
@@ -439,6 +485,7 @@ When you retrieve posts from the API, a Post object will be returned that holds 
 	]
 }
 ```
+
 ___
 
 ### Retrieving Posts
@@ -454,7 +501,7 @@ The Posts endpoint allows you to filter through posts with query parameters and 
 
 **Retrieve all posts with the resource of `news`**
 
-🔗 `GET` to `/posts?resource=news` 
+🔗 `GET` to `/posts?resource=news`
 
 **Retrieve all posts with a status of `published`**
 
@@ -466,13 +513,15 @@ The Posts endpoint allows you to filter through posts with query parameters and 
 
 ### Retrieve a specific Post
 
-To retrieve a specific post, an ID parameter is passed after `/posts` URL, the following URL will retrieve the post with an ID of 10.
+To retrieve a specific post, an ID parameter is passed after `/posts` URL, the following URL will retrieve the post with
+an ID of 10.
 ___
 
 ### Creating a post
 
-To create a post a slug and title is required to avoid any collisions and detect if the slug is already being used by an existing post. If no author ID is passed, the owner
-will automatically be assigned. You can optionally pass a category ID.
+To create a post a slug and title is required to avoid any collisions and detect if the slug is already being used by an
+existing post. If no author ID is passed, the owner will automatically be assigned. You can optionally pass a category
+ID.
 
 Required fields:
 
@@ -485,34 +534,36 @@ Below is a minimal example of creating a post.
 
 ```json
 {
-    "slug": "/new-post-title",
-    "title": "My awesome new post",
-    "author": 1,
-    "category": 1
+	"slug": "/new-post-title",
+	"title": "My awesome new post",
+	"author": 1,
+	"category": 1
 }
 ```
+
 ___
 
 ### Updating a Post
 
-To update a post, an ID parameter is passed after the `/posts` URL, the body is exactly the same as the `POST` route. 
-If no post is found with the given ID a response of 400 will be returned.
+To update a post, an ID parameter is passed after the `/posts` URL, the body is exactly the same as the `POST` route. If
+no post is found with the given ID a response of 400 will be returned.
 
 👉 `PUT` to `/posts/1`
 
 ```json
 {
-    "title": "My awesome new post with a changed title",
-    "author": 1,
-    "category": 1
+	"title": "My awesome new post with a changed title",
+	"author": 1,
+	"category": 1
 }
 ```
+
 ___
 
 ### Deleting a Post
 
-To delete a post, an ID parameter is passed after the `/posts` URL. 
-If no post is found with the given ID a response of 400 will be returned.
+To delete a post, an ID parameter is passed after the `/posts` URL. If no post is found with the given ID a response of
+400 will be returned.
 
 👉 `DELETE` to `/posts/1`
 
@@ -520,15 +571,9 @@ ___
 
 ## Categories
 
-
 ## Media
 
-
 ## Fields
-
-
-
-
 
 ## Options
 
