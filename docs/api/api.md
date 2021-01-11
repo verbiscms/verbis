@@ -62,9 +62,9 @@ required as an object in the `data` key under `errors`.
     "error": true,
     "message": "Validation failed",
     "meta": {
-        "request_time": "2021-01-11 09:23:07.245776 +0000 UTC",
-        "response_time": "2021-01-11 09:23:07.286635 +0000 UTC",
-        "latency_time": "20.857ms"
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
     },
     "data": {
         "errors": [
@@ -132,11 +132,8 @@ Below is a table listing the current endpoints for each resource that's availabl
 | Options             | Browse, Add, Edit                    | Allows to add or edit an option.                               |
 | Fields              | Browse                               | Retrieves page layouts based on query parameters.              |
 
-Brief intro
-Table of endpoints
-
-
-	// Set page to 1 if the user has passed "?limit=all"
+#TODO
+// Set page to 1 if the user has passed "?limit=all"
 
 ### Auth
 
@@ -144,11 +141,136 @@ Table of endpoints
 
 ### Theme
 
+The `/theme` endpoint is used to retrieve the theme's `config.yml` file within the theme directory. This can be particularly useful for establishing
+what resources the current theme has, and general information about the currently activated theme including a title, description and theme version.
+
+**Example Response:**
+
+`GET` to `/api/{version}/theme`
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully obtained theme config",
+    "meta": {
+		"request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+		"response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+		"latency_time": "20.000ms"
+    },
+    "data": {
+        "theme": {
+            "title": "A Verbis Theme",
+            "description": "Stock theme for verbis",
+            "version": "0.0.1"
+        },
+        "resources": {
+            "posts": {
+                "name": "posts",
+                "friendly_name": "Posts",
+                "singular_name": "Post",
+                "slug": "/posts",
+                "icon": "feather feather-clipboard"
+            }
+        },
+        "assets_path": "/assets",
+        "file_extension": ".cms",
+        "template_dir": "templates",
+        "layout_dir": "layouts",
+        "editor": {
+            "modules": [
+                "blockquote",
+                "code_block",
+                "code_block_highlight",
+                "code_view",
+                "hardbreak",
+                "h1",
+                "h2",
+                "h3",
+                "h4",
+                "h5",
+                "h6",
+                "paragraph",
+                "hr",
+                "ul",
+                "ol",
+                "bold",
+                "code",
+                "italic",
+                "link",
+                "strike",
+                "underline",
+                "history",
+                "search",
+                "trailing_node",
+                "color",
+                "table"
+            ],
+            "options": {
+                "link": {
+                    "rel": "noopener noreferrer nofollow"
+                },
+                "ol": {
+                    "class": "list list-ordered"
+                },
+                "palette": [
+                    "#fad839",
+                    "#ca1f26",
+                    "#1b3990",
+                    "#333"
+                ],
+                "ul": {
+                    "class": "list"
+                }
+            }
+        }
+    }
+}
+```
+
 ### Templates
 
+The `/templates` endpoint is used to retrieve the theme's `config.yml` file within the theme directory. This can be particularly useful for establishing
+what resources the current theme has, and general information about the currently activated theme including a title, description and theme version.
+
+**Example Response:**
+
+`GET` to `/api/{version}/templates`
+
+```json
+{
+    "status": 200,
+    "error": false,
+    "message": "Successfully obtained templates",
+    "meta": {
+        "request_time": "2021-01-01 12:00:00.000000 +0000 UTC",
+        "response_time": "2021-01-01 12:00:20.200000 +0000 UTC",
+        "latency_time": "20.000ms"
+    },
+    "data": {
+        "templates": [
+            {
+                "key": "default",
+                "name": "Default"
+            },
+            {
+                "key": "archive",
+                "name": "Archive"
+            },
+			{
+				"key": "archive-single",
+				"name": "Archive Single"
+			}
+        ]
+    }
+}
+```
 ### Layouts
 
 ### Posts
+
+
+
 
 ### Fields
 
