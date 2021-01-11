@@ -495,7 +495,8 @@ ___
 
 ### Updating a Post
 
-To update a post, an ID paramater is passed after the `/posts` URL, the body is exactly tje sa,e as the `POST` route.
+To update a post, an ID parameter is passed after the `/posts` URL, the body is exactly the same as the `POST` route. 
+If no post is found with the given ID a response of 400 will be returned.
 
 👉 `PUT` to `/posts/1`
 
@@ -510,13 +511,24 @@ ___
 
 ### Deleting a Post
 
-___
+To delete a post, an ID parameter is passed after the `/posts` URL. 
+If no post is found with the given ID a response of 400 will be returned.
 
-## Fields
+👉 `DELETE` to `/posts/1`
+
+___
 
 ## Categories
 
+
 ## Media
+
+
+## Fields
+
+
+
+
 
 ## Options
 
