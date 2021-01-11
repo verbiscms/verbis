@@ -51,7 +51,7 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 	const op = "Model.filterRows"
 
 	q := ""
-	operators := []string{"=", ">", ">=", "<=", "<>", "LIKE", "IN", "NOT LIKE", "like", "in", "not like"}
+	operators := []string{"=", ">", ">=", "<", "<=", "<>", "LIKE", "IN", "NOT LIKE", "like", "in", "not like"}
 
 	if len(filters) != 0 {
 		counter := 0
