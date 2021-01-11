@@ -449,27 +449,61 @@ The Posts endpoint allows you to filter through posts with query parameters and 
 | Resource            | The posts resource, `posts` or `pages` if there is no resource attached.    | 
 | Status              | The status of the post, `published`, `draft` or `private`.                  |
 
-### Examples
+#### Examples
 
 **Retrieve all posts with the resource of `news`**
 
-👉 `api/v1/posts?resource=news` 
+🔗 `GET` to `/posts?resource=news` 
 
 **Retrieve all posts with a status of `published`**
 
-👉 `api/v1/posts?status=published`
+🔗 `GET` to `/posts?status=published`
 
 **Retrieve all posts with a status of `published` and with a limit of `10`**
 
-👉 `api/v1/posts?status=published&limit=10`
+🔗 `GET` to `/posts?status=published&limit=10`
 
 ### Retrieve a specific Post
 
-To retrieve a specific post, an ID parameter is passed after `/posts` URL.
+To retrieve a specific post, an ID parameter is passed after `/posts` URL, the following URL will retrieve the post with an ID of 10.
 
+### Creating a post
 
+To create a post a slug and title is required to avoid any collisions and detect if the slug is already being used by an existing post. If no author ID is passed, the owner
+will automatically be assigned. You can optionally pass a category ID.
+
+Required fields:
+
+- `slug`
+- `title`
+
+Below is a minimal example of creating a post.
+
+👉 `POST` to `/posts`
+
+```json
+{
+    "slug": "/new-post-title",
+    "title": "My awesome new post",
+    "author": 1,
+    "category": 1
+}
+```
 
 ### Updating a Post
+
+To update a post, an ID paramater is passed after the `/posts` URL, the body is exactly tje sa,e as the `POST` route.
+
+👉 `PUT` to `/posts/1`
+
+```json
+{
+    "title": "My awesome new post with a changed title",
+    "author": 1,
+    "category": 1
+}
+```
+
 
 ### Deleting a Post
 
