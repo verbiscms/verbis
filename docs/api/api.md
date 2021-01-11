@@ -439,6 +439,7 @@ When you retrieve posts from the API, a Post object will be returned that holds 
 	]
 }
 ```
+___
 
 ### Retrieving Posts
 
@@ -466,6 +467,7 @@ The Posts endpoint allows you to filter through posts with query parameters and 
 ### Retrieve a specific Post
 
 To retrieve a specific post, an ID parameter is passed after `/posts` URL, the following URL will retrieve the post with an ID of 10.
+___
 
 ### Creating a post
 
@@ -489,6 +491,7 @@ Below is a minimal example of creating a post.
     "category": 1
 }
 ```
+___
 
 ### Updating a Post
 
@@ -503,9 +506,11 @@ To update a post, an ID paramater is passed after the `/posts` URL, the body is 
     "category": 1
 }
 ```
-
+___
 
 ### Deleting a Post
+
+___
 
 ## Fields
 
