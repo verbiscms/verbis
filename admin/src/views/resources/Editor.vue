@@ -198,7 +198,7 @@ import Fields from "@/components/editor/tabs/Fields";
 import Tabs from "@/components/misc/Tabs";
 import Popover from "@/components/misc/Popover";
 import FormGroup from "@/components/forms/FormGroup";
-import FieldParser from "@/util/fieldParser"
+import FieldParser from "@/util/fields/parser"
 
 export default {
 	name: "Single",

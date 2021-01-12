@@ -29,7 +29,7 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
 
 export default {
 	name: "FieldNumber",

@@ -24,16 +24,17 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import {fieldMixin} from "@/util/fields/fields"
+import {choiceMixin} from "@/util/fields/choice"
 
 export default {
 	name: "FiledButtonGroup",
-	mixins: [fieldMixin],
+	mixins: [fieldMixin, choiceMixin],
 	data: () => ({
 		errors: [],
 	}),
 	mounted() {
-		this.setDefaultValueChoices();
+		this.setDefault();
 	},
 	methods: {
 		/*
@@ -43,7 +44,7 @@ export default {
 		validate() {
 			this.errors = [];
 			if (!this.getOptions["allow_null"]) {
-				this.validateRequired()
+				this.validateRequired();
 			}
 		},
 	},
@@ -54,10 +55,10 @@ export default {
 		 */
 		field: {
 			get() {
-				return this.getValue;
+				return this.getMultipleFormat();
 			},
 			set(value) {
-				this.$emit("update:fields", this.getFieldObject(value));
+				return this.setMultipleFormat(value);
 			}
 		}
 	}

@@ -27,16 +27,20 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
+import {choiceMixin} from "@/util/fields/choice"
 
 export default {
 	name: "FieldRadio",
-	mixins: [fieldMixin],
+	mixins: [fieldMixin, choiceMixin],
 	data: () => ({
 		errors: [],
 	}),
 	mounted() {
-		this.setDefaultValueChoices();
+		this.setDefault();
+	},
+	created() {
+		this.fields.key = this.getFormat;
 	},
 	methods: {
 		/*
@@ -57,10 +61,10 @@ export default {
 		 */
 		field: {
 			get() {
-				return this.fields;
+				return this.getMultipleFormat();
 			},
 			set(value) {
-				this.$emit("update:fields", this.getFieldObject(value));
+				this.setMultipleFormat(value);
 			}
 		}
 	}

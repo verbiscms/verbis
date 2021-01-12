@@ -182,7 +182,7 @@
 
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-markup';
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
 import {Editor, EditorContent, EditorMenuBar, EditorMenuBubble} from 'tiptap'
 import {
 	VerbisBlockquote,

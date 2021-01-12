@@ -22,7 +22,7 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
 
 export default {
 	name: "FieldText",
@@ -44,10 +44,10 @@ export default {
 		 */
 		field: {
 			get() {
-				return this.getValue === "" ? this.getOptions['default_value'] : this.getValue
+				return this.getValue === "" ? this.getOptions['default_value'] : (this.getValue === "true");
 			},
 			set(value) {
-				this.$emit("update:fields", this.getFieldObject(value));
+				this.$emit("update:fields", this.getFieldObject(value.toString()));
 			}
 		}
 	}
