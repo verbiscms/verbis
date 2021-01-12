@@ -46,19 +46,41 @@ export default class FieldParser {
                 return
             }
 
+            // Flexible
+            if (field.type === "flexible") {
+                this._set(this.parsed, field.name + "_flexible", field)
+                return
+            }
+
             // Obtain the split keys array
             const splitKeys = field.key.split("_");
 
             // Find repeater children
-            const parent = this.fields.find(f => f.name === splitKeys[0])
-            if (parent) {
+            const parent = this.fields.find(f => f.name === splitKeys[0]);
+            if (parent && parent.type === "repeater") {
                 for (let itemIndex = 1; itemIndex < splitKeys.length; itemIndex += 3) {
                     splitKeys.splice(itemIndex, 0, 'children');
                 }
                 this._set(this.parsed, splitKeys.join("_"), field)
             }
 
-            // Flexible
+            // Find Flexible Children
+            if (parent && parent.type === "flexible") {
+                for (let itemIndex = 1; itemIndex < splitKeys.length; itemIndex += 3) {
+                    splitKeys.splice(itemIndex, 0, 'children');
+                }
+
+                for (let itemIndex = 3; itemIndex < splitKeys.length; itemIndex += 3) {
+                    splitKeys.splice(itemIndex, 0, 'fields');
+                }
+
+                parent.value.split(",").forEach((val, index) => {
+                    let str = parent.name + "_children_" + index + "_type";
+                    this._set(this.parsed, str, val)
+                });
+
+                this._set(this.parsed, splitKeys.join("_"), field)
+            }
         });
 
         return this.parsed;

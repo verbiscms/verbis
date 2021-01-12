@@ -80,8 +80,8 @@
 											===================== -->
 										<!-- Repeater -->
 										<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldRepeater>
-<!--										&lt;!&ndash; Flexible &ndash;&gt;-->
-<!--										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>-->
+										<!-- Flexible -->
+										<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldFlexible>
 									</div><!-- /Field Content -->
 								</div>
 							</transition>
@@ -123,8 +123,8 @@ import FieldUser from "@/components/editor/fields/User";
 
 // Layout
 import FieldRepeater from "@/components/editor/fields/Repeater";
-// import FieldFlexible from "@/components/editor/fields/FlexibleContent";
-//
+import FieldFlexible from "@/components/editor/fields/FlexibleContent";
+
 import Collapse from "@/components/misc/Collapse";
 import FieldImage from "@/components/editor/fields/Image";
 
@@ -165,7 +165,7 @@ export default {
 		FieldUser,
 		// Layout
 		FieldRepeater,
-		// FieldFlexible,
+		FieldFlexible,
 	},
 	data: () => ({
 		heights: {},
