@@ -58,10 +58,6 @@
 											===================== -->
 										<!-- Select -->
 										<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldSelect>
-
-										<!-- HERE DOWNWARDS -->
-
-
 										<!-- Tags -->
 										<FieldTags v-else-if="layout.type === 'tags'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldTags>
 										<!-- Checkbox -->
@@ -77,6 +73,8 @@
 										<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPost>
 										<!-- User -->
 										<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUser>
+
+										<!-- Category -->
 										<!-- =====================
 											Layout
 											===================== -->

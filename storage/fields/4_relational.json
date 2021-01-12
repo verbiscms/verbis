@@ -14,13 +14,11 @@
 				"width": 100
 			},
 			"options": {
-				"post_type": [
-					"page",
-					"news"
-				],
+				"resource": ["staff", "industries"],
 				"category": "",
-				"allow_null": false,
-				"multiple": true
+				"required": false,
+				"min": false,
+				"max": false
 			}
 		},
 		{
@@ -38,8 +36,9 @@
 				"role": [
 					"admin"
 				],
-				"allow_null": false,
-				"multiple": false
+				"required": false,
+				"min": false,
+				"max": false
 			}
 		}
 	]

@@ -30,7 +30,7 @@ export default class FieldParser {
         this.fields.forEach(field => {
 
             // Normal
-            if (field.key === "" && field.type !== "repeater") {
+            if (field.type !== "repeater") {
                 this.parsed[field.name] = field;
                 return
             }
