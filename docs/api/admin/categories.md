@@ -1,7 +1,7 @@
 # Categories
 
 These routes allow you to browse, read, create, update and delete categories through the Verbis API. All endpoints are
-prefixed with `/categories`.
+prefixed with `/categories`. These routes can be particularly powerful for updating and creating filtered posts
 
 ## The Category object
 

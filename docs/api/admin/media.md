@@ -3,6 +3,9 @@
 These routes allow you to browse, read, upload, update and delete media items through the Verbis API. All media
 endpoints are prefixed with `/media`.
 
+Using these routes you can access all media items in the library and uploads different content for use with your
+Verbis installation. 
+
 ## The Media object
 
 When you retrieve media items from the API, an array of Media object's will be returned that holds information about the
@@ -125,7 +128,7 @@ Required fields:
 ## Updating a Media Item
 
 To update a media item, an ID parameter is passed after the `/media` URL. Whilst you can't update any of the paths or
-core media item, you are able to edit some key meta data as shown below.
+the core media item properties, you are able to edit meta data as shown below.
 
 👉 `PUT` to `/api/{version}/media/1`
 

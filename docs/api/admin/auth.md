@@ -3,7 +3,7 @@
 Verbis uses secure token authentication for all routes that are not public. Fresh tokens are generated when after a
 successful login and will be regenerated once the user logs out, or the session expires.
 
-📢 **Storing the token:** Private endpoints should feature a header with the key `token` to authorise requests
+📢 **Storing the token:** Private endpoints should feature a header with the key `token` to authorise requests.
 
 There are a collection of `Auth` endpoints described below that help with password resets as wells as authentication.
 
@@ -150,7 +150,7 @@ not be verified.
 
 Resets a users' password, after they have clicked the verification email link. `new_password` and `confirm_password`
 need to be equal and at least 8 characters in length. The token passed from the email also needs to be valid in order to
-reset.
+reset the users password. This can be obtained from the last part of the URL.
 
 Required fields:
 - `new_password`

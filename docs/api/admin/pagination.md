@@ -1,6 +1,6 @@
 # Pagination
 
-By default, Verbis limit's all `GET` requests to 15 by default. The `Pagination` object appears under the `meta` key in
+By default, Verbis limit's all `GET` requests to **15** by default. The `Pagination` object appears under the `meta` key in
 the response for browse endpoints.
 
 ## The Pagination object
@@ -26,8 +26,8 @@ The pagination object contains the following:
 - `pages`: how many pages there are in total.
 - `limit`: how many items are displayed at once.
 - `total`: how many items there are in total.
-- `next`: is either a boolean set to `false` if there is no next page, or an integer of page number of if there is.
-- `prev`: is either a boolean set to `false` if there is no previous page, or an integer of page number of if there is.
+- `next`: is either a boolean set to `false` if there is no next page, or an integer of the next page number of if there is.
+- `prev`: is either a boolean set to `false` if there is no previous page, or an integer of the previous page number of if there is.
 
 ## Pagination parameters for requests
 
@@ -50,8 +50,9 @@ This example demonstrates how to obtain posts in batches of ten, and display the
 
 **Retrieve all rows**
 
-This example demonstrates how to obtain all posts with no paging. ⚠️ **Be careful** when setting the `limit` to `all` it
-may slow down requests depending on how big your website is.
+This example demonstrates how to obtain all posts with no paging.
+
+⚠️ **Be careful** when setting the `limit` to `all` it may slow down requests depending on how big your Verbis installation is.
 
 `/posts?limit=all`
 
