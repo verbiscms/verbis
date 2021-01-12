@@ -108,13 +108,13 @@ export default {
 				return {};
 			}
 		},
-		errorTrigger: {
-			type: Boolean,
-			default: false,
-		},
 		fieldKey: {
 			type: String,
 			default: "",
+		},
+		errorTrigger: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	components: {
@@ -191,6 +191,13 @@ export default {
 		 */
 		addRow() {
 			this.repeaterFields['children'].push({})
+			this.updateHeight();
+		},
+		/*
+		 * updateHeight()
+		 * Update height when row is added
+		 */
+		updateHeight() {
 			this.$nextTick(() => {
 				this.helpers.setHeight(this.$refs.repeater.closest(".collapse-content"));
 			});
@@ -217,7 +224,7 @@ export default {
 		},
 		/*
 		 * moveItem()
-		 * Move from, to, can move a repeater item
+		 * Move from, to, moves repeater children
 		 * up or down.
 		 */
 		moveItem(from, to) {
@@ -248,13 +255,6 @@ export default {
 			return this.layout.options
 		},
 		/*
-		 * getSubFields()
-		 * Get the sub field layouts for looping over.
-		 */
-		getSubFields() {
-			return this.layout['sub_fields'];
-		},
-		/*
 		 * getLayout()
 		 * Get the field layout.
 		 */
@@ -262,7 +262,14 @@ export default {
 			return this.layout;
 		},
 		/*
-		 * field()
+		 * getSubFields()
+		 * Get the sub field layouts for looping over.
+		 */
+		getSubFields() {
+			return this.layout['sub_fields'];
+		},
+		/*
+		 * repeaterFields()
 		 * Fire's the repeater fields back up to the parent.
 		 */
 		repeaterFields: {
