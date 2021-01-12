@@ -41,7 +41,7 @@ export default class FieldParser {
             }
 
             // Repeaters
-            if (field.type === "repeater") {
+            if (field.type === "repeater" && !field.key.split("_").length) {
                 this._set(this.parsed, field.name + "_repeater", field)
                 return
             }
@@ -58,33 +58,65 @@ export default class FieldParser {
             // Find repeater children
             const parent = this.fields.find(f => f.name === splitKeys[0]);
             if (parent && parent.type === "repeater") {
-                for (let itemIndex = 1; itemIndex < splitKeys.length; itemIndex += 3) {
-                    splitKeys.splice(itemIndex, 0, 'children');
+                if (parent && parent.type === "repeater") {
+                    for (let itemIndex = 1; itemIndex < splitKeys.length; itemIndex += 3) {
+                        splitKeys.splice(itemIndex, 0, 'children');
+                    }
+                    this._set(this.parsed, splitKeys.join("_"), field)
                 }
-                this._set(this.parsed, splitKeys.join("_"), field)
             }
+
+            // TODO KEYS ARENT BEING UPDATED IN FLEXIBLE REPEATERS
+            // "text": {
+            //     "uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+            //         "value": "default",
+            //         "name": "text",
+            //         "type": "text",
+            //         "key": "flexible_0_repeater_1_text"
+            // },
+            // "text2": {
+            //     "uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
+            //         "value": "default",
+            //         "name": "text2",
+            //         "type": "text",
+            //         "key": "flexible_0_repeater_1_text2"
+            // }
 
             // Find Flexible Children
             if (parent && parent.type === "flexible") {
+
                 for (let itemIndex = 1; itemIndex < splitKeys.length; itemIndex += 3) {
                     splitKeys.splice(itemIndex, 0, 'children');
                 }
 
-                for (let itemIndex = 3; itemIndex < splitKeys.length; itemIndex += 3) {
-                    splitKeys.splice(itemIndex, 0, 'fields');
-                }
+                // for (let itemIndex = 3; itemIndex < splitKeys.length; itemIndex += 3) {
+                //     console.log(field.key)
+                // }
+
+                splitKeys.splice(3, 0, 'fields');
 
                 parent.value.split(",").forEach((val, index) => {
                     let str = parent.name + "_children_" + index + "_type";
-                    this._set(this.parsed, str, val)
+                    this._set(this.parsed, str, val);
                 });
 
-                this._set(this.parsed, splitKeys.join("_"), field)
+                console.log(splitKeys.join("_"))
+
+                this._set(this.parsed, splitKeys.join("_"), field);
             }
         });
 
         return this.parsed;
     }
+    //
+    // getRepeater(keys, parent) {
+    //     if (parent && parent.type === "repeater") {
+    //         for (let itemIndex = 1; itemIndex < keys.length; itemIndex += 3) {
+    //             keys.splice(itemIndex, 0, 'children');
+    //         }
+    //         this._set(this.parsed, keys.join("_"), field)
+    //     }
+    // }
     /*
      * flattenFields()
      * Collapse the fields into an array to send off
