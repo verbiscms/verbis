@@ -99,24 +99,6 @@ export const fieldMixin = {
 			}
 		},
 		/*
-		 * setDefaultValueChoices()
-		 * Set the default value for choices if there is no field data.
-		 */
-		setDefaultValueChoices() {
-			if (this.getValue === "" && this.getOptions['default_value'] !== "") {
-				const opts = this.getOptions['default_value'];
-				let defaultVal = ""
-				opts.forEach(opt => {
-					defaultVal = this.getOptions['choices'][opt]
-				});
-				if (defaultVal !== "") {
-					this.field = defaultVal;
-					return
-				}
-			}
-			this.field = this.fields;
-		},
-		/*
 		 * replacePrependAppend()
 		 * Replace the field value with empty strings.
 		 */
@@ -128,7 +110,7 @@ export const fieldMixin = {
 		 * Return a error message if the options are required & the value is nil.
 		 */
 		validateRequired() {
-			if (this.field === "" && this.getLayout["required"]) {
+			if (this.field === "" && this.getOptions["required"] === true) {
 				this.errors.push(`The ${this.getLayout.label.toLowerCase()} field is required.`);
 			}
 		},

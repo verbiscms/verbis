@@ -2,7 +2,7 @@
 	Field - User // TODO  - Sort out roles!
 	===================== -->
 <template>
-	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" v-if="!loadingUsers">
+	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" v-if="!loadingUsers" ref="user">
 		<!-- User Tags -->
 		<vue-tags-input
 			v-model="tag"
@@ -13,9 +13,10 @@
 			:disabled="disabled"
 			:max-tags="getMaxTags"
 			:autocomplete-min-length="0"
-			@max-tags-reached="validate(`Only one user can be inserted in to the ${layout.label}`)"
+			@max-tags-reached="maxTagsReached"
 			placeholder="Add User"
-			@blur="validateRequired"
+			@focus="updateHeight"
+			:add-on-key="[13, ':', ';']"
 		/>
 		<!-- Message -->
 		<transition name="trans-fade-height">
@@ -30,17 +31,11 @@
 <script>
 
 import VueTagsInput from '@jack_reddico/vue-tags-input';
+import { fieldMixin } from "@/util/fields/fields"
 
 export default {
 	name: "FieldPostObject",
-	props: {
-		layout: Object,
-		fields: {
-			required: false,
-			type: String,
-			default: "",
-		},
-	},
+	mixins: [fieldMixin],
 	components: {
 		VueTagsInput,
 	},
@@ -59,85 +54,147 @@ export default {
 		this.getUsers()
 	},
 	methods: {
-		validate(msg) {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
+		validate() {
 			this.errors = [];
-			this.errors.push(msg)
+			this.validateRequired();
+			this.updateHeight();
 		},
-		validateRequired() {
-			if (!this.selectedTags.length && !this.getOptions["allow_null"]) {
-				this.errors.push(`The ${this.layout.label.toLowerCase()} field is required.`)
+		/*
+		 * updateHeight()
+		 * Update the height of the container when searching.
+		 */
+		updateHeight() {
+			this.$nextTick(() => {
+				this.helpers.setHeight(this.$refs.user.closest(".collapse-content"));
+			});
+		},
+		/*
+		 * handleBlur()
+		 * Validate minimum and maximum length in options.
+		 */
+		handleBlur() {
+			//this.validateRequired();
+			if (this.getMinTags > this.selectedTags.length) {
+				this.errors.push(`Enter a minimum of ${this.getMinTags} users.`)
 			}
+			this.updateHeight();
 		},
+		/*
+		 * maxTagsReached()
+		 * Handler for maximum tags reached.
+		 */
+		maxTagsReached() {
+			let label = this.getMaxTags === 0 ? 'item' : 'items'
+			this.errors.push(`Enter a maximum of ${this.getMaxTags} ${label} can be inserted in to the ${this.layout.label}`);
+			setTimeout(() => {
+				this.updateHeight();
+			}, 10)
+		},
+		/*
+		 * getUsers()
+		 * Retrieve all users from the API.
+		 */
 		getUsers() {
 			this.$store.dispatch("getUsers")
 				.then(users => {
 					this.users = users;
-					this.mapUsers()
+					this.mapUsers();
 					this.loadingUsers = false;
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
 				})
 		},
+		/*
+		 * mapUsers()
+		 * Set the users for filtering and set tags.
+		 */
 		mapUsers() {
-			this.users = this.users.map(a => {
-				return {
-					text: a['first_name'] + " " + a['last_name'],
-					id: a.id,
-					role: a.role.name,
-				};
-			});
+			this.users = this.users.map(a => ({text: a['first_name'] + " " + a['last_name'], id: a.id, role: a.role.name}));
 			this.setTags();
 		},
+		/*
+		 * hasRole()
+		 */
 		hasRole(user) {
 			const roles = this.getOptions['role']
 			return !!(roles.length && roles.includes(user.role));
 		},
+		/*
+		 * setTags()
+		 * Set the existing tags on mounted if there is any by
+		 * filtering through existing users.
+		 */
 		setTags() {
-			console.log(this.value);
-			if (this.value !== "") {
-				this.value.split(",").forEach(val => {
-					this.users.forEach(user => {
-						if (parseInt(val) === user.id) {
-							this.selectedTags.push({
-								text: user.text,
-								id: user.id,
-								role: user.role.name
-							})
-						}
-					});
-				});
+			if (this.field !== "") {
+				this.selectedTags = this.field.reduce((r, x) => {
+					const user = this.users.find(u => u.id === parseInt(x));
+					if (user) {
+						r.push({text: user.text, id: user.id, role: user.role.name})
+					}
+					return r;
+				}, [])
 			}
 		},
+		/*
+		 * updateTags()
+		 * Update tags when fired.
+		 */
 		updateTags(tags) {
 			this.errors = [];
 			this.selectedTags = tags;
-			this.validateRequired()
-			let tagsArr = "";
-			tags.forEach(tag => {
-				tagsArr += tag.id + ","
-			})
-			this.value = tagsArr
+			this.updateHeight();
+			this.handleBlur();
+			this.field = tags.map(t => t.id).join(",")
 		},
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options
+		/*
+		 * getRoles() TODO
+		 * Get the roles allowed.
+		 */
+		getRoles() {
+			const roles = this.getOptions['roles']
+			return !roles || !roles.length ? false : roles;
 		},
+		/*
+		 * getMaxTags()
+		 * Get minimum amount of tags required.
+		 */
+		getMinTags() {
+			return !this.getOptions['min'] ? -1 : this.getOptions['min'];
+		},
+		/*
+		 * getMaxTags()
+		 * Get maximum amount of tags required.
+		 */
 		getMaxTags() {
-			return this.layout.options['multiple'] ? 999999999999999999 : 1;
+			return !this.getOptions['max'] ? 999999999999999999 : this.getOptions['max'];
 		},
+		/*
+		 * filteredItems()
+		 * Filter tags.
+		 */
 		filteredItems() {
 			return this.users.filter(i => {
 				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
 			});
 		},
-		value: {
+		/*
+		 * field()
+		 * Splits comma separated list and for use and
+		 * fire's value back up to the parent.
+		 */
+		field: {
 			get() {
-				return this.fields === undefined ? [] : this.fields
+				return this.getValue === "" || !this.getValue ? "" : this.getValue.split(",");
 			},
 			set(value) {
-				this.$emit("update:fields", value)
+				this.$emit("update:fields", this.getFieldObject(value))
 			}
 		}
 	}

@@ -21,27 +21,26 @@
 	===================== -->
 <script>
 
-import {fieldMixin} from "@/util/fields"
+import {fieldMixin} from "@/util/fields/fields"
+import {choiceMixin} from "@/util/fields/choice"
 
 export default {
 	name: "FieldSelect",
-	mixins: [fieldMixin],
+	mixins: [fieldMixin, choiceMixin],
 	data: () => ({
 		focused: false,
 	}),
 	mounted() {
 		this.setDefault();
 	},
+	created() {
+		this.fields.key = this.getFormat;
+	},
 	methods: {
-		setDefault() {
-			if (this.getValue === "" && this.getOptions['default_value'] !== "") {
-				this.field = this.getOptions['default_value'];
-			}
-		},
 		/*
-		* validate()
-		* Fires when the publish button is clicked.
-		*/
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
 		validate() {
 			this.errors = [];
 			if (!this.getOptions["allow_null"]) {
@@ -56,9 +55,13 @@ export default {
 		handleBlur() {
 			this.focused = false;
 			this.validateRequired();
-		},
+		}
 	},
 	computed: {
+		/*
+		 * getPlaceholder()
+		 * Retrieves the placeholder from the options.
+		 */
 		getPlaceholder() {
 			const placeholder = this.getOptions['placeholder']
 			if (!placeholder || placeholder === "") {
@@ -68,16 +71,14 @@ export default {
 		},
 		/*
 		 * field()
-		 * Replaces and sets the prepend and append values
-		 * Fire's back up to the parent.
+		 * Fire's value back up to the parent.
 		 */
 		field: {
 			get() {
-
-				return this.getValue;
+				return this.getMultipleFormat();
 			},
 			set(value) {
-				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value)));
+				this.setMultipleFormat(value);
 			}
 		}
 	}

@@ -94,7 +94,6 @@ export default {
 			return !!(roles.length && roles.includes(user.role));
 		},
 		setTags() {
-			console.log(this.value);
 			if (this.value !== "") {
 				this.value.split(",").forEach(val => {
 					this.users.forEach(user => {

@@ -88,7 +88,7 @@
 import Uploader from "@/components/media/Uploader";
 import Modal from "@/components/modals/General";
 import { mediaMixin } from "@/util/media"
-import {fieldMixin} from "@/util/fields"
+import {fieldMixin} from "@/util/fields/fields"
 import ImageWithActions from "@/components/misc/ImageWithActions";
 
 export default {
