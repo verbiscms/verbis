@@ -36,7 +36,7 @@
        <div class="container">
            <div class="row">
                <div class="col-12">
-                   {{ $content := getField "content" }}
+                   {{ $content := field "content" }}
                    {{ if $content }}
                        {{ escape $content }}
                    {{ end }}
@@ -59,7 +59,7 @@
                                    <div class="" id="myTabContent">
                                        <div class="tab-pane fade show active" id="tabs-text-1" role="tabpanel" aria-labelledby="tabs-text-1-tab">
                                            <h4>{{ $post.Title }}</h4>
-                                           <p class="description">{{ getField "excerpt" $post.Id }}</p>
+                                           <p class="description">{{ field "excerpt" $post.Id }}</p>
                                            {{ with $post.Category }}
                                            <div class="badge badge-pill badge-primary">{{ .Name }}</div>
                                            {{ end }}

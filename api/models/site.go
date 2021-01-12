@@ -101,7 +101,7 @@ func getDefaultThemeConfig() domain.ThemeConfig {
 	return domain.ThemeConfig{
 		Theme:         domain.Theme{},
 		Resources:     nil,
-		AssetsPath:    "/assets",
+		AssetsPath:    "assets",
 		FileExtension: ".cms",
 		TemplateDir:   "templates",
 		LayoutDir:     "layouts",
