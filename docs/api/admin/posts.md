@@ -9,7 +9,7 @@ When you retrieve posts from the API, a Post object will be returned that holds 
 the following:
 
 - `post`: contains details about the post including the `slug`, `title`, page attributes such as `page_template` and any
-  options that are attached including SEO and Meta information
+  options that are attached including SEO and Meta information.
 - `author`: contains the post category author, including the `first_name`, `last_name` and `role`.
 - `category`: contains the post category information, including the `slug`, `name` and `description`.
 - `layout`: contains the page layout as an array of field groups, these are key settings for the `fields`.
@@ -131,7 +131,7 @@ the following:
 
 ## Retrieving Posts
 
-The Posts endpoint allows you to filter through posts with query parameters and [filtering](#Filtering) shown below.
+The Posts endpoint allows you to filter through posts with query parameters shown below.
 
 | Query Parameter     | Description                                                                 |
 | ------------------- | --------------------------------------------------------------------------- |

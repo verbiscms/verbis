@@ -50,7 +50,7 @@
                     {{ end }}
                 </div>
                 <div class="col-lg-6 col-10 mx-md-auto">
-                    {{ $image := getField "image" }}
+                    {{ $image := field "image" }}
                     {{ if $image }}
                         <img class="ml-lg-5" src="{{ $image.Url }}" width="100%">
                     {{ end }}
