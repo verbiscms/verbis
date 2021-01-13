@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"strings"
@@ -78,19 +79,25 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 		// If the resource is pages or a resource
 		resourceQ := ""
 		if resource == "pages" {
-			resourceQ = fmt.Sprintf(" resource IS NULL")
+			resourceQ = fmt.Sprintf(" posts.resource IS NULL")
 		} else {
-			resourceQ = fmt.Sprintf(" resource = '%s'", resource)
+			resourceQ = fmt.Sprintf(" posts.resource = '%s'", resource)
 		}
 
 		q += resourceQ
 		countQ += resourceQ
 	}
 
-	// Get Category
+	// Get Status
 	if status != "" {
-		q += fmt.Sprintf(" WHERE status = '%s'", status)
-		countQ += fmt.Sprintf(" WHERE status = '%s'", status)
+
+		if resource != "" {
+			q += fmt.Sprintf(" AND")
+			countQ += fmt.Sprintf(" AND")
+		}
+
+		q += fmt.Sprintf(" posts.status = '%s'", status)
+		countQ += fmt.Sprintf(" posts.status = '%s'", status)
 	}
 
 	// Apply order
@@ -103,6 +110,7 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 
 	// Select posts
 	if err := s.db.Select(&p, q); err != nil {
+		color.Red.Println(err)
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
