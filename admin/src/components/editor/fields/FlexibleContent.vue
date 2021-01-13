@@ -14,7 +14,7 @@
 						<i class="flexible-handle fal fa-arrows"></i>
 					</div>
 				</div><!-- /Card Header -->
-				<div class="card-body card-body-border-bottom" v-for="(layout, layoutKey) in getSubFields(group.type)" :key="layoutKey">
+				<div class="card-body card-body-border-bottom" v-for="(layout, layoutKey) in getSubFields(groupIndex)" :key="layoutKey">
 					<!-- Field Title -->
 					<div class="field-title">
 						<h4>{{ layout.label }}</h4>
@@ -24,53 +24,53 @@
 						Basic
 						===================== -->
 					<!-- Text -->
-					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldText>
+					<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldText>
 					<!-- Textarea -->
-					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldTextarea>
+					<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldTextarea>
 					<!-- Number -->
-					<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldNumber>
+					<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldNumber>
 					<!-- Range -->
-					<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRange>
+					<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRange>
 					<!-- Email -->
-					<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldEmail>
+					<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldEmail>
 					<!-- Url -->
-					<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldUrl>
+					<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldUrl>
 					<!-- Password -->
-					<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldPassword>
+					<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldPassword>
 					<!-- =====================
 						Content
 						===================== -->
 					<!-- Richtext -->
-					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRichText>
+					<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRichText>
 					<!-- Image -->
-					<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldImage>
+					<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldImage>
 					<!-- =====================
 						Choice
 						===================== -->
 					<!-- Select -->
-					<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldSelect>
+					<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldSelect>
 					<!-- Multi Select -->
-					<FieldTags v-else-if="layout.type === 'multi_select'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldTags>
+					<FieldTags v-else-if="layout.type === 'multi_select'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldTags>
 					<!-- Checkbox -->
-					<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldCheckbox>
+					<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldCheckbox>
 					<!-- Radio -->
-					<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRadio>
+					<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRadio>
 					<!-- Button Group -->
-					<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldButtonGroup>
+					<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldButtonGroup>
 					<!-- =====================
 						Relational
 						===================== -->
 					<!-- Post Object -->
-					<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldPost>
+					<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldPost>
 					<!-- User -->
-					<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldUser>
+					<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldUser>
 					<!-- =====================
 						Layout
 						===================== -->
 					<!-- Repeater -->
-					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRepeater>
+					<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRepeater>
 					<!-- Flexible -->
-					<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields['children'][groupIndex]['fields'][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldFlexible>
+					<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldFlexible>
 				</div><!-- /Card Body -->
 			</div><!-- /Card -->
 		</draggable>
@@ -99,7 +99,6 @@ import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldImage from "@/components/editor/fields/Image";
 import FieldRichText from "@/components/editor/fields/RichText";
-import FieldRepeater from "@/components/editor/fields/Repeater";
 import Popover from "@/components/misc/Popover";
 import draggable from 'vuedraggable'
 
@@ -129,7 +128,7 @@ export default {
 		FieldRange,
 		FieldEmail,
 		FieldRichText,
-		FieldRepeater,
+		FieldRepeater: () => import('@/components/editor/fields/Repeater'),
 		FieldImage,
 		Popover,
 		draggable,
@@ -138,6 +137,7 @@ export default {
 		errors: [],
 		layouts: [],
 		showPopover: false,
+		layoutStr: [],
 	}),
 	mounted() {
 		this.init();
@@ -152,7 +152,7 @@ export default {
 		fields: {
 			deep: true,
 			handler(val) {
-				val['flexible'].value =  this.fields['children'].map(c => c.type).join(",");
+				val['flexible'].value =  this.layoutStr.join(",");
 				this.updateChildIndex();
 			},
 		},
@@ -168,17 +168,21 @@ export default {
 			this.layoutFields = this.getFields;
 
 			if (!this.layoutFields['flexible']) {
+				const value = this.layoutStr === "" ? "" : this.layoutStr.join(",")
 				this.$set(this.layoutFields, 'flexible', {
 					uuid: this.getLayout.uuid,
-					value: "",
+					value: value,
 					name: this.getLayout.name,
 					type: this.getLayout.type,
+					key: this.fieldKey
 				});
 			}
 
 			if (!this.layoutFields['children']) {
 				this.$set(this.layoutFields, 'children', [])
 			}
+
+			this.layoutStr = this.fields['flexible'].value === "" ? [] : this.fields['flexible'].value.split(",")
 		},
 		/*
 		 * getKey()
@@ -188,9 +192,9 @@ export default {
 		 */
 		getKey(index, name) {
 			if (this.fieldKey === "") {
-				return this.getLayout.name + "_" + index + "_" + name;
+				return this.getLayout.name + "|" + index + "|" + name;
 			}
-			return this.fieldKey + "_" + index + "_" + name
+			return this.fieldKey + "|" + index + "|" + name
 		},
 		/*
 		 * updateHeight()
@@ -205,8 +209,7 @@ export default {
 		 * deleteRow()
 		 */
 		deleteRow(index) {
-			this.fields.splice(index, 1);
-			this.layouts.splice(index, 1);
+			this.fields['children'].splice(index, 1);
 		},
 		/*
 		 * addRow()
@@ -215,7 +218,8 @@ export default {
 		 */
 		addRow(key) {
 			this.layouts.push(this.getLayouts[key])
-			this.layoutFields['children'].push({type: key, fields: {},})
+			this.layoutFields['children'].push({})
+			this.layoutStr.push(key)
 			this.updateHeight();
 		},
 		/*
@@ -240,8 +244,14 @@ export default {
 		moveItem(from, to) {
 			this.layoutFields['children'].splice(to, 0, this.layoutFields['children'].splice(from, 1)[0]);
 		},
-		getSubFields(key) {
-			return this.getLayouts[key]['sub_fields'];
+		getSubFields(index) {
+			const layout = this.getLayouts[this.layoutStr[index]];
+			if (layout) {
+				if ('sub_fields' in layout) {
+					return layout['sub_fields']
+				}
+			}
+			return [];
 		},
 		/*
 		 * updateChildIndex()
@@ -250,7 +260,7 @@ export default {
 		 */
 		updateChildIndex() {
 			this.layoutFields['children'].forEach((child, index) => {
-				const fields = child['fields']
+				const fields = child
 				for (const key in fields) {
 					if ("repeater" in fields[key]) {
 						fields[key]['repeater'].key = this.getKey(index, fields[key]['repeater'].name)
