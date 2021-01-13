@@ -26,7 +26,7 @@ var (
 			}
 
 			// Set up stores & pass the database.
-			store := models.New(db, *cfg)
+			_ = models.New(db, *cfg)
 			if err != nil {
 				printError(err.Error())
 			}
