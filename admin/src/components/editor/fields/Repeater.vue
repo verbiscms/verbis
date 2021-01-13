@@ -145,7 +145,6 @@ export default {
 		fields: {
 			deep: true,
 			handler(val) {
-				console.log(val);
 				this.fields['repeater'].value = val.children.length.toString();
 				this.updateChildIndex();
 			},
