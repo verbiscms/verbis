@@ -4,16 +4,20 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	//"github.com/ainsleyclark/verbis/api/errors"
 	vhttp "github.com/ainsleyclark/verbis/api/http"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/stretchr/testify/assert"
+	//"time"
 
 	"testing"
 )
 
 func Test_GetUser(t *testing.T) {
 
-	user := domain.User{Id: 1, FirstName: "verbis"}
+	user := domain.User{
+		UserPart: domain.UserPart{Id: 1, FirstName: "verbis"},
+	}
 	user.HideCredentials()
 	//fmt.Printf("%+v\n", user)
 
@@ -63,8 +67,12 @@ func Test_GetUser(t *testing.T) {
 func Test_GetUsers(t *testing.T) {
 
 	users := domain.Users{
-		{Id: 1, FirstName: "verbis"},
-		{Id: 1, FirstName: "cms"},
+		domain.User{
+			UserPart: domain.UserPart{Id: 1, FirstName: "verbis"},
+		},
+		domain.User{
+			UserPart: domain.UserPart{Id: 1, FirstName: "cms"},
+		},
 	}
 
 	tt := map[string]struct {

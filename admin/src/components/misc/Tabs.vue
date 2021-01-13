@@ -33,11 +33,13 @@ export default {
 		this.activeTab = this.defaultTab;
 
 		this.$nextTick(() => {
-			const firstTab = this.$refs['tab'][this.defaultTab]
-			this.updatePosition(firstTab, this.defaultTab);
-			setTimeout(() => {
-				this.loading = false;
-			}, 100);
+			if (this.$refs['tab']) {
+				const firstTab = this.$refs['tab'][this.defaultTab];
+				this.updatePosition(firstTab, this.defaultTab);
+				setTimeout(() => {
+					this.loading = false;
+				}, 200);
+			}
 		});
 	},
 	created() {

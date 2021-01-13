@@ -36,7 +36,7 @@
        <div class="container">
            <div class="row">
               <div class="col-12">
-                  {{ escape (getField "richtext") }}
+                  {{ escape (field "richtext") }}
               </div>
            </div>
        </div>

@@ -7,7 +7,7 @@
 			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
 			<div class="form-input-icon">
 				<input class="form-input form-input-white" type="text" value="The value"
-					v-model="value"
+					v-model="field"
 					@keyup="validate"
 					:placeholder="getOptions['placeholder']"
 					:maxlength="getOptions['maxlength']"
@@ -29,47 +29,43 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
 
 export default {
 	name: "FieldEmail",
 	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: ''
-		},
-	},
 	data: () => ({
-		errors: [],
 		focused: false,
 	}),
 	mounted() {
-		this.setDefaultValue()
+		this.setDefaultValue();
 	},
 	methods: {
+		/*
+ 	     * validate()
+		 * Fires when the publish button is clicked.
+		 * Checks if the email is valid.
+		 */
 		validate() {
 			this.errors = [];
 			// eslint-disable-next-line no-useless-escape
-			if (this.value !== "" && !this.helpers.validateEmail(this.value)) {
+			if (this.getValue !== "" && !this.helpers.validateEmail(this.getValue)) {
 				this.errors.push(`Enter a valid email address for the ${this.layout.label} field.`)
 			}
 		}
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Replaces and sets the prepend and append values
+		 * Fire's back up to the parent.
+		 */
+		field: {
 			get() {
 				return this.replacePrependAppend();
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value))
+				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value)));
 			}
 		}
 	}

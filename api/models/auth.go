@@ -83,7 +83,6 @@ func (s *AuthStore) Logout(token string) (int, error) {
 	newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 	_, err := s.db.Exec("UPDATE users SET token = ?, updated_at = NOW() WHERE token = ?", newToken, token)
 	if err != nil {
-		fmt.Println(err)
 		return -1, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user's token with the name: %v", u.FirstName+" "+u.LastName), Operation: op, Err: err}
 	}
 

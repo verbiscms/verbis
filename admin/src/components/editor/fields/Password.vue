@@ -7,7 +7,7 @@
 			<div class="field-prepend" v-if="getOptions['prepend']">{{ getOptions['prepend'] }}</div>
 			<div class="form-input-icon">
 				<input class="form-input form-input-white" type="password"
-					v-model="value"
+					v-model="field"
 					@keyup="validate"
 					:placeholder="getOptions['placeholder']"
 					@focus="focused = true"
@@ -29,20 +29,12 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
 
 export default {
 	name: "FieldPassword",
 	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: ''
-		},
-	},
 	data: () => ({
-		errors: [],
 		focused: false,
 		defaultMaxLength: 36,
 	}),
@@ -54,18 +46,17 @@ export default {
 		},
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Replaces and sets the prepend and append values
+		 * Fire's back up to the parent.
+		 */
+		field: {
 			get() {
 				return this.replacePrependAppend();
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value))
+				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value)));
 			}
 		}
 	}

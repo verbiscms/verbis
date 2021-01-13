@@ -1,9 +1,10 @@
-*<!-- =====================
+<!-- =====================
 	Single
 	===================== -->
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
+			<pre style="font-size: 14px; line-height: 1.2">{{ fields }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
@@ -91,7 +92,7 @@
 									<div v-if="categoryArchive" class="badge badge-orange">Category archive</div>
 								</div>
 							</div>
-							<Fields :layout="fieldLayout" :fields.sync="data.fields" :error-trigger="errorTrigger"></Fields>
+							<Fields :layout="fieldLayout" :fields.sync="fields" :error-trigger="errorTrigger"></Fields>
 						</div>
 						<!-- Meta Options -->
 						<MetaOptions v-if="activeTab === 1" :key="2" :meta.sync="data.options.meta" :url="computedSlug"></MetaOptions>
@@ -197,6 +198,7 @@ import Fields from "@/components/editor/tabs/Fields";
 import Tabs from "@/components/misc/Tabs";
 import Popover from "@/components/misc/Popover";
 import FormGroup from "@/components/forms/FormGroup";
+import FieldParser from "@/util/fields/parser"
 
 export default {
 	name: "Single",
@@ -233,7 +235,6 @@ export default {
 		data: {
 			"title": "",
 			"slug": "/",
-			"fields": {},
 			"archive_id": "",
 			"author": 0,
 			"status": "draft",
@@ -246,8 +247,10 @@ export default {
 			"published_at": new Date(),
 		},
 		defaultLayout: `{"uuid":"6a4d7442-1020-490f-a3e2-436f9135bc24","title":"Default Options","fields":[{"uuid":"39ca0ea0-c911-4eaa-b6e0-67dfd99e1225","label":"RichText","name":"content","type":"richtext","instructions":"Add content to the page.","required":true,"conditional_logic":null,"wrapper":{"width":100},"options":{"default_value":"","tabs":"all","toolbar":"full","media_upload":1}}]}`,
+		fields: {},
 		isSaving: false,
 		sidebarOpen: false,
+		loadingFields: true,
 	}),
 	beforeMount() {
 		this.setNewUpdate();
@@ -370,12 +373,19 @@ export default {
 						this.$set(this.data, 'category', null)
 					}
 
+					// Set field values
+					//this.fields = this.expandFields(res.data.data.fields);
+					// eslint-disable-next-line no-undef
+					this.fields = new FieldParser(res.data.data.fields, this.fieldLayout).expandFields()
+					this.loadingFields = false;
+
 					// Set date format
 					this.setDates();
 
 					this.getCategories();
 				})
 				.catch(err => {
+					console.log(err);
 					this.helpers.handleResponse(err);
 				})
 		},
@@ -521,6 +531,8 @@ export default {
 						this.$set(this.data, 'resource', null)
 					}
 
+					this.$set(this.data, 'fields', new FieldParser(this.fields, this.fieldLayout).flattenFields())
+
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)
 							.then(res => {
@@ -663,6 +675,41 @@ export default {
 			this.isCustomSlug = false;
 			this.editSlug = "";
 			this.slugBtn = false;
+		},
+		old() {
+
+			// fields.forEach(field => {
+			// 	// Not a repeater
+			// 	if (!field.parent && field.type !== "repeater") {
+			// 		obj[field.uuid] = field;
+			// 	}
+			//
+			// 	// Is repeater children
+			// 	if (field.parent) {
+			// 		if (!obj[field.parent]) {
+			// 			obj[field.parent] = [];
+			// 		}
+			// 		if (!obj[field.parent][field.index]) {
+			// 			obj[field.parent][field.index] = {};
+			// 		}
+			// 		console.log(field.name, field.index)
+			//
+			// 		if (field.type !== "repeater") {
+			// 			obj[field.parent][field.index][field.uuid] = field || {};
+			// 		} else {
+			// 			console.log(field);
+			// 		}
+			// 	}
+			//
+			// 	// Is parent repeater
+			// 	if (field.type === "repeater" && !field.index) {
+			// 		if (!obj[field.uuid]) {
+			// 			obj[field.uuid] = [];
+			// 		}
+			// 		obj[field.uuid].push(field)
+			// 	}
+			// });
+			// return obj;
 		}
 	},
 	computed: {
@@ -956,3 +1003,4 @@ export default {
 	}
 
 </style>
+

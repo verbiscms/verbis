@@ -171,10 +171,10 @@ CREATE TABLE `post_fields` (
   `post_id` int NOT NULL,
   `uuid` varchar(36) NOT NULL,
   `type` varchar(250) NOT NULL,
-  `field_key` varchar(250) NOT NULL,
-  `value` varchar(250) NULL,
-  `parent` varchar(250) NULL,
-  `index` int NULL,
+  `name` varchar(250) NOT NULL,
+  `field_key` varchar(500) NOT NULL,
+  `value` longtext NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -193,8 +193,6 @@ CREATE TABLE `posts` (
   `resource` varchar(150) NULL,
   `page_template` varchar(150) NOT NULL DEFAULT 'default',
   `layout` varchar(150)  NOT NULL DEFAULT 'default',
-  `fields` json DEFAULT NULL,
-  /*`is_archive` BIT DEFAULT 0,*/
   `codeinjection_head` longtext,
   `codeinjection_foot` longtext,
   `user_id` int NOT NULL,
