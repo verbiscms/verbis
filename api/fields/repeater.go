@@ -76,7 +76,7 @@ func (s *Service) getFieldChildren(name string, fields []domain.PostField) Repea
 		}
 
 		r[index] = append(r[index], v)
- 	}
+	}
 
 	return r
 }

@@ -55,18 +55,18 @@ func (s *Service) GetFlexible(name string, args ...interface{}) (Flexible, error
 func (s *Service) getLayouts(fields []domain.PostField, layouts []string, format bool) Flexible {
 	var flexible []Layout
 	//for _, v := range layouts {
-		//var sub SubFields
-		//for _, field := range fields {
-			//if field.Layout != nil && *field.Layout == v {
-			//	if !format {
-			//		sub = append(sub, field)
-			//		continue
-			//	}
-			//	sub = append(sub, s.resolveField(field))
-			//}
-		//}
+	//var sub SubFields
+	//for _, field := range fields {
+	//if field.Layout != nil && *field.Layout == v {
+	//	if !format {
+	//		sub = append(sub, field)
+	//		continue
+	//	}
+	//	sub = append(sub, s.resolveField(field))
+	//}
+	//}
 	//	flexible = append(flexible, Layout{Name: v, SubFields: sub})
-//	}
+	//	}
 	return flexible
 }
 

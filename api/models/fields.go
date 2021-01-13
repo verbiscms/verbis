@@ -15,7 +15,7 @@ type FieldsRepository interface {
 	UpdateCreate(postId int, f []domain.PostField) error
 	Create(f domain.PostField) (domain.PostField, error)
 	//Update(f domain.PostField) (domain.PostField, error)
-//	Exists(uuid uuid.UUID, index *int) bool
+	//	Exists(uuid uuid.UUID, index *int) bool
 	GetByPost(postId int) ([]domain.PostField, error)
 	GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup
 }
