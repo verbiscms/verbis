@@ -1,10 +1,10 @@
 <!-- =====================
-	Field - Select TODO: Handle multiple!
+	Field - Select
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<div class="form-select-cont form-input">
-			<select class="form-select" v-model="value" @blur="validate">
+			<select class="form-select" v-model="field" @blur="validate">
 				<option value="" disabled selected>{{ getPlaceholder }}</option>
 				<option :value="choice" v-for="choice in getOptions['choices']" :key="choice">{{ choice }}</option>
 			</select>
@@ -21,44 +21,47 @@
 	===================== -->
 <script>
 
-import {fieldMixin} from "@/util/fields"
+import {fieldMixin} from "@/util/fields/fields"
+import {choiceMixin} from "@/util/fields/choice"
 
 export default {
 	name: "FieldSelect",
-	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: [String, Array],
-			default: '',
-		},
-	},
+	mixins: [fieldMixin, choiceMixin],
 	data: () => ({
-		errors: [],
 		focused: false,
 	}),
 	mounted() {
-		this.setDefaultValueChoices()
+		this.setDefault();
+	},
+	created() {
+		this.fields.key = this.getFormat;
 	},
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
 		validate() {
 			this.errors = [];
 			if (!this.getOptions["allow_null"]) {
-				this.validateRequired()
+				this.validateRequired();
 			}
 		},
+		/*
+		 * handleBlur()
+		 * Inline validation when user has clicked off the field.
+		 * And removes focus class.
+		 */
 		handleBlur() {
 			this.focused = false;
 			this.validateRequired();
-		},
+		}
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options;
-		},
-		getLayout() {
-			return this.layout;
-		},
+		/*
+		 * getPlaceholder()
+		 * Retrieves the placeholder from the options.
+		 */
 		getPlaceholder() {
 			const placeholder = this.getOptions['placeholder']
 			if (!placeholder || placeholder === "") {
@@ -66,12 +69,16 @@ export default {
 			}
 			return placeholder;
 		},
-		value: {
+		/*
+		 * field()
+		 * Fire's value back up to the parent.
+		 */
+		field: {
 			get() {
-				return this.fields;
+				return this.getMultipleFormat();
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value));
+				this.setMultipleFormat(value);
 			}
 		}
 	}

@@ -7,10 +7,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-type ViewUser struct {
-}
-
-func (t *TemplateManager) getUser(id interface{}) *domain.User {
+func (t *TemplateManager) getUser(id interface{}) *domain.UserPart {
 	i, err := cast.ToIntE(id)
 	if err != nil {
 		return nil
@@ -21,9 +18,7 @@ func (t *TemplateManager) getUser(id interface{}) *domain.User {
 		return nil
 	}
 
-	user.HideCredentials()
-
-	return &user
+	return user.HideCredentials()
 }
 
 func (t *TemplateManager) getUsers(query map[string]interface{}) (map[string]interface{}, error) {
@@ -39,10 +34,8 @@ func (t *TemplateManager) getUsers(query map[string]interface{}) (map[string]int
 		return nil, err
 	}
 
-	users.HideCredentials()
-
 	return map[string]interface{}{
-		"Users":      users,
+		"Users":      users.HideCredentials(),
 		"Pagination": http.NewPagination().Get(p.Params, total),
 	}, nil
 }

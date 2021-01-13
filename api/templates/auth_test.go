@@ -63,14 +63,18 @@ func Test_Admin(t *testing.T) {
 			want:   true,
 			cookie: "verbis-session=token",
 			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{Id: 0, Role: domain.UserRole{Id: 6}}, nil)
+				m.On("GetByToken", "token").Return(domain.User{
+					UserPart: domain.UserPart{Id: 0, Role: domain.UserRole{Id: 6}},
+				}, nil)
 			},
 		},
 		"Not Admin": {
 			want:   false,
 			cookie: "verbis-session=token",
 			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{Id: 0, Role: domain.UserRole{Id: 1}}, nil)
+				m.On("GetByToken", "token").Return(domain.User{
+					UserPart: domain.UserPart{Id: 0, Role: domain.UserRole{Id: 1}},
+				}, nil)
 			},
 		},
 		"No Cookie": {

@@ -2,7 +2,7 @@
 	Field - Post Object
 	===================== -->
 <template>
-	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
+	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="post">
 		<!-- Post Tags -->
 		<vue-tags-input
 			v-model="tag"
@@ -12,9 +12,10 @@
 			add-only-from-autocomplete
 			:disabled="disabled"
 			:max-tags="getMaxTags"
-			@max-tags-reached="validate(`Only one post can be inserted in to the ${layout.label}`)"
+			:autocomplete-min-length="0"
+			@max-tags-reached="maxTagsReached"
 			placeholder="Add Post"
-			@blur="validateRequired"
+			@focus="updateHeight"
 			:add-on-key="[13, ':', ';']"
 		/>
 		<!-- Message -->
@@ -30,13 +31,11 @@
 <script>
 
 import VueTagsInput from '@jack_reddico/vue-tags-input';
+import { fieldMixin } from "@/util/fields/fields"
 
 export default {
 	name: "FieldPost",
-	props: {
-		layout: Object,
-		fields: Array,
-	},
+	mixins: [fieldMixin],
 	components: {
 		VueTagsInput,
 	},
@@ -53,79 +52,154 @@ export default {
 		this.getPosts();
 	},
 	methods: {
-		validate(msg) {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
+		validate() {
 			this.errors = [];
-			this.errors.push(msg)
+			this.validateRequired();
+			this.updateHeight();
 		},
-		validateRequired() {
-			if (!this.selectedTags.length && !this.getOptions["allow_null"]) {
-				this.errors.push(`The ${this.layout.label} field is required.`)
+		/*
+		 * updateHeight()
+		 * Update the height of the container when searching.
+		 */
+		updateHeight() {
+			this.$nextTick(() => {
+				this.helpers.setHeight(this.$refs.post.closest(".collapse-content"));
+			});
+		},
+		/*
+		 * handleBlur()
+		 * Validate minimum and maximum length in options.
+		 */
+		handleBlur() {
+			//this.validateRequired();
+			if (this.getMinTags > this.selectedTags.length) {
+				this.errors.push(`Enter a minimum of ${this.getMinTags} posts.`)
 			}
+			this.updateHeight();
 		},
+		/*
+		 * maxTagsReached()
+		 * Handler for maximum tags reached.
+		 */
+		maxTagsReached() {
+			let label = this.getMaxTags === 0 ? 'item' : 'items'
+			this.errors.push(`Enter a maximum of ${this.getMaxTags} ${label} can be inserted in to the ${this.layout.label}`);
+			setTimeout(() => {
+				this.updateHeight();
+			}, 10)
+		},
+		/*
+		 * getPosts()
+		 * Retrieve all posts from the API.
+		 */
 		getPosts() {
 			this.axios.get("/posts")
 				.then(res => {
-					const posts = res.data.data
-					if (posts === undefined || Object.keys(posts).length === 0 && posts.constructor === Object) {
-						// TODO: Handle
-					} else {
-						this.posts = posts.map(a => {
-							return {
-								text: a.post.title,
-								id: a.post.id
-							};
-						});
-					}
-					this.setTags()
+					this.mapPosts(res.data.data);
+					this.setTags();
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
 				});
 		},
-		setTags() {
-			this.value.forEach(val => {
-				this.posts.forEach(post => {
-					if (val.id === post.id) {
-						this.selectedTags.push({
-							text: post.text,
-							id: post.id
-						})
+		/*
+		 * mapPosts()
+		 * If the posts are undefined, return an empty array.
+		 * If resources are set, they are filters and returned.
+		 * Or all posts are returned for filtering.
+		 */
+		mapPosts(posts) {
+			if (posts === undefined || Object.keys(posts).length === 0 && posts.constructor === Object) {
+				this.posts = [];
+				return
+			}
+
+			if (this.getResources) {
+				this.posts = posts.filter(p => {
+					if (this.getResources.includes(p.post.resource)) {
+						return p
 					}
-				});
-			});
+				}).map(p => ({text: p.post.title, id: p.post.id}))
+				return
+			}
+
+			this.posts = posts.map(a => ({text: a.post.title, id: a.post.id}));
 		},
+		/*
+		 * setTags()
+		 * Set the existing tags on mounted if there is any by
+		 * filtering through existing posts.
+		 */
+		setTags() {
+			if (this.field !== "") {
+				this.selectedTags = this.field.reduce((r, x) => {
+					const post = this.posts.find(p => p.id === parseInt(x));
+					if (post) {
+						r.push({text: post.text, id: post.id})
+					}
+					return r;
+				}, [])
+			}
+		},
+		/*
+		 * updateTags()
+		 * Update tags when fired.
+		 */
 		updateTags(tags) {
 			this.errors = [];
 			this.selectedTags = tags;
-			this.validateRequired()
-			let tagsArr = []
-			tags.forEach(tag => {
-				tagsArr.push({
-					id: tag.id,
-					type: "post",
-				})
-			})
-			this.value = tagsArr
+			this.updateHeight();
+			this.handleBlur();
+			this.field = tags.map(t => t.id).join(",")
 		},
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options
+		/*
+		 * getResource()
+		 * Get the resources allowed.
+		 */
+		getResources() {
+			const resources = this.getOptions['resource']
+			return !resources || !resources.length ? false : resources;
 		},
+		/*
+		 * getMaxTags()
+		 * Get minimum amount of tags required.
+		 */
+		getMinTags() {
+			return !this.getOptions['min'] ? -1 : this.getOptions['min'];
+		},
+		/*
+		 * getMaxTags()
+		 * Get maximum amount of tags required.
+		 */
 		getMaxTags() {
-			return this.layout.options['multiple'] ? 999999999999999999 : 1;
+			return !this.getOptions['max'] ? 999999999999999999 : this.getOptions['max'];
 		},
+		/*
+		 * filteredItems()
+		 * Filter tags.
+		 */
 		filteredItems() {
 			return this.posts.filter(i => {
 				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
 			});
 		},
-		value: {
+		/*
+		 * field()
+		 * Splits comma separated list and for use and
+		 * fire's value back up to the parent.
+		 */
+		field: {
 			get() {
-				return this.fields === undefined ? [] : this.fields
+				return this.getValue === "" ? "" : this.getValue.split(",");
 			},
 			set(value) {
-				this.$emit("update:fields", value)
+				this.$emit("update:fields", this.getFieldObject(value))
 			}
 		}
 	}

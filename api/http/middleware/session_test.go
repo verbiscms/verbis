@@ -12,7 +12,7 @@ import (
 )
 
 // TestRedirects - Test redirects from options are working correctly
-// with correct code & location.
+// with correct code & locationjson.
 func Test_SessionCheck(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
