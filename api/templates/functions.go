@@ -44,14 +44,14 @@ var (
 // NewManager - Construct
 func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateManager {
 	return &TemplateManager{
-		gin:         g,
-		post:        p,
-		site:        s.Site.GetGlobalConfig(),
-		store:       s,
-		options:     s.Options.GetStruct(),
-		themeConfig: s.Site.GetThemeConfig(),
+		gin:          g,
+		post:         p,
+		site:         s.Site.GetGlobalConfig(),
+		store:        s,
+		options:      s.Options.GetStruct(),
+		themeConfig:  s.Site.GetThemeConfig(),
 		fieldService: fields.NewService(s, *p),
-		config: c,
+		config:       c,
 	}
 }
 

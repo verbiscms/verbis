@@ -83,7 +83,7 @@ require (
 	github.com/yosssi/gohtml v0.0.0-20201013000340-ee4748c638f4
 	golang.org/x/crypto v0.0.0-20201016220609-9e8e0b390897
 	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5
-	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
+	golang.org/x/net v0.0.0-20201021035429-f5854403a974
 	golang.org/x/sys v0.0.0-20201020230747-6e5568b54d1a // indirect
 	golang.org/x/tools v0.0.0-20201022215848-ffe8bce740af // indirect
 	google.golang.org/protobuf v1.25.0 // indirect

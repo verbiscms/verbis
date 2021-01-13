@@ -35,7 +35,8 @@ export default class FieldParser {
         this.fields.forEach(field => {
 
             // Normal
-            if (field.type !== "repeater" && !field.key.split("_").length) {
+            if (field.type !== "repeater" && field.type !== "flexible" && !field.key.includes("_")) {
+                console.log(field);
                 this.parsed[field.name] = field;
                 return
             }

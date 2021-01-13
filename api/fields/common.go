@@ -87,19 +87,19 @@ func (s *Service) findFieldByName(name string, fields []domain.PostField) (domai
 // be looping through them anyway to append and format the fields.
 // Returns the sorted slice of fields.
 //func (s *Service) getFieldChildren(uuid uuid.UUID, fields []domain.PostField, format bool) []domain.PostField {
-	//var pf []domain.PostField
-	//for _, field := range fields {
-	//	parent := field.Parent
-	//	if parent != nil && uuid == *parent {
-	//		if !format {
-	//			pf = append(pf, field)
-	//			continue
-	//		}
-	//		pf = append(pf, s.resolveField(field))
-	//	}
-	//}
-	//return nil
-	//return s.sortFields(pf)
+//var pf []domain.PostField
+//for _, field := range fields {
+//	parent := field.Parent
+//	if parent != nil && uuid == *parent {
+//		if !format {
+//			pf = append(pf, field)
+//			continue
+//		}
+//		pf = append(pf, s.resolveField(field))
+//	}
+//}
+//return nil
+//return s.sortFields(pf)
 //}
 
 // sortFields
