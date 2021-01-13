@@ -32,7 +32,6 @@ export default class FieldParser {
             return {}
         }
 
-
         this.fields.forEach(field => {
             let keyArr = field.key.split("|");
 
@@ -61,6 +60,8 @@ export default class FieldParser {
             keyArr.forEach((key, index) => {
                 const f = this.fields.find(f => f.name === key);
 
+                // TODO: Flexible Repeaters?
+
                 if (f && field.type === "flexible") {
                     keyArr.splice(index + 2, 0, "flexible")
                 }
@@ -74,13 +75,10 @@ export default class FieldParser {
                 }
             });
 
-            console.log(keyArr.join("|"))
-
-
             this._set(this.parsed, keyArr.join("|"), field);
         });
         //
-        console.log(JSON.stringify(this.parsed, undefined, 2));
+        //console.log(JSON.stringify(this.parsed, undefined, 2));
 
         return this.parsed;
     }
