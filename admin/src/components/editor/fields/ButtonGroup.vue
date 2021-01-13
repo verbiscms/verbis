@@ -8,8 +8,8 @@
 			<button class="btn"
 				v-for="(choice, choiceIndex) in getOptions['choices']"
 				:key="choiceIndex"
-				@click="value = choice"
-				:class="{ 'btn-blue' : value === choice}">
+				@click="field = choice"
+				:class="{ 'btn-blue' : field === choice}">
 				{{ choice }}</button>
 		</div><!-- /Button Container -->
 		<!-- Message -->
@@ -24,45 +24,41 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import {fieldMixin} from "@/util/fields/fields"
+import {choiceMixin} from "@/util/fields/choice"
 
 export default {
 	name: "FiledButtonGroup",
-	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: ''
-		},
-	},
+	mixins: [fieldMixin, choiceMixin],
 	data: () => ({
 		errors: [],
 	}),
 	mounted() {
-		this.setDefaultValueChoices()
+		this.setDefault();
 	},
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
 		validate() {
 			this.errors = [];
 			if (!this.getOptions["allow_null"]) {
-				this.validateRequired()
+				this.validateRequired();
 			}
 		},
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options;
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Fire's value back up to the parent.
+		 */
+		field: {
 			get() {
-				return this.fields;
+				return this.getMultipleFormat();
 			},
 			set(value) {
-				this.$emit("update:fields", value);
+				return this.setMultipleFormat(value);
 			}
 		}
 	}

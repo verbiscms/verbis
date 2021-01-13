@@ -120,6 +120,7 @@ class helpers {
 			'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
 		return pattern.test(url)
 	}
+
 }
 
 Vue.prototype.helpers = new helpers();

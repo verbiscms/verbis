@@ -224,11 +224,13 @@ func createOwner() *domain.UserCreate {
 
 	user := domain.UserCreate{
 		User: domain.User{
-			FirstName: firstName,
-			LastName:  lastName,
-			Email:     email,
-			Role: domain.UserRole{
-				Id: 6,
+			UserPart: domain.UserPart{
+				FirstName: firstName,
+				LastName:  lastName,
+				Email:     email,
+				Role: domain.UserRole{
+					Id: 6,
+				},
 			},
 		},
 		Password:        password,

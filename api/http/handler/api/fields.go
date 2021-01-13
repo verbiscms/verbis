@@ -36,18 +36,20 @@ func (c *Fields) Get(g *gin.Context) {
 	const op = "FieldHandler.Get"
 
 	resource := g.Query("resource")
-	user, err := strconv.Atoi(g.Query("user_id"))
-	if err != nil {
-		Respond(g, 400, "Field search failed, wrong type passed to user id", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
-		return
-	}
 
-	if user == 0 {
+	userId, err := strconv.Atoi(g.Query("user_id"))
+	if err != nil || userId == 0 {
 		owner, err := c.store.User.GetOwner()
 		if err != nil {
 			Respond(g, 500, errors.Message(err), err)
 		}
-		user = owner.Id
+		userId = owner.Id
+	}
+
+	categoryId, err := strconv.Atoi(g.Query("category_id"))
+	if err != nil {
+		categoryId = 0
+		//Respond(g, 400, "Field search failed, wrong type passed to category id", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})x
 	}
 
 	post := domain.Post{
@@ -58,26 +60,24 @@ func (c *Fields) Get(g *gin.Context) {
 		Resource:          &resource,
 		PageTemplate:      g.Query("page_template"),
 		PageLayout:        g.Query("layout"),
-		Fields:            nil,
 		CodeInjectionHead: nil,
 		CodeInjectionFoot: nil,
-		UserId:            user,
+		UserId:            userId,
 	}
 
 	// Get the author associated with the post
 	author, err := c.store.User.GetById(post.UserId)
 	if err != nil {
-		Respond(g, 500, errors.Message(err), err)
-		return
+		author = domain.User{}
 	}
 
 	// Get the categories associated with the post
-	categories, err := c.store.Categories.GetByPost(post.Id)
+	category, err := c.store.Categories.GetById(categoryId)
 	if err != nil {
-		categories = nil
+		category = domain.Category{}
 	}
 
-	fields := c.store.Fields.GetLayout(post, author, categories)
+	fields := c.store.Fields.GetLayout(post, author, &category)
 
 	Respond(g, 200, "Successfully obtained fields", fields)
 }

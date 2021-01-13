@@ -96,7 +96,7 @@ func (s *Seeder) runOptions() error {
 		"cache_frontend":            true,
 		"cache_frontend_request":    "max-age",
 		"cache_frontend_seconds":    31536000,
-		"cache_frontend_extensions": []string{"jpg", "jpeg", "gif", "png", "ico", "cur", "webp", "jxr", "svg", "css", "js", "htc", "ttf", "tt", "otf", "eot", "woff", "woff2"},
+		"cache_frontend_extensions": []string{"jpg", "jpeg", "gif", "png", "ico", "cur", "webp", "jxr", "svg", "css", "js", "htc", "ttf", "tt", "otf", "eot", "woff", "woff2", "webm"},
 		// Gzip
 		"gzip":                     true,
 		"gzip_compression":         "default-compression",

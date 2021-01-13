@@ -5,7 +5,7 @@
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<div class="form-input-icon">
 			<input class="form-input form-input-white" type="text" value="The value"
-				v-model="value"
+				v-model="field"
 				@keyup="validate"
 				:placeholder="getOptions['placeholder']"
 				@blur="validateRequired">
@@ -23,51 +23,48 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
 
 export default {
 	name: "FieldEmail",
 	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: ''
-		},
-	},
 	data: () => ({
 		errors: [],
 	}),
 	mounted() {
-		this.setDefaultValue()
+		this.setDefaultValue();
 	},
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 * Checks if the URL is valid.
+		 */
 		validate() {
 			this.errors = [];
-			let pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-				'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
+			let pattern = new RegExp('^(https?:\\/\\/)?'+ // Protocol
+				'((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // Domain name
 				'((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-				'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-				'(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-				'(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-			if (this.value !== "" && !pattern.test(this.value)) {
+				'(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // Port and path
+				'(\\?[;&a-z\\d%_.~+=-]*)?'+ // Query string
+				'(\\#[-a-z\\d_]*)?$','i'); // Fragment locator
+			if (this.getValue !== "" && !pattern.test(this.getValue)) {
 				this.errors.push(`Enter a valid url for the ${this.layout.label} field.`)
 			}
 		}
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Replaces and sets the prepend and append values
+		 * Fire's back up to the parent.
+		 */
+		field: {
 			get() {
 				return this.replacePrependAppend();
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value))
+				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value)));
 			}
 		}
 	}

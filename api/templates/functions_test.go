@@ -2,7 +2,6 @@ package templates
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -30,21 +29,6 @@ func newTestSuite(args ...string) *TemplateManager {
 	g, _ := gin.CreateTestContext(httptest.NewRecorder())
 	g.Request, _ = http.NewRequest("GET", "/get", nil)
 
-	p := &domain.PostData{}
-	if len(args) == 1 {
-		data := []byte(args[0])
-		var m map[string]interface{}
-		err := json.Unmarshal(data, &m)
-		if err != nil {
-			fmt.Println(err)
-		}
-		p = &domain.PostData{
-			Post: domain.Post{
-				Fields: m,
-			},
-		}
-	}
-
 	mockOptions := mocks.OptionsRepository{}
 	mockOptions.On("GetStruct").Return(domain.Options{}, nil)
 
@@ -55,7 +39,7 @@ func newTestSuite(args ...string) *TemplateManager {
 	return NewManager(g, &models.Store{
 		Options: &mockOptions,
 		Site:    &mockSite,
-	}, p, config.Configuration{})
+	}, &domain.PostData{}, config.Configuration{})
 }
 
 // execute

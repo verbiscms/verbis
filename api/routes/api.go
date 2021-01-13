@@ -63,9 +63,6 @@ func api(s *server.Server, c *handler.Handler, m *models.Store) {
 			operator.PUT("/posts/:id", c.Posts.Update)
 			operator.DELETE("/posts/:id", c.Posts.Delete)
 
-			// Fields
-			operator.GET("/fields", c.Fields.Get)
-
 			// Categories
 			operator.GET("/categories", c.Categories.Get)
 			operator.GET("/categories/:id", c.Categories.GetById)
@@ -80,16 +77,19 @@ func api(s *server.Server, c *handler.Handler, m *models.Store) {
 			operator.PUT("/media/:id", c.Media.Update)
 			operator.DELETE("/media/:id", c.Media.Delete)
 
-			// Options
-			operator.GET("/options", c.Options.Get)
-			operator.GET("/options/:name", c.Options.GetByName)
-			operator.POST("/options", c.Options.UpdateCreate)
-
 			// Users
 			operator.GET("/users", c.User.Get)
 			operator.GET("/users/:id", c.User.GetById)
 			operator.PUT("/users/:id", c.User.Update)
 			operator.POST("/users/:id/reset-password", c.User.ResetPassword)
+
+			// Fields
+			operator.GET("/fields", c.Fields.Get)
+
+			// Options
+			operator.GET("/options", c.Options.Get)
+			operator.GET("/options/:name", c.Options.GetByName)
+			operator.POST("/options", c.Options.UpdateCreate)
 
 			// Roles
 			operator.GET("/roles", c.User.GetRoles)

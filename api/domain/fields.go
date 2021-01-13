@@ -12,17 +12,25 @@ type FieldGroup struct {
 
 // Field defines an individual field type
 type Field struct {
-	UUID         uuid.UUID              `json:"uuid"`
-	Label        string                 `json:"label"`
-	Name         string                 `json:"name"`
-	Type         string                 `json:"type"`
-	Instructions string                 `json:"instructions"`
-	Required     bool                   `json:"required"`
-	Logic        *[][]ConditionalLogic  `json:"conditional_logic"`
-	Wrapper      *Wrapper               `json:"wrapper"`
-	Options      map[string]interface{} `json:"options"`
-	SubFields    *[]Field               `json:"sub_fields,omitempty"`
-	Layouts      map[string]interface{} `json:"layouts,omitempty"`
+	UUID         uuid.UUID                  `json:"uuid"`
+	Label        string                     `json:"label"`
+	Name         string                     `json:"name"`
+	Type         string                     `json:"type"`
+	Instructions string                     `json:"instructions"`
+	Required     bool                       `json:"required"`
+	Logic        *[][]FieldConditionalLogic `json:"conditional_logic"`
+	Wrapper      *FieldWrapper              `json:"wrapper"`
+	Options      map[string]interface{}     `json:"options"`
+	SubFields    *[]Field                   `json:"sub_fields,omitempty"`
+	Layouts      map[string]FieldLayout     `json:"layouts,omitempty"`
+}
+
+type FieldLayout struct {
+	UUID      uuid.UUID `json:"uuid"`
+	Name      string    `json:"name"`
+	Label     string    `json:"label"`
+	Display   string    `json:"didpslay"`
+	SubFields *[]Field  `json:"sub_fields,omitempty"`
 }
 
 type FieldFilter struct {
@@ -39,11 +47,11 @@ type FieldLocation struct {
 	Value    string
 }
 
-type Wrapper struct {
+type FieldWrapper struct {
 	Width int `json:"width"`
 }
 
-type ConditionalLogic struct {
+type FieldConditionalLogic struct {
 	Field    string `json:"field"`
 	Operator string `json:"operator"`
 	Value    string `json:"value"`

@@ -6,7 +6,7 @@
 		<div class="field-prepend-append" :class="{ 'field-focused' : focused }">
 			<div class="field-prepend" v-if="layout.options['prepend'] !== ''">{{ layout.options['prepend'] }}</div>
 			<input class="form-input form-input-white" type="number"
-				v-model="value"
+				v-model="field"
 				@keyup="validate"
 				@change="validateRequired"
 				:placeholder="getOptions['placeholder']"
@@ -29,57 +29,58 @@
 	===================== -->
 <script>
 
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
 
 export default {
 	name: "FieldNumber",
 	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: "0",
-		},
-	},
 	data: () => ({
 		errors: [],
 		focused: false,
 	}),
 	mounted() {
-		this.setDefaultValue()
+		this.setDefaultValue();
 	},
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
 		validate() {
 			this.errors = []
 			const min = this.getOptions['min'],
 				max = this.getOptions['max'];
-			if (this.value !== "") {
-				if (this.value > max && max !== "") {
+			if (this.getValue !== "") {
+				if (this.getValue > max && max !== "") {
 					this.errors.push(`The maximum value of the ${this.layout.name} can not exceed ${max}.`)
 				}
-				if (this.value < min && min !== "") {
+				if (this.getValue < min && min !== "") {
 					this.errors.push(`The minimum value of the ${this.layout.name} can not be below ${min}.`)
 				}
 			}
 		},
+		/*
+		 * handleBlur()
+		 * Inline validation when user has clicked off the field.
+		 * And removes focus class.
+		 */
 		handleBlur() {
 			this.focused = false;
-			this.validateRequired()
+			this.validateRequired();
 		},
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options;
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Replaces and sets the prepend and append values
+		 * Fire's back up to the parent
+		 */
+		field: {
 			get() {
 				return this.replacePrependAppend();
 			},
 			set(value) {
-				this.$emit("update:fields", this.setPrependAppend(value));
+				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value)));
 			}
 		}
 	}

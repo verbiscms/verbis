@@ -1,59 +1,128 @@
 package models
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
-	log "github.com/sirupsen/logrus"
-
+	location "github.com/ainsleyclark/verbis/api/fields/converter"
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/jmoiron/sqlx"
-	"os"
-	"path/filepath"
-	"strconv"
-	"strings"
 )
 
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
+	UpdateCreate(postId int, f []domain.PostField) error
+	Create(f domain.PostField) (domain.PostField, error)
+	//Update(f domain.PostField) (domain.PostField, error)
+//	Exists(uuid uuid.UUID, index *int) bool
 	GetByPost(postId int) ([]domain.PostField, error)
-	GetByPostAndKey(key string, postId int) (domain.PostField, error)
-	GetFieldGroups() (*[]domain.FieldGroup, error)
-	GetLayout(p domain.Post, a domain.User, c *domain.Category) *[]domain.FieldGroup
+	GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup
 }
 
 // FieldsStore defines the data layer for Posts
 type FieldsStore struct {
-	db       *sqlx.DB
-	config   config.Configuration
-	options  domain.Options
-	jsonPath string
+	db      *sqlx.DB
+	config  config.Configuration
+	options domain.Options
+	finder  location.Finder
 }
 
 // newFields - Construct
 func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
-	const op = "FieldsRepository.newFields"
-
-	fs := FieldsStore{
-		db:       db,
-		config:   config,
-		options:  newOptions(db, config).GetStruct(),
-		jsonPath: paths.Storage() + "/fields",
+	return &FieldsStore{
+		db:      db,
+		config:  config,
+		options: newOptions(db, config).GetStruct(),
+		finder:  location.NewLocation(),
 	}
-
-	return &fs
 }
 
+// UpdateCreate checks to see if the record exists before updating
+// or creating the new record.
+func (s *FieldsStore) UpdateCreate(postId int, f []domain.PostField) error {
+
+	err := s.deleteFieldsByPostId(postId)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range f {
+		v.PostId = postId
+		_, err := s.Create(v)
+		if err != nil {
+			return err
+		}
+	}
+
+	//for _, v := range f {
+	//	v.PostId = postId
+	//	if s.Exists(v.UUID, v.Index) {
+	//		_, err := s.Update(v)
+	//		if err != nil {
+	//			return err
+	//		}
+	//	} else {
+	//		_, err := s.Create(v)
+	//		if err != nil {
+	//			return err
+	//		}
+	//	}
+	//}
+	return nil
+}
+
+// Delete all fields from the post fields with the associated ID.
+// Returns errors.INTERNAL if the SQL query was invalid.
+func (s *FieldsStore) deleteFieldsByPostId(id int) error {
+	const op = "FieldsStore.DeleteFieldsByPostId"
+	if _, err := s.db.Exec("DELETE FROM post_fields WHERE post_id = ?", id); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the post fields with the post ID of: %d", id), Operation: op, Err: err}
+	}
+	return nil
+}
+
+// Update a post field by Id
+// Returns errors.INTERNAL if the SQL query was invalid.
+func (s *FieldsStore) Create(f domain.PostField) (domain.PostField, error) {
+	const op = "FieldsRepository.Create"
+	q := "INSERT INTO post_fields (uuid, post_id, type, name, value, field_key) VALUES (?, ?, ?, ?, ?, ?)"
+	_, err := s.db.Exec(q, f.UUID.String(), f.PostId, f.Type, f.Name, f.OriginalValue, f.Key)
+	if err != nil {
+		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post field wuth the name: %s", f.Name), Operation: op, Err: err}
+	}
+	return f, nil
+}
+
+// Update a post field by Id
+// Returns errors.INTERNAL if the SQL query was invalid.
+//func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
+//	const op = "FieldsRepository.Update"
+//	_, err := s.db.Exec("UPDATE post_fields SET type = ?, name = ?, value = ?, parent = ?, layout = ?, row_index = ? WHERE uuid = ?", f.Type, f.Name, f.OriginalValue, f.Parent, f.Layout, f.Index, f.UUID.String())
+//	if err != nil {
+//		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post field wuth the uuid: %s", f.UUID.String()), Operation: op, Err: err}
+//	}
+//	return f, nil
+//}
+
+// Exists Checks if a post field exists by the given UUID
+//func (s *FieldsStore) Exists(uuid uuid.UUID, index *int) bool {
+//	var exists bool
+//
+//	if index == nil {
+//		_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ?)", uuid.String()).Scan(&exists)
+//		return exists
+//	}
+//
+//	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND row_index = ?)", uuid.String(), index).Scan(&exists)
+//	return exists
+//}
+
 func (s *FieldsStore) GetByPost(postId int) ([]domain.PostField, error) {
-	const op = "FieldsRepository.GetByPost"
+	const op = "FieldsStore.GetByPost"
 	var f []domain.PostField
-	if err := s.db.Get(&f, "SELECT * FROM post_fields WHERE page_id = ?", postId); err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the key: %d", postId), Operation: op, Err: err}
+	if err := s.db.Select(&f, "SELECT * FROM post_fields WHERE post_id = ?", postId); err != nil {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the ID: %d", postId), Operation: op, Err: err}
 	}
 	return f, nil
 }
@@ -61,7 +130,7 @@ func (s *FieldsStore) GetByPost(postId int) ([]domain.PostField, error) {
 func (s *FieldsStore) GetByPostAndKey(key string, postId int) (domain.PostField, error) {
 	const op = "FieldsRepository.GetByPostAndKey"
 	var f domain.PostField
-	if err := s.db.Get(&f, "SELECT * FROM post_fields WHERE page_id = ? AND field_key = ? LIMIT = 1", postId, key); err != nil {
+	if err := s.db.Select(&f, "SELECT * FROM post_fields WHERE post_id = ? AND field_key = ? LIMIT = 1", postId, key); err != nil {
 		return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the page ID: %d and key: %s", postId, key), Operation: op, Err: err}
 	}
 	return f, nil
@@ -70,206 +139,6 @@ func (s *FieldsStore) GetByPostAndKey(key string, postId int) (domain.PostField,
 // GetLayout loops over all of the locations within the config json
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
-func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category) *[]domain.FieldGroup {
-	var fg []domain.FieldGroup
-
-	// If the cache allows for caching of layouts & if the
-	// layout has already been cached, return.
-	var found bool
-	if s.options.CacheServerFields {
-		cached, found := cache.Store.Get("field_layout_" + p.UUID.String())
-		if found {
-			return cached.(*[]domain.FieldGroup)
-		}
-	}
-
-	// Obtain json files
-	fieldGroups, err := s.GetFieldGroups()
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
-	}
-
-	// Loop over the groups
-	for _, group := range *fieldGroups {
-
-		// Check for empty location
-		if len(group.Locations) == 0 && !s.hasBeenAdded(group.UUID.String(), fg) {
-			fg = append(fg, group)
-
-		} else {
-
-			// Check and Loop over locations
-			for _, location := range group.Locations {
-
-				if !s.hasBeenAdded(group.UUID.String(), fg) {
-
-					// Loop over rule sets
-					var locationSet []bool
-					for _, rule := range location {
-
-						switch rule.Param {
-						// Status
-						case "status":
-							{
-								locationSet = append(locationSet, s.checkLocation(p.Status, rule))
-								break
-							}
-						// Status
-						case "post":
-							{
-								locationSet = append(locationSet, s.checkLocation(strconv.Itoa(p.Id), rule))
-								break
-							}
-						// Page Templates
-						case "page_template":
-							{
-								locationSet = append(locationSet, s.checkLocation(p.PageTemplate, rule))
-								break
-							}
-						// Layout
-						case "layout":
-							{
-								locationSet = append(locationSet, s.checkLocation(p.PageLayout, rule))
-								break
-							}
-						// Resources
-						case "resource":
-							{
-								if p.Resource != nil {
-									locationSet = append(locationSet, s.checkLocation(*p.Resource, rule))
-								} else {
-									locationSet = append(locationSet, s.checkLocation("", rule))
-								}
-								break
-							}
-						// Categories
-						case "categories":
-							{
-								if c != nil {
-									locationSet = append(locationSet, s.checkLocation(strconv.Itoa(c.Id), rule))
-								} else {
-									locationSet = append(locationSet, s.checkLocation("", rule))
-								}
-								break
-							}
-						// Author
-						case "author":
-							{
-								locationSet = append(locationSet, s.checkLocation(strconv.Itoa(p.UserId), rule))
-								break
-							}
-						// Role
-						case "role":
-							{
-								locationSet = append(locationSet, s.checkLocation(strconv.Itoa(a.Role.Id), rule))
-								break
-							}
-						}
-					}
-
-					// Remove from the array for the front end
-					group.Locations = nil
-
-					if s.checkMatch(locationSet) {
-						fg = append(fg, group)
-					}
-				}
-			}
-		}
-	}
-
-	// Append empty if nil
-	if fg == nil {
-		fg = []domain.FieldGroup{}
-	}
-
-	// Set the cache field layout if the cache was not found
-	if !found && s.options.CacheServerFields {
-		cache.Store.Set("field_layout_"+p.UUID.String(), &fg, cache.RememberForever)
-	}
-
-	return &fg
-}
-
-// GetFieldGroups will loop over all of the json files that have been
-// stored in /storage/fields and append them to the array to be
-// returned.
-// Returns errors.INTERNAL if the path file not be read or be unmarshalled
-func (s *FieldsStore) GetFieldGroups() (*[]domain.FieldGroup, error) {
-	const op = "FieldsRepository.GetFieldGroups"
-
-	var fg []domain.FieldGroup
-	err := filepath.Walk(s.jsonPath, func(path string, info os.FileInfo, err error) error {
-		if strings.Contains(info.Name(), "json") {
-
-			file, err := files.ReadJson(path)
-			if err != nil {
-				return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field path with the path: %s", path), Operation: op, Err: err}
-			}
-
-			var fields domain.FieldGroup
-			err = json.Unmarshal(file, &fields)
-			if err != nil {
-				return &errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal the field struct", Operation: op, Err: err}
-			}
-
-			fg = append(fg, fields)
-		}
-
-		return nil
-	})
-
-	if err != nil {
-		return &[]domain.FieldGroup{}, err
-	}
-
-	return &fg, nil
-}
-
-// checkLocation checks to see if there has been a match within
-// the location passed, the string could be resource. page
-// template or anything defined within fields.
-func (s *FieldsStore) checkLocation(check string, location domain.FieldLocation) bool {
-	var match = false
-
-	switch location.Operator {
-	case "==":
-		{
-			if check == location.Value {
-				match = true
-			}
-		}
-	case "!=":
-		{
-			if check != location.Value {
-				match = true
-			}
-		}
-	}
-
-	return match
-}
-
-// checkMatch checks to see if the there has been a match within
-// the location block by using an array of booleans, if there
-// has already been a match, it will return false. Useful
-// for and location blocks not or.
-func (s *FieldsStore) checkMatch(matches []bool) bool {
-	for _, a := range matches {
-		if !a {
-			return false
-		}
-	}
-	return true
-}
-
-// hasBeenAdded checks to see if there already been a match within
-// the array of field groups.
-func (s *FieldsStore) hasBeenAdded(key string, fg []domain.FieldGroup) bool {
-	for _, v := range fg {
-		if v.UUID.String() == key {
-			return true
-		}
-	}
-	return false
+func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup {
+	return s.finder.GetLayout(p, a, c, s.options.CacheServerFields)
 }

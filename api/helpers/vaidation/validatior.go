@@ -64,6 +64,9 @@ func (v *Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 			}
 		}
 
+		field = strings.Replace(field, "Part", "", -1)
+		field = strings.Replace(field, "User", "", -1)
+
 		reg := regexp.MustCompile(`[A-Z][^A-Z]*`)
 		fieldString := ""
 
@@ -119,34 +122,24 @@ func (v *Validation) message(kind string, field string, param string) string {
 	switch kind {
 	case "required":
 		errorMsg = field + " is required."
-		break
 	case "email":
 		errorMsg = "Enter a valid email address."
-		break
 	case "min":
 		errorMsg = "Enter a minimum of " + param + " characters."
-		break
 	case "max":
 		errorMsg = "Enter a maximum of " + param + " characters."
-		break
 	case "alpha":
 		errorMsg = field + " must be alpha."
-		break
 	case "alphanum":
 		errorMsg = field + " must be alphanumeric."
-		break
 	case "ip":
 		errorMsg = field + " must be valid IP address."
-		break
 	case "url":
 		errorMsg = "Enter a valid url."
-		break
 	case "eqfield":
 		errorMsg = field + " must equal the " + param + "."
-		break
 	case "password":
 		errorMsg = field + " doesn't match our records."
-		break
 	}
 
 	return errorMsg

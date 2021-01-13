@@ -182,7 +182,7 @@
 
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-markup';
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
 import {Editor, EditorContent, EditorMenuBar, EditorMenuBubble} from 'tiptap'
 import {
 	VerbisBlockquote,
@@ -220,13 +220,6 @@ const Chrome = require('vue-color/src/components/Compact.vue').default;
 
 export default {
 	name: "FieldRichText",
-	props: {
-		layout: Object,
-		fields: {
-			type: String,
-			default: ''
-		},
-	},
 	mixins: [fieldMixin],
 	components: {
 		Uploader,
@@ -258,18 +251,17 @@ export default {
 		getEditorConfig() {
 			return this.$store.state.theme.editor
 		},
-		getOptions() {
-			return this.layout.options
-		},
-		getLayout() {
-			return this.layout;
-		},
-		value: {
+		/*
+		 * field()
+		 * Replaces <p> tags and strips.
+		 * Fire's back up to the parent.
+		 */
+		field: {
 			get() {
-				return this.fields === '<p></p>' ? '' : this.fields;
+				return this.getValue === '<p></p>' ? '' : this.getValue;
 			},
 			set(value) {
-				this.$emit("update:fields", value);
+				this.$emit("update:fields", this.getFieldObject(value));
 			}
 		}
 	},
@@ -286,15 +278,15 @@ export default {
 		},
 		setUpEditor() {
 			const extensions = this.createExtensions();
-			this.setDefaultValue()
+			this.setDefaultValue();
 			this.$nextTick(() => {
 				this.editor = new Editor({
-					content: this.value,
+					content: this.field,
 					onUpdate: ({ getHTML }) => {
 						this.errors = [];
 						this.html = getHTML();
 						if (this.html === '<p></p>') this.html = '';
-						this.value = this.html;
+						this.field = this.html;
 					},
 					onTransaction: ({ state }) => {
 						this.charPosition = state.selection.anchor;
@@ -347,7 +339,7 @@ export default {
 			if (this.codeView) {
 				this.editor.setContent(this.code)
 			} else {
-				this.code = this.value
+				this.code = this.field
 			}
 			this.codeView = !this.codeView
 		},

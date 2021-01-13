@@ -2,7 +2,7 @@
 	Field - Tags
 	===================== -->
 <template>
-	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
+	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="tags">
 		<!-- Multi Select Tags -->
 		<vue-tags-input
 			v-model="tag"
@@ -12,9 +12,11 @@
 			add-only-from-autocomplete
 			:disabled="disabled"
 			:max-tags="getMaxTags"
-			@max-tags-reached="validate(`Only one tag can be inserted in to the ${layout.label}`)"
+			:autocomplete-min-length="0"
+			@max-tags-reached="maxTagsReached"
 			:placeholder="getButtonLabel"
-			@blur="validateRequired"
+			@focus="updateHeight"
+			:add-on-key="[13, ':', ';']"
 		/>
 		<!-- Message -->
 		<transition name="trans-fade-height">
@@ -29,20 +31,12 @@
 <script>
 
 import VueTagsInput from '@jack_reddico/vue-tags-input';
-import { fieldMixin } from "@/util/fields"
+import { fieldMixin } from "@/util/fields/fields"
+import { choiceMixin } from "@/util/fields/choice"
 
 export default {
 	name: "FieldTags",
-	mixins: [fieldMixin],
-	props: {
-		layout: Object,
-		fields: {
-			type: Array,
-			default: () => {
-				return [];
-			},
-		},
-	},
+	mixins: [fieldMixin,choiceMixin],
 	components: {
 		VueTagsInput,
 	},
@@ -60,79 +54,138 @@ export default {
 		this.getItems();
 	},
 	methods: {
-		validate() {
-			this.errors = [];
-			if (!this.getOptions["allow_null"]) {
-				this.validateRequired()
+		/*
+		 * setDefault()
+		 * Sets default values on mounted, if no value exists
+		 * and the default value exists.
+		 */
+		setDefault() {
+			if (!this.field && this.getOptions['default_value'] && this.getOptions['default_value'].length) {
+				this.selectedTags = this.getOptions['default_value'].map(t => {
+					const key = Object.keys(this.getChoices).find(key => this.getChoices[key] === t);
+					return {key: key,text: t}
+				});
+			} else {
+				this.setTags();
 			}
 		},
+		/*
+		 * updateHeight()
+		 * Update the height of the container when searching.
+		 */
+		updateHeight() {
+			this.$nextTick(() => {
+				this.helpers.setHeight(this.$refs.tags.closest(".collapse-content"));
+			});
+		},
+		/*
+		 * handleBlur()
+		 * Validate minimum and maximum length in options.
+		 */
+		handleBlur() {
+			this.validateRequired();
+			if (this.getMinTags > this.selectedTags.length) {
+				this.errors.push(`Enter a minimum of ${this.getMinTags} ${this.getLayout.label.toLowerCase()}.`)
+			}
+		},
+		/*
+		 * maxTagsReached()
+		 * Handler for maximum tags reached.
+		 */
+		maxTagsReached() {
+			this.errors.push(`Only a maximum of ${this.getMaxTags} ${this.getLayout.label.toLowerCase()}.`);
+			setTimeout(() => {
+				this.updateHeight();
+			}, 10)
+		},
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
+		validate() {
+			this.errors = [];
+			this.validateRequired();
+			this.updateHeight();
+		},
+		/*
+		 * getItems()
+		 * Pushes to the items array on mounted for vue tags
+		 * input.
+		 */
 		getItems() {
-			const choices = this.getOptions['choices'];
-			for (const choice in choices) {
+			for (const choice in this.getChoices) {
 				this.items.push({
-					text: choices[choice],
+					text: this.getChoices[choice],
 					key: choice,
 				});
 			}
 		},
+		/*
+		 * setTags()
+		 * Set the existing tags on mounted if there is any.
+		 */
+		setTags() {
+			if (this.field) {
+				this.selectedTags = this.field.map(t => {
+					return {key: t,text: this.getOptions['choices'][t]}
+				});
+			}
+		},
+		/*
+		 * updateTags()
+		 * Update tags when fired.
+		 */
 		updateTags(tags) {
 			this.errors = [];
 			this.selectedTags = tags;
-			this.validateRequired()
-			let tagsArr = []
-			tags.forEach(tag => {
-				tagsArr.push({
-					text: tag.text,
-					key: tag.key,
-				})
-			})
-			this.value = tagsArr
+			this.updateHeight();
+			this.handleBlur();
+			this.field = tags.map(t => t.key).join(",")
 		},
-		setDefault() {
-			if (!this.fields.length && this.getOptions['default_value'] && this.getOptions['default_value'].length) {
-				const opts = this.getOptions['default_value'];
-				let defaultVal = [];
-				opts.forEach(opt => {
-					defaultVal.push({
-						text: this.getOptions['choices'][opt],
-						key: opt,
-					})
-				});
-				if (defaultVal.length) {
-					this.selectedTags = defaultVal;
-					this.value = defaultVal
-				}
-			} else {
-				this.value.forEach(tag => {
-					this.selectedTags.push(tag)
-				});
-			}
-		}
 	},
 	computed: {
-		getOptions() {
-			return this.layout.options;
+		/*
+		 * getMaxTags()
+		 * Get minimum amount of tags required.
+		 */
+		getMinTags() {
+			return !this.getOptions['min'] ? -1 : this.getOptions['min'];
 		},
-		getLayout() {
-			return this.layout;
-		},
+		/*
+		 * getMaxTags()
+		 * Get maximum amount of tags required.
+		 */
 		getMaxTags() {
-			return !this.getOptions['maximum'] ? 999999999999999999 :  this.getOptions['maximum'];
+			return !this.getOptions['max'] ? 999999999999999999 : this.getOptions['max'];
 		},
+		/*
+		 * getButtonLabel()
+		 * Obtain the button label for the tags component.
+		 * Defaults to "Add Item"
+		 */
 		getButtonLabel() {
 			return this.getOptions['button_label'] ? this.getOptions['button_label'] : "Add item"
 		},
+		/*
+		 * filteredItems()
+		 * Filter tags.
+		 */
 		filteredItems() {
 			return this.items.filter(i => {
 				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
 			});
 		},
-		value: {
+		/*
+		 * field()
+		 * Splits comma separated list and for use and
+		 * fire's value back up to the parent.
+		 */
+		field: {
 			get() {
-				return this.fields;
+				return this.getValue === "" ? false : this.getValue.split(",");
 			},
 			set(value) {
-				this.$emit("update:fields", value);
+				this.$emit("update:fields", this.getFieldObject(value));
 			}
 		}
 	}

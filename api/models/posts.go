@@ -177,8 +177,8 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 		p.Status = "draft"
 	}
 
-	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, fields, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.Fields, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
+	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
+	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -196,6 +196,11 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	// Update the categories based on the array of integers that
 	// are passed.
 	if err := s.categoriesModel.InsertPostCategory(int(id), p.Category); err != nil {
+		return domain.Post{}, err
+	}
+
+	// Update or create the fields
+	if err := s.fieldsModel.UpdateCreate(int(id), p.Fields); err != nil {
 		return domain.Post{}, err
 	}
 
@@ -232,8 +237,8 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	p.UserId = p.Author
 
 	// Update the posts table with data
-	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, fields = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.Fields, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
+	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
+	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
 	if err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -241,6 +246,11 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	// Update the categories based on the array of integers that
 	// are passed. If the categories
 	if err := s.categoriesModel.InsertPostCategory(p.Id, p.Category); err != nil {
+		return domain.Post{}, err
+	}
+
+	// Update or create the fields
+	if err := s.fieldsModel.UpdateCreate(p.Id, p.Fields); err != nil {
 		return domain.Post{}, err
 	}
 
@@ -297,22 +307,24 @@ func (s *PostStore) Exists(slug string) bool {
 // the category, author & fields associated with the post.
 func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
 
-	author, err := s.userModel.GetById(post.UserId)
-	if err != nil {
-		return domain.PostData{}, err
-	}
+	user, _ := s.userModel.GetById(post.UserId)
 
 	// Get the categories associated with the post
-	category, err := s.categoriesModel.GetByPost(post.Id)
+	category, _ := s.categoriesModel.GetByPost(post.Id)
 
 	// Get the layout associated with the post
-	layout := s.fieldsModel.GetLayout(post, author, category)
+	layout := s.fieldsModel.GetLayout(post, user, category)
 
-	pAuthor := domain.PostAuthor(author)
+	author := user.Author()
+
+	// Get the fields associated with the post
+	fields, _ := s.fieldsModel.GetByPost(post.Id)
+
 	pd := domain.PostData{
 		Post:   post,
-		Layout: layout,
-		Author: &pAuthor,
+		Author: &author,
+		Layout: &layout,
+		Fields: &fields,
 	}
 
 	if category != nil {
@@ -356,7 +368,6 @@ func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
 		Status:            c.Status,
 		Resource:          c.Resource,
 		PageTemplate:      c.PageTemplate,
-		Fields:            c.Fields,
 		CodeInjectionHead: c.CodeInjectionHead,
 		CodeInjectionFoot: c.CodeInjectionFoot,
 		UserId:            c.UserId,

@@ -73,6 +73,8 @@
 										<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldPost>
 										<!-- User -->
 										<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields[layout.name]" :error-trigger="errorTrigger"></FieldUser>
+
+										<!-- Category -->
 										<!-- =====================
 											Layout
 											===================== -->
@@ -132,7 +134,7 @@ export default {
 		layout: Array,
 		fields: {
 			required: true,
-			type: Object
+			type: Object,
 		},
 		errorTrigger: {
 			type: Boolean,

@@ -10,6 +10,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"regexp"
+	"strings"
 )
 
 // Store defines all of the repositories used to interact with the database
@@ -51,19 +52,19 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 	const op = "Model.filterRows"
 
 	q := ""
-	operators := []string{"=", ">", ">=", "<=", "<>", "LIKE", "IN", "NOT LIKE", "like", "in", "not like"}
+	operators := []string{"=", ">", ">=", "<", "<=", "<>", "LIKE", "IN", "NOT LIKE", "like", "in", "not like"}
 
 	if len(filters) != 0 {
 		counter := 0
 		for column, v := range filters {
 
 			// Strip tags
-			column = stripAlphaNum(column)
+			column = stripAlphaNum(strings.ToLower(column))
 
 			// Check if the column exists before continuing
 			var exists bool
-			_ = db.QueryRow(fmt.Sprintf("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '%s' AND COLUMN_NAME = '%s'", table, column)).Scan(&exists)
-			if !exists {
+			err := db.QueryRow("SELECT 1 FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = ? AND COLUMN_NAME = ?", table, column).Scan(&exists)
+			if !exists || err != nil {
 				return "", &errors.Error{
 					Code:      errors.INVALID,
 					Message:   fmt.Sprintf("The %s search query does not exist", column),
@@ -71,8 +72,9 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 					Err:       fmt.Errorf("the %s search query does not exists when searching for %s", column, table)}
 			}
 
+			var fTable string
 			if table != "" {
-				table = table + "."
+				fTable = table + "."
 			}
 
 			for index, filter := range v {
@@ -92,7 +94,7 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 						Code:      errors.INVALID,
 						Message:   fmt.Sprintf("The %s operator does not exist", operator),
 						Operation: op,
-						Err:       fmt.Errorf("the %s operator does not exists when searching for the %s", operator, table)}
+						Err:       fmt.Errorf("the %s operator does not exists when searching for the %s", operator, fTable)}
 				}
 
 				if counter > 0 {
@@ -103,7 +105,7 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 					q += fmt.Sprintf(" WHERE ")
 				}
 
-				q += fmt.Sprintf("(%s%s %s '%s')", table, column, operator, value)
+				q += fmt.Sprintf("(%s%s %s '%s')", fTable, column, operator, value)
 			}
 
 			counter++
@@ -116,6 +118,6 @@ func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (st
 // stripAlphaNum - Strip characters and return alpha numeric string for
 // database processing.
 func stripAlphaNum(text string) string {
-	reg := regexp.MustCompile("[^a-zA-Z0-9 =<>%.@/!+']+")
+	reg := regexp.MustCompile("[^a-zA-Z0-9 =<>%.@/!+_']+")
 	return reg.ReplaceAllString(text, "")
 }
