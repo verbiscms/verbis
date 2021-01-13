@@ -1,0 +1,25 @@
+{
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc24",
+	"title": "Basic Verbis Options",
+	"fields": [
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e1225",
+			"label": "RichText",
+			"name": "content",
+			"type": "richtext",
+			"instructions": "Instructions",
+			"required": true,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"default_value": "default",
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		}
+	],
+	"location": []
+}

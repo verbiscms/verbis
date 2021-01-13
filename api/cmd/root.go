@@ -55,4 +55,5 @@ func init() {
 	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(dumpCmd)
 	rootCmd.AddCommand(testCmd)
+	rootCmd.AddCommand(importCmd)
 }

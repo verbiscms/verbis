@@ -31,7 +31,7 @@ func frontend(s *server.Server, c *handler.Handler, m *models.Store, config conf
 		s.Static("/verbis", paths.Api()+"/web/public")
 
 		// Serve uploads
-		s.GET("/" + uploadPath +  "/*any", c.Frontend.GetUploads)
+		s.GET("/"+uploadPath+"/*any", c.Frontend.GetUploads)
 
 		// Robots
 		s.GET("/robots.txt", c.SEO.Robots)
