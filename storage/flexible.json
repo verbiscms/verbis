@@ -3,6 +3,46 @@
 	"title": "Layout Verbis Options",
 	"fields": [
 		{
+			"uuid": "5219bf7c-55c5-11eb-ae93-0242ac130002",
+			"label": "Repeater",
+			"name": "single_repeater",
+			"type": "repeater",
+			"instructions": "Instructions",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": ""
+			},
+			"sub_fields": [
+				{
+					"uuid": "5219c792-55c5-11eb-ae93-0242ac130002",
+					"label": "Text",
+					"name": "r_text",
+					"type": "text",
+					"instructions": "Instructions",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {
+						"maxlength": "20",
+						"default_value": "default",
+						"placeholder": "Placeholder",
+						"prepend": "",
+						"append": ""
+					}
+				}
+			]
+		},
+		{
 			"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e2725",
 			"label": "Flexible",
 			"name": "flexible",

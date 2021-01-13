@@ -70,7 +70,7 @@
 						<!-- Repeater -->
 						<FieldRepeater v-if="layout.type === 'repeater'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldRepeater>
 						<!-- Flexible -->
-						<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldFlexible>
+						<FieldFlexible v-if="layout.type === 'flexible'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldFlexible>
 					</div><!-- /Card Body -->
 				</div><!-- /Card -->
 		</draggable>
@@ -95,7 +95,7 @@ import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
 import FieldImage from "@/components/editor/fields/Image";
 import FieldRichText from "@/components/editor/fields/RichText";
-import FieldRepeater from "@/components/editor/fields/Repeater";
+
 import draggable from 'vuedraggable'
 
 export default {
@@ -124,8 +124,9 @@ export default {
 		FieldRange,
 		FieldEmail,
 		FieldRichText,
-		FieldRepeater,
+		FieldRepeater: () => import('@/components/editor/fields/Repeater'),
 		FieldImage,
+		FieldFlexible: () => import('@/components/editor/fields/FlexibleContent'),
 		draggable,
 	},
 	data: () => ({
@@ -165,6 +166,7 @@ export default {
 					value: "0",
 					name: this.getLayout.name,
 					type: this.getLayout.type,
+					key: this.fieldKey
 				});
 			}
 
@@ -180,9 +182,9 @@ export default {
 		 */
 		getKey(index, name) {
 			if (this.fieldKey === "") {
-				return this.getLayout.name + "_" + index + "_" + name;
+				return this.getLayout.name + "|" + index + "|" + name;
 			}
-			return this.fieldKey + "_" + index + "_" + name
+			return this.fieldKey + "|" + index + "|" + name
 		},
 		/*
 		 * addRow()
@@ -238,9 +240,17 @@ export default {
 		updateChildIndex() {
 			this.repeaterFields['children'].forEach((child, index) => {
 				for (const key in child) {
+					if ("repeater" in child[key]) {
+						child[key]['repeater'].key = this.getKey(index, child[key]['repeater'].name)
+						return
+					}
+					if ("flexible" in child[key]) {
+						child[key]['flexible'].key = this.getKey(index, child[key]['flexible'].name)
+						return
+					}
 					// eslint-disable-next-line no-prototype-builtins
 					if (child.hasOwnProperty(key)) {
-						child[key].key = this.getKey(index, child[key].name)
+						child[key].key = this.getKey(index, child[key].name);
 					}
 				}
 			});
