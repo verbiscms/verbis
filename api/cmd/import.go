@@ -41,14 +41,15 @@ and convert the data into Verbis content. `,
 
 			file := getXMLFile()
 
-			_, err = wordpress.New(file, store)
+			wp, err := wordpress.New(file, store)
 			if err != nil {
 				printError(err.Error())
 			}
 
 			//"/Users/ainsley/Desktop/Reddico/websites/reddico-website/theme/res/import-xml/test.xml"
 
-			// wp.Import()
+			result := wp.Import()
+
 		},
 	}
 )

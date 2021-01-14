@@ -9,8 +9,12 @@ import (
 	"strings"
 )
 
-type uploader func(file *multipart.FileHeader, url string, err error) (string, error)
+// uploader defines the return return function thats called when a image
+// is found crawling the content.
+type uploader func(file *multipart.FileHeader, url string, err error) string
 
+// ParseHTML
+//
 func ParseHTML(content string, upload uploader) (string, error) {
 	const op = "Importer.ParseHTML"
 
@@ -25,10 +29,12 @@ func ParseHTML(content string, upload uploader) (string, error) {
 			for index, img := range n.Attr {
 				if img.Key == "src" {
 					file, err := DownloadFile(img.Val)
-					url, err := upload(file, img.Val, err)
-					if err != nil {
+					url := upload(file, img.Val, err)
+
+					if url == "" {
 						break
 					}
+
 					n.Attr[index].Val = url
 					break
 				}
