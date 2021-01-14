@@ -48,8 +48,7 @@ and convert the data into Verbis content. `,
 
 			//"/Users/ainsley/Desktop/Reddico/websites/reddico-website/theme/res/import-xml/test.xml"
 
-			result := wp.Import()
-
+			wp.Import()
 		},
 	}
 )
