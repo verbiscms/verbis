@@ -16,6 +16,7 @@ var (
 	layout    = "main"
 	template  = "test"
 	fieldUuid = "39ca0ea0-c911-4eaa-b6e0-67dfd99e1225"
+	userRoleId = 2
 )
 
 type Convert struct {
@@ -281,37 +282,72 @@ func (c *Convert) findAuthor(item Item) (int, error) {
 	return c.owner.Id, nil
 }
 
+// populateAuthors
+//
+// Loops over the Wordpress authors and checks to see if they exist.
+// If they dont, a new user will be created and an email will be
+// sent with there their password. If they do exist, the author
+// will be appended to the Convert author array.
+// The user will be added to the FailedAuthors array in any case of error.
 func (c *Convert) populateAuthors() {
 	for _, v := range c.XML.Channel.Authors {
 		exists := c.store.User.ExistsByEmail(v.AuthorEmail)
-		if exists {
+
+		if !exists {
+			password, err := c.createUser(v)
+			if err != nil {
+				continue
+			}
+			// TODO: Send email with new password
+			fmt.Println(password)
 			continue
 		}
 
-		password := encryption.CreatePassword()
-		user := &domain.UserCreate{
-			User: domain.User{
-				UserPart: domain.UserPart{
-					FirstName: v.AuthorFirstName,
-					LastName:  v.AuthorLastName,
-					Email:     v.AuthorEmail,
-					Role: domain.UserRole{
-						Id: 2,
-					},
-				},
-			},
-			Password:        password,
-			ConfirmPassword: password,
-		}
-
-		u, err := c.store.User.Create(user)
+		user, err := c.store.User.GetByEmail(v.AuthorEmail)
 		if err != nil {
 			c.Failed.Authors.Append(v.AuthorFirstName, v.AuthorLastName, v.AuthorEmail, err)
+			continue
 		}
 
-		c.authors = append(c.authors, u)
-		// TODO: Send email with new password
+		c.authors = append(c.authors, user)
 	}
+}
+
+// createUser
+//
+// Generates a new password and continues to create a new User
+// from the repository. If the user failed to be created it
+// will be added to the FailedAuthors array.
+//
+// Returns the newly created password if successful.
+// Returns an error if the user could not be created.
+func (c *Convert) createUser(a Author) (string, error) {
+	password := encryption.CreatePassword()
+
+	user := &domain.UserCreate{
+		User: domain.User{
+			UserPart: domain.UserPart{
+				FirstName: a.AuthorFirstName,
+				LastName:  a.AuthorLastName,
+				Email:     a.AuthorEmail,
+				Role: domain.UserRole{
+					Id: userRoleId,
+				},
+			},
+		},
+		Password:        password,
+		ConfirmPassword: password,
+	}
+
+	u, err := c.store.User.Create(user)
+	if err != nil {
+		c.Failed.Authors.Append(a.AuthorFirstName, a.AuthorLastName, a.AuthorEmail, err)
+		return "", err
+	}
+
+	c.authors = append(c.authors, u)
+
+	return password, nil
 }
 
 // getStatus
