@@ -12,32 +12,17 @@ import (
 //
 // The array of interfaces are presumed to be the following:
 // [0] for Post ID, fields are obtained by the post given.
-// [1] for formatting the field, for example, a field with type of Post
-// with the value of 1, will automatically be resolved to a domain.Post,
-// if this is set to false, the value will only be 1.
 //
-// Returns the fields to be modified and whether or not they should be formatted.
-// Logs errors.INVALID if the format interface{} could not to be cast to a bool.
-func (s *Service) handleArgs(args []interface{}) ([]domain.PostField, bool) {
+// Returns the fields to be modified & processed.
+func (s *Service) handleArgs(args []interface{}) []domain.PostField {
 	const op = "FieldsService.handleArgs"
 
-	switch len(args) {
-	case 1:
+	if len(args) == 1 {
 		fields := s.getFieldsByPost(args[0])
-		return fields, true
-	case 2:
-		format, err := cast.ToBoolE(args[1])
-		if err != nil {
-			log.WithFields(log.Fields{
-				"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast format to bool", Operation: op, Err: err},
-			}).Error()
-			format = true
-		}
-		fields := s.getFieldsByPost(args[0])
-		return fields, format
-	default:
-		return s.fields, true
+		return fields
 	}
+
+	return s.fields
 }
 
 // getFieldsByPost

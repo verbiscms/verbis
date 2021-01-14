@@ -5,7 +5,7 @@
 		{
 			"uuid": "2a07ab04-51cc-11eb-ae93-0242ac130002",
 			"label": "Normal Repeater",
-			"name": "nested",
+			"name": "repeater",
 			"type": "repeater",
 			"instructions": "Instructions",
 			"required": false,
@@ -24,47 +24,7 @@
 				{
 					"uuid": "2a07ae74-51cc-11eb-ae93-0242ac130002",
 					"label": "Text 1",
-					"name": "text_test",
-					"type": "text",
-					"instructions": "Instructions",
-					"required": false,
-					"conditional_logic": null,
-					"wrapper": {
-						"width": 100
-					},
-					"options": {
-						"maxlength": "20",
-						"default_value": "",
-						"placeholder": "Placeholder",
-						"prepend": "",
-						"append": ""
-					}
-				}
-			]
-		},
-		{
-			"uuid": "b5435bd0-51ba-11eb-ae93-0242ac130002",
-			"label": "Repeater",
-			"name": "repeater",
-			"type": "repeater",
-			"instructions": "Instructions",
-			"required": false,
-			"conditional_logic": null,
-			"wrapper": {
-				"width": 100
-			},
-			"options": {
-				"collapsed": "",
-				"min": 0,
-				"max": 0,
-				"layout": "table",
-				"button_label": ""
-			},
-			"sub_fields": [
-				{
-					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
-					"label": "Text 1",
-					"name": "PARENTTEXT",
+					"name": "text",
 					"type": "text",
 					"instructions": "Instructions",
 					"required": false,
@@ -81,8 +41,8 @@
 					}
 				},
 				{
-					"uuid": "2a07ab04-51cc-11eb-ae93-0242ac130002",
-					"label": "NESTED",
+					"uuid": "276b5ee0-5695-11eb-ae93-0242ac130002",
+					"label": "Normal Repeater",
 					"name": "nested",
 					"type": "repeater",
 					"instructions": "Instructions",
@@ -100,9 +60,9 @@
 					},
 					"sub_fields": [
 						{
-							"uuid": "2a07ae74-51cc-11eb-ae93-0242ac130002",
+							"uuid": "276b5e2c-5695-11eb-ae93-0242ac130002",
 							"label": "Text 1",
-							"name": "NESTEDTEXT",
+							"name": "text_test",
 							"type": "text",
 							"instructions": "Instructions",
 							"required": false,
@@ -119,154 +79,6 @@
 							}
 						}
 					]
-				}
-			]
-		},
-		{
-			"uuid": "5219bf7c-55c5-11eb-ae93-0242ac132002",
-			"label": "Repeater",
-			"name": "test",
-			"type": "repeater",
-			"instructions": "Instructions",
-			"required": false,
-			"conditional_logic": null,
-			"wrapper": {
-				"width": 100
-			},
-			"options": {
-				"collapsed": "",
-				"min": 0,
-				"max": 0,
-				"layout": "table",
-				"button_label": ""
-			},
-			"sub_fields": [
-				{
-					"uuid": "32ca0ba0-c911-2eaa-b6e0-63dfd99e2725",
-					"label": "Flexible",
-					"name": "flexible",
-					"type": "flexible",
-					"instructions": "Instructions",
-					"required": true,
-					"conditional_logic": null,
-					"wrapper": {
-						"width": 100
-					},
-					"layouts": {
-						"layoutkey1": {
-							"uuid": "39ca0ea0-c911-4eaa-b4e0-67dfd99e5735",
-							"name": "layoutkey1",
-							"label": "layoutlabel",
-							"display": "block",
-							"sub_fields": [
-								{
-									"uuid": "39ca0ea0-c911-4eaa-b4e0-67dfd99e5735",
-									"label": "Text",
-									"name": "text",
-									"type": "text",
-									"instructions": "Instructions",
-									"required": true,
-									"conditional_logic": null,
-									"wrapper": {
-										"width": 100
-									},
-									"options": {
-										"maxlength": 10,
-										"default_value": "default",
-										"placeholder": "Placeholder",
-										"prepend": "",
-										"append": ""
-									}
-								}
-							]
-						},
-						"layoutkey2": {
-							"key": "39ca0ea0-c911-4eab-b6e0-67dfd99e5735",
-							"name": "layoutkey2",
-							"label": "layoutlabel",
-							"display": "block",
-							"sub_fields": [
-								{
-									"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
-									"label": "Text",
-									"name": "text",
-									"type": "text",
-									"instructions": "Instructions",
-									"required": true,
-									"conditional_logic": null,
-									"wrapper": {
-										"width": 100
-									},
-									"options": {
-										"maxlength": 10,
-										"default_value": "default",
-										"placeholder": "Placeholder",
-										"prepend": "",
-										"append": ""
-									}
-								},
-								{
-									"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5732",
-									"label": "Repeater",
-									"name": "repeater",
-									"type": "repeater",
-									"instructions": "Instructions",
-									"required": false,
-									"conditional_logic": null,
-									"wrapper": {
-										"width": 100
-									},
-									"options": {
-										"collapsed": "",
-										"min": 0,
-										"max": 0,
-										"layout": "table",
-										"button_label": ""
-									},
-									"sub_fields": [
-										{
-											"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
-											"label": "Text",
-											"name": "text",
-											"type": "text",
-											"instructions": "Instructions",
-											"required": false,
-											"conditional_logic": null,
-											"wrapper": {
-												"width": 100
-											},
-											"options": {
-												"maxlength": "20",
-												"default_value": "default",
-												"placeholder": "Placeholder",
-												"prepend": "",
-												"append": ""
-											}
-										},
-										{
-											"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
-											"label": "Text",
-											"name": "text2",
-											"type": "text",
-											"instructions": "Instructions",
-											"required": false,
-											"conditional_logic": null,
-											"wrapper": {
-												"width": 100
-											},
-											"options": {
-												"maxlength": "",
-												"default_value": "default",
-												"placeholder": "Placeholder",
-												"prepend": "",
-												"append": ""
-											}
-										}
-									]
-								}
-							]
-						}
-					}
 				}
 			]
 		}
