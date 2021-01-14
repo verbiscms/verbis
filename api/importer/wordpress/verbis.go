@@ -7,7 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/importer"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/gookit/color"
 	"github.com/kyokomi/emoji"
 	"mime/multipart"
 	"runtime"
@@ -31,12 +30,6 @@ type Convert struct {
 	store   *models.Store
 	authors []domain.User
 	owner   domain.User
-}
-
-type Options struct {
-	Layout   string
-	Template string
-	UserRole int
 }
 
 type Result struct {
@@ -73,13 +66,13 @@ func New(xmlPath string, s *models.Store) (*Convert, error) {
 // and Posts.
 func (c *Convert) Import() {
 
-	posts, categories := c.populatePosts()
+	//posts, categories := c.populatePosts()
 
 	r := Result{
 		Failed:  c.failed,
-		Posts: 	 posts,
+		//Posts: 	 posts,
 		Authors: c.populateAuthors(),
-		Categories: categories,
+		//Categories: categories,
 	}
 
 	// TODO: To be returned here as a WebHook or placed in a Debug Table
@@ -145,7 +138,6 @@ func (c *Convert) populatePosts() ([]domain.PostData, []domain.Category) {
 }
 
 // addItem
-//
 //
 // This function will append to the FailedPosts array if there
 // was a problem parsing any of the content.
@@ -354,8 +346,13 @@ func (c *Convert) populateAuthors() []domain.UserPart {
 			if err != nil {
 				continue
 			}
-			color.Yellow.Println(password)
-			// TODO: Send email with new password
+
+			// User can't login!
+			err = importer.SendNewPassword(*user.HideCredentials(), password, *c.store.Site.GetGlobalConfig())
+			if err != nil {
+				continue
+			}
+
 			users = append(users, *user.HideCredentials())
 			continue
 		}
