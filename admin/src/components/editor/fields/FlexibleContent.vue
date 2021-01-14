@@ -153,7 +153,9 @@ export default {
 			deep: true,
 			handler(val) {
 				val['flexible'].value =  this.layoutStr.join(",");
-				this.updateChildIndex();
+				this.$nextTick(() => {
+					this.updateChildIndex();
+				}, 20)
 			},
 		},
 	},
@@ -262,17 +264,19 @@ export default {
 			this.layoutFields['children'].forEach((child, index) => {
 				const fields = child
 				for (const key in fields) {
-					if ("repeater" in fields[key]) {
-						fields[key]['repeater'].key = this.getKey(index, fields[key]['repeater'].name)
-						return
-					}
-					if ("flexible" in fields[key]) {
-						fields[key]['flexible'].key = this.getKey(index, fields[key]['flexible'].name)
-						return
-					}
 					// eslint-disable-next-line no-prototype-builtins
 					if (fields.hasOwnProperty(key)) {
-						fields[key].key = this.getKey(index, fields[key].name)
+						if ("key" in child[key] && 'uuid' in child[key]) {
+							fields[key].key = this.getKey(index, fields[key].name)
+						}
+						if ("repeater" in fields[key]) {
+							fields[key]['repeater'].key = this.getKey(index, fields[key]['repeater'].name)
+							return
+						}
+						if ("flexible" in fields[key]) {
+							fields[key]['flexible'].key = this.getKey(index, fields[key]['flexible'].name)
+							return
+						}
 					}
 				}
 			});
