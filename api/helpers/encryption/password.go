@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"golang.org/x/crypto/bcrypt"
+	"math/rand"
 )
 
 // HashPassword gets the password in byte format and generates
 // a hashed password with the default cost of 10.
+//
 // Returns errors.INTERNAL if the bcrypt failed to generate
 // from password.
 func HashPassword(password string) (string, error) {
@@ -18,4 +20,15 @@ func HashPassword(password string) (string, error) {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not hash the password with the string: %s", password), Operation: op, Err: err}
 	}
 	return string(hashedPassword), err
+}
+
+// CreatePassword creates a random password with a character
+// length of 24.
+func CreatePassword() string {
+	var characterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@:\\/@£$%=^&&*()_+?><")
+	b := make([]rune, 24)
+	for i := range b {
+		b[i] = characterRunes[rand.Intn(len(characterRunes))]
+	}
+	return string(b)
 }
