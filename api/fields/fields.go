@@ -11,22 +11,23 @@ type Fields map[string]interface{}
 //
 // Returns all of the fields for the current post, or post ID given.
 func (s *Service) GetFields(args ...interface{}) (Fields, error) {
-	fields, format := s.handleArgs(args)
+	//fields,  s.handleArgs(args)
+	//
+	//f := make(Fields, len(fields))
+	//s.mapper(fields, func(field domain.PostField) {
+	//	if !format {
+	//		f[field.Name] = field.OriginalValue.String()
+	//		return
+	//	}
+	//	if field.Type == "repeater" || field.Type == "flexible" {
+	//		f[field.Name] = field.Value
+	//		return
+	//	}
+	//	f[field.Name] = s.resolveField(field).Value
+	//})
 
-	f := make(Fields, len(fields))
-	s.mapper(fields, func(field domain.PostField) {
-		if !format {
-			f[field.Name] = field.OriginalValue.String()
-			return
-		}
-		if field.Type == "repeater" || field.Type == "flexible" {
-			f[field.Name] = field.Value
-			return
-		}
-		f[field.Name] = s.resolveField(field).Value
-	})
-
-	return f, nil
+	return nil, nil
+	//return f, nil
 }
 
 // WalkerFunc defines the function for walking the slice of domain.PostField

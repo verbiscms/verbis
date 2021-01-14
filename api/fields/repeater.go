@@ -1,7 +1,9 @@
 package fields
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
 	"strings"
 )
@@ -20,30 +22,38 @@ type Row []domain.PostField
 // return repeater
 // All values must be resolved beforr passing back.
 
+
 // GetRepeater
 //
 // Returns the collection of children from the given key and returns
 // a new Repeater.
 // Returns errors.INVALID if the field type is not a repeater.
 // Returns errors.NOTFOUND if the field was not found by the given key.
-func (s *Service) GetRepeater(name string, args ...interface{}) (Repeater, error) {
+func (s *Service) GetRepeater(input interface{}, args ...interface{}) (Repeater, error) {
 	const op = "FieldsService.GetRepeater"
 
-	fields, _ := s.handleArgs(args)
+	repeater, ok := input.(Repeater)
+	if ok {
+		return repeater, nil
+	}
 
-	//field, err := s.findFieldByName(name, fields)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//if field.Type != "repeater" {
-	//	return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the name: %s, is not a repeater", name)}
-	//}
+	name, err := cast.ToStringE(input)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err}
+	}
 
-	s.getFieldChildren(name, fields)
+	fields := s.handleArgs(args)
 
-	//return s.getFieldChildren(field.UUID, fields, format), nil
-	return nil, nil
+	field, err := s.findFieldByName(name, fields)
+	if err != nil {
+		return nil, err
+	}
+
+	if field.Type != "repeater" {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the name: %s, is not a repeater", name)}
+	}
+
+	return s.repeater("", field, fields), nil
 }
 
 // getFieldChildren
@@ -53,32 +63,46 @@ func (s *Service) GetRepeater(name string, args ...interface{}) (Repeater, error
 // It's not necessary to use a database call for this look up, as we will
 // be looping through them anyway to append and format the fields.
 // Returns the sorted slice of fields.
-func (s *Service) getFieldChildren(name string, fields []domain.PostField) Repeater {
-	var r Repeater
-	for _, v := range fields {
-		arr := strings.Split(v.Key, "_")
+func (s *Service) repeater(key string, field domain.PostField, fields []domain.PostField) Repeater {
 
-		if len(arr) < 3 {
-			continue
-		}
-
-		if arr[0] != name {
-			continue
-		}
-
-		index, err := cast.ToIntE(arr[1])
-		if err != nil {
-			continue
-		}
-
-		if len(r) <= index {
-			r = append(r, Row{})
-		}
-
-		r[index] = append(r[index], v)
+	amount, err := field.OriginalValue.Int()
+	if err != nil {
+		fmt.Println(err)
+		// Log
 	}
 
-	return r
+	var repeater = make(Repeater, amount)
+	for rIndex := 0; rIndex < len(repeater); rIndex++ {
+		pipe := key + field.Name + "|" + cast.ToString(rIndex)
+
+		var row Row
+		for _, v := range fields {
+
+			pipeLen := strings.Split(pipe, "|")
+			keyLen := strings.Split(v.Key, "|")
+
+			if strings.HasPrefix(v.Key, pipe) && len(pipeLen) + 1 == len(keyLen) {
+
+				fieldType := v.Type
+				if fieldType != "repeater" && fieldType != "flexible" {
+					row = append(row, s.resolveField(v))
+				}
+
+				if fieldType == "repeater" {
+					v.Value = s.repeater(pipe + "|", v, fields)
+					row = append(row, v)
+				}
+
+				//if field.Type == "flexible" {
+				//
+				//}
+			}
+		}
+
+		repeater[rIndex] = row
+	}
+
+	return repeater
 }
 
 // HasRows

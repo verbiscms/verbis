@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -102,6 +103,10 @@ func (f FieldValue) IsEmpty() bool {
 
 func (f FieldValue) String() string {
 	return string(f)
+}
+
+func (f FieldValue) Int() (int, error) {
+	return strconv.Atoi(f.String())
 }
 
 type PostSeoMeta struct {

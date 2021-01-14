@@ -1,9 +1,7 @@
 package fields
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 )
 
 // Flexible represents the collection of layouts used
@@ -31,18 +29,20 @@ type SubFields []domain.PostField
 func (s *Service) GetFlexible(name string, args ...interface{}) (Flexible, error) {
 	const op = "FieldsService.GetFlexible"
 
-	fields, format := s.handleArgs(args)
+	//fields, format := s.handleArgs(args)
+	//
+	//field, err := s.findFieldByName(name, fields)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//if field.Type != "flexible" {
+	//	return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)}
+	//}
+	//
+	//return s.getLayouts(fields, field.OriginalValue.Array(), format), nil
 
-	field, err := s.findFieldByName(name, fields)
-	if err != nil {
-		return nil, err
-	}
-
-	if field.Type != "flexible" {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)}
-	}
-
-	return s.getLayouts(fields, field.OriginalValue.Array(), format), nil
+	return nil, nil
 }
 
 // getLayouts
