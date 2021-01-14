@@ -3,6 +3,7 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
+		hello {{ fieldKey }}
 		<draggable @start="drag=true" :list="repeaterFields['children']" :group="repeaterFields['children']" :sort="true" handle=".repeater-handle">
 			<div class="repeater" v-for="(repeater, repeaterIndex) in repeaterFields['children']" :key="repeaterIndex">
 					<div class="card-header">
@@ -145,8 +146,12 @@ export default {
 		fields: {
 			deep: true,
 			handler(val) {
-				this.fields['repeater'].value = val.children.length.toString();
-				this.updateChildIndex();
+				this.$nextTick(() => {
+					this.fields['repeater'].value = val.children.length.toString();
+					this.$nextTick(() => {
+						this.updateChildIndex();
+					}, 20)
+				});
 			},
 		},
 	},
@@ -240,17 +245,17 @@ export default {
 		updateChildIndex() {
 			this.repeaterFields['children'].forEach((child, index) => {
 				for (const key in child) {
-					if ("repeater" in child[key]) {
-						child[key]['repeater'].key = this.getKey(index, child[key]['repeater'].name)
-						return
-					}
-					if ("flexible" in child[key]) {
-						child[key]['flexible'].key = this.getKey(index, child[key]['flexible'].name)
-						return
-					}
 					// eslint-disable-next-line no-prototype-builtins
 					if (child.hasOwnProperty(key)) {
-						child[key].key = this.getKey(index, child[key].name);
+						if ("key" in child[key] && 'uuid' in child[key]) {
+							child[key]['key'] = this.getKey(index, child[key].name)
+						}
+						if ("repeater" in child[key]) {
+							child[key]['repeater']['key'] = this.getKey(index, child[key]['repeater'].name)
+						}
+						if ("flexible" in child[key]) {
+							child[key]['flexible']['key'] = this.getKey(index, child[key]['flexible'].name)
+						}
 					}
 				}
 			});

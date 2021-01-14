@@ -4,7 +4,7 @@
 	"fields": [
 		{
 			"uuid": "2a07ab04-51cc-11eb-ae93-0242ac130002",
-			"label": "NESTED",
+			"label": "Normal Repeater",
 			"name": "nested",
 			"type": "repeater",
 			"instructions": "Instructions",
@@ -24,7 +24,7 @@
 				{
 					"uuid": "2a07ae74-51cc-11eb-ae93-0242ac130002",
 					"label": "Text 1",
-					"name": "NESTEDTEXT",
+					"name": "text_test",
 					"type": "text",
 					"instructions": "Instructions",
 					"required": false,
