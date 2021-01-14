@@ -111,18 +111,22 @@ type PostSeoMeta struct {
 	Seo    *PostSeo  `db:"seo" json:"seo"`
 }
 type PostMeta struct {
+	Title       string       `json:"title,omitempty"`
+	Description string       `json:"description,omitempty"`
+	Twitter     PostTwitter  `json:"twitter,omitempty"`
+	Facebook    PostFacebook `json:"facebook,omitempty"`
+}
+
+type PostTwitter struct {
 	Title       string `json:"title,omitempty"`
 	Description string `json:"description,omitempty"`
-	Twitter     struct {
-		Title       string `json:"title,omitempty"`
-		Description string `json:"description,omitempty"`
-		ImageId     int    `json:"image_id,numeric,omitempty"`
-	} `json:"twitter,omitempty"`
-	Facebook struct {
-		Title       string `json:"title,omitempty"`
-		Description string `json:"description,omitempty"`
-		ImageId     int    `json:"image_id,numeric,omitempty"`
-	} `json:"facebook,omitempty"`
+	ImageId     int    `json:"image_id,numeric,omitempty"`
+}
+
+type PostFacebook struct {
+	Title       string `json:"title,omitempty"`
+	Description string `json:"description,omitempty"`
+	ImageId     int    `json:"image_id,numeric,omitempty"`
 }
 
 func (m *PostMeta) Scan(value interface{}) error {

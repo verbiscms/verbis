@@ -2,11 +2,17 @@ package importer
 
 import (
 	"bytes"
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"golang.org/x/net/html"
+	"mime/multipart"
 	"strings"
 )
 
-func ParseHTML(content string, downloader func(url string) (string, error)) (string, error) {
+type uploader func(file *multipart.FileHeader, url string, err error) (string, error)
+
+func ParseHTML(content string, upload uploader) (string, error) {
+	const op = "Importer.ParseHTML"
 
 	doc, err := html.Parse(strings.NewReader(content))
 	if err != nil {
@@ -18,11 +24,12 @@ func ParseHTML(content string, downloader func(url string) (string, error)) (str
 		if n.Type == html.ElementNode && n.Data == "img" {
 			for index, img := range n.Attr {
 				if img.Key == "src" {
-					newUrl, err := downloader(img.Val)
+					file, err := DownloadFile(img.Val)
+					url, err := upload(file, img.Val, err)
 					if err != nil {
 						break
 					}
-					n.Attr[index].Val = newUrl
+					n.Attr[index].Val = url
 					break
 				}
 			}
@@ -38,7 +45,7 @@ func ParseHTML(content string, downloader func(url string) (string, error)) (str
 	var b bytes.Buffer
 	err = html.Render(&b, doc)
 	if err != nil {
-		return "", err
+		return "", &errors.Error{Code: errors.INVALID, Message: "Could not parse HTML", Operation: op, Err: fmt.Errorf("unable to parse HTML")}
 	}
 
 	replacer := strings.NewReplacer("<html><head></head><body>", "", "</body></html>", "")
