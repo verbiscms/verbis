@@ -15,6 +15,10 @@ type FieldService interface {
 	GetFlexible(name string, args ...interface{}) (Flexible, error)
 }
 
+const (
+	SEPERATOR = "|"
+)
+
 // Service
 //
 // Defines the helper for obtaining fields for front end templates.
