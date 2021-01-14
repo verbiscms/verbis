@@ -11,8 +11,8 @@ type Importer interface {
 	Import()
 }
 
-// ParseLink
-//
+// ParseLink converts a link to of type *URL
+// Returns errors.INVALID if the post link was unable to be parsed.
 func ParseLink(link string) (string, error) {
 	const op = "Importer.ParseLink"
 	u, err := url.Parse(link)
@@ -22,7 +22,8 @@ func ParseLink(link string) (string, error) {
 	return u.Path, nil
 }
 
-// ParseUUID
+// ParseUUID converts a string to of type uuid.UUID
+// Returns errors.INVALID if the string was unable to be parsed.
 func ParseUUID(u string) (uuid.UUID, error) {
 	const op = "Importer.ParseUUID"
 	id, err := uuid.Parse(u)
