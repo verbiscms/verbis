@@ -19,6 +19,7 @@ type UserRepository interface {
 	GetById(id int) (domain.User, error)
 	GetOwner() (domain.User, error)
 	GetByToken(token string) (domain.User, error)
+	GetByEmail(email string) (domain.User, error)
 	GetRoles() ([]domain.UserRole, error)
 	Create(u *domain.UserCreate) (domain.User, error)
 	Update(u *domain.User) (domain.User, error)
@@ -139,6 +140,17 @@ func (s *UserStore) GetByToken(token string) (domain.User, error) {
 	var u domain.User
 	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE token = ? LIMIT 1", token); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the token: %s", token), Operation: op, Err: err}
+	}
+	return u, nil
+}
+
+// GetByToken gets a user with the given token.
+// Returns errors.NOTFOUND if the owner was not found.
+func (s *UserStore) GetByEmail(email string) (domain.User, error) {
+	const op = "UserRepository.GetByEmail"
+	var u domain.User
+	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE email = ? LIMIT 1", email); err != nil {
+		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the email: %s", email), Operation: op, Err: err}
 	}
 	return u, nil
 }

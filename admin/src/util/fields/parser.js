@@ -33,90 +33,55 @@ export default class FieldParser {
         }
 
         this.fields.forEach(field => {
+            let keyArr = field.key.split("|");
 
             // Normal
-            if (field.type !== "repeater" && !field.key.split("_").length) {
+            if (field.type !== "repeater" && field.type !== "flexible" && !field.key.includes("|")) {
                 this.parsed[field.name] = field;
                 return
             }
 
-            // Repeaters
-            if (field.type === "repeater" && !field.key.split("_").length) {
-                this._set(this.parsed, field.name + "_repeater", field)
-                return
+            if (field.type === "repeater") {
+                if (field.key === "") {
+                    this._set(this.parsed, field.name + "|repeater", field)
+                    return;
+                }
+
+                return;
             }
 
-            // Flexible
             if (field.type === "flexible") {
-                this._set(this.parsed, field.name + "_flexible", field)
-                return
-            }
-
-            // Obtain the split keys array
-            const splitKeys = field.key.split("_");
-
-            // Find repeater children
-            const parent = this.fields.find(f => f.name === splitKeys[0]);
-            if (parent && parent.type === "repeater") {
-                if (parent && parent.type === "repeater") {
-                    for (let itemIndex = 1; itemIndex < splitKeys.length; itemIndex += 3) {
-                        splitKeys.splice(itemIndex, 0, 'children');
-                    }
-                    this._set(this.parsed, splitKeys.join("_"), field)
+                if (field.key === "") {
+                    this._set(this.parsed, field.name + "|flexible", field)
+                    return;
                 }
             }
 
-            // TODO KEYS ARENT BEING UPDATED IN FLEXIBLE REPEATERS
-            // "text": {
-            //     "uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
-            //         "value": "default",
-            //         "name": "text",
-            //         "type": "text",
-            //         "key": "flexible_0_repeater_1_text"
-            // },
-            // "text2": {
-            //     "uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
-            //         "value": "default",
-            //         "name": "text2",
-            //         "type": "text",
-            //         "key": "flexible_0_repeater_1_text2"
-            // }
+            keyArr.forEach((key, index) => {
+                const f = this.fields.find(f => f.name === key);
 
-            // Find Flexible Children
-            if (parent && parent.type === "flexible") {
+                // TODO: Flexible Repeaters?
 
-                for (let itemIndex = 1; itemIndex < splitKeys.length; itemIndex += 3) {
-                    splitKeys.splice(itemIndex, 0, 'children');
+                if (f && field.type === "flexible") {
+                    keyArr.splice(index + 2, 0, "flexible")
                 }
 
-                // for (let itemIndex = 3; itemIndex < splitKeys.length; itemIndex += 3) {
-                //     console.log(field.key)
-                // }
+                if (f && f.type === "repeater" && field.type !== "repeater") {
+                    keyArr.splice(index + 1, 0, "children")
+                }
 
-                splitKeys.splice(3, 0, 'fields');
+                if (f && f.type === "flexible" && field.type !== "flexible") {
+                    keyArr.splice(index + 1, 0, "children")
+                }
+            });
 
-                parent.value.split(",").forEach((val, index) => {
-                    let str = parent.name + "_children_" + index + "_type";
-                    this._set(this.parsed, str, val);
-                });
-
-                console.log(splitKeys.join("_"))
-
-                this._set(this.parsed, splitKeys.join("_"), field);
-            }
+            this._set(this.parsed, keyArr.join("|"), field);
         });
+        //
+        //console.log(JSON.stringify(this.parsed, undefined, 2));
 
         return this.parsed;
     }
-    //
-    // getRepeater(keys, parent) {
-    //     if (parent && parent.type === "repeater") {
-    //         for (let itemIndex = 1; itemIndex < keys.length; itemIndex += 3) {
-    //             keys.splice(itemIndex, 0, 'children');
-    //         }
-    //         this._set(this.parsed, keys.join("_"), field)
-    //     }
-    // }
     /*
      * flattenFields()
      * Collapse the fields into an array to send off
@@ -153,7 +118,7 @@ export default class FieldParser {
     _set(obj, path, value){
         if (Object(obj) !== obj) return obj; // When obj is not an object
         // If not yet an array, get the keys from the string-path
-        if (!Array.isArray(path)) path = path.toString().match(/[^_[\]]+/g) || [];
+        if (!Array.isArray(path)) path = path.toString().match(/[^|[\]]+/g) || [];
         path.slice(0,-1).reduce((a, c, i) => // Iterate all of them except the last one
                 Object(a[c]) === a[c] // Does the key exist and is its value an object?
                     // Yes: then follow that path
