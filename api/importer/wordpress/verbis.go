@@ -15,13 +15,13 @@ import (
 
 // TODO: This needs to be dynamic.
 var (
-	resource  = "posts"
-	layout    = "main"
-	template  = "test"
-	fieldUuid = "39ca0ea0-c911-4eaa-b6e0-67dfd99e1225"
+	resource   = "posts"
+	layout     = "main"
+	template   = "test"
+	fieldUuid  = "39ca0ea0-c911-4eaa-b6e0-67dfd99e1225"
 	userRoleId = 2
-	trackChan = make(chan int, runtime.NumCPU() * 4)
-	wg = sync.WaitGroup{}
+	trackChan  = make(chan int, runtime.NumCPU()*4)
+	wg         = sync.WaitGroup{}
 )
 
 type Convert struct {
@@ -33,9 +33,9 @@ type Convert struct {
 }
 
 type Result struct {
-	Failed Failures
-	Posts []domain.PostData
-	Authors []domain.UserPart
+	Failed     Failures
+	Posts      []domain.PostData
+	Authors    []domain.UserPart
 	Categories []domain.Category
 }
 
@@ -69,7 +69,7 @@ func (c *Convert) Import() {
 	//posts, categories := c.populatePosts()
 
 	r := Result{
-		Failed:  c.failed,
+		Failed: c.failed,
 		//Posts: 	 posts,
 		Authors: c.populateAuthors(),
 		//Categories: categories,
@@ -115,8 +115,8 @@ type FailedAuthor struct {
 }
 
 var (
-	posts []domain.PostData		  // Successful posts that have been inserted
-	categories []domain.Category  // Successful categories that have been inserted
+	posts      []domain.PostData // Successful posts that have been inserted
+	categories []domain.Category // Successful categories that have been inserted
 )
 
 // populatePosts
@@ -201,13 +201,13 @@ func (c *Convert) addItem(item Item) {
 
 	post, err := c.store.Posts.Create(&p)
 	if err != nil {
-		c.failPost(item,nil, err)
+		c.failPost(item, nil, err)
 		return
 	}
 
 	cPost, err := c.store.Posts.Format(post)
 	if err != nil {
-		c.failPost(item,nil, err)
+		c.failPost(item, nil, err)
 		return
 	}
 
@@ -433,8 +433,8 @@ func (c *Convert) failPost(item Item, media []FailedMedia, err error) {
 func (c *Convert) failAuthor(fName string, lName string, email string, err error) {
 	c.failed.Authors = append(c.failed.Authors, FailedAuthor{
 		FirstName: fName,
-		LastName: lName,
-		Email:    email,
-		Error: err,
+		LastName:  lName,
+		Email:     email,
+		Error:     err,
 	})
 }

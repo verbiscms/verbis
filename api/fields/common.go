@@ -66,9 +66,9 @@ func (s *Service) findFieldByName(name string, fields []domain.PostField) (domai
 // resolve represents the struct to be passed when resolving
 // repeaters and flexible content types.
 type resolve struct {
-	Key string
-	Index int
-	Field domain.PostField
+	Key    string
+	Index  int
+	Field  domain.PostField
 	Fields []domain.PostField
 	*Service
 }
@@ -91,7 +91,7 @@ func (r *resolve) Walker(appender func(domain.PostField)) {
 		pipeLen := strings.Split(pipe, SEPARATOR)
 		keyLen := strings.Split(v.Key, SEPARATOR)
 
-		if strings.HasPrefix(v.Key, pipe) && len(pipeLen) + 1 == len(keyLen) {
+		if strings.HasPrefix(v.Key, pipe) && len(pipeLen)+1 == len(keyLen) {
 
 			fieldType := v.Type
 			if fieldType == "repeater" {
@@ -110,4 +110,3 @@ func (r *resolve) Walker(appender func(domain.PostField)) {
 		}
 	}
 }
-
