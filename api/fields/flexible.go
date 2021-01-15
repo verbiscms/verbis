@@ -1,7 +1,10 @@
 package fields
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/spf13/cast"
 )
 
 // Flexible represents the collection of layouts used
@@ -26,24 +29,33 @@ type SubFields []domain.PostField
 // a new Flexible.
 // Returns errors.INVALID if the field type is not flexible content.
 // Returns errors.INTERNAL if the layouts could not be cast to a string slice.
-func (s *Service) GetFlexible(name string, args ...interface{}) (Flexible, error) {
+func (s *Service) GetFlexible(input interface{}, args ...interface{}) (Flexible, error) {
 	const op = "FieldsService.GetFlexible"
 
-	//fields, format := s.handleArgs(args)
-	//
-	//field, err := s.findFieldByName(name, fields)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	//if field.Type != "flexible" {
-	//	return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)}
-	//}
-	//
-	//return s.getLayouts(fields, field.OriginalValue.Array(), format), nil
+	flexible, ok := input.(Flexible)
+	if ok {
+		return flexible, nil
+	}
 
-	return nil, nil
+	name, err := cast.ToStringE(input)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err}
+	}
+
+	fields := s.handleArgs(args)
+
+	field, err := s.findFieldByName(name, fields)
+	if err != nil {
+		return nil, err
+	}
+
+	if field.Type != "flexible" {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)}
+	}
+
+	return s.resolveFlexible("", field, fields), nil
 }
+
 
 // getLayouts
 //
@@ -52,21 +64,31 @@ func (s *Service) GetFlexible(name string, args ...interface{}) (Flexible, error
 // layout.
 // Fields are resolved dependant on the format parameter.
 // Returns a new Flexible.
-func (s *Service) getLayouts(fields []domain.PostField, layouts []string, format bool) Flexible {
-	var flexible []Layout
-	//for _, v := range layouts {
-	//var sub SubFields
-	//for _, field := range fields {
-	//if field.Layout != nil && *field.Layout == v {
-	//	if !format {
-	//		sub = append(sub, field)
-	//		continue
-	//	}
-	//	sub = append(sub, s.resolveField(field))
-	//}
-	//}
-	//	flexible = append(flexible, Layout{Name: v, SubFields: sub})
-	//	}
+func (s *Service) resolveFlexible(key string, field domain.PostField, fields []domain.PostField) Flexible {
+	layouts := field.OriginalValue.Array()
+
+	var flexible = make(Flexible, len(layouts))
+	for index := 0; index < len(flexible); index++ {
+
+		r := resolve{
+			Key:    key,
+			Index:  index,
+			Field:  field,
+			Fields: fields,
+			Service: s,
+		}
+
+		var subFields SubFields
+		r.fieldAppender(func(f domain.PostField) {
+			subFields = append(subFields, f)
+		})
+
+		flexible[index] = Layout{
+			Name:      layouts[index],
+			SubFields: subFields,
+		}
+	}
+
 	return flexible
 }
 
