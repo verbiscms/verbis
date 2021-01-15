@@ -11,12 +11,12 @@ type FieldService interface {
 	GetFields(args ...interface{}) (Fields, error)
 	GetLayout(name string, args ...interface{}) (domain.Field, error)
 	GetLayouts(args ...interface{}) []domain.FieldGroup
-	GetRepeater(name string, args ...interface{}) (Repeater, error)
+	GetRepeater(input interface{}, args ...interface{}) (Repeater, error)
 	GetFlexible(name string, args ...interface{}) (Flexible, error)
 }
 
 const (
-	SEPERATOR = "|"
+	SEPARATOR = "|"
 )
 
 // Service
