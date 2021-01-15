@@ -4,31 +4,26 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"strings"
 )
 
-// Repeater represents the collection of fields fused
+// Repeater represents the collection of rows used
 // for the repeater function in templates.
 type Repeater []Row
 
-// Comment
+// Row represents the collection of the repeaters
+// containing `sub_fields.
 type Row []domain.PostField
-
-// TODO: We no longer need the format paramater
-// TODO: The repeater needs to be an array of arrays.
-// Get repeater
-// if (type is repeater)
-// return repeater
-// All values must be resolved beforr passing back.
-
 
 // GetRepeater
 //
 // Returns the collection of children from the given key and returns
 // a new Repeater.
-// Returns errors.INVALID if the field type is not a repeater.
+//
 // Returns errors.NOTFOUND if the field was not found by the given key.
+// Returns errors.INVALID if the field type is not a repeater or the name could not be cast.
 func (s *Service) GetRepeater(input interface{}, args ...interface{}) (Repeater, error) {
 	const op = "FieldsService.GetRepeater"
 
@@ -53,7 +48,7 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) (Repeater,
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the name: %s, is not a repeater", name)}
 	}
 
-	return s.repeater("", field, fields), nil
+	return s.resolveRepeater("", field, fields), nil
 }
 
 // getFieldChildren
@@ -63,23 +58,26 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) (Repeater,
 // It's not necessary to use a database call for this look up, as we will
 // be looping through them anyway to append and format the fields.
 // Returns the sorted slice of fields.
-func (s *Service) repeater(key string, field domain.PostField, fields []domain.PostField) Repeater {
+func (s *Service) resolveRepeater(key string, field domain.PostField, fields []domain.PostField) Repeater {
+	const op = "FieldsService.resolveRepeater"
 
 	amount, err := field.OriginalValue.Int()
 	if err != nil {
-		fmt.Println(err)
-		// Log
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast repeater value to integer", Operation: op, Err: err},
+		}).Error()
+		return Repeater{}
 	}
 
 	var repeater = make(Repeater, amount)
 	for rIndex := 0; rIndex < len(repeater); rIndex++ {
-		pipe := key + field.Name + "|" + cast.ToString(rIndex)
+		pipe := key + field.Name + SEPARATOR + cast.ToString(rIndex)
 
 		var row Row
 		for _, v := range fields {
 
-			pipeLen := strings.Split(pipe, "|")
-			keyLen := strings.Split(v.Key, "|")
+			pipeLen := strings.Split(pipe, SEPARATOR)
+			keyLen := strings.Split(v.Key, SEPARATOR)
 
 			if strings.HasPrefix(v.Key, pipe) && len(pipeLen) + 1 == len(keyLen) {
 
@@ -89,7 +87,7 @@ func (s *Service) repeater(key string, field domain.PostField, fields []domain.P
 				}
 
 				if fieldType == "repeater" {
-					v.Value = s.repeater(pipe + "|", v, fields)
+					v.Value = s.resolveRepeater(pipe + SEPARATOR, v, fields)
 					row = append(row, v)
 				}
 
@@ -122,6 +120,18 @@ func (r Row) SubField(name string) interface{} {
 		}
 	}
 	return nil
+}
+
+// HasField
+//
+// Returns true if a field exists within the row.
+func (r Row) HasField(name string) bool {
+	for _, sub := range r {
+		if name == sub.Name {
+			return true
+		}
+	}
+	return false
 }
 
 // First
