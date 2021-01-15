@@ -1,188 +1,159 @@
 package fields
 
-//
-//func (t *FieldTestSuite) TestService_HandleArgs() {
-//
-//	tt := map[string]struct {
-//		fields []domain.PostField
-//		args   []interface{}
-//		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
-//		format bool
-//		want   []domain.PostField
-//	}{
-//		"Default": {
-//			fields: []domain.PostField{{Name: "test"}},
-//			args:   nil,
-//			format: true,
-//			want:   []domain.PostField{{Name: "test"}},
-//		},
-//		"1 Args (Post)": {
-//			fields: nil,
-//			args:   []interface{}{1},
-//			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-//				f.On("GetByPost", 1).Return([]domain.PostField{
-//					{Id: 1, Type: "text", Name: "post"},
-//				}, nil)
-//			},
-//			format: true,
-//			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
-//		},
-//		"1 Args (Post Error)": {
-//			fields: []domain.PostField{{Name: "test"}},
-//			args:   []interface{}{1},
-//			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-//				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
-//			},
-//			format: true,
-//			want:   nil,
-//		},
-//		"2 Args (Post & Format)": {
-//			fields: nil,
-//			args:   []interface{}{1, false},
-//			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-//				f.On("GetByPost", 1).Return([]domain.PostField{
-//					{Id: 1, Type: "text", Name: "post"},
-//				}, nil)
-//			},
-//			format: false,
-//			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
-//		},
-//		"Cast to Bool Error": {
-//			fields: nil,
-//			args:   []interface{}{1, noStringer{}},
-//			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-//				f.On("GetByPost", 1).Return([]domain.PostField{
-//					{Id: 1, Type: "text", Name: "post"},
-//				}, nil)
-//			},
-//			format: true,
-//			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			s := t.GetMockService(test.fields, test.mock)
-//			got, format := s.handleArgs(test.args)
-//			t.Equal(test.format, format)
-//			t.Equal(test.want, got)
-//		})
-//	}
-//}
-//
-//func (t *FieldTestSuite) TestService_GetFieldsByPost() {
-//
-//	tt := map[string]struct {
-//		id   interface{}
-//		mock func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
-//		want []domain.PostField
-//	}{
-//		"Success": {
-//			id: 1,
-//			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-//				f.On("GetByPost", 1).Return([]domain.PostField{
-//					{Id: 1, Type: "text", Name: "post"},
-//				}, nil)
-//			},
-//			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
-//		},
-//		"Cast Error": {
-//			id:   noStringer{},
-//			want: nil,
-//		},
-//		"Get Error": {
-//			id: 1,
-//			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-//				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
-//			},
-//			want: nil,
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			t.Equal(test.want, t.GetMockService(nil, test.mock).getFieldsByPost(test.id))
-//		})
-//	}
-//}
-//
-//func (t *FieldTestSuite) TestService_GetChildren() {
-//
-//	id := uuid.New()
-//
-//	tt := map[string]struct {
-//		uuid   uuid.UUID
-//		fields []domain.PostField
-//		format bool
-//		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
-//		want   []domain.PostField
-//	}{
-//		"Not Formatted": {
-//			uuid: id,
-//			fields: []domain.PostField{
-//				{Id: 1, Parent: nil},
-//				{Id: 2, Parent: &id},
-//				{Id: 3, Parent: &id},
-//				{Id: 4, Parent: &id},
-//			},
-//			format: false,
-//			want: []domain.PostField{
-//				{Id: 2, Parent: &id},
-//				{Id: 3, Parent: &id},
-//				{Id: 4, Parent: &id},
-//			},
-//		},
-//		"Formatted": {
-//			uuid: id,
-//			fields: []domain.PostField{
-//				{Id: 1, Parent: nil},
-//				{Id: 2, Parent: &id, OriginalValue: "1", Type: "category"},
-//			},
-//			format: true,
-//			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-//				c.On("GetById", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
-//			},
-//			want: []domain.PostField{
-//				{Id: 2, Parent: &id, OriginalValue: "1", Value: domain.Category{Id: 1, Name: "cat"}, Type: "category"},
-//			},
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			s := t.GetMockService(nil, test.mock)
-//			t.Equal(test.want, s.getFieldChildren(test.uuid, test.fields, test.format))
-//		})
-//	}
-//}
-//
-//func (t *FieldTestSuite) TestService_SortFields() {
-//
-//	one := 1
-//	two := 2
-//	three := 3
-//
-//	tt := map[string]struct {
-//		fields []domain.PostField
-//		want   []domain.PostField
-//	}{
-//		"Simple": {
-//			fields: []domain.PostField{
-//				{Id: 1, Index: &three},
-//				{Id: 2, Index: &two},
-//				{Id: 3, Index: &one},
-//			},
-//			want: []domain.PostField{
-//				{Id: 3, Index: &one},
-//				{Id: 2, Index: &two},
-//				{Id: 1, Index: &three},
-//			},
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			t.Equal(test.want, t.GetService(nil).sortFields(test.want))
-//		})
-//	}
-//}
+import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+)
+
+func (t *FieldTestSuite) TestService_HandleArgs() {
+
+	tt := map[string]struct {
+		fields []domain.PostField
+		args   []interface{}
+		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		want   []domain.PostField
+	}{
+		"Default": {
+			fields: []domain.PostField{{Name: "test"}},
+			args:   nil,
+			want:   []domain.PostField{{Name: "test"}},
+		},
+		"1 Args (Post)": {
+			fields: nil,
+			args:   []interface{}{1},
+			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
+				f.On("GetByPost", 1).Return([]domain.PostField{
+					{Id: 1, Type: "text", Name: "post"},
+				}, nil)
+			},
+			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+		},
+		"1 Args (Post Error)": {
+			fields: []domain.PostField{{Name: "test"}},
+			args:   []interface{}{1},
+			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
+				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
+			},
+			want:   nil,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.Equal(test.want, t.GetMockService(test.fields, test.mock).handleArgs(test.args))
+		})
+	}
+}
+
+func (t *FieldTestSuite) TestService_GetFieldsByPost() {
+
+	tt := map[string]struct {
+		id   interface{}
+		mock func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		want []domain.PostField
+	}{
+		"Success": {
+			id: 1,
+			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
+				f.On("GetByPost", 1).Return([]domain.PostField{
+					{Id: 1, Type: "text", Name: "post"},
+				}, nil)
+			},
+			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+		},
+		"Cast Error": {
+			id:   noStringer{},
+			want: nil,
+		},
+		"Get Error": {
+			id: 1,
+			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
+				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
+			},
+			want: nil,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.Equal(test.want, t.GetMockService(nil, test.mock).getFieldsByPost(test.id))
+		})
+	}
+}
+
+func (t *FieldTestSuite) TestService_FindFieldByName() {
+
+	tt := map[string]struct {
+		name  string
+		fields []domain.PostField
+		want interface{}
+	}{
+		"Success": {
+			name: "test",
+			fields: []domain.PostField{{Id: 1, Type: "text", Name: "test"}},
+			want: domain.PostField{Id: 1, Type: "text", Name: "test"},
+		},
+		"Fail": {
+			name: "test",
+			fields: nil,
+			want: "no field exists with the name: test",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.GetService(test.fields)
+
+			got, err := s.findFieldByName(test.name, test.fields)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *FieldTestSuite) TestResolve_Walker() {
+
+	tt := map[string]struct {
+		resolver resolve
+		want interface{}
+	}{
+		"No Prefix": {
+			resolver: resolve{
+				Key:     "",
+				Index:   0,
+				Field:  domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
+				Fields:  []domain.PostField{
+					{Type: "text", Name: "text", OriginalValue: "text1", Key: ""},
+				},
+			},
+			want: domain.PostField{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: ""},
+		},
+		"Success": {
+			resolver: resolve{
+				Key:     "",
+				Index:   0,
+				Field:  domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
+				Fields:  []domain.PostField{
+					{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
+				},
+			},
+			want: domain.PostField{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			test.resolver.Service = t.GetService(nil)
+			test.resolver.Walker(func(field domain.PostField) {
+				t.Equal(test.want, field)
+			})
+		})
+	}
+}
+
+

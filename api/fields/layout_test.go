@@ -58,6 +58,8 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 
 func (t *FieldTestSuite) TestService_GetLayouts() {
 
+  	var f []domain.FieldGroup
+
 	fg := []domain.FieldGroup{
 		{
 			Title:  "test1",
@@ -81,12 +83,12 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 			args:   nil,
 			want:   fg,
 		},
-		//"Error": {
-		//	id: 1,
-		//	layout: nil,
-		//	args: nil,
-		//	want: []domain.FieldGroup{},
-		//},
+		"Error": {
+			id: 1,
+			layout: nil,
+			args: nil,
+			want: f,
+		},
 	}
 
 	for name, test := range tt {
@@ -95,6 +97,61 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 			s.layout = test.layout
 
 			t.Equal(test.want, s.GetLayouts(test.args...))
+		})
+	}
+}
+
+func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
+
+	post := domain.Post{Id: 1, Title: "post"}
+	var f []domain.FieldGroup
+
+	tt := map[string]struct {
+		layout []domain.FieldGroup
+		args   []interface{}
+		mock func(p *mocks.PostsRepository)
+		want   interface{}
+	}{
+		"Default": {
+			layout: []domain.FieldGroup{
+				{Title:  "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}},},
+			},
+			args:   nil,
+			want:   []domain.FieldGroup{
+				{Title:  "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}},},
+			},
+		},
+		"1 Args (Post)": {
+			layout: nil,
+			args:   []interface{}{1},
+			mock: func(p *mocks.PostsRepository) {
+				p.On("GetById", 1).Return(post, nil)
+				p.On("Format", post).Return(domain.PostData{
+					Post:   domain.Post{Id: 1, Title: "post"},
+					Layout: &[]domain.FieldGroup{
+						{Title:  "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
+					},
+				}, nil)
+			},
+			want: []domain.FieldGroup{
+				{Title:  "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
+			},
+		},
+		"1 Args (Post Error)": {
+			layout: nil,
+			args:   []interface{}{1},
+			mock: func(p *mocks.PostsRepository) {
+				p.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
+			},
+			want: f,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.GetPostsMockService(nil, test.mock)
+			s.layout = test.layout
+			t.Equal(test.want, s.handleLayoutArgs(test.args))
 		})
 	}
 }

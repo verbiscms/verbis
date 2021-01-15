@@ -16,8 +16,6 @@ import (
 //
 // Returns the fields to be modified & processed.
 func (s *Service) handleArgs(args []interface{}) []domain.PostField {
-	const op = "FieldsService.handleArgs"
-
 	if len(args) == 1 {
 		fields := s.getFieldsByPost(args[0])
 		return fields
@@ -65,7 +63,8 @@ func (s *Service) findFieldByName(name string, fields []domain.PostField) (domai
 	return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: "Field does not exist", Operation: op, Err: fmt.Errorf("no field exists with the name: %s", name)}
 }
 
-
+// resolve represents the struct to be passed when resolving
+// repeaters and flexible content types.
 type resolve struct {
 	Key string
 	Index int
@@ -74,7 +73,16 @@ type resolve struct {
 	*Service
 }
 
-func (r *resolve) fieldAppender(appender func(domain.PostField)) {
+// Walker
+//
+// Constructs a pipe based on the key, name, SEPARATOR and the index
+// in order to look up dynamic Flexible content and Repeater
+// types. The key `flex|0|repeater|0|text` will be split
+// and looked up. If the child value is of type Repeater
+// or Flexible the function will call itself meaning
+// all values will be resolved.
+// The appender func outputs the field to the caller once resolved.
+func (r *resolve) Walker(appender func(domain.PostField)) {
 
 	pipe := r.Key + r.Field.Name + SEPARATOR + cast.ToString(r.Index)
 
@@ -102,3 +110,4 @@ func (r *resolve) fieldAppender(appender func(domain.PostField)) {
 		}
 	}
 }
+
