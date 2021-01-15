@@ -6,7 +6,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
-	"strings"
 )
 
 // Repeater represents the collection of rows used
@@ -70,34 +69,22 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields []d
 	}
 
 	var repeater = make(Repeater, amount)
-	for rIndex := 0; rIndex < len(repeater); rIndex++ {
-		pipe := key + field.Name + SEPARATOR + cast.ToString(rIndex)
+	for index := 0; index < len(repeater); index++ {
 
-		var row Row
-		for _, v := range fields {
-
-			pipeLen := strings.Split(pipe, SEPARATOR)
-			keyLen := strings.Split(v.Key, SEPARATOR)
-
-			if strings.HasPrefix(v.Key, pipe) && len(pipeLen) + 1 == len(keyLen) {
-
-				fieldType := v.Type
-				if fieldType != "repeater" && fieldType != "flexible" {
-					row = append(row, s.resolveField(v))
-				}
-
-				if fieldType == "repeater" {
-					v.Value = s.resolveRepeater(pipe + SEPARATOR, v, fields)
-					row = append(row, v)
-				}
-
-				//if field.Type == "flexible" {
-				//
-				//}
-			}
+		r := resolve{
+			Key:    key,
+			Index:  index,
+			Field:  field,
+			Fields: fields,
+			Service: s,
 		}
 
-		repeater[rIndex] = row
+		var row Row
+		r.fieldAppender(func(f domain.PostField) {
+			row = append(row, f)
+		})
+
+		repeater[index] = row
 	}
 
 	return repeater

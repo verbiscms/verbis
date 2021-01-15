@@ -43,6 +43,7 @@ func (s *Service) resolveValue(value string, typ string) interface{} {
 	var r interface{} = value
 
 	switch typ {
+
 	// TODO: Need to cast numbers to integers
 	case "category":
 		category, err := s.store.Categories.GetById(cast.ToInt(value))
