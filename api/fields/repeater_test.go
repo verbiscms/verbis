@@ -57,103 +57,127 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 	}
 }
 
-func (t *FieldTestSuite) TestService_Repeater() {
+func (t *FieldTestSuite) TestService_ResolveRepeater() {
 
 	tt := map[string]struct {
 		fields []domain.PostField
 		key    string
 		want   interface{}
 	}{
+		"Bad Cast to Int": {
+			fields: []domain.PostField{
+				{Id: 1, Type: "repeater", Name: "repeater", OriginalValue: "@£$$%^&%$^&"},
+				{Id: 2, Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
+			},
+			key: "repeater",
+			want: Repeater{},
+		},
 		"Simple": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "repeater", Name: "repeater", OriginalValue: "3"},
-				{Id: 2, Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
-				{Id: 3, Type: "text", Name: "text2", OriginalValue: "text2", Key: "repeater|0|text2"},
-				{Id: 4, Type: "text", Name: "text", OriginalValue: "text3", Key: "repeater|1|text"},
-				{Id: 5, Type: "text", Name: "text2", OriginalValue: "text4", Key: "repeater|1|text2"},
-				{Id: 6, Type: "text", Name: "text", OriginalValue: "text5", Key: "repeater|2|text"},
-				{Id: 7, Type: "text", Name: "text2", OriginalValue: "text6", Key: "repeater|2|text2"},
+				{Type: "repeater", Name: "repeater", OriginalValue: "3"},
+				{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
+				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "repeater|0|text2"},
+				{Type: "text", Name: "text", OriginalValue: "text3", Key: "repeater|1|text"},
+				{Type: "text", Name: "text2", OriginalValue: "text4", Key: "repeater|1|text2"},
+				{Type: "text", Name: "text", OriginalValue: "text5", Key: "repeater|2|text"},
+				{Type: "text", Name: "text2", OriginalValue: "text6", Key: "repeater|2|text2"},
 			},
 			key: "repeater",
 			want: Repeater{
 				Row{
-					{Id: 2, Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"},
-					{Id: 3, Type: "text", Name: "text2", OriginalValue: "text2", Value: "text2", Key: "repeater|0|text2"},
+					{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"},
+					{Type: "text", Name: "text2", OriginalValue: "text2", Value: "text2", Key: "repeater|0|text2"},
 				},
 				Row{
-					{Id: 4, Type: "text", Name: "text", OriginalValue: "text3", Value: "text3", Key: "repeater|1|text"},
-					{Id: 5, Type: "text", Name: "text2", OriginalValue: "text4", Value: "text4", Key: "repeater|1|text2"},
+					{Type: "text", Name: "text", OriginalValue: "text3", Value: "text3", Key: "repeater|1|text"},
+					{Type: "text", Name: "text2", OriginalValue: "text4", Value: "text4", Key: "repeater|1|text2"},
 				},
 				Row{
-					{Id: 6, Type: "text", Name: "text", OriginalValue: "text5", Value: "text5", Key: "repeater|2|text"},
-					{Id: 7, Type: "text", Name: "text2", OriginalValue: "text6", Value: "text6", Key: "repeater|2|text2"},
+					{Type: "text", Name: "text", OriginalValue: "text5", Value: "text5", Key: "repeater|2|text"},
+					{Type: "text", Name: "text2", OriginalValue: "text6", Value: "text6", Key: "repeater|2|text2"},
 				},
 			},
 		},
 		"Nested": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "repeater", Name: "repeater", OriginalValue: "2"},
-				{Id: 4, Type: "text", Name: "parent_text", OriginalValue: "R1", Key: "repeater|0|parent_text"},
-				{Id: 5, Type: "text", Name: "parent_text", OriginalValue: "R2", Key: "repeater|1|parent_text"},
-				{Id: 2, Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|0|nested"},
-				{Id: 6, Type: "text", Name: "nested_text", OriginalValue: "N1", Key: "repeater|0|nested|0|nested_test"},
-				{Id: 7, Type: "text", Name: "nested_text", OriginalValue: "N2", Key: "repeater|0|nested|1|nested_test"},
-				{Id: 3, Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|1|nested"},
-				{Id: 8, Type: "text", Name: "nested_text", OriginalValue: "N3", Key: "repeater|1|nested|0|nested_test"},
-				{Id: 9, Type: "text", Name: "nested_text", OriginalValue: "N4", Key: "repeater|1|nested|1|nested_test"},
+				{Type: "repeater", Name: "repeater", OriginalValue: "2"},
+				{Type: "text", Name: "parent_text", OriginalValue: "R1", Key: "repeater|0|parent_text"},
+				{Type: "text", Name: "parent_text", OriginalValue: "R2", Key: "repeater|1|parent_text"},
+				{Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|0|nested"},
+				{Type: "text", Name: "nested_text", OriginalValue: "N1", Key: "repeater|0|nested|0|nested_test"},
+				{Type: "text", Name: "nested_text", OriginalValue: "N2", Key: "repeater|0|nested|1|nested_test"},
+				{Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|1|nested"},
+				{Type: "text", Name: "nested_text", OriginalValue: "N3", Key: "repeater|1|nested|0|nested_test"},
+				{Type: "text", Name: "nested_text", OriginalValue: "N4", Key: "repeater|1|nested|1|nested_test"},
 			},
 			key: "repeater",
 			want: Repeater{
 				Row{
-					{Id: 4, Type: "text", Name: "parent_text", OriginalValue: "R1", Value: "R1", Key: "repeater|0|parent_text"},
-					{Id: 2, Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|0|nested", Value: Repeater{
-						Row{{Id: 6, Type: "text", Name: "nested_text", OriginalValue: "N1", Value: "N1", Key: "repeater|0|nested|0|nested_test"}},
-						Row{{Id: 7, Type: "text", Name: "nested_text", OriginalValue: "N2", Value: "N2", Key: "repeater|0|nested|1|nested_test"}},
+					{Type: "text", Name: "parent_text", OriginalValue: "R1", Value: "R1", Key: "repeater|0|parent_text"},
+					{Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|0|nested", Value: Repeater{
+						Row{{Type: "text", Name: "nested_text", OriginalValue: "N1", Value: "N1", Key: "repeater|0|nested|0|nested_test"}},
+						Row{{Type: "text", Name: "nested_text", OriginalValue: "N2", Value: "N2", Key: "repeater|0|nested|1|nested_test"}},
 					}},
 				},
 				Row{
-					{Id: 5, Type: "text", Name: "parent_text", OriginalValue: "R2", Value: "R2", Key: "repeater|1|parent_text"},
-					{Id: 3, Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|1|nested", Value: Repeater{
-						Row{{Id: 8, Type: "text", Name: "nested_text", OriginalValue: "N3", Value: "N3", Key: "repeater|1|nested|0|nested_test"}},
-						Row{{Id: 9, Type: "text", Name: "nested_text", OriginalValue: "N4", Value: "N4", Key: "repeater|1|nested|1|nested_test"}},
+					{Type: "text", Name: "parent_text", OriginalValue: "R2", Value: "R2", Key: "repeater|1|parent_text"},
+					{Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|1|nested", Value: Repeater{
+						Row{{Type: "text", Name: "nested_text", OriginalValue: "N3", Value: "N3", Key: "repeater|1|nested|0|nested_test"}},
+						Row{{Type: "text", Name: "nested_text", OriginalValue: "N4", Value: "N4", Key: "repeater|1|nested|1|nested_test"}},
 					}},
 				},
 			},
 		},
-		"Nested Nested :(": {
+		"Nested Nested": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "repeater", Name: "repeater", OriginalValue: "2"},
-				{Id: 4, Type: "text", Name: "parent_text", OriginalValue: "R1", Key: "repeater|0|parent_text"},
-				{Id: 5, Type: "text", Name: "parent_text", OriginalValue: "R2", Key: "repeater|1|parent_text"},
+				{Type: "repeater", Name: "repeater", OriginalValue: "2"},
+				{Type: "text", Name: "parent_text", OriginalValue: "R1", Key: "repeater|0|parent_text"},
+				{Type: "text", Name: "parent_text", OriginalValue: "R2", Key: "repeater|1|parent_text"},
+				{Type: "repeater", Name: "nested", OriginalValue: "1", Key: "repeater|0|nested"},
+				{Type: "text", Name: "nested_text", OriginalValue: "N1", Key: "repeater|0|nested|0|nested_test"},
 
-				{Id: 2, Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|0|nested"},
-				{Id: 6, Type: "text", Name: "nested_text", OriginalValue: "N1", Key: "repeater|0|nested|0|nested_test"},
-				{Id: 7, Type: "text", Name: "nested_text", OriginalValue: "N2", Key: "repeater|0|nested|1|nested_test"},
+				{Type: "repeater", Name: "nested_nested", OriginalValue: "1", Key: "repeater|0|nested|0|nested_nested"},
+				{Type: "text", Name: "nested_nested_text", OriginalValue: "NN1", Key: "repeater|0|nested|0|nested_nested|0|nested_nested_text"},
 
-				{Id: 3, Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|1|nested"},
-				{Id: 8, Type: "text", Name: "nested_text", OriginalValue: "N3", Key: "repeater|1|nested|0|nested_test"},
-				{Id: 9, Type: "text", Name: "nested_text", OriginalValue: "N4", Key: "repeater|1|nested|1|nested_test"},
+				{Type: "repeater", Name: "nested", OriginalValue: "1", Key: "repeater|1|nested"},
+				{Type: "text", Name: "nested_text", OriginalValue: "N2", Key: "repeater|1|nested|0|nested_test"},
+
+				{Type: "repeater", Name: "nested_nested", OriginalValue: "1", Key: "repeater|1|nested|0|nested_nested"},
+				{Type: "text", Name: "nested_nested_text", OriginalValue: "NN1", Key: "repeater|1|nested|0|nested_nested|0|nested_nested_text"},
 			},
 			key: "repeater",
 			want: Repeater{
 				Row{
-					{Id: 4, Type: "text", Name: "parent_text", OriginalValue: "R1", Value: "R1", Key: "repeater|0|parent_text"},
-					{Id: 2, Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|0|nested", Value: Repeater{
-						Row{{Id: 6, Type: "text", Name: "nested_text", OriginalValue: "N1", Value: "N1", Key: "repeater|0|nested|0|nested_test"}},
-						Row{{Id: 7, Type: "text", Name: "nested_text", OriginalValue: "N2", Value: "N2", Key: "repeater|0|nested|1|nested_test"}},
+					{Type: "text", Name: "parent_text", OriginalValue: "R1", Value: "R1", Key: "repeater|0|parent_text"},
+					{Type: "repeater", Name: "nested", OriginalValue: "1", Key: "repeater|0|nested", Value: Repeater{
+						Row{
+							{Type: "text", Name: "nested_text", OriginalValue: "N1", Value: "N1", Key: "repeater|0|nested|0|nested_test"},
+							{Type: "repeater", Name: "nested_nested", OriginalValue: "1", Key: "repeater|0|nested|0|nested_nested", Value: Repeater{
+								Row{
+									{Type: "text", Name: "nested_nested_text", OriginalValue: "NN1", Value: "NN1", Key: "repeater|0|nested|0|nested_nested|0|nested_nested_text"},
+								},
+							}},
+						},
 					}},
 				},
 				Row{
-					{Id: 5, Type: "text", Name: "parent_text", OriginalValue: "R2", Value: "R2", Key: "repeater|1|parent_text"},
-					{Id: 3, Type: "repeater", Name: "nested", OriginalValue: "2", Key: "repeater|1|nested", Value: Repeater{
-						Row{{Id: 8, Type: "text", Name: "nested_text", OriginalValue: "N3", Value: "N3", Key: "repeater|1|nested|0|nested_test"}},
-						Row{{Id: 9, Type: "text", Name: "nested_text", OriginalValue: "N4", Value: "N4", Key: "repeater|1|nested|1|nested_test"}},
+					{Type: "text", Name: "parent_text", OriginalValue: "R2", Value: "R2", Key: "repeater|1|parent_text"},
+					{Type: "repeater", Name: "nested", OriginalValue: "1", Key: "repeater|1|nested", Value: Repeater{
+						Row{
+							{Type: "text", Name: "nested_text", OriginalValue: "N2", Value: "N2", Key: "repeater|1|nested|0|nested_test"},
+							{Type: "repeater", Name: "nested_nested", OriginalValue: "1", Key: "repeater|1|nested|0|nested_nested", Value: Repeater{
+								Row{
+									{Type: "text", Name: "nested_nested_text", OriginalValue: "NN1", Value: "NN1", Key: "repeater|1|nested|0|nested_nested|0|nested_nested_text"},
+								},
+							}},
+						},
 					}},
 				},
 			},
 		},
-	}
 
+		// TODO FLEXIBLE
+	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
@@ -198,7 +222,7 @@ func (t *FieldTestSuite) TestRepeater_HasRows() {
 	}
 }
 
-func (t *FieldTestSuite) TestRepeater_SubField() {
+func (t *FieldTestSuite) TestRow_SubField() {
 
 	row := Row{
 		{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
@@ -231,6 +255,35 @@ func (t *FieldTestSuite) TestRepeater_SubField() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.Equal(test.want, row.SubField(test.key))
+		})
+	}
+}
+
+func (t *FieldTestSuite) TestRow_HasField() {
+
+	row := Row{
+		{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
+		{Id: 2, Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
+		{Id: 3, Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
+	}
+
+	tt := map[string]struct {
+		key  string
+		want interface{}
+	}{
+		"True": {
+			key:  "test1",
+			want: true,
+		},
+		"False": {
+			key:  "wrongval",
+			want: false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.Equal(test.want, row.HasField(test.key))
 		})
 	}
 }
