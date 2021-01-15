@@ -8,11 +8,11 @@ import (
 // FieldService defines methods for obtaining fields for the front end templates
 type FieldService interface {
 	GetField(name string, args ...interface{}) (interface{}, error)
-	GetFields(args ...interface{}) (Fields, error)
+	GetFields(args ...interface{}) Fields
 	GetLayout(name string, args ...interface{}) (domain.Field, error)
 	GetLayouts(args ...interface{}) []domain.FieldGroup
 	GetRepeater(input interface{}, args ...interface{}) (Repeater, error)
-	GetFlexible(name string, args ...interface{}) (Flexible, error)
+	GetFlexible(input interface{}, args ...interface{}) (Flexible, error)
 }
 
 const (

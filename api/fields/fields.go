@@ -2,6 +2,7 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	"strings"
 )
 
 // Fields defines the map of fields to be returned to the template.
@@ -10,24 +11,15 @@ type Fields map[string]interface{}
 // GetFields
 //
 // Returns all of the fields for the current post, or post ID given.
-func (s *Service) GetFields(args ...interface{}) (Fields, error) {
-	//fields,  s.handleArgs(args)
-	//
-	//f := make(Fields, len(fields))
-	//s.mapper(fields, func(field domain.PostField) {
-	//	if !format {
-	//		f[field.Name] = field.OriginalValue.String()
-	//		return
-	//	}
-	//	if field.Type == "repeater" || field.Type == "flexible" {
-	//		f[field.Name] = field.Value
-	//		return
-	//	}
-	//	f[field.Name] = s.resolveField(field).Value
-	//})
+func (s *Service) GetFields(args ...interface{}) Fields {
+	fields := s.handleArgs(args)
 
-	return nil, nil
-	//return f, nil
+	var f = make(Fields, 0)
+	s.mapper(fields, func(field domain.PostField) {
+		f[field.Name] = field.Value
+	})
+
+	return f
 }
 
 // WalkerFunc defines the function for walking the slice of domain.PostField
@@ -43,16 +35,13 @@ type WalkerFunc func(field domain.PostField)
 func (s *Service) mapper(fields []domain.PostField, walkerFunc WalkerFunc) {
 	for _, field := range fields {
 
-		//if field.Parent != nil || field.Layout != nil {
-		//	continue
-		//}
-
 		if field.Type == "repeater" {
-			if repeater, err := s.GetRepeater(field.Name); err == nil {
+			repeater, err := s.GetRepeater(field.Name)
+			if err == nil {
 				field.Value = repeater
 				walkerFunc(field)
-				continue
 			}
+			continue
 		}
 
 		if field.Type == "flexible" {
@@ -60,11 +49,12 @@ func (s *Service) mapper(fields []domain.PostField, walkerFunc WalkerFunc) {
 			if err == nil {
 				field.Value = flexible
 				walkerFunc(field)
-				continue
 			}
+			continue
 		}
 
-		walkerFunc(field)
+		if field.Key == "" || len(strings.Split(field.Key, SEPARATOR)) == 0 {
+			walkerFunc(field)
+		}
 	}
-	return
 }
