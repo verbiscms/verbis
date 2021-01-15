@@ -6,6 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
+	"strings"
 )
 
 // handleArgs
@@ -64,45 +65,40 @@ func (s *Service) findFieldByName(name string, fields []domain.PostField) (domai
 	return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: "Field does not exist", Operation: op, Err: fmt.Errorf("no field exists with the name: %s", name)}
 }
 
-// getFieldChildren
-//
-// Loops through the given slice of domain.PostField and compares the
-// uuid passed with the field's parent UUID.
-// It's not necessary to use a database call for this look up, as we will
-// be looping through them anyway to append and format the fields.
-// Returns the sorted slice of fields.
-//func (s *Service) getFieldChildren(uuid uuid.UUID, fields []domain.PostField, format bool) []domain.PostField {
-//var pf []domain.PostField
-//for _, field := range fields {
-//	parent := field.Parent
-//	if parent != nil && uuid == *parent {
-//		if !format {
-//			pf = append(pf, field)
-//			continue
-//		}
-//		pf = append(pf, s.resolveField(field))
-//	}
-//}
-//return nil
-//return s.sortFields(pf)
-//}
 
-// sortFields
-//
-// Sort's the slice of domain.PostFields by Index, used for
-// the service.GetRepeater function
-//func (s *Service) sortFields(pf []domain.PostField) []domain.PostField {
-//	sort.SliceStable(pf, func(i, j int) bool {
-//		lt := pf[i].Index
-//		gt := pf[j].Index
-//		zero := 0
-//		if lt == nil {
-//			lt = &zero
-//		}
-//		if gt == nil {
-//			gt = &zero
-//		}
-//		return *lt < *gt
-//	})
-//	return pf
-//}
+type resolve struct {
+	Key string
+	Index int
+	Field domain.PostField
+	Fields []domain.PostField
+	*Service
+}
+
+func (r *resolve) fieldAppender(appender func(domain.PostField)) {
+
+	pipe := r.Key + r.Field.Name + SEPARATOR + cast.ToString(r.Index)
+
+	for _, v := range r.Fields {
+
+		pipeLen := strings.Split(pipe, SEPARATOR)
+		keyLen := strings.Split(v.Key, SEPARATOR)
+
+		if strings.HasPrefix(v.Key, pipe) && len(pipeLen) + 1 == len(keyLen) {
+
+			fieldType := v.Type
+			if fieldType == "repeater" {
+				v.Value = r.resolveRepeater(pipe+SEPARATOR, v, r.Fields)
+				appender(v)
+				return
+			}
+
+			if fieldType == "flexible" {
+				v.Value = r.resolveFlexible(pipe+SEPARATOR, v, r.Fields)
+				appender(v)
+				return
+			}
+
+			appender(r.resolveField(v))
+		}
+	}
+}
