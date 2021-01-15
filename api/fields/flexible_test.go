@@ -7,6 +7,68 @@ import (
 func (t *FieldTestSuite) TestService_GetFlexible() {
 
 	tt := map[string]struct {
+		fields []domain.PostField
+		input  interface{}
+		want   interface{}
+	}{
+		"Cast to Flexible": {
+			fields: nil,
+			input: Flexible{
+				{
+					Name: "layout1",
+					SubFields: SubFields{
+						{Type: "text", Name: "text1", OriginalValue: "text1", Value: "text1", Key: "flex|0|text1"},
+						{Type: "text", Name: "text2", OriginalValue: "text2", Value: "text2", Key: "flex|0|text2"},
+					},
+				},
+			},
+			want: Flexible{
+				{
+					Name: "layout1",
+					SubFields: SubFields{
+						{Type: "text", Name: "text1", OriginalValue: "text1", Value: "text1", Key: "flex|0|text1"},
+						{Type: "text", Name: "text2", OriginalValue: "text2", Value: "text2", Key: "flex|0|text2"},
+					},
+				},
+			},
+		},
+		"No Stringer": {
+			fields: nil,
+			input: noStringer{},
+			want: "unable to cast fields.noStringer{} of type fields.noStringer to string",
+		},
+		"No Field": {
+			fields: nil,
+			input: "test",
+			want: "no field exists with the name: test",
+		},
+		"Wrong Field Type": {
+			fields: []domain.PostField{
+				{Id: 1, Type: "text", Name: "test", OriginalValue: "text", Key: ""},
+			},
+			input: "test",
+			want: "field with the name: test, is not flexible content",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.GetService(test.fields)
+
+			got, err := s.GetFlexible(test.input)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *FieldTestSuite) TestService_ResolveFlexible() {
+
+	tt := map[string]struct {
 		flexible domain.PostField
 		fields []domain.PostField
 		key    string

@@ -27,6 +27,7 @@ type SubFields []domain.PostField
 //
 // Returns the collection of Layouts from the given key and returns
 // a new Flexible.
+//
 // Returns errors.INVALID if the field type is not flexible content.
 // Returns errors.INTERNAL if the layouts could not be cast to a string slice.
 func (s *Service) GetFlexible(input interface{}, args ...interface{}) (Flexible, error) {
@@ -79,7 +80,7 @@ func (s *Service) resolveFlexible(key string, field domain.PostField, fields []d
 		}
 
 		var subFields SubFields
-		r.fieldAppender(func(f domain.PostField) {
+		r.Walker(func(f domain.PostField) {
 			subFields = append(subFields, f)
 		})
 

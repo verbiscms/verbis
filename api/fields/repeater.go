@@ -80,7 +80,7 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields []d
 		}
 
 		var row Row
-		r.fieldAppender(func(f domain.PostField) {
+		r.Walker(func(f domain.PostField) {
 			row = append(row, f)
 		})
 
