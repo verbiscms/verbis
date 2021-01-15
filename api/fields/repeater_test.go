@@ -4,7 +4,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 )
 
-
 func (t *FieldTestSuite) TestService_GetRepeater() {
 
 	tt := map[string]struct {
@@ -25,20 +24,20 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 		},
 		"No Stringer": {
 			fields: nil,
-			input: noStringer{},
-			want: "unable to cast fields.noStringer{} of type fields.noStringer to string",
+			input:  noStringer{},
+			want:   "unable to cast fields.noStringer{} of type fields.noStringer to string",
 		},
 		"No Field": {
 			fields: nil,
-			input: "test",
-			want: "no field exists with the name: test",
+			input:  "test",
+			want:   "no field exists with the name: test",
 		},
 		"Wrong Field Type": {
 			fields: []domain.PostField{
 				{Id: 1, Type: "text", Name: "test", OriginalValue: "text", Key: ""},
 			},
 			input: "test",
-			want: "field with the name: test, is not a repeater",
+			want:  "field with the name: test, is not a repeater",
 		},
 	}
 
@@ -69,7 +68,7 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 				{Id: 1, Type: "repeater", Name: "repeater", OriginalValue: "@£$$%^&%$^&"},
 				{Id: 2, Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
 			},
-			key: "repeater",
+			key:  "repeater",
 			want: Repeater{},
 		},
 		"Simple": {
@@ -194,7 +193,6 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 	}
 }
 
-
 func (t *FieldTestSuite) TestRepeater_HasRows() {
 
 	tt := map[string]struct {
@@ -291,8 +289,8 @@ func (t *FieldTestSuite) TestRow_HasField() {
 func (t *FieldTestSuite) TestRow_First() {
 
 	tt := map[string]struct {
-		row Row
-		want     interface{}
+		row  Row
+		want interface{}
 	}{
 		"Found": {
 			row: Row{
@@ -303,8 +301,8 @@ func (t *FieldTestSuite) TestRow_First() {
 			want: domain.PostField{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
 		},
 		"Not Found": {
-			row: Row{},
-			want:     nil,
+			row:  Row{},
+			want: nil,
 		},
 	}
 
@@ -318,8 +316,8 @@ func (t *FieldTestSuite) TestRow_First() {
 func (t *FieldTestSuite) TestRow_Last() {
 
 	tt := map[string]struct {
-		row Row
-		want     interface{}
+		row  Row
+		want interface{}
 	}{
 		"Found": {
 			row: Row{
@@ -330,8 +328,8 @@ func (t *FieldTestSuite) TestRow_Last() {
 			want: domain.PostField{Id: 3, Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
 		},
 		"Not Found": {
-			row: Row{},
-			want:     nil,
+			row:  Row{},
+			want: nil,
 		},
 	}
 

@@ -43,7 +43,7 @@
 					"red": "Red",
 					"orange": "Orangey"
 				},
-				"return_format": "key",
+				"return_format": "map",
 				"default_value": "Red",
 				"required": true
 			}

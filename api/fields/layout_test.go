@@ -58,7 +58,7 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 
 func (t *FieldTestSuite) TestService_GetLayouts() {
 
-  	var f []domain.FieldGroup
+	var f []domain.FieldGroup
 
 	fg := []domain.FieldGroup{
 		{
@@ -84,10 +84,10 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 			want:   fg,
 		},
 		"Error": {
-			id: 1,
+			id:     1,
 			layout: nil,
-			args: nil,
-			want: f,
+			args:   nil,
+			want:   f,
 		},
 	}
 
@@ -109,16 +109,16 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 	tt := map[string]struct {
 		layout []domain.FieldGroup
 		args   []interface{}
-		mock func(p *mocks.PostsRepository)
+		mock   func(p *mocks.PostsRepository)
 		want   interface{}
 	}{
 		"Default": {
 			layout: []domain.FieldGroup{
-				{Title:  "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}},},
+				{Title: "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
 			},
-			args:   nil,
-			want:   []domain.FieldGroup{
-				{Title:  "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}},},
+			args: nil,
+			want: []domain.FieldGroup{
+				{Title: "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
 			},
 		},
 		"1 Args (Post)": {
@@ -127,14 +127,14 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 			mock: func(p *mocks.PostsRepository) {
 				p.On("GetById", 1).Return(post, nil)
 				p.On("Format", post).Return(domain.PostData{
-					Post:   domain.Post{Id: 1, Title: "post"},
+					Post: domain.Post{Id: 1, Title: "post"},
 					Layout: &[]domain.FieldGroup{
-						{Title:  "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
+						{Title: "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
 					},
 				}, nil)
 			},
 			want: []domain.FieldGroup{
-				{Title:  "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
+				{Title: "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
 			},
 		},
 		"1 Args (Post Error)": {

@@ -72,10 +72,10 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields []d
 	for index := 0; index < len(repeater); index++ {
 
 		r := resolve{
-			Key:    key,
-			Index:  index,
-			Field:  field,
-			Fields: fields,
+			Key:     key,
+			Index:   index,
+			Field:   field,
+			Fields:  fields,
 			Service: s,
 		}
 
