@@ -35,7 +35,7 @@ func (e *ChangedPassword) Send(u domain.UserPart, password string, site domain.S
 		"AdminPath": e.mailer.Config.Admin.Path,
 		"UserName":  u.FirstName,
 		"Password":  password,
-		"Email": u.Email,
+		"Email":     u.Email,
 	}
 
 	html, err := e.mailer.ExecuteHTML("new-password.html", data)

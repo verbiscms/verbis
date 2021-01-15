@@ -57,7 +57,6 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) (Flexible,
 	return s.resolveFlexible("", field, fields), nil
 }
 
-
 // getLayouts
 //
 // Loops over the given layouts (e.g ["layout1","layout2"] and builds up
@@ -72,10 +71,10 @@ func (s *Service) resolveFlexible(key string, field domain.PostField, fields []d
 	for index := 0; index < len(flexible); index++ {
 
 		r := resolve{
-			Key:    key,
-			Index:  index,
-			Field:  field,
-			Fields: fields,
+			Key:     key,
+			Index:   index,
+			Field:   field,
+			Fields:  fields,
 			Service: s,
 		}
 

@@ -15,8 +15,8 @@ func (t *FieldTestSuite) TestService_GetFields() {
 	}{
 		"None": {
 			fields: []domain.PostField{},
-			args: nil,
-			want: Fields{},
+			args:   nil,
+			want:   Fields{},
 		},
 		"Simple": {
 			fields: []domain.PostField{

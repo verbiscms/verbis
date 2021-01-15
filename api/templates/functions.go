@@ -98,12 +98,13 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		// Dict
 		"dict": t.dict,
 		// Fields
-		"field":    t.fieldService.GetField,
-		"fields":   t.fieldService.GetFields,
-		"layout":   t.fieldService.GetLayout,
-		"layouts":  t.fieldService.GetLayouts,
-		"repeater": t.fieldService.GetRepeater,
-		"flexible": t.fieldService.GetFlexible,
+		"field":       t.fieldService.GetField,
+		"fieldObject": t.fieldService.GetFieldObject,
+		"fields":      t.fieldService.GetFields,
+		"layout":      t.fieldService.GetLayout,
+		"layouts":     t.fieldService.GetLayouts,
+		"repeater":    t.fieldService.GetRepeater,
+		"flexible":    t.fieldService.GetFlexible,
 		// Header & Footer
 		"verbisHead": t.header,
 		"verbisFoot": t.footer,

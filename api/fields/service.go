@@ -8,6 +8,7 @@ import (
 // FieldService defines methods for obtaining fields for the front end templates
 type FieldService interface {
 	GetField(name string, args ...interface{}) (interface{}, error)
+	GetFieldObject(name string, args ...interface{}) (domain.PostField, error)
 	GetFields(args ...interface{}) Fields
 	GetLayout(name string, args ...interface{}) (domain.Field, error)
 	GetLayouts(args ...interface{}) []domain.FieldGroup

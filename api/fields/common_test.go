@@ -27,7 +27,7 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 					{Id: 1, Type: "text", Name: "post"},
 				}, nil)
 			},
-			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"1 Args (Post Error)": {
 			fields: []domain.PostField{{Name: "test"}},
@@ -35,7 +35,7 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
 			},
-			want:   nil,
+			want: nil,
 		},
 	}
 
@@ -85,19 +85,19 @@ func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 func (t *FieldTestSuite) TestService_FindFieldByName() {
 
 	tt := map[string]struct {
-		name  string
+		name   string
 		fields []domain.PostField
-		want interface{}
+		want   interface{}
 	}{
 		"Success": {
-			name: "test",
+			name:   "test",
 			fields: []domain.PostField{{Id: 1, Type: "text", Name: "test"}},
-			want: domain.PostField{Id: 1, Type: "text", Name: "test"},
+			want:   domain.PostField{Id: 1, Type: "text", Name: "test"},
 		},
 		"Fail": {
-			name: "test",
+			name:   "test",
 			fields: nil,
-			want: "no field exists with the name: test",
+			want:   "no field exists with the name: test",
 		},
 	}
 
@@ -120,14 +120,14 @@ func (t *FieldTestSuite) TestResolve_Walker() {
 
 	tt := map[string]struct {
 		resolver resolve
-		want interface{}
+		want     interface{}
 	}{
 		"No Prefix": {
 			resolver: resolve{
-				Key:     "",
-				Index:   0,
-				Field:  domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
-				Fields:  []domain.PostField{
+				Key:   "",
+				Index: 0,
+				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
+				Fields: []domain.PostField{
 					{Type: "text", Name: "text", OriginalValue: "text1", Key: ""},
 				},
 			},
@@ -135,10 +135,10 @@ func (t *FieldTestSuite) TestResolve_Walker() {
 		},
 		"Success": {
 			resolver: resolve{
-				Key:     "",
-				Index:   0,
-				Field:  domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
-				Fields:  []domain.PostField{
+				Key:   "",
+				Index: 0,
+				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
+				Fields: []domain.PostField{
 					{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
 				},
 			},
@@ -155,5 +155,3 @@ func (t *FieldTestSuite) TestResolve_Walker() {
 		})
 	}
 }
-
-

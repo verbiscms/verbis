@@ -141,6 +141,13 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 	}
 }
 
+// TODO Clean up
+//
+/////////////
+func (t *FieldTestSuite) TestTesty() {
+	getMap()
+}
+
 func (t *FieldTestSuite) TestService_ResolveValue() {
 
 	tt := map[string]struct {
