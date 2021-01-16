@@ -85,5 +85,6 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository
 func (t *FieldTestSuite) GetService(fields []domain.PostField) *Service {
 	return &Service{
 		fields: fields,
+		store: &models.Store{},
 	}
 }

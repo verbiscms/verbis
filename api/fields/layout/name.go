@@ -1,4 +1,4 @@
-package walker
+package layout
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"

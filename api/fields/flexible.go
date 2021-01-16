@@ -70,7 +70,7 @@ func (s *Service) resolveFlexible(key string, field domain.PostField, fields []d
 	var flexible = make(Flexible, len(layouts))
 	for index := 0; index < len(flexible); index++ {
 
-		r := resolve{
+		r := walker{
 			Key:     key,
 			Index:   index,
 			Field:   field,
@@ -79,7 +79,7 @@ func (s *Service) resolveFlexible(key string, field domain.PostField, fields []d
 		}
 
 		var subFields SubFields
-		r.Walker(func(f domain.PostField) {
+		r.Walk(func(f domain.PostField) {
 			subFields = append(subFields, f)
 		})
 
