@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/fields/resolve"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	"strings"
@@ -63,9 +64,9 @@ func (s *Service) findFieldByName(name string, fields []domain.PostField) (domai
 	return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: "Field does not exist", Operation: op, Err: fmt.Errorf("no field exists with the name: %s", name)}
 }
 
-// resolve represents the struct to be passed when resolving
+// walker represents the struct to be passed when resolving
 // repeaters and flexible content types.
-type resolve struct {
+type walker struct {
 	Key    string
 	Index  int
 	Field  domain.PostField
@@ -73,7 +74,7 @@ type resolve struct {
 	*Service
 }
 
-// Walker
+// Walk
 //
 // Constructs a pipe based on the key, name, SEPARATOR and the index
 // in order to look up dynamic Flexible content and Repeater
@@ -82,7 +83,7 @@ type resolve struct {
 // or Flexible the function will call itself meaning
 // all values will be resolved.
 // The appender func outputs the field to the caller once resolved.
-func (r *resolve) Walker(appender func(domain.PostField)) {
+func (r *walker) Walk(appender func(domain.PostField)) {
 
 	pipe := r.Key + r.Field.Name + SEPARATOR + cast.ToString(r.Index)
 
@@ -106,7 +107,7 @@ func (r *resolve) Walker(appender func(domain.PostField)) {
 				return
 			}
 
-			appender(r.resolveField(v))
+			appender(resolve.Field(v, *r.store))
 		}
 	}
 }

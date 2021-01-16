@@ -20,9 +20,9 @@ func (t *FieldTestSuite) TestService_GetFields() {
 		},
 		"Simple": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "text", Name: "key1", Value: "1"},
-				{Id: 2, Type: "text", Name: "key2", Value: "2"},
-				{Id: 3, Type: "text", Name: "key3", Value: "3"},
+				{Id: 1, Type: "text", Name: "key1", OriginalValue: "1"},
+				{Id: 2, Type: "text", Name: "key2", OriginalValue: "2"},
+				{Id: 3, Type: "text", Name: "key3", OriginalValue: "3"},
 			},
 			args: nil,
 			want: Fields{

@@ -1,6 +1,9 @@
 package fields
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import (
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/fields/resolve"
+)
 
 // GetField
 //
@@ -14,7 +17,9 @@ func (s *Service) GetField(name string, args ...interface{}) (interface{}, error
 		return nil, err
 	}
 
-	return s.resolveField(field).Value, nil
+	resolved := resolve.Field(field, *s.store)
+
+	return resolved.Value, nil
 }
 
 // GetFieldObject
@@ -29,5 +34,7 @@ func (s *Service) GetFieldObject(name string, args ...interface{}) (domain.PostF
 		return domain.PostField{}, err
 	}
 
-	return s.resolveField(field), nil
+	resolved := resolve.Field(field, *s.store)
+
+	return resolved, nil
 }
