@@ -1,6 +1,7 @@
 package fields
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -8,72 +9,90 @@ import (
 	"github.com/spf13/cast"
 )
 
+type fieldValue struct {
+	*Service
+}
+
+type valuer func(field domain.FieldValue) (interface{}, error)
+
+type fieldValueMap map[string]valuer
+
 // resolveField
 //
 // Determines if the given field values is a slice or array or singular
 // and returns a resolved field value or a slice of interfaces.
 func (s *Service) resolveField(field domain.PostField) domain.PostField {
+	exec := &fieldValue{s}
+	resolved := exec.Resolve(field)
+	return resolved
+}
+
+func (f *fieldValue) GetMap() fieldValueMap {
+	return fieldValueMap{
+		"category": f.Category,
+		"checkbox": f.Checkbox,
+		"choice":   f.Choice,
+		"image":    f.Media,
+		"number":   f.Number,
+		"post":     f.Post,
+		"range":    f.Number,
+		"user":     f.User,
+	}
+}
+
+func (f *fieldValue) Resolve(field domain.PostField) domain.PostField  {
 	original := field.OriginalValue
 
-	if original.IsEmpty() {
+	if original.IsEmpty() && field.Key != "map" {
+		field.Value = field.OriginalValue.String()
 		return field
 	}
 
 	if !original.IsArray() {
-		field.Value = s.resolveValue(original.String(), field.Type)
+		field.Value = f.Execute(field.OriginalValue.String(), field.Type)
 		return field
 	}
 
 	var items []interface{}
 	for _, v := range original.Array() {
-		items = append(items, s.resolveValue(v, field.Type))
+		items = append(items, f.Execute(v, field.Type))
 	}
 	field.Value = items
 
 	return field
 }
 
-
-
-
-type fieldValue struct {
-	Service
-}
-
-type valuer func(value domain.FieldValue) (interface{}, error)
-
-type fieldValueMap map[string]valuer
-
-
-func getMap() {
-	v := &fieldValue{}
-
-	// TODO: Posts, Choice (Tags, Radio, Button, Select)
-	// Checkbox
-
-	mm := fieldValueMap{
-		"number" : v.Number,
-		"media": v.Media,
-		"range": v.Number,
-		"checkbox": v.Checkbox,
-		"categories": v.Categories,
-		"user": v.User,
+func (f *fieldValue) Execute(value string, typ string) interface{} {
+	fn, ok := f.GetMap()[typ]
+	if !ok {
+		return value
 	}
 
-	fmt.Println(mm["number"]("ff"))
-}
-
-// Number
-//
-//
-func (f *fieldValue) Number(value domain.FieldValue) (interface{}, error) {
-	const op = "fieldValue.Number"
-	number, err := cast.ToInt64E(value)
+	val, err := fn(domain.FieldValue(value))
 	if err != nil {
-		// TODO CHANGE TYPE HERE DYNAMIC
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast TODO CHANGE TYPE HERE DYNAMIC field to an integer", Operation: op, Err: err}
+		log.WithFields(log.Fields{"error": err}).Error()
 	}
-	return number, nil
+
+	return val
+}
+
+// Categories
+//
+//
+func (f *fieldValue) Category(value domain.FieldValue) (interface{}, error) {
+	const op = "fieldValue.Category"
+
+	id, err := value.Int()
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast category ID to an integer", Operation: op, Err: err}
+	}
+
+	category, err := f.store.Categories.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return category, nil
 }
 
 // Checkbox
@@ -81,69 +100,89 @@ func (f *fieldValue) Number(value domain.FieldValue) (interface{}, error) {
 //
 func (f *fieldValue) Checkbox(value domain.FieldValue) (interface{}, error) {
 	const op = "fieldValue.Checkbox"
-	check, err := cast.ToBoolE(value)
+
+	check, err := cast.ToBoolE(value.String())
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast checkbox field to an bool", Operation: op, Err: err}
 	}
+
 	return check, nil
+}
+
+// Choice
+//
+//
+func (f *fieldValue) Choice(value domain.FieldValue) (interface{}, error) {
+	const op = "fieldValue.Choice"
+
+	var c = struct {
+		key   string
+		value string
+	}{}
+
+	err := json.Unmarshal([]byte(value), &c)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Unable to unmarshal to choice map"), Operation: op, Err: err}
+	}
+
+	return c, nil
 }
 
 // Media
 //
 //
 func (f *fieldValue) Media(value domain.FieldValue) (interface{}, error) {
-	const op = "fieldValue.User"
+	const op = "fieldValue.Media"
 
-	var mediaItems []domain.Media
-	for _, v := range value.Array() {
-
-		id, err := cast.ToIntE(v)
-		if err != nil {
-			return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast user ID to an integer", Operation: op, Err: err}
-		}
-
-		media, err := f.store.Media.GetById(id)
-		if err != nil {
-			return nil, err
-		}
-
-		mediaItems = append(mediaItems, media)
+	id, err := value.Int()
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast user ID to an integer", Operation: op, Err: err}
 	}
 
-	if len(mediaItems) == 1 {
-		return mediaItems[0], nil
+	media, err := f.store.Media.GetById(id)
+	if err != nil {
+		return nil, err
 	}
 
-	return mediaItems, nil
+	return media, nil
 }
 
-// Categories
+// Number
 //
 //
-func (f *fieldValue) Categories(value domain.FieldValue) (interface{}, error) {
-	const op = "fieldValue.User"
+func (f *fieldValue) Number(value domain.FieldValue) (interface{}, error) {
+	const op = "fieldValue.Number"
 
-	var categories []domain.Category
-	for _, v := range value.Array() {
-
-		id, err := cast.ToIntE(v)
-		if err != nil {
-			return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast category ID to an integer", Operation: op, Err: err}
-		}
-
-		category, err := f.store.Categories.GetById(id)
-		if err != nil {
-			return nil, err
-		}
-
-		categories = append(categories, category)
+	number, err := cast.ToInt64E(value.String())
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast field to an integer", Operation: op, Err: err}
 	}
 
-	if len(categories) == 1 {
-		return categories[0], nil
+	return number, nil
+}
+
+// Post
+//
+//
+func (f *fieldValue) Post(value domain.FieldValue) (interface{}, error) {
+	const op = "fieldValue.Post"
+
+	id, err := value.Int()
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast post ID to an integer", Operation: op, Err: err}
 	}
 
-	return categories, nil
+	post, err := f.store.Posts.GetById(id)
+	if err != nil {
+		return nil, err
+	}
+
+	formatPost, err := f.store.Posts.Format(post)
+	if err != nil {
+		return nil, err
+	}
+
+	return formatPost, nil
 }
 
 // User
@@ -152,87 +191,15 @@ func (f *fieldValue) Categories(value domain.FieldValue) (interface{}, error) {
 func (f *fieldValue) User(value domain.FieldValue) (interface{}, error) {
 	const op = "fieldValue.User"
 
-	var users []domain.UserPart
-	for _, v := range value.Array() {
-
-		id, err := cast.ToIntE(v)
-		if err != nil {
-			return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast user ID to an integer", Operation: op, Err: err}
-		}
-
-		user, err := f.store.User.GetById(id)
-		if err != nil {
-			return nil, err
-		}
-
-		users = append(users, *user.HideCredentials())
+	id, err := value.Int()
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast user ID to an integer", Operation: op, Err: err}
 	}
 
-	if len(users) == 1 {
-		return users[0], nil
+	user, err := f.store.User.GetById(id)
+	if err != nil {
+		return nil, err
 	}
 
-	return users, nil
-}
-
-
-// resolveValue
-//
-// Switches the fields type and resolves the field value accordingly.
-// If there was an error resolving the value, the original field
-// will be returned.
-// Resolves categories, images, posts and users from the ID
-// to the type.
-func (s *Service) resolveValue(value string, typ string) interface{} {
-	var e error
-	var r interface{} = value
-
-	switch typ {
-	case "number", "range":
-		number, err := cast.ToInt64E(value)
-		if err != nil {
-			e = err
-		}
-		r = number
-		// TODO: Need to cast numbers to integers
-
-	case "category":
-		category, err := s.store.Categories.GetById(cast.ToInt(value))
-		if err != nil {
-			e = err
-		}
-		r = category
-	case "image":
-		media, err := s.store.Media.GetById(cast.ToInt(value))
-		if err != nil {
-			e = err
-		}
-		r = media
-	case "post":
-		post, err := s.store.Posts.GetById(cast.ToInt(value))
-		if err != nil {
-			e = err
-			break
-		}
-		formatPost, err := s.store.Posts.Format(post)
-		if err != nil {
-			e = err
-		}
-		r = formatPost
-	case "user":
-		user, err := s.store.User.GetById(cast.ToInt(value))
-		if err != nil {
-			e = err
-		}
-		r = *user.HideCredentials()
-	default:
-		return value
-	}
-
-	if e != nil {
-		log.WithFields(log.Fields{"error": e}).Error()
-		return nil
-	}
-
-	return r
+	return *user.HideCredentials(), nil
 }
