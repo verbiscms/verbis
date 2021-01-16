@@ -32,11 +32,11 @@ func (t *FieldTestSuite) TestService_GetField() {
 		},
 		"Post": {
 			fields: []domain.PostField{
-				{Id: 1, Type: "text", Name: "key1"},
+				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key: "key2",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 2).Return([]domain.PostField{{Id: 2, Type: "text", Name: "key2", Value: "test"}}, nil)
+				f.On("GetByPost", 2).Return([]domain.PostField{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},
 			want: "test",

@@ -8,27 +8,30 @@ import (
 
 func (t *FieldTestSuite) TestService_ResolveField() {
 
+	//var i interface{} = nil
+
 	tt := map[string]struct {
 		field  domain.PostField
 		mock   func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository)
 		want   interface{}
 		hasErr bool
 	}{
-		"Nil Value": {
-			field: domain.PostField{
-				Id:            1,
-				Type:          "text",
-				OriginalValue: "",
-			},
-			mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
-			},
-			want: domain.PostField{
-				Id:    1,
-				Type:  "text",
-				Value: nil,
-			},
-			hasErr: false,
-		},
+		//"Nil Value": {
+		//	field: domain.PostField{
+		//		Id:            1,
+		//		Type:          "text",
+		//		OriginalValue: "",
+		//	},
+		//	mock: func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository) {
+		//	},
+		//	want: domain.PostField{
+		//		Id:    1,
+		//		Type:  "text",
+		//		OriginalValue: "",
+		//		Value:  i,
+		//	},
+		//	hasErr: false,
+		//},
 		"Category Array": {
 			field: domain.PostField{
 				Id:            1,
@@ -144,9 +147,9 @@ func (t *FieldTestSuite) TestService_ResolveField() {
 // TODO Clean up
 //
 /////////////
-func (t *FieldTestSuite) TestTesty() {
-	getMap()
-}
+//func (t *FieldTestSuite) TestTesty() {
+//	getMap()
+//}
 
 func (t *FieldTestSuite) TestService_ResolveValue() {
 
