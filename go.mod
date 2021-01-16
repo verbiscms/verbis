@@ -64,7 +64,7 @@ require (
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
 	github.com/roberthodgen/spa-server v0.0.0-20171007154335-bb87b4ff3253 // indirect
-	github.com/rs/zerolog v1.18.0
+	github.com/rs/zerolog v1.18.0 // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/slayer/autorestart v0.0.0-20170706172704-7bc8d250279b // indirect
 	github.com/spf13/afero v1.3.5 // indirect
@@ -73,7 +73,7 @@ require (
 	github.com/stretchr/testify v1.6.1
 	github.com/tdewolff/minify/v2 v2.9.10
 	github.com/teamwork/reload v1.3.2
-	github.com/tidwall/gjson v1.6.7
+	github.com/tidwall/gjson v1.6.7 // indirect
 	github.com/ugorji/go v1.1.13 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/unrolled/render v1.0.3 // indirect
