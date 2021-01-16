@@ -10,6 +10,18 @@ type Value struct {
 	store *models.Store
 }
 
+// TODO: If choice is with a key of `key` or `value`
+
+var (
+	Iterable = []string{
+		"category",
+		"image",
+		"posts",
+		"user",
+		"tags",
+	}
+)
+
 type valuer func(field domain.FieldValue) (interface{}, error)
 
 type fieldValueMap map[string]valuer
@@ -18,9 +30,11 @@ type fieldValueMap map[string]valuer
 //
 // Determines if the given field values is a slice or array or singular
 // and returns a resolved field value or a slice of interfaces.
-func Field(field domain.PostField, store models.Store) domain.PostField {
-	exec := &Value{}
-	resolved := exec.Resolve(field)
+func Field(field domain.PostField, store *models.Store) domain.PostField {
+	exec := &Value{
+		store: store,
+	}
+	resolved := exec.resolve(field)
 	return resolved
 }
 
@@ -37,7 +51,7 @@ func (v *Value) getMap() fieldValueMap {
 	}
 }
 
-func (v *Value) Resolve(field domain.PostField) domain.PostField  {
+func (v *Value) resolve(field domain.PostField) domain.PostField  {
 	original := field.OriginalValue
 
 	if original.IsEmpty() && field.Key != "map" {
@@ -45,21 +59,21 @@ func (v *Value) Resolve(field domain.PostField) domain.PostField  {
 		return field
 	}
 
-	if !original.IsArray() {
-		field.Value = v.Execute(field.OriginalValue.String(), field.Type)
+	if !field.IsIterable(Iterable) {
+		field.Value = v.execute(field.OriginalValue.String(), field.Type)
 		return field
 	}
 
 	var items []interface{}
 	for _, f := range original.Array() {
-		items = append(items, v.Execute(f, field.Type))
+		items = append(items, v.execute(f, field.Type))
 	}
 	field.Value = items
 
 	return field
 }
 
-func (v *Value) Execute(value string, typ string) interface{} {
+func (v *Value) execute(value string, typ string) interface{} {
 	fn, ok := v.getMap()[typ]
 	if !ok {
 		return value

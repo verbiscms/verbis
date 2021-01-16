@@ -17,7 +17,7 @@ func (s *Service) GetFields(args ...interface{}) Fields {
 
 	var f = make(Fields, 0)
 	s.mapper(fields, func(field domain.PostField) {
-		f[field.Name] = resolve.Field(field, *s.store).Value
+		f[field.Name] = resolve.Field(field, s.store).Value
 	})
 
 	return f

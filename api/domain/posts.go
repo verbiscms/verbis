@@ -90,8 +90,13 @@ type PostField struct {
 
 type FieldValue string
 
-func (f FieldValue) IsArray() bool {
-	return strings.Contains(string(f), ",")
+func (f PostField) IsIterable(arr []string) bool {
+	for _, v := range arr {
+		if v == f.Type {
+			return true
+		}
+	}
+	return false
 }
 
 func (f FieldValue) Array() []string {

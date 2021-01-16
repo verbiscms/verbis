@@ -11,7 +11,7 @@ import (
 // Returns the domain.User if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) user(value domain.FieldValue) (interface{}, error) {
-	const op = "fieldValue.User"
+	const op = "FieldResolver.user"
 
 	id, err := value.Int()
 	if err != nil {

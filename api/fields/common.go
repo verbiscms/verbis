@@ -107,7 +107,7 @@ func (r *walker) Walk(appender func(domain.PostField)) {
 				return
 			}
 
-			appender(resolve.Field(v, *r.store))
+			appender(resolve.Field(v, r.store))
 		}
 	}
 }
