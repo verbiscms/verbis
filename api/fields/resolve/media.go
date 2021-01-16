@@ -11,7 +11,7 @@ import (
 // Returns the domain.Media if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) media(value domain.FieldValue) (interface{}, error) {
-	const op = "Value.Media"
+	const op = "FieldResolver.media"
 
 	id, err := value.Int()
 	if err != nil {
