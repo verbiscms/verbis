@@ -116,42 +116,42 @@ func (t *FieldTestSuite) TestService_FindFieldByName() {
 	}
 }
 
-func (t *FieldTestSuite) TestResolve_Walker() {
-
-	tt := map[string]struct {
-		resolver resolve
-		want     interface{}
-	}{
-		"No Prefix": {
-			resolver: resolve{
-				Key:   "",
-				Index: 0,
-				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
-				Fields: []domain.PostField{
-					{Type: "text", Name: "text", OriginalValue: "text1", Key: ""},
-				},
-			},
-			want: domain.PostField{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: ""},
-		},
-		"Success": {
-			resolver: resolve{
-				Key:   "",
-				Index: 0,
-				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
-				Fields: []domain.PostField{
-					{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
-				},
-			},
-			want: domain.PostField{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"},
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func() {
-			test.resolver.Service = t.GetService(nil)
-			test.resolver.Walker(func(field domain.PostField) {
-				t.Equal(test.want, field)
-			})
-		})
-	}
-}
+//func (t *FieldTestSuite) TestResolve_Walker() {
+//
+//	tt := map[string]struct {
+//		resolver resolve
+//		want     interface{}
+//	}{
+//		"No Prefix": {
+//			resolver: resolve{
+//				Key:   "",
+//				Index: 0,
+//				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
+//				Fields: []domain.PostField{
+//					{Type: "text", Name: "text", OriginalValue: "text1", Key: ""},
+//				},
+//			},
+//			want: domain.PostField{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: ""},
+//		},
+//		"Success": {
+//			resolver: resolve{
+//				Key:   "",
+//				Index: 0,
+//				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
+//				Fields: []domain.PostField{
+//					{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
+//				},
+//			},
+//			want: domain.PostField{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"},
+//		},
+//	}
+//
+//	for name, test := range tt {
+//		t.Run(name, func() {
+//			test.resolver.Service = t.GetService(nil)
+//			test.resolver.Walker(func(field domain.PostField) {
+//				t.Equal(test.want, field)
+//			})
+//		})
+//	}
+//}

@@ -71,7 +71,7 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields []d
 	var repeater = make(Repeater, amount)
 	for index := 0; index < len(repeater); index++ {
 
-		r := resolve{
+		r := walker{
 			Key:     key,
 			Index:   index,
 			Field:   field,
@@ -80,7 +80,7 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields []d
 		}
 
 		var row Row
-		r.Walker(func(f domain.PostField) {
+		r.Walk(func(f domain.PostField) {
 			row = append(row, f)
 		})
 

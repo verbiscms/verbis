@@ -4,6 +4,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 	"strconv"
 	"strings"
@@ -106,7 +107,12 @@ func (f FieldValue) String() string {
 }
 
 func (f FieldValue) Int() (int, error) {
-	return strconv.Atoi(f.String())
+	const op = "FieldValue.Int"
+	i, err := strconv.Atoi(f.String())
+	if err != nil {
+		return 0, &errors.Error{Code: errors.INVALID, Message: "Unable to cast FieldValue to an integer", Operation: op, Err: err}
+	}
+	return i, nil
 }
 
 type PostSeoMeta struct {

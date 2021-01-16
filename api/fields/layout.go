@@ -3,7 +3,7 @@ package fields
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/fields/walker"
+	"github.com/ainsleyclark/verbis/api/fields/layout"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 )
@@ -11,7 +11,7 @@ import (
 // GetGroup
 //
 func (s *Service) GetLayout(name string, args ...interface{}) (domain.Field, error) {
-	layout, err := walker.ByName(name, s.handleLayoutArgs(args))
+	layout, err := layout.ByName(name, s.handleLayoutArgs(args))
 	if err != nil {
 		return domain.Field{}, err
 	}
