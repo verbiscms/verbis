@@ -11,7 +11,7 @@ import (
 // Returns the domain.Category if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) category(value domain.FieldValue) (interface{}, error) {
-	const op = "fieldValue.Category"
+	const op = "FieldResolver.category"
 
 	id, err := value.Int()
 	if err != nil {

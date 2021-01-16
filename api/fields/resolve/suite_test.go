@@ -14,6 +14,8 @@ type ResolverTestSuite struct {
 	suite.Suite
 }
 
+type noStringer struct{}
+
 func TestResolver(t *testing.T) {
 	suite.Run(t, new(ResolverTestSuite))
 }

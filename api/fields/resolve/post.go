@@ -11,7 +11,7 @@ import (
 // Returns the domain.PostData if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) post(value domain.FieldValue) (interface{}, error) {
-	const op = "fieldValue.Post"
+	const op = "FieldResolver.post"
 
 	id, err := value.Int()
 	if err != nil {

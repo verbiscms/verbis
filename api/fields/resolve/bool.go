@@ -11,7 +11,7 @@ import (
 // Casts the domain.FieldValue to a boolean.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an bool.
 func (v *Value) checkbox(value domain.FieldValue) (interface{}, error) {
-	const op = "Value.Checkbox"
+	const op = "FieldResolver.checkbox"
 
 	check, err := cast.ToBoolE(value.String())
 	if err != nil {
