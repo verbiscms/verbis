@@ -8,8 +8,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/routes"
 	"github.com/ainsleyclark/verbis/api/server"
+	"github.com/ainsleyclark/verbis/api/server/routes"
 	"github.com/kyokomi/emoji"
 	"github.com/spf13/cobra"
 )

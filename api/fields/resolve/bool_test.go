@@ -2,23 +2,23 @@ package resolve
 
 import "github.com/ainsleyclark/verbis/api/domain"
 
-func (t *ResolverTestSuite) TestFieldValue_Checkbox() {
+func (t *ResolverTestSuite) TestValue_Checkbox() {
 
 	tt := map[string]struct {
-		value  domain.FieldValue
-		want   interface{}
+		value domain.FieldValue
+		want  interface{}
 	}{
 		"True": {
 			value: domain.FieldValue("true"),
-			want: true,
+			want:  true,
 		},
 		"False": {
 			value: domain.FieldValue("false"),
-			want: false,
+			want:  false,
 		},
 		"Failed": {
 			value: `wrongval`,
-			want: "invalid syntax",
+			want:  "invalid syntax",
 		},
 	}
 

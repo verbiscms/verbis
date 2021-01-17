@@ -9,9 +9,9 @@ import (
 func (t *ResolverTestSuite) TestValue_Post() {
 
 	tt := map[string]struct {
-		value  domain.FieldValue
-		mock   func(p *mocks.PostsRepository)
-		want   interface{}
+		value domain.FieldValue
+		mock  func(p *mocks.PostsRepository)
+		want  interface{}
 	}{
 		"Post": {
 			value: domain.FieldValue("1"),
@@ -42,8 +42,8 @@ func (t *ResolverTestSuite) TestValue_Post() {
 		},
 		"Cast Error": {
 			value: domain.FieldValue("wrongval"),
-			mock: func(p *mocks.PostsRepository) {},
-			want: `strconv.Atoi: parsing "wrongval": invalid syntax`,
+			mock:  func(p *mocks.PostsRepository) {},
+			want:  `strconv.Atoi: parsing "wrongval": invalid syntax`,
 		},
 	}
 
@@ -60,6 +60,78 @@ func (t *ResolverTestSuite) TestValue_Post() {
 				t.Contains(err.Error(), test.want)
 				return
 			}
+
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *ResolverTestSuite) TestValue_PostResolve() {
+
+	tt := map[string]struct {
+		field domain.PostField
+		mock  func(p *mocks.PostsRepository)
+		want  domain.PostField
+	}{
+		"Post": {
+			field: domain.PostField{OriginalValue: "1,2,3", Type: "post"},
+			mock: func(p *mocks.PostsRepository) {
+				p.On("GetById", 1).Return(domain.Post{Title: "post1"}, nil)
+				p.On("GetById", 2).Return(domain.Post{Title: "post2"}, nil)
+				p.On("GetById", 3).Return(domain.Post{Title: "post3"}, nil)
+				p.On("Format", domain.Post{Title: "post1"}).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("Format", domain.Post{Title: "post2"}).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("Format", domain.Post{Title: "post3"}).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+			},
+			want: domain.PostField{OriginalValue: "1,2,3", Type: "post", Value: []interface{}{
+				domain.PostData{Post: domain.Post{Title: "post1"}},
+				domain.PostData{Post: domain.Post{Title: "post2"}},
+				domain.PostData{Post: domain.Post{Title: "post3"}},
+			}},
+		},
+		"Trailing Comma": {
+			field: domain.PostField{OriginalValue: "1,2,3,", Type: "post"},
+			mock: func(p *mocks.PostsRepository) {
+				p.On("GetById", 1).Return(domain.Post{Title: "post1"}, nil)
+				p.On("GetById", 2).Return(domain.Post{Title: "post2"}, nil)
+				p.On("GetById", 3).Return(domain.Post{Title: "post3"}, nil)
+				p.On("Format", domain.Post{Title: "post1"}).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("Format", domain.Post{Title: "post2"}).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("Format", domain.Post{Title: "post3"}).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+			},
+			want: domain.PostField{OriginalValue: "1,2,3,", Type: "post", Value: []interface{}{
+				domain.PostData{Post: domain.Post{Title: "post1"}},
+				domain.PostData{Post: domain.Post{Title: "post2"}},
+				domain.PostData{Post: domain.Post{Title: "post3"}},
+			}},
+		},
+		"Leading Comma": {
+			field: domain.PostField{OriginalValue: ",1,2,3", Type: "post"},
+			mock: func(p *mocks.PostsRepository) {
+				p.On("GetById", 1).Return(domain.Post{Title: "post1"}, nil)
+				p.On("GetById", 2).Return(domain.Post{Title: "post2"}, nil)
+				p.On("GetById", 3).Return(domain.Post{Title: "post3"}, nil)
+				p.On("Format", domain.Post{Title: "post1"}).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("Format", domain.Post{Title: "post2"}).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("Format", domain.Post{Title: "post3"}).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+			},
+			want: domain.PostField{OriginalValue: ",1,2,3", Type: "post", Value: []interface{}{
+				domain.PostData{Post: domain.Post{Title: "post1"}},
+				domain.PostData{Post: domain.Post{Title: "post2"}},
+				domain.PostData{Post: domain.Post{Title: "post3"}},
+			}},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			v := t.GetValue()
+			postMock := &mocks.PostsRepository{}
+
+			test.mock(postMock)
+			v.store.Posts = postMock
+
+			got := v.resolve(test.field)
 
 			t.Equal(test.want, got)
 		})
