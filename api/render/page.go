@@ -118,7 +118,7 @@ func (r *Render) handleTrailingSlash(g *gin.Context) (string, bool) {
 	color.Red.Println(trailing)
 
 	if lastChar != "/" && trailing {
-		g.Redirect(301, url + "/")
+		g.Redirect(301, url+"/")
 		return "", true
 	}
 
