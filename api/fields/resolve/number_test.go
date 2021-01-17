@@ -2,23 +2,23 @@ package resolve
 
 import "github.com/ainsleyclark/verbis/api/domain"
 
-func (t *ResolverTestSuite) TestFieldValue_Number() {
+func (t *ResolverTestSuite) TestValue_Number() {
 
 	tt := map[string]struct {
-		value  domain.FieldValue
-		want   interface{}
+		value domain.FieldValue
+		want  interface{}
 	}{
 		"Success": {
 			value: "1",
-			want: int64(1),
+			want:  int64(1),
 		},
 		"Large": {
 			value: "99999999999999999",
-			want: int64(99999999999999999),
+			want:  int64(99999999999999999),
 		},
 		"Bad Cast": {
 			value: "wrongval",
-			want: "unable to cast",
+			want:  "unable to cast",
 		},
 	}
 
@@ -36,3 +36,31 @@ func (t *ResolverTestSuite) TestFieldValue_Number() {
 		})
 	}
 }
+
+func (t *ResolverTestSuite) TestValue_NumberResolve() {
+
+	tt := map[string]struct {
+		field domain.PostField
+		want  domain.PostField
+	}{
+		"Number": {
+			field: domain.PostField{OriginalValue: "999", Type: "number"},
+			want:  domain.PostField{OriginalValue: "999", Type: "number", Value: int64(999)},
+		},
+		"Range": {
+			field: domain.PostField{OriginalValue: "999", Type: "range"},
+			want:  domain.PostField{OriginalValue: "999", Type: "range", Value: int64(999)},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			v := t.GetValue()
+
+			got := v.resolve(test.field)
+
+			t.Equal(test.want, got)
+		})
+	}
+}
+
