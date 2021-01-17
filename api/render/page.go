@@ -8,7 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/templates"
+	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
 )
@@ -60,7 +60,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		pt = pt + r.theme.FileExtension
 	}
 
-	tm := templates.NewManager(g, r.store, &postData, r.config)
+	tm := tpl.NewManager(g, r.store, &postData, r.config)
 	gvFrontend := goview.New(goview.Config{
 		Root:         paths.Theme(),
 		Extension:    r.theme.FileExtension,

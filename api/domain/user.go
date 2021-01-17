@@ -34,11 +34,11 @@ type UserPart struct {
 
 type Users []User
 
-type UsersParts []*UserPart
+type UsersParts []UserPart
 
-func (u *Users) HideCredentials() UsersParts {
+func (u Users) HideCredentials() UsersParts {
 	var p UsersParts
-	for _, v := range *u {
+	for _, v := range u {
 		p = append(p, v.HideCredentials())
 	}
 	return p
@@ -67,8 +67,8 @@ func (u *User) HidePassword() {
 	u.Password = ""
 }
 
-func (u *User) HideCredentials() *UserPart {
-	return &UserPart{
+func (u *User) HideCredentials() UserPart {
+	return UserPart{
 		Id:               u.Id,
 		UUID:             u.UUID,
 		FirstName:        u.FirstName,
