@@ -90,7 +90,7 @@ type PostField struct {
 
 type FieldValue string
 
-func (f PostField) IsIterable(arr []string) bool {
+func (f PostField) TypeIsInArray(arr []string) bool {
 	for _, v := range arr {
 		if v == f.Type {
 			return true

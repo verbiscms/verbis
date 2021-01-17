@@ -22,15 +22,15 @@ func (t *ResolverTestSuite) TestValue_Resolve() {
 	}{
 		"Empty": {
 			field: domain.PostField{OriginalValue: ""},
-			want: domain.PostField{OriginalValue: "", Value: ""},
+			want:  domain.PostField{OriginalValue: "", Value: ""},
 		},
 		"Not Iterable": {
 			field: domain.PostField{OriginalValue: "999", Type: "number"},
-			want: domain.PostField{OriginalValue: "999", Type: "number", Value: int64(999)},
+			want:  domain.PostField{OriginalValue: "999", Type: "number", Value: int64(999)},
 		},
 		"Iterable": {
 			field: domain.PostField{OriginalValue: "1,2,3,4,5", Type: "tags"},
-			want: domain.PostField{OriginalValue: "1,2,3,4,5", Type: "tags", Value: []interface{}{"1","2","3","4","5"}},
+			want:  domain.PostField{OriginalValue: "1,2,3,4,5", Type: "tags", Value: []interface{}{"1", "2", "3", "4", "5"}},
 		},
 	}
 
@@ -46,22 +46,22 @@ func (t *ResolverTestSuite) TestValue_Execute() {
 	tt := map[string]struct {
 		value string
 		typ   string
-		want   interface{}
+		want  interface{}
 	}{
 		"Not found": {
 			value: "test",
-			typ: "wrongval",
-			want: "test",
+			typ:   "wrongval",
+			want:  "test",
 		},
 		"Found": {
 			value: "999",
-			typ: "number",
-			want: int64(999),
+			typ:   "number",
+			want:  int64(999),
 		},
 		"Error": {
 			value: "wrongval",
-			typ: "number",
-			want: nil,
+			typ:   "number",
+			want:  nil,
 		},
 	}
 
