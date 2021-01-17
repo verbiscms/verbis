@@ -32,11 +32,13 @@ type Resources struct {
 }
 
 type Resource struct {
-	Name         string `yaml:"name" json:"name"`
-	FriendlyName string `yaml:"friendly_name" json:"friendly_name"`
-	SingularName string `yaml:"singular_name" json:"singular_name"`
-	Slug         string `yaml:"slug" json:"slug"`
-	Icon         string `yaml:"icon" json:"icon"`
+	Name             string `yaml:"name" json:"name"`
+	FriendlyName     string `yaml:"friendly_name" json:"friendly_name"`
+	SingularName     string `yaml:"singular_name" json:"singular_name"`
+	Slug             string `yaml:"slug" json:"slug"`
+	Icon             string `yaml:"icon" json:"icon"`
+	Hidden           bool   `yaml:"hidden" json:"hidden"`
+	HideCategorySlug bool   `yaml:"hide_category_slug" json:"hide_category_slug"`
 }
 
 // Templates

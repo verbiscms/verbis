@@ -4,7 +4,6 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
-			<pre style="font-size: 14px; line-height: 1.2">{{ fields }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
@@ -59,12 +58,17 @@
 					Title & Tabs
 					===================== -->
 				<div class="col-12 col-desk-12 editor-main-col">
-					<Tabs @update="activeTab = $event - 1" :default-tab="activeTab">
+					<div v-if="isPublic">
+						<Tabs @update="activeTab = $event - 1" :default-tab="activeTab">
+							<template slot="item">Content</template>
+							<template slot="item">Meta</template>
+							<template slot="item">SEO</template>
+							<template slot="item">Code Injection</template>
+							<template slot="item">Insights</template>
+						</Tabs>
+					</div>
+					<Tabs v-else @update="activeTab = $event - 1" :default-tab="activeTab">
 						<template slot="item">Content</template>
-						<template slot="item">Meta</template>
-						<template slot="item">SEO</template>
-						<template slot="item">Code Injection</template>
-						<template slot="item">Insights</template>
 					</Tabs>
 					<!-- Spinner -->
 					<div v-if="doingAxios || loadingLayouts" class="media-spinner spinner-container">
@@ -154,7 +158,7 @@
 						</div>
 					</FormGroup><!-- /Categories -->
 				</div>
-				<div class="editor-sidebar-cont">
+				<div class="editor-sidebar-cont" v-if="isPublic">
 					<h6 class="margin">Properties</h6>
 					<!-- Page Template -->
 					<FormGroup label="Page template">
@@ -309,6 +313,7 @@ export default {
 		 */
 		setDefaultLayout() {
 			if (!this.fieldLayout.length) {
+				this.fieldLayout = [];
 				this.fieldLayout.push(JSON.parse(this.defaultLayout));
 			}
 		},
@@ -628,6 +633,11 @@ export default {
 		 * return the nice slug.
 		 */
 		resolveCategorySlug() {
+
+			if (this.resource['hide_category_slug']) {
+				return "";
+			}
+
 			let categorySlugs = [];
 
 			if (this.data['category']) {
@@ -713,6 +723,12 @@ export default {
 		}
 	},
 	computed: {
+		isPublic() {
+			if ('hidden' in this.resource) {
+				return !this.resource.hidden;
+			}
+			return true
+		},
 		/*
 		 * getBaseSlug()
 		 * Get the base slug (resource).

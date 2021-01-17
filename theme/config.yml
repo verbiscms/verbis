@@ -42,12 +42,15 @@ resources:
         singular_name: Case Study
         slug: /case-studies
         icon: feather feather-book
+        hidden: true
     industries:
         name: industries
         friendly_name: Industries
         singular_name: Industry
         slug: /industries
         icon: feather feather-inbox
+        hidden: false
+        hide_category_slug: true
 
 # |
 # |--------------------------------------------------------------------------

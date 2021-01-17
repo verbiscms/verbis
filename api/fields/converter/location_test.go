@@ -61,17 +61,17 @@ func (t *LocationTestSuite) TestLocation_GetLayout() {
 		"Not Cached": {
 			cacheable: false,
 			jsonPath:  "/test-get-layout",
-			want:      []domain.FieldGroup{{Title: "title"}},
+			want:      []domain.FieldGroup{{Title: "title", Fields: []domain.Field{{Name: "test"}}}},
 		},
 		"Cacheable Nil": {
 			cacheable: true,
 			jsonPath:  "/test-get-layout",
-			want:      []domain.FieldGroup{{Title: "title"}},
+			want:      []domain.FieldGroup{{Title: "title", Fields: []domain.Field{{Name: "test"}}}},
 		},
 		"Cacheable": {
 			cacheable: true,
 			jsonPath:  "/test-get-layout",
-			want:      []domain.FieldGroup{{Title: "title"}},
+			want:      []domain.FieldGroup{{Title: "title", Fields: []domain.Field{{Name: "test"}}}},
 		},
 	}
 
@@ -263,7 +263,7 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 	}{
 		"Success": {
 			path: testPath + "/success",
-			want: []domain.FieldGroup{{UUID: id, Title: "Title"}, {UUID: id, Title: "Title"}},
+			want: []domain.FieldGroup{{UUID: id, Title: "Title", Fields: []domain.Field{{Name: "test"}}}, {UUID: id, Title: "Title", Fields: []domain.Field{{Name: "test"}}}},
 		},
 		"Bad Path": {
 			path: testPath + "/wrongval",
@@ -276,6 +276,10 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 		"Open Error": {
 			path: testPath + "/open-error",
 			want: "permission denied",
+		},
+		"Empty Fields": {
+			path: testPath + "/empty",
+			want: "layout does not contain any fields",
 		},
 	}
 

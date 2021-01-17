@@ -49,10 +49,7 @@ func (e *ChangedPassword) Send(u domain.UserPart, password string, site domain.S
 		HTML:    html,
 	}
 
-	_, err = e.mailer.Send(&tm)
-	if err != nil {
-		return err
-	}
+	e.mailer.Send(&tm)
 
 	return nil
 }

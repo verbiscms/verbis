@@ -16,7 +16,7 @@ type PostData struct {
 	Author   *PostAuthor   `json:"author"`
 	Category *PostCategory `json:"category"`
 	Layout   *[]FieldGroup `json:"layout"`
-	Fields   *[]PostField  `json:"fields"`
+	Fields   *[]PostField  `json:"fields,omitempty"`
 }
 
 type Post struct {
@@ -34,7 +34,7 @@ type Post struct {
 	PublishedAt       *time.Time  `db:"published_at" json:"published_at"`
 	CreatedAt         *time.Time  `db:"created_at" json:"created_at"`
 	UpdatedAt         *time.Time  `db:"updated_at" json:"updated_at"`
-	SeoMeta           PostSeoMeta `db:"options" json:"options"`
+	SeoMeta           PostOptions `db:"options" json:"options"`
 }
 
 type PostCreate struct {
@@ -120,12 +120,14 @@ func (f FieldValue) Int() (int, error) {
 	return i, nil
 }
 
-type PostSeoMeta struct {
-	Id     int       `json:"-"`
-	PageId int       `json:"-" binding:"required|numeric"`
-	Meta   *PostMeta `db:"meta" json:"meta"`
-	Seo    *PostSeo  `db:"seo" json:"seo"`
+type PostOptions struct {
+	Id       int       `json:"-"`
+	PageId   int       `json:"-" binding:"required|numeric"`
+	Meta     *PostMeta `db:"meta" json:"meta"`
+	Seo      *PostSeo  `db:"seo" json:"seo"`
+	EditLock string    `db:"edit_lock" json:"edit_lock"`
 }
+
 type PostMeta struct {
 	Title       string       `json:"title,omitempty"`
 	Description string       `json:"description,omitempty"`
