@@ -11,6 +11,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/color"
+	"strings"
 )
 
 func (r *Render) Page(g *gin.Context) ([]byte, error) {
@@ -21,7 +23,13 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		<-api.ServeChan
 	}()
 
-	url := g.Request.URL.Path
+	url, hasRedirected := r.handleTrailingSlash(g)
+	if hasRedirected {
+		return nil, nil
+	}
+
+	color.Green.Println(url)
+
 	post, err := r.store.Posts.GetBySlug(url)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No page found with the url: %s", url), Operation: op, Err: err}
@@ -98,4 +106,32 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	}()
 
 	return minified, nil
+}
+
+func (r *Render) handleTrailingSlash(g *gin.Context) (string, bool) {
+	url := g.Request.URL.Path
+
+	lastChar := url[len(url)-1:]
+	trailing := r.options.SeoEnforceSlash
+
+	color.Red.Println(url)
+	color.Red.Println(trailing)
+
+	if lastChar != "/" && trailing {
+		g.Redirect(301, url + "/")
+		return "", true
+	}
+
+	if lastChar == "/" && !trailing && url != "/" {
+		g.Redirect(301, strings.TrimSuffix(url, "/"))
+		return "", true
+	}
+
+	if lastChar == "/" && url != "/" {
+		url = strings.TrimSuffix(url, "/")
+	}
+
+	color.Green.Println(url)
+
+	return url, false
 }

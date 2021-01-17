@@ -26,7 +26,6 @@ type Render struct {
 
 // NewRender - Construct
 func NewRender(m *models.Store, config config.Configuration) *Render {
-	const op = "Assets.NewAssets"
 	options := m.Options.GetStruct()
 	return &Render{
 		store:   m,
