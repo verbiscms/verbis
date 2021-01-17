@@ -348,12 +348,12 @@ func (c *Convert) populateAuthors() []domain.UserPart {
 			}
 
 			// User can't login!
-			err = importer.SendNewPassword(*user.HideCredentials(), password, *c.store.Site.GetGlobalConfig())
+			err = importer.SendNewPassword(user.HideCredentials(), password, *c.store.Site.GetGlobalConfig())
 			if err != nil {
 				continue
 			}
 
-			users = append(users, *user.HideCredentials())
+			users = append(users, user.HideCredentials())
 			continue
 		}
 

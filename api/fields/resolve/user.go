@@ -23,5 +23,5 @@ func (v *Value) user(value domain.FieldValue) (interface{}, error) {
 		return nil, err
 	}
 
-	return *user.HideCredentials(), nil
+	return user.HideCredentials(), nil
 }
