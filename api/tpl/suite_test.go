@@ -110,17 +110,3 @@ func (t *TplTestSuite) RunT(tpl string, expect interface{}) {
 
 	t.Equal(got, b)
 }
-
-
-type Tester struct {
-	test string
-}
-
-func data() Tester {
-	return Tester{}
-}
-
-func (t *TplTestSuite) TestR() {
-	t.RunTWithData(`{{ if . }} Will content be printed here? {{ end }}`, "", data())
-}
-
