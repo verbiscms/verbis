@@ -3,15 +3,15 @@ package tpl
 func (t *TplTestSuite) Test_Replace() {
 
 	tt := map[string]struct {
-		tpl string
+		tpl  string
 		want interface{}
 	}{
 		"Valid": {
-			tpl: `{{ replace "verbis-cms-is-amazing" "-" " " }}`,
+			tpl:  `{{ replace "verbis-cms-is-amazing" "-" " " }}`,
 			want: "verbis cms is amazing",
 		},
 		"Valid 2": {
-			tpl: `{{ replace "verbis" "v" "" }}`,
+			tpl:  `{{ replace "verbis" "v" "" }}`,
 			want: "erbis",
 		},
 	}
@@ -26,27 +26,27 @@ func (t *TplTestSuite) Test_Replace() {
 func (t *TplTestSuite) Test_Substr() {
 
 	tt := map[string]struct {
-		tpl string
+		tpl  string
 		want interface{}
 	}{
 		"Valid": {
-			tpl: `{{ substr "verbiscms" 0 2 }}`,
+			tpl:  `{{ substr "verbiscms" 0 2 }}`,
 			want: "ve",
 		},
 		"Valid 2": {
-			tpl: `{{ substr "hello world" 0 5 }}`,
+			tpl:  `{{ substr "hello world" 0 5 }}`,
 			want: "hello",
 		},
 		"Strings as Params": {
-			tpl: `{{ substr "hello world" "0" "5" }}`,
+			tpl:  `{{ substr "hello world" "0" "5" }}`,
 			want: "hello",
 		},
 		"Negative Start": {
-			tpl: `{{ substr "hello world" "-1" "5" }}`,
+			tpl:  `{{ substr "hello world" "-1" "5" }}`,
 			want: "hello",
 		},
 		"Negative End": {
-			tpl: `{{ substr "hello world" "5" "-1" }}`,
+			tpl:  `{{ substr "hello world" "5" "-1" }}`,
 			want: " world",
 		},
 	}
@@ -61,23 +61,23 @@ func (t *TplTestSuite) Test_Substr() {
 func (t *TplTestSuite) Test_Trunc() {
 
 	tt := map[string]struct {
-		tpl string
+		tpl  string
 		want interface{}
 	}{
 		"Positive": {
-			tpl: `{{ trunc "hello world" 5 }}`,
+			tpl:  `{{ trunc "hello world" 5 }}`,
 			want: "hello",
 		},
 		"Negative": {
-			tpl: `{{ trunc "hello world" -5 }}`,
+			tpl:  `{{ trunc "hello world" -5 }}`,
 			want: "world",
 		},
 		"Strings as Params": {
-			tpl: `{{ trunc "hello world" "-5" }}`,
+			tpl:  `{{ trunc "hello world" "-5" }}`,
 			want: "world",
 		},
 		"Original": {
-			tpl: `{{ trunc "hello world" -1000 }}`,
+			tpl:  `{{ trunc "hello world" -1000 }}`,
 			want: "hello world",
 		},
 	}
@@ -92,19 +92,19 @@ func (t *TplTestSuite) Test_Trunc() {
 func (t *TplTestSuite) Test_Ellipsis() {
 
 	tt := map[string]struct {
-		tpl string
+		tpl  string
 		want interface{}
 	}{
 		"Valid": {
-			tpl: `{{ ellipsis "hello world" 5 }}`,
+			tpl:  `{{ ellipsis "hello world" 5 }}`,
 			want: "hello...",
 		},
 		"Valid 2": {
-			tpl: `{{ ellipsis "hello world this is Verbis CMS" 11 }}`,
+			tpl:  `{{ ellipsis "hello world this is Verbis CMS" 11 }}`,
 			want: "hello world...",
 		},
 		"Short String": {
-			tpl: `{{ ellipsis "cms" 3 }}`,
+			tpl:  `{{ ellipsis "cms" 3 }}`,
 			want: "cms",
 		},
 	}

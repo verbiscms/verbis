@@ -245,6 +245,29 @@
 						</Collapse><!-- /Serve Robots -->
 					</div>
 				</div><!-- /Col -->
+				<!-- =====================
+					Misc
+					===================== -->
+				<div class="col-12">
+					<h6 class="margin">Misc</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<!-- Enforce Slashes -->
+						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header card-header-block">
+									<div>
+										<h4 class="card-title">Enforce trailing slashes?</h4>
+										<p>By enabling this option, all pages (apart from the homepage) will be redirected to to a trailing slash, for example <code>yoursite.com/posts</code> becomes <code>yoursite.com/posts/</code></p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="seo-enforce-slash" v-model="data['seo_enforce_slash']" :true-value="true" :false-value="false" />
+										<label for="seo-enforce-slash"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Serve Robots -->
+					</div><!-- /Card -->
+				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
 		<!-- =====================

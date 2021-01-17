@@ -56,7 +56,7 @@ func (t *TplTestSuite) Test_GetData() {
 			PublishedAt:       &time,
 			CreatedAt:         &time,
 			UpdatedAt:         &time,
-			SeoMeta:           domain.PostSeoMeta{},
+			SeoMeta:           domain.PostOptions{},
 		},
 		Author:   author,
 		Category: category,

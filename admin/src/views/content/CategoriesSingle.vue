@@ -7,7 +7,6 @@
 			<!-- Header -->
 			<div class="row">
 				<div class="col-12">
-					{{ computedSlug }}
 					<header class="header header-with-actions">
 						<div class="header-title">
 							<h1 v-if="newItem">New category</h1>
@@ -63,31 +62,6 @@
 								</div>
 							</template>
 						</Collapse><!-- /Title & description -->
-						<!-- Slug-->
-						<Collapse :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['slug']}">
-							<template v-slot:header>
-								<div class="card-header">
-									<div>
-										<h4 class="card-title">Slug</h4>
-										<p>Enter a slug for the category, by default it will use the name, and will be assigned after the resource, for example: /news/tech</p>
-									</div>
-									<div class="card-controls">
-										<i class="feather feather-chevron-down"></i>
-									</div>
-								</div><!-- /Card Header -->
-							</template>
-							<template v-slot:body>
-								<div class="card-body">
-									<FormGroup class="form-url" label="Slug*" :error="errors['slug']">
-										<div class="form-url-cont">
-											<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
-											<i class="feather feather-edit" @click="slugBtn = !slugBtn"></i>
-										</div>
-										<h4>{{computedSlug }}</h4>
-									</FormGroup>
-								</div>
-							</template>
-						</Collapse><!-- /Slug-->
 						<!-- Resource-->
 						<Collapse v-if="data['parent_id'] === '' || data['parent_id'] === null" :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['resource']}">
 							<template v-slot:header>
@@ -114,7 +88,33 @@
 									</FormGroup>
 								</div>
 							</template>
-						</Collapse><!-- /Resource-->
+						</Collapse><!-- /Resource -->
+						<!-- Slug-->
+						<Collapse :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['slug']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Slug</h4>
+										<p v-if="!getHideCategorySlug">Enter a slug for the category, by default it will use the name, and will be assigned after the resource, for example: /news/tech</p>
+										<p v-else>Category slugs for this resource are hidden.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-if="!getHideCategorySlug" v-slot:body>
+								<div class="card-body">
+									<FormGroup class="form-url" label="Slug*" :error="errors['slug']">
+										<div class="form-url-cont">
+											<input class="form-input form-input-white" type="text" id="options-url" v-model="slug" :disabled="!slugBtn">
+											<i class="feather feather-edit" @click="slugBtn = !slugBtn"></i>
+										</div>
+										<h4>{{computedSlug }}</h4>
+									</FormGroup>
+								</div>
+							</template>
+						</Collapse><!-- /Slug-->
 						<!-- Parent -->
 						<Collapse :show="newItem" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['parent']}">
 							<template v-slot:header>
@@ -577,12 +577,26 @@ export default {
 		 * Get resource slug from the data to show in the warnings.
 		 */
 		getResourceSlug() {
-			if (this.data['resource'] === "pages") return "/fuck";
+			if (this.data['resource'] === "pages") return "/";
 			const resource = this.getTheme['resources'][this.data.resource]
 			if ('slug' in resource) {
 				return resource.slug + "/";
 			}
-			return "/wank";
+			return "/";
+		},
+		/*
+		 * getHideCategorySlug()
+		 * Obtains the resource from the store and returns tru
+		 * if the 'hide_category_slug' is truthy.
+		 */
+		getHideCategorySlug() {
+			const resources = this.getTheme['resources'],
+				key = this.data.resource;
+			if (key in resources) {
+				console.log(resources[key]);
+				return resources[key]['hide_category_slug'];
+			}
+			return false
 		},
 		/*
 		 * filteredPosts()

@@ -229,6 +229,7 @@ CREATE TABLE `post_options` (
   `page_id` int NOT NULL,
   `seo` json DEFAULT NULL,
   `meta` json DEFAULT NULL,
+  `edit_lock` varchar(150) NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

@@ -48,6 +48,7 @@ func (s *Seeder) runOptions() error {
 		"seo_sitemap_serve":     true,
 		"seo_sitemap_redirects": true,
 		"seo_sitemap_excluded":  []string{},
+		"seo_enforce_slash":     false,
 		"seo_robots_serve":      true,
 		"seo_robots":            "\"User-Agent: *\\nAllow: /\"",
 		"seo_redirects":         nil,

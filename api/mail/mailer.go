@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/html"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	log "github.com/sirupsen/logrus"
 )
 
 type Mailer struct {
@@ -65,24 +66,26 @@ func (m *Mailer) load() error {
 // Create a Transmission using an inline Recipient List
 // and inline email Content.
 // Returns errors.INVALID if the mail failed to send via sparkpost.
-func (m *Mailer) Send(t *Sender) (string, error) {
+func (m *Mailer) Send(t *Sender) {
 	const op = "mail.Send"
 
-	tx := &sp.Transmission{
-		Recipients: t.To,
-		Content: sp.Content{
-			HTML:    t.HTML,
-			From:    m.FromAddress,
-			Subject: t.Subject,
-		},
-	}
+	go func() {
+		tx := &sp.Transmission{
+			Recipients: t.To,
+			Content: sp.Content{
+				HTML:    t.HTML,
+				From:    m.FromAddress,
+				Subject: t.Subject,
+			},
+		}
 
-	id, _, err := m.client.Send(tx)
-	if err != nil {
-		return id, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err}
-	}
-
-	return id, nil
+		id, _, err := m.client.Send(tx)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err},
+			})
+		}
+	}()
 }
 
 // Execute the mail HTML files

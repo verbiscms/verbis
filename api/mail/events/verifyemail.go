@@ -55,10 +55,7 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 		HTML:    html,
 	}
 
-	_, err = e.mailer.Send(&tm)
-	if err != nil {
-		return err
-	}
+	e.mailer.Send(&tm)
 
 	return nil
 }

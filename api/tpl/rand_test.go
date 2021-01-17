@@ -8,19 +8,19 @@ import (
 func (t *TplTestSuite) Test_RandInt() {
 
 	tt := map[string]struct {
-		tpl string
+		tpl  string
 		want []int
 	}{
 		"Valid": {
-			tpl: `{{ randInt 1 100 }}`,
+			tpl:  `{{ randInt 1 100 }}`,
 			want: []int{1, 100},
 		},
 		"Valid 2": {
-			tpl: `{{ randInt 1 5 }}`,
+			tpl:  `{{ randInt 1 5 }}`,
 			want: []int{1, 5},
 		},
 		"Large": {
-			tpl: `{{ randInt 1 99999999 }}`,
+			tpl:  `{{ randInt 1 99999999 }}`,
 			want: []int{1, 99999999},
 		},
 	}
@@ -41,19 +41,19 @@ func (t *TplTestSuite) Test_RandInt() {
 func (t *TplTestSuite) Test_RandFloat() {
 
 	tt := map[string]struct {
-		tpl string
+		tpl  string
 		want []float64
 	}{
 		"Valid": {
-			tpl: `{{ randFloat 1 100 }}`,
+			tpl:  `{{ randFloat 1 100 }}`,
 			want: []float64{1, 100},
 		},
 		"Valid2": {
-			tpl: `{{ randFloat 1.555555 10.44444 }}`,
+			tpl:  `{{ randFloat 1.555555 10.44444 }}`,
 			want: []float64{1.555555, 10.44444},
 		},
 		"Large": {
-			tpl: `{{ randInt 1 99999999.99999 }}`,
+			tpl:  `{{ randInt 1 99999999.99999 }}`,
 			want: []float64{1, 99999999.99999},
 		},
 	}
@@ -75,19 +75,19 @@ func (t *TplTestSuite) Test_RandAlpha() {
 
 	tt := map[string]struct {
 		tpl string
-		len  int
+		len int
 	}{
 		"Valid": {
 			tpl: `{{ randAlpha 5  }}`,
-			len:  5,
+			len: 5,
 		},
 		"Valid 2": {
 			tpl: `{{ randAlpha 10  }}`,
-			len:  10,
+			len: 10,
 		},
 		"Valid 3": {
 			tpl: `{{ randAlpha 100  }}`,
-			len:  100,
+			len: 100,
 		},
 	}
 
@@ -104,19 +104,19 @@ func (t *TplTestSuite) Test_RandAlphaNum() {
 
 	tt := map[string]struct {
 		tpl string
-		len  int
+		len int
 	}{
 		"Valid": {
 			tpl: `{{ randAlphaNum 5  }}`,
-			len:  5,
+			len: 5,
 		},
 		"Valid 2": {
 			tpl: `{{ randAlphaNum 10  }}`,
-			len:  10,
+			len: 10,
 		},
 		"Valid 3": {
 			tpl: `{{ randAlphaNum 100  }}`,
-			len:  100,
+			len: 100,
 		},
 	}
 
