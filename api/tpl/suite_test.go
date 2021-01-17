@@ -9,7 +9,6 @@ import (
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"html"
@@ -42,9 +41,7 @@ func (t *TplTestSuite) BeforeTest(suiteName, testName string) {
 }
 
 func (t *TplTestSuite) AfterTest() {
-	color.Green.Println("fddf")
 	t.TemplateManager = nil
-	t.gin = nil
 }
 
 // GetManager
