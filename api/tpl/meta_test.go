@@ -51,7 +51,7 @@ func (t *TplTestSuite) Test_Header() {
 		},
 		"Not Public for Post": {
 			post: domain.Post{
-				SeoMeta: domain.PostSeoMeta{
+				SeoMeta: domain.PostOptions{
 					Seo: &domain.PostSeo{
 						Public: false,
 					},
@@ -64,7 +64,7 @@ func (t *TplTestSuite) Test_Header() {
 		},
 		"Public": {
 			post: domain.Post{
-				SeoMeta: domain.PostSeoMeta{
+				SeoMeta: domain.PostOptions{
 					Seo: &domain.PostSeo{
 						Public: true,
 					},
@@ -76,7 +76,7 @@ func (t *TplTestSuite) Test_Header() {
 		},
 		"Canonical": {
 			post: domain.Post{
-				SeoMeta: domain.PostSeoMeta{
+				SeoMeta: domain.PostOptions{
 					Seo: &domain.PostSeo{
 						Canonical: &cannonical,
 						Public:    true,
@@ -89,7 +89,7 @@ func (t *TplTestSuite) Test_Header() {
 		},
 		"Meta with Post Description": {
 			post: domain.Post{
-				SeoMeta: domain.PostSeoMeta{
+				SeoMeta: domain.PostOptions{
 					Meta: &domain.PostMeta{
 						Description: "description",
 					},
@@ -105,7 +105,7 @@ func (t *TplTestSuite) Test_Header() {
 		},
 		"Meta with Global Description": {
 			post: domain.Post{
-				SeoMeta: domain.PostSeoMeta{
+				SeoMeta: domain.PostOptions{
 					Meta: &domain.PostMeta{
 						Description: "",
 					},
@@ -121,7 +121,7 @@ func (t *TplTestSuite) Test_Header() {
 		},
 		"Meta with Facebook Post Description": {
 			post: domain.Post{
-				SeoMeta: domain.PostSeoMeta{
+				SeoMeta: domain.PostOptions{
 					Meta: &domain.PostMeta{
 						Title:       "",
 						Description: "",
@@ -145,7 +145,7 @@ func (t *TplTestSuite) Test_Header() {
 		},
 		"Meta with Twitter Post Description": {
 			post: domain.Post{
-				SeoMeta: domain.PostSeoMeta{
+				SeoMeta: domain.PostOptions{
 					Meta: &domain.PostMeta{
 						Title:       "",
 						Description: "",
@@ -376,7 +376,7 @@ func (t *TplTestSuite) Test_MetaTitle() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.post.Post = domain.Post{
-				SeoMeta: domain.PostSeoMeta{
+				SeoMeta: domain.PostOptions{
 					Meta: &test.meta,
 				},
 			}

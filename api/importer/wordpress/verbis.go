@@ -278,11 +278,11 @@ func (c *Convert) getCategory(categories []Category) (domain.Category, error) {
 
 // getSeoMeta
 //
-// Constructs domain.PostSeoMeta and attaches meta titles and
+// Constructs domain.PostOptions and attaches meta titles and
 // meta descriptions if the 'Yoast' plugin exists in
 // 'Wordpress'.
-func (c *Convert) getSeoMeta(title string, meta []Meta) domain.PostSeoMeta {
-	m := domain.PostSeoMeta{
+func (c *Convert) getSeoMeta(title string, meta []Meta) domain.PostOptions {
+	m := domain.PostOptions{
 		Meta: &domain.PostMeta{
 			Title: title,
 			Twitter: domain.PostTwitter{

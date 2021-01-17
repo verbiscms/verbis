@@ -63,4 +63,3 @@ func (t *ResolverTestSuite) TestValue_NumberResolve() {
 		})
 	}
 }
-

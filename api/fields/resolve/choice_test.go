@@ -56,7 +56,7 @@ func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
 		},
 		"Button Group Map": {
 			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "button_group"},
-			want:  domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "button_group", Value: choice{
+			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "button_group", Value: choice{
 				Key:   "key1",
 				Value: "value1",
 			}},
@@ -71,7 +71,7 @@ func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
 		},
 		"Radio Map": {
 			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "radio"},
-			want:  domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "radio", Value: choice{
+			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "radio", Value: choice{
 				Key:   "key1",
 				Value: "value1",
 			}},
@@ -86,7 +86,7 @@ func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
 		},
 		"Select Map": {
 			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "select"},
-			want:  domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "select", Value: choice{
+			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "select", Value: choice{
 				Key:   "key1",
 				Value: "value1",
 			}},

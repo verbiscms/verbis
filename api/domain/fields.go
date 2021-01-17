@@ -6,7 +6,7 @@ import "github.com/google/uuid"
 type FieldGroup struct {
 	UUID      uuid.UUID         `json:"uuid"`
 	Title     string            `json:"title"`
-	Fields    *[]Field          `json:"fields,omitempty"`
+	Fields    []Field           `json:"fields,omitempty"`
 	Locations [][]FieldLocation `json:"location,omitempty"`
 }
 

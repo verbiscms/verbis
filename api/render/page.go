@@ -32,6 +32,16 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not format post data", Operation: op, Err: err}
 	}
 
+	// Check if the resource is public
+	resource := postData.Resource
+	if resource != nil {
+		for _, v := range r.theme.Resources {
+			if v.Hidden && v.Name == *resource {
+				return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("The post resource is not public: %v", resource), Operation: op, Err: err}
+			}
+		}
+	}
+
 	// Check if the file has been cached
 	var foundCache bool
 	if r.options.CacheServerAssets {
@@ -71,7 +81,8 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	})
 
 	var b bytes.Buffer
-	if err := gvFrontend.RenderWriter(&b, pt, tm.GetData()); err != nil {
+	err = gvFrontend.RenderWriter(&b, pt, tm.GetData())
+	if err != nil {
 		panic(err)
 	}
 

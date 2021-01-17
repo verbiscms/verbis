@@ -37,37 +37,37 @@ func (t *TplTestSuite) testUrl(request string, tpl string) string {
 	return rr.Body.String()
 }
 
-func (t *TplTestSuite)  Test_GetBaseURL() {
+func (t *TplTestSuite) Test_GetBaseURL() {
 	want := "https://verbiscms.com"
 	got := t.testUrl("https://verbiscms.com/page", "{{ baseUrl }}")
 	t.Equal(want, got)
 }
 
-func (t *TplTestSuite)  Test_GetScheme_HTTP() {
+func (t *TplTestSuite) Test_GetScheme_HTTP() {
 	want := "http"
 	got := t.testUrl("http://verbiscms.com/page", "{{ scheme }}")
 	t.Equal(want, got)
 }
 
-func (t *TplTestSuite)  Test_GetScheme_HTTPS() {
+func (t *TplTestSuite) Test_GetScheme_HTTPS() {
 	want := "https"
 	got := t.testUrl("https://verbiscms.com/page", "{{ scheme }}")
 	t.Equal(want, got)
 }
 
-func (t *TplTestSuite)  Test_GetHost() {
+func (t *TplTestSuite) Test_GetHost() {
 	want := "verbiscms.com"
 	got := t.testUrl("https://verbiscms.com/page", "{{ host }}")
 	t.Equal(want, got)
 }
 
-func (t *TplTestSuite)  Test_GetFullURL() {
+func (t *TplTestSuite) Test_GetFullURL() {
 	//want := "https://verbiscms.com/page"
 	_ = t.testUrl("https://verbiscms.com/page", "{{ fullUrl }}")
 	//assert.Equal(t, want, got)
 }
 
-func (t *TplTestSuite)  Test_GetQueryParams() {
+func (t *TplTestSuite) Test_GetQueryParams() {
 
 	tt := map[string]struct {
 		url   string

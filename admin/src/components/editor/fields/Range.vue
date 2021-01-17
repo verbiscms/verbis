@@ -51,7 +51,7 @@ export default {
 				return this.replacePrependAppend();
 			},
 			set(value) {
-				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value)));
+				this.$emit("update:fields", this.getFieldObject(this.setPrependAppend(value.toString())));
 			}
 		}
 	}

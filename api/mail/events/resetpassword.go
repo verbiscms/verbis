@@ -29,8 +29,6 @@ func NewResetPassword() (*ResetPassword, error) {
 func (e *ResetPassword) Send(u *domain.User, url string, token string, title string) error {
 	const op = "events.ResetPassword.Send"
 
-	fmt.Println(url)
-
 	data := mail.Data{
 		"AppUrl":    url,
 		"AppTitle":  title,
@@ -51,11 +49,7 @@ func (e *ResetPassword) Send(u *domain.User, url string, token string, title str
 		HTML:    html,
 	}
 
-	_, err = e.mailer.Send(&tm)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
+	e.mailer.Send(&tm)
 
 	return nil
 }

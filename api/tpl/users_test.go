@@ -8,7 +8,6 @@ import (
 	vhttp "github.com/ainsleyclark/verbis/api/http"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	//"time"
-
 )
 
 func (t *TplTestSuite) Test_GetUser() {

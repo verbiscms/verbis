@@ -73,7 +73,6 @@ func (t *TplTestSuite) TestTemplateManager_Body() {
 				t.gin.Request.Header.Set("Cookie", "verbis-session=token")
 			}
 
-
 			t.Equal(test.want, t.body())
 
 			t.gin.Request.Header.Set("Cookie", "")

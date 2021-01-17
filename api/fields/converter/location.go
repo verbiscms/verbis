@@ -182,6 +182,10 @@ func (l *Location) fieldGroupWalker() ([]domain.FieldGroup, error) {
 				return &errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal the field struct", Operation: op, Err: err}
 			}
 
+			if fields.Fields == nil {
+				return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No fields exist with the path: %s", path), Operation: op, Err: fmt.Errorf("layout does not contain any fields")}
+			}
+
 			fg = append(fg, fields)
 		}
 

@@ -42,10 +42,7 @@ func (e *FormSend) Send(form *domain.Form) error {
 		HTML:    html,
 	}
 
-	_, err = e.mailer.Send(&tm)
-	if err != nil {
-		return err
-	}
+	e.mailer.Send(&tm)
 
 	return nil
 }

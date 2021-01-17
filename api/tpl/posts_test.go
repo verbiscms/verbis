@@ -81,7 +81,7 @@ func (t *TplTestSuite) Test_GetPost() {
 	}
 }
 
-func (t *TplTestSuite)  Test_GetPosts() {
+func (t *TplTestSuite) Test_GetPosts() {
 
 	post := domain.Post{Id: 1, Title: "Title"}
 	posts := []domain.Post{

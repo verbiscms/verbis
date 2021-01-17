@@ -53,7 +53,7 @@ func (t *ResolverTestSuite) TestValue_TagsResolve() {
 	}{
 		"Tags": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "tags"},
-			want:  domain.PostField{OriginalValue: "1,2,3", Type: "tags", Value: []interface{}{"1","2","3"}},
+			want:  domain.PostField{OriginalValue: "1,2,3", Type: "tags", Value: []interface{}{"1", "2", "3"}},
 		},
 	}
 
