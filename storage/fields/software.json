@@ -1,0 +1,53 @@
+{
+	"uuid": "05e1aa54-5983-11eb-ae93-0242ac130002",
+	"title": "Software",
+	"fields": [
+		{
+			"uuid": "05e1ad60-5983-11eb-ae93-0242ac130002",
+			"label": "Software",
+			"name": "software",
+			"type": "repeater",
+			"instructions": "Add a piece of software for the tech page.",
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": ""
+			},
+			"sub_fields": [
+				{
+					"uuid": "d4df2c2e-4e8d-11eb-ae93-0242ac130002",
+					"label": "Background Colour",
+					"name": "bg_colour",
+					"type": "select",
+					"instructions": "Select a background colour for the team member.",
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 50
+					},
+					"options": {
+						"choices": {
+							"bg-primary": "Green",
+							"shade-green-2": "Light Green",
+							"shade-purple-2": "Purple",
+							"shade-purple-3": "Light Purple",
+							"bg-sage": "Sage",
+							"shade-grey-1": "Grey",
+							"shade-black-2": "Black"
+						},
+						"default_value": "green",
+						"required": false,
+						"return_format": "key"
+					}
+				}
+			]
+		}
+	],
+	"location": [
+	]
+}
