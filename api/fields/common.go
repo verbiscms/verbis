@@ -21,7 +21,6 @@ func (s *Service) handleArgs(args []interface{}) []domain.PostField {
 		fields := s.getFieldsByPost(args[0])
 		return fields
 	}
-
 	return s.fields
 }
 

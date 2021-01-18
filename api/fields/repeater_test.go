@@ -10,6 +10,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 		fields []domain.PostField
 		input  interface{}
 		want   interface{}
+		err bool
 	}{
 		"Cast to Repeater": {
 			fields: nil,
@@ -21,16 +22,19 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 				Row{{Id: 1, Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
 				Row{{Id: 2, Type: "text", Name: "text", OriginalValue: "text2", Value: "text2", Key: "repeater|1|text"}},
 			},
+			err: false,
 		},
 		"No Stringer": {
 			fields: nil,
 			input:  noStringer{},
 			want:   "unable to cast fields.noStringer{} of type fields.noStringer to string",
+			err: true,
 		},
 		"No Field": {
 			fields: nil,
 			input:  "test",
 			want:   "no field exists with the name: test",
+			err: true,
 		},
 		"Wrong Field Type": {
 			fields: []domain.PostField{
@@ -38,6 +42,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 			},
 			input: "test",
 			want:  "field with the name: test, is not a repeater",
+			err: true,
 		},
 	}
 
@@ -45,9 +50,10 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 		t.Run(name, func() {
 			s := t.GetService(test.fields)
 
-			got, err := s.GetRepeater(test.input)
-			if err != nil {
-				t.Contains(err.Error(), test.want)
+			got := s.GetRepeater(test.input)
+			if test.err {
+				t.Contains(t.logWriter.String(), test.want)
+				t.Reset()
 				return
 			}
 
@@ -182,11 +188,11 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 		t.Run(name, func() {
 			s := t.GetService(test.fields)
 
-			got, err := s.GetRepeater(test.key)
-			if err != nil {
-				t.Contains(err.Error(), test.want)
-				return
-			}
+			got := s.GetRepeater(test.key)
+			//if err != nil {
+			//	t.Contains(err.Error(), test.want)
+			//	return
+			//}
 
 			t.Equal(test.want, got)
 		})
