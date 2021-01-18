@@ -71,7 +71,7 @@
 						<template slot="item">Content</template>
 					</Tabs>
 					<!-- Spinner -->
-					<div v-if="doingAxios || loadingLayouts" class="media-spinner spinner-container">
+					<div v-if="doingAxios && loadingLayouts" class="media-spinner spinner-container">
 						<div class="spinner spinner-large spinner-grey"></div>
 					</div>
 					<!-- Content & Fields -->
@@ -264,8 +264,12 @@ export default {
 	},
 	watch: {
 		getCategory: function () {
+			// TODO: This needs cleaning up, without the timeout its not working!
 			if (!this.doingAxios) {
-				this.computedSlug = this.getBaseSlug + this.slugify(this.editSlug);
+				setTimeout(() => {
+					const end = this.data.slug.substring(this.data.slug.lastIndexOf('/') + 1);
+					this.computedSlug = this.getBaseSlug + end;
+				}, 50);
 			}
 		}
 	},
@@ -379,7 +383,6 @@ export default {
 					}
 
 					// Set field values
-					//this.fields = this.expandFields(res.data.data.fields);
 					// eslint-disable-next-line no-undef
 					this.fields = new FieldParser(res.data.data.fields, this.fieldLayout).expandFields()
 					this.loadingFields = false;
@@ -633,7 +636,6 @@ export default {
 		 * return the nice slug.
 		 */
 		resolveCategorySlug() {
-
 			if (this.resource['hide_category_slug']) {
 				return "";
 			}
@@ -642,11 +644,14 @@ export default {
 
 			if (this.data['category']) {
 				let category = this.categories.find(c => c.id === this.data['category']);
-				categorySlugs.push(category['slug']);
 
-				while (category['parent_id'] !== null) {
-					category = this.categories.find(c => c.id === category['parent_id']);
+				if (category) {
 					categorySlugs.push(category['slug']);
+
+					while (category['parent_id'] !== null) {
+						category = this.categories.find(c => c.id === category['parent_id']);
+						categorySlugs.push(category['slug']);
+					}
 				}
 			}
 			categorySlugs = categorySlugs.reverse();
@@ -668,13 +673,11 @@ export default {
 				this.closeSlug();
 				return;
 			}
-			else {
-				const newSlug = this.getBaseSlug + this.slugify(this.editSlug);
-				this.computedSlug = newSlug;
-				this.slugBtn = false;
-				this.isCustomSlug = true;
-				this.editSlug = "";
-			}
+			const newSlug = this.getBaseSlug + this.slugify(this.editSlug);
+			this.computedSlug = newSlug;
+			this.slugBtn = false;
+			this.isCustomSlug = true;
+			this.editSlug = "";
 		},
 		/*
 		 * closeSlug()
@@ -686,41 +689,6 @@ export default {
 			this.editSlug = "";
 			this.slugBtn = false;
 		},
-		old() {
-
-			// fields.forEach(field => {
-			// 	// Not a repeater
-			// 	if (!field.parent && field.type !== "repeater") {
-			// 		obj[field.uuid] = field;
-			// 	}
-			//
-			// 	// Is repeater children
-			// 	if (field.parent) {
-			// 		if (!obj[field.parent]) {
-			// 			obj[field.parent] = [];
-			// 		}
-			// 		if (!obj[field.parent][field.index]) {
-			// 			obj[field.parent][field.index] = {};
-			// 		}
-			// 		console.log(field.name, field.index)
-			//
-			// 		if (field.type !== "repeater") {
-			// 			obj[field.parent][field.index][field.uuid] = field || {};
-			// 		} else {
-			// 			console.log(field);
-			// 		}
-			// 	}
-			//
-			// 	// Is parent repeater
-			// 	if (field.type === "repeater" && !field.index) {
-			// 		if (!obj[field.uuid]) {
-			// 			obj[field.uuid] = [];
-			// 		}
-			// 		obj[field.uuid].push(field)
-			// 	}
-			// });
-			// return obj;
-		}
 	},
 	computed: {
 		isPublic() {
@@ -734,7 +702,10 @@ export default {
 		 * Get the base slug (resource).
 		 */
 		getBaseSlug() {
-			return this.resource.name === "pages" ? "/" + this.resolveCategorySlug() : "/" + this.resource.name + "/" + this.resolveCategorySlug();
+			if (this.resource.name === "pages") {
+				return "/" + this.resolveCategorySlug();
+			}
+			return "/" + this.resource.name + "/" + this.resolveCategorySlug();
 		},
 		/*
 		 * getCategory()
@@ -751,8 +722,12 @@ export default {
 		 */
 		computedSlug: {
 			get() {
-				if (this.isCustomSlug) return this.data.slug;
-				if (this.editSlug !== "") return this.getBaseSlug + this.slugify(this.data['title']);
+				if (this.isCustomSlug) {
+					return this.data.slug;
+				}
+				if (this.editSlug !== "") {
+					return this.getBaseSlug + this.slugify(this.data['title']);
+				}
 				return this.getBaseSlug + this.slugify(this.editSlug ? this.editSlug : this.data['title']);
 			},
 			set(value) {

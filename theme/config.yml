@@ -24,12 +24,14 @@ theme:
 # |
 # |
 resources:
-    posts:
-        name: posts
+    news:
+        name: news
         friendly_name: Posts
         singular_name: Post
         slug: /posts
         icon: feather feather-clipboard
+        hidden: false
+        hide_category_slug: true
     staff:
         name: staff
         friendly_name: Staff Members
@@ -43,6 +45,7 @@ resources:
         slug: /case-studies
         icon: feather feather-book
         hidden: true
+        hide_category_slug: true
     industries:
         name: industries
         friendly_name: Industries
