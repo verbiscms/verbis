@@ -10,15 +10,16 @@ import (
 	"github.com/kyokomi/emoji"
 	"mime/multipart"
 	"runtime"
+	"strings"
 	"sync"
 )
 
 // TODO: This needs to be dynamic.
 var (
-	resource   = "posts"
+	resource   = "news"
 	layout     = "main"
-	template   = "test"
-	fieldUuid  = "39ca0ea0-c911-4eaa-b6e0-67dfd99e1225"
+	template   = "news-single"
+	fieldUuid  = "2dedc760-5016-11eb-ae93-0242ac130002"
 	userRoleId = 2
 	trackChan  = make(chan int, runtime.NumCPU()*4)
 	wg         = sync.WaitGroup{}
@@ -30,6 +31,7 @@ type Convert struct {
 	store   *models.Store
 	authors []domain.User
 	owner   domain.User
+	sendEmail bool
 }
 
 type Result struct {
@@ -40,7 +42,7 @@ type Result struct {
 }
 
 // New - Construct
-func New(xmlPath string, s *models.Store) (*Convert, error) {
+func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
 	wp := NewWordpressXml()
 	err := wp.ReadFile(xmlPath)
 	if err != nil {
@@ -57,6 +59,7 @@ func New(xmlPath string, s *models.Store) (*Convert, error) {
 		failed: Failures{},
 		store:  s,
 		owner:  owner,
+		sendEmail: sendEmail,
 	}, nil
 }
 
@@ -66,13 +69,13 @@ func New(xmlPath string, s *models.Store) (*Convert, error) {
 // and Posts.
 func (c *Convert) Import() {
 
-	//posts, categories := c.populatePosts()
+	posts, categories := c.populatePosts()
 
 	r := Result{
 		Failed: c.failed,
-		//Posts: 	 posts,
+		Posts: 	 posts,
 		Authors: c.populateAuthors(),
-		//Categories: categories,
+		Categories: categories,
 	}
 
 	// TODO: To be returned here as a WebHook or placed in a Debug Table
@@ -167,7 +170,7 @@ func (c *Convert) addItem(item Item) {
 
 	p := domain.PostCreate{
 		Post: domain.Post{
-			Slug:         fmt.Sprintf("/%v/%v", resource, link),
+			Slug:         fmt.Sprintf("/%v/%v", resource, strings.ReplaceAll(link, "/", "")),
 			Title:        item.Title,
 			Status:       getStatus(item.Status),
 			Resource:     &resource,
@@ -347,10 +350,12 @@ func (c *Convert) populateAuthors() []domain.UserPart {
 				continue
 			}
 
-			// User can't login!
-			err = importer.SendNewPassword(user.HideCredentials(), password, *c.store.Site.GetGlobalConfig())
-			if err != nil {
-				continue
+			if c.sendEmail {
+				// User can't login!
+				err = importer.SendNewPassword(user.HideCredentials(), password, *c.store.Site.GetGlobalConfig())
+				if err != nil {
+					continue
+				}
 			}
 
 			users = append(users, user.HideCredentials())
