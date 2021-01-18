@@ -4,6 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
+			<pre>{{ users }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
@@ -131,7 +132,6 @@
 							</select>
 						</div>
 					</FormGroup><!-- /Status -->
-					<!-- Author -->
 				</div>
 				<div class="editor-sidebar-cont">
 					<h6 class="margin">Content</h6>

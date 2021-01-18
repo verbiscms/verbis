@@ -69,12 +69,13 @@ func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
 // and Posts.
 func (c *Convert) Import() {
 
+	authors := c.populateAuthors()
 	posts, categories := c.populatePosts()
 
 	r := Result{
 		Failed: c.failed,
 		Posts: 	 posts,
-		Authors: c.populateAuthors(),
+		Authors: authors,
 		Categories: categories,
 	}
 
@@ -322,7 +323,7 @@ func (c *Convert) findAuthor(item Item) int {
 	}
 
 	for _, v := range c.authors {
-		if v.Id == author.AuthorID {
+		if v.Email == author.AuthorEmail {
 			return v.Id
 		}
 	}
