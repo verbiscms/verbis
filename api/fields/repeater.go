@@ -23,31 +23,37 @@ type Row []domain.PostField
 //
 // Returns errors.NOTFOUND if the field was not found by the given key.
 // Returns errors.INVALID if the field type is not a repeater or the name could not be cast.
-func (s *Service) GetRepeater(input interface{}, args ...interface{}) (Repeater, error) {
+func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 	const op = "FieldsService.GetRepeater"
 
 	repeater, ok := input.(Repeater)
 	if ok {
-		return repeater, nil
+		return repeater
 	}
 
 	name, err := cast.ToStringE(input)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err}
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err},
+		}).Error()
+		return nil
 	}
 
 	fields := s.handleArgs(args)
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		return nil, err
+		log.WithFields(log.Fields{"error": err}).Error()
+		return nil
 	}
 
 	if field.Type != "repeater" {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the name: %s, is not a repeater", name)}
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the name: %s, is not a repeater", name)},
+		}).Error()
 	}
 
-	return s.resolveRepeater("", field, fields), nil
+	return s.resolveRepeater("", field, fields)
 }
 
 // getFieldChildren

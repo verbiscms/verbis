@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 )
 
@@ -30,31 +31,38 @@ type SubFields []domain.PostField
 //
 // Returns errors.INVALID if the field type is not flexible content.
 // Returns errors.INTERNAL if the layouts could not be cast to a string slice.
-func (s *Service) GetFlexible(input interface{}, args ...interface{}) (Flexible, error) {
+func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 	const op = "FieldsService.GetFlexible"
 
 	flexible, ok := input.(Flexible)
 	if ok {
-		return flexible, nil
+		return flexible
 	}
 
 	name, err := cast.ToStringE(input)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err}
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err},
+		}).Error()
+		return nil
 	}
 
 	fields := s.handleArgs(args)
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		return nil, err
+		log.WithFields(log.Fields{"error": err}).Error()
+		return nil
 	}
 
 	if field.Type != "flexible" {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)}
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)},
+		}).Error()
+		return nil
 	}
 
-	return s.resolveFlexible("", field, fields), nil
+	return s.resolveFlexible("", field, fields)
 }
 
 // getLayouts

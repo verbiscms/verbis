@@ -37,8 +37,8 @@ func (s *Service) mapper(fields []domain.PostField, walkerFunc WalkerFunc) {
 	for _, field := range fields {
 
 		if field.Type == "repeater" {
-			repeater, err := s.GetRepeater(field.Name)
-			if err == nil {
+			repeater := s.GetRepeater(field.Name)
+			if repeater != nil {
 				field.Value = repeater
 				walkerFunc(field)
 			}
@@ -46,8 +46,8 @@ func (s *Service) mapper(fields []domain.PostField, walkerFunc WalkerFunc) {
 		}
 
 		if field.Type == "flexible" {
-			flexible, err := s.GetFlexible(field.Name)
-			if err == nil {
+			flexible := s.GetFlexible(field.Name)
+			if flexible != nil {
 				field.Value = flexible
 				walkerFunc(field)
 			}
