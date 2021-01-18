@@ -23,8 +23,6 @@
 						<!-- =====================
 							Basic
 							===================== -->
-						<pre>{{ layout }}</pre>
-						<pre>{{ layout.type }}</pre>
 						<!-- Text -->
 						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldText>
 						<!-- Textarea -->

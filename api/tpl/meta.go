@@ -187,7 +187,7 @@ func (t *TemplateManager) footer() template.HTML {
 	}
 
 	// Get Code Injection for the Post
-	if *t.post.CodeInjectionFoot != "" {
+	if t.post.CodeInjectionFoot != nil {
 		b.WriteString(*t.post.CodeInjectionFoot)
 	}
 
