@@ -23,6 +23,8 @@
 						<!-- =====================
 							Basic
 							===================== -->
+						<pre>{{ layout }}</pre>
+						<pre>{{ layout.type }}</pre>
 						<!-- Text -->
 						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldText>
 						<!-- Textarea -->
@@ -88,13 +90,30 @@
 	Scripts
 	===================== -->
 <script>
+
+// Basic
 import FieldText from "@/components/editor/fields/Text";
 import FieldTextarea from "@/components/editor/fields/Textarea";
 import FieldNumber from "@/components/editor/fields/Number";
 import FieldRange from "@/components/editor/fields/Range";
 import FieldEmail from "@/components/editor/fields/Email";
-import FieldImage from "@/components/editor/fields/Image";
+import FieldUrl from "@/components/editor/fields/Url";
+import FieldPassword from "@/components/editor/fields/Password";
+
+// Content
 import FieldRichText from "@/components/editor/fields/RichText";
+import FieldImage from "@/components/editor/fields/Image";
+
+// Choice
+import FieldSelect from "@/components/editor/fields/Select";
+import FieldTags from "@/components/editor/fields/Tags";
+import FieldCheckbox from "@/components/editor/fields/Checkbox";
+import FieldRadio from "@/components/editor/fields/Radio";
+import FieldButtonGroup from "@/components/editor/fields/ButtonGroup";
+
+// Relational
+import FieldPost from "@/components/editor/fields/Post";
+import FieldUser from "@/components/editor/fields/User";
 
 import draggable from 'vuedraggable'
 
@@ -118,14 +137,28 @@ export default {
 		},
 	},
 	components: {
+		// Basic
 		FieldText,
 		FieldTextarea,
 		FieldNumber,
 		FieldRange,
 		FieldEmail,
+		FieldUrl,
+		FieldPassword,
+		// Content
 		FieldRichText,
-		FieldRepeater: () => import('@/components/editor/fields/Repeater'),
 		FieldImage,
+		// Choice
+		FieldSelect,
+		FieldTags,
+		FieldCheckbox,
+		FieldRadio,
+		FieldButtonGroup,
+		// Relational
+		FieldPost,
+		FieldUser,
+		// Layout
+		FieldRepeater: () => import('@/components/editor/fields/Repeater'),
 		FieldFlexible: () => import('@/components/editor/fields/FlexibleContent'),
 		draggable,
 	},

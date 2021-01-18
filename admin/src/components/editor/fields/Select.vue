@@ -3,6 +3,7 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
+		{{ field }}hnhjkgdf
 		<div class="form-select-cont form-input">
 			<select class="form-select" v-model="field" @blur="validate">
 				<option value="" disabled selected>{{ getPlaceholder }}</option>

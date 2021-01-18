@@ -125,7 +125,6 @@ export default {
 		 */
 		insertMedia(e) {
 			this.field = e.id;
-			console.log("FIRED");
 			this.$nextTick(() => {
 				this.showImageModal = false;
 				this.getMediaById();
@@ -139,13 +138,11 @@ export default {
 		 * Remove's a media item when clicked.
 		 */
 		getMediaById() {
-			console.log(this.field);
 			this.axios.get('/media/' + this.field)
 				.then(res => {
 					this.media = res.data.data;
 				})
-				.catch(e => {
-					console.log(e);
+				.catch(() => {
 					this.field = "";
 				});
 		},
