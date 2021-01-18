@@ -51,6 +51,7 @@ export default {
 			if (this.getValue !== "" && !pattern.test(this.getValue)) {
 				this.errors.push(`Enter a valid url for the ${this.layout.label} field.`)
 			}
+			this.validateRequired();
 		}
 	},
 	computed: {

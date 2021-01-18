@@ -14,7 +14,7 @@
 							<i class="repeater-handle fal fa-arrows"></i>
 						</div>
 					</div>
-					<div class="card-body" v-for="(layout, layoutIndex) in getSubFields" :key="layoutIndex">
+					<div class="card-body" v-for="(layout, layoutIndex) in getSubFields" :key="layoutIndex" :style="{ width: layout.wrapper['width'] + '%' }">
 						<!-- Field Title -->
 						<div class="field-title">
 							<h4>{{ layout.label }}</h4>

@@ -39,10 +39,15 @@ export default {
 		defaultMaxLength: 36,
 	}),
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
 		validate() {
 			this.errors = [];
 			this.typed = true;
 			this.validateMaxLength(this.defaultMaxLength);
+			this.validateRequired();
 		},
 	},
 	computed: {

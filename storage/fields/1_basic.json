@@ -8,17 +8,17 @@
 			"name": "text",
 			"type": "text",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 50
 			},
 			"options": {
 				"maxlength": 10,
-				"default_value": "default",
+				"default_value": "",
 				"placeholder": "Placeholder",
 				"prepend": "",
-				"append": "Append"
+				"append": ""
 			}
 		},
 		{
@@ -27,14 +27,14 @@
 			"name": "textarea",
 			"type": "textarea",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
 			},
 			"options": {
 				"maxlength": 20,
-				"default_value": "default",
+				"default_value": "",
 				"placeholder": "Placeholder",
 				"resize": true,
 				"rows": "",
@@ -47,15 +47,15 @@
 			"name": "number",
 			"type": "number",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
 			},
 			"options": {
-				"default_value": "default",
+				"default_value": "",
 				"placeholder": "Enter a number",
-				"prepend": 20,
+				"prepend": "",
 				"append": "",
 				"min": "",
 				"max": "",
@@ -68,7 +68,7 @@
 			"name": "range",
 			"type": "range",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -78,8 +78,8 @@
 				"min": 20,
 				"max": 300,
 				"step": 5,
-				"prepend": 3,
-				"append": 10
+				"prepend": "10",
+				"append": ""
 			}
 		},
 		{
@@ -88,16 +88,16 @@
 			"name": "email",
 			"type": "email",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
 			},
 			"options": {
-				"default_value": "default",
+				"default_value": "",
 				"placeholder": "Placeholder",
 				"prepend": "",
-				"append": "Append"
+				"append": ""
 			}
 		},
 		{
@@ -106,13 +106,13 @@
 			"name": "url",
 			"type": "url",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
 			},
 			"options": {
-				"default_value": "https://google.com",
+				"default_value": "",
 				"placeholder": "Placeholder"
 			}
 		},
@@ -122,7 +122,7 @@
 			"name": "password",
 			"type": "password",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100

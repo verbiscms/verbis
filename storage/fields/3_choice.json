@@ -8,7 +8,7 @@
 			"name": "tags",
 			"type": "tags",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -23,8 +23,7 @@
 				"default_value": ["Red", "Green"],
 				"min": 1,
 				"max": 10,
-				"button_label": "",
-				"required": false
+				"button_label": ""
 			}
 		},
 		{
@@ -33,7 +32,7 @@
 			"name": "radio",
 			"type": "radio",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -44,8 +43,7 @@
 					"orange": "Orangey"
 				},
 				"return_format": "map",
-				"default_value": "Red",
-				"required": true
+				"default_value": "Red"
 			}
 		},
 		{
@@ -54,7 +52,7 @@
 			"name": "button_group",
 			"type": "button_group",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -65,8 +63,7 @@
 					"orange": "Orangey"
 				},
 				"return_format": "key",
-				"default_value": "Red",
-				"required": true
+				"default_value": "Red"
 			}
 		},
 		{
@@ -75,7 +72,7 @@
 			"name": "select",
 			"type": "select",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -87,7 +84,6 @@
 				},
 				"return_format": "key",
 				"default_value": "Red",
-				"required": false,
 				"placeholder": "Placeholder"
 			}
 		},

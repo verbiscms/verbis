@@ -14,7 +14,7 @@
 						<i class="flexible-handle fal fa-arrows"></i>
 					</div>
 				</div><!-- /Card Header -->
-				<div class="card-body card-body-border-bottom" v-for="(layout, layoutKey) in getSubFields(groupIndex)" :key="layoutKey">
+				<div class="card-body card-body-border-bottom" v-for="(layout, layoutKey) in getSubFields(groupIndex)" :key="layoutKey" :style="{ width: layout.wrapper['width'] + '%' }">
 					<!-- Field Title -->
 					<div class="field-title">
 						<h4>{{ layout.label }}</h4>

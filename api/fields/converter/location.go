@@ -61,6 +61,7 @@ func (l *Location) GetLayout(p domain.Post, a domain.User, c *domain.Category, c
 
 	fg, err := l.fieldGroupWalker()
 	if err != nil {
+		fmt.Println(err)
 		log.WithFields(log.Fields{"error": err}).Error()
 	}
 	l.Groups = fg
@@ -92,7 +93,6 @@ func (l *Location) groupResolver(p domain.Post, a domain.User, c *domain.Categor
 		// Check for empty locations json
 		if len(group.Locations) == 0 && !hasBeenAdded(group.UUID.String(), fg) {
 			fg = append(fg, group)
-
 		} else {
 
 			// Check and Loop over locations
@@ -182,7 +182,7 @@ func (l *Location) fieldGroupWalker() ([]domain.FieldGroup, error) {
 			err = json.Unmarshal(file, &fields)
 			if err != nil {
 				log.WithFields(log.Fields{
-					"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal the field struct", Operation: op, Err: err},
+					"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal the field struct", Operation: op, Err: fmt.Errorf("cannot parse file %s: %s", info.Name(), err.Error())},
 				}).Error()
 				return nil
 			}

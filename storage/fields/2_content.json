@@ -8,7 +8,7 @@
 			"name": "richtext",
 			"type": "richtext",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -26,13 +26,13 @@
 			"name": "image",
 			"type": "image",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
 			},
 			"options": {
-				"default_value": "default",
+				"default_value": "",
 				"tabs": "all",
 				"toolbar": "full",
 				"media_upload": 1
