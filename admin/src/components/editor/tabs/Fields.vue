@@ -3,6 +3,7 @@
 	===================== -->
 <template>
 	<section>
+		<pre>{{ fields }}</pre>
 		<!-- Field Group -->
 		<div v-for="(group, groupIndex) in layout" :key="group.uuid" class="field-group">
 			<Collapse :show="true" :use-icon="true">

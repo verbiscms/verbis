@@ -3,7 +3,6 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
-		hello {{ fieldKey }}
 		<draggable @start="drag=true" :list="repeaterFields['children']" :group="repeaterFields['children']" :sort="true" handle=".repeater-handle">
 			<div class="repeater" v-for="(repeater, repeaterIndex) in repeaterFields['children']" :key="repeaterIndex">
 					<div class="card-header">
@@ -27,44 +26,44 @@
 						<!-- Text -->
 						<FieldText v-if="layout.type === 'text'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldText>
 						<!-- Textarea -->
-						<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldTextarea>
+						<FieldTextarea v-else-if="layout.type === 'textarea'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldTextarea>
 						<!-- Number -->
-						<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldNumber>
+						<FieldNumber v-if="layout.type === 'number'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldNumber>
 						<!-- Range -->
-						<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldRange>
+						<FieldRange v-if="layout.type === 'range'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldRange>
 						<!-- Email -->
-						<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldEmail>
+						<FieldEmail v-if="layout.type === 'email'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldEmail>
 						<!-- Url -->
-						<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldUrl>
+						<FieldUrl v-if="layout.type === 'url'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldUrl>
 						<!-- Password -->
-						<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldPassword>
+						<FieldPassword v-if="layout.type === 'password'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldPassword>
 						<!-- =====================
 							Content
 							===================== -->
 						<!-- Richtext -->
-						<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldRichText>
+						<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldRichText>
 						<!-- Image -->
-						<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldImage>
+						<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldImage>
 						<!-- =====================
 							Choice
 							===================== -->
 						<!-- Select -->
-						<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldSelect>
+						<FieldSelect v-else-if="layout.type === 'select'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldSelect>
 						<!-- Multi Select -->
-						<FieldTags v-else-if="layout.type === 'multi_select'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldTags>
+						<FieldTags v-else-if="layout.type === 'multi_select'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldTags>
 						<!-- Checkbox -->
-						<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldCheckbox>
+						<FieldCheckbox v-else-if="layout.type === 'checkbox'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldCheckbox>
 						<!-- Radio -->
-						<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldRadio>
+						<FieldRadio v-else-if="layout.type === 'radio'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldRadio>
 						<!-- Button Group -->
-						<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldButtonGroup>
+						<FieldButtonGroup v-else-if="layout.type === 'button_group'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldButtonGroup>
 						<!-- =====================
 							Relational
 							===================== -->
 						<!-- Post Object -->
-						<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldPost>
+						<FieldPost v-if="layout.type === 'post'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldPost>
 						<!-- User -->
-						<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.uuid]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldUser>
+						<FieldUser v-if="layout.type === 'user'" :layout="layout" :fields.sync="fields['children'][repeaterIndex][layout.name]" :field-key="getKey(repeaterIndex, layout.name)" :error-trigger="errorTrigger"></FieldUser>
 						<!-- =====================
 							Layout
 							===================== -->
