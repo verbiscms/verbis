@@ -12,7 +12,6 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 )
 
 // Finder defines the method for obtaining field layouts.
@@ -169,21 +168,30 @@ func (l *Location) fieldGroupWalker() ([]domain.FieldGroup, error) {
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No file or directory with the path: %s", path), Operation: op, Err: err}
 		}
 
-		if strings.Contains(info.Name(), "json") {
+		if filepath.Ext(info.Name()) == ".json" {
 
 			file, err := ioutil.ReadFile(path)
 			if err != nil {
-				return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field file with the path: %s", path), Operation: op, Err: err}
+				log.WithFields(log.Fields{
+					"error": &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field file with the path: %s", path), Operation: op, Err: err},
+				}).Error()
+				return nil
 			}
 
 			var fields domain.FieldGroup
 			err = json.Unmarshal(file, &fields)
 			if err != nil {
-				return &errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal the field struct", Operation: op, Err: err}
+				log.WithFields(log.Fields{
+					"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to unmarshal the field struct", Operation: op, Err: err},
+				}).Error()
+				return nil
 			}
 
 			if fields.Fields == nil {
-				return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No fields exist with the path: %s", path), Operation: op, Err: fmt.Errorf("layout does not contain any fields")}
+				log.WithFields(log.Fields{
+					"error": &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No fields exist with the path: %s", path), Operation: op, Err: fmt.Errorf("layout does not contain any fields")},
+				}).Error()
+				return nil
 			}
 
 			fg = append(fg, fields)

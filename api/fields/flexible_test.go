@@ -10,6 +10,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 		fields []domain.PostField
 		input  interface{}
 		want   interface{}
+		err    bool
 	}{
 		"Cast to Flexible": {
 			fields: nil,
@@ -31,16 +32,19 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 					},
 				},
 			},
+			err: false,
 		},
 		"No Stringer": {
 			fields: nil,
 			input:  noStringer{},
 			want:   "unable to cast fields.noStringer{} of type fields.noStringer to string",
+			err: true,
 		},
 		"No Field": {
 			fields: nil,
 			input:  "test",
 			want:   "no field exists with the name: test",
+			err: true,
 		},
 		"Wrong Field Type": {
 			fields: []domain.PostField{
@@ -48,6 +52,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 			},
 			input: "test",
 			want:  "field with the name: test, is not flexible content",
+			err: true,
 		},
 	}
 
@@ -55,9 +60,10 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 		t.Run(name, func() {
 			s := t.GetService(test.fields)
 
-			got, err := s.GetFlexible(test.input)
-			if err != nil {
-				t.Contains(err.Error(), test.want)
+			got := s.GetFlexible(test.input)
+			if test.err {
+				t.Contains(t.logWriter.String(), test.want)
+				t.Reset()
 				return
 			}
 

@@ -246,14 +246,16 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 
 	testPath := "/test-field-groups/"
 
+	var fg []domain.FieldGroup
+
 	id, err := uuid.Parse("6a4d7442-1020-490f-a3e2-436f9135bc24")
 	t.NoError(err)
 
 	// For bad path
-	err = os.Chmod(t.Path+testPath+"open-error/json.txt", 000)
+	err = os.Chmod(t.Path+testPath+"open-error/location.json", 000)
 	t.NoError(err)
 	defer func() {
-		err = os.Chmod(t.Path+testPath+"open-error/json.txt", 777)
+		err = os.Chmod(t.Path+testPath+"open-error/location.json", 777)
 		t.NoError(err)
 	}()
 
@@ -271,15 +273,15 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 		},
 		"Unmarshal Error": {
 			path: testPath + "/unmarshal",
-			want: "json: cannot unmarshal number into Go struct field FieldGroup.title of type string",
+			want: fg,
 		},
 		"Open Error": {
 			path: testPath + "/open-error",
-			want: "permission denied",
+			want: fg,
 		},
 		"Empty Fields": {
 			path: testPath + "/empty",
-			want: "layout does not contain any fields",
+			want: fg,
 		},
 	}
 

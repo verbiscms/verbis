@@ -1,19 +1,18 @@
 package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"bytes"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
-	"io/ioutil"
 	"testing"
 )
 
 type FieldTestSuite struct {
 	suite.Suite
+	logWriter bytes.Buffer
 }
 
 type noStringer struct{}
@@ -23,9 +22,13 @@ func TestFields(t *testing.T) {
 }
 
 func (t *FieldTestSuite) BeforeTest(suiteName, testName string) {
-	err := logger.Init(config.Configuration{})
-	log.SetOutput(ioutil.Discard)
-	t.NoError(err)
+	b := bytes.Buffer{}
+	t.logWriter = b
+	log.SetOutput(&t.logWriter)
+}
+
+func (t *FieldTestSuite) Reset() {
+	t.logWriter.Reset()
 }
 
 func (t *FieldTestSuite) GetMockService(fields []domain.PostField, fnc func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)) *Service {
