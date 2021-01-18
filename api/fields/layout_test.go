@@ -14,6 +14,7 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 		layout []domain.FieldGroup
 		args   []interface{}
 		want   interface{}
+		err bool
 	}{
 		"Success": {
 			id:   1,
@@ -21,11 +22,11 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 			layout: []domain.FieldGroup{
 				{
 					Title:  "test1",
-					Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}},
+					Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}},
 				},
 				{
 					Title:  "test2",
-					Fields: &[]domain.Field{{Name: "key3"}, {Name: "key4"}},
+					Fields: []domain.Field{{Name: "key3"}, {Name: "key4"}},
 				},
 			},
 			args: nil,
@@ -37,6 +38,7 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 			layout: nil,
 			args:   nil,
 			want:   "no groups exist",
+			err: true,
 		},
 	}
 
@@ -45,9 +47,10 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 			s := t.GetService(nil)
 			s.layout = test.layout
 
-			got, err := s.GetLayout(test.name, test.args...)
-			if err != nil {
-				t.Contains(err.Error(), test.want)
+			got := s.GetLayout(test.name, test.args...)
+			if test.err {
+				t.Contains(t.logWriter.String(), test.want)
+				t.Reset()
 				return
 			}
 
@@ -63,11 +66,11 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 	fg := []domain.FieldGroup{
 		{
 			Title:  "test1",
-			Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}},
+			Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}},
 		},
 		{
 			Title:  "test2",
-			Fields: &[]domain.Field{{Name: "key3"}, {Name: "key4"}},
+			Fields: []domain.Field{{Name: "key3"}, {Name: "key4"}},
 		},
 	}
 
@@ -114,11 +117,11 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 	}{
 		"Default": {
 			layout: []domain.FieldGroup{
-				{Title: "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
+				{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
 			},
 			args: nil,
 			want: []domain.FieldGroup{
-				{Title: "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
+				{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
 			},
 		},
 		"1 Args (Post)": {
@@ -129,12 +132,12 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 				p.On("Format", post).Return(domain.PostData{
 					Post: domain.Post{Id: 1, Title: "post"},
 					Layout: &[]domain.FieldGroup{
-						{Title: "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
+						{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
 					},
 				}, nil)
 			},
 			want: []domain.FieldGroup{
-				{Title: "test1", Fields: &[]domain.Field{{Name: "key1"}, {Name: "key2"}}},
+				{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
 			},
 		},
 		"1 Args (Post Error)": {

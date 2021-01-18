@@ -13,6 +13,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
 		args   []interface{}
 		want   interface{}
+		err    bool
 	}{
 		"Success": {
 			fields: []domain.PostField{
@@ -29,6 +30,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args:   nil,
 			want:   "no field exists with the name: wrongval",
+			err: true,
 		},
 		"Post": {
 			fields: []domain.PostField{
@@ -40,6 +42,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			},
 			args: []interface{}{2},
 			want: "test",
+			err: false,
 		},
 	}
 
@@ -47,9 +50,10 @@ func (t *FieldTestSuite) TestService_GetField() {
 		t.Run(name, func() {
 			s := t.GetMockService(test.fields, test.mock)
 
-			got, err := s.GetField(test.key, test.args...)
-			if err != nil {
-				t.Contains(err.Error(), test.want)
+			got := s.GetField(test.key, test.args...)
+			if test.err {
+				t.Contains(t.logWriter.String(), test.want)
+				t.Reset()
 				return
 			}
 
@@ -66,6 +70,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
 		args   []interface{}
 		want   interface{}
+		err    bool
 	}{
 		"Success": {
 			fields: []domain.PostField{
@@ -75,6 +80,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args: nil,
 			want: domain.PostField{Id: 1, Type: "text", Name: "key1", OriginalValue: "test", Value: "test"},
+			err: false,
 		},
 		"No Field": {
 			fields: nil,
@@ -82,6 +88,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args:   nil,
 			want:   "no field exists with the name: wrongval",
+			err: true,
 		},
 		"Post": {
 			fields: []domain.PostField{
@@ -93,6 +100,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			},
 			args: []interface{}{2},
 			want: domain.PostField{Id: 2, Type: "text", Name: "key2", OriginalValue: "test", Value: "test"},
+			err: false,
 		},
 	}
 
@@ -100,13 +108,15 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 		t.Run(name, func() {
 			s := t.GetMockService(test.fields, test.mock)
 
-			got, err := s.GetFieldObject(test.key, test.args...)
-			if err != nil {
-				t.Contains(err.Error(), test.want)
+			got := s.GetFieldObject(test.key, test.args...)
+			if test.err {
+				t.Contains(t.logWriter.String(), test.want)
+				t.Reset()
 				return
 			}
 
 			t.Equal(test.want, got)
+
 		})
 	}
 }
