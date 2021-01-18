@@ -47,7 +47,8 @@ export default {
 		 * Fires when the publish button is clicked.
 		 */
 		validate() {
-			this.errors = []
+			this.errors = [];
+			this.validateRequired();
 			const min = this.getOptions['min'],
 				max = this.getOptions['max'];
 			if (this.getValue !== "") {
@@ -59,6 +60,16 @@ export default {
 				}
 			}
 		},
+		// /*
+		//  * validateRequired()
+		//  * Return a error message if the options are required & the value is nil.
+		//  */
+		// validateRequired() {
+		// 	console.log(this.field);
+		// 	if (this.field === 0 && this.getLayout["required"] === true) {
+		// 		this.errors.push(`The ${this.getLayout.label.toLowerCase()} field is required.`);
+		// 	}
+		// },
 		/*
 		 * handleBlur()
 		 * Inline validation when user has clicked off the field.

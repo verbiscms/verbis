@@ -104,7 +104,8 @@
 		display: flex;
 		align-items: center;
 		border-radius: $form-input-border-radius;
-		overflow: hidden;
+		//overflow: hidden;
+		overflow: visible;
 		border: 1px solid $grey-light;
 		background-color: $white;
 		@include formInputBoxShadow;

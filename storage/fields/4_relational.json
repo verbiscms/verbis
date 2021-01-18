@@ -8,7 +8,7 @@
 			"name": "post",
 			"type": "post",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -16,7 +16,6 @@
 			"options": {
 				"resource": ["staff", "industries"],
 				"category": "",
-				"required": false,
 				"min": false,
 				"max": false
 			}
@@ -27,7 +26,7 @@
 			"name": "user",
 			"type": "user",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -36,7 +35,6 @@
 				"role": [
 					"admin"
 				],
-				"required": false,
 				"min": false,
 				"max": false
 			}

@@ -61,7 +61,8 @@ export default {
 	methods: {
 		validate(msg) {
 			this.errors = [];
-			this.errors.push(msg)
+			this.errors.push(msg);
+			this.validateRequired();
 		},
 		validateRequired() {
 			if (!this.selectedTags.length && !this.getOptions["allow_null"]) {

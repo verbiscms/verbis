@@ -266,6 +266,14 @@ export default {
 		}
 	},
 	methods: {
+		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
+		validate() {
+			this.errors = [];
+			this.validateRequired();
+		},
 		insertMedia(media, command) {
 			const src = media.url;
 			if (src !== null) {

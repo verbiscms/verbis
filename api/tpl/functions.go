@@ -72,9 +72,10 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"categories":       t.getCategories,
 		// Cast
 		"toBool":     cast.ToBool,
+		"toString":   cast.ToString,
+		"toSlice": 	  cast.ToSlice,
 		"toTime":     cast.ToTime,
 		"toDuration": cast.ToDuration,
-		"toString":   cast.ToString,
 		"toInt":      cast.ToInt,
 		"toInt8":     cast.ToInt8,
 		"toInt16":    cast.ToInt16,

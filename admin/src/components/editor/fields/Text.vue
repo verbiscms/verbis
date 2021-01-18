@@ -46,6 +46,7 @@ export default {
 			this.errors = [];
 			this.typed = true;
 			this.validateMaxLength();
+			this.validateRequired();
 		},
 		/*
 		 * handleBlur()

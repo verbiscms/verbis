@@ -4,7 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
-			<pre>{{ users }}</pre>
+		<pre>	{{ fields.image }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
