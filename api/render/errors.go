@@ -1,8 +1,11 @@
 package render
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
 )
@@ -13,14 +16,18 @@ type ErrorHandler interface {
 
 type Errors struct {
 	ThemeConfig domain.ThemeConfig
+	Store *models.Store
 }
 
 func (e *Errors) NotFound(g *gin.Context) {
+
+	tm := tpl.NewManager(g, e.Store, &domain.PostData{}, config.Configuration{})
 
 	gvError := goview.New(goview.Config{
 		Root:         paths.Theme(),
 		Extension:    e.ThemeConfig.FileExtension,
 		Partials:     []string{},
+		Funcs: tm.GetFunctions(),
 		DisableCache: true,
 	})
 

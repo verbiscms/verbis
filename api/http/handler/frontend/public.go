@@ -5,7 +5,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
 )
 
 // PublicHandler defines methods for the frontend to interact with the server
@@ -33,6 +32,7 @@ func NewPublic(m *models.Store, config config.Configuration) *Public {
 		render: render.NewRender(m, config),
 		ErrorHandler: &render.Errors{
 			ThemeConfig: m.Site.GetThemeConfig(),
+			Store: m,
 		},
 	}
 }
@@ -69,7 +69,6 @@ func (c *Public) Serve(g *gin.Context) {
 
 	page, err := c.render.Page(g)
 	if err != nil {
-		color.Red.Println(err)
 		c.NotFound(g)
 		return
 	}

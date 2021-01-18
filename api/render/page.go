@@ -23,12 +23,13 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		<-api.ServeChan
 	}()
 
-	url, hasRedirected := r.handleTrailingSlash(g)
-	if hasRedirected {
-		return nil, nil
-	}
+	url := g.Request.URL.Path
 
-	color.Green.Println(url)
+	//url, hasRedirected := r.handleTrailingSlash(g)
+	//if hasRedirected {
+	//	return nil, nil
+	//}
+	//color.Green.Println(url)
 
 	post, err := r.store.Posts.GetBySlug(url)
 	if err != nil {
