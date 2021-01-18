@@ -10,12 +10,13 @@ import (
 
 // GetGroup
 //
-func (s *Service) GetLayout(name string, args ...interface{}) (domain.Field, error) {
-	layout, err := layout.ByName(name, s.handleLayoutArgs(args))
+func (s *Service) GetLayout(name string, args ...interface{}) domain.Field {
+	l, err := layout.ByName(name, s.handleLayoutArgs(args))
 	if err != nil {
-		return domain.Field{}, err
+		log.WithFields(log.Fields{"error": err}).Error()
+		return domain.Field{}
 	}
-	return layout, nil
+	return l
 }
 
 // GetGroups

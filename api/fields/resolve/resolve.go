@@ -102,6 +102,10 @@ func (v *Value) resolve(field domain.PostField) domain.PostField {
 	}
 	field.Value = items
 
+	if len(items) == 1 {
+		field.Value = items[0]
+	}
+
 	return field
 }
 

@@ -125,6 +125,7 @@ export default {
 		 */
 		insertMedia(e) {
 			this.field = e.id;
+			console.log("FIRED");
 			this.$nextTick(() => {
 				this.showImageModal = false;
 				this.getMediaById();
@@ -138,11 +139,13 @@ export default {
 		 * Remove's a media item when clicked.
 		 */
 		getMediaById() {
+			console.log(this.field);
 			this.axios.get('/media/' + this.field)
 				.then(res => {
 					this.media = res.data.data;
 				})
-				.catch(() => {
+				.catch(e => {
+					console.log(e);
 					this.field = "";
 				});
 		},
@@ -160,14 +163,17 @@ export default {
 		 * field()
 		 * Cast the ID to a string on emitting
 		 * and parses the ID back to an integer when retrieving.
-		 * Fire's back up to the parent.
+		 * Fire's back up to the parent. Check when setting the value
+		 * for an empty string IS REQUIRED.
 		 */
 		field: {
 			get() {
 				return this.getValue !== "" ? parseInt(this.getValue) : false;
 			},
 			set(value) {
-				this.$emit("update:fields", this.getFieldObject(value.toString()));
+				if (value !== "") {
+					this.$emit("update:fields", this.getFieldObject(value.toString()));
+				}
 			}
 		}
 	}
