@@ -110,6 +110,7 @@ import FieldPassword from "@/components/editor/fields/Password";
 
 // Content
 import FieldRichText from "@/components/editor/fields/RichText";
+import FieldImage from "@/components/editor/fields/Image";
 
 // Choice
 import FieldSelect from "@/components/editor/fields/Select";
@@ -127,7 +128,6 @@ import FieldRepeater from "@/components/editor/fields/Repeater";
 import FieldFlexible from "@/components/editor/fields/FlexibleContent";
 
 import Collapse from "@/components/misc/Collapse";
-import FieldImage from "@/components/editor/fields/Image";
 
 export default {
 	name: "Fields",
@@ -143,7 +143,6 @@ export default {
 		},
 	},
 	components: {
-		FieldImage,
 		Collapse,
 		// Basic
 		FieldText,
@@ -155,6 +154,7 @@ export default {
 		FieldPassword,
 		// Content
 		FieldRichText,
+		FieldImage,
 		// Choice
 		FieldSelect,
 		FieldTags,
