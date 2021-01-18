@@ -1,5 +1,5 @@
 {
-	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc72",
+	"uuid": "92c16cd2-59b2-11eb-ae93-0242ac130002",
 	"title": "Layout Verbis Options",
 	"fields": [
 		{
@@ -8,7 +8,7 @@
 			"name": "flexible",
 			"type": "flexible",
 			"instructions": "Instructions",
-			"required": true,
+			"required": false,
 			"conditional_logic": null,
 			"wrapper": {
 				"width": 100
@@ -26,10 +26,10 @@
 							"name": "text",
 							"type": "text",
 							"instructions": "Instructions",
-							"required": true,
+							"required": false,
 							"conditional_logic": null,
 							"wrapper": {
-								"width": 100
+								"width": 50
 							},
 							"options": {
 								"maxlength": 10,
@@ -53,7 +53,7 @@
 							"name": "text",
 							"type": "text",
 							"instructions": "Instructions",
-							"required": true,
+							"required": false,
 							"conditional_logic": null,
 							"wrapper": {
 								"width": 100
@@ -72,7 +72,7 @@
 							"name": "text2",
 							"type": "text",
 							"instructions": "Instructions",
-							"required": true,
+							"required": false,
 							"conditional_logic": null,
 							"wrapper": {
 								"width": 100
@@ -176,7 +176,7 @@
 					"required": false,
 					"conditional_logic": null,
 					"wrapper": {
-						"width": 100
+						"width": 50
 					},
 					"options": {
 						"maxlength": "20",
@@ -208,13 +208,5 @@
 			]
 		}
 	],
-	"location": [
-		[
-			{
-				"param": "page_template",
-				"operator": "==",
-				"value": "home"
-			}
-		]
-	]
+	"location": []
 }

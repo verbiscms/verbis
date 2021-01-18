@@ -29,11 +29,57 @@ Casts an `interface` to a `bool` type.
 
 ___
 
+## toString
+
+Casts an `interface` to a `string` type.
+
+### Accepts: 
+
+`i interface{}` The value to be converted.
+
+### Returns:
+
+`time.Time` The cast value or `""` (an empty string) if an error occurred.
+
+### Examples:
+
+**Cast a `int` to `string`**
+
+```gotemplate
+{{ toString "123" }}
+```
+
+___
+
+## toSlice
+
+Casts an `interface` to a `[]interface` type.
+This is particularly useful for range loops, as Verbis automatically
+resolves singular types. 
+
+### Accepts:
+
+`i interface{}` The value to be converted.
+
+### Returns:
+
+`[]interface{}` The cast value or `nil` if an error occurred.
+
+### Examples:
+
+**Cast a `int` to `string`**
+
+```gotemplate
+{{ toString "123" }}
+```
+
+___
+
 ## toTime
 
 Casts an `interface` to a `time.Time` type.
 
-### Accepts: 
+### Accepts:
 
 `i interface{}` The value to be converted.
 
@@ -55,7 +101,7 @@ ___
 
 Casts an `interface` to a `time.Duration` type.
 
-### Accepts: 
+### Accepts:
 
 `i interface{}` The value to be converted.
 
@@ -69,28 +115,6 @@ Casts an `interface` to a `time.Duration` type.
 
 ```gotemplate
 {{ toDuration "123" }}
-```
-
-___
-
-## toString
-
-Casts an `interface` to a `string` type.
-
-### Accepts: 
-
-`i interface{}` The value to be converted.
-
-### Returns:
-
-`time.Time` The cast value or `""` (an empty string) if an error occurred.
-
-### Examples:
-
-**Cast a `int` to `string`**
-
-```gotemplate
-{{ toString "123" }}
 ```
 
 ___

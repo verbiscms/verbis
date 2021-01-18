@@ -111,6 +111,23 @@ export default {
 	},
 	methods: {
 		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
+		validate() {
+			this.errors = [];
+			this.validateRequired();
+		},
+		/*
+		 * validateRequired()
+		 * Return a error message if the options are required & the value is nil.
+		 */
+		validateRequired() {
+			if (this.field === false && this.getLayout["required"] === true) {
+				this.errors.push(`The ${this.getLayout.label.toLowerCase()} field is required.`);
+			}
+		},
+		/*
 		 * handleError()
 		 * If there was an error getting the media file,
 		 * defaults will be set and no broken image will be displayed.

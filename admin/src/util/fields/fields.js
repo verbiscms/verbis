@@ -110,7 +110,7 @@ export const fieldMixin = {
 		 * Return a error message if the options are required & the value is nil.
 		 */
 		validateRequired() {
-			if (this.field === "" && this.getOptions["required"] === true) {
+			if (this.field === "" && this.getLayout["required"] === true) {
 				this.errors.push(`The ${this.getLayout.label.toLowerCase()} field is required.`);
 			}
 		},

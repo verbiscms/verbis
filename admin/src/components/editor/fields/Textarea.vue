@@ -38,7 +38,8 @@ export default {
 		 */
 		validate() {
 			this.errors = [];
-			this.validateMaxLength()
+			this.validateMaxLength();
+			this.validateRequired();
 		},
 	},
 	computed: {

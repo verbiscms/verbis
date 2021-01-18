@@ -52,6 +52,7 @@ export default {
 			if (this.getValue !== "" && !this.helpers.validateEmail(this.getValue)) {
 				this.errors.push(`Enter a valid email address for the ${this.layout.label} field.`)
 			}
+			this.validateRequired();
 		}
 	},
 	computed: {
