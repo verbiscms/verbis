@@ -1,0 +1,102 @@
+{
+	"uuid": "69296bc6-4f4a-11eb-ae93-0242ac130002",
+	"title": "Awards",
+	"fields": [
+		{
+			"uuid": "69297710-4f4a-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "awards_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "69296f5e-4f4a-11eb-ae93-0242ac130002",
+			"label": "Award",
+			"name": "awards",
+			"type": "repeater",
+			"instructions": "Add award image and text.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": ""
+			},
+			"sub_fields": [
+				{
+					"uuid": "6929713e-4f4a-11eb-ae93-0242ac130002",
+					"label": "Awards Image",
+					"name": "image",
+					"type": "image",
+					"instructions": "Add a logo",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {
+						"tabs": "all",
+						"toolbar": "full",
+						"media_upload": 1
+					}
+				},
+				{
+					"uuid": "69297210-4f4a-11eb-ae93-0242ac130002",
+					"label": "Title",
+					"name": "title",
+					"type": "text",
+					"instructions": "Add a title for the award.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 50
+					},
+					"options": {
+						"maxlength": "",
+						"default_value": "",
+						"prepend": "",
+						"append": ""
+					}
+				},
+				{
+					"uuid": "692972ce-4f4a-11eb-ae93-0242ac130002",
+					"label": "Sub Text",
+					"name": "sub_text",
+					"type": "text",
+					"instructions": "Add a sub text for the award.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 50
+					},
+					"options": {
+						"maxlength": "",
+						"default_value": "",
+						"prepend": "",
+						"append": ""
+					}
+				}
+			]
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "seo"
+			}
+		]
+	]
+}

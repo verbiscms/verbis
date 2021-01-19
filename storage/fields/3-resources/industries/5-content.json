@@ -1,0 +1,100 @@
+{
+	"uuid": "0e23e526-500d-11eb-ae93-0242ac130002",
+	"title": "Content",
+	"fields": [
+		{
+			"uuid": "0e23e7ba-500d-11eb-ae93-0242ac130002",
+			"label": "Secondary Content",
+			"name": "secondary_checkbox",
+			"type": "checkbox",
+			"instructions": "Include secondary content?",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"default_value": false,
+				"prepend": "",
+				"append": ""
+			}
+		},
+		{
+			"uuid": "0e23e990-500d-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "secondary_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {}
+		},
+		{
+			"uuid": "0e23ea80-500d-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "secondary_content",
+			"type": "richtext",
+			"instructions": "Add content for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "0e23edaa-500d-11eb-ae93-0242ac130002",
+			"label": "Phone",
+			"name": "secondary_phone",
+			"type": "image",
+			"instructions": "Add a phone image for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		},
+		{
+			"uuid": "0e23ee72-500d-11eb-ae93-0242ac130002",
+			"label": "Background Colour",
+			"name": "secondary_bg_colour",
+			"type": "select",
+			"instructions": "Select a background colour for the phone image.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"choices": {
+					"bg-primary": "Green",
+					"shade-green-2": "Light Green",
+					"shade-purple-2": "Purple",
+					"shade-purple-3": "Light Purple",
+					"bg-sage": "Sage",
+					"shade-grey-1": "Grey",
+					"shade-black-2": "Black"
+				},
+				"return_format": "key",
+				"default_value": "green"
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "industries"
+			}
+		]
+	]
+}

@@ -106,7 +106,7 @@ Replaces a sub string with a new string with all matches.
 
 ### Accepts: 
 
-`old, string, new string, src string` The old string to be replaced, the new string, and the source string.
+`src string, old, string, new string` The source string, the old string to be replaced, and the new string.
 
 ### Returns:
 
@@ -119,7 +119,7 @@ Replaces a sub string with a new string with all matches.
 Returns `hello-verbis-cms`
 
 ```gotemplate
-{{ replace "" "-" "hello verbis cms" }}
+{{ replace "hello verbis cms" "" "-" }}
 ```
 
 **Replace part of a string**
@@ -127,7 +127,7 @@ Returns `hello-verbis-cms`
 Returns `hello world!`
 
 ```gotemplate
-{{ replace "verbis cms" "world!" "hello verbis cms" }}
+{{ replace "hello verbis cms" "verbis cms" "world!" }}
 ```
 
 ___

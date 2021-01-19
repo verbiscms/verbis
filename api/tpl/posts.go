@@ -21,7 +21,7 @@ type ViewPost struct {
 // or nil if not found.
 //
 // Example: {{ post 123 }}
-func (t *TemplateManager) getPost(id interface{}) *ViewPost {
+func (t *TemplateManager) getPost(id interface{}) interface{} {
 	i, err := cast.ToIntE(id)
 	if err != nil {
 		return nil
@@ -37,7 +37,7 @@ func (t *TemplateManager) getPost(id interface{}) *ViewPost {
 		return nil
 	}
 
-	return &fp
+	return fp
 }
 
 // getPosts

@@ -48,7 +48,7 @@ func (t *TplTestSuite) Test_GetPost() {
 				m.On("GetById", 1).Return(post, nil)
 				m.On("Format", post).Return(domain.PostData{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			want: "",
 		},
 		"Not Found": {
 			input: 1,
@@ -56,7 +56,7 @@ func (t *TplTestSuite) Test_GetPost() {
 				m.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
 				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
 			},
-			want: nil,
+			want: "",
 		},
 		"No Stringer": {
 			input: noStringer{},
@@ -64,7 +64,7 @@ func (t *TplTestSuite) Test_GetPost() {
 				m.On("GetById", 1).Return(post, nil)
 				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
 			},
-			want: nil,
+			want: "",
 		},
 	}
 

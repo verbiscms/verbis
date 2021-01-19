@@ -29,14 +29,14 @@ func (t *TplTestSuite) Test_GetCategory() {
 			mock: func(m *mocks.CategoryRepository) {
 				m.On("GetById", 1).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			want: "",
 		},
 		"No Stringer": {
 			input: noStringer{},
 			mock: func(m *mocks.CategoryRepository) {
 				m.On("GetById", 1).Return(category, nil)
 			},
-			want: nil,
+			want: "",
 		},
 	}
 
@@ -75,14 +75,14 @@ func (t *TplTestSuite) Test_GetCategoryByName() {
 			mock: func(m *mocks.CategoryRepository) {
 				m.On("GetByName", "cat").Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			want: "",
 		},
 		"No Stringer": {
 			input: noStringer{},
 			mock: func(m *mocks.CategoryRepository) {
 				m.On("GetByName", "cat").Return(category, nil)
 			},
-			want: nil,
+			want: "",
 		},
 	}
 
@@ -101,11 +101,6 @@ func (t *TplTestSuite) Test_GetCategoryByName() {
 
 func (t *TplTestSuite) Test_GetParentCategory() {
 
-	p := 2
-	category := domain.Category{Id: 1, Name: "cat", ParentId: &p}
-	noParentCategory := domain.Category{Id: 1, Name: "cat", ParentId: nil}
-	parentCategory := domain.Category{Id: 2, Name: "parent"}
-
 	tt := map[string]struct {
 		input interface{}
 		mock  func(m *mocks.CategoryRepository)
@@ -114,39 +109,30 @@ func (t *TplTestSuite) Test_GetParentCategory() {
 		"Success": {
 			input: 1,
 			mock: func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(category, nil).Once()
-				m.On("GetById", 2).Return(parentCategory, nil)
+				m.On("GetParent", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
 			},
-			want: parentCategory,
+			want: domain.Category{Id: 1, Name: "cat"},
 		},
 		"Not Found": {
 			input: 1,
 			mock: func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(domain.Category{}, fmt.Errorf("error")).Once()
+				m.On("GetParent", 1).Return(domain.Category{}, fmt.Errorf("error")).Once()
 			},
-			want: nil,
-		},
-		"No Parent": {
-			input: 1,
-			mock: func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(noParentCategory, nil).Once()
-			},
-			want: nil,
+			want: "",
 		},
 		"Nil Parent": {
 			input: 1,
 			mock: func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(category, nil).Once()
-				m.On("GetById", 2).Return(domain.Category{}, fmt.Errorf("error"))
+				m.On("GetParent", 2).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			want: "",
 		},
 		"No Stringer": {
 			input: noStringer{},
 			mock: func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(domain.Category{}, fmt.Errorf("error")).Once()
+				m.On("GetParent", 1).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			want: "",
 		},
 	}
 
@@ -157,7 +143,7 @@ func (t *TplTestSuite) Test_GetParentCategory() {
 			test.mock(&categoryMock)
 			t.store.Categories = &categoryMock
 
-			tpl := `{{ categoryByParent . }}`
+			tpl := `{{ categoryParent . }}`
 			t.RunTWithData(tpl, test.want, test.input)
 		})
 	}

@@ -383,9 +383,11 @@ export default {
 
 			const promises = [];
 			checkedArr.forEach(id => {
-				const post =  this.getPostsById(id).post
-				post.status = status;
-				promises.push(this.updateStatusAxios(id, post));
+				const item =  this.getPostsById(id);
+				let obj = item.post;
+				obj.fields = item.fields;
+				obj.status = status;
+				promises.push(this.updateStatusAxios(id, obj));
 			});
 
 			Promise.all(promises)

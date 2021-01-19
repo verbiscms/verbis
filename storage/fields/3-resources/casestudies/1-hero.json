@@ -1,0 +1,70 @@
+{
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc12",
+	"title": "Hero",
+	"fields": [
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5125",
+			"label": "Title",
+			"name": "hero_title",
+			"type": "textarea",
+			"instructions": "Add a title for the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "line_break"
+			}
+		},
+		{
+			"uuid": "f74663e0-5a40-11eb-ae93-0242ac130002",
+			"label": "Background Image",
+			"name": "hero_bg",
+			"type": "image",
+			"instructions": "Add a background image for the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+			"label": "Logo",
+			"name": "logo",
+			"type": "image",
+			"instructions": "Add a logo for the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "casestudies"
+			}
+		]
+	]
+}

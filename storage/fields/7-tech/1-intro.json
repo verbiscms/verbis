@@ -1,0 +1,86 @@
+{
+	"uuid": "a3769770-4f4c-11eb-ae93-0242ac130002",
+	"title": "Intro",
+	"fields": [
+		{
+			"uuid": "f0c39644-5a74-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "intro_title",
+			"type": "text",
+			"instructions": "Add a title for the intro section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "a37699fa-4f4c-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "intro_content",
+			"type": "textarea",
+			"instructions": "Add content for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"rows": 6
+			}
+		},
+		{
+			"uuid": "a3769c66-4f4c-11eb-ae93-0242ac130002",
+			"label": "Image",
+			"name": "intro_image",
+			"type": "image",
+			"instructions": "Add a image for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		},
+		{
+			"uuid": "a3769d24-4f4c-11eb-ae93-0242ac130002",
+			"label": "Image Name",
+			"name": "intro_name",
+			"type": "text",
+			"instructions": "Add a name attached to the image for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {}
+		},
+		{
+			"uuid": "a376a062-4f4c-11eb-ae93-0242ac130002",
+			"label": "Image Job Title",
+			"name": "intro_job_title",
+			"type": "text",
+			"instructions": "Add a job title attached to the image for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "tech"
+			}
+		]
+	]
+}

@@ -1,0 +1,57 @@
+{
+	"uuid": "9c6924f4-50f8-11eb-ae93-0242ac130002",
+	"title": "Hero",
+	"fields": [
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5125",
+			"label": "Title",
+			"name": "hero_title",
+			"type": "textarea",
+			"instructions": "Add a title for the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "line_break"
+			}
+		},
+		{
+			"uuid": "9c692756-50f8-11eb-ae93-0242ac130002",
+			"label": "Lead",
+			"name": "hero_lead",
+			"type": "textarea",
+			"instructions": "Add lead text for the hero which will appear beneath the title.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "line_break"
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "tools-archive"
+			}
+		]
+	]
+}

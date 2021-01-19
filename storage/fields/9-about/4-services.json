@@ -1,0 +1,67 @@
+{
+	"uuid": "e5adfa6a-50e7-11eb-ae93-0242ac130002",
+	"title": "Perks",
+	"fields": [
+		{
+			"uuid": "e5adfcb8-50e7-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "perks_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {}
+		},
+		{
+			"uuid": "e5adfda8-50e7-11eb-ae93-0242ac130002",
+			"label": "Intro",
+			"name": "perks_intro",
+			"type": "text",
+			"instructions": "Add an intro for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {}
+		},
+		{
+			"uuid": "e5ae00fa-50e7-11eb-ae93-0242ac130002",
+			"label": "Left Column",
+			"name": "perks_left_col",
+			"type": "richtext",
+			"instructions": "Add content for the left hand column.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "e5ae0366-50e7-11eb-ae93-0242ac130002",
+			"label": "Right Column",
+			"name": "perks_right_col",
+			"type": "richtext",
+			"instructions": "Add content for the right hand column.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "about"
+			}
+		]
+	]
+}

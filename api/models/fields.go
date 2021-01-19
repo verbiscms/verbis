@@ -50,7 +50,7 @@ func (s *FieldsStore) UpdateCreate(postId int, f []domain.PostField) error {
 	// Find fields that should be deleted (not in the array)
 	for _, v := range fields {
 		if !s.shouldDelete(v, f) {
-			err := s.Delete(v)
+			err := s.Delete(postId, v)
 			if err != nil {
 				return err
 			}
@@ -114,7 +114,7 @@ func (s *FieldsStore) Create(f domain.PostField) (domain.PostField, error) {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
 	const op = "FieldsRepository.Update"
-	_, err := s.db.Exec("UPDATE post_fields SET type = ?, name = ?, value = ?, field_key = ? WHERE uuid = ?", f.Type, f.Name, f.OriginalValue, f.Key, f.UUID.String())
+	_, err := s.db.Exec("UPDATE post_fields SET type = ?, name = ?, value = ?, field_key = ? WHERE uuid = ? AND post_id = ?", f.Type, f.Name, f.OriginalValue, f.Key, f.UUID.String(), f.PostId)
 	if err != nil {
 		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post field wuth the uuid: %s", f.UUID.String()), Operation: op, Err: err}
 	}
@@ -123,9 +123,9 @@ func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
 
 // Update a post field by Id
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *FieldsStore) Delete(f domain.PostField) error {
+func (s *FieldsStore) Delete(postId int, f domain.PostField) error {
 	const op = "FieldsRepository.Delete"
-	if _, err := s.db.Exec("DELETE FROM post_fields WHERE uuid = ? AND field_key = ?", f.UUID, f.Key); err != nil {
+	if _, err := s.db.Exec("DELETE FROM post_fields WHERE uuid = ? AND field_key = ? AND post_id = ?", f.UUID, f.Key, postId); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete post field with the uuid: %v", f.UUID), Operation: op, Err: err}
 	}
 	return nil
@@ -149,7 +149,7 @@ func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category
 // Finds fields in the domain.PostField array that should be deleted.
 func (s *FieldsStore) shouldDelete(f domain.PostField, fields []domain.PostField) bool {
 	for _, v := range fields {
-		if (f.Key == v.Key) && (f.UUID == v.UUID) {
+		if (f.Key == v.Key) && (f.UUID == v.UUID) && (f.Name == v.Name) {
 			return true
 		}
 	}

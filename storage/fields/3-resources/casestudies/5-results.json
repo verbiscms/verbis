@@ -1,0 +1,88 @@
+{
+	"uuid": "4c840004-4f62-11eb-ae93-0242ac130002",
+	"title": "Results",
+	"fields": [
+		{
+			"uuid": "4c84028e-4f62-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "results_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "4c840374-4f62-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "results_content",
+			"type": "richtext",
+			"instructions": "Add content for the left hand column.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "4c840446-4f62-11eb-ae93-0242ac130002",
+			"label": "Numbers",
+			"name": "results_numbers",
+			"type": "repeater",
+			"instructions": "Add a results number.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": ""
+			},
+			"sub_fields": [
+				{
+					"uuid": "4c8405fe-4f62-11eb-ae93-0242ac130002",
+					"label": "Number",
+					"name": "results_number",
+					"type": "text",
+					"instructions": "Add a number.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {}
+				},
+				{
+					"uuid": "4c8406d0-4f62-11eb-ae93-0242ac130002",
+					"label": "Title",
+					"name": "results_sub_text",
+					"type": "text",
+					"instructions": "Add sub text for the number",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {}
+				}
+			]
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "casestudies"
+			}
+		]
+	]
+}

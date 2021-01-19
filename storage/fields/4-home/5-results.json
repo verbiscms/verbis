@@ -1,0 +1,165 @@
+{
+	"uuid": "e3a4c528-4e80-11eb-ae93-0242ac130002",
+	"title": "Results",
+	"fields": [
+		{
+			"uuid": "e3a4c78a-4e80-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "results_title",
+			"type": "text",
+			"instructions": "Add a title for the results section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "Add an results title.",
+				"prepend": "",
+				"append": ""
+			}
+		},
+		{
+			"uuid": "e3a4c9ec-4e80-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "results_content",
+			"type": "textarea",
+			"instructions": "Add text which will appear underneath the title.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "paragraph"
+			}
+		},
+		{
+			"uuid": "e3a4cac8-4e80-11eb-ae93-0242ac130002",
+			"label": "Card Left Title",
+			"name": "results_card_left_title",
+			"type": "text",
+			"instructions": "Add a title for the card on the left.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": ""
+			}
+		},
+		{
+			"uuid": "e3a4cb90-4e80-11eb-ae93-0242ac130002",
+			"label": "Card Left Content",
+			"name": "results_card_left_content",
+			"type": "text",
+			"instructions": "Add content for the card on the left.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": ""
+			}
+		},
+		{
+			"uuid": "e3a4cc58-4e80-11eb-ae93-0242ac130002",
+			"label": "Card Left Image",
+			"name": "results_card_left_image",
+			"type": "image",
+			"instructions": "Add a image for the card on the left.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		},
+		{
+			"uuid": "e3a4cd16-4e80-11eb-ae93-0242ac130002",
+			"label": "Card Right Title",
+			"name": "results_card_right_title",
+			"type": "text",
+			"instructions": "Add a title for the card on the left.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": ""
+			}
+		},
+		{
+			"uuid": "e3a4cdd4-4e80-11eb-ae93-0242ac130002",
+			"label": "Card Right Content",
+			"name": "results_card_right_content",
+			"type": "text",
+			"instructions": "Add content for the card on the right.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": ""
+			}
+		},
+		{
+			"uuid": "e3a4cfb4-4e80-11eb-ae93-0242ac130002",
+			"label": "Card Right Image",
+			"name": "results_card_right_image",
+			"type": "image",
+			"instructions": "Add a image for the card on the right.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "home"
+			}
+		]
+	]
+}

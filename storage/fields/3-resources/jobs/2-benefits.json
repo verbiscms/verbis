@@ -1,0 +1,28 @@
+{
+	"uuid": "98f4c6a8-5011-11eb-ae93-0242ac130002",
+	"title": "Benefits",
+	"fields": [
+		{
+			"uuid": "98f4ca5e-5011-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "benefits_content",
+			"type": "richtext",
+			"instructions": "Add content for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "jobs"
+			}
+		]
+	]
+}

@@ -163,7 +163,7 @@
 		<!-- =====================
 			Content
 			===================== -->
-		<div class="richtext-content">
+		<div class="richtext-content" :style="{ 'height' : getEditorHeight }">
 			<prism-editor class="richtext-prism prism" v-show="codeView" v-model="code" :highlight="highlighter" line-numbers></prism-editor>
 			<editor-content :editor="editor" v-show="!codeView" />
 		</div>
@@ -250,6 +250,12 @@ export default {
 	computed: {
 		getEditorConfig() {
 			return this.$store.state.theme.editor
+		},
+		getEditorHeight() {
+			if ('height' in this.getOptions) {
+				return this.getOptions['height'];
+			}
+			return "400px"
 		},
 		/*
 		 * field()

@@ -1,0 +1,123 @@
+{
+	"uuid": "18bbbbe0-50de-11eb-ae93-0242ac130002",
+	"title": "Values",
+	"fields": [
+		{
+			"uuid": "18bbbe9c-50de-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "values_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "18bbbf8c-50de-11eb-ae93-0242ac130002",
+			"label": "Left Column",
+			"name": "values_left",
+			"type": "richtext",
+			"instructions": "Add content for the left hand column of the section",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "18bbc04a-50de-11eb-ae93-0242ac130002",
+			"label": "Right Column",
+			"name": "values_right",
+			"type": "richtext",
+			"instructions": "Add content for the right hand column of the section",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "18bbc4aa-50de-11eb-ae93-0242ac130002",
+			"label": "Image",
+			"name": "values_image",
+			"type": "image",
+			"instructions": "Add an image for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		},
+		{
+			"uuid": "18bbc5e0-50de-11eb-ae93-0242ac130002",
+			"label": "Media Name",
+			"name": "values_name",
+			"type": "text",
+			"instructions": "Add a name attached to the image for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {}
+		},
+		{
+			"uuid": "a376a062-4f4c-11eb-ae93-0242ac130002",
+			"label": "Media Job Title",
+			"name": "values_job_title",
+			"type": "text",
+			"instructions": "Add a job title attached to the image for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {}
+		},
+		{
+			"uuid": "26a68698-50d6-11eb-ae93-0242ac130002",
+			"label": "Bottom Content",
+			"name": "values_bottom_title",
+			"type": "text",
+			"instructions": "Add a title for the bottom section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "26a68698-50d6-11eb-ae93-0242ac130002",
+			"label": "Bottom Content",
+			"name": "values_bottom",
+			"type": "richtext",
+			"instructions": "Add content for the bottom of the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "about"
+			}
+		]
+	]
+}
