@@ -1,9 +1,5 @@
 package tpl
 
-import (
-	"github.com/ainsleyclark/verbis/api/domain"
-)
-
 // getMedia
 //
 // Obtains the media by ID and returns a domain.Media type
@@ -13,7 +9,7 @@ import (
 // Example:
 // {{ $image := media 10 }}
 // {{ $image.Url }}
-func (t *TemplateManager) getMedia(i interface{}) *domain.Media {
+func (t *TemplateManager) getMedia(i interface{}) interface{} {
 	var id int
 
 	if i == nil {
@@ -52,5 +48,5 @@ func (t *TemplateManager) getMedia(i interface{}) *domain.Media {
 		return nil
 	}
 
-	return &m
+	return m
 }

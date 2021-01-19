@@ -33,14 +33,14 @@ func (t *TplTestSuite) Test_GetUser() {
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetById", 1).Return(domain.User{}, fmt.Errorf("error"))
 			},
-			want: domain.UserPart{},
+			want: "",
 		},
 		"No Stringer": {
 			input: noStringer{},
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetById", 1).Return(user, nil)
 			},
-			want: domain.UserPart{},
+			want: "",
 		},
 	}
 

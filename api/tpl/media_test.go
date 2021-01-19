@@ -34,14 +34,14 @@ func (t *TplTestSuite) Test_GetMedia() {
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
-			want: nil,
+			want: "",
 		},
 		"nil": {
 			input: nil,
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", nil).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
-			want: nil,
+			want: "",
 		},
 		"int": {
 			input: id,
@@ -90,7 +90,7 @@ func (t *TplTestSuite) Test_GetMedia() {
 			mock: func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(nil, fmt.Errorf("no media"))
 			},
-			want: nil,
+			want: "",
 		},
 	}
 

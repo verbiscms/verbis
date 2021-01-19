@@ -15,7 +15,7 @@ type FieldService struct {
 }
 
 // GetField provides a mock function with given fields: name, args
-func (_m *FieldService) GetField(name string, args ...interface{}) (interface{}, error) {
+func (_m *FieldService) GetField(name string, args ...interface{}) interface{} {
 	var _ca []interface{}
 	_ca = append(_ca, name)
 	_ca = append(_ca, args...)
@@ -30,18 +30,28 @@ func (_m *FieldService) GetField(name string, args ...interface{}) (interface{},
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string, ...interface{}) error); ok {
-		r1 = rf(name, args...)
+	return r0
+}
+
+// GetFieldObject provides a mock function with given fields: name, args
+func (_m *FieldService) GetFieldObject(name string, args ...interface{}) domain.PostField {
+	var _ca []interface{}
+	_ca = append(_ca, name)
+	_ca = append(_ca, args...)
+	ret := _m.Called(_ca...)
+
+	var r0 domain.PostField
+	if rf, ok := ret.Get(0).(func(string, ...interface{}) domain.PostField); ok {
+		r0 = rf(name, args...)
 	} else {
-		r1 = ret.Error(1)
+		r0 = ret.Get(0).(domain.PostField)
 	}
 
-	return r0, r1
+	return r0
 }
 
 // GetFields provides a mock function with given fields: args
-func (_m *FieldService) GetFields(args ...interface{}) (fields.Fields, error) {
+func (_m *FieldService) GetFields(args ...interface{}) fields.Fields {
 	var _ca []interface{}
 	_ca = append(_ca, args...)
 	ret := _m.Called(_ca...)
@@ -55,44 +65,30 @@ func (_m *FieldService) GetFields(args ...interface{}) (fields.Fields, error) {
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(...interface{}) error); ok {
-		r1 = rf(args...)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
-// GetFlexible provides a mock function with given fields: name, args
-func (_m *FieldService) GetFlexible(name string, args ...interface{}) (fields.Flexible, error) {
+// GetFlexible provides a mock function with given fields: input, args
+func (_m *FieldService) GetFlexible(input interface{}, args ...interface{}) fields.Flexible {
 	var _ca []interface{}
-	_ca = append(_ca, name)
+	_ca = append(_ca, input)
 	_ca = append(_ca, args...)
 	ret := _m.Called(_ca...)
 
 	var r0 fields.Flexible
-	if rf, ok := ret.Get(0).(func(string, ...interface{}) fields.Flexible); ok {
-		r0 = rf(name, args...)
+	if rf, ok := ret.Get(0).(func(interface{}, ...interface{}) fields.Flexible); ok {
+		r0 = rf(input, args...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(fields.Flexible)
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string, ...interface{}) error); ok {
-		r1 = rf(name, args...)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // GetLayout provides a mock function with given fields: name, args
-func (_m *FieldService) GetLayout(name string, args ...interface{}) (domain.Field, error) {
+func (_m *FieldService) GetLayout(name string, args ...interface{}) domain.Field {
 	var _ca []interface{}
 	_ca = append(_ca, name)
 	_ca = append(_ca, args...)
@@ -105,14 +101,7 @@ func (_m *FieldService) GetLayout(name string, args ...interface{}) (domain.Fiel
 		r0 = ret.Get(0).(domain.Field)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string, ...interface{}) error); ok {
-		r1 = rf(name, args...)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // GetLayouts provides a mock function with given fields: args
@@ -133,28 +122,21 @@ func (_m *FieldService) GetLayouts(args ...interface{}) []domain.FieldGroup {
 	return r0
 }
 
-// GetRepeater provides a mock function with given fields: name, args
-func (_m *FieldService) GetRepeater(name string, args ...interface{}) (fields.Repeater, error) {
+// GetRepeater provides a mock function with given fields: input, args
+func (_m *FieldService) GetRepeater(input interface{}, args ...interface{}) fields.Repeater {
 	var _ca []interface{}
-	_ca = append(_ca, name)
+	_ca = append(_ca, input)
 	_ca = append(_ca, args...)
 	ret := _m.Called(_ca...)
 
 	var r0 fields.Repeater
-	if rf, ok := ret.Get(0).(func(string, ...interface{}) fields.Repeater); ok {
-		r0 = rf(name, args...)
+	if rf, ok := ret.Get(0).(func(interface{}, ...interface{}) fields.Repeater); ok {
+		r0 = rf(input, args...)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(fields.Repeater)
 		}
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string, ...interface{}) error); ok {
-		r1 = rf(name, args...)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }

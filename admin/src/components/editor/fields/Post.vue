@@ -97,7 +97,7 @@ export default {
 		 * Retrieve all posts from the API.
 		 */
 		getPosts() {
-			this.axios.get("/posts")
+			this.axios.get("/posts?limit=all")
 				.then(res => {
 					this.mapPosts(res.data.data);
 					this.setTags();

@@ -1,0 +1,115 @@
+{
+	"uuid": "6a4d7442-1020-490f-a3e2-436f9135bc12",
+	"title": "Hero",
+	"fields": [
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5125",
+			"label": "Title",
+			"name": "hero_title",
+			"type": "textarea",
+			"instructions": "Add a title for the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "line_break"
+			}
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
+			"label": "Lead",
+			"name": "hero_lead",
+			"type": "textarea",
+			"instructions": "Add lead text for the hero which will appear beneath the title.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "line_break"
+			}
+		},
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5732",
+			"label": "Logos",
+			"name": "hero_logos",
+			"type": "repeater",
+			"instructions": "Add logo's to appear at the bottom of the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": ""
+			},
+			"sub_fields": [
+				{
+					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+					"label": "Logo",
+					"name": "logo",
+					"type": "image",
+					"instructions": "Add a logo",
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {
+						"tabs": "all",
+						"toolbar": "full",
+						"media_upload": 1
+					}
+				}
+			]
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "home"
+			}
+		],
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "seo"
+			}
+		],
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "tech"
+			}
+		],
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "work-archive"
+			}
+		]
+	]
+}

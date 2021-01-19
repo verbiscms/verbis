@@ -68,7 +68,7 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		// Categories
 		"category":         t.getCategory,
 		"categoryByName":   t.getCategoryByName,
-		"categoryByParent": t.getCategoryByParent,
+		"categoryParent": t.getCategoryParent,
 		"categories":       t.getCategories,
 		// Cast
 		"toBool":     cast.ToBool,

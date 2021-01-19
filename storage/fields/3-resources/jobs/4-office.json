@@ -1,0 +1,41 @@
+{
+	"uuid": "4648cc36-5013-11eb-ae93-0242ac130002",
+	"title": "Apply Form",
+	"fields": [
+		{
+			"uuid": "4648c902-5013-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "apply_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "4648cd4e-5013-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "apply_content",
+			"type": "richtext",
+			"instructions": "Add content for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "jobs"
+			}
+		]
+	]
+}

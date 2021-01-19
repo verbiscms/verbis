@@ -15,6 +15,7 @@
 				===================== -->
 			<div v-else class="image-wrapper">
 				<div class="image-cont">
+<!--					"image-cover" : !media.type.includes("svg") }-->
 					<ImageWithActions class="image-cover" @choose="showImageModal = true" @remove="remove">
 						<img :src="getSiteUrl + media['url']" @error="handleError">
 					</ImageWithActions>
@@ -221,6 +222,7 @@ export default {
 	&-cont {
 		height: 250px;
 		width: 100%;
+		background-color: darken($bg-color, 2%);
 	}
 
 	// Header

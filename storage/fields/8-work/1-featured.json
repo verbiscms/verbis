@@ -1,0 +1,37 @@
+{
+	"uuid": "c2529980-501b-11eb-ae93-0242ac130002",
+	"title": "Case Studies",
+	"fields": [
+		{
+			"uuid": "c2529c46-501b-11eb-ae93-0242ac130002",
+			"label": "Featured Case Study",
+			"name": "featured",
+			"type": "post",
+			"instructions": "This will appear as a full width card.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"posts": [
+					"casestudies"
+				],
+				"category": "",
+				"min": 0,
+				"max": 1
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "work-archive"
+			}
+		]
+	]
+}
+
+

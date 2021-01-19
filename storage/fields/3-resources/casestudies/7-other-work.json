@@ -1,0 +1,46 @@
+{
+	"uuid": "9a6110be-4f62-11eb-ae93-0242ac130002",
+	"title": "Other Work",
+	"fields": [
+		{
+			"uuid": "9a61182a-4f62-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "work_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {}
+		},
+		{
+			"uuid": "9a611942-4f62-11eb-ae93-0242ac130002",
+			"label": "Case Studies",
+			"name": "work_posts",
+			"type": "post",
+			"instructions": "Instructions",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"resource": [
+					"casestudies"
+				],
+				"category": ""
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "casestudies"
+			}
+		]
+	]
+}
