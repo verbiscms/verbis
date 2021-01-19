@@ -18,6 +18,7 @@ type CategoryRepository interface {
 	GetByPost(pageId int) (*domain.Category, error)
 	GetBySlug(slug string) (domain.Category, error)
 	GetByName(name string) (domain.Category, error)
+	GetParent(id int) (domain.Category, error)
 	Create(c *domain.Category) (domain.Category, error)
 	Update(c *domain.Category) (domain.Category, error)
 	Delete(id int) error
@@ -128,6 +129,17 @@ func (s *CategoryStore) GetByName(name string) (domain.Category, error) {
 	var c domain.Category
 	if err := s.db.Get(&c, "SELECT * FROM categories WHERE name = ?", name); err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the name: %v", name), Operation: op, Err: err}
+	}
+	return c, nil
+}
+
+// Get the parent category by ID
+// Returns errors.NOTFOUND if the category was not found by the given slug.
+func (s *CategoryStore) GetParent(id int) (domain.Category, error) {
+	const op = "CategoryRepository.GetByParent"
+	var c domain.Category
+	if err := s.db.Get(&c, "SELECT * FROM categories WHERE parent_id = ?", id); err != nil {
+		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the parent ID: %d", id), Operation: op, Err: err}
 	}
 	return c, nil
 }

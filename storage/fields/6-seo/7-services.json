@@ -1,0 +1,54 @@
+{
+	"uuid": "ff3087a4-4f49-11eb-ae93-0242ac130002",
+	"title": "Services",
+	"fields": [
+		{
+			"uuid": "ff3089f2-4f49-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "services_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "ff308aec-4f49-11eb-ae93-0242ac130002",
+			"label": "Left Column",
+			"name": "services_left_col",
+			"type": "richtext",
+			"instructions": "Add content for the left hand columm.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "09b5ad9e-4f4a-11eb-ae93-0242ac130002",
+			"label": "Right Column",
+			"name": "services_right_col",
+			"type": "richtext",
+			"instructions": "Add content for the right hand columm.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "seo"
+			}
+		]
+	]
+}

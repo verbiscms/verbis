@@ -1,0 +1,54 @@
+{
+	"uuid": "62bc6910-4e9a-11eb-ae93-0242ac130002",
+	"title": "Team Banner",
+	"fields": [
+		{
+			"uuid": "62bc6b7c-4e9a-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "banner_title",
+			"type": "text",
+			"instructions": "Add a title for the team banner.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "62bc6f6e-4e9a-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "banner_content",
+			"type": "text",
+			"instructions": "Add content for the team banner.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "d46843fe-4e9a-11eb-ae93-0242ac130002",
+			"label": "Image",
+			"name": "banner_image",
+			"type": "image",
+			"instructions": "Add a image for the team banner.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "team"
+			}
+		]
+	]
+}

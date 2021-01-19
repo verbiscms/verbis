@@ -1,0 +1,72 @@
+{
+	"uuid": "e9039c8c-439b-11eb-b378-0242ac130002",
+	"title": "Intro",
+	"fields": [
+		{
+			"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e1725",
+			"label": "Title",
+			"name": "intro_title",
+			"type": "text",
+			"instructions": "Add a title for the intro section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "Add an intro title",
+				"prepend": "",
+				"append": ""
+			}
+		},
+		{
+			"uuid": "e9039da4-439b-11eb-b378-0242ac130002",
+			"label": "Content",
+			"name": "intro_content",
+			"type": "textarea",
+			"instructions": "Add text which will appear at the right hand side of the image underneath the title.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "paragraph"
+			}
+		},
+		{
+			"uuid": "e9039f20-439b-11eb-b378-0242ac130002",
+			"label": "Image",
+			"name": "intro_image",
+			"type": "image",
+			"instructions": "Add a image for the intro section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "home"
+			}
+		]
+	]
+}

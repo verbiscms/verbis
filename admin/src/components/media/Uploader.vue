@@ -842,6 +842,7 @@ export default {
 			margin: 0;
 			border-radius: 4px;
 			overflow: hidden;
+			background-color: darken($bg-color, 2%);
 
 			img {
 				width: 100%;

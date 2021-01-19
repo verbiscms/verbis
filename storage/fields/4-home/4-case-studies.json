@@ -1,0 +1,32 @@
+{
+	"uuid": "cf84fe02-4e7e-11eb-ae93-0242ac130002",
+	"title": "Case Studies",
+	"fields": [
+		{
+			"uuid": "cf8500c8-4e7e-11eb-ae93-0242ac130002",
+			"label": "Case Study",
+			"name": "case_studies",
+			"type": "post",
+			"instructions": "Add 3 case studies to appear on the homepage.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"category": "",
+				"min": 3,
+				"max": 3
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "home"
+			}
+		]
+	]
+}

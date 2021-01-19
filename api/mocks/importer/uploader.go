@@ -14,7 +14,7 @@ type uploader struct {
 }
 
 // Execute provides a mock function with given fields: file, url, err
-func (_m *uploader) Execute(file *multipart.FileHeader, url string, err error) (string, error) {
+func (_m *uploader) Execute(file *multipart.FileHeader, url string, err error) string {
 	ret := _m.Called(file, url, err)
 
 	var r0 string
@@ -24,12 +24,5 @@ func (_m *uploader) Execute(file *multipart.FileHeader, url string, err error) (
 		r0 = ret.Get(0).(string)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(*multipart.FileHeader, string, error) error); ok {
-		r1 = rf(file, url, err)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }

@@ -1,0 +1,79 @@
+{
+	"uuid": "3ab8ec5e-5020-11eb-ae93-0242ac130002",
+	"title": "Hero",
+	"fields": [
+		{
+			"uuid": "3ab8eeb6-5020-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "hero_title",
+			"type": "textarea",
+			"instructions": "Add a title for the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "line_break"
+			}
+		},
+		{
+			"uuid": "3ab8efc4-5020-11eb-ae93-0242ac130002",
+			"label": "Lead",
+			"name": "hero_lead",
+			"type": "textarea",
+			"instructions": "Add lead text for the hero which will appear beneath the title.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "paragraph"
+			}
+		},
+		{
+			"uuid": "3ab8f0aa-5020-11eb-ae93-0242ac130002",
+			"label": "Featured News Item",
+			"name": "featured",
+			"type": "post",
+			"instructions": "This will appear as a full width card.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"resource": [
+					"news"
+				],
+				"category": "",
+				"min": 0,
+				"max": 1
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "news-archive"
+			}
+		]
+	]
+}
+
+

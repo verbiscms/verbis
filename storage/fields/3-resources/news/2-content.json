@@ -1,0 +1,45 @@
+{
+	"uuid": "2dedc65c-5016-11eb-ae93-0242ac130002",
+	"title": "Content",
+	"fields": [
+		{
+			"uuid": "c36308b0-5024-11eb-ae93-0242ac130002",
+			"label": "Excerpt",
+			"name": "excerpt",
+			"type": "textarea",
+			"instructions": "Add an excerpt for the news item, it will appear in the news archive page.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"rows": 4
+			}
+		},
+		{
+			"uuid": "2dedc760-5016-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "content",
+			"type": "richtext",
+			"instructions": "Add content for the news item.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"height": "1000px"
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "news"
+			}
+		]
+	]
+}

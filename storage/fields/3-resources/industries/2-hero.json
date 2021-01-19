@@ -1,0 +1,112 @@
+{
+	"uuid": "e52ba44e-4f65-11eb-ae93-0242ac130002",
+	"title": "Hero",
+	"fields": [
+		{
+			"uuid": "e52ba6ec-4f65-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "hero_title",
+			"type": "textarea",
+			"instructions": "Add a title for the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "line_break"
+			}
+		},
+		{
+			"uuid": "e52ba7f0-4f65-11eb-ae93-0242ac130002",
+			"label": "Lead",
+			"name": "hero_lead",
+			"type": "textarea",
+			"instructions": "Add lead text for the hero which will appear beneath the title.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 50
+			},
+			"options": {
+				"maxlength": "",
+				"default_value": "",
+				"placeholder": "",
+				"prepend": "",
+				"append": "",
+				"rows": 4,
+				"format": "paragraph"
+			}
+		},
+		{
+			"uuid": "e52baa52-4f65-11eb-ae93-0242ac130002",
+			"label": "Image",
+			"name": "hero_image",
+			"type": "image",
+			"instructions": "Add an image for the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		},
+		{
+			"uuid": "e52ba8b8-4f65-11eb-ae93-0242ac130002",
+			"label": "Logos",
+			"name": "hero_logos",
+			"type": "repeater",
+			"instructions": "Add logo's to appear at the bottom of the hero.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": ""
+			},
+			"sub_fields": [
+				{
+					"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5735",
+					"label": "Logo",
+					"name": "logo",
+					"type": "image",
+					"instructions": "Add a logo",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {
+						"tabs": "all",
+						"toolbar": "full",
+						"media_upload": 1
+					}
+				}
+			]
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "industries"
+			}
+		]
+	]
+}

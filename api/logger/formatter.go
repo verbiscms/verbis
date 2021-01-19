@@ -137,6 +137,8 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 		b.Write(s.Bytes())
 	}
 
+	b = bytes.NewBuffer([]byte(strings.TrimSuffix(b.String(), "|")))
+
 	b.WriteString("\n")
 
 	return b.Bytes(), nil
@@ -146,7 +148,7 @@ func (f *Formatter) printError(errorData errors.Error) *bytes.Buffer {
 	b := &bytes.Buffer{}
 
 	if errorData.Error() != "" {
-		if errorData.Code != errors.NOTFOUND {
+		//if errorData.Code != errors.NOTFOUND {
 			if errorData.Code != "" {
 				if f.Colours {
 					b.WriteString(color.Red.Sprintf(" [code] %s", errorData.Code))
@@ -170,7 +172,7 @@ func (f *Formatter) printError(errorData errors.Error) *bytes.Buffer {
 					b.WriteString(fmt.Sprintf(" [error] %s", errorData.Err.Error()))
 				}
 			}
-		}
+	//	}
 	}
 
 	return b

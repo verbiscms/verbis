@@ -1,0 +1,64 @@
+{
+	"uuid": "d02d8a18-50d1-11eb-ae93-0242ac130002",
+	"title": "Quotes",
+	"fields": [
+		{
+			"uuid": "d02d8d74-50d1-11eb-ae93-0242ac130002",
+			"label": "Quotes",
+			"name": "quotes",
+			"type": "repeater",
+			"instructions": "Add quotes to appear in the section, if more than 1 is added it will automatically become a slider.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": ""
+			},
+			"sub_fields": [
+				{
+					"uuid": "d02d8ff4-50d1-11eb-ae93-0242ac130002",
+					"label": "Quote",
+					"name": "quote",
+					"type": "textarea",
+					"instructions": "Add a quote for the section.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {
+						"rows": 4
+					}
+				},
+				{
+					"uuid": "d02d918e-50d1-11eb-ae93-0242ac130002",
+					"label": "Quote Author",
+					"name": "quote_author",
+					"type": "text",
+					"instructions": "Add a author for the section.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {}
+				}
+			]
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "page_template",
+				"operator": "==",
+				"value": "home"
+			}
+		]
+	]
+}

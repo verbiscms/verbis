@@ -4,7 +4,6 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
-		<pre>	{{ fields.image }}</pre>
 			<!-- =====================
 				Header
 				===================== -->
@@ -539,7 +538,7 @@ export default {
 						this.$set(this.data, 'resource', null)
 					}
 
-					this.$set(this.data, 'fields', new FieldParser(this.fields, this.fieldLayout).flattenFields())
+					this.$set(this.data, 'fields', new FieldParser(this.fields, this.fieldLayout).flattenFields());
 
 					if (this.newItem) {
 						this.axios.post("/posts", this.data)
