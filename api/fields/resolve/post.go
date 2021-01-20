@@ -28,5 +28,5 @@ func (v *Value) post(value domain.FieldValue) (interface{}, error) {
 		return nil, err
 	}
 
-	return formatPost, nil
+	return formatPost.ViewPost(), nil
 }

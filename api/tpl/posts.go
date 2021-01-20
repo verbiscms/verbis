@@ -7,14 +7,6 @@ import (
 	"github.com/spf13/cast"
 )
 
-// ViewPost represents the data to be sent back to the template
-// once acquired.
-type ViewPost struct {
-	Author   *domain.PostAuthor
-	Category *domain.PostCategory
-	domain.Post
-}
-
 // getPost
 //
 // Obtains the post by ID and returns a domain.Post type
@@ -72,7 +64,7 @@ func (t *TemplateManager) getPosts(query map[string]interface{}) (map[string]int
 		return nil, err
 	}
 
-	var returnPosts []ViewPost
+	var returnPosts []domain.ViewPost
 	for _, post := range posts {
 		formattedPost, err := t.formatPost(post)
 		if err != nil {
@@ -120,16 +112,12 @@ func (t *TemplateManager) getPaginationPage() int {
 // ready to be returned to the template. It removes
 // layouts from the formatting as it is not
 // needed in the frontend.
-func (t *TemplateManager) formatPost(post domain.Post) (ViewPost, error) {
+func (t *TemplateManager) formatPost(post domain.Post) (domain.ViewPost, error) {
 
 	fp, err := t.store.Posts.Format(post)
 	if err != nil {
-		return ViewPost{}, err
+		return domain.ViewPost{}, err
 	}
 
-	return ViewPost{
-		Author:   fp.Author,
-		Category: fp.Category,
-		Post:     fp.Post,
-	}, nil
+	return fp.ViewPost(), nil
 }
