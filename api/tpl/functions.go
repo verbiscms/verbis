@@ -55,6 +55,24 @@ func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Co
 	}
 }
 
+// ToSliceE casts an interface to a []interface{} type.
+func ToSlice(i interface{}) []interface{} {
+	var s []interface{}
+
+	switch v := i.(type) {
+	case []interface{}:
+		return append(s, v...)
+	case []map[string]interface{}:
+		for _, u := range v {
+			s = append(s, u)
+		}
+		return s
+	default:
+		s = append(s, i)
+		return s
+	}
+}
+
 // Get all template functions
 func (t *TemplateManager) GetFunctions() template.FuncMap {
 
@@ -73,7 +91,7 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		// Cast
 		"toBool":     cast.ToBool,
 		"toString":   cast.ToString,
-		"toSlice": 	  cast.ToSlice,
+		"toSlice": 	  ToSlice,
 		"toTime":     cast.ToTime,
 		"toDuration": cast.ToDuration,
 		"toInt":      cast.ToInt,
