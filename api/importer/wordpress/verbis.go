@@ -7,6 +7,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/importer"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/gookit/color"
 	"github.com/kyokomi/emoji"
 	"mime/multipart"
 	"runtime"
@@ -346,15 +347,19 @@ func (c *Convert) populateAuthors() []domain.UserPart {
 		exists := c.store.User.ExistsByEmail(v.AuthorEmail)
 
 		if !exists {
+
 			user, password, err := c.createUser(v)
 			if err != nil {
 				continue
 			}
 
+			color.Green.Println(fmt.Sprintf("User: %s Password: %s", user.Email, password))
+
 			if c.sendEmail {
 				// User can't login!
 				err = importer.SendNewPassword(user.HideCredentials(), password, *c.store.Site.GetGlobalConfig())
 				if err != nil {
+					color.Red.Println(err)
 					continue
 				}
 			}

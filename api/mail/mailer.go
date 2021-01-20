@@ -69,24 +69,28 @@ func (m *Mailer) load() error {
 func (m *Mailer) Send(t *Sender) {
 	const op = "mail.Send"
 
-	go func() {
-		tx := &sp.Transmission{
-			Recipients: t.To,
-			Content: sp.Content{
-				HTML:    t.HTML,
-				From:    m.FromAddress,
-				Subject: t.Subject,
-			},
-		}
+	tx := &sp.Transmission{
+		Recipients: t.To,
+		Content: sp.Content{
+			HTML:    t.HTML,
+			From:    m.FromAddress,
+			Subject: t.Subject,
+		},
+	}
 
-		id, _, err := m.client.Send(tx)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"error": &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err},
-			})
-		}
-	}()
+	id, _, err := m.client.Send(tx)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err},
+		})
+		return
+	}
+
+	// TODO: Nil pointer dereference here for logging?
+	fmt.Println("Email successfully sent")
 }
+
+
 
 // Execute the mail HTML files
 // Returns errors.INTERNAL if the render failed

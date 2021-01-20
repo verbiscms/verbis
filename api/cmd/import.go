@@ -41,7 +41,7 @@ and convert the data into Verbis content. `,
 
 			file := getXMLFile()
 
-			wp, err := wordpress.New(file, store, false)
+			wp, err := wordpress.New(file, store, true)
 			if err != nil {
 				printError(err.Error())
 			}
