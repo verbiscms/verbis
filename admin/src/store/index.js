@@ -73,6 +73,9 @@ export default new Vuex.Store({
 		},
 		setProfilePicture(state, picture) {
 			state.profilePicture = picture;
+		},
+		addUser(state, user) {
+			state.users.push(user);
 		}
 	},
 	actions: {

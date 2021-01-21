@@ -16,7 +16,7 @@ type ErrorHandler interface {
 
 type Errors struct {
 	ThemeConfig domain.ThemeConfig
-	Store *models.Store
+	Store       *models.Store
 }
 
 func (e *Errors) NotFound(g *gin.Context) {
@@ -27,7 +27,7 @@ func (e *Errors) NotFound(g *gin.Context) {
 		Root:         paths.Theme(),
 		Extension:    e.ThemeConfig.FileExtension,
 		Partials:     []string{},
-		Funcs: tm.GetFunctions(),
+		Funcs:        tm.GetFunctions(),
 		DisableCache: true,
 	})
 

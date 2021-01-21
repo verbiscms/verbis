@@ -110,6 +110,18 @@ export default {
 			this.getMediaById();
 		}
 	},
+	watch: {
+		/*
+		 * fields()
+		 * Watch the fields and if value changes, go and grab the
+		 * new media item (for repeater items).
+		 */
+		fields: {
+			handler() {
+				this.getMediaById();
+			},
+		},
+	},
 	methods: {
 		/*
 		 * validate()

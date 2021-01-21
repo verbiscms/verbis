@@ -441,7 +441,7 @@ export default {
 		 * Return media for filtering profile picture.
 		 */
 		getMedia() {
-			this.axios.get("/media")
+			this.axios.get("/media?limit=all")
 				.then(res => {
 					this.media = res.data.data;
 				})

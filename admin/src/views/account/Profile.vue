@@ -224,7 +224,6 @@
 						</div><!-- /Col -->
 					</div><!-- /Row -->
 				</div><!-- Form Group -->
-				{{ data }}
 			</form>
 		</div><!-- /Container -->
 		<!-- =====================

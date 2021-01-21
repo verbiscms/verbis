@@ -10,7 +10,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 		fields []domain.PostField
 		input  interface{}
 		want   interface{}
-		err bool
+		err    bool
 	}{
 		"Cast to Repeater": {
 			fields: nil,
@@ -28,13 +28,13 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 			fields: nil,
 			input:  noStringer{},
 			want:   "unable to cast fields.noStringer{} of type fields.noStringer to string",
-			err: true,
+			err:    true,
 		},
 		"No Field": {
 			fields: nil,
 			input:  "test",
 			want:   "no field exists with the name: test",
-			err: true,
+			err:    true,
 		},
 		"Wrong Field Type": {
 			fields: []domain.PostField{
@@ -42,7 +42,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 			},
 			input: "test",
 			want:  "field with the name: test, is not a repeater",
-			err: true,
+			err:   true,
 		},
 	}
 

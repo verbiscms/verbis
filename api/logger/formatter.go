@@ -149,30 +149,30 @@ func (f *Formatter) printError(errorData errors.Error) *bytes.Buffer {
 
 	if errorData.Error() != "" {
 		//if errorData.Code != errors.NOTFOUND {
-			if errorData.Code != "" {
+		if errorData.Code != "" {
+			if f.Colours {
+				b.WriteString(color.Red.Sprintf(" [code] %s", errorData.Code))
+			} else {
+				b.WriteString(fmt.Sprintf("| [code] %s", errorData.Code))
+			}
+		}
+		if errorData.Operation != "" {
+			if api.SuperAdmin {
 				if f.Colours {
-					b.WriteString(color.Red.Sprintf(" [code] %s", errorData.Code))
+					b.WriteString(color.Red.Sprintf(" [operation] %s", errorData.Operation))
 				} else {
-					b.WriteString(fmt.Sprintf("| [code] %s", errorData.Code))
+					b.WriteString(fmt.Sprintf(" [operation] %s", errorData.Operation))
 				}
 			}
-			if errorData.Operation != "" {
-				if api.SuperAdmin {
-					if f.Colours {
-						b.WriteString(color.Red.Sprintf(" [operation] %s", errorData.Operation))
-					} else {
-						b.WriteString(fmt.Sprintf(" [operation] %s", errorData.Operation))
-					}
-				}
+		}
+		if errorData.Err != nil {
+			if f.Colours {
+				b.WriteString(color.Red.Sprintf(" [error] %s", errorData.Err.Error()))
+			} else {
+				b.WriteString(fmt.Sprintf(" [error] %s", errorData.Err.Error()))
 			}
-			if errorData.Err != nil {
-				if f.Colours {
-					b.WriteString(color.Red.Sprintf(" [error] %s", errorData.Err.Error()))
-				} else {
-					b.WriteString(fmt.Sprintf(" [error] %s", errorData.Err.Error()))
-				}
-			}
-	//	}
+		}
+		//	}
 	}
 
 	return b

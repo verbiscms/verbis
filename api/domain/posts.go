@@ -89,6 +89,7 @@ func (p *PostData) ViewPost() ViewPost {
 		Post:     p.Post,
 	}
 }
+
 type PostField struct {
 	Id            int         `db:"id" json:"-"`
 	PostId        int         `db:"post_id" json:"-"`

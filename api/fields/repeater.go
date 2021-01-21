@@ -51,6 +51,7 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 		log.WithFields(log.Fields{
 			"error": &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the name: %s, is not a repeater", name)},
 		}).Error()
+		return nil
 	}
 
 	return s.resolveRepeater("", field, fields)

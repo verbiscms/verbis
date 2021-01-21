@@ -3,8 +3,8 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="repeater">
-		<draggable @start="drag=true" :list="repeaterFields['children']" :group="repeaterFields['children']" :sort="true" handle=".repeater-handle">
-			<div class="repeater" v-for="(repeater, repeaterIndex) in repeaterFields['children']" :key="repeaterIndex">
+		<draggable @start="drag=true" :list="sortedChildren" :group="sortedChildren" :sort="true" handle=".repeater-handle">
+			<div class="repeater" v-for="(repeater, repeaterIndex) in sortedChildren" :key="repeaterIndex">
 					<div class="card-header">
 						<h4>{{ layout.label }} item {{ repeaterIndex + 1 }}</h4>
 						<div class="card-controls">
@@ -265,7 +265,13 @@ export default {
 		 * up or down.
 		 */
 		moveItem(from, to) {
+			//this.rendering = true;
+
 			this.repeaterFields['children'].splice(to, 0, this.repeaterFields['children'].splice(from, 1)[0]);
+
+			// this.$nextTick(() => {
+			// 	this.rendering = false;
+			// });
 		},
 		/*
 		 * updateChildIndex()
@@ -292,6 +298,11 @@ export default {
 		}
 	},
 	computed: {
+
+		sortedChildren() {
+		//	this.repeaterFields['children'].sort(function(a, b) {     return parseFloat(a) - parseFloat(b); });
+			return this.repeaterFields['children'];
+		},
 		/*
 		 * getOptions()
 		 * Get the field options.

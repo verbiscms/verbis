@@ -1,11 +1,13 @@
 package api
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/color"
 )
 
 // AuthHandler defines methods for auth methods to interact with the server
@@ -42,17 +44,21 @@ func (c *Auth) Login(g *gin.Context) {
 
 	var l domain.Login
 	if err := g.ShouldBindJSON(&l); err != nil {
+		fmt.Print(err)
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	user, err := c.store.Auth.Authenticate(l.Email, l.Password)
 	if err != nil {
+		fmt.Print(err)
 		Respond(g, 401, errors.Message(err), err)
 		return
 	}
 	user.HidePassword()
 
+	color.Green.Println(user)
+	color.Green.Println(user.Token)
 	g.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true)
 
 	Respond(g, 200, "Successfully logged in & session started", user)

@@ -43,7 +43,7 @@ func (s *SeoMetaStore) UpdateCreate(p *domain.Post) error {
 // Exists Checks if a seo meta record exists by Id
 func (s *SeoMetaStore) exists(id int) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT page_id FROM post_options WHERE page_id = ?)", id).Scan(&exists)
+	_ = s.db.QueryRow("SELECT EXISTS (SELECT post_id FROM post_options WHERE post_id = ?)", id).Scan(&exists)
 	return exists
 }
 
@@ -51,7 +51,7 @@ func (s *SeoMetaStore) exists(id int) bool {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *SeoMetaStore) create(p *domain.Post) error {
 	const op = "SeoMetaRepository.create"
-	_, err := s.db.Exec("INSERT INTO post_options (page_id, seo, meta) VALUES (?, ?, ?)", p.Id, p.SeoMeta.Seo, p.SeoMeta.Meta)
+	_, err := s.db.Exec("INSERT INTO post_options (post_id, seo, meta) VALUES (?, ?, ?)", p.Id, p.SeoMeta.Seo, p.SeoMeta.Meta)
 	if err != nil {
 		fmt.Println(err)
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the seo meta options record for post title: %v", p.Title), Operation: op, Err: err}
@@ -63,7 +63,7 @@ func (s *SeoMetaStore) create(p *domain.Post) error {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *SeoMetaStore) update(p *domain.Post) error {
 	const op = "SeoMetaRepository.update"
-	_, err := s.db.Exec("UPDATE post_options SET seo = ?, meta = ? WHERE page_id = ?", p.SeoMeta.Seo, p.SeoMeta.Meta, p.Id)
+	_, err := s.db.Exec("UPDATE post_options SET seo = ?, meta = ? WHERE post_id = ?", p.SeoMeta.Seo, p.SeoMeta.Meta, p.Id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the seo meta options for the post title: %v", p.Title), Operation: op, Err: err}
 	}

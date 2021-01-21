@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -144,6 +145,8 @@ func (c *Posts) Update(g *gin.Context) {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
+
+	cache.ClearPostCache(post.Id)
 
 	id, err := strconv.Atoi(g.Param("id"))
 	if err != nil {

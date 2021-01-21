@@ -11,7 +11,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
+	"net/url"
+	"path"
+	"path/filepath"
 	"strings"
 )
 
@@ -23,17 +25,27 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		<-api.ServeChan
 	}()
 
-	url := g.Request.URL.Path
-
-	//url, hasRedirected := r.handleTrailingSlash(g)
-	//if hasRedirected {
-	//	return nil, nil
-	//}
-	//color.Green.Println(url)
+	//url := g.Request.URL.Path
+	url, hasRedirected := r.handleTrailingSlash(g)
+	if hasRedirected {
+		return nil, nil
+	}
 
 	post, err := r.store.Posts.GetBySlug(url)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No page found with the url: %s", url), Operation: op, Err: err}
+	}
+
+	// Check if the file has been cached
+	var foundCache bool
+	cacheKey := cache.GetPostKey(post.Id)
+	if r.options.CacheServerTemplates {
+		var cachedTemplate interface{}
+		cachedTemplate, foundCache = cache.Store.Get(cacheKey)
+
+		if cachedTemplate != nil && foundCache {
+			return cachedTemplate.([]byte), nil
+		}
 	}
 
 	postData, err := r.store.Posts.Format(post)
@@ -48,17 +60,6 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 			if v.Hidden && v.Name == *resource {
 				return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("The post resource is not public: %v", resource), Operation: op, Err: err}
 			}
-		}
-	}
-
-	// Check if the file has been cached
-	var foundCache bool
-	if r.options.CacheServerAssets {
-		var cachedTemplate interface{}
-		cachedTemplate, foundCache = cache.Store.Get(url)
-
-		if cachedTemplate != nil && foundCache {
-			return cachedTemplate.([]byte), nil
 		}
 	}
 
@@ -102,7 +103,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 
 	go func() {
 		if r.options.CacheServerTemplates && !foundCache {
-			cache.Store.Set(url, minified, cache.RememberForever)
+			cache.Store.Set(cacheKey, minified, cache.RememberForever)
 		}
 	}()
 
@@ -110,29 +111,45 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 }
 
 func (r *Render) handleTrailingSlash(g *gin.Context) (string, bool) {
-	url := g.Request.URL.Path
+	p := g.Request.URL.Path
 
-	lastChar := url[len(url)-1:]
+	// True if options enforce slash is set in admin
 	trailing := r.options.SeoEnforceSlash
+	lastChar := p[len(p)-1:]
 
-	color.Red.Println(url)
-	color.Red.Println(trailing)
+	uri, err := url.Parse(p)
+	if err != nil {
+		return p, false
+	}
+
+	base := path.Base(uri.Path)
+	ext := filepath.Ext(base)
+	if ext != "" {
+		return p, false
+	}
+
+	/// TODO: Remove trailing slash on api
+	// Add cannoical.
+
+
+	// Must be homepage
+	if p == "/" {
+		return "/", false
+	}
 
 	if lastChar != "/" && trailing {
-		g.Redirect(301, url+"/")
+		g.Redirect(301, p+"/")
 		return "", true
 	}
 
-	if lastChar == "/" && !trailing && url != "/" {
-		g.Redirect(301, strings.TrimSuffix(url, "/"))
+	if lastChar == "/" && !trailing {
+		g.Redirect(301, strings.TrimSuffix(p, "/"))
 		return "", true
 	}
 
-	if lastChar == "/" && url != "/" {
-		url = strings.TrimSuffix(url, "/")
+	if lastChar == "/" {
+		p = strings.TrimSuffix(p, "/")
 	}
 
-	color.Green.Println(url)
-
-	return url, false
+	return p, false
 }
