@@ -1,12 +1,14 @@
 package api
 
 import (
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -150,6 +152,7 @@ func (c *User) Update(g *gin.Context) {
 	}
 	u.Id = id
 
+
 	updatedUser, err := c.store.User.Update(&u)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
@@ -158,6 +161,8 @@ func (c *User) Update(g *gin.Context) {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
+
+	defer c.clearCache(updatedUser.Id)
 
 	Respond(g, 200, "Successfully updated user with ID: "+strconv.Itoa(u.Id), updatedUser)
 }
@@ -225,4 +230,17 @@ func (c *User) ResetPassword(g *gin.Context) {
 	}
 
 	Respond(g, 200, "Successfully updated password for the user with ID: "+strconv.Itoa(id), nil)
+}
+
+// clearCache
+// Clear the post cache that have the given user ID
+// attached to it.
+func (c *User) clearCache(id int) {
+	go func() {
+		posts, _, err := c.store.Posts.Get(http.Params{LimitAll: true}, "", "")
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Fatal()
+		}
+		cache.ClearUserCache(id, posts)
+	}()
 }

@@ -1,5 +1,8 @@
 {{ define "content" }}
 
+
+    <img src="/uploads/2021/01/screenshot-2021-01-20-at-165119.png" alt="">
+
     <!-- End Navbar -->
     <div class="wrapper">
         <div class="section section-hero section-shaped">

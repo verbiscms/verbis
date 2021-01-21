@@ -1,23 +1,14 @@
 {{ define "content" }}
 
-    <div style="padding:100px;">
-        <h1>Repeater</h1>
-        <!-- Repeater -->
-        {{ $repeater := repeater "repeater" }}
-        {{ if $repeater.HasRows }}
-            {{ range $row := $repeater}}
-                {{  $row.SubField "text" }}
 
-                <!-- Nested Repeater -->
-                {{ $nested := $row.SubField "nested" }}
-                {{ if $nested.HasRows }}
-                    {{ range $nestedrow := $nested }}
-                        {{ $nestedrow.SubField "text_test" }}
-                    {{ end }}
-               {{ end }}
+    <div style="padding: 20px">
+        {{ .Post.Title }}
+        {{ $result := posts (dict "limit" 99999999 "order_direction" "asc") }}
+        HEY HEYggg
 
-            {{ end }}
-        {{ end }}
+        {{ .Post.Author.FirstName }}
+        {{ $result.Posts }}
     </div>
 
-{{ end }}å
+
+{{ end }}

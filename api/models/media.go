@@ -80,7 +80,12 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 	const op = "MediaRepository.Get"
 
 	var m []domain.Media
-	q := fmt.Sprintf("SELECT * FROM media")
+	q := `SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at,
+    CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
+    CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt',
+    CASE WHEN description IS NULL THEN '' ELSE alt END AS 'description'
+	FROM media`;
+
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM media")
 
 	// Apply filters to total and original query
@@ -301,9 +306,9 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 	m := domain.Media{
 		UUID:        uuid,
 		Url:         s.getUrl() + "/" + name,
-		Title:       nil,
-		Description: nil,
-		Alt:         nil,
+		Title:       "",
+		Description: "",
+		Alt:         "",
 		FilePath:    filePath,
 		FileSize:    fileSize,
 		FileName:    name,

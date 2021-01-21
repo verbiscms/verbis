@@ -14,7 +14,7 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 		layout []domain.FieldGroup
 		args   []interface{}
 		want   interface{}
-		err bool
+		err    bool
 	}{
 		"Success": {
 			id:   1,
@@ -38,7 +38,7 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 			layout: nil,
 			args:   nil,
 			want:   "no groups exist",
-			err: true,
+			err:    true,
 		},
 	}
 

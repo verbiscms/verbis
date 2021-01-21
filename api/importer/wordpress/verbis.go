@@ -27,11 +27,11 @@ var (
 )
 
 type Convert struct {
-	XML     WpXml
-	failed  Failures
-	store   *models.Store
-	authors []domain.User
-	owner   domain.User
+	XML       WpXml
+	failed    Failures
+	store     *models.Store
+	authors   []domain.User
+	owner     domain.User
 	sendEmail bool
 }
 
@@ -56,10 +56,10 @@ func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
 	}
 
 	return &Convert{
-		XML:    wp,
-		failed: Failures{},
-		store:  s,
-		owner:  owner,
+		XML:       wp,
+		failed:    Failures{},
+		store:     s,
+		owner:     owner,
 		sendEmail: sendEmail,
 	}, nil
 }
@@ -74,9 +74,9 @@ func (c *Convert) Import() {
 	posts, categories := c.populatePosts()
 
 	r := Result{
-		Failed: c.failed,
-		Posts: 	 posts,
-		Authors: authors,
+		Failed:     c.failed,
+		Posts:      posts,
+		Authors:    authors,
 		Categories: categories,
 	}
 

@@ -57,32 +57,15 @@ func (t *TemplateManager) getPosts(query map[string]interface{}) (map[string]int
 		return nil, err
 	}
 
-	posts, total, err := t.store.Posts.Get(p.Params, p.Resource, "published")
+	posts, total, err := t.store.Posts.NewGetTest(p.Params, p.Resource, "published")
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
 
-	var returnPosts []domain.ViewPost
-	for _, post := range posts {
-		formattedPost, err := t.formatPost(post)
-		if err != nil {
-			continue
-		}
-
-		if p.Category == "" {
-			returnPosts = append(returnPosts, formattedPost)
-			continue
-		}
-
-		if p.Category == formattedPost.Category.Name {
-			returnPosts = append(returnPosts, formattedPost)
-		}
-	}
-
 	return map[string]interface{}{
-		"Posts":      returnPosts,
+		"Posts":      posts,
 		"Pagination": http.NewPagination().Get(p.Params, total),
 	}, nil
 }

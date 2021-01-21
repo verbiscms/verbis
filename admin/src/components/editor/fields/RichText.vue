@@ -787,17 +787,17 @@ $richtext-border-radius: 10px;
 		ul {
 			list-style: none;
 
-			&:before {
-				position: relative;
-				content: "\2022";
-				color: $secondary;
-				font-weight: bold;
-				display: inline-block;
-				width: 1em;
-			}
-
 			li {
-				display: inline-block;
+				display: block;
+
+				&:before {
+					position: relative;
+					content: "\2022";
+					color: $secondary;
+					font-weight: bold;
+					display: inline-block;
+					width: 1em;
+				}
 			}
 		}
 

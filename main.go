@@ -17,9 +17,11 @@ package main
 
 import (
 	"github.com/ainsleyclark/verbis/api/cmd"
+	"runtime"
 )
 
 func main() {
 	// Execute Verbis
+	runtime.GOMAXPROCS(runtime.NumCPU())
 	cmd.Execute()
 }
