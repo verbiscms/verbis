@@ -26,7 +26,7 @@ type PostsRepository interface {
 	Exists(slug string) bool
 	Total() (int, error)
 
-	NewGetTest(meta http.Params, resource string, status string) ([]*TestPostRaw, int, error)
+	NewGetTest(meta http.Params, resource string, status string) (interface{}, int, error)
 }
 
 // PostStore defines the data layer for Posts
@@ -51,33 +51,42 @@ func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 
 type TestPostRaw struct {
 	domain.Post
-	Author        domain.UserPart   `db:"author"`
-	Category      *domain.Category  `db:"category"`
-	UUID          uuid.UUID         `db:"field_uuid"`
-	Type          string            `db:"field_type"`
-	Name          string            `db:"field_name"`
-	Key           string            `db:"field_key"`
-	OriginalValue domain.FieldValue `db:"field_value"`
+	Author        domain.User   `db:"author"`
+	Category      domain.Category  `db:"category"`
+	Field struct{
+		Id            int         `db:"field_id"`
+		PostId        int         `db:"post_id"`
+		UUID          *uuid.UUID   `db:"uuid"`
+		Type          string      `db:"type"`
+		Name          string      `db:"name"`
+		Key           string      `db:"field_key"`
+		OriginalValue string  `db:"value" json:"value"`
+	} `db:"field"`
 }
 
 type TestPost struct {
 	domain.Post `json:"post"`
-	Author      domain.UserPart    `json:"author"`
+	Author      domain.User    `json:"author"`
 	Category    *domain.Category   `json:"category"`
 	Fields      []domain.PostField `json:"fields"`
+	Layout      []domain.FieldGroup `json:"layout"`
 }
 
-func (s *PostStore) NewGetTest(meta http.Params, resource string, status string) ([]*TestPostRaw, int, error) {
+func (s *PostStore) NewGetTest(meta http.Params, resource string, status string) (interface{}, int, error) {
 	const op = "PostsRepository.Get"
 
 	q := `SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
        users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.first_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
        roles.id 'author.roles.id', roles.name 'author.roles.name', roles.description 'author.roles.description',
-       pf.uuid 'field_uuid', pf.type 'field_type', pf.name 'field_name', pf.field_key 'field_key', pf.value 'field_value',
+       pf.uuid 'field.uuid',
        CASE WHEN categories.id IS NULL THEN 0 ELSE categories.id END AS 'category.id',
        CASE WHEN categories.name IS NULL THEN '' ELSE categories.name END AS 'category.name',
-       CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource'
+       CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource',
+       CASE WHEN pf.id IS NULL THEN 0 ELSE pf.id END AS 'field.field_id',
+       CASE WHEN pf.type IS NULL THEN "" ELSE pf.type END AS 'field.type',
+       CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
+       CASE WHEN pf.value IS NULL THEN "" ELSE pf.value END AS 'field.value'
 FROM posts
          LEFT JOIN post_options ON posts.id = post_options.post_id
          RIGHT JOIN users ON posts.user_id = users.id
@@ -140,34 +149,70 @@ FROM posts
 	}
 
 	// Select posts
-	var p []*TestPostRaw
-	if err := s.db.Select(&p, q); err != nil {
+	var rawPosts []TestPostRaw
+	if err := s.db.Select(&rawPosts, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
-	// Return not found error if no posts are available
-	if len(p) == 0 {
-		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
-	}
-
-	// Count the total number of posts
-	var total int
-	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
-		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
-	}
-
-	//for i, v := range p {
-	//	fields, err := s.fieldsModel.GetByPost(v.Id)
-	//	if err != nil {
-	//		continue
-	//	}
-	//	p[i].Fields = fields
-	//	if v.Category.Id == 0 {
-	//		p[i].Category = nil
-	//	}
+	//// Return not found error if no posts are available
+	//if len(rawPosts) == 0 {
+	//	return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
+	//}
+	//
+	//// Count the total number of posts
+	//var total int
+	//if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+	//	return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
 	//}
 
-	return p, total, nil
+	var posts []TestPost
+	for _, v := range rawPosts {
+
+		if !find(posts, v.Id) {
+			var category *domain.Category = nil
+			if v.Category.Id != 0 {
+				category = &v.Category
+			}
+
+			posts = append(posts, TestPost{
+				Post:     v.Post,
+				Author:   v.Author,
+				Category: category,
+				Fields:   make([]domain.PostField, 0),
+				//Layout: s.fieldsModel.GetLayout(v.Post, v.Author, &v.Category),
+			})
+		}
+
+		if v.Field.UUID != nil {
+			field := domain.PostField{
+				Id:            v.Field.Id,
+				PostId:        v.Field.PostId,
+				UUID:          *v.Field.UUID,
+				Type:          v.Field.Type,
+				Name:          v.Field.Name,
+				Key:           v.Field.Key,
+				Value:         nil,
+				OriginalValue: domain.FieldValue(v.Field.OriginalValue),
+			}
+
+			for fi, fv := range posts {
+				if fv.Id == v.Id {
+					posts[fi].Fields = append(posts[fi].Fields, field)
+				}
+			}
+		}
+	}
+
+	return posts, 10, nil
+}
+
+func find(posts []TestPost, id int) bool {
+	for _, v := range posts {
+		if v.Id == id {
+			return true
+		}
+	}
+	return false
 }
 
 // Get all posts
@@ -300,6 +345,9 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 		p.Status = "draft"
 	}
 
+	// Remove any trailing slashes from slug.
+	p.Slug = strings.TrimRight(p.Slug, "/")
+
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
 	if err != nil {
@@ -358,6 +406,9 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	// Check if the author is set assign to owner if not.
 	p.Author = s.checkOwner(*p)
 	p.UserId = p.Author
+
+	// Remove any trailing slashes from slug.
+	p.Slug = strings.TrimRight(p.Slug, "/")
 
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"

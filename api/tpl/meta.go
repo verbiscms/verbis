@@ -48,11 +48,17 @@ func (t *TemplateManager) header() template.HTML {
 		b.WriteString(`<meta name="robots" content="noindex">`)
 	}
 
+	// Check if there are trailing slashes
+	slash := ""
+	if t.options.SeoEnforceSlash && t.post.Slug != "/" {
+		slash = "/"
+	}
+
 	// Write the Canonical
 	if seo.Canonical != nil && *seo.Canonical != "" {
-		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s" />`, *seo.Canonical))
+		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s%s" />`, *seo.Canonical, slash))
 	} else {
-		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s" />`, t.site.Url+t.post.Slug))
+		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s%s" />`, t.site.Url+t.post.Slug, slash))
 	}
 
 	// Obtain Meta
