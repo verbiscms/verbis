@@ -169,3 +169,17 @@ func (c *Categories) Delete(g *gin.Context) {
 
 	Respond(g, 200, "Successfully deleted category with ID: "+strconv.Itoa(id), nil)
 }
+
+
+// clearCache
+// Clear the post cache that have the given category ID
+// attached to it.
+//func (c *Categories) clearCache(id int) {
+//	go func() {
+//		posts, _, err := c.store.Posts.Get(http.Params{LimitAll: true}, "", "")
+//		if err != nil {
+//			log.WithFields(log.Fields{"error": err}).Fatal()
+//		}
+//		cache.ClearCategoryCache(id, posts)
+//	}()
+//}

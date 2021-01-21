@@ -34,7 +34,7 @@ func NewSEO(m *models.Store, config config.Configuration) *SEO {
 		sitemap: render.NewSitemap(m),
 		ErrorHandler: &render.Errors{
 			ThemeConfig: m.Site.GetThemeConfig(),
-			Store: m,
+			Store:       m,
 		},
 	}
 }

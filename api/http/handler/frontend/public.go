@@ -32,7 +32,7 @@ func NewPublic(m *models.Store, config config.Configuration) *Public {
 		render: render.NewRender(m, config),
 		ErrorHandler: &render.Errors{
 			ThemeConfig: m.Site.GetThemeConfig(),
-			Store: m,
+			Store:       m,
 		},
 	}
 }

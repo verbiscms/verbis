@@ -8,7 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"strings"
@@ -26,6 +25,8 @@ type PostsRepository interface {
 	Delete(id int) error
 	Exists(slug string) bool
 	Total() (int, error)
+
+	NewGetTest(meta http.Params, resource string, status string) ([]*TestPostRaw, int, error)
 }
 
 // PostStore defines the data layer for Posts
@@ -48,6 +49,127 @@ func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 	}
 }
 
+type TestPostRaw struct {
+	domain.Post
+	Author        domain.UserPart   `db:"author"`
+	Category      *domain.Category  `db:"category"`
+	UUID          uuid.UUID         `db:"field_uuid"`
+	Type          string            `db:"field_type"`
+	Name          string            `db:"field_name"`
+	Key           string            `db:"field_key"`
+	OriginalValue domain.FieldValue `db:"field_value"`
+}
+
+type TestPost struct {
+	domain.Post `json:"post"`
+	Author      domain.UserPart    `json:"author"`
+	Category    *domain.Category   `json:"category"`
+	Fields      []domain.PostField `json:"fields"`
+}
+
+func (s *PostStore) NewGetTest(meta http.Params, resource string, status string) ([]*TestPostRaw, int, error) {
+	const op = "PostsRepository.Get"
+
+	q := `SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
+       users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.first_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
+       users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
+       roles.id 'author.roles.id', roles.name 'author.roles.name', roles.description 'author.roles.description',
+       pf.uuid 'field_uuid', pf.type 'field_type', pf.name 'field_name', pf.field_key 'field_key', pf.value 'field_value',
+       CASE WHEN categories.id IS NULL THEN 0 ELSE categories.id END AS 'category.id',
+       CASE WHEN categories.name IS NULL THEN '' ELSE categories.name END AS 'category.name',
+       CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource'
+FROM posts
+         LEFT JOIN post_options ON posts.id = post_options.post_id
+         RIGHT JOIN users ON posts.user_id = users.id
+         LEFT JOIN user_roles ON users.id = user_roles.user_id
+         LEFT JOIN roles ON user_roles.role_id = roles.id
+         LEFT JOIN post_categories pc on posts.id = pc.post_id
+         LEFT JOIN categories on pc.category_id = categories.id
+         LEFT JOIN post_fields pf on posts.id = pf.post_id`
+
+	countQ := `SELECT COUNT(*) FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id`
+
+	// Apply filters to total and original query
+	filter, err := filterRows(s.db, meta.Filters, "posts")
+	if err != nil {
+		return nil, -1, err
+	}
+	q += filter
+	countQ += filter
+
+	// Get by resource
+	if resource != "all" && resource != "" {
+		if len(meta.Filters) > 0 {
+			q += fmt.Sprintf(" AND")
+			countQ += fmt.Sprintf(" AND")
+		} else {
+			q += fmt.Sprintf(" WHERE")
+			countQ += fmt.Sprintf(" WHERE")
+		}
+
+		// If the resource is pages or a resource
+		resourceQ := ""
+		if resource == "pages" {
+			resourceQ = fmt.Sprintf(" posts.resource IS NULL")
+		} else {
+			resourceQ = fmt.Sprintf(" posts.resource = '%s'", resource)
+		}
+
+		q += resourceQ
+		countQ += resourceQ
+	}
+
+	// Get Status
+	if status != "" {
+		if resource != "" {
+			q += fmt.Sprintf(" AND")
+			countQ += fmt.Sprintf(" AND")
+		}
+		q += fmt.Sprintf(" posts.status = '%s'", status)
+		countQ += fmt.Sprintf(" posts.status = '%s'", status)
+	}
+
+	// Apply order
+	if meta.OrderBy != "" {
+		q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
+	}
+
+	// Apply pagination
+	if !meta.LimitAll {
+		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
+	}
+
+	// Select posts
+	var p []*TestPostRaw
+	if err := s.db.Select(&p, q); err != nil {
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
+	}
+
+	// Return not found error if no posts are available
+	if len(p) == 0 {
+		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
+	}
+
+	// Count the total number of posts
+	var total int
+	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
+	}
+
+	//for i, v := range p {
+	//	fields, err := s.fieldsModel.GetByPost(v.Id)
+	//	if err != nil {
+	//		continue
+	//	}
+	//	p[i].Fields = fields
+	//	if v.Category.Id == 0 {
+	//		p[i].Category = nil
+	//	}
+	//}
+
+	return p, total, nil
+}
+
 // Get all posts
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no posts available.
@@ -55,8 +177,8 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 	const op = "PostsRepository.Get"
 
 	var p []domain.Post
-	q := fmt.Sprintf("SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.page_id")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN post_options ON posts.id = post_options.page_id")
+	q := fmt.Sprintf("SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id")
+	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id")
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.db, meta.Filters, "posts")
@@ -101,7 +223,9 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 	}
 
 	// Apply order
-	q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
+	if meta.OrderBy != "" {
+		q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
+	}
 
 	// Apply pagination
 	if !meta.LimitAll {
@@ -110,7 +234,6 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 
 	// Select posts
 	if err := s.db.Select(&p, q); err != nil {
-		color.Red.Println(err)
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
@@ -134,7 +257,7 @@ func (s *PostStore) Get(meta http.Params, resource string, status string) ([]dom
 func (s *PostStore) GetById(id int) (domain.Post, error) {
 	const op = "PostsRepository.GetById"
 	var p domain.Post
-	if err := s.db.Get(&p, "SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.page_id WHERE posts.id = ? LIMIT 1", id); err != nil {
+	if err := s.db.Get(&p, "SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id WHERE posts.id = ? LIMIT 1", id); err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op}
 	}
 	return p, nil
@@ -146,7 +269,7 @@ func (s *PostStore) GetById(id int) (domain.Post, error) {
 func (s *PostStore) GetBySlug(slug string) (domain.Post, error) {
 	const op = "PostsRepository.GetBySlug"
 	var p domain.Post
-	if err := s.db.Get(&p, "SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.page_id WHERE posts.slug = ? LIMIT 1", slug); err != nil {
+	if err := s.db.Get(&p, "SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id WHERE posts.slug = ? LIMIT 1", slug); err != nil {
 		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op}
 	}
 	return p, nil

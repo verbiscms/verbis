@@ -30,7 +30,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args:   nil,
 			want:   "no field exists with the name: wrongval",
-			err: true,
+			err:    true,
 		},
 		"Post": {
 			fields: []domain.PostField{
@@ -42,7 +42,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			},
 			args: []interface{}{2},
 			want: "test",
-			err: false,
+			err:  false,
 		},
 	}
 
@@ -80,7 +80,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args: nil,
 			want: domain.PostField{Id: 1, Type: "text", Name: "key1", OriginalValue: "test", Value: "test"},
-			err: false,
+			err:  false,
 		},
 		"No Field": {
 			fields: nil,
@@ -88,7 +88,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args:   nil,
 			want:   "no field exists with the name: wrongval",
-			err: true,
+			err:    true,
 		},
 		"Post": {
 			fields: []domain.PostField{
@@ -100,7 +100,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			},
 			args: []interface{}{2},
 			want: domain.PostField{Id: 2, Type: "text", Name: "key2", OriginalValue: "test", Value: "test"},
-			err: false,
+			err:  false,
 		},
 	}
 

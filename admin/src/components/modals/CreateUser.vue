@@ -117,10 +117,11 @@ export default {
 			this.doingAxios = true;
 
 			this.axios.post("/users", this.newUser)
-				.then(() => {
+				.then(res => {
 					this.$noty.success("User created successfully");
 					this.showCreateModal = false;
 					this.newUser = {};
+					this.$store.commit("addUser", res.data.data)
 					this.$emit("update", true)
 				})
 				.catch(err => {
@@ -175,7 +176,6 @@ export default {
 			set(value) {
 				this.$emit("update:show", value)
 			}
-
 		},
 		/*
 		 * getRoles()

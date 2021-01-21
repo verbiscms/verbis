@@ -425,7 +425,7 @@ export default {
 		 * Obtain the categories.
 		 */
 		async getCategories() {
-			await this.axios.get(`/categories?filter={"resource":[{"operator":"=", "value": "${this.resource['name']}"}]}`, {
+			await this.axios.get(`/categories?limit=all&filter={"resource":[{"operator":"=", "value": "${this.resource['name']}"}]}`, {
 				paramsSerializer: function (params) {
 					return params;
 				}

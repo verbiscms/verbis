@@ -90,8 +90,6 @@ func (m *Mailer) Send(t *Sender) {
 	fmt.Println("Email successfully sent")
 }
 
-
-
 // Execute the mail HTML files
 // Returns errors.INTERNAL if the render failed
 func (m *Mailer) ExecuteHTML(file string, data interface{}) (string, error) {

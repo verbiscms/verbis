@@ -77,6 +77,7 @@ func ToSlice(i interface{}) []interface{} {
 func (t *TemplateManager) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
+		"test": t.getPosts,
 		// Attributes
 		"body": t.body,
 		"lang": t.lang,
@@ -84,14 +85,14 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"auth":  t.auth,
 		"admin": t.admin,
 		// Categories
-		"category":         t.getCategory,
-		"categoryByName":   t.getCategoryByName,
+		"category":       t.getCategory,
+		"categoryByName": t.getCategoryByName,
 		"categoryParent": t.getCategoryParent,
-		"categories":       t.getCategories,
+		"categories":     t.getCategories,
 		// Cast
 		"toBool":     cast.ToBool,
 		"toString":   cast.ToString,
-		"toSlice": 	  ToSlice,
+		"toSlice":    ToSlice,
 		"toTime":     cast.ToTime,
 		"toDuration": cast.ToDuration,
 		"toInt":      cast.ToInt,
