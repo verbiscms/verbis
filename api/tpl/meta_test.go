@@ -87,6 +87,19 @@ func (t *TplTestSuite) Test_Header() {
 			site:    domain.Site{Url: "https://verbiscms.com"},
 			want:    `<link rel="canonical" href="test" />`,
 		},
+		"Canonical With Slash": {
+			post: domain.Post{
+				SeoMeta: domain.PostOptions{
+					Seo: &domain.PostSeo{
+						Canonical: &cannonical,
+						Public:    true,
+					},
+				},
+			},
+			options: domain.Options{SeoPublic: true, SeoEnforceSlash: true},
+			site:    domain.Site{Url: "https://verbiscms.com"},
+			want:    `<link rel="canonical" href="test/" />`,
+		},
 		"Meta with Post Description": {
 			post: domain.Post{
 				SeoMeta: domain.PostOptions{

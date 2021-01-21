@@ -128,10 +128,6 @@ func (r *Render) handleTrailingSlash(g *gin.Context) (string, bool) {
 		return p, false
 	}
 
-	/// TODO: Remove trailing slash on api
-	// Add cannoical.
-
-
 	// Must be homepage
 	if p == "/" {
 		return "/", false
