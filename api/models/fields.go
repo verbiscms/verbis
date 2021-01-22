@@ -14,7 +14,7 @@ import (
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
 	GetByPost(postId int) ([]domain.PostField, error)
-	GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup
+	GetLayout(post domain.PostData) []domain.FieldGroup
 	UpdateCreate(postId int, f []domain.PostField) error
 	Create(f domain.PostField) (domain.PostField, error)
 	Update(f domain.PostField) (domain.PostField, error)
@@ -141,8 +141,8 @@ func (s *FieldsStore) Exists(postId int, uuid uuid.UUID, key string) bool {
 // GetLayout loops over all of the locations within the config json
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
-func (s *FieldsStore) GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup {
-	return s.finder.GetLayout(p, a, c, s.options.CacheServerFields)
+func (s *FieldsStore) GetLayout(post domain.PostData) []domain.FieldGroup {
+	return s.finder.GetLayout(post, s.options.CacheServerFields)
 }
 
 // shouldDelete

@@ -18,15 +18,10 @@ func (v *Value) post(value domain.FieldValue) (interface{}, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast post ID to an integer", Operation: op, Err: err}
 	}
 
-	post, err := v.store.Posts.GetById(id)
+	post, err := v.store.Posts.GetById(id, false)
 	if err != nil {
 		return nil, err
 	}
 
-	formatPost, err := v.store.Posts.Format(post)
-	if err != nil {
-		return nil, err
-	}
-
-	return formatPost.ViewPost(), nil
+	return post, nil
 }

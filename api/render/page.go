@@ -48,13 +48,8 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		}
 	}
 
-	postData, err := r.store.Posts.Format(post)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not format post data", Operation: op, Err: err}
-	}
-
 	// Check if the resource is public
-	resource := postData.Resource
+	resource := post.Resource
 	if resource != nil {
 		for _, v := range r.theme.Resources {
 			if v.Hidden && v.Name == *resource {
@@ -80,7 +75,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		pt = pt + r.theme.FileExtension
 	}
 
-	tm := tpl.NewManager(g, r.store, &postData, r.config)
+	tm := tpl.NewManager(g, r.store, &post, r.config)
 	gvFrontend := goview.New(goview.Config{
 		Root:         paths.Theme(),
 		Extension:    r.theme.FileExtension,

@@ -45,9 +45,7 @@ func (c *Posts) Get(g *gin.Context) {
 
 	params := http.NewParams(g).Get()
 
-	postData, total, err := c.store.Posts.NewGetTest(params, g.Query("resource"), g.Query("status"))
-
-	//posts, total, err := c.store.Posts.Get(params, g.Query("resource"), g.Query("status"))
+	posts, total, err := c.store.Posts.Get(params, true, g.Query("resource"), g.Query("status"))
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -59,15 +57,9 @@ func (c *Posts) Get(g *gin.Context) {
 		return
 	}
 
-	//postData, err := c.store.Posts.FormatMultiple(posts)
-	//if err != nil {
-	//	Respond(g, 500, errors.Message(err), err)
-	//	return
-	//}
-
 	pagination := http.NewPagination().Get(params, total)
 
-	Respond(g, 200, "Successfully obtained posts", postData, pagination)
+	Respond(g, 200, "Successfully obtained posts", posts, pagination)
 }
 
 // Get By ID
@@ -85,7 +77,7 @@ func (c *Posts) GetById(g *gin.Context) {
 		return
 	}
 
-	post, err := c.store.Posts.GetById(id)
+	post, err := c.store.Posts.GetById(id, true)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -94,13 +86,7 @@ func (c *Posts) GetById(g *gin.Context) {
 		return
 	}
 
-	formatPost, err := c.store.Posts.Format(post)
-	if err != nil {
-		Respond(g, 500, errors.Message(err), err)
-		return
-	}
-
-	Respond(g, 200, "Successfully obtained post with ID: "+paramId, formatPost)
+	Respond(g, 200, "Successfully obtained post with ID: "+paramId, post)
 }
 
 // Create
@@ -126,13 +112,7 @@ func (c *Posts) Create(g *gin.Context) {
 		return
 	}
 
-	formatPost, err := c.store.Posts.Format(newPost)
-	if err != nil {
-		Respond(g, 500, errors.Message(err), err)
-		return
-	}
-
-	Respond(g, 200, "Successfully created post with ID: "+strconv.Itoa(newPost.Id), formatPost)
+	Respond(g, 200, "Successfully created post with ID: "+strconv.Itoa(newPost.Id), newPost)
 }
 
 // Update
@@ -167,13 +147,7 @@ func (c *Posts) Update(g *gin.Context) {
 		return
 	}
 
-	formatPost, err := c.store.Posts.Format(updatedPost)
-	if err != nil {
-		Respond(g, 500, errors.Message(err), err)
-		return
-	}
-
-	Respond(g, 200, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.Id), formatPost)
+	Respond(g, 200, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.Id), updatedPost)
 }
 
 // Delete

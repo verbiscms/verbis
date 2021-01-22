@@ -210,13 +210,7 @@ func (c *Convert) addItem(item Item) {
 		return
 	}
 
-	cPost, err := c.store.Posts.Format(post)
-	if err != nil {
-		c.failPost(item, nil, err)
-		return
-	}
-
-	posts = append(posts, cPost)
+	posts = append(posts, post)
 }
 
 // parseContent

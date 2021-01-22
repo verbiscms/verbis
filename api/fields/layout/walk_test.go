@@ -21,12 +21,12 @@ func TestByUUID(t *testing.T) {
 	}{
 		"Found": {
 			uuid:   id,
-			groups: []domain.FieldGroup{{Fields: &fields}},
+			groups: []domain.FieldGroup{{Fields: fields}},
 			want:   field,
 		},
 		"Not Found": {
 			uuid:   uuid.New(),
-			groups: []domain.FieldGroup{{Fields: &fields}},
+			groups: []domain.FieldGroup{{Fields: fields}},
 			want:   fmt.Sprintf("unable to find field with UUID of"),
 		},
 		"No Layouts": {
@@ -62,12 +62,12 @@ func TestByName(t *testing.T) {
 	}{
 		"Found": {
 			name:   "test",
-			groups: []domain.FieldGroup{{Fields: &fields}},
+			groups: []domain.FieldGroup{{Fields: fields}},
 			want:   field,
 		},
 		"Not Found": {
 			name:   "wrong",
-			groups: []domain.FieldGroup{{Fields: &fields}},
+			groups: []domain.FieldGroup{{Fields: fields}},
 			want:   fmt.Sprintf("unable to find field with name of"),
 		},
 		"No Layouts": {

@@ -24,7 +24,7 @@ export default class VerbisLink extends Link {
                 },
             ],
             toDOM: node => {
-                return this.options ? ['a', this.options, 0] : ['a', {...node.attrs, rel: 'noopener noreferrer nofollow'}, 0];
+                return this.options ? ['a', {...node.attrs, ...this.options, target: '_blank'}, 0] : ['a', {...node.attrs, rel: 'noopener noreferrer nofollow', target: '_blank'}, 0];
             },
         }
     }

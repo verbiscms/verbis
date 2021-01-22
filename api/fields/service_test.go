@@ -7,15 +7,16 @@ import (
 
 func (t *FieldTestSuite) TestNewService() {
 	m := &models.Store{}
-	var l []domain.FieldGroup
-	var f []domain.PostField
+
+	var l = make([]domain.FieldGroup, 0)
+	var f = make([]domain.PostField, 0)
 
 	pd := domain.PostData{
 		Post: domain.Post{
 			Id: 1,
 		},
-		Layout: &l,
-		Fields: &f,
+		Layout: l,
+		Fields: f,
 	}
 
 	service := &Service{

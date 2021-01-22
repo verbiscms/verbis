@@ -16,10 +16,7 @@ func (t *ResolverTestSuite) TestValue_Post() {
 		"Post": {
 			value: domain.FieldValue("1"),
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{Title: "post"}, nil)
-				p.On("Format", domain.Post{Title: "post"}).Return(domain.PostData{
-					Post: domain.Post{Title: "post"},
-				}, nil)
+				p.On("GetById", 1, false).Return(domain.PostData{Post: domain.Post{Title: "post"}}, nil)
 			},
 			want: domain.PostData{
 				Post: domain.Post{Title: "post"},
@@ -28,17 +25,9 @@ func (t *ResolverTestSuite) TestValue_Post() {
 		"Post Error": {
 			value: domain.FieldValue("1"),
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("not found"))
+				p.On("GetById", 1, false).Return(domain.PostData{}, fmt.Errorf("not found"))
 			},
 			want: "not found",
-		},
-		"Post Format Error": {
-			value: domain.FieldValue("1"),
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{Title: "post"}, nil)
-				p.On("Format", domain.Post{Title: "post"}).Return(domain.PostData{}, fmt.Errorf("format error"))
-			},
-			want: "format error",
 		},
 		"Cast Error": {
 			value: domain.FieldValue("wrongval"),
@@ -76,12 +65,9 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 		"Post": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "post"},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{Title: "post1"}, nil)
-				p.On("GetById", 2).Return(domain.Post{Title: "post2"}, nil)
-				p.On("GetById", 3).Return(domain.Post{Title: "post3"}, nil)
-				p.On("Format", domain.Post{Title: "post1"}).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("Format", domain.Post{Title: "post2"}).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("Format", domain.Post{Title: "post3"}).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+				p.On("GetById", 1, false).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("GetById", 2, false).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("GetById", 3, false).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3", Type: "post", Value: []interface{}{
 				domain.PostData{Post: domain.Post{Title: "post1"}},
@@ -92,12 +78,9 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 		"Trailing Comma": {
 			field: domain.PostField{OriginalValue: "1,2,3,", Type: "post"},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{Title: "post1"}, nil)
-				p.On("GetById", 2).Return(domain.Post{Title: "post2"}, nil)
-				p.On("GetById", 3).Return(domain.Post{Title: "post3"}, nil)
-				p.On("Format", domain.Post{Title: "post1"}).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("Format", domain.Post{Title: "post2"}).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("Format", domain.Post{Title: "post3"}).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+				p.On("GetById", 1, false).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("GetById", 2, false).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("GetById", 3, false).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3,", Type: "post", Value: []interface{}{
 				domain.PostData{Post: domain.Post{Title: "post1"}},
@@ -108,12 +91,9 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 		"Leading Comma": {
 			field: domain.PostField{OriginalValue: ",1,2,3", Type: "post"},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{Title: "post1"}, nil)
-				p.On("GetById", 2).Return(domain.Post{Title: "post2"}, nil)
-				p.On("GetById", 3).Return(domain.Post{Title: "post3"}, nil)
-				p.On("Format", domain.Post{Title: "post1"}).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("Format", domain.Post{Title: "post2"}).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("Format", domain.Post{Title: "post3"}).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+				p.On("GetById", 1, false).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("GetById", 2, false).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("GetById", 3, false).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: ",1,2,3", Type: "post", Value: []interface{}{
 				domain.PostData{Post: domain.Post{Title: "post1"}},

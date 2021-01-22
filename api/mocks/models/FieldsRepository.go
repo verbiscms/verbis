@@ -72,13 +72,13 @@ func (_m *FieldsRepository) GetByPost(postId int) ([]domain.PostField, error) {
 	return r0, r1
 }
 
-// GetLayout provides a mock function with given fields: p, a, c
-func (_m *FieldsRepository) GetLayout(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup {
-	ret := _m.Called(p, a, c)
+// GetLayout provides a mock function with given fields: post
+func (_m *FieldsRepository) GetLayout(post domain.PostData) []domain.FieldGroup {
+	ret := _m.Called(post)
 
 	var r0 []domain.FieldGroup
-	if rf, ok := ret.Get(0).(func(domain.Post, domain.User, *domain.Category) []domain.FieldGroup); ok {
-		r0 = rf(p, a, c)
+	if rf, ok := ret.Get(0).(func(domain.PostData) []domain.FieldGroup); ok {
+		r0 = rf(post)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]domain.FieldGroup)

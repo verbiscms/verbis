@@ -78,7 +78,7 @@ func (t *LocationTestSuite) TestLocation_GetLayout() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			l := &Location{JsonPath: t.Path + test.jsonPath}
-			t.Equal(test.want, l.GetLayout(domain.Post{}, domain.User{}, &domain.Category{}, test.cacheable))
+			t.Equal(test.want, l.GetLayout(domain.PostData{}, test.cacheable))
 		})
 	}
 }
@@ -88,10 +88,9 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 	r := "resource"
 	uu := uuid.New()
 
+
 	tt := map[string]struct {
-		post     domain.Post
-		author   domain.User
-		category *domain.Category
+		post     domain.PostData
 		groups   []domain.FieldGroup
 		want     interface{}
 	}{
@@ -99,7 +98,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{},
 		},
 		"Already Added": {
-			post: domain.Post{Id: 1, Title: "title", Status: "published"},
+			post: domain.PostData{Post: domain.Post{Id: 1, Title: "title", Status: "published"}},
 			groups: []domain.FieldGroup{
 				{Title: "status", UUID: uu},
 				{Title: "status", UUID: uu},
@@ -107,7 +106,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{{Title: "status", UUID: uu}},
 		},
 		"Status": {
-			post: domain.Post{Id: 1, Title: "title", Status: "published"},
+			post: domain.PostData{Post: domain.Post{Id: 1, Title: "title", Status: "published"}},
 			groups: []domain.FieldGroup{
 				{
 					Title: "status",
@@ -119,7 +118,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{{Title: "status"}},
 		},
 		"Post": {
-			post: domain.Post{Id: 1},
+			post: domain.PostData{Post: domain.Post{Id: 1}},
 			groups: []domain.FieldGroup{
 				{
 					Title: "post",
@@ -131,7 +130,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Page Template": {
-			post: domain.Post{PageTemplate: "template"},
+			post: domain.PostData{Post: domain.Post{PageTemplate: "template"}},
 			groups: []domain.FieldGroup{
 				{
 					Title: "post",
@@ -143,7 +142,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Layout": {
-			post: domain.Post{PageLayout: "layout"},
+			post: domain.PostData{Post: domain.Post{PageLayout: "layout"}},
 			groups: []domain.FieldGroup{
 				{
 					Title: "post",
@@ -155,7 +154,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Resource": {
-			post: domain.Post{Resource: &r},
+			post: domain.PostData{Post: domain.Post{Resource: &r}},
 			groups: []domain.FieldGroup{
 				{
 					Title: "post",
@@ -167,7 +166,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Nil Resource": {
-			post: domain.Post{Resource: nil},
+			post: domain.PostData{Post: domain.Post{Resource: nil}},
 			groups: []domain.FieldGroup{
 				{
 					Title: "post",
@@ -179,7 +178,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{},
 		},
 		"Category": {
-			category: &domain.Category{Id: 1},
+			post: domain.PostData{Category: &domain.Category{Id: 1}},
 			groups: []domain.FieldGroup{
 				{
 					Title: "category",
@@ -191,7 +190,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{{Title: "category"}},
 		},
 		"Nil Category": {
-			category: nil,
+			post: domain.PostData{Category: nil},
 			groups: []domain.FieldGroup{
 				{
 					Title: "category",
@@ -203,7 +202,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{},
 		},
 		"Author": {
-			post: domain.Post{UserId: 1},
+			post: domain.PostData{Author: domain.UserPart{Id: 1}},
 			groups: []domain.FieldGroup{
 				{
 					Title: "post",
@@ -215,8 +214,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: []domain.FieldGroup{{Title: "post"}},
 		},
 		"Role": {
-			author: domain.User{
-				UserPart: domain.UserPart{
+			post: domain.PostData{Author: domain.UserPart{
 					Role: domain.UserRole{
 						Id: 1,
 					},
@@ -237,7 +235,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			l := &Location{Groups: test.groups}
-			t.Equal(test.want, l.groupResolver(test.post, test.author, test.category))
+			t.Equal(test.want, l.groupResolver(test.post))
 		})
 	}
 }
