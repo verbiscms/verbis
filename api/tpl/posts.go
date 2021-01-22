@@ -1,7 +1,6 @@
 package tpl
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/spf13/cast"
@@ -19,17 +18,12 @@ func (t *TemplateManager) getPost(id interface{}) interface{} {
 		return nil
 	}
 
-	p, err := t.store.Posts.GetById(i)
+	post, err := t.store.Posts.GetById(i, false)
 	if err != nil {
 		return nil
 	}
 
-	fp, err := t.formatPost(p)
-	if err != nil {
-		return nil
-	}
-
-	return fp
+	return post
 }
 
 // getPosts
@@ -57,7 +51,7 @@ func (t *TemplateManager) getPosts(query map[string]interface{}) (map[string]int
 		return nil, err
 	}
 
-	posts, total, err := t.store.Posts.NewGetTest(p.Params, p.Resource, "published")
+	posts, total, err := t.store.Posts.Get(p.Params, false, p.Resource, "published")
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
 	} else if err != nil {
@@ -95,12 +89,12 @@ func (t *TemplateManager) getPaginationPage() int {
 // ready to be returned to the template. It removes
 // layouts from the formatting as it is not
 // needed in the frontend.
-func (t *TemplateManager) formatPost(post domain.Post) (domain.ViewPost, error) {
-
-	fp, err := t.store.Posts.Format(post)
-	if err != nil {
-		return domain.ViewPost{}, err
-	}
-
-	return fp.ViewPost(), nil
-}
+//func (t *TemplateManager) formatPost(post domain.Post) (domain.ViewPost, error) {
+//
+//	fp, err := t.store.Posts.Format(post)
+//	if err != nil {
+//		return domain.ViewPost{}, err
+//	}
+//
+//	return fp.ViewPost(), nil
+//}

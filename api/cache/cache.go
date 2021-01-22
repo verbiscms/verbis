@@ -32,7 +32,7 @@ func ClearPostCache(id int) {
 	Store.Delete(GetPostKey(id))
 }
 
-func ClearUserCache(userId int, posts []domain.Post) {
+func ClearUserCache(userId int, posts []domain.PostData) {
 	for _, v := range posts {
 		if v.UserId == userId {
 			ClearPostCache(v.Id)

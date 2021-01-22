@@ -15,18 +15,15 @@ import (
 
 // PostsRepository defines methods for Posts to interact with the database
 type PostsRepository interface {
-	Get(meta http.Params, resource string, status string) ([]domain.Post, int, error)
-	Format(post domain.Post) (domain.PostData, error)
-	FormatMultiple(posts []domain.Post) ([]domain.PostData, error)
-	GetById(id int) (domain.Post, error)
-	GetBySlug(slug string) (domain.Post, error)
-	Create(p *domain.PostCreate) (domain.Post, error)
-	Update(p *domain.PostCreate) (domain.Post, error)
+	Get(meta http.Params, layout bool, resource string, status string) ([]domain.PostData, int, error)
+	GetById(id int, layout bool) (domain.PostData, error)
+	GetBySlug(slug string) (domain.PostData, error)
+	Create(p *domain.PostCreate) (domain.PostData, error)
+	Update(p *domain.PostCreate) (domain.PostData, error)
 	Delete(id int) error
-	Exists(slug string) bool
+	Exists(id int) bool
+	ExistsBySlug(slug string) bool
 	Total() (int, error)
-
-	NewGetTest(meta http.Params, resource string, status string) (interface{}, int, error)
 }
 
 // PostStore defines the data layer for Posts
@@ -49,7 +46,7 @@ func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 	}
 }
 
-type TestPostRaw struct {
+type PostRaw struct {
 	domain.Post
 	Author        domain.User   `db:"author"`
 	Category      domain.Category  `db:"category"`
@@ -64,18 +61,8 @@ type TestPostRaw struct {
 	} `db:"field"`
 }
 
-type TestPost struct {
-	domain.Post `json:"post"`
-	Author      domain.User    `json:"author"`
-	Category    *domain.Category   `json:"category"`
-	Fields      []domain.PostField `json:"fields"`
-	Layout      []domain.FieldGroup `json:"layout"`
-}
-
-func (s *PostStore) NewGetTest(meta http.Params, resource string, status string) (interface{}, int, error) {
-	const op = "PostsRepository.Get"
-
-	q := `SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
+const (
+	postQuery = `SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
        users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.first_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
        roles.id 'author.roles.id', roles.name 'author.roles.name', roles.description 'author.roles.description',
@@ -87,7 +74,7 @@ func (s *PostStore) NewGetTest(meta http.Params, resource string, status string)
        CASE WHEN pf.type IS NULL THEN "" ELSE pf.type END AS 'field.type',
        CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
        CASE WHEN pf.value IS NULL THEN "" ELSE pf.value END AS 'field.value'
-FROM posts
+	FROM posts
          LEFT JOIN post_options ON posts.id = post_options.post_id
          RIGHT JOIN users ON posts.user_id = users.id
          LEFT JOIN user_roles ON users.id = user_roles.user_id
@@ -95,8 +82,13 @@ FROM posts
          LEFT JOIN post_categories pc on posts.id = pc.post_id
          LEFT JOIN categories on pc.category_id = categories.id
          LEFT JOIN post_fields pf on posts.id = pf.post_id`
+)
 
-	countQ := `SELECT COUNT(*) FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id`
+func (s *PostStore) Get(meta http.Params, layout bool, resource string, status string) ([]domain.PostData, int, error) {
+	const op = "PostsRepository.Get"
+
+	q := postQuery
+	countQ := "SELECT COUNT(*) FROM posts"
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.db, meta.Filters, "posts")
@@ -138,6 +130,7 @@ FROM posts
 		countQ += fmt.Sprintf(" posts.status = '%s'", status)
 	}
 
+
 	// Apply order
 	if meta.OrderBy != "" {
 		q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
@@ -148,39 +141,58 @@ FROM posts
 		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
 	}
 
-	// Select posts
-	var rawPosts []TestPostRaw
+	var rawPosts []PostRaw
 	if err := s.db.Select(&rawPosts, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
-	//// Return not found error if no posts are available
-	//if len(rawPosts) == 0 {
-	//	return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
-	//}
-	//
-	//// Count the total number of posts
-	//var total int
-	//if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
-	//	return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
-	//}
+	// Count the total number of posts
+	var total int
+	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
+	}
 
-	var posts []TestPost
+	// Return not found error if no posts are available
+	formattedPosts := s.format(rawPosts, layout)
+	if len(formattedPosts) == 0 {
+		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
+	}
+
+	return formattedPosts, total, nil
+}
+
+func (s *PostStore) find(posts []domain.PostData, id int) bool {
+	for _, v := range posts {
+		if v.Id == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData  {
+	var posts []domain.PostData
+
 	for _, v := range rawPosts {
 
-		if !find(posts, v.Id) {
+		if !s.find(posts, v.Id) {
 			var category *domain.Category = nil
 			if v.Category.Id != 0 {
 				category = &v.Category
 			}
 
-			posts = append(posts, TestPost{
+			p := domain.PostData{
 				Post:     v.Post,
-				Author:   v.Author,
+				Author:   v.Author.HideCredentials(),
 				Category: category,
 				Fields:   make([]domain.PostField, 0),
-				//Layout: s.fieldsModel.GetLayout(v.Post, v.Author, &v.Category),
-			})
+			}
+
+			if layout {
+				p.Layout = s.fieldsModel.GetLayout(p)
+			}
+
+			posts = append(posts, p)
 		}
 
 		if v.Field.UUID != nil {
@@ -203,132 +215,42 @@ FROM posts
 		}
 	}
 
-	return posts, 10, nil
-}
-
-func find(posts []TestPost, id int) bool {
-	for _, v := range posts {
-		if v.Id == id {
-			return true
-		}
-	}
-	return false
-}
-
-// Get all posts
-// Returns errors.INTERNAL if the SQL query was invalid.
-// Returns errors.NOTFOUND if there are no posts available.
-func (s *PostStore) Get(meta http.Params, resource string, status string) ([]domain.Post, int, error) {
-	const op = "PostsRepository.Get"
-
-	var p []domain.Post
-	q := fmt.Sprintf("SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id")
-
-	// Apply filters to total and original query
-	filter, err := filterRows(s.db, meta.Filters, "posts")
-	if err != nil {
-		return nil, -1, err
-	}
-	q += filter
-	countQ += filter
-
-	// Get by resource
-	if resource != "all" && resource != "" {
-		if len(meta.Filters) > 0 {
-			q += fmt.Sprintf(" AND")
-			countQ += fmt.Sprintf(" AND")
-		} else {
-			q += fmt.Sprintf(" WHERE")
-			countQ += fmt.Sprintf(" WHERE")
-		}
-
-		// If the resource is pages or a resource
-		resourceQ := ""
-		if resource == "pages" {
-			resourceQ = fmt.Sprintf(" posts.resource IS NULL")
-		} else {
-			resourceQ = fmt.Sprintf(" posts.resource = '%s'", resource)
-		}
-
-		q += resourceQ
-		countQ += resourceQ
-	}
-
-	// Get Status
-	if status != "" {
-
-		if resource != "" {
-			q += fmt.Sprintf(" AND")
-			countQ += fmt.Sprintf(" AND")
-		}
-
-		q += fmt.Sprintf(" posts.status = '%s'", status)
-		countQ += fmt.Sprintf(" posts.status = '%s'", status)
-	}
-
-	// Apply order
-	if meta.OrderBy != "" {
-		q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
-	}
-
-	// Apply pagination
-	if !meta.LimitAll {
-		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
-	}
-
-	// Select posts
-	if err := s.db.Select(&p, q); err != nil {
-		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
-	}
-
-	// Return not found error if no posts are available
-	if len(p) == 0 {
-		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
-	}
-
-	// Count the total number of posts
-	var total int
-	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
-		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
-	}
-
-	return p, total, nil
+	return posts
 }
 
 // GetById returns a post by Id
 //
 // Returns errors.NOTFOUND if the post was not found by the given Id.
-func (s *PostStore) GetById(id int) (domain.Post, error) {
+func (s *PostStore) GetById(id int, layout bool) (domain.PostData, error) {
 	const op = "PostsRepository.GetById"
-	var p domain.Post
-	if err := s.db.Get(&p, "SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id WHERE posts.id = ? LIMIT 1", id); err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op}
+	var p []PostRaw
+	if err := s.db.Select(&p, fmt.Sprintf("%s %s", postQuery, "AND posts.id = ? LIMIT 1"), id); err != nil {
+		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op}
 	}
-	return p, nil
+	return s.format(p, layout)[0], nil
 }
 
 // GetBySlug returns a a post by slug
 //
 // Returns errors.NOTFOUND if the post was not found by the given slug.
-func (s *PostStore) GetBySlug(slug string) (domain.Post, error) {
+func (s *PostStore) GetBySlug(slug string) (domain.PostData, error) {
 	const op = "PostsRepository.GetBySlug"
-	var p domain.Post
-	if err := s.db.Get(&p, "SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta' FROM posts LEFT JOIN post_options ON posts.id = post_options.post_id WHERE posts.slug = ? LIMIT 1", slug); err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op}
+	var p []PostRaw
+	if err := s.db.Select(&p, fmt.Sprintf("%s %s", postQuery, "AND posts.slug = ? LIMIT 1"), slug); err != nil {
+		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op}
 	}
-	return p, nil
+	return s.format(p, false)[0], nil
 }
 
 // Create a new post
 // Returns errors.CONFLICT if the the post slug already exists.
 // Returns errors.INTERNAL if the SQL query was invalid or the function
 // could not get the newly created ID.
-func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
+func (s *PostStore) Create(p *domain.PostCreate) (domain.PostData, error) {
 	const op = "PostsRepository.Create"
 
 	if err := s.validateUrl(p.Slug); err != nil {
-		return domain.Post{}, err
+		return domain.PostData{}, err
 	}
 
 	// Check if the author is set assign to owner if not.
@@ -351,36 +273,34 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
 	if err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
+		return domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	id, err := c.LastInsertId()
 	if err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post ID with the title: %v", p.Title), Operation: op, Err: err}
+		return domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post ID with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
-	post, err := s.GetById(int(id))
+	post, err := s.GetById(int(id), true)
 	if err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post with the title: %v", p.Title), Operation: op, Err: err}
+		return domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	// Update the categories based on the array of integers that
 	// are passed.
 	if err := s.categoriesModel.InsertPostCategory(int(id), p.Category); err != nil {
-		return domain.Post{}, err
+		return domain.PostData{}, err
 	}
 
 	// Update or create the fields
 	if err := s.fieldsModel.UpdateCreate(int(id), p.Fields); err != nil {
-		return domain.Post{}, err
+		return domain.PostData{}, err
 	}
 
-	// Convert the PostCreate type to type of Post to be returned
-	// to the controller, used for binding & validation.
-	convertedPost := s.convertToPost(*p)
-	convertedPost.Id = int(id)
-	if err := s.seoMetaModel.UpdateCreate(&convertedPost); err != nil {
-		return domain.Post{}, err
+
+	// Update the post meta
+	if err := s.seoMetaModel.UpdateCreate(&post); err != nil {
+		return domain.PostData{}, err
 	}
 
 	return post, nil
@@ -389,17 +309,17 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.Post, error) {
 // Update a post by Id
 // Returns errors.NOTFOUND if the post was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
+func (s *PostStore) Update(p *domain.PostCreate) (domain.PostData, error) {
 	const op = "PostsRepository.Update"
 
-	oldPost, err := s.GetById(p.Id)
+	oldPost, err := s.GetById(p.Id, false)
 	if err != nil {
-		return domain.Post{}, err
+		return domain.PostData{}, err
 	}
 
 	if oldPost.Slug != p.Slug {
 		if err := s.validateUrl(p.Slug); err != nil {
-			return domain.Post{}, err
+			return domain.PostData{}, err
 		}
 	}
 
@@ -414,31 +334,34 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
 	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
 	if err != nil {
-		return domain.Post{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
+		return domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	// Update the categories based on the array of integers that
 	// are passed. If the categories
 	if err := s.categoriesModel.InsertPostCategory(p.Id, p.Category); err != nil {
-		return domain.Post{}, err
+		return domain.PostData{}, err
 	}
 
 	// Update or create the fields
 	if err := s.fieldsModel.UpdateCreate(p.Id, p.Fields); err != nil {
-		return domain.Post{}, err
+		return domain.PostData{}, err
 	}
 
-	// Convert the PostCreate type to type of Post to be returned
-	// to the controller, used for binding & validation.
-	convertedPost := s.convertToPost(*p)
-	if err := s.seoMetaModel.UpdateCreate(&convertedPost); err != nil {
-		return domain.Post{}, err
+	post, err := s.GetById(p.Id, true)
+	if err != nil {
+		return domain.PostData{}, err
+	}
+
+	// Update the post meta
+	if err := s.seoMetaModel.UpdateCreate(&post); err != nil {
+		return domain.PostData{}, err
 	}
 
 	// Clear the cache
-	cache.Store.Delete(convertedPost.Slug)
+	cache.Store.Delete(post.Slug)
 
-	return convertedPost, nil
+	return post, nil
 }
 
 // Delete post
@@ -447,9 +370,8 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.Post, error) {
 func (s *PostStore) Delete(id int) error {
 	const op = "PostsRepository.Delete"
 
-	_, err := s.GetById(id)
-	if err != nil {
-		return err
+	if !s.Exists(id) {
+		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No post exists with the ID: %v", id), Operation: op, Err: fmt.Errorf("no post exists")}
 	}
 
 	if _, err := s.db.Exec("DELETE FROM posts WHERE id = ?", id); err != nil {
@@ -471,85 +393,19 @@ func (s *PostStore) Total() (int, error) {
 }
 
 // Exists Checks if a post exists by the given slug
-func (s *PostStore) Exists(slug string) bool {
+func (s *PostStore) Exists(id int) bool {
+	var exists bool
+	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM posts WHERE id = ?)", id).Scan(&exists)
+	return exists
+}
+
+// Exists Checks if a post exists by the given slug
+func (s *PostStore) ExistsBySlug(slug string) bool {
 	var exists bool
 	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM posts WHERE slug = ?)", slug).Scan(&exists)
 	return exists
 }
 
-// Format formats the post into as domain.PostData type which contains
-// the category, author & fields associated with the post.
-func (s *PostStore) Format(post domain.Post) (domain.PostData, error) {
-
-	user, _ := s.userModel.GetById(post.UserId)
-
-	// Get the categories associated with the post
-	category, _ := s.categoriesModel.GetByPost(post.Id)
-
-	// Get the layout associated with the post
-	layout := s.fieldsModel.GetLayout(post, user, category)
-
-	author := user.Author()
-
-	// Get the fields associated with the post
-	fields, _ := s.fieldsModel.GetByPost(post.Id)
-
-	pd := domain.PostData{
-		Post:   post,
-		Author: &author,
-		Layout: &layout,
-		Fields: &fields,
-	}
-
-	if category != nil {
-		pd.Category = &domain.PostCategory{
-			Id:          category.Id,
-			Slug:        category.Slug,
-			Name:        category.Name,
-			Description: category.Description,
-			Resource:    category.Resource,
-			ParentId:    category.ParentId,
-			UpdatedAt:   category.UpdatedAt,
-			CreatedAt:   category.CreatedAt,
-		}
-	}
-
-	return pd, nil
-}
-
-// FormatMultiple formats an array of posts to return categories,
-// fields and author.
-func (s *PostStore) FormatMultiple(posts []domain.Post) ([]domain.PostData, error) {
-	var postData []domain.PostData
-	for _, post := range posts {
-		formatted, err := s.Format(post)
-		if err != nil {
-			return nil, err
-		} else {
-			postData = append(postData, formatted)
-		}
-	}
-	return postData, nil
-}
-
-// convertToPost converts are post create into a standard post
-func (s *PostStore) convertToPost(c domain.PostCreate) domain.Post {
-	return domain.Post{
-		Id:                c.Id,
-		UUID:              c.UUID,
-		Slug:              c.Slug,
-		Title:             c.Title,
-		Status:            c.Status,
-		Resource:          c.Resource,
-		PageTemplate:      c.PageTemplate,
-		CodeInjectionHead: c.CodeInjectionHead,
-		CodeInjectionFoot: c.CodeInjectionFoot,
-		UserId:            c.UserId,
-		CreatedAt:         c.CreatedAt,
-		UpdatedAt:         c.UpdatedAt,
-		SeoMeta:           c.SeoMeta,
-	}
-}
 
 // checkOwner Checks if the author is set or if the author does not exist.
 // Returns the owner ID under circumstances.
@@ -572,7 +428,7 @@ func (s *PostStore) checkOwner(p domain.PostCreate) int {
 func (s *PostStore) validateUrl(slug string) error {
 	const op = "PostsRepository.validateUrl"
 
-	if s.Exists(slug) {
+	if s.ExistsBySlug(slug) {
 		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", slug), Operation: op}
 	}
 

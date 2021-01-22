@@ -106,7 +106,6 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 
 func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 
-	post := domain.Post{Id: 1, Title: "post"}
 	var f []domain.FieldGroup
 
 	tt := map[string]struct {
@@ -128,10 +127,9 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 			layout: nil,
 			args:   []interface{}{1},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(post, nil)
-				p.On("Format", post).Return(domain.PostData{
+				p.On("GetById", 1, true).Return(domain.PostData{
 					Post: domain.Post{Id: 1, Title: "post"},
-					Layout: &[]domain.FieldGroup{
+					Layout: []domain.FieldGroup{
 						{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
 					},
 				}, nil)
@@ -144,7 +142,7 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 			layout: nil,
 			args:   []interface{}{1},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
+				p.On("GetById", 1, true).Return(domain.PostData{}, fmt.Errorf("error"))
 			},
 			want: f,
 		},
@@ -161,9 +159,6 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 
 func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 
-	post := domain.Post{Id: 1, Title: "post"}
-	fg := &[]domain.FieldGroup{{Title: "test"}}
-
 	tt := map[string]struct {
 		id   interface{}
 		mock func(p *mocks.PostsRepository)
@@ -172,13 +167,12 @@ func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 		"Success": {
 			id: 1,
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(post, nil)
-				p.On("Format", post).Return(domain.PostData{
+				p.On("GetById", 1, true).Return(domain.PostData{
 					Post:   domain.Post{Id: 1, Title: "post"},
-					Layout: fg,
+					Layout: []domain.FieldGroup{{Title: "test"}},
 				}, nil)
 			},
-			want: *fg,
+			want: []domain.FieldGroup{{Title: "test"}},
 		},
 		"Cast Error": {
 			id:   noStringer{},
@@ -187,15 +181,7 @@ func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 		"Not Found": {
 			id: 1,
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
-			},
-			want: nil,
-		},
-		"Format Error": {
-			id: 1,
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1).Return(post, nil)
-				p.On("Format", post).Return(domain.PostData{}, fmt.Errorf("error"))
+				p.On("GetById", 1, true).Return(domain.PostData{}, fmt.Errorf("error"))
 			},
 			want: nil,
 		},

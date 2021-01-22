@@ -10,7 +10,7 @@ import (
 
 // SeoMetaRepository defines methods for Posts to interact with the database
 type SeoMetaRepository interface {
-	UpdateCreate(p *domain.Post) error
+	UpdateCreate(p *domain.PostData) error
 }
 
 // SeoMetaStore defines the data layer for Seo & Meta Options
@@ -27,7 +27,7 @@ func newSeoMeta(db *sqlx.DB) *SeoMetaStore {
 
 // UpdateCreate checks to see if the record exists before updating
 // or creating the new record.
-func (s *SeoMetaStore) UpdateCreate(p *domain.Post) error {
+func (s *SeoMetaStore) UpdateCreate(p *domain.PostData) error {
 	if s.exists(p.Id) {
 		if err := s.update(p); err != nil {
 			return err
@@ -49,11 +49,10 @@ func (s *SeoMetaStore) exists(id int) bool {
 
 // create a new seo meta record
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *SeoMetaStore) create(p *domain.Post) error {
+func (s *SeoMetaStore) create(p *domain.PostData) error {
 	const op = "SeoMetaRepository.create"
 	_, err := s.db.Exec("INSERT INTO post_options (post_id, seo, meta) VALUES (?, ?, ?)", p.Id, p.SeoMeta.Seo, p.SeoMeta.Meta)
 	if err != nil {
-		fmt.Println(err)
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the seo meta options record for post title: %v", p.Title), Operation: op, Err: err}
 	}
 	return nil
@@ -61,7 +60,7 @@ func (s *SeoMetaStore) create(p *domain.Post) error {
 
 // update a seo meta record by page Id
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *SeoMetaStore) update(p *domain.Post) error {
+func (s *SeoMetaStore) update(p *domain.PostData) error {
 	const op = "SeoMetaRepository.update"
 	_, err := s.db.Exec("UPDATE post_options SET seo = ?, meta = ? WHERE post_id = ?", p.SeoMeta.Seo, p.SeoMeta.Meta, p.Id)
 	if err != nil {

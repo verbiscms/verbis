@@ -16,7 +16,7 @@ import (
 
 // Finder defines the method for obtaining field layouts.
 type Finder interface {
-	GetLayout(p domain.Post, a domain.User, c *domain.Category, cacheable bool) []domain.FieldGroup
+	GetLayout(post domain.PostData, cacheable bool) []domain.FieldGroup
 }
 
 // Location defines
@@ -47,13 +47,13 @@ func NewLocation() *Location {
 // caching allows and the domain.FieldGroups have
 // been cached, it will return the cached
 // version
-func (l *Location) GetLayout(p domain.Post, a domain.User, c *domain.Category, cacheable bool) []domain.FieldGroup {
+func (l *Location) GetLayout(post domain.PostData, cacheable bool) []domain.FieldGroup {
 
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
 	var found bool
 	if cacheable {
-		cached, found := cache.Store.Get("field_layout_" + p.UUID.String())
+		cached, found := cache.Store.Get("field_layout_" + post.UUID.String())
 		if found {
 			return cached.([]domain.FieldGroup)
 		}
@@ -67,11 +67,11 @@ func (l *Location) GetLayout(p domain.Post, a domain.User, c *domain.Category, c
 	l.Groups = fg
 
 	// Get the groups from the resolver
-	groups := l.groupResolver(p, a, c)
+	groups := l.groupResolver(post)
 
 	// Set the cache field layout if the cache was not found
 	if !found && cacheable {
-		cache.Store.Set("field_layout_"+p.UUID.String(), groups, cache.RememberForever)
+		cache.Store.Set("field_layout_"+post.UUID.String(), groups, cache.RememberForever)
 	}
 
 	return groups
@@ -84,7 +84,7 @@ func (l *Location) GetLayout(p domain.Post, a domain.User, c *domain.Category, c
 // properties of the post, user and category passed.
 // Produces an array of field groups that can be
 // returned for the post.
-func (l *Location) groupResolver(p domain.Post, a domain.User, c *domain.Category) []domain.FieldGroup {
+func (l *Location) groupResolver(post domain.PostData) []domain.FieldGroup {
 	var fg []domain.FieldGroup
 
 	// Loop over the groups
@@ -106,29 +106,29 @@ func (l *Location) groupResolver(p domain.Post, a domain.User, c *domain.Categor
 
 						switch rule.Param {
 						case "status":
-							locationSet = append(locationSet, checkLocation(p.Status, rule))
+							locationSet = append(locationSet, checkLocation(post.Status, rule))
 						case "post":
-							locationSet = append(locationSet, checkLocation(strconv.Itoa(p.Id), rule))
+							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Id), rule))
 						case "page_template":
-							locationSet = append(locationSet, checkLocation(p.PageTemplate, rule))
+							locationSet = append(locationSet, checkLocation(post.PageTemplate, rule))
 						case "page_layout":
-							locationSet = append(locationSet, checkLocation(p.PageLayout, rule))
+							locationSet = append(locationSet, checkLocation(post.PageLayout, rule))
 						case "resource":
-							if p.Resource != nil {
-								locationSet = append(locationSet, checkLocation(*p.Resource, rule))
+							if post.Resource != nil {
+								locationSet = append(locationSet, checkLocation(*post.Resource, rule))
 							} else {
 								locationSet = append(locationSet, checkLocation("", rule))
 							}
 						case "category":
-							if c != nil {
-								locationSet = append(locationSet, checkLocation(strconv.Itoa(c.Id), rule))
+							if post.Category != nil {
+								locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Category.Id), rule))
 							} else {
 								locationSet = append(locationSet, checkLocation("", rule))
 							}
 						case "author":
-							locationSet = append(locationSet, checkLocation(strconv.Itoa(p.UserId), rule))
+							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Author.Id), rule))
 						case "role":
-							locationSet = append(locationSet, checkLocation(strconv.Itoa(a.Role.Id), rule))
+							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Author.Role.Id), rule))
 						}
 					}
 

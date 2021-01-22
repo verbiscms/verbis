@@ -13,10 +13,10 @@ import (
 
 type PostData struct {
 	Post     `json:"post"`
-	Author   *PostAuthor   `json:"author"`
-	Category *PostCategory `json:"category"`
-	Layout   *[]FieldGroup `json:"layout"`
-	Fields   *[]PostField  `json:"fields,omitempty"`
+	Author    UserPart   `json:"author"`
+	Category *Category `json:"category"`
+	Layout   []FieldGroup `json:"layout,omitempty"`
+	Fields   []PostField  `json:"fields,omitempty"`
 }
 
 type Post struct {
@@ -74,21 +74,6 @@ type PostCategory struct {
 	CreatedAt   time.Time `json:"created_at"`
 }
 
-// ViewPost represents the data to be sent back to the template
-// once acquired.
-type ViewPost struct {
-	Author   *PostAuthor
-	Category *PostCategory
-	Post
-}
-
-func (p *PostData) ViewPost() ViewPost {
-	return ViewPost{
-		Author:   p.Author,
-		Category: p.Category,
-		Post:     p.Post,
-	}
-}
 
 type PostField struct {
 	Id            int         `db:"id" json:"-"`

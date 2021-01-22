@@ -122,6 +122,9 @@ export default {
 					this.showCreateModal = false;
 					this.newUser = {};
 					this.$store.commit("addUser", res.data.data)
+
+					console.log(this.$store.users)
+
 					this.$emit("update", true)
 				})
 				.catch(err => {
