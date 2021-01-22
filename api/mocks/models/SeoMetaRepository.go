@@ -13,11 +13,11 @@ type SeoMetaRepository struct {
 }
 
 // UpdateCreate provides a mock function with given fields: p
-func (_m *SeoMetaRepository) UpdateCreate(p *domain.Post) error {
+func (_m *SeoMetaRepository) UpdateCreate(p *domain.PostData) error {
 	ret := _m.Called(p)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*domain.Post) error); ok {
+	if rf, ok := ret.Get(0).(func(*domain.PostData) error); ok {
 		r0 = rf(p)
 	} else {
 		r0 = ret.Error(0)

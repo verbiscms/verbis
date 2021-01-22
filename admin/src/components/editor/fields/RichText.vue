@@ -180,9 +180,10 @@
 
 <script>
 
-import { highlight, languages } from 'prismjs/components/prism-core';
+import {highlight, languages} from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-markup';
-import { fieldMixin } from "@/util/fields/fields"
+import {fieldMixin} from "@/util/fields/fields"
+
 import {Editor, EditorContent, EditorMenuBar, EditorMenuBubble} from 'tiptap'
 import {
 	VerbisBlockquote,
@@ -191,6 +192,7 @@ import {
 	VerbisCode,
 	VerbisCodeBlock,
 	VerbisCodeBlockHighlight,
+	VerbisColour,
 	VerbisHardBreak,
 	VerbisHeading,
 	VerbisHorizontalRule,
@@ -199,20 +201,10 @@ import {
 	VerbisListItem,
 	VerbisOrderedList,
 	VerbisStrike,
-	VerbisUnderline,
-	VerbisColour,
-	VerbisTable
+	VerbisTable,
+	VerbisUnderline
 } from '../../../extensions/tiptap/index'
-import {
-	Highlight,
-	History,
-	Search,
-	TrailingNode,
-	TableHeader,
-	TableCell,
-	TableRow,
-	Image,
-} from 'tiptap-extensions';
+import {Highlight, History, Image, Search, TableCell, TableHeader, TableRow, TrailingNode,} from 'tiptap-extensions';
 import Modal from "@/components/modals/General";
 import Uploader from "@/components/media/Uploader";
 
@@ -332,6 +324,7 @@ export default {
 		},
 		setLinkUrl(command, url) {
 			command({href: url});
+			this.field = this.html;
 			this.hideLinkMenu()
 		},
 		showLinkMenu(attrs) {
@@ -352,10 +345,36 @@ export default {
 		changeCodeView() {
 			if (this.codeView) {
 				this.editor.setContent(this.code)
+				this.field = this.code;
 			} else {
-				this.code = this.field
+				this.code = this.field;
 			}
-			this.codeView = !this.codeView
+			this.codeView = !this.codeView;
+		},
+		// TODO Extra spaces are coming back
+		process(str) {
+			let div = document.createElement('div');
+			div.innerHTML = str.trim();
+			return this.format(div, 0).innerHTML;
+		},
+		format(node, level) {
+			let indentBefore = new Array(level++ + 1).join('  '),
+				indentAfter  = new Array(level - 1).join('  '),
+				textNode;
+
+			for (let i = 0; i < node.children.length; i++) {
+
+				textNode = document.createTextNode('\n' + indentBefore);
+				node.insertBefore(textNode, node.children[i]);
+
+				this.format(node.children[i], level);
+
+				if (node.lastElementChild === node.children[i]) {
+					textNode = document.createTextNode('\n' + indentAfter);
+					node.appendChild(textNode);
+				}
+			}
+			return node;
 		},
 		createExtensions() {
 			let extensions = [],

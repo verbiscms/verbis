@@ -352,7 +352,6 @@ export default {
 					}
 				})
 				.catch(err => {
-					console.log(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						const errorMsg =  this.isSelf ? "Fix the errors before saving your profile." : "User updated successfully."
@@ -417,14 +416,10 @@ export default {
 			await this.axios.get("/users/" + this.userId)
 				.then(res => {
 					const user = res.data.data;
-
 					// Return 404 if not found
 					if (this.helpers.isEmptyObject(user)) {
 						this.$router.push({ name : 'not-found' })
 					}
-
-					console.log(user);
-
 					this.data = user;
 				})
 				.catch(err => {

@@ -2,12 +2,13 @@
 
 
     <div style="padding: 20px">
-        {{ .Post.Title }}
-        {{ $result := posts (dict "limit" 99999999 "order_direction" "asc") }}
-        HEY HEYggg
+        {{ field "content" }}
+{{/*        {{ .Post.Title }}*/}}
+{{/*        {{ $result := posts (dict "limit" 99999999 "order_direction" "asc") }}*/}}
+{{/*        HEY HEYggg*/}}
 
-        {{ .Post.Author.FirstName }}
-        {{ $result.Posts }}
+{{/*        {{ .Post.Author.FirstName }}*/}}
+{{/*        {{ $result.Posts }}*/}}
     </div>
 
 

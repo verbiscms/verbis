@@ -53,17 +53,11 @@ func (s *Service) getLayoutByPost(id interface{}) []domain.FieldGroup {
 		return nil
 	}
 
-	p, err := s.store.Posts.GetById(i)
+	post, err := s.store.Posts.GetById(i, true)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error()
 		return nil
 	}
 
-	t, err := s.store.Posts.Format(p)
-	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
-		return nil
-	}
-
-	return *t.Layout
+	return post.Layout
 }

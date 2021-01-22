@@ -248,7 +248,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 		LimitAll:       true,
 		OrderDirection: "desc",
 		OrderBy:        "created_at",
-	}, resource, "published")
+	}, false, resource, "published")
 
 	if err != nil {
 		return nil, err

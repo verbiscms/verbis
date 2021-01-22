@@ -237,7 +237,7 @@ func (c *User) ResetPassword(g *gin.Context) {
 // attached to it.
 func (c *User) clearCache(id int) {
 	go func() {
-		posts, _, err := c.store.Posts.Get(http.Params{LimitAll: true}, "", "")
+		posts, _, err := c.store.Posts.Get(http.Params{LimitAll: true}, false, "", "")
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Fatal()
 		}

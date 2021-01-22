@@ -52,32 +52,35 @@ func (c *Fields) Get(g *gin.Context) {
 		//Respond(g, 400, "Field search failed, wrong type passed to category id", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})x
 	}
 
-	post := domain.Post{
-		Id:                0,
-		Slug:              "",
-		Title:             "",
-		Status:            "",
-		Resource:          &resource,
-		PageTemplate:      g.Query("page_template"),
-		PageLayout:        g.Query("layout"),
-		CodeInjectionHead: nil,
-		CodeInjectionFoot: nil,
-		UserId:            userId,
+	post := domain.PostData{
+		Post:     domain.Post{
+			Id:                0,
+			Slug:              "",
+			Title:             "",
+			Status:            "",
+			Resource:          &resource,
+			PageTemplate:      g.Query("page_template"),
+			PageLayout:        g.Query("layout"),
+			CodeInjectionHead: nil,
+			CodeInjectionFoot: nil,
+			UserId:            userId,
+		},
 	}
+
 
 	// Get the author associated with the post
 	author, err := c.store.User.GetById(post.UserId)
 	if err != nil {
-		author = domain.User{}
+		post.Author = author.HideCredentials()
 	}
 
 	// Get the categories associated with the post
 	category, err := c.store.Categories.GetById(categoryId)
 	if err != nil {
-		category = domain.Category{}
+		post.Category = &category
 	}
 
-	fields := c.store.Fields.GetLayout(post, author, &category)
+	fields := c.store.Fields.GetLayout(post)
 
 	Respond(g, 200, "Successfully obtained fields", fields)
 }

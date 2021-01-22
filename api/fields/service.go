@@ -41,12 +41,12 @@ type Service struct {
 func NewService(s *models.Store, d domain.PostData) *Service {
 	fields := make([]domain.PostField, 0)
 	if d.Fields != nil {
-		fields = *d.Fields
+		fields = d.Fields
 	}
 
 	layouts := make([]domain.FieldGroup, 0)
 	if d.Layout != nil {
-		layouts = *d.Layout
+		layouts = d.Layout
 	}
 
 	return &Service{

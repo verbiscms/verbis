@@ -17,11 +17,19 @@ import (
 //
 // Returns the fields to be modified & processed.
 func (s *Service) handleArgs(args []interface{}) []domain.PostField {
-	if len(args) == 1 {
-		fields := s.getFieldsByPost(args[0])
-		return fields
+	if len(args) == 0 {
+		return s.fields
 	}
-	return s.fields
+
+	post, ok := args[0].(domain.PostData)
+	if ok {
+		return post.Fields
+	}
+
+	fields := s.getFieldsByPost(args[0])
+
+	return fields
+
 }
 
 // getFieldsByPost
