@@ -170,7 +170,6 @@ func (c *Categories) Delete(g *gin.Context) {
 	Respond(g, 200, "Successfully deleted category with ID: "+strconv.Itoa(id), nil)
 }
 
-
 // clearCache
 // Clear the post cache that have the given category ID
 // attached to it.

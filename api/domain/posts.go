@@ -13,8 +13,8 @@ import (
 
 type PostData struct {
 	Post     `json:"post"`
-	Author    UserPart   `json:"author"`
-	Category *Category `json:"category"`
+	Author   UserPart     `json:"author"`
+	Category *Category    `json:"category"`
 	Layout   []FieldGroup `json:"layout,omitempty"`
 	Fields   []PostField  `json:"fields,omitempty"`
 }
@@ -73,7 +73,6 @@ type PostCategory struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 	CreatedAt   time.Time `json:"created_at"`
 }
-
 
 type PostField struct {
 	Id            int         `db:"id" json:"-"`

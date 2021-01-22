@@ -48,16 +48,16 @@ func newPosts(db *sqlx.DB, config config.Configuration) *PostStore {
 
 type PostRaw struct {
 	domain.Post
-	Author        domain.User   `db:"author"`
-	Category      domain.Category  `db:"category"`
-	Field struct{
-		Id            int         `db:"field_id"`
-		PostId        int         `db:"post_id"`
-		UUID          *uuid.UUID   `db:"uuid"`
-		Type          string      `db:"type"`
-		Name          string      `db:"name"`
-		Key           string      `db:"field_key"`
-		OriginalValue string  `db:"value" json:"value"`
+	Author   domain.User     `db:"author"`
+	Category domain.Category `db:"category"`
+	Field    struct {
+		Id            int        `db:"field_id"`
+		PostId        int        `db:"post_id"`
+		UUID          *uuid.UUID `db:"uuid"`
+		Type          string     `db:"type"`
+		Name          string     `db:"name"`
+		Key           string     `db:"field_key"`
+		OriginalValue string     `db:"value" json:"value"`
 	} `db:"field"`
 }
 
@@ -130,7 +130,6 @@ func (s *PostStore) Get(meta http.Params, layout bool, resource string, status s
 		countQ += fmt.Sprintf(" posts.status = '%s'", status)
 	}
 
-
 	// Apply order
 	if meta.OrderBy != "" {
 		q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
@@ -170,7 +169,7 @@ func (s *PostStore) find(posts []domain.PostData, id int) bool {
 	return false
 }
 
-func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData  {
+func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
 	var posts []domain.PostData
 
 	for _, v := range rawPosts {
@@ -297,7 +296,6 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostData, error) {
 		return domain.PostData{}, err
 	}
 
-
 	// Update the post meta
 	if err := s.seoMetaModel.UpdateCreate(&post); err != nil {
 		return domain.PostData{}, err
@@ -405,7 +403,6 @@ func (s *PostStore) ExistsBySlug(slug string) bool {
 	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM posts WHERE slug = ?)", slug).Scan(&exists)
 	return exists
 }
-
 
 // checkOwner Checks if the author is set or if the author does not exist.
 // Returns the owner ID under circumstances.

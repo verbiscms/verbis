@@ -88,11 +88,10 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 	r := "resource"
 	uu := uuid.New()
 
-
 	tt := map[string]struct {
-		post     domain.PostData
-		groups   []domain.FieldGroup
-		want     interface{}
+		post   domain.PostData
+		groups []domain.FieldGroup
+		want   interface{}
 	}{
 		"None": {
 			want: []domain.FieldGroup{},
@@ -215,10 +214,10 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 		},
 		"Role": {
 			post: domain.PostData{Author: domain.UserPart{
-					Role: domain.UserRole{
-						Id: 1,
-					},
+				Role: domain.UserRole{
+					Id: 1,
 				},
+			},
 			},
 			groups: []domain.FieldGroup{
 				{
