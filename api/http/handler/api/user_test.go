@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -49,9 +50,18 @@ func Test_NewUser(t *testing.T) {
 func TestUser_Get(t *testing.T) {
 
 	users := domain.Users{
-		{Id: 123, FirstName: "Verbis", LastName: "CMS"},
-		{Id: 124, FirstName: "Verbis", LastName: "CMS"},
+		{
+			UserPart:      domain.UserPart{
+				Id: 123, FirstName: "Verbis", LastName: "CMS",
+			},
+		},
+		{
+			UserPart:      domain.UserPart{
+				Id: 123, FirstName: "Verbis", LastName: "CMS",
+			},
+		},
 	}
+
 	pagination := http.Params{Page: 1, Limit: 15, OrderBy: "id", OrderDirection: "ASC", Filters: nil}
 
 	tt := map[string]struct {
@@ -62,7 +72,7 @@ func TestUser_Get(t *testing.T) {
 		mock    func(u *mocks.UserRepository)
 	}{
 		"Success": {
-			want:    `[{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":123,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":124,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"}]`,
+			want:    `[{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":123,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"},{"biography":null,"created_at":"0001-01-01T00:00:00Z","email":"","email_verified_at":null,"facebook":null,"first_name":"Verbis","id":123,"instagram":null,"last_name":"CMS","linked_in":null,"profile_picture_id":null,"role":{"description":"","id":0,"name":""},"twitter":null,"updated_at":"0001-01-01T00:00:00Z","uuid":"00000000-0000-0000-0000-000000000000"}]`,
 			status:  200,
 			message: "Successfully obtained users",
 			mock: func(u *mocks.UserRepository) {
@@ -122,7 +132,11 @@ func TestUser_Get(t *testing.T) {
 // TestUser_GetById - Test GetByID route
 func TestUser_GetById(t *testing.T) {
 
-	user := domain.User{Id: 123, FirstName: "Verbis", LastName: "CMS"}
+	user := domain.User{
+		UserPart:      domain.UserPart{
+			Id: 123, FirstName: "Verbis", LastName: "CMS",
+		},
+	}
 
 	tt := map[string]struct {
 		want    string
@@ -238,11 +252,13 @@ func TestUser_Create(t *testing.T) {
 
 	userCreate := &domain.UserCreate{
 		User: domain.User{
-			FirstName: "Verbis",
-			LastName:  "CMS",
-			Email:     "verbis@verbiscms.com",
-			Role: domain.UserRole{
-				Id: 123,
+			UserPart:domain.UserPart{
+				FirstName: "Verbis",
+				LastName:  "CMS",
+				Email:     "verbis@verbiscms.com",
+				Role: domain.UserRole{
+					Id: 123,
+				},
 			},
 		},
 		Password:        "password",
@@ -250,17 +266,21 @@ func TestUser_Create(t *testing.T) {
 	}
 
 	user := domain.User{
-		Id:        123,
-		FirstName: "Verbis",
-		LastName:  "CMS",
-		Email:     "verbis@verbiscms.com",
+		UserPart: domain.UserPart{
+			Id:        123,
+			FirstName: "Verbis",
+			LastName:  "CMS",
+			Email:     "verbis@verbiscms.com",
+		},
 	}
 
 	userBadValidation := &domain.UserCreate{
 		User: domain.User{
-			FirstName: "Verbis",
-			LastName:  "CMS",
-			Email:     "verbis@verbiscms.com",
+			UserPart: domain.UserPart{
+				FirstName: "Verbis",
+				LastName:  "CMS",
+				Email:     "verbis@verbiscms.com",
+			},
 		},
 		Password:        "password",
 		ConfirmPassword: "password",
@@ -283,7 +303,7 @@ func TestUser_Create(t *testing.T) {
 			},
 		},
 		"Validation Failed": {
-			want:    `{"errors":[{"key":"role_id","message":"User Role Id is required.","type":"required"}]}`,
+			want:    `{"errors":[{"key":"role_id","message":"Role Id is required.","type":"required"}]}`,
 			status:  400,
 			message: "Validation failed",
 			input:   userBadValidation,
@@ -341,23 +361,29 @@ func TestUser_Create(t *testing.T) {
 	}
 }
 
-// TestUser_Update - Test Update route
+//TestUser_Update - Test Update route
 func TestUser_Update(t *testing.T) {
 
+	cache.Init()
+
 	user := domain.User{
-		Id:        123,
-		FirstName: "Verbis",
-		LastName:  "CMS",
-		Email:     "verbis@verbiscms.com",
-		Role: domain.UserRole{
-			Id: 1,
+		UserPart: domain.UserPart{
+			Id:        123,
+			FirstName: "Verbis",
+			LastName:  "CMS",
+			Email:     "verbis@verbiscms.com",
+			Role: domain.UserRole{
+				Id: 1,
+			},
 		},
 	}
 
 	userBadValidation := &domain.User{
-		FirstName: "Verbis",
-		LastName:  "CMS",
-		Email:     "verbis@verbiscms.com",
+		UserPart: domain.UserPart{
+			FirstName: "Verbis",
+			LastName:  "CMS",
+			Email:     "verbis@verbiscms.com",
+		},
 	}
 
 	tt := map[string]struct {
@@ -425,6 +451,9 @@ func TestUser_Update(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			rr := newTestSuite(t)
 			mock := &mocks.UserRepository{}
+			postsMock := &mocks.PostsRepository{}
+			postsMock.On("Get", http.Params{LimitAll: true}, false, "", "").Return([]domain.PostData{}, 2, nil)
+
 			test.mock(mock)
 
 			body, err := json.Marshal(test.input)
@@ -433,7 +462,9 @@ func TestUser_Update(t *testing.T) {
 			}
 
 			rr.RequestAndServe("PUT", test.url, "/users/:id", bytes.NewBuffer(body), func(g *gin.Context) {
-				getUserMock(mock).Update(g)
+				t := getUserMock(mock)
+				t.store.Posts = postsMock
+				t.Update(g)
 			})
 
 			rr.Run(test.want, test.status, test.message)

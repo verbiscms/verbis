@@ -58,7 +58,7 @@ func TestMedia_Get(t *testing.T) {
 		mock    func(u *mocks.MediaRepository)
 	}{
 		"Success": {
-			want:    `[{"id":123,"uuid":"00000000-0000-0000-0000-000000000000","url":"/logo.svg","title":null,"alt":null,"description":null,"file_size":0,"file_name":"","sizes":null,"type":"","user_id":0,"created_at":"0001-01-01T00:00:00Z","updated_at":"0001-01-01T00:00:00Z"},{"id":124,"uuid":"00000000-0000-0000-0000-000000000000","url":"/logo.png","title":null,"alt":null,"description":null,"file_size":0,"file_name":"","sizes":null,"type":"","user_id":0,"created_at":"0001-01-01T00:00:00Z","updated_at":"0001-01-01T00:00:00Z"}]`,
+			want:    `[{"alt":"","created_at":"0001-01-01T00:00:00Z","description":"","file_name":"","file_size":0,"id":123,"sizes":null,"title":"","type":"","updated_at":"0001-01-01T00:00:00Z","url":"/logo.svg","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"},{"alt":"","created_at":"0001-01-01T00:00:00Z","description":"","file_name":"","file_size":0,"id":124,"sizes":null,"title":"","type":"","updated_at":"0001-01-01T00:00:00Z","url":"/logo.png","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"}]`,
 			status:  200,
 			message: "Successfully obtained media",
 			mock: func(u *mocks.MediaRepository) {
@@ -131,7 +131,7 @@ func TestMedia_GetById(t *testing.T) {
 		url     string
 	}{
 		"Success": {
-			want:    `{"alt":null,"created_at":"0001-01-01T00:00:00Z","description":null,"file_name":"","file_size":0,"id":123,"sizes":null,"title":null,"type":"","updated_at":"0001-01-01T00:00:00Z","url":"/logo.svg","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"}`,
+			want:    `{"alt":"","created_at":"0001-01-01T00:00:00Z","description":"","file_name":"","file_size":0,"id":123,"sizes":null,"title":"","type":"","updated_at":"0001-01-01T00:00:00Z","url":"/logo.svg","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"}`,
 			status:  200,
 			message: "Successfully obtained media item with ID: 123",
 			mock: func(m *mocks.MediaRepository) {
@@ -203,7 +203,7 @@ func TestMedia_Update(t *testing.T) {
 		url     string
 	}{
 		"Success": {
-			want:    `{"alt":null,"created_at":"0001-01-01T00:00:00Z","description":null,"file_name":"","file_size":0,"id":123,"sizes":null,"title":null,"type":"","updated_at":"0001-01-01T00:00:00Z","url":"/logo.svg","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"}`,
+			want:    `{"alt":"","created_at":"0001-01-01T00:00:00Z","description":"","file_name":"","file_size":0,"id":123,"sizes":null,"title":"","type":"","updated_at":"0001-01-01T00:00:00Z","url":"/logo.svg","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"}`,
 			status:  200,
 			message: "Successfully updated media item with ID: 123",
 			input:   media,
@@ -292,7 +292,7 @@ func TestMedia_Upload(t *testing.T) {
 		url     string
 	}{
 		"Success": {
-			want:    `{"alt":null,"created_at":"0001-01-01T00:00:00Z","description":null,"file_name":"","file_size":0,"id":0,"sizes":null,"title":null,"type":"","updated_at":"0001-01-01T00:00:00Z","url":"","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"}`,
+			want:    `{"alt":"","created_at":"0001-01-01T00:00:00Z","description":"","file_name":"","file_size":0,"id":0,"sizes":null,"title":"","type":"","updated_at":"0001-01-01T00:00:00Z","url":"","user_id":0,"uuid":"00000000-0000-0000-0000-000000000000"}`,
 			status:  200,
 			message: "Successfully uploaded media item",
 			files:   1,
