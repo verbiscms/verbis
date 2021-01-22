@@ -152,7 +152,6 @@ func (c *User) Update(g *gin.Context) {
 	}
 	u.Id = id
 
-
 	updatedUser, err := c.store.User.Update(&u)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)

@@ -53,7 +53,7 @@ func (c *Fields) Get(g *gin.Context) {
 	}
 
 	post := domain.PostData{
-		Post:     domain.Post{
+		Post: domain.Post{
 			Id:                0,
 			Slug:              "",
 			Title:             "",
@@ -66,7 +66,6 @@ func (c *Fields) Get(g *gin.Context) {
 			UserId:            userId,
 		},
 	}
-
 
 	// Get the author associated with the post
 	author, err := c.store.User.GetById(post.UserId)
