@@ -20,8 +20,8 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 			want:   []domain.PostField{{Name: "test"}},
 		},
 		"1 Args (Post Fields)": {
-			args:   []interface{}{domain.PostData{
-				Post: domain.Post{Id: 1, Title: "post"},
+			args: []interface{}{domain.PostData{
+				Post:   domain.Post{Id: 1, Title: "post"},
 				Fields: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
 			}},
 			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},

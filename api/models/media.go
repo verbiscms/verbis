@@ -84,7 +84,7 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
     CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
     CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt',
     CASE WHEN description IS NULL THEN '' ELSE alt END AS 'description'
-	FROM media`;
+	FROM media`
 
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM media")
 
