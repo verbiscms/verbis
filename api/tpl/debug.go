@@ -11,6 +11,19 @@ func  (t *TemplateManager) debug(i interface{}) string {
 	return fmt.Sprintf("%+v\n", i)
 }
 
+// Have a struct!
+
+type dump struct {
+	bytes *bytes.Buffer
+
+}
+
+// or
+type dd *bytes.Buffer
+
+// or both
+
+
 func (t *TemplateManager) dd(i interface{}) (template.HTML, error) {
 
 
