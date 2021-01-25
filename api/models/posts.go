@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"strings"
@@ -62,6 +63,11 @@ type PostRaw struct {
 }
 
 const (
+
+	// THERES TWO THINGS WRONG
+	// IF THERE IS NO AUTHOR THATS ASSOCIATED WITH A POST, IT WILL COME BACK WITH NULL IDS
+	// PAGINATION IS NOT WORKING NOW, BECAUSE FIELDS ARE INCLUDED
+
 	postQuery = `SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
        users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.first_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
@@ -73,6 +79,7 @@ const (
        CASE WHEN pf.id IS NULL THEN 0 ELSE pf.id END AS 'field.field_id',
        CASE WHEN pf.type IS NULL THEN "" ELSE pf.type END AS 'field.type',
        CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
+       CASE WHEN pf.name IS NULL THEN "" ELSE pf.name END AS 'field.name',
        CASE WHEN pf.value IS NULL THEN "" ELSE pf.value END AS 'field.value'
 	FROM posts
          LEFT JOIN post_options ON posts.id = post_options.post_id
@@ -140,6 +147,8 @@ func (s *PostStore) Get(meta http.Params, layout bool, resource string, status s
 		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
 	}
 
+
+	color.Green.Println(q)
 	var rawPosts []PostRaw
 	if err := s.db.Select(&rawPosts, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
@@ -187,9 +196,9 @@ func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
 				Fields:   make([]domain.PostField, 0),
 			}
 
-			if layout {
-				p.Layout = s.fieldsModel.GetLayout(p)
-			}
+			//if layout {
+			//	p.Layout = s.fieldsModel.GetLayout(p)
+			//}
 
 			posts = append(posts, p)
 		}
@@ -214,6 +223,8 @@ func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
 		}
 	}
 
+	color.Green.Println(len(posts))
+
 	return posts
 }
 
@@ -236,6 +247,7 @@ func (s *PostStore) GetBySlug(slug string) (domain.PostData, error) {
 	const op = "PostsRepository.GetBySlug"
 	var p []PostRaw
 	if err := s.db.Select(&p, fmt.Sprintf("%s %s", postQuery, "AND posts.slug = ? LIMIT 1"), slug); err != nil {
+		color.Red.Println(err)
 		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op}
 	}
 	return s.format(p, false)[0], nil
