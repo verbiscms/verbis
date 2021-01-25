@@ -89,7 +89,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 	var opts []domain.OptionDB
 	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 		}).Fatal()
 		return domain.Options{}
 	}
@@ -99,7 +99,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 		unValue, err := s.unmarshalValue(v.Value)
 		if err != nil {
 			log.WithFields(log.Fields{
-				"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+				"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 			}).Fatal()
 			return domain.Options{}
 		}
@@ -109,7 +109,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 	mOpts, err := json.Marshal(unOpts)
 	if err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 		}).Fatal()
 		return domain.Options{}
 	}
@@ -117,7 +117,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 	var options domain.Options
 	if err := json.Unmarshal(mOpts, &options); err != nil {
 		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
+			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
 		}).Fatal()
 		return domain.Options{}
 	}
