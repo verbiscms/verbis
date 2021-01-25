@@ -1,8 +1,11 @@
 {{ define "content" }}
 
 
+    <div class="">fdg;ljdsfglksdfjlsdfgj</div>
+
     <div style="padding: 20px">
-        {{ field "content" }}
+        {{ test . }}
+{{/*        {{ field "content" }}*/}}
 {{/*        {{ .Post.Title }}*/}}
 {{/*        {{ $result := posts (dict "limit" 99999999 "order_direction" "asc") }}*/}}
 {{/*        HEY HEYggg*/}}
@@ -10,6 +13,8 @@
 {{/*        {{ .Post.Author.FirstName }}*/}}
 {{/*        {{ $result.Posts }}*/}}
     </div>
+
+    <div class="">fdg;ljdsfglksdfjlsdfgj</div>
 
 
 {{ end }}

@@ -166,6 +166,10 @@ func (t *TemplateManager) writeTwitter(bytes *bytes.Buffer, title string, descri
 func (t *TemplateManager) metaTitle() string {
 	postMeta := t.post.SeoMeta.Meta
 
+	if postMeta == nil {
+		return ""
+	}
+
 	if postMeta.Title != "" {
 		return postMeta.Title
 	}
