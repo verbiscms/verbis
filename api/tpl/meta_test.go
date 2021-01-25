@@ -365,22 +365,27 @@ func (t *TplTestSuite) Test_WriteTwitter() {
 func (t *TplTestSuite) Test_MetaTitle() {
 
 	tt := map[string]struct {
-		meta    domain.PostMeta
+		meta    domain.PostOptions
 		options domain.Options
 		want    string
 	}{
+		"Nil Meta": {
+			meta:    domain.PostOptions{Meta: nil},
+			options: domain.Options{},
+			want:    "",
+		},
 		"With Post Title": {
-			meta:    domain.PostMeta{Title: "post-title-verbis"},
+			meta:    domain.PostOptions{Meta: &domain.PostMeta{Title: "post-title-verbis"}},
 			options: domain.Options{},
 			want:    "post-title-verbis",
 		},
 		"With Options": {
-			meta:    domain.PostMeta{Title: ""},
+			meta:    domain.PostOptions{Meta: &domain.PostMeta{Title: ""}},
 			options: domain.Options{MetaTitle: "post-title-verbis"},
 			want:    "post-title-verbis",
 		},
 		"None": {
-			meta:    domain.PostMeta{Title: ""},
+			meta:    domain.PostOptions{Meta: &domain.PostMeta{Title: ""}},
 			options: domain.Options{MetaTitle: ""},
 			want:    "",
 		},
@@ -389,9 +394,7 @@ func (t *TplTestSuite) Test_MetaTitle() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.post.Post = domain.Post{
-				SeoMeta: domain.PostOptions{
-					Meta: &test.meta,
-				},
+				SeoMeta: test.meta,
 			}
 			t.options = test.options
 

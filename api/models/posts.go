@@ -161,8 +161,6 @@ func (s *PostStore) Get(meta http.Params, layout bool, resource string, status s
 	return formattedPosts, total, nil
 }
 
-
-
 // GetById returns a post by Id
 //
 // Returns errors.NOTFOUND if the post was not found by the given Id.

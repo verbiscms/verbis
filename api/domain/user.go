@@ -88,23 +88,3 @@ func (u *User) HideCredentials() UserPart {
 	}
 }
 
-func (u *User) Author() PostAuthor {
-	return PostAuthor{
-		Id:               u.Id,
-		UUID:             u.UUID,
-		FirstName:        u.FirstName,
-		LastName:         u.LastName,
-		Email:            u.Email,
-		Website:          u.Website,
-		Facebook:         u.Facebook,
-		Twitter:          u.Twitter,
-		Linkedin:         u.Linkedin,
-		Instagram:        u.Instagram,
-		Biography:        u.Biography,
-		Role:             u.Role,
-		ProfilePictureID: u.ProfilePictureID,
-		EmailVerifiedAt:  u.EmailVerifiedAt,
-		CreatedAt:        u.CreatedAt,
-		UpdatedAt:        u.UpdatedAt,
-	}
-}

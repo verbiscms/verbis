@@ -1,7 +1,6 @@
 package tpl
 
 import (
-	"fmt"
 	"github.com/gin-contrib/location"
 	"github.com/spf13/cast"
 )
@@ -19,7 +18,6 @@ func (t *TemplateManager) getHost() string {
 }
 
 func (t *TemplateManager) getFullURL() string {
-	fmt.Println(t.gin.Request.Host)
 	return location.Get(t.gin).String() + t.gin.Request.URL.Path
 }
 

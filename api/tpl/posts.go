@@ -82,19 +82,3 @@ func (t *TemplateManager) getPaginationPage() int {
 	}
 	return pageInt
 }
-
-// formatPost
-//
-// Format's from the posts store and creates a new ViewPost
-// ready to be returned to the template. It removes
-// layouts from the formatting as it is not
-// needed in the frontend.
-//func (t *TemplateManager) formatPost(post domain.Post) (domain.ViewPost, error) {
-//
-//	fp, err := t.store.Posts.Format(post)
-//	if err != nil {
-//		return domain.ViewPost{}, err
-//	}
-//
-//	return fp.ViewPost(), nil
-//}

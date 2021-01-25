@@ -1,12 +1,14 @@
 package api
 
 import (
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 )
 
@@ -141,6 +143,8 @@ func (c *Categories) Update(g *gin.Context) {
 		return
 	}
 
+	defer c.clearCache(updatedCategory.Id)
+
 	Respond(g, 200, "Successfully updated category with ID: "+strconv.Itoa(category.Id), updatedCategory)
 }
 
@@ -173,12 +177,12 @@ func (c *Categories) Delete(g *gin.Context) {
 // clearCache
 // Clear the post cache that have the given category ID
 // attached to it.
-//func (c *Categories) clearCache(id int) {
-//	go func() {
-//		posts, _, err := c.store.Posts.Get(http.Params{LimitAll: true}, "", "")
-//		if err != nil {
-//			log.WithFields(log.Fields{"error": err}).Fatal()
-//		}
-//		cache.ClearCategoryCache(id, posts)
-//	}()
-//}
+func (c *Categories) clearCache(id int) {
+	go func() {
+		posts, _, err := c.store.Posts.Get(http.Params{LimitAll: true}, false, "", "")
+		if err != nil {
+			log.WithFields(log.Fields{"error": err}).Error()
+		}
+		cache.ClearCategoryCache(id, posts)
+	}()
+}

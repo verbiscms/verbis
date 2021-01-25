@@ -36,8 +36,8 @@ func (t *TplTestSuite) Test_GetData() {
 		SocialPinterest:  "pinterest",
 	}
 
-	author := &domain.PostAuthor{}
-	category := &domain.PostCategory{}
+	author := domain.UserPart{}
+	category := &domain.Category{}
 	resource := "resource"
 
 	t.post = &domain.PostData{
