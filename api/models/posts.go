@@ -8,7 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
 	"strings"
@@ -62,14 +61,9 @@ type PostRaw struct {
 	} `db:"field"`
 }
 
-const (
-
-	// THERES TWO THINGS WRONG
-	// IF THERE IS NO AUTHOR THATS ASSOCIATED WITH A POST, IT WILL COME BACK WITH NULL IDS
-	// PAGINATION IS NOT WORKING NOW, BECAUSE FIELDS ARE INCLUDED
-
-	postQuery = `SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
-       users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.first_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
+func (s PostStore) getQuery(query string) string {
+	return fmt.Sprintf(`SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
+       users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.last_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
        roles.id 'author.roles.id', roles.name 'author.roles.name', roles.description 'author.roles.description',
        pf.uuid 'field.uuid',
@@ -81,20 +75,20 @@ const (
        CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
        CASE WHEN pf.name IS NULL THEN "" ELSE pf.name END AS 'field.name',
        CASE WHEN pf.value IS NULL THEN "" ELSE pf.value END AS 'field.value'
-	FROM posts
-         LEFT JOIN post_options ON posts.id = post_options.post_id
-         RIGHT JOIN users ON posts.user_id = users.id
-         LEFT JOIN user_roles ON users.id = user_roles.user_id
-         LEFT JOIN roles ON user_roles.role_id = roles.id
-         LEFT JOIN post_categories pc on posts.id = pc.post_id
-         LEFT JOIN categories on pc.category_id = categories.id
-         LEFT JOIN post_fields pf on posts.id = pf.post_id`
-)
+FROM (%s) posts
+      LEFT JOIN post_options ON posts.id = post_options.post_id
+      LEFT JOIN users ON posts.user_id = users.id
+      INNER JOIN user_roles ON users.id = user_roles.user_id
+      LEFT JOIN roles ON user_roles.role_id = roles.id
+      LEFT JOIN post_categories pc on posts.id = pc.post_id
+      LEFT JOIN categories on pc.category_id = categories.id
+      LEFT JOIN post_fields pf on posts.id = pf.post_id`, query)
+}
 
 func (s *PostStore) Get(meta http.Params, layout bool, resource string, status string) ([]domain.PostData, int, error) {
 	const op = "PostsRepository.Get"
 
-	q := postQuery
+	q := "SELECT * FROM posts"
 	countQ := "SELECT COUNT(*) FROM posts"
 
 	// Apply filters to total and original query
@@ -147,10 +141,8 @@ func (s *PostStore) Get(meta http.Params, layout bool, resource string, status s
 		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
 	}
 
-
-	color.Green.Println(q)
 	var rawPosts []PostRaw
-	if err := s.db.Select(&rawPosts, q); err != nil {
+	if err := s.db.Select(&rawPosts, s.getQuery(q)); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
@@ -169,75 +161,27 @@ func (s *PostStore) Get(meta http.Params, layout bool, resource string, status s
 	return formattedPosts, total, nil
 }
 
-func (s *PostStore) find(posts []domain.PostData, id int) bool {
-	for _, v := range posts {
-		if v.Id == id {
-			return true
-		}
-	}
-	return false
-}
 
-func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
-	var posts []domain.PostData
-
-	for _, v := range rawPosts {
-
-		if !s.find(posts, v.Id) {
-			var category *domain.Category = nil
-			if v.Category.Id != 0 {
-				category = &v.Category
-			}
-
-			p := domain.PostData{
-				Post:     v.Post,
-				Author:   v.Author.HideCredentials(),
-				Category: category,
-				Fields:   make([]domain.PostField, 0),
-			}
-
-			//if layout {
-			//	p.Layout = s.fieldsModel.GetLayout(p)
-			//}
-
-			posts = append(posts, p)
-		}
-
-		if v.Field.UUID != nil {
-			field := domain.PostField{
-				Id:            v.Field.Id,
-				PostId:        v.Field.PostId,
-				UUID:          *v.Field.UUID,
-				Type:          v.Field.Type,
-				Name:          v.Field.Name,
-				Key:           v.Field.Key,
-				Value:         nil,
-				OriginalValue: domain.FieldValue(v.Field.OriginalValue),
-			}
-
-			for fi, fv := range posts {
-				if fv.Id == v.Id {
-					posts[fi].Fields = append(posts[fi].Fields, field)
-				}
-			}
-		}
-	}
-
-	color.Green.Println(len(posts))
-
-	return posts
-}
 
 // GetById returns a post by Id
 //
 // Returns errors.NOTFOUND if the post was not found by the given Id.
 func (s *PostStore) GetById(id int, layout bool) (domain.PostData, error) {
 	const op = "PostsRepository.GetById"
+
 	var p []PostRaw
-	if err := s.db.Select(&p, fmt.Sprintf("%s %s", postQuery, "AND posts.id = ? LIMIT 1"), id); err != nil {
-		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op}
+	err := s.db.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.id = ? LIMIT 1"), id)
+
+	if err != nil {
+		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op, Err: err}
 	}
-	return s.format(p, layout)[0], nil
+
+	formatted := s.format(p, false)
+	if len(formatted) == 0 {
+		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the ID: %d", id), Operation: op, Err: fmt.Errorf("could not format the post with the ID: %d", id)}
+	}
+
+	return formatted[0], nil
 }
 
 // GetBySlug returns a a post by slug
@@ -245,12 +189,20 @@ func (s *PostStore) GetById(id int, layout bool) (domain.PostData, error) {
 // Returns errors.NOTFOUND if the post was not found by the given slug.
 func (s *PostStore) GetBySlug(slug string) (domain.PostData, error) {
 	const op = "PostsRepository.GetBySlug"
+
 	var p []PostRaw
-	if err := s.db.Select(&p, fmt.Sprintf("%s %s", postQuery, "AND posts.slug = ? LIMIT 1"), slug); err != nil {
-		color.Red.Println(err)
-		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op}
+	err := s.db.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.slug = ? LIMIT 1"), slug)
+
+	if err != nil {
+		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op, Err: err}
 	}
-	return s.format(p, false)[0], nil
+
+	formatted := s.format(p, false)
+	if len(formatted) == 0 {
+		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the slug: %s", slug), Operation: op, Err: fmt.Errorf("could not format the post with the slug: %s", slug)}
+	}
+
+	return formatted[0], nil
 }
 
 // Create a new post
@@ -279,7 +231,9 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostData, error) {
 	}
 
 	// Remove any trailing slashes from slug.
-	p.Slug = strings.TrimRight(p.Slug, "/")
+	if p.Slug != "/" {
+		p.Slug = strings.TrimRight(p.Slug, "/")
+	}
 
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
@@ -338,7 +292,9 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.PostData, error) {
 	p.UserId = p.Author
 
 	// Remove any trailing slashes from slug.
-	p.Slug = strings.TrimRight(p.Slug, "/")
+	if p.Slug != "/" {
+		p.Slug = strings.TrimRight(p.Slug, "/")
+	}
 
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
@@ -449,4 +405,61 @@ func (s *PostStore) validateUrl(slug string) error {
 	}
 
 	return nil
+}
+
+func (s *PostStore) find(posts []domain.PostData, id int) bool {
+	for _, v := range posts {
+		if v.Id == id {
+			return true
+		}
+	}
+	return false
+}
+
+func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
+	var posts []domain.PostData
+
+	for _, v := range rawPosts {
+
+		if !s.find(posts, v.Id) {
+			var category *domain.Category = nil
+			if v.Category.Id != 0 {
+				category = &v.Category
+			}
+
+			p := domain.PostData{
+				Post:     v.Post,
+				Author:   v.Author.HideCredentials(),
+				Category: category,
+				Fields:   make([]domain.PostField, 0),
+			}
+
+			if layout {
+				p.Layout = s.fieldsModel.GetLayout(p)
+			}
+
+			posts = append(posts, p)
+		}
+
+		if v.Field.UUID != nil {
+			field := domain.PostField{
+				Id:            v.Field.Id,
+				PostId:        v.Field.PostId,
+				UUID:          *v.Field.UUID,
+				Type:          v.Field.Type,
+				Name:          v.Field.Name,
+				Key:           v.Field.Key,
+				Value:         nil,
+				OriginalValue: domain.FieldValue(v.Field.OriginalValue),
+			}
+
+			for fi, fv := range posts {
+				if fv.Id == v.Id {
+					posts[fi].Fields = append(posts[fi].Fields, field)
+				}
+			}
+		}
+	}
+
+	return posts
 }
