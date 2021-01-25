@@ -55,29 +55,11 @@ func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Co
 	}
 }
 
-// ToSliceE casts an interface to a []interface{} type.
-func ToSlice(i interface{}) []interface{} {
-	var s []interface{}
-
-	switch v := i.(type) {
-	case []interface{}:
-		return append(s, v...)
-	case []map[string]interface{}:
-		for _, u := range v {
-			s = append(s, u)
-		}
-		return s
-	default:
-		s = append(s, i)
-		return s
-	}
-}
-
 // Get all template functions
 func (t *TemplateManager) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
-		"test": t.getPosts,
+		"test": t.dd,
 		// Attributes
 		"body": t.body,
 		"lang": t.lang,
@@ -92,7 +74,7 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		// Cast
 		"toBool":     cast.ToBool,
 		"toString":   cast.ToString,
-		"toSlice":    ToSlice,
+		"toSlice":    t.toSlice,
 		"toTime":     cast.ToTime,
 		"toDuration": cast.ToDuration,
 		"toInt":      cast.ToInt,
@@ -232,21 +214,7 @@ func (t *TemplateManager) GetData() map[string]interface{} {
 		"Site":  t.store.Site.GetGlobalConfig(),
 		"Theme": theme.Theme,
 		//"Token": csrf.GetToken(t.gin),
-		"Post": map[string]interface{}{
-			"Id":           t.post.Id,
-			"UUID":         t.post.UUID,
-			"Slug":         t.post.Slug,
-			"Title":        t.post.Title,
-			"Status":       t.post.Status,
-			"Resource":     t.post.Resource,
-			"PageTemplate": t.post.PageTemplate,
-			"PageLayout":   t.post.PageLayout,
-			"PublishedAt":  t.post.PublishedAt,
-			"UpdatedAt":    t.post.UpdatedAt,
-			"CreatedAt":    t.post.CreatedAt,
-			"Author":       t.post.Author,
-			"Category":     t.post.Category,
-		},
+		"Post": t.post.Post,
 		"Options": map[string]interface{}{
 			"Social": map[string]interface{}{
 				"Facebook":  t.options.SocialFacebook,

@@ -40,14 +40,13 @@ func ClearUserCache(userId int, posts []domain.PostData) {
 	}
 }
 
-//func ClearCategoryCache(categoryId int, posts []domain.Post) {
-//
-//	for _, v := range posts {
-//		if v == userId {
-//			ClearPostCache(v.Id)
-//		}
-//	}
-//}
+func ClearCategoryCache(categoryId int, posts []domain.PostData) {
+	for _, v := range posts {
+		if v.Category.Id == categoryId {
+			ClearPostCache(v.Id)
+		}
+	}
+}
 
 func GetPostKey(id int) string {
 	return fmt.Sprintf("%s%d", postIdKey, id)

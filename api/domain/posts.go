@@ -44,36 +44,6 @@ type PostCreate struct {
 	Fields   []PostField `json:"fields,omitempty"`
 }
 
-type PostAuthor struct {
-	Id               int        `json:"id" binding:"required,numeric"`
-	UUID             uuid.UUID  `db:"uuid" json:"uuid"`
-	FirstName        string     `json:"first_name"`
-	LastName         string     `json:"last_name"`
-	Email            string     `json:"email"`
-	Website          *string    `db:"website" json:"website,omitempty" binding:"omitempty,url"`
-	Facebook         *string    `db:"facebook" json:"facebook"`
-	Twitter          *string    `db:"twitter" json:"twitter"`
-	Linkedin         *string    `db:"linked_in" json:"linked_in"`
-	Instagram        *string    `db:"instagram" json:"instagram"`
-	Biography        *string    `db:"biography" json:"biography"`
-	ProfilePictureID *int       `json:"profile_picture_id"`
-	Role             UserRole   `json:"role"`
-	EmailVerifiedAt  *time.Time `json:"email_verified_at"`
-	CreatedAt        time.Time  `json:"created_at"`
-	UpdatedAt        time.Time  `json:"updated_at"`
-}
-
-type PostCategory struct {
-	Id          int       `json:"id"`
-	Slug        string    `json:"slug"`
-	Name        string    `json:"name"`
-	Description *string   `json:"description"`
-	Resource    string    `json:"resource"`
-	ParentId    *int      `json:"parent_id"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	CreatedAt   time.Time `json:"created_at"`
-}
-
 type PostField struct {
 	Id            int         `db:"id" json:"-"`
 	PostId        int         `db:"post_id" json:"-"`

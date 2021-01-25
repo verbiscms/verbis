@@ -80,3 +80,26 @@ func (t *TemplateManager) implode(glue interface{}, slice interface{}) string {
 		return ""
 	}
 }
+
+// ToSliceE
+// toSlice
+//
+// Casts an interface to a []interface{} type.
+//
+// Example: {{ toSlice 1 }} Returns `[1]`
+func (t *TemplateManager) toSlice(i interface{}) []interface{} {
+	var s []interface{}
+
+	switch v := i.(type) {
+	case []interface{}:
+		return append(s, v...)
+	case []map[string]interface{}:
+		for _, u := range v {
+			s = append(s, u)
+		}
+		return s
+	default:
+		s = append(s, i)
+		return s
+	}
+}
