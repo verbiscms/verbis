@@ -2,17 +2,16 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/helpers/webp"
-
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
@@ -83,7 +82,7 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 	q := `SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at,
     CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
     CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt',
-    CASE WHEN description IS NULL THEN '' ELSE alt END AS 'description'
+    CASE WHEN description IS NULL THEN '' ELSE description END AS 'description'
 	FROM media`
 
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM media")
@@ -128,8 +127,14 @@ func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
 func (s *MediaStore) GetById(id int) (domain.Media, error) {
 	const op = "MediaRepository.GetById"
 	var m domain.Media
-	if err := s.db.Get(&m, "SELECT * FROM media WHERE id = ?", id); err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the ID: %d", id), Operation: op}
+	q := `SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at,
+    CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
+    CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt',
+    CASE WHEN description IS NULL THEN '' ELSE description END AS 'description'
+	FROM media 
+	WHERE id = ? LIMIT 1`
+	if err := s.db.Get(&m, q, id); err != nil {
+		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the ID: %d", id), Operation: op, Err: err}
 	}
 	return m, nil
 }
@@ -139,8 +144,15 @@ func (s *MediaStore) GetById(id int) (domain.Media, error) {
 func (s *MediaStore) GetByName(name string) (domain.Media, error) {
 	const op = "MediaRepository.GetByName"
 	var m domain.Media
-	if err := s.db.Get(&m, "SELECT * FROM media WHERE name = ?", name); err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the name: %s", name), Operation: op}
+	q := `SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at,
+    CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
+    CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt',
+    CASE WHEN description IS NULL THEN '' ELSE description END AS 'description'
+	FROM media 
+	WHERE name = ? LIMIT 1`
+	if err := s.db.Get(&m, q, name); err != nil {
+
+		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the name: %s", name), Operation: op, Err: err}
 	}
 	return m, nil
 }
@@ -151,8 +163,15 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 	const op = "MediaRepository.GetByUrl"
 	var m domain.Media
 
+	q := `SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at,
+    CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
+    CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt',
+    CASE WHEN description IS NULL THEN '' ELSE description END AS 'description'
+	FROM media 
+	WHERE url = ? LIMIT 1`
+
 	// Test normal size
-	if err := s.db.Get(&m, "SELECT * FROM media WHERE url = ?", url); err == nil {
+	if err := s.db.Get(&m, q, url); err == nil {
 		return m.FilePath + "/" + m.UUID.String(), m.Type, nil
 	}
 
@@ -165,7 +184,7 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 		}
 	}
 
-	return "", "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the url: %s", url), Operation: op}
+	return "", "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the url: %s", url), Operation: op, Err: fmt.Errorf("no media item exists with the url: %s", url)}
 }
 
 // Serve is responsible for serving the correct data to the front end
@@ -197,7 +216,7 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, 
 	}
 
 	if found != nil {
-		return nil, "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("File does not exist with the path: %v", uploadPath), Operation: op}
+		return nil, "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("File does not exist with the path: %v", uploadPath), Operation: op, Err: err}
 	}
 
 	return data, mimeType, nil
@@ -236,7 +255,7 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, token string) (domain.Me
 
 	// Save the uploaded file
 	if err := files.Save(file, path+"/"+key.String()+extension); err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not save the media file, please try again", Operation: op}
+		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not save the media file, please try again", Operation: op, Err: err}
 	}
 
 	// Convert to WebP
