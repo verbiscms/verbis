@@ -184,10 +184,11 @@ export default {
 		fields: {
 			deep: true,
 			handler(val) {
-				val['flexible'].value =  this.layoutStr.join(",");
-				this.$nextTick(() => {
-					this.updateChildIndex();
-				}, 20)
+				if (!('flexible' in val)) {
+					return;
+				}
+				val.flexible.value =  this.layoutStr.join(",");
+				this.updateChildIndex();
 			},
 		},
 	},
@@ -243,7 +244,8 @@ export default {
 		 * deleteRow()
 		 */
 		deleteRow(index) {
-			this.fields['children'].splice(index, 1);
+			this.layoutFields['children'].splice(index, 1);
+			this.layoutStr.splice(index, 1);
 		},
 		/*
 		 * addRow()
@@ -277,12 +279,20 @@ export default {
 		 */
 		moveItem(from, to) {
 			this.layoutFields['children'].splice(to, 0, this.layoutFields['children'].splice(from, 1)[0]);
+			this.layoutStr.splice(to, 0, this.layoutStr.splice(from, 1)[0]);
 		},
+		/*
+		 * getSubFields()
+		 */
 		getSubFields(index) {
+			console.log(this.layoutStr);
+			console.log(this.layoutStr[index]);
+
 			const layout = this.getLayouts[this.layoutStr[index]];
 			if (layout) {
+
 				if ('sub_fields' in layout) {
-					return layout['sub_fields']
+					return layout['sub_fields'];
 				}
 			}
 			return [];

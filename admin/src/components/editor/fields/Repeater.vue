@@ -177,10 +177,13 @@ export default {
 			deep: true,
 			handler(val) {
 				this.$nextTick(() => {
+					if (!('children' in val)) {
+						return;
+					}
 					this.fields['repeater'].value = val.children.length.toString();
 					this.$nextTick(() => {
 						this.updateChildIndex();
-					}, 20)
+					}, 20);
 				});
 			},
 		},
