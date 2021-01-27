@@ -1,0 +1,58 @@
+{
+	"uuid": "2f80bc9e-5012-11eb-ae93-0242ac130002",
+	"title": "Join Us Card",
+	"fields": [
+		{
+			"uuid": "2f80bf28-5012-11eb-ae93-0242ac130002",
+			"label": "Title",
+			"name": "card_title",
+			"type": "text",
+			"instructions": "Add a title for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "2f80c036-5012-11eb-ae93-0242ac130002",
+			"label": "Content",
+			"name": "card_content",
+			"type": "text",
+			"instructions": "Add content for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {}
+		},
+		{
+			"uuid": "2f80c112-5012-11eb-ae93-0242ac130002",
+			"label": "Image",
+			"name": "card_image",
+			"type": "image",
+			"instructions": "Add a image for the section.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"tabs": "all",
+				"toolbar": "full",
+				"media_upload": 1
+			}
+		}
+	],
+	"location": [
+		[
+			{
+				"param": "resource",
+				"operator": "==",
+				"value": "jobs"
+			}
+		]
+	]
+}
