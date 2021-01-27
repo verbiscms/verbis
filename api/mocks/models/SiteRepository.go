@@ -13,16 +13,14 @@ type SiteRepository struct {
 }
 
 // GetGlobalConfig provides a mock function with given fields:
-func (_m *SiteRepository) GetGlobalConfig() *domain.Site {
+func (_m *SiteRepository) GetGlobalConfig() domain.Site {
 	ret := _m.Called()
 
-	var r0 *domain.Site
-	if rf, ok := ret.Get(0).(func() *domain.Site); ok {
+	var r0 domain.Site
+	if rf, ok := ret.Get(0).(func() domain.Site); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Site)
-		}
+		r0 = ret.Get(0).(domain.Site)
 	}
 
 	return r0
