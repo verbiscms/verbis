@@ -174,7 +174,7 @@ func (s *PostStore) GetById(id int, layout bool) (domain.PostData, error) {
 		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op, Err: err}
 	}
 
-	formatted := s.format(p, false)
+	formatted := s.format(p, layout)
 	if len(formatted) == 0 {
 		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the ID: %d", id), Operation: op, Err: fmt.Errorf("could not format the post with the ID: %d", id)}
 	}
@@ -261,7 +261,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostData, error) {
 	}
 
 	// Update the post meta
-	if err := s.seoMetaModel.UpdateCreate(&post); err != nil {
+	if err := s.seoMetaModel.UpdateCreate(int(id), p.SeoMeta); err != nil {
 		return domain.PostData{}, err
 	}
 
@@ -318,7 +318,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.PostData, error) {
 	}
 
 	// Update the post meta
-	if err := s.seoMetaModel.UpdateCreate(&post); err != nil {
+	if err := s.seoMetaModel.UpdateCreate(p.Id, p.SeoMeta); err != nil {
 		return domain.PostData{}, err
 	}
 
@@ -420,15 +420,15 @@ func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
 	for _, v := range rawPosts {
 
 		if !s.find(posts, v.Id) {
-			var category *domain.Category = nil
+			var category domain.Category
 			if v.Category.Id != 0 {
-				category = &v.Category
+				category = v.Category
 			}
 
 			p := domain.PostData{
 				Post:     v.Post,
 				Author:   v.Author.HideCredentials(),
-				Category: category,
+				Category: &category,
 				Fields:   make([]domain.PostField, 0),
 			}
 

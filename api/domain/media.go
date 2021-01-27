@@ -33,7 +33,6 @@ type MediaSize struct {
 	Name     string    `db:"name" json:"name"`
 	SizeName string    `db:"size_name" json:"size_name"`
 	FileSize int       `db:"file_size" json:"file_size"`
-	FilePath string    `db:"file_path" json:"-"`
 	Width    int       `db:"width" json:"width"`
 	Height   int       `db:"height" json:"height"`
 	Crop     bool      `db:"crop" json:"crop"`

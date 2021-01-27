@@ -18,7 +18,7 @@ import (
 
 // SiteRepository defines methods for Posts to interact with the database
 type SiteRepository interface {
-	GetGlobalConfig() *domain.Site
+	GetGlobalConfig() domain.Site
 	GetThemeConfig() domain.ThemeConfig
 	GetTemplates() (domain.Templates, error)
 	GetLayouts() (domain.Layouts, error)
@@ -56,20 +56,18 @@ func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
 }
 
 // GetGlobalConfig gets the site global config
-func (s *SiteStore) GetGlobalConfig() *domain.Site {
+func (s *SiteStore) GetGlobalConfig() domain.Site {
 	const op = "SiteRepository.GetGlobalConfig"
 
 	opts := s.optionsModel.GetStruct()
 
-	ds := domain.Site{
+	return domain.Site{
 		Title:       opts.SiteTitle,
 		Description: opts.SiteDescription,
 		Logo:        opts.SiteLogo,
 		Url:         opts.SiteUrl,
 		Version:     api.App.Version,
 	}
-
-	return &ds
 }
 
 // Get"s the themes configuration from the themes path

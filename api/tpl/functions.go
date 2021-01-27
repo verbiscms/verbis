@@ -16,7 +16,7 @@ import (
 type TemplateManager struct {
 	gin          *gin.Context
 	post         *domain.PostData
-	site         *domain.Site
+	site         domain.Site
 	store        *models.Store
 	options      domain.Options
 	config       config.Configuration
@@ -211,10 +211,10 @@ func (t *TemplateManager) GetData() map[string]interface{} {
 
 	data := map[string]interface{}{
 		"Type":  t.orderOfSearch(),
-		"Site":  t.store.Site.GetGlobalConfig(),
+		"Site":  t.site,
 		"Theme": theme.Theme,
 		//"Token": csrf.GetToken(t.gin),
-		"Post": t.post.Post,
+		"Post": t.post,
 		"Options": map[string]interface{}{
 			"Social": map[string]interface{}{
 				"Facebook":  t.options.SocialFacebook,
