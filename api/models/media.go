@@ -176,11 +176,14 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 	}
 
 	// Test Sizes
-	if err := s.db.Get(&m, "SELECT * FROM media WHERE sizes LIKE '%"+url+"%' LIMIT 1"); err == nil {
-		for _, v := range m.Sizes {
-			if v.Url == url {
-				return m.FilePath + "/" + v.FilePath + "/" + v.UUID.String(), m.Type, nil
-			}
+	err := s.db.Get(&m, "SELECT * FROM media WHERE sizes LIKE '%"+url+"%' LIMIT 1")
+	if err != nil {
+		return "", "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the url: %s", url), Operation: op, Err: fmt.Errorf("no media item exists with the url: %s", url)}
+	}
+
+	for _, v := range m.Sizes {
+		if v.Url == url {
+			return m.FilePath + "/" + v.UUID.String(), m.Type, nil
 		}
 	}
 
@@ -197,6 +200,7 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, 
 
 	path, mimeType, err := s.GetByUrl(uploadPath)
 	if err != nil {
+		fmt.Println(err)
 		return nil, "", err
 	}
 
@@ -402,7 +406,7 @@ func (s *MediaStore) Delete(id int) error {
 
 	// Delete the sizes and webp versions if stored
 	for _, v := range m.Sizes {
-		filePath := m.FilePath + "/" + v.FilePath + "/" + v.UUID.String() + extension
+		filePath := m.FilePath + "/" + v.UUID.String() + extension
 		go files.CheckAndDelete(filePath)
 		go files.CheckAndDelete(filePath + ".webp")
 	}
@@ -454,7 +458,6 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, 
 
 			if err := s.processImageSize(file, path+"/"+mediaUUID.String(), mime, size); err == nil {
 				savedSizes[key] = domain.MediaSize{
-					FilePath: path,
 					UUID:     mediaUUID,
 					Url:      s.getUrl() + "/" + fileName,
 					Name:     fileName,

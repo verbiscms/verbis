@@ -351,7 +351,7 @@ func (c *Convert) populateAuthors() []domain.UserPart {
 
 			if c.sendEmail {
 				// User can't login!
-				err = importer.SendNewPassword(user.HideCredentials(), password, *c.store.Site.GetGlobalConfig())
+				err = importer.SendNewPassword(user.HideCredentials(), password, c.store.Site.GetGlobalConfig())
 				if err != nil {
 					color.Red.Println(err)
 					continue

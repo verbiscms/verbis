@@ -1,11 +1,11 @@
 {
-	"uuid": "4648cc36-5013-11eb-ae93-0242ac130002",
-	"title": "Apply Form",
+	"uuid": "1ee93a08-5b04-11eb-ae93-0242ac130002",
+	"title": "Office",
 	"fields": [
 		{
-			"uuid": "4648c902-5013-11eb-ae93-0242ac130002",
+			"uuid": "1ee93cb0-5b04-11eb-ae93-0242ac130002",
 			"label": "Title",
-			"name": "apply_title",
+			"name": "office_title",
 			"type": "text",
 			"instructions": "Add a title for the section.",
 			"required": false,
@@ -16,9 +16,9 @@
 			"options": {}
 		},
 		{
-			"uuid": "4648cd4e-5013-11eb-ae93-0242ac130002",
+			"uuid": "1ee9411a-5b04-11eb-ae93-0242ac130002",
 			"label": "Content",
-			"name": "apply_content",
+			"name": "office_content",
 			"type": "richtext",
 			"instructions": "Add content for the section.",
 			"required": false,
