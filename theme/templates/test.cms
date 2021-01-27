@@ -4,7 +4,7 @@
     <div class="">fdg;ljdsfglksdfjlsdfgj</div>
 
     <div style="padding: 20px">
-        {{ test . }}
+        {{ test . | safeHTML }}
 {{/*        {{ field "content" }}*/}}
 {{/*        {{ .Post.Title }}*/}}
 {{/*        {{ $result := posts (dict "limit" 99999999 "order_direction" "asc") }}*/}}

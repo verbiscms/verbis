@@ -167,16 +167,15 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
     CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
     CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt',
     CASE WHEN description IS NULL THEN '' ELSE description END AS 'description'
-	FROM media 
-	WHERE url = ? LIMIT 1`
+	FROM media `
 
 	// Test normal size
-	if err := s.db.Get(&m, q, url); err == nil {
+	if err := s.db.Get(&m, q+"WHERE url = ? LIMIT 1", url); err == nil {
 		return m.FilePath + "/" + m.UUID.String(), m.Type, nil
 	}
 
 	// Test Sizes
-	err := s.db.Get(&m, "SELECT * FROM media WHERE sizes LIKE '%"+url+"%' LIMIT 1")
+	err := s.db.Get(&m, q+"WHERE sizes LIKE '%"+url+"%' LIMIT 1")
 	if err != nil {
 		return "", "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the url: %s", url), Operation: op, Err: fmt.Errorf("no media item exists with the url: %s", url)}
 	}
