@@ -51,12 +51,12 @@ func TestUser_Get(t *testing.T) {
 
 	users := domain.Users{
 		{
-			UserPart:      domain.UserPart{
+			UserPart: domain.UserPart{
 				Id: 123, FirstName: "Verbis", LastName: "CMS",
 			},
 		},
 		{
-			UserPart:      domain.UserPart{
+			UserPart: domain.UserPart{
 				Id: 123, FirstName: "Verbis", LastName: "CMS",
 			},
 		},
@@ -133,7 +133,7 @@ func TestUser_Get(t *testing.T) {
 func TestUser_GetById(t *testing.T) {
 
 	user := domain.User{
-		UserPart:      domain.UserPart{
+		UserPart: domain.UserPart{
 			Id: 123, FirstName: "Verbis", LastName: "CMS",
 		},
 	}
@@ -252,7 +252,7 @@ func TestUser_Create(t *testing.T) {
 
 	userCreate := &domain.UserCreate{
 		User: domain.User{
-			UserPart:domain.UserPart{
+			UserPart: domain.UserPart{
 				FirstName: "Verbis",
 				LastName:  "CMS",
 				Email:     "verbis@verbiscms.com",

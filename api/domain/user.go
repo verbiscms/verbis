@@ -87,4 +87,3 @@ func (u *User) HideCredentials() UserPart {
 		UpdatedAt:        u.UpdatedAt,
 	}
 }
-
