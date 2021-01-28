@@ -210,4 +210,3 @@ Returns `hello verbis...`
 ```gotemplate
 {{ ellipsis "hello verbis cms!" 11 }}
 ```
-```

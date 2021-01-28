@@ -5,7 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 )
 
-// Creates a new date Namespace
+// Creates a new dict Namespace
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{deps: d}
 }
