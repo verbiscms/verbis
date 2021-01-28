@@ -5,21 +5,26 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 )
 
+// Creates a new slice Namespace
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{deps: d}
 }
 
+// Namespace defines the methods for slices to be used
+// as template functions.
 type Namespace struct {
 	deps *deps.Deps
 }
 
 const name = "slice"
 
+// Adds the namespace methods to the internal.FuncsNamespace
+// on initialisation.
 func init() {
-	f := func(d *deps.Deps) *internal.TemplateFuncsNamespace {
+	f := func(d *deps.Deps) *internal.FuncsNamespace {
 		ctx := New(d)
 
-		ns := &internal.TemplateFuncsNamespace{
+		ns := &internal.FuncsNamespace{
 			Name:    name,
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
@@ -28,7 +33,7 @@ func init() {
 			"slice",
 			nil,
 			[][2]string{
-				{`{{ $mySlice := slice 1 2 3 }}`, `1234`},
+				{`{{ slice "hello" "world" "!" }}`, `[hello world !]`},
 			},
 		)
 
@@ -36,7 +41,7 @@ func init() {
 			"append",
 			nil,
 			[][2]string{
-				{`{{ $mySlice := slice 1 2 3 }}`, `<p>Blockhead</p>`},
+				{`{{ append (slice "hello" "world" "!") "verbis" }}`, `[hello world ! verbis]`},
 			},
 		)
 
@@ -44,7 +49,7 @@ func init() {
 			"prepend",
 			nil,
 			[][2]string{
-				{`{{chomp "<p>Blockhead</p>\n" | safeHTML }}`, `<p>Blockhead</p>`},
+				{`{{ prepend (slice "hello" "world" "!") "verbis" }}`, `[verbis hello world !]`},
 			},
 		)
 
@@ -52,7 +57,7 @@ func init() {
 			"first",
 			nil,
 			[][2]string{
-				{`{{chomp "<p>Blockhead</p>\n" | safeHTML }}`, `<p>Blockhead</p>`},
+				{`{{ first (slice "hello" "world" "!") }}`, `hello`},
 			},
 		)
 
@@ -60,7 +65,7 @@ func init() {
 			"last",
 			nil,
 			[][2]string{
-				{`{{chomp "<p>Blockhead</p>\n" | safeHTML }}`, `<p>Blockhead</p>`},
+				{`{{ last (slice "hello" "world" "!") }}`, `!`},
 			},
 		)
 
@@ -68,12 +73,12 @@ func init() {
 			"reverse",
 			nil,
 			[][2]string{
-				{`{{ $mySlice := slice 1 2 3 }}{{ reverse $mySlice }}`, `321`},
+				{`{{ reverse (slice "hello" "world" "!") }}`, `[! world hello]`},
 			},
 		)
 
 		return ns
 	}
 
-	internal.AddTemplateFuncsNamespace(f)
+	internal.AddFuncsNamespace(f)
 }

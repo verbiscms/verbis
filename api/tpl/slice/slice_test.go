@@ -1,250 +1,244 @@
 package slice
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	tpl_test "github.com/ainsleyclark/verbis/api/tpl/tpltest"
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
+var (
+	ns = New(&deps.Deps{})
+)
+
+type noStringer struct{}
+
 func Test_Slice(t *testing.T) {
-	
+
 	tt := map[string]struct {
-		input interface{}
-		tpl   string
+		input []interface{}
 		want  interface{}
 	}{
 		"String": {
-			input: nil,
-			tpl:   `{{ $s := slice "a" "b" "c" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}`,
-			want:  "abc",
+			[]interface{}{"a", "b", "c"},
+			[]interface{}{"a", "b", "c"},
 		},
 		"Int": {
-			input: nil,
-			tpl:   `{{ $s := slice 1 2 3 }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}`,
-			want:  "123",
+			[]interface{}{1, 2, 3},
+			[]interface{}{1, 2, 3},
 		},
 		"Float": {
-			input: nil,
-			tpl:   `{{ $s := slice 1.1 2.2 3.3 }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}`,
-			want:  "1.12.23.3",
+			[]interface{}{1.1, 2.2, 3.3},
+			[]interface{}{1.1, 2.2, 3.3},
 		},
 		"Mixed": {
-			input: nil,
-			tpl:   `{{ $s := slice 1 1.1 "a" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}`,
-			want:  "11.1a",
-		},
-		"Posts": {
-			input: domain.Post{},
-			tpl:   `{{ slice . . . }}`,
-			want:  make([]domain.Post, 3),
+			[]interface{}{"a", 1, 1.1},
+			[]interface{}{"a", 1, 1.1},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			tpl_test.New(t).RunTWithData(test.tpl, test.want, test.input)
+			got := ns.slice(test.input...)
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
 
 func Test_Append(t *testing.T) {
 
-	suite := tpl_test.New(t)
+	slice := []string{"a", "b", "c"}
 
 	tt := map[string]struct {
 		input interface{}
-		tpl   string
+		slice interface{}
 		want  interface{}
 	}{
 		"String": {
-			input: []interface{}{"a", "b", "c"},
-			tpl:   `{{ $s := append . "d" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}{{ index $s 3 }}`,
-			want:  "abcd",
+			"d",
+			slice,
+			[]interface{}{"a", "b", "c", "d"},
 		},
 		"Int": {
-			input: []interface{}{1, 2, 3},
-			tpl:   `{{ $s := append . "4" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}{{ index $s 3 }}`,
-			want:  "1234",
+			1,
+			slice,
+			[]interface{}{"a", "b", "c", 1},
 		},
 		"Float": {
-			input: []interface{}{1.1, 2.2, 3.3},
-			tpl:   `{{ $s := append . "4.4" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}{{ index $s 3 }}`,
-			want:  "1.12.23.34.4",
-		},
-		"Mixed": {
-			input: []interface{}{1, 1.1, "a"},
-			tpl:   `{{ $s := append . "hello" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}{{ index $s 3 }}`,
-			want:  "11.1ahello",
-		},
-		"Posts": {
-			input: []interface{}{[]interface{}{domain.Post{}}, domain.Post{}},
-			tpl:   `{{ $arr := index . 0 }}{{ $post := index . 1 }}{{ append $arr $post }}`,
-			want:  make([]domain.Post, 2),
+			1.1,
+			slice,
+			[]interface{}{"a", "b", "c", 1.1},
 		},
 		"Error": {
-			input: "wrongval",
-			tpl:   `{{ append . "hello" }}`,
-			want:  "unable to append to slice with type: string",
+			"a",
+			"wrongval",
+			"unable to append to slice with type: string",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			suite.RunTWithData(test.tpl, test.want, test.input)
+			got, err := ns.append(test.slice, test.input)
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
 
-func Test_Prepend(t *testing.T){
+func Test_Prepend(t *testing.T) {
+
+	slice := []string{"a", "b", "c"}
 
 	tt := map[string]struct {
 		input interface{}
-		tpl   string
+		slice interface{}
 		want  interface{}
 	}{
 		"String": {
-			input: []interface{}{"a", "b", "c"},
-			tpl:   `{{ $s := prepend . "d" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}{{ index $s 3 }}`,
-			want:  "dabc",
+			"d",
+			slice,
+			[]interface{}{"d", "a", "b", "c"},
 		},
 		"Int": {
-			input: []interface{}{1, 2, 3},
-			tpl:   `{{ $s := prepend . "4" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}{{ index $s 3 }}`,
-			want:  "4123",
+			1,
+			slice,
+			[]interface{}{1, "a", "b", "c"},
 		},
 		"Float": {
-			input: []interface{}{1.1, 2.2, 3.3},
-			tpl:   `{{ $s := prepend . "4.4" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}{{ index $s 3 }}`,
-			want:  "4.41.12.23.3",
-		},
-		"Mixed": {
-			input: []interface{}{1, 1.1, "a"},
-			tpl:   `{{ $s := prepend . "hello" }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}{{ index $s 3 }}`,
-			want:  "hello11.1a",
-		},
-		"Posts": {
-			input: []interface{}{[]interface{}{domain.Post{}}, domain.Post{}},
-			tpl:   `{{ $arr := index . 0 }}{{ $post := index . 1 }}{{ prepend $arr $post }}`,
-			want:  make([]domain.Post, 2),
+			1.1,
+			slice,
+			[]interface{}{1.1, "a", "b", "c"},
 		},
 		"Error": {
-			input: "wrongval",
-			tpl:   `{{ prepend . "hello" }}`,
-			want:  "unable to prepend to slice with type: string",
+			"a",
+			"wrongval",
+			"unable to prepend to slice with type: string",
 		},
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T){
-			suite := tpl_test.New(t)
-			suite.RunTWithData(test.tpl, test.want, test.input)
+		t.Run(name, func(t *testing.T) {
+			got, err := ns.prepend(test.slice, test.input)
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
 
-func Test_First(t *testing.T){
+func Test_First(t *testing.T) {
 
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
 	}{
 		"String": {
-			input: []interface{}{"a", "b", "c"},
-			want:  "a",
+			[]interface{}{"a", "b", "c"},
+			"a",
 		},
 		"Int": {
-			input: []interface{}{1, 2, 3},
-			want:  "1",
+			[]interface{}{1, 2, 3},
+			1,
 		},
 		"Float": {
-			input: []interface{}{1.1, 2.2, 3.3},
-			want:  "1.1",
+			[]interface{}{1.1, 2.2, 3.3},
+			1.1,
 		},
 		"Mixed": {
-			input: []interface{}{1, 1.1, "a"},
-			want:  "1",
+			[]interface{}{1, 1.1, "a"},
+			1,
 		},
-		"Empty": {
-			input: []interface{}{},
-			want:  "",
+		"Nil": {
+			[]interface{}{},
+			nil,
 		},
 		"Error": {
-			input: "wrongval",
-			want:  "unable to get first element of slice with type: string",
+			"wrongval",
+			"unable to get first element of slice with type: string",
 		},
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T){
-			suite := tpl_test.New(t)
-			tpl := `{{ first . }}`
-			suite.RunTWithData(tpl, test.want, test.input)
+		t.Run(name, func(t *testing.T) {
+			got, err := ns.first(test.input)
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
 
-func Test_Last(t *testing.T){
+func Test_Last(t *testing.T) {
 
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
 	}{
 		"String": {
-			input: []interface{}{"a", "b", "c"},
-			want:  "c",
+			[]interface{}{"a", "b", "c"},
+			"c",
 		},
 		"Int": {
-			input: []interface{}{1, 2, 3},
-			want:  "3",
+			[]interface{}{1, 2, 3},
+			3,
 		},
 		"Float": {
-			input: []interface{}{1.1, 2.2, 3.3},
-			want:  "3.3",
+			[]interface{}{1.1, 2.2, 3.3},
+			3.3,
 		},
 		"Mixed": {
-			input: []interface{}{1, 1.1, "a"},
-			want:  "a",
+			[]interface{}{1, 1.1, "a"},
+			"a",
 		},
-		"Empty": {
-			input: []interface{}{},
-			want:  "",
+		"Nil": {
+			[]interface{}{},
+			nil,
 		},
 		"Error": {
-			input: "wrongval",
-			want:  "unable to get last element of slice with type: string",
+			"wrongval",
+			"unable to get last element of slice with type: string",
 		},
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T){
-			tpl := `{{ last . }}`
-			suite := tpl_test.New(t)
-			suite.RunTWithData(tpl, test.want, test.input)
+		t.Run(name, func(t *testing.T) {
+			got, err := ns.last(test.input)
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
 
-func Test_Reverse(t *testing.T){
+func Test_Reverse(t *testing.T) {
 
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
 	}{
 		"String": {
-			input: []interface{}{"a", "b", "c"},
-			want:  "cba",
+			[]interface{}{"a", "b", "c"},
+			[]interface{}{"c", "b", "a"},
 		},
 		"Int": {
-			input: []interface{}{1, 2, 3},
-			want:  "321",
+			[]interface{}{1, 2, 3},
+			[]interface{}{3, 2, 1},
 		},
 		"Float": {
-			input: []interface{}{1.1, 2.2, 3.3},
-			want:  "3.32.21.1",
+			[]interface{}{1.1, 2.2, 3.3},
+			[]interface{}{3.3, 2.2, 1.1},
 		},
 		"Mixed": {
-			input: []interface{}{1, 1.1, "a"},
-			want:  "a1.11",
+			[]interface{}{1, 1.1, "a"},
+			[]interface{}{"a", 1.1, 1},
 		},
 		"Error": {
 			input: "wrongval",
@@ -253,10 +247,13 @@ func Test_Reverse(t *testing.T){
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T){
-			tpl := `{{ $s := reverse . }}{{ index $s 0 }}{{ index $s 1 }}{{ index $s 2 }}`
-			suite := tpl_test.New(t)
-			suite.RunTWithData(tpl, test.want, test.input)
+		t.Run(name, func(t *testing.T) {
+			got, err := ns.reverse(test.input)
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
 		})
 	}
 }

@@ -190,7 +190,7 @@ func (c *Forms) Send(g *gin.Context) {
 		return
 	}
 
-//	color.Red.Printf("%+v\n", form.Body)
+	//	color.Red.Printf("%+v\n", form.Body)
 
 	err = c.store.Forms.Send(&form, g.ClientIP(), g.Request.UserAgent())
 	if err != nil {

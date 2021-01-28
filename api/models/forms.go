@@ -327,8 +327,7 @@ func (s *FormsStore) validateFile(form *domain.Form) {
 
 		field := reader.GetField(v.Label.Name())
 
-
-	//	field := reader.GetField(v.Key)
+		//	field := reader.GetField(v.Key)
 
 		switch v.Type {
 		case "file":
