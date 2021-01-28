@@ -163,7 +163,3 @@ func GetTemplateParams(query map[string]interface{}) (TemplateParams, error) {
 
 	return params, nil
 }
-
-func Test() {
-
-}
