@@ -26,33 +26,51 @@ theme:
 resources:
     news:
         name: news
-        friendly_name: Posts
-        singular_name: Post
-        slug: /posts
+        friendly_name: News
+        singular_name: News Item
+        slug: /news
         icon: feather feather-clipboard
         hidden: false
         hide_category_slug: true
-    staff:
-        name: staff
-        friendly_name: Staff Members
-        singular_name: Staff
-        slug: /team-members
+    team:
+        name: team
+        friendly_name: Team Members
+        singular_name: Team Member
+        slug: /team
         icon: feather feather-user
+        hidden: true
+        hide_category_slug: true
+    jobs:
+        name: jobs
+        friendly_name: Jobs
+        singular_name: Job
+        slug: /jobs
+        icon: feather feather-inbox
+        hidden: false
+        hide_category_slug: true
     casestudies:
         name: casestudies
         friendly_name: Case Studies
         singular_name: Case Study
-        slug: /case-studies
+        slug: /work
         icon: feather feather-book
-        hidden: true
+        hidden: false
         hide_category_slug: true
     industries:
         name: industries
         friendly_name: Industries
         singular_name: Industry
         slug: /industries
-        icon: feather feather-inbox
+        icon: feather feather-folder
         hidden: false
+        hide_category_slug: true
+    tools:
+        name: tools
+        friendly_name: Tools
+        singular_name: Tool
+        slug: /tools
+        icon: feather feather-layers
+        hidden: true
         hide_category_slug: true
 
 # |

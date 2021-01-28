@@ -51,5 +51,6 @@ type FormLabel string
 
 // Name converts the label to a dynamic-struct friendly name.
 func (f FormLabel) Name() string {
-	return strings.ReplaceAll(string(f), " ", "")
+	s := strings.ReplaceAll(string(f), " ", "")
+	return strings.Title(s)
 }
