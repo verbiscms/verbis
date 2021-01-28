@@ -5,28 +5,28 @@ import (
 	"html/template"
 )
 
-var TemplateFuncsNamespaceRegistry []func(d *deps.Deps) *TemplateFuncsNamespace
+var FuncsNamespaceRegistry []func(d *deps.Deps) *FuncsNamespace
 
-func AddTemplateFuncsNamespace(ns func(d *deps.Deps) *TemplateFuncsNamespace) {
-	TemplateFuncsNamespaceRegistry = append(TemplateFuncsNamespaceRegistry, ns)
+func AddFuncsNamespace(ns func(d *deps.Deps) *FuncsNamespace) {
+	FuncsNamespaceRegistry = append(FuncsNamespaceRegistry, ns)
 }
 
-type TemplateFuncsNamespace struct {
+type FuncsNamespace struct {
 	Name           string
 	Context        func(v ...interface{}) interface{}
-	MethodMappings map[string]TemplateFuncMethodMapping
+	MethodMappings map[string]FuncMethodMapping
 }
 
-type TemplateFuncMethodMapping struct {
+type FuncMethodMapping struct {
 	Method   interface{}
 	Name     string
 	Aliases  []string
 	Examples [][2]string
 }
 
-func (t *TemplateFuncsNamespace) AddMethodMapping(m interface{}, name string, aliases []string, examples [][2]string) {
+func (t *FuncsNamespace) AddMethodMapping(m interface{}, name string, aliases []string, examples [][2]string) {
 	if t.MethodMappings == nil {
-		t.MethodMappings = make(map[string]TemplateFuncMethodMapping)
+		t.MethodMappings = make(map[string]FuncMethodMapping)
 	}
 
 	for _, e := range examples {
@@ -41,19 +41,18 @@ func (t *TemplateFuncsNamespace) AddMethodMapping(m interface{}, name string, al
 		}
 	}
 
-	t.MethodMappings[name] = TemplateFuncMethodMapping{
+	t.MethodMappings[name] = FuncMethodMapping{
 		Method:   m,
-		Name: name,
+		Name:     name,
 		Aliases:  aliases,
 		Examples: examples,
 	}
 }
 
-
 func GetFuncMap(d *deps.Deps) template.FuncMap {
 	funcMap := template.FuncMap{}
 
-	for _, nsf := range TemplateFuncsNamespaceRegistry {
+	for _, nsf := range FuncsNamespaceRegistry {
 		ns := nsf(d)
 		if _, exists := funcMap[ns.Name]; exists {
 			panic(ns.Name + " is a duplicate template func")

@@ -2,6 +2,7 @@ package deps
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/models"
 )
 
@@ -20,5 +21,6 @@ type Deps struct {
 
 	// Logger
 
-	//
+	// Options
+	Options domain.Options
 }
