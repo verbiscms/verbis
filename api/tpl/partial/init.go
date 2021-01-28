@@ -1,22 +1,22 @@
-package dict
+package partial
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 )
 
-// Creates a new dict Namespace
+// Creates a new partial Namespace
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{deps: d}
 }
 
-// Namespace defines the methods for dicts to be used
+// Namespace defines the methods for slices to be used
 // as template functions.
 type Namespace struct {
 	deps *deps.Deps
 }
 
-const name = "dict"
+const name = "slice"
 
 // Adds the namespace methods to the internal.FuncsNamespace
 // on initialisation.
@@ -29,13 +29,15 @@ func init() {
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
 
-		ns.AddMethodMapping(ctx.dict,
-			"dict",
+		ns.AddMethodMapping(ctx.partial,
+			"slice",
 			nil,
 			[][2]string{
-				{`{{ dict "colour" "green" "height" 20 }}`, `map[colour:green height:20]`},
+				{`{{ slice "hello" "world" "!" }}`, `[hello world !]`},
 			},
 		)
+
+
 
 		return ns
 	}

@@ -6,6 +6,10 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 )
 
+type Paths struct {
+	Theme string
+}
+
 // Deps holds dependencies used by many.
 // There will be normally only one instance of deps in play
 // at a given time, i.e. one per Site built.
@@ -23,4 +27,7 @@ type Deps struct {
 
 	// Options
 	Options domain.Options
+
+	// Paths
+	Paths Paths
 }

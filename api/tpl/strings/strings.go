@@ -1,4 +1,4 @@
-package tpl
+package strings
 
 import (
 	"github.com/spf13/cast"
@@ -9,8 +9,9 @@ import (
 //
 // Returns new replaced string with all matches.
 //
-// Example: {{ replace "" "-" "hello verbis cms" }} Returns `hello-verbis-cms`
-func (t *TemplateManager) replace(old, new, src string) string {
+// Returns `hello-verbis-cms`
+// Example: {{ replace "" "-" "hello verbis cms" }}
+func (ns *Namespace) replace(old, new, src string) string {
 	return strings.Replace(old, new, src, -1)
 }
 
@@ -18,8 +19,9 @@ func (t *TemplateManager) replace(old, new, src string) string {
 //
 // Returns new substring of the given string.
 //
-// Example: {{ substr "hello verbis" 0 5 }} Returns `hello`
-func (t *TemplateManager) substr(str string, start, end interface{}) string {
+// Returns `hello`
+// Example: {{ substr "hello verbis" 0 5 }}
+func (ns *Namespace) substr(str string, start, end interface{}) string {
 	st := cast.ToInt(start)
 	en := cast.ToInt(end)
 	if st < 0 {
@@ -35,8 +37,9 @@ func (t *TemplateManager) substr(str string, start, end interface{}) string {
 //
 // Returns a truncated string with no suffix, negatives apply.
 //
-// Example: {{ trunc "hello verbis" -5 }} Returns `verbis`
-func (t *TemplateManager) trunc(str string, a interface{}) string {
+// Returns `verbis`
+// Example: {{ trunc "hello verbis" -5 }}
+func (ns *Namespace) trunc(str string, a interface{}) string {
 	i := cast.ToInt(a)
 	if i < 0 && len(str)+i > 0 {
 		return str[len(str)+i:]
@@ -51,11 +54,13 @@ func (t *TemplateManager) trunc(str string, a interface{}) string {
 //
 // Returns a ellipsis (...) string from the given length.
 //
-// Example: {{ ellipsis "hello verbis cms!" 11 }} Returns `hello verbis...`
-func (t *TemplateManager) ellipsis(str string, len int) string {
+// Returns `hello verbis...`
+// Example: {{ ellipsis "hello verbis cms!" 11 }}
+func (ns *Namespace) ellipsis(str string, len interface{}) string {
+	i := cast.ToInt(len)
 	marker := "..."
-	if len < 4 {
+	if i < 4 {
 		return str
 	}
-	return t.substr(str, 0, len) + marker
+	return ns.substr(str, 0, i) + marker
 }
