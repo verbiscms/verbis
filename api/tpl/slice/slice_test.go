@@ -10,8 +10,6 @@ var (
 	ns = New(&deps.Deps{})
 )
 
-type noStringer struct{}
-
 func Test_Slice(t *testing.T) {
 
 	tt := map[string]struct {

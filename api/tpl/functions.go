@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cast"
 	"html/template"
 	"strings"
-	"time"
 )
 
 type TemplateManager struct {
@@ -89,16 +88,6 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"toUInt64":   cast.ToUint64,
 		"toFloat32":  cast.ToFloat32,
 		"toFloat64":  cast.ToFloat64,
-		// Date & Time
-		"now":            time.Now,
-		"date":           t.date,
-		"dateInZone":     t.dateInZone,
-		"ago":            t.ago,
-		"duration":       t.duration,
-		"htmlDate":       t.htmlDate,
-		"htmlDateInZone": t.htmlDateInZone,
-		// Dict
-		"dict": t.dict,
 		// Fields
 		"field":       t.fieldService.GetField,
 		"fieldObject": t.fieldService.GetFieldObject,
@@ -111,22 +100,8 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"verbisHead": t.header,
 		"verbisFoot": t.footer,
 		"metaTitle":  t.metaTitle,
-		// Math
-		"add":      t.add,
-		"subtract": t.subtract,
-		"divide":   t.divide,
-		"multiply": t.multiply,
-		"mod":      t.modulus,
-		"round":    t.round,
-		"ceil":     t.ceil,
-		"floor":    t.floor,
-		"min":      t.min,
-		"max":      t.max,
 		// Media
 		"media": t.getMedia,
-		// OS
-		"env":       t.env,
-		"expandEnv": t.expandEnv,
 		// Partials
 		"partial": t.partial,
 		// Posts
@@ -154,14 +129,6 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"typeOf":     t.typeOf,
 		"typeIs":     t.typeIs,
 		"typeIsLike": t.typeIsLike,
-		// Regex"
-		"regexMatch":             t.regexMatch,
-		"regexFindAll":           t.regexFindAll,
-		"regexFind":              t.regexFind,
-		"regexReplaceAll":        t.regexReplaceAll,
-		"regexReplaceAllLiteral": t.regexReplaceAllLiteral,
-		"regexSplit":             t.regexSplit,
-		"regexQuoteMeta":         t.regexQuoteMeta,
 		// Safe
 		"safeHTML":     t.safeHTML,
 		"safeHTMLAttr": t.safeHTMLAttr,
@@ -169,22 +136,6 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"safeJS":       t.safeJS,
 		"safeJSStr":    t.safeJSStr,
 		"safeURL":      t.safeUrl,
-		// Slice
-		"slice":   t.slice,
-		"append":  t.append,
-		"prepend": t.prepend,
-		"first":   t.first,
-		"last":    t.last,
-		"reverse": t.reverse,
-		// Strings
-		"trim":     strings.TrimSpace,
-		"upper":    strings.ToUpper,
-		"lower":    strings.ToLower,
-		"title":    strings.Title,
-		"replace":  t.replace,
-		"substr":   t.substr,
-		"trunc":    t.trunc,
-		"ellipsis": t.ellipsis,
 		// URL
 		"baseUrl": t.getBaseURL,
 		"scheme":  t.getScheme,

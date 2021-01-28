@@ -1,0 +1,2 @@
+<h1>This is a partial file.</h1>
+{{ .Wrong }}
