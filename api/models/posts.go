@@ -131,18 +131,20 @@ func (s *PostStore) Get(meta http.Params, layout bool, resource string, status s
 		countQ += fmt.Sprintf(" posts.status = '%s'", status)
 	}
 
-	// Apply order
-	if meta.OrderBy != "" {
-		q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
-	}
-
 	// Apply pagination
 	if !meta.LimitAll {
 		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
 	}
 
+	q = s.getQuery(q)
+
+	// Apply order
+	if meta.OrderBy != "" {
+		q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
+	}
+
 	var rawPosts []PostRaw
-	if err := s.db.Select(&rawPosts, s.getQuery(q)); err != nil {
+	if err := s.db.Select(&rawPosts, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
@@ -415,11 +417,12 @@ func (s *PostStore) find(posts []domain.PostData, id int) bool {
 }
 
 func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
-	var posts []domain.PostData
+	var posts = make([]domain.PostData, 0)
 
 	for _, v := range rawPosts {
 
 		if !s.find(posts, v.Id) {
+
 			var category domain.Category
 			if v.Category.Id != 0 {
 				category = v.Category
