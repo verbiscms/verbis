@@ -10,9 +10,8 @@ import (
 //
 // Creates a slice (array) of passed arguments.
 //
-// Example: Returns `!`
-// {{ $mySlice := slice "hello" "world" "!" }}
-// {{ index $mySlice 2 }}
+// Example: Returns `[hello world !]`
+// {{ slice "hello" "world" "!" }}
 func (ns *Namespace) slice(i ...interface{}) []interface{} {
 	return i
 }
@@ -21,9 +20,8 @@ func (ns *Namespace) slice(i ...interface{}) []interface{} {
 //
 // Adds and element to the end of the slice.
 //
-// Example: Returns `1234`
-// {{ $mySlice := slice 1 2 3 }}
-// {{ append $mySlice 4 }}
+// Example: Returns [hello world ! verbis]
+// {{ append (slice "hello" "world" "!") "verbis" }}
 func (ns *Namespace) append(slice interface{}, i interface{}) ([]interface{}, error) {
 	const op = "Templates.append"
 
@@ -48,9 +46,8 @@ func (ns *Namespace) append(slice interface{}, i interface{}) ([]interface{}, er
 //
 // Adds and element to the beginning of the slice.
 //
-// Example: Returns 4123
-// {{ $mySlice := slice 1 2 3 }}
-// {{ prepend $mySlice 4 }}
+// Example: Returns [verbis hello world !]
+// {{ prepend (slice "hello" "world" "!") "verbis" }}
 func (ns *Namespace) prepend(slice interface{}, i interface{}) ([]interface{}, error) {
 	const op = "Templates.append"
 
@@ -75,9 +72,8 @@ func (ns *Namespace) prepend(slice interface{}, i interface{}) ([]interface{}, e
 //
 // Retrieves the first element of the slice.
 //
-// Example: Returns `1`
-// {{ $mySlice := slice 1 2 3 }}
-// {{ first $mySlice }}
+// Example: Returns `hello`
+// {{ first (slice "hello" "world" "!") }}
 func (ns *Namespace) first(slice interface{}) (interface{}, error) {
 	const op = "Templates.first"
 
@@ -101,9 +97,8 @@ func (ns *Namespace) first(slice interface{}) (interface{}, error) {
 //
 // Retrieves the last element of the slice.
 //
-// Example: Returns `3`
-// {{ $mySlice := slice 1 2 3 }}
-// {{ last $mySlice }}
+// Example: Returns `!`
+// {{ last (slice "hello" "world" "!") }}
 func (ns *Namespace) last(slice interface{}) (interface{}, error) {
 	const op = "Templates.last"
 
@@ -127,9 +122,8 @@ func (ns *Namespace) last(slice interface{}) (interface{}, error) {
 //
 // Reverses the slice.
 //
-// Example: Returns `321`
-// {{ $mySlice := slice 1 2 3 }}
-// {{ reverse $mySlice }}
+// Example: Returns `[! world hello]`
+// {{ reverse (slice "hello" "world" "!") }}
 func (ns *Namespace) reverse(slice interface{}) ([]interface{}, error) {
 	const op = "Templates.reverse"
 
