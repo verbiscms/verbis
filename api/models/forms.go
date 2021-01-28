@@ -6,11 +6,17 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/helpers/encryption"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/mail/events"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	dynamicstruct "github.com/ompluscator/dynamic-struct"
+	"mime/multipart"
+	"path/filepath"
 )
 
 // FormRepository defines methods for Posts to interact with the database
@@ -236,32 +242,53 @@ func (s *FormsStore) Delete(id int) error {
 
 func (s *FormsStore) Send(form *domain.Form, ip string, agent string) error {
 	const op = "FormsRepository.GetFields"
-	//reader := dynamicstruct.NewReader(form.Body)
-	if form.StoreDB {
-		if err := s.storeSubmission(form, ip, agent); err != nil {
-			return err
-		}
-	}
-	if form.EmailSend {
-		if err := s.mailSubmission(form); err != nil {
-			return err
-		}
-	}
+
+	s.validateFile(form)
+
+	//if form.StoreDB {
+	//	if err := s.storeSubmission(form, ip, agent); err != nil {
+	//		return err
+	//	}
+	//}
+	//if form.EmailSend {
+	//	if err := s.mailSubmission(form); err != nil {
+	//		return err
+	//	}
+	//}
 	return nil
 }
 
 // GetValidation returns the dynamic struct used for validation.
 func (s *FormsStore) getValidation(form *domain.Form) dynamicstruct.Builder {
 	const op = "FormsRepository.getValidation"
+
 	instance := dynamicstruct.NewStruct()
 	for _, v := range form.Fields {
-		tag := fmt.Sprintf(`json:"%s"`, v.Key)
+		tag := fmt.Sprintf(`json:"%s" form:"%s"`, v.Key, v.Key)
 		if v.Required {
-			tag = fmt.Sprintf("%s, `binding:\"required\"`", tag)
+			tag = fmt.Sprintf("%s `binding:\"required\"`", tag)
 		}
-		instance.AddField(v.Label.Name(), "", tag)
+		instance.AddField(v.Label.Name(), s.getType(v.Type), tag)
 	}
+
 	return instance
+}
+
+func (s *FormsStore) getType(typ string) interface{} {
+	var i interface{} = nil
+
+	switch typ {
+	case "text":
+		i = ""
+	case "float":
+		i = 0.0
+	case "boolean":
+		i = false
+	case "file":
+		i = multipart.FileHeader{}
+	}
+
+	return i
 }
 
 func (s *FormsStore) mailSubmission(form *domain.Form) error {
@@ -290,4 +317,51 @@ func (s *FormsStore) storeSubmission(form *domain.Form, ip string, agent string)
 	}
 
 	return nil
+}
+
+func (s *FormsStore) validateFile(form *domain.Form) {
+	reader := dynamicstruct.NewReader(form.Body)
+
+	m := make(map[string]interface{})
+	for _, v := range form.Fields {
+
+		field := reader.GetField(v.Label.Name())
+
+
+	//	field := reader.GetField(v.Key)
+
+		switch v.Type {
+		case "file":
+			f, ok := field.Interface().(multipart.FileHeader)
+			if !ok {
+				fmt.Println("error")
+			}
+
+			name, err := dumpFile(&f)
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			m[v.Key] = name
+		default:
+			m[v.Key] = field.Interface()
+		}
+	}
+
+	color.Red.Printf("%+v\n", m)
+}
+
+func dumpFile(f *multipart.FileHeader) (string, error) {
+
+	ext := filepath.Ext(f.Filename)
+	name := encryption.MD5Hash(f.Filename) + ext
+
+	//_, _ = mime.TypeByFile(f)
+	dir := paths.Forms() + "/" + name
+	err := files.Save(f, dir)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return name, nil
 }

@@ -5,7 +5,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/http/csrf"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
@@ -176,27 +175,28 @@ func (c *Forms) Delete(g *gin.Context) {
 func (c *Forms) Send(g *gin.Context) {
 	const op = "FormHandler.Send"
 
-	g.String(200, csrf.GetToken(g))
-	return
+	form, err := c.store.Forms.GetByUUID(g.Param("uuid"))
+	if errors.Code(err) == errors.NOTFOUND {
+		Respond(g, 200, errors.Message(err), err)
+		return
+	} else if err != nil {
+		Respond(g, 500, errors.Message(err), err)
+		return
+	}
 
-	//form, err := c.store.Forms.GetByUUID(g.Param("uuid"))
-	//if errors.Code(err) == errors.NOTFOUND {
-	//	Respond(g, 200, errors.Message(err), err)
-	//	return
-	//} else if err != nil {
-	//	Respond(g, 500, errors.Message(err), err)
-	//	return
-	//}
-	//
-	//if err := g.ShouldBindJSON(form.Body); err != nil {
-	//	Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
-	//	return
-	//}
-	//
-	//if err := c.store.Forms.Send(&form, g.ClientIP(), g.Request.UserAgent()); err != nil {
-	//	Respond(g, 500, errors.Message(err), err)
-	//	return
-	//}
-	//
-	//Respond(g, 200, "Form submitted & sent successfully", nil)
+	err = g.Bind(form.Body)
+	if err != nil {
+		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
+	}
+
+//	color.Red.Printf("%+v\n", form.Body)
+
+	err = c.store.Forms.Send(&form, g.ClientIP(), g.Request.UserAgent())
+	if err != nil {
+		Respond(g, 500, errors.Message(err), err)
+		return
+	}
+
+	Respond(g, 200, "Form submitted & sent successfully", nil)
 }

@@ -704,7 +704,7 @@ export default {
 			if (this.resource.name === "pages") {
 				return "/" + this.resolveCategorySlug();
 			}
-			return "/" + this.resource.name + "/" + this.resolveCategorySlug();
+			return this.resource.slug + "/" + this.resolveCategorySlug();
 		},
 		/*
 		 * getCategory()

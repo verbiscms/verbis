@@ -84,3 +84,7 @@ func Uploads() string {
 func Web() string {
 	return Api() + "/web"
 }
+
+func Forms() string {
+	return Storage() + "/forms"
+}
