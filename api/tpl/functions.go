@@ -7,7 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/cast"
 	"html/template"
 	"strings"
 )
@@ -65,29 +64,6 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		// Auth
 		"auth":  t.auth,
 		"admin": t.admin,
-		// Categories
-		"category":       t.getCategory,
-		"categoryByName": t.getCategoryByName,
-		"categoryParent": t.getCategoryParent,
-		"categories":     t.getCategories,
-		// Cast
-		"toBool":     cast.ToBool,
-		"toString":   cast.ToString,
-		"toSlice":    t.toSlice,
-		"toTime":     cast.ToTime,
-		"toDuration": cast.ToDuration,
-		"toInt":      cast.ToInt,
-		"toInt8":     cast.ToInt8,
-		"toInt16":    cast.ToInt16,
-		"toInt32":    cast.ToInt32,
-		"toInt64":    cast.ToInt64,
-		"toUInt":     cast.ToUint,
-		"toUInt8":    cast.ToUint8,
-		"toUInt16":   cast.ToUint16,
-		"toUInt32":   cast.ToUint32,
-		"toUInt64":   cast.ToUint64,
-		"toFloat32":  cast.ToFloat32,
-		"toFloat64":  cast.ToFloat64,
 		// Fields
 		"field":       t.fieldService.GetField,
 		"fieldObject": t.fieldService.GetFieldObject,
@@ -118,24 +94,6 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"storagePath":   t.storagePath,
 		"templatesPath": t.templatesPath,
 		"layoutsPath":   t.layoutsPath,
-		// Rand
-		"randInt":      t.randInt,
-		"randFloat":    t.randFloat,
-		"randAlpha":    t.randAlpha,
-		"randAlphaNum": t.randAlphaNum,
-		// Reflect
-		"kindIs":     t.kindIs,
-		"kindOf":     t.kindOf,
-		"typeOf":     t.typeOf,
-		"typeIs":     t.typeIs,
-		"typeIsLike": t.typeIsLike,
-		// Safe
-		"safeHTML":     t.safeHTML,
-		"safeHTMLAttr": t.safeHTMLAttr,
-		"safeCSS":      t.safeCSS,
-		"safeJS":       t.safeJS,
-		"safeJSStr":    t.safeJSStr,
-		"safeURL":      t.safeUrl,
 		// URL
 		"baseUrl": t.getBaseURL,
 		"scheme":  t.getScheme,
@@ -143,13 +101,6 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"fullUrl": t.getFullURL,
 		"url":     t.getURL,
 		"query":   t.getQueryParams,
-		// Users
-		"user":  t.getUser,
-		"users": t.getUsers,
-		// Util
-		"len":     t.len,
-		"explode": t.explode,
-		"implode": t.implode,
 	}
 
 	return funcMap

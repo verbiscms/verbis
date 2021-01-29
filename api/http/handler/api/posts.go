@@ -43,7 +43,7 @@ func NewPosts(m *models.Store, config config.Configuration) *Posts {
 func (c *Posts) Get(g *gin.Context) {
 	const op = "PostHandler.Get"
 
-	params := http.NewParams(g).Get()
+	params := http.ApiParams(g,DefaultParams).Get()
 
 	posts, total, err := c.store.Posts.Get(params, true, g.Query("resource"), g.Query("status"))
 	if errors.Code(err) == errors.NOTFOUND {
