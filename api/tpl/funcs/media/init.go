@@ -30,7 +30,7 @@ func init() {
 		}
 
 		ns.AddMethodMapping(ctx.Find,
-			"user",
+			"media",
 			nil,
 			nil,
 		)
