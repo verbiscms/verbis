@@ -40,7 +40,7 @@ func (t *ResolverTestSuite) TestValue_Media() {
 			mediaMock := &mocks.MediaRepository{}
 
 			test.mock(mediaMock)
-			v.store.Media = mediaMock
+			v.deps.Store.Media = mediaMock
 
 			got, err := v.media(test.value)
 			if err != nil {
@@ -107,7 +107,7 @@ func (t *ResolverTestSuite) TestValue_MediaResolve() {
 			mediaMock := &mocks.MediaRepository{}
 
 			test.mock(mediaMock)
-			v.store.Media = mediaMock
+			v.deps.Store.Media = mediaMock
 
 			got := v.resolve(test.field)
 

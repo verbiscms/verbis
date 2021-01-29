@@ -34,32 +34,32 @@ func TestNamespace_Find(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			input: 1,
-			mock: func(m *mocks.CategoryRepository) {
+			1,
+			func(m *mocks.CategoryRepository) {
 				m.On("GetById", 1).Return(category, nil)
 			},
-			want: category,
+			category,
 		},
 		"Not Found": {
-			input: 1,
-			mock: func(m *mocks.CategoryRepository) {
+			1,
+			func(m *mocks.CategoryRepository) {
 				m.On("GetById", 1).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			nil,
 		},
 		"No Stringer": {
-			input: noStringer{},
-			mock: func(m *mocks.CategoryRepository) {
+			noStringer{},
+			func(m *mocks.CategoryRepository) {
 				m.On("GetById", 1).Return(category, nil)
 			},
-			want: nil,
+			nil,
 		},
 		"Nil": {
-			input: nil,
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			func(m *mocks.CategoryRepository) {
 				m.On("GetById", 1).Return(category, nil)
 			},
-			want: nil,
+			nil,
 		},
 	}
 
@@ -83,32 +83,32 @@ func TestNamespace_ByName(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			input: "cat",
-			mock: func(m *mocks.CategoryRepository) {
+			"cat",
+			func(m *mocks.CategoryRepository) {
 				m.On("GetByName", "cat").Return(category, nil)
 			},
-			want: category,
+			category,
 		},
 		"Not Found": {
-			input: "cat",
-			mock: func(m *mocks.CategoryRepository) {
+			"cat",
+			func(m *mocks.CategoryRepository) {
 				m.On("GetByName", "cat").Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			nil,
 		},
 		"No Stringer": {
-			input: noStringer{},
-			mock: func(m *mocks.CategoryRepository) {
+			noStringer{},
+			func(m *mocks.CategoryRepository) {
 				m.On("GetByName", "cat").Return(category, nil)
 			},
-			want: nil,
+			nil,
 		},
 		"Nil": {
-			input: nil,
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			func(m *mocks.CategoryRepository) {
 				m.On("GetByName", "cat").Return(category, nil)
 			},
-			want: nil,
+			nil,
 		},
 	}
 
@@ -130,39 +130,39 @@ func TestNamespace_Parent(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			input: 1,
-			mock: func(m *mocks.CategoryRepository) {
+			1,
+			func(m *mocks.CategoryRepository) {
 				m.On("GetParent", 1).Return(domain.Category{Id: 1, Name: "cat"}, nil)
 			},
-			want: domain.Category{Id: 1, Name: "cat"},
+			domain.Category{Id: 1, Name: "cat"},
 		},
 		"Not Found": {
-			input: 1,
-			mock: func(m *mocks.CategoryRepository) {
+			1,
+			func(m *mocks.CategoryRepository) {
 				m.On("GetParent", 1).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			nil,
 		},
 		"Nil Parent": {
-			input: 1,
-			mock: func(m *mocks.CategoryRepository) {
+			1,
+			func(m *mocks.CategoryRepository) {
 				m.On("GetParent", 1).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			nil,
 		},
 		"No Stringer": {
-			input: noStringer{},
-			mock: func(m *mocks.CategoryRepository) {
+			noStringer{},
+			func(m *mocks.CategoryRepository) {
 				m.On("GetParent", 1).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			nil,
 		},
 		"Nil": {
-			input: nil,
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			func(m *mocks.CategoryRepository) {
 				m.On("GetParent", 1).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			nil,
 		},
 	}
 
@@ -186,10 +186,10 @@ func TestNamespace_List(t *testing.T) {
 	}
 
 	p := vhttp.Params{
-		Page: 1,
-		Limit: 15,
-		LimitAll: false,
-		OrderBy: OrderBy,
+		Page:           1,
+		Limit:          15,
+		LimitAll:       false,
+		OrderBy:        OrderBy,
 		OrderDirection: OrderDirection,
 	}
 
@@ -199,11 +199,11 @@ func TestNamespace_List(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			input: params.Query{"limit": 15},
-			mock: func(m *mocks.CategoryRepository) {
+			params.Query{"limit": 15},
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", p).Return(categories, 2, nil)
 			},
-			want: Categories{
+			Categories{
 				Categories: categories,
 				Pagination: &vhttp.Pagination{
 					Page:  1,
@@ -216,11 +216,11 @@ func TestNamespace_List(t *testing.T) {
 			},
 		},
 		"Nil": {
-			input: nil,
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", p).Return(categories, 2, nil)
 			},
-			want: Categories{
+			Categories{
 				Categories: categories,
 				Pagination: &vhttp.Pagination{
 					Page:  1,
@@ -233,18 +233,18 @@ func TestNamespace_List(t *testing.T) {
 			},
 		},
 		"Not Found": {
-			input: params.Query{"limit": 15},
-			mock: func(m *mocks.CategoryRepository) {
+			params.Query{"limit": 15},
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
 			},
-			want: nil,
+			nil,
 		},
 		"Internal Error": {
-			input: params.Query{"limit": 15},
-			mock: func(m *mocks.CategoryRepository) {
+			params.Query{"limit": 15},
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"})
 			},
-			want: "internal error",
+			"internal error",
 		},
 	}
 

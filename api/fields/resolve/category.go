@@ -18,7 +18,7 @@ func (v *Value) category(value domain.FieldValue) (interface{}, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast category ID to an integer", Operation: op, Err: err}
 	}
 
-	category, err := v.store.Categories.GetById(id)
+	category, err := v.deps.Store.Categories.GetById(id)
 	if err != nil {
 		return nil, err
 	}

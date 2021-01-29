@@ -1,8 +1,8 @@
 package resolve
 
 import (
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/models"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -10,7 +10,7 @@ import (
 // domain.FieldValue's. The store is required
 // for use with DB calls such as Posts.
 type Value struct {
-	store *models.Store
+	deps *deps.Deps
 }
 
 var (
@@ -42,9 +42,9 @@ type valueMap map[string]valuer
 // Field
 //
 // Resolve's a field value.
-func Field(field domain.PostField, store *models.Store) domain.PostField {
+func Field(field domain.PostField, d *deps.Deps) domain.PostField {
 	exec := &Value{
-		store: store,
+		deps: d,
 	}
 	resolved := exec.resolve(field)
 	return resolved

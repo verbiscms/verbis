@@ -48,7 +48,7 @@ func (s *Service) getFieldsByPost(id interface{}) []domain.PostField {
 		return nil
 	}
 
-	fields, err := s.store.Fields.GetByPost(i)
+	fields, err := s.deps.Store.Fields.GetByPost(i)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error()
 		return nil
@@ -114,7 +114,7 @@ func (r *walker) Walk(appender func(domain.PostField)) {
 				return
 			}
 
-			appender(resolve.Field(v, r.store))
+			appender(resolve.Field(v, r.deps))
 		}
 	}
 }

@@ -42,14 +42,14 @@ var (
 // NewManager - Construct
 func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Configuration) *TemplateManager {
 	return &TemplateManager{
-		gin:          g,
-		post:         p,
-		site:         s.Site.GetGlobalConfig(),
-		store:        s,
-		options:      s.Options.GetStruct(),
-		themeConfig:  s.Site.GetThemeConfig(),
-		fieldService: fields.NewService(s, *p),
-		config:       c,
+		gin:         g,
+		post:        p,
+		site:        s.Site.GetGlobalConfig(),
+		store:       s,
+		options:     s.Options.GetStruct(),
+		themeConfig: s.Site.GetThemeConfig(),
+		//		fieldService: fields.NewService(s, *p),
+		config: c,
 	}
 }
 
@@ -57,43 +57,18 @@ func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Co
 func (t *TemplateManager) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
-		"test": t.dd,
 		// Attributes
 		"body": t.body,
 		"lang": t.lang,
 		// Auth
 		"auth":  t.auth,
 		"admin": t.admin,
-		// Fields
-		"field":       t.fieldService.GetField,
-		"fieldObject": t.fieldService.GetFieldObject,
-		"fields":      t.fieldService.GetFields,
-		"layout":      t.fieldService.GetLayout,
-		"layouts":     t.fieldService.GetLayouts,
-		"repeater":    t.fieldService.GetRepeater,
-		"flexible":    t.fieldService.GetFlexible,
 		// Header & Footer
 		"verbisHead": t.header,
 		"verbisFoot": t.footer,
 		"metaTitle":  t.metaTitle,
-		// Media
-		"media": t.getMedia,
 		// Partials
 		"partial": t.partial,
-		// Posts
-		"post":           t.getPost,
-		"posts":          t.getPosts,
-		"paginationPage": t.getPaginationPage,
-		// Paths
-		"basePath":      t.basePath,
-		"adminPath":     t.adminPath,
-		"apiPath":       t.apiPath,
-		"themePath":     t.themePath,
-		"uploadsPath":   t.uploadsPath,
-		"assetsPath":    t.assetsPath,
-		"storagePath":   t.storagePath,
-		"templatesPath": t.templatesPath,
-		"layoutsPath":   t.layoutsPath,
 		// URL
 		"baseUrl": t.getBaseURL,
 		"scheme":  t.getScheme,

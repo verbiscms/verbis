@@ -1,8 +1,8 @@
 package fields
 
 import (
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/models"
 )
 
 // FieldService defines methods for obtaining fields for the front end templates
@@ -28,7 +28,9 @@ const (
 type Service struct {
 	// Used for obtaining categories, media items, posts and
 	// users from the database when resolving fields.
-	store *models.Store
+	deps *deps.Deps
+	// The original post to sort and filter the fields
+	post domain.PostData
 	// The original post ID.
 	postId int
 	// The slice of domain.PostField to create repeaters,
@@ -40,20 +42,20 @@ type Service struct {
 }
 
 // NewService - Construct
-func NewService(s *models.Store, d domain.PostData) *Service {
+func NewService(d *deps.Deps, p domain.PostData) *Service {
 	fields := make([]domain.PostField, 0)
-	if d.Fields != nil {
-		fields = d.Fields
+	if p.Fields != nil {
+		fields = p.Fields
 	}
 
 	layouts := make([]domain.FieldGroup, 0)
-	if d.Layout != nil {
-		layouts = d.Layout
+	if p.Layout != nil {
+		layouts = p.Layout
 	}
 
 	return &Service{
-		store:  s,
-		postId: d.Post.Id,
+		deps:   d,
+		postId: p.Id,
 		fields: fields,
 		layout: layouts,
 	}

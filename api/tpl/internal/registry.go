@@ -2,6 +2,8 @@ package internal
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/gin-gonic/gin"
 	"html/template"
 )
 
@@ -69,4 +71,15 @@ func GetFuncMap(d *deps.Deps) template.FuncMap {
 	}
 
 	return funcMap
+}
+
+func GetPostFuncMap(d *deps.Deps, t *TemplateDeps) {
+
+	//ns := fields.Init(d, t)
+	//ns.
+}
+
+type TemplateDeps struct {
+	Context *gin.Context
+	Post    *domain.PostData
 }

@@ -4,10 +4,38 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+	vhttp "github.com/ainsleyclark/verbis/api/http"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/tpl/params"
 	"github.com/stretchr/testify/assert"
 	"testing"
+)
+
+var (
+	cat  = &domain.Category{}
+	post = domain.Post{
+		Id:     1,
+		Title:  "test title",
+		UserId: 1,
+	}
+	postData = domain.PostData{
+		Post:     post,
+		Author:   domain.UserPart{},
+		Category: cat,
+	}
+	postDataSlice = []domain.PostData{
+		postData, postData,
+	}
+	tplPost = TplPost{
+		Author:   domain.UserPart{},
+		Category: cat,
+		Post:     post,
+	}
+	tplPostSlice = []TplPost{
+		tplPost, tplPost,
+	}
 )
 
 type noStringer struct{}
@@ -23,50 +51,38 @@ func Setup() (*Namespace, *mocks.PostsRepository) {
 
 func TestNamespace_Find(t *testing.T) {
 
-	post := domain.Post{
-		Id:     1,
-		Title:  "test title",
-		UserId: 1,
-	}
-
-	viewData := TplPost{
-		Author:    domain.UserPart{},
-		Category: &domain.Category{},
-		Post:     post,
-	}
-
 	tt := map[string]struct {
 		input interface{}
 		mock  func(m *mocks.PostsRepository)
 		want  interface{}
 	}{
 		"Success": {
-			input: 1,
-			mock: func(m *mocks.PostsRepository) {
-				m.On("GetById", 1).Return(post, nil)
+			1,
+			func(m *mocks.PostsRepository) {
+				m.On("GetById", 1, false).Return(postData, nil)
 			},
-			want: viewData,
-		},
-		"Format Error": {
-			input: 1,
-			mock: func(m *mocks.PostsRepository) {
-				m.On("GetById", 1).Return(post, nil)
-			},
-			want: nil,
+			tplPost,
 		},
 		"Not Found": {
-			input: 1,
-			mock: func(m *mocks.PostsRepository) {
-				m.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
+			1,
+			func(m *mocks.PostsRepository) {
+				m.On("GetById", 1, false).Return(domain.PostData{}, fmt.Errorf("error"))
 			},
-			want: nil,
+			nil,
 		},
 		"No Stringer": {
-			input: noStringer{},
-			mock: func(m *mocks.PostsRepository) {
-				m.On("GetById", 1).Return(post, nil)
+			noStringer{},
+			func(m *mocks.PostsRepository) {
+				m.On("GetById", 1, false).Return(postData, nil)
 			},
-			want: nil,
+			nil,
+		},
+		"Nil": {
+			nil,
+			func(m *mocks.PostsRepository) {
+				m.On("GetById", 1, false).Return(postData, nil)
+			},
+			nil,
 		},
 	}
 
@@ -79,145 +95,82 @@ func TestNamespace_Find(t *testing.T) {
 		})
 	}
 }
-//
-//func (t *TplTestSuite) Test_GetPosts() {
-//
-//	post := domain.Post{Id: 1, Title: "Title"}
-//	posts := []domain.Post{
-//		post, post,
-//	}
-//
-//	author := &domain.PostAuthor{}
-//	category := &domain.PostCategory{}
-//	viewData := []ViewPost{
-//		{
-//			Author:   author,
-//			Category: category,
-//			Post:     post,
-//		},
-//		{
-//			Author:   author,
-//			Category: category,
-//			Post:     post,
-//		},
-//	}
-//
-//	categoryTest := &domain.PostCategory{
-//		Name: "cat",
-//	}
-//	viewDataCategory := []ViewPost{
-//		{
-//			Author:   author,
-//			Category: categoryTest,
-//			Post:     post,
-//		},
-//		{
-//			Author:   author,
-//			Category: categoryTest,
-//			Post:     post,
-//		},
-//	}
-//
-//	tt := map[string]struct {
-//		input map[string]interface{}
-//		mock  func(m *mocks.PostsRepository)
-//		want  interface{}
-//	}{
-//		"Success": {
-//			input: map[string]interface{}{"limit": 15},
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
-//			},
-//			want: map[string]interface{}{
-//				"Posts": viewData,
-//				"Pagination": &vhttp.Pagination{
-//					Page:  1,
-//					Pages: 1,
-//					Limit: 15,
-//					Total: 5,
-//					Next:  false,
-//					Prev:  false,
-//				},
-//			},
-//		},
-//		"Failed Params": {
-//			input: map[string]interface{}{"limit": "wrongval"},
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
-//			},
-//			want: "cannot unmarshal string into Go struct field TemplateParams.limit",
-//		},
-//		"Not Found": {
-//			input: map[string]interface{}{"limit": 15},
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
-//			},
-//			want: map[string]interface{}(nil),
-//		},
-//		"Internal Error": {
-//			input: map[string]interface{}{"limit": 15},
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"})
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
-//			},
-//			want: "internal error",
-//		},
-//		"Format Error": {
-//			input: map[string]interface{}{"limit": 15},
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 5, nil)
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, fmt.Errorf("error"))
-//			},
-//			want: map[string]interface{}{
-//				"Posts": []ViewPost(nil),
-//				"Pagination": &vhttp.Pagination{
-//					Page:  1,
-//					Pages: 1,
-//					Limit: 15,
-//					Total: 5,
-//					Next:  false,
-//					Prev:  false,
-//				},
-//			},
-//		},
-//		"Category": {
-//			input: map[string]interface{}{"limit": 15, "category": "cat"},
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("Get", vhttp.Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "published_at", OrderDirection: "desc"}, "all", "published").Return(posts, 2, nil)
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: categoryTest}, nil)
-//			},
-//			want: map[string]interface{}{
-//				"Posts": viewDataCategory,
-//				"Pagination": &vhttp.Pagination{
-//					Page:  1,
-//					Pages: 1,
-//					Limit: 15,
-//					Total: 2,
-//					Next:  false,
-//					Prev:  false,
-//				},
-//			},
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			postsMock := mocks.PostsRepository{}
-//
-//			test.mock(&postsMock)
-//			t.store.Posts = &postsMock
-//
-//			p, err := t.getPosts(test.input)
-//			if err != nil {
-//				t.Contains(err.Error(), test.want)
-//				return
-//			}
-//
-//			t.EqualValues(test.want, p)
-//		})
-//	}
-//}
 
+func TestNamespace_List(t *testing.T) {
+
+	p := vhttp.Params{
+		Page:           1,
+		Limit:          15,
+		LimitAll:       false,
+		OrderBy:        OrderBy,
+		OrderDirection: OrderDirection,
+	}
+
+	tt := map[string]struct {
+		input params.Query
+		mock  func(m *mocks.PostsRepository)
+		want  interface{}
+	}{
+		"Success": {
+			params.Query{"limit": 15},
+			func(m *mocks.PostsRepository) {
+				m.On("Get", p, false, "", "published").Return(postDataSlice, 5, nil)
+			},
+			Posts{
+				Posts: tplPostSlice,
+				Pagination: &vhttp.Pagination{
+					Page:  1,
+					Pages: 1,
+					Limit: 15,
+					Total: 5,
+					Next:  false,
+					Prev:  false,
+				},
+			},
+		},
+		"Nil": {
+			nil,
+			func(m *mocks.PostsRepository) {
+				m.On("Get", p, false, "", "published").Return(postDataSlice, 5, nil)
+			},
+			Posts{
+				Posts: tplPostSlice,
+				Pagination: &vhttp.Pagination{
+					Page:  1,
+					Pages: 1,
+					Limit: 15,
+					Total: 5,
+					Next:  false,
+					Prev:  false,
+				},
+			},
+		},
+		"Not Found": {
+			params.Query{"limit": 15},
+			func(m *mocks.PostsRepository) {
+				m.On("Get", p, false, "", "published").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+			},
+			nil,
+		},
+		"Internal Error": {
+			params.Query{"limit": 15},
+			func(m *mocks.PostsRepository) {
+				m.On("Get", p, false, "", "published").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"})
+			},
+			"internal error",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			ns, mock := Setup()
+			test.mock(mock)
+			got, err := ns.List(test.input)
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
+		})
+	}
+}

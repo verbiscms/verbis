@@ -16,7 +16,6 @@ import (
 	//"time"
 )
 
-
 type noStringer struct{}
 
 func Setup() (*Namespace, *mocks.UserRepository) {
@@ -40,32 +39,32 @@ func TestNamespace_Find(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			input: 1,
-			mock: func(m *mocks.UserRepository) {
+			1,
+			func(m *mocks.UserRepository) {
 				m.On("GetById", 1).Return(user, nil).Once()
 			},
-			want: user.HideCredentials(),
+			user.HideCredentials(),
 		},
 		"Not Found": {
-			input: 1,
-			mock: func(m *mocks.UserRepository) {
+			1,
+			func(m *mocks.UserRepository) {
 				m.On("GetById", 1).Return(domain.User{}, fmt.Errorf("error")).Once()
 			},
-			want: nil,
+			nil,
 		},
 		"No Stringer": {
-			input: noStringer{},
-			mock: func(m *mocks.UserRepository) {
+			noStringer{},
+			func(m *mocks.UserRepository) {
 				m.On("GetById", 1).Return(user, nil).Once()
 			},
-			want: nil,
+			nil,
 		},
 		"Nil": {
-			input: nil,
-			mock: func(m *mocks.UserRepository) {
+			nil,
+			func(m *mocks.UserRepository) {
 				m.On("GetById", 1).Return(user, nil).Once()
 			},
-			want: nil,
+			nil,
 		},
 	}
 
@@ -87,10 +86,10 @@ func TestNamespace_List(t *testing.T) {
 	}
 
 	p := vhttp.Params{
-		Page: 1,
-		Limit: 15,
-		LimitAll: false,
-		OrderBy: OrderBy,
+		Page:           1,
+		Limit:          15,
+		LimitAll:       false,
+		OrderBy:        OrderBy,
 		OrderDirection: OrderDirection,
 	}
 
@@ -100,11 +99,11 @@ func TestNamespace_List(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			input: params.Query{"limit": 15},
-			mock: func(m *mocks.UserRepository) {
+			params.Query{"limit": 15},
+			func(m *mocks.UserRepository) {
 				m.On("Get", p).Return(users, 2, nil).Once()
 			},
-			want: Users{
+			Users{
 				Users: users.HideCredentials(),
 				Pagination: &vhttp.Pagination{
 					Page:  1,
@@ -117,11 +116,11 @@ func TestNamespace_List(t *testing.T) {
 			},
 		},
 		"Nil": {
-			input: nil,
-			mock: func(m *mocks.UserRepository) {
+			nil,
+			func(m *mocks.UserRepository) {
 				m.On("Get", p).Return(users, 2, nil).Once()
 			},
-			want: Users{
+			Users{
 				Users: users.HideCredentials(),
 				Pagination: &vhttp.Pagination{
 					Page:  1,
@@ -134,18 +133,18 @@ func TestNamespace_List(t *testing.T) {
 			},
 		},
 		"Not Found": {
-			input: params.Query{"limit": 15},
-			mock: func(m *mocks.UserRepository) {
+			params.Query{"limit": 15},
+			func(m *mocks.UserRepository) {
 				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"}).Once()
 			},
-			want: nil,
+			nil,
 		},
 		"Internal Error": {
-			input: params.Query{"limit": 15},
-			mock: func(m *mocks.UserRepository) {
+			params.Query{"limit": 15},
+			func(m *mocks.UserRepository) {
 				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"}).Once()
 			},
-			want: "internal error",
+			"internal error",
 		},
 	}
 

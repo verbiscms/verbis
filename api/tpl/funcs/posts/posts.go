@@ -15,6 +15,14 @@ const (
 	OrderDirection = "desc"
 )
 
+// TplPost def
+type TplPost struct {
+	domain.Post
+	Author   domain.UserPart
+	Category *domain.Category
+	Fields   []domain.PostField
+}
+
 // Find
 //
 // Obtains the post by ID and returns a domain.PostData type
@@ -23,7 +31,7 @@ const (
 // Example: {{ post 123 }}
 func (ns *Namespace) Find(id interface{}) interface{} {
 	i, err := cast.ToIntE(id)
-	if err != nil {
+	if err != nil || id == nil {
 		return nil
 	}
 
@@ -32,23 +40,20 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 		return nil
 	}
 
-	return post
+	return TplPost{
+		Post:     post.Post,
+		Author:   post.Author,
+		Category: post.Category,
+		Fields:   post.Fields,
+	}
 }
 
 // Posts defines the struct for returning
 // posts and pagination back to the
 // template.
 type Posts struct {
-	Posts []TplPost
+	Posts      []TplPost
 	Pagination *http.Pagination
-}
-
-// Tpl
-type TplPost struct {
-	domain.Post
-	Author   domain.UserPart
-	Category *domain.Category
-	Fields   []domain.PostField
 }
 
 // List
@@ -94,8 +99,7 @@ func (ns *Namespace) List(query params.Query) (interface{}, error) {
 	}
 
 	return Posts{
-		Posts: tplPosts,
+		Posts:      tplPosts,
 		Pagination: http.NewPagination().Get(p, total),
 	}, nil
 }
-

@@ -40,7 +40,6 @@ func (t *TemplateManager) getQueryParams(i interface{}) string {
 	return val[0]
 }
 
-
 // getPagination
 //
 // Gets the page query parameter and returns, if the page
