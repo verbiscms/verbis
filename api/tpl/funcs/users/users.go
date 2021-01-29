@@ -23,7 +23,7 @@ const (
 // Example: {{ user 123 }}
 func (ns *Namespace) Find(id interface{}) interface{} {
 	i, err := cast.ToIntE(id)
-	if err != nil {
+	if err != nil || id == nil {
 		return nil
 	}
 

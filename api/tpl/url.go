@@ -39,3 +39,44 @@ func (t *TemplateManager) getQueryParams(i interface{}) string {
 
 	return val[0]
 }
+
+
+// getPagination
+//
+// Gets the page query parameter and returns, if the page
+// query param wasn't found or the string could
+// not be cast to an integer, it will return 1.
+//
+// Example: {{ paginationPage }}
+//func (ns *Namespace) getPaginationPage() int {
+//	page := t.gin.Query("page")
+//	if page == "" {
+//		return 1
+//	}
+//	pageInt, err := cast.ToIntE(page)
+//	if err != nil {
+//		return 1
+//	}
+//	return pageInt
+//}
+
+//func (t *TplTestSuite) TestGetPagination() {
+//	g, _ := gin.CreateTestContext(httptest.NewRecorder())
+//	g.Request, _ = http.NewRequest("GET", "/get?page=123", nil)
+//	t.gin = g
+//	tpl := "{{ paginationPage }}"
+//	t.RunT(tpl, 123)
+//}
+//
+//func (t *TplTestSuite) TestGetPagination_NoPage() {
+//	tpl := "{{ paginationPage }}"
+//	t.RunT(tpl, 1)
+//}
+//
+//func (t *TplTestSuite) TestGetPagination_ConvertString() {
+//	g, _ := gin.CreateTestContext(httptest.NewRecorder())
+//	g.Request, _ = http.NewRequest("GET", "/get?page=wrongval", nil)
+//	t.gin = g
+//	tpl := "{{ paginationPage }}"
+//	t.RunT(tpl, "1")
+//}
