@@ -344,7 +344,7 @@ export default {
 		getMedia() {
 			this.doingAxios = true;
 
-			this.axios.get(`media?order=created_at,desc&filter=${this.filter}&${this.pagination}&limit=${this.rows * 5}`, {
+			this.axios.get(`media?order_by=created_at&order_direction=desc&filter=${this.filter}&${this.pagination}&limit=${this.rows * 5}`, {
 				paramsSerializer: function (params) {
 					return params;
 				}

@@ -67,10 +67,10 @@ resolves singular types.
 
 ### Examples:
 
-**Cast a `int` to `string`**
+**Cast a `int` to `slice`**
 
 ```gotemplate
-{{ toString "123" }}
+{{ toSlice 1 }}
 ```
 
 ___

@@ -25,7 +25,7 @@ type TplTestSuite struct {
 	*TemplateManager
 }
 
-func TestTpl(t *testing.T) {
+func TestNamespaceTpl(t *testing.T) {
 	suite.Run(t, new(TplTestSuite))
 }
 

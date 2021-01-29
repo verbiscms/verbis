@@ -2,7 +2,7 @@ package tpl
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/tpl/debug"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/debug"
 )
 
 func (t *TemplateManager) debug(i interface{}) string {

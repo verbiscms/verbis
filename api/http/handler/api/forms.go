@@ -41,7 +41,8 @@ func NewForms(m *models.Store, config config.Configuration) *Forms {
 func (c *Forms) Get(g *gin.Context) {
 	const op = "FormHandler.Get"
 
-	params := http.NewParams(g).Get()
+	params := http.ApiParams(g, DefaultParams).Get()
+
 	forms, total, err := c.store.Forms.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)

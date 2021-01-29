@@ -32,7 +32,7 @@ func newSHA1Hash(n ...int) string {
 		noRandomCharacters = n[0]
 	}
 
-	randString := RandomString(noRandomCharacters, true)
+	randString := RandomString(int64(noRandomCharacters), true)
 
 	hash := sha1.New()
 	hash.Write([]byte(randString))
@@ -42,7 +42,7 @@ func newSHA1Hash(n ...int) string {
 }
 
 // randomString generates a random string of n length
-func RandomString(n int, numeric bool) string {
+func RandomString(n int64, numeric bool) string {
 	var characterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	if !numeric {
 		characterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
