@@ -55,7 +55,7 @@ Generates a random alpha string using `a-zA-Z` from a given length.
 
 ### Accepts: 
 
-`length int` The length of the random string.
+`length int64` The length of the random string.
 
 ### Returns:
 
@@ -80,7 +80,7 @@ Generates a random alphanumeric string using `a-zA-Z0-9` from a given length.
 
 ### Accepts: 
 
-`length int` The length of the random string.
+`length int64` The length of the random string.
 
 ### Returns:
 

@@ -42,7 +42,8 @@ func NewMedia(m *models.Store, config config.Configuration) *Media {
 func (c *Media) Get(g *gin.Context) {
 	const op = "MediaHandler.Get"
 
-	params := http.NewParams(g).Get()
+	params := http.ApiParams(g, DefaultParams).Get()
+
 	media, total, err := c.store.Media.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)

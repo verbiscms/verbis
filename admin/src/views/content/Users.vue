@@ -217,7 +217,7 @@ export default {
 		paginationObj: {},
 		activeTab: 1,
 		activeTabName: "all",
-		order: "",
+		order: ["", ""],
 		orderBy: {
 			title: "asc",
 			user_id: "asc",
@@ -247,7 +247,7 @@ export default {
 		 * NOTE: paramsSerializer is required here.
 		 */
 		getUsers() {
-			this.axios.get(`users?order=${this.order}&filter=${this.filter}&${this.pagination}`, {
+			this.axios.get(`users?order_by=${this.order[0]}&order_direction=${this.order[1]}&filter=${this.filter}&${this.pagination}`, {
 				paramsSerializer: function(params) {
 					return params;
 				}
@@ -344,7 +344,7 @@ export default {
 			} else {
 				this.$set(this.orderBy, column, 'desc');
 			}
-			this.order = column + "," + this.orderBy[column];
+			this.order = [column,this.orderBy[column]];
 			this.getUsers();
 		},
 		/*

@@ -43,7 +43,8 @@ func NewCategories(m *models.Store, config config.Configuration) *Categories {
 func (c *Categories) Get(g *gin.Context) {
 	const op = "CategoryHandler.Get"
 
-	params := http.NewParams(g).Get()
+	params := http.ApiParams(g, DefaultParams).Get()
+
 	categories, total, err := c.store.Categories.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)

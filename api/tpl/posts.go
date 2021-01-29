@@ -1,8 +1,6 @@
 package tpl
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/spf13/cast"
 )
 
@@ -46,22 +44,23 @@ func (t *TemplateManager) getPost(id interface{}) interface{} {
 //         <h4>No posts found</h4>
 // {{ end }}
 func (t *TemplateManager) getPosts(query map[string]interface{}) (map[string]interface{}, error) {
-	p, err := http.GetTemplateParams(query)
-	if err != nil {
-		return nil, err
-	}
-
-	posts, total, err := t.store.Posts.Get(p.Params, false, p.Resource, "published")
-	if errors.Code(err) == errors.NOTFOUND {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-
-	return map[string]interface{}{
-		"Posts":      posts,
-		"Pagination": http.NewPagination().Get(p.Params, total),
-	}, nil
+	//p, err := http.GetTemplateParams(query)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//posts, total, err := t.store.Posts.Get(p.Params, false, p.Resource, "published")
+	//if errors.Code(err) == errors.NOTFOUND {
+	//	return nil, nil
+	//} else if err != nil {
+	//	return nil, err
+	//}
+	//
+	//return map[string]interface{}{
+	//	"Posts":      posts,
+	//	"Pagination": http.NewPagination().Get(p.Params, total),
+	//}, nil
+	return nil, nil
 }
 
 // getPagination

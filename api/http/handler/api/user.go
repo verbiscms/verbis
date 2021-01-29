@@ -45,7 +45,8 @@ func NewUser(m *models.Store, config config.Configuration) *User {
 func (c *User) Get(g *gin.Context) {
 	const op = "UserHandler.Get"
 
-	params := http.NewParams(g).Get()
+	params := http.ApiParams(g, DefaultParams).Get()
+
 	users, total, err := c.store.User.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
