@@ -76,8 +76,6 @@ func (t *TemplateManager) GetFunctions() template.FuncMap {
 		"verbisHead": t.header,
 		"verbisFoot": t.footer,
 		"metaTitle":  t.metaTitle,
-		// Media
-		"media": t.getMedia,
 		// Partials
 		"partial": t.partial,
 		// Posts

@@ -43,7 +43,8 @@ type Posts struct {
 	Pagination *http.Pagination
 }
 
-// Tpl
+// TplPost defines the Post data for
+// templates.
 type TplPost struct {
 	domain.Post
 	Author   domain.UserPart
