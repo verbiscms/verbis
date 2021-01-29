@@ -42,7 +42,7 @@ func (t *ResolverTestSuite) TestValue_User() {
 			userMock := &mocks.UserRepository{}
 
 			test.mock(userMock)
-			v.store.User = userMock
+			v.deps.Store.User = userMock
 
 			got, err := v.user(test.value)
 			if err != nil {
@@ -109,7 +109,7 @@ func (t *ResolverTestSuite) TestValue_UserResolve() {
 			userMock := &mocks.UserRepository{}
 
 			test.mock(userMock)
-			v.store.User = userMock
+			v.deps.Store.User = userMock
 
 			got := v.resolve(test.field)
 

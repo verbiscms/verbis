@@ -13,9 +13,9 @@ func TestQuery_Get(t *testing.T) {
 	q := Query{}
 
 	tt := map[string]struct {
-		orderBy string
+		orderBy        string
 		orderDirection string
-		want  http.Params
+		want           http.Params
 	}{
 		"Empty": {
 			"",
@@ -105,7 +105,7 @@ func TestQuery_Default(t *testing.T) {
 	tt := map[string]struct {
 		query Query
 		param string
-		def  string
+		def   string
 		want  interface{}
 	}{
 		"Found": {

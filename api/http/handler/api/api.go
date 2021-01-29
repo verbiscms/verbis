@@ -7,7 +7,7 @@ var (
 	// none were passed for the API.
 	DefaultParams = http.Defaults{
 		Page:           1,
-		Limit:         	15,
+		Limit:          15,
 		OrderBy:        "created_at",
 		OrderDirection: "desc",
 	}
