@@ -1,73 +1,84 @@
-package tpl
+package posts
 
-//func (t *TplTestSuite) Test_GetPost() {
-//
-//	post := domain.Post{
-//		Id:     1,
-//		Title:  "test title",
-//		UserId: 1,
-//	}
-//
-//	author := &domain.PostAuthor{}
-//	category := &domain.PostCategory{}
-//
-//	viewData := ViewPost{
-//		Author:   author,
-//		Category: category,
-//		Post:     post,
-//	}
-//
-//	tt := map[string]struct {
-//		input interface{}
-//		mock  func(m *mocks.PostsRepository)
-//		want  interface{}
-//	}{
-//		"Success": {
-//			input: 1,
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("GetById", 1).Return(post, nil)
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
-//			},
-//			want: viewData,
-//		},
-//		"Format Error": {
-//			input: 1,
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("GetById", 1).Return(post, nil)
-//				m.On("Format", post).Return(domain.PostData{}, fmt.Errorf("error"))
-//			},
-//			want: "",
-//		},
-//		"Not Found": {
-//			input: 1,
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
-//			},
-//			want: "",
-//		},
-//		"No Stringer": {
-//			input: noStringer{},
-//			mock: func(m *mocks.PostsRepository) {
-//				m.On("GetById", 1).Return(post, nil)
-//				m.On("Format", post).Return(domain.PostData{Post: post, Author: author, Category: category}, nil)
-//			},
-//			want: "",
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			postsMock := mocks.PostsRepository{}
-//
-//			test.mock(&postsMock)
-//			t.store.Posts = &postsMock
-//
-//			tpl := `{{ post .PostId }}`
-//			t.RunTWithData(tpl, test.want, map[string]interface{}{"PostId": test.input})
-//		})
-//	}
-//}
+import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+type noStringer struct{}
+
+func Setup() (*Namespace, *mocks.PostsRepository) {
+	mock := &mocks.PostsRepository{}
+	return &Namespace{deps: &deps.Deps{
+		Store: &models.Store{
+			Posts: mock,
+		},
+	}}, mock
+}
+
+func TestNamespace_Find(t *testing.T) {
+
+	post := domain.Post{
+		Id:     1,
+		Title:  "test title",
+		UserId: 1,
+	}
+
+	viewData := TplPost{
+		Author:    domain.UserPart{},
+		Category: &domain.Category{},
+		Post:     post,
+	}
+
+	tt := map[string]struct {
+		input interface{}
+		mock  func(m *mocks.PostsRepository)
+		want  interface{}
+	}{
+		"Success": {
+			input: 1,
+			mock: func(m *mocks.PostsRepository) {
+				m.On("GetById", 1).Return(post, nil)
+			},
+			want: viewData,
+		},
+		"Format Error": {
+			input: 1,
+			mock: func(m *mocks.PostsRepository) {
+				m.On("GetById", 1).Return(post, nil)
+			},
+			want: nil,
+		},
+		"Not Found": {
+			input: 1,
+			mock: func(m *mocks.PostsRepository) {
+				m.On("GetById", 1).Return(domain.Post{}, fmt.Errorf("error"))
+			},
+			want: nil,
+		},
+		"No Stringer": {
+			input: noStringer{},
+			mock: func(m *mocks.PostsRepository) {
+				m.On("GetById", 1).Return(post, nil)
+			},
+			want: nil,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			ns, mock := Setup()
+			test.mock(mock)
+			got := ns.Find(test.input)
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
 //
 //func (t *TplTestSuite) Test_GetPosts() {
 //
@@ -209,5 +220,4 @@ package tpl
 //		})
 //	}
 //}
-
 

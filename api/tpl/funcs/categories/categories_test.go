@@ -54,6 +54,13 @@ func TestNamespace_Find(t *testing.T) {
 			},
 			want: nil,
 		},
+		"Nil": {
+			input: nil,
+			mock: func(m *mocks.CategoryRepository) {
+				m.On("GetById", 1).Return(category, nil)
+			},
+			want: nil,
+		},
 	}
 
 	for name, test := range tt {
@@ -91,6 +98,13 @@ func TestNamespace_ByName(t *testing.T) {
 		},
 		"No Stringer": {
 			input: noStringer{},
+			mock: func(m *mocks.CategoryRepository) {
+				m.On("GetByName", "cat").Return(category, nil)
+			},
+			want: nil,
+		},
+		"Nil": {
+			input: nil,
 			mock: func(m *mocks.CategoryRepository) {
 				m.On("GetByName", "cat").Return(category, nil)
 			},
@@ -143,6 +157,13 @@ func TestNamespace_Parent(t *testing.T) {
 			},
 			want: nil,
 		},
+		"Nil": {
+			input: nil,
+			mock: func(m *mocks.CategoryRepository) {
+				m.On("GetParent", 1).Return(domain.Category{}, fmt.Errorf("error"))
+			},
+			want: nil,
+		},
 	}
 
 	for name, test := range tt {
@@ -179,6 +200,23 @@ func TestNamespace_List(t *testing.T) {
 	}{
 		"Success": {
 			input: params.Query{"limit": 15},
+			mock: func(m *mocks.CategoryRepository) {
+				m.On("Get", p).Return(categories, 2, nil)
+			},
+			want: Categories{
+				Categories: categories,
+				Pagination: &vhttp.Pagination{
+					Page:  1,
+					Pages: 1,
+					Limit: 15,
+					Total: 2,
+					Next:  false,
+					Prev:  false,
+				},
+			},
+		},
+		"Nil": {
+			input: nil,
 			mock: func(m *mocks.CategoryRepository) {
 				m.On("Get", p).Return(categories, 2, nil)
 			},
