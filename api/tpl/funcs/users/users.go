@@ -39,7 +39,7 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 // categories and pagination back to the
 // template.
 type Users struct {
-	Users []domain.UserPart
+	Users      []domain.UserPart
 	Pagination *http.Pagination
 }
 
@@ -72,7 +72,7 @@ func (ns *Namespace) List(query params.Query) (interface{}, error) {
 	}
 
 	return Users{
-		Users: users.HideCredentials(),
+		Users:      users.HideCredentials(),
 		Pagination: http.NewPagination().Get(p, total),
 	}, nil
 }

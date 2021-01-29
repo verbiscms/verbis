@@ -1,37 +1,16 @@
-package tpl
+package url
 
 import (
-	"github.com/gin-contrib/location"
 	"github.com/spf13/cast"
 )
 
-func (t *TemplateManager) getBaseURL() string {
-	return location.Get(t.gin).String()
-}
-
-func (t *TemplateManager) getScheme() string {
-	return location.Get(t.gin).Scheme
-}
-
-func (t *TemplateManager) getHost() string {
-	return location.Get(t.gin).Host
-}
-
-func (t *TemplateManager) getFullURL() string {
-	return location.Get(t.gin).String() + t.gin.Request.URL.Path
-}
-
-func (t *TemplateManager) getURL() string {
-	return t.gin.Request.URL.String()
-}
-
-func (t *TemplateManager) getQueryParams(i interface{}) string {
+func (ns *Namespace) Query(i interface{}) string {
 	key, err := cast.ToStringE(i)
 	if err != nil {
 		return ""
 	}
 
-	query := t.gin.Request.URL.Query()
+	query := ns.ctx.Request.URL.Query()
 	val, ok := query[key]
 	if !ok {
 		return ""
@@ -47,17 +26,17 @@ func (t *TemplateManager) getQueryParams(i interface{}) string {
 // not be cast to an integer, it will return 1.
 //
 // Example: {{ paginationPage }}
-//func (ns *Namespace) getPaginationPage() int {
-//	page := t.gin.Query("page")
-//	if page == "" {
-//		return 1
-//	}
-//	pageInt, err := cast.ToIntE(page)
-//	if err != nil {
-//		return 1
-//	}
-//	return pageInt
-//}
+func (ns *Namespace) Pagination() int {
+	page := ns.ctx.Query("page")
+	if page == "" {
+		return 1
+	}
+	pageInt, err := cast.ToIntE(page)
+	if err != nil {
+		return 1
+	}
+	return pageInt
+}
 
 //func (t *TplTestSuite) TestGetPagination() {
 //	g, _ := gin.CreateTestContext(httptest.NewRecorder())

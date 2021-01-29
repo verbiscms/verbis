@@ -38,81 +38,81 @@ func TestNamespace_Find(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			input: 1,
-			mock: func(m *mocks.MediaRepository) {
+			1,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
 			},
-			want: media,
+			media,
 		},
 		"No Item": {
-			input: 1,
-			mock: func(m *mocks.MediaRepository) {
+			1,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
-			want: nil,
+			nil,
 		},
 		"nil": {
-			input: nil,
-			mock: func(m *mocks.MediaRepository) {
+			nil,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", nil).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
-			want: nil,
+			nil,
 		},
 		"int": {
-			input: id,
-			mock: func(m *mocks.MediaRepository) {
+			id,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
 			},
-			want: media,
+			media,
 		},
 		"*int": {
-			input: &id,
-			mock: func(m *mocks.MediaRepository) {
+			&id,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
 			},
-			want: media,
+			media,
 		},
 		"float32": {
-			input: idFloat32,
-			mock: func(m *mocks.MediaRepository) {
+			idFloat32,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
 			},
-			want: media,
+			media,
 		},
 		"*float32": {
-			input: &idFloat32,
-			mock: func(m *mocks.MediaRepository) {
+			&idFloat32,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
 			},
-			want: media,
+			media,
 		},
 		"float64": {
-			input: idFloat64,
-			mock: func(m *mocks.MediaRepository) {
+			idFloat64,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
 			},
-			want: media,
+			media,
 		},
 		"*float64": {
-			input: &idFloat64,
-			mock: func(m *mocks.MediaRepository) {
+			&idFloat64,
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(media, nil)
 			},
-			want: media,
+			media,
 		},
 		"string": {
-			input: "wrongval",
-			mock: func(m *mocks.MediaRepository) {
+			"wrongval",
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
-			want: nil,
+			nil,
 		},
 		"noStringer": {
-			input: noStringer{},
-			mock: func(m *mocks.MediaRepository) {
+			noStringer{},
+			func(m *mocks.MediaRepository) {
 				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
-			want: nil,
+			nil,
 		},
 	}
 

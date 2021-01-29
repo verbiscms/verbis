@@ -9,12 +9,11 @@ import (
 const (
 	// PaginationAllLimit defines how many items will be returned if
 	// the limit is set to list all
-	PaginationDefault      = 15
+	PaginationDefault = 15
 	// PaginationDefaultOrder defines the default order by for the
 	// API
 	PaginationDefaultOrder = "id,DESC"
 )
-
 
 // Parameterize defines the function for getting http params
 type Parameterize interface {
@@ -30,8 +29,8 @@ type Params struct {
 	OrderBy        string              `json:"order_by"`
 	OrderDirection string              `json:"order_direction"`
 	Filters        map[string][]Filter `json:"-"`
-	defaults Defaults `json:"-"`
-	Stringer  `json:"-"`
+	defaults       Defaults            `json:"-"`
+	Stringer       `json:"-"`
 }
 
 type Stringer interface {
@@ -45,12 +44,11 @@ type Filter struct {
 }
 
 type Defaults struct {
-	Page int
-	Limit interface{}
-	OrderBy string
+	Page           int
+	Limit          interface{}
+	OrderBy        string
 	OrderDirection string
 }
-
 
 // NewParams - create a new parameter type
 func NewParams(str Stringer, def Defaults) *Params {
@@ -78,7 +76,6 @@ func ApiParams(g *gin.Context, def Defaults) *Params {
 	p.validateDefaults()
 	return p
 }
-
 
 func (p *Params) validateDefaults() {
 	if p.defaults.OrderBy == "" {
