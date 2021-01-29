@@ -60,6 +60,13 @@ func TestNamespace_Find(t *testing.T) {
 			},
 			want: nil,
 		},
+		"Nil": {
+			input: nil,
+			mock: func(m *mocks.UserRepository) {
+				m.On("GetById", 1).Return(user, nil).Once()
+			},
+			want: nil,
+		},
 	}
 
 	for name, test := range tt {
@@ -94,6 +101,23 @@ func TestNamespace_List(t *testing.T) {
 	}{
 		"Success": {
 			input: params.Query{"limit": 15},
+			mock: func(m *mocks.UserRepository) {
+				m.On("Get", p).Return(users, 2, nil).Once()
+			},
+			want: Users{
+				Users: users.HideCredentials(),
+				Pagination: &vhttp.Pagination{
+					Page:  1,
+					Pages: 1,
+					Limit: 15,
+					Total: 2,
+					Next:  false,
+					Prev:  false,
+				},
+			},
+		},
+		"Nil": {
+			input: nil,
 			mock: func(m *mocks.UserRepository) {
 				m.On("Get", p).Return(users, 2, nil).Once()
 			},

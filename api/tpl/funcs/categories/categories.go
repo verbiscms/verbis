@@ -23,7 +23,7 @@ const (
 // Example: {{ category 123 }}
 func (ns *Namespace) Find(id interface{}) interface{} {
 	i, err := cast.ToIntE(id)
-	if err != nil {
+	if err != nil || id == nil {
 		return nil
 	}
 
@@ -43,7 +43,7 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 // Example: {{ categoryByName "sports" }}
 func (ns *Namespace) ByName(name interface{}) interface{} {
 	n, err := cast.ToStringE(name)
-	if err != nil {
+	if err != nil || name == nil {
 		return nil
 	}
 
@@ -63,7 +63,7 @@ func (ns *Namespace) ByName(name interface{}) interface{} {
 // Example: {{ categoryByParent "sports" }}
 func (ns *Namespace) Parent(id interface{}) interface{} {
 	i, err := cast.ToIntE(id)
-	if err != nil {
+	if err != nil || id == nil {
 		return nil
 	}
 

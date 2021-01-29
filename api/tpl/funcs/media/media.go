@@ -14,12 +14,8 @@ import (
 // {{ $image := media 10 }}
 // {{ $image.Url }}
 func (ns *Namespace) Find(i interface{}) interface{} {
-	if i == nil {
-		return nil
-	}
-
 	id, err := cast.ToIntE(i)
-	if err != nil {
+	if err != nil || i == nil {
 		return nil
 	}
 
