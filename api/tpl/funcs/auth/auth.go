@@ -4,6 +4,8 @@ package auth
 //
 // If the user is authenticated (logged in).
 // Return false if the cookie was not found or not authenticated.
+//
+// Example: {{ auth }}
 func (ns *Namespace) Auth() bool {
 	cookie, err := ns.ctx.Cookie("verbis-session")
 
@@ -23,6 +25,8 @@ func (ns *Namespace) Auth() bool {
 //
 // If the user is authenticated (logged in) & an admin user.
 // Returns false if the cookie was not found or not authenticated.
+//
+// Example: {{ admin }}
 func (ns *Namespace) Admin() bool {
 	cookie, err := ns.ctx.Cookie("verbis-session")
 

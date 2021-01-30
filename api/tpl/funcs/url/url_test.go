@@ -25,7 +25,7 @@ func Setup(t *testing.T, request string, f func(ns *Namespace) string) string {
 
 	req, err := http.NewRequest("GET", request, nil)
 	assert.NoError(t, err)
-
+	
 	engine.ServeHTTP(rr, req)
 
 	return got

@@ -2,8 +2,16 @@ package url
 
 import (
 	"github.com/spf13/cast"
+	"golang.org/x/net/html"
 )
 
+// Query
+//
+// Gets the page query parameter and returns, if the page
+// query param wasn't found or the string could
+// not be cast to an integer, it will return 1.
+//
+// Example: {{ paginationPage }}
 func (ns *Namespace) Query(i interface{}) string {
 	key, err := cast.ToStringE(i)
 	if err != nil {
@@ -16,10 +24,10 @@ func (ns *Namespace) Query(i interface{}) string {
 		return ""
 	}
 
-	return val[0]
+	return html.EscapeString(val[0])
 }
 
-// getPagination
+// Pagination
 //
 // Gets the page query parameter and returns, if the page
 // query param wasn't found or the string could
@@ -31,30 +39,6 @@ func (ns *Namespace) Pagination() int {
 	if page == "" {
 		return 1
 	}
-	pageInt, err := cast.ToIntE(page)
-	if err != nil {
-		return 1
-	}
-	return pageInt
+	return cast.ToInt(page)
 }
 
-//func (t *TplTestSuite) TestGetPagination() {
-//	g, _ := gin.CreateTestContext(httptest.NewRecorder())
-//	g.Request, _ = http.NewRequest("GET", "/get?page=123", nil)
-//	t.gin = g
-//	tpl := "{{ paginationPage }}"
-//	t.RunT(tpl, 123)
-//}
-//
-//func (t *TplTestSuite) TestGetPagination_NoPage() {
-//	tpl := "{{ paginationPage }}"
-//	t.RunT(tpl, 1)
-//}
-//
-//func (t *TplTestSuite) TestGetPagination_ConvertString() {
-//	g, _ := gin.CreateTestContext(httptest.NewRecorder())
-//	g.Request, _ = http.NewRequest("GET", "/get?page=wrongval", nil)
-//	t.gin = g
-//	tpl := "{{ paginationPage }}"
-//	t.RunT(tpl, "1")
-//}
