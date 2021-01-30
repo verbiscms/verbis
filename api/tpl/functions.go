@@ -57,25 +57,8 @@ func NewManager(g *gin.Context, s *models.Store, p *domain.PostData, c config.Co
 func (t *TemplateManager) GetFunctions() template.FuncMap {
 
 	funcMap := template.FuncMap{
-		// Attributes
-		"body": t.body,
-		"lang": t.lang,
-		// Auth
-		"auth":  t.auth,
-		"admin": t.admin,
-		// Header & Footer
-		"verbisHead": t.header,
-		"verbisFoot": t.footer,
-		"metaTitle":  t.metaTitle,
 		// Partials
 		"partial": t.partial,
-		// URL
-		"baseUrl": t.getBaseURL,
-		"scheme":  t.getScheme,
-		"host":    t.getHost,
-		"fullUrl": t.getFullURL,
-		"url":     t.getURL,
-		"query":   t.getQueryParams,
 	}
 
 	return funcMap

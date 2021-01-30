@@ -7,8 +7,11 @@ import (
 )
 
 // Creates a new auth Namespace
-func New(d *deps.Deps) *Namespace {
-	return &Namespace{deps: d}
+func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
+	return &Namespace{
+		deps: d,
+		ctx: t.Context,
+	}
 }
 
 // Namespace defines the methods for auth to be used
@@ -18,13 +21,13 @@ type Namespace struct {
 	ctx  *gin.Context
 }
 
-const name = "safe"
+const name = "auth"
 
 // Adds the namespace methods to the internal.FuncsNamespace
 // on initialisation.
 func init() {
 	f := func(d *deps.Deps) *internal.FuncsNamespace {
-		ctx := New(d)
+		ctx := New(d, &internal.TemplateDeps{})
 
 		ns := &internal.FuncsNamespace{
 			Name: name,

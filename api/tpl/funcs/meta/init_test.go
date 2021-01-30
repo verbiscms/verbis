@@ -1,4 +1,4 @@
-package auth
+package meta
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"

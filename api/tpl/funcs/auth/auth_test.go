@@ -2,11 +2,37 @@ package auth
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"testing"
 )
 
-func (t *TplTestSuite) Test_Auth() {
+func Setup(cookie string) (*Namespace, *mocks.UserRepository) {
+	gin.SetMode(gin.TestMode)
+
+	rr := httptest.NewRecorder()
+	g, _ := gin.CreateTestContext(rr)
+	g.Request, _ = http.NewRequest("GET", "/get", nil)
+	g.Request.Header.Set("Cookie", cookie)
+
+	mock := &mocks.UserRepository{}
+	return &Namespace{
+		deps: &deps.Deps{
+			Store: &models.Store{
+				User: mock,
+			},
+		},
+		ctx: g,
+	}, mock
+}
+
+func Test_Auth(t *testing.T) {
 
 	tt := map[string]struct {
 		want   interface{}
@@ -37,20 +63,16 @@ func (t *TplTestSuite) Test_Auth() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
-			mock := mocks.UserRepository{}
-
-			test.mock(&mock)
-			t.store.User = &mock
-			t.gin.Request.Header.Set("Cookie", test.cookie)
-
-			tpl := "{{ auth }}"
-			t.RunT(tpl, test.want)
+		t.Run(name, func(t *testing.T) {
+			ns, mock := Setup(test.cookie)
+			test.mock(mock)
+			got := ns.Auth()
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
 
-func (t *TplTestSuite) Test_Admin() {
+func Test_Admin(t *testing.T) {
 
 	tt := map[string]struct {
 		want   interface{}
@@ -92,15 +114,11 @@ func (t *TplTestSuite) Test_Admin() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
-			mock := mocks.UserRepository{}
-
-			test.mock(&mock)
-			t.store.User = &mock
-			t.gin.Request.Header.Set("Cookie", test.cookie)
-
-			tpl := "{{ admin }}"
-			t.RunT(tpl, test.want)
+		t.Run(name, func(t *testing.T) {
+			ns, mock := Setup(test.cookie)
+			test.mock(mock)
+			got := ns.Admin()
+			assert.Equal(t, test.want, got)
 		})
 	}
 }

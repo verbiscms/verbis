@@ -28,6 +28,7 @@ type Deps struct {
 
 	// Cache
 
+	Site domain.Site
 	// Logger
 
 	// Options

@@ -1,4 +1,4 @@
-package tpl
+package attributes
 
 import (
 	"bytes"
@@ -7,18 +7,17 @@ import (
 	"strings"
 )
 
-// body
+// Body
 //
 // Returns class names for the body element. Includes the
 // resource, page ID, page title, page template, page
 // layout and if the user is logged in or not.
 //
-// Example:
-// `{{ body }}` would return
-// `page page-id-4 page-title page-template-news-archive page-layout-main logged-in`
-func (t *TemplateManager) body() string {
+// Example: `{{ body }}`
+// Returns: `page page-id-4 page-title page-template-news-archive page-layout-main logged-in` (for example)
+func (ns *Namespace) Body() string {
 	body := new(bytes.Buffer)
-	p := t.post.Post
+	p := ns.post.Post
 
 	// Resource, writes page if no resource (e.g. page)
 	if p.Resource == nil {
@@ -40,11 +39,22 @@ func (t *TemplateManager) body() string {
 	body.WriteString(fmt.Sprintf("page-layout-%s", cssValidString(p.PageLayout)))
 
 	// Logged in (e.g. logged-in) if auth
-	if t.auth() {
+	if ns.auth.Auth() {
 		body.WriteString(" logged-in")
 	}
 
 	return body.String()
+}
+
+// lang
+//
+// Returns language attributes set in the options for
+// use with the `<html lang="">` attribute.
+//
+// Example: `{{ lang }}`
+// Returns: 'en-gb` (for example)
+func (ns *Namespace) Lang() string {
+	return ns.deps.Options.GeneralLocale
 }
 
 // cssValidString
@@ -63,15 +73,4 @@ func cssValidString(str string) string {
 	str = strings.ReplaceAll(str, " ", "-")
 
 	return strings.ToLower(str)
-}
-
-// lang
-//
-// Returns language attributes set in the options for
-// use with the `<html lang="">` attribute.
-//
-// Example:
-// `{{ lang }}` would return 'en-gb`
-func (t *TemplateManager) lang() string {
-	return t.options.GeneralLocale
 }
