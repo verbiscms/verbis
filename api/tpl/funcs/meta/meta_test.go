@@ -1,15 +1,36 @@
-package tpl
+package meta
 
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/stretchr/testify/assert"
 	"html/template"
+	"testing"
 	"time"
 )
 
-func (t *TplTestSuite) Test_Header() {
+func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace, *mocks.MediaRepository) {
+	mock := &mocks.MediaRepository{}
+	ns := Namespace{
+		deps: &deps.Deps{
+			Store:   &models.Store{
+				Media:      mock,
+			},
+			Site: site,
+			Options: opts,
+		},
+		post: &domain.PostData{
+			Post:     post,
+		},
+	}
+	return &ns, mock
+}
+
+func TestNamespace_Header(t *testing.T) {
 
 	code := "codeinjection post"
 	cannonical := "test"
@@ -185,21 +206,16 @@ func (t *TplTestSuite) Test_Header() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
-			mockMedia := mocks.MediaRepository{}
-			mockMedia.On("GetById", 0).Return(domain.Media{}, fmt.Errorf("no image"))
-
-			t.store.Media = &mockMedia
-			t.site = &test.site
-			t.post.Post = test.post
-			t.options = test.options
-
-			t.Equal(test.want, t.header())
+		t.Run(name, func(t *testing.T) {
+			ns, mock := Setup(test.options, test.site, test.post)
+			mock.On("GetById", 0).Return(domain.Media{}, fmt.Errorf("no image"))
+			got := ns.Header()
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
 
-func (t *TplTestSuite) Test_WriteMeta() {
+func TestNamespace_WriteMeta(t *testing.T) {
 
 	tm, err := time.Parse("02 Jan 06 15:04:05 MST", "22 May 90 20:39:39 GMT")
 	if err != nil {
@@ -232,20 +248,23 @@ func (t *TplTestSuite) Test_WriteMeta() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
+		t.Run(name, func(t *testing.T) {
+			post := domain.Post{}
 			if test.publishedAt != nil {
-				t.post.PublishedAt = test.publishedAt
+				post.PublishedAt = test.publishedAt
 			}
 
-			var b bytes.Buffer
-			t.writeMeta(&b, test.description)
+			ns, mock := Setup(domain.Options{}, domain.Site{}, post)
+			mock.On("GetById", 0).Return(domain.Media{}, fmt.Errorf("no image"))
 
-			t.Equal(test.want, b.String())
+			var b bytes.Buffer
+			ns.writeMeta(&b, test.description)
+			assert.Equal(t, test.want, b.String())
 		})
 	}
 }
 
-func (t *TplTestSuite) Test_WriteFacebook() {
+func TestNamespace_WriteFacebook(t *testing.T) {
 
 	media := domain.Media{
 		Id:  1,
@@ -293,22 +312,18 @@ func (t *TplTestSuite) Test_WriteFacebook() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
-			mock := mocks.MediaRepository{}
-
-			test.mock(&mock)
-			t.store.Media = &mock
-			t.options = test.options
+		t.Run(name, func(t *testing.T) {
+			ns, mock := Setup(test.options, domain.Site{}, domain.Post{})
+			test.mock(mock)
 
 			var b bytes.Buffer
-			t.writeFacebook(&b, test.title, test.description, 1)
-
-			t.Equal(test.want, b.String())
+			ns.writeFacebook(&b, test.title, test.description, 1)
+			assert.Equal(t, test.want, b.String())
 		})
 	}
 }
 
-func (t *TplTestSuite) Test_WriteTwitter() {
+func TestNamespace_WriteTwitter(t *testing.T) {
 
 	media := domain.Media{
 		Id:  1,
@@ -348,21 +363,18 @@ func (t *TplTestSuite) Test_WriteTwitter() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
-			mock := mocks.MediaRepository{}
-
-			test.mock(&mock)
-			t.store.Media = &mock
+		t.Run(name, func(t *testing.T) {
+			ns, mock := Setup(domain.Options{}, domain.Site{}, domain.Post{})
+			test.mock(mock)
 
 			var b bytes.Buffer
-			t.writeTwitter(&b, test.title, test.description, 1)
-
-			t.Equal(test.want, b.String())
+			ns.writeTwitter(&b, test.title, test.description, 1)
+			assert.Equal(t, test.want, b.String())
 		})
 	}
 }
 
-func (t *TplTestSuite) Test_MetaTitle() {
+func TestNamespace_MetaTitle(t *testing.T) {
 
 	tt := map[string]struct {
 		meta    domain.PostOptions
@@ -392,18 +404,18 @@ func (t *TplTestSuite) Test_MetaTitle() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
-			t.post.Post = domain.Post{
+		t.Run(name, func(t *testing.T) {
+			post := domain.Post{
 				SeoMeta: test.meta,
 			}
-			t.options = test.options
-
-			t.Equal(test.want, t.metaTitle())
+			ns, _ := Setup(test.options, domain.Site{}, post)
+			got := ns.MetaTitle()
+			assert.Equal(t, test.want, got)
 		})
 	}
 }
 
-func (t *TplTestSuite) Test_Footer() {
+func TestNamespace_Footer(t *testing.T) {
 
 	code := `codeinjection `
 
@@ -425,11 +437,10 @@ func (t *TplTestSuite) Test_Footer() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
-			t.post.Post = test.post
-			t.options = test.options
-
-			t.Equal(test.want, t.footer())
+		t.Run(name, func(t *testing.T) {
+			ns, _ := Setup(test.options, domain.Site{}, test.post)
+			got := ns.Footer()
+			assert.Equal(t, test.want, got)
 		})
 	}
 }

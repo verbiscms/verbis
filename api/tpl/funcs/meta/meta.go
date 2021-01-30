@@ -1,4 +1,4 @@
-package tpl
+package meta
 
 import (
 	"bytes"
@@ -8,23 +8,23 @@ import (
 	"html/template"
 )
 
-// header
+// Header
 //
 // Header obtains all of the site and post wide Code Injection
 // as well as any meta information from the page.
 //
 // Example: {{ verbisHead }}
-func (t *TemplateManager) header() template.HTML {
+func (ns *Namespace) Header() template.HTML {
 	var b bytes.Buffer
 
 	// Get Code Injection from the Post
-	if t.post.CodeInjectionHead != nil {
-		b.WriteString(*t.post.CodeInjectionHead)
+	if ns.post.CodeInjectionHead != nil {
+		b.WriteString(*ns.post.CodeInjectionHead)
 	}
 
 	// Get Code Injection from the Options (globally)
-	if t.options.CodeInjectionHead != "" {
-		b.WriteString(t.options.CodeInjectionHead)
+	if ns.deps.Options.CodeInjectionHead != "" {
+		b.WriteString(ns.deps.Options.CodeInjectionHead)
 	}
 
 	// Obtain SEO & set post public
@@ -34,8 +34,8 @@ func (t *TemplateManager) header() template.HTML {
 		Canonical:      nil,
 	}
 
-	if t.post.SeoMeta.Seo != nil {
-		seo = *t.post.SeoMeta.Seo
+	if ns.post.SeoMeta.Seo != nil {
+		seo = *ns.post.SeoMeta.Seo
 	}
 
 	postPublic := true
@@ -44,13 +44,13 @@ func (t *TemplateManager) header() template.HTML {
 	}
 
 	// Check if the site is public or page is public
-	if !t.options.SeoPublic || !postPublic {
+	if !ns.deps.Options.SeoPublic || !postPublic {
 		b.WriteString(`<meta name="robots" content="noindex">`)
 	}
 
 	// Check if there are trailing slashes
 	slash := ""
-	if t.options.SeoEnforceSlash && t.post.Slug != "/" {
+	if ns.deps.Options.SeoEnforceSlash && ns.post.Slug != "/" {
 		slash = "/"
 	}
 
@@ -58,35 +58,35 @@ func (t *TemplateManager) header() template.HTML {
 	if seo.Canonical != nil && *seo.Canonical != "" {
 		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s%s" />`, *seo.Canonical, slash))
 	} else {
-		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s%s" />`, t.site.Url+t.post.Slug, slash))
+		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s%s" />`, ns.deps.Site.Url+ns.post.Slug, slash))
 	}
 
 	// Obtain Meta
-	meta := t.post.SeoMeta.Meta
+	meta := ns.post.SeoMeta.Meta
 	if meta != nil {
 
 		if meta.Description != "" {
-			t.writeMeta(&b, meta.Description)
+			ns.writeMeta(&b, meta.Description)
 		} else {
-			t.writeMeta(&b, t.options.MetaDescription)
+			ns.writeMeta(&b, ns.deps.Options.MetaDescription)
 		}
 
 		if meta.Facebook.Title != "" || meta.Facebook.Description != "" {
-			t.writeFacebook(&b, meta.Facebook.Title, meta.Facebook.Title, meta.Facebook.ImageId)
+			ns.writeFacebook(&b, meta.Facebook.Title, meta.Facebook.Title, meta.Facebook.ImageId)
 		} else {
-			t.writeFacebook(&b, t.options.MetaFacebookTitle, t.options.MetaFacebookDescription, t.options.MetaFacebookImageId)
+			ns.writeFacebook(&b, ns.deps.Options.MetaFacebookTitle, ns.deps.Options.MetaFacebookDescription, ns.deps.Options.MetaFacebookImageId)
 		}
 
 		if meta.Twitter.Title != "" || meta.Twitter.Description != "" {
-			t.writeTwitter(&b, meta.Twitter.Title, meta.Twitter.Description, meta.Twitter.ImageId)
+			ns.writeTwitter(&b, meta.Twitter.Title, meta.Twitter.Description, meta.Twitter.ImageId)
 		} else {
-			t.writeTwitter(&b, t.options.MetaTwitterTitle, t.options.MetaTwitterDescription, t.options.MetaTwitterImageId)
+			ns.writeTwitter(&b, ns.deps.Options.MetaTwitterTitle, ns.deps.Options.MetaTwitterDescription, ns.deps.Options.MetaTwitterImageId)
 		}
 
 	} else {
-		t.writeMeta(&b, t.options.MetaDescription)
-		t.writeFacebook(&b, t.options.MetaFacebookTitle, t.options.MetaFacebookDescription, t.options.MetaFacebookImageId)
-		t.writeTwitter(&b, t.options.MetaTwitterTitle, t.options.MetaTwitterDescription, t.options.MetaTwitterImageId)
+		ns.writeMeta(&b, ns.deps.Options.MetaDescription)
+		ns.writeFacebook(&b, ns.deps.Options.MetaFacebookTitle, ns.deps.Options.MetaFacebookDescription, ns.deps.Options.MetaFacebookImageId)
+		ns.writeTwitter(&b, ns.deps.Options.MetaTwitterTitle, ns.deps.Options.MetaTwitterDescription, ns.deps.Options.MetaTwitterImageId)
 	}
 
 	return template.HTML(gohtml.Format(b.String()))
@@ -96,12 +96,12 @@ func (t *TemplateManager) header() template.HTML {
 //
 // Writes to the given *bytes.Buffer with meta description
 // and article published time if they are not nil.
-func (t *TemplateManager) writeMeta(bytes *bytes.Buffer, description string) {
+func (ns *Namespace) writeMeta(bytes *bytes.Buffer, description string) {
 	if description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", description))
 	}
-	if t.post.PublishedAt != nil {
-		bytes.WriteString(fmt.Sprintf("<meta property=\"article:modified_time\" content=\"%s\" />", t.post.PublishedAt))
+	if ns.post.PublishedAt != nil {
+		bytes.WriteString(fmt.Sprintf("<meta property=\"article:modified_time\" content=\"%s\" />", ns.post.PublishedAt))
 	}
 }
 
@@ -110,12 +110,12 @@ func (t *TemplateManager) writeMeta(bytes *bytes.Buffer, description string) {
 // Opengraph writing to the given *bytes.Bufffer, this function
 // will write website, site name, locale from options, title,
 // description & post image if there is one.
-func (t *TemplateManager) writeFacebook(bytes *bytes.Buffer, title string, description string, imageId int) {
+func (ns *Namespace) writeFacebook(bytes *bytes.Buffer, title string, description string, imageId int) {
 
 	if title != "" || description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", t.options.SiteTitle))
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:locale\" content=\"%s\">", t.options.GeneralLocale))
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", ns.deps.Options.SiteTitle))
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:locale\" content=\"%s\">", ns.deps.Options.GeneralLocale))
 	}
 
 	if title != "" {
@@ -126,9 +126,9 @@ func (t *TemplateManager) writeFacebook(bytes *bytes.Buffer, title string, descr
 		bytes.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", description))
 	}
 
-	image, foundImage := t.store.Media.GetById(imageId)
+	image, foundImage := ns.deps.Store.Media.GetById(imageId)
 	if foundImage == nil {
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:image\" content=\"%s\">", t.options.SiteUrl+image.Url))
+		bytes.WriteString(fmt.Sprintf("<meta property=\"og:image\" content=\"%s\">", ns.deps.Options.SiteUrl+image.Url))
 	}
 }
 
@@ -137,7 +137,7 @@ func (t *TemplateManager) writeFacebook(bytes *bytes.Buffer, title string, descr
 // Twitter card writing to the given *bytes.Bufffer, this function
 // will write the title, description & post image if there is
 // one.
-func (t *TemplateManager) writeTwitter(bytes *bytes.Buffer, title string, description string, imageId int) {
+func (ns *Namespace) writeTwitter(bytes *bytes.Buffer, title string, description string, imageId int) {
 	if title != "" || description != "" {
 		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:card\" content=\"summary\">"))
 	}
@@ -150,21 +150,21 @@ func (t *TemplateManager) writeTwitter(bytes *bytes.Buffer, title string, descri
 		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:description\" content=\"%s\">", title))
 	}
 
-	image, foundImage := t.store.Media.GetById(imageId)
+	image, foundImage := ns.deps.Store.Media.GetById(imageId)
 	if foundImage == nil {
-		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:image\" content=\"%s\">", t.options.SiteUrl+image.Url))
+		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:image\" content=\"%s\">", ns.deps.Options.SiteUrl+image.Url))
 	}
 }
 
-// metaTitle
+// MetaTitle
 //
 // metaTitle obtains the meta title from the post, if there is no
 // title set on the post, it will look for the global title, if
 // none, return empty string.
 //
 // Example: <title>Verbis - {{ metaTitle }}</title>
-func (t *TemplateManager) metaTitle() string {
-	postMeta := t.post.SeoMeta.Meta
+func (ns *Namespace) MetaTitle() string {
+	postMeta := ns.post.SeoMeta.Meta
 
 	if postMeta == nil {
 		return ""
@@ -174,31 +174,31 @@ func (t *TemplateManager) metaTitle() string {
 		return postMeta.Title
 	}
 
-	if t.options.MetaTitle != "" {
-		return t.options.MetaTitle
+	if ns.deps.Options.MetaTitle != "" {
+		return ns.deps.Options.MetaTitle
 	}
 
 	return ""
 }
 
-// footer
+// Footer
 //
 // Obtains all of the site and post wide Code Injection
 // Returns formatted HTML template for use after the
 // closing `</body>`.
 //
 // Example: {{ verbisFoot }}
-func (t *TemplateManager) footer() template.HTML {
+func (ns *Namespace) Footer() template.HTML {
 	var b bytes.Buffer
 
 	// Get Global Foot (Code Injection)
-	if t.options.CodeInjectionFoot != "" {
-		b.WriteString(t.options.CodeInjectionFoot)
+	if ns.deps.Options.CodeInjectionFoot != "" {
+		b.WriteString(ns.deps.Options.CodeInjectionFoot)
 	}
 
 	// Get Code Injection for the Post
-	if t.post.CodeInjectionFoot != nil {
-		b.WriteString(*t.post.CodeInjectionFoot)
+	if ns.post.CodeInjectionFoot != nil {
+		b.WriteString(*ns.post.CodeInjectionFoot)
 	}
 
 	return template.HTML(gohtml.Format(b.String()))
