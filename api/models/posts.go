@@ -6,7 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	log "github.com/sirupsen/logrus"
@@ -15,7 +15,7 @@ import (
 
 // PostsRepository defines methods for Posts to interact with the database
 type PostsRepository interface {
-	Get(meta http.Params, layout bool, resource string, status string) ([]domain.PostData, int, error)
+	Get(meta params.Params, layout bool, resource string, status string) ([]domain.PostData, int, error)
 	GetById(id int, layout bool) (domain.PostData, error)
 	GetBySlug(slug string) (domain.PostData, error)
 	Create(p *domain.PostCreate) (domain.PostData, error)
@@ -85,7 +85,7 @@ FROM (%s) posts
       LEFT JOIN post_fields pf on posts.id = pf.post_id`, query)
 }
 
-func (s *PostStore) Get(meta http.Params, layout bool, resource string, status string) ([]domain.PostData, int, error) {
+func (s *PostStore) Get(meta params.Params, layout bool, resource string, status string) ([]domain.PostData, int, error) {
 	const op = "PostsRepository.Get"
 
 	q := "SELECT * FROM posts"
@@ -126,6 +126,9 @@ func (s *PostStore) Get(meta http.Params, layout bool, resource string, status s
 		if resource != "" {
 			q += fmt.Sprintf(" AND")
 			countQ += fmt.Sprintf(" AND")
+		} else {
+			q += fmt.Sprintf(" WHERE")
+			countQ += fmt.Sprintf(" WHERE")
 		}
 		q += fmt.Sprintf(" posts.status = '%s'", status)
 		countQ += fmt.Sprintf(" posts.status = '%s'", status)

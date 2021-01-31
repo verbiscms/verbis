@@ -4,8 +4,7 @@ package mocks
 
 import (
 	domain "github.com/ainsleyclark/verbis/api/domain"
-	http "github.com/ainsleyclark/verbis/api/http"
-
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	mock "github.com/stretchr/testify/mock"
 
 	multipart "mime/multipart"
@@ -45,11 +44,11 @@ func (_m *MediaRepository) Exists(name string) bool {
 }
 
 // Get provides a mock function with given fields: meta
-func (_m *MediaRepository) Get(meta http.Params) ([]domain.Media, int, error) {
+func (_m *MediaRepository) Get(meta params.Params) ([]domain.Media, int, error) {
 	ret := _m.Called(meta)
 
 	var r0 []domain.Media
-	if rf, ok := ret.Get(0).(func(http.Params) []domain.Media); ok {
+	if rf, ok := ret.Get(0).(func(params.Params) []domain.Media); ok {
 		r0 = rf(meta)
 	} else {
 		if ret.Get(0) != nil {
@@ -58,14 +57,14 @@ func (_m *MediaRepository) Get(meta http.Params) ([]domain.Media, int, error) {
 	}
 
 	var r1 int
-	if rf, ok := ret.Get(1).(func(http.Params) int); ok {
+	if rf, ok := ret.Get(1).(func(params.Params) int); ok {
 		r1 = rf(meta)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(http.Params) error); ok {
+	if rf, ok := ret.Get(2).(func(params.Params) error); ok {
 		r2 = rf(meta)
 	} else {
 		r2 = ret.Error(2)
