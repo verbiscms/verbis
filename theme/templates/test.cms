@@ -7,5 +7,16 @@
     {{ dict "colour" "green" "height" 20 }}
 
 
+{{/*    {{ $result := categories (dict "limit" 10) }}*/}}
+{{/*    {{ with $result.Categories }}*/}}
+{{/*        {{ range $post := . }}*/}}
+{{/*            {{ . }}*/}}
+{{/*        {{ end }}*/}}
+{{/*    {{ end }}*/}}
+
+    head{{ field "test" }}
+    {{ baseUrl }}
 </h1>
+
+
 {{ end }}

@@ -8,8 +8,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"io/ioutil"
 	"time"
@@ -242,7 +242,7 @@ func (s *Sitemap) ClearCache() {
 func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 	const op = "SiteMapper.retrievePages"
 
-	posts, _, err := s.store.Posts.Get(http.Params{
+	posts, _, err := s.store.Posts.Get(params.Params{
 		Page:           1,
 		Limit:          0,
 		LimitAll:       true,

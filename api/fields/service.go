@@ -42,7 +42,7 @@ type Service struct {
 }
 
 // NewService - Construct
-func NewService(d *deps.Deps, p domain.PostData) *Service {
+func NewService(d *deps.Deps, p *domain.PostData) *Service {
 	fields := make([]domain.PostField, 0)
 	if p.Fields != nil {
 		fields = p.Fields
