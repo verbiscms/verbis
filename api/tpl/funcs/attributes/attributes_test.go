@@ -86,7 +86,7 @@ func TestNamespace_Body(t *testing.T) {
 			g.Request, _ = http.NewRequest("GET", "/get", nil)
 			ns.auth = auth.New(
 				&deps.Deps{Store:&models.Store{User: mock}},
-				&internal.TemplateDeps{Context: g, Post: post},
+				&core.TemplateDeps{Context: g, Post: post},
 			)
 
 			if test.cookie {

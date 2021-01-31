@@ -5,32 +5,35 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 )
 
-type TemplateData struct {
-	Site domain.Site
-	Theme domain.ThemeConfig
-	Post domain.PostData
-	Options tplOptions
-}
+type (
 
-type tplOptions struct {
-	Social tplSocial
-	Contact tplContact
-}
+	TemplateData struct {
+		Site domain.Site
+		Theme domain.ThemeConfig
+		Post domain.PostData
+		Options tplOptions
+	}
 
-type tplSocial struct {
-	Facebook string
-	Twitter  string
-	Youtube string
-	LinkedIn string
-	Instagram string
-	Pintrest string
-}
+	tplOptions struct {
+		Social tplSocial
+		Contact tplContact
+	}
 
-type tplContact struct {
-	Email string
-	Telephone string
-	Address string
-}
+	tplSocial struct {
+		Facebook string
+		Twitter  string
+		Youtube string
+		LinkedIn string
+		Instagram string
+		Pintrest string
+	}
+
+	tplContact struct {
+		Email string
+		Telephone string
+		Address string
+	}
+)
 
 // Nwq - Returns all the necessary data for template usage.
 func New(d *deps.Deps, post domain.PostData) *TemplateData {

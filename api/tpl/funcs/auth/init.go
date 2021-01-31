@@ -7,7 +7,7 @@ import (
 )
 
 // Creates a new auth Namespace
-func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
+func New(d *deps.Deps, t *core.TemplateDeps) *Namespace {
 	return &Namespace{
 		deps: d,
 		ctx: t.Context,
@@ -23,39 +23,32 @@ type Namespace struct {
 
 const name = "auth"
 
-// Adds the namespace methods to the internal.FuncsNamespace
-// on initialisation.
-func init() {
-	f := func(d *deps.Deps) *internal.FuncsNamespace {
-		ctx := New(d, &internal.TemplateDeps{})
+//  Creates a new Namespace and returns a new core.FuncsNamespace
+func Init(d *deps.Deps, t *core.TemplateDeps) *core.FuncsNamespace {
+	ctx := New(d, t)
 
-		ns := &internal.FuncsNamespace{
-			Name: name,
-			Context: func(args ...interface{}) interface{} {
-
-				return ctx
-
-			},
-		}
-
-		ns.AddMethodMapping(ctx.Auth,
-			"auth",
-			nil,
-			[][2]string{
-				{`{{ toBool "true" }}`, `true`},
-			},
-		)
-
-		ns.AddMethodMapping(ctx.Admin,
-			"admin",
-			nil,
-			[][2]string{
-				{`{{ auth }}`, `false`},
-			},
-		)
-
-		return ns
+	ns := &core.FuncsNamespace{
+		Name: name,
+		Context: func(args ...interface{}) interface{} {
+			return ctx
+		},
 	}
 
-	internal.AddFuncsNamespace(f)
+	ns.AddMethodMapping(ctx.Auth,
+		"auth",
+		nil,
+		[][2]string{
+			{`{{ toBool "true" }}`, `true`},
+		},
+	)
+
+	ns.AddMethodMapping(ctx.Admin,
+		"admin",
+		nil,
+		[][2]string{
+			{`{{ auth }}`, `false`},
+		},
+	)
+
+	return ns
 }

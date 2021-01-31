@@ -39,9 +39,9 @@ func (ns *Namespace) Body() string {
 	body.WriteString(fmt.Sprintf("page-layout-%s", cssValidString(p.PageLayout)))
 
 	// Logged in (e.g. logged-in) if auth
-	if ns.auth.Auth() {
-		body.WriteString(" logged-in")
-	}
+	//if ns.auth.Auth() {
+	//	body.WriteString(" logged-in")
+	//}
 
 	return body.String()
 }
