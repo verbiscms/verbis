@@ -14,7 +14,7 @@ type MutableNamespaceRegistry []*FuncsNamespace
 type TemplateDeps struct {
 	Context *gin.Context
 	Post    *domain.PostData
-	Funcs template.FuncMap
+	Funcs   template.FuncMap
 }
 
 func AddFuncsNamespace(ns func(d *deps.Deps) *FuncsNamespace) {
@@ -58,4 +58,3 @@ func (t *FuncsNamespace) AddMethodMapping(m interface{}, name string, aliases []
 		Examples: examples,
 	}
 }
-

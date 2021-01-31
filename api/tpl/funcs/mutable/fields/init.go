@@ -36,7 +36,9 @@ func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ns.AddMethodMapping(ctx.fields.GetField,
 		"field",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ field "text" }}`, `Hello World!`},
+		},
 	)
 
 	ns.AddMethodMapping(ctx.fields.GetFieldObject,
