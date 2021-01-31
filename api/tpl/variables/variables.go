@@ -3,57 +3,81 @@ package variables
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/gin-gonic/gin"
 )
 
+type Reader interface {
+	Get() TemplateData
+}
+
+type Data struct {
+	deps *deps.Deps
+	ctx  *gin.Context
+	post *domain.PostData
+}
+
+// Creates a new Funcs
+func New(d *deps.Deps, ctx *gin.Context, post *domain.PostData) *Data {
+	return &Data{
+		deps: d,
+		ctx:  ctx,
+		post: post,
+	}
+}
+
 type (
-
+	// TemplateData represents the main datta to be returned
+	// in templates.
 	TemplateData struct {
-		Site domain.Site
-		Theme domain.ThemeConfig
-		Post domain.PostData
-		Options tplOptions
+		Site    domain.Site
+		Theme   domain.ThemeConfig
+		Post    domain.PostData
+		Options Options
 	}
-
-	tplOptions struct {
-		Social tplSocial
-		Contact tplContact
+	// tplOptions represents Verbis options to be returned
+	// in templates.
+	Options struct {
+		Social  Social
+		Contact Contact
 	}
-
-	tplSocial struct {
-		Facebook string
-		Twitter  string
-		Youtube string
-		LinkedIn string
+	// tplSocial represents social details to be returned
+	// in templates.
+	Social struct {
+		Facebook  string
+		Twitter   string
+		Youtube   string
+		LinkedIn  string
 		Instagram string
-		Pintrest string
+		Pintrest  string
 	}
-
-	tplContact struct {
-		Email string
+	// Contact represents contact details of the site
+	// to be returned in templates.
+	Contact struct {
+		Email     string
 		Telephone string
-		Address string
+		Address   string
 	}
 )
 
 // Nwq - Returns all the necessary data for template usage.
-func New(d *deps.Deps, post domain.PostData) *TemplateData {
-	return &TemplateData{
-		Site:    d.Site,
-		Theme:   d.Theme,
-		Post:    post,
-		Options: tplOptions{
-			Social: tplSocial{
-				Facebook:  d.Options.SocialFacebook,
-				Twitter:   d.Options.SocialTwitter,
-				Youtube:   d.Options.SocialYoutube,
-				LinkedIn:  d.Options.SocialLinkedIn,
-				Instagram: d.Options.SocialInstagram,
-				Pintrest:  d.Options.SocialPinterest,
+func (d *Data) Get() TemplateData {
+	return TemplateData{
+		Site:  d.deps.Site,
+		Theme: d.deps.Theme,
+		Post:  *d.post,
+		Options: Options{
+			Social: Social{
+				Facebook:  d.deps.Options.SocialFacebook,
+				Twitter:   d.deps.Options.SocialTwitter,
+				Youtube:   d.deps.Options.SocialYoutube,
+				LinkedIn:  d.deps.Options.SocialLinkedIn,
+				Instagram: d.deps.Options.SocialInstagram,
+				Pintrest:  d.deps.Options.SocialPinterest,
 			},
-			Contact: tplContact{
-				Email:     d.Options.ContactEmail,
-				Telephone: d.Options.ContactTelephone,
-				Address:   d.Options.ContactAddress,
+			Contact: Contact{
+				Email:     d.deps.Options.ContactEmail,
+				Telephone: d.deps.Options.ContactTelephone,
+				Address:   d.deps.Options.ContactAddress,
 			},
 		},
 	}

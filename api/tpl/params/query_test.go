@@ -1,7 +1,7 @@
 package params
 
 import (
-	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -15,12 +15,12 @@ func TestQuery_Get(t *testing.T) {
 	tt := map[string]struct {
 		orderBy        string
 		orderDirection string
-		want           http.Params
+		want           params.Params
 	}{
 		"Empty": {
 			"",
 			"",
-			http.Params{
+			params.Params{
 				Page:           1,
 				Limit:          15,
 				LimitAll:       false,
@@ -32,7 +32,7 @@ func TestQuery_Get(t *testing.T) {
 		"Order By": {
 			"test",
 			"",
-			http.Params{
+			params.Params{
 				Page:           1,
 				Limit:          15,
 				LimitAll:       false,
@@ -44,7 +44,7 @@ func TestQuery_Get(t *testing.T) {
 		"Order Direction": {
 			"",
 			"test",
-			http.Params{
+			params.Params{
 				Page:           1,
 				Limit:          15,
 				LimitAll:       false,

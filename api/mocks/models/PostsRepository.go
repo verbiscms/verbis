@@ -4,8 +4,7 @@ package mocks
 
 import (
 	domain "github.com/ainsleyclark/verbis/api/domain"
-	http "github.com/ainsleyclark/verbis/api/http"
-
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -78,11 +77,11 @@ func (_m *PostsRepository) ExistsBySlug(slug string) bool {
 }
 
 // Get provides a mock function with given fields: meta, layout, resource, status
-func (_m *PostsRepository) Get(meta http.Params, layout bool, resource string, status string) ([]domain.PostData, int, error) {
+func (_m *PostsRepository) Get(meta params.Params, layout bool, resource string, status string) ([]domain.PostData, int, error) {
 	ret := _m.Called(meta, layout, resource, status)
 
 	var r0 []domain.PostData
-	if rf, ok := ret.Get(0).(func(http.Params, bool, string, string) []domain.PostData); ok {
+	if rf, ok := ret.Get(0).(func(params.Params, bool, string, string) []domain.PostData); ok {
 		r0 = rf(meta, layout, resource, status)
 	} else {
 		if ret.Get(0) != nil {
@@ -91,14 +90,14 @@ func (_m *PostsRepository) Get(meta http.Params, layout bool, resource string, s
 	}
 
 	var r1 int
-	if rf, ok := ret.Get(1).(func(http.Params, bool, string, string) int); ok {
+	if rf, ok := ret.Get(1).(func(params.Params, bool, string, string) int); ok {
 		r1 = rf(meta, layout, resource, status)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(http.Params, bool, string, string) error); ok {
+	if rf, ok := ret.Get(2).(func(params.Params, bool, string, string) error); ok {
 		r2 = rf(meta, layout, resource, status)
 	} else {
 		r2 = ret.Error(2)

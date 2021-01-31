@@ -6,7 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
-	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"regexp"
@@ -48,13 +48,14 @@ func New(db *database.MySql, config config.Configuration) *Store {
 // filterRows takes in the filters from the params set in http.Params
 // If there is no filters set, an empty string will be returned.
 // Returns errors.INVALID if the operator or column name was not found.
-func filterRows(db *sqlx.DB, filters map[string][]http.Filter, table string) (string, error) {
+func filterRows(db *sqlx.DB, filters map[string][]params.Filter, table string) (string, error) {
 	const op = "Model.filterRows"
 
 	q := ""
 	operators := []string{"=", ">", ">=", "<", "<=", "<>", "LIKE", "IN", "NOT LIKE", "like", "in", "not like"}
 
 	if len(filters) != 0 {
+
 		counter := 0
 		for column, v := range filters {
 

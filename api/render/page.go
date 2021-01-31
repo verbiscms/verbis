@@ -81,7 +81,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		Config:  r.config,
 		Site:    r.store.Site.GetGlobalConfig(),
 		Options: r.store.Options.GetStruct(),
-		Paths:   deps.Paths{
+		Paths: deps.Paths{
 			Base:    paths.Base(),
 			Admin:   paths.Admin(),
 			API:     paths.Api(),
@@ -89,9 +89,8 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 			Uploads: paths.Uploads(),
 			Storage: paths.Storage(),
 		},
-		Theme:  r.store.Site.GetThemeConfig(),
+		Theme: r.store.Site.GetThemeConfig(),
 	}, g, &post)
-
 
 	gvFrontend := goview.New(goview.Config{
 		Root:         paths.Theme(),
