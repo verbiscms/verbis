@@ -2,7 +2,10 @@
 
 
 
+
 <h1>
+
+    {{ partial "partials/footer.cms" }}
 
     {{ dict "colour" "green" "height" 20 }}
 

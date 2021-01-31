@@ -37,13 +37,17 @@ func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ns.AddMethodMapping(ctx.Body,
 		"body",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ body }}`, `page page-id-1 page-title-my-verbis-page page-template-single page-layout-main`},
+		},
 	)
 
 	ns.AddMethodMapping(ctx.Lang,
 		"lang",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ lang }}`, `en-gb`},
+		},
 	)
 
 	return ns

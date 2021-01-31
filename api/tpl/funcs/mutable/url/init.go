@@ -35,43 +35,57 @@ func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ns.AddMethodMapping(ctx.Base,
 		"baseUrl",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ baseUrl }}`, `http://verbiscms.com`},
+		},
 	)
 
 	ns.AddMethodMapping(ctx.Scheme,
 		"scheme",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ scheme }}`, `http`},
+		},
 	)
 
 	ns.AddMethodMapping(ctx.Host,
 		"host",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ host }}`, `verbiscms.com`},
+		},
 	)
 
 	ns.AddMethodMapping(ctx.Full,
 		"fullUrl",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ fullUrl }}`, `http://verbiscms.com/page`},
+		},
 	)
 
 	ns.AddMethodMapping(ctx.Path,
 		"path",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ path }}`, `/page`},
+		},
 	)
 
 	ns.AddMethodMapping(ctx.Query,
 		"query",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ query "foo" }}`, `bar`},
+		},
 	)
 
 	ns.AddMethodMapping(ctx.Pagination,
 		"paginationPage",
 		nil,
-		[][2]string{},
+		[][2]string{
+			{`{{ paginationPage }}`, `2`},
+		},
 	)
 
 	return ns

@@ -32,13 +32,17 @@ func init() {
 		ns.AddMethodMapping(ctx.Env,
 			"env",
 			nil,
-			[][2]string{},
+			[][2]string{
+				{`{{ env "foo" }}`, `bar`},
+			},
 		)
 
 		ns.AddMethodMapping(ctx.ExpandEnv,
 			"expandEnv",
 			nil,
-			[][2]string{},
+			[][2]string{
+				{`{{ expandEnv "Welcome to $foo" }}`, `Welcome to bar`},
+			},
 		)
 
 		return ns
