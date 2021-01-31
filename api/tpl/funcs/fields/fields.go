@@ -1,13 +1,13 @@
-package math
+package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/fields"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/ainsleyclark/verbis/api/tpl/core"
 )
 
 // Creates a new fields Namespace
-func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
+func New(d *deps.Deps, t *core.TemplateDeps) *Namespace {
 	f := fields.NewService(d, *t.Post)
 	return &Namespace{
 		deps:   d,
@@ -24,16 +24,12 @@ type Namespace struct {
 
 const name = "fields"
 
-// Adds the namespace methods to the internal.FuncsNamespace
-// on initialisation.
-func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
+//  Creates a new Namespace and returns a new core.FuncsNamespace
+func Init(d *deps.Deps, t *core.TemplateDeps) *core.FuncsNamespace {
 	ctx := New(d, t)
 
-	ns := &internal.FuncsNamespace{
+	ns := &core.FuncsNamespace{
 		Name: name,
-		Context: func(args ...interface{}) interface{} {
-			return ctx
-		},
 	}
 
 	ns.AddMethodMapping(ctx.fields.GetField,

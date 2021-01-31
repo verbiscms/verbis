@@ -3,12 +3,15 @@ package meta
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/ainsleyclark/verbis/api/tpl/core"
 )
 
 // Creates a new meta Namespace
-func New(d *deps.Deps) *Namespace {
-	return &Namespace{deps: d}
+func New(d *deps.Deps, t *core.TemplateDeps) *Namespace {
+	return &Namespace{
+		deps: d,
+		post: t.Post,
+	}
 }
 
 // Namespace defines the methods for meta to be used
@@ -20,41 +23,34 @@ type Namespace struct {
 
 const name = "safe"
 
-// Adds the namespace methods to the internal.FuncsNamespace
-// on initialisation.
-func init() {
-	f := func(d *deps.Deps) *internal.FuncsNamespace {
-		ctx := New(d)
+//  Creates a new Namespace and returns a new core.FuncsNamespace
+func Init(d *deps.Deps, t *core.TemplateDeps) *core.FuncsNamespace {
+	ctx := New(d, t)
 
-		ns := &internal.FuncsNamespace{
-			Name: name,
-			Context: func(args ...interface{}) interface{} {
-
-				return ctx
-
-			},
-		}
-
-		ns.AddMethodMapping(ctx.Header,
-			"verbisHead",
-			[]string{"head"},
-			[][2]string{},
-		)
-
-		ns.AddMethodMapping(ctx.MetaTitle,
-			"metaTitle",
-			[]string{"foot"},
-			[][2]string{},
-		)
-
-		ns.AddMethodMapping(ctx.Footer,
-			"verbisFoot",
-			[]string{"foot"},
-			[][2]string{},
-		)
-
-		return ns
+	ns := &core.FuncsNamespace{
+		Name: name,
+		Context: func(args ...interface{}) interface{} {
+			return ctx
+		},
 	}
 
-	internal.AddFuncsNamespace(f)
+	ns.AddMethodMapping(ctx.Header,
+		"verbisHead",
+		[]string{"head"},
+		[][2]string{},
+	)
+
+	ns.AddMethodMapping(ctx.MetaTitle,
+		"metaTitle",
+		nil,
+		[][2]string{},
+	)
+
+	ns.AddMethodMapping(ctx.Footer,
+		"verbisFoot",
+		[]string{"foot"},
+		[][2]string{},
+	)
+
+	return ns
 }

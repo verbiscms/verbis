@@ -1,8 +1,9 @@
+
 package cast
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/ainsleyclark/verbis/api/tpl/core"
 	"github.com/spf13/cast"
 )
 
@@ -19,13 +20,13 @@ type Namespace struct {
 
 const name = "safe"
 
-// Adds the namespace methods to the internal.FuncsNamespace
+// Adds the namespace methods to the core.FuncsNamespace
 // on initialisation.
 func init() {
-	f := func(d *deps.Deps) *internal.FuncsNamespace {
+	f := func(d *deps.Deps) *core.FuncsNamespace {
 		ctx := New(d)
 
-		ns := &internal.FuncsNamespace{
+		ns := &core.FuncsNamespace{
 			Name:    name,
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
@@ -166,5 +167,5 @@ func init() {
 		return ns
 	}
 
-	internal.AddFuncsNamespace(f)
+	core.AddFuncsNamespace(f)
 }
