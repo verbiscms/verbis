@@ -25,7 +25,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/mutable/fields"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/mutable/meta"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/mutable/partial"
-	_ "github.com/ainsleyclark/verbis/api/tpl/funcs/mutable/partial"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/mutable/url"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/gin-gonic/gin"
@@ -38,17 +37,20 @@ type Mapper interface {
 
 type Funcs struct {
 	deps *deps.Deps
-	ctx  *gin.Context
-	post *domain.PostData
+	tpld *internal.TemplateDeps
 }
 
 // Creates a new Funcs
 func New(d *deps.Deps, ctx *gin.Context, post *domain.PostData) *Funcs {
-	return &Funcs{
+	f := &Funcs{
 		deps: d,
-		ctx:  ctx,
-		post: post,
+		tpld: &internal.TemplateDeps{
+			Context: ctx,
+			Post:    post,
+		},
 	}
+	f.tpld.Funcs = f.Map()
+	return f
 }
 
 func (f *Funcs) Map() template.FuncMap {
@@ -75,8 +77,7 @@ func (f *Funcs) Map() template.FuncMap {
 func (f *Funcs) getNamespaces() []*internal.FuncsNamespace {
 	var fs []*internal.FuncsNamespace
 	for _, nsf := range internal.GenericNamespaceRegistry {
-		ns := nsf(f.deps)
-		fs = append(fs, ns)
+		fs = append(fs, nsf(f.deps))
 	}
 
 	for _, nsf := range f.getMutableNamespaces() {
@@ -87,17 +88,12 @@ func (f *Funcs) getNamespaces() []*internal.FuncsNamespace {
 }
 
 func (f *Funcs) getMutableNamespaces() internal.MutableNamespaceRegistry {
-	t := &internal.TemplateDeps{
-		Context: f.ctx,
-		Post:    f.post,
-	}
 	return internal.MutableNamespaceRegistry{
-		attributes.Init(f.deps, t),
-		auth.Init(f.deps, t),
-		fields.Init(f.deps, t),
-		meta.Init(f.deps, t),
-		partial.Init(f.deps, t),
-		url.Init(f.deps, t),
+		attributes.Init(f.deps, f.tpld),
+		auth.Init(f.deps, f.tpld),
+		fields.Init(f.deps, f.tpld),
+		meta.Init(f.deps, f.tpld),
+		partial.Init(f.deps, f.tpld),
+		url.Init(f.deps, f.tpld),
 	}
 }
-

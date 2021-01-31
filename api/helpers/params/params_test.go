@@ -92,4 +92,3 @@ func TestParams_Get(t *testing.T) {
 		})
 	}
 }
-
