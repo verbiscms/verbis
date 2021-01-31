@@ -2,7 +2,7 @@ package paths
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/ainsleyclark/verbis/api/tpl/core"
 )
 
 // Creates a new paths Namespace
@@ -18,58 +18,58 @@ type Namespace struct {
 
 const name = "paths"
 
-// Adds the namespace methods to the internal.FuncsNamespace
+// Adds the namespace methods to the core.FuncsNamespace
 // on initialisation.
 func init() {
-	f := func(d *deps.Deps) *internal.FuncsNamespace {
+	f := func(d *deps.Deps) *core.FuncsNamespace {
 		ctx := New(d)
 
-		ns := &internal.FuncsNamespace{
+		ns := &core.FuncsNamespace{
 			Name:    name,
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
 
-		ns.AddMethodMapping(d.Paths.Base,
-			"basePath",
-			nil,
-			[][2]string{},
-		)
-
-		ns.AddMethodMapping(d.Paths.Admin,
-			"adminPath",
-			nil,
-			[][2]string{},
-		)
-
-		ns.AddMethodMapping(d.Paths.API,
-			"apiPath",
-			nil,
-			[][2]string{},
-		)
-
-		ns.AddMethodMapping(d.Paths.Theme,
-			"themePath",
-			nil,
-			[][2]string{},
-		)
-
-		ns.AddMethodMapping(d.Paths.Uploads,
-			"uploadsPath",
-			nil,
-			[][2]string{},
-		)
-
-		ns.AddMethodMapping(d.Theme.AssetsPath,
-			"assetsPath",
-			nil,
-			[][2]string{},
-		)
-
-		ns.AddMethodMapping(d.Paths.Storage,
-			"storagePath",
-			nil,
-			[][2]string{},
-		)
+		//ns.AddMethodMapping(d.Paths.Base,
+		//	"basePath",
+		//	nil,
+		//	[][2]string{},
+		//)
+		//
+		//ns.AddMethodMapping(d.Paths.Admin,
+		//	"adminPath",
+		//	nil,
+		//	[][2]string{},
+		//)
+		//
+		//ns.AddMethodMapping(d.Paths.API,
+		//	"apiPath",
+		//	nil,
+		//	[][2]string{},
+		//)
+		//
+		//ns.AddMethodMapping(d.Paths.Theme,
+		//	"themePath",
+		//	nil,
+		//	[][2]string{},
+		//)
+		//
+		//ns.AddMethodMapping(d.Paths.Uploads,
+		//	"uploadsPath",
+		//	nil,
+		//	[][2]string{},
+		//)
+		//
+		//ns.AddMethodMapping(d.Theme.AssetsPath,
+		//	"assetsPath",
+		//	nil,
+		//	[][2]string{},
+		//)
+		//
+		//ns.AddMethodMapping(d.Paths.Storage,
+		//	"storagePath",
+		//	nil,
+		//	[][2]string{},
+		//)
 
 		ns.AddMethodMapping(ctx.Templates,
 			"templatesPath",
@@ -86,5 +86,5 @@ func init() {
 		return ns
 	}
 
-	internal.AddFuncsNamespace(f)
+	core.AddFuncsNamespace(f)
 }

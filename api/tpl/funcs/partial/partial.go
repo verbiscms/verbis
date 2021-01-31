@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"html/template"
 	"strings"
 )
@@ -37,7 +36,8 @@ func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, e
 	}
 
 	pathArr := strings.Split(path, "/")
-	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(internal.GetFuncMap(ns.deps)).ParseFiles(path)
+	//file, err := template.New(pathArr[len(pathArr)-1]).Funcs(core.GetFuncMap(ns.deps)).ParseFiles(path)
+	file, err := template.New(pathArr[len(pathArr)-1]).ParseFiles(path)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to parse partial file", Operation: op, Err: err}
 	}

@@ -2,7 +2,7 @@ package url
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/ainsleyclark/verbis/api/tpl/core"
 	"github.com/gin-gonic/gin"
 	"github.com/gookit/color"
 )
@@ -24,13 +24,13 @@ type Namespace struct {
 
 const name = "reflect"
 
-// Adds the namespace methods to the internal.FuncsNamespace
+// Adds the namespace methods to the core.FuncsNamespace
 // on initialisation.
 func init() {
-	f := func(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
+	f := func(d *deps.Deps, t *core.TemplateDeps) *core.FuncsNamespace {
 		ctx := New(d, t.Context)
 
-		ns := &internal.FuncsNamespace{
+		ns := &core.FuncsNamespace{
 			Name:    name,
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
@@ -82,5 +82,5 @@ func init() {
 
 	color.Green.Println(f)
 
-	//internal.AddFuncsNamespace(f)
+	//core.AddFuncsNamespace(f)
 }

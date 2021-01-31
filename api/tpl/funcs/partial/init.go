@@ -2,7 +2,7 @@ package partial
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/ainsleyclark/verbis/api/tpl/core"
 )
 
 // Creates a new partial Namespace
@@ -16,15 +16,15 @@ type Namespace struct {
 	deps *deps.Deps
 }
 
-const name = "slice"
+const name = "partial"
 
-// Adds the namespace methods to the internal.FuncsNamespace
+// Adds the namespace methods to the core.FuncsNamespace
 // on initialisation.
 func init() {
-	f := func(d *deps.Deps) *internal.FuncsNamespace {
+	f := func(d *deps.Deps) *core.FuncsNamespace {
 		ctx := New(d)
 
-		ns := &internal.FuncsNamespace{
+		ns := &core.FuncsNamespace{
 			Name:    name,
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
@@ -40,5 +40,5 @@ func init() {
 		return ns
 	}
 
-	internal.AddFuncsNamespace(f)
+	core.AddFuncsNamespace(f)
 }
