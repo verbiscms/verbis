@@ -17,18 +17,30 @@ import (
 //
 // Returns the fields to be modified & processed.
 func (s *Service) handleArgs(args []interface{}) []domain.PostField {
+	const op = "FieldsService.handleArgs"
+
 	if len(args) == 0 {
 		return s.fields
 	}
 
-	post, ok := args[0].(domain.PostData)
-	if ok {
-		return post.Fields
+	switch f := args[0].(type) {
+	case domain.PostData:
+		return f.Fields
+	case []domain.PostField:
+		return f
+	case domain.PostTemplate:
+		return f.Fields
 	}
 
-	fields := s.getFieldsByPost(args[0])
+	id, err := cast.ToIntE(args[0])
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INVALID, Message: "Invalid argument passed to ", Operation: op, Err: fmt.Errorf("unable to cast post id to integer")},
+		}).Error()
+		return nil
+	}
 
-	return fields
+	return s.getFieldsByPost(id)
 
 }
 
@@ -37,18 +49,9 @@ func (s *Service) handleArgs(args []interface{}) []domain.PostField {
 // Returns the fields by Post with the given ID.
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining the post.
-func (s *Service) getFieldsByPost(id interface{}) []domain.PostField {
-	const op = "FieldsService.getFieldsByPost"
+func (s *Service) getFieldsByPost(id int) []domain.PostField {
 
-	i, err := cast.ToIntE(id)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err},
-		}).Error()
-		return nil
-	}
-
-	fields, err := s.deps.Store.Fields.GetByPost(i)
+	fields, err := s.deps.Store.Fields.GetByPost(id)
 	if err != nil {
 		log.WithFields(log.Fields{"error": err}).Error()
 		return nil

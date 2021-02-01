@@ -29,12 +29,12 @@ var (
 	postDataSlice = []domain.PostData{
 		postData, postData,
 	}
-	tplPost = TplPost{
+	tplPost = domain.PostTemplate{
 		Author:   domain.UserPart{},
 		Category: cat,
 		Post:     post,
 	}
-	tplPostSlice = []TplPost{
+	tplPostSlice = []domain.PostTemplate{
 		tplPost, tplPost,
 	}
 )

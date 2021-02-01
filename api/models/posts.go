@@ -134,6 +134,11 @@ func (s *PostStore) Get(meta params.Params, layout bool, resource string, status
 		countQ += fmt.Sprintf(" posts.status = '%s'", status)
 	}
 
+	// Apply order
+	if meta.OrderBy != "" {
+		q += fmt.Sprintf(" ORDER BY posts.%s %s", meta.OrderBy, meta.OrderDirection)
+	}
+
 	// Apply pagination
 	if !meta.LimitAll {
 		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
