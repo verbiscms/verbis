@@ -32,29 +32,15 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 		return nil
 	}
 
-	return TplPost{
-		Post:     post.Post,
-		Author:   post.Author,
-		Category: post.Category,
-		Fields:   post.Fields,
-	}
+	return post.Tpl()
 }
 
 // Posts defines the struct for returning
 // posts and pagination back to the
 // template.
 type Posts struct {
-	Posts      []TplPost
+	Posts      []domain.PostTemplate
 	Pagination *http.Pagination
-}
-
-// TplPost defines the Post data for
-// templates.
-type TplPost struct {
-	domain.Post
-	Author   domain.UserPart
-	Category *domain.Category
-	Fields   []domain.PostField
 }
 
 // List
@@ -89,14 +75,9 @@ func (ns *Namespace) List(query params.Query) (interface{}, error) {
 		return nil, err
 	}
 
-	var tplPosts = make([]TplPost, len(posts))
-	for i, v := range posts {
-		tplPosts[i] = TplPost{
-			Post:     v.Post,
-			Author:   v.Author,
-			Category: v.Category,
-			Fields:   v.Fields,
-		}
+	var tplPosts = make([]domain.PostTemplate, len(posts))
+	for i, post := range posts {
+		tplPosts[i] = post.Tpl()
 	}
 
 	return Posts{
