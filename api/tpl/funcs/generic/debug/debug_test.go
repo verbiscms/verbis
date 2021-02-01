@@ -35,7 +35,7 @@ func TestNamespace_Debug(t *testing.T) {
 			template.HTML("map[test:123]\n"),
 		},
 		"Struct": {
-			struct {Test string}{Test: "test"},
+			struct{ Test string }{Test: "test"},
 			template.HTML("{Test:test}\n"),
 		},
 	}
@@ -71,7 +71,7 @@ func TestNamespace_Dump(t *testing.T) {
 			template.HTML(fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, "{\n\t\"test\": 123\n}")),
 		},
 		"Struct": {
-			struct {Test string}{Test: "test"},
+			struct{ Test string }{Test: "test"},
 			template.HTML(fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, "{\n\t\"Test\": \"test\"\n}")),
 		},
 		"Error": {
