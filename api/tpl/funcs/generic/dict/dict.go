@@ -17,7 +17,7 @@ import (
 // Example: {{ dict "colour" "green" "height" 20 }}
 // Returns: map[string]interface{}{"colour":"green", "height":20}
 func (ns *Namespace) Dict(values ...interface{}) (map[string]interface{}, error) {
-	const op = "Templates.dict"
+	const op = "Templates.Dict"
 
 	if len(values)%2 != 0 {
 		return nil, &errors.Error{Code: errors.TEMPLATE, Message: "Invalid dict call", Operation: op, Err: fmt.Errorf("dict values are not divisable by two")}

@@ -5,7 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/mutable/auth"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/frontend/auth"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
@@ -75,7 +75,7 @@ func TestNamespace_Body(t *testing.T) {
 
 			ns := Namespace{
 				deps: nil,
-				post: post,
+				tpld: &internal.TemplateDeps{Post: post},
 			}
 
 			mock := &mocks.UserRepository{}

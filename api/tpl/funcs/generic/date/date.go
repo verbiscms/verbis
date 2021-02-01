@@ -27,7 +27,7 @@ func (ns *Namespace) Date(fmt string, date interface{}) (string, error) {
 //
 // Example: {{ dateInZone "02/01/2006" now "Europe/London" }}
 func (ns *Namespace) DateInZone(format string, date interface{}, zone string) (string, error) {
-	const op = "Templates.dateInZone"
+	const op = "Templates.DateInZone"
 
 	tm, err := cast.ToTimeE(date)
 	if err != nil {

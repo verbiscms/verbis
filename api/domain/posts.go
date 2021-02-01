@@ -73,7 +73,6 @@ type PostField struct {
 	OriginalValue FieldValue  `db:"value" json:"value"`
 }
 
-
 type FieldValue string
 
 func (f PostField) TypeIsInArray(arr []string) bool {

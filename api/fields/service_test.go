@@ -22,8 +22,8 @@ func (t *FieldTestSuite) TestNewService() {
 	}
 
 	deps := &deps.Deps{
-		Store:   m,
-		Config:  config.Configuration{},
+		Store:  m,
+		Config: config.Configuration{},
 	}
 
 	service := &Service{
