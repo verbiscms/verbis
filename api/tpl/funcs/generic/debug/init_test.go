@@ -1,4 +1,4 @@
-package partial
+package debug
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"

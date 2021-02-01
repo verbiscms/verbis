@@ -20,7 +20,7 @@ import (
 //
 // Example: {{ partial "partials/circle.svg" (dict "radius" 50 "fill" "red") }}
 func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, error) {
-	const op = "Templates.partial"
+	const op = "Templates.Partial"
 
 	path := ns.deps.Paths.Theme + "/" + name
 
@@ -37,7 +37,6 @@ func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, e
 
 	pathArr := strings.Split(path, "/")
 	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(ns.tpld.Funcs).ParseFiles(path)
-	//file, err := template.New(pathArr[len(pathArr)-1]).ParseFiles(path)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to parse partial file", Operation: op, Err: err}
 	}

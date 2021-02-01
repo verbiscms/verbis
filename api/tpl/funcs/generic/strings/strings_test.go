@@ -19,15 +19,15 @@ func TestNamespace_Replace(t *testing.T) {
 		want interface{}
 	}{
 		"Valid": {
-			"verbis-cms-is-amazing",
 			"-",
 			" ",
+			"verbis-cms-is-amazing",
 			"verbis cms is amazing",
 		},
 		"Valid 2": {
-			"verbis",
 			"v",
 			"",
+			"verbis",
 			"erbis",
 		},
 	}
