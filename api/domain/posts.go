@@ -37,6 +37,24 @@ type Post struct {
 	SeoMeta           PostOptions `db:"options" json:"options"`
 }
 
+// TplPost defines the Post data for
+// templates.
+type PostTemplate struct {
+	Post
+	Author   UserPart
+	Category *Category
+	Fields   []PostField
+}
+
+func (p *PostData) Tpl() PostTemplate {
+	return PostTemplate{
+		Post:     p.Post,
+		Author:   p.Author,
+		Category: p.Category,
+		Fields:   p.Fields,
+	}
+}
+
 type PostCreate struct {
 	Post
 	Author   int         `json:"author,omitempty" binding:"numeric"`
@@ -54,6 +72,7 @@ type PostField struct {
 	Value         interface{} `json:"-"`
 	OriginalValue FieldValue  `db:"value" json:"value"`
 }
+
 
 type FieldValue string
 

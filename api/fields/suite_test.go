@@ -2,6 +2,7 @@ package fields
 
 import (
 	"bytes"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -40,9 +41,11 @@ func (t *FieldTestSuite) GetMockService(fields []domain.PostField, fnc func(f *m
 	}
 
 	s := t.GetService(fields)
-	s.store = &models.Store{
-		Categories: categoryMock,
-		Fields:     fieldsMock,
+	s.deps = &deps.Deps{
+		Store: &models.Store{
+			Categories: categoryMock,
+			Fields:     fieldsMock,
+		},
 	}
 
 	return s
@@ -56,8 +59,10 @@ func (t *FieldTestSuite) GetPostsMockService(fields []domain.PostField, fnc func
 	}
 
 	s := t.GetService(fields)
-	s.store = &models.Store{
-		Posts: postsMocks,
+	s.deps = &deps.Deps{
+		Store: &models.Store{
+			Posts: postsMocks,
+		},
 	}
 
 	return s
@@ -75,11 +80,13 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository
 	}
 
 	s := t.GetService(nil)
-	s.store = &models.Store{
-		Categories: categoryMock,
-		Media:      mediaMock,
-		Posts:      postsMock,
-		User:       userMock,
+	s.deps = &deps.Deps{
+		Store: &models.Store{
+			Categories: categoryMock,
+			Media:      mediaMock,
+			Posts:      postsMock,
+			User:       userMock,
+		},
 	}
 
 	return s
@@ -88,6 +95,6 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository
 func (t *FieldTestSuite) GetService(fields []domain.PostField) *Service {
 	return &Service{
 		fields: fields,
-		store:  &models.Store{},
+		deps:  &deps.Deps{},
 	}
 }

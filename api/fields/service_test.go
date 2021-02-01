@@ -1,6 +1,8 @@
 package fields
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/models"
 )
@@ -11,7 +13,7 @@ func (t *FieldTestSuite) TestNewService() {
 	var l = make([]domain.FieldGroup, 0)
 	var f = make([]domain.PostField, 0)
 
-	pd := domain.PostData{
+	pd := &domain.PostData{
 		Post: domain.Post{
 			Id: 1,
 		},
@@ -19,12 +21,17 @@ func (t *FieldTestSuite) TestNewService() {
 		Fields: f,
 	}
 
+	deps := &deps.Deps{
+		Store:   m,
+		Config:  config.Configuration{},
+	}
+
 	service := &Service{
-		store:  m,
+		deps:   deps,
 		postId: 1,
 		fields: f,
 		layout: l,
 	}
 
-	t.Equal(NewService(m, pd), service)
+	t.Equal(NewService(deps, pd), service)
 }
