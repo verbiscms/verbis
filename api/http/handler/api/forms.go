@@ -4,6 +4,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -41,7 +42,7 @@ func NewForms(m *models.Store, config config.Configuration) *Forms {
 func (c *Forms) Get(g *gin.Context) {
 	const op = "FormHandler.Get"
 
-	params := http.ApiParams(g, DefaultParams).Get()
+	params := params2.ApiParams(g, DefaultParams).Get()
 
 	forms, total, err := c.store.Forms.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {

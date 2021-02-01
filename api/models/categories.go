@@ -5,7 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/google/uuid"
 	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
@@ -14,7 +14,7 @@ import (
 
 // CategoryRepository defines methods for Categories to interact with the database
 type CategoryRepository interface {
-	Get(meta http.Params) ([]domain.Category, int, error)
+	Get(meta params.Params) ([]domain.Category, int, error)
 	GetById(id int) (domain.Category, error)
 	GetByPost(pageId int) (*domain.Category, error)
 	GetBySlug(slug string) (domain.Category, error)
@@ -48,7 +48,7 @@ func newCategories(db *sqlx.DB, config config.Configuration) *CategoryStore {
 // Get all categories
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
-func (s *CategoryStore) Get(meta http.Params) ([]domain.Category, int, error) {
+func (s *CategoryStore) Get(meta params.Params) ([]domain.Category, int, error) {
 	const op = "CategoryRepository.Get"
 
 	var c []domain.Category

@@ -5,6 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -43,7 +44,7 @@ func NewCategories(m *models.Store, config config.Configuration) *Categories {
 func (c *Categories) Get(g *gin.Context) {
 	const op = "CategoryHandler.Get"
 
-	params := http.ApiParams(g, DefaultParams).Get()
+	params := params.ApiParams(g, DefaultParams).Get()
 
 	categories, total, err := c.store.Categories.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
@@ -180,7 +181,7 @@ func (c *Categories) Delete(g *gin.Context) {
 // attached to it.
 func (c *Categories) clearCache(id int) {
 	go func() {
-		posts, _, err := c.store.Posts.Get(http.Params{LimitAll: true}, false, "", "")
+		posts, _, err := c.store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error()
 		}

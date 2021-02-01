@@ -18,7 +18,7 @@ func (v *Value) media(value domain.FieldValue) (interface{}, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast user ID to an integer", Operation: op, Err: err}
 	}
 
-	media, err := v.store.Media.GetById(id)
+	media, err := v.deps.Store.Media.GetById(id)
 	if err != nil {
 		return nil, err
 	}

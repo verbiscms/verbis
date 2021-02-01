@@ -5,6 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -42,7 +43,7 @@ func NewMedia(m *models.Store, config config.Configuration) *Media {
 func (c *Media) Get(g *gin.Context) {
 	const op = "MediaHandler.Get"
 
-	params := http.ApiParams(g, DefaultParams).Get()
+	params := params2.ApiParams(g, DefaultParams).Get()
 
 	media, total, err := c.store.Media.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
