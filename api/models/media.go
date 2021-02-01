@@ -10,9 +10,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
-	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
 	log "github.com/sirupsen/logrus"
@@ -32,7 +32,7 @@ import (
 
 // MediaRepository defines methods for Media to interact with the database
 type MediaRepository interface {
-	Get(meta http.Params) ([]domain.Media, int, error)
+	Get(meta params.Params) ([]domain.Media, int, error)
 	GetById(id int) (domain.Media, error)
 	GetByName(name string) (domain.Media, error)
 	GetByUrl(url string) (string, string, error)
@@ -75,7 +75,7 @@ func (s *MediaStore) getOptionsStruct() {
 // Get all media
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no media available.
-func (s *MediaStore) Get(meta http.Params) ([]domain.Media, int, error) {
+func (s *MediaStore) Get(meta params.Params) ([]domain.Media, int, error) {
 	const op = "MediaRepository.Get"
 
 	var m []domain.Media

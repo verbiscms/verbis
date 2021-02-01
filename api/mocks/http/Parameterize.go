@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	http "github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	mock "github.com/stretchr/testify/mock"
 )
 
@@ -13,14 +13,14 @@ type Parameterize struct {
 }
 
 // Get provides a mock function with given fields:
-func (_m *Parameterize) Get() http.Params {
+func (_m *Parameterize) Get() params.Params {
 	ret := _m.Called()
 
-	var r0 http.Params
-	if rf, ok := ret.Get(0).(func() http.Params); ok {
+	var r0 params.Params
+	if rf, ok := ret.Get(0).(func() params.Params); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(http.Params)
+		r0 = ret.Get(0).(params.Params)
 	}
 
 	return r0

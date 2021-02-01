@@ -42,7 +42,7 @@ func (t *ResolverTestSuite) TestValue_Post() {
 			postMock := &mocks.PostsRepository{}
 
 			test.mock(postMock)
-			v.store.Posts = postMock
+			v.deps.Store.Posts = postMock
 
 			got, err := v.post(test.value)
 			if err != nil {
@@ -109,7 +109,7 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 			postMock := &mocks.PostsRepository{}
 
 			test.mock(postMock)
-			v.store.Posts = postMock
+			v.deps.Store.Posts = postMock
 
 			got := v.resolve(test.field)
 

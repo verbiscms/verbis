@@ -8,8 +8,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/mail/events"
 	"github.com/google/uuid"
 	"github.com/gookit/color"
@@ -21,7 +21,7 @@ import (
 
 // FormRepository defines methods for Posts to interact with the database
 type FormRepository interface {
-	Get(meta http.Params) ([]domain.Form, int, error)
+	Get(meta params.Params) ([]domain.Form, int, error)
 	GetById(id int) (domain.Form, error)
 	GetByUUID(uuid string) (domain.Form, error)
 	//GetValidation(form *domain.Form) dynamicstruct.Builder
@@ -49,7 +49,7 @@ func newForms(db *sqlx.DB, config config.Configuration) *FormsStore {
 //
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no forms available.
-func (s *FormsStore) Get(meta http.Params) ([]domain.Form, int, error) {
+func (s *FormsStore) Get(meta params.Params) ([]domain.Form, int, error) {
 	const op = "FormsRepository.Get"
 
 	var f []domain.Form

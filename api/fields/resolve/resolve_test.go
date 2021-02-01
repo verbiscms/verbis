@@ -1,15 +1,15 @@
 package resolve
 
 import (
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/models"
 )
 
 func (t *ResolverTestSuite) Test_Field() {
-	store := &models.Store{}
+	deps := &deps.Deps{}
 	field := domain.PostField{Id: 1, Type: "text", OriginalValue: "test"}
 
-	got := Field(field, store)
+	got := Field(field, deps)
 
 	t.Equal(domain.PostField{Id: 1, Type: "text", OriginalValue: "test", Value: "test"}, got)
 }

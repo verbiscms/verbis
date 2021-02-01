@@ -1,12 +1,13 @@
 package http
 
 import (
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"math"
 )
 
 // Paginate defines the function for getting http params
 type Paginate interface {
-	Get() Params
+	Get() params.Params
 }
 
 // Pagination represents the data to be sent back from the API on
@@ -26,7 +27,7 @@ func NewPagination() *Pagination {
 }
 
 // Get pagination parameters
-func (p *Pagination) Get(params Params, total int) *Pagination {
+func (p *Pagination) Get(params params.Params, total int) *Pagination {
 
 	// Calculate total pages
 	var pages int

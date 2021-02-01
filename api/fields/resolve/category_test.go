@@ -40,7 +40,7 @@ func (t *ResolverTestSuite) TestValue_Category() {
 			categoryMock := &mocks.CategoryRepository{}
 
 			test.mock(categoryMock)
-			v.store.Categories = categoryMock
+			v.deps.Store.Categories = categoryMock
 
 			got, err := v.category(test.value)
 			if err != nil {
@@ -107,7 +107,7 @@ func (t *ResolverTestSuite) TestValue_CategoryResolve() {
 			categoryMock := &mocks.CategoryRepository{}
 
 			test.mock(categoryMock)
-			v.store.Categories = categoryMock
+			v.deps.Store.Categories = categoryMock
 
 			got := v.resolve(test.field)
 
