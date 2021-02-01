@@ -5,6 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -43,7 +44,7 @@ func NewPosts(m *models.Store, config config.Configuration) *Posts {
 func (c *Posts) Get(g *gin.Context) {
 	const op = "PostHandler.Get"
 
-	params := http.ApiParams(g,DefaultParams).Get()
+	params := params2.ApiParams(g, DefaultParams).Get()
 
 	posts, total, err := c.store.Posts.Get(params, true, g.Query("resource"), g.Query("status"))
 	if errors.Code(err) == errors.NOTFOUND {

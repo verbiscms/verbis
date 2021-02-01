@@ -6,7 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
-	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
 	"strings"
@@ -15,7 +15,7 @@ import (
 
 // UserRepository defines methods for Users to interact with the database
 type UserRepository interface {
-	Get(meta http.Params) (domain.Users, int, error)
+	Get(meta params.Params) (domain.Users, int, error)
 	GetById(id int) (domain.User, error)
 	GetOwner() (domain.User, error)
 	GetByToken(token string) (domain.User, error)
@@ -51,7 +51,7 @@ func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
 // Get all users
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no users available.
-func (s *UserStore) Get(meta http.Params) (domain.Users, int, error) {
+func (s *UserStore) Get(meta params.Params) (domain.Users, int, error) {
 	const op = "UserRepository.Get"
 
 	var u domain.Users

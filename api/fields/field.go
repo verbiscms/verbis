@@ -19,7 +19,7 @@ func (s *Service) GetField(name string, args ...interface{}) interface{} {
 		return nil
 	}
 
-	resolved := resolve.Field(field, s.store)
+	resolved := resolve.Field(field, s.deps)
 
 	return resolved.Value
 }
@@ -37,7 +37,7 @@ func (s *Service) GetFieldObject(name string, args ...interface{}) domain.PostFi
 		return domain.PostField{}
 	}
 
-	resolved := resolve.Field(field, s.store)
+	resolved := resolve.Field(field, s.deps)
 
 	return resolved
 }

@@ -1,26 +1,25 @@
 {{ define "content" }}
 
 
-    <div class="">fdg;ljdsfglksdfjlsdfgj</div>
-
-    <div style="padding: 20px">
-        {{ test . | safeHTML }}
-{{/*        {{ field "content" }}*/}}
-{{/*        {{ .Post.Title }}*/}}
-{{/*        {{ $result := posts (dict "limit" 99999999 "order_direction" "asc") }}*/}}
-{{/*        HEY HEYggg*/}}
-
-{{/*        {{ .Post.Author.FirstName }}*/}}
-{{/*        {{ $result.Posts }}*/}}
-    </div>
-
-    <div class="">fdg;ljdsfglksdfjlsdfgj</div>
 
 
 <h1>
 
+    {{ partial "partials/footer.cms" }}
+
     {{ dict "colour" "green" "height" 20 }}
 
 
+{{/*    {{ $result := categories (dict "limit" 10) }}*/}}
+{{/*    {{ with $result.Categories }}*/}}
+{{/*        {{ range $post := . }}*/}}
+{{/*            {{ . }}*/}}
+{{/*        {{ end }}*/}}
+{{/*    {{ end }}*/}}
+
+    head{{ field "test" }}
+    {{ baseUrl }}
 </h1>
+
+
 {{ end }}

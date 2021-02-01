@@ -7,7 +7,12 @@ import (
 )
 
 type Paths struct {
-	Theme string
+	Base    string
+	Admin   string
+	API     string
+	Theme   string
+	Uploads string
+	Storage string
 }
 
 // Deps holds dependencies used by many.
@@ -23,6 +28,7 @@ type Deps struct {
 
 	// Cache
 
+	Site domain.Site
 	// Logger
 
 	// Options
@@ -30,4 +36,7 @@ type Deps struct {
 
 	// Paths
 	Paths Paths
+
+	// Theme
+	Theme domain.ThemeConfig
 }

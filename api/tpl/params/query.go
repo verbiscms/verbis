@@ -1,7 +1,7 @@
 package params
 
 import (
-	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/spf13/cast"
 )
 
@@ -12,9 +12,9 @@ type Query map[string]interface{}
 var (
 	// Defaults represents the default params if
 	// none were passed for templates.
-	Defaults = http.Defaults{
+	Defaults = params.Defaults{
 		Page:           1,
-		Limit:         	15,
+		Limit:          15,
 		OrderBy:        "created_at",
 		OrderDirection: "desc",
 	}
@@ -25,7 +25,7 @@ var (
 // Returns parameters for the store to used for obtaining
 // multiple entities. If the orderBy or orderDirection
 // arguments are not passed, defaults will be used.
-func (q Query) Get(orderBy string, orderDirection string) http.Params {
+func (q Query) Get(orderBy string, orderDirection string) params.Params {
 	def := Defaults
 	if orderBy != "" {
 		def.OrderBy = orderBy
@@ -33,7 +33,7 @@ func (q Query) Get(orderBy string, orderDirection string) http.Params {
 	if orderDirection != "" {
 		def.OrderDirection = orderDirection
 	}
-	params := http.NewParams(q, def)
+	params := params.NewParams(q, def)
 	return params.Get()
 }
 
@@ -65,4 +65,3 @@ func (q Query) Default(param string, def string) interface{} {
 	}
 	return val
 }
-

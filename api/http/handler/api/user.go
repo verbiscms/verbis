@@ -5,6 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -45,7 +46,7 @@ func NewUser(m *models.Store, config config.Configuration) *User {
 func (c *User) Get(g *gin.Context) {
 	const op = "UserHandler.Get"
 
-	params := http.ApiParams(g, DefaultParams).Get()
+	params := params.ApiParams(g, DefaultParams).Get()
 
 	users, total, err := c.store.User.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
@@ -237,7 +238,7 @@ func (c *User) ResetPassword(g *gin.Context) {
 // attached to it.
 func (c *User) clearCache(id int) {
 	go func() {
-		posts, _, err := c.store.Posts.Get(http.Params{LimitAll: true}, false, "", "")
+		posts, _, err := c.store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error()
 		}

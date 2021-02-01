@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -75,18 +76,33 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		pt = pt + r.theme.FileExtension
 	}
 
-	tm := tpl.NewManager(g, r.store, &post, r.config)
+	tm := tpl.New(&deps.Deps{
+		Store:   r.store,
+		Config:  r.config,
+		Site:    r.store.Site.GetGlobalConfig(),
+		Options: r.store.Options.GetStruct(),
+		Paths: deps.Paths{
+			Base:    paths.Base(),
+			Admin:   paths.Admin(),
+			API:     paths.Api(),
+			Theme:   paths.Theme(),
+			Uploads: paths.Uploads(),
+			Storage: paths.Storage(),
+		},
+		Theme: r.store.Site.GetThemeConfig(),
+	}, g, &post)
+
 	gvFrontend := goview.New(goview.Config{
 		Root:         paths.Theme(),
 		Extension:    r.theme.FileExtension,
 		Master:       master,
 		Partials:     []string{},
-		Funcs:        tm.GetFunctions(),
+		Funcs:        tm.Funcs(),
 		DisableCache: !environment.IsProduction(),
 	})
 
 	var b bytes.Buffer
-	err = gvFrontend.RenderWriter(&b, pt, tm.GetData())
+	err = gvFrontend.RenderWriter(&b, pt, tm.Data())
 	if err != nil {
 		panic(err)
 	}
