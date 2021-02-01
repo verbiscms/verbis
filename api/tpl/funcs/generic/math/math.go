@@ -38,7 +38,7 @@ func (ns *Namespace) Subtract(a, b interface{}) int64 {
 // Example: {{ divide 16 4 }}
 // Returns: `4`
 func (ns *Namespace) Divide(a, b interface{}) (int64, error) {
-	const op = "Templates.divide"
+	const op = "Templates.Divide"
 
 	aa := cast.ToInt64(a)
 	bb := cast.ToInt64(b)
@@ -71,7 +71,7 @@ func (ns *Namespace) Multiply(a interface{}, i ...interface{}) int64 {
 // Example: {{ mod 10 9 }}
 // Returns: `1`
 func (ns *Namespace) Modulus(a, b interface{}) (int64, error) {
-	const op = "Templates.divide"
+	const op = "Templates.Modulus"
 
 	aa := cast.ToInt64(a)
 	bb := cast.ToInt64(b)

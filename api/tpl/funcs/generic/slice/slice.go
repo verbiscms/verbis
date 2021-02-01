@@ -23,7 +23,7 @@ func (ns *Namespace) Slice(i ...interface{}) []interface{} {
 // Example: {{ append (slice "hello" "world" "!") "verbis" }}
 // Returns: `[hello world ! verbis]`
 func (ns *Namespace) Append(slice interface{}, i interface{}) ([]interface{}, error) {
-	const op = "Templates.append"
+	const op = "Templates.Append"
 
 	typ := reflect.TypeOf(slice).Kind()
 
@@ -49,7 +49,7 @@ func (ns *Namespace) Append(slice interface{}, i interface{}) ([]interface{}, er
 // Example: {{ prepend (slice "hello" "world" "!") "verbis" }}
 // Returns: `[verbis hello world !]`
 func (ns *Namespace) Prepend(slice interface{}, i interface{}) ([]interface{}, error) {
-	const op = "Templates.append"
+	const op = "Templates.Prepend"
 
 	typ := reflect.TypeOf(slice).Kind()
 
@@ -75,7 +75,7 @@ func (ns *Namespace) Prepend(slice interface{}, i interface{}) ([]interface{}, e
 // Example: {{ first (slice "hello" "world" "!") }}
 // Returns: `hello`
 func (ns *Namespace) First(slice interface{}) (interface{}, error) {
-	const op = "Templates.first"
+	const op = "Templates.First"
 
 	typ := reflect.TypeOf(slice).Kind()
 
@@ -100,7 +100,7 @@ func (ns *Namespace) First(slice interface{}) (interface{}, error) {
 // Example: {{ last (slice "hello" "world" "!") }}
 // Returns: `!`
 func (ns *Namespace) Last(slice interface{}) (interface{}, error) {
-	const op = "Templates.last"
+	const op = "Templates.Last"
 
 	typ := reflect.TypeOf(slice).Kind()
 
@@ -125,7 +125,7 @@ func (ns *Namespace) Last(slice interface{}) (interface{}, error) {
 // Example: {{ reverse (slice "hello" "world" "!") }}
 // Returns: `[! world hello]`
 func (ns *Namespace) Reverse(slice interface{}) ([]interface{}, error) {
-	const op = "Templates.reverse"
+	const op = "Templates.Reverse"
 
 	typ := reflect.TypeOf(slice).Kind()
 

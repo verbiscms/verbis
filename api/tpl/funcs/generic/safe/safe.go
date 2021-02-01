@@ -15,7 +15,7 @@ import (
 // Example: {{ "<p>verbis&cms</p>" | safeHTML }}
 // Returns: `verbis&cms`
 func (ns *Namespace) HTML(i interface{}) (template.HTML, error) {
-	const op = "Templates.safeHTML"
+	const op = "Templates.HTML"
 	s, err := cast.ToStringE(i)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Unable to cast to safe HTML to string"), Operation: op, Err: err}
@@ -28,7 +28,7 @@ func (ns *Namespace) HTML(i interface{}) (template.HTML, error) {
 // Returns a given string as html/template HTMLAttr content.
 // Returns errors.TEMPLATE if the inputted interface failed to be cast.
 func (ns *Namespace) HTMLAttr(i interface{}) (template.HTMLAttr, error) {
-	const op = "Templates.safeHTMLAttr"
+	const op = "Templates.HTMLAttr"
 	s, err := cast.ToStringE(i)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Unable to cast to safe HTMLAttr to string"), Operation: op, Err: err}
@@ -44,7 +44,7 @@ func (ns *Namespace) HTMLAttr(i interface{}) (template.HTMLAttr, error) {
 // Example: {{ "<p>verbis&cms</p>" | safeHTML }}
 // Returns: `verbis&amp;cms`
 func (ns *Namespace) CSS(i interface{}) (template.CSS, error) {
-	const op = "Templates.safeCSS"
+	const op = "Templates.CSS"
 	s, err := cast.ToStringE(i)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Unable to cast to safe CSS to string"), Operation: op, Err: err}
@@ -60,7 +60,7 @@ func (ns *Namespace) CSS(i interface{}) (template.CSS, error) {
 // Example: {{ "(2*2)" | safeJS }}
 // Returns: `(2*2)`
 func (ns *Namespace) JS(i interface{}) (template.JS, error) {
-	const op = "Templates.safeJS"
+	const op = "Templates.JS"
 	s, err := cast.ToStringE(i)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Unable to cast to safe JS to string"), Operation: op, Err: err}
@@ -73,7 +73,7 @@ func (ns *Namespace) JS(i interface{}) (template.JS, error) {
 // Returns the given string as a html/template JSStr content.
 // Returns errors.TEMPLATE if the inputted interface failed to be cast.
 func (ns *Namespace) JSStr(i interface{}) (template.JSStr, error) {
-	const op = "Templates.safeJSStr"
+	const op = "Templates.JSStr"
 	s, err := cast.ToStringE(i)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Unable to cast to safe JSStr to string"), Operation: op, Err: err}
@@ -89,7 +89,7 @@ func (ns *Namespace) JSStr(i interface{}) (template.JSStr, error) {
 // Example: {{ "https://verbiscms.com" | safeUrl }}
 // Returns: `https://verbiscms.com`
 func (ns *Namespace) Url(i interface{}) (template.URL, error) {
-	const op = "Templates.safeUrl"
+	const op = "Templates.Url"
 	s, err := cast.ToStringE(i)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Unable to cast to safe URL to string"), Operation: op, Err: err}

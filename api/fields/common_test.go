@@ -38,7 +38,7 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 		},
 		"1 Args (Post Template)": {
 			fields: nil,
-			args:   []interface{}{domain.PostTemplate{
+			args: []interface{}{domain.PostTemplate{
 				Post:   domain.Post{Id: 1, Title: "post"},
 				Fields: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
 			}},
@@ -48,8 +48,8 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 		"1 Args (Fields)": {
 			fields: nil,
 			args:   []interface{}{[]domain.PostField{{Id: 1, Type: "text", Name: "post"}}},
-			mock: nil,
-			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			mock:   nil,
+			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"1 Args (Post Error)": {
 			fields: []domain.PostField{{Name: "test"}},
@@ -62,8 +62,8 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 		"Cast Error": {
 			fields: nil,
 			args:   []interface{}{noStringer{}},
-			mock: nil,
-			want: nil,
+			mock:   nil,
+			want:   nil,
 		},
 	}
 

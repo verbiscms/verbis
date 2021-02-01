@@ -9,7 +9,7 @@ import (
 
 var GenericNamespaceRegistry []func(d *deps.Deps) *FuncsNamespace
 
-type MutableNamespaceRegistry []*FuncsNamespace
+type FuncNamespaces []*FuncsNamespace
 
 type TemplateDeps struct {
 	Context *gin.Context
