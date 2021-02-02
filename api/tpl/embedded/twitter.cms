@@ -1,0 +1,16 @@
+{{- $meta := .Post.SeoMeta.Meta.Twitter -}}
+{{- if and (ne $meta.Title "") (ne $meta.Description "") -}}
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="{{ with $meta.Title }}{{ . }}{{ end }}" />
+<meta property="twitter:description" content="{{ with $meta.Description }}{{ . }}{{ end }}" />
+{{- with .GetImage $meta.ImageId }}
+<meta property="twitter:image" content="{{ . }}">
+{{- end -}}
+{{- else -}}
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="{{ with .Options.MetaTwitterTitle }}{{ . }}{{ end }}" />
+<meta property="twitter:description" content="{{ with .Options.MetaTwitterDescription }}{{ . }}{{ end }}" />
+{{- with .GetImage .Options.MetaFacebookImageId }}
+<meta property="twitter:image" content="{{ . }}">
+{{- end -}}
+{{- end -}}

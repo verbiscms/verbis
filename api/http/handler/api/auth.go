@@ -7,7 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
 )
 
 // AuthHandler defines methods for auth methods to interact with the server
@@ -57,8 +56,6 @@ func (c *Auth) Login(g *gin.Context) {
 	}
 	user.HidePassword()
 
-	color.Green.Println(user)
-	color.Green.Println(user.Token)
 	g.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true)
 
 	Respond(g, 200, "Successfully logged in & session started", user)

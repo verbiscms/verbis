@@ -12,7 +12,7 @@ const (
 	// to the front end.
 	CSS = `
 		<style>
-			.pre.sf-dump {
+			.sf-dump {
 				background-color: #18171B;
 				color: #FF8400;
 				line-height: 1.4em;

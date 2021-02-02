@@ -152,9 +152,9 @@ func (m *PostMeta) Value() (driver.Value, error) {
 }
 
 type PostSeo struct {
-	Public         bool    `json:"public"`
-	ExcludeSitemap bool    `json:"exclude_sitemap"`
-	Canonical      *string `json:"canonical"`
+	Public         bool   `json:"public"`
+	ExcludeSitemap bool   `json:"exclude_sitemap"`
+	Canonical      string `json:"canonical"`
 }
 
 func (m *PostSeo) Scan(value interface{}) error {

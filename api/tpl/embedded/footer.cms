@@ -1,0 +1,7 @@
+{{- /* Footer - Code Injection */ -}}
+{{- with .Post.CodeInjectionFoot -}}
+{{ . | safeHTML }}
+{{ end -}}
+{{- with .Options.CodeInjectionFoot -}}
+{{ . | safeHTML }}
+{{- end -}}

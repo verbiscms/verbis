@@ -24,15 +24,15 @@ func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, e
 
 	path := ns.deps.Paths.Theme + "/" + name
 
+	if !files.Exists(path) {
+		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Partial file does not exist", Operation: op, Err: fmt.Errorf("no file exists with the path: %s", name)}
+	}
+
 	var context interface{}
 	if len(data) == 1 {
 		context = data[0]
 	} else {
 		context = data
-	}
-
-	if !files.Exists(path) {
-		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Partial file does not exist", Operation: op, Err: fmt.Errorf("no file exists with the path: %s", name)}
 	}
 
 	pathArr := strings.Split(path, "/")
@@ -44,7 +44,7 @@ func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, e
 	var tpl bytes.Buffer
 	err = file.Execute(&tpl, context)
 	if err != nil {
-		return "", fmt.Errorf("Unable to execute partial file: %v", err)
+		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute partial file", Operation: op, Err: err}
 	}
 
 	return template.HTML(tpl.String()), nil
