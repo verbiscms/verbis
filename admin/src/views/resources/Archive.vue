@@ -4,7 +4,6 @@
 <template>
 	<section :key="$route.params.resource">
 		<div class="auth-container">
-			{{ order }}
 			<!-- Header -->
 			<div class="row">
 				<div class="col-12">

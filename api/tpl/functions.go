@@ -36,7 +36,7 @@ func New(d *deps.Deps, ctx *gin.Context, post *domain.PostData) *TemplateManager
 //
 // Obtains the template.FuncMap from the registry
 func (t *TemplateManager) Funcs() template.FuncMap {
-	return t.mapper.Map()
+	return t.mapper.FuncMap()
 }
 
 // Data

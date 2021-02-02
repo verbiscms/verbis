@@ -173,8 +173,8 @@
 									<FormGroup label="Youtube" :error="errors['social_youtube']">
 										<input class="form-input form-input-white" type="text" v-model="data['social_youtube']">
 									</FormGroup>
-									<FormGroup label="LinkedIn" :error="errors['social_linked_in']">
-										<input class="form-input form-input-white" type="text" v-model="data['social_linked_in']">
+									<FormGroup label="LinkedIn" :error="errors['social_linkedin']">
+										<input class="form-input form-input-white" type="text" v-model="data['social_linkedin']">
 									</FormGroup>
 									<FormGroup label="Instagram" :error="errors['social_instagram']">
 										<input class="form-input form-input-white" type="text" v-model="data['social_instagram']">
