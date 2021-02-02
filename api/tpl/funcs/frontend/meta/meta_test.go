@@ -1,7 +1,6 @@
 package meta
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -99,7 +98,7 @@ func TestNamespace_Header(t *testing.T) {
 			post: domain.Post{
 				SeoMeta: domain.PostOptions{
 					Seo: &domain.PostSeo{
-						Canonical: &cannonical,
+						Canonical: cannonical,
 						Public:    true,
 					},
 				},
@@ -112,7 +111,7 @@ func TestNamespace_Header(t *testing.T) {
 			post: domain.Post{
 				SeoMeta: domain.PostOptions{
 					Seo: &domain.PostSeo{
-						Canonical: &cannonical,
+						Canonical: cannonical,
 						Public:    true,
 					},
 				},
@@ -257,122 +256,120 @@ func TestNamespace_WriteMeta(t *testing.T) {
 			ns, mock := Setup(domain.Options{}, domain.Site{}, post)
 			mock.On("GetById", 0).Return(domain.Media{}, fmt.Errorf("no image"))
 
-			var b bytes.Buffer
-			ns.writeMeta(&b, test.description)
-			assert.Equal(t, test.want, b.String())
+			assert.Equal(t, test.want, ns.Header())
 		})
 	}
 }
 
-func TestNamespace_WriteFacebook(t *testing.T) {
+//func TestNamespace_WriteFacebook(t *testing.T) {
+//
+//	media := domain.Media{
+//		Id:  1,
+//		Url: "/media/url",
+//	}
+//	opts := domain.Options{
+//		SiteTitle:     "verbis",
+//		GeneralLocale: "en-gb",
+//	}
+//
+//	tt := map[string]struct {
+//		title       string
+//		description string
+//		mock        func(m *mocks.MediaRepository)
+//		options     domain.Options
+//		want        string
+//	}{
+//		"With Title & Description": {
+//			title:       "cms",
+//			description: "verbis",
+//			options:     opts,
+//			mock: func(m *mocks.MediaRepository) {
+//				m.On("GetById", 1).Return(media, nil)
+//			},
+//			want: `<meta property="og:type" content="website"><meta property="og:site_name" content="verbis"><meta property="og:locale" content="en-gb"><meta property="og:title" content="cms"><meta property="og:description" content="verbis"><meta property="og:image" content="/media/url">`,
+//		},
+//		"Without Title & Description": {
+//			title:       "",
+//			description: "",
+//			options:     opts,
+//			mock: func(m *mocks.MediaRepository) {
+//				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
+//			},
+//			want: ``,
+//		},
+//		"No Image": {
+//			title:       "cms",
+//			description: "verbis",
+//			options:     opts,
+//			mock: func(m *mocks.MediaRepository) {
+//				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
+//			},
+//			want: `<meta property="og:type" content="website"><meta property="og:site_name" content="verbis"><meta property="og:locale" content="en-gb"><meta property="og:title" content="cms"><meta property="og:description" content="verbis">`,
+//		},
+//	}
+//
+//	for name, test := range tt {
+//		t.Run(name, func(t *testing.T) {
+//			ns, mock := Setup(test.options, domain.Site{}, domain.Post{})
+//			test.mock(mock)
+//
+//			var b bytes.Buffer
+//			ns.writeFacebook(&b, test.title, test.description, 1)
+//			assert.Equal(t, test.want, b.String())
+//		})
+//	}
+//}
 
-	media := domain.Media{
-		Id:  1,
-		Url: "/media/url",
-	}
-	opts := domain.Options{
-		SiteTitle:     "verbis",
-		GeneralLocale: "en-gb",
-	}
-
-	tt := map[string]struct {
-		title       string
-		description string
-		mock        func(m *mocks.MediaRepository)
-		options     domain.Options
-		want        string
-	}{
-		"With Title & Description": {
-			title:       "cms",
-			description: "verbis",
-			options:     opts,
-			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
-			},
-			want: `<meta property="og:type" content="website"><meta property="og:site_name" content="verbis"><meta property="og:locale" content="en-gb"><meta property="og:title" content="cms"><meta property="og:description" content="verbis"><meta property="og:image" content="/media/url">`,
-		},
-		"Without Title & Description": {
-			title:       "",
-			description: "",
-			options:     opts,
-			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
-			},
-			want: ``,
-		},
-		"No Image": {
-			title:       "cms",
-			description: "verbis",
-			options:     opts,
-			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
-			},
-			want: `<meta property="og:type" content="website"><meta property="og:site_name" content="verbis"><meta property="og:locale" content="en-gb"><meta property="og:title" content="cms"><meta property="og:description" content="verbis">`,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			ns, mock := Setup(test.options, domain.Site{}, domain.Post{})
-			test.mock(mock)
-
-			var b bytes.Buffer
-			ns.writeFacebook(&b, test.title, test.description, 1)
-			assert.Equal(t, test.want, b.String())
-		})
-	}
-}
-
-func TestNamespace_WriteTwitter(t *testing.T) {
-
-	media := domain.Media{
-		Id:  1,
-		Url: "/media/url",
-	}
-
-	tt := map[string]struct {
-		title       string
-		description string
-		mock        func(m *mocks.MediaRepository)
-		want        string
-	}{
-		"With Title & Description": {
-			title:       "cms",
-			description: "verbis",
-			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
-			},
-			want: `<meta name="twitter:card" content="summary"><meta name="twitter:title" content="cms"><meta name="twitter:description" content="cms"><meta name="twitter:image" content="/media/url">`,
-		},
-		"Without Title & Description": {
-			title:       "",
-			description: "",
-			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
-			},
-			want: ``,
-		},
-		"No Image": {
-			title:       "cms",
-			description: "verbis",
-			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
-			},
-			want: `<meta name="twitter:card" content="summary"><meta name="twitter:title" content="cms"><meta name="twitter:description" content="cms">`,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			ns, mock := Setup(domain.Options{}, domain.Site{}, domain.Post{})
-			test.mock(mock)
-
-			var b bytes.Buffer
-			ns.writeTwitter(&b, test.title, test.description, 1)
-			assert.Equal(t, test.want, b.String())
-		})
-	}
-}
+//func TestNamespace_WriteTwitter(t *testing.T) {
+//
+//	media := domain.Media{
+//		Id:  1,
+//		Url: "/media/url",
+//	}
+//
+//	tt := map[string]struct {
+//		title       string
+//		description string
+//		mock        func(m *mocks.MediaRepository)
+//		want        string
+//	}{
+//		"With Title & Description": {
+//			title:       "cms",
+//			description: "verbis",
+//			mock: func(m *mocks.MediaRepository) {
+//				m.On("GetById", 1).Return(media, nil)
+//			},
+//			want: `<meta name="twitter:card" content="summary"><meta name="twitter:title" content="cms"><meta name="twitter:description" content="cms"><meta name="twitter:image" content="/media/url">`,
+//		},
+//		"Without Title & Description": {
+//			title:       "",
+//			description: "",
+//			mock: func(m *mocks.MediaRepository) {
+//				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
+//			},
+//			want: ``,
+//		},
+//		"No Image": {
+//			title:       "cms",
+//			description: "verbis",
+//			mock: func(m *mocks.MediaRepository) {
+//				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("err"))
+//			},
+//			want: `<meta name="twitter:card" content="summary"><meta name="twitter:title" content="cms"><meta name="twitter:description" content="cms">`,
+//		},
+//	}
+//
+//	for name, test := range tt {
+//		t.Run(name, func(t *testing.T) {
+//			ns, mock := Setup(domain.Options{}, domain.Site{}, domain.Post{})
+//			test.mock(mock)
+//
+//			var b bytes.Buffer
+//			ns.writeTwitter(&b, test.title, test.description, 1)
+//			assert.Equal(t, test.want, b.String())
+//		})
+//	}
+//}
 
 func TestNamespace_MetaTitle(t *testing.T) {
 

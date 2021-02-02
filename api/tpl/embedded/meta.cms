@@ -1,0 +1,41 @@
+{{- /* Robots */}}
+{{- $seo := .Post.SeoMeta.Seo -}}
+{{- $meta := .Post.SeoMeta.Meta -}}
+{{- if or (not .Options.SeoPublic) (not $seo.Public) -}}
+<meta name=robots content="noindex">
+{{- end -}}
+{{- /* Cannonical */}}
+{{- $slash := "" -}}
+{{- if and (.Options.SeoEnforceSlash) (ne .Post.Slug "/") }}{{ $slash = "/" }}{{ end -}}
+{{- with (ne $seo.Canonical "") -}}
+<link rel=canonical href="{{ . }}{{ $slash }}">
+{{ else -}}
+<link rel=canonical href="{{ .Site.Url }}{{ .Post.Slug }}{{ $slash }}">
+{{ end -}}
+{{- /* Description */}}
+{{- $postDescription := $meta.Description -}}
+{{- $globalDescription := .Options.MetaDescription -}}
+{{- if $postDescription -}}
+{{- with $postDescription -}}
+<meta name=description content="{{ . }}">
+{{- end }}
+{{ else -}}
+{{- with $globalDescription -}}
+<meta name=description content="{{ . }}">
+{{- end -}}
+{{- end -}}
+{{- /* PublishedAt */ -}}
+{{- with .Post.PublishedAt -}}
+<meta property="article:modified_time" content="{{ . }}">
+{{- end -}}
+{{- /* Author */}}
+{{ with .Post.Author -}}
+<meta name=author content="{{ .FirstName }} {{ .LastName }}">
+{{ end -}}
+{{- with .Post.CodeInjectionHead -}}
+{{ . | safeHTML }}
+{{ end -}}
+{{- with .Options.CodeInjectionHead -}}
+{{ . | safeHTML }}
+{{- end -}}
+

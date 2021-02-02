@@ -4,21 +4,30 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"html/template"
 )
 
 // Creates a new meta Namespace
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
+	if t.Post.SeoMeta.Seo == nil {
+		t.Post.SeoMeta.Seo = &domain.PostSeo{Public: true, ExcludeSitemap: false, Canonical: ""}
+	}
+	if t.Post.SeoMeta.Meta == nil {
+		t.Post.SeoMeta.Meta = &domain.PostMeta{Title: "", Description: ""}
+	}
 	return &Namespace{
-		deps: d,
-		post: t.Post,
+		deps:  d,
+		post:  t.Post,
+		funcs: t.Funcs,
 	}
 }
 
 // Namespace defines the methods for meta to be used
 // as template functions.
 type Namespace struct {
-	deps *deps.Deps
-	post *domain.PostData
+	deps  *deps.Deps
+	post  *domain.PostData
+	funcs template.FuncMap
 }
 
 const name = "meta"

@@ -3,10 +3,33 @@ package meta
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/yosssi/gohtml"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"html/template"
 )
+
+type TemplateMeta struct {
+	Site          domain.Site
+	Post          *domain.PostData
+	Options       domain.Options
+	FacebookImage string
+	TwitterImage  string
+	deps *deps.Deps
+}
+
+const (
+	// The path of the emmbedded files to execute.
+	EmbeddedPath = "/api/tpl/embedded/"
+)
+
+func (tm *TemplateMeta) GetImage(id int) string {
+	img, err := tm.deps.Store.Media.GetById(id)
+	if err != nil {
+		return ""
+	}
+	return img.Url
+}
 
 // Header
 //
@@ -15,146 +38,20 @@ import (
 //
 // Example: {{ verbisHead }}
 func (ns *Namespace) Header() template.HTML {
-	var b bytes.Buffer
+	const op = "Templates.Header"
 
-	// Get Code Injection from the Post
-	if ns.post.CodeInjectionHead != nil {
-		b.WriteString(*ns.post.CodeInjectionHead)
+	tm := &TemplateMeta{
+		Site:          ns.deps.Site,
+		Post:          ns.post,
+		Options:       ns.deps.Options,
+		deps: ns.deps,
 	}
 
-	// Get Code Injection from the Options (globally)
-	if ns.deps.Options.CodeInjectionHead != "" {
-		b.WriteString(ns.deps.Options.CodeInjectionHead)
-	}
+	head := ns.executeTemplates(tm, []string{"meta.cms", "opengraph.cms", "twitter.cms"})
 
-	// Obtain SEO & set post public
-	seo := domain.PostSeo{
-		Public:         false,
-		ExcludeSitemap: true,
-		Canonical:      nil,
-	}
-
-	if ns.post.SeoMeta.Seo != nil {
-		seo = *ns.post.SeoMeta.Seo
-	}
-
-	postPublic := true
-	if !seo.Public {
-		postPublic = false
-	}
-
-	// Check if the site is public or page is public
-	if !ns.deps.Options.SeoPublic || !postPublic {
-		b.WriteString(`<meta name="robots" content="noindex">`)
-	}
-
-	// Check if there are trailing slashes
-	slash := ""
-	if ns.deps.Options.SeoEnforceSlash && ns.post.Slug != "/" {
-		slash = "/"
-	}
-
-	// Write the Canonical
-	if seo.Canonical != nil && *seo.Canonical != "" {
-		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s%s" />`, *seo.Canonical, slash))
-	} else {
-		b.WriteString(fmt.Sprintf(`<link rel="canonical" href="%s%s" />`, ns.deps.Site.Url+ns.post.Slug, slash))
-	}
-
-	// Obtain Meta
-	meta := ns.post.SeoMeta.Meta
-	if meta != nil {
-
-		if meta.Description != "" {
-			ns.writeMeta(&b, meta.Description)
-		} else {
-			ns.writeMeta(&b, ns.deps.Options.MetaDescription)
-		}
-
-		if meta.Facebook.Title != "" || meta.Facebook.Description != "" {
-			ns.writeFacebook(&b, meta.Facebook.Title, meta.Facebook.Title, meta.Facebook.ImageId)
-		} else {
-			ns.writeFacebook(&b, ns.deps.Options.MetaFacebookTitle, ns.deps.Options.MetaFacebookDescription, ns.deps.Options.MetaFacebookImageId)
-		}
-
-		if meta.Twitter.Title != "" || meta.Twitter.Description != "" {
-			ns.writeTwitter(&b, meta.Twitter.Title, meta.Twitter.Description, meta.Twitter.ImageId)
-		} else {
-			ns.writeTwitter(&b, ns.deps.Options.MetaTwitterTitle, ns.deps.Options.MetaTwitterDescription, ns.deps.Options.MetaTwitterImageId)
-		}
-
-	} else {
-		ns.writeMeta(&b, ns.deps.Options.MetaDescription)
-		ns.writeFacebook(&b, ns.deps.Options.MetaFacebookTitle, ns.deps.Options.MetaFacebookDescription, ns.deps.Options.MetaFacebookImageId)
-		ns.writeTwitter(&b, ns.deps.Options.MetaTwitterTitle, ns.deps.Options.MetaTwitterDescription, ns.deps.Options.MetaTwitterImageId)
-	}
-
-	return template.HTML(gohtml.Format(b.String()))
+	return template.HTML(head)
 }
 
-// writeMeta
-//
-// Writes to the given *bytes.Buffer with meta description
-// and article published time if they are not nil.
-func (ns *Namespace) writeMeta(bytes *bytes.Buffer, description string) {
-	if description != "" {
-		bytes.WriteString(fmt.Sprintf("<meta name=\"description\" content=\"%s\">", description))
-	}
-	if ns.post.PublishedAt != nil {
-		bytes.WriteString(fmt.Sprintf("<meta property=\"article:modified_time\" content=\"%s\" />", ns.post.PublishedAt))
-	}
-}
-
-// writeFacebook
-//
-// Opengraph writing to the given *bytes.Bufffer, this function
-// will write website, site name, locale from options, title,
-// description & post image if there is one.
-func (ns *Namespace) writeFacebook(bytes *bytes.Buffer, title string, description string, imageId int) {
-
-	if title != "" || description != "" {
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:type\" content=\"website\">"))
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:site_name\" content=\"%s\">", ns.deps.Options.SiteTitle))
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:locale\" content=\"%s\">", ns.deps.Options.GeneralLocale))
-	}
-
-	if title != "" {
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:title\" content=\"%s\">", title))
-	}
-
-	if description != "" {
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:description\" content=\"%s\">", description))
-	}
-
-	image, foundImage := ns.deps.Store.Media.GetById(imageId)
-	if foundImage == nil {
-		bytes.WriteString(fmt.Sprintf("<meta property=\"og:image\" content=\"%s\">", ns.deps.Options.SiteUrl+image.Url))
-	}
-}
-
-// writeTwitter
-//
-// Twitter card writing to the given *bytes.Bufffer, this function
-// will write the title, description & post image if there is
-// one.
-func (ns *Namespace) writeTwitter(bytes *bytes.Buffer, title string, description string, imageId int) {
-	if title != "" || description != "" {
-		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:card\" content=\"summary\">"))
-	}
-
-	if title != "" {
-		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:title\" content=\"%s\">", title))
-	}
-
-	if description != "" {
-		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:description\" content=\"%s\">", title))
-	}
-
-	image, foundImage := ns.deps.Store.Media.GetById(imageId)
-	if foundImage == nil {
-		bytes.WriteString(fmt.Sprintf("<meta name=\"twitter:image\" content=\"%s\">", ns.deps.Options.SiteUrl+image.Url))
-	}
-}
 
 // MetaTitle
 //
@@ -189,17 +86,36 @@ func (ns *Namespace) MetaTitle() string {
 //
 // Example: {{ verbisFoot }}
 func (ns *Namespace) Footer() template.HTML {
-	var b bytes.Buffer
-
-	// Get Global Foot (Code Injection)
-	if ns.deps.Options.CodeInjectionFoot != "" {
-		b.WriteString(ns.deps.Options.CodeInjectionFoot)
+	tm := &TemplateMeta{
+		Post:    ns.post,
+		Options: ns.deps.Options,
 	}
 
-	// Get Code Injection for the Post
-	if ns.post.CodeInjectionFoot != nil {
-		b.WriteString(*ns.post.CodeInjectionFoot)
-	}
+	foot := ns.executeTemplates(tm, []string{"footer.cms"})
 
-	return template.HTML(gohtml.Format(b.String()))
+	return template.HTML(foot)
+}
+
+func (ns *Namespace) executeTemplates(tm *TemplateMeta, tpls []string) string {
+	head := ""
+	for _, name := range tpls {
+		path := ns.deps.Paths.Base + EmbeddedPath + name
+		if !files.Exists(path) {
+			continue
+		}
+
+		file, err := template.New(name).Funcs(ns.funcs).ParseFiles(path)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		var tpl bytes.Buffer
+		err = file.Execute(&tpl, tm)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		head += fmt.Sprintf("%s\n", tpl.String())
+	}
+	return head
 }

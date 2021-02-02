@@ -7,7 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	"strconv"
 )
@@ -72,7 +71,6 @@ func (s *CategoryStore) Get(meta params.Params) ([]domain.Category, int, error) 
 	}
 
 	// Select categories
-	color.Green.Println(q)
 	if err := s.db.Select(&c, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
 	}
