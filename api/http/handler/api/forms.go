@@ -4,7 +4,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
@@ -42,7 +42,7 @@ func NewForms(m *models.Store, config config.Configuration) *Forms {
 func (c *Forms) Get(g *gin.Context) {
 	const op = "FormHandler.Get"
 
-	params := params2.ApiParams(g, DefaultParams).Get()
+	params := params.ApiParams(g, DefaultParams).Get()
 
 	forms, total, err := c.store.Forms.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
@@ -172,7 +172,11 @@ func (c *Forms) Delete(g *gin.Context) {
 	Respond(g, 200, "Successfully deleted form with ID: "+strconv.Itoa(id), nil)
 }
 
+// Send
 //
+// Returns 200 if the form was deleted.
+// Returns 500 if there was an error deleting the form.
+// Returns 400 if the the form wasn't found or no ID was passed.
 
 func (c *Forms) Send(g *gin.Context) {
 	const op = "FormHandler.Send"
@@ -191,8 +195,6 @@ func (c *Forms) Send(g *gin.Context) {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-
-	//	color.Red.Printf("%+v\n", form.Body)
 
 	err = c.store.Forms.Send(&form, g.ClientIP(), g.Request.UserAgent())
 	if err != nil {
