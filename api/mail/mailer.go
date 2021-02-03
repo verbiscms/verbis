@@ -83,7 +83,7 @@ func (m *Mailer) Send(t *Sender) {
 			att = append(att, sp.Attachment{
 				MIMEType: v.MIMEType,
 				Filename: v.Filename,
-				B64Data:  v.B64Data,
+				B64Data:  *v.B64Data,
 			})
 		}
 		content.Attachments = att
