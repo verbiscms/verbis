@@ -5,8 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/foolin/goview"
+	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,7 +20,7 @@ type Errors struct {
 
 func (e *Errors) NotFound(g *gin.Context) {
 
-	tm := tpl.New(&deps.Deps{
+	d := &deps.Deps{
 		Store:   e.Store,
 		Site:    e.Store.Site.GetGlobalConfig(),
 		Options: e.Store.Options.GetStruct(),
@@ -34,20 +33,29 @@ func (e *Errors) NotFound(g *gin.Context) {
 			Storage: paths.Storage(),
 		},
 		Theme: e.ThemeConfig,
-	}, g, &domain.PostData{})
-
-	gvError := goview.New(goview.Config{
-		Root:         paths.Theme(),
-		Extension:    e.ThemeConfig.FileExtension,
-		Partials:     []string{},
-		Funcs:        tm.Funcs(),
-		DisableCache: true,
-	})
-
-	if err := gvError.Render(g.Writer, 404, "404", tm.Data()); err != nil {
-		panic(err)
-		return
 	}
+
+	d.Tpl = tplimpl.New(d)
+
+
+	//err := t.Execute(g.Writer, "404", nil)
+	//if err != nil {
+	//	panic(err)
+	//}
+
+	//
+	//gvError := goview.New(goview.Config{
+	//	Root:         paths.Theme(),
+	//	Extension:    e.ThemeConfig.FileExtension,
+	//	Partials:     []string{},
+	//	//Funcs:        tm.Funcs(),
+	//	DisableCache: true,
+	//})
+	//
+	//if err := gvError.Render(g.Writer, 404, "404", tm.Data()); err != nil {
+	//
+	//	return
+	//}
 
 	return
 }
