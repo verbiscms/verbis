@@ -4,6 +4,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/tpl"
 )
 
 type Paths struct {
@@ -39,4 +40,6 @@ type Deps struct {
 
 	// Theme
 	Theme domain.ThemeConfig
+
+	Tpl tpl.TemplateExecutor
 }

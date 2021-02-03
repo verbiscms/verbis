@@ -31,12 +31,6 @@ import (
 	"html/template"
 )
 
-// Mapper represents the functions for obtaining template.FuncMap's
-// for use in Verbis templates.
-type Mapper interface {
-	FuncMap() template.FuncMap
-}
-
 // Funcs represents the dependency for interacting with the various
 // template functions.
 type Funcs struct {
@@ -45,23 +39,21 @@ type Funcs struct {
 }
 
 // Creates a new Funcs
-func New(d *deps.Deps, ctx *gin.Context, post *domain.PostData) *Funcs {
-	f := &Funcs{
-		d,
-		&internal.TemplateDeps{
-			Context: ctx,
-			Post:    post,
-		},
-	}
-	f.Funcs = f.FuncMap()
-	return f
+func New(d *deps.Deps) *Funcs {
+	return &Funcs{deps: d}
 }
 
 // FuncMap
 //
 // Returns the frontend and generic funcMap's
-func (f *Funcs) FuncMap() template.FuncMap {
-	return f.getFuncs(f.getNamespaces())
+func (f *Funcs) FuncMap(ctx *gin.Context, post *domain.PostData) template.FuncMap {
+	f.TemplateDeps = &internal.TemplateDeps{
+		Context: ctx,
+		Post:    post,
+	}
+	funcs := f.getFuncs(f.getNamespaces())
+	f.TemplateDeps.Funcs = funcs
+	return funcs
 }
 
 // FuncMap

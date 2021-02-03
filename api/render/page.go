@@ -6,11 +6,9 @@ import (
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/foolin/goview"
+	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
 	"github.com/gin-gonic/gin"
 	"net/url"
 	"path"
@@ -76,7 +74,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		pt = pt + r.theme.FileExtension
 	}
 
-	tm := tpl.New(&deps.Deps{
+	d := &deps.Deps{
 		Store:   r.store,
 		Config:  r.config,
 		Site:    r.store.Site.GetGlobalConfig(),
@@ -90,22 +88,35 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 			Storage: paths.Storage(),
 		},
 		Theme: r.store.Site.GetThemeConfig(),
-	}, g, &post)
+	}
 
-	gvFrontend := goview.New(goview.Config{
-		Root:         paths.Theme(),
-		Extension:    r.theme.FileExtension,
-		Master:       master,
-		Partials:     []string{},
-		Funcs:        tm.Funcs(),
-		DisableCache: !environment.IsProduction(),
+
+	t := tplimpl.New(d).Prepare(&tplimpl.Config{
+		Root:      paths.Theme(),
+		Extension: r.theme.FileExtension,
+		Master:    master,
 	})
 
 	var b bytes.Buffer
-	err = gvFrontend.RenderWriter(&b, pt, tm.Data())
+	err = t.ExecutePost(&b, pt, g, &post)
 	if err != nil {
 		panic(err)
 	}
+
+	//tm := tpl.New(, g, &post)
+
+	//gvFrontend := goview.New(goview.Config{
+	//	Root:         paths.Theme(),
+	//	Extension:    r.theme.FileExtension,
+	//	Master:       master,
+	//	Partials:     []string{},
+	//	//Funcs:        tm.Funcs(),
+	//	DisableCache: !environment.IsProduction(),
+	//})
+	//
+	//var b bytes.Buffer
+	//err = gvFrontend.RenderWriter(&b, pt, tm.Data())
+
 
 	minified, err := r.minify.MinifyBytes(&b, "text/html")
 	if err != nil || minified == nil {

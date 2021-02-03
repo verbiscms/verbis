@@ -6,29 +6,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Reader interface {
-	Get() TemplateData
-}
-
-type Data struct {
+type data struct {
 	deps *deps.Deps
 	ctx  *gin.Context
 	post *domain.PostData
 }
 
 // Creates a new Funcs
-func New(d *deps.Deps, ctx *gin.Context, post *domain.PostData) *Data {
-	return &Data{
-		deps: d,
-		ctx:  ctx,
-		post: post,
-	}
+func New(d *deps.Deps) *data {
+	return &data{deps: d}
+}
+
+func (d *data) Data(ctx *gin.Context, post *domain.PostData) interface{} {
+	d.ctx = ctx
+	d.post = post
+	return d.getData()
 }
 
 type (
 	// TemplateData represents the main datta to be returned
 	// in templates.
-	TemplateData struct {
+	Data struct {
 		Site    domain.Site
 		Theme   domain.ThemeConfig
 		Post    domain.PostData
@@ -60,8 +58,8 @@ type (
 )
 
 // Nwq - Returns all the necessary data for template usage.
-func (d *Data) Get() TemplateData {
-	return TemplateData{
+func (d *data) getData() interface{} {
+	return Data{
 		Site:  d.deps.Site,
 		Theme: d.deps.Theme,
 		Post:  *d.post,
