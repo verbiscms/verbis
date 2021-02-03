@@ -27,7 +27,7 @@ func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace,
 		Site:    site,
 		Options: opts,
 		Paths: deps.Paths{
-			Base:    apiPath,
+			Base: apiPath,
 		},
 	}
 

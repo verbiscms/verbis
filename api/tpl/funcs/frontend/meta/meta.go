@@ -1,11 +1,10 @@
 package meta
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
+
+	//"github.com/ainsleyclark/verbis/api/tpl/templates"
 	"html/template"
 )
 
@@ -96,25 +95,20 @@ func (ns *Namespace) Footer() template.HTML {
 }
 
 func (ns *Namespace) executeTemplates(tm *TemplateMeta, tpls []string) string {
-	head := ""
-	for _, name := range tpls {
-		path := ns.deps.Paths.Base + EmbeddedPath + name
-		if !files.Exists(path) {
-			continue
-		}
+	//head := ""
+	//for _, name := range tpls {
 
-		file, err := template.New(name).Funcs(ns.funcs).ParseFiles(path)
-		if err != nil {
-			fmt.Println(err)
-		}
+		//var b bytes.Buffer
+		//err := ns.deps.Tpl.Prepare(templates.Config{
+		//	Root:      ns.deps.Paths.Base + EmbeddedPath,
+		//	Extension: ".html",
+		//}).Execute(&b, name, tm)
 
-		var tpl bytes.Buffer
-		err = file.Execute(&tpl, tm)
-		if err != nil {
-			fmt.Println(err)
-		}
+		//if err != nil {
+		//	fmt.Println(err)
+		//}
 
-		head += fmt.Sprintf("%s\n", tpl.String())
-	}
-	return head
+		//head += fmt.Sprintf("%s\n", b.String())
+	//}
+	return "head"
 }

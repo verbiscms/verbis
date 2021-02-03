@@ -1,4 +1,4 @@
-package tpl
+package models
 
 //type TypeOfPage struct {
 //	PageType string
