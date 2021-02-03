@@ -49,13 +49,13 @@ type Attachment struct {
 	MIMEType string
 	Filename string
 	MD5name  string
-	B64Data  string
+	B64Data  *string
 	Size     int64
 }
 
 // SizeMB
 //
-// Returns the attachement file size in megabytes.
+// Returns the attachment file size in megabytes.
 func (a *Attachment) SizeMB() int {
 	return int(a.Size / 1024)
 }
@@ -94,11 +94,13 @@ func getAttachment(i interface{}) (*Attachment, error) {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
 	}
 
+	data := b64(buf.Bytes())
+
 	return &Attachment{
 		MIMEType: mt,
 		Filename: m.Filename,
 		MD5name:  name,
-		B64Data:  b64(buf.String()),
+		B64Data:  &data,
 		Size:     m.Size,
 	}, nil
 }
@@ -122,7 +124,9 @@ func validateFile(file multipart.File, size int64) (string, error) {
 		return "", &errors.Error{Code: errors.INVALID, Message: "Mime type not permitted", Operation: op, Err: fmt.Errorf("mime for the uploaded file is not permitted")}
 	}
 
-	fileSize := int(size / 1024)
+	fileSize := int(1024 / size)
+	fmt.Println(fileSize)
+	fmt.Println(size)
 	if fileSize > UploadLimit {
 		return "", &errors.Error{Code: errors.INVALID, Message: "File is too large to upload", Operation: op, Err: fmt.Errorf("the file exceeds the upload limit for uploading")}
 	}
@@ -134,8 +138,8 @@ func validateFile(file multipart.File, size int64) (string, error) {
 //
 // Base64 encodes the attachment to be sent via the
 // mailer.
-func b64(data string) string {
-	return base64.StdEncoding.EncodeToString([]byte(data))
+func b64(data []byte) string {
+	return base64.StdEncoding.EncodeToString(data)
 }
 
 // dumpFile
