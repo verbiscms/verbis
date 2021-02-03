@@ -235,9 +235,14 @@ export default {
 		charPosition: 0,
 	}),
 	mounted() {
-		this.config = this.getEditorConfig
-		this.setUpEditor()
-		this.setColourPalette()
+		this.config = this.getEditorConfig;
+		this.setUpEditor();
+		this.setColourPalette();
+	},
+	watch: {
+		code: function (val) {
+			this.field = val;
+		},
 	},
 	computed: {
 		getEditorConfig() {
@@ -259,6 +264,7 @@ export default {
 				return this.getValue === '<p></p>' ? '' : this.getValue;
 			},
 			set(value) {
+				console.log("hello")
 				this.$emit("update:fields", this.getFieldObject(value));
 			}
 		}
