@@ -6,26 +6,43 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/generic/safe"
 	"github.com/stretchr/testify/assert"
 	"html/template"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 )
 
 func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace, *mocks.MediaRepository) {
+	wd, _ := os.Getwd()
+	apiPath := filepath.Join(filepath.Dir(wd), "../../../..")
+
 	mock := &mocks.MediaRepository{}
-	ns := Namespace{
-		deps: &deps.Deps{
-			Store: &models.Store{
-				Media: mock,
-			},
-			Site:    site,
-			Options: opts,
+	d := &deps.Deps{
+		Store: &models.Store{
+			Media: mock,
 		},
+		Site:    site,
+		Options: opts,
+		Paths: deps.Paths{
+			Base:    apiPath,
+		},
+	}
+
+	s := safe.New(d)
+
+	ns := Namespace{
+		deps: d,
 		post: &domain.PostData{
 			Post: post,
 		},
+		funcs: template.FuncMap{
+			"safeHTML": s.HTML,
+		},
 	}
+
 	return &ns, mock
 }
 

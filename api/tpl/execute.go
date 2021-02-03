@@ -1,4 +1,4 @@
-package engine
+package tpl
 
 import (
 	"bytes"
@@ -56,21 +56,21 @@ type Delims struct {
 }
 
 // FileHandler file handler interface
-type FileHandler2 func(config Config, tplFile string) (content string, err error)
+type FileHandler func(config Config, tplFile string) (content string, err error)
 
 // New new template engine
-func New(config Config) *ViewEngine {
+func NewT(config Config) *ViewEngine {
 	return &ViewEngine{
 		config:      config,
 		tplMap:      make(map[string]*template.Template),
 		tplMutex:    sync.RWMutex{},
-		fileHandler: DefaultFileHandler2(),
+		fileHandler: DefaultFileHandler(),
 	}
 }
 
 // Default new default template engine
 func Default() *ViewEngine {
-	return New(DefaultConfig)
+	return NewT(DefaultConfig)
 }
 
 // Render render template with http.ResponseWriter
@@ -93,6 +93,7 @@ func (e *ViewEngine) executeRender(out io.Writer, name string, data interface{})
 	if filepath.Ext(name) == e.config.Extension {
 		useMaster = false
 		name = strings.TrimSuffix(name, e.config.Extension)
+
 	}
 	return e.executeTemplate(out, name, data, useMaster)
 }
@@ -176,7 +177,7 @@ func (e *ViewEngine) SetFileHandler(handle FileHandler) {
 }
 
 // DefaultFileHandler new default file handler
-func DefaultFileHandler2() FileHandler {
+func DefaultFileHandler() FileHandler {
 	return func(config Config, tplFile string) (content string, err error) {
 		// Get the absolute path of the root template
 		path, err := filepath.Abs(config.Root + string(os.PathSeparator) + tplFile + config.Extension)
