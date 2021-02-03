@@ -15,7 +15,7 @@ type TemplateMeta struct {
 	Options       domain.Options
 	FacebookImage string
 	TwitterImage  string
-	deps *deps.Deps
+	deps          *deps.Deps
 }
 
 const (
@@ -41,17 +41,16 @@ func (ns *Namespace) Header() template.HTML {
 	const op = "Templates.Header"
 
 	tm := &TemplateMeta{
-		Site:          ns.deps.Site,
-		Post:          ns.post,
-		Options:       ns.deps.Options,
-		deps: ns.deps,
+		Site:    ns.deps.Site,
+		Post:    ns.post,
+		Options: ns.deps.Options,
+		deps:    ns.deps,
 	}
 
 	head := ns.executeTemplates(tm, []string{"meta.cms", "opengraph.cms", "twitter.cms"})
 
 	return template.HTML(head)
 }
-
 
 // MetaTitle
 //

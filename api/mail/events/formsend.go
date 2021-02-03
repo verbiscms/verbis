@@ -3,6 +3,7 @@ package events
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/forms"
 	"github.com/ainsleyclark/verbis/api/mail"
 )
 
@@ -28,7 +29,7 @@ func NewFormSend(config config.Configuration) (*FormSend, error) {
 }
 
 // Send the verify email event.
-func (e *FormSend) Send(form *domain.Form) error {
+func (e *FormSend) Send(form *domain.Form, values forms.FormValues, attachments forms.Attachments) error {
 	const op = "events.VerifyEmail.Send"
 
 	html, err := e.mailer.ExecuteHTML("form-send.html", nil)
@@ -37,9 +38,10 @@ func (e *FormSend) Send(form *domain.Form) error {
 	}
 
 	tm := mail.Sender{
-		To:      []string{"ainsley@reddico.co.uk"},
-		Subject: form.EmailSubject,
-		HTML:    html,
+		To:          []string{"ainsley@reddico.co.uk"},
+		Subject:     form.EmailSubject,
+		HTML:        html,
+		Attachments: attachments,
 	}
 
 	e.mailer.Send(&tm)

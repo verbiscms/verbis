@@ -6,6 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/forms"
 	"github.com/ainsleyclark/verbis/api/helpers/html"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	log "github.com/sirupsen/logrus"
@@ -20,9 +21,10 @@ type Mailer struct {
 }
 
 type Sender struct {
-	To      []string
-	Subject string
-	HTML    string
+	To          []string
+	Subject     string
+	HTML        string
+	Attachments forms.Attachments
 }
 
 type Data map[string]interface{}
@@ -69,13 +71,27 @@ func (m *Mailer) load() error {
 func (m *Mailer) Send(t *Sender) {
 	const op = "mail.Send"
 
+	content := sp.Content{
+		HTML:    t.HTML,
+		From:    m.FromAddress,
+		Subject: t.Subject,
+	}
+
+	if len(t.Attachments) != 0 {
+		var att []sp.Attachment
+		for _, v := range t.Attachments {
+			att = append(att, sp.Attachment{
+				MIMEType: v.MIMEType,
+				Filename: v.Filename,
+				B64Data:  v.B64Data,
+			})
+		}
+		content.Attachments = att
+	}
+
 	tx := &sp.Transmission{
 		Recipients: t.To,
-		Content: sp.Content{
-			HTML:    t.HTML,
-			From:    m.FromAddress,
-			Subject: t.Subject,
-		},
+		Content:    content,
 	}
 
 	id, _, err := m.client.Send(tx)

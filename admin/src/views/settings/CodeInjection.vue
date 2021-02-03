@@ -27,6 +27,7 @@
 			</div><!-- /Row -->
 			<div class="row">
 				<div class="col-12">
+					<pre>{{ head }}</pre>
 					<h6 class="margin">Header</h6>
 					<!-- =====================
 						Head
@@ -46,7 +47,7 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body">
-									<prism-editor class="prism" v-model="data['codeinjection_head']" :highlight="highlighter" line-numbers></prism-editor>
+									<prism-editor class="prism" v-model="head" :highlight="highlighter" line-numbers></prism-editor>
 								</div><!-- /Card Body -->
 							</template>
 						</Collapse>
@@ -70,7 +71,7 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body">
-									<prism-editor class="prism" v-model="data['codeinjection_foot']" :highlight="highlighter" line-numbers></prism-editor>
+									<prism-editor class="prism" v-model="foot" :highlight="highlighter" line-numbers></prism-editor>
 								</div><!-- /Card Body -->
 							</template>
 						</Collapse>
@@ -103,8 +104,18 @@ export default {
 	data: () => ({
 		errorMsg: "Fix the errors before saving code injection.",
 		successMsg: "Code injection updated successfully.",
+		head: "",
+		foot: "",
 	}),
 	methods: {
+		runAfterGet() {
+			this.head = this.data["codeinjection_head"];
+			this.foot = this.data["codeinjection_foot"];
+		},
+		runBeforeSave() {
+			this.$set(this.data, "codeinjection_head", this.head);
+			this.$set(this.data, "codeinjection_foot", this.foot);
+		},
 		/*
 		 * highlighter()
 		 * Return html for prism editor.

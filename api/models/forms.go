@@ -1,22 +1,15 @@
 package models
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
+	"github.com/ainsleyclark/verbis/api/forms"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/mail/events"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
-	dynamicstruct "github.com/ompluscator/dynamic-struct"
-	"mime/multipart"
-	"path/filepath"
 )
 
 // FormRepository defines methods for Posts to interact with the database
@@ -88,13 +81,9 @@ func (s *FormsStore) Get(meta params.Params) ([]domain.Form, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of forms", Operation: op, Err: err}
 	}
 
-	for _, v := range f {
-		v.Body = s.getValidation(&v).Build().New()
-		fields, err := s.GetFields(v.Id)
-		if err == nil {
-			v.Fields = fields
-		}
-	}
+	//for _, v := range f {
+	//forms.ToStruct(&v)
+	//}
 
 	return f, total, nil
 }
@@ -115,7 +104,7 @@ func (s *FormsStore) GetById(id int) (domain.Form, error) {
 		f.Fields = fields
 	}
 
-	f.Body = s.getValidation(&f).Build().New()
+	//f.Body = forms.ToStruct(&f)
 
 	return f, nil
 }
@@ -136,7 +125,7 @@ func (s *FormsStore) GetByUUID(uuid string) (domain.Form, error) {
 		f.Fields = fields
 	}
 
-	f.Body = s.getValidation(&f).Build().New()
+	f.Body = forms.ToStruct(f)
 
 	return f, nil
 }
@@ -243,124 +232,52 @@ func (s *FormsStore) Delete(id int) error {
 func (s *FormsStore) Send(form *domain.Form, ip string, agent string) error {
 	const op = "FormsRepository.GetFields"
 
-	s.validateFile(form)
+	fv, att, err := forms.NewReader(form).Values()
+	if err != nil {
+		return err
+	}
 
-	//if form.StoreDB {
-	//	if err := s.storeSubmission(form, ip, agent); err != nil {
-	//		return err
-	//	}
-	//}
-	//if form.EmailSend {
-	//	if err := s.mailSubmission(form); err != nil {
-	//		return err
-	//	}
-	//}
+	if form.StoreDB {
+		err := s.storeSubmission(form, fv, ip, agent)
+		if err != nil {
+			return err
+		}
+	}
+
+	if form.EmailSend {
+		err := s.mailSubmission(form, fv, att)
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
-// GetValidation returns the dynamic struct used for validation.
-func (s *FormsStore) getValidation(form *domain.Form) dynamicstruct.Builder {
-	const op = "FormsRepository.getValidation"
-
-	instance := dynamicstruct.NewStruct()
-	for _, v := range form.Fields {
-		tag := fmt.Sprintf(`json:"%s" form:"%s"`, v.Key, v.Key)
-		if v.Required {
-			tag = fmt.Sprintf("%s `binding:\"required\"`", tag)
-		}
-		instance.AddField(v.Label.Name(), s.getType(v.Type), tag)
-	}
-
-	return instance
-}
-
-func (s *FormsStore) getType(typ string) interface{} {
-	var i interface{} = nil
-
-	switch typ {
-	case "text":
-		i = ""
-	case "float":
-		i = 0.0
-	case "boolean":
-		i = false
-	case "file":
-		i = multipart.FileHeader{}
-	}
-
-	return i
-}
-
-func (s *FormsStore) mailSubmission(form *domain.Form) error {
+func (s *FormsStore) mailSubmission(form *domain.Form, values forms.FormValues, attachments forms.Attachments) error {
 	const op = "FormsRepository.mailSubmission"
 	fs, err := events.NewFormSend(s.config)
 	if err != nil {
 		return err
 	}
-	if err := fs.Send(form); err != nil {
+	if err := fs.Send(form, values, attachments); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *FormsStore) storeSubmission(form *domain.Form, ip string, agent string) error {
+func (s *FormsStore) storeSubmission(form *domain.Form, values forms.FormValues, ip string, agent string) error {
 	const op = "FormsRepository.storeSubmission"
 
-	fields, err := json.Marshal(form.Body)
+	f, err := values.JSON()
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not process the form fields for storing"), Operation: op, Err: err}
 	}
 
-	_, err = s.db.Exec("INSERT INTO form_submissions (uuid, form_id, fields, ip_address, user_agent, sent_at) VALUES (?, ?, ?, ?, ?, NOW())", uuid.New().String(), form.Id, fields, ip, agent)
+	_, err = s.db.Exec("INSERT INTO form_submissions (uuid, form_id, fields, ip_address, user_agent, sent_at) VALUES (?, ?, ?, ?, ?, NOW())", uuid.New().String(), form.Id, f, ip, agent)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the form submission with the ID: %v", form.Id), Operation: op, Err: err}
 	}
 
 	return nil
-}
-
-func (s *FormsStore) validateFile(form *domain.Form) {
-	reader := dynamicstruct.NewReader(form.Body)
-
-	m := make(map[string]interface{})
-	for _, v := range form.Fields {
-
-		field := reader.GetField(v.Label.Name())
-
-		//	field := reader.GetField(v.Key)
-
-		switch v.Type {
-		case "file":
-			f, ok := field.Interface().(multipart.FileHeader)
-			if !ok {
-				fmt.Println("error")
-			}
-
-			name, err := dumpFile(&f)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			m[v.Key] = name
-		default:
-			m[v.Key] = field.Interface()
-		}
-	}
-
-	color.Red.Printf("%+v\n", m)
-}
-
-func dumpFile(f *multipart.FileHeader) (string, error) {
-
-	ext := filepath.Ext(f.Filename)
-	name := encryption.MD5Hash(f.Filename) + ext
-
-	//_, _ = mime.TypeByFile(f)
-	dir := paths.Forms() + "/" + name
-	err := files.Save(f, dir)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	return name, nil
 }
