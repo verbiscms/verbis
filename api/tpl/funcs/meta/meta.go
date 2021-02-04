@@ -47,7 +47,7 @@ func (ns *Namespace) Header() template.HTML {
 	tm := &TemplateMeta{
 		Site:    ns.deps.Site,
 		Post:    ns.post,
-		Options: ns.deps.Options,
+		Options: *ns.deps.Options,
 		deps:    ns.deps,
 	}
 
@@ -91,7 +91,7 @@ func (ns *Namespace) MetaTitle() string {
 func (ns *Namespace) Footer() template.HTML {
 	tm := &TemplateMeta{
 		Post:    ns.post,
-		Options: ns.deps.Options,
+		Options: *ns.deps.Options,
 	}
 
 	foot := ns.executeTemplates(tm, []string{"footer"})
@@ -104,7 +104,7 @@ func (ns *Namespace) executeTemplates(tm *TemplateMeta, tpls []string) string {
 	for _, name := range tpls {
 
 		var b bytes.Buffer
-		err := ns.deps.Tpl.Prepare(tpl.Config{
+		err := ns.deps.Tmpl().Prepare(tpl.Config{
 			Root:      ns.deps.Paths.Base + EmbeddedPath,
 			Extension: ".cms",
 		}).Execute(&b, name, tm)

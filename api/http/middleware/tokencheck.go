@@ -6,21 +6,21 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 )
 
 // Administrator middleware
-func AdminTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
+func AdminTokenCheck(d *deps.Deps) gin.HandlerFunc {
 	return func(g *gin.Context) {
 
 		if err := checkTokenExists(g); err != nil {
 			return
 		}
 
-		u, err := checkUserToken(g, userModel)
+		u, err := checkUserToken(d, g)
 		if err != nil {
 			return
 		}
@@ -35,14 +35,14 @@ func AdminTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
 }
 
 // Operator middleware
-func OperatorTokenCheck(userModel models.UserRepository) gin.HandlerFunc {
+func OperatorTokenCheck(d *deps.Deps) gin.HandlerFunc {
 	return func(g *gin.Context) {
 
 		if err := checkTokenExists(g); err != nil {
 			return
 		}
 
-		u, err := checkUserToken(g, userModel)
+		u, err := checkUserToken(d, g)
 		if err != nil {
 			return
 		}
@@ -67,10 +67,10 @@ func checkTokenExists(g *gin.Context) error {
 }
 
 // Check the user token and return the user if passes
-func checkUserToken(g *gin.Context, m models.UserRepository) (*domain.User, error) {
+func checkUserToken(d *deps.Deps, g *gin.Context) (*domain.User, error) {
 	token := g.Request.Header.Get("token")
 
-	u, err := m.CheckToken(token)
+	u, err := d.Store.User.CheckToken(token)
 	if err != nil {
 		api.AbortJSON(g, 401, "Invalid token in the request header", nil)
 		return &domain.User{}, err

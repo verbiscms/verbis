@@ -10,7 +10,7 @@ import "github.com/ainsleyclark/verbis/api/cache"
 // and mimetypes, returns nil for both if nothing was found.
 func (r *Render) getCachedAsset(url string) (*[]byte, *string) {
 
-	if r.options.CacheServerAssets {
+	if r.Options.CacheServerAssets {
 		return nil, nil
 	}
 

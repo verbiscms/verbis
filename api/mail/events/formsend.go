@@ -36,7 +36,7 @@ func NewFormSend(config config.Configuration) (*FormSend, error) {
 func (e *FormSend) Send(form *domain.Form, values forms.FormValues, attachments forms.Attachments) error {
 	const op = "events.VerifyEmail.Send"
 
-	html, err := e.mailer.ExecuteHTML("form-send.html", nil)
+	html, err := e.mailer.ExecuteHTML("form-send.html", values)
 	if err != nil {
 		return err
 	}

@@ -6,10 +6,9 @@ package api
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -25,16 +24,12 @@ type AuthHandler interface {
 
 // Auth defines the handler for Authentication methods
 type Auth struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // newAuth - Construct
-func NewAuth(m *models.Store, config config.Configuration) *Auth {
-	return &Auth{
-		store:  m,
-		config: config,
-	}
+func NewAuth(d *deps.Deps) *Auth {
+	return &Auth{d}
 }
 
 // Login the user
@@ -52,7 +47,7 @@ func (c *Auth) Login(g *gin.Context) {
 		return
 	}
 
-	user, err := c.store.Auth.Authenticate(l.Email, l.Password)
+	user, err := c.Store.Auth.Authenticate(l.Email, l.Password)
 	if err != nil {
 		fmt.Print(err)
 		Respond(g, 401, errors.Message(err), err)
@@ -74,7 +69,7 @@ func (c *Auth) Logout(g *gin.Context) {
 	const op = "AuthHandler.Logout"
 
 	token := g.Request.Header.Get("token")
-	_, err := c.store.Auth.Logout(token)
+	_, err := c.Store.Auth.Logout(token)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -95,13 +90,13 @@ func (c *Auth) VerifyEmail(g *gin.Context) {
 	const op = "AuthHandler.VerifyEmail"
 
 	token := g.Param("token")
-	err := c.store.Auth.VerifyEmail(token)
+	err := c.Store.Auth.VerifyEmail(token)
 	if err != nil {
 		notFound(g)
 		return
 	}
 
-	g.Redirect(301, c.config.Admin.Path)
+	g.Redirect(301, c.Store.Config.Admin.Path)
 }
 
 // Reset password
@@ -117,7 +112,7 @@ func (c *Auth) ResetPassword(g *gin.Context) {
 		return
 	}
 
-	err := c.store.Auth.ResetPassword(rp.Token, rp.NewPassword)
+	err := c.Store.Auth.ResetPassword(rp.Token, rp.NewPassword)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -136,7 +131,7 @@ func (c *Auth) ResetPassword(g *gin.Context) {
 func (c *Auth) VerifyPasswordToken(g *gin.Context) {
 	const op = "AuthHandler.VerifyPasswordToken"
 
-	err := c.store.Auth.VerifyPasswordToken(g.Param("token"))
+	err := c.Store.Auth.VerifyPasswordToken(g.Param("token"))
 	if err != nil {
 		Respond(g, 404, errors.Message(err), err)
 		return
@@ -158,7 +153,7 @@ func (c *Auth) SendResetPassword(g *gin.Context) {
 		return
 	}
 
-	err := c.store.Auth.SendResetPassword(srp.Email)
+	err := c.Store.Auth.SendResetPassword(srp.Email)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return

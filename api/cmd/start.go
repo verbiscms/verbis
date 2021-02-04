@@ -8,12 +8,14 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/cron"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/server/routes"
+	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
 	"github.com/kyokomi/emoji"
 	"github.com/spf13/cobra"
 )
@@ -52,19 +54,25 @@ up the server on the port specified in the .env file.`,
 			// Set up the router & pass logger
 			serve := server.New(store.Options)
 
+
+			d := deps.New(deps.DepsConfig{
+				Store:   store,
+				Config:  cfg,
+				Running: true,
+			})
+
+			d.SetTmpl(tplimpl.New(d))
+
 			// Pass the stores to the controllers
-			handler := handler.New(store, *cfg)
+			handler := handler.New(d)
 
 			// Load the routes
-			routes.Load(serve, handler, store, *cfg)
-
-			// Get options
-			options := store.Options.GetStruct()
+			routes.Load(d, serve, handler)
 
 			// Print listening success
 			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", environment.GetPort()))
-			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", options.SiteUrl)
-			emoji.Printf(":key: Or visit the admin area at:  %s \n", options.SiteUrl+"/admin")
+			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", d.Options.SiteUrl)
+			emoji.Printf(":key: Or visit the admin area at:  %s \n", d.Options.SiteUrl+"/admin")
 			fmt.Println()
 
 			// Listen & serve.

@@ -6,12 +6,11 @@ package api
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"strconv"
@@ -28,16 +27,12 @@ type CategoryHandler interface {
 
 // Categories defines the handler for Categories
 type Categories struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // newCategories - Construct
-func NewCategories(m *models.Store, config config.Configuration) *Categories {
-	return &Categories{
-		store:  m,
-		config: config,
-	}
+func NewCategories(d *deps.Deps) *Categories {
+	return &Categories{d}
 }
 
 // Get all categories
@@ -48,9 +43,9 @@ func NewCategories(m *models.Store, config config.Configuration) *Categories {
 func (c *Categories) Get(g *gin.Context) {
 	const op = "CategoryHandler.Get"
 
-	params := params.ApiParams(g, DefaultParams).Get()
+	p := params.ApiParams(g, DefaultParams).Get()
 
-	categories, total, err := c.store.Categories.Get(params)
+	categories, total, err := c.Store.Categories.Get(p)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -62,7 +57,7 @@ func (c *Categories) Get(g *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().Get(params, total)
+	pagination := http.NewPagination().Get(p, total)
 
 	Respond(g, 200, "Successfully obtained categories", categories, pagination)
 }
@@ -81,7 +76,7 @@ func (c *Categories) GetById(g *gin.Context) {
 		return
 	}
 
-	category, err := c.store.Categories.GetById(id)
+	category, err := c.Store.Categories.GetById(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -107,7 +102,7 @@ func (c *Categories) Create(g *gin.Context) {
 		return
 	}
 
-	newCategory, err := c.store.Categories.Create(&category)
+	newCategory, err := c.Store.Categories.Create(&category)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -140,7 +135,7 @@ func (c *Categories) Update(g *gin.Context) {
 	}
 	category.Id = id
 
-	updatedCategory, err := c.store.Categories.Update(&category)
+	updatedCategory, err := c.Store.Categories.Update(&category)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -168,7 +163,7 @@ func (c *Categories) Delete(g *gin.Context) {
 		return
 	}
 
-	err = c.store.Categories.Delete(id)
+	err = c.Store.Categories.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -185,7 +180,7 @@ func (c *Categories) Delete(g *gin.Context) {
 // attached to it.
 func (c *Categories) clearCache(id int) {
 	go func() {
-		posts, _, err := c.store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
+		posts, _, err := c.Store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error()
 		}

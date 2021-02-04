@@ -5,23 +5,22 @@
 package routes
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 )
 
 // Load all of the routes groups specified in the package
 // And any global middleware to be used on the server.
-func Load(s *server.Server, c *handler.Handler, m *models.Store, cf config.Configuration) {
+func Load(d *deps.Deps, s *server.Server, c *handler.Handler) {
 
 	// Global middleware
 	s.Use(middleware.Log())
 	s.Use(middleware.CORS())
 
 	// Load routes
-	api(s, c, m)
-	frontend(s, c, m, cf)
-	spa(s, c, cf)
+	api(d, s, c)
+	frontend(d, s, c)
+	spa(d, s, c)
 }
