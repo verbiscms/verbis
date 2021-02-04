@@ -36,7 +36,6 @@ type Deps struct {
 
 	Site domain.Site
 
-
 	// Logger
 
 	// Options
@@ -74,7 +73,6 @@ type DepsConfig struct {
 	Config *config.Configuration
 
 	Running bool
-
 }
 
 func New(cfg DepsConfig) *Deps {
@@ -96,7 +94,7 @@ func New(cfg DepsConfig) *Deps {
 		Config:  cfg.Config,
 		Site:    cfg.Store.Site.GetGlobalConfig(),
 		Options: &opts,
-		Paths:   Paths{
+		Paths: Paths{
 			Base:    paths.Base(),
 			Admin:   paths.Admin(),
 			API:     paths.Api(),
