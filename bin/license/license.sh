@@ -1,9 +1,10 @@
 #!/bin/bash
 
-for i in *.go
+find . -type f -name '*.go' | while read i;
 do
-  if ! grep -q Copyright $i
-  then
+	echo $i
+ 	if ! grep -q Copyright $i
+  	then
     cat copyright.txt $i >$i.new && mv $i.new $i
-  fi
+  	fi
 done
