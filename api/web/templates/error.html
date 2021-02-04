@@ -8,13 +8,11 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <h3 class="card-subtitle">Verbis Error - {{ .Error.Code }}</h3>
-                        <h2 class="card-title">{{ .Error.Message }}</h2>
-                        {{ if .SubMessage }}
-                            <h4>{{ .SubMessage }}</h4>
-                        {{ end }}
+                        {{ with .Error.Code }}<h3 class="card-subtitle">Verbis Error - {{ . }}</h3>{{ end }}
+                        {{ with .Error.Message }}<h2 class="card-title">{{ . }}</h2>{{ end }}
+                        {{ with .SubMessage }}<h4>{{ . }}</h4>{{ end }}
                         <pre class="highlight code">
-<code class="{{ .FileLanguage }}">{{- range $key, $value := .File }}<span class="code-line {{ if  eq $value.Line $.LineNumber }}code-line-highlight{{ end }}">{{ $value.Line }}</span>{{ $value.Content }}<br/>{{- end }}</code>
+<code class="handlebars">{{- range $key, $value := .File }}<span class="code-line {{ if  eq $value.Line $.LineNumber }}code-line-highlight{{ end }}">{{ $value.Line }}</span>{{ $value.Content }}<br/>{{- end }}</code>
                         </pre>
                     </div>
                 </div><!-- /Col -->
@@ -39,15 +37,21 @@
                 <div class="col-12 col-desk-4">
                     <div class="error-info">
                         <h2>Information:</h2>
-                        <div class="card card-small">
-                            <h4><span class="card-subtitle">Url:</span>{{ .Url }}</h4>
-                        </div>
-                        <div class="card card-small">
-                            <h4><span class="card-subtitle">Client IP:</span>{{ .Ip }}</h4>
-                        </div>
-                        <div class="card card-small">
-                            <h4><span class="card-subtitle">Data Length:</span>{{ .DataLength }}</h4>
-                        </div>
+                        {{ with .Url }}
+                            <div class="card card-small">
+                                <h4><span class="card-subtitle">Url:</span>{{ . }}</h4>
+                            </div>
+                        {{ end }}
+                        {{ with .Ip }}
+                            <div class="card card-small">
+                                <h4><span class="card-subtitle">Client IP:</span>{{ . }}</h4>
+                            </div>
+                        {{ end }}
+                        {{ with .DataLength }}
+                            <div class="card card-small">
+                                <h4><span class="card-subtitle">Data Length:</span>{{ . }}</h4>
+                            </div>
+                        {{ end }}
                     </div>
                 </div>
             </div><!-- /Row -->

@@ -43,7 +43,10 @@ func DefaultFileHandler() fileHandler {
 	}
 }
 
-func (e *Execute) executeRender(out io.Writer, name string, data interface{}) error {
+// executeRender
+//
+//
+func (e *Execute) executeRender(out io.Writer, name string, data interface{}) (string, error) {
 	useMaster := true
 	if filepath.Ext(name) == e.config.GetExtension() {
 		useMaster = false
@@ -52,8 +55,11 @@ func (e *Execute) executeRender(out io.Writer, name string, data interface{}) er
 	return e.executeTemplate(out, name, data, useMaster)
 }
 
-func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, useMaster bool) error {
-	const op = "TemplateEngine.executeTemplate"
+// executeTemplate
+//
+//
+func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, useMaster bool) (string, error) {
+	const op = "TemplateEngine.Execute"
 
 	var tpl *template.Template
 	var err error
@@ -83,7 +89,7 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 			var data string
 			data, err = e.fileHandler(e.config, v)
 			if err != nil {
-				return err
+				return v, err
 			}
 			var tmpl *template.Template
 			if v == name {
@@ -93,7 +99,7 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 			}
 			_, err = tmpl.Parse(data)
 			if err != nil {
-				return &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Template engine error parsing template with name: %s", v), Operation: op, Err: err}
+				return v, &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Template engine error parsing template with name: %s", v), Operation: op, Err: err}
 			}
 		}
 		e.tplMutex.Lock()
@@ -104,8 +110,8 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 	// Display the content to the screen
 	err = tpl.Funcs(e.funcMap).ExecuteTemplate(out, exeName, data)
 	if err != nil {
-		return &errors.Error{Code: errors.TEMPLATE, Message: "Template engine execute template error", Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Template engine execute template error", Operation: op, Err: err}
 	}
 
-	return nil
+	return "", nil
 }

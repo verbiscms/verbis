@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 )
@@ -64,8 +65,11 @@ func (c *Public) Serve(g *gin.Context) {
 	const op = "FrontendHandler.Serve"
 
 	page, err := c.render.Page(g)
-	if err != nil {
+	if errors.Code(err) == errors.NOTFOUND {
 		c.NotFound(g)
+		return
+	} else {
+		g.Data(500, "text/html", page)
 		return
 	}
 

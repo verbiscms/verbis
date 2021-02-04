@@ -19,6 +19,7 @@ type Paths struct {
 	Theme   string
 	Uploads string
 	Storage string
+	Web     string
 }
 
 // Deps holds dependencies used by many.
@@ -101,6 +102,7 @@ func New(cfg DepsConfig) *Deps {
 			Theme:   paths.Theme(),
 			Uploads: paths.Uploads(),
 			Storage: paths.Storage(),
+			Web:     paths.Web(),
 		},
 		Theme:   &theme,
 		tmpl:    nil,
