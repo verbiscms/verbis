@@ -5,10 +5,9 @@
 package api
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -20,16 +19,12 @@ type FieldHandler interface {
 
 // Fields defines the handler for Fields
 type Fields struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // newFields - Construct
-func NewFields(m *models.Store, config config.Configuration) *Fields {
-	return &Fields{
-		store:  m,
-		config: config,
-	}
+func NewFields(d *deps.Deps) *Fields {
+	return &Fields{d}
 }
 
 // Get - Filter fields and get layouts based on query params.
@@ -43,7 +38,7 @@ func (c *Fields) Get(g *gin.Context) {
 
 	userId, err := strconv.Atoi(g.Query("user_id"))
 	if err != nil || userId == 0 {
-		owner, err := c.store.User.GetOwner()
+		owner, err := c.Store.User.GetOwner()
 		if err != nil {
 			Respond(g, 500, errors.Message(err), err)
 		}
@@ -72,18 +67,18 @@ func (c *Fields) Get(g *gin.Context) {
 	}
 
 	// Get the author associated with the post
-	author, err := c.store.User.GetById(post.UserId)
+	author, err := c.Store.User.GetById(post.UserId)
 	if err != nil {
 		post.Author = author.HideCredentials()
 	}
 
 	// Get the categories associated with the post
-	category, err := c.store.Categories.GetById(categoryId)
+	category, err := c.Store.Categories.GetById(categoryId)
 	if err != nil {
 		post.Category = &category
 	}
 
-	fields := c.store.Fields.GetLayout(post)
+	fields := c.Store.Fields.GetLayout(post)
 
 	Respond(g, 200, "Successfully obtained fields", fields)
 }

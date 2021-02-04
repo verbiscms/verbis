@@ -6,12 +6,11 @@ package api
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -27,16 +26,12 @@ type PostHandler interface {
 
 // Posts defines the handler for Posts
 type Posts struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // newPosts - Construct
-func NewPosts(m *models.Store, config config.Configuration) *Posts {
-	return &Posts{
-		store:  m,
-		config: config,
-	}
+func NewPosts(d *deps.Deps) *Posts {
+	return &Posts{d}
 }
 
 // Get all posts, obtain resource param to pass to the get
@@ -48,9 +43,9 @@ func NewPosts(m *models.Store, config config.Configuration) *Posts {
 func (c *Posts) Get(g *gin.Context) {
 	const op = "PostHandler.Get"
 
-	params := params2.ApiParams(g, DefaultParams).Get()
+	p := params.ApiParams(g, DefaultParams).Get()
 
-	posts, total, err := c.store.Posts.Get(params, true, g.Query("resource"), g.Query("status"))
+	posts, total, err := c.Store.Posts.Get(p, true, g.Query("resource"), g.Query("status"))
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -62,7 +57,7 @@ func (c *Posts) Get(g *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().Get(params, total)
+	pagination := http.NewPagination().Get(p, total)
 
 	Respond(g, 200, "Successfully obtained posts", posts, pagination)
 }
@@ -82,7 +77,7 @@ func (c *Posts) GetById(g *gin.Context) {
 		return
 	}
 
-	post, err := c.store.Posts.GetById(id, true)
+	post, err := c.Store.Posts.GetById(id, true)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -108,7 +103,7 @@ func (c *Posts) Create(g *gin.Context) {
 		return
 	}
 
-	newPost, err := c.store.Posts.Create(&post)
+	newPost, err := c.Store.Posts.Create(&post)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -143,7 +138,7 @@ func (c *Posts) Update(g *gin.Context) {
 	}
 	post.Id = id
 
-	updatedPost, err := c.store.Posts.Update(&post)
+	updatedPost, err := c.Store.Posts.Update(&post)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -169,7 +164,7 @@ func (c *Posts) Delete(g *gin.Context) {
 		return
 	}
 
-	err = c.store.Posts.Delete(id)
+	err = c.Store.Posts.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return

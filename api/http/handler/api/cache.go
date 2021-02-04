@@ -6,6 +6,7 @@ package api
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,11 +16,13 @@ type CacheHandler interface {
 }
 
 // CacheController defines the handler for Cache
-type Cache struct{}
+type Cache struct{
+	*deps.Deps
+}
 
 // newCache - Construct
-func NewCache() *Cache {
-	return &Cache{}
+func NewCache(d *deps.Deps) *Cache {
+	return &Cache{d}
 }
 
 // Clear server cache

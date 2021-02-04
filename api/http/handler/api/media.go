@@ -6,12 +6,11 @@ package api
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -27,16 +26,12 @@ type MediaHandler interface {
 
 // Media defines the handler for Posts
 type Media struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // newMedia - Construct
-func NewMedia(m *models.Store, config config.Configuration) *Media {
-	return &Media{
-		store:  m,
-		config: config,
-	}
+func NewMedia(d *deps.Deps) *Media {
+	return &Media{d}
 }
 
 // Get all media items
@@ -47,9 +42,9 @@ func NewMedia(m *models.Store, config config.Configuration) *Media {
 func (c *Media) Get(g *gin.Context) {
 	const op = "MediaHandler.Get"
 
-	params := params2.ApiParams(g, DefaultParams).Get()
+	p := params.ApiParams(g, DefaultParams).Get()
 
-	media, total, err := c.store.Media.Get(params)
+	media, total, err := c.Store.Media.Get(p)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -61,7 +56,7 @@ func (c *Media) Get(g *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().Get(params, total)
+	pagination := http.NewPagination().Get(p, total)
 
 	Respond(g, 200, "Successfully obtained media", media, pagination)
 }
@@ -81,7 +76,7 @@ func (c *Media) GetById(g *gin.Context) {
 		return
 	}
 
-	media, err := c.store.Media.GetById(id)
+	media, err := c.Store.Media.GetById(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -121,12 +116,12 @@ func (c *Media) Upload(g *gin.Context) {
 		return
 	}
 
-	if err := c.store.Media.Validate(files[0]); err != nil {
+	if err := c.Store.Media.Validate(files[0]); err != nil {
 		Respond(g, 415, errors.Message(err), err)
 		return
 	}
 
-	media, err := c.store.Media.Upload(files[0], g.Request.Header.Get("token"))
+	media, err := c.Store.Media.Upload(files[0], g.Request.Header.Get("token"))
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -156,7 +151,7 @@ func (c *Media) Update(g *gin.Context) {
 	}
 	m.Id = id
 
-	err = c.store.Media.Update(&m)
+	err = c.Store.Media.Update(&m)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -182,7 +177,7 @@ func (c *Media) Delete(g *gin.Context) {
 		return
 	}
 
-	err = c.store.Media.Delete(id)
+	err = c.Store.Media.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return

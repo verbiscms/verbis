@@ -6,12 +6,11 @@ package api
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"strconv"
@@ -30,16 +29,12 @@ type UserHandler interface {
 
 // User defines the handler for Users
 type User struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // newUser - Construct
-func NewUser(m *models.Store, config config.Configuration) *User {
-	return &User{
-		store:  m,
-		config: config,
-	}
+func NewUser(d *deps.Deps) *User {
+	return &User{d}
 }
 
 // Get all users
@@ -52,7 +47,7 @@ func (c *User) Get(g *gin.Context) {
 
 	params := params.ApiParams(g, DefaultParams).Get()
 
-	users, total, err := c.store.User.Get(params)
+	users, total, err := c.Store.User.Get(params)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -83,7 +78,7 @@ func (c *User) GetById(g *gin.Context) {
 		return
 	}
 
-	user, err := c.store.User.GetById(id)
+	user, err := c.Store.User.GetById(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -102,7 +97,7 @@ func (c *User) GetById(g *gin.Context) {
 func (c *User) GetRoles(g *gin.Context) {
 	const op = "UserHandler.GetRoles"
 
-	roles, err := c.store.User.GetRoles()
+	roles, err := c.Store.User.GetRoles()
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
@@ -125,7 +120,7 @@ func (c *User) Create(g *gin.Context) {
 		return
 	}
 
-	user, err := c.store.User.Create(&u)
+	user, err := c.Store.User.Create(&u)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -158,7 +153,7 @@ func (c *User) Update(g *gin.Context) {
 	}
 	u.Id = id
 
-	updatedUser, err := c.store.User.Update(&u)
+	updatedUser, err := c.Store.User.Update(&u)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -186,7 +181,7 @@ func (c *User) Delete(g *gin.Context) {
 		return
 	}
 
-	err = c.store.User.Delete(id)
+	err = c.Store.User.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -212,7 +207,7 @@ func (c *User) ResetPassword(g *gin.Context) {
 		return
 	}
 
-	user, err := c.store.User.GetById(id)
+	user, err := c.Store.User.GetById(id)
 	if err != nil {
 		Respond(g, 400, "No user has been found with the ID: "+strconv.Itoa(id), err)
 		return
@@ -225,7 +220,7 @@ func (c *User) ResetPassword(g *gin.Context) {
 		return
 	}
 
-	err = c.store.User.ResetPassword(id, reset)
+	err = c.Store.User.ResetPassword(id, reset)
 	if errors.Code(err) == errors.INVALID {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -242,7 +237,7 @@ func (c *User) ResetPassword(g *gin.Context) {
 // attached to it.
 func (c *User) clearCache(id int) {
 	go func() {
-		posts, _, err := c.store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
+		posts, _, err := c.Store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
 		if err != nil {
 			log.WithFields(log.Fields{"error": err}).Error()
 		}

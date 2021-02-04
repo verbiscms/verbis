@@ -35,7 +35,7 @@ func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 	// Check if the file has been cached
 	var cachedFile *[]byte
 	var cachedMime *string
-	if r.options.CacheServerAssets {
+	if r.Options.CacheServerAssets {
 		cachedFile, cachedMime = r.getCachedAsset(url)
 		if cachedFile != nil && cachedMime != nil {
 			return cachedMime, cachedFile, nil
@@ -43,7 +43,7 @@ func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 	}
 
 	// Get the relevant paths
-	assetsPath := paths.Theme() + r.theme.AssetsPath
+	assetsPath := paths.Theme() + r.Theme.AssetsPath
 	fileName := strings.Replace(url, "/assets", "", 1)
 	mimeType := mime.TypeByExtension(strings.Replace(filepath.Ext(fileName), ".", "", 1))
 
@@ -55,7 +55,7 @@ func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 	// Set the cache if options allow
 	defer func() {
 		go func() {
-			if r.options.CacheServerAssets && cachedFile == nil {
+			if r.Options.CacheServerAssets && cachedFile == nil {
 				cache.Store.Set(url, &file, cache.RememberForever)
 				cache.Store.Set(url+"mimetype", &mimeType, cache.RememberForever)
 			}
@@ -67,7 +67,7 @@ func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 
 	// Check if the serving of webp's is allowed & get the
 	// webp images and assign if not nil
-	if r.options.MediaServeWebP && webp.Accepts(g) {
+	if r.Options.MediaServeWebP && webp.Accepts(g) {
 		webpFile := webp.GetData(g, assetsPath+fileName, mimeType)
 		if webpFile != nil {
 			mimeType = "image/webp"

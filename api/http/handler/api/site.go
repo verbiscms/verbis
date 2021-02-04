@@ -5,9 +5,8 @@
 package api
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,23 +20,19 @@ type SiteHandler interface {
 
 // Site defines the handler for Posts
 type Site struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // newSite - Construct
-func NewSite(m *models.Store, config config.Configuration) *Site {
-	return &Site{
-		store:  m,
-		config: config,
-	}
+func NewSite(d *deps.Deps) *Site {
+	return &Site{d}
 }
 
 // GetSite gets site's general config
 //
 // Returns 200 if site config was obtained successfully.
 func (c *Site) GetSite(g *gin.Context) {
-	Respond(g, 200, "Successfully obtained site config", c.store.Site.GetGlobalConfig())
+	Respond(g, 200, "Successfully obtained site config", c.Store.Site.GetGlobalConfig())
 }
 
 // GetTheme gets the theme's config from the theme path
@@ -45,7 +40,7 @@ func (c *Site) GetSite(g *gin.Context) {
 // Returns 200 if theme config was obtained successfully.
 // Returns 500 if there was an error getting the theme config.
 func (c *Site) GetTheme(g *gin.Context) {
-	Respond(g, 200, "Successfully obtained theme config", c.store.Site.GetThemeConfig())
+	Respond(g, 200, "Successfully obtained theme config", c.Store.Site.GetThemeConfig())
 }
 
 // GetTemplates gets all page templates
@@ -55,7 +50,7 @@ func (c *Site) GetTheme(g *gin.Context) {
 func (c *Site) GetTemplates(g *gin.Context) {
 	const op = "SiteHandler.GetTemplates"
 
-	templates, err := c.store.Site.GetTemplates()
+	templates, err := c.Store.Site.GetTemplates()
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -74,7 +69,7 @@ func (c *Site) GetTemplates(g *gin.Context) {
 func (c *Site) GetLayouts(g *gin.Context) {
 	const op = "SiteHandler.GetLayouts"
 
-	templates, err := c.store.Site.GetLayouts()
+	templates, err := c.Store.Site.GetLayouts()
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return

@@ -5,14 +5,13 @@
 package middleware
 
 import (
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 )
 
-func Redirects(o models.OptionsRepository) gin.HandlerFunc {
+func Redirects(options *domain.Options) gin.HandlerFunc {
 	return func(g *gin.Context) {
-		options := o.GetStruct()
 		path := location.Get(g).String() + g.Request.URL.String()
 
 		for _, v := range options.SeoRedirects {

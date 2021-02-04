@@ -5,11 +5,10 @@
 package handler
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend"
 	"github.com/ainsleyclark/verbis/api/http/handler/spa"
-	"github.com/ainsleyclark/verbis/api/models"
 )
 
 // Handler defines all of handler funcs for the app.
@@ -30,20 +29,20 @@ type Handler struct {
 }
 
 // Construct
-func New(m *models.Store, config config.Configuration) *Handler {
+func New(d *deps.Deps) *Handler {
 	return &Handler{
-		Auth:       api.NewAuth(m, config),
-		Cache:      api.NewCache(),
-		Categories: api.NewCategories(m, config),
-		Fields:     api.NewFields(m, config),
-		Forms:      api.NewForms(m, config),
-		Media:      api.NewMedia(m, config),
-		Options:    api.NewwOptions(m, config),
-		Posts:      api.NewPosts(m, config),
-		Site:       api.NewSite(m, config),
-		User:       api.NewUser(m, config),
-		SPA:        spa.NewSpa(m, config),
-		Frontend:   frontend.NewPublic(m, config),
-		SEO:        frontend.NewSEO(m, config),
+		Auth:       api.NewAuth(d),
+		Cache:      api.NewCache(d),
+		Categories: api.NewCategories(d),
+		Fields:     api.NewFields(d),
+		Forms:      api.NewForms(d),
+		Media:      api.NewMedia(d),
+		Options:    api.NewOptions(d),
+		Posts:      api.NewPosts(d),
+		Site:       api.NewSite(d),
+		User:       api.NewUser(d),
+		SPA:        spa.NewSpa(d),
+		Frontend:   frontend.NewPublic(d),
+		SEO:        frontend.NewSEO(d),
 	}
 }

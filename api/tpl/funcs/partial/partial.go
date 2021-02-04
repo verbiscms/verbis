@@ -40,7 +40,7 @@ func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, e
 	}
 
 	pathArr := strings.Split(path, "/")
-	funcs := ns.deps.Tpl.FuncMap(ns.tpld.Context, ns.tpld.Post, ns.tpld.Cfg)
+	funcs := ns.deps.Tmpl().FuncMap(ns.tpld.Context, ns.tpld.Post, ns.tpld.Cfg)
 
 	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(funcs).ParseFiles(path)
 	if err != nil {

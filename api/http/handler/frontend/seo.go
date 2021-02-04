@@ -5,9 +5,8 @@
 package frontend
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 )
@@ -22,24 +21,19 @@ type SEOHandler interface {
 
 // SEO defines the handler for all SEO Routes (sitemaps & robots)
 type SEO struct {
-	store   *models.Store
-	config  config.Configuration
+	*deps.Deps
 	sitemap render.SiteMapper
 	options domain.Options
 	render.ErrorHandler
 }
 
 // newSEO - Construct
-func NewSEO(m *models.Store, config config.Configuration) *SEO {
+func NewSEO(d *deps.Deps) *SEO {
 	return &SEO{
-		store:   m,
-		config:  config,
-		options: m.Options.GetStruct(),
-		sitemap: render.NewSitemap(m),
-		ErrorHandler: &render.Errors{
-			ThemeConfig: m.Site.GetThemeConfig(),
-			Store:       m,
-		},
+		Deps:         d,
+		sitemap:      render.NewSitemap(d.Store),
+		options:      d.Store.Options.GetStruct(),
+		ErrorHandler: &render.Errors{Deps: d},
 	}
 }
 

@@ -5,23 +5,22 @@
 package routes
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 )
 
-func frontend(s *server.Server, c *handler.Handler, m *models.Store, config config.Configuration) {
+func frontend(d *deps.Deps, s *server.Server, c *handler.Handler) {
 
 	// Set Frontend Middleware
 	s.Use(middleware.Recovery(server.Recover))
-	s.Use(middleware.Redirects(m.Options))
+	s.Use(middleware.Redirects(d.Options))
 
 	// TODO: This check should be in config
-	uploadPath := config.Media.UploadPath
+	uploadPath := d.Config.Media.UploadPath
 	if uploadPath == "" {
 		uploadPath = "uploads"
 	}

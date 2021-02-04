@@ -9,11 +9,9 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
 	"github.com/gin-gonic/gin"
 	"net/url"
 	"path"
@@ -35,7 +33,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		return nil, nil
 	}
 
-	post, err := r.store.Posts.GetBySlug(url)
+	post, err := r.Store.Posts.GetBySlug(url)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No page found with the url: %s", url), Operation: op, Err: err}
 	}
@@ -43,7 +41,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	// Check if the file has been cached
 	var foundCache bool
 	cacheKey := cache.GetPostKey(post.Id)
-	if r.options.CacheServerTemplates {
+	if r.Options.CacheServerTemplates {
 		var cachedTemplate interface{}
 		cachedTemplate, foundCache = cache.Store.Get(cacheKey)
 
@@ -55,7 +53,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	// Check if the resource is public
 	resource := post.Resource
 	if resource != nil {
-		for _, v := range r.theme.Resources {
+		for _, v := range r.Theme.Resources {
 			if v.Hidden && v.Name == *resource {
 				return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("The post resource is not public: %v", resource), Operation: op, Err: err}
 			}
@@ -69,60 +67,27 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 
 	pt := "index"
 	if post.PageTemplate != "default" {
-		pt = r.theme.TemplateDir + "/" + post.PageTemplate
+		pt = r.Theme.TemplateDir + "/" + post.PageTemplate
 	}
 
 	master := ""
 	if post.PageLayout != "default" {
-		master = r.theme.LayoutDir + "/" + post.PageLayout
+		master = r.Theme.LayoutDir + "/" + post.PageLayout
 	} else {
-		pt = pt + r.theme.FileExtension
+		pt = pt + r.Theme.FileExtension
 	}
 
-	d := &deps.Deps{
-		Store:   r.store,
-		Config:  r.config,
-		Site:    r.store.Site.GetGlobalConfig(),
-		Options: r.store.Options.GetStruct(),
-		Paths: deps.Paths{
-			Base:    paths.Base(),
-			Admin:   paths.Admin(),
-			API:     paths.Api(),
-			Theme:   paths.Theme(),
-			Uploads: paths.Uploads(),
-			Storage: paths.Storage(),
-		},
-		Theme: r.store.Site.GetThemeConfig(),
-	}
-
-	t := tplimpl.New(d)
-	d.Tpl = t
-
-	e := d.Tpl.Prepare(&tpl.Config{
+	exec := r.Tmpl().Prepare(&tpl.Config{
 		Root:      paths.Theme(),
-		Extension: r.theme.FileExtension,
+		Extension: r.Theme.FileExtension,
 		Master:    master,
 	})
 
 	var b bytes.Buffer
-	err = e.ExecutePost(&b, pt, g, &post)
+	err = exec.ExecutePost(&b, pt, g, &post)
 	if err != nil {
 		panic(err)
 	}
-
-	//tm := tpl.New(, g, &post)
-
-	//gvFrontend := goview.New(goview.Config{
-	//	Root:         paths.Theme(),
-	//	Extension:    r.theme.FileExtension,
-	//	Master:       master,
-	//	Partials:     []string{},
-	//	//Funcs:        tm.Funcs(),
-	//	DisableCache: !environment.IsProduction(),
-	//})
-	//
-	//var b bytes.Buffer
-	//err = gvFrontend.RenderWriter(&b, pt, tm.Data())
 
 	minified, err := r.minify.MinifyBytes(&b, "text/html")
 	if err != nil || minified == nil {
@@ -130,7 +95,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	}
 
 	go func() {
-		if r.options.CacheServerTemplates && !foundCache {
+		if r.Options.CacheServerTemplates && !foundCache {
 			cache.Store.Set(cacheKey, minified, cache.RememberForever)
 		}
 	}()
@@ -142,7 +107,7 @@ func (r *Render) handleTrailingSlash(g *gin.Context) (string, bool) {
 	p := g.Request.URL.Path
 
 	// True if options enforce slash is set in admin
-	trailing := r.options.SeoEnforceSlash
+	trailing := r.Options.SeoEnforceSlash
 	lastChar := p[len(p)-1:]
 
 	uri, err := url.Parse(p)
