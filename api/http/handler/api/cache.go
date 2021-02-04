@@ -16,7 +16,7 @@ type CacheHandler interface {
 }
 
 // CacheController defines the handler for Cache
-type Cache struct{
+type Cache struct {
 	*deps.Deps
 }
 

@@ -19,8 +19,8 @@ type Renderer interface {
 // Render
 type Render struct {
 	*deps.Deps
-	minify  minifier
-	cacher  headerWriter
+	minify minifier
+	cacher headerWriter
 }
 
 // NewRender - Construct

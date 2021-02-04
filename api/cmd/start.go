@@ -54,7 +54,6 @@ up the server on the port specified in the .env file.`,
 			// Set up the router & pass logger
 			serve := server.New(store.Options)
 
-
 			d := deps.New(deps.DepsConfig{
 				Store:   store,
 				Config:  cfg,

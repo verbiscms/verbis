@@ -25,20 +25,26 @@ var (
 		MinifyJSON: true,
 		MinifyXML:  true,
 	}
+	// htmlMime is the default for HTML regexp for the pkg minifier
 	htmlMime = `text/html`
+	// cssMime is the default for CSS regexp for the pkg minifier
 	cssMime = `text/css`
+	// jsMime is the default for JS regexp for the pkg minifier
 	jsMime = `^(application|text)/(x-)?(java|ecma)script$`
+	// svgMime is the default for SVG regexp for the pkg minifier
 	svgMime = `image/svg+xml`
+	// jsonMime is the default for JSON regexp for the pkg minifier
 	jsonMime = `[/+]json$`
-	xmlMime =`[/+]xml$`
+	// xmlMime is the default for XML regexp for the pkg minifier
+	xmlMime = `[/+]xml$`
 )
 
 // Config represents the options for minifying output.
 type Config struct {
 	MinifyHTML bool
-	MinifyCSS bool
-	MinifyJS bool
-	MinifySVG bool
+	MinifyCSS  bool
+	MinifyJS   bool
+	MinifySVG  bool
 	MinifyJSON bool
-	MinifyXML bool
+	MinifyXML  bool
 }
