@@ -5,7 +5,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-// Query represents the map of arguments passed to
+// Query defines the map of arguments passed to
 // list functions in templates.
 type Query map[string]interface{}
 
@@ -33,8 +33,8 @@ func (q Query) Get(orderBy string, orderDirection string) params.Params {
 	if orderDirection != "" {
 		def.OrderDirection = orderDirection
 	}
-	params := params.NewParams(q, def)
-	return params.Get()
+	p := params.NewParams(q, def)
+	return p.Get()
 }
 
 // Param

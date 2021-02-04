@@ -41,5 +41,5 @@ type Deps struct {
 	// Theme
 	Theme domain.ThemeConfig
 
-	Tpl tpl.TemplateExecutor
+	Tpl tpl.TemplateHandler
 }
