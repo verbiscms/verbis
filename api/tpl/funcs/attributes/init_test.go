@@ -3,7 +3,7 @@ package attributes
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/frontend/auth"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/stretchr/testify/assert"
 	"testing"

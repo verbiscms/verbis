@@ -2,7 +2,7 @@ package attributes
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/frontend/auth"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 )
 

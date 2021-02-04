@@ -5,6 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
 	"github.com/gin-gonic/gin"
 )
@@ -38,15 +39,20 @@ func (e *Errors) NotFound(g *gin.Context) {
 	d.Tpl = tplimpl.New(d)
 
 
-	//err := t.Execute(g.Writer, "404", nil)
-	//if err != nil {
-	//	panic(err)
-	//}
+	err := d.Tpl.Prepare(tpl.Config{
+		Root:      paths.Theme(),
+		Extension: e.ThemeConfig.FileExtension,
+		Master:    "",
+	}).Execute(g.Writer, "404", nil)
+
+	if err != nil {
+		panic(err)
+	}
 
 	//
 	//gvError := goview.New(goview.Config{
-	//	Root:         paths.Theme(),
-	//	Extension:    e.ThemeConfig.FileExtension,
+	//	Root:        ,
+	//	Extension:    ,
 	//	Partials:     []string{},
 	//	//Funcs:        tm.Funcs(),
 	//	DisableCache: true,

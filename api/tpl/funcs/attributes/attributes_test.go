@@ -5,7 +5,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/frontend/auth"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"

@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
 	"github.com/gin-gonic/gin"
 	"net/url"
@@ -90,15 +91,18 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		Theme: r.store.Site.GetThemeConfig(),
 	}
 
+	t := tplimpl.New(d)
+	d.Tpl = t
 
-	t := tplimpl.New(d).Prepare(&tplimpl.Config{
+
+	e := d.Tpl.Prepare(&tpl.Config{
 		Root:      paths.Theme(),
 		Extension: r.theme.FileExtension,
 		Master:    master,
 	})
 
 	var b bytes.Buffer
-	err = t.ExecutePost(&b, pt, g, &post)
+	err = e.ExecutePost(&b, pt, g, &post)
 	if err != nil {
 		panic(err)
 	}

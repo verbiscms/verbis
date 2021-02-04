@@ -3,11 +3,41 @@ package tplimpl
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/tpl"
 	"html/template"
 	"io"
+	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
+
+// FileHandler file handler interface
+type fileHandler func(config tpl.TemplateConfig, template string) (content string, err error)
+
+// DefaultFileHandler
+//
+// Accepts a template path and looks up the page template by the
+// template path and file extension set in the engine.
+// Returns
+func DefaultFileHandler() fileHandler {
+	const op = "TemplateEngine.defaultFileHandler"
+
+	return func(config tpl.TemplateConfig, template string) (content string, err error) {
+		// Get the absolute path of the root template
+		path, err := filepath.Abs(config.GetRoot() + string(os.PathSeparator) + template + config.GetExtension())
+		if err != nil {
+			return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("No page template exists with the path:%v", path), Operation: op, Err: err}
+		}
+
+		data, err := ioutil.ReadFile(path)
+		if err != nil {
+			return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Render read name:%v, path:%v", template, path), Operation: op, Err: err}
+		}
+
+		return string(data), nil
+	}
+}
 
 func (e *Execute) executeRender(out io.Writer, name string, data interface{}) error {
 	useMaster := true

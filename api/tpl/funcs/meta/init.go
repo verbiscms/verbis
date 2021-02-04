@@ -18,7 +18,6 @@ func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 	return &Namespace{
 		deps:  d,
 		post:  t.Post,
-		funcs: t.Funcs,
 	}
 }
 
