@@ -13,7 +13,7 @@ func TestMinify_MinifyBytes(t *testing.T) {
 
 	tt := map[string]struct {
 		input string
-		mime string
+		mime  string
 		want  interface{}
 	}{
 		"HTML": {
@@ -86,7 +86,7 @@ func TestMinify_MinifyBytesNotParsed(t *testing.T) {
 
 	tt := map[string]struct {
 		input string
-		mime string
+		mime  string
 		want  interface{}
 	}{
 		"HTML": {

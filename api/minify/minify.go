@@ -29,11 +29,14 @@ type Minifier interface {
 // package and options to determine whether or not to
 // minify the asset passed.
 type minify struct {
-	pkg     *min.M
+	pkg    *min.M
 	config Config
 }
 
-// New - Construct, sets minify functions
+// New
+//
+// Creates a new Minify instance, if no config options are
+// passed the defaultConfig is used.
 func New(cfg ...Config) *minify {
 	m := min.New()
 
@@ -43,8 +46,8 @@ func New(cfg ...Config) *minify {
 	}
 
 	return &minify{
-		pkg:     m,
-		config:  config,
+		pkg:    m,
+		config: config,
 	}
 }
 
