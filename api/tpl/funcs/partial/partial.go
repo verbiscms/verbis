@@ -22,7 +22,7 @@ import (
 func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, error) {
 	const op = "Templates.Partial"
 
-	path := ns.deps.Paths.Theme + "/" + name
+	path := ns.tpld.Cfg.GetRoot() + "/" + name
 
 	if !files.Exists(path) {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Partial file does not exist", Operation: op, Err: fmt.Errorf("no file exists with the path: %s", name)}
@@ -36,18 +36,18 @@ func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, e
 	}
 
 	pathArr := strings.Split(path, "/")
-	funcs := ns.deps.Tpl.FuncMap(ns.tpld.Context, ns.tpld.Post)
+	funcs := ns.deps.Tpl.FuncMap(ns.tpld.Context, ns.tpld.Post, ns.tpld.Cfg)
 
 	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(funcs).ParseFiles(path)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to parse partial file", Operation: op, Err: err}
 	}
 
-	var tpl bytes.Buffer
-	err = file.Execute(&tpl, context)
+	var b bytes.Buffer
+	err = file.Execute(&b, context)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute partial file", Operation: op, Err: err}
 	}
 
-	return template.HTML(tpl.String()), nil
+	return template.HTML(b.String()), nil
 }
