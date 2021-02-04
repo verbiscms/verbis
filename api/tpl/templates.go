@@ -28,6 +28,7 @@ type TemplateExecutor interface {
 	Execute(w io.Writer, name string, data interface{}) error
 	ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) error
 	Config() TemplateConfig
+	Executor() TemplateExecutor
 }
 
 // TemplateFuncGetter represents the functions for obtaining

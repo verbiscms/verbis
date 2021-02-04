@@ -6,6 +6,7 @@ package render
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/minify"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +20,7 @@ type Renderer interface {
 // Render
 type Render struct {
 	*deps.Deps
-	minify minifier
+	minify minify.Minifier
 	cacher headerWriter
 }
 
@@ -28,7 +29,14 @@ func NewRender(d *deps.Deps) *Render {
 	options := d.Store.Options.GetStruct()
 	return &Render{
 		d,
-		newMinify(options),
+		minify.New(minify.Config{
+			MinifyHTML: options.MinifyHTML,
+			MinifyCSS:  options.MinifyCSS,
+			MinifyJS:   options.MinifyJS,
+			MinifySVG:  options.MinifySVG,
+			MinifyJSON: options.MinifyJSON,
+			MinifyXML:  options.MinifyXML,
+		}),
 		newHeaders(options),
 	}
 }
