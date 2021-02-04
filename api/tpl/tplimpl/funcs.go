@@ -29,9 +29,9 @@ import (
 	_ "github.com/ainsleyclark/verbis/api/tpl/funcs/users"
 	_ "github.com/ainsleyclark/verbis/api/tpl/funcs/util"
 
+	// Package
 	"html/template"
 )
-
 
 // getFuncs
 //

@@ -16,8 +16,8 @@ func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 		t.Post.SeoMeta.Meta = &domain.PostMeta{Title: "", Description: ""}
 	}
 	return &Namespace{
-		deps:  d,
-		post:  t.Post,
+		deps: d,
+		post: t.Post,
 	}
 }
 
