@@ -5,9 +5,7 @@
 package render
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,23 +18,17 @@ type Renderer interface {
 
 // Render
 type Render struct {
-	store   *models.Store
-	config  config.Configuration
+	*deps.Deps
 	minify  minifier
 	cacher  headerWriter
-	options domain.Options
-	theme   domain.ThemeConfig
 }
 
 // NewRender - Construct
-func NewRender(m *models.Store, config config.Configuration) *Render {
-	options := m.Options.GetStruct()
+func NewRender(d *deps.Deps) *Render {
+	options := d.Store.Options.GetStruct()
 	return &Render{
-		store:   m,
-		config:  config,
-		minify:  newMinify(options),
-		cacher:  newHeaders(options),
-		options: options,
-		theme:   m.Site.GetThemeConfig(),
+		d,
+		newMinify(options),
+		newHeaders(options),
 	}
 }

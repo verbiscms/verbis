@@ -5,13 +5,13 @@
 package routes
 
 import (
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 )
 
-func api(s *server.Server, c *handler.Handler, m *models.Store) {
+func api(d *deps.Deps, s *server.Server, c *handler.Handler) {
 
 	// API Routes
 	api := s.Group("/api/v1")
@@ -45,8 +45,8 @@ func api(s *server.Server, c *handler.Handler, m *models.Store) {
 		// Operator
 		operator := api.Group("")
 		{
-			operator.Use(middleware.OperatorTokenCheck(m.User))
-			operator.Use(middleware.SessionCheck(m.User))
+			operator.Use(middleware.OperatorTokenCheck(d))
+			operator.Use(middleware.SessionCheck(d))
 
 			// Theme
 			operator.GET("/theme", c.Site.GetTheme)
@@ -102,8 +102,8 @@ func api(s *server.Server, c *handler.Handler, m *models.Store) {
 		// Administrator
 		admin := api.Group("")
 		{
-			admin.Use(middleware.AdminTokenCheck(m.User))
-			operator.Use(middleware.SessionCheck(m.User))
+			admin.Use(middleware.AdminTokenCheck(d))
+			operator.Use(middleware.SessionCheck(d))
 
 			// Users
 			admin.POST("/users", c.User.Create)

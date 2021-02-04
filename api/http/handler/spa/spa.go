@@ -5,10 +5,9 @@
 package spa
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -22,17 +21,14 @@ type SPAHandler interface {
 
 // SPA defines the handler for the SPA
 type SPA struct {
-	config config.Configuration
+	*deps.Deps
 	render.ErrorHandler
 }
 
 // newSpa - Construct
-func NewSpa(m *models.Store, config config.Configuration) *SPA {
+func NewSpa(d *deps.Deps) *SPA {
 	return &SPA{
-		config: config,
-		ErrorHandler: &render.Errors{
-			ThemeConfig: m.Site.GetThemeConfig(),
-		},
+		ErrorHandler: &render.Errors{Deps: d},
 	}
 }
 

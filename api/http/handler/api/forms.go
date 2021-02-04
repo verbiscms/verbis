@@ -5,12 +5,11 @@
 package api
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
@@ -25,17 +24,12 @@ type FormHandler interface {
 
 // Forms defines the handler for all Form Routes
 type Forms struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // NewForms - Construct
-func NewForms(m *models.Store, config config.Configuration) *Forms {
-	return &Forms{
-		store:  m,
-		config: config,
-	}
-
+func NewForms(d *deps.Deps) *Forms {
+	return &Forms{d}
 }
 
 // Get all forms
@@ -46,9 +40,9 @@ func NewForms(m *models.Store, config config.Configuration) *Forms {
 func (c *Forms) Get(g *gin.Context) {
 	const op = "FormHandler.Get"
 
-	params := params.ApiParams(g, DefaultParams).Get()
+	p := params.ApiParams(g, DefaultParams).Get()
 
-	forms, total, err := c.store.Forms.Get(params)
+	forms, total, err := c.Store.Forms.Get(p)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -60,7 +54,7 @@ func (c *Forms) Get(g *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().Get(params, total)
+	pagination := http.NewPagination().Get(p, total)
 
 	Respond(g, 200, "Successfully obtained forms", forms, pagination)
 }
@@ -79,7 +73,7 @@ func (c *Forms) GetById(g *gin.Context) {
 		return
 	}
 
-	form, err := c.store.Forms.GetById(id)
+	form, err := c.Store.Forms.GetById(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -105,7 +99,7 @@ func (c *Forms) Create(g *gin.Context) {
 		return
 	}
 
-	newForm, err := c.store.Forms.Create(&form)
+	newForm, err := c.Store.Forms.Create(&form)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -138,7 +132,7 @@ func (c *Forms) Update(g *gin.Context) {
 	}
 	form.Id = id
 
-	updatedForm, err := c.store.Forms.Update(&form)
+	updatedForm, err := c.Store.Forms.Update(&form)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -164,7 +158,7 @@ func (c *Forms) Delete(g *gin.Context) {
 		return
 	}
 
-	err = c.store.Forms.Delete(id)
+	err = c.Store.Forms.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		Respond(g, 400, errors.Message(err), err)
 		return
@@ -185,7 +179,7 @@ func (c *Forms) Delete(g *gin.Context) {
 func (c *Forms) Send(g *gin.Context) {
 	const op = "FormHandler.Send"
 
-	form, err := c.store.Forms.GetByUUID(g.Param("uuid"))
+	form, err := c.Store.Forms.GetByUUID(g.Param("uuid"))
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -200,7 +194,7 @@ func (c *Forms) Send(g *gin.Context) {
 		return
 	}
 
-	err = c.store.Forms.Send(&form, g.ClientIP(), g.Request.UserAgent())
+	err = c.Store.Forms.Send(&form, g.ClientIP(), g.Request.UserAgent())
 	if err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return

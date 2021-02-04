@@ -27,7 +27,6 @@
 			</div><!-- /Row -->
 			<div class="row">
 				<div class="col-12">
-					<pre>{{ head }}</pre>
 					<h6 class="margin">Header</h6>
 					<!-- =====================
 						Head

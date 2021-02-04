@@ -5,8 +5,7 @@
 package frontend
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 )
@@ -20,24 +19,17 @@ type PublicHandler interface {
 
 // Public defines the handler for all frontend routes
 type Public struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 	render render.Renderer
 	render.ErrorHandler
 }
 
 // NewPublic - Construct
-func NewPublic(m *models.Store, config config.Configuration) *Public {
-	const op = "FrontendHandler.newFrontend"
-
+func NewPublic(d *deps.Deps) *Public {
 	return &Public{
-		store:  m,
-		config: config,
-		render: render.NewRender(m, config),
-		ErrorHandler: &render.Errors{
-			ThemeConfig: m.Site.GetThemeConfig(),
-			Store:       m,
-		},
+		Deps:         d,
+		render:       render.NewRender(d),
+		ErrorHandler: &render.Errors{Deps: d},
 	}
 }
 

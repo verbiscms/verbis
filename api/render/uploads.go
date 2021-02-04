@@ -25,7 +25,7 @@ func (r *Render) Upload(g *gin.Context) (*string, *[]byte, error) {
 	// Check if the file has been cached
 	var cachedFile *[]byte
 	var cachedMime *string
-	if r.options.CacheServerUploads {
+	if r.Options.CacheServerUploads {
 		cachedFile, cachedMime = r.getCachedAsset(url)
 		if cachedFile != nil && cachedMime != nil {
 			return cachedMime, cachedFile, nil
@@ -36,7 +36,7 @@ func (r *Render) Upload(g *gin.Context) (*string, *[]byte, error) {
 	r.cacher.Cache(g)
 
 	// Get the data & mime type from the media store
-	file, mimeType, err := r.store.Media.Serve(url, webp.Accepts(g))
+	file, mimeType, err := r.Store.Media.Serve(url, webp.Accepts(g))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -44,7 +44,7 @@ func (r *Render) Upload(g *gin.Context) (*string, *[]byte, error) {
 	// Set the cache if the app is in production
 	defer func() {
 		go func() {
-			if r.options.CacheServerUploads && cachedFile == nil {
+			if r.Options.CacheServerUploads && cachedFile == nil {
 				cache.Store.Set(url, &file, cache.RememberForever)
 				cache.Store.Set(url+"mimetype", &mimeType, cache.RememberForever)
 			}

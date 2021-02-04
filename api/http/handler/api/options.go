@@ -5,10 +5,9 @@
 package api
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"github.com/teamwork/reload"
@@ -24,16 +23,12 @@ type OptionsHandler interface {
 
 // Options defines the handler for Options
 type Options struct {
-	store  *models.Store
-	config config.Configuration
+	*deps.Deps
 }
 
 // newOptions - Construct
-func NewwOptions(m *models.Store, config config.Configuration) *Options {
-	return &Options{
-		store:  m,
-		config: config,
-	}
+func NewOptions(d *deps.Deps) *Options {
+	return &Options{d}
 }
 
 // Get All
@@ -43,7 +38,7 @@ func NewwOptions(m *models.Store, config config.Configuration) *Options {
 func (c *Options) Get(g *gin.Context) {
 	const op = "OptionsHandler.Delete"
 
-	options, err := c.store.Options.Get()
+	options, err := c.Store.Options.Get()
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -67,7 +62,7 @@ func (c *Options) GetByName(g *gin.Context) {
 	const op = "OptionsHandler.GetByName"
 
 	name := g.Param("name")
-	option, err := c.store.Options.GetByName(name)
+	option, err := c.Store.Options.GetByName(name)
 	if errors.Code(err) == errors.NOTFOUND {
 		Respond(g, 200, errors.Message(err), err)
 		return
@@ -100,7 +95,7 @@ func (c *Options) UpdateCreate(g *gin.Context) {
 		return
 	}
 
-	if err := c.store.Options.UpdateCreate(&options); err != nil {
+	if err := c.Store.Options.UpdateCreate(&options); err != nil {
 		Respond(g, 500, errors.Message(err), err)
 		return
 	}
@@ -108,6 +103,8 @@ func (c *Options) UpdateCreate(g *gin.Context) {
 	Respond(g, 200, "Successfully created/updated options", nil)
 
 	go func() {
+		// Set the deps options
+		c.SetOptions(&vOptions)
 		time.Sleep(time.Second * 2)
 		reload.Exec()
 	}()
