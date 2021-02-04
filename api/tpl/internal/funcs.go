@@ -4,7 +4,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/gin-gonic/gin"
-	"html/template"
 )
 
 var GenericNamespaceRegistry []func(d *deps.Deps) *FuncsNamespace
@@ -14,7 +13,6 @@ type FuncNamespaces []*FuncsNamespace
 type TemplateDeps struct {
 	Context *gin.Context
 	Post    *domain.PostData
-	Funcs   template.FuncMap
 }
 
 func AddFuncsNamespace(ns func(d *deps.Deps) *FuncsNamespace) {

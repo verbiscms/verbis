@@ -6,7 +6,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/generic/safe"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/safe"
 	"github.com/stretchr/testify/assert"
 	"html/template"
 	"os"

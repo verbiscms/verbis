@@ -1,10 +1,11 @@
 package meta
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-
-	//"github.com/ainsleyclark/verbis/api/tpl/templates"
+	"github.com/ainsleyclark/verbis/api/tpl"
 	"html/template"
 )
 
@@ -46,7 +47,7 @@ func (ns *Namespace) Header() template.HTML {
 		deps:    ns.deps,
 	}
 
-	head := ns.executeTemplates(tm, []string{"meta.cms", "opengraph.cms", "twitter.cms"})
+	head := ns.executeTemplates(tm, []string{"meta", "opengraph", "twitter"})
 
 	return template.HTML(head)
 }
@@ -89,26 +90,27 @@ func (ns *Namespace) Footer() template.HTML {
 		Options: ns.deps.Options,
 	}
 
-	foot := ns.executeTemplates(tm, []string{"footer.cms"})
+	foot := ns.executeTemplates(tm, []string{"footer"})
 
 	return template.HTML(foot)
 }
 
 func (ns *Namespace) executeTemplates(tm *TemplateMeta, tpls []string) string {
-	//head := ""
-	//for _, name := range tpls {
+	head := ""
+	for _, name := range tpls {
 
-		//var b bytes.Buffer
-		//err := ns.deps.Tpl.Prepare(templates.Config{
-		//	Root:      ns.deps.Paths.Base + EmbeddedPath,
-		//	Extension: ".html",
-		//}).Execute(&b, name, tm)
+		var b bytes.Buffer
+		err := ns.deps.Tpl.Prepare(tpl.Config{
+			Root:      ns.deps.Paths.Base + EmbeddedPath,
+			Extension: ".cms",
+		}).Execute(&b, name, tm)
 
-		//if err != nil {
-		//	fmt.Println(err)
-		//}
+		if err != nil {
+			fmt.Println(err)
+		}
 
-		//head += fmt.Sprintf("%s\n", b.String())
-	//}
-	return "head"
+		head += fmt.Sprintf("%s\n", b.String())
+	}
+
+	return head
 }

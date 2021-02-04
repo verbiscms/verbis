@@ -7,6 +7,7 @@ import (
 	"io"
 )
 
+
 type TemplateHandler interface {
 	TemplateFuncGetter
 	TemplateDataGetter
@@ -36,6 +37,25 @@ type TemplateConfig interface {
 	GetRoot() string
 	GetExtension() string
 	GetMaster() string
+}
+
+// Config represents the options for passing
+type Config struct {
+	Root      string //view root
+	Extension string //template extension
+	Master    string //template master
+}
+
+func (c Config) GetRoot() string {
+	return c.Root
+}
+
+func (c Config) GetExtension() string {
+	return c.Extension
+}
+
+func (c Config) GetMaster() string {
+	return c.Master
 }
 
 

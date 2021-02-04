@@ -36,7 +36,9 @@ func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, e
 	}
 
 	pathArr := strings.Split(path, "/")
-	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(ns.tpld.Funcs).ParseFiles(path)
+	funcs := ns.deps.Tpl.FuncMap(ns.tpld.Context, ns.tpld.Post)
+
+	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(funcs).ParseFiles(path)
 	if err != nil {
 		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to parse partial file", Operation: op, Err: err}
 	}

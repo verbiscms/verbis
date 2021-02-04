@@ -2,6 +2,16 @@ package tplimpl
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/tpl"
+	"html/template"
+	"sync"
+)
+
+const (
+	// Delimiter left for the template
+	DelimitersLeft = "{{"
+	// Delimiter right for the template
+	DelimitersRight = "}}"
 )
 
 // TemplateManager defines the service for executing and
@@ -12,26 +22,20 @@ type TemplateManager struct {
 	deps *deps.Deps
 }
 
-// Config represents the options for passing
-type Config struct {
-	Root      string //view root
-	Extension string //template extension
-	Master    string //template master
-}
-
 // Creates a new TemplateManager
 func New(d *deps.Deps) *TemplateManager {
-	return &TemplateManager{}
+	return &TemplateManager{
+		deps: d,
+	}
 }
 
-func (c *Config) GetRoot() string {
-	return c.Root
-}
-
-func (c *Config) GetExtension() string {
-	return c.Extension
-}
-
-func (c *Config) GetMaster() string {
-	return c.Master
+// Execute defines the data for rendering a template
+// contains
+type Execute struct {
+	*TemplateManager
+	config      tpl.TemplateConfig
+	tplMap      map[string]*template.Template
+	tplMutex    sync.RWMutex
+	fileHandler fileHandler
+	funcMap     template.FuncMap
 }
