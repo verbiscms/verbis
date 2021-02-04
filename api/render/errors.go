@@ -38,7 +38,6 @@ func (e *Errors) NotFound(g *gin.Context) {
 
 	d.Tpl = tplimpl.New(d)
 
-
 	err := d.Tpl.Prepare(tpl.Config{
 		Root:      paths.Theme(),
 		Extension: e.ThemeConfig.FileExtension,

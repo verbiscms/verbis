@@ -48,7 +48,7 @@ func (e *Execute) Execute(w io.Writer, name string, data interface{}) error {
 // the variables package.
 func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) error {
 	data := e.Data(ctx, post)
-	e.funcMap = e.FuncMap(ctx, post)
+	e.funcMap = e.FuncMap(ctx, post, e.config)
 	return e.executeRender(w, name, data)
 }
 
@@ -62,6 +62,15 @@ func (e *Execute) Exists(template string) bool {
 		return false
 	}
 	return true
+}
+
+// Config
+//
+// Satisfies the tpl.TemplateExecutor interface by returning
+// the Execute configuration to obtain the root, extension
+// and master layout.
+func (e *Execute) Config() tpl.TemplateConfig {
+	return e.config
 }
 
 // Data
@@ -78,10 +87,11 @@ func (t *TemplateManager) Data(ctx *gin.Context, post *domain.PostData) interfac
 // Satisfies the tpl.TemplateFuncGetter interface by returning
 // functions that relies on context and post data such as
 // `Meta` and `Url`. Generic functions are also included.
-func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostData) template.FuncMap {
+func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostData, cfg tpl.TemplateConfig) template.FuncMap {
 	td := &internal.TemplateDeps{
 		Context: ctx,
 		Post:    post,
+		Cfg:     cfg,
 	}
 	funcs := t.getFuncs(t.getNamespaces(td))
 	return funcs
@@ -96,4 +106,3 @@ func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostData) templ
 func (t *TemplateManager) GenericFuncMap() template.FuncMap {
 	return t.getFuncs(t.getGenericNamespaces())
 }
-

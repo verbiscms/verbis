@@ -94,7 +94,6 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	t := tplimpl.New(d)
 	d.Tpl = t
 
-
 	e := d.Tpl.Prepare(&tpl.Config{
 		Root:      paths.Theme(),
 		Extension: r.theme.FileExtension,
@@ -120,7 +119,6 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	//
 	//var b bytes.Buffer
 	//err = gvFrontend.RenderWriter(&b, pt, tm.Data())
-
 
 	minified, err := r.minify.MinifyBytes(&b, "text/html")
 	if err != nil || minified == nil {

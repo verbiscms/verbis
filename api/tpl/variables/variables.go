@@ -64,6 +64,3 @@ func Data(d *deps.Deps, ctx *gin.Context, post *domain.PostData) interface{} {
 		},
 	}
 }
-
-
-
