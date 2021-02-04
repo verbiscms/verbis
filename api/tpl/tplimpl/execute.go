@@ -7,6 +7,7 @@ package tplimpl
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/ainsleyclark/verbis/api/tpl/errors"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/ainsleyclark/verbis/api/tpl/variables"
 	"github.com/gin-gonic/gin"
@@ -40,7 +41,8 @@ func (t *TemplateManager) Prepare(c tpl.TemplateConfig) tpl.TemplateExecutor {
 // is used.
 func (e *Execute) Execute(w io.Writer, name string, data interface{}) error {
 	e.funcMap = e.GenericFuncMap()
-	return e.executeRender(w, name, data)
+	_, err := e.executeRender(w, name, data)
+	return err
 }
 
 // ExecutePost
@@ -53,7 +55,25 @@ func (e *Execute) Execute(w io.Writer, name string, data interface{}) error {
 func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) error {
 	data := e.Data(ctx, post)
 	e.funcMap = e.FuncMap(ctx, post, e.config)
-	return e.executeRender(w, name, data)
+
+	path, err := e.executeRender(w, name, data)
+
+	if err != nil {
+		errors.New(errors.Recovery{
+			File: path,
+			Error:   err,
+			Deps:    e.deps,
+			Writer:  w,
+			Name:    name,
+			Context: ctx,
+			Post:    post,
+			Exec:    e.config,
+		}).Recover()
+
+		return err
+	}
+
+	return nil
 }
 
 // Exists
@@ -75,6 +95,14 @@ func (e *Execute) Exists(template string) bool {
 // and master layout.
 func (e *Execute) Config() tpl.TemplateConfig {
 	return e.config
+}
+
+// Executor
+//
+// Satisfies the tpl.TemplateExecutor interface by returning
+// itself for use with recovery
+func (e *Execute) Executor() tpl.TemplateExecutor {
+	return e
 }
 
 // Data
