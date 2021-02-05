@@ -1,11 +1,21 @@
 {{ define "content" }}
 
+
+
+
+
     <!-- =====================
         Error
         ===================== -->
     <section class="error">
         <div class="container">
             <div class="row">
+
+
+                <div class="col-12">
+                    <pre class="highlight code"><code class="language-go">{{- range $stackItem := .Stack }}{{ range $line := $stackItem.Lines }}<span class="code-line {{ if eq $stackItem.Line $line.Line }}code-line-highlight{{ end }}">{{ $line.Line }}</span>{{ $line.Content }}<br/>{{ end }}{{ end }}</code></pre>
+                </div>
+
                 <div class="col-12">
                     <div class="card">
                         {{ with .Error.Code }}<h3 class="card-subtitle">Verbis Error - {{ . }}</h3>{{ end }}
@@ -37,25 +47,26 @@
                 <div class="col-12 col-desk-4">
                     <div class="error-info">
                         <h2>Information:</h2>
-                        {{ with .Url }}
-                            <div class="card card-small">
-                                <h4><span class="card-subtitle">Url:</span>{{ . }}</h4>
-                            </div>
-                        {{ end }}
-                        {{ with .Ip }}
-                            <div class="card card-small">
-                                <h4><span class="card-subtitle">Client IP:</span>{{ . }}</h4>
-                            </div>
-                        {{ end }}
-                        {{ with .DataLength }}
-                            <div class="card card-small">
-                                <h4><span class="card-subtitle">Data Length:</span>{{ . }}</h4>
-                            </div>
-                        {{ end }}
+{{/*                        {{ with .Url }}*/}}
+{{/*                            <div class="card card-small">*/}}
+{{/*                                <h4><span class="card-subtitle">Url:</span>{{ . }}</h4>*/}}
+{{/*                            </div>*/}}
+{{/*                        {{ end }}*/}}
+{{/*                        {{ with .Ip }}*/}}
+{{/*                            <div class="card card-small">*/}}
+{{/*                                <h4><span class="card-subtitle">Client IP:</span>{{ . }}</h4>*/}}
+{{/*                            </div>*/}}
+{{/*                        {{ end }}*/}}
+{{/*                        {{ with .DataLength }}*/}}
+{{/*                            <div class="card card-small">*/}}
+{{/*                                <h4><span class="card-subtitle">Data Length:</span>{{ . }}</h4>*/}}
+{{/*                            </div>*/}}
+{{/*                        {{ end }}*/}}
                     </div>
                 </div>
             </div><!-- /Row -->
         </div><!-- /Container -->
     </section>
 
+    <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.4.0/languages/go.min.js"></script>
 {{ end }}

@@ -60,7 +60,7 @@ func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *
 
 	if err != nil {
 		errors.New(errors.Recovery{
-			File: path,
+			File:    path,
 			Error:   err,
 			Deps:    e.deps,
 			Writer:  w,

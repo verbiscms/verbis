@@ -14,7 +14,6 @@ import (
 	"io"
 	"io/ioutil"
 	"regexp"
-	"runtime"
 	"strings"
 )
 
@@ -24,12 +23,13 @@ import (
 // Its up to the caller to log or do whatever it wants
 // to do with the file contents
 
-const (
-	STACKDEPTH = 16
-)
+
+type Tester interface {
+
+}
 
 type Recovery struct {
-	File string
+	File    string
 	Error   interface{}
 	Deps    *deps.Deps
 	Writer  io.Writer
@@ -39,24 +39,16 @@ type Recovery struct {
 	Exec    tpl.TemplateConfig
 }
 
-// TemplateStack defines the stack used for the error page
-type Stack struct {
-	File    string
-	Line    int
-	Name    string
-	Message string
-}
 
 type tplData struct {
-	Error   errors.Error
-	Stack []Stack
+	Error      errors.Error
+	Template  *FileStack
+	Stack      []*FileStack
 	SubMessage string
-	File []FileLine
-	Highlight int
+	File       []FileLine
+	Highlight  int
 	LineNumber int
-	Url string
-	Ip string
-	DataLength int
+
 }
 
 // FileLine defines the error for templating it includes the
@@ -65,7 +57,6 @@ type FileLine struct {
 	Line    int
 	Content string
 }
-
 
 func New(r Recovery) *Recovery {
 	return &r
@@ -95,25 +86,19 @@ func (r *Recovery) Recover() {
 
 func (r *Recovery) data() *tplData {
 
-
-	contents, err := r.fileContents()
-	if err != nil {
+	//contents, err := r.fileContents()
+	//if err != nil {
 		// log
-		contents = ""
-	}
-
-
+		//contents = ""
+	//}
 
 	return &tplData{
 		Error:      r.getError(),
-		Stack:      r.stack(),
+		Stack:      Stack(StackDepth, TraverseLength),
 		SubMessage: "",
-		File:       r.getFileLines(contents, 10, 100),
+		//File:       fileLines(contents, 10),
 		Highlight:  0,
 		LineNumber: cast.ToInt(r.lineNumber()),
-		Url:        r.Context.Request.URL.Path,
-		Ip:         r.Context.ClientIP(),
-		DataLength: r.Context.Writer.Size(),
 	}
 }
 
@@ -125,8 +110,7 @@ func (r *Recovery) fileContents() (string, error) {
 	path := r.Exec.GetRoot() + "/" + r.File + r.Exec.GetExtension()
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Println(path)
-		return "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the file contents with the path: %s", path), Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the file contents with the path: " + path, Operation: op, Err: err}
 	}
 
 	return string(contents), nil
@@ -149,10 +133,8 @@ func (r *Recovery) getError() errors.Error {
 	return err
 }
 
-
 func (r *Recovery) lineNumber() string {
 	e := r.getError()
-	fmt.Println(e.Error())
 	reg := regexp.MustCompile(`:\d+:`)
 	lc := string(reg.Find([]byte(e.Error())))
 	return strings.ReplaceAll(lc, ":", "")
@@ -164,8 +146,8 @@ func (r *Recovery) getFileLines(file string, line int, limit int) []FileLine {
 	split := strings.Split(file, "\n")
 
 	var fileLines []FileLine
-	counter := line - (limit / 2)
-	for i := 0; i < limit; i++ {
+	counter := line - len(split)
+	for i := 0; i < len(split) * 2; i++ {
 		if counter >= 0 && counter < len(split) {
 			fileLines = append(fileLines, FileLine{
 				Line:    counter + 1,
@@ -178,21 +160,4 @@ func (r *Recovery) getFileLines(file string, line int, limit int) []FileLine {
 	return fileLines
 }
 
-// getStack obtains the stack details from the caller
-func (r *Recovery) stack() []Stack {
-	var stack []Stack
 
-	const stackDepth = STACKDEPTH
-	for c := 0; c < stackDepth; c++ {
-		t, file, line, ok := runtime.Caller(c)
-		if ok {
-			stack = append(stack, Stack{
-				File: file,
-				Line: line,
-				Name: runtime.FuncForPC(t).Name(),
-			})
-		}
-	}
-
-	return stack
-}

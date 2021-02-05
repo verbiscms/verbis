@@ -18,8 +18,8 @@ type FormSend struct {
 }
 
 type FormSendData struct {
-	Site domain.Site
-	Form *domain.Form
+	Site   domain.Site
+	Form   *domain.Form
 	Values forms.FormValues
 }
 
@@ -54,19 +54,19 @@ func (e *FormSend) Send(f *FormSendData, attachments forms.Attachments) error {
 	}
 	f.Values = fv
 
-	_, err := e.mailer.ExecuteHTML("form-send.html", &f)
+	html, err := e.mailer.ExecuteHTML("form-send.html", &f)
 	if err != nil {
 		return err
 	}
 
-	//tm := mail.Sender{
-	//	To:          f.Form.GetRecipients(),
-	//	Subject:     f.Form.EmailSubject,
-	//	HTML:        html,
-	//	Attachments: attachments,
-	//}
-	//
-	//e.mailer.Send(&tm)
+	tm := mail.Sender{
+		To:          f.Form.GetRecipients(),
+		Subject:     f.Form.EmailSubject,
+		HTML:        html,
+		Attachments: attachments,
+	}
+
+	e.mailer.Send(&tm)
 
 	return nil
 }
