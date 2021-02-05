@@ -20,6 +20,7 @@ type Form struct {
 	EmailSend    types.BitBool `db:"email_send" json:"email_send"`
 	EmailMessage string        `db:"email_message" json:"email_message"`
 	EmailSubject string        `db:"email_subject" json:"email_subject"`
+	Recipients   string		   `db:"recipients" json:"recipients"`
 	StoreDB      types.BitBool `db:"store_db" json:"store_db"`
 	Body         interface{}   `db:"-" json:"-"`
 	CreatedAt    *time.Time    `db:"created_at" json:"created_at"`
@@ -53,8 +54,19 @@ type FormSubmission struct {
 // FormLabel defines the label/name for form fields.
 type FormLabel string
 
+// GetRecipients splits the recipients string and returns
+// a slice of email addresses.
+func (f *Form) GetRecipients() []string {
+	return strings.Split( f.Recipients, ",")
+}
+
 // Name converts the label to a dynamic-struct friendly name.
 func (f FormLabel) Name() string {
 	s := strings.ReplaceAll(string(f), " ", "")
 	return strings.Title(s)
+}
+
+// Stringer on the FormLabel type
+func (f FormLabel) String() string {
+	return string(f)
 }
