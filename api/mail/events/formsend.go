@@ -17,6 +17,12 @@ type FormSend struct {
 	config config.Configuration
 }
 
+type FormSendData struct {
+	Site domain.Site
+	Form *domain.Form
+	Values forms.FormValues
+}
+
 // NewVerifyEmail creates a new verify email event
 func NewFormSend(config config.Configuration) (*FormSend, error) {
 	const op = "events.NewFormSend"
@@ -33,22 +39,34 @@ func NewFormSend(config config.Configuration) (*FormSend, error) {
 }
 
 // Send the verify email event.
-func (e *FormSend) Send(form *domain.Form, values forms.FormValues, attachments forms.Attachments) error {
+func (e *FormSend) Send(f *FormSendData, attachments forms.Attachments) error {
 	const op = "events.VerifyEmail.Send"
 
-	html, err := e.mailer.ExecuteHTML("form-send.html", values)
+	fv := make(forms.FormValues)
+	for _, v := range f.Form.Fields {
+		val, ok := f.Values[v.Key]
+		if !ok {
+			continue
+		}
+		if v.Type != "file" {
+			fv[v.Label.String()] = val
+		}
+	}
+	f.Values = fv
+
+	_, err := e.mailer.ExecuteHTML("form-send.html", &f)
 	if err != nil {
 		return err
 	}
 
-	tm := mail.Sender{
-		To:          []string{"ainsley@reddico.co.uk"},
-		Subject:     form.EmailSubject,
-		HTML:        html,
-		Attachments: attachments,
-	}
-
-	e.mailer.Send(&tm)
+	//tm := mail.Sender{
+	//	To:          f.Form.GetRecipients(),
+	//	Subject:     f.Form.EmailSubject,
+	//	HTML:        html,
+	//	Attachments: attachments,
+	//}
+	//
+	//e.mailer.Send(&tm)
 
 	return nil
 }

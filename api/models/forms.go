@@ -32,6 +32,7 @@ type FormRepository interface {
 type FormsStore struct {
 	db     *sqlx.DB
 	config config.Configuration
+	siteModel SiteRepository
 }
 
 // newSeoMeta - Construct
@@ -39,6 +40,7 @@ func newForms(db *sqlx.DB, config config.Configuration) *FormsStore {
 	return &FormsStore{
 		db:     db,
 		config: config,
+		siteModel: newSite(db, config),
 	}
 }
 
@@ -264,7 +266,11 @@ func (s *FormsStore) mailSubmission(form *domain.Form, values forms.FormValues, 
 	if err != nil {
 		return err
 	}
-	if err := fs.Send(form, values, attachments); err != nil {
+	if err := fs.Send(&events.FormSendData{
+		Site:   s.siteModel.GetGlobalConfig(),
+		Form:   form,
+		Values: values,
+	}, attachments); err != nil {
 		return err
 	}
 	return nil

@@ -175,7 +175,6 @@ func (c *Forms) Delete(g *gin.Context) {
 // Returns 200 if the form was deleted.
 // Returns 500 if there was an error deleting the form.
 // Returns 400 if the the form wasn't found or no ID was passed.
-
 func (c *Forms) Send(g *gin.Context) {
 	const op = "FormHandler.Send"
 
@@ -190,6 +189,7 @@ func (c *Forms) Send(g *gin.Context) {
 
 	err = g.Bind(form.Body)
 	if err != nil {
+		// If file has an empty value, no validation data is returned
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	dynamicstruct "github.com/ompluscator/dynamic-struct"
+	"golang.org/x/net/html"
 	"mime/multipart"
 )
 
@@ -53,9 +54,14 @@ func (r *Reader) Values() (FormValues, Attachments, error) {
 
 		switch v.Type {
 		case "file":
+
 			a, err := getAttachment(field.Interface())
 			if err != nil {
 				return nil, nil, err
+			}
+
+			if a == nil {
+				continue
 			}
 
 			// Add to the total size to ensure its below
@@ -69,14 +75,12 @@ func (r *Reader) Values() (FormValues, Attachments, error) {
 			// name of the file.
 			m[v.Key] = a.MD5name
 		default:
-
-			// html.escapestring here
-
-			m[v.Key] = field.Interface()
+			str := field.String()
+			m[v.Key] = html.EscapeString(str)
 		}
 	}
 
-	if int(totalSize/1024) > UploadLimit {
+	if float64(totalSize / 1024) / 1024 > UploadLimit {
 		return nil, nil, &errors.Error{Code: errors.INVALID, Message: "File attachments have exceeded the upload limit", Operation: op, Err: fmt.Errorf("attachements exceed the upload limit defined")}
 	}
 
@@ -114,7 +118,8 @@ func getType(typ string) interface{} {
 	case "boolean":
 		i = false
 	case "file":
-		i = multipart.FileHeader{}
+		m := &multipart.FileHeader{}
+		i = m
 	}
 
 	return i
