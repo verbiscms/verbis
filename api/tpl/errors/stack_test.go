@@ -29,17 +29,24 @@ func TestFileStack_Lines(t *testing.T) {
 
 	tt := map[string]struct {
 		input []*FileStack
-		want  interface{}
+		want  []*FileLine
 	}{
-		"test": {
+		"Single": {
 			[]*FileStack{
+				{Line:     1, Contents: "test\ntest"},
+			},
+			[]*FileLine{
+				{Line:    2, Content: "test"},
+			},
+		},
+		"Multiple": {
+			[]*FileStack{
+				{Line:     1, Contents: "test"},
 				{Line:     2, Contents: "test\ntest"},
 			},
 			[]*FileLine{
-				{
-					Line:    2,
-					Content: "test",
-				},
+				{Line:    1, Content: "test"},
+				{Line:     2, Content: "test\ntest"},
 			},
 		},
 	}
@@ -51,7 +58,9 @@ func TestFileStack_Lines(t *testing.T) {
 			}
 			got := test.input[0].Lines()
 			for _, v := range got {
-				assert.Equal(t, test.want, *v)
+				for _, line := range test.want {
+					assert.Equal(t, *line, *v)
+				}
 			}
 		})
 	}
