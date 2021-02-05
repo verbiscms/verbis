@@ -20,7 +20,7 @@ type Form struct {
 	EmailSend    types.BitBool `db:"email_send" json:"email_send"`
 	EmailMessage string        `db:"email_message" json:"email_message"`
 	EmailSubject string        `db:"email_subject" json:"email_subject"`
-	Recipients   string		   `db:"recipients" json:"recipients"`
+	Recipients   string        `db:"recipients" json:"recipients"`
 	StoreDB      types.BitBool `db:"store_db" json:"store_db"`
 	Body         interface{}   `db:"-" json:"-"`
 	CreatedAt    *time.Time    `db:"created_at" json:"created_at"`
@@ -57,7 +57,7 @@ type FormLabel string
 // GetRecipients splits the recipients string and returns
 // a slice of email addresses.
 func (f *Form) GetRecipients() []string {
-	return strings.Split( f.Recipients, ",")
+	return strings.Split(f.Recipients, ",")
 }
 
 // Name converts the label to a dynamic-struct friendly name.
