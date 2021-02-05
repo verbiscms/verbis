@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
+	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/gabriel-vasile/mimetype"
@@ -23,7 +24,7 @@ import (
 const (
 	// The total upload limit allowed to upload file
 	// attachments.
-	UploadLimit = 5
+	UploadLimit = 5.0
 )
 
 var (
@@ -57,55 +58,49 @@ type Attachment struct {
 	Size     int64
 }
 
-// SizeMB
-//
-// Returns the attachment file size in megabytes.
-func (a *Attachment) SizeMB() int {
-	return int(a.Size / 1024)
-}
-
 // getAttachment
 //
 //
 func getAttachment(i interface{}) (*Attachment, error) {
 	const op = "Forms.getAttachement"
 
-	m, ok := i.(multipart.FileHeader)
+	mFile, ok := i.(*multipart.FileHeader)
 	if !ok {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: fmt.Errorf("")}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not cast to multipart FileHeader", Operation: op, Err: fmt.Errorf("unable to cast to multipart.FileHeader")}
 	}
 
-	file, err := m.Open()
+	// TODO: If nil
+
+	// TODO: This needs to be dynamic based in the options.
+	name, err := dumpFile(mFile)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not dump file to file system", Operation: op, Err: err}
+	}
+
+	file, err := mFile.Open()
+	if err != nil {
+
 	}
 	defer file.Close()
 
-	mt, err := validateFile(file, m.Size)
+	mimeType, err := validateFile(file, mFile.Size)
 	if err != nil {
-		return nil, err
+
 	}
 
 	buf := bytes.NewBuffer(nil)
-	_, err = io.Copy(buf, file)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
-	}
-
-	// TODO: This needs to be dynamic based in the options.
-	name, err := dumpFile(buf.String(), m.Filename)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
+	if _, err := io.Copy(buf, file); err != nil {
+		return nil, err
 	}
 
 	data := b64(buf.Bytes())
 
 	return &Attachment{
-		MIMEType: mt,
-		Filename: m.Filename,
+		MIMEType: mimeType,
+		Filename: mFile.Filename,
 		MD5name:  name,
 		B64Data:  &data,
-		Size:     m.Size,
+		Size:     mFile.Size,
 	}, nil
 }
 
@@ -128,10 +123,7 @@ func validateFile(file multipart.File, size int64) (string, error) {
 		return "", &errors.Error{Code: errors.INVALID, Message: "Mime type not permitted", Operation: op, Err: fmt.Errorf("mime for the uploaded file is not permitted")}
 	}
 
-	fileSize := int(1024 / size)
-	fmt.Println(fileSize)
-	fmt.Println(size)
-	if fileSize > UploadLimit {
+	if float64(size / 1024) / 1024  > UploadLimit {
 		return "", &errors.Error{Code: errors.INVALID, Message: "File is too large to upload", Operation: op, Err: fmt.Errorf("the file exceeds the upload limit for uploading")}
 	}
 
@@ -154,22 +146,13 @@ func b64(data []byte) string {
 // saved to the forms storage folder.
 //
 // Returns errors.INTERNAL if the file could not be created or saved.
-func dumpFile(s string, name string) (string, error) {
+func dumpFile(mp *multipart.FileHeader) (string, error) {
 	const op = "Forms.dumpFile"
 
+	name := mp.Filename
 	ext := filepath.Ext(name)
 	file := encryption.MD5Hash(name+time.Now().String()) + ext
-	dst := paths.Forms() + "/" + file
+	dst := paths.Forms() + string(os.PathSeparator) + file
 
-	f, err := os.Create(dst)
-	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to create file to save mail attachment to the system.", Operation: op, Err: err}
-	}
-
-	_, err = f.WriteString(s)
-	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to save mail attachment to the system.", Operation: op, Err: err}
-	}
-
-	return file, nil
+	return file, files.Save(mp, dst)
 }

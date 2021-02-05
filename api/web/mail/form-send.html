@@ -1,10 +1,11 @@
 {{ define "content" }}
-
     <!-- =====================
-        Form Send
+        Form Send TODO: Created At and more info abotu the form!
         ===================== -->
-    <p></p>
-    <p></p>
-
-
+    <h2>Form Submission from {{ .Site.Title }}</h2>
+    <p style="margin-bottom: 1rem;">New {{ .Form.Name }} submission, see below for more details.</p>
+    {{- with .Form.EmailMessage }}<p>{{ . }}</p>{{ end -}}
+    {{- range $key, $value := .Values -}}
+        <p style="margin-bottom: 6px;"><strong>{{ with $key }}{{ . }}{{ end }}:</strong> {{ with $value }}{{ . }}{{ end }}</p>
+    {{- end -}}
 {{ end }}

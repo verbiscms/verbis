@@ -49,6 +49,7 @@ CREATE TABLE `forms` (
     `email_send` bit DEFAULT 0 NOT NULL,
     `email_message` mediumtext NULL,
     `email_subject` varchar(78) NOT NULL,
+    `recipients` varchar(1000) NOT NULL,
     `store_db` bit DEFAULT 0 NOT NULL,
     `updated_at` timestamp NULL DEFAULT NULL,
     `created_at` timestamp NULL DEFAULT NULL,
