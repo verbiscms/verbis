@@ -35,6 +35,7 @@ const html = $('html'),
  * Highlight JS
  *
  */
+hljs.configure({ useBR: true })
 hljs.registerLanguage('handlebars', handlebars);
 hljs.registerLanguage('go', go);
 hljs.initHighlightingOnLoad();

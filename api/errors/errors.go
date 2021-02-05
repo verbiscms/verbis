@@ -20,6 +20,9 @@ const (
 	TEMPLATE = "template"  // Templating error
 )
 
+// Global Error message when no message has been found.
+const GlobalError = "An internal error has occurred."
+
 // Error defines a standard application error.
 type Error struct {
 	Code      string   `json:"code"`
@@ -29,7 +32,9 @@ type Error struct {
 	Stack     []string `json:"stack"`
 }
 
-// Error returns the string representation of the error message.
+// Error
+//
+// Returns the string representation of the error message.
 func (e *Error) Error() string {
 	var buf bytes.Buffer
 
@@ -52,7 +57,10 @@ func (e *Error) Error() string {
 	return buf.String()
 }
 
-// ErrorCode returns the code of the root error, if available. Otherwise returns INTERNAL.
+// ErrorCode
+//
+// Returns the code of the root error, if available.
+// Otherwise returns INTERNAL.
 func Code(err error) string {
 	if err == nil {
 		return ""
@@ -64,8 +72,11 @@ func Code(err error) string {
 	return INTERNAL
 }
 
-// ErrorMessage returns the human-readable message of the error, if available.
-// Otherwise returns a generic error message.
+// ErrorMessage
+//
+// Returns the human-readable message of the error, if
+// available. Otherwise returns a generic error
+// message.
 func Message(err error) string {
 	if err == nil {
 		return ""
@@ -74,10 +85,12 @@ func Message(err error) string {
 	} else if ok && e.Err != nil {
 		return Message(e.Err)
 	}
-	return "An internal error has occurred."
+	return GlobalError
 }
 
-// ErrorStack returns the stack from which the error was called from.
+// ErrorStack
+//
+// Returns the stack from which the error was called from.
 func Stack(err error) []string {
 	var stack []string
 	for c := 2; c < 5; c++ {

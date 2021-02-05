@@ -30,16 +30,16 @@ type FormRepository interface {
 
 // FormsStore defines the data layer for Forms
 type FormsStore struct {
-	db     *sqlx.DB
-	config config.Configuration
+	db        *sqlx.DB
+	config    config.Configuration
 	siteModel SiteRepository
 }
 
 // newSeoMeta - Construct
 func newForms(db *sqlx.DB, config config.Configuration) *FormsStore {
 	return &FormsStore{
-		db:     db,
-		config: config,
+		db:        db,
+		config:    config,
 		siteModel: newSite(db, config),
 	}
 }
