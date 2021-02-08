@@ -187,7 +187,7 @@ func (c *Forms) Send(g *gin.Context) {
 		return
 	}
 
-	err = g.Bind(form.Body)
+	err = g.ShouldBind(form.Body)
 	if err != nil {
 		// If file has an empty value, no validation data is returned
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})

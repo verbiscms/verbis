@@ -78,81 +78,65 @@ func getAttachment(i interface{}) (*Attachment, error) {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: fmt.Errorf("")}
 	}
 
-	file, err := m.Open()
+	path, file, teardown, err := createTempFile(m)
+	if err != nil {
+		return nil, err
+	}
+	defer teardown()
+
+	mt, err := validateFile(file, m.Size)
+	if err != nil {
+		return nil, err
+	}
+
+	bytes, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
 	}
-	defer file.Close()
 
-	out, err := os.Create(paths.Storage() + "/forms/temp.jpg")
+	md5Name, err := dumpFile(bytes, m.Filename)
 	if err != nil {
-		fmt.Println(err)
-	}
-	defer out.Close()
-
-	_, err = io.Copy(out, file)
-
-	bytes, err := ioutil.ReadFile(paths.Storage() + "/forms/temp.jpg")
-	if err != nil {
-		fmt.Println(err)
+		return nil, err
 	}
 
-	fmt.Printf("%+v\n", b64(bytes))
-
-	err = ioutil.WriteFile(paths.Storage()+"/forms/final.jpg", bytes, 777)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer func() {
-		// delete temp
-	}()
-
-	//mt, err := validateFile(file, m.Size)
-	//if err != nil {
-	//	return nil, err
-	//}
-
-	//err = ioutil.WriteFile("/Users/ainsley/Desktop/test.jpg", buf, 777)
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-	//
-	//return nil, err
-
-	//
-	////_, err = ioutil.ReadFile(m.Filename)
-	//buf := bytes.NewBuffer(nil)
-	//_, err = buf.ReadFrom(file)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
-	////test, err := file.Read(buf)
-	//
-	//fmt.Printf("%+v\n", buf)
-	//
-	////buf := bytes.NewBuffer(nil)
-	////_, err = io.Copy(buf, file)
-	////if err != nil {
-	////	return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
-	////}
-	//
-	//// TODO: This needs to be dynamic based in the options.
-	//name, err := dumpFile(buf.String(), m.Filename)
-	//if err != nil {
-	//	return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
-	//}
-	//
 	data := b64(bytes)
 
 	return &Attachment{
-		MIMEType: "image/jpg",
+		MIMEType: mt,
 		Filename: m.Filename,
-		MD5name:  "fuckwank.jpg",
+		MD5name:  md5Name,
 		B64Data:  &data,
 		Size:     m.Size,
 	}, nil
+}
+
+func createTempFile(m *multipart.FileHeader) (string, *multipart.File, func(), error) {
+	const op = "Forms.createTempFile"
+
+	path := os.TempDir() + "/verbis-" + encryption.MD5Hash(time.Now().String()) + filepath.Ext(m.Filename)
+
+	file, err := m.Open()
+	if err != nil {
+		return "", nil, nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
+	}
+
+	out, err := os.Create(path)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	t := func() {
+		_ = file.Close()
+		_ = out.Close()
+		_ = os.Remove(path)
+	}
+
+	_, err = io.Copy(out, file)
+	if err != nil {
+		return "", nil, t, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
+	}
+
+	return path, &file, t, nil
 }
 
 // validateFile
@@ -162,10 +146,10 @@ func getAttachment(i interface{}) (*Attachment, error) {
 // Returns errors.INVALID if the mime type could not to be detected,
 // the mime type is not in the list of permitted types or the
 // file is above the UploadLimit.
-func validateFile(file multipart.File, size int64) (string, error) {
+func validateFile(file *multipart.File, size int64) (string, error) {
 	const op = "Forms.validateFile"
 
-	typ, err := mimetype.DetectReader(file)
+	typ, err := mimetype.DetectReader(*file)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INVALID, Message: "Unable to detect filetype", Operation: op, Err: err}
 	}
@@ -175,8 +159,6 @@ func validateFile(file multipart.File, size int64) (string, error) {
 	}
 
 	fileSize := int(1024 / size)
-	fmt.Println(fileSize)
-	fmt.Println(size)
 	if fileSize > UploadLimit {
 		return "", &errors.Error{Code: errors.INVALID, Message: "File is too large to upload", Operation: op, Err: fmt.Errorf("the file exceeds the upload limit for uploading")}
 	}
@@ -200,22 +182,19 @@ func b64(data []byte) string {
 // saved to the forms storage folder.
 //
 // Returns errors.INTERNAL if the file could not be created or saved.
-func dumpFile(s string, name string) (string, error) {
+func dumpFile(b []byte, name string) (string, error) {
 	const op = "Forms.dumpFile"
 
 	ext := filepath.Ext(name)
 	file := encryption.MD5Hash(name+time.Now().String()) + ext
 	dst := paths.Forms() + "/" + file
 
-	f, err := os.Create(dst)
+	err := ioutil.WriteFile(dst, b, 777)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to create file to save mail attachment to the system.", Operation: op, Err: err}
 	}
 
-	_, err = f.WriteString(s)
-	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to save mail attachment to the system.", Operation: op, Err: err}
-	}
-
 	return file, nil
 }
+
+

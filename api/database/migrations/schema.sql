@@ -90,7 +90,7 @@ CREATE TABLE `form_submissions` (
     `form_id` int NOT NULL,
     `fields` json,
     `ip_address` varchar(20) NOT NULL,
-    `user_agent` varchar(36) NOT NULL,
+    `user_agent` varchar(1000) NOT NULL,
     `sent_at` timestamp NULL DEFAULT NULL,
     PRIMARY KEY (`id`),
     KEY `form_id_index` (`form_id`)

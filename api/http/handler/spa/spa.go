@@ -22,13 +22,13 @@ type SPAHandler interface {
 // SPA defines the handler for the SPA
 type SPA struct {
 	*deps.Deps
-	render.ErrorHandler
+	render render.Renderer
 }
 
 // newSpa - Construct
 func NewSpa(d *deps.Deps) *SPA {
 	return &SPA{
-		ErrorHandler: &render.Errors{Deps: d},
+		render: render.NewRender(d),
 	}
 }
 
@@ -55,7 +55,7 @@ func (c *SPA) Serve(g *gin.Context) {
 
 		if err != nil {
 			// TODO, log here! Error getting admin file
-			c.ErrorHandler.NotFound(g)
+			c.render.NotFound(g)
 			return
 		}
 
@@ -68,7 +68,7 @@ func (c *SPA) Serve(g *gin.Context) {
 
 		if err != nil {
 			// TODO, log here! Error getting admin file
-			c.ErrorHandler.NotFound(g)
+			c.render.NotFound(g)
 			return
 		}
 
