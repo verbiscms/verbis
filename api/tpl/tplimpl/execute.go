@@ -56,19 +56,22 @@ func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *
 	data := e.Data(ctx, post)
 	e.funcMap = e.FuncMap(ctx, post, e.config)
 
-	path, err := e.executeRender(w, name, data)
+	//path, err := e.executeRender(w, name, data)
+	_, err := e.executeRender(w, name, data)
 
 	if err != nil {
-		errors.New(errors.Recovery{
-			File:    path,
-			Error:   err,
-			Deps:    e.deps,
-			Writer:  w,
-			Name:    name,
-			Context: ctx,
-			Post:    post,
-			Exec:    e.config,
-		}).Recover()
+		//errors.New(errors.Recovery{
+		//	File:    path,
+		//	Error:   err,
+		//	Deps:    e.deps,
+		//	Writer:  w,
+		//	Name:    name,
+		//	Context: ctx,
+		//	Post:    post,
+		//	Exec:    e.config,
+		//}).Recover()
+
+		errors.New(e.deps).InternalServerError().Recover(w, ctx, err)
 
 		return err
 	}

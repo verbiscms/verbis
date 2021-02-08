@@ -8,11 +8,11 @@ import (
 func TestStack(t *testing.T) {
 
 	tt := map[string]struct {
-		depth int
+		depth    int
 		traverse int
-		want  int
+		want     int
 	}{
-		"Single": {1, 0, 1},
+		"Single":   {1, 0, 1},
 		"Multiple": {3, 0, 3},
 		"Traverse": {3, 1, 2},
 	}
@@ -33,20 +33,20 @@ func TestFileStack_Lines(t *testing.T) {
 	}{
 		"Single": {
 			[]*FileStack{
-				{Line:     1, Contents: "test\ntest"},
+				{Line: 1, Contents: "test\ntest"},
 			},
 			[]*FileLine{
-				{Line:    2, Content: "test"},
+				{Line: 2, Content: "test"},
 			},
 		},
 		"Multiple": {
 			[]*FileStack{
-				{Line:     1, Contents: "test"},
-				{Line:     2, Contents: "test\ntest"},
+				{Line: 1, Contents: "test"},
+				{Line: 2, Contents: "test\ntest"},
 			},
 			[]*FileLine{
-				{Line:    1, Content: "test"},
-				{Line:     2, Content: "test\ntest"},
+				{Line: 1, Content: "test"},
+				{Line: 2, Content: "test\ntest"},
 			},
 		},
 	}
