@@ -145,6 +145,9 @@ func (s *FormsStore) GetFields(id int) ([]domain.FormField, error) {
 	if err := s.db.Select(&f, "SELECT * FROM form_fields WHERE form_id = ?", id); err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the form fields with the form ID: %v", id), Operation: op, Err: err}
 	}
+	if len(f) == 0 {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No form fields attached to the form with the ID: %v", id), Operation: op, Err: fmt.Errorf("no fields are attached to the form")}
+	}
 	return f, nil
 }
 

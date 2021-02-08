@@ -15,6 +15,7 @@ type Renderer interface {
 	Asset(g *gin.Context) (*string, *[]byte, error)
 	Upload(g *gin.Context) (*string, *[]byte, error)
 	Page(g *gin.Context) ([]byte, error)
+	NotFound(g *gin.Context)
 }
 
 // Render

@@ -54,19 +54,19 @@ func (e *FormSend) Send(f *FormSendData, attachments forms.Attachments) error {
 	}
 	f.Values = fv
 
-	html, err := e.mailer.ExecuteHTML("form-send.html", &f)
+	_, err := e.mailer.ExecuteHTML("form-send.html", &f)
 	if err != nil {
 		return err
 	}
 
-	tm := mail.Sender{
-		To:          f.Form.GetRecipients(),
-		Subject:     f.Form.EmailSubject,
-		HTML:        html,
-		Attachments: attachments,
-	}
-
-	e.mailer.Send(&tm)
+	//tm := mail.Sender{
+	//	To:          f.Form.GetRecipients(),
+	//	Subject:     f.Form.EmailSubject,
+	//	HTML:        html,
+	//	Attachments: attachments,
+	//}
+	//
+	//e.mailer.Send(&tm)
 
 	return nil
 }

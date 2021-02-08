@@ -22,7 +22,6 @@ type PublicHandler interface {
 type Public struct {
 	*deps.Deps
 	render render.Renderer
-	render.ErrorHandler
 }
 
 // NewPublic - Construct
@@ -30,7 +29,6 @@ func NewPublic(d *deps.Deps) *Public {
 	return &Public{
 		Deps:         d,
 		render:       render.NewRender(d),
-		ErrorHandler: &render.Errors{Deps: d},
 	}
 }
 
@@ -40,7 +38,7 @@ func (c *Public) GetUploads(g *gin.Context) {
 
 	mimeType, file, err := c.render.Upload(g)
 	if err != nil {
-		c.NotFound(g)
+		c.render.NotFound(g)
 		return
 	}
 
@@ -53,7 +51,7 @@ func (c *Public) GetAssets(g *gin.Context) {
 
 	mimeType, file, err := c.render.Asset(g)
 	if err != nil {
-		c.NotFound(g)
+		c.render.NotFound(g)
 		return
 	}
 
@@ -66,7 +64,7 @@ func (c *Public) Serve(g *gin.Context) {
 
 	page, err := c.render.Page(g)
 	if errors.Code(err) == errors.NOTFOUND {
-		c.NotFound(g)
+		c.render.NotFound(g)
 		return
 	} else {
 		g.Data(500, "text/html", page)

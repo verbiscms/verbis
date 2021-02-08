@@ -33,7 +33,6 @@ func NewSEO(d *deps.Deps) *SEO {
 		Deps:         d,
 		sitemap:      render.NewSitemap(d.Store),
 		options:      d.Store.Options.GetStruct(),
-		ErrorHandler: &render.Errors{Deps: d},
 	}
 }
 

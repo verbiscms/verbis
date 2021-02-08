@@ -74,6 +74,8 @@ func (r *Reader) Values() (FormValues, Attachments, error) {
 			// Set the key of the FormValues to the MD5
 			// name of the file.
 			m[v.Key] = a.MD5name
+		case "checkbox":
+			m[v.Key] = field.Bool()
 		default:
 			str := field.String()
 			m[v.Key] = html.EscapeString(str)
@@ -115,7 +117,7 @@ func getType(typ string) interface{} {
 		i = 0
 	case "float":
 		i = 0.0
-	case "boolean":
+	case "checkbox":
 		i = false
 	case "file":
 		m := &multipart.FileHeader{}
