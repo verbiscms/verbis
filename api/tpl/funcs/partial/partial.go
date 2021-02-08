@@ -55,3 +55,34 @@ func (ns *Namespace) Partial(name string, data ...interface{}) (template.HTML, e
 
 	return template.HTML(b.String()), nil
 }
+
+//func (ns *Namespace) partialWrapper(root string, name string, funcs template.FuncMap, data interface{}) (template.HTML, error) {
+//	const op = "Templates.Partial"
+//
+//	path := root + "/" + name
+//
+//	if !files.Exists(path) {
+//		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Partial file does not exist", Operation: op, Err: fmt.Errorf("no file exists with the path: %s", name)}
+//	}
+//
+//	var context interface{}
+//	if len(data) == 1 {
+//		context = data[0]
+//	} else {
+//		context = data
+//	}
+//
+//	pathArr := strings.Split(path, "/")
+//	file, err := template.New(pathArr[len(pathArr)-1]).Funcs(funcs).ParseFiles(path)
+//	if err != nil {
+//		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to parse partial file", Operation: op, Err: err}
+//	}
+//
+//	var b bytes.Buffer
+//	err = file.Execute(&b, context)
+//	if err != nil {
+//		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute partial file", Operation: op, Err: err}
+//	}
+//
+//	return template.HTML(b.String()), nil
+//}

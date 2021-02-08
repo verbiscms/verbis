@@ -6,9 +6,11 @@ package render
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/color"
 )
 
 type ErrorHandler interface {
@@ -19,18 +21,18 @@ type Errors struct {
 	*deps.Deps
 }
 
-func (e *Errors) NotFound(g *gin.Context) {
+func (r *Render) NotFound(g *gin.Context) {
 
-	exec := e.Tmpl().Prepare(tpl.Config{
+	exec := r.Tmpl().Prepare(tpl.Config{
 		Root:      paths.Theme(),
-		Extension: e.Theme.FileExtension,
+		Extension: r.Theme.FileExtension,
 		Master:    "",
 	})
 
-	err := exec.Execute(g.Writer, "404", nil)
+	err := exec.ExecutePost(g.Writer, "404", g, &domain.PostData{})
 
 	if err != nil {
-		panic(err)
+		color.Green.Println(err)
 	}
 
 	return
