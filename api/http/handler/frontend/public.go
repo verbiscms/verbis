@@ -27,8 +27,8 @@ type Public struct {
 // NewPublic - Construct
 func NewPublic(d *deps.Deps) *Public {
 	return &Public{
-		Deps:         d,
-		render:       render.NewRender(d),
+		Deps:   d,
+		render: render.NewRender(d),
 	}
 }
 
@@ -66,7 +66,7 @@ func (c *Public) Serve(g *gin.Context) {
 	if errors.Code(err) == errors.NOTFOUND {
 		c.render.NotFound(g)
 		return
-	} else {
+	} else if err != nil {
 		g.Data(500, "text/html", page)
 		return
 	}

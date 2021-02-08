@@ -19,10 +19,17 @@ const (
 
 // FileStack defines the stack used for the error page
 type FileStack struct {
-	File string
-	Line int
-	Name string
+	File     string
+	Line     int
+	Name     string
 	Contents string
+}
+
+// FileLine defines the error for templating it includes the
+// line & content of the error file.
+type FileLine struct {
+	Line    int
+	Content string
 }
 
 // Stack
@@ -48,9 +55,9 @@ func Stack(depth int, traverse int) []*FileStack {
 		}
 
 		stack = append(stack, &FileStack{
-			File: file,
-			Line: line,
-			Name: runtime.FuncForPC(t).Name(),
+			File:     file,
+			Line:     line,
+			Name:     runtime.FuncForPC(t).Name(),
 			Contents: string(contents),
 		})
 	}
@@ -69,7 +76,7 @@ func (f *FileStack) Lines() []*FileLine {
 
 	var fileLines []*FileLine
 	counter := 0
-	for i := f.Line - diff; i < f.Line + diff; i ++ {
+	for i := f.Line - diff; i < f.Line+diff; i++ {
 		if i > 0 && i < len(lines) {
 			fileLines = append(fileLines, &FileLine{
 				Line:    i + 1,
