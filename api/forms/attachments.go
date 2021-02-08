@@ -196,5 +196,3 @@ func dumpFile(b []byte, name string) (string, error) {
 
 	return file, nil
 }
-
-

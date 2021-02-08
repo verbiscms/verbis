@@ -30,9 +30,9 @@ type SEO struct {
 // newSEO - Construct
 func NewSEO(d *deps.Deps) *SEO {
 	return &SEO{
-		Deps:         d,
-		sitemap:      render.NewSitemap(d.Store),
-		options:      d.Store.Options.GetStruct(),
+		Deps:    d,
+		sitemap: render.NewSitemap(d.Store),
+		options: d.Store.Options.GetStruct(),
 	}
 }
 

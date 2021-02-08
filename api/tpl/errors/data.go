@@ -1,7 +1,9 @@
 package errors
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -9,10 +11,24 @@ import (
 )
 
 type Data struct {
-	Request Request
-	Post    *domain.PostData
+	Error    *errors.Error
+	Request  Request
+	Post     domain.PostData
+	Template *FileStack
+	Stack    []*FileStack
 }
 
+func (r *Recover) GetData(ctx *gin.Context, err interface{}) *Data {
+	e := getError(err)
+	fmt.Println(e)
+	return &Data{
+		Error:   getError(err),
+		Request: getRequest(ctx),
+		Stack:   Stack(StackDepth, TraverseLength),
+	}
+}
+
+// Request represents the data to passed back to the error page.
 type Request struct {
 	Url        string
 	Method     string
@@ -26,12 +42,16 @@ type Request struct {
 	Referer    string
 }
 
-func GetRequest(ctx *gin.Context) *Request {
+// GetRequest
+//
+// Returns important information to the error page
+// about the request made.
+func getRequest(ctx *gin.Context) Request {
 	body, err := ioutil.ReadAll(ctx.Request.Body)
 	if err != nil {
 		body = nil
 	}
-	return &Request{
+	return Request{
 		Url:        location.Get(ctx).String() + ctx.Request.URL.Path,
 		Method:     ctx.Request.Method,
 		Headers:    ctx.Request.Header,

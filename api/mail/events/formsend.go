@@ -5,6 +5,7 @@
 package events
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/forms"
@@ -54,19 +55,21 @@ func (e *FormSend) Send(f *FormSendData, attachments forms.Attachments) error {
 	}
 	f.Values = fv
 
-	_, err := e.mailer.ExecuteHTML("form-send.html", &f)
+	html, err := e.mailer.ExecuteHTML("form-send.html", &f)
 	if err != nil {
 		return err
 	}
 
-	//tm := mail.Sender{
-	//	To:          f.Form.GetRecipients(),
-	//	Subject:     f.Form.EmailSubject,
-	//	HTML:        html,
-	//	Attachments: attachments,
-	//}
-	//
-	//e.mailer.Send(&tm)
+	fmt.Println(f.Form.GetRecipients())
+
+	tm := mail.Sender{
+		To:          f.Form.GetRecipients(),
+		Subject:     f.Form.EmailSubject,
+		HTML:        html,
+		Attachments: attachments,
+	}
+
+	e.mailer.Send(&tm)
 
 	return nil
 }
