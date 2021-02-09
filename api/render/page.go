@@ -11,9 +11,10 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/recovery"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"net/http"
 	"net/url"
 	"path"
 	"path/filepath"
@@ -88,10 +89,13 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	var b bytes.Buffer
 	err = exec.ExecutePost(&b, pt, g, &post)
 	if err != nil {
-		// The page has failed to render, return the error page to
-		// be shown.
-		log.WithFields(log.Fields{"error": err}).Error()
-		return b.Bytes(), err
+		return recovery.New(r.Deps).New(http.StatusInternalServerError).Recover(recovery.Config{
+			Context: g,
+			Error:   err,
+			TplFile: pt,
+			TplExec: exec,
+			Post:    &post,
+		}), err
 	}
 
 	minified, err := r.minify.MinifyBytes(&b, "text/html")
