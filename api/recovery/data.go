@@ -1,7 +1,6 @@
-package errors
+package recovery
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-contrib/location"
@@ -11,18 +10,16 @@ import (
 )
 
 type Data struct {
-	Error    *errors.Error
+	error *errors.Error
 	Request  Request
 	Post     domain.PostData
 	Template *FileStack
 	Stack    []*FileStack
 }
 
-func (r *Recover) GetData(ctx *gin.Context, err interface{}) *Data {
-	e := getError(err)
-	fmt.Println(e)
+func (r *Recover) getData(ctx *gin.Context) *Data {
 	return &Data{
-		Error:   getError(err),
+		error: r.err,
 		Request: getRequest(ctx),
 		Stack:   Stack(StackDepth, TraverseLength),
 	}

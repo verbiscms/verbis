@@ -7,8 +7,6 @@ package errors
 import (
 	"bytes"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"runtime"
 )
 
 // Application error codes.
@@ -86,37 +84,4 @@ func Message(err error) string {
 		return Message(e.Err)
 	}
 	return GlobalError
-}
-
-// ErrorStack
-//
-// Returns the stack from which the error was called from.
-func Stack(err error) []string {
-	var stack []string
-	for c := 2; c < 5; c++ {
-		_, file, _, _ := runtime.Caller(c)
-		stack = append(stack, file)
-	}
-	return stack
-}
-
-// Report the error to logging.
-func Report(err error) {
-	var returnErr string = ""
-	if err.Error() != "" {
-		returnErr = err.Error()
-	}
-
-	e, ok := err.(*Error)
-	if !ok {
-		return
-	}
-
-	log.WithFields(log.Fields{
-		"code":      Code(err),
-		"message":   err.Error(),
-		"operation": e.Operation,
-		"err":       returnErr,
-		"stack":     Stack(e),
-	}).Error()
 }

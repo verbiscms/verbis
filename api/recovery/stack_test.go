@@ -1,4 +1,4 @@
-package errors
+package recovery
 
 import (
 	"github.com/stretchr/testify/assert"
