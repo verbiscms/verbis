@@ -1,4 +1,4 @@
-package models
+package res
 
 fmt.Println("------")
 fmt.Printf("%+v\n", g.Request)

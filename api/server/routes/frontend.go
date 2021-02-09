@@ -9,14 +9,14 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
+	"github.com/ainsleyclark/verbis/api/recovery"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 )
 
 func frontend(d *deps.Deps, s *server.Server, c *handler.Handler) {
 
-	// Set Frontend Middleware
-	s.Use(middleware.Recovery(server.Recover))
+	s.Use(recovery.New(d).New().InternalServerError().HttpRecovery(gin.DefaultWriter))
 	s.Use(middleware.Redirects(d.Options))
 
 	// TODO: This check should be in config

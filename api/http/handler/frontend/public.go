@@ -7,6 +7,7 @@ package frontend
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/recovery"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 )
@@ -67,7 +68,7 @@ func (c *Public) Serve(g *gin.Context) {
 		c.render.NotFound(g)
 		return
 	} else if err != nil {
-		g.Data(500, "text/html", page)
+		recovery.New(c.Deps).New().InternalServerError().Recover(g, err)
 		return
 	}
 

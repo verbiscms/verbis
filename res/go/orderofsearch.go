@@ -1,4 +1,4 @@
-package models
+package res
 
 //type TypeOfPage struct {
 //	PageType string

@@ -7,7 +7,6 @@ package tplimpl
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/ainsleyclark/verbis/api/tpl/errors"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/ainsleyclark/verbis/api/tpl/variables"
 	"github.com/gin-gonic/gin"
@@ -60,19 +59,6 @@ func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *
 	_, err := e.executeRender(w, name, data)
 
 	if err != nil {
-		//errors.New(errors.Recovery{
-		//	File:    path,
-		//	Error:   err,
-		//	Deps:    e.deps,
-		//	Writer:  w,
-		//	Name:    name,
-		//	Context: ctx,
-		//	Post:    post,
-		//	Exec:    e.config,
-		//}).Recover()
-
-		errors.New(e.deps).InternalServerError().Recover(w, ctx, err)
-
 		return err
 	}
 
