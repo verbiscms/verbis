@@ -2,13 +2,12 @@ package recovery
 
 import (
 	"github.com/gin-gonic/gin"
-	"io"
 	"net"
 	"os"
 	"strings"
 )
 
-func (r *Recover) HttpRecovery(out io.Writer) gin.HandlerFunc {
+func (r *Recover) HttpRecovery() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -24,8 +23,11 @@ func (r *Recover) HttpRecovery(out io.Writer) gin.HandlerFunc {
 				}
 				// If the connection is dead, we can't write a status to it.
 				if !brokenPipe {
-					r.Recover(ctx, err)
-					//ctx.Data(500, "text/html", ctx.Read)
+					bytes := r.Recover(Config{
+						Context: ctx,
+						Error:   err,
+					})
+					ctx.Data(500, "text/html", bytes)
 					return
 				}
 			}

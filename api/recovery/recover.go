@@ -2,91 +2,96 @@ package recovery
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
-	"io"
-	"net/http"
 )
 
-type Recovery interface {
-	Recover(w io.Writer, ctx *gin.Context, err interface{})
-}
-
-type Recover struct {
+type Handler struct {
 	deps *deps.Deps
-	code int
-	err  *errors.Error
 }
 
-// NotFound
-//
-//
-func (r *Recover) NotFound() *Recover {
-	r.code = http.StatusNotFound
-	return r
+func New(d *deps.Deps) *Handler {
+	return &Handler{deps: d}
 }
 
-// InternalServerError
+type Recovery interface {
+	Recover(cfg Config) []byte
+	HttpRecovery() gin.HandlerFunc
+}
+
+// Recover defines
+type Recover struct {
+	deps   *deps.Deps
+	code   int
+	err    *errors.Error
+	config Config
+}
+
+// Config defines
+type Config struct {
+	Context *gin.Context
+	Error   interface{}
+	TplFile string
+	TplExec tpl.TemplateExecutor
+	Post    *domain.PostData
+}
+
+// New
 //
-//
-func (r *Recover) InternalServerError() *Recover {
-	r.code = http.StatusInternalServerError
-	return r
+// TODO: Should we be passing codes in? Or have it in the config?
+func (h *Handler) New(code int) *Recover {
+	return &Recover{
+		deps: h.deps,
+		code: code,
+	}
 }
 
 // Recover
 //
 //
-func (r *Recover) Recover(ctx *gin.Context, err interface{}) []byte {
-	r.err = getError(err)
-	return r.recoverWrapper(true, ctx, r.getData(ctx))
+func (r *Recover) Recover(cfg Config) []byte {
+	r.config = cfg
+	r.err = getError(cfg.Error)
+	return r.recoverWrapper(true)
 }
 
-// RecoverTemplate
+// recoverWrapper
 //
+// Obtains the template executor from the resolver, this could
+// be a user defined error page, or an internal Verbis page
+// dependant on the pages defined in the theme. The
+// error page is executed and returned as bytes.
 //
-func (r *Recover) RecoverTemplate(ctx *gin.Context, err interface{}, file string, exec tpl.TemplateExecutor) []byte {
-	path := exec.Config().GetRoot() + "/" + file + exec.Config().GetExtension()
-	//_ = &FileStack{
-	//	File:     path,
-	//	Line:     lineNumber(err),
-	//	Name:     file,
-	//	Contents: fileContents(path),
-	//}
-}
+// Logs errors.INTERNAL if the internal Verbis error page failed to execute.
+// Sets the config error errors.TEMPLATE if the user defined error page failed to execute.
+func (r *Recover) recoverWrapper(useTheme bool) []byte {
+	const op = "Recovery.Recover"
 
-func (r *Recover) recoverWrapper(useTheme bool, ctx *gin.Context, data interface{}) []byte {
 	path, exec, custom := r.resolver(useTheme)
 
 	var b bytes.Buffer
-	err := exec.Execute(&b, path, data)
-	if err != nil {
-		if custom {
-			r.recoverWrapper(false, ctx, data)
-		}
-		log.Fatal(err)
+	err := exec.Execute(&b, path, r.getData())
+
+	// Theme error template failed, use the internal error pages
+	if err != nil && custom {
+		r.config.TplFile = path
+		r.config.TplExec = exec
+		r.err = &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute template with the name: " + path, Operation: op, Err: err}
+		return r.recoverWrapper(false)
+	}
+
+	// Verbis error template failed, exit.
+	if err != nil && !custom {
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to execute Verbis error template", Operation: op, Err: err},
+		}).Error()
+		return nil
 	}
 
 	return b.Bytes()
 }
 
-// getError
-//
-// Converts an interface{} to a Verbis internal error ready
-// for processing and to return to the recovery page.
-func getError(e interface{}) *errors.Error {
-	switch v := e.(type) {
-	case errors.Error:
-		return &v
-	case *errors.Error:
-		return v
-	case error:
-		return &errors.Error{Code: errors.TEMPLATE, Message: v.Error(), Operation: "", Err: v}
-	default:
-		return &errors.Error{Code: errors.TEMPLATE, Message: "Internal Verbis error, please report", Operation: "", Err: fmt.Errorf("internal verbis error")}
-	}
-}
