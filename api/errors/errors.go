@@ -23,10 +23,10 @@ const GlobalError = "An internal error has occurred."
 
 // Error defines a standard application error.
 type Error struct {
-	Code      string   `json:"code"`
-	Message   string   `json:"message"`
-	Operation string   `json:"operation"`
-	Err       error    `json:"error"`
+	Code      string `json:"code"`
+	Message   string `json:"message"`
+	Operation string `json:"operation"`
+	Err       error  `json:"error"`
 }
 
 // Error

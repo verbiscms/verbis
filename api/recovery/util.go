@@ -1,21 +1,46 @@
 package recovery
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"io/ioutil"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
+const (
+	// TplPrefix defines the prefix for template searching
+	// such as "errors-500.html"
+	TplPrefix = "error"
+)
+
+// getError
+//
+// Converts an interface{} to a Verbis internal error ready
+// for processing and to return to the recovery page.
+func getError(e interface{}) *errors.Error {
+	switch v := e.(type) {
+	case errors.Error:
+		return &v
+	case *errors.Error:
+		return v
+	case error:
+		return &errors.Error{Code: errors.TEMPLATE, Message: v.Error(), Operation: "", Err: v}
+	default:
+		return &errors.Error{Code: errors.TEMPLATE, Message: "Internal Verbis error, please report", Operation: "", Err: fmt.Errorf(cast.ToString(e))}
+	}
+}
+
 // tplLineNumber
 //
 // Returns the line number of the template that broke.
 // If the line number could not be retrieved using
 // a regex find, -1 will be returned.
-func tplLineNumber(err *errors.Error) int {
+func tplLineNumber(err interface{}) int {
 	e := getError(err)
 	reg := regexp.MustCompile(`:\d+:`)
 	lc := string(reg.Find([]byte(e.Error())))
@@ -62,14 +87,14 @@ func (r *Recover) resolver(custom bool) (string, tpl.TemplateExecutor, bool) {
 	})
 
 	// Look for `errors-404.cms` for example
-	path = Prefix + "-" + code
+	path = TplPrefix + "-" + code
 	if e.Exists(path) && custom {
 		return path, e, true
 	}
 
 	// Look for `error.cms` for example
-	path = Prefix
-	if e.Exists(Prefix) && custom {
+	path = TplPrefix
+	if e.Exists(TplPrefix) && custom {
 		return path, e, true
 	}
 
@@ -78,6 +103,9 @@ func (r *Recover) resolver(custom bool) (string, tpl.TemplateExecutor, bool) {
 	return path, exec, false
 }
 
+// verbisErrorResolver
+//
+//
 func (r *Recover) verbisErrorResolver() (string, tpl.TemplateExecutor) {
 	return "templates/error", r.deps.Tmpl().Prepare(tpl.Config{
 		Root:      r.deps.Paths.Web,
