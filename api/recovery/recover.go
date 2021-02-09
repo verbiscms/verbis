@@ -41,16 +41,16 @@ func (r *Recover) InternalServerError() *Recover {
 // Recover
 //
 //
-func (r *Recover) Recover(ctx *gin.Context, err interface{}) {
+func (r *Recover) Recover(ctx *gin.Context, err interface{}) []byte {
 	r.err = getError(err)
-	r.recoverWrapper(true, ctx, r.getData(ctx))
+	return r.recoverWrapper(true, ctx, r.getData(ctx))
 }
 
 // RecoverTemplate
 //
 //
-func (r *Recover) RecoverTemplate(ctx *gin.Context, err interface{}, file string, exec tpl.TemplateExecutor) {
-	//path := exec.Config().GetRoot() + "/" + file + exec.Config().GetExtension()
+func (r *Recover) RecoverTemplate(ctx *gin.Context, err interface{}, file string, exec tpl.TemplateExecutor) []byte {
+	path := exec.Config().GetRoot() + "/" + file + exec.Config().GetExtension()
 	//_ = &FileStack{
 	//	File:     path,
 	//	Line:     lineNumber(err),
@@ -59,7 +59,7 @@ func (r *Recover) RecoverTemplate(ctx *gin.Context, err interface{}, file string
 	//}
 }
 
-func (r *Recover) recoverWrapper(useTheme bool, ctx *gin.Context, data interface{}) {
+func (r *Recover) recoverWrapper(useTheme bool, ctx *gin.Context, data interface{}) []byte {
 	path, exec, custom := r.resolver(useTheme)
 
 	var b bytes.Buffer
@@ -67,12 +67,11 @@ func (r *Recover) recoverWrapper(useTheme bool, ctx *gin.Context, data interface
 	if err != nil {
 		if custom {
 			r.recoverWrapper(false, ctx, data)
-			return
 		}
 		log.Fatal(err)
 	}
 
-	ctx.Data(r.code, "text/html", b.Bytes())
+	return b.Bytes()
 }
 
 // getError

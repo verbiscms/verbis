@@ -68,7 +68,7 @@ func (c *Public) Serve(g *gin.Context) {
 		c.render.NotFound(g)
 		return
 	} else if err != nil {
-		recovery.New(c.Deps).New().InternalServerError().Recover(g, err)
+		g.Data(500, "text/html", recovery.New(c.Deps).New().InternalServerError().Recover(g, err))
 		return
 	}
 
