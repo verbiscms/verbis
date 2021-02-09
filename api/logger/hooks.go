@@ -35,8 +35,8 @@ func (hook *WriterHook) Fire(entry *log.Entry) error {
 				"message":   e.Message,
 				"operation": e.Operation,
 				"err":       e.Err.Error(),
-				"stack":     errors.Stack(e),
-				"time":      entry.Time.Format("2006-01-02 15:04:05"),
+				//"stack":     errors.Stack(e),
+				"time": entry.Time.Format("2006-01-02 15:04:05"),
 			})
 
 			if err != nil {

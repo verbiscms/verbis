@@ -1,11 +1,11 @@
-package models
+package res
 
 import (
-	"cms/api/database"
-	"cms/api/helpers"
-	"cms/api/helpers/paths"
 	gojson "encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/helpers"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/jmoiron/sqlx"
 	"time"
 )

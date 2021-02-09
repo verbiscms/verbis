@@ -1,10 +1,10 @@
-package models
+package res
 
 import (
-	"cms/api/domain"
-	"cms/api/helpers/paths"
-	"cms/config"
 	"encoding/json"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/foolin/goview"
 	"github.com/foolin/goview/supports/ginview"
 	"os"

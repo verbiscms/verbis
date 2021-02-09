@@ -1,4 +1,4 @@
-package models
+package res
 
 import (
 	"github.com/spf13/cobra"

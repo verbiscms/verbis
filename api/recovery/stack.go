@@ -1,4 +1,4 @@
-package errors
+package recovery
 
 import (
 	"io/ioutil"
