@@ -27,7 +27,6 @@ type Error struct {
 	Message   string   `json:"message"`
 	Operation string   `json:"operation"`
 	Err       error    `json:"error"`
-	Stack     []string `json:"stack"`
 }
 
 // Error
