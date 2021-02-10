@@ -12,12 +12,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/recovery"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
-	"net/http"
 )
 
 func frontend(d *deps.Deps, s *server.Server, c *handler.Handler) {
 
-	s.Use(recovery.New(d).New(http.StatusInternalServerError).HttpRecovery())
+	s.Use(recovery.New(d).HttpRecovery())
 	s.Use(middleware.Redirects(d.Options))
 
 	// TODO: This check should be in config

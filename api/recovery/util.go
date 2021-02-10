@@ -1,3 +1,7 @@
+// Copyright 2020 The Verbis Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package recovery
 
 import (
@@ -5,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cast"
 	"io/ioutil"
 	"regexp"
 	"strconv"
@@ -16,6 +19,10 @@ const (
 	// TplPrefix defines the prefix for template searching
 	// such as "errors-500.html"
 	TplPrefix = "error"
+	// The extension of the web error file
+	VerbisErrorExtension = "html"
+	// The main layout of the web error file
+	VerbisErrorLayout = "layouts/main"
 )
 
 // getError
@@ -31,7 +38,7 @@ func getError(e interface{}) *errors.Error {
 	case error:
 		return &errors.Error{Code: errors.TEMPLATE, Message: v.Error(), Operation: "", Err: v}
 	default:
-		return &errors.Error{Code: errors.TEMPLATE, Message: "Internal Verbis error, please report", Operation: "", Err: fmt.Errorf(cast.ToString(e))}
+		return &errors.Error{Code: errors.TEMPLATE, Message: "Internal Verbis error, please report", Operation: "Internal", Err: fmt.Errorf("%v", e)}
 	}
 }
 
@@ -74,9 +81,9 @@ func tplFileContents(path string) string {
 // resolver
 //
 //
-func (r *Recover) resolver(custom bool) (string, tpl.TemplateExecutor, bool) {
-	code := strconv.Itoa(r.code)
-	if r.code == 0 || code == "0" {
+func (r *Recover) resolveErrorPage(custom bool) (string, tpl.TemplateExecutor, bool) {
+	code := strconv.Itoa(r.config.Code)
+	if r.config.Code == 0 || code == "0" {
 		code = "500"
 	}
 
@@ -98,18 +105,19 @@ func (r *Recover) resolver(custom bool) (string, tpl.TemplateExecutor, bool) {
 		return path, e, true
 	}
 
-	// Return native error page
+	// Return the native error page
 	path, exec := r.verbisErrorResolver()
 	return path, exec, false
 }
 
 // verbisErrorResolver
 //
-//
+// Returns a new tpl.TemplateExecutor when no other
+// custom error templates have been found.
 func (r *Recover) verbisErrorResolver() (string, tpl.TemplateExecutor) {
 	return "templates/error", r.deps.Tmpl().Prepare(tpl.Config{
 		Root:      r.deps.Paths.Web,
-		Extension: ".html",
-		Master:    "layouts/main",
+		Extension: VerbisErrorExtension,
+		Master:    VerbisErrorLayout,
 	})
 }

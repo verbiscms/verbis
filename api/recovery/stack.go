@@ -1,3 +1,7 @@
+// Copyright 2020 The Verbis Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package recovery
 
 import (
@@ -14,15 +18,32 @@ const (
 	LineLimit = 50
 	// How many files to move up in the runtime.Caller
 	// before obtaining the stack
-	TraverseLength = 2
+	StackSkip = 2
 )
 
 // FileStack defines the stack used for the error page
-type FileStack struct {
+type File struct {
 	File     string
 	Line     int
 	Name     string
 	Contents string
+}
+
+// Stack defines the slice of file lines for recovery
+type Stack []*File
+
+// Append a file to the stack trace
+func (s *Stack) Append(file *File) {
+	*s = append(*s, file)
+}
+
+// Prepend a file to the stack trace (useful for templates)
+func (s *Stack) Prepend(file *File) {
+	if len(*s) == 0 {
+		*s = append(*s, file)
+		return
+	}
+	*s = append([]*File{file}, *s...)
 }
 
 // FileLine defines the error for templating it includes the
@@ -39,8 +60,8 @@ type FileLine struct {
 // If there was an error reading the file, or the
 // runtime.Caller function failed, it will not
 // be appended to the stack.
-func Stack(depth int, traverse int) []*FileStack {
-	var stack []*FileStack
+func GetStack(depth int, traverse int) Stack {
+	var stack Stack
 
 	for c := traverse; c < depth; c++ {
 		t, file, line, ok := runtime.Caller(c)
@@ -54,7 +75,7 @@ func Stack(depth int, traverse int) []*FileStack {
 			continue
 		}
 
-		stack = append(stack, &FileStack{
+		stack.Append(&File{
 			File:     file,
 			Line:     line,
 			Name:     runtime.FuncForPC(t).Name(),
@@ -69,7 +90,7 @@ func Stack(depth int, traverse int) []*FileStack {
 //
 // Splits the file into a array of lines by separating
 // them by a new line.
-func (f *FileStack) Lines() []*FileLine {
+func (f *File) Lines() []*FileLine {
 	lines := strings.Split(f.Contents, "\n")
 
 	diff := LineLimit / 2
