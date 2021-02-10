@@ -1,3 +1,7 @@
+// Copyright 2020 The Verbis Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package recovery
 
 import (
@@ -12,12 +16,11 @@ type (
 	// Data represents the main struct for sending back data to the
 	// template for recovery.
 	Data struct {
-		Error    Error
-		Template *FileStack
-		Request  Request
-		Post     *domain.PostData
-		Stack    []*FileStack
-		Debug    bool
+		Error   Error
+		Request Request
+		Post    *domain.PostData
+		Stack   Stack
+		Debug   bool
 	}
 	// Error represents a errors.Error in friendly form (strings) to
 	// for the recovery template.
@@ -50,48 +53,68 @@ type (
 // been set, the template file stack will be
 // retrieved,
 func (r *Recover) getData() *Data {
-
-	// Retrieve the request body contents.
-	body, err := ioutil.ReadAll(r.config.Context.Request.Body)
-	if err != nil {
-		body = nil
+	return &Data{
+		Error:   r.getErrorData(),
+		Request: r.getRequestData(),
+		Post:    r.config.Post,
+		Stack:   r.getStackData(),
+		Debug:   environment.IsDebug(),
 	}
+}
 
-	// Check if the template exec has been set, if it has
-	// retrieve the file stack for the template.
-	var tpl *FileStack = nil
+// getStackData
+//
+// Check if the template exec has been set, if it has
+// retrieve the file stack for the template. and
+// prepend it to the stack
+func (r *Recover) getStackData() Stack {
+	stack := GetStack(StackDepth, StackSkip)
 	if r.config.TplExec != nil && r.config.TplFile != "" {
 		path := r.config.TplExec.Config().GetRoot() + "/" + r.config.TplFile + r.config.TplExec.Config().GetExtension()
-		tpl = &FileStack{
+		stack.Prepend(&File{
 			File:     path,
 			Line:     tplLineNumber(r.config.Error),
 			Name:     r.config.TplFile,
 			Contents: tplFileContents(path),
-		}
+		})
+	}
+	return stack
+}
+
+// getErrorData
+//
+//
+func (r *Recover) getErrorData() Error {
+	return Error{
+		Code:      r.err.Code,
+		Message:   r.err.Message,
+		Operation: r.err.Operation,
+		Err:       r.err.Error(),
+	}
+}
+
+// getRequestData
+//
+//
+func (r *Recover) getRequestData() Request {
+	ctx := r.config.Context
+
+	// Retrieve the request body contents.
+	body, err := ioutil.ReadAll(ctx.Request.Body)
+	if err != nil {
+		body = nil
 	}
 
-	return &Data{
-		Error: Error{
-			Code:      r.err.Code,
-			Message:   r.err.Message,
-			Operation: r.err.Operation,
-			Err:       r.err.Error(),
-		},
-		Template: tpl,
-		Request: Request{
-			Url:        location.Get(r.config.Context).String() + r.config.Context.Request.URL.Path,
-			Method:     r.config.Context.Request.Method,
-			Headers:    r.config.Context.Request.Header,
-			Query:      r.config.Context.Request.URL.Query(),
-			Body:       string(body),
-			Cookies:    r.config.Context.Request.Cookies(),
-			IP:         r.config.Context.ClientIP(),
-			DataLength: r.config.Context.Writer.Size(),
-			UserAgent:  r.config.Context.Request.UserAgent(),
-			Referer:    r.config.Context.Request.Referer(),
-		},
-		Post:     r.config.Post,
-		Stack:    Stack(StackDepth, TraverseLength),
-		Debug: environment.IsDebug(),
+	return Request{
+		Url:        location.Get(ctx).String() + ctx.Request.URL.Path,
+		Method:     ctx.Request.Method,
+		Headers:    ctx.Request.Header,
+		Query:      ctx.Request.URL.Query(),
+		Body:       string(body),
+		Cookies:    ctx.Request.Cookies(),
+		IP:         ctx.ClientIP(),
+		DataLength: ctx.Writer.Size(),
+		UserAgent:  ctx.Request.UserAgent(),
+		Referer:    ctx.Request.Referer(),
 	}
 }

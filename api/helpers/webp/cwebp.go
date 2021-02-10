@@ -113,8 +113,18 @@ func (c *CWebP) Crop(x, y, width, height int) *CWebP {
 func (c *CWebP) Run() error {
 	defer c.BinWrapper.Reset()
 
+	c.Arg("-mt")
+
+	// lower the number more compression
+
 	if c.quality > -1 {
-		c.Arg("-q", fmt.Sprintf("%d", c.quality))
+		if c.quality == 100 {
+			c.Arg("-lossless")
+			c.Arg("-exact")
+			//c.Arg("-q", fmt.Sprintf("%d", c.quality))
+		} else {
+			c.Arg("-q", fmt.Sprintf("%d", c.quality))
+		}
 	}
 
 	if c.crop != nil {
