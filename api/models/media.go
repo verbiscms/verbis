@@ -499,6 +499,8 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		}
 
 		if s.options.MediaConvertWebP {
+			// 100 - compression level
+			//go webp.Convert(filePath, 100 - s.options.MediaCompression)
 			go webp.Convert(filePath, s.options.MediaCompression)
 		}
 	}

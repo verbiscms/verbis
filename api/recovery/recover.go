@@ -1,3 +1,7 @@
+// Copyright 2020 The Verbis Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package recovery
 
 import (
@@ -28,14 +32,23 @@ type Recovery interface {
 
 // Recover defines
 type Recover struct {
-	deps   *deps.Deps
-	code   int
-	err    *errors.Error
-	config Config
+	deps     *deps.Deps
+	err      *errors.Error
+	config   Config
+	resolver resolver
+	recovery recovery
+	data     dataGetter
 }
+
+type resolver func(custom bool) (string, tpl.TemplateExecutor, bool)
+
+type recovery func(useTheme bool) []byte
+
+type dataGetter func() *Data
 
 // Config defines
 type Config struct {
+	Code    int
 	Context *gin.Context
 	Error   interface{}
 	TplFile string
@@ -43,29 +56,25 @@ type Config struct {
 	Post    *domain.PostData
 }
 
-// New
-//
-// TODO: Should we be passing codes in? Or have it in the config?
-func (h *Handler) New(code int) *Recover {
-	return &Recover{
-		deps: h.deps,
-		code: code,
-	}
-}
-
 // Recover
 //
 //
-func (r *Recover) Recover(cfg Config) []byte {
-	r.config = cfg
-	r.err = getError(cfg.Error)
-	return r.recoverWrapper(true)
+func (h *Handler) Recover(cfg Config) []byte {
+	r := &Recover{
+		deps:   h.deps,
+		err:    getError(cfg.Error),
+		config: cfg,
+	}
+	r.resolver = r.resolveErrorPage
+	r.recovery = r.recoverWrapper
+	r.data = r.getData
+	return r.recovery(true)
 }
 
 // HttpRecovery
 //
 //
-func (r *Recover) HttpRecovery() gin.HandlerFunc {
+func (h *Handler) HttpRecovery() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
@@ -81,11 +90,11 @@ func (r *Recover) HttpRecovery() gin.HandlerFunc {
 				}
 				// If the connection is dead, we can't write a status to it.
 				if !brokenPipe {
-					bytes := r.Recover(Config{
+					b := h.Recover(Config{
 						Context: ctx,
 						Error:   err,
 					})
-					ctx.Data(500, "text/html", bytes)
+					ctx.Data(500, "text/html", b)
 					return
 				}
 			}
@@ -109,7 +118,7 @@ func (r *Recover) recoverWrapper(useTheme bool) []byte {
 	path, exec, custom := r.resolver(useTheme)
 
 	var b bytes.Buffer
-	err := exec.Execute(&b, path, r.getData())
+	err := exec.Execute(&b, path, r.data())
 
 	// Theme error template failed, use the internal error pages
 	if err != nil && custom {
@@ -119,7 +128,7 @@ func (r *Recover) recoverWrapper(useTheme bool) []byte {
 		return r.recoverWrapper(false)
 	}
 
-	// Verbis error template failed, exit.
+	// Verbis error template failed, exit
 	if err != nil && !custom {
 		log.WithFields(log.Fields{
 			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to execute Verbis error template", Operation: op, Err: err},
@@ -129,4 +138,3 @@ func (r *Recover) recoverWrapper(useTheme bool) []byte {
 
 	return b.Bytes()
 }
-

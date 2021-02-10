@@ -97,21 +97,13 @@ func (c *controllerTest) NewRequest(method string, url string, body io.Reader) {
 func (c *controllerTest) RequestAndServe(method string, url string, engineUrl string, body io.Reader, handler func(ctx *gin.Context)) {
 	switch method {
 	case "GET":
-		{
-			c.engine.GET(engineUrl, handler)
-		}
+		c.engine.GET(engineUrl, handler)
 	case "POST":
-		{
-			c.engine.POST(engineUrl, handler)
-		}
+		c.engine.POST(engineUrl, handler)
 	case "PUT":
-		{
-			c.engine.PUT(engineUrl, handler)
-		}
+		c.engine.PUT(engineUrl, handler)
 	case "DELETE":
-		{
-			c.engine.DELETE(engineUrl, handler)
-		}
+		c.engine.DELETE(engineUrl, handler)
 	}
 	c.NewRequest(method, url, body)
 	c.engine.ServeHTTP(c.recorder, c.gin.Request)

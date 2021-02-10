@@ -55,9 +55,7 @@ func TestNamespace_Query(t *testing.T) {
 			g, _ := gin.CreateTestContext(httptest.NewRecorder())
 			g.Request, _ = http.NewRequest("GET", test.url, nil)
 
-			ns := Namespace{
-				ctx: g,
-			}
+			ns := Namespace{ctx: g}
 
 			got := ns.Query(test.input)
 
@@ -97,9 +95,7 @@ func TestGetPagination(t *testing.T) {
 			g, _ := gin.CreateTestContext(httptest.NewRecorder())
 			g.Request, _ = http.NewRequest("GET", test.url, nil)
 
-			ns := Namespace{
-				ctx: g,
-			}
+			ns := Namespace{ctx: g}
 
 			got := ns.Pagination()
 			assert.Equal(t, test.want, got)

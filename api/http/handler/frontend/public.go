@@ -62,8 +62,6 @@ func (c *Public) GetAssets(g *gin.Context) {
 func (c *Public) Serve(g *gin.Context) {
 	const op = "FrontendHandler.Serve"
 
-	panic("fdgjhdfgkj")
-
 	page, err := c.render.Page(g)
 	if errors.Code(err) == errors.NOTFOUND {
 		c.render.NotFound(g)

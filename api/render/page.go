@@ -89,7 +89,8 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	var b bytes.Buffer
 	err = exec.ExecutePost(&b, pt, g, &post)
 	if err != nil {
-		return recovery.New(r.Deps).New(http.StatusInternalServerError).Recover(recovery.Config{
+		return recovery.New(r.Deps).Recover(recovery.Config{
+			Code:    http.StatusInternalServerError,
 			Context: g,
 			Error:   err,
 			TplFile: pt,

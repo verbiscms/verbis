@@ -1,11 +1,78 @@
+// Copyright 2020 The Verbis Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package recovery
 
-import (
-	"github.com/stretchr/testify/assert"
-	"testing"
-)
+func (t *RecoverTestSuite) TestStack_Append() {
 
-func TestStack(t *testing.T) {
+	tt := map[string]struct {
+		stack Stack
+		input *File
+		want  Stack
+	}{
+		"Nil Length": {
+			nil,
+			&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			Stack{
+				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			},
+		},
+		"Multiple": {
+			Stack{
+				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			},
+			&File{File: "test", Line: 2, Name: "name", Contents: "contents"},
+			Stack{
+				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+				&File{File: "test", Line: 2, Name: "name", Contents: "contents"},
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			test.stack.Append(test.input)
+			t.Equal(test.want, test.stack)
+		})
+	}
+}
+
+func (t *RecoverTestSuite) TestStack_Prepend() {
+
+	tt := map[string]struct {
+		stack Stack
+		input *File
+		want  Stack
+	}{
+		"Nil Length": {
+			nil,
+			&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			Stack{
+				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			},
+		},
+		"Multiple": {
+			Stack{
+				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			},
+			&File{File: "test", Line: 2, Name: "name", Contents: "contents"},
+			Stack{
+				&File{File: "test", Line: 2, Name: "name", Contents: "contents"},
+				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			test.stack.Prepend(test.input)
+			t.Equal(test.want, test.stack)
+		})
+	}
+}
+
+func (t *RecoverTestSuite) Test_GetStack() {
 
 	tt := map[string]struct {
 		depth    int
@@ -18,21 +85,21 @@ func TestStack(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			got := Stack(test.depth, test.traverse)
-			assert.Equal(t, test.want, len(got))
+		t.Run(name, func() {
+			got := GetStack(test.depth, test.traverse)
+			t.Equal(test.want, len(got))
 		})
 	}
 }
 
-func TestFileStack_Lines(t *testing.T) {
+func (t *RecoverTestSuite) TestFile_Lines() {
 
 	tt := map[string]struct {
-		input []*FileStack
+		input Stack
 		want  []*FileLine
 	}{
 		"Single": {
-			[]*FileStack{
+			Stack{
 				{Line: 1, Contents: "test\ntest"},
 			},
 			[]*FileLine{
@@ -40,7 +107,7 @@ func TestFileStack_Lines(t *testing.T) {
 			},
 		},
 		"Multiple": {
-			[]*FileStack{
+			Stack{
 				{Line: 1, Contents: "test"},
 				{Line: 2, Contents: "test\ntest"},
 			},
@@ -52,14 +119,14 @@ func TestFileStack_Lines(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			if len(test.input) == 0 {
-				t.Fail()
+				t.Fail("Wrong args for input")
 			}
 			got := test.input[0].Lines()
 			for _, v := range got {
 				for _, line := range test.want {
-					assert.Equal(t, *line, *v)
+					t.Equal(*line, *v)
 				}
 			}
 		})
