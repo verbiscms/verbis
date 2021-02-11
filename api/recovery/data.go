@@ -107,7 +107,7 @@ func (r *Recover) getStackData() trace.Stack {
 
 // getErrorData
 //
-// Returns error friendly data for the template.
+// Returns error friendly Error data for the template.
 func (r *Recover) getErrorData() Error {
 	return Error{
 		Code:      r.err.Code,
@@ -119,7 +119,7 @@ func (r *Recover) getErrorData() Error {
 
 // getRequestData
 //
-//
+// Returns error friendly Request data for the template.
 func (r *Recover) getRequestData() Request {
 	ctx := r.config.Context
 
@@ -144,7 +144,7 @@ func (r *Recover) getRequestData() Request {
 
 // getContextData
 //
-//
+// Returns error friendly request Context for the template.
 func (r *Recover) getContextData() Context {
 	opts, err := r.deps.Store.Options.Get()
 	if err != nil {

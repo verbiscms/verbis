@@ -8,58 +8,172 @@
 
 	position: relative;
 	width: 100%;
+	overflow: hidden;
 
-	// Item
+	// Viewer
 	// ==========================================================================
 
-	&-item {
-		position: relative;
+	&-viewer {
+		display: none;
 		width: 100%;
-		display: flex;
-		border-bottom: 1px solid $grey-light;
+		height: 100%;
 
-		&-highlight {
-			background-color: rgba($primary, 0.2);
+		&-active {
+			display: block;
 		}
+	}
+
+	// Main
+	// ==========================================================================
+
+	&-main {
+		height: 100%;
+		background-color: $white;
+
+		&-header {
+			padding: 1rem 2rem;
+			background-color: $bg-color;
+			border-bottom: 1px solid $grey-light;
+
+			* {
+				font-size: 1rem;
+				margin-bottom: 0;
+			}
+
+			&-name {
+				color: $grey;
+				margin-bottom: 2px;
+			}
+
+			&-file {
+				color: $secondary;
+			}
+		}
+
+		&-content {
+			display: flex;
+			width: 100%;
+			height: 100%;
+			overflow-x: scroll;
+		}
+	}
+
+	// Code
+	// ==========================================================================
+
+	&-code {
+		position: relative;
+		//width: 100%;
+		height: auto;
+		margin: 0;
+		flex-grow: 1;
+
+		code {
+			margin: 0;
+			height: 100%;
+			width: 100%;
+			min-height: 100%;
+			font-size: 12px;
+			background-color: transparent;
+			padding: 0;
+			line-height: 2 !important;
+		}
+
+		&-line {
+			position: relative;
+			width: auto;
+			min-width: 100%;
+			padding-left: 14px;
+			margin-bottom: 0;
+
+			&-highlight {
+				background-color: rgba($primary, 0.1);
+			}
+		}
+	}
+
+	// Line Props
+	// ==========================================================================
+
+	&-line,
+	&-code-line {
+		font-size: 12px;
+		line-height: 2 !important;
+		font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+		height: 24px
+	}
+
+	// Ruler
+	// ==========================================================================
+
+	&-ruler {
+		position: sticky;
+		flex: none;
+		left: 0;
+		z-index: 20;
+		background-color: $bg-color;
+		border-right: 1px solid $grey-light;
 	}
 
 	// Line
 	// ==========================================================================
 
 	&-line {
-		display: flex;
-		justify-content: center;
-		margin-right: 14px;
-		padding: 22px 0;
-		border-right: 1px solid $primary;
-		width: 70px;
-		min-width: 70px;
-		max-width: 70px;
-		font-size: 14px;
+		padding: 0;
+		font-size: 12px;
 		color: $secondary;
+		width: 40px;
+		text-align: center;
+
+		&-highlight {
+			background-color: rgba($primary, 0.3);
+		}
 	}
 
-	// Cont
+	// Frames
 	// ==========================================================================
 
-	&-cont {
-		display: flex;
-		flex-direction: column;
-		justify-content: center;
-	}
+	&-frame {
 
-	// File
-	// ==========================================================================
+		&-group {
+			display: flex;
+			align-items: center;
+			border-bottom: 1px solid $grey-light;
+			cursor: pointer;
 
-	&-file {
-		@include px-to-rem(14);
-	}
+			&-active {
+				background-color: rgba($primary, 0.1);
+			}
+		}
 
-	// Line
-	// ==========================================================================
+		&-number {
+			width: 50px;
+			min-width: 50px;
+			font-size: 14px;
+			text-align: center;
+			border-right: 1px solid $primary;
+			padding: 1rem 0.5rem;
+		}
 
-	&-name {
-		@include px-to-rem(12);
-		color: $secondary;
+		&-name {
+			font-weight: 500;
+			line-height: 1.2;
+			display: flex;
+			padding: 0 10px;
+			flex-grow: 2;
+
+			small {
+			 	word-break: break-all;
+				color: $secondary;
+			}
+		}
+
+		&-line {
+			font-size: 0.75rem;
+			width: auto;
+			min-width: 50px;
+			padding: 1rem 0.5rem;
+			text-align: center;
+		}
 	}
 }
