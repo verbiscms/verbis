@@ -40,7 +40,6 @@ func (t *RecoverTestSuite) TestRecover_GetData() {
 			Cookies:    []*http.Cookie{},
 			IP:         "",
 			DataLength: 0,
-			UserAgent:  "",
 			Referer:    "",
 		},
 		Post:  nil,
@@ -144,7 +143,6 @@ func (t *RecoverTestSuite) TestRecover_GetRequestData() {
 		Cookies:    []*http.Cookie{&cookie},
 		IP:         "",
 		DataLength: -1,
-		UserAgent:  "",
 		Referer:    "",
 	}
 
@@ -171,7 +169,6 @@ func (t *RecoverTestSuite) TestRecover_GetRequestData_NilBody() {
 		Cookies:    []*http.Cookie{&cookie},
 		IP:         "",
 		DataLength: -1,
-		UserAgent:  "",
 		Referer:    "",
 	}
 

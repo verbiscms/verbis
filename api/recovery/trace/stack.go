@@ -14,7 +14,7 @@ import (
 const (
 	// How many lines before and after the calling function
 	// to retrieve.
-	LineLimit = 50
+	LineLimit = 60
 )
 
 // Tracer represents the functionality for obtaining a new
@@ -101,6 +101,8 @@ func Language(path string) string {
 	switch ext {
 	case ".go":
 		return "go"
+	case ".s":
+		return "assembly"
 	default:
 		return "handlebars"
 	}
@@ -115,21 +117,21 @@ type File struct {
 	Language string
 }
 
-// Vendor
-//
-// Determines if a file is Verbis specific or vendor.
-func (f *File) Vendor() bool {
-	if f.Language == "handlebars" {
-		return true
-	}
-	return strings.Contains(f.Name, "verbis")
-}
-
 // FileLine defines the error for templating it includes the
 // line & content of the error file.
 type FileLine struct {
 	Line    int
 	Content string
+}
+
+// Vendor
+//
+// Determines if a file is Verbis specific or vendor.
+func (f *File) Vendor() bool {
+	if f.Language == "handlebars" {
+		return false
+	}
+	return !strings.Contains(f.Name, "verbis")
 }
 
 // Lines

@@ -48023,6 +48023,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var highlight_js_lib_languages_handlebars__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(highlight_js_lib_languages_handlebars__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var highlight_js_lib_languages_go__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! highlight.js/lib/languages/go */ "./node_modules/highlight.js/lib/languages/go.js");
 /* harmony import */ var highlight_js_lib_languages_go__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(highlight_js_lib_languages_go__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var highlight_js_lib_languages_x86asm__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! highlight.js/lib/languages/x86asm */ "./node_modules/highlight.js/lib/languages/x86asm.js");
+/* harmony import */ var highlight_js_lib_languages_x86asm__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(highlight_js_lib_languages_x86asm__WEBPACK_IMPORTED_MODULE_5__);
 /**
  * app.js
  * All custom JS for theme stored here.
@@ -48039,6 +48041,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 __webpack_require__(/*! ./scripts/polyfills */ "./src/js/scripts/polyfills.js"); //Vendor
+
 
 
 
@@ -48080,6 +48083,7 @@ highlight_js__WEBPACK_IMPORTED_MODULE_1___default.a.addPlugin(brPlugin);
 
 highlight_js__WEBPACK_IMPORTED_MODULE_1___default.a.registerLanguage('handlebars', highlight_js_lib_languages_handlebars__WEBPACK_IMPORTED_MODULE_3___default.a);
 highlight_js__WEBPACK_IMPORTED_MODULE_1___default.a.registerLanguage('go', highlight_js_lib_languages_go__WEBPACK_IMPORTED_MODULE_4___default.a);
+highlight_js__WEBPACK_IMPORTED_MODULE_1___default.a.registerLanguage('assembly', highlight_js_lib_languages_x86asm__WEBPACK_IMPORTED_MODULE_5___default.a);
 highlight_js__WEBPACK_IMPORTED_MODULE_1___default.a.highlightAll();
 /*
  * Scroll To Anchor

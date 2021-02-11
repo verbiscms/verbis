@@ -50,12 +50,12 @@ h1 {
 }
 
 h2 {
-	@include fluid-type(320px, 1408px, 22px, 24px);
-	font-weight: 700;
 	color: $copy;
 	margin-bottom: 1.2rem;
-	line-height: 1.3;
 	text-align: center;
+	font-weight: 600;
+	line-height: 1.25;
+	font-size: 1.5rem;
 }
 
 h3 {
@@ -92,6 +92,8 @@ p {
 
 small {
 	color: $secondary;
+	font-weight: 300;
+	font-size: 13px;
 }
 
 // Links
@@ -106,7 +108,11 @@ a {
 	will-change: color;
 
 	&:hover {
-		color: $primary;
+		color: $primary !important;
+
+		* {
+			color: $primary;
+		}
 	}
 }
 
