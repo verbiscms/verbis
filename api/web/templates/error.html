@@ -16,9 +16,9 @@
                             </div>
                             <!-- Card Body -->
                             <div class="card-body">
-                                <h3>Error: {{ .Error.Code | upper }}</h3>
-                                <h2>{{ .Error.Err }} - {{ .Error.Message }}</h2>
-                                <small>{{ .Request.Url }}</small>
+                                <h2 class="error-code">Error Code: {{ .Error.Code | upper }}</h2>
+                                <h2 class="error-message">{{ .Error.Message }} - {{ .Error.Err }}</h2>
+                                <a href="{{ .Request.Url }}" target="_blank"><small>{{ .Request.Url }}</small></a>
                             </div>
                         </div><!-- /Main Error Card -->
                     </div><!-- /Col -->
@@ -60,7 +60,7 @@
                                     <!-- Stack Frames -->
                                     <div class="stack-frame">
                                         <div class="stack-frame-header">
-                                            <h5>Trace frames</h5>
+                                            <p>Trace frames</p>
                                         </div>
                                         {{ range $index, $item := . -}}
                                             {{ with $item -}}
