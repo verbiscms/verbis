@@ -106,6 +106,27 @@ func TestStack_Find(t *testing.T) {
 	}
 }
 
+func Test_Language(t *testing.T) {
+
+	tt := map[string]struct {
+		input string
+		want string
+	}{
+		"Default": {"test", "handlebars"},
+		"Go":   {".go", "go"},
+		"HTML":   {".html", "handlebars"},
+		"CMS":   {".cms", "handlebars"},
+		"Assembly":   {".s", "assembly"},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := Language(test.input)
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
 func Test_GetStack(t *testing.T) {
 
 	tt := map[string]struct {
@@ -126,6 +147,34 @@ func Test_GetStack(t *testing.T) {
 	}
 }
 
+func TestFile_Vendor(t *testing.T) {
+
+	tt := map[string]struct {
+		input File
+		want  bool
+	}{
+		"Handlebars": {
+			File{Language: "handlebars"},
+			false,
+		},
+		"Non Vendor": {
+			File{Name: "verbis/recovery"},
+			false,
+		},
+		"Vendor": {
+			File{Name: "wrongval"},
+			true,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.Vendor()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
 func TestFile_Lines(t *testing.T) {
 
 	tt := map[string]struct {
@@ -134,20 +183,19 @@ func TestFile_Lines(t *testing.T) {
 	}{
 		"Single": {
 			Stack{
-				{Line: 1, Contents: "test\ntest"},
+				{Contents: "test"},
 			},
 			[]*FileLine{
-				{Line: 2, Content: "test"},
+				{Line: 1, Content: "test"},
 			},
 		},
 		"Multiple": {
 			Stack{
-				{Line: 1, Contents: "test"},
-				{Line: 2, Contents: "test\ntest"},
+				{Contents: "test\ntest"},
 			},
 			[]*FileLine{
 				{Line: 1, Content: "test"},
-				{Line: 2, Content: "test\ntest"},
+				{Line: 2, Content: "test"},
 			},
 		},
 	}
@@ -158,10 +206,8 @@ func TestFile_Lines(t *testing.T) {
 				t.Error("Wrong args for input")
 			}
 			got := test.input[0].Lines()
-			for _, v := range got {
-				for _, line := range test.want {
-					assert.Equal(t, *line, *v)
-				}
+			for i := 0; i < len(got); i++ {
+				assert.Equal(t, test.want[i], got[i])
 			}
 		})
 	}

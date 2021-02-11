@@ -20,6 +20,7 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/atelier-forest-light.css';
 import handlebars from 'highlight.js/lib/languages/handlebars';
 import go from 'highlight.js/lib/languages/go';
+import assembly from 'highlight.js/lib/languages/x86asm';
 
 /**
  * Variables
@@ -54,6 +55,7 @@ hljs.addPlugin(brPlugin);
  */
 hljs.registerLanguage('handlebars', handlebars);
 hljs.registerLanguage('go', go);
+hljs.registerLanguage('assembly', assembly);
 hljs.highlightAll();
 
 /*

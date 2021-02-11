@@ -17,6 +17,12 @@
 		margin-bottom: 1rem;
 	}
 
+	&-code {
+		color: $secondary;
+		font-weight: 500;
+		margin-bottom: 6px !important;
+	}
+
 	// Main
 	// ==========================================================================
 
@@ -29,7 +35,9 @@
 
 	&-info {
 		padding-bottom: 50px;
-		//border: 1px solid $grey-light;
-		//box-shadow: 0 1px 6px 0 $grey-light;
+
+		&-card {
+			margin-top: 0;
+		}
 	}
 }

@@ -50,7 +50,7 @@ $stack-dark-colour: rgba($primary, 0.3);
 			}
 
 			&-file {
-				color: $secondary;
+				color: $black;
 			}
 		}
 
@@ -139,6 +139,15 @@ $stack-dark-colour: rgba($primary, 0.3);
 	// ==========================================================================
 
 	&-frame {
+
+		&-header {
+			padding: 1rem;
+			background-color: $bg-color;
+
+			p {
+				margin-bottom: 0;
+			}
+		}
 
 		&-group {
 			grid-template-columns: 3rem 1fr auto;

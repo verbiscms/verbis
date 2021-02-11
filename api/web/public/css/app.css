@@ -7575,27 +7575,12 @@ h1 {
 }
 
 h2 {
-  font-weight: 700;
   color: #1E2027;
   margin-bottom: 1.2rem;
-  line-height: 1.3;
   text-align: center;
-}
-
-h2 {
-  font-size: 22px;
-}
-
-@media screen and (min-width: 320px) {
-  h2 {
-    font-size: calc(22px + 2 * ((100vw - 320px) / 1088));
-  }
-}
-
-@media screen and (min-width: 1408px) {
-  h2 {
-    font-size: 24px;
-  }
+  font-weight: 600;
+  line-height: 1.25;
+  font-size: 1.5rem;
 }
 
 h3 {
@@ -7654,6 +7639,8 @@ p {
 
 small {
   color: #7E8593;
+  font-weight: 300;
+  font-size: 13px;
 }
 
 a {
@@ -7667,6 +7654,10 @@ a {
 }
 
 a:hover {
+  color: #3F87E5 !important;
+}
+
+a:hover * {
   color: #3F87E5;
 }
 
@@ -7773,7 +7764,7 @@ a:hover {
   background-color: #fff;
   width: 100%;
   padding: 0;
-  border: 1px solid #E8E8EB;
+  border: 1px solid rgba(192, 192, 194, 0.4);
   box-shadow: 0 1px 6px 0 #E8E8EB;
   border-radius: 4px;
   margin-bottom: 0;
@@ -7942,11 +7933,6 @@ a:hover {
   }
 }
 
-.code .hljs {
-  background-color: transparent;
-  padding: 0;
-}
-
 .stack {
   position: relative;
   width: 100%;
@@ -7986,7 +7972,7 @@ a:hover {
 }
 
 .stack-main-header-file {
-  color: #7E8593;
+  color: #000;
 }
 
 .stack-main-content {
@@ -8055,6 +8041,15 @@ a:hover {
 
 .stack-line-highlight {
   background-color: rgba(63, 135, 229, 0.3);
+}
+
+.stack-frame-header {
+  padding: 1rem;
+  background-color: #F7F7FA;
+}
+
+.stack-frame-header p {
+  margin-bottom: 0;
 }
 
 .stack-frame-group {
@@ -8159,6 +8154,7 @@ a:hover {
   padding: 6px 0;
   border-top-left-radius: 4px;
   border-top-right-radius: 4px;
+  border-bottom: 1px solid #E8E8EB;
 }
 
 .tab-nav-bar {
@@ -8359,12 +8355,22 @@ a:hover {
   margin-bottom: 1rem;
 }
 
+.error-code {
+  color: #7E8593;
+  font-weight: 500;
+  margin-bottom: 6px !important;
+}
+
 .error-main {
   padding: 50px 0;
 }
 
 .error-info {
   padding-bottom: 50px;
+}
+
+.error-info-card {
+  margin-top: 0;
 }
 
 /* ====================
