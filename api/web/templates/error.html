@@ -4,7 +4,7 @@
         <!-- =====================
             Main Error
             ===================== -->
-        <section class="error">
+        <section class="error error-main">
             <div class="container">
                 <div class="row">
                     <div class="col-12">
@@ -12,7 +12,7 @@
                         <div class="card">
                             <!-- Card Header -->
                             <div class="card-header">
-                                <p>{{ themePath }}</p>
+                                <small>{{ themePath }}</small>
                             </div>
                             <!-- Card Body -->
                             <div class="card-body">
@@ -28,246 +28,270 @@
         <!-- =====================
             Info
             ===================== -->
-        <section class="error">
-            <!-- =====================
-                 Tabs
-                 ===================== -->
-            <nav class="tabs-nav">
-                <ul class="tab-bar">
-                    {{ if .Stack -}}
-                        <li><button class="tab" data-tab="stack">Stack</button></li>
+        <section class="error error-info">
+            <div class="container">
+                <div class="error-info-card card">
+                    <!-- =====================
+                        Tabs
+                        ===================== -->
+                    <nav class="tab-nav">
+                        <ul class="tab-nav-bar">
+                            {{ if .Stack -}}
+                                <li><button class="tab tab-active" data-tab="#stack">Stack trace</button></li>
+                            {{- end }}
+                            {{ if .Request -}}
+                                <li><button class="tab" data-tab="#request">Request</button></li>
+                            {{- end }}
+                            {{ if .Post -}}
+                                <li><button class="tab" data-tab="#post">Post</button></li>
+                            {{- end }}
+                            {{ if .Context -}}
+                                <li><button class="tab" data-tab="#context">Context</button></li>
+                            {{- end }}
+                        </ul>
+                    </nav>
+                    <!-- =====================
+                         Stack
+                         ===================== -->
+                    {{ with .Stack -}}
+                        <div class="tab-panel tab-panel-active stack" id="stack">
+                            <div class="row no-gaps">
+                                <div class="col-12 col-tab-5 col-desk-4">
+                                    <!-- Stack Frames -->
+                                    <div class="stack-frames">
+                                        {{ range $index, $item := . -}}
+                                            {{ with $item -}}
+                                                <div class="stack-frame-group {{ if eq $index 0 -}} stack-frame-group-active {{- end }}" data-stack="#stack-item-{{ $index }}">
+                                                    <div class="stack-frame-number">{{ add $index 1 -}}</div>
+                                                    <div class="stack-frame-name">
+                                                        <small>{{ $item.Name }}</small>
+                                                    </div>
+                                                    <div class="stack-frame-line">:{{ $item.Line }}</div>
+                                                    <div class="stack-frame-name">{{ . }}</div>
+                                                </div>
+                                            {{- end }}
+                                        {{ end }}
+                                    </div><!-- /Stack Frames -->
+                                </div><!-- /Col -->
+                                <div class="col-12 col-tab-7 col-desk-8">
+                                    <!-- Stack Main -->
+                                    <div class="stack-main">
+                                        {{ range $index, $item := . -}}
+                                            {{ with $item -}}
+                                            <div class="stack-viewer {{ if eq $index 0 -}} stack-viewer-active {{- end }}" id="stack-item-{{ $index }}">
+                                                <!-- Stack Header -->
+                                                <div class="stack-main-header">
+                                                    <p class="stack-main-header-name">{{ .Name }}</p>
+                                                    <p class="stack-main-header-file">{{ .File }}</p>
+                                                </div><!-- /Stack Header -->
+                                                <!-- Stack Content -->
+                                                <div class="stack-main-content">
+                                                    {{- $highlight := .Line -}}
+                                                    <!-- Stack Ruler -->
+                                                    <div class="stack-ruler">
+                                                        {{ range .Lines }} <div class="stack-line {{ if eq $highlight .Line -}} stack-line-highlight {{- end }}">{{ .Line }}</div>{{ end }}
+                                                    </div>
+                                                    <!-- Stack Item -->
+                                                    <div class="stack-code" id="stack-code-{{ $index }}">
+                                                        <pre class="highlight stack-code"><code class="{{ .Language -}}">
+{{- range .Lines -}}
+<p class="stack-code-line {{ if eq $highlight .Line -}} stack-code-line-highlight {{- end }}"><span>{{ .Content }}</span></p>
+{{- end -}}
+                                                            </code>
+                                                        </pre>
+                                                    </div>
+                                                </div><!-- /Stack Content -->
+                                            </div><!-- /Stack Viewer -->
+                                            {{- end }}
+                                        {{- end }}
+                                    </div><!-- /Stack Main -->
+                                </div><!-- /Col -->
+                            </div><!-- /Row -->
+                        </div><!-- /Stack -->
                     {{- end }}
-                    {{ if .Request -}}
-                        <li><button class="tab" data-tab="request">Request</button></li>
-                    {{- end }}
-                    {{ if .Post -}}
-                        <li><button class="tab" data-tab="post">Post</button></li>
-                    {{- end }}
-                    {{ if .Context -}}
-                        <li><button class="tab" data-tab="context">Context</button></li>
-                    {{- end }}
-                </ul>
-            </nav>
-            <!-- =====================
-                 Stack
-                 ===================== -->
-            {{ with .Stack -}}
-                <div class="tab-panel stack" id="stack">
-                    <div class="row no-gaps">
-                        <div class="col-12 col-tab-5 col-desk-3">
-                            <!-- Stack Frames -->
-                            <div class="stack-frames">
-                                {{ range $index, $item := . -}}
-                                    {{ with $item -}}
-                                        <div class="stack-frame-group" id="stack-item-{{ $index }}">
-                                            <p>{{ $index = add $index 1 -}}</p>
-                                            {{ $item.Line }}
-                                            <small>{{ $item.Name }}</small>
-                                        </div>
+                    <!-- =====================
+                        Request
+                        ===================== -->
+                    {{ with .Request -}}
+                        <div class="tab-panel tab-panel-request" id="request">
+                            <!-- Request -->
+                            <div class="tab-section">
+                                <h4 class="definition-title">Request</h4>
+                                <dl class="definition-list">
+                                    <dt class="definition-label">URL</dt>
+                                    <dd class="definition-value">{{ with .Url }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Method</dt>
+                                    <dd class="definition-value">{{ with .Method }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">IP</dt>
+                                    <dd class="definition-value">{{ with .IP }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Referer</dt>
+                                    <dd class="definition-value">{{ with .Referer }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Data length</dt>
+                                    <dd class="definition-value">{{ with .DataLength }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Body</dt>
+                                    <dd class="definition-value">{{ with .Body }}{{ . }}{{ end }}</dd>
+                                </dl>
+                            </div><!-- /Tab Section -->
+                            <!-- Headers -->
+                            <div class="tab-section">
+                                <h4 class="definition-title">Headers</h4>
+                                <dl class="definition-list">
+                                    {{ range $header, $value := .Headers -}}
+                                        <dt class="definition-label">{{ with $header }}{{ . }}{{ end }}</dt>
+                                        <dd class="definition-value">{{ range $value }}{{ . }}{{ end }}</dd>
                                     {{- end }}
-                                {{ end }}
-                            </div><!-- /Stack Frames -->
-                        </div><!-- /Col -->
-                        <div class="col-12 col-tab-7 col-desk-9">
-                            <!-- Stack Main -->
-                            <div class="stack">
-                                {{ range $index, $item := . -}}
-                                    {{ with $item -}}
-                                        <!-- Stack Item -->
-                                        <div class="stack-item" id="stack-item-{{ $index }}">
-                                            {{- $highlight := .Line -}}
-                                            <pre class="highlight code">
-                                                <code class="{{ .Language }}">
-                                                     {{- range .Lines -}}
-                                                         <span class="code-line {{ if eq $highlight .Line -}} code-line-highlight {{- end }}">{{ .Content }}</span><br>
-                                                     {{- end -}}
-                                                </code>
-                                            </pre>
-                                        </div><!-- /Stack Item -->
+                                </dl>
+                            </div><!-- /Tab Section -->
+                            <!-- Query -->
+                            <div class="tab-section">
+                                <h4 class="definition-title">Query</h4>
+                                <dl class="definition-list">
+                                    {{ range $query, $value := .Query -}}
+                                        <dt class="definition-label">{{ with $query }}{{ . }}{{ end }}</dt>
+                                        <dd class="definition-value">{{ range $value }}{{ . }}{{ end }}</dd>
                                     {{- end }}
-                                {{- end }}
-                            </div><!-- /Stack Main -->
-                        </div><!-- /Col -->
-                    </div><!-- /Row -->
-                </div><!-- /Stack -->
-            {{- end }}
-            <!-- =====================
-                Request
-                ===================== -->
-            {{ with .Request -}}
-                <div class="tab-panel tab-panel-request">
-                    <!-- Request -->
-                    <div class="tab-section">
-                        <h3>Request</h3>
-                        <dl class="definition-list">
-                            <dt class="definition-label">URL</dt>
-                            <dd class="definition-value">{{ with .Url }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Method</dt>
-                            <dd class="definition-value">{{ with .Method }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">IP</dt>
-                            <dd class="definition-value">{{ with .IP }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Referer</dt>
-                            <dd class="definition-value">{{ with .Referer }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Data length</dt>
-                            <dd class="definition-value">{{ with .DataLength }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Body</dt>
-                            <dd class="definition-value">{{ with .Body }}{{ . }}{{ end }}</dd>
-                        </dl>
-                    </div><!-- /Tab Section -->
-                    <!-- Headers -->
-                    <div class="tab-section">
-                        <h3>Headers</h3>
-                        <dl class="definition-list">
-                            {{ range $header, $value := .Headers -}}
-                                <dt class="definition-label">{{ with $header }}{{ . }}{{ end }}</dt>
-                                <dd class="definition-label">{{ range $value }}{{ . }}{{ end }}</dd>
-                            {{- end }}
-                        </dl>
-                    </div><!-- /Tab Section -->
-                    <!-- Query -->
-                    <div class="tab-section">
-                        <h3>Query</h3>
-                        <dl class="definition-list">
-                            {{ range $query, $value := .Query -}}
-                                <dt class="definition-label">{{ with $query }}{{ . }}{{ end }}</dt>
-                                <dd class="definition-label">{{ range $value }}{{ . }}{{ end }}</dd>
-                            {{- end }}
-                        </dl>
-                    </div><!-- /Tab Section -->
-                    <!-- Cookies -->
-                    <div class="tab-section">
-                        <h3>Cookies</h3>
-                        <dl class="definition-list">
-                            {{ range .Cookies -}}
-                                <dt class="definition-label">{{ with .Name }}{{ . }}{{ end }}</dt>
-                                <dd class="definition-value">{{ with .Value }}{{ . }}{{ end }}</dd>
-                            {{- end }}
-                        </dl>
-                    </div><!-- /Tab Section -->
-                </div><!-- /Request -->
-            {{- end }}
-            <!-- =====================
-                Post
-                ===================== -->
-            {{ with .Post }}
-                <div class="tab-panel tab-panel-post">
-                    <!-- Data -->
-                    <div class="tab-section">
-                        <h3>Data</h3>
-                        <dl class="definition-list">
-                            <dt class="definition-label">ID</dt>
-                            <dd class="definition-value">{{ with .Id }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">UUID</dt>
-                            <dd class="definition-value">{{ with .UUID }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Slug</dt>
-                            <dd class="definition-value">{{ with .Slug }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Title</dt>
-                            <dd class="definition-value">{{ with .Title }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Status</dt>
-                            <dd class="definition-value">{{ with .Status }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Resource</dt>
-                            <dd class="definition-value">{{ with .Resource }}{{ . }}{{ else }}page{{ end }}</dd>
-                            <dt class="definition-label">Template</dt>
-                            <dd class="definition-value">{{ with .PageTemplate }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Layout</dt>
-                            <dd class="definition-value">{{ with .PageLayout }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Code Injection Head</dt>
-                            <dd class="definition-value">{{ with .CodeInjectionHead }}{{ . | safeHTML }}{{ end }}</dd>
-                            <dt class="definition-label">Code Injection Foot</dt>
-                            <dd class="definition-value">{{ with .PageLayout }}{{ . | safeHTML }}{{ end }}</dd>
-                            <dt class="definition-label">Published At</dt>
-                            <dd class="definition-value">{{ with .PublishedAt }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Created At</dt>
-                            <dd class="definition-value">{{ with .CreatedAt }}{{ . }}{{ end }}</dd>
-                            <dt class="definition-label">Updated At</dt>
-                            <dd class="definition-value">{{ with .UpdatedAt }}{{ . }}{{ end }}</dd>
-                        </dl>
-                    </div><!-- /Tab Section -->
-                    <!-- Author -->
-                    {{ with .Author -}}
-                        <div class="tab-section">
-                            <h3>Author</h3>
-                            <dl class="definition-list">
-                                <dt class="definition-label">ID</dt>
-                                <dd class="definition-value">{{ with .Id }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">UUID</dt>
-                                <dd class="definition-value">{{ with .UUID }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">First Name</dt>
-                                <dd class="definition-value">{{ with .FirstName }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">Last Name</dt>
-                                <dd class="definition-value">{{ with .LastName }}{{ . }}{{ end }}</dd>
-                            </dl>
-                        </div><!-- /Tab Section -->
+                                </dl>
+                            </div><!-- /Tab Section -->
+                            <!-- Cookies -->
+                            <div class="tab-section">
+                                <h4 class="definition-title">Cookies</h4>
+                                <dl class="definition-list">
+                                    {{ range .Cookies -}}
+                                        <dt class="definition-label">{{ with .Name }}{{ . }}{{ end }}</dt>
+                                        <dd class="definition-value">{{ with .Value }}{{ . }}{{ end }}</dd>
+                                    {{- end }}
+                                </dl>
+                            </div><!-- /Tab Section -->
+                        </div><!-- /Request -->
                     {{- end }}
-                    <!-- Category -->
-                    {{ with .Category -}}
-                        <div class="tab-section">
-                            <h3>Category</h3>
-                            <dl class="definition-list">
-                                <dt class="definition-label">ID</dt>
-                                <dd class="definition-value">{{ with .Id }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">UUID</dt>
-                                <dd class="definition-value">{{ with .UUID }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">Slug</dt>
-                                <dd class="definition-value">{{ with .Slug }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">Name</dt>
-                                <dd class="definition-value">{{ with .Name }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">Description</dt>
-                                <dd class="definition-value">{{ with .Description }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">Resource</dt>
-                                <dd class="definition-value">{{ with .Resource }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">Parent ID</dt>
-                                <dd class="definition-value">{{ with .ParentId }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">Created At</dt>
-                                <dd class="definition-value">{{ with .CreatedAt }}{{ . }}{{ end }}</dd>
-                                <dt class="definition-label">Updated At</dt>
-                                <dd class="definition-value">{{ with .UpdatedAt }}{{ . }}{{ end }}</dd>
-                            </dl>
-                        </div><!-- /Tab Section -->
+                    <!-- =====================
+                        Post
+                        ===================== -->
+                    {{ with .Post }}
+                        <div class="tab-panel tab-panel-post" id="post">
+                            <!-- Data -->
+                            <div class="tab-section">
+                                <h4 class="definition-title">Data</h4>
+                                <dl class="definition-list">
+                                    <dt class="definition-label">ID</dt>
+                                    <dd class="definition-value">{{ with .Id }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">UUID</dt>
+                                    <dd class="definition-value">{{ with .UUID }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Slug</dt>
+                                    <dd class="definition-value">{{ with .Slug }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Title</dt>
+                                    <dd class="definition-value">{{ with .Title }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Status</dt>
+                                    <dd class="definition-value">{{ with .Status }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Resource</dt>
+                                    <dd class="definition-value">{{ with .Resource }}{{ . }}{{ else }}page{{ end }}</dd>
+                                    <dt class="definition-label">Template</dt>
+                                    <dd class="definition-value">{{ with .PageTemplate }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Layout</dt>
+                                    <dd class="definition-value">{{ with .PageLayout }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Code Injection Head</dt>
+                                    <dd class="definition-value">{{ with .CodeInjectionHead }}{{ . | safeHTML }}{{ end }}</dd>
+                                    <dt class="definition-label">Code Injection Foot</dt>
+                                    <dd class="definition-value">{{ with .PageLayout }}{{ . | safeHTML }}{{ end }}</dd>
+                                    <dt class="definition-label">Published At</dt>
+                                    <dd class="definition-value">{{ with .PublishedAt }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Created At</dt>
+                                    <dd class="definition-value">{{ with .CreatedAt }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Updated At</dt>
+                                    <dd class="definition-value">{{ with .UpdatedAt }}{{ . }}{{ end }}</dd>
+                                </dl>
+                            </div><!-- /Tab Section -->
+                            <!-- Author -->
+                            {{ with .Author -}}
+                                <div class="tab-section">
+                                    <h4 class="definition-title">Author</h4>
+                                    <dl class="definition-list">
+                                        <dt class="definition-label">ID</dt>
+                                        <dd class="definition-value">{{ with .Id }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">UUID</dt>
+                                        <dd class="definition-value">{{ with .UUID }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">First Name</dt>
+                                        <dd class="definition-value">{{ with .FirstName }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">Last Name</dt>
+                                        <dd class="definition-value">{{ with .LastName }}{{ . }}{{ end }}</dd>
+                                    </dl>
+                                </div><!-- /Tab Section -->
+                            {{- end }}
+                            <!-- Category -->
+                            {{ with .Category -}}
+                                <div class="tab-section">
+                                    <h4 class="definition-title">Category</h4>
+                                    <dl class="definition-list">
+                                        <dt class="definition-label">ID</dt>
+                                        <dd class="definition-value">{{ with .Id }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">UUID</dt>
+                                        <dd class="definition-value">{{ with .UUID }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">Slug</dt>
+                                        <dd class="definition-value">{{ with .Slug }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">Name</dt>
+                                        <dd class="definition-value">{{ with .Name }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">Description</dt>
+                                        <dd class="definition-value">{{ with .Description }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">Resource</dt>
+                                        <dd class="definition-value">{{ with .Resource }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">Parent ID</dt>
+                                        <dd class="definition-value">{{ with .ParentId }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">Created At</dt>
+                                        <dd class="definition-value">{{ with .CreatedAt }}{{ . }}{{ end }}</dd>
+                                        <dt class="definition-label">Updated At</dt>
+                                        <dd class="definition-value">{{ with .UpdatedAt }}{{ . }}{{ end }}</dd>
+                                    </dl>
+                                </div><!-- /Tab Section -->
+                            {{- end }}
+                            <!-- Fields -->
+                            {{ with .Fields -}}
+                                <div class="tab-section">
+                                    <h4 class="definition-title">Fields</h4>
+                                    <dl class="definition-list">
+                                        {{ range . -}}
+                                            <dt class="definition-label">{{ with .Name }}{{ . }}{{ end }}</dt>
+                                            <dd class="definition-value">{{ with .Key }} key: {{ . }}{{ end }}{{ with .Type }} type: {{ . }}{{ end }}{{ with .Value }} value: {{ . }}{{ end }}</dd>
+                                        {{- end }}
+                                    </dl>
+                                </div><!-- /Tab Section -->
+                            {{- end }}
+                        </div><!-- /Post -->
                     {{- end }}
-                    <!-- Fields -->
-                    {{ with .Fields -}}
-                        <div class="tab-section">
-                            <h3>Fields</h3>
-                            <dl class="definition-list">
-                                {{ range . -}}
-                                    <dt class="definition-label">{{ with .Name }}{{ . }}{{ end }}</dt>
-                                    <dd class="definition-value">{{ with .Key }} key: {{ . }}{{ end }}{{ with .Type }} type: {{ . }}{{ end }}{{ with .Value }} value: {{ . }}{{ end }}</dd>
-                                {{- end }}
-                            </dl>
-                        </div><!-- /Tab Section -->
+                    <!-- =====================
+                        Context
+                        ===================== -->
+                    {{ with .Context }}
+                        <div class="tab-panel tab-panel-context" id="context">
+                            <!-- Verbis -->
+                            <div class="tab-section">
+                                <h4 class="definition-title">App</h4>
+                                <dl class="definition-list">
+                                    <dt class="definition-label">Version</dt>
+                                    <dd class="definition-value">{{ with .Version }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Title</dt>
+                                    <dd class="definition-value">{{ with .Site.Title }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Description</dt>
+                                    <dd class="definition-value">{{ with .Site.Description }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Logo</dt>
+                                    <dd class="definition-value">{{ with .Site.Logo }}{{ . }}{{ end }}</dd>
+                                    <dt class="definition-label">Url</dt>
+                                    <dd class="definition-value">{{ with .Site.Url }}{{ . }}{{ end }}</dd>
+                                </dl>
+                            </div><!-- /Tab Section -->
+                            <!-- Options -->
+                            <div class="tab-section">
+                                <h4 class="definition-title">Options</h4>
+                                <dl class="definition-list">
+                                    {{ range $option, $value := .Options -}}
+                                        <dt class="definition-label">{{ with $option }}{{ . }}{{ end }}</dt>
+                                        <dd class="definition-value">{{ with $value }}{{ . }}{{ end }}</dd>
+                                    {{- end }}
+                                </dl>
+                            </div><!-- /Tab Section -->
+                        </div><!-- /Context -->
                     {{- end }}
-                </div><!-- /Post -->
-            {{- end }}
-            <!-- =====================
-                Context
-                ===================== -->
-            {{ with .Context }}
-                <div class="tab-panel tab-panel-context">
-                    <!-- Verbis -->
-                    <div class="tab-section">
-                        <h3>Verbis</h3>
-                        <dt class="definition-label">Version</dt>
-                        <dd class="definition-value">{{ with .Version }}{{ . }}{{ end }}</dd>
-                        <dt class="definition-label">Title</dt>
-                        <dd class="definition-value">{{ with .Site.Title }}{{ . }}{{ end }}</dd>
-                        <dt class="definition-label">Description</dt>
-                        <dd class="definition-value">{{ with .Site.Description }}{{ . }}{{ end }}</dd>
-                        <dt class="definition-label">Logo</dt>
-                        <dd class="definition-value">{{ with .Site.Logo }}{{ . }}{{ end }}</dd>
-                        <dt class="definition-label">Url</dt>
-                        <dd class="definition-value">{{ with .Site.Url }}{{ . }}{{ end }}</dd>
-                    </div><!-- /Tab Section -->
-                    <!-- Options -->
-                    <div class="tab-section">
-                        <h3>Options</h3>
-                        {{ range $option, $value := .Options -}}
-                            <dt class="definition-label">{{ with $option }}{{ . }}{{ end }}</dt>
-                            <dd class="definition-label">{{ with $value }}{{ . }}{{ end }}</dd>
-                        {{- end }}
-                    </div><!-- /Tab Section -->
-                </div><!-- /Context -->
-            {{- end }}
+                </div><!-- /Card -->
+            </div><!-- /Container -->
         </section>
     {{ else }}
         <!-- =====================

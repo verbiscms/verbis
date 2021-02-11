@@ -1,0 +1,82 @@
+// -----------------------------------------------------------------------------
+// _tab.scss
+// This file contains all styles related to the button component.
+// -----------------------------------------------------------------------------
+
+// Variables
+$tab-colour: #1357a9;
+$tab-bg-colour: #0d4383;
+
+.tab {
+	$self: &;
+
+	position: relative;
+	display: inline-flex;
+	justify-content: center;
+	background-color: $tab-bg-colour;
+	padding: 14px 22px;
+	cursor: pointer;
+	outline: none;
+	font-size: 0.9rem;
+	height: auto;
+	user-select: none;
+	line-height: 1;
+	color: $white;
+	border: none;
+	font-weight: 500;
+	margin: 0 2px;
+	border-radius: 2px;
+
+	// Button
+	// ==========================================================================
+
+	&:hover {
+		background-color: $tab-colour;
+	}
+
+	&-active {
+		background-color: $tab-colour;
+	}
+
+	// Nav
+	// ==========================================================================
+
+	&-nav {
+		width: 100%;
+		background-color: $tab-bg-colour;
+		padding: 6px 0;
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+
+		&-bar {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+	}
+
+	// Panel
+	// ==========================================================================
+
+	&-panel {
+		position: relative;
+		width: 100%;
+		display: none;
+		background-color: $white;
+
+		&-active {
+			display: block;
+		}
+	}
+
+	// Section
+	// ==========================================================================
+
+	&-section {
+		position: relative;
+		width: 100%;
+		padding: 2rem 2.5rem;
+		border-top: 2px solid $grey-light;
+	}
+}
+

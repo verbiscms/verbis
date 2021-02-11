@@ -9,7 +9,7 @@
 html,
 body {
 	color: $copy-text;
-	font-family: $font;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 	font-size: 90%;
 	font-kerning: normal;
 	font-variant-ligatures: common-ligatures;
@@ -51,17 +51,20 @@ h1 {
 
 h2 {
 	@include fluid-type(320px, 1408px, 22px, 24px);
-	font-weight: bold;
+	font-weight: 700;
 	color: $copy;
-	margin-bottom: 1.8rem;
+	margin-bottom: 1.2rem;
+	line-height: 1.3;
 	text-align: center;
 }
 
 h3 {
-	@include fluid-type(320px, 1408px, 16px, 20px);
-	font-weight: bold;
+	@include fluid-type(320px, 1408px, 16px, 24px);
+	font-weight: 500;
 	color: $secondary;
 	line-height: 1;
+	margin-bottom: 10px;
+	letter-spacing: -0.5px;
 }
 
 h4 {
@@ -85,6 +88,10 @@ p {
 	color: rgba($secondary, 0.70);
 	font-weight: normal;
 	line-height: 1.4;
+}
+
+small {
+	color: $secondary;
 }
 
 // Links
