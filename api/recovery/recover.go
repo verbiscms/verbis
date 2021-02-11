@@ -6,12 +6,13 @@ package recovery
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/recovery/trace"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"net"
 	"os"
 	"strings"
@@ -32,19 +33,17 @@ type Recovery interface {
 
 // Recover defines
 type Recover struct {
-	deps     *deps.Deps
-	err      *errors.Error
-	config   Config
-	resolver resolver
-	recovery recovery
-	data     dataGetter
+	deps    *deps.Deps
+	err     *errors.Error
+	config  Config
+	resolve Resolver
+	data    TplData
+	tracer  trace.Tracer
 }
 
-type resolver func(custom bool) (string, tpl.TemplateExecutor, bool)
+type Resolver func(custom bool) (string, tpl.TemplateExecutor, bool)
 
-type recovery func(useTheme bool) []byte
-
-type dataGetter func() *Data
+type TplData func() *Data
 
 // Config defines
 type Config struct {
@@ -56,19 +55,44 @@ type Config struct {
 	Post    *domain.PostData
 }
 
-// Recover
-//
-//
-func (h *Handler) Recover(cfg Config) []byte {
+func (h *Handler) newRecover(cfg Config) *Recover {
 	r := &Recover{
 		deps:   h.deps,
 		err:    getError(cfg.Error),
 		config: cfg,
+		tracer: trace.New(),
 	}
-	r.resolver = r.resolveErrorPage
-	r.recovery = r.recoverWrapper
+	r.resolve = r.resolveErrorPage
 	r.data = r.getData
-	return r.recovery(true)
+	return r
+}
+
+// Recover
+//
+//
+func (h *Handler) Recover(cfg Config) []byte {
+	r := h.newRecover(cfg)
+	var tpl []byte
+	custom := true
+
+	r.recoverWrapper(custom, func(b []byte, err *errors.Error) {
+		if err != nil {
+			custom = false
+		}
+		tpl = b
+	})
+
+	//
+	if !custom {
+		r.recoverWrapper(custom, func(b []byte, err *errors.Error) {
+			if err != nil {
+				fmt.Println(err)
+			}
+			tpl = b
+		})
+	}
+
+	return tpl
 }
 
 // HttpRecovery
@@ -89,6 +113,7 @@ func (h *Handler) HttpRecovery() gin.HandlerFunc {
 					}
 				}
 				// If the connection is dead, we can't write a status to it.
+				// Otherwise we will send the recover data back.
 				if !brokenPipe {
 					b := h.Recover(Config{
 						Context: ctx,
@@ -110,31 +135,29 @@ func (h *Handler) HttpRecovery() gin.HandlerFunc {
 // dependant on the pages defined in the theme. The
 // error page is executed and returned as bytes.
 //
-// Logs errors.INTERNAL if the internal Verbis error page failed to execute.
-// Sets the config error errors.TEMPLATE if the user defined error page failed to execute.
-func (r *Recover) recoverWrapper(useTheme bool) []byte {
+// Logs errors.INTERNAL if the internal Verbis error page
+// failed to execute.
+// Sets the config error errors.TEMPLATE if the user defined
+// error page failed to execute.
+func (r *Recover) recoverWrapper(useTheme bool, fn func(b []byte, err *errors.Error)) {
 	const op = "Recovery.Recover"
 
-	path, exec, custom := r.resolver(useTheme)
+	path, exec, custom := r.resolve(useTheme)
 
 	var b bytes.Buffer
-	err := exec.Execute(&b, path, r.data())
+	_, err := exec.Execute(&b, path, r.data())
 
 	// Theme error template failed, use the internal error pages
 	if err != nil && custom {
 		r.config.TplFile = path
 		r.config.TplExec = exec
-		r.err = &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute template with the name: " + path, Operation: op, Err: err}
-		return r.recoverWrapper(false)
+		fn(nil, &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute template with the name: " + path, Operation: op, Err: err})
 	}
 
 	// Verbis error template failed, exit
 	if err != nil && !custom {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to execute Verbis error template", Operation: op, Err: err},
-		}).Error()
-		return nil
+		fn(nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to execute Verbis error template", Operation: op, Err: err})
 	}
 
-	return b.Bytes()
+	fn(b.Bytes(), nil)
 }

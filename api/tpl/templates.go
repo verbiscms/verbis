@@ -25,8 +25,8 @@ type TemplateHandler interface {
 // template.
 type TemplateExecutor interface {
 	Exists(template string) bool
-	Execute(w io.Writer, name string, data interface{}) error
-	ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) error
+	Execute(w io.Writer, name string, data interface{}) (string, error)
+	ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) (string, error)
 	Config() TemplateConfig
 	Executor() TemplateExecutor
 }

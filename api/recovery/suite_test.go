@@ -6,6 +6,8 @@ package recovery
 
 import (
 	"bytes"
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -20,6 +22,7 @@ import (
 
 type RecoverTestSuite struct {
 	suite.Suite
+	deps      *deps.Deps
 	logWriter bytes.Buffer
 	apiPath   string
 }
@@ -35,12 +38,25 @@ func (t *RecoverTestSuite) BeforeTest(suiteName, testName string) {
 	t.logWriter = b
 	log.SetOutput(&t.logWriter)
 	t.SetPath()
+	t.SetDeps()
 }
 
 func (t *RecoverTestSuite) SetPath() {
 	wd, err := os.Getwd()
 	t.NoError(err)
 	t.apiPath = filepath.Join(filepath.Dir(wd))
+}
+
+func (t *RecoverTestSuite) SetDeps() {
+	t.deps = &deps.Deps{
+		Paths: deps.Paths{
+			Theme: "theme",
+		},
+		Theme: &domain.ThemeConfig{
+			FileExtension: "cms",
+			TemplateDir:   "template",
+		},
+	}
 }
 
 func (t *RecoverTestSuite) Reset() {

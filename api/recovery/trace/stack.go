@@ -2,31 +2,33 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package recovery
+package trace
 
 import (
 	"io/ioutil"
+	"path/filepath"
 	"runtime"
 	"strings"
 )
 
 const (
-	// The amount of files in the stack to be retrieved
-	StackDepth = 200
 	// How many lines before and after the calling function
-	// to retrieve
+	// to retrieve.
 	LineLimit = 50
-	// How many files to move up in the runtime.Caller
-	// before obtaining the stack
-	StackSkip = 2
 )
 
-// FileStack defines the stack used for the error page
-type File struct {
-	File     string
-	Line     int
-	Name     string
-	Contents string
+// Tracer represents the functionality for obtaining a new
+// stack.
+type Tracer interface {
+	Trace(depth int, skip int) Stack
+}
+
+// Trace implements the trace method to obtain the stack
+type trace struct{}
+
+// Return a new tracer
+func New() *trace {
+	return &trace{}
 }
 
 // Stack defines the slice of file lines for recovery
@@ -46,11 +48,14 @@ func (s *Stack) Prepend(file *File) {
 	*s = append([]*File{file}, *s...)
 }
 
-// FileLine defines the error for templating it includes the
-// line & content of the error file.
-type FileLine struct {
-	Line    int
-	Content string
+// Find a file in the stack by name.
+func (s *Stack) Find(name string) *File {
+	for _, v := range *s {
+		if v.Name == name {
+			return v
+		}
+	}
+	return nil
 }
 
 // Stack
@@ -60,10 +65,10 @@ type FileLine struct {
 // If there was an error reading the file, or the
 // runtime.Caller function failed, it will not
 // be appended to the stack.
-func GetStack(depth int, traverse int) Stack {
+func (t *trace) Trace(depth int, skip int) Stack {
 	var stack Stack
 
-	for c := traverse; c < depth; c++ {
+	for c := skip; c < depth; c++ {
 		t, file, line, ok := runtime.Caller(c)
 
 		if !ok {
@@ -80,10 +85,51 @@ func GetStack(depth int, traverse int) Stack {
 			Line:     line,
 			Name:     runtime.FuncForPC(t).Name(),
 			Contents: string(contents),
+			Language: Language(file),
 		})
 	}
 
 	return stack
+}
+
+// language
+//
+// Returns the language used in the file for syntax
+// highlighting.
+func Language(path string) string {
+	ext := filepath.Ext(path)
+	switch ext {
+	case ".go":
+		return "go"
+	default:
+		return "handlebars"
+	}
+}
+
+// FileStack defines the stack used for the error page
+type File struct {
+	File     string
+	Line     int
+	Name     string
+	Contents string
+	Language string
+}
+
+// Vendor
+//
+// Determines if a file is Verbis specific or vendor.
+func (f *File) Vendor() bool {
+	if f.Language == "handlebars" {
+		return true
+	}
+	return strings.Contains(f.Name, "verbis")
+}
+
+// FileLine defines the error for templating it includes the
+// line & content of the error file.
+type FileLine struct {
+	Line    int
+	Content string
 }
 
 // Lines
@@ -98,7 +144,7 @@ func (f *File) Lines() []*FileLine {
 	var fileLines []*FileLine
 	counter := 0
 	for i := f.Line - diff; i < f.Line+diff; i++ {
-		if i > 0 && i < len(lines) {
+		if i >= 0 && i < len(lines) {
 			fileLines = append(fileLines, &FileLine{
 				Line:    i + 1,
 				Content: lines[i],
@@ -109,3 +155,4 @@ func (f *File) Lines() []*FileLine {
 
 	return fileLines
 }
+

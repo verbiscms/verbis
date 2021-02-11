@@ -33,47 +33,47 @@ func init() {
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
 
-		//ns.AddMethodMapping(d.Paths.Base,
-		//	"basePath",
-		//	nil,
-		//	[][2]string{},
-		//)
-		//
-		//ns.AddMethodMapping(d.Paths.Admin,
-		//	"adminPath",
-		//	nil,
-		//	[][2]string{},
-		//)
-		//
-		//ns.AddMethodMapping(d.Paths.API,
-		//	"apiPath",
-		//	nil,
-		//	[][2]string{},
-		//)
-		//
-		//ns.AddMethodMapping(d.Paths.Theme,
-		//	"themePath",
-		//	nil,
-		//	[][2]string{},
-		//)
-		//
-		//ns.AddMethodMapping(d.Paths.Uploads,
-		//	"uploadsPath",
-		//	nil,
-		//	[][2]string{},
-		//)
-		//
-		//ns.AddMethodMapping(d.Theme.AssetsPath,
-		//	"assetsPath",
-		//	nil,
-		//	[][2]string{},
-		//)
-		//
-		//ns.AddMethodMapping(d.Paths.Storage,
-		//	"storagePath",
-		//	nil,
-		//	[][2]string{},
-		//)
+		ns.AddMethodMapping(func() string {return d.Paths.Base},
+			"basePath",
+			nil,
+			[][2]string{},
+		)
+
+		ns.AddMethodMapping(func() string {return d.Paths.Admin},
+			"adminPath",
+			nil,
+			[][2]string{},
+		)
+
+		ns.AddMethodMapping(func() string {return d.Paths.API},
+			"apiPath",
+			nil,
+			[][2]string{},
+		)
+
+		ns.AddMethodMapping(func() string {return d.Paths.Theme},
+			"themePath",
+			nil,
+			[][2]string{},
+		)
+
+		ns.AddMethodMapping(func() string {return d.Paths.Uploads},
+			"uploadsPath",
+			nil,
+			[][2]string{},
+		)
+
+		ns.AddMethodMapping(func() string {return d.Theme.AssetsPath},
+			"assetsPath",
+			nil,
+			[][2]string{},
+		)
+
+		ns.AddMethodMapping(func() string {return d.Paths.Storage},
+			"storagePath",
+			nil,
+			[][2]string{},
+		)
 
 		ns.AddMethodMapping(ctx.Templates,
 			"templatesPath",

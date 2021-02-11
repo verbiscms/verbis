@@ -2,9 +2,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package recovery
+package trace
 
-func (t *RecoverTestSuite) TestStack_Append() {
+import (
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func TestStack_Append(t *testing.T) {
 
 	tt := map[string]struct {
 		stack Stack
@@ -31,14 +36,14 @@ func (t *RecoverTestSuite) TestStack_Append() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
+		t.Run(name, func(t *testing.T) {
 			test.stack.Append(test.input)
-			t.Equal(test.want, test.stack)
+			assert.Equal(t, test.want, test.stack)
 		})
 	}
 }
 
-func (t *RecoverTestSuite) TestStack_Prepend() {
+func TestStack_Prepend(t *testing.T) {
 
 	tt := map[string]struct {
 		stack Stack
@@ -65,14 +70,43 @@ func (t *RecoverTestSuite) TestStack_Prepend() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
+		t.Run(name, func(t *testing.T) {
 			test.stack.Prepend(test.input)
-			t.Equal(test.want, test.stack)
+			assert.Equal(t, test.want, test.stack)
 		})
 	}
 }
 
-func (t *RecoverTestSuite) Test_GetStack() {
+func TestStack_Find(t *testing.T) {
+
+	f := &File{File: "test", Line: 1, Name: "name", Contents: "contents"}
+
+	tt := map[string]struct {
+		stack Stack
+		input string
+		want  *File
+	}{
+		"Found": {
+			Stack{f},
+			"name",
+			f,
+		},
+		"Not Found": {
+			nil,
+			"name",
+			nil,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.stack.Find(test.input)
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func Test_GetStack(t *testing.T) {
 
 	tt := map[string]struct {
 		depth    int
@@ -85,14 +119,14 @@ func (t *RecoverTestSuite) Test_GetStack() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
-			got := GetStack(test.depth, test.traverse)
-			t.Equal(test.want, len(got))
+		t.Run(name, func(t *testing.T) {
+			got := New().Trace(test.depth, test.traverse)
+			assert.Equal(t, test.want, len(got))
 		})
 	}
 }
 
-func (t *RecoverTestSuite) TestFile_Lines() {
+func TestFile_Lines(t *testing.T) {
 
 	tt := map[string]struct {
 		input Stack
@@ -119,14 +153,14 @@ func (t *RecoverTestSuite) TestFile_Lines() {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func() {
+		t.Run(name, func(t *testing.T) {
 			if len(test.input) == 0 {
-				t.Fail("Wrong args for input")
+				t.Error("Wrong args for input")
 			}
 			got := test.input[0].Lines()
 			for _, v := range got {
 				for _, line := range test.want {
-					t.Equal(*line, *v)
+					assert.Equal(t, *line, *v)
 				}
 			}
 		})

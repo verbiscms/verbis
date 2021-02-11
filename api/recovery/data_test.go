@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
+	"github.com/ainsleyclark/verbis/api/recovery/trace"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"
@@ -50,6 +51,7 @@ func (t *RecoverTestSuite) TestRecover_GetData() {
 		deps:   nil,
 		err:    &errors.Error{Code: errors.TEMPLATE, Message: "message", Operation: "operation", Err: fmt.Errorf("error")},
 		config: Config{},
+		tracer: trace.New(),
 	}
 
 	t.RequestSetup(bytes.NewBuffer([]byte("test")), nil, func(ctx *gin.Context) {
@@ -73,17 +75,17 @@ func (t *RecoverTestSuite) TestRecover_GetStackData() {
 
 	tt := map[string]struct {
 		input Config
-		want  func(s Stack) Stack
+		want  func(s trace.Stack) trace.Stack
 	}{
 		"Nil Exec": {
 			Config{TplExec: nil},
-			func(s Stack) Stack {
+			func(s trace.Stack) trace.Stack {
 				return s
 			},
 		},
 		"Nil TplFile": {
 			Config{TplFile: ""},
-			func(s Stack) Stack {
+			func(s trace.Stack) trace.Stack {
 				return s
 			},
 		},
@@ -92,8 +94,8 @@ func (t *RecoverTestSuite) TestRecover_GetStackData() {
 				TplFile: "test",
 				TplExec: m,
 			},
-			func(s Stack) Stack {
-				s.Append(&File{File: "tt", Line: 0, Name: "tt", Contents: "tt"})
+			func(s trace.Stack) trace.Stack {
+				s.Append(&trace.File{File: "tt", Line: 0, Name: "tt", Contents: "tt"})
 				return s
 			},
 		},
@@ -101,8 +103,8 @@ func (t *RecoverTestSuite) TestRecover_GetStackData() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			r := Recover{config: test.input}
-			stack := GetStack(StackDepth, 1)
+			r := Recover{config: test.input, tracer: trace.New()}
+			stack := trace.New().Trace(StackDepth, 1)
 			t.Equal(len(test.want(stack)), len(r.getStackData()))
 		})
 	}
