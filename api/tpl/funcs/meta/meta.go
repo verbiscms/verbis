@@ -104,7 +104,7 @@ func (ns *Namespace) executeTemplates(tm *TemplateMeta, tpls []string) string {
 	for _, name := range tpls {
 
 		var b bytes.Buffer
-		err := ns.deps.Tmpl().Prepare(tpl.Config{
+		_, err := ns.deps.Tmpl().Prepare(tpl.Config{
 			Root:      ns.deps.Paths.Base + EmbeddedPath,
 			Extension: ".cms",
 		}).Execute(&b, name, tm)

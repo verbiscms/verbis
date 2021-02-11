@@ -99,7 +99,7 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 			}
 			_, err = tmpl.Parse(data)
 			if err != nil {
-				return v, &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Template engine error parsing template with name: %s", v), Operation: op, Err: err}
+				return v, &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Unable to parse template with the name: %s", v), Operation: op, Err: err}
 			}
 		}
 		e.tplMutex.Lock()

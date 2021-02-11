@@ -6,25 +6,7 @@ package recovery
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
-	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/stretchr/testify/assert"
-	"testing"
-)
-
-var (
-	d = &deps.Deps{
-		Paths: deps.Paths{
-			Theme: "theme",
-		},
-		Theme: &domain.ThemeConfig{
-			FileExtension: "cms",
-			TemplateDir:   "template",
-		},
-	}
 )
 
 func (t *RecoverTestSuite) Test_GetError() {
@@ -112,88 +94,6 @@ func (t *RecoverTestSuite) Test_TplFileContents() {
 		t.Run(name, func() {
 			got := tplFileContents(test.input)
 			t.Equal(test.want, got)
-		})
-	}
-}
-
-func TestRecover_Resolver(t *testing.T) {
-
-	tt := map[string]struct {
-		input  bool
-		code   int
-		path   string
-		mock   func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string)
-		custom bool
-	}{
-		"Default Code": {
-			true,
-			0,
-			"error-500",
-			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(m)
-				m.On("Exists", path).Return(true)
-			},
-			true,
-		},
-		"Custom error-404.cms": {
-			true,
-			404,
-			"error-404",
-			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(m)
-				m.On("Exists", path).Return(true)
-			},
-			true,
-		},
-		"Custom error-500.cms": {
-			true,
-			500,
-			"error-500",
-			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(m)
-				m.On("Exists", path).Return(true)
-			},
-			true,
-		},
-		"Custom error.cms": {
-			true,
-			500,
-			"error",
-			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(m)
-				m.On("Exists", "error-500").Return(false).Once()
-				m.On("Exists", path).Return(true).Once()
-			},
-			true,
-		},
-		"Verbis Error Exec": {
-			true,
-			500,
-			"templates/error",
-			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-				fe := &mocks.TemplateExecutor{}
-				fe.On("Exists", "error-500").Return(false).Once()
-				fe.On("Exists", "error").Return(false).Once()
-				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(fe).Once()
-				mh.On("Prepare", tpl.Config{Root: d.Paths.Web, Extension: VerbisErrorExtension, Master: VerbisErrorLayout}).Return(m).Once()
-			},
-			false,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			handlerMock := &mocks.TemplateHandler{}
-			templateMock := &mocks.TemplateExecutor{}
-			test.mock(handlerMock, templateMock, test.path)
-
-			d.SetTmpl(handlerMock)
-
-			r := Recover{deps: d, config: Config{Code: test.code}}
-			path, exec, custom := r.resolveErrorPage(test.custom)
-			assert.Equal(t, test.custom, custom)
-			assert.Equal(t, templateMock, exec)
-			assert.Equal(t, test.path, path)
 		})
 	}
 }

@@ -5,8 +5,10 @@
 package recovery
 
 import (
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/recovery/trace"
 	"github.com/gin-contrib/location"
 	"io/ioutil"
 	"net/http"
@@ -16,11 +18,13 @@ type (
 	// Data represents the main struct for sending back data to the
 	// template for recovery.
 	Data struct {
-		Error   Error
-		Request Request
-		Post    *domain.PostData
-		Stack   Stack
-		Debug   bool
+		Error      Error
+		StatusCode int
+		Request    Request
+		Post       *domain.PostData
+		Stack      trace.Stack
+		Context    Context
+		Debug      bool
 	}
 	// Error represents a errors.Error in friendly form (strings) to
 	// for the recovery template.
@@ -35,15 +39,29 @@ type (
 	Request struct {
 		Url        string
 		Method     string
+		IP         string
+		Referer    string
+		DataLength int
+		Body       string
 		Headers    map[string][]string
 		Query      map[string][]string
-		Body       string
 		Cookies    []*http.Cookie
-		IP         string
-		DataLength int
-		UserAgent  string
-		Referer    string
 	}
+	// Context represents general information about Verbis to
+	// help with debugging.
+	Context struct {
+		Version string
+		Site    domain.Site
+		Options map[string]interface{}
+	}
+)
+
+const (
+	// The amount of files in the stack to be retrieved.
+	StackDepth = 200
+	// How many files to move up in the runtime.Caller
+	// before obtaining the stack.
+	StackSkip = 2
 )
 
 // getData
@@ -54,11 +72,13 @@ type (
 // retrieved,
 func (r *Recover) getData() *Data {
 	return &Data{
-		Error:   r.getErrorData(),
-		Request: r.getRequestData(),
-		Post:    r.config.Post,
-		Stack:   r.getStackData(),
-		Debug:   environment.IsDebug(),
+		Error:      r.getErrorData(),
+		StatusCode: r.config.Code,
+		Request:    r.getRequestData(),
+		Post:       r.config.Post,
+		Stack:      r.getStackData(),
+		Context: r.getContextData(),
+		Debug:      environment.IsDebug(),
 	}
 }
 
@@ -66,16 +86,20 @@ func (r *Recover) getData() *Data {
 //
 // Check if the template exec has been set, if it has
 // retrieve the file stack for the template. and
-// prepend it to the stack
-func (r *Recover) getStackData() Stack {
-	stack := GetStack(StackDepth, StackSkip)
+// prepend it to the stack.
+func (r *Recover) getStackData() trace.Stack {
+	stack := r.tracer.Trace(StackDepth, StackSkip)
 	if r.config.TplExec != nil && r.config.TplFile != "" {
-		path := r.config.TplExec.Config().GetRoot() + "/" + r.config.TplFile + r.config.TplExec.Config().GetExtension()
-		stack.Prepend(&File{
+		root := r.config.TplExec.Config().GetRoot()
+		ext := r.config.TplExec.Config().GetExtension()
+		path := root + "/" + r.config.TplFile + ext
+
+		stack.Prepend(&trace.File{
 			File:     path,
-			Line:     tplLineNumber(r.config.Error),
+			Line:     tplLineNumber(r.err),
 			Name:     r.config.TplFile,
 			Contents: tplFileContents(path),
+			Language: "handlebars",
 		})
 	}
 	return stack
@@ -83,7 +107,7 @@ func (r *Recover) getStackData() Stack {
 
 // getErrorData
 //
-//
+// Returns error friendly data for the template.
 func (r *Recover) getErrorData() Error {
 	return Error{
 		Code:      r.err.Code,
@@ -108,13 +132,27 @@ func (r *Recover) getRequestData() Request {
 	return Request{
 		Url:        location.Get(ctx).String() + ctx.Request.URL.Path,
 		Method:     ctx.Request.Method,
+		IP:         ctx.ClientIP(),
+		Referer:    ctx.Request.Referer(),
+		DataLength: ctx.Writer.Size(),
+		Body:       string(body),
 		Headers:    ctx.Request.Header,
 		Query:      ctx.Request.URL.Query(),
-		Body:       string(body),
 		Cookies:    ctx.Request.Cookies(),
-		IP:         ctx.ClientIP(),
-		DataLength: ctx.Writer.Size(),
-		UserAgent:  ctx.Request.UserAgent(),
-		Referer:    ctx.Request.Referer(),
+	}
+}
+
+// getContextData
+//
+//
+func (r *Recover) getContextData() Context {
+	opts, err := r.deps.Store.Options.Get()
+	if err != nil {
+		opts = nil
+	}
+	return Context{
+		Version: api.App.Version,
+		Site:   r.deps.Site,
+		Options: opts,
 	}
 }

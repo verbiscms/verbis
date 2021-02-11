@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
+	"github.com/ainsleyclark/verbis/api/recovery/trace"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
@@ -45,8 +46,8 @@ func (t *RecoverTestSuite) TestHandler_HttpRecovery() {
 		t.NoError(err)
 	}).Return(nil)
 
-	d.SetTmpl(handlerMock)
-	engine.Use(New(d).HttpRecovery())
+	t.deps.SetTmpl(handlerMock)
+	engine.Use(New(t.deps).HttpRecovery())
 
 	engine.GET("/test", func(ctx *gin.Context) {
 		panic(&errors.Error{Message: "test"})
@@ -75,7 +76,7 @@ func (t *RecoverTestSuite) TestHandler_HttpRecovery_Panics() {
 
 				rr := httptest.NewRecorder()
 				_, engine := gin.CreateTestContext(rr)
-				engine.Use(New(d).HttpRecovery())
+				engine.Use(New(t.deps).HttpRecovery())
 
 				engine.GET("/test", func(ctx *gin.Context) {
 					ctx.Header("X-Test", "Value")
@@ -105,7 +106,7 @@ func (t *RecoverTestSuite) TestRecover_RecoverWrapper() {
 
 	tt := map[string]struct {
 		input    bool
-		resolver resolver
+		resolver Resolver
 		want     []byte
 	}{
 		"Theme Error Page": {
@@ -140,6 +141,7 @@ func (t *RecoverTestSuite) TestRecover_RecoverWrapper() {
 			func(custom bool) (string, tpl.TemplateExecutor, bool) {
 				m := mocks.TemplateExecutor{}
 				m.On("Execute", &bytes.Buffer{}, "root", data()).Return(fmt.Errorf("error"))
+				m.On("Execute", &bytes.Buffer{}, "root", data())
 				return "root", &m, false
 			},
 			nilBytes,
@@ -149,13 +151,20 @@ func (t *RecoverTestSuite) TestRecover_RecoverWrapper() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			r := &Recover{
-				deps:     d,
-				config:   Config{},
-				resolver: test.resolver,
-				data:     data,
+				deps:   t.deps,
+				config: Config{},
+				tracer: trace.New(),
 			}
-			got := r.recoverWrapper(test.input)
-			t.Equal(test.want, got)
+			r.resolve = test.resolver
+			r.data = func() *Data {
+				return &Data{}
+			}
+
+			var tpl []byte
+			r.recoverWrapper(test.input, func(b []byte, err *errors.Error) {
+				tpl = b
+			})
+			t.Equal(test.want, tpl)
 		})
 	}
 }
