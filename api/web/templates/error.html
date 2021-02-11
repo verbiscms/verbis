@@ -58,16 +58,19 @@
                             <div class="row no-gaps">
                                 <div class="col-12 col-tab-5 col-desk-4">
                                     <!-- Stack Frames -->
-                                    <div class="stack-frames">
+                                    <div class="stack-frame">
+                                        <div class="stack-frame-header">
+                                            <h5>Trace frames</h5>
+                                        </div>
                                         {{ range $index, $item := . -}}
                                             {{ with $item -}}
                                                 <div class="stack-frame-group {{ if eq $index 0 -}} stack-frame-group-active {{- end }}" data-stack="#stack-item-{{ $index }}">
                                                     <div class="stack-frame-number">{{ add $index 1 -}}</div>
-                                                    <div class="stack-frame-name">
-                                                        <small>{{ $item.Name }}</small>
+                                                    <div class="stack-frame-details">
+                                                        <small class="stack-frame-name">{{ $item.Name }}</small>
+                                                        <small class="stack-frame-file">{{ $item.File }}</small>
                                                     </div>
                                                     <div class="stack-frame-line">:{{ $item.Line }}</div>
-                                                    <div class="stack-frame-name">{{ . }}</div>
                                                 </div>
                                             {{- end }}
                                         {{ end }}
@@ -76,6 +79,7 @@
                                 <div class="col-12 col-tab-7 col-desk-8">
                                     <!-- Stack Main -->
                                     <div class="stack-main">
+                                        {{/*<p class="stack-code-line {{ if eq $highlight .Line -}} stack-code-line-highlight {{- end }}"><span>{{ .Content }}</span></p>*/}}
                                         {{ range $index, $item := . -}}
                                             {{ with $item -}}
                                             <div class="stack-viewer {{ if eq $index 0 -}} stack-viewer-active {{- end }}" id="stack-item-{{ $index }}">
@@ -95,7 +99,7 @@
                                                     <div class="stack-code" id="stack-code-{{ $index }}">
                                                         <pre class="highlight stack-code"><code class="{{ .Language -}}">
 {{- range .Lines -}}
-<p class="stack-code-line {{ if eq $highlight .Line -}} stack-code-line-highlight {{- end }}"><span>{{ .Content }}</span></p>
+<span class="stack-code-line {{ if eq $highlight .Line -}} stack-code-line-highlight {{- end }}"><span>{{ .Content }}<br></span></span>
 {{- end -}}
                                                             </code>
                                                         </pre>
