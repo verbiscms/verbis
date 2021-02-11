@@ -7,7 +7,6 @@ package recovery
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/tpl"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"regexp"
@@ -15,20 +14,11 @@ import (
 	"strings"
 )
 
-const (
-	// TplPrefix defines the prefix for template searching
-	// such as "errors-500.html"
-	TplPrefix = "error"
-	// The extension of the web error file
-	VerbisErrorExtension = "html"
-	// The main layout of the web error file
-	VerbisErrorLayout = "layouts/main"
-)
-
 // getError
 //
-// Converts an interface{} to a Verbis internal error ready
-// for processing and to return to the recovery page.
+// Converts an interface{} to a Verbis internal error
+// ready for processing and to return to the recovery
+// page.
 func getError(e interface{}) *errors.Error {
 	switch v := e.(type) {
 	case errors.Error:
@@ -44,13 +34,12 @@ func getError(e interface{}) *errors.Error {
 
 // tplLineNumber
 //
-// Returns the line number of the template that broke.
-// If the line number could not be retrieved using
-// a regex find, -1 will be returned.
-func tplLineNumber(err interface{}) int {
-	e := getError(err)
+// Returns the line number of the template that broke. If
+// the line number could not be retrieved using a regex
+// find, -1 will be returned.
+func tplLineNumber(err *errors.Error) int {
 	reg := regexp.MustCompile(`:\d+:`)
-	lc := string(reg.Find([]byte(e.Error())))
+	lc := string(reg.Find([]byte(err.Error())))
 	line := strings.ReplaceAll(lc, ":", "")
 
 	i, ok := strconv.Atoi(line)
@@ -62,7 +51,7 @@ func tplLineNumber(err interface{}) int {
 
 // tplFileContents
 //
-// Gets the file contents of the errored template..
+// Gets the file contents of the errored template.
 // Logs errors.NOTFOUND if the path could not be found.
 func tplFileContents(path string) string {
 	const op = "Recovery.tplFileContents"
@@ -76,48 +65,4 @@ func tplFileContents(path string) string {
 	}
 
 	return string(contents)
-}
-
-// resolver
-//
-//
-func (r *Recover) resolveErrorPage(custom bool) (string, tpl.TemplateExecutor, bool) {
-	code := strconv.Itoa(r.config.Code)
-	if r.config.Code == 0 || code == "0" {
-		code = "500"
-	}
-
-	path := ""
-	e := r.deps.Tmpl().Prepare(tpl.Config{
-		Root:      r.deps.Paths.Theme + "/" + r.deps.Theme.TemplateDir,
-		Extension: r.deps.Theme.FileExtension,
-	})
-
-	// Look for `errors-404.cms` for example
-	path = TplPrefix + "-" + code
-	if e.Exists(path) && custom {
-		return path, e, true
-	}
-
-	// Look for `error.cms` for example
-	path = TplPrefix
-	if e.Exists(TplPrefix) && custom {
-		return path, e, true
-	}
-
-	// Return the native error page
-	path, exec := r.verbisErrorResolver()
-	return path, exec, false
-}
-
-// verbisErrorResolver
-//
-// Returns a new tpl.TemplateExecutor when no other
-// custom error templates have been found.
-func (r *Recover) verbisErrorResolver() (string, tpl.TemplateExecutor) {
-	return "templates/error", r.deps.Tmpl().Prepare(tpl.Config{
-		Root:      r.deps.Paths.Web,
-		Extension: VerbisErrorExtension,
-		Master:    VerbisErrorLayout,
-	})
 }

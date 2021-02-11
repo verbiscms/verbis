@@ -38,10 +38,9 @@ func (t *TemplateManager) Prepare(c tpl.TemplateConfig) tpl.TemplateExecutor {
 // and any data to be passed. As this function is not
 // attached to any context, the generic function map
 // is used.
-func (e *Execute) Execute(w io.Writer, name string, data interface{}) error {
+func (e *Execute) Execute(w io.Writer, name string, data interface{}) (string, error) {
 	e.funcMap = e.GenericFuncMap()
-	_, err := e.executeRender(w, name, data)
-	return err
+	return e.executeRender(w, name, data)
 }
 
 // ExecutePost
@@ -51,18 +50,10 @@ func (e *Execute) Execute(w io.Writer, name string, data interface{}) error {
 // the context and the domain.PostData. Data is not
 // needed to be  passed as data is obtained from
 // the variables package.
-func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) error {
+func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) (string, error) {
 	data := e.Data(ctx, post)
 	e.funcMap = e.FuncMap(ctx, post, e.config)
-
-	//path, err := e.executeRender(w, name, data)
-	_, err := e.executeRender(w, name, data)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return e.executeRender(w, name, data)
 }
 
 // Exists

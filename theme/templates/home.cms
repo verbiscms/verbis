@@ -1,7 +1,6 @@
 {{ define "content" }}
 
 
-    {{ fuck }}
 
     {{ baseUrl }}
     {{ dumphh . }}
