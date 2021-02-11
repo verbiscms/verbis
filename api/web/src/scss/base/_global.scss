@@ -22,26 +22,6 @@ section {
 	position: relative;
 }
 
-.auth-container {
-	position: relative;
-	display: block;
-	left: $sidebar-width;
-	max-width: none;
-	min-height: 100vh;
-	width: calc(100vw - #{$sidebar-width});
-	margin: 0;
-	padding: $auth-container-padding-y $auth-container-padding-x;
-	z-index: 9;
-	box-shadow: 0 0 50px 0 rgba($black, 0.11);
-	background-color: $bg-color;
-}
-
-.container {
-	padding: 0;
-	margin: 0;
-	max-width: none;
-}
-
 *,
 *::before,
 *::after {

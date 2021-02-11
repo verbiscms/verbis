@@ -17,7 +17,7 @@ require('./scripts/polyfills');
 
 //Vendor
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-dark.css';
+import 'highlight.js/styles/atom-one-light.css';
 import handlebars from 'highlight.js/lib/languages/handlebars';
 import go from 'highlight.js/lib/languages/go';
 
@@ -26,19 +26,10 @@ import go from 'highlight.js/lib/languages/go';
  * Variables
  *
  */
-const html = $('html'),
-	header = $('.header'),
-	nav = $('.nav'),
-	hamburger = $('.hamburger');
-
-/*
- * Highlight JS
- *
- */
-hljs.configure({ useBR: true })
-hljs.registerLanguage('handlebars', handlebars);
-hljs.registerLanguage('go', go);
-hljs.initHighlightingOnLoad();
+const html = document.querySelector('html'),
+	header = document.querySelector('.header'),
+	nav = document.querySelector('.nav'),
+	hamburger = document.querySelector('.hamburger');
 
 /*
  * Remove No JS Body Class
@@ -48,47 +39,59 @@ html.classList.remove('no-js');
 html.classList.add('js');
 
 /*
+ * Highlight JS
+ *
+ */
+hljs.registerLanguage('handlebars', handlebars);
+hljs.registerLanguage('go', go);
+hljs.highlightAll();
+
+/*
  * Scroll To Anchor
  * Targets all links with # anchor & adds smooth scrolling
  *
  */
-let headerOffset = header.offsetHeight; 
+if (header) {
+	let headerOffset = header.offsetHeight;
 
-window.addEventListener('resize', function(){
-	headerOffset = header.offsetHeight;
-});
+	window.addEventListener('resize', function(){
+		headerOffset = header.offsetHeight;
+	});
 
-$('a[href^="#"]').forEach(anchor => {
-	anchor.addEventListener('click', function (e) {
-		e.preventDefault();
+	document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+		anchor.addEventListener('click', function (e) {
+			e.preventDefault();
 
-		let offset = headerOffset,
-			section = $(anchor.getAttribute('href')),
-			elementPosition = section.offsetTop,
-			offsetPosition = elementPosition - offset;
+			let offset = headerOffset,
+				section = $(anchor.getAttribute('href')),
+				elementPosition = section.offsetTop,
+				offsetPosition = elementPosition - offset;
 
-		window.scrollTo({
-			top: offsetPosition,
-			behavior: 'smooth'
+			window.scrollTo({
+				top: offsetPosition,
+				behavior: 'smooth'
+			});
 		});
 	});
-});
+}
 
 /*
  * Scroll
  * Adds header & nav classes after a certain scroll amount determined by scrollPos.
  *
  */
-const scrollPos = 100;
-window.addEventListener('scroll', function() {
-	if (window.pageYOffset > scrollPos) {
-		header.classList.add('header-scrolled');
-		nav.classList.add('nav-scrolled');
-	} else {
-		header.classList.remove('header-scrolled');
-		nav.classList.remove('nav-scrolled');
-	}
-});
+// const scrollPos = 100;
+// if (header && nav) {
+// 	window.addEventListener('scroll', function() {
+// 		if (window.pageYOffset > scrollPos) {
+// 			header.classList.add('header-scrolled');
+// 			nav.classList.add('nav-scrolled');
+// 		} else {
+// 			header.classList.remove('header-scrolled');
+// 			nav.classList.remove('nav-scrolled');
+// 		}
+// 	});
+// }
 
 /*
  * Nav Click
@@ -96,7 +99,7 @@ window.addEventListener('scroll', function() {
  */
 
 // Remove active classes when clicked.
-const links = $('.header .nav .nav-item a');
+const links = document.querySelectorAll('.header .nav .nav-item a');
 links.forEach(link => {
 	link.addEventListener('click', e => {
 		if (window.innerWidth < 1025) {
@@ -104,6 +107,52 @@ links.forEach(link => {
 			nav.classList.remove('nav-mobile-active');
 			$('#hamburger-check').checked = '';
 		}
+	});
+});
+
+/*
+ * Tabs
+ * Handler for click of tabs, show and hide.
+ */
+const tabs = document.querySelectorAll(".tab");
+tabs.forEach(tab => {
+	tab.addEventListener("click", e => {
+		e.preventDefault();
+		const attr = tab.getAttribute("data-tab"),
+			panel = document.querySelector(attr);
+
+		if (!panel) {
+			console.warn("No panel exists with the attribute: " + attr);
+			return;
+		}
+
+		document.querySelector(".tab-active").classList.remove("tab-active");
+		tab.classList.add("tab-active");
+		document.querySelector(".tab-panel-active").classList.remove("tab-panel-active");
+		panel.classList.add("tab-panel-active");
+	});
+});
+
+/*
+ * Stack Frames
+ * Handler for click of stack frame, change code panel.
+ */
+const frames = document.querySelectorAll(".stack-frame-group");
+frames.forEach(frame => {
+	frame.addEventListener("click", e => {
+		e.preventDefault();
+		const attr = frame.getAttribute("data-stack"),
+			stack = document.querySelector(attr);
+
+		if (!stack) {
+			console.warn("No stack exists with the attribute: " + attr);
+			return;
+		}
+
+		document.querySelector(".stack-viewer-active").classList.remove("stack-viewer-active");
+		stack.classList.add("stack-viewer-active");
+		document.querySelector(".stack-frame-group-active").classList.remove("stack-frame-group-active");
+		frame.classList.add("stack-frame-group-active");
 	});
 });
 

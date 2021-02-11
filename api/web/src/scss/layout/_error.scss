@@ -6,19 +6,30 @@
 .error {
 	position: relative;
 	width: 100vw;
-	max-width: 1200px;
+	max-width: 1200px !important;
 	margin: 0 auto;
-	padding: 60px 0;
+	//padding: 60px 0;
+
+	// Props
+	// ==========================================================================
 
 	h2 {
-		margin-bottom: 10px;
+		margin-bottom: 1rem;
 	}
 
-	&-info {
-		padding: 0 10px;
+	// Main
+	// ==========================================================================
 
-		h2 {
-			text-align: left;
-		}
+	&-main {
+		padding: 50px 0;
+	}
+
+	// Main
+	// ==========================================================================
+
+	&-info {
+		padding-bottom: 50px;
+		//border: 1px solid $grey-light;
+		//box-shadow: 0 1px 6px 0 $grey-light;
 	}
 }

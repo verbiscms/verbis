@@ -11,11 +11,11 @@
 	align-items: flex-start;
 	background-color: $white;
 	width: 100%;
-	padding: 36px 50px;
-	box-shadow: 0 0 15px rgba($black, 0.08);
-	border-radius: 20px;
-	border: none;
-	margin: 0 auto 2rem auto;
+	padding: 0;
+	border: 1px solid $grey-light;
+	box-shadow: 0 1px 6px 0 $grey-light;
+	border-radius: 4px;
+	margin-bottom: 0;
 
 	// Props
 	// =========================================================================
@@ -27,6 +27,20 @@
 	&-cont {
 		width: 100%;
 		max-width: 320px;
+	}
+
+
+	// Header
+	// =========================================================================
+
+	&-header {
+		padding: 10px 3rem;
+		border-bottom: 1px solid $grey-light;
+		width: 100%;
+	}
+
+	&-body {
+		padding: 3rem;
 	}
 
 	// Title
