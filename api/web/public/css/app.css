@@ -7966,6 +7966,7 @@ a:hover {
 .stack-main {
   height: 100%;
   background-color: #fff;
+  border-left: 1px solid #E8E8EB;
 }
 
 .stack-main-header {
@@ -8019,6 +8020,7 @@ a:hover {
   min-width: 100%;
   padding-left: 14px;
   margin-bottom: 0;
+  display: flex;
 }
 
 .stack-code-line-highlight {
@@ -8056,8 +8058,9 @@ a:hover {
 }
 
 .stack-frame-group {
-  display: flex;
-  align-items: center;
+  grid-template-columns: 3rem 1fr auto;
+  display: grid;
+  align-items: flex-end;
   border-bottom: 1px solid #E8E8EB;
   cursor: pointer;
 }
@@ -8066,34 +8069,58 @@ a:hover {
   background-color: rgba(63, 135, 229, 0.1);
 }
 
-.stack-frame-number {
-  width: 50px;
-  min-width: 50px;
-  font-size: 14px;
-  text-align: center;
-  border-right: 1px solid #3F87E5;
-  padding: 1rem 0.5rem;
+.stack-frame-group-active .stack-frame-file {
+  display: block;
 }
 
-.stack-frame-name {
+.stack-frame-group-active .stack-frame-name {
+  color: #3F87E5 !important;
+}
+
+.stack-frame-group-active .stack-frame-details {
+  border-left-color: #3F87E5;
+}
+
+.stack-frame-details {
+  display: grid;
+  align-items: center;
+  grid-gap: 0.5rem;
   font-weight: 500;
   line-height: 1.2;
-  display: flex;
-  padding: 0 10px;
+  padding-left: 0.75rem;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   flex-grow: 2;
+  border-left: 1px solid rgba(63, 135, 229, 0.3);
 }
 
-.stack-frame-name small {
+.stack-frame-details small {
   word-break: break-all;
   color: #7E8593;
 }
 
+.stack-frame-name {
+  font-weight: 600;
+}
+
+.stack-frame-file {
+  display: none;
+  color: #E8E8EB;
+}
+
+.stack-frame-number,
 .stack-frame-line {
-  font-size: 0.75rem;
-  width: auto;
+  width: 50px;
   min-width: 50px;
-  padding: 1rem 0.5rem;
+  font-size: 12px;
   text-align: center;
+  padding: 1rem 0.5rem;
+  font-weight: 600;
+  color: #7E8593;
+}
+
+.stack-frame-line {
+  font-weight: 400;
 }
 
 .tab {
