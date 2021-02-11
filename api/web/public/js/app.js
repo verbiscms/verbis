@@ -86,10 +86,10 @@
 /************************************************************************/
 /******/ ({
 
-/***/ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/highlight.js/styles/atom-one-light.css":
-/*!*********************************************************************************************************************************************!*\
-  !*** ./node_modules/css-loader??ref--6-1!./node_modules/postcss-loader/src??ref--6-2!./node_modules/highlight.js/styles/atom-one-light.css ***!
-  \*********************************************************************************************************************************************/
+/***/ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/highlight.js/styles/atelier-forest-light.css":
+/*!***************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader??ref--6-1!./node_modules/postcss-loader/src??ref--6-2!./node_modules/highlight.js/styles/atelier-forest-light.css ***!
+  \***************************************************************************************************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -98,7 +98,7 @@ exports = module.exports = __webpack_require__(/*! ../../css-loader/lib/css-base
 
 
 // module
-exports.push([module.i, "/*\n\nAtom One Light by Daniel Gamage\nOriginal One Light Syntax theme from https://github.com/atom/one-light-syntax\n\nbase:    #fafafa\nmono-1:  #383a42\nmono-2:  #686b77\nmono-3:  #a0a1a7\nhue-1:   #0184bb\nhue-2:   #4078f2\nhue-3:   #a626a4\nhue-4:   #50a14f\nhue-5:   #e45649\nhue-5-2: #c91243\nhue-6:   #986801\nhue-6-2: #c18401\n\n*/\n\n.hljs {\n  display: block;\n  overflow-x: auto;\n  padding: 0.5em;\n  color: #383a42;\n  background: #fafafa;\n}\n\n.hljs-comment,\n.hljs-quote {\n  color: #a0a1a7;\n  font-style: italic;\n}\n\n.hljs-doctag,\n.hljs-keyword,\n.hljs-formula {\n  color: #a626a4;\n}\n\n.hljs-section,\n.hljs-name,\n.hljs-selector-tag,\n.hljs-deletion,\n.hljs-subst {\n  color: #e45649;\n}\n\n.hljs-literal {\n  color: #0184bb;\n}\n\n.hljs-string,\n.hljs-regexp,\n.hljs-addition,\n.hljs-attribute,\n.hljs-meta-string {\n  color: #50a14f;\n}\n\n.hljs-built_in,\n.hljs-class .hljs-title {\n  color: #c18401;\n}\n\n.hljs-attr,\n.hljs-variable,\n.hljs-template-variable,\n.hljs-type,\n.hljs-selector-class,\n.hljs-selector-attr,\n.hljs-selector-pseudo,\n.hljs-number {\n  color: #986801;\n}\n\n.hljs-symbol,\n.hljs-bullet,\n.hljs-link,\n.hljs-meta,\n.hljs-selector-id,\n.hljs-title {\n  color: #4078f2;\n}\n\n.hljs-emphasis {\n  font-style: italic;\n}\n\n.hljs-strong {\n  font-weight: bold;\n}\n\n.hljs-link {\n  text-decoration: underline;\n}\n", ""]);
+exports.push([module.i, "/* Base16 Atelier Forest Light - Theme */\n/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/forest) */\n/* Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16) */\n\n/* Atelier-Forest Comment */\n.hljs-comment,\n.hljs-quote {\n  color: #766e6b;\n}\n\n/* Atelier-Forest Red */\n.hljs-variable,\n.hljs-template-variable,\n.hljs-attribute,\n.hljs-tag,\n.hljs-name,\n.hljs-regexp,\n.hljs-link,\n.hljs-name,\n.hljs-selector-id,\n.hljs-selector-class {\n  color: #f22c40;\n}\n\n/* Atelier-Forest Orange */\n.hljs-number,\n.hljs-meta,\n.hljs-built_in,\n.hljs-builtin-name,\n.hljs-literal,\n.hljs-type,\n.hljs-params {\n  color: #df5320;\n}\n\n/* Atelier-Forest Green */\n.hljs-string,\n.hljs-symbol,\n.hljs-bullet {\n  color: #7b9726;\n}\n\n/* Atelier-Forest Blue */\n.hljs-title,\n.hljs-section {\n  color: #407ee7;\n}\n\n/* Atelier-Forest Purple */\n.hljs-keyword,\n.hljs-selector-tag {\n  color: #6666ea;\n}\n\n.hljs {\n  display: block;\n  overflow-x: auto;\n  background: #f1efee;\n  color: #68615e;\n  padding: 0.5em;\n}\n\n.hljs-emphasis {\n  font-style: italic;\n}\n\n.hljs-strong {\n  font-weight: bold;\n}\n", ""]);
 
 // exports
 
@@ -47025,15 +47025,15 @@ module.exports = zephir;
 
 /***/ }),
 
-/***/ "./node_modules/highlight.js/styles/atom-one-light.css":
-/*!*************************************************************!*\
-  !*** ./node_modules/highlight.js/styles/atom-one-light.css ***!
-  \*************************************************************/
+/***/ "./node_modules/highlight.js/styles/atelier-forest-light.css":
+/*!*******************************************************************!*\
+  !*** ./node_modules/highlight.js/styles/atelier-forest-light.css ***!
+  \*******************************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
 
-var content = __webpack_require__(/*! !../../css-loader??ref--6-1!../../postcss-loader/src??ref--6-2!./atom-one-light.css */ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/highlight.js/styles/atom-one-light.css");
+var content = __webpack_require__(/*! !../../css-loader??ref--6-1!../../postcss-loader/src??ref--6-2!./atelier-forest-light.css */ "./node_modules/css-loader/index.js?!./node_modules/postcss-loader/src/index.js?!./node_modules/highlight.js/styles/atelier-forest-light.css");
 
 if(typeof content === 'string') content = [[module.i, content, '']];
 
@@ -48017,8 +48017,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _scripts_helpers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./scripts/helpers */ "./src/js/scripts/helpers.js");
 /* harmony import */ var highlight_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! highlight.js */ "./node_modules/highlight.js/lib/index.js");
 /* harmony import */ var highlight_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(highlight_js__WEBPACK_IMPORTED_MODULE_1__);
-/* harmony import */ var highlight_js_styles_atom_one_light_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! highlight.js/styles/atom-one-light.css */ "./node_modules/highlight.js/styles/atom-one-light.css");
-/* harmony import */ var highlight_js_styles_atom_one_light_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(highlight_js_styles_atom_one_light_css__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var highlight_js_styles_atelier_forest_light_css__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! highlight.js/styles/atelier-forest-light.css */ "./node_modules/highlight.js/styles/atelier-forest-light.css");
+/* harmony import */ var highlight_js_styles_atelier_forest_light_css__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(highlight_js_styles_atelier_forest_light_css__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var highlight_js_lib_languages_handlebars__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! highlight.js/lib/languages/handlebars */ "./node_modules/highlight.js/lib/languages/handlebars.js");
 /* harmony import */ var highlight_js_lib_languages_handlebars__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(highlight_js_lib_languages_handlebars__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var highlight_js_lib_languages_go__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! highlight.js/lib/languages/go */ "./node_modules/highlight.js/lib/languages/go.js");
@@ -48061,6 +48061,18 @@ var html = document.querySelector('html'),
 
 html.classList.remove('no-js');
 html.classList.add('js');
+var brPlugin = {
+  "before:highlightBlock": function beforeHighlightBlock(_ref) {
+    var block = _ref.block;
+    block.innerHTML = block.innerHTML.replace(/\n/g, '').replace(/<br[ /]*>/g, '\n');
+  },
+  "after:highlightBlock": function afterHighlightBlock(_ref2) {
+    var result = _ref2.result;
+    result.value = result.value.replace(/\n/g, "<br>");
+  }
+}; // how to use it
+
+highlight_js__WEBPACK_IMPORTED_MODULE_1___default.a.addPlugin(brPlugin);
 /*
  * Highlight JS
  *

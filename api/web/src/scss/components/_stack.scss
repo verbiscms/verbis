@@ -3,6 +3,9 @@
 // This file contains all styles related to the stack component.
 // -----------------------------------------------------------------------------
 
+$stack-light-colour: rgba($primary, 0.1);
+$stack-dark-colour: rgba($primary, 0.3);
+
 .stack {
 	$self: &;
 
@@ -29,6 +32,7 @@
 	&-main {
 		height: 100%;
 		background-color: $white;
+		border-left: 1px solid $grey-light;
 
 		&-header {
 			padding: 1rem 2rem;
@@ -85,9 +89,10 @@
 			min-width: 100%;
 			padding-left: 14px;
 			margin-bottom: 0;
+			display: flex;
 
 			&-highlight {
-				background-color: rgba($primary, 0.1);
+				background-color: $stack-light-colour;
 			}
 		}
 	}
@@ -126,7 +131,7 @@
 		text-align: center;
 
 		&-highlight {
-			background-color: rgba($primary, 0.3);
+			background-color: $stack-dark-colour;
 		}
 	}
 
@@ -136,31 +141,40 @@
 	&-frame {
 
 		&-group {
-			display: flex;
-			align-items: center;
+			grid-template-columns: 3rem 1fr auto;
+			display: grid;
+			align-items: flex-end;
 			border-bottom: 1px solid $grey-light;
 			cursor: pointer;
 
 			&-active {
 				background-color: rgba($primary, 0.1);
+
+				#{$self}-frame-file {
+					display: block;
+				}
+
+				#{$self}-frame-name {
+					color: $primary !important;
+				}
+
+				#{$self}-frame-details {
+					border-left-color: $primary;
+				}
 			}
 		}
 
-		&-number {
-			width: 50px;
-			min-width: 50px;
-			font-size: 14px;
-			text-align: center;
-			border-right: 1px solid $primary;
-			padding: 1rem 0.5rem;
-		}
-
-		&-name {
+		&-details {
+			display: grid;
+			align-items: center;
+			grid-gap: 0.5rem;
 			font-weight: 500;
 			line-height: 1.2;
-			display: flex;
-			padding: 0 10px;
+			padding-left: 0.75rem;
+			padding-top: 1rem;
+			padding-bottom: 1rem;
 			flex-grow: 2;
+			border-left: 1px solid $stack-dark-colour;
 
 			small {
 			 	word-break: break-all;
@@ -168,12 +182,28 @@
 			}
 		}
 
+		&-name {
+			font-weight: 600;
+		}
+
+		&-file {
+			display: none;
+			color: $grey-light;
+		}
+
+		&-number,
 		&-line {
-			font-size: 0.75rem;
-			width: auto;
+			width: 50px;
 			min-width: 50px;
-			padding: 1rem 0.5rem;
+			font-size: 12px;
 			text-align: center;
+			padding: 1rem 0.5rem;
+			font-weight: 600;
+			color: $secondary;
+		}
+
+		&-line {
+			font-weight: 400;
 		}
 	}
 }

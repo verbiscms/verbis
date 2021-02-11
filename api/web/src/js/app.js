@@ -17,10 +17,9 @@ require('./scripts/polyfills');
 
 //Vendor
 import hljs from 'highlight.js';
-import 'highlight.js/styles/atom-one-light.css';
+import 'highlight.js/styles/atelier-forest-light.css';
 import handlebars from 'highlight.js/lib/languages/handlebars';
 import go from 'highlight.js/lib/languages/go';
-
 
 /**
  * Variables
@@ -38,6 +37,17 @@ const html = document.querySelector('html'),
 html.classList.remove('no-js');
 html.classList.add('js');
 
+const brPlugin = {
+	"before:highlightBlock": ({ block }) => {
+		block.innerHTML = block.innerHTML.replace(/\n/g, '').replace(/<br[ /]*>/g, '\n');
+	},
+	"after:highlightBlock": ({ result }) => {
+		result.value = result.value.replace(/\n/g, "<br>");
+	}
+};
+
+// how to use it
+hljs.addPlugin(brPlugin);
 /*
  * Highlight JS
  *
