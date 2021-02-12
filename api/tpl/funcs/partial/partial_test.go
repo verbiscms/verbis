@@ -6,7 +6,8 @@ package partial
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/dict"
 	"github.com/stretchr/testify/assert"
 	"html/template"
 	"os"
@@ -18,18 +19,18 @@ const (
 	TestPath = "/test/testdata"
 )
 
-func Setup(t *testing.T) *Namespace {
+func Setup(t *testing.T) *mocks.TemplateExecutor {
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
-	apiPath := filepath.Join(filepath.Dir(wd), "../../..")
+	apiPath := filepath.Join(filepath.Dir(wd), "../..")
 
-	d := &deps.Deps{
-		Paths: deps.Paths{
-			Theme: apiPath + TestPath,
-		},
-	}
+	m := &mocks.TemplateExecutor{}
+	mc := &mocks.TemplateConfig{}
 
-	return New(d, &internal.TemplateDeps{})
+	m.On("Config").Return(mc)
+	mc.On("GetRoot").Return(apiPath + TestPath)
+
+	return m
 }
 
 func TestNamespace_Partial(t *testing.T) {
@@ -83,8 +84,13 @@ func TestNamespace_Partial(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			ns := Setup(t)
-			got, err := ns.Partial(test.name, test.data)
+			dic := dict.New(&deps.Deps{})
+
+			p := Partial(template.FuncMap{
+				"dict": dic.Dict,
+			}, Setup(t))
+
+			got, err := p(test.name, test.data)
 			if err != nil {
 				assert.Contains(t, err.Error(), test.want)
 				return

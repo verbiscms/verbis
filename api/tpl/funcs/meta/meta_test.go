@@ -29,7 +29,7 @@ func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace,
 			Media: mock,
 		},
 		Site:    site,
-		Options: opts,
+		Options: &opts,
 		Paths: deps.Paths{
 			Base: apiPath,
 		},
