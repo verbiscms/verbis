@@ -141,7 +141,7 @@ func TestNamespace_CSSValidString(t *testing.T) {
 
 func Test_Lang(t *testing.T) {
 	ns := New(&deps.Deps{
-		Options: domain.Options{
+		Options: &domain.Options{
 			GeneralLocale: "en-gb",
 		},
 	}, &internal.TemplateDeps{})
