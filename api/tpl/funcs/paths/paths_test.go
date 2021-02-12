@@ -16,7 +16,7 @@ var (
 		Paths: deps.Paths{
 			Theme: "/test/",
 		},
-		Theme: domain.ThemeConfig{
+		Theme: &domain.ThemeConfig{
 			TemplateDir: "templates",
 			LayoutDir:   "layouts",
 		},

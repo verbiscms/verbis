@@ -6,6 +6,7 @@ package resolve
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/models"
 	log "github.com/sirupsen/logrus"
@@ -32,6 +33,8 @@ func (t *ResolverTestSuite) BeforeTest(suiteName, testName string) {
 
 func (t *ResolverTestSuite) GetValue() *Value {
 	return &Value{
-		&models.Store{},
+		&deps.Deps{
+			Store:   &models.Store{},
+		},
 	}
 }

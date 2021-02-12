@@ -35,31 +35,45 @@ func (_m *TemplateExecutor) Config() tpl.TemplateConfig {
 }
 
 // Execute provides a mock function with given fields: w, name, data
-func (_m *TemplateExecutor) Execute(w io.Writer, name string, data interface{}) error {
+func (_m *TemplateExecutor) Execute(w io.Writer, name string, data interface{}) (string, error) {
 	ret := _m.Called(w, name, data)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(io.Writer, string, interface{}) error); ok {
+	var r0 string
+	if rf, ok := ret.Get(0).(func(io.Writer, string, interface{}) string); ok {
 		r0 = rf(w, name, data)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(string)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(io.Writer, string, interface{}) error); ok {
+		r1 = rf(w, name, data)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // ExecutePost provides a mock function with given fields: w, name, ctx, post
-func (_m *TemplateExecutor) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) error {
+func (_m *TemplateExecutor) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) (string, error) {
 	ret := _m.Called(w, name, ctx, post)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(io.Writer, string, *gin.Context, *domain.PostData) error); ok {
+	var r0 string
+	if rf, ok := ret.Get(0).(func(io.Writer, string, *gin.Context, *domain.PostData) string); ok {
 		r0 = rf(w, name, ctx, post)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(string)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(io.Writer, string, *gin.Context, *domain.PostData) error); ok {
+		r1 = rf(w, name, ctx, post)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Executor provides a mock function with given fields:
