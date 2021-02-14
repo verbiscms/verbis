@@ -5,6 +5,8 @@
 package cmd
 
 import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/spf13/cobra"
 )
 
@@ -13,7 +15,8 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-
+			fmt.Print("In test")
+			fmt.Println(api.Stack)
 		},
 	}
 )
