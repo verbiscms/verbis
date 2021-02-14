@@ -11,9 +11,6 @@ package api
 var SuperAdminString = "true"
 var SuperAdmin = true
 
-// Stack
-var Stack = ""
-
 // App defines default values before the the user has defined
 // any custom properties by updating the database.
 var App = struct {

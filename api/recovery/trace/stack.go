@@ -155,4 +155,3 @@ func (f *File) Lines() []*FileLine {
 
 	return fileLines
 }
-

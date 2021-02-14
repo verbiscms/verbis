@@ -10,9 +10,9 @@ import (
 func TestDefaultFileHandler(t *testing.T) {
 
 	tt := map[string]struct {
-		mock func(config *mocks.TemplateConfig)
+		mock     func(config *mocks.TemplateConfig)
 		template string
-		want interface{}
+		want     interface{}
 	}{
 		"Valid": {
 			func(config *mocks.TemplateConfig) {
