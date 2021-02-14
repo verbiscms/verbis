@@ -34,7 +34,7 @@ func (t *ResolverTestSuite) BeforeTest(suiteName, testName string) {
 func (t *ResolverTestSuite) GetValue() *Value {
 	return &Value{
 		&deps.Deps{
-			Store:   &models.Store{},
+			Store: &models.Store{},
 		},
 	}
 }
