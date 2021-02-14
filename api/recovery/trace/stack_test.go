@@ -110,13 +110,13 @@ func Test_Language(t *testing.T) {
 
 	tt := map[string]struct {
 		input string
-		want string
+		want  string
 	}{
-		"Default": {"test", "handlebars"},
-		"Go":   {".go", "go"},
-		"HTML":   {".html", "handlebars"},
-		"CMS":   {".cms", "handlebars"},
-		"Assembly":   {".s", "assembly"},
+		"Default":  {"test", "handlebars"},
+		"Go":       {".go", "go"},
+		"HTML":     {".html", "handlebars"},
+		"CMS":      {".cms", "handlebars"},
+		"Assembly": {".s", "assembly"},
 	}
 
 	for name, test := range tt {

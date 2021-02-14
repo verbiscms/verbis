@@ -17,8 +17,8 @@ func TestData(t *testing.T) {
 	}
 
 	got := Data(&deps.Deps{
-		Site: domain.Site{},
-		Theme: &domain.ThemeConfig{},
+		Site:    domain.Site{},
+		Theme:   &domain.ThemeConfig{},
 		Options: &domain.Options{},
 	}, &gin.Context{}, &domain.PostData{})
 
