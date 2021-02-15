@@ -96,6 +96,13 @@ func api(d *deps.Deps, s *server.Server, c *handler.Handler) {
 			// Roles
 			operator.GET("/roles", c.User.GetRoles)
 
+			// Redirects
+			operator.GET("/redirects", c.Redirects.Get)
+			operator.GET("/redirects/:id", c.Redirects.GetById)
+			operator.POST("/redirects", c.Redirects.Create)
+			operator.PUT("/redirects/:id", c.Redirects.Update)
+			operator.DELETE("/redirects/:id", c.Redirects.Delete)
+
 			// Cache
 			operator.POST("/cache", c.Cache.Clear)
 		}

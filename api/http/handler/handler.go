@@ -19,6 +19,7 @@ type Handler struct {
 	Media      api.MediaHandler
 	Options    api.OptionsHandler
 	Posts      api.PostHandler
+	Redirects  api.RedirectHandler
 	Site       api.SiteHandler
 	User       api.UserHandler
 	Forms      api.FormHandler
@@ -39,6 +40,7 @@ func New(d *deps.Deps) *Handler {
 		Media:      api.NewMedia(d),
 		Options:    api.NewOptions(d),
 		Posts:      api.NewPosts(d),
+		Redirects:  api.NewRedirects(d),
 		Site:       api.NewSite(d),
 		User:       api.NewUser(d),
 		SPA:        spa.NewSpa(d),

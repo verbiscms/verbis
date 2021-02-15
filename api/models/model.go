@@ -26,6 +26,7 @@ type Store struct {
 	Media      MediaRepository
 	Options    OptionsRepository
 	Posts      PostsRepository
+	Redirects  RedirectRepository
 	Roles      RoleRepository
 	Site       SiteRepository
 	User       UserRepository
@@ -42,6 +43,7 @@ func New(db *database.MySql, config config.Configuration) *Store {
 		Media:      newMedia(db.Sqlx, config),
 		Options:    newOptions(db.Sqlx, config),
 		Posts:      newPosts(db.Sqlx, config),
+		Redirects:  newRedirects(db.Sqlx, config),
 		Roles:      newRoles(db.Sqlx, config),
 		Site:       newSite(db.Sqlx, config),
 		User:       newUser(db.Sqlx, config),
