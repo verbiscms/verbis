@@ -28,5 +28,6 @@ var App = struct {
 }
 
 // 50
+var AssetsChan = make(chan int, 10)
 var UploadChan = make(chan int, 10)
 var ServeChan = make(chan int, 50)
