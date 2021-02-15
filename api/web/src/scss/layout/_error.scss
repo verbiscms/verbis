@@ -3,6 +3,11 @@
 // This file contains all styles related to the error
 // -----------------------------------------------------------------------------
 
+// Variables
+$error-padding-mob: 36px;
+$error-padding-tab: 50px;
+$error-padding-desk: 50px;
+
 .error {
 	position: relative;
 	width: 100vw;
@@ -27,17 +32,45 @@
 	// ==========================================================================
 
 	&-main {
-		padding: 50px 0;
+		padding: $error-padding-mob 0;
 	}
 
 	// Main
 	// ==========================================================================
 
 	&-info {
-		padding-bottom: 50px;
+		padding-bottom: $error-padding-mob;
 
 		&-card {
 			margin-top: 0;
+		}
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+
+		&-main {
+			padding: $error-padding-tab 0;
+		}
+
+		&-info {
+			padding-bottom: $error-padding-tab;
+		}
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+
+		&-main {
+			padding: $error-padding-desk 0;
+		}
+
+		&-info {
+			padding-bottom: $error-padding-desk;
 		}
 	}
 }

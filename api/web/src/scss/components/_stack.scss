@@ -139,8 +139,15 @@ $stack-dark-colour: rgba($primary, 0.3);
 	// ==========================================================================
 
 	&-frame {
+		min-height: 100vh;
+
+		// Header
+		// ==========================================================================
 
 		&-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
 			padding: 1rem;
 			background-color: $bg-color;
 
@@ -149,12 +156,18 @@ $stack-dark-colour: rgba($primary, 0.3);
 			}
 		}
 
+		// Group
+		// ==========================================================================
+
 		&-group {
 			grid-template-columns: 3rem 1fr auto;
 			display: grid;
 			align-items: flex-end;
 			border-bottom: 1px solid $grey-light;
 			cursor: pointer;
+
+			// Active
+			// ==========================================================================
 
 			&-active {
 				background-color: rgba($primary, 0.1);
@@ -171,7 +184,46 @@ $stack-dark-colour: rgba($primary, 0.3);
 					border-left-color: $primary;
 				}
 			}
+
+			// Hidden
+			// ==========================================================================
+
+			&-hidden {
+				display: none;
+			}
+
+			// Vendor
+			// ==========================================================================
+
+			&-vendor {
+
+				* {
+					color: $grey !important;
+				}
+			}
 		}
+
+		// Icon
+		// ==========================================================================
+
+		&-icon {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			height: 100%;
+
+			svg {
+				width: 16px;
+				height: auto;
+
+				path {
+					fill: $grey;
+				}
+			}
+		}
+
+		// Details
+		// ==========================================================================
 
 		&-details {
 			display: grid;
@@ -183,13 +235,16 @@ $stack-dark-colour: rgba($primary, 0.3);
 			padding-top: 1rem;
 			padding-bottom: 1rem;
 			flex-grow: 2;
-			border-left: 1px solid $stack-dark-colour;
+			border-left: 2px solid $stack-dark-colour;
 
 			small {
 			 	word-break: break-all;
 				color: $secondary;
 			}
 		}
+
+		// Text
+		// ==========================================================================
 
 		&-name {
 			font-weight: 600;
@@ -213,6 +268,10 @@ $stack-dark-colour: rgba($primary, 0.3);
 
 		&-line {
 			font-weight: 400;
+		}
+
+		&-expand {
+			cursor: pointer;
 		}
 	}
 }

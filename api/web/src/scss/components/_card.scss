@@ -3,6 +3,11 @@
 // This file contains all styles related to the card component.
 // -----------------------------------------------------------------------------
 
+// Variables
+$card-padding-mob: 2rem;
+$card-padding-tab: 2rem;
+$card-padding-desk: 3rem;
+
 .card {
 	$self: &;
 
@@ -29,18 +34,20 @@
 		max-width: 320px;
 	}
 
-
 	// Header
 	// =========================================================================
 
 	&-header {
-		padding: 10px 3rem;
+		padding: 16px $card-padding-mob;
 		border-bottom: 1px solid $grey-light;
 		width: 100%;
 	}
 
+	// Body
+	// =========================================================================
+
 	&-body {
-		padding: 3rem;
+		padding: $card-padding-mob;
 	}
 
 	// Title
@@ -91,11 +98,27 @@
 	// =========================================================================
 
 	@include media-tab {
+
+		&-header {
+			padding: 10px $card-padding-tab;
+		}
+
+		&-body {
+			padding: $card-padding-tab;
+		}
 	}
 
 	// Desktop
 	// =========================================================================
 
 	@include media-desk {
+
+		&-header {
+			padding: 10px $card-padding-desk;
+		}
+
+		&-body {
+			padding: $card-padding-desk;
+		}
 	}
 }
