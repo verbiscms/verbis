@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/partial"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -73,6 +74,10 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 	if useMaster && e.config.GetMaster() != "" {
 		exeName = e.config.GetMaster()
 	}
+
+	pfn := partial.Partial(e.funcMap, e)
+	e.funcMap["partial"] = pfn
+	e.funcMap["include"] = pfn
 
 	if !ok {
 		tplList := make([]string, 0)

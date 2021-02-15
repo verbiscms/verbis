@@ -34,7 +34,7 @@ function build() {
     if [[ $1 == "mac" ]]
 		then
 			echo "Building for mac..."
-			CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "./build/mac/verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
+			CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "./build/mac/verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false' -X 'github.com/ainsleyclark/verbis/api.Stack=heythere'"
 			CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "./build/mac/verbis-linux" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
 			CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o "./build/mac/verbis-windows.exe" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
     fi
