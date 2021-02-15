@@ -100,7 +100,8 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	}
 
 	minified, err := r.minify.MinifyBytes(&b, "text/html")
-	if err != nil || minified == nil {
+	if err != nil {
+		fmt.Println("This file did not get minified: ", err)
 		return b.Bytes(), nil
 	}
 

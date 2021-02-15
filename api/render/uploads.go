@@ -6,6 +6,7 @@ package render
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
@@ -28,6 +29,7 @@ func (r *Render) Upload(g *gin.Context) (*string, *[]byte, error) {
 	if r.Options.CacheServerUploads {
 		cachedFile, cachedMime = r.getCachedAsset(url)
 		if cachedFile != nil && cachedMime != nil {
+			fmt.Println("From cache: ", url)
 			return cachedMime, cachedFile, nil
 		}
 	}
@@ -53,9 +55,11 @@ func (r *Render) Upload(g *gin.Context) (*string, *[]byte, error) {
 
 	// If the minified file is nil or the err is not empty, serve the original data
 	minifiedFile, err := r.minify.MinifyBytes(bytes.NewBuffer(file), mimeType)
-	if err != nil || minifiedFile != nil {
-		file = minifiedFile
+	if err != nil {
+		return &mimeType, &file, nil
 	}
 
-	return &mimeType, &file, nil
+	fmt.Println("From normal: ", url)
+
+	return &mimeType, &minifiedFile, nil
 }

@@ -7,12 +7,12 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
-
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"path/filepath"
@@ -30,14 +30,21 @@ import (
 func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 	const op = "Render.GetAsset"
 
+	api.AssetsChan <- 1
+	defer func() {
+		<-api.AssetsChan
+	}()
+
 	url := g.Request.URL.Path
 
 	// Check if the file has been cached
 	var cachedFile *[]byte
 	var cachedMime *string
+
 	if r.Options.CacheServerAssets {
 		cachedFile, cachedMime = r.getCachedAsset(url)
 		if cachedFile != nil && cachedMime != nil {
+			fmt.Println("From cache: ", url)
 			return cachedMime, cachedFile, nil
 		}
 	}
@@ -77,9 +84,11 @@ func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 
 	// If the minified file is nil or the err is not empty, serve the original data
 	minifiedFile, err := r.minify.MinifyBytes(bytes.NewBuffer(file), mimeType)
-	if err != nil || minifiedFile != nil {
-		file = minifiedFile
+	if err != nil {
+		return &mimeType, &file, nil
 	}
 
-	return &mimeType, &file, nil
+	fmt.Println("From normal: ", url)
+
+	return &mimeType, &minifiedFile, nil
 }
