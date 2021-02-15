@@ -16,16 +16,13 @@ import (
 
 func frontend(d *deps.Deps, s *server.Server, c *handler.Handler) {
 
-	s.Use(recovery.New(d).HttpRecovery())
-	s.Use(middleware.Redirects(d.Options))
-
 	// TODO: This check should be in config
 	uploadPath := d.Config.Media.UploadPath
 	if uploadPath == "" {
 		uploadPath = "uploads"
 	}
 
-	_ = s.Group("")
+	frontend := s.Group("")
 	{
 		// Serve assets
 		s.GET("/assets/*any", c.Frontend.GetAssets)
@@ -55,4 +52,7 @@ func frontend(d *deps.Deps, s *server.Server, c *handler.Handler) {
 		// Serve the front end
 		s.NoRoute(c.Frontend.Serve)
 	}
+
+	frontend.Use(recovery.New(d).HttpRecovery())
+	frontend.Use(middleware.Redirects(d.Options))
 }

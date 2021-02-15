@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/server"
+	"github.com/gin-gonic/gin"
 )
 
 // Vue (SPA) routes
@@ -17,4 +18,6 @@ func spa(d *deps.Deps, s *server.Server, c *handler.Handler) {
 		spa.GET("/*any", c.SPA.Serve)
 		spa.GET("", c.SPA.Serve)
 	}
+
+	spa.Use(gin.Recovery())
 }
