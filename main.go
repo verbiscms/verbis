@@ -20,6 +20,8 @@ import (
 	"runtime"
 )
 
+//go:generate go run scripts/includetxt.go
+
 func main() {
 	// Execute Verbis
 	runtime.GOMAXPROCS(runtime.NumCPU())

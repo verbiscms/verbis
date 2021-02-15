@@ -6,7 +6,7 @@ package trace
 
 import (
 	"fmt"
-	"io/ioutil"
+	"github.com/ainsleyclark/verbis/api/recovery/internal"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -78,10 +78,8 @@ func (t *trace) Trace(depth int, skip int) Stack {
 			continue
 		}
 
-		contents, err := ioutil.ReadFile(file)
-		if err != nil {
-			continue
-		}
+		b := strings.Replace(file, "/Users/ainsley/Desktop/Reddico/apis", "", -1)
+		contents := internal.Get(b)
 
 		stack.Append(&File{
 			File:     file,
@@ -165,4 +163,3 @@ func (f *File) Lines() []*FileLine {
 
 	return fileLines
 }
-

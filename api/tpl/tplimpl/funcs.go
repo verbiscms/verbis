@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/fields"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/meta"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/partial"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/url"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 
@@ -96,7 +95,6 @@ func (t *TemplateManager) getFrontendNamespaces(td *internal.TemplateDeps) inter
 		auth.Init(t.deps, td),
 		fields.Init(t.deps, td),
 		meta.Init(t.deps, td),
-		partial.Init(t.deps, td),
 		url.Init(t.deps, td),
 	}
 }

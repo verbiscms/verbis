@@ -77,7 +77,7 @@ func (r *Recover) getData() *Data {
 		Request:    r.getRequestData(),
 		Post:       r.config.Post,
 		Stack:      r.getStackData(),
-		Context: r.getContextData(),
+		Context:    r.getContextData(),
 		Debug:      environment.IsDebug(),
 	}
 }
@@ -152,7 +152,7 @@ func (r *Recover) getContextData() Context {
 	}
 	return Context{
 		Version: api.App.Version,
-		Site:   r.deps.Site,
+		Site:    r.deps.Site,
 		Options: opts,
 	}
 }
