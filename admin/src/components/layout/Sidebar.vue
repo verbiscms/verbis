@@ -205,6 +205,13 @@
 											<span>Media</span>
 										</router-link>
 									</li><!-- /Media -->
+									<!-- Redirects -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-redirects' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'settings-redirects' }">
+											<i class="feather feather-repeat"></i>
+											<span>Redirects</span>
+										</router-link>
+									</li><!-- /Media -->
 								</ul>
 							</nav>
 						</template>
