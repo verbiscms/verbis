@@ -95,8 +95,8 @@ type Options struct {
 	FormEmailDisclosure    string   `json:"form_email_disclosure"`
 }
 
-type Redirect struct {
-	To   string `json:"to" binding:"required"`
-	From string `json:"from" binding:"required"`
-	Code int    `json:"code" binding:"required,numeric"`
-}
+//type Redirect struct {
+//	To   string `json:"to" binding:"required"`
+//	From string `json:"from" binding:"required"`
+//	Code int    `json:"code" binding:"required,numeric"`
+//}
