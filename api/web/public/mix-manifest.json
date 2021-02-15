@@ -1,6 +1,4 @@
 {
     "/js/app.js": "/js/app.js",
-    "/css/app.css": "/css/app.css",
-    "/images/verbis-logo.svg": "/images/verbis-logo.svg",
-    "/images/verbis-logo.png": "/images/verbis-logo.png"
+    "/css/app.css": "/css/app.css"
 }

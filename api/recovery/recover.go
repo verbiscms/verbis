@@ -114,7 +114,11 @@ func (h *Handler) HttpRecovery() gin.HandlerFunc {
 				}
 				// If the connection is dead, we can't write a status to it.
 				// Otherwise we will send the recover data back.
-				if !brokenPipe {
+				if brokenPipe {
+					ctx.Error(err.(error)) // nolint: errcheck
+					ctx.Abort()
+					return
+				} else {
 					b := h.Recover(Config{
 						Context: ctx,
 						Error:   err,

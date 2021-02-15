@@ -337,7 +337,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.PostData, error) {
 	}
 
 	// Clear the cache
-	cache.Store.Delete(post.Slug)
+	cache.Store.Delete(cache.GetPostKey(post.Id))
 
 	return post, nil
 }
