@@ -61,31 +61,53 @@
                                     <div class="stack-frame">
                                         <div class="stack-frame-header">
                                             <p>Trace frames</p>
+                                            <p class="stack-frame-expand stack-vendor-show">Expand vendor frames</p>
                                         </div>
+                                        {{ $venderCount := 0 -}}
                                         {{ range $index, $item := . -}}
                                             {{ with $item -}}
-                                                <div class="stack-frame-group {{ if eq $index 0 -}} stack-frame-group-active {{- end }}" data-stack="#stack-item-{{ $index }}">
+                                                <div class="stack-frame-group {{ if eq $index 0 -}} stack-frame-group-active {{- end }} {{ if .Vendor -}} stack-frame-group-vendor stack-frame-group-hidden {{- end }}" data-stack="#stack-item-{{ $index }}">
                                                     <div class="stack-frame-number">{{ add $index 1 -}}</div>
                                                     <div class="stack-frame-details">
-                                                        <small class="stack-frame-name">{{ $item.Name }}</small>
+                                                        <small class="stack-frame-name">{{ $item.Function }}</small>
                                                         <small class="stack-frame-file">{{ $item.File }}</small>
                                                     </div>
                                                     <div class="stack-frame-line">:{{ $item.Line }}</div>
                                                 </div>
+                                               {{ if .Vendor }}{{ $venderCount = add 1 $venderCount }}{{ end }}
                                             {{- end }}
                                         {{ end }}
+                                        <!-- Vendor Expand -->
+                                        <div class="stack-frame-group stack-frame-group-vendor stack-vendor-show">
+                                            <div class="stack-frame-icon">
+                                                <svg enable-background="new 0 0 64 64" viewBox="0 0 64 64" width="512" xmlns="http://www.w3.org/2000/svg">
+                                                    <g>
+                                                        <path d="m32 46c-1.104 0-2-.896-2-2v-24c0-1.104.896-2 2-2s2 .896 2 2v24c0 1.104-.896 2-2 2z"/>
+                                                    </g>
+                                                    <g>
+                                                        <path d="m44 34h-24c-1.104 0-2-.896-2-2s.896-2 2-2h24c1.104 0 2 .896 2 2s-.896 2-2 2z"/>
+                                                    </g>
+                                                    <g>
+                                                        <path d="m31.933 57.99c-.001 0-.001 0 0 0-2.275 0-4.53-.297-6.703-.881-9.364-2.518-16.696-10.276-18.68-19.763-2.021-9.664 1.71-19.824 9.504-25.884 4.506-3.503 10.189-5.433 16.003-5.433 4.025 0 8.023.936 11.561 2.705 8.737 4.371 14.382 13.503 14.382 23.266 0 7.965-3.759 15.643-10.056 20.538-4.522 3.516-10.209 5.452-16.011 5.452zm.125-47.961c-4.93 0-9.741 1.631-13.548 4.591-6.597 5.128-9.755 13.728-8.044 21.907 1.679 8.025 7.882 14.588 15.803 16.719 1.834.494 3.74.744 5.663.744h.001c4.918 0 9.733-1.637 13.557-4.61 5.328-4.143 8.51-10.64 8.51-17.38 0-8.262-4.777-15.989-12.171-19.688-2.985-1.493-6.364-2.283-9.771-2.283z"/>
+                                                    </g>
+                                                </svg>
+                                            </div>
+                                            <div class="stack-frame-details">
+                                                <small class="stack-frame-name">{{ $venderCount }} vendor frames</small>
+                                            </div>
+                                            <div></div>
+                                        </div><!-- /Vendor Expand -->
                                     </div><!-- /Stack Frames -->
                                 </div><!-- /Col -->
                                 <div class="col-12 col-tab-7 col-desk-8">
                                     <!-- Stack Main -->
                                     <div class="stack-main">
-                                        {{/*<p class="stack-code-line {{ if eq $highlight .Line -}} stack-code-line-highlight {{- end }}"><span>{{ .Content }}</span></p>*/}}
                                         {{ range $index, $item := . -}}
                                             {{ with $item -}}
                                             <div class="stack-viewer {{ if eq $index 0 -}} stack-viewer-active {{- end }}" id="stack-item-{{ $index }}">
                                                 <!-- Stack Header -->
                                                 <div class="stack-main-header">
-                                                    <p class="stack-main-header-name">{{ .Name }}</p>
+                                                    <p class="stack-main-header-name">{{ .Function }}</p>
                                                     <p class="stack-main-header-file">{{ .File }}</p>
                                                 </div><!-- /Stack Header -->
                                                 <!-- Stack Content -->

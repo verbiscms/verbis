@@ -5,6 +5,7 @@
 package trace
 
 import (
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"runtime"
@@ -48,10 +49,10 @@ func (s *Stack) Prepend(file *File) {
 	*s = append([]*File{file}, *s...)
 }
 
-// Find a file in the stack by name.
-func (s *Stack) Find(name string) *File {
+// Find a file in the stack by function.
+func (s *Stack) Find(fn string) *File {
 	for _, v := range *s {
-		if v.Name == name {
+		if v.Function == fn {
 			return v
 		}
 	}
@@ -68,6 +69,8 @@ func (s *Stack) Find(name string) *File {
 func (t *trace) Trace(depth int, skip int) Stack {
 	var stack Stack
 
+	t.Test()
+
 	for c := skip; c < depth; c++ {
 		t, file, line, ok := runtime.Caller(c)
 
@@ -83,13 +86,18 @@ func (t *trace) Trace(depth int, skip int) Stack {
 		stack.Append(&File{
 			File:     file,
 			Line:     line,
-			Name:     runtime.FuncForPC(t).Name(),
+			Function:     runtime.FuncForPC(t).Name(),
 			Contents: string(contents),
 			Language: Language(file),
 		})
 	}
 
 	return stack
+}
+
+func (t *trace) Test() {
+	pc, fspec, line, _ := runtime.Caller(1)
+	fmt.Printf("☛ %v || %s [%s:%d]\n", "heklo", runtime.FuncForPC(pc).Name(), fspec, line)
 }
 
 // language
@@ -112,7 +120,7 @@ func Language(path string) string {
 type File struct {
 	File     string
 	Line     int
-	Name     string
+	Function     string
 	Contents string
 	Language string
 }
@@ -131,7 +139,7 @@ func (f *File) Vendor() bool {
 	if f.Language == "handlebars" {
 		return false
 	}
-	return !strings.Contains(f.Name, "verbis")
+	return !strings.Contains(f.Function, "verbis")
 }
 
 // Lines

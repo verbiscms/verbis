@@ -97,7 +97,7 @@ func (r *Recover) getStackData() trace.Stack {
 		stack.Prepend(&trace.File{
 			File:     path,
 			Line:     tplLineNumber(r.err),
-			Name:     r.config.TplFile,
+			Function:     r.config.TplFile,
 			Contents: tplFileContents(path),
 			Language: "handlebars",
 		})

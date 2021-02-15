@@ -26,6 +26,7 @@ $tab-bg-colour: #0d4383;
 	font-weight: 500;
 	margin: 0 2px;
 	border-radius: 2px;
+	white-space: nowrap;
 
 	// Button
 	// ==========================================================================
@@ -48,11 +49,14 @@ $tab-bg-colour: #0d4383;
 		border-top-left-radius: 4px;
 		border-top-right-radius: 4px;
 		border-bottom: 1px solid $grey-light;
+		overflow: hidden;
 
 		&-bar {
 			display: flex;
 			align-items: center;
-			justify-content: center;
+			justify-content: flex-start;
+			overflow: auto;
+			padding: 0 6px;
 		}
 	}
 
@@ -76,8 +80,22 @@ $tab-bg-colour: #0d4383;
 	&-section {
 		position: relative;
 		width: 100%;
-		padding: 2rem 2.5rem;
+		padding: 2rem 1rem;
 		border-top: 2px solid $grey-light;
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+
+		&-nav-bar {
+			justify-content: center;
+		}
+
+		&-section {
+			padding: 2rem 2.5rem;
+		}
 	}
 }
 

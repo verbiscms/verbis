@@ -64,7 +64,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 
 	_, err = g.Cookie("verbis-session")
 	if err != nil && post.Status != "published" {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Page not published, or user is not logged in", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Page not published, or user is not logged in", Operation: op, Err: err}
 	}
 
 	// TODO this should be in tpl

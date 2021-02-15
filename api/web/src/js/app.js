@@ -108,6 +108,7 @@ if (header) {
 /*
  * Nav Click
  * Removes classes once a link is clicked.
+ *
  */
 
 // Remove active classes when clicked.
@@ -125,6 +126,7 @@ links.forEach(link => {
 /*
  * Tabs
  * Handler for click of tabs, show and hide.
+ *
  */
 const tabs = document.querySelectorAll(".tab");
 tabs.forEach(tab => {
@@ -148,6 +150,7 @@ tabs.forEach(tab => {
 /*
  * Stack Frames
  * Handler for click of stack frame, change code panel.
+ *
  */
 const frames = document.querySelectorAll(".stack-frame-group");
 frames.forEach(frame => {
@@ -168,3 +171,19 @@ frames.forEach(frame => {
 	});
 });
 
+/*
+ * Expand Vendor Frames
+ * Handler for click of stack frame, change code panel.
+ *
+ */
+const showVendorBtns = document.querySelectorAll(".stack-vendor-show");
+showVendorBtns.forEach(btn => {
+	btn.addEventListener("click", e => {
+		e.preventDefault();
+
+		const vendorFrames = document.querySelectorAll(".stack-frame-group-hidden");
+		vendorFrames.forEach(frame => {
+			frame.classList.remove("stack-frame-group-hidden")
+		});
+	})
+});

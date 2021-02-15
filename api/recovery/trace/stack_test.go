@@ -9,6 +9,13 @@ import (
 	"testing"
 )
 
+func TestTrace_Test(t *testing.T) {
+
+	m := New()
+	m.Test()
+
+}
+
 func TestStack_Append(t *testing.T) {
 
 	tt := map[string]struct {
@@ -18,19 +25,19 @@ func TestStack_Append(t *testing.T) {
 	}{
 		"Nil Length": {
 			nil,
-			&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			&File{File: "test", Line: 1, Function: "function", Contents: "contents"},
 			Stack{
-				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+				&File{File: "test", Line: 1, Function: "function", Contents: "contents"},
 			},
 		},
 		"Multiple": {
 			Stack{
-				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+				&File{File: "test", Line: 1, Function: "function", Contents: "contents"},
 			},
-			&File{File: "test", Line: 2, Name: "name", Contents: "contents"},
+			&File{File: "test", Line: 2, Function: "function", Contents: "contents"},
 			Stack{
-				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
-				&File{File: "test", Line: 2, Name: "name", Contents: "contents"},
+				&File{File: "test", Line: 1, Function: "function", Contents: "contents"},
+				&File{File: "test", Line: 2, Function: "function", Contents: "contents"},
 			},
 		},
 	}
@@ -52,19 +59,19 @@ func TestStack_Prepend(t *testing.T) {
 	}{
 		"Nil Length": {
 			nil,
-			&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+			&File{File: "test", Line: 1, Function: "function", Contents: "contents"},
 			Stack{
-				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+				&File{File: "test", Line: 1, Function: "function", Contents: "contents"},
 			},
 		},
 		"Multiple": {
 			Stack{
-				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+				&File{File: "test", Line: 1, Function: "function", Contents: "contents"},
 			},
-			&File{File: "test", Line: 2, Name: "name", Contents: "contents"},
+			&File{File: "test", Line: 2, Function: "function", Contents: "contents"},
 			Stack{
-				&File{File: "test", Line: 2, Name: "name", Contents: "contents"},
-				&File{File: "test", Line: 1, Name: "name", Contents: "contents"},
+				&File{File: "test", Line: 2, Function: "function", Contents: "contents"},
+				&File{File: "test", Line: 1, Function: "function", Contents: "contents"},
 			},
 		},
 	}
@@ -79,7 +86,7 @@ func TestStack_Prepend(t *testing.T) {
 
 func TestStack_Find(t *testing.T) {
 
-	f := &File{File: "test", Line: 1, Name: "name", Contents: "contents"}
+	f := &File{File: "test", Line: 1, Function: "function", Contents: "contents"}
 
 	tt := map[string]struct {
 		stack Stack
@@ -88,12 +95,12 @@ func TestStack_Find(t *testing.T) {
 	}{
 		"Found": {
 			Stack{f},
-			"name",
+			"function",
 			f,
 		},
 		"Not Found": {
 			nil,
-			"name",
+			"function",
 			nil,
 		},
 	}
@@ -158,11 +165,11 @@ func TestFile_Vendor(t *testing.T) {
 			false,
 		},
 		"Non Vendor": {
-			File{Name: "verbis/recovery"},
+			File{Function: "verbis/recovery"},
 			false,
 		},
 		"Vendor": {
-			File{Name: "wrongval"},
+			File{Function: "wrongval"},
 			true,
 		},
 	}

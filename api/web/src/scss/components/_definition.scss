@@ -3,6 +3,10 @@
 // This file contains all styles related to the definition component.
 // -----------------------------------------------------------------------------
 
+// Variables
+$definition-font-size-mob: 13px;
+$definition-font-size: 0.83rem;
+
 .definition {
 	$self: &;
 
@@ -11,7 +15,7 @@
 
 	&-label,
 	&-value {
-		font-size: 0.83em;
+		font-size: $definition-font-size-mob;
 		line-height: 1.25;
 	}
 
@@ -22,8 +26,7 @@
 		position: relative;
 		display: grid;
 		grid-column-gap: 1.5rem;
-		grid-row-gap: 0.6rem;
-		grid-template-columns: 14rem 1fr;
+		grid-row-gap: 0.5rem;
 	}
 
 	// Title
@@ -31,11 +34,9 @@
 
 	&-title {
 		font-weight: bold;
-		margin-left: 15.5rem;
 		margin-bottom: 0.75rem;
-		font-size: 0.9rem;
+		font-size: 1rem;
 		text-align: left;
-
 	}
 
 	// Label
@@ -54,7 +55,7 @@
 	&-value {
 		word-break: break-all;
 		text-align: left;
-		margin: 0;
+		margin: 0 0 10px 0;
 	}
 
 	// Desktop
@@ -62,8 +63,35 @@
 
 	@include media-tab {
 
+		&-label,
+		&-value {
+			font-size: $definition-font-size;
+			line-height: 1.25;
+		}
+
+		&-value {
+			margin: 0;
+		}
+	}
+
+	// Desktop
+	// ==========================================================================
+
+	@include media-tab {
+
+		&-list {
+			grid-column-gap: 1.5rem;
+			grid-row-gap: 0.6rem;
+			grid-template-columns: 14rem 1fr;
+		}
+
 		&-label {
 			text-align: right;
+		}
+
+		&-title {
+			margin-left: 15.5rem;
+			font-size: 0.9rem;
 		}
 	}
 }
