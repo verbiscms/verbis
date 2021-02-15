@@ -203,23 +203,23 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, 
 
 	path, mimeType, err := s.GetByUrl(uploadPath)
 	if err != nil {
-		fmt.Println(err)
 		return nil, "", err
 	}
 
 	extension := files.GetFileExtension(uploadPath)
+	absPath := paths.Uploads() + "/" + path
 
 	var data []byte
 	var found error
 	if acceptWebP && s.options.MediaServeWebP {
-		data, found = ioutil.ReadFile(path + extension + ".webp")
+		data, found = ioutil.ReadFile(absPath + extension + ".webp")
 		if found != nil {
-			data, found = ioutil.ReadFile(path + extension)
+			data, found = ioutil.ReadFile(absPath + extension)
 		} else {
 			mimeType = "image/webp"
 		}
 	} else {
-		data, found = ioutil.ReadFile(path + extension)
+		data, found = ioutil.ReadFile(absPath + extension)
 	}
 
 	if found != nil {
@@ -242,8 +242,8 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, token string) (domain.Me
 		return domain.Media{}, nil
 	}
 
-	// E.G  /Users/admin/cms/storage/uploads
-	path := s.createDirectory()
+	// E.G  /Users/admin/cms/storage/uploads/2021/1, /2021/1
+	absPath, path := s.createDirectory()
 
 	// E.G: Image20@.png
 	name := file.Filename
@@ -261,13 +261,13 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, token string) (domain.Me
 	mimeType, _ := mime.TypeByFile(file)
 
 	// Save the uploaded file
-	if err := files.Save(file, path+"/"+key.String()+extension); err != nil {
+	if err := files.Save(file, absPath+"/"+key.String()+extension); err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not save the media file, please try again", Operation: op, Err: err}
 	}
 
 	// Convert to WebP
 	if s.options.MediaConvertWebP && mimeType == "image/jpeg" || mimeType == "image/png" {
-		go webp.Convert(path+"/"+key.String()+extension, s.options.MediaCompression)
+		go webp.Convert(absPath+"/"+key.String()+extension, s.options.MediaCompression)
 	}
 
 	// Resize
@@ -538,22 +538,23 @@ func resizeImage(srcImage image.Image, width int, height int, crop bool) image.I
 
 // createDirectory creates the media directory year path if the organise year variable in the media
 // store is set to true. Date and year folders are created recursively.
-func (s *MediaStore) createDirectory() string {
+func (s *MediaStore) createDirectory() (string, string) {
 	const op = "MediaRepository.createDirectory"
 
 	s.getOptionsStruct()
 	uploadsPath := paths.Uploads()
 
 	if !s.options.MediaOrganiseDate {
-		return uploadsPath
+		return uploadsPath, ""
 	} else {
 		t := time.Now()
-		path := uploadsPath + "/" + t.Format("2006") + "/" + t.Format("01")
+		datePath := t.Format("2006") + "/" + t.Format("01")
+		path := uploadsPath + "/" + datePath
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			_ = os.MkdirAll(path, os.ModePerm)
 		}
-		return path
+		return path, datePath
 	}
 }
 
