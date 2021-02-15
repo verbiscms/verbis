@@ -44,10 +44,6 @@ func New(m models.OptionsRepository) *Server {
 
 	r.Use(location.Default())
 
-	// Recovery middleware recovers from any panics and writes a 500 if there was one.
-	// TODO: Is this required?
-	server.Use(gin.Recovery())
-
 	// Set up Gzip compression
 	server.setupGzip(m)
 
