@@ -174,6 +174,12 @@ const routes = [
 		component: () => import('../views/settings/Media.vue'),
 		meta: { transitionName : 'fade' },
 	},
+	{
+		path: '/settings/redirects',
+		name: 'settings-redirects',
+		component: () => import('../views/settings/Redirects.vue'),
+		meta: { transitionName : 'fade' },
+	},
 	/**
 	 * Errors / Not Found
 	 *
