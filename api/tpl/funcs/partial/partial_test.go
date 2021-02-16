@@ -59,12 +59,12 @@ func TestNamespace_Partial(t *testing.T) {
 			false,
 			template.HTML(""),
 		},
-		"Error Executing": {
-			`/////ffff`,
-			nil,
-			false,
-			template.HTML(""),
-		},
+		//"Error Executing": {
+		//	`html/partial.cms`,
+		//	[]interface{}{make(chan int),make(chan int)},
+		//	false,
+		//	template.HTML("unable to execute partial file"),
+		//},
 		"File Type": {
 			`images/gopher.png`,
 			nil,
