@@ -155,6 +155,13 @@
 					</div>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
+			<transition name="archive-pagination-trans">
+				<div class="row" v-if="!doingAxios && paginationObj">
+					<div class="col-12">
+						<Pagination :pagination="paginationObj" @update="setPagination"></Pagination>
+					</div><!-- /Col -->
+				</div><!-- /Row -->
+			</transition>
 		</div><!-- /Container -->
 		<!-- =====================
 			Redirect Modal
@@ -187,6 +194,7 @@ import Redirect from "@/components/modals/Redirect";
 import Tabs from "@/components/misc/Tabs";
 import Modal from "@/components/modals/General";
 import Popover from "@/components/misc/Popover";
+import Pagination from "@/components/misc/Pagination";
 
 export default {
 	name: "Redirects",
@@ -197,6 +205,7 @@ export default {
 		Tabs,
 		Modal,
 		Popover,
+		Pagination,
 	},
 	data: () => ({
 		doingAxios: true,
