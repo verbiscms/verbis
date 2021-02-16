@@ -4,8 +4,6 @@
 <template>
 	<section>
 		<div class="auth-container">
-
-			{{ order }}
 			<!-- Header -->
 			<div class="row">
 				<div class="col-12">

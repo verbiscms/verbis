@@ -22,12 +22,12 @@
 					</div><!-- /Col -->
 					<div class="col-12">
 						<!-- From -->
-						<FormGroup label="From*" :error="errors['from']">
-							<input class="form-input form-input-white" type="text" v-model="redirect['from']" tabindex="1" placeholder="Enter a full URL">
+						<FormGroup label="From*" :error="errors['from_path']">
+							<input class="form-input form-input-white" type="text" v-model="redirect['from_path']" tabindex="1" placeholder="Enter a relative URL such as /blog">
 						</FormGroup>
 						<!-- To -->
-						<FormGroup label="To*" :error="errors['to']">
-							<input class="form-input form-input-white" type="text" v-model="redirect['to']" tabindex="2" placeholder="Enter a full URL">
+						<FormGroup label="To*" :error="errors['to_path']">
+							<input class="form-input form-input-white" type="text" v-model="redirect['to_path']" tabindex="2" placeholder="Enter a URL">
 						</FormGroup>
 						<!-- To -->
 						<FormGroup class="form-group-no-margin" label="Code*" :error="errors['code']">
@@ -58,10 +58,6 @@ export default {
 	props: {
 		show: {
 			type: Boolean,
-			default: false,
-		},
-		redirectKey: {
-			type: [Boolean, Number],
 			default: false,
 		},
 		redirectUpdate: {
@@ -106,16 +102,12 @@ export default {
 		 */
 		init(open) {
 			if (open && this.redirectUpdate) {
-				this.redirect = {
-					to: this.redirectUpdate['to'],
-					from: this.redirectUpdate['from'],
-					code: this.redirectUpdate['code'],
-				}
+				this.redirect = this.redirectUpdate;
 				return;
 			}
 			this.redirect = {
-				to: "",
-				from: "",
+				to_path: "",
+				from_path: "",
 				code: "",
 			};
 		},
@@ -124,16 +116,69 @@ export default {
 		 * Check for errors and update parent.
 		 */
 		save() {
+			this.doingAxios = true;
 			this.validate();
 			if (this.helpers.isEmptyObject(this.errors)) {
-				const key = this.redirectKey !== false ? this.redirectKey : "new";
-				this.$emit("update", this.redirect, key);
-				this.redirect = {
-					to: "",
-					from: "",
-					code: "",
-				};
+				if (this.redirectUpdate) {
+					this.update();
+				} else {
+					this.create();
+				}
 			}
+		},
+		/*
+		 * create()
+		 * Create a new redirect
+		 */
+		create() {
+			this.axios.post('/redirects', this.redirect)
+				.then(() => {
+					this.errors = {};
+					this.$noty.success("Successfully created redirect");
+				})
+				.catch(err => {
+					this.helpers.checkServer(err);
+					if (err.response.status === 400) {
+						this.validate(err.response.data.data.errors);
+						this.$noty.error("Fix the errors before saving the category.");
+						return;
+					}
+					this.$noty.error(err.response.data.message);
+				})
+				.finally(() => {
+					this.emit();
+					setTimeout(() => {
+						this.doingAxios = false;
+					}, this.timeoutDelay);
+				});
+		},
+		/*
+		 * update()
+		 * Update existing redirect
+		 */
+		update() {
+			console.log(this.redirect);
+			this.axios.put('/redirects/' + this.redirect.id, this.redirect)
+				.then(res => {
+					console.log(res);
+					this.errors = {};
+					this.$noty.success("Successfully updated redirect");
+				})
+				.catch(err => {
+					this.helpers.checkServer(err);
+					if (err.response.status === 400) {
+						this.validate(err.response.data.data.errors);
+						this.$noty.error("Fix the errors before saving the category.");
+						return;
+					}
+					this.$noty.error(err.response.data.message);
+				})
+				.finally(() => {
+					this.emit();
+					setTimeout(() => {
+						this.doingAxios = false;
+					}, this.timeoutDelay);
+				});
 		},
 		/*
 		 * validate()
@@ -142,22 +187,23 @@ export default {
 		validate() {
 			this.errors = {};
 
-			// Validate from
-			if (this.redirect['from'] === "") {
-				this.$set(this.errors, "from", "Enter a from URL");
-			} else if (!this.helpers.validateUrl(this.redirect['from'])) {
-				this.$set(this.errors, "from", "Enter a valid URL");
-			}
 
-			// Validate to
-			if (this.redirect['to'] === "") {
+			// // Validate from
+			if (this.redirect['from_path'] === "") {
+				this.$set(this.errors, "from_path", "Enter a from URL");
+			} //else if (!this.helpers.validateUrl(this.redirect['from'])) {
+				//this.$set(this.errors, "from", "Enter a valid URL");
+			//}
+
+			// // Validate to
+			if (this.redirect['to_path'] === "") {
 				this.$set(this.errors, "to", "Enter a to URL");
-			} else if (!this.helpers.validateUrl(this.redirect['to'])) {
-				this.$set(this.errors, "to", "Enter a valid URL");
-			}
+			} //else if (!this.helpers.validateUrl(this.redirect['to'])) {
+				//this.$set(this.errors, "to", "Enter a valid URL");
+			//}
 
 			// Validate equals
-			if (this.redirect['from'] === this.redirect['to']) {
+			if (this.redirect['from_path'] === this.redirect['to_path']) {
 				this.$set(this.errors, "to", "Enter a different 'to' URL");
 			}
 
@@ -166,6 +212,19 @@ export default {
 			if (!found) {
 				this.$set(this.errors, "code", "Enter a redirect code");
 			}
+
+			setTimeout(() => {
+				this.doingAxios = false;
+			}, this.timeoutDelay);
+		},
+		/*
+		 * emit()
+		 * Fires back upto the parent once redirect has been
+		 * created or updated.
+		 */
+		emit() {
+			this.$emit("update", this.redirect);
+			this.redirect = {};
 		},
 	},
 	computed: {

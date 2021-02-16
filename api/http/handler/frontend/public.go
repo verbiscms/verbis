@@ -42,7 +42,7 @@ func (c *Public) GetUploads(g *gin.Context) {
 		return
 	}
 
-	g.Data(200, *mimeType, *file)
+	g.Data(200, mimeType, *file)
 }
 
 // GetAssets retrieves assets from the theme path, returns webp if accepts.
@@ -55,7 +55,7 @@ func (c *Public) GetAssets(g *gin.Context) {
 		return
 	}
 
-	g.Data(200, *mimeType, *file)
+	g.Data(200, mimeType, *file)
 }
 
 // Serve the front end website

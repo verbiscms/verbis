@@ -12,8 +12,8 @@ import (
 // RedirectRepository defines methods for Redirects to interact with the database
 type RedirectRepository interface {
 	Get(meta params.Params) ([]domain.Redirect, int, error)
-	GetById(id int64) (*domain.Redirect, error)
-	GetByFrom(from string) (*domain.Redirect, error)
+	GetById(id int64) (domain.Redirect, error)
+	GetByFrom(from string) (domain.Redirect, error)
 	Create(r *domain.Redirect) (domain.Redirect, error)
 	Update(r *domain.Redirect) (domain.Redirect, error)
 	Delete(id int64) error
@@ -82,24 +82,24 @@ func (s *RedirectStore) Get(meta params.Params) ([]domain.Redirect, int, error) 
 
 // Get the redirect by ID.
 // Returns errors.NOTFOUND if the redirect was not found by the given from path.
-func (s *RedirectStore) GetById(id int64) (*domain.Redirect, error) {
+func (s *RedirectStore) GetById(id int64) (domain.Redirect, error) {
 	const op = "RedirectStore.GetByPost"
 	var r domain.Redirect
 	if err := s.db.Get(&r, "SELECT * FROM redirects WHERE id = ?", id); err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get redirect with the ID: %d", id), Operation: op, Err: err}
+		return domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get redirect with the ID: %d", id), Operation: op, Err: err}
 	}
-	return &r, nil
+	return r, nil
 }
 
 // Get the redirect by from path
 // Returns errors.NOTFOUND if the redirect was not found by the given from path.
-func (s *RedirectStore) GetByFrom(from string) (*domain.Redirect, error) {
+func (s *RedirectStore) GetByFrom(from string) (domain.Redirect, error) {
 	const op = "RedirectStore.GetByPost"
 	var r domain.Redirect
 	if err := s.db.Get(&r, "SELECT * FROM redirects WHERE from_path = ?", from); err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get redirect with the path: %s", from), Operation: op, Err: err}
+		return domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get redirect with the path: %s", from), Operation: op, Err: err}
 	}
-	return &r, nil
+	return r, nil
 }
 
 // Create a new redirect
@@ -133,12 +133,12 @@ func (s *RedirectStore) Create(r *domain.Redirect) (domain.Redirect, error) {
 func (s *RedirectStore) Update(r *domain.Redirect) (domain.Redirect, error) {
 	const op = "RedirectStore.Update"
 
-	if s.Exists(r.Id) {
+	if !s.Exists(r.Id) {
 		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the Id: %d", r.Id), Operation: op, Err: fmt.Errorf("no redirect exists")}
 	}
 
 	q := "UPDATE redirects SET from_path = ?, to_path = ?, code = ?, updated_at = NOW() WHERE id = ?"
-	_, err := s.db.Exec(q, r.From, r.To, r.Code)
+	_, err := s.db.Exec(q, r.From, r.To, r.Code, r.Id)
 	if err != nil {
 		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the redirect with the from path: %s", r.From), Operation: op, Err: err}
 	}
@@ -152,8 +152,8 @@ func (s *RedirectStore) Update(r *domain.Redirect) (domain.Redirect, error) {
 func (s *RedirectStore) Delete(id int64) error {
 	const op = "RedirectStore.Delete"
 
-	if s.Exists(id) {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the Id: %d", id), Operation: op, Err: fmt.Errorf("no redirect exists")}
+	if !s.Exists(id) {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the Id: %d", id), Operation: op, Err: fmt.Errorf("no redirect exists with the id: %d", id)}
 	}
 
 	if _, err := s.db.Exec("DELETE FROM redirects WHERE id = ?", id); err != nil {

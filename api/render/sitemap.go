@@ -15,6 +15,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"time"
 )
@@ -289,15 +290,29 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 //
 // Returns []sitemapViewItem containing slug & created at date.
 func (s *Sitemap) getRedirects() []viewItem {
-	var data []viewItem
-	if s.options.SeoSitemapRedirects {
-		for _, v := range s.options.SeoRedirects {
-			data = append(data, viewItem{
-				Slug:      v.From,
-				CreatedAt: time.Now().Format(time.RFC3339),
-			})
-		}
+	const op = "SiteMapper.getRedirects"
+
+	if !s.options.SeoSitemapRedirects {
+		return nil
 	}
+
+	var data []viewItem
+	redirects, _, err := s.store.Redirects.Get(params.Params{LimitAll: true, OrderBy:        "created_at", OrderDirection: "desc",})
+
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code:      errors.INTERNAL, Message:   "Error obtaining site redirects", Operation: op, Err:       err},
+		})
+		return nil
+	}
+
+	for _, v := range redirects {
+		data = append(data, viewItem{
+			Slug:      v.From,
+			CreatedAt: v.CreatedAt.Format(time.RFC3339),
+		})
+	}
+
 	return data
 }
 
