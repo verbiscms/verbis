@@ -55,7 +55,6 @@ type Options struct {
 	SeoEnforceSlash     bool       `json:"seo_enforce_slash"`
 	SeoRobotsServe      bool       `json:"seo_robots_serve"`
 	SeoRobots           string     `json:"seo_robots"`
-	SeoRedirects        []Redirect `json:"seo_redirects"`
 	// Media
 	MediaCompression     int        `json:"media_compression" binding:"required"`
 	MediaConvertWebP     bool       `json:"media_convert_webp"`
@@ -67,8 +66,6 @@ type Options struct {
 	MediaSizes           MediaSizes `json:"media_images_sizes"`
 	// Server Cache
 	CacheServerTemplates bool `json:"cache_server_templates"`
-	CacheServerAssets    bool `json:"cache_server_assets"`
-	CacheServerUploads   bool `json:"cache_server_uploads"`
 	CacheServerFields    bool `json:"cache_server_field_layouts"`
 	// Frontend Caching
 	CacheFrontend          bool     `json:"cache_frontend"`
@@ -94,9 +91,3 @@ type Options struct {
 	FormIncludeLogo        bool     `json:"form_email_include_logo"`
 	FormEmailDisclosure    string   `json:"form_email_disclosure"`
 }
-
-//type Redirect struct {
-//	To   string `json:"to" binding:"required"`
-//	From string `json:"from" binding:"required"`
-//	Code int    `json:"code" binding:"required,numeric"`
-//}

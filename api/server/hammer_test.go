@@ -19,7 +19,7 @@ var photoErr error
 
 func Test_Hammer(t *testing.T) {
 
-	conn := 1000
+	conn := 2000
 
 	for i := 0; i < conn; i++ {
 		wg.Add(1)
@@ -45,8 +45,8 @@ func runHammer(i int) {
 
 	fmt.Println(i)
 
-	req, err := http.Get("https://www.kentonline.co.uk/_media/img/360x0/FJ9UT3RA4IOEJ3EOJ38X.jpg")
-	//req, err := http.Get("http://127.0.0.1:8080/uploads/2020/11/ainsphoto.jpg")
+	//req, err := http.Get("https://staging.reddico.co.uk")
+	req, err := http.Get("https://staging.reddico.co.uk/uploads/2021/02/untitled-design-4.png")
 	if err != nil {
 		fmt.Println("NUMBER: ")
 		fmt.Println(i)

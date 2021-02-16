@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/gookit/color"
 	min "github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"github.com/tdewolff/minify/v2/html"
@@ -86,8 +85,6 @@ func (m *minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 		err    error
 	)
 
-	color.Green.Println("compare: ", mime)
-
 	switch mime {
 	case HTML:
 		m.pkg.AddFunc(htmlMime, html.Minify)
@@ -112,7 +109,6 @@ func (m *minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 	}
 
 	if err != nil {
-		fmt.Println("minify: ", err)
 		return b.Bytes(), err
 	}
 

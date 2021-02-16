@@ -138,7 +138,6 @@ func (c *Redirects) Update(g *gin.Context) {
 		return
 	}
 
-
 	Respond(g, 200, "Successfully updated redirect with ID: "+strconv.FormatInt(redirect.Id, 10), updatedForm)
 }
 

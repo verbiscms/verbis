@@ -183,8 +183,6 @@ CREATE TABLE `post_fields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
-
-
 --
 -- Table structure for table `posts`
 --
@@ -227,6 +225,24 @@ CREATE TABLE `post_options` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `post_id_index` (`post_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `redirects`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `redirects` (
+    `id` int NOT NULL AUTO_INCREMENT,
+    `from_path` varchar(255) NOT NULL,
+    `to_path` varchar(255) NOT NULL,
+    `code` int NOT NULL,
+    `updated_at` timestamp NULL DEFAULT NULL,
+    `created_at` timestamp NULL DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `redirect_from_path` (`from_path`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
