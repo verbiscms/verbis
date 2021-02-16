@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/gookit/color"
 	"html/template"
 	"strings"
 )
@@ -51,7 +50,6 @@ func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) PartialFunc {
 		var b bytes.Buffer
 		err = file.Execute(&b, context)
 		if err != nil {
-			color.Red.Println("kljkljk")
 			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute partial file", Operation: op, Err: err}
 		}
 
