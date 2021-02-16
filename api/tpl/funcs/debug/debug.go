@@ -1,15 +1,14 @@
-// Copyright 2020 The Verbis Authors. All rights reserved.
+ // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
 package debug
 
-import (
-	"encoding/json"
-	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"html/template"
-)
+ import (
+	 "fmt"
+	 "github.com/sanity-io/litter"
+	 "html/template"
+ )
 
 const (
 	// CSS describes the styling for dumps to be sent back
@@ -55,21 +54,14 @@ func (ns *Namespace) Debug(i interface{}) template.HTML {
 
 // Dump
 //
-// Marshals indents the struct and wraps the string
+// Uses the litter package to dump the passed interface.
 // inside a div with CSS attached.
 //
 // Returns errors.TEMPLATE if the marshal failed.
 //
 // Example: {{ dump .Post }}
 func (ns *Namespace) Dump(i interface{}) (template.HTML, error) {
-	const op = "Templates.Dump"
-
-	b, err := json.MarshalIndent(i, "", "\t")
-	if err != nil {
-		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to par", Operation: op, Err: err}
-	}
-
-	el := fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, string(b))
-
+	dump := litter.Sdump(i)
+	el := fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, dump)
 	return template.HTML(el), nil
 }

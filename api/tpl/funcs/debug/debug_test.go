@@ -68,19 +68,15 @@ func TestNamespace_Dump(t *testing.T) {
 		},
 		"Slice": {
 			[]interface{}{"test", 123},
-			template.HTML(fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, "[\n\t\"test\",\n\t123\n]")),
+			template.HTML(fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, "[]interface {}{\n  \"test\",\n  123,\n}")),
 		},
 		"Map": {
 			map[string]interface{}{"test": 123},
-			template.HTML(fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, "{\n\t\"test\": 123\n}")),
+			template.HTML(fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, "map[string]interface {}{\n  \"test\": 123,\n}")),
 		},
 		"Struct": {
 			struct{ Test string }{Test: "test"},
-			template.HTML(fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, "{\n\t\"Test\": \"test\"\n}")),
-		},
-		"Error": {
-			map[string]interface{}{"foo": make(chan int)},
-			"Templates.Dump: json: unsupported type: chan int",
+			template.HTML(fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, "struct { Test string }{\n  Test: \"test\",\n}")),
 		},
 	}
 

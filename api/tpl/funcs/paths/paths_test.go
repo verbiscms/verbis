@@ -14,21 +14,63 @@ import (
 var (
 	ns = New(&deps.Deps{
 		Paths: deps.Paths{
-			Theme: "/test/",
+			Base:    "/base/",
+			Admin:   "/admin/",
+			API:     "/api/",
+			Theme:   "/theme/",
+			Uploads: "/uploads/",
+			Storage: "/storage/",
+			Web:     "/web/",
 		},
 		Theme: &domain.ThemeConfig{
 			TemplateDir: "templates",
 			LayoutDir:   "layouts",
+			AssetsPath: "/assets/",
 		},
 	})
 )
 
+func TestNamespace_Base(t *testing.T) {
+	got := ns.Base()
+	assert.Equal(t, "/base/", got)
+}
+
+func TestNamespace_Admin(t *testing.T) {
+	got := ns.Admin()
+	assert.Equal(t, "/admin/", got)
+}
+
+func TestNamespace_API(t *testing.T) {
+	got := ns.API()
+	assert.Equal(t, "/api/", got)
+}
+
+func TestNamespace_Theme(t *testing.T) {
+	got := ns.Theme()
+	assert.Equal(t, "/theme/", got)
+}
+
+func TestNamespace_Uploads(t *testing.T) {
+	got := ns.Uploads()
+	assert.Equal(t, "/uploads/", got)
+}
+
+func TestNamespace_Storage(t *testing.T) {
+	got := ns.Storage()
+	assert.Equal(t, "/storage/", got)
+}
+
+func TestNamespace_Assets(t *testing.T) {
+	got := ns.Assets()
+	assert.Equal(t, "/assets/", got)
+}
+
 func TestNamespace_Templates(t *testing.T) {
 	got := ns.Templates()
-	assert.Equal(t, "/test/templates", got)
+	assert.Equal(t, "/theme/templates", got)
 }
 
 func TestNameSpace_Layouts(t *testing.T) {
 	got := ns.Layouts()
-	assert.Equal(t, "/test/layouts", got)
+	assert.Equal(t, "/theme/layouts", got)
 }

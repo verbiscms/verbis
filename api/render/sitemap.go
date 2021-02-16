@@ -297,11 +297,11 @@ func (s *Sitemap) getRedirects() []viewItem {
 	}
 
 	var data []viewItem
-	redirects, _, err := s.store.Redirects.Get(params.Params{LimitAll: true, OrderBy:        "created_at", OrderDirection: "desc",})
+	redirects, _, err := s.store.Redirects.Get(params.Params{LimitAll: true, OrderBy: "created_at", OrderDirection: "desc"})
 
 	if err != nil {
 		log.WithFields(log.Fields{
-			"error": &errors.Error{Code:      errors.INTERNAL, Message:   "Error obtaining site redirects", Operation: op, Err:       err},
+			"error": &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining site redirects", Operation: op, Err: err},
 		})
 		return nil
 	}

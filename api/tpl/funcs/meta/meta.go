@@ -7,12 +7,26 @@ package meta
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
+	log "github.com/sirupsen/logrus"
 	"html/template"
 )
 
+const (
+	// The path of the embedded files to execute when super admin.
+	DevEmbeddedPath = "/tpl/embedded/"
+	// The path of the embedded files to execute when compiled.
+	EmbeddedPath = "/tpl/"
+	// The extension of the embedded files.
+	EmbeddedExtension = ".cms"
+)
+
+// TemplateMeta defines the helper for executing meta
+// templates.
 type TemplateMeta struct {
 	Site          domain.Site
 	Post          *domain.PostData
@@ -22,11 +36,11 @@ type TemplateMeta struct {
 	deps          *deps.Deps
 }
 
-const (
-	// The path of the emmbedded files to execute.
-	EmbeddedPath = "/api/tpl/embedded/"
-)
-
+// GetImage
+//
+// Is a helper function for the embedded meta templates.
+// Returns an media item URL or an empty string if
+// the media item did not exist.
 func (tm *TemplateMeta) GetImage(id int) string {
 	img, err := tm.deps.Store.Media.GetById(id)
 	if err != nil {
@@ -42,7 +56,7 @@ func (tm *TemplateMeta) GetImage(id int) string {
 //
 // Example: {{ verbisHead }}
 func (ns *Namespace) Header() template.HTML {
-	const op = "Templates.Header"
+	const op = "Templates.Meta.Header"
 
 	tm := &TemplateMeta{
 		Site:    ns.deps.Site,
@@ -99,22 +113,38 @@ func (ns *Namespace) Footer() template.HTML {
 	return template.HTML(foot)
 }
 
-func (ns *Namespace) executeTemplates(tm *TemplateMeta, tpls []string) string {
-	head := ""
-	for _, name := range tpls {
+// executeTemplates
+//
+// Ranges over the templates passed and executes the embedded
+// templates, logs if an error occurred or concatenates
+// the meta and returns a string upon successful
+// execution.
+func (ns *Namespace) executeTemplates(tm *TemplateMeta, templates []string) string {
+	const op = "Templates.Meta.executeTemplates"
+
+	meta := ""
+	for _, name := range templates {
+
+		root := ns.deps.Paths.API + EmbeddedPath
+		if api.SuperAdmin {
+			root = ns.deps.Paths.API + DevEmbeddedPath
+		}
 
 		var b bytes.Buffer
 		_, err := ns.deps.Tmpl().Prepare(tpl.Config{
-			Root:      ns.deps.Paths.Base + EmbeddedPath,
-			Extension: ".cms",
+			Root:      root,
+			Extension: EmbeddedExtension,
 		}).Execute(&b, name, tm)
 
 		if err != nil {
-			fmt.Println(err)
+			log.WithFields(log.Fields{
+				"error": &errors.Error{Code: errors.INTERNAL, Message: "Error executing template", Operation: op, Err: err},
+			})
+			return ""
 		}
 
-		head += fmt.Sprintf("%s\n", b.String())
+		meta += fmt.Sprintf("%s\n", b.String())
 	}
 
-	return head
+	return meta
 }
