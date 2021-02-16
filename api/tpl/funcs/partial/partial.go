@@ -8,8 +8,8 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/gookit/color"
 	"html/template"
 	"strings"
 )
@@ -34,10 +34,6 @@ func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) PartialFunc {
 	return func(name string, data ...interface{}) (template.HTML, error) {
 		path := exec.Config().GetRoot() + "/" + name
 
-		if !files.Exists(path) {
-			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Partial file does not exist", Operation: op, Err: fmt.Errorf("no file exists with the path: %s", name)}
-		}
-
 		var context interface{}
 		if len(data) == 1 {
 			context = data[0]
@@ -49,12 +45,13 @@ func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) PartialFunc {
 
 		file, err := template.New(pathArr[len(pathArr)-1]).Funcs(tplFuncs).ParseFiles(path)
 		if err != nil {
-			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to parse partial file", Operation: op, Err: err}
+			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Partial file does not exist", Operation: op, Err: fmt.Errorf("no file exists with the path: %s", name)}
 		}
 
 		var b bytes.Buffer
 		err = file.Execute(&b, context)
 		if err != nil {
+			color.Red.Println("kljkljk")
 			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute partial file", Operation: op, Err: err}
 		}
 

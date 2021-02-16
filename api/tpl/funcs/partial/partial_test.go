@@ -38,46 +38,61 @@ func TestNamespace_Partial(t *testing.T) {
 	tt := map[string]struct {
 		name string
 		data interface{}
+		multiple bool
 		want interface{}
 	}{
 		"Success": {
 			`html/partial.cms`,
 			nil,
+			false,
 			template.HTML(`<h1>This is a partial file.</h1>`),
 		},
 		"Wrong Path": {
 			`html/wrongpath.cms`,
 			nil,
+			false,
 			"Templates.Partial: no file exists with the path: html/wrongpath.cms",
 		},
 		"Bad Data": {
 			`html/partial-baddata.cms`,
 			nil,
+			false,
+			template.HTML(""),
+		},
+		"Error Executing": {
+			`/////ffff`,
+			nil,
+			false,
 			template.HTML(""),
 		},
 		"File Type": {
 			`images/gopher.png`,
 			nil,
+			false,
 			template.HTML(""),
 		},
 		"Dict": {
 			`html/partial-dict.cms`,
 			map[string]interface{}{"Text": "cms"},
+			false,
 			template.HTML("cms"),
 		},
 		"Single Input": {
 			`html/partial-data.cms`,
 			"verbis",
+			false,
 			template.HTML("verbis"),
 		},
 		"Multiple Inputs": {
 			`html/partial-data.cms`,
 			[]interface{}{"hello", "verbis"},
+			true,
 			template.HTML("[hello verbis]"),
 		},
 		"Multiple Inputs 2": {
 			`html/partial-data.cms`,
 			[]interface{}{"hello", "verbis", 1, 2, 3},
+			true,
 			template.HTML("[hello verbis 1 2 3]"),
 		},
 	}
@@ -90,7 +105,17 @@ func TestNamespace_Partial(t *testing.T) {
 				"dict": dic.Dict,
 			}, Setup(t))
 
-			got, err := p(test.name, test.data)
+			var got template.HTML
+			var err error
+
+			if test.multiple {
+				slice, ok := test.data.([]interface{})
+				assert.True(t, ok)
+				got, err = p(test.name, slice...)
+			} else {
+				got, err = p(test.name, test.data)
+			}
+
 			if err != nil {
 				assert.Contains(t, err.Error(), test.want)
 				return

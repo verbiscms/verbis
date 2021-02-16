@@ -33,44 +33,44 @@ func init() {
 			Context: func(args ...interface{}) interface{} { return ctx },
 		}
 
-		ns.AddMethodMapping(func() string { return d.Paths.Base },
+		ns.AddMethodMapping(ctx.Base,
 			"basePath",
 			nil,
 			[][2]string{},
 		)
 
-		ns.AddMethodMapping(func() string { return d.Paths.Admin },
+		ns.AddMethodMapping(ctx.Admin,
 			"adminPath",
 			nil,
 			[][2]string{},
 		)
 
-		ns.AddMethodMapping(func() string { return d.Paths.API },
+		ns.AddMethodMapping(ctx.API,
 			"apiPath",
 			nil,
 			[][2]string{},
 		)
 
-		ns.AddMethodMapping(func() string { return d.Paths.Theme },
+		ns.AddMethodMapping(ctx.Theme,
 			"themePath",
 			nil,
 			[][2]string{},
 		)
 
-		ns.AddMethodMapping(func() string { return d.Paths.Uploads },
+		ns.AddMethodMapping(ctx.Uploads,
 			"uploadsPath",
 			nil,
 			[][2]string{},
 		)
 
-		ns.AddMethodMapping(func() string { return d.Theme.AssetsPath },
-			"assetsPath",
+		ns.AddMethodMapping(ctx.Storage,
+			"storagePath",
 			nil,
 			[][2]string{},
 		)
 
-		ns.AddMethodMapping(func() string { return d.Paths.Storage },
-			"storagePath",
+		ns.AddMethodMapping(ctx.Assets,
+			"assetsPath",
 			nil,
 			[][2]string{},
 		)
