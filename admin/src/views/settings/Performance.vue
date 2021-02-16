@@ -145,36 +145,6 @@
 								</div><!-- /Card Header -->
 							</template>
 						</Collapse><!-- /Cache Renderer -->
-						<!-- Cache Assets -->
-						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['cache_server_assets'] }">
-							<template v-slot:header>
-								<div class="card-header">
-									<div>
-										<h4 class="card-title">Cache assets?</h4>
-										<p>By ticking the box, assets served such as images, CSS & javascript files will be cached and only read from the disk once or until updated.</p>
-									</div>
-									<div class="toggle">
-										<input type="checkbox" class="toggle-switch" id="cache-database-assets" v-model="data['cache_server_assets']" :true-value="true" :false-value="false" />
-										<label for="cache-database-assets"></label>
-									</div>
-								</div><!-- /Card Header -->
-							</template>
-						</Collapse><!-- /Cache Assets -->
-						<!-- Cache Uploads -->
-						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['cache_server_uploads'] }">
-							<template v-slot:header>
-								<div class="card-header">
-									<div>
-										<h4 class="card-title">Cache uploads?</h4>
-										<p>By ticking the box, uploads will be cached and only read from the disk once or until updated.</p>
-									</div>
-									<div class="toggle">
-										<input type="checkbox" class="toggle-switch" id="cache-database-uploads" v-model="data['cache_server_uploads']" :true-value="true" :false-value="false" />
-										<label for="cache-database-uploads"></label>
-									</div>
-								</div><!-- /Card Header -->
-							</template>
-						</Collapse><!-- Cache Uploads -->
 						<!-- Cache Field Layouts -->
 						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['cache_server_field_layouts'] }">
 							<template v-slot:header>

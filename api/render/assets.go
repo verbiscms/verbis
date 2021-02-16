@@ -5,10 +5,8 @@
 package render
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -27,7 +25,7 @@ import (
 // It then sets cache headers using the cacher interface & checks if a webp
 // image is available with the path of .jpg.webp. The minify is the used
 // to see if the file can be minfied.
-func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
+func (r *Render) Asset(g *gin.Context) (string, *[]byte, error) {
 	const op = "Render.GetAsset"
 
 	api.AssetsChan <- 1
@@ -37,18 +35,6 @@ func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 
 	url := g.Request.URL.Path
 
-	// Check if the file has been cached
-	var cachedFile *[]byte
-	var cachedMime *string
-
-	if r.Options.CacheServerAssets {
-		cachedFile, cachedMime = r.getCachedAsset(url)
-		if cachedFile != nil && cachedMime != nil {
-			fmt.Println("From cache: ", url)
-			return cachedMime, cachedFile, nil
-		}
-	}
-
 	// Get the relevant paths
 	assetsPath := paths.Theme() + r.Theme.AssetsPath
 	fileName := strings.Replace(url, "/assets", "", 1)
@@ -56,18 +42,8 @@ func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 
 	file, err := ioutil.ReadFile(assetsPath + fileName)
 	if err != nil {
-		return nil, nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the file with the path: %s", assetsPath+fileName), Operation: op, Err: err}
+		return "", nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the file with the path: %s", assetsPath+fileName), Operation: op, Err: err}
 	}
-
-	// Set the cache if options allow
-	defer func() {
-		go func() {
-			if r.Options.CacheServerAssets && cachedFile == nil {
-				cache.Store.Set(url, &file, cache.RememberForever)
-				cache.Store.Set(url+"mimetype", &mimeType, cache.RememberForever)
-			}
-		}()
-	}()
 
 	// Set cache headers
 	r.cacher.Cache(g)
@@ -77,18 +53,15 @@ func (r *Render) Asset(g *gin.Context) (*string, *[]byte, error) {
 	if r.Options.MediaServeWebP && webp.Accepts(g) {
 		webpFile := webp.GetData(g, assetsPath+fileName, mimeType)
 		if webpFile != nil {
-			mimeType = "image/webp"
-			file = webpFile
+			return "image/webp", &webpFile, nil
 		}
 	}
 
 	// If the minified file is nil or the err is not empty, serve the original data
-	minifiedFile, err := r.minify.MinifyBytes(bytes.NewBuffer(file), mimeType)
-	if err != nil {
-		return &mimeType, &file, nil
-	}
+	//minifiedFile, err := r.minify.MinifyBytes(bytes.NewBuffer(file), mimeType)
+	//if err != nil {
+	//	return mimeType, &file, nil
+	//}
 
-	fmt.Println("From normal: ", url)
-
-	return &mimeType, &minifiedFile, nil
+	return mimeType, &file, nil
 }

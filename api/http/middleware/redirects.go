@@ -5,25 +5,20 @@
 package middleware
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/gin-contrib/location"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gin-gonic/gin"
 )
 
-func Redirects(options *domain.Options) gin.HandlerFunc {
+func Redirects(d *deps.Deps) gin.HandlerFunc {
 	return func(g *gin.Context) {
-		path := location.Get(g).String() + g.Request.URL.String()
+		path := g.Request.URL.String()
+		redirect, err := d.Store.Redirects.GetByFrom(path)
 
-		// when storing redirects, string lowering database
-		// and string lowercase here.
-
-		for _, v := range options.SeoRedirects {
-			if path == v.From {
-				g.Redirect(v.Code, v.To)
-				return
-			}
+		if err != nil {
+			g.Next()
+			return
 		}
 
-		g.Next()
+		g.Redirect(redirect.Code, redirect.To)
 	}
 }

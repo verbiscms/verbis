@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/recovery"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +21,9 @@ func frontend(d *deps.Deps, s *server.Server, c *handler.Handler) {
 		uploadPath = "uploads"
 	}
 
-	frontend := s.Group("")
+	s.Use(middleware.Redirects(d))
+
+	_ = s.Group("")
 	{
 		// Serve assets
 		s.GET("/assets/*any", c.Frontend.GetAssets)
@@ -52,7 +53,4 @@ func frontend(d *deps.Deps, s *server.Server, c *handler.Handler) {
 		// Serve the front end
 		s.NoRoute(c.Frontend.Serve)
 	}
-
-	frontend.Use(recovery.New(d).HttpRecovery())
-	frontend.Use(middleware.Redirects(d.Options))
 }

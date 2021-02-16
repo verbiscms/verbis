@@ -188,64 +188,6 @@
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
-					Redirects
-					===================== -->
-				<div class="col-12">
-					<h6 class="margin">Redirects</h6>
-					<div class="card card-small-box-shadow card-expand seo-redirects">
-						<!-- Serve Robots -->
-						<Collapse :show="false" class="collapse-border-bottom">
-							<template v-slot:header>
-								<div class="card-header seo-redirects">
-									<div>
-										<h4 class="card-title">Redirects</h4>
-										<p>View the XML sitemap that Verbis generates.</p>
-									</div>
-									<div class="card-controls">
-										<i class="feather feather-plus" @click="showRedirectModal = true"></i>
-										<i class="feather feather-chevron-down"></i>
-									</div>
-								</div><!-- /Card Header -->
-							</template>
-							<template v-slot:body>
-								<div class="table-wrapper" v-if="data['seo_redirects'] && data['seo_redirects'].length"  ref="redirects">
-									<div class="table-scroll">
-										<table class="table archive-table">
-											<thead>
-											<tr>
-												<th>From</th>
-												<th>To</th>
-												<th>Code</th>
-												<th>Update/Delete</th>
-											</tr>
-											</thead>
-											<tbody>
-											<tr v-for="(redirect, redirectKey) in data['seo_redirects']" :key="redirectKey">
-												<td>{{ redirect.from }}</td>
-												<td>{{ redirect.to }}</td>
-												<td>{{ redirect.code }}</td>
-												<td>
-													<div class="card-controls">
-														<i class="feather feather-trash-2" @click="deleteRedirect(redirectKey)"></i>
-														<i class="feather feather-edit" @click="updateRedirectHandler(redirectKey)"></i>
-													</div>
-												</td>
-											</tr>
-											</tbody>
-										</table>
-									</div><!-- /Table Scroll -->
-								</div><!-- /Table Wrapper -->
-								<Alert v-else colour="orange">
-									<slot>
-										<h3>No redirects available available.</h3>
-										<p>To create a new one, click the button above.</p>
-									</slot>
-								</Alert>
-							</template>
-						</Collapse><!-- /Serve Robots -->
-					</div>
-				</div><!-- /Col -->
-				<!-- =====================
 					Misc
 					===================== -->
 				<div class="col-12">
@@ -270,10 +212,6 @@
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
-		<!-- =====================
-			Redirect Modal
-			===================== -->
-		<Redirect :show.sync="showRedirectModal" :redirect-key="selectedRedirectKey" :redirect-update="selectedRedirect" @update="updateRedirect"></Redirect>
 	</section>
 </template>
 
@@ -290,15 +228,11 @@ import FormGroup from "../../components/forms/FormGroup";
 import VueTagsInput from '@jack_reddico/vue-tags-input';
 import { highlight, languages } from 'prismjs/components/prism-core';
 import 'prismjs/components/prism-markup';
-import Redirect from "@/components/modals/Redirect";
-import Alert from "@/components/misc/Alert";
 
 export default {
 	name: "SeoMeta",
 	mixins: [optionsMixin],
 	components: {
-		Alert,
-		Redirect,
 		FormGroup,
 		Collapse,
 		MetaForm,
@@ -318,9 +252,6 @@ export default {
 		tags: [],
 		tag: "",
 		sitemap: "",
-		showRedirectModal: false,
-		selectedRedirect: false,
-		selectedRedirectKey: false,
 	}),
 	mounted() {
 		this.getSitemap();
@@ -429,43 +360,6 @@ export default {
 		 */
 		highlighter(code) {
 			return highlight(code, languages.xml, "xml");
-		},
-		/*
-		 * updateRedirect()
-		 */
-		updateRedirect(redirect, key) {
-			if (!this.data['seo_redirects']) {
-				this.$set(this.data, 'seo_redirects', []);
-			}
-
-			if (key === "new") {
-				this.data['seo_redirects'].push(redirect);
-				this.updateHeight('redirects');
-			}
-
-			if (Number.isInteger(key)) {
-				console.log(redirect, key)
-				this.$set(this.data['seo_redirects'], key, redirect);
-			}
-
-			this.showRedirectModal = false;
-		},
-		/*
-		 * updateRedirectHandler()
-		 */
-		updateRedirectHandler(key) {
-			this.selectedRedirectKey = key;
-			this.selectedRedirect = this.data['seo_redirects'][key];
-			this.showRedirectModal = true;
-		},
-		/*
-		 * deleteRedirect()
-		 * Remove a redirect from the array.
-		 */
-		deleteRedirect(index) {
-			if (index > -1) {
-				this.data['seo_redirects'].splice(index, 1);
-			}
 		},
 	},
 	computed: {

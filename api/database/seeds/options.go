@@ -55,7 +55,6 @@ func (s *Seeder) runOptions() error {
 		"seo_enforce_slash":     false,
 		"seo_robots_serve":      true,
 		"seo_robots":            "User-agent: *\nAllow: /",
-		"seo_redirects":         nil,
 		// Media
 		"media_compression":         80,
 		"media_convert_webp":        true,
@@ -91,12 +90,8 @@ func (s *Seeder) runOptions() error {
 			},
 		},
 		// Cache
-		"cache_global":    true,
-		"cache_layout":    true,
-		"cache_fields":    true,
-		"cache_site":      true,
-		"cache_templates": true,
-		"cache_resources": true,
+		"cache_server_templates":     true,
+		"cache_server_field_layouts": true,
 		// Frontend Caching
 		"cache_frontend":            true,
 		"cache_frontend_request":    "max-age",
