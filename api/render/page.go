@@ -40,10 +40,12 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No page found with the url: %s", url), Operation: op, Err: err}
 	}
 
+	hasQuery := len(g.Request.URL.Query()) > 0
+
 	// Check if the file has been cached
 	var foundCache bool
 	cacheKey := cache.GetPostKey(post.Id)
-	if r.Options.CacheServerTemplates {
+	if r.Options.CacheServerTemplates && !hasQuery {
 		var cachedTemplate interface{}
 		cachedTemplate, foundCache = cache.Store.Get(cacheKey)
 
@@ -106,7 +108,7 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 	}
 
 	go func() {
-		if r.Options.CacheServerTemplates && !foundCache {
+		if r.Options.CacheServerTemplates && !foundCache && !hasQuery {
 			cache.Store.Set(cacheKey, minified, cache.RememberForever)
 		}
 	}()
