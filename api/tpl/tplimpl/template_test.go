@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	// The path of test templates to be executed.
 	root = "/test/testdata/tpl"
 )
 

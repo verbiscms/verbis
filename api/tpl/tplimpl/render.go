@@ -17,14 +17,16 @@ import (
 	"strings"
 )
 
-// FileHandler file handler interface
+// FileHandler function describing the process for obtaining template files.
 type fileHandler func(config tpl.TemplateConfig, template string) (content string, err error)
 
 // DefaultFileHandler
 //
-// Accepts a template path and looks up the page template by the
-// template path and file extension set in the engine.
-// Returns
+// Accepts a template path and looks up the page template
+// by the template path and file extension set in the
+// engine.
+//
+// Returns errors.TEMPLATE if thee file does not exist or filepath.Abs failed.
 func DefaultFileHandler() fileHandler {
 	const op = "TemplateEngine.defaultFileHandler"
 
@@ -32,7 +34,7 @@ func DefaultFileHandler() fileHandler {
 		// Get the absolute path of the root template
 		path, err := filepath.Abs(config.GetRoot() + string(os.PathSeparator) + template + config.GetExtension())
 		if err != nil {
-			return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("No page template exists with the path:%v", path), Operation: op, Err: err}
+			return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Error obtaining absolute file of template:%v", path), Operation: op, Err: err}
 		}
 
 		data, err := ioutil.ReadFile(path)
@@ -46,7 +48,8 @@ func DefaultFileHandler() fileHandler {
 
 // executeRender
 //
-//
+// Checks whether to use the master layout and returns
+// the executeTemplate function.
 func (e *Execute) executeRender(out io.Writer, name string, data interface{}) (string, error) {
 	useMaster := true
 	if filepath.Ext(name) == e.config.GetExtension() {
@@ -58,7 +61,11 @@ func (e *Execute) executeRender(out io.Writer, name string, data interface{}) (s
 
 // executeTemplate
 //
+// Returns the path of the executed file, and and error
+// if the was an issue writing to the io.Writer.
+// Partial functions are included.
 //
+// Returns errors.TEMPLATE if the template file failed to execute or was unable to be parsed.
 func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, useMaster bool) (string, error) {
 	const op = "TemplateEngine.Execute"
 
