@@ -88,6 +88,22 @@ func TestParams_Get(t *testing.T) {
 	}
 }
 
+// Limit Error
+type mockLimit struct {}
+
+func (m *mockLimit) Param(param string) string {
+	return "0"
+}
+
+func TestParams_LimitError(t *testing.T) {
+	m := &mockLimit{}
+	p := Params{Stringer: m, defaults: Defaults{Limit: 20}}
+	limit, limitAll := p.limit()
+	assert.Equal(t, 20, limit)
+	assert.False(t, limitAll)
+}
+
+// Page Error
 type mockPage struct {}
 
 func (m *mockPage) Param(param string) string {
@@ -97,11 +113,10 @@ func (m *mockPage) Param(param string) string {
 func TestParams_PageError(t *testing.T) {
 	m := &mockPage{}
 	p := Params{Stringer: m}
-	got := p.page()
-	want := 1
-	assert.Equal(t, want, got)
+	assert.Equal(t, 1, p.page())
 }
 
+// Filter testing
 type mockFilter struct {
 	str string
 }
