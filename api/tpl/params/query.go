@@ -38,6 +38,7 @@ func (q Query) Get(orderBy string, orderDirection string) params.Params {
 		def.OrderDirection = orderDirection
 	}
 	p := params.NewParams(q, def)
+
 	return p.Get()
 }
 
