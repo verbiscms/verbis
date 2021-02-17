@@ -62,9 +62,11 @@ func (e *Execute) executeRender(out io.Writer, name string, data interface{}) (s
 func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, useMaster bool) (string, error) {
 	const op = "TemplateEngine.Execute"
 
-	var tpl *template.Template
-	var err error
-	var ok bool
+	var (
+		tpl *template.Template
+		err error
+		ok bool
+	)
 
 	e.tplMutex.RLock()
 	tpl, ok = e.tplMap[name]
@@ -115,8 +117,8 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 	// Display the content to the screen
 	err = tpl.Funcs(e.funcMap).ExecuteTemplate(out, exeName, data)
 	if err != nil {
-		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Template engine execute template error", Operation: op, Err: err}
+		return name, &errors.Error{Code: errors.TEMPLATE, Message: "Template engine execute template error", Operation: op, Err: err}
 	}
 
-	return "", nil
+	return name, nil
 }

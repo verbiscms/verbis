@@ -6,74 +6,16 @@ package tplimpl
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/ainsleyclark/verbis/api/tpl/variables"
-	"github.com/gin-contrib/location"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/html"
 	"html/template"
-	"net/http"
-	"net/http/httptest"
-	"os"
-	"testing"
 )
 
-func Setup(t *testing.T) (*TemplateManager, *gin.Context, *domain.PostData) {
-	gin.SetMode(gin.TestMode)
-
-	rr := httptest.NewRecorder()
-	ctx, engine := gin.CreateTestContext(rr)
-	ctx.Request, _ = http.NewRequest("GET", "/page", nil)
-	engine.Use(location.Default())
-
-	engine.GET("/page", func(g *gin.Context) {
-		ctx = g
-		return
-	})
-
-	req, err := http.NewRequest("GET", "http://verbiscms.com/page?page=2&foo=bar", nil)
-	assert.NoError(t, err)
-	engine.ServeHTTP(rr, req)
-
-	os.Setenv("foo", "bar")
-
-	post := &domain.PostData{
-		Post: domain.Post{
-			Id:           1,
-			Slug:         "/page",
-			Title:        "My Verbis Page",
-			Status:       "published",
-			Resource:     nil,
-			PageTemplate: "single",
-			PageLayout:   "main",
-			UserId:       1,
-		},
-		Fields: []domain.PostField{
-			{PostId: 1, Type: "text", Name: "text", Key: "", OriginalValue: "Hello World!"},
-		},
-	}
-
-	d := &deps.Deps{
-		Store:   nil,
-		Config:  nil,
-		Site:    domain.Site{},
-		Options: &domain.Options{
-			GeneralLocale: "en-gb",
-		},
-		Paths:   deps.Paths{},
-		Theme:   &domain.ThemeConfig{},
-		Running: false,
-	}
-
-	return &TemplateManager{deps: d}, ctx, post
-}
-
 // Test all internal template function mappings
-func TestFuncs(t *testing.T) {
-	tm, ctx, post := Setup(t)
+func (t *TplTestSuite) TestFuncs() {
+	tm, ctx, post := t.Setup()
 
 	v := variables.Data(tm.deps, ctx, post)
 	td := &internal.TemplateDeps{Context: ctx, Post:    post, Cfg:     nil,}
@@ -84,7 +26,7 @@ func TestFuncs(t *testing.T) {
 			for _, e := range mm.Examples {
 				file, err := template.New("test").Funcs(funcs).Parse(e[0])
 				if err != nil {
-					t.Errorf("test failed for %s: %s", mm.Name, err.Error())
+					t.Error(err, fmt.Sprintf("test failed for %s", mm.Name))
 					continue
 				}
 
@@ -94,13 +36,13 @@ func TestFuncs(t *testing.T) {
 					t.Error(err)
 				}
 
-				assert.Equal(t, e[1], html.UnescapeString(tpl.String()))
+				t.Equal(e[1], html.UnescapeString(tpl.String()))
 			}
 		}
 	}
 }
 
-func TestFuncs_FuncMap(t *testing.T) {
+func (t *TplTestSuite) TestFuncs_FuncMap() {
 
 	tt := map[string]struct {
 		namespaces internal.FuncNamespaces
@@ -141,17 +83,15 @@ func TestFuncs_FuncMap(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			tm, _, _ := Setup(t)
-
+		t.Run(name, func() {
+			tm, _, _ := t.Setup()
 			if test.panics {
-				assert.Panics(t, func() {
+				t.Panics(func() {
 					tm.getFuncs(test.namespaces)
 				})
 				return
 			}
-
-			assert.Equal(t, test.want, tm.getFuncs(test.namespaces))
+			t.Equal(test.want, tm.getFuncs(test.namespaces))
 		})
 	}
 }

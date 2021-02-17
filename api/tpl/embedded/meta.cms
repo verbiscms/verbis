@@ -8,7 +8,7 @@
 {{- $slash := "" -}}
 {{- if and (.Options.SeoEnforceSlash) (ne .Post.Slug "/") }}{{ $slash = "/" }}{{ end -}}
 {{- with (ne $seo.Canonical "") -}}
-<link rel=canonical href="{{ . }}{{ $slash }}">
+<link rel=canonical href="{{ $seo.Canonical }}{{ $slash }}">
 {{ else -}}
 <link rel=canonical href="{{ .Site.Url }}{{ .Post.Slug }}{{ $slash }}">
 {{ end -}}
