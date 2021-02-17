@@ -5,34 +5,139 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/stretchr/testify/assert"
-	"testing"
+	"html/template"
+	"sync"
 )
 
-func TestTemplateManager_Prepare(t *testing.T) {
-	//tm := TemplateManager{deps: &deps.Deps{}}
-	//config := tpl.Config{}
+const (
+	root = "/test/testdata/tpl"
+)
 
-	//got := tm.Prepare(config)
-	//want := &Execute{
-	//	&tm,
-	//	config,
-	//	make(map[string]*template.Template),
-	//	sync.RWMutex{},
-	//	DefaultFileHandler(),
-	//	template.FuncMap{},
-	//}
-//	assert.Equal(t, want, got)
-}
-
-func TestExecute_Execute(t *testing.T) {
+func (t *TplTestSuite) TestTemplateManager_Prepare() {
 	tm := TemplateManager{deps: &deps.Deps{}}
-	got, want := tm.Prepare(tpl.Config{}).Execute(&bytes.Buffer{}, "test", "")
+	config := tpl.Config{}
 
-	fmt.Println(got, want)
+	got := tm.Prepare(config)
+	want := &Execute{
+		&tm,
+		config,
+		make(map[string]*template.Template),
+		sync.RWMutex{},
+		DefaultFileHandler(),
+		template.FuncMap{},
+	}
+
+	t.Equal(want.config, got.config)
+	t.Equal(want.TemplateManager, got.TemplateManager)
+	t.Equal(want.funcMap, got.funcMap)
 }
 
-func TestExecute_Exists(t *testing.T) {
+func (t *TplTestSuite) TestExecute_Execute() {
+
+	tt := map[string]struct {
+		config tpl.Config
+		name string
+		data interface{}
+		fileHandler fileHandler
+		want interface{}
+		wantName string
+
+	}{
+		"Simple": {
+			tpl.Config{Extension: ".html", Root: root},
+			"standard",
+			nil,
+			nil,
+			"<h1>Verbis</h1>",
+			"standard",
+		},
+		"Extension": {
+			tpl.Config{Extension: ".html", Root: root},
+			"standard.html",
+			nil,
+			nil,
+			"<h1>Verbis</h1>",
+			"standard",
+		},
+		"Error": {
+			tpl.Config{Extension: ".html", Root: root},
+			"error",
+			nil,
+			nil,
+			"TemplateEngine.Execute: template: error:1: function \"wrongfunc\" not defined",
+			"error",
+		},
+		"Master": {
+			tpl.Config{Extension: ".html", Root: root, Master: "layout"},
+			"child",
+			nil,
+			nil,
+			"<h1>Verbis</h1>",
+			"child",
+		},
+		"File Handler Error": {
+			tpl.Config{Extension: ".html", Root: root},
+			"standard",
+			nil,
+			func(config tpl.TemplateConfig, template string) (content string, err error) {
+				return "", fmt.Errorf("error")
+			},
+			"error",
+			"standard",
+		},
+		"With Data": {
+			tpl.Config{Extension: ".html", Root: root},
+			"data",
+			"verbis",
+			nil,
+			"verbis",
+			"data",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			tm, ctx, post := t.Setup()
+
+			test.config.Root = t.apiPath + test.config.Root
+			e := tm.Prepare(test.config)
+
+			if test.fileHandler != nil {
+				e.fileHandler = test.fileHandler
+			}
+
+			// Normal
+			t.Run("Normal", func() {
+				normalBuf := &bytes.Buffer{}
+				normalPath, err := e.Execute(normalBuf, test.name, test.data)
+				t.Equal(normalPath, test.wantName)
+				if err != nil {
+					t.Contains(err.Error(), test.want)
+					return
+				}
+				t.Equal(test.want, normalBuf.String())
+			})
+
+			// Post
+			t.Run("Post", func() {
+				if name == "With Data" {
+					return
+				}
+
+				postBuf := &bytes.Buffer{}
+				postPath, err := e.ExecutePost(postBuf, test.name, ctx, post)
+				t.Equal(postPath, test.wantName)
+				if err != nil {
+					t.Contains(err.Error(), test.want)
+					return
+				}
+				t.Equal(test.want, postBuf.String())
+			})
+		})
+	}
+}
+
+func (t *TplTestSuite) TestExecute_Exists() {
 
 	tt := map[string]struct {
 		handler fileHandler
@@ -53,23 +158,23 @@ func TestExecute_Exists(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			e := Execute{fileHandler:     test.handler}
 			got := e.Exists("test")
-			assert.Equal(t, test.want, got)
+			t.Equal(test.want, got)
 		})
 	}
 }
 
-func TestExecute_Config(t *testing.T) {
+func (t *TplTestSuite) TestExecute_Config() {
 	cfg := tpl.Config{
 		Root: "test",
 	}
 	e := Execute{config: cfg}
-	assert.Equal(t, cfg, e.Config())
+	t.Equal(cfg, e.Config())
 }
-//
-//func TestExecute_Executor(t *testing.T) {
-//	e := Execute{}
-//	assert.EqualValues(t, e, e.Executor())
-//}
+
+func (t *TplTestSuite) TestExecute_Executor() {
+	e := &Execute{}
+	t.Equal(e, e.Executor())
+}
