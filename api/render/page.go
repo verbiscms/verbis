@@ -117,6 +117,10 @@ func (r *Render) Page(g *gin.Context) ([]byte, error) {
 func (r *Render) handleTrailingSlash(g *gin.Context) (string, bool) {
 	p := g.Request.URL.Path
 
+	if len(g.Request.URL.Query()) > 0 {
+		return p, false
+	}
+
 	// True if options enforce slash is set in admin
 	trailing := r.Options.SeoEnforceSlash
 	lastChar := p[len(p)-1:]
