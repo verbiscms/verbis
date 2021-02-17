@@ -5,94 +5,137 @@
 package params
 
 import (
-	"github.com/gin-gonic/gin"
+	"encoding/json"
+	"github.com/spf13/cast"
 	"github.com/stretchr/testify/assert"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
-func TestNewParams(t *testing.T) {
-	want := &Params{
-		gin: &gin.Context{},
+type mockStringer struct {
+	def map[string]interface{}
+}
+
+func Setup(t *testing.T, def Defaults) *mockStringer {
+	data, err := json.Marshal(def) // Convert to a json string
+	assert.NoError(t, err)
+	var m = make(map[string]interface{}, 0)
+	err = json.Unmarshal(data, &m) // Convert to a map
+
+	ms := mockStringer{def: m}
+
+	return &ms
+}
+
+func (m *mockStringer) Param(param string) string {
+	val, ok := m.def[param]
+	if !ok {
+		return ""
 	}
-	got := NewParams(&gin.Context{})
-	assert.Equal(t, got, want)
+	s, err := cast.ToStringE(val)
+	if err != nil {
+		return ""
+	}
+	return s
 }
 
 func TestParams_Get(t *testing.T) {
-	gin.SetMode(gin.TestMode)
 
 	tt := map[string]struct {
-		url  string
-		want *Params
+		def Defaults
+		want Params
 	}{
-		"Page": {
-			url:  "page=2",
-			want: &Params{Page: 2, Limit: 15, LimitAll: false, OrderBy: "id", OrderDirection: "ASC", Filters: nil},
+		"No Defaults": {
+			Defaults{},
+			Params{Page: 1, Limit: DefaultLimit, LimitAll: false, OrderBy: DefaultOrderBy, OrderDirection: DefaultOrderDirection, Filters: nil},
 		},
 		"Nil Page": {
-			url:  "page=wrong",
-			want: &Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "id", OrderDirection: "ASC", Filters: nil},
+			Defaults{Page: -1},
+			Params{Page: 1, Limit: DefaultLimit, LimitAll: false, OrderBy: DefaultOrderBy, OrderDirection: DefaultOrderDirection, Filters: nil},
+		},
+		"Limit": {
+			Defaults{Limit: 20},
+			Params{Page: 1, Limit: 20, LimitAll: false, OrderBy: DefaultOrderBy, OrderDirection: DefaultOrderDirection, Filters: nil},
+		},
+		"Zero Limit": {
+			Defaults{Limit: 0},
+			Params{Page: 1, Limit: DefaultLimit, LimitAll: false, OrderBy: DefaultOrderBy, OrderDirection: DefaultOrderDirection, Filters: nil},
+		},
+		"Nil Limit": {
+			Defaults{Limit: nil},
+			Params{Page: 1, Limit: DefaultLimit, LimitAll: false, OrderBy: DefaultOrderBy, OrderDirection: DefaultOrderDirection, Filters: nil},
 		},
 		"Limit All": {
-			url:  "limit=all",
-			want: &Params{Page: 1, Limit: 0, LimitAll: true, OrderBy: "id", OrderDirection: "ASC", Filters: nil},
+			Defaults{Limit: "all"},
+			Params{Page: 1, Limit: 0, LimitAll: true, OrderBy: DefaultOrderBy, OrderDirection: DefaultOrderDirection, Filters: nil},
 		},
-		"Limit Failed": {
-			url:  "limit=wrong",
-			want: &Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "id", OrderDirection: "ASC", Filters: nil},
+		"Order By": {
+			Defaults{OrderBy: "name"},
+			Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "name", OrderDirection: DefaultOrderDirection, Filters: nil},
 		},
-		"Limit Zero": {
-			url:  "limit=0",
-			want: &Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "id", OrderDirection: "ASC", Filters: nil},
-		},
-		"Order": {
-			url:  "order=name,desc",
-			want: &Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "name", OrderDirection: "desc", Filters: nil},
-		},
-		"Order One Param": {
-			url:  "order=id",
-			want: &Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "id", OrderDirection: "ASC", Filters: nil},
-		},
-		"Order Comma": {
-			url:  "order=id,",
-			want: &Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "id", OrderDirection: "ASC", Filters: nil},
-		},
-		"Filter": {
-			url: `&filter={"resource":[{"operator":"=", "value":"verbis"}]}`,
-			want: &Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "id", OrderDirection: "ASC", Filters: map[string][]Filter{
-				"resource": {
-					{
-						Operator: "=",
-						Value:    "verbis",
-					},
-				},
-			}},
-		},
-		"Failed Filter": {
-			url:  `&filter={"resource":[, "value":"verbis"}]}`,
-			want: &Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: "id", OrderDirection: "ASC", Filters: nil},
+		"Order Direction": {
+			Defaults{OrderDirection: "ASC"},
+			Params{Page: 1, Limit: 15, LimitAll: false, OrderBy: DefaultOrderBy, OrderDirection: "ASC", Filters: nil},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			rr := httptest.NewRecorder()
-			g, engine := gin.CreateTestContext(rr)
+			mock := Setup(t, test.def)
+			p := New(mock, test.def)
+			got := p.Get()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
 
-			req, err := http.NewRequest("GET", "/test?"+test.url, nil)
-			assert.NoError(t, err)
-			g.Request = req
+type mockPage struct {}
 
-			params := &Params{}
-			engine.GET("/test", func(g *gin.Context) {
-				p := NewParams(g).Get()
-				params = &p
-			})
-			engine.ServeHTTP(rr, req)
+func (m *mockPage) Param(param string) string {
+	return "99999999999999999999999999999"
+}
 
-			assert.Equal(t, test.want, params)
+func TestParams_PageError(t *testing.T) {
+	m := &mockPage{}
+	p := Params{Stringer: m}
+	got := p.page()
+	want := 1
+	assert.Equal(t, want, got)
+}
+
+type mockFilter struct {
+	str string
+}
+
+func (m *mockFilter) Param(param string) string {
+	return m.str
+}
+
+func TestParams_Filter(t *testing.T) {
+
+	tt := map[string]struct {
+		filter string
+		want map[string][]Filter
+	}{
+		"Filter": {
+			`{"resource":[{"operator":"=", "value":"verbis"}]}`,
+			map[string][]Filter{
+				"resource": {
+					{Operator: "=", Value:    "verbis",},
+				},
+			},
+		},
+		"Failed Filter": {
+			`{"resource":[, "value":"verbis"}]}`,
+			nil,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			m := &mockFilter{str: test.filter}
+			p := Params{Stringer: m}
+			got := p.filter()
+			assert.Equal(t, test.want, got)
 		})
 	}
 }

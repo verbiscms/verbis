@@ -37,9 +37,7 @@ func (q Query) Get(orderBy string, orderDirection string) params.Params {
 	if orderDirection != "" {
 		def.OrderDirection = orderDirection
 	}
-	p := params.NewParams(q, def)
-
-	return p.Get()
+	return params.New(q, def).Get()
 }
 
 // Param

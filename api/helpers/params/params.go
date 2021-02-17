@@ -10,22 +10,19 @@ import (
 )
 
 const (
-	// PaginationAllLimit defines how many items will be returned if
+	// DefaultLimit defines how many items will be returned if
 	// the limit is set to list all
-	PaginationDefault = 15
-	// PaginationDefaultOrder defines the default order by for the
-	// API
-	PaginationDefaultOrder = "id,DESC"
+	DefaultLimit = 15
+	// DefaultOrderBy defines the default order by if an error
+	// occurred.
+	DefaultOrderBy = "id"
+	// DefaultOrderDirection defines the default order direction
+	// if an error occurred.
+	DefaultOrderDirection = "DESC"
 )
-
-// Parameterize defines the function for getting http params
-type Parameterize interface {
-	Get() Params
-}
 
 // Params represents the http params for interacting with the DB
 type Params struct {
-	//gin            *gin.Context
 	Page           int                 `json:"page"`
 	Limit          int                 `json:"limit"`
 	LimitAll       bool                `json:"all"`
@@ -36,6 +33,7 @@ type Params struct {
 	Stringer       `json:"-"`
 }
 
+// Stringer defines the method for obtaining paramaters.
 type Stringer interface {
 	Param(string) string
 }
@@ -46,37 +44,27 @@ type Filter struct {
 	Value    string `json:"value"`
 }
 
+// Defaults represents the default configuration for obtaining params.
 type Defaults struct {
-	Page           int
-	Limit          interface{}
-	OrderBy        string
-	OrderDirection string
+	Page           int `json:"page"`
+	Limit          interface{} `json:"limit"`
+	OrderBy        string `json:"order_by"`
+	OrderDirection string  `json:"order_direction"`
 }
 
 // NewParams - create a new parameter type
-func NewParams(str Stringer, def Defaults) *Params {
+func New(str Stringer, def Defaults) *Params {
 	p := &Params{
 		Stringer: str,
 		defaults: def,
 	}
-	p.validateDefaults()
 	return p
 }
 
-// Check there are values set in the defaults.
-func (p *Params) validateDefaults() {
-	if p.defaults.OrderBy == "" {
-		panic("No default order by set")
-	}
-	if p.defaults.OrderDirection == "" {
-		panic("No default order direction set")
-	}
-	if p.defaults.Limit == nil {
-		panic("No default limit set")
-	}
-}
-
-// Get query Parameters for http API routes
+// Get
+//
+// Get query Parameters for http API routes and
+// query loops in templates.
 func (p *Params) Get() Params {
 	limit, limitAll := p.limit()
 	order := p.order()
@@ -90,20 +78,32 @@ func (p *Params) Get() Params {
 	}
 }
 
-// Get page and set default
+// page
+//
+// Obtain the page parameter and set a default if there
+// was an error converting the page or the page number
+// is set to 0.
 func (p *Params) page() int {
 	var page int
 	pageStr := p.Param("page")
 
 	page, err := strconv.Atoi(pageStr)
-	if err != nil || page == 0 {
+	if err != nil {
 		page = p.defaults.Page
+	}
+
+	if page <= 0 {
+		page = 1
 	}
 
 	return page
 }
 
-// Get limit & calculate if list all
+// limit
+//
+// Obtain the limit parameter and set a default if there
+// was an error converting the limit or the page number
+// is set to 0. Returns true if limit is set to "all"
 func (p *Params) limit() (int, bool) {
 	limitStr := p.Param("limit")
 	if limitStr == "all" {
@@ -112,18 +112,21 @@ func (p *Params) limit() (int, bool) {
 
 	limit, err := strconv.Atoi(limitStr)
 	defLimit, ok := p.defaults.Limit.(int)
-	if !ok {
-		return PaginationDefault, false
+	if !ok || err != nil || defLimit == 0  {
+		return DefaultLimit, false
 	}
 
-	if err != nil || limit == 0 || limitStr == "" {
+	if limit == 0 || limitStr == "" || defLimit == 0 {
 		return defLimit, false
 	}
 
 	return limit, false
 }
 
-// Get order and set defaults
+// order
+//
+// Obtain the order array (order by and order direction)
+// set defaults if there is none set.
 func (p *Params) order() []string {
 	order := []string{p.defaults.OrderBy, p.defaults.OrderDirection}
 
@@ -137,10 +140,22 @@ func (p *Params) order() []string {
 		order[1] = orderDirection
 	}
 
+	if order[0] == "" {
+		order[0] = DefaultOrderBy
+	}
+
+	if order[1] == "" {
+		order[1] = DefaultOrderDirection
+	}
+
 	return order
 }
 
-// Get the filters
+// filter
+//
+// Obtain the map of filters by unmarshalling into a
+// Filter, if an error occurred, filters will be
+// set to nil.
 func (p *Params) filter() map[string][]Filter {
 	filtersParam := p.Param("filter")
 
