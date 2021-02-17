@@ -43,12 +43,10 @@ func TestByUUID(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			got, err := ByUUID(test.uuid, test.groups)
-
 			if err != nil {
 				assert.Contains(t, err.Error(), test.want)
 				return
 			}
-
 			assert.Equal(t, test.want, got)
 		})
 	}
@@ -84,12 +82,10 @@ func TestByName(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			got, err := ByName(test.name, test.groups)
-
 			if err != nil {
 				assert.Contains(t, err.Error(), test.want)
 				return
 			}
-
 			assert.Equal(t, test.want, got)
 		})
 	}

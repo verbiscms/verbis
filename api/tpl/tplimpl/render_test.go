@@ -2,11 +2,9 @@ package tplimpl
 
 import (
 	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func TestDefaultFileHandler(t *testing.T) {
+func (t *TplTestSuite) TestDefaultFileHandler() {
 
 	tt := map[string]struct {
 		mock     func(config *mocks.TemplateConfig)
@@ -32,24 +30,23 @@ func TestDefaultFileHandler(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			m := &mocks.TemplateConfig{}
 			test.mock(m)
 			fn := DefaultFileHandler()
 			got, err := fn(m, test.template)
 
 			if err != nil {
-				assert.Contains(t, err.Error(), test.want)
+				t.Contains(err.Error(), test.want)
 				return
 			}
 
-			assert.Equal(t, test.want, got)
+			t.Equal(test.want, got)
 		})
 	}
 }
 
-
-func TestExecute_ExecuteRender(t *testing.T) {
+func(t *TplTestSuite) TestExecute_ExecuteRender() {
 
 	tt := map[string]struct {
 		mock     func(config *mocks.TemplateConfig)
@@ -75,18 +72,18 @@ func TestExecute_ExecuteRender(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			m := &mocks.TemplateConfig{}
 			test.mock(m)
 			fn := DefaultFileHandler()
 			got, err := fn(m, test.template)
 
 			if err != nil {
-				assert.Contains(t, err.Error(), test.want)
+				t.Contains(err.Error(), test.want)
 				return
 			}
 
-			assert.Equal(t, test.want, got)
+			t.Equal(test.want, got)
 		})
 	}
 }

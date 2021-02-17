@@ -20,7 +20,7 @@ import (
 // Satisfies the tpl.TemplateHandler interface by accepting
 // a tpl.Config data and set's up the template so it's
 // ready for execution.
-func (t *TemplateManager) Prepare(c tpl.TemplateConfig) tpl.TemplateExecutor {
+func (t *TemplateManager) Prepare(c tpl.TemplateConfig) *Execute {
 	return &Execute{
 		t,
 		c,
