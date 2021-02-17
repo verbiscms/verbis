@@ -3,7 +3,7 @@
 {{- $meta := .Post.SeoMeta.Meta -}}
 {{- if or (not .Options.SeoPublic) (not $seo.Public) -}}
 <meta name=robots content="noindex">
-{{- end -}}
+{{ end -}}
 {{- /* Cannonical */}}
 {{- $slash := "" -}}
 {{- if and (.Options.SeoEnforceSlash) (ne .Post.Slug "/") }}{{ $slash = "/" }}{{ end -}}
