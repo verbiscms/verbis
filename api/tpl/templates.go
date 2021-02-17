@@ -54,7 +54,7 @@ type TemplateConfig interface {
 	GetMaster() string
 }
 
-// Config represents the options for passing
+// Config represents the options for passing.
 type Config struct {
 	Root      string
 	Extension string
@@ -63,21 +63,21 @@ type Config struct {
 
 // GetRoot
 //
-// Returns the view root
+// Returns the view root.
 func (c Config) GetRoot() string {
 	return c.Root
 }
 
 // GetExtension
 //
-// Returns the template extension
+// Returns the template extension.
 func (c Config) GetExtension() string {
 	return c.Extension
 }
 
 // GetMaster
 //
-// Returns the template master layout
+// Returns the template master layout.
 func (c Config) GetMaster() string {
 	return c.Master
 }
