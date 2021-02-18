@@ -1,3 +1,7 @@
+// Copyright 2020 The Verbis Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package redirects
 
 import (
@@ -5,16 +9,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// RedirectHandler defines methods for Redirect routes to interact with the server.
-type RedirectHandler interface {
-	List(g *gin.Context)
-	Find(g *gin.Context)
-	Create(g *gin.Context)
-	Update(g *gin.Context)
-	Delete(g *gin.Context)
+// Handler defines methods for Redirect routes to interact with the server.
+type Handler interface {
+	List(ctx *gin.Context)
+	Find(ctx *gin.Context)
+	Create(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
-// Redirects defines the handler for all Redirect Routes.
+// Redirects defines the handler for all redirect routes.
 type Redirects struct {
 	*deps.Deps
 }
