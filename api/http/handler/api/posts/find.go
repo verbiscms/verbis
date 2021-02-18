@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package posts
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -13,19 +13,20 @@ import (
 
 // Find
 //
-// Returns 200 if the category was obtained.
-// Returns 500 if there as an error obtaining the category.
+// Returns 200 if the posts were obtained.
 // Returns 400 if the ID wasn't passed or failed to convert.
-func (c *Categories) Find(ctx *gin.Context) {
-	const op = "CategoryHandler.Find"
+// Returns 500 if there as an error obtaining or formatting the post.
+func (c *Posts) Find(ctx *gin.Context) {
+	const op = "PostHandler.Find"
 
-	id, err := strconv.Atoi(ctx.Param("id"))
+	paramId := ctx.Param("id")
+	id, err := strconv.Atoi(paramId)
 	if err != nil {
-		api.Respond(ctx, 400, "Pass a valid number to obtain the category by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		api.Respond(ctx, 400, "Pass a valid number to obtain the post by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	category, err := c.Store.Categories.GetById(id)
+	post, err := c.Store.Posts.GetById(id, true)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 200, errors.Message(err), err)
 		return
@@ -34,5 +35,5 @@ func (c *Categories) Find(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, 200, "Successfully obtained category with ID: "+strconv.Itoa(id), category)
+	api.Respond(ctx, 200, "Successfully obtained post with ID: "+paramId, post)
 }

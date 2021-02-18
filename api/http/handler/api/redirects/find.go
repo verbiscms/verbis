@@ -17,7 +17,7 @@ import (
 // Returns 500 if there as an error obtaining the redirect.
 // Returns 400 if the ID wasn't passed or failed to convert.
 func (r *Redirects) Find(ctx *gin.Context) {
-	const op = "RedirectHandler.GetById"
+	const op = "RedirectHandler.Find"
 
 	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
 	if err != nil {
