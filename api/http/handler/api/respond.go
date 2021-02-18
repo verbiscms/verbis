@@ -32,7 +32,7 @@ type Meta struct {
 }
 
 type ValidationErrJson struct {
-	Errors interface{} `json:"errors"`
+	Errors validation.Errors `json:"errors"`
 }
 
 // Main JSON responder.
@@ -162,10 +162,12 @@ func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
 	if dataType == "*json.UnmarshalTypeError" {
 		e, _ := data.(*json.UnmarshalTypeError)
 		data = &ValidationErrJson{
-			Errors: validation.ValidationError{
-				Key:     e.Field,
-				Type:    "Unmarshal error",
-				Message: "Invalid type passed to " + e.Struct + " struct.",
+			Errors: validation.Errors{
+				{
+					Key:     e.Field,
+					Type:    "Unmarshal error",
+					Message: "Invalid type passed to " + e.Struct + " struct.",
+				},
 			},
 		}
 		return data, true

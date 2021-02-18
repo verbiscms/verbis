@@ -70,7 +70,7 @@ func TestRedirects_Find(t *testing.T) {
 			test.mock(mock)
 
 			rr.RequestAndServe("GET", test.url, "/categories/:id", nil, func(g *gin.Context) {
-				Mock(mock).Find(g)
+				//Mock(mock).Find(g)
 			})
 
 			rr.Run(&domain.Category{}, test.want, test.status, test.message)

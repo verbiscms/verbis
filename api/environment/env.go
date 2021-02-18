@@ -77,7 +77,7 @@ func Load() error {
 }
 
 // Validate the environment file for missing keys
-func Validate() []validation.ValidationError {
+func Validate() []validation.Error {
 	v := validation.New()
 	err := v.Package.Struct(env)
 	if err != nil {
