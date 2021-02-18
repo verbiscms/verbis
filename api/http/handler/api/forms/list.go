@@ -18,7 +18,7 @@ import (
 // Returns 500 if there was an error getting the forms.
 // Returns 400 if there was conflict or the request was invalid.
 func (f *Forms) List(ctx *gin.Context) {
-	const op = "FormHandler.Get"
+	const op = "FormHandler.List"
 
 	p := params.ApiParams(ctx, api.DefaultParams).Get()
 

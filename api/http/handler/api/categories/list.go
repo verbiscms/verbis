@@ -18,7 +18,7 @@ import (
 // Returns 500 if there was an error getting the categories.
 // Returns 400 if there was conflict or the request was invalid.
 func (c *Categories) List(ctx *gin.Context) {
-	const op = "CategoryHandler.Get"
+	const op = "CategoryHandler.List"
 
 	p := params.ApiParams(ctx, api.DefaultParams).Get()
 

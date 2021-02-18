@@ -12,12 +12,14 @@ import (
 	"strconv"
 )
 
-// Get - Filter fields and get layouts based on query params.
+// List
+//
+// Filter fields and get layouts based on query params.
 //
 // Returns 200 if login was successful.
 // Returns 500 if the layouts failed to be obtained.
-func (c *Fields) Get(ctx *gin.Context) {
-	const op = "FieldHandler.Get"
+func (c *Fields) List(ctx *gin.Context) {
+	const op = "FieldHandler.List"
 
 	resource := ctx.Query("resource")
 
