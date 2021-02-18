@@ -17,10 +17,11 @@ import (
 
 // Validator defines methods for checking the validation errors
 type Validator interface {
-	Process(errors pkgValidate.ValidationErrors) []ValidationError
+	Process(errors pkgValidate.ValidationErrors) []Error
 	CmdCheck(key string, data interface{}) error
 	message(kind string, field string, param string) string
 }
+
 
 // Validation defines site wide validation for endpoints
 // and using the Package validation helper.
@@ -28,9 +29,11 @@ type Validation struct {
 	Package *pkgValidate.Validate
 }
 
-// ValidationError defines the structure when returning
+type Errors []Error
+
+// Error defines the structure when returning
 // validation errors.
-type ValidationError struct {
+type Error struct {
 	Key     string `json:"key"`
 	Type    string `json:"type"`
 	Message string `json:"message"`
@@ -52,9 +55,9 @@ func New() *Validation {
 }
 
 // Process handles validation errors and passes back to respond.
-func (v *Validation) Process(errors pkgValidate.ValidationErrors) []ValidationError {
+func (v *Validation) Process(errors pkgValidate.ValidationErrors) []Error {
 
-	var returnErrors []ValidationError
+	var returnErrors []Error
 	for _, e := range errors {
 
 		field := e.Field()
@@ -86,7 +89,7 @@ func (v *Validation) Process(errors pkgValidate.ValidationErrors) []ValidationEr
 			fieldString += strings.ToLower(element) + "_"
 		}
 
-		returnErrors = append(returnErrors, ValidationError{
+		returnErrors = append(returnErrors, Error{
 			Key:     strings.TrimRight(fieldString, "_"),
 			Type:    e.Tag(),
 			Message: v.message(e.Tag(), field, e.Param()),

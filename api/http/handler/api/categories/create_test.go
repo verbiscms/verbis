@@ -10,19 +10,22 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
+	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	suite "github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
-	"testing"
 )
 
-func TestCategories_Create(t *testing.T) {
+var (
+	category = domain.Category{Id: 123, Slug: "/cat", Name: "Category", Resource: "test"}
+	categoryBadValidation = domain.Category{Id: 123, Name: "Category", Resource: "test"}
+)
 
-	category := domain.Category{Id: 123, Slug: "/cat", Name: "Category", Resource: "test"}
-	categoryBadValidation := domain.Category{Id: 123, Name: "Category", Resource: "test"}
+func (t *CategoriesTestSuite) TestCategories_Create() {
 
 	tt := map[string]struct {
-		want    *domain.Category
+		want    interface{}
 		status  int
 		message string
 		input   interface{}
@@ -38,7 +41,7 @@ func TestCategories_Create(t *testing.T) {
 			},
 		},
 		"Validation Failed": {
-			want:    `{"errors":[{"key":"slug","message":"Slug is required.","type":"required"}]}`,
+			want:    api.ValidationErrJson{Errors: validation.Errors{{Key: "slug", Message: "Slug is required.", Type: "required"}}},
 			status:  400,
 			message: "Validation failed",
 			input:   categoryBadValidation,
@@ -47,7 +50,7 @@ func TestCategories_Create(t *testing.T) {
 			},
 		},
 		"Invalid": {
-			want:    `{}`,
+			want:    "{}",
 			status:  400,
 			message: "invalid",
 			input:   category,
@@ -56,7 +59,7 @@ func TestCategories_Create(t *testing.T) {
 			},
 		},
 		"Conflict": {
-			want:    `{}`,
+			want:    "{}",
 			status:  400,
 			message: "conflict",
 			input:   category,
@@ -65,7 +68,7 @@ func TestCategories_Create(t *testing.T) {
 			},
 		},
 		"Internal Error": {
-			want:    `{}`,
+			want:    "{}",
 			status:  500,
 			message: "internal",
 			input:   category,
@@ -76,21 +79,26 @@ func TestCategories_Create(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			rr := suite.APITestSuite(t)
+		t.Run(name, func() {
+			rr := suite.APITestSuite(t.T())
 			mock := &mocks.CategoryRepository{}
 			test.mock(mock)
 
 			body, err := json.Marshal(test.input)
 			if err != nil {
-				t.Fatal(err)
+				t.Error(err)
 			}
 
 			rr.RequestAndServe("POST", "/categories", "/categories", bytes.NewBuffer(body), func(g *gin.Context) {
-				Mock(mock).Create(g)
+				t.Mock(mock).Create(g)
 			})
 
-			rr.Run(&domain.Category{}, test.want, test.status, test.message)
+			respond, data := rr.TestRun()
+
+			t.Equal(test.message, respond.Message)
+			t.Equal(test.status, rr.Status())
+			t.Equal(suite.JsonHeader, rr.ContentType())
+			t.JSONEq(rr.TestIn(test.want), data)
 		})
 	}
 }
