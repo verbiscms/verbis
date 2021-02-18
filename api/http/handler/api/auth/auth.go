@@ -14,7 +14,6 @@ type Handler interface {
 	Login(ctx *gin.Context)
 	Logout(ctx *gin.Context)
 	ResetPassword(ctx *gin.Context)
-	VerifyEmail(ctx *gin.Context)
 	VerifyPasswordToken(ctx *gin.Context)
 	SendResetPassword(ctx *gin.Context)
 }
