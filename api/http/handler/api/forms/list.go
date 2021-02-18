@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package redirects
+package forms
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -14,15 +14,15 @@ import (
 
 // List
 //
-// Returns 200 if there are no redirects or success.
-// Returns 500 if there was an error getting the redirects.
+// Returns 200 if there are no forms or success.
+// Returns 500 if there was an error getting the forms.
 // Returns 400 if there was conflict or the request was invalid.
-func (r *Redirects) List(ctx *gin.Context) {
-	const op = "RedirectHandler.Get"
+func (f *Forms) List(ctx *gin.Context) {
+	const op = "FormHandler.Get"
 
 	p := params.ApiParams(ctx, api.DefaultParams).Get()
 
-	redirects, total, err := r.Store.Redirects.Get(p)
+	forms, total, err := f.Store.Forms.Get(p)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 200, errors.Message(err), err)
 		return
@@ -36,5 +36,5 @@ func (r *Redirects) List(ctx *gin.Context) {
 
 	pagination := http.NewPagination().Get(p, total)
 
-	api.Respond(ctx, 200, "Successfully obtained redirects", redirects, pagination)
+	api.Respond(ctx, 200, "Successfully obtained forms", forms, pagination)
 }

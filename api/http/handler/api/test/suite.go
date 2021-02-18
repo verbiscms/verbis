@@ -13,7 +13,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 )
 
@@ -43,7 +42,7 @@ func APITestSuite(t *testing.T) *controllerTest {
 	}
 }
 
-func (c *controllerTest) Data(i interface{}, fn func(b []byte) interface{}) {
+func (c *controllerTest) unmrashal(i interface{}) {
 	got := &api.RespondJson{}
 	err := json.NewDecoder(c.recorder.Body).Decode(got)
 	if err != nil {
@@ -56,15 +55,12 @@ func (c *controllerTest) Data(i interface{}, fn func(b []byte) interface{}) {
 		c.testing.Error(err)
 	}
 
-	ref := reflect.ValueOf(i)
-	v := reflect.New(ref.Type().Elem())
-
-	err = json.Unmarshal(out, &v)
+	err = json.Unmarshal(out, i)
 	if err != nil {
-		c.testing.Error(err)
+		c.testing.Fatal(err, "Unable to unmarshal")
 	}
 
-	c.got = v.Interface()
+	c.got = i
 }
 
 // Run the API test.
