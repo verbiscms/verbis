@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
 
@@ -42,15 +43,15 @@ func APITestSuite(t *testing.T) *controllerTest {
 	}
 }
 
-func (c *controllerTest) unmrashal(i interface{}) {
-	got := &api.RespondJson{}
-	err := json.NewDecoder(c.recorder.Body).Decode(got)
+func (c *controllerTest) unmarshal(i interface{}) {
+	responder := &api.RespondJson{}
+	err := json.NewDecoder(c.recorder.Body).Decode(responder)
 	if err != nil {
 		c.testing.Error(err)
 	}
-	c.respond = *got
+	c.respond = *responder
 
-	out, err := json.Marshal(got.Data)
+	out, err := json.Marshal(responder.Data)
 	if err != nil {
 		c.testing.Error(err)
 	}
@@ -64,10 +65,17 @@ func (c *controllerTest) unmrashal(i interface{}) {
 }
 
 // Run the API test.
-func (c *controllerTest) Run(want interface{}, status int, message string) {
+func (c *controllerTest) Run(typ interface{}, want interface{}, status int, message string) {
+	c.unmarshal(typ)
 	assert.Equal(c.testing, status, c.recorder.Code)
 	assert.Equal(c.testing, message, c.respond.Message)
 	assert.Equal(c.testing, c.recorder.Header().Get("Content-Type"), "application/json; charset=utf-8")
+
+	if reflect.ValueOf(want).IsZero() {
+		assert.Equal(c.testing, typ, c.got)
+		return
+	}
+
 	assert.Equal(c.testing, want, c.got)
 }
 
