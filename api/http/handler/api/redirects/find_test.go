@@ -1,7 +1,10 @@
+// Copyright 2020 The Verbis Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package redirects
 
 import (
-	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
@@ -29,7 +32,7 @@ func TestRedirects_Find(t *testing.T) {
 	category := domain.Category{Id: 123, Slug: "/cat", Name: "Category"}
 
 	tt := map[string]struct {
-		want    interface{}
+		want    domain.Category
 		status  int
 		message string
 		mock    func(m *mocks.CategoryRepository)
@@ -56,16 +59,7 @@ func TestRedirects_Find(t *testing.T) {
 				getCategoriesMock(mock).GetById(g)
 			})
 
-			rr.Data(&domain.Category{}, func(b []byte) interface{} {
-				m := domain.Category{}
-				err := json.Unmarshal(b, &m)
-				if err != nil {
-					t.Error(err)
-				}
-				return m
-			})
-
-			rr.Run(test.want, test.status, test.message)
+			rr.Run(&test.want, &domain.Category{}, test.status, test.message)
 		})
 	}
 }
