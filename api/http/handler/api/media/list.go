@@ -18,7 +18,7 @@ import (
 // Returns 500 if there was an error getting the media items.
 // Returns 400 if there was conflict or the request was invalid.
 func (m *Media) List(ctx *gin.Context) {
-	const op = "MediaHandler.Get"
+	const op = "MediaHandler.List"
 
 	p := params.ApiParams(ctx, api.DefaultParams).Get()
 

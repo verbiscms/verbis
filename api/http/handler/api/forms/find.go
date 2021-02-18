@@ -17,7 +17,7 @@ import (
 // Returns 500 if there as an error obtaining the form.
 // Returns 400 if the ID wasn't passed or failed to convert.
 func (f *Forms) Find(ctx *gin.Context) {
-	const op = "FormHandler.GetById"
+	const op = "FormHandler.Find"
 
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

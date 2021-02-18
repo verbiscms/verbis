@@ -2,27 +2,22 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package redirects
+package options
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 )
 
 // List
 //
-// Returns 200 if there are no redirects or success.
-// Returns 500 if there was an error getting the redirects.
-// Returns 400 if there was conflict or the request was invalid.
-func (r *Redirects) List(ctx *gin.Context) {
-	const op = "RedirectHandler.List"
+// Returns 200 if there are no options or success.
+// Returns 500 if there was an error getting the options.
+func (o *Options) List(ctx *gin.Context) {
+	const op = "OptionsHandler.List"
 
-	p := params.ApiParams(ctx, api.DefaultParams).Get()
-
-	redirects, total, err := r.Store.Redirects.Get(p)
+	options, err := o.Store.Options.Get()
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 200, errors.Message(err), err)
 		return
@@ -34,7 +29,5 @@ func (r *Redirects) List(ctx *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().Get(p, total)
-
-	api.Respond(ctx, 200, "Successfully obtained redirects", redirects, pagination)
+	api.Respond(ctx, 200, "Successfully obtained options", options)
 }

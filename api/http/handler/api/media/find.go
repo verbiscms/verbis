@@ -17,7 +17,7 @@ import (
 // Returns 400 if the ID wasn't passed or failed to convert.
 // Returns 500 if there as an error obtaining the media items.
 func (m *Media) Find(ctx *gin.Context) {
-	const op = "MediaHandler.GetById"
+	const op = "MediaHandler.Find"
 
 	paramId := ctx.Param("id")
 	id, err := strconv.Atoi(paramId)
