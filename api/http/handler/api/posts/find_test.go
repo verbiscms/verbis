@@ -3,3 +3,68 @@
 // license that can be found in the LICENSE file.
 
 package posts
+
+import (
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+func (t *PostsTestSuite) TestPosts_Find() {
+
+	tt := map[string]struct {
+		want    interface{}
+		status  int
+		message string
+		mock    func(m *mocks.PostsRepository)
+		url     string
+	}{
+		"Success": {
+			postData,
+			200,
+			"Successfully obtained post with ID: 123",
+			func(m *mocks.PostsRepository) {
+				m.On("GetById", 123, true).Return(postData, nil)
+			},
+			"/posts/123",
+		},
+		"Invalid ID": {
+			nil,
+			400,
+			"Pass a valid number to obtain the post by ID",
+			func(m *mocks.PostsRepository) {
+			},
+			"/posts/wrongid",
+		},
+		"Not Found": {
+			nil,
+			200,
+			"no posts found",
+			func(m *mocks.PostsRepository) {
+				m.On("GetById", 123, true).Return(domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+				m.On("Format", post).Return(post, nil)
+			},
+			"/posts/123",
+		},
+		"Internal Error": {
+			nil,
+			500,
+			"internal",
+			func(m *mocks.PostsRepository) {
+				m.On("GetById", 123, true).Return(domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+			"/posts/123",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.RequestAndServe(http.MethodGet, test.url, "/posts/:id", nil, func(ctx *gin.Context) {
+				t.Setup(test.mock).Find(ctx)
+			})
+			t.RunT(test.want, test.status, test.message)
+		})
+	}
+}
