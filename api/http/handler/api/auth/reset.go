@@ -10,7 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// SendResetPassword defines the data required for resetting user passwords.
+// SendResetPassword defines the data to be validated when a
+// user sends the reset email.
 type SendResetPassword struct {
 	Email string `json:"email" binding:"required,email"`
 }

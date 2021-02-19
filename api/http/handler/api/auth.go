@@ -7,7 +7,6 @@ package api
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
 )
@@ -20,6 +19,11 @@ type AuthHandler interface {
 	VerifyEmail(g *gin.Context)
 	VerifyPasswordToken(g *gin.Context)
 	SendResetPassword(g *gin.Context)
+}
+
+type Login struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
 }
 
 // Auth defines the handler for Authentication methods
@@ -40,7 +44,7 @@ func NewAuth(d *deps.Deps) *Auth {
 func (c *Auth) Login(g *gin.Context) {
 	const op = "AuthHandler.Login"
 
-	var l domain.Login
+	var l Login
 	if err := g.ShouldBindJSON(&l); err != nil {
 		fmt.Print(err)
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
@@ -99,6 +103,13 @@ func (c *Auth) VerifyEmail(g *gin.Context) {
 	g.Redirect(301, c.Store.Config.Admin.Path)
 }
 
+
+type ResetPassword struct {
+	NewPassword     string `json:"new_password" binding:"required,min=8,max=60"`
+	ConfirmPassword string `json:"confirm_password" binding:"eqfield=NewPassword,required"`
+	Token           string `db:"token" json:"token" binding:"required"`
+}
+
 // Reset password
 //
 // Returns 200 if successful.
@@ -106,7 +117,7 @@ func (c *Auth) VerifyEmail(g *gin.Context) {
 func (c *Auth) ResetPassword(g *gin.Context) {
 	const op = "AuthHandler.ResetPassword"
 
-	var rp domain.ResetPassword
+	var rp ResetPassword
 	if err := g.ShouldBindJSON(&rp); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
@@ -140,6 +151,12 @@ func (c *Auth) VerifyPasswordToken(g *gin.Context) {
 	Respond(g, 200, "Successfully verified token", nil)
 }
 
+
+// SendResetPassword defines the data required for resetting user passwords.
+type SendResetPassword struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
 // SendResetPassword reset password email & generate token
 //
 // Returns 200 if successful.
@@ -147,7 +164,7 @@ func (c *Auth) VerifyPasswordToken(g *gin.Context) {
 func (c *Auth) SendResetPassword(g *gin.Context) {
 	const op = "AuthHandler.SendResetPassword"
 
-	var srp domain.SendResetPassword
+	var srp SendResetPassword
 	if err := g.ShouldBindJSON(&srp); err != nil {
 		Respond(g, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return

@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func (t *CategoriesTestSuite) TestCategories_List() {
@@ -19,42 +20,42 @@ func (t *CategoriesTestSuite) TestCategories_List() {
 		mock    func(m *mocks.CategoryRepository)
 	}{
 		"Success": {
-			want:    categories,
-			status:  200,
-			message: "Successfully obtained categories",
-			mock: func(m *mocks.CategoryRepository) {
+			categories,
+			200,
+			"Successfully obtained categories",
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", pagination).Return(categories, 1, nil)
 			},
 		},
 		"Not Found": {
-			want:    nil,
-			status:  200,
-			message: "no categories found",
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			200,
+			"no categories found",
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
 			},
 		},
 		"Conflict": {
-			want:    nil,
-			status:  400,
-			message: "conflict",
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			400,
+			"conflict",
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
-			want:    nil,
-			status:  400,
-			message: "invalid",
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			400,
+			"invalid",
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
-			want:    nil,
-			status:  500,
-			message: "internal",
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			500,
+			"internal",
+			func(m *mocks.CategoryRepository) {
 				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
@@ -62,7 +63,7 @@ func (t *CategoriesTestSuite) TestCategories_List() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe("GET", "/categories", "/categories", nil, func(ctx *gin.Context) {
+			t.RequestAndServe(http.MethodGet, "/categories", "/categories", nil, func(ctx *gin.Context) {
 				t.Setup(test.mock).List(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)

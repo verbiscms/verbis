@@ -3,3 +3,70 @@
 // license that can be found in the LICENSE file.
 
 package options
+
+import (
+	"github.com/ainsleyclark/verbis/api/errors"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+func (t *OptionsTestSuite) TestOptions_List() {
+
+	tt := map[string]struct {
+		want    interface{}
+		status  int
+		message string
+		mock    func(m *mocks.OptionsRepository)
+	}{
+		"Success": {
+			options,
+			200,
+			"Successfully obtained options",
+			func(m *mocks.OptionsRepository) {
+				m.On("Get").Return(options, nil)
+			},
+		},
+		"Not Found": {
+			nil,
+			200,
+			"no options found",
+			func(m *mocks.OptionsRepository) {
+				m.On("Get").Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "no options found"})
+			},
+		},
+		"Conflict": {
+			nil,
+			400,
+			"conflict",
+			func(m *mocks.OptionsRepository) {
+				m.On("Get").Return(nil, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			},
+		},
+		"Invalid": {
+			nil,
+			400,
+			"invalid",
+			func(m *mocks.OptionsRepository) {
+				m.On("Get").Return(nil, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			},
+		},
+		"Internal Error": {
+			nil,
+			500,
+			"internal",
+			func(m *mocks.OptionsRepository) {
+				m.On("Get").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.RequestAndServe(http.MethodGet, "/options", "/options", nil, func(ctx *gin.Context) {
+				t.Setup(test.mock).List(ctx)
+			})
+			t.RunT(test.want, test.status, test.message)
+		})
+	}
+}
