@@ -62,13 +62,9 @@ func (t *CategoriesTestSuite) TestCategories_List() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := &mocks.CategoryRepository{}
-			test.mock(mock)
-
-			t.RequestAndServe("GET", "/categories", "/categories", nil, func(g *gin.Context) {
-				t.Setup(mock).List(g)
+			t.RequestAndServe("GET", "/categories", "/categories", nil, func(ctx *gin.Context) {
+				t.Setup(test.mock).List(ctx)
 			})
-
 			t.RunT(test.want, test.status, test.message)
 		})
 	}

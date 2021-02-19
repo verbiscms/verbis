@@ -68,13 +68,9 @@ func (t *CategoriesTestSuite) TestCategories_Delete() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := &mocks.CategoryRepository{}
-			test.mock(mock)
-
-			t.RequestAndServe("DELETE", test.url, "/categories/:id", nil, func(g *gin.Context) {
-				t.Setup(mock).Delete(g)
+			t.RequestAndServe("DELETE", test.url, "/categories/:id", nil, func(ctx *gin.Context) {
+				t.Setup(test.mock).Delete(ctx)
 			})
-
 			t.RunT(test.want, test.status, test.message)
 		})
 	}
