@@ -67,6 +67,19 @@ var (
 				Required:   true,
 			},
 		},
+	}
+	// The default form with body used for testing.
+	formBody = domain.Form{
+		Id: 123,
+		Name: "Form",
+		Fields: []domain.FormField{
+			{
+				Key:        "key",
+				Label:      "label",
+				Type:       "text",
+				Required:   true,
+			},
+		},
 		Body: body{Name: "test"},
 	}
 	// The default form with wrong validation used for testing.
@@ -74,9 +87,7 @@ var (
 		Id: 123,
 		Body: struct {
 			Name string `binding:"required"`
-		}{
-			Name: "",
-		},
+		}{},
 	}
 	// The default forms used for testing.
 	forms = []domain.Form{

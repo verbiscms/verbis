@@ -29,7 +29,7 @@ func (t *FormsTestSuite) TestForms_Send() {
 			nil,
 			200,
 			"Successfully sent form with ID: 123",
-			form,
+			formBody,
 			func(m *mocks.FormRepository) {
 				m.On("GetByUUID", "test").Return(form, nil)
 				m.On("Send", &form, mock.Anything, mock.Anything).Return(nil)
@@ -42,7 +42,7 @@ func (t *FormsTestSuite) TestForms_Send() {
 			"Validation failed",
 			formBadValidation,
 			func(m *mocks.FormRepository) {
-				m.On("GetByUUID", "test").Return(form, nil)
+				m.On("GetByUUID", "test").Return(formBadValidation, nil)
 			},
 			"/forms/test",
 		},
