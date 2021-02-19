@@ -74,16 +74,13 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := &mocks.CategoryRepository{}
-			test.mock(mock)
-
 			body, err := json.Marshal(test.input)
 			if err != nil {
 				t.Error(err)
 			}
 
 			t.RequestAndServe("POST", "/categories", "/categories", bytes.NewBuffer(body), func(g *gin.Context) {
-				t.Setup(mock).Create(g)
+				t.Setup(test.mock).Create(g)
 			})
 
 			t.RunT(test.want, test.status, test.message)
