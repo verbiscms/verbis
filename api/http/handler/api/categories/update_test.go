@@ -78,16 +78,13 @@ func (t *CategoriesTestSuite) TestCategories_Update() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := &mocks.CategoryRepository{}
-			test.mock(mock)
-
 			body, err := json.Marshal(test.input)
 			if err != nil {
 				t.Error(err)
 			}
 
 			t.RequestAndServe("PUT", test.url, "/categories/:id", bytes.NewBuffer(body), func(g *gin.Context) {
-				t.Setup(mock).Update(g)
+				t.Setup(test.mock).Update(g)
 			})
 
 			t.RunT(test.want, test.status, test.message)

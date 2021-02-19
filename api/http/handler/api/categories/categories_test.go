@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
@@ -27,13 +28,18 @@ func TestCategories(t *testing.T) {
 
 // Setup
 //
+// TODO: Post mock?!
 // A helper to obtain a mock categories handler
 // for testing.
-func (t *CategoriesTestSuite) Setup(m models.CategoryRepository) *Categories {
+func (t *CategoriesTestSuite) Setup(mf func(m *mocks.CategoryRepository)) *Categories {
+	mock := &mocks.CategoryRepository{}
+	if mf != nil {
+		mf(mock)
+	}
 	return &Categories{
 		Deps: &deps.Deps{
 			Store: &models.Store{
-				Categories: m,
+				Categories: mock,
 			},
 		},
 	}

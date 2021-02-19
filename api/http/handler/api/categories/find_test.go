@@ -61,13 +61,9 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := &mocks.CategoryRepository{}
-			test.mock(mock)
-
 			t.RequestAndServe("GET", test.url, "/categories/:id", nil, func(g *gin.Context) {
-				t.Setup(mock).Find(g)
+				t.Setup(test.mock).Find(g)
 			})
-
 			t.RunT(test.want, test.status, test.message)
 		})
 	}
