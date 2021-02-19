@@ -7,24 +7,26 @@ package categories
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
 
-
 type CategoriesTestSuite struct {
-	suite.Suite
+	test.HandlerSuite
 }
 
 func TestCategories(t *testing.T) {
-	suite.Run(t, new(CategoriesTestSuite))
+	suite.Run(t, &CategoriesTestSuite{
+		HandlerSuite: test.APITestSuite(),
+	})
 }
 
-// Mock
+// Setup
 //
-// Us a helper to obtain a mock categories handler
+// A helper to obtain a mock categories handler
 // for testing.
-func (t *CategoriesTestSuite) Mock(m models.CategoryRepository) *Categories {
+func (t *CategoriesTestSuite) Setup(m models.CategoryRepository) *Categories {
 	return &Categories{
 		Deps: &deps.Deps{
 			Store: &models.Store{
