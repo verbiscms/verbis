@@ -21,7 +21,8 @@ func (f *Forms) Create(ctx *gin.Context) {
 	const op = "FormHandler.Create"
 
 	var form domain.Form
-	if err := ctx.ShouldBindJSON(&form); err != nil {
+	err := ctx.ShouldBindJSON(&form)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

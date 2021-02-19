@@ -28,15 +28,15 @@ func (_m *Validator) CmdCheck(key string, data interface{}) error {
 }
 
 // Process provides a mock function with given fields: errors
-func (_m *Validator) Process(errors validator.ValidationErrors) []validation.ValidationError {
+func (_m *Validator) Process(errors validator.ValidationErrors) []validation.Error {
 	ret := _m.Called(errors)
 
-	var r0 []validation.ValidationError
-	if rf, ok := ret.Get(0).(func(validator.ValidationErrors) []validation.ValidationError); ok {
+	var r0 []validation.Error
+	if rf, ok := ret.Get(0).(func(validator.ValidationErrors) []validation.Error); ok {
 		r0 = rf(errors)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]validation.ValidationError)
+			r0 = ret.Get(0).([]validation.Error)
 		}
 	}
 

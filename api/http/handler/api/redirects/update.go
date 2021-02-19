@@ -21,7 +21,8 @@ func (r *Redirects) Update(ctx *gin.Context) {
 	const op = "RedirectHandler.Update"
 
 	var redirect domain.Redirect
-	if err := ctx.ShouldBindJSON(&redirect); err != nil {
+	err := ctx.ShouldBindJSON(&redirect)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
