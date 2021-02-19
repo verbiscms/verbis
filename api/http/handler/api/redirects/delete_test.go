@@ -3,3 +3,76 @@
 // license that can be found in the LICENSE file.
 
 package redirects
+
+import (
+	"github.com/ainsleyclark/verbis/api/errors"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+func (t *RedirectsTestSuite) TestCategories_Delete() {
+
+	tt := map[string]struct {
+		want    interface{}
+		status  int
+		message string
+		mock    func(m *mocks.RedirectRepository)
+		url     string
+	}{
+		"Success": {
+			nil,
+			200,
+			"Successfully deleted redirect with ID: 123",
+			func(m *mocks.RedirectRepository) {
+				m.On("Delete", int64(123)).Return(nil)
+			},
+			"/redirects/123",
+		},
+		"Invalid ID": {
+			nil,
+			400,
+			"A valid ID is required to delete a redirect",
+			func(m *mocks.RedirectRepository) {
+				m.On("Delete", int64(123)).Return(nil)
+			},
+			"/redirects/wrongid",
+		},
+		"Not Found": {
+			nil,
+			400,
+			"not found",
+			func(m *mocks.RedirectRepository) {
+				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.NOTFOUND,  Message: "not found"})
+			},
+			"/redirects/123",
+		},
+		"Conflict": {
+			nil,
+			400,
+			"conflict",
+			func(m *mocks.RedirectRepository) {
+				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.CONFLICT,  Message: "conflict"})
+			},
+			"/redirects/123",
+		},
+		"Internal": {
+			nil,
+			500,
+			"internal",
+			func(m *mocks.RedirectRepository) {
+				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+			"/redirects/123",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.RequestAndServe(http.MethodDelete, test.url, "/redirects/:id", nil, func(ctx *gin.Context) {
+				t.Setup(test.mock).Delete(ctx)
+			})
+			t.RunT(test.want, test.status, test.message)
+		})
+	}
+}
