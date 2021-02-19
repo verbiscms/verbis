@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func (t *CategoriesTestSuite) TestCategories_Find() {
@@ -22,47 +23,47 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 		url     string
 	}{
 		"Success": {
-			want:    category,
-			status:  200,
-			message: "Successfully obtained category with ID: 123",
-			mock: func(m *mocks.CategoryRepository) {
+			category,
+			200,
+			"Successfully obtained category with ID: 123",
+			func(m *mocks.CategoryRepository) {
 				m.On("GetById", 123).Return(category, nil)
 			},
-			url: "/categories/123",
+			"/categories/123",
 		},
 		"Invalid ID": {
-			want:    nil,
-			status:  400,
-			message: "Pass a valid number to obtain the category by ID",
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			400,
+			"Pass a valid number to obtain the category by ID",
+			func(m *mocks.CategoryRepository) {
 				m.On("GetById", 123).Return(domain.Category{}, fmt.Errorf("error"))
 			},
-			url: "/categories/wrongid",
+			"/categories/wrongid",
 		},
 		"Not Found": {
-			want:    nil,
-			status:  200,
-			message: "no categories found",
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			200,
+			"no categories found",
+			func(m *mocks.CategoryRepository) {
 				m.On("GetById", 123).Return(domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
 			},
-			url: "/categories/123",
+			"/categories/123",
 		},
 		"Internal Error": {
-			want:    nil,
-			status:  500,
-			message: "internal",
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			500,
+			"internal",
+			func(m *mocks.CategoryRepository) {
 				m.On("GetById", 123).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
-			url: "/categories/123",
+			"/categories/123",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe("GET", test.url, "/categories/:id", nil, func(g *gin.Context) {
-				t.Setup(test.mock).Find(g)
+			t.RequestAndServe(http.MethodGet, test.url, "/categories/:id", nil, func(ctx *gin.Context) {
+				t.Setup(test.mock).Find(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

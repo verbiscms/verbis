@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package forms
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
@@ -12,72 +12,83 @@ import (
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
 
-// CategoriesTestSuite defines the helper used for category
+// FormsTestSuite defines the helper used for form
 // testing.
-type CategoriesTestSuite struct {
+type FormsTestSuite struct {
 	test.HandlerSuite
 }
 
-// TestCategories
+// TestForms
 //
 // Assert testing has begun.
-func TestCategories(t *testing.T) {
-	suite.Run(t, &CategoriesTestSuite{
+func TestForms(t *testing.T) {
+	suite.Run(t, &FormsTestSuite{
 		HandlerSuite: test.APITestSuite(),
 	})
 }
 
 // Setup
 //
-// A helper to obtain a mock categories handler
+// A helper to obtain a mock form handler
 // for testing.
-func (t *CategoriesTestSuite) Setup(mf func(m *mocks.CategoryRepository)) *Categories {
-	m := &mocks.CategoryRepository{}
+func (t *FormsTestSuite) Setup(mf func(m *mocks.FormRepository)) *Forms {
+	m := &mocks.FormRepository{}
 	if mf != nil {
 		mf(m)
 	}
-	pm := &mocks.PostsRepository{}
-	pm.On("Get", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]domain.PostData{}, 0, nil)
-	return &Categories{
+	return &Forms{
 		Deps: &deps.Deps{
 			Store: &models.Store{
-				Categories: m,
-				Posts: pm,
+				Forms: m,
 			},
 		},
 	}
 }
 
+// The dynamic struct to be validated.
+type body struct {
+	Name string `binding:"required"`
+}
+
 var (
-	// The default category used for testing.
-	category = domain.Category{
+	// The default form used for testing.
+	form = domain.Form{
 		Id: 123,
-		Slug: "/cat",
-		Name: "Category",
-		Resource: "test",
+		Name: "Form",
+		Fields: []domain.FormField{
+			{
+				Key:        "key",
+				Label:      "label",
+				Type:       "text",
+				Required:   true,
+			},
+		},
+		Body: body{Name: "test"},
 	}
-	// The default category with wrong validation used for testing.
-	categoryBadValidation = domain.Category{
+	// The default form with wrong validation used for testing.
+	formBadValidation = domain.Form{
 		Id: 123,
-		Name: "Category",
-		Resource: "test",
+		Body: struct {
+			Name string `binding:"required"`
+		}{
+			Name: "",
+		},
 	}
-	// The default categories used for testing.
-	categories = []domain.Category{
+	// The default forms used for testing.
+	forms = []domain.Form{
 		{
 			Id: 123,
-			Slug: "/cat",
-			Name: "Category",
+			Name: "Form",
+			Body: body{Name: "test"},
 		},
 		{
 			Id: 124,
-			Slug: "/cat1",
-			Name: "Category1",
+			Name: "Form1",
+			Body: body{Name: "test"},
 		},
 	}
 	// The default pagination used for testing.

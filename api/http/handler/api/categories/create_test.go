@@ -5,8 +5,6 @@
 package categories
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -14,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func (t *CategoriesTestSuite) TestCategories_Create() {
@@ -26,47 +25,47 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 		mock    func(m *mocks.CategoryRepository)
 	}{
 		"Success": {
-			want:    &category,
-			status:  200,
-			message: "Successfully created category with ID: 123",
-			input:   category,
-			mock: func(m *mocks.CategoryRepository) {
+			&category,
+			200,
+			"Successfully created category with ID: 123",
+			category,
+			func(m *mocks.CategoryRepository) {
 				m.On("Create", &category).Return(category, nil)
 			},
 		},
 		"Validation Failed": {
-			want:    api.ValidationErrJson{Errors: validation.Errors{{Key: "slug", Message: "Slug is required.", Type: "required"}}},
-			status:  400,
-			message: "Validation failed",
-			input:   categoryBadValidation,
-			mock: func(m *mocks.CategoryRepository) {
+			api.ValidationErrJson{Errors: validation.Errors{{Key: "slug", Message: "Slug is required.", Type: "required"}}},
+			400,
+			"Validation failed",
+			categoryBadValidation,
+			func(m *mocks.CategoryRepository) {
 				m.On("Create", &categoryBadValidation).Return(domain.Category{}, fmt.Errorf("error"))
 			},
 		},
 		"Invalid": {
-			want:    nil,
-			status:  400,
-			message: "invalid",
-			input:   category,
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			400,
+			"invalid",
+			category,
+			func(m *mocks.CategoryRepository) {
 				m.On("Create", &category).Return(domain.Category{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
-			want:    nil,
-			status:  400,
-			message: "conflict",
-			input:   category,
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			400,
+			"conflict",
+			category,
+			func(m *mocks.CategoryRepository) {
 				m.On("Create", &category).Return(domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
-			want:    nil,
-			status:  500,
-			message: "internal",
-			input:   category,
-			mock: func(m *mocks.CategoryRepository) {
+			nil,
+			500,
+			"internal",
+			category,
+			func(m *mocks.CategoryRepository) {
 				m.On("Create", &category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
@@ -74,16 +73,9 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			body, err := json.Marshal(test.input)
-			if err != nil {
-				t.Error(err)
-			}
-
-			// dont need to marshal, can use helpers
-			t.RequestAndServe("POST", "/categories", "/categories", bytes.NewBuffer(body), func(g *gin.Context) {
-				t.Setup(test.mock).Create(g)
+			t.RequestAndServe(http.MethodPost, "/categories", "/categories", test.input, func(ctx *gin.Context) {
+				t.Setup(test.mock).Create(ctx)
 			})
-
 			t.RunT(test.want, test.status, test.message)
 		})
 	}

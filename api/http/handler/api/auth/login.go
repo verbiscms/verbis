@@ -5,11 +5,17 @@
 package auth
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 )
+
+// Login defines the data to be validated when a
+// user logins into the SPA.
+type Login struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required"`
+}
 
 // Login the user.
 //
@@ -19,7 +25,7 @@ import (
 func (a *Auth) Login(ctx *gin.Context) {
 	const op = "AuthHandler.Login"
 
-	var l domain.Login
+	var l Login
 	if err := ctx.ShouldBindJSON(&l); err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return

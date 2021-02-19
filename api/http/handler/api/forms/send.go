@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 // Send
@@ -20,7 +21,7 @@ func (f *Forms) Send(ctx *gin.Context) {
 
 	form, err := f.Store.Forms.GetByUUID(ctx.Param("uuid"))
 	if errors.Code(err) == errors.NOTFOUND {
-		api.Respond(ctx, 200, errors.Message(err), err)
+		api.Respond(ctx, 400, errors.Message(err), err)
 		return
 	} else if err != nil {
 		api.Respond(ctx, 500, errors.Message(err), err)
@@ -40,5 +41,5 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, 200, "Form submitted & sent successfully", nil)
+	api.Respond(ctx, 200, "Successfully sent form with ID: "+strconv.Itoa(form.Id), nil)
 }
