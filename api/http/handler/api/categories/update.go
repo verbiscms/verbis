@@ -21,7 +21,8 @@ func (c *Categories) Update(ctx *gin.Context) {
 	const op = "CategoryHandler.Update"
 
 	var category domain.Category
-	if err := ctx.ShouldBindJSON(&category); err != nil {
+	err := ctx.ShouldBindJSON(&category)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

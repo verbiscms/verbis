@@ -21,7 +21,8 @@ func (m *Media) Update(ctx *gin.Context) {
 	const op = "MediaHandler.Update"
 
 	var media domain.Media
-	if err := ctx.ShouldBindJSON(&m); err != nil {
+	err := ctx.ShouldBindJSON(&m)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

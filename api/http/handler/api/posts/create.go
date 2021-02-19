@@ -21,7 +21,8 @@ func (c *Posts) Create(ctx *gin.Context) {
 	const op = "PostHandler.Create"
 
 	var post domain.PostCreate
-	if err := ctx.ShouldBindJSON(&post); err != nil {
+	err := ctx.ShouldBindJSON(&post)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

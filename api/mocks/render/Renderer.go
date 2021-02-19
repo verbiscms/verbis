@@ -13,16 +13,14 @@ type Renderer struct {
 }
 
 // Asset provides a mock function with given fields: g
-func (_m *Renderer) Asset(g *gin.Context) (*string, *[]byte, error) {
+func (_m *Renderer) Asset(g *gin.Context) (string, *[]byte, error) {
 	ret := _m.Called(g)
 
-	var r0 *string
-	if rf, ok := ret.Get(0).(func(*gin.Context) *string); ok {
+	var r0 string
+	if rf, ok := ret.Get(0).(func(*gin.Context) string); ok {
 		r0 = rf(g)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*string)
-		}
+		r0 = ret.Get(0).(string)
 	}
 
 	var r1 *[]byte
@@ -73,16 +71,14 @@ func (_m *Renderer) Page(g *gin.Context) ([]byte, error) {
 }
 
 // Upload provides a mock function with given fields: g
-func (_m *Renderer) Upload(g *gin.Context) (*string, *[]byte, error) {
+func (_m *Renderer) Upload(g *gin.Context) (string, *[]byte, error) {
 	ret := _m.Called(g)
 
-	var r0 *string
-	if rf, ok := ret.Get(0).(func(*gin.Context) *string); ok {
+	var r0 string
+	if rf, ok := ret.Get(0).(func(*gin.Context) string); ok {
 		r0 = rf(g)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*string)
-		}
+		r0 = ret.Get(0).(string)
 	}
 
 	var r1 *[]byte
