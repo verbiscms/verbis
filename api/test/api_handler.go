@@ -6,6 +6,7 @@ package test
 
 import (
 	"encoding/json"
+	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -35,6 +36,7 @@ func APITestSuite() HandlerSuite {
 	gin.DefaultWriter = ioutil.Discard
 	rr := httptest.NewRecorder()
 	ctx, engine := gin.CreateTestContext(rr)
+	cache.Init()
 
 	return HandlerSuite{
 		Recorder: rr,
