@@ -18,11 +18,6 @@ import (
 
 func (t *CategoriesTestSuite) TestCategories_Create() {
 
-	var (
-		category = domain.Category{Id: 123, Slug: "/cat", Name: "Category", Resource: "test"}
-		categoryBadValidation = domain.Category{Id: 123, Name: "Category", Resource: "test"}
-	)
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int
