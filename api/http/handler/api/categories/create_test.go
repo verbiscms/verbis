@@ -79,6 +79,7 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 				t.Error(err)
 			}
 
+			// dont need to marshal, can use helpers
 			t.RequestAndServe("POST", "/categories", "/categories", bytes.NewBuffer(body), func(g *gin.Context) {
 				t.Setup(test.mock).Create(g)
 			})
