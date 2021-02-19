@@ -5,6 +5,7 @@
 package test
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
@@ -55,7 +56,7 @@ func (t *HandlerSuite) RunT(want interface{}, status int, message string) {
 	t.Equal(message, got.Message)
 	t.Equal(status, t.Status())
 	t.Equal(JsonHeader, t.ContentType())
-	t.JSONEq(t.marshalInput(want), data)
+	t.JSONEq(t.marshalWant(want), data)
 }
 
 func (t *HandlerSuite) Status() int {
@@ -78,7 +79,7 @@ func (t *HandlerSuite) NewRequest(method string, url string, body io.Reader) {
 
 // RequestAndServe makes a new http.Request and assigns the gin testing
 // the request, serves HTTP.
-func (t *HandlerSuite) RequestAndServe(method string, url string, engineUrl string, body io.Reader, handler func(ctx *gin.Context)) {
+func (t *HandlerSuite) RequestAndServe(method string, url string, engineUrl string, body interface{}, handler func(ctx *gin.Context)) {
 	switch method {
 	case "GET":
 		t.Engine.GET(engineUrl, handler)
@@ -89,7 +90,7 @@ func (t *HandlerSuite) RequestAndServe(method string, url string, engineUrl stri
 	case "DELETE":
 		t.Engine.DELETE(engineUrl, handler)
 	}
-	t.NewRequest(method, url, body)
+	t.NewRequest(method, url, t.marshalInput(body))
 	t.Engine.ServeHTTP(t.Recorder, t.Context.Request)
 }
 
@@ -101,7 +102,20 @@ func (t *HandlerSuite) Reset() {
 	t.Engine = engine
 }
 
-func (t *HandlerSuite) marshalInput(i interface{}) string {
+func (t *HandlerSuite) marshalInput(i interface{}) *bytes.Buffer {
+	if i == nil {
+		return &bytes.Buffer{}
+	}
+
+	body, err := json.Marshal(i)
+	if err != nil {
+		t.Fail("error marshalling input")
+	}
+
+	return bytes.NewBuffer(body)
+}
+
+func (t *HandlerSuite) marshalWant(i interface{}) string {
 	str, ok := i.(string)
 	if ok {
 		return str
@@ -111,7 +125,7 @@ func (t *HandlerSuite) marshalInput(i interface{}) string {
 	}
 	out, err := json.Marshal(i)
 	if err != nil {
-		t.Fail("error marshalling input", err)
+		t.Fail("error marshalling want", err)
 	}
 	return string(out)
 }
