@@ -3,3 +3,70 @@
 // license that can be found in the LICENSE file.
 
 package posts
+
+import (
+	"github.com/ainsleyclark/verbis/api/errors"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
+
+func (t *PostsTestSuite) TestPosts_List() {
+
+	tt := map[string]struct {
+		want    interface{}
+		status  int
+		message string
+		mock    func(m *mocks.PostsRepository)
+	}{
+		"Success": {
+			posts,
+			200,
+			"Successfully obtained posts",
+			func(m *mocks.PostsRepository) {
+				m.On("Get", pagination, true, "", "").Return(posts, 2, nil)
+			},
+		},
+		"Not Found": {
+			nil,
+			200,
+			"no posts found",
+			func(m *mocks.PostsRepository) {
+				m.On("Get", pagination, true, "", "").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+			},
+		},
+		"Conflict": {
+			nil,
+			400,
+			"conflict",
+			func(m *mocks.PostsRepository) {
+				m.On("Get", pagination, true, "", "").Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			},
+		},
+		"Invalid": {
+			nil,
+			400,
+			"invalid",
+			func(m *mocks.PostsRepository) {
+				m.On("Get", pagination, true, "", "").Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			},
+		},
+		"Internal Error": {
+			nil,
+			500,
+			"internal",
+			func(m *mocks.PostsRepository) {
+				m.On("Get", pagination, true, "", "").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.RequestAndServe(http.MethodGet, "/posts", "/posts", nil, func(ctx *gin.Context) {
+				t.Setup(test.mock).List(ctx)
+			})
+			t.RunT(test.want, test.status, test.message)
+		})
+	}
+}
