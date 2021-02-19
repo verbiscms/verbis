@@ -26,12 +26,13 @@ func (a *Auth) SendResetPassword(ctx *gin.Context) {
 	const op = "AuthHandler.SendResetPassword"
 
 	var srp SendResetPassword
-	if err := ctx.ShouldBindJSON(&srp); err != nil {
+	err := ctx.ShouldBindJSON(&srp)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	err := a.Store.Auth.SendResetPassword(srp.Email)
+	err = a.Store.Auth.SendResetPassword(srp.Email)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 400, errors.Message(err), err)
 		return

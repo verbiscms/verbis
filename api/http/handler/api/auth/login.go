@@ -26,7 +26,8 @@ func (a *Auth) Login(ctx *gin.Context) {
 	const op = "AuthHandler.Login"
 
 	var l Login
-	if err := ctx.ShouldBindJSON(&l); err != nil {
+	err := ctx.ShouldBindJSON(&l)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

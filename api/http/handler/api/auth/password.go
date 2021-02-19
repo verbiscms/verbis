@@ -26,12 +26,13 @@ func (a *Auth) ResetPassword(ctx *gin.Context) {
 	const op = "AuthHandler.ResetPassword"
 
 	var rp ResetPassword
-	if err := ctx.ShouldBindJSON(&rp); err != nil {
+	err := ctx.ShouldBindJSON(&rp)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	err := a.Store.Auth.ResetPassword(rp.Token, rp.NewPassword)
+	err = a.Store.Auth.ResetPassword(rp.Token, rp.NewPassword)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 400, errors.Message(err), err)
 		return

@@ -21,7 +21,8 @@ func (u *Users) Update(ctx *gin.Context) {
 	const op = "UserHandler.Update"
 
 	var user domain.User
-	if err := ctx.ShouldBindJSON(&user); err != nil {
+	err := ctx.ShouldBindJSON(&user)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

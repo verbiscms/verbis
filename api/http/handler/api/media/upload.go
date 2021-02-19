@@ -41,7 +41,8 @@ func (m *Media) Upload(ctx *gin.Context) {
 		return
 	}
 
-	if err := m.Store.Media.Validate(files[0]); err != nil {
+	err = m.Store.Media.Validate(files[0])
+	if err != nil {
 		api.Respond(ctx, 415, errors.Message(err), err)
 		return
 	}

@@ -26,18 +26,21 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 	const op = "OptionsHandler.UpdateCreate"
 
 	var options domain.OptionsDB
-	if err := ctx.ShouldBindBodyWith(&options, binding.JSON); err != nil {
+	err := ctx.ShouldBindBodyWith(&options, binding.JSON)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	var vOptions domain.Options
-	if err := ctx.ShouldBindBodyWith(&vOptions, binding.JSON); err != nil {
+	err = ctx.ShouldBindBodyWith(&vOptions, binding.JSON)
+	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	if err := o.Store.Options.UpdateCreate(&options); err != nil {
+	err = o.Store.Options.UpdateCreate(&options)
+	if err != nil {
 		api.Respond(ctx, 500, errors.Message(err), err)
 		return
 	}
