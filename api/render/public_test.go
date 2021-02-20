@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package frontend
+package render
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
+	"github.com/ainsleyclark/verbis/api/http/handler/frontend"
 	storeMocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -27,13 +27,13 @@ import (
 
 // getPublicMock is a helper to obtain a mock Public
 // handler for testing.
-func getPublicMock(r render.Renderer, gin *gin.Context) *Public {
+func getPublicMock(r Renderer, gin *gin.Context) *frontend.Public {
 	mockError := mocks.ErrorHandler{}
 	mockError.On("NotFound", gin).Run(func(args mock.Arguments) {
 		gin.AbortWithStatus(404)
 		return
 	})
-	return &Public{
+	return &frontend.Public{
 		config:       config.Configuration{},
 		ErrorHandler: &mockError,
 		render:       r,
@@ -83,14 +83,14 @@ func Test_NewFrontend(t *testing.T) {
 		Site:    &siteMock,
 	}
 	config := config.Configuration{}
-	want := &Public{
+	want := &frontend.Public{
 		store:        &store,
 		config:       config,
-		render:       render.NewRender(&store, config),
-		ErrorHandler: &render.Errors{},
+		render:       NewRender(&store, config),
+		ErrorHandler: &Errors{},
 	}
 
-	got := NewPublic(&store, config)
+	got := frontend.NewPublic(&store, config)
 	assert.ObjectsAreEqual(got, want)
 }
 
