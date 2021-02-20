@@ -21,6 +21,6 @@ func Load(d *deps.Deps, s *server.Server, c *handler.Handler) {
 
 	// Load routes
 	api(d, s)
-	frontend(d, s, c)
+	frontend(d, s)
 	spa(d, s, c)
 }

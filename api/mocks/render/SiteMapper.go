@@ -14,8 +14,8 @@ func (_m *SiteMapper) ClearCache() {
 	_m.Called()
 }
 
-// GetIndex provides a mock function with given fields:
-func (_m *SiteMapper) GetIndex() ([]byte, error) {
+// Index provides a mock function with given fields:
+func (_m *SiteMapper) Index() ([]byte, error) {
 	ret := _m.Called()
 
 	var r0 []byte
@@ -37,8 +37,8 @@ func (_m *SiteMapper) GetIndex() ([]byte, error) {
 	return r0, r1
 }
 
-// GetPages provides a mock function with given fields: resource
-func (_m *SiteMapper) GetPages(resource string) ([]byte, error) {
+// Pages provides a mock function with given fields: resource
+func (_m *SiteMapper) Pages(resource string) ([]byte, error) {
 	ret := _m.Called(resource)
 
 	var r0 []byte
@@ -60,8 +60,8 @@ func (_m *SiteMapper) GetPages(resource string) ([]byte, error) {
 	return r0, r1
 }
 
-// GetXSL provides a mock function with given fields: index
-func (_m *SiteMapper) GetXSL(index bool) ([]byte, error) {
+// XSL provides a mock function with given fields: index
+func (_m *SiteMapper) XSL(index bool) ([]byte, error) {
 	ret := _m.Called(index)
 
 	var r0 []byte

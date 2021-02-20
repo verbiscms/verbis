@@ -12,12 +12,12 @@ import "github.com/gin-gonic/gin"
 //
 // Returns a 404 if there was an error obtaining the XML file.
 // or there was no resource items found.
-func (c *SEO) SiteMapIndex(ctx *gin.Context) {
+func (s *SEO) SiteMapIndex(ctx *gin.Context) {
 	const op = "FrontendHandler.SiteMapIndex"
 
-	sitemap, err := c.Sitemap.GetIndex()
+	sitemap, err := s.Publisher.SiteMap().Index()
 	if err != nil {
-		c.Publisher.NotFound(ctx)
+		s.Publisher.NotFound(ctx)
 		return
 	}
 

@@ -21,7 +21,7 @@ type tester struct {
 func (t *ApiTestSuite) TestRespond() {
 
 	pagination := http.Pagination{Page: 1, Pages: 2, Limit: 10, Total: 0, Next: false, Prev: false}
-	var verr = errors.Error{Err:       nil,}
+	var verr = errors.Error{Err: nil}
 
 	tt := map[string]struct {
 		status     int
@@ -106,13 +106,13 @@ func (t *ApiTestSuite) TestRespond() {
 		"Verbis Error": {
 			400,
 			"message",
-			&errors.Error{Code:      errors.INVALID, Err:       validator.ValidationErrors{},},
+			&errors.Error{Code: errors.INVALID, Err: validator.ValidationErrors{}},
 			nil,
 			RespondJSON{
 				Status:  400,
 				Error:   true,
 				Message: "message",
-				Data:    map[string]interface {}{"errors":interface {}(nil)},
+				Data:    map[string]interface{}{"errors": interface{}(nil)},
 			},
 		},
 		"Verbis Error Nil": {
@@ -148,7 +148,7 @@ func (t *ApiTestSuite) TestRespond() {
 				Status:  400,
 				Error:   true,
 				Message: "message",
-				Data:    map[string]interface {}{"errors":[]interface {}{map[string]interface {}{"key":"field", "message":"Invalid type passed to struct struct.", "type":"Unmarshal error"}}},
+				Data:    map[string]interface{}{"errors": []interface{}{map[string]interface{}{"key": "field", "message": "Invalid type passed to struct struct.", "type": "Unmarshal error"}}},
 			},
 		},
 		"Empty Slice": {
@@ -160,7 +160,7 @@ func (t *ApiTestSuite) TestRespond() {
 				Status:  200,
 				Error:   false,
 				Message: "message",
-				Data:   map[string]interface{}{},
+				Data:    map[string]interface{}{},
 			},
 		},
 	}
@@ -203,6 +203,6 @@ func (t *ApiTestSuite) Test_GetMeta() {
 	response, err := time.Parse(layout, got.RequestTime)
 	t.NoError(err)
 
-	t.WithinDuration(time.Now(), request, 10 * time.Millisecond)
-	t.WithinDuration(time.Now(), response, 10 * time.Millisecond)
+	t.WithinDuration(time.Now(), request, 10*time.Millisecond)
+	t.WithinDuration(time.Now(), response, 10*time.Millisecond)
 }
