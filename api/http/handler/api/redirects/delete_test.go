@@ -43,7 +43,7 @@ func (t *RedirectsTestSuite) TestCategories_Delete() {
 			400,
 			"not found",
 			func(m *mocks.RedirectRepository) {
-				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.NOTFOUND,  Message: "not found"})
+				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/redirects/123",
 		},
@@ -52,7 +52,7 @@ func (t *RedirectsTestSuite) TestCategories_Delete() {
 			400,
 			"conflict",
 			func(m *mocks.RedirectRepository) {
-				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.CONFLICT,  Message: "conflict"})
+				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/redirects/123",
 		},

@@ -12,7 +12,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func api(d *deps.Deps, s *server.Server, c *handler.Handler) {
+func api(d *deps.Deps, s *server.Server) {
+
+	h := handler.NewApi(d)
 
 	// API Routes
 	api := s.Group("/api/v1")
@@ -21,15 +23,15 @@ func api(d *deps.Deps, s *server.Server, c *handler.Handler) {
 		api.Use(middleware.EmptyBody())
 
 		// Site
-		api.GET("/site", c.Site.GetSite)
+		api.GET("/site", h.Site.Global)
 
 		// Auth
-		api.POST("/login", c.Auth.Login)
-		api.POST("/logout", c.Auth.Logout)
-		api.POST("/password/reset", c.Auth.ResetPassword)
-		api.POST("/password/email", c.Auth.SendResetPassword)
-		api.GET("/password/verify/:token", c.Auth.VerifyPasswordToken)
-		api.GET("/email/verify/:token", c.Auth.VerifyEmail)
+		api.POST("/login", h.Auth.Login)
+		api.POST("/logout", h.Auth.Logout)
+		api.POST("/password/reset", h.Auth.ResetPassword)
+		api.POST("/password/email", h.Auth.SendResetPassword)
+		api.GET("/password/verify/:token", h.Auth.VerifyPasswordToken)
+		//	api.GET("/email/verify/:token", h.Auth.VerifyEmail)
 
 		// Forms
 		forms := api.Group("/forms")
@@ -41,7 +43,7 @@ func api(d *deps.Deps, s *server.Server, c *handler.Handler) {
 		//	},
 		//}))
 
-		forms.POST("/:uuid", c.Forms.Send)
+		forms.POST("/:uuid", h.Forms.Send)
 
 		// Operator
 		operator := api.Group("")
@@ -50,61 +52,61 @@ func api(d *deps.Deps, s *server.Server, c *handler.Handler) {
 			operator.Use(middleware.SessionCheck(d))
 
 			// Theme
-			operator.GET("/theme", c.Site.GetTheme)
+			operator.GET("/theme", h.Site.Theme)
 
 			// Templates
-			operator.GET("/templates", c.Site.GetTemplates)
+			operator.GET("/templates", h.Site.Templates)
 
 			// Layouts
-			operator.GET("/layouts", c.Site.GetLayouts)
+			operator.GET("/layouts", h.Site.Layouts)
 
 			// Posts
-			operator.GET("/posts", c.Posts.Get)
-			operator.GET("/posts/:id", c.Posts.GetById)
-			operator.POST("/posts", c.Posts.Create)
-			operator.PUT("/posts/:id", c.Posts.Update)
-			operator.DELETE("/posts/:id", c.Posts.Delete)
+			operator.GET("/posts", h.Posts.List)
+			operator.GET("/posts/:id", h.Posts.Find)
+			operator.POST("/posts", h.Posts.Create)
+			operator.PUT("/posts/:id", h.Posts.Update)
+			operator.DELETE("/posts/:id", h.Posts.Delete)
 
 			// Categories
-			operator.GET("/categories", c.Categories.Get)
-			operator.GET("/categories/:id", c.Categories.GetById)
-			operator.POST("/categories", c.Categories.Create)
-			operator.PUT("/categories/:id", c.Categories.Update)
-			operator.DELETE("/categories/:id", c.Categories.Delete)
+			operator.GET("/categories", h.Categories.List)
+			operator.GET("/categories/:id", h.Categories.Find)
+			operator.POST("/categories", h.Categories.Create)
+			operator.PUT("/categories/:id", h.Categories.Update)
+			operator.DELETE("/categories/:id", h.Categories.Delete)
 
 			// Media
-			operator.GET("/media", c.Media.Get)
-			operator.GET("/media/:id", c.Media.GetById)
-			operator.POST("/media", c.Media.Upload)
-			operator.PUT("/media/:id", c.Media.Update)
-			operator.DELETE("/media/:id", c.Media.Delete)
+			operator.GET("/media", h.Media.List)
+			operator.GET("/media/:id", h.Media.Find)
+			operator.POST("/media", h.Media.Upload)
+			operator.PUT("/media/:id", h.Media.Update)
+			operator.DELETE("/media/:id", h.Media.Delete)
 
 			// Users
-			operator.GET("/users", c.User.Get)
-			operator.GET("/users/:id", c.User.GetById)
-			operator.PUT("/users/:id", c.User.Update)
-			operator.POST("/users/:id/reset-password", c.User.ResetPassword)
+			operator.GET("/users", h.Users.List)
+			operator.GET("/users/:id", h.Users.Find)
+			operator.PUT("/users/:id", h.Users.Update)
+			operator.POST("/users/:id/reset-password", h.Users.ResetPassword)
 
 			// Fields
-			operator.GET("/fields", c.Fields.Get)
+			operator.GET("/fields", h.Fields.List)
 
 			// Options
-			operator.GET("/options", c.Options.Get)
-			operator.GET("/options/:name", c.Options.GetByName)
-			operator.POST("/options", c.Options.UpdateCreate)
+			operator.GET("/options", h.Options.List)
+			operator.GET("/options/:name", h.Options.Find)
+			operator.POST("/options", h.Options.UpdateCreate)
 
 			// Roles
-			operator.GET("/roles", c.User.GetRoles)
+			operator.GET("/roles", h.Users.Roles)
 
 			// Redirects
-			operator.GET("/redirects", c.Redirects.Get)
-			operator.GET("/redirects/:id", c.Redirects.GetById)
-			operator.POST("/redirects", c.Redirects.Create)
-			operator.PUT("/redirects/:id", c.Redirects.Update)
-			operator.DELETE("/redirects/:id", c.Redirects.Delete)
+			operator.GET("/redirects", h.Redirects.List)
+			operator.GET("/redirects/:id", h.Redirects.Find)
+			operator.POST("/redirects", h.Redirects.Create)
+			operator.PUT("/redirects/:id", h.Redirects.Update)
+			operator.DELETE("/redirects/:id", h.Redirects.Delete)
 
 			// Cache
-			operator.POST("/cache", c.Cache.Clear)
+			operator.POST("/cache", h.Cache.Clear)
 		}
 
 		// Administrator
@@ -114,8 +116,8 @@ func api(d *deps.Deps, s *server.Server, c *handler.Handler) {
 			operator.Use(middleware.SessionCheck(d))
 
 			// Users
-			admin.POST("/users", c.User.Create)
-			admin.DELETE("/users/:id", c.User.Delete)
+			admin.POST("/users", h.Users.Create)
+			admin.DELETE("/users/:id", h.Users.Delete)
 		}
 	}
 

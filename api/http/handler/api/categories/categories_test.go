@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -20,7 +19,7 @@ import (
 // CategoriesTestSuite defines the helper used for category
 // testing.
 type CategoriesTestSuite struct {
-	test.HandlerSuite
+	api.HandlerSuite
 }
 
 // TestCategories
@@ -28,7 +27,7 @@ type CategoriesTestSuite struct {
 // Assert testing has begun.
 func TestCategories(t *testing.T) {
 	suite.Run(t, &CategoriesTestSuite{
-		HandlerSuite: test.APITestSuite(),
+		HandlerSuite: api.TestSuite(),
 	})
 }
 
@@ -47,7 +46,7 @@ func (t *CategoriesTestSuite) Setup(mf func(m *mocks.CategoryRepository)) *Categ
 		Deps: &deps.Deps{
 			Store: &models.Store{
 				Categories: m,
-				Posts: pm,
+				Posts:      pm,
 			},
 		},
 	}
@@ -56,36 +55,36 @@ func (t *CategoriesTestSuite) Setup(mf func(m *mocks.CategoryRepository)) *Categ
 var (
 	// The default category used for testing.
 	category = domain.Category{
-		Id: 123,
-		Slug: "/cat",
-		Name: "Category",
+		Id:       123,
+		Slug:     "/cat",
+		Name:     "Category",
 		Resource: "test",
 	}
 	// The default category with wrong validation used for testing.
 	categoryBadValidation = domain.Category{
-		Id: 123,
-		Name: "Category",
+		Id:       123,
+		Name:     "Category",
 		Resource: "test",
 	}
 	// The default categories used for testing.
 	categories = []domain.Category{
 		{
-			Id: 123,
+			Id:   123,
 			Slug: "/cat",
 			Name: "Category",
 		},
 		{
-			Id: 124,
+			Id:   124,
 			Slug: "/cat1",
 			Name: "Category1",
 		},
 	}
 	// The default pagination used for testing.
 	pagination = params.Params{
-		Page: api.DefaultParams.Page,
-		Limit: 15,
-		OrderBy: api.DefaultParams.OrderBy,
+		Page:           api.DefaultParams.Page,
+		Limit:          15,
+		OrderBy:        api.DefaultParams.OrderBy,
 		OrderDirection: api.DefaultParams.OrderDirection,
-		Filters: nil,
+		Filters:        nil,
 	}
 )

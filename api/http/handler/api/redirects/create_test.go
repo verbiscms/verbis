@@ -34,7 +34,7 @@ func (t *RedirectsTestSuite) TestCategories_Create() {
 			},
 		},
 		"Validation Failed": {
-			api.ValidationErrJson{Errors: validation.Errors{{Key: "to", Message: "To is required.", Type: "required"}}},
+			api.ErrorJson{Errors: validation.Errors{{Key: "to", Message: "To is required.", Type: "required"}}},
 			400,
 			"Validation failed",
 			redirectBadValidation,

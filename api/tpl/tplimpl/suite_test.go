@@ -21,7 +21,7 @@ import (
 
 type TplTestSuite struct {
 	suite.Suite
-	apiPath string
+	apiPath   string
 	logWriter bytes.Buffer
 }
 
@@ -45,7 +45,7 @@ func (t *TplTestSuite) Reset() {
 	t.logWriter.Reset()
 }
 
-func(t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostData) {
+func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostData) {
 	gin.SetMode(gin.TestMode)
 
 	rr := httptest.NewRecorder()
@@ -81,9 +81,9 @@ func(t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostData)
 	}
 
 	d := &deps.Deps{
-		Store:   nil,
-		Config:  nil,
-		Site:    domain.Site{},
+		Store:  nil,
+		Config: nil,
+		Site:   domain.Site{},
 		Options: &domain.Options{
 			GeneralLocale: "en-gb",
 		},
@@ -94,4 +94,3 @@ func(t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostData)
 
 	return &TemplateManager{deps: d}, ctx, post
 }
-

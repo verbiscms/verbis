@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"io"
 	"mime/multipart"
@@ -25,7 +24,7 @@ import (
 // MediaTestSuite defines the helper used for media
 // testing.
 type MediaTestSuite struct {
-	test.HandlerSuite
+	api.HandlerSuite
 }
 
 // TestCategories
@@ -33,7 +32,7 @@ type MediaTestSuite struct {
 // Assert testing has begun.
 func TestMedia(t *testing.T) {
 	suite.Run(t, &MediaTestSuite{
-		HandlerSuite: test.APITestSuite(),
+		HandlerSuite: api.TestSuite(),
 	})
 }
 
@@ -86,30 +85,30 @@ func (t *MediaTestSuite) ImagePath() string {
 var (
 	// The default media item used for testing.
 	mediaItem = domain.Media{
-		Id:          123,
+		Id: 123,
 	}
 	// The default media item with wrong validation used for testing.
 	mediaBadValidation = &domain.Media{}
 	// The default media items used for testing.
 	mediaItems = []domain.Media{
 		{
-			Id:          1,
-			Url:         "/uploads/1",
-			Title:       "title",
+			Id:    1,
+			Url:   "/uploads/1",
+			Title: "title",
 		},
 		{
-			Id:          1,
-			Url:         "/uploads/1",
-			Title:       "title",
+			Id:    1,
+			Url:   "/uploads/1",
+			Title: "title",
 		},
 	}
 	// The default pagination used for testing.
 	pagination = params.Params{
-		Page: api.DefaultParams.Page,
-		Limit: 15,
-		OrderBy: api.DefaultParams.OrderBy,
+		Page:           api.DefaultParams.Page,
+		Limit:          15,
+		OrderBy:        api.DefaultParams.OrderBy,
 		OrderDirection: api.DefaultParams.OrderDirection,
-		Filters: nil,
+		Filters:        nil,
 	}
 )
 

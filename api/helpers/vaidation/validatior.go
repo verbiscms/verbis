@@ -22,7 +22,6 @@ type Validator interface {
 	message(kind string, field string, param string) string
 }
 
-
 // Validation defines site wide validation for endpoints
 // and using the Package validation helper.
 type Validation struct {

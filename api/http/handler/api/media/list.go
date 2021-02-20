@@ -6,7 +6,6 @@ package media
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
@@ -20,7 +19,7 @@ import (
 func (m *Media) List(ctx *gin.Context) {
 	const op = "MediaHandler.List"
 
-	p := params.ApiParams(ctx, api.DefaultParams).Get()
+	p := api.Params(ctx).Get()
 
 	media, total, err := m.Store.Media.Get(p)
 	if errors.Code(err) == errors.NOTFOUND {

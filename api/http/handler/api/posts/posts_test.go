@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -20,7 +19,7 @@ import (
 // PostsTestSuite defines the helper used for post
 // testing.
 type PostsTestSuite struct {
-	test.HandlerSuite
+	api.HandlerSuite
 }
 
 // TestPosts
@@ -28,7 +27,7 @@ type PostsTestSuite struct {
 // Assert testing has begun.
 func TestPosts(t *testing.T) {
 	suite.Run(t, &PostsTestSuite{
-		HandlerSuite: test.APITestSuite(),
+		HandlerSuite: api.TestSuite(),
 	})
 }
 
@@ -54,29 +53,29 @@ func (t *PostsTestSuite) Setup(mf func(m *mocks.PostsRepository)) *Posts {
 var (
 	// The default post used for testing.
 	post = domain.Post{
-		Id: 123,
-		Slug: "/post",
+		Id:    123,
+		Slug:  "/post",
 		Title: "post",
 	}
 	// The default post create used for testing.
 	postCreate = domain.PostCreate{
 		Post: domain.Post{
-			Id: 123,
+			Id:    123,
 			Title: "post",
-			Slug: "/post",
+			Slug:  "/post",
 		},
 	}
 	postData = domain.PostData{
 		Post: domain.Post{
-			Id: 123,
-			Slug: "/post",
+			Id:    123,
+			Slug:  "/post",
 			Title: "post",
 		},
 	}
 	// The default post with wrong validation used for testing.
 	postBadValidation = domain.PostCreate{
 		Post: domain.Post{
-			Id: 123,
+			Id:    123,
 			Title: "post",
 		},
 	}
@@ -84,25 +83,25 @@ var (
 	posts = []domain.PostData{
 		{
 			Post: domain.Post{
-				Id: 123,
-				Slug: "/post",
+				Id:    123,
+				Slug:  "/post",
 				Title: "post",
 			},
 		},
 		{
 			Post: domain.Post{
-				Id: 124,
-				Slug: "/post1",
+				Id:    124,
+				Slug:  "/post1",
 				Title: "post1",
 			},
 		},
 	}
 	// The default pagination used for testing.
 	pagination = params.Params{
-		Page: api.DefaultParams.Page,
-		Limit: 15,
-		OrderBy: api.DefaultParams.OrderBy,
+		Page:           api.DefaultParams.Page,
+		Limit:          15,
+		OrderBy:        api.DefaultParams.OrderBy,
 		OrderDirection: api.DefaultParams.OrderDirection,
-		Filters: nil,
+		Filters:        nil,
 	}
 )

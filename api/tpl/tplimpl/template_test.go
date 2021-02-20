@@ -36,13 +36,12 @@ func (t *TplTestSuite) TestTemplateManager_Prepare() {
 func (t *TplTestSuite) TestExecute_Execute() {
 
 	tt := map[string]struct {
-		config tpl.Config
-		name string
-		data interface{}
+		config      tpl.Config
+		name        string
+		data        interface{}
 		fileHandler fileHandler
-		want interface{}
-		wantName string
-
+		want        interface{}
+		wantName    string
 	}{
 		"Simple": {
 			tpl.Config{Extension: ".html", Root: root},
@@ -142,7 +141,7 @@ func (t *TplTestSuite) TestExecute_Exists() {
 
 	tt := map[string]struct {
 		handler fileHandler
-		want bool
+		want    bool
 	}{
 		"Exists": {
 			func(config tpl.TemplateConfig, template string) (content string, err error) {
@@ -160,7 +159,7 @@ func (t *TplTestSuite) TestExecute_Exists() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			e := Execute{fileHandler:     test.handler}
+			e := Execute{fileHandler: test.handler}
 			got := e.Exists("test")
 			t.Equal(test.want, got)
 		})

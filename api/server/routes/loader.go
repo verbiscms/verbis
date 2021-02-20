@@ -20,7 +20,7 @@ func Load(d *deps.Deps, s *server.Server, c *handler.Handler) {
 	s.Use(middleware.CORS())
 
 	// Load routes
-	api(d, s, c)
+	api(d, s)
 	frontend(d, s, c)
 	spa(d, s, c)
 }

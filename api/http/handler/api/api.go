@@ -6,6 +6,7 @@ package api
 
 import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/gin-gonic/gin"
 )
 
 var (
@@ -19,3 +20,22 @@ var (
 	}
 )
 
+// Params
+//
+// Sets up a new Params struct with context.
+func Params(g *gin.Context) *params.Params {
+	return params.New(&apiParams{ctx: g}, DefaultParams)
+}
+
+// apiParams defines the helper for returning context parameters.
+type apiParams struct {
+	ctx *gin.Context
+}
+
+// Param
+//
+// Satisfies the Stringer interface by returning a query
+// parameters to pass information to models.
+func (a *apiParams) Param(q string) string {
+	return a.ctx.Query(q)
+}

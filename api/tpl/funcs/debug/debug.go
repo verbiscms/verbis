@@ -1,14 +1,14 @@
- // Copyright 2020 The Verbis Authors. All rights reserved.
+// Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
 package debug
 
- import (
-	 "fmt"
-	 "github.com/sanity-io/litter"
-	 "html/template"
- )
+import (
+	"fmt"
+	"github.com/sanity-io/litter"
+	"html/template"
+)
 
 const (
 	// CSS describes the styling for dumps to be sent back

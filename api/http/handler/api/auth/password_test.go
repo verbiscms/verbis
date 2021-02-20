@@ -26,7 +26,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			Token:       "token",
 		}
 	)
-	
+
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -35,7 +35,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 		mock    func(m *mocks.AuthRepository)
 	}{
 		"Success": {
-			 nil,
+			nil,
 			200,
 			"Successfully reset password",
 			rp,
@@ -44,7 +44,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			},
 		},
 		"Validation Failed": {
-			api.ValidationErrJson{Errors: validation.Errors{{Key: "confirm_password", Message: "Confirm Password must equal the New Password.", Type: "eqfield"}}},
+			api.ErrorJson{Errors: validation.Errors{{Key: "confirm_password", Message: "Confirm Password must equal the New Password.", Type: "eqfield"}}},
 			400,
 			"Validation failed",
 			rpdBadValidation,
