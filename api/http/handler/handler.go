@@ -18,7 +18,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api/site"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/users"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend"
+	"github.com/ainsleyclark/verbis/api/http/handler/frontend/public"
 	"github.com/ainsleyclark/verbis/api/http/handler/spa"
+	"github.com/ainsleyclark/verbis/api/render"
 )
 
 // Handler defines all of handler funcs for the app.
@@ -69,4 +71,13 @@ func NewApi(d *deps.Deps) *ApiHandler {
 		Site:       &site.Site{Deps: d},
 		Users:      &users.Users{Deps: d},
 	}
+}
+
+type Frontend struct {
+	Public public.Handler
+
+}
+
+func NewFrontend(d *deps.Deps, publisher render.Render) {
+
 }
