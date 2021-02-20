@@ -26,7 +26,7 @@ func TestPublic(t *testing.T) {
 	b := []byte(testString)
 	suite.Run(t, &PublicTestSuite{
 		HandlerSuite: api.TestSuite(),
-		bytes: &b,
+		bytes:        &b,
 	})
 }
 

@@ -145,7 +145,7 @@ func GetMeta(ctx *gin.Context, pagination []*http.Pagination) Meta {
 
 	// Calculate start, end and latency time
 	var startTime = time.Now()
-	requestTime, exists := ctx.Get("request_time");
+	requestTime, exists := ctx.Get("request_time")
 	if exists {
 		startTime = requestTime.(time.Time)
 	}

@@ -12,12 +12,12 @@ import "github.com/gin-gonic/gin"
 // is used to serve the sitemap.
 //
 // Returns a 404 if there was an error obtaining the XSL.
-func (c *SEO) SiteMapXSL(ctx *gin.Context, index bool) {
+func (s *SEO) SiteMapXSL(ctx *gin.Context, index bool) {
 	const op = "FrontendHandler.SiteMapIndexXSL"
 
-	sitemap, err := c.Sitemap.GetXSL(index)
+	sitemap, err := s.Publisher.SiteMap().XSL(index)
 	if err != nil {
-		c.Publisher.NotFound(ctx)
+		s.Publisher.NotFound(ctx)
 		return
 	}
 

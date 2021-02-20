@@ -29,9 +29,9 @@ import (
 
 // SiteMapper represents functions for executing the sitemap data.
 type SiteMapper interface {
-	GetIndex() ([]byte, error)
-	GetPages(resource string) ([]byte, error)
-	GetXSL(index bool) ([]byte, error)
+	Index() ([]byte, error)
+	Pages(resource string) ([]byte, error)
+	XSL(index bool) ([]byte, error)
 	ClearCache()
 }
 
@@ -111,7 +111,7 @@ func NewSitemap(m *models.Store) *Sitemap {
 // constructed and executed.
 //
 // Returns errors.CONFLICT if the sitemap serve options was not enabled.
-func (s *Sitemap) GetIndex() ([]byte, error) {
+func (s *Sitemap) Index() ([]byte, error) {
 	const op = "SiteMapper.GetIndex"
 
 	if !s.options.SeoSitemapServe {
@@ -156,7 +156,7 @@ func (s *Sitemap) GetIndex() ([]byte, error) {
 // path for use with the sitemap-xml file.
 //
 // Returns errors.INTERNAL if the ioutil function failed to read the path.
-func (s *Sitemap) GetXSL(index bool) ([]byte, error) {
+func (s *Sitemap) XSL(index bool) ([]byte, error) {
 	const op = "SiteMapper.GeXLS"
 
 	fileName := s.indexXSL
@@ -186,7 +186,7 @@ func (s *Sitemap) GetXSL(index bool) ([]byte, error) {
 // Returns errors.CONFLICT if the sitemap serve options was not enabled.
 // Returns errors.INTERNAL if the pages template was unable to be executed.
 // Returns errors.NOTFOUND if the given resource was not found within the resource or redirects.
-func (s *Sitemap) GetPages(resource string) ([]byte, error) {
+func (s *Sitemap) Pages(resource string) ([]byte, error) {
 	const op = "SiteMapper.GetPages"
 
 	if !s.options.SeoSitemapServe {
