@@ -6,7 +6,6 @@ package posts
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
@@ -23,7 +22,7 @@ import (
 func (c *Posts) List(ctx *gin.Context) {
 	const op = "PostHandler.List"
 
-	p := params.ApiParams(ctx, api.DefaultParams).Get()
+	p := api.Params(ctx).Get()
 
 	posts, total, err := c.Store.Posts.Get(p, true, ctx.Query("resource"), ctx.Query("status"))
 	if errors.Code(err) == errors.NOTFOUND {

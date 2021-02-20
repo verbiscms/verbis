@@ -25,7 +25,7 @@ var (
 		Theme: &domain.ThemeConfig{
 			TemplateDir: "templates",
 			LayoutDir:   "layouts",
-			AssetsPath: "/assets/",
+			AssetsPath:  "/assets/",
 		},
 	})
 )

@@ -6,7 +6,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http"
@@ -16,7 +15,11 @@ import (
 	"time"
 )
 
-type RespondJson struct {
+// RespondJSON defines the main struct for sending back
+// data for API requests, it includes a status code,
+// if the handler produced an error, a message,
+// meta information and the main data.
+type RespondJSON struct {
 	Status  int         `json:"status"`
 	Error   bool        `json:"error"`
 	Message string      `json:"message"`
@@ -24,6 +27,8 @@ type RespondJson struct {
 	Data    interface{} `json:"data"`
 }
 
+// Meta defines any additional information for API
+// request, including pagination for list routes.
 type Meta struct {
 	RequestTime  string      `json:"request_time"`
 	ResponseTime string      `json:"response_time"`
@@ -31,164 +36,131 @@ type Meta struct {
 	Pagination   interface{} `json:"pagination,omitempty"`
 }
 
-type ValidationErrJson struct {
+// ErrorJson defines the validation errors if there any
+// when processing data via handlers.
+type ErrorJson struct {
 	Errors validation.Errors `json:"errors"`
 }
 
-// Main JSON responder.
-func Respond(g *gin.Context, status int, message string, data interface{}, pagination ...*http.Pagination) {
+// Respond
+//
+// Returns RespondJSON and sends back the main data for
+// use with the API. Returns status, message and data.
+func Respond(ctx *gin.Context, status int, message string, data interface{}, pagination ...*http.Pagination) {
+	ctx.Set("verbis_message", message)
 
-	// Check the response data
-	if d, changed := checkResponseData(g, data); changed {
-		data = d
-	}
-
-	g.Set("verbis_message", message)
-
-	// If there is no error set the status to 200
 	hasError := false
 	if status != 200 {
 		hasError = true
 	}
 
-	// Check if the pagination is empty
-	var returnPagination interface{}
-	if len(pagination) == 0 {
-		pagination = nil
-	} else if pagination[0] == nil {
-		returnPagination = nil
-	} else {
-		returnPagination = pagination[0]
-	}
-
-	// Construct meta
-	m := calculateRequestTime(g)
-	m.Pagination = returnPagination
-
-	// Set up the response JSON
-	respond := RespondJson{
+	ctx.JSON(status, RespondJSON{
 		Status:  status,
 		Message: message,
 		Error:   hasError,
-		Meta:    m,
-		Data:    data,
-	}
-
-	// Respond
-	g.JSON(status, respond)
+		Meta:    GetMeta(ctx, pagination),
+		Data:    checkResponseData(ctx, data),
+	})
 
 	return
 }
 
-// Abort with JSON
+// AbortJSON
+//
+// Returns RespondJSON and aborts the request with given
+// status, message and data.
 func AbortJSON(g *gin.Context, status int, message string, data interface{}) {
-
-	// Check the response data
-	if d, changed := checkResponseData(g, data); changed {
-		data = d
-	}
-
-	// If there is no error set the status to 200
 	hasError := false
 	if status != 200 {
 		hasError = true
 	}
 
-	// Set up the response JSON
-	respond := RespondJson{
+	g.AbortWithStatusJSON(status, RespondJSON{
 		Status:  status,
 		Error:   hasError,
 		Message: message,
-		Meta:    calculateRequestTime(g),
-		Data:    data,
-	}
-
-	// Respond
-	g.AbortWithStatusJSON(status, respond)
+		Meta:    GetMeta(g, nil),
+		Data:    checkResponseData(g, data),
+	})
 }
 
-// Handle 404s.
-func notFound(g *gin.Context) {
-	g.AbortWithError(404, fmt.Errorf("Page not found"))
-}
+// checkResponseData
+//
+// Checks what type of data is passed and processes it
+// accordingly. errors, empty slices & interfaces as
+// well as validation. Returns the original data
+// if the type passed is not of type error or
+// nil
+func checkResponseData(ctx *gin.Context, data interface{}) interface{} {
 
-// checkResponseData checks what type of data is passed and processes it
-// accordingly. errors, empty slices & interfaces as well as validation.
-// Returns true if the data has changed.
-func checkResponseData(g *gin.Context, data interface{}) (interface{}, bool) {
+	switch v := data.(type) {
+	case nil:
+		return gin.H{}
+	case *errors.Error:
+		ctx.Set("verbis_error", v)
 
-	if data == nil {
-		return gin.H{}, true
-	}
-
-	// Get the type of data
-	dataType := reflect.TypeOf(data).String()
-
-	// Report to the log if data is an error
-	if dataType == "*errors.Error" {
-		errData := data.(*errors.Error)
-		g.Set("verbis_error", errData)
-
-		if errData.Err != nil {
-			errType := reflect.TypeOf(errData.Err).String()
-
-			if errType == "validator.ValidationErrors" && errData.Code == errors.INVALID {
-				validationErrors, _ := errData.Err.(validator.ValidationErrors)
-				v := validation.New()
-				data = &ValidationErrJson{
-					Errors: v.Process(validationErrors),
-				}
-				return data, true
-			} else {
-				return gin.H{}, true
-			}
+		if v.Err == nil {
+			return gin.H{}
 		}
 
-		return gin.H{}, true
+		errType := reflect.TypeOf(v.Err)
+		if errType.String() == "validator.ValidationErrors" && v.Code == errors.INVALID {
+			validationErrors := v.Err.(validator.ValidationErrors)
+			val := validation.New()
+			return &ErrorJson{
+				Errors: val.Process(validationErrors),
+			}
+		} else {
+			return gin.H{}
+		}
+	case *json.UnmarshalTypeError:
+		return ErrorJson{
+			Errors: validation.Errors{
+				{
+					Key:     v.Field,
+					Type:    "Unmarshal error",
+					Message: "Invalid type passed to " + v.Struct + " struct.",
+				},
+			},
+		}
 	}
 
-	// Check if data is nil or an empty slice, if it is return empty object
 	if reflect.TypeOf(data).Kind().String() == "slice" {
 		s := reflect.ValueOf(data)
 		ret := make([]interface{}, s.Len())
 		if len(ret) == 0 {
-			return gin.H{}, true
+			return gin.H{}
 		}
 	}
 
-	// If data is of type validation errors, pass to validator
-
-	// If the data is type unmarshal error
-	if dataType == "*json.UnmarshalTypeError" {
-		e, _ := data.(*json.UnmarshalTypeError)
-		data = &ValidationErrJson{
-			Errors: validation.Errors{
-				{
-					Key:     e.Field,
-					Type:    "Unmarshal error",
-					Message: "Invalid type passed to " + e.Struct + " struct.",
-				},
-			},
-		}
-		return data, true
-	}
-
-	return gin.H{}, false
+	return data
 }
 
-// calculateRequestTime processes the request and response time and works out latency time.
-// Returns Meta
-func calculateRequestTime(g *gin.Context) Meta {
-	var startTime = time.Now()
+// GetMeta
+//
+// Processes the request and response time and calculates
+// latency time. Sets pagination if the length is
+// greater than one.
+func GetMeta(ctx *gin.Context, pagination []*http.Pagination) Meta {
 
-	if t, exists := g.Get("request_time"); exists {
-		startTime = t.(time.Time)
+	// Calculate start, end and latency time
+	var startTime = time.Now()
+	requestTime, exists := ctx.Get("request_time");
+	if exists {
+		startTime = requestTime.(time.Time)
 	}
 	latencyTime := time.Since(startTime)
+
+	// Check if the pagination is empty
+	var p interface{} = nil
+	if len(pagination) == 1 {
+		p = pagination[0]
+	}
 
 	return Meta{
 		RequestTime:  startTime.UTC().String(),
 		ResponseTime: time.Now().UTC().String(),
 		LatencyTime:  latencyTime.Round(time.Microsecond).String(),
+		Pagination:   p,
 	}
 }

@@ -18,7 +18,7 @@ func (t *TplTestSuite) TestFuncs() {
 	tm, ctx, post := t.Setup()
 
 	v := variables.Data(tm.deps, ctx, post)
-	td := &internal.TemplateDeps{Context: ctx, Post:    post, Cfg:     nil,}
+	td := &internal.TemplateDeps{Context: ctx, Post: post, Cfg: nil}
 	funcs := tm.FuncMap(ctx, post, nil)
 
 	for _, ns := range tm.getNamespaces(td) {

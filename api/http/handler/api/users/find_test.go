@@ -32,7 +32,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 			"/users/123",
 		},
 		"Invalid ID": {
-			 nil,
+			nil,
 			400,
 			"Pass a valid number to obtain the user by ID",
 			func(m *mocks.UserRepository) {

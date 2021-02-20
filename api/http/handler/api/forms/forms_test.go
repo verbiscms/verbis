@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -19,7 +18,7 @@ import (
 // FormsTestSuite defines the helper used for form
 // testing.
 type FormsTestSuite struct {
-	test.HandlerSuite
+	api.HandlerSuite
 }
 
 // TestForms
@@ -27,7 +26,7 @@ type FormsTestSuite struct {
 // Assert testing has begun.
 func TestForms(t *testing.T) {
 	suite.Run(t, &FormsTestSuite{
-		HandlerSuite: test.APITestSuite(),
+		HandlerSuite: api.TestSuite(),
 	})
 }
 
@@ -57,27 +56,27 @@ type body struct {
 var (
 	// The default form used for testing.
 	form = domain.Form{
-		Id: 123,
+		Id:   123,
 		Name: "Form",
 		Fields: []domain.FormField{
 			{
-				Key:        "key",
-				Label:      "label",
-				Type:       "text",
-				Required:   true,
+				Key:      "key",
+				Label:    "label",
+				Type:     "text",
+				Required: true,
 			},
 		},
 	}
 	// The default form with body used for testing.
 	formBody = domain.Form{
-		Id: 123,
+		Id:   123,
 		Name: "Form",
 		Fields: []domain.FormField{
 			{
-				Key:        "key",
-				Label:      "label",
-				Type:       "text",
-				Required:   true,
+				Key:      "key",
+				Label:    "label",
+				Type:     "text",
+				Required: true,
 			},
 		},
 		Body: body{Name: "test"},
@@ -92,22 +91,22 @@ var (
 	// The default forms used for testing.
 	forms = []domain.Form{
 		{
-			Id: 123,
+			Id:   123,
 			Name: "Form",
 			Body: body{Name: "test"},
 		},
 		{
-			Id: 124,
+			Id:   124,
 			Name: "Form1",
 			Body: body{Name: "test"},
 		},
 	}
 	// The default pagination used for testing.
 	pagination = params.Params{
-		Page: api.DefaultParams.Page,
-		Limit: 15,
-		OrderBy: api.DefaultParams.OrderBy,
+		Page:           api.DefaultParams.Page,
+		Limit:          15,
+		OrderBy:        api.DefaultParams.OrderBy,
 		OrderDirection: api.DefaultParams.OrderDirection,
-		Filters: nil,
+		Filters:        nil,
 	}
 )

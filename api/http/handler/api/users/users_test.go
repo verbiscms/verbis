@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin/binding"
 	pkgValidate "github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/mock"
@@ -23,7 +22,7 @@ import (
 // UsersTestSuite defines the helper used for category
 // testing.
 type UsersTestSuite struct {
-	test.HandlerSuite
+	api.HandlerSuite
 }
 
 // TestUsers
@@ -32,7 +31,7 @@ type UsersTestSuite struct {
 func TestUsers(t *testing.T) {
 	cache.Init()
 	suite.Run(t, &UsersTestSuite{
-		HandlerSuite: test.APITestSuite(),
+		HandlerSuite: api.TestSuite(),
 	})
 }
 
@@ -59,7 +58,7 @@ func (t *UsersTestSuite) Setup(mf func(m *mocks.UserRepository)) *Users {
 		Deps: &deps.Deps{
 			Store: &models.Store{
 				Posts: pm,
-				User: m,
+				User:  m,
 			},
 		},
 	}
@@ -129,13 +128,13 @@ var (
 	// The default roles used for testing.
 	roles = []domain.UserRole{
 		{
-			Id: 1,
-			Name: "Banned",
+			Id:          1,
+			Name:        "Banned",
 			Description: "Banned Role",
 		},
 		{
-			Id: 2,
-			Name: "Administrator",
+			Id:          2,
+			Name:        "Administrator",
 			Description: "Administrator Role",
 		},
 	}
@@ -154,10 +153,10 @@ var (
 	}
 	// The default pagination used for testing.
 	pagination = params.Params{
-		Page: api.DefaultParams.Page,
-		Limit: 15,
-		OrderBy: api.DefaultParams.OrderBy,
+		Page:           api.DefaultParams.Page,
+		Limit:          15,
+		OrderBy:        api.DefaultParams.OrderBy,
 		OrderDirection: api.DefaultParams.OrderDirection,
-		Filters: nil,
+		Filters:        nil,
 	}
 )

@@ -36,10 +36,10 @@ func Setup(t *testing.T) *mocks.TemplateExecutor {
 func TestNamespace_Partial(t *testing.T) {
 
 	tt := map[string]struct {
-		name string
-		data interface{}
+		name     string
+		data     interface{}
 		multiple bool
-		want interface{}
+		want     interface{}
 	}{
 		"Success": {
 			`html/partial.cms`,

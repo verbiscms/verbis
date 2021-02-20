@@ -6,7 +6,6 @@ package categories
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
@@ -20,7 +19,7 @@ import (
 func (c *Categories) List(ctx *gin.Context) {
 	const op = "CategoryHandler.List"
 
-	p := params.ApiParams(ctx, api.DefaultParams).Get()
+	p := api.Params(ctx).Get()
 
 	categories, total, err := c.Store.Categories.Get(p)
 	if errors.Code(err) == errors.NOTFOUND {

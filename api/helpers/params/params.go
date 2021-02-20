@@ -46,10 +46,10 @@ type Filter struct {
 
 // Defaults represents the default configuration for obtaining params.
 type Defaults struct {
-	Page           int `json:"page"`
+	Page           int         `json:"page"`
 	Limit          interface{} `json:"limit"`
-	OrderBy        string `json:"order_by"`
-	OrderDirection string  `json:"order_direction"`
+	OrderBy        string      `json:"order_by"`
+	OrderDirection string      `json:"order_direction"`
 }
 
 // NewParams - create a new parameter type
@@ -112,7 +112,7 @@ func (p *Params) limit() (int, bool) {
 
 	limit, err := strconv.Atoi(limitStr)
 	defLimit, ok := p.defaults.Limit.(int)
-	if !ok || err != nil || defLimit == 0  {
+	if !ok || err != nil || defLimit == 0 {
 		return DefaultLimit, false
 	}
 

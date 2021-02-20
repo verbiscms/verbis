@@ -34,7 +34,7 @@ func (t *FormsTestSuite) TestForms_Create() {
 			},
 		},
 		"Validation Failed": {
-			api.ValidationErrJson{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
+			api.ErrorJson{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
 			400,
 			"Validation failed",
 			formBadValidation,

@@ -41,7 +41,7 @@ func (m *mockStringer) Param(param string) string {
 func TestParams_Get(t *testing.T) {
 
 	tt := map[string]struct {
-		def Defaults
+		def  Defaults
 		want Params
 	}{
 		"No Defaults": {
@@ -89,7 +89,7 @@ func TestParams_Get(t *testing.T) {
 }
 
 // Limit Error
-type mockLimit struct {}
+type mockLimit struct{}
 
 func (m *mockLimit) Param(param string) string {
 	return "0"
@@ -104,7 +104,7 @@ func TestParams_LimitError(t *testing.T) {
 }
 
 // Page Error
-type mockPage struct {}
+type mockPage struct{}
 
 func (m *mockPage) Param(param string) string {
 	return "99999999999999999999999999999"
@@ -129,13 +129,13 @@ func TestParams_Filter(t *testing.T) {
 
 	tt := map[string]struct {
 		filter string
-		want map[string][]Filter
+		want   map[string][]Filter
 	}{
 		"Filter": {
 			`{"resource":[{"operator":"=", "value":"verbis"}]}`,
 			map[string][]Filter{
 				"resource": {
-					{Operator: "=", Value:    "verbis",},
+					{Operator: "=", Value: "verbis"},
 				},
 			},
 		},
