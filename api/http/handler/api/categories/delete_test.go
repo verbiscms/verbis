@@ -43,7 +43,7 @@ func (t *CategoriesTestSuite) TestCategories_Delete() {
 			400,
 			"not found",
 			func(m *mocks.CategoryRepository) {
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND,  Message: "not found"})
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/categories/123",
 		},
@@ -52,7 +52,7 @@ func (t *CategoriesTestSuite) TestCategories_Delete() {
 			400,
 			"conflict",
 			func(m *mocks.CategoryRepository) {
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT,  Message: "conflict"})
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/categories/123",
 		},

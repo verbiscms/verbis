@@ -72,7 +72,7 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 	var (
 		tpl *template.Template
 		err error
-		ok bool
+		ok  bool
 	)
 
 	e.tplMutex.RLock()

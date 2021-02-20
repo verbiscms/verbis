@@ -7,9 +7,9 @@ package options
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -17,7 +17,7 @@ import (
 // OptionsTestSuite defines the helper used for option
 // testing.
 type OptionsTestSuite struct {
-	test.HandlerSuite
+	api.HandlerSuite
 }
 
 // TestOptions
@@ -25,7 +25,7 @@ type OptionsTestSuite struct {
 // Assert testing has begun.
 func TestOptions(t *testing.T) {
 	suite.Run(t, &OptionsTestSuite{
-		HandlerSuite: test.APITestSuite(),
+		HandlerSuite: api.TestSuite(),
 	})
 }
 
@@ -68,11 +68,11 @@ var (
 	// The default options used for testing.
 	options = domain.OptionsDB{
 		"test1": domain.OptionDB{
-			ID: 123,
+			ID:   123,
 			Name: "test",
 		},
 		"test2": domain.OptionDB{
-			ID: 124,
+			ID:   124,
 			Name: "test1",
 		},
 	}

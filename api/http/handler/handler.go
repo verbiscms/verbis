@@ -6,7 +6,6 @@ package handler
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/auth"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/cache"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/categories"
@@ -24,42 +23,19 @@ import (
 
 // Handler defines all of handler funcs for the app.
 type Handler struct {
-	Auth       api.AuthHandler
-	Cache      api.CacheHandler
-	Categories api.CategoryHandler
-	Media      api.MediaHandler
-	Options    api.OptionsHandler
-	Posts      api.PostHandler
-	Redirects  api.RedirectHandler
-	Site       api.SiteHandler
-	User       api.UserHandler
-	Forms      api.FormHandler
-	Fields     api.FieldHandler
-	Frontend   frontend.PublicHandler
-	SEO        frontend.SEOHandler
-	SPA        spa.SPAHandler
+	Frontend frontend.PublicHandler
+	SEO      frontend.SEOHandler
+	SPA      spa.SPAHandler
 }
 
 // Construct
 func New(d *deps.Deps) *Handler {
 	return &Handler{
-		Auth:       api.NewAuth(d),
-		Cache:      api.NewCache(d),
-		Categories: api.NewCategories(d),
-		Fields:     api.NewFields(d),
-		Forms:      api.NewForms(d),
-		Media:      api.NewMedia(d),
-		Options:    api.NewOptions(d),
-		Posts:      api.NewPosts(d),
-		Redirects:  api.NewRedirects(d),
-		Site:       api.NewSite(d),
-		User:       api.NewUser(d),
-		SPA:        spa.NewSpa(d),
-		Frontend:   frontend.NewPublic(d),
-		SEO:        frontend.NewSEO(d),
+		SPA:      spa.NewSpa(d),
+		Frontend: frontend.NewPublic(d),
+		SEO:      frontend.NewSEO(d),
 	}
 }
-
 
 // Handler defines all of handler funcs for the API.
 type ApiHandler struct {
@@ -76,10 +52,10 @@ type ApiHandler struct {
 	Users      users.Handler
 }
 
-// NewApiHandler
+// NewApi
 //
 // Returns a new API handler for routes.
-func NewApiHandler(d *deps.Deps) *ApiHandler {
+func NewApi(d *deps.Deps) *ApiHandler {
 	return &ApiHandler{
 		Auth:       &auth.Auth{Deps: d},
 		Cache:      &cache.Cache{Deps: d},

@@ -36,7 +36,7 @@ func (a *Auth) SendResetPassword(ctx *gin.Context) {
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 400, errors.Message(err), err)
 		return
-	}else if err != nil {
+	} else if err != nil {
 		api.Respond(ctx, 500, errors.Message(err), err)
 		return
 	}

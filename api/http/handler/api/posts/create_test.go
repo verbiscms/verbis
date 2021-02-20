@@ -34,7 +34,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 			},
 		},
 		"Validation Failed": {
-			api.ValidationErrJson{Errors: validation.Errors{{Key: "slug", Message: "Post Slug is required.", Type: "required"}}},
+			api.ErrorJson{Errors: validation.Errors{{Key: "slug", Message: "Post Slug is required.", Type: "required"}}},
 			400,
 			"Validation failed",
 			postBadValidation,

@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package test
+package api
 
 import (
 	"bytes"
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
 	"io"
@@ -18,6 +17,7 @@ import (
 )
 
 const (
+	// The header to be expected to be recieved from the API.
 	JsonHeader = "application/json; charset=utf-8"
 )
 
@@ -29,10 +29,11 @@ type HandlerSuite struct {
 	Engine   *gin.Engine
 }
 
-
-// APITestSuite - New recorder for testing
+// TestSuite
+//
+// New recorder for testing
 // controllers, initialises gin & sets gin mode.
-func APITestSuite() HandlerSuite {
+func TestSuite() HandlerSuite {
 	gin.SetMode(gin.TestMode)
 	gin.DefaultWriter = ioutil.Discard
 	rr := httptest.NewRecorder()
@@ -41,11 +42,13 @@ func APITestSuite() HandlerSuite {
 
 	return HandlerSuite{
 		Recorder: rr,
-		Context:      ctx,
+		Context:  ctx,
 		Engine:   engine,
 	}
 }
 
+// RunT
+//
 // Run the API test.
 func (t *HandlerSuite) RunT(want interface{}, status int, message string) {
 	defer func() {
@@ -59,10 +62,24 @@ func (t *HandlerSuite) RunT(want interface{}, status int, message string) {
 	t.JSONEq(t.marshalWant(want), data)
 }
 
+// RespondData
+//
+// Returns the RespondJSON and the data decoded in
+// string form.
+func (t *HandlerSuite) RespondData() (RespondJSON, string) {
+	return t.decode()
+}
+
+// Status
+//
+// Returns the recorder's status code.
 func (t *HandlerSuite) Status() int {
 	return t.Recorder.Code
 }
 
+// ContentType
+//
+// Returns the recorder's content type.
 func (t *HandlerSuite) ContentType() string {
 	return t.Recorder.Header().Get("Content-Type")
 }
@@ -77,23 +94,29 @@ func (t *HandlerSuite) NewRequest(method string, url string, body io.Reader) {
 	t.Context.Request = req
 }
 
-// RequestAndServe makes a new http.Request and assigns the gin testing
+// RequestAndServe
+//
+// Makes a new http.Request and assigns the gin testing
 // the request, serves HTTP.
 func (t *HandlerSuite) RequestAndServe(method string, url string, engineUrl string, body interface{}, handler func(ctx *gin.Context)) {
 	switch method {
-	case "GET":
+	case http.MethodGet:
 		t.Engine.GET(engineUrl, handler)
-	case "POST":
+	case http.MethodPost:
 		t.Engine.POST(engineUrl, handler)
-	case "PUT":
+	case http.MethodPut:
 		t.Engine.PUT(engineUrl, handler)
-	case "DELETE":
+	case http.MethodDelete:
 		t.Engine.DELETE(engineUrl, handler)
 	}
 	t.NewRequest(method, url, t.marshalInput(body))
 	t.Engine.ServeHTTP(t.Recorder, t.Context.Request)
 }
 
+// Reset
+//
+// Sets up a new recorder, engine and context upon
+// test completion.
 func (t *HandlerSuite) Reset() {
 	rr := httptest.NewRecorder()
 	ctx, engine := gin.CreateTestContext(rr)
@@ -102,6 +125,10 @@ func (t *HandlerSuite) Reset() {
 	t.Engine = engine
 }
 
+// marshalInput
+//
+// Convert the interface{} to a new bytes.Buffer
+// for comparison of the input.
 func (t *HandlerSuite) marshalInput(i interface{}) *bytes.Buffer {
 	if i == nil {
 		return &bytes.Buffer{}
@@ -115,6 +142,10 @@ func (t *HandlerSuite) marshalInput(i interface{}) *bytes.Buffer {
 	return bytes.NewBuffer(body)
 }
 
+// marshalWant
+//
+// Marshal the test want, if the test want arg
+// is is nil, return an empty JSON object.
 func (t *HandlerSuite) marshalWant(i interface{}) string {
 	str, ok := i.(string)
 	if ok {
@@ -130,9 +161,12 @@ func (t *HandlerSuite) marshalWant(i interface{}) string {
 	return string(out)
 }
 
-// Run the API test.
-func (t *HandlerSuite) decode() (api.RespondJson, string) {
-	responder := &api.RespondJson{}
+// decode
+//
+// Unmarshal the result of the recorder into a
+// RespondJSON ready for testing.
+func (t *HandlerSuite) decode() (RespondJSON, string) {
+	responder := &RespondJSON{}
 	err := json.NewDecoder(t.Recorder.Body).Decode(responder)
 	if err != nil {
 		t.Fail("error decoding body", err)

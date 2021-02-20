@@ -48,7 +48,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			nil,
 			400,
 			"No user has been found with the ID: 123",
-			  reset,
+			reset,
 			func(m *mocks.UserRepository) {
 				m.On("GetById", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 				m.On("ResetPassword", 123, reset).Return(nil)

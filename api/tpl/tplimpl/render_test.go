@@ -46,7 +46,7 @@ func (t *TplTestSuite) TestDefaultFileHandler() {
 	}
 }
 
-func(t *TplTestSuite) TestExecute_ExecuteRender() {
+func (t *TplTestSuite) TestExecute_ExecuteRender() {
 
 	tt := map[string]struct {
 		mock     func(config *mocks.TemplateConfig)

@@ -6,7 +6,6 @@ package users
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
@@ -20,9 +19,9 @@ import (
 func (u *Users) List(ctx *gin.Context) {
 	const op = "UserHandler.List"
 
-	params := params.ApiParams(ctx, api.DefaultParams).Get()
+	p := api.Params(ctx).Get()
 
-	users, total, err := u.Store.User.Get(params)
+	users, total, err := u.Store.User.Get(p)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 200, errors.Message(err), err)
 		return
@@ -34,7 +33,7 @@ func (u *Users) List(ctx *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().Get(params, total)
+	pagination := http.NewPagination().Get(p, total)
 
 	api.Respond(ctx, 200, "Successfully obtained users", users.HideCredentials(), pagination)
 }

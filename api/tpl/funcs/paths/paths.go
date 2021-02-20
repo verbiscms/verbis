@@ -58,7 +58,6 @@ func (ns *Namespace) Storage() string {
 	return ns.deps.Paths.Storage
 }
 
-
 // Assets
 //
 // Returns the assets path of the theme.

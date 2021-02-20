@@ -13,7 +13,7 @@ import (
 )
 
 func (t *SiteTestSuite) TestSite_Layouts() {
-	
+
 	tt := map[string]struct {
 		want    interface{}
 		status  int
