@@ -17,7 +17,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api/redirects"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/site"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/users"
-	"github.com/ainsleyclark/verbis/api/http/handler/frontend"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend/public"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend/seo"
 	"github.com/ainsleyclark/verbis/api/http/handler/spa"
@@ -26,7 +25,7 @@ import (
 
 // Handler defines all of handler funcs for the app.
 type Handler struct {
-	Frontend frontend.PublicHandler
+	//Frontend frontend.PublicHandler
 	//SEO      frontend.SEOHandler
 	SPA spa.SPAHandler
 }
@@ -34,8 +33,8 @@ type Handler struct {
 // Construct
 func New(d *deps.Deps) *Handler {
 	return &Handler{
-		SPA:      spa.NewSpa(d),
-		Frontend: frontend.NewPublic(d),
+		SPA: spa.NewSpa(d),
+		//Frontend: frontend.NewPublic(d),
 		//SEO:      frontend.NewSEO(d),
 	}
 }
