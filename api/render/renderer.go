@@ -16,13 +16,19 @@ type Renderer interface {
 	Upload(g *gin.Context) (string, *[]byte, error)
 	Page(g *gin.Context) ([]byte, error)
 	NotFound(g *gin.Context)
+	SiteMap() SiteMapper
 }
 
 // Render
 type Render struct {
 	*deps.Deps
-	minify minify.Minifier
-	cacher headerWriter
+	minify  minify.Minifier
+	cacher  headerWriter
+	sitemap *Sitemap
+}
+
+func (r *Render) SiteMap() SiteMapper {
+	return r.sitemap
 }
 
 // NewRender - Construct
@@ -39,5 +45,6 @@ func NewRender(d *deps.Deps) *Render {
 			MinifyXML:  options.MinifyXML,
 		}),
 		newHeaders(options),
+		NewSitemap(d.Store),
 	}
 }

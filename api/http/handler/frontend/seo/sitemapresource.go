@@ -18,7 +18,7 @@ import "github.com/gin-gonic/gin"
 func (s *SEO) SiteMapResource(ctx *gin.Context) {
 	const op = "FrontendHandler.SiteMap"
 
-	sitemap, err := s.Sitemap.GetPages(ctx.Param("resource"))
+	sitemap, err := s.Publisher.SiteMap().Pages(ctx.Param("resource"))
 	if err != nil {
 		s.Publisher.NotFound(ctx)
 		return

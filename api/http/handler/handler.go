@@ -19,6 +19,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api/users"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend/public"
+	"github.com/ainsleyclark/verbis/api/http/handler/frontend/seo"
 	"github.com/ainsleyclark/verbis/api/http/handler/spa"
 	"github.com/ainsleyclark/verbis/api/render"
 )
@@ -26,8 +27,8 @@ import (
 // Handler defines all of handler funcs for the app.
 type Handler struct {
 	Frontend frontend.PublicHandler
-	SEO      frontend.SEOHandler
-	SPA      spa.SPAHandler
+	//SEO      frontend.SEOHandler
+	SPA spa.SPAHandler
 }
 
 // Construct
@@ -35,7 +36,7 @@ func New(d *deps.Deps) *Handler {
 	return &Handler{
 		SPA:      spa.NewSpa(d),
 		Frontend: frontend.NewPublic(d),
-		SEO:      frontend.NewSEO(d),
+		//SEO:      frontend.NewSEO(d),
 	}
 }
 
@@ -73,11 +74,16 @@ func NewApi(d *deps.Deps) *ApiHandler {
 	}
 }
 
-type Frontend struct {
+type FrontendHandler struct {
 	Public public.Handler
-
+	SEO    seo.Handler
 }
 
-func NewFrontend(d *deps.Deps, publisher render.Render) {
+// TODO, New publisher should be here, not passed, add comments!
 
+func NewFrontend(d *deps.Deps, publisher *render.Render) *FrontendHandler {
+	return &FrontendHandler{
+		Public: &public.Public{Deps: d, Publisher: publisher},
+		SEO:    &seo.SEO{Deps: d, Publisher: publisher},
+	}
 }

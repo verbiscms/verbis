@@ -13,9 +13,10 @@ import (
 // Handler defines methods for seo routes to
 // interact with the server.
 type Handler interface {
-	Uploads(ctx *gin.Context)
-	Assets(ctx *gin.Context)
-	Serve(ctx *gin.Context)
+	Robots(ctx *gin.Context)
+	SiteMapIndex(ctx *gin.Context)
+	SiteMapResource(ctx *gin.Context)
+	SiteMapXSL(ctx *gin.Context, index bool)
 }
 
 // SEO defines the handler for all seo routes,
@@ -23,5 +24,4 @@ type Handler interface {
 type SEO struct {
 	*deps.Deps
 	Publisher render.Renderer
-	Sitemap render.SiteMapper
 }

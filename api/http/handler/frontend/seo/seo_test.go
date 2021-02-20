@@ -5,6 +5,7 @@
 package seo
 
 import (
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
 	"github.com/gin-gonic/gin"
@@ -26,19 +27,37 @@ func TestSEO(t *testing.T) {
 	b := []byte(testString)
 	suite.Run(t, &SEOTestSuite{
 		HandlerSuite: api.TestSuite(),
-		bytes: &b,
+		bytes:        &b,
 	})
 }
 
 // Setup
 //
 // A helper to obtain a seo handler for testing.
-func (t *SEOTestSuite) Setup(mf func(m *mocks.Renderer, ctx *gin.Context), ctx *gin.Context) *SEO {
+func (t *SEOTestSuite) Setup(mf func(ms *mocks.Renderer, ctx *gin.Context), ctx *gin.Context) *SEO {
 	m := &mocks.Renderer{}
 	if mf != nil {
 		mf(m, ctx)
 	}
 	return &SEO{
+		Deps:      &deps.Deps{},
+		Publisher: m,
+	}
+}
+
+// SetupSitemap
+//
+// A helper to obtain a seo handler for testing
+// for sitemap handle funcs.
+func (t *SEOTestSuite) SetupSitemap(mf func(m *mocks.Renderer, ms *mocks.SiteMapper, ctx *gin.Context), ctx *gin.Context) *SEO {
+	ms := &mocks.SiteMapper{}
+	m := &mocks.Renderer{}
+	m.On("SiteMap").Return(ms)
+	if mf != nil {
+		mf(m, ms, ctx)
+	}
+	return &SEO{
+		Deps:      &deps.Deps{},
 		Publisher: m,
 	}
 }
