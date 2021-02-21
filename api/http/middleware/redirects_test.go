@@ -131,13 +131,13 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 				Store: &models.Store{Redirects: mock},
 				Config: &config.Configuration{
 					Admin: config.Admin{
-						Path:                "admin",
+						Path: "admin",
 					},
 				},
 			}))
 
 			t.RequestAndServe(http.MethodGet, test.url, test.url, nil, t.DefaultHandler)
-			
+
 			t.Equal(test.status, t.Status())
 			if test.redirectUrl != "" {
 				loc, err := t.Recorder.Result().Location()
