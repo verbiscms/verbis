@@ -5,184 +5,131 @@
 package spa
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/domain"
-	siteMock "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
-	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
-// getSPAMock is a helper to obtain a mock SPA handler
-// for testing.
-func getSPAMock() *SPA {
-	mockError := mocks.ErrorHandler{}
-	mockError.On("NotFound", mock.Anything, mock.Anything)
-	return &SPA{
-		config:       config.Configuration{},
-		ErrorHandler: &mockError,
-	}
+const (
+	// The SPA test dir.
+	TestPath = "/test/testdata/spa"
+)
+
+// SPATestSuite defines the helper used for SPA
+// testing.
+type SPATestSuite struct {
+	api.HandlerSuite
 }
 
-// spaTest represents the suite of testing methods for SPA routes.
-type spaTest struct {
-	testing  *testing.T
-	recorder *httptest.ResponseRecorder
-	gin      *gin.Context
-	engine   *gin.Engine
+// TestSPA
+//
+// Assert testing has begun.
+func TestSPA(t *testing.T) {
+	suite.Run(t, &SPATestSuite{
+		HandlerSuite: api.TestSuite(),
+	})
 }
 
-// setup helper for SPA routes.
-func setup(t *testing.T) *spaTest {
-	gin.SetMode(gin.TestMode)
-	rr := httptest.NewRecorder()
-	g, engine := gin.CreateTestContext(rr)
-
-	return &spaTest{
-		testing:  t,
-		recorder: rr,
-		gin:      g,
-		engine:   engine,
-	}
-}
-
-// Test_NewSPA - Test construct
-func Test_NewSPA(t *testing.T) {
-	config := config.Configuration{}
-	want := &SPA{
-		config:       config,
-		ErrorHandler: &render.Errors{},
-	}
-	mockSite := siteMock.SiteRepository{}
-	mockSite.On("GetThemeConfig").Return(domain.ThemeConfig{})
-	models := models.Store{
-		Site: &mockSite,
-	}
-
-	got := NewSpa(&models, config)
-	assert.ObjectsAreEqual(got, want)
-}
-
-// TestSPA_Serve - Test serving of files for SPA handler.
-func TestSPA_Serve(t *testing.T) {
-
-	// Save current function and restore at the end:
-	oldBasePath := basePath
-	oldAdminPath := adminPath
-	defer func() {
-		basePath = oldBasePath
-		adminPath = oldAdminPath
-	}()
-
-	// Set api path
+// Setup
+//
+// A helper to obtain a SPA handler for testing.
+func (t *SPATestSuite) Setup(mf func(m *mocks.Renderer, ctx *gin.Context), admin string, ctx *gin.Context) *SPA {
 	wd, err := os.Getwd()
-	assert.NoError(t, err)
+	t.NoError(err)
 	apiPath := filepath.Join(filepath.Dir(wd), "../..")
 
-	// Reassign paths
-	adminPath = apiPath + "/test/testdata/spa"
-	basePath = apiPath + "/test/testdata/spa"
-	imagePath := "/images/gopher.svg"
-	htmlPath := "/index.html"
+	m := &mocks.Renderer{}
+	if mf != nil {
+		mf(m, ctx)
+	}
 
-	// Test success getting svg file
-	t.Run("Success File", func(t *testing.T) {
-		rr := setup(t)
+	return &SPA{
+		Deps: &deps.Deps{
+			Paths: deps.Paths{
+				API: apiPath,
+				Admin: apiPath + admin,
+			},
+		},
+		Publisher: m,
+	}
+}
 
-		req, err := http.NewRequest("GET", "/admin"+imagePath, nil)
-		assert.NoError(t, err)
+func (t *SPATestSuite) TestSPA() {
 
-		rr.engine.GET("/admin"+imagePath, func(g *gin.Context) {
-			getSPAMock().Serve(g)
-		})
-		rr.engine.ServeHTTP(rr.recorder, req)
+	tt := map[string]struct {
+		want      string
+		status    int
+		content   string
+		url       string
+		adminPath string
+		mock      func(m *mocks.Renderer, ctx *gin.Context)
+	}{
+		"Success File": {
+			"/images/gopher.svg",
+			200,
+			"image/svg+xml",
+			"/images/gopher.svg",
+			TestPath,
+			nil,
+		},
+		"Not Found File": {
+			"test",
+			404,
+			"text/html",
+			"/images/wrongpath.svg",
+			TestPath,
+			func(m *mocks.Renderer, ctx *gin.Context) {
+				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
+					ctx.Data(404, "text/html", []byte("test"))
+				})
+			},
+		},
+		"Success Page": {
+			"/index.html",
+			200,
+			"text/html; charset=utf-8",
+			"/",
+			TestPath,
+			nil,
+		},
+		"Not Found Page": {
+			"test",
+			404,
+			"text/html",
+			"/",
+			"wrong",
+			func(m *mocks.Renderer, ctx *gin.Context) {
+				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
+					ctx.Data(404, "text/html", []byte("test"))
+				})
+			},
+		},
+	}
 
-		data, err := ioutil.ReadFile(basePath + imagePath)
-		if err != nil {
-			t.Errorf("could not open file with the path %s", basePath+imagePath)
-		}
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.RequestAndServe(http.MethodGet, "/admin"+test.url, "*any", nil, func(ctx *gin.Context) {
+				spa := t.Setup(test.mock, test.adminPath, ctx)
+				spa.Serve(ctx)
 
-		assert.Equal(t, data, rr.recorder.Body.Bytes())
-		assert.Equal(t, 200, rr.recorder.Code)
-		assert.Equal(t, "image/svg+xml", rr.recorder.Header().Get("Content-Type"))
-	})
-
-	// Test 404 of file
-	t.Run("404 File", func(t *testing.T) {
-		rr := setup(t)
-
-		req, err := http.NewRequest("GET", "/admin/wrongimage.svg", nil)
-		assert.NoError(t, err)
-
-		rr.engine.GET("/admin/wrongimage.svg", func(g *gin.Context) {
-			mockError := mocks.ErrorHandler{}
-			mockError.On("NotFound", g, mock.Anything).Run(func(args mock.Arguments) {
-				g.AbortWithStatus(404)
+				data, err := ioutil.ReadFile(spa.Paths.API + test.adminPath + test.want)
+				if err == nil {
+					test.want = string(data)
+				}
 			})
-			spa := &SPA{
-				config:       config.Configuration{},
-				ErrorHandler: &mockError,
-			}
-			spa.Serve(g)
+
+			t.Equal(test.status, t.Status())
+			t.Equal(test.content, t.ContentType())
+			t.Equal(test.want, t.Recorder.Body.String())
+			t.Reset()
 		})
-		rr.engine.ServeHTTP(rr.recorder, req)
-
-		assert.Equal(t, 404, rr.recorder.Code)
-	})
-
-	//Test success getting html file
-	t.Run("Success HTML", func(t *testing.T) {
-		rr := setup(t)
-
-		req, err := http.NewRequest("GET", "/admin", nil)
-		assert.NoError(t, err)
-
-		rr.engine.GET("/admin", func(g *gin.Context) {
-			getSPAMock().Serve(g)
-		})
-		rr.engine.ServeHTTP(rr.recorder, req)
-
-		data, err := ioutil.ReadFile(basePath + htmlPath)
-		if err != nil {
-			t.Errorf("could not open file with the path %s", basePath+htmlPath)
-		}
-
-		assert.Equal(t, string(data), rr.recorder.Body.String())
-		assert.Equal(t, 200, rr.recorder.Code)
-		assert.Equal(t, "text/html; charset=utf-8", rr.recorder.Header().Get("Content-Type"))
-	})
-
-	// Test 404 of file
-	t.Run("404 HTML", func(t *testing.T) {
-		rr := setup(t)
-
-		adminPath = apiPath + "/test/testdata"
-
-		req, err := http.NewRequest("GET", "/admin", nil)
-		assert.NoError(t, err)
-
-		rr.engine.GET("/admin", func(g *gin.Context) {
-			mockError := mocks.ErrorHandler{}
-			mockError.On("NotFound", g, mock.Anything).Run(func(args mock.Arguments) {
-				g.AbortWithStatus(404)
-			})
-			spa := &SPA{
-				config:       config.Configuration{},
-				ErrorHandler: &mockError,
-			}
-			spa.Serve(g)
-		})
-		rr.engine.ServeHTTP(rr.recorder, req)
-
-		assert.Equal(t, 404, rr.recorder.Code)
-	})
+	}
 }

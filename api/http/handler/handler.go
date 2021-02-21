@@ -23,22 +23,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/render"
 )
 
-// Handler defines all of handler funcs for the app.
-type Handler struct {
-	//Frontend frontend.PublicHandler
-	//SEO      frontend.SEOHandler
-	SPA spa.SPAHandler
-}
-
-// Construct
-func New(d *deps.Deps) *Handler {
-	return &Handler{
-		SPA: spa.NewSpa(d),
-		//Frontend: frontend.NewPublic(d),
-		//SEO:      frontend.NewSEO(d),
-	}
-}
-
 // Handler defines all of handler funcs for the API.
 type ApiHandler struct {
 	Auth       auth.Handler
@@ -78,11 +62,20 @@ type FrontendHandler struct {
 	SEO    seo.Handler
 }
 
-// TODO, New publisher should be here, not passed, add comments!
-
-func NewFrontend(d *deps.Deps, publisher *render.Render) *FrontendHandler {
+func NewFrontend(d *deps.Deps) *FrontendHandler {
+	p := render.NewRender(d)
 	return &FrontendHandler{
-		Public: &public.Public{Deps: d, Publisher: publisher},
-		SEO:    &seo.SEO{Deps: d, Publisher: publisher},
+		Public: &public.Public{Deps: d, Publisher: p},
+		SEO:    &seo.SEO{Deps: d, Publisher: p},
+	}
+}
+
+type SPAHandler struct {
+	spa.Handler
+}
+
+func NewSPA(d *deps.Deps) *SPAHandler {
+	return &SPAHandler{
+		&spa.SPA{Deps: d},
 	}
 }

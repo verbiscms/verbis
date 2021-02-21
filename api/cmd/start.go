@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/server/routes"
@@ -51,8 +50,6 @@ up the server on the port specified in the .env file.`,
 			scheduler := cron.New(store)
 			go scheduler.Run()
 
-			// Set up the router & pass logger
-			serve := server.New(store.Options)
 
 			d := deps.New(deps.DepsConfig{
 				Store:   store,
@@ -62,11 +59,11 @@ up the server on the port specified in the .env file.`,
 
 			d.SetTmpl(tplimpl.New(d))
 
-			// Pass the stores to the controllers
-			handler := handler.New(d)
+			// Set up the router
+			serve := server.New(d)
 
 			// Load the routes
-			routes.Load(d, serve, handler)
+			routes.Load(d, serve)
 
 			// Print listening success
 			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", environment.GetPort()))
