@@ -7,14 +7,40 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 )
 
-// TestCORS - Test Cors headers
-func TestCORS(t *testing.T) {
+type MiddlewareTestSuite struct {
+	suite.Suite
+}
+
+
+func TestMiddleware(t *testing.T) {
+	suite.Run(t, new(MiddlewareTestSuite))
+}
+
+func (t *MiddlewareTestSuite) Setup(request string) (*httptest.Server, *http.Request, func()) {
+	gin.SetMode(gin.TestMode)
+	gin.DefaultWriter = ioutil.Discard
+	r := gin.Default()
+
+	server := httptest.NewServer(r)
+
+	req, err := http.NewRequest(http.MethodGet, request, nil)
+	t.NoError(err)
+
+	return server, req, server.Close
+}
+
+func (t *MiddlewareTestSuite) t() {
+
+}
+
+func (t *MiddlewareTestSuite) TestCORS() {
 
 	tt := map[string]struct {
 		origin string
@@ -39,26 +65,28 @@ func TestCORS(t *testing.T) {
 	}
 
 	for name, test := range tt {
-
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			gin.SetMode(gin.TestMode)
 			gin.DefaultWriter = ioutil.Discard
 			r := gin.Default()
 			r.Use(CORS())
+
+			t.Setup()
+
 
 			server := httptest.NewServer(r)
 			defer server.Close()
 
 			client := &http.Client{}
 			req, err := http.NewRequest("GET", "http://"+server.Listener.Addr().String()+"/api", nil)
-			assert.NoError(t, err)
+			t.NoError(err)
 			req.Header.Add("Origin", test.origin)
 
 			get, err := client.Do(req)
-			assert.NoError(t, err)
+			t.NoError(err)
 
 			o := get.Header.Get(test.origin)
-			assert.Equal(t, test.want, o)
+			t.Equal(test.want, o)
 		})
 	}
 }

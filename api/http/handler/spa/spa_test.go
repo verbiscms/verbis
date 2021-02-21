@@ -54,7 +54,7 @@ func (t *SPATestSuite) Setup(mf func(m *mocks.Renderer, ctx *gin.Context), admin
 	return &SPA{
 		Deps: &deps.Deps{
 			Paths: deps.Paths{
-				API: apiPath,
+				API:   apiPath,
 				Admin: apiPath + admin,
 			},
 		},
