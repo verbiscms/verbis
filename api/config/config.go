@@ -15,25 +15,25 @@ import (
 // Global Configuration, sets defaults to ensure that there are no
 // empty values within the configuration to prevent any errors.
 type Configuration struct {
-	Admin admin
-	Media media
-	Logs  logs
+	Admin Admin
+	Media Media
+	Logs  Logs
 }
 
 // Admin
-type admin struct {
+type Admin struct {
 	Path                string `yaml:"admin_path,omitempty"`
 	InactiveSessionTime int    `yaml:"inactive_session_time,omitempty"`
 }
 
 // Media
-type media struct {
+type Media struct {
 	UploadPath       string   `yaml:"upload_path"`
 	AllowedFileTypes []string `yaml:"allowed_file_types"`
 }
 
 // Logs
-type logs struct {
+type Logs struct {
 	AccessLog string `yaml:"access_log"`
 	ErrorLog  string `yaml:"error_log"`
 }
@@ -61,15 +61,15 @@ type logs struct {
 
 func New() (*Configuration, error) {
 	c := &Configuration{
-		Admin: admin{
+		Admin: Admin{
 			Path:                "admin",
 			InactiveSessionTime: 60,
 		},
-		Media: media{
+		Media: Media{
 			UploadPath:       "",
 			AllowedFileTypes: nil,
 		},
-		Logs: logs{
+		Logs: Logs{
 			AccessLog: "default",
 			ErrorLog:  "default",
 		},

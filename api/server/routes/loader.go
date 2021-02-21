@@ -11,7 +11,7 @@ import (
 
 // Load
 //
-// Load all of the routes groups specified in the package
+// Loads all of the routes groups specified in the package
 // And any global middleware to be used on the server.
 func Load(d *deps.Deps, s *server.Server) {
 	apiRoutes(d, s)

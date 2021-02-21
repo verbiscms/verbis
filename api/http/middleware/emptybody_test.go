@@ -8,182 +8,147 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
-// handler is ac helper func for the EmptyBody testing
-func handler(g *gin.Context) {
-	g.String(200, "verbis")
-	return
-}
-
-// TestEmptyBody - Test EmptyBody handler
-func TestEmptyBody(t *testing.T) {
+func (t *MiddlewareTestSuite) TestEmptyBody() {
 
 	tt := map[string]struct {
-		method        string
-		header        string
-		input         string
-		message       string
-		status        int
-		returnContent string
-		want          string
+		method  string
+		input   string
+		status  int
+		message string
+		header  string
+		content string
+		want    string
 	}{
 		"Valid": {
-			want:          "verbis",
-			input:         `{verbis: "cms"}`,
-			method:        http.MethodDelete,
-			status:        200,
-			header:        "application/json",
-			returnContent: "text/plain; charset=utf-8",
+			http.MethodDelete,
+			`{verbis: "cms"}`,
+			200,
+			"",
+			"application/json",
+			"text/plain; charset=utf-8",
+			"verbis",
 		},
 		"Not JSON": {
-			want:          "verbis",
-			input:         "",
-			method:        http.MethodGet,
-			status:        200,
-			header:        "text/plain; charset=utf-8",
-			returnContent: "text/plain; charset=utf-8",
+			http.MethodGet,
+			"",
+			200,
+			"",
+			"text/plain; charset=utf-8",
+			"text/plain; charset=utf-8",
+			"verbis",
 		},
 		"Empty Body": {
-			want:          "",
-			input:         "",
-			message:       "Empty JSON body",
-			method:        http.MethodPost,
-			status:        401,
-			header:        "application/json; charset=utf-8",
-			returnContent: "application/json; charset=utf-8",
+			http.MethodPost,
+			"",
+			401,
+			"Empty JSON body",
+			"application/json; charset=utf-8",
+			"application/json; charset=utf-8",
+			"",
 		},
 		"Invalid JSON": {
-			want:          "",
-			input:         "notjson",
-			message:       "Invalid JSON",
-			method:        http.MethodPost,
-			status:        401,
-			header:        "application/json; charset=utf-8",
-			returnContent: "application/json; charset=utf-8",
+			http.MethodPost,
+			"notjson",
+			401,
+			"Invalid JSON",
+			"application/json; charset=utf-8",
+			"application/json; charset=utf-8",
+			"",
 		},
 	}
 
 	for name, test := range tt {
+		t.Run(name, func() {
+			t.Engine.Use(EmptyBody())
 
-		t.Run(name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
+			t.Engine.GET("/test", t.DefaultHandler)
+			t.Engine.PUT("/test", t.DefaultHandler)
+			t.Engine.POST("/test", t.DefaultHandler)
+			t.Engine.DELETE("/test", t.DefaultHandler)
 
-			rr := httptest.NewRecorder()
-			context, engine := gin.CreateTestContext(rr)
-			engine.Use(EmptyBody())
+			t.NewRequest(test.method, "/test", bytes.NewBuffer([]byte(test.input)))
+			t.Context.Request.Header.Set("Content-Type", test.header)
+			t.ServeHTTP()
 
-			engine.GET("/test", handler)
-			engine.PUT("/test", handler)
-			engine.POST("/test", handler)
-			engine.DELETE("/test", handler)
-
-			context.Request, _ = http.NewRequest(test.method, "/test", bytes.NewBuffer([]byte(test.input)))
-			context.Request.Header.Add("Content-Type", test.header)
-			engine.ServeHTTP(rr, context.Request)
-
-			assert.Equal(t, test.status, rr.Code)
-			assert.Equal(t, test.returnContent, rr.Header().Get("content-type"))
+			t.Equal(test.status, t.Recorder.Code)
+			t.Equal(test.content, t.Recorder.Header().Get("content-type"))
 
 			if test.message != "" {
 				var body map[string]interface{}
-				err := json.Unmarshal(rr.Body.Bytes(), &body)
-				assert.NoError(t, err)
-				assert.Equal(t, test.message, body["message"])
+				err := json.Unmarshal(t.Recorder.Body.Bytes(), &body)
+				t.NoError(err)
+				t.Equal(test.message, body["message"])
 			} else {
-				assert.Equal(t, test.want, rr.Body.String())
+				t.Equal(test.want, t.Recorder.Body.String())
 			}
+
+			t.Reset()
 		})
 	}
 }
 
-// Test_isEmpty - Test checker for empty body
-func Test_isEmpty(t *testing.T) {
+func (t *MiddlewareTestSuite) Test_isEmpty() {
+
+	tt := map[string]struct {
+		want  bool
+		input interface{}
+	}{
+		"Empty": {
+			true,
+			nil,
+		},
+		"With Body": {
+			false,
+			"{}",
+		},
+		"With Body JSON": {
+			false,
+			`{body: "verbis"}`,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			var got bool
+			t.RequestAndServe(http.MethodGet, "/test", "/test", test.input, func(ctx *gin.Context) {
+				body, err := ioutil.ReadAll(ctx.Request.Body)
+				t.NoError(err)
+				got = isEmpty(ctx, body)
+			})
+			t.Equal(test.want, got)
+			t.Reset()
+		})
+	}
+}
+
+func (t *MiddlewareTestSuite) Test_isJSON() {
 
 	tt := map[string]struct {
 		want  bool
 		input string
 	}{
 		"Empty": {
-			want:  true,
-			input: "",
+			false,
+			"invalidjson",
 		},
 		"With Body": {
-			want:  false,
-			input: "{}",
+			true,
+			"{}",
 		},
 		"With Body JSON": {
-			want:  false,
-			input: `{body: "verbis"}`,
+			true,
+			`{"body": "verbis"}`,
 		},
 	}
 
 	for name, test := range tt {
-
-		t.Run(name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
-
-			rr := httptest.NewRecorder()
-			context, engine := gin.CreateTestContext(rr)
-
-			var got bool
-			engine.GET("/test", func(g *gin.Context) {
-				bodyBytes, _ := ioutil.ReadAll(g.Request.Body)
-				got = isEmpty(context, bodyBytes)
-			})
-
-			context.Request, _ = http.NewRequest("GET", "/test", bytes.NewBuffer([]byte(test.input)))
-			engine.ServeHTTP(rr, context.Request)
-
-			assert.Equal(t, test.want, got)
-		})
-	}
-}
-
-// Test_isJSON - Test checker for is JSON
-func Test_isJSON(t *testing.T) {
-
-	tt := map[string]struct {
-		want  bool
-		input string
-	}{
-		"Empty": {
-			want:  false,
-			input: "",
-		},
-		"With Body": {
-			want:  true,
-			input: "{}",
-		},
-		"With Body JSON": {
-			want:  true,
-			input: `{"body": "verbis"}`,
-		},
-	}
-
-	for name, test := range tt {
-
-		t.Run(name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
-
-			rr := httptest.NewRecorder()
-			context, engine := gin.CreateTestContext(rr)
-
-			var got bool
-			engine.GET("/test", func(g *gin.Context) {
-				bodyBytes, _ := ioutil.ReadAll(g.Request.Body)
-				got = isJSON(string(bodyBytes))
-			})
-
-			context.Request, _ = http.NewRequest("GET", "/test", bytes.NewBuffer([]byte(test.input)))
-			engine.ServeHTTP(rr, context.Request)
-
-			assert.Equal(t, test.want, got)
+		t.Run(name, func() {
+			got := isJSON(test.input)
+			t.Equal(test.want, got)
 		})
 	}
 }

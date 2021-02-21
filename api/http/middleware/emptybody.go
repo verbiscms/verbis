@@ -12,6 +12,11 @@ import (
 	"io/ioutil"
 )
 
+// EmptyBody
+//
+// Determines if the  content type is JSON and the method
+// type is a post or a put, if the body is invalid
+// JSON or empty, abort JSON will be called.
 func EmptyBody() gin.HandlerFunc {
 	return func(g *gin.Context) {
 		contentType := g.Request.Header.Get("Content-Type")
@@ -39,14 +44,18 @@ func EmptyBody() gin.HandlerFunc {
 	}
 }
 
-// Checks if the request is empty
+// isEmpty
+//
+// Checks if the request is empty.
 func isEmpty(g *gin.Context, body []byte) bool {
-	_ = g.Request.Body.Close() //  must close
+	_ = g.Request.Body.Close()
 	g.Request.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 	return len(body) == 0
 }
 
-// Checks if the request is valid json
+// isJSON
+//
+// Checks if the request is valid json.
 func isJSON(s string) bool {
 	var js interface{}
 	return json.Unmarshal([]byte(s), &js) == nil

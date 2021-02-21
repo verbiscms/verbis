@@ -5,20 +5,22 @@
 package routes
 
 import (
+	app "github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/server"
 )
 
-// api
+// apiRoutes
 //
+// API facing routes.
 func apiRoutes(d *deps.Deps, s *server.Server) {
 
 	h := handler.NewApi(d)
 
 	// API Routes
-	api := s.Group("/api/v1")
+	api := s.Group(app.APIRoute)
 	{
 		// API Middleware
 		api.Use(middleware.CORS())
@@ -37,15 +39,9 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 
 		// Forms
 		forms := api.Group("/forms")
-		//forms.Use(csrf.Middleware(csrf.Options{
-		//	Secret: "verbis",
-		//	ErrorFunc: func(g *gin.Context) {
-		//		respond.AbortJSON(g, 400, "CSRF token mismatch", nil)
-		//		return
-		//	},
-		//}))
-
-		forms.POST("/:uuid", h.Forms.Send)
+		{
+			forms.POST("/:uuid", h.Forms.Send)
+		}
 
 		// Operator
 		operator := api.Group("")

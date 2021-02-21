@@ -10,11 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// SessionCheck
+//
+// Obtains the token header and checks if the session is
+// still active. If it isn't the request will be
+// aborted with a status code of 401.
 func SessionCheck(d *deps.Deps) gin.HandlerFunc {
 	return func(g *gin.Context) {
 		token := g.Request.Header.Get("token")
 
-		if err := d.Store.User.CheckSession(token); err != nil {
+		err := d.Store.User.CheckSession(token)
+		if err != nil {
 			g.SetCookie("verbis-session", "", -1, "/", "", false, true)
 			api.AbortJSON(g, 401, "Session expired, please login again", gin.H{
 				"errors": gin.H{
