@@ -14,8 +14,8 @@ type Paginate interface {
 	Get() params.Params
 }
 
-// Pagination represents the data to be sent back from the API on
-// get routes
+// Pagination represents the data to be sent back from the
+// API on list routes.
 type Pagination struct {
 	Page  int         `json:"page"`
 	Pages int         `json:"pages"`
@@ -30,7 +30,10 @@ func NewPagination() *Pagination {
 	return &Pagination{}
 }
 
-// Get pagination parameters
+// Get
+//
+// Uses the parameters to return formatted pagination on
+// list routes.
 func (p *Pagination) Get(params params.Params, total int) *Pagination {
 
 	// Calculate total pages
