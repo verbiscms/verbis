@@ -20,11 +20,11 @@ const (
 func (t *MiddlewareTestSuite) Test_SessionCheck() {
 
 	tt := map[string]struct {
-		want interface{}
-		status      int
+		want    interface{}
+		status  int
 		message string
-		cookie *http.Cookie
-		mock        func(m *mocks.UserRepository)
+		cookie  *http.Cookie
+		mock    func(m *mocks.UserRepository)
 	}{
 		"Expired": {
 			`{"errors":{"session":"expired"}}`,
@@ -63,7 +63,7 @@ func (t *MiddlewareTestSuite) Test_SessionCheck() {
 			}
 
 			t.Engine.Use(SessionCheck(&deps.Deps{
-				Store:   &models.Store{User: mock},
+				Store: &models.Store{User: mock},
 			}))
 
 			t.NewRequest(http.MethodGet, "/test", nil)

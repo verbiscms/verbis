@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
-	"reflect"
 	"strings"
 	"time"
 )
@@ -20,164 +19,202 @@ import (
 type Formatter struct {
 	Colours         bool
 	TimestampFormat string
+	entry           *logrus.Entry
+	buf             *bytes.Buffer
 }
 
+// Format
+//
 // Format building log message.
 func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
+	if !f.Colours {
+		color.Disable()
+	}
+
 	b := &bytes.Buffer{}
+	f.buf = b
+	f.entry = entry
 
 	b.WriteString("[VERBIS] ")
 
-	// Print the time
+	f.Time()
+	f.StatusCode()
+	f.Level()
+	f.IP()
+	f.Method()
+	f.Url()
+	f.Message()
+	f.Error()
+	f.Fields()
+
+	str := b.String()
+	str = strings.TrimSuffix(str, "|")
+	str = strings.TrimSuffix(str, " ")
+	str += "\n"
+
+	return []byte(str), nil
+}
+
+// Time
+//
+//
+func (f *Formatter) Time() {
 	timestampFormat := f.TimestampFormat
 	if timestampFormat == "" {
 		timestampFormat = time.StampMilli
 	}
-	b.WriteString(entry.Time.Format(timestampFormat))
+	f.buf.WriteString(f.entry.Time.Format(timestampFormat))
+}
 
-	// Get the response code colour
-	cc := color.Style{}
-	status := entry.Data["status_code"]
+// StatusCode
+//
+//
+func (f *Formatter) StatusCode() {
+	f.buf.WriteString(" | ")
+
+	cc := color.Style{color.FgLightWhite, color.BgRed, color.OpBold}
+
+	status, ok := f.entry.Data["status_code"]
+	if !ok {
+		cc = color.Style{color.FgLightWhite, color.BgBlack, color.OpBold}
+		f.buf.WriteString(cc.Sprint("VRB"))
+	}
+
 	if codeInt, ok := status.(int); ok {
 		if codeInt < 400 {
 			cc = color.Style{color.FgLightWhite, color.BgGreen, color.OpBold}
-		} else {
-			cc = color.Style{color.FgLightWhite, color.BgRed, color.OpBold}
 		}
 	}
 
-	// Print the response code
 	if status != "" && status != nil {
-		b.WriteString(" |")
-		if f.Colours {
-			b.WriteString(cc.Sprintf("%d", status))
-		} else {
-			b.WriteString(fmt.Sprintf("%d", status))
-		}
-		b.WriteString("| ")
-	} else {
-		b.WriteString(" | ")
+		f.buf.WriteString(cc.Sprintf("%d", status))
 	}
 
-	// Get level the colour
-	lc := color.Style{}
-	switch entry.Level {
-	case logrus.DebugLevel:
-		lc = color.Style{color.FgGray, color.OpBold}
-	case logrus.WarnLevel:
-		lc = color.Style{color.FgYellow, color.OpBold}
-	case logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel:
-		lc = color.Style{color.FgRed, color.OpBold}
-	default:
-		lc = color.Style{color.FgBlue, color.OpBold}
-	}
-
-	// Print the level
-	level := strings.ToUpper(entry.Level.String())
-	if f.Colours {
-		b.WriteString(lc.Sprintf("["))
-		b.WriteString(lc.Sprintf(level))
-
-		if entry.Level == logrus.InfoLevel {
-			b.WriteString(lc.Sprintf("] "))
-		} else {
-			b.WriteString(lc.Sprintf("]"))
-		}
-	} else {
-		b.WriteString(fmt.Sprintf("["))
-		b.WriteString(fmt.Sprintf(level))
-
-		if entry.Level == logrus.InfoLevel {
-			b.WriteString(fmt.Sprintf("] "))
-		} else {
-			b.WriteString(fmt.Sprintf("]"))
-		}
-	}
-
-	// Print the IP
-	if ip, ok := entry.Data["client_ip"].(string); ok {
-		b.WriteString(fmt.Sprintf(" | %s | ", ip))
-	}
-
-	// Print the method
-	if method, ok := entry.Data["request_method"].(string); ok {
-		rc := color.Style{color.FgLightWhite, color.BgBlue, color.OpBold}
-		if len(method) == 3 {
-			if f.Colours {
-				b.WriteString(rc.Sprintf("  %s   ", method))
-			} else {
-				b.WriteString(fmt.Sprintf("  %s   ", method))
-			}
-		} else {
-			if f.Colours {
-				b.WriteString(rc.Sprintf("  %s  ", method))
-			} else {
-				b.WriteString(fmt.Sprintf("  %s  ", method))
-			}
-		}
-	}
-
-	// Print the url
-	if url, ok := entry.Data["request_url"].(string); ok {
-		b.WriteString(fmt.Sprintf(" \"%s\"", url))
-	}
-
-	// Print the message
-	if msg, ok := entry.Data["message"].(string); ok {
-		if msg != "" {
-			b.WriteString(fmt.Sprintf("| [msg] %s |", msg))
-		}
-	}
-
-	// Print any errors if one is set
-	// TODO Fix here
-	// THIS is coming a nil pointer deference!
-	if reflect.TypeOf(entry.Data["error"]).String() == "*errors.Error" {
-		err := entry.Data["error"].(*errors.Error)
-		s := f.printError(*err)
-		b.Write(s.Bytes())
-	} else if errorData, ok := entry.Data["error"].(errors.Error); ok {
-		s := f.printError(errorData)
-		b.Write(s.Bytes())
-	}
-
-	b = bytes.NewBuffer([]byte(strings.TrimSuffix(b.String(), "|")))
-
-	b.WriteString("\n")
-
-	return b.Bytes(), nil
+	f.buf.WriteString(" | ")
 }
 
-func (f *Formatter) printError(errorData errors.Error) *bytes.Buffer {
-	b := &bytes.Buffer{}
-
-	if errorData.Error() != "" {
-		//if errorData.Code != errors.NOTFOUND {
-		if errorData.Code != "" {
-			if f.Colours {
-				b.WriteString(color.Red.Sprintf(" [code] %s", errorData.Code))
-			} else {
-				b.WriteString(fmt.Sprintf("| [code] %s", errorData.Code))
-			}
-		}
-		if errorData.Operation != "" {
-			if api.SuperAdmin {
-				if f.Colours {
-					b.WriteString(color.Red.Sprintf(" [operation] %s", errorData.Operation))
-				} else {
-					b.WriteString(fmt.Sprintf(" [operation] %s", errorData.Operation))
-				}
-			}
-		}
-		if errorData.Err != nil {
-			if f.Colours {
-				b.WriteString(color.Red.Sprintf(" [error] %s", errorData.Err.Error()))
-			} else {
-				b.WriteString(fmt.Sprintf(" [error] %s", errorData.Err.Error()))
-			}
-		}
-		//	}
+// Level
+//
+//
+func (f *Formatter) Level() {
+	cc := color.Style{}
+	switch f.entry.Level {
+	case logrus.DebugLevel:
+		cc = color.Style{color.FgGray, color.OpBold}
+	case logrus.WarnLevel:
+		cc = color.Style{color.FgYellow, color.OpBold}
+	case logrus.ErrorLevel, logrus.FatalLevel, logrus.PanicLevel:
+		cc = color.Style{color.FgRed, color.OpBold}
+	default:
+		cc = color.Style{color.FgBlue, color.OpBold}
 	}
 
-	return b
+	level := strings.ToUpper(f.entry.Level.String())
+	f.buf.WriteString(cc.Sprintf("[%s]", level))
+}
+
+// IP
+//
+// Print the IP address if there is any.
+func (f *Formatter) IP() {
+	ip, ok := f.entry.Data["client_ip"].(string)
+	if ok {
+		f.buf.WriteString(fmt.Sprintf(" | %s | ", ip))
+		return
+	}
+	f.buf.WriteString(" ")
+}
+
+// Method
+//
+// Print the request method if there is any.
+func (f *Formatter) Method() {
+	method, ok := f.entry.Data["request_method"].(string)
+	if !ok {
+		return
+	}
+	rc := color.Style{color.FgLightWhite, color.BgBlue, color.OpBold}
+	f.buf.WriteString(rc.Sprintf("  %s   ", method))
+}
+
+// Url
+//
+// Print the request
+func (f *Formatter) Url() {
+	url, ok := f.entry.Data["request_url"].(string)
+	if ok {
+		f.buf.WriteString(fmt.Sprintf(" \"%s\"", url))
+	}
+}
+
+// Message
+//
+//
+func (f *Formatter) Message() {
+	msg, ok := f.entry.Data["message"].(string)
+	if ok && msg != "" {
+		f.buf.WriteString(fmt.Sprintf("| [msg] %s |", msg))
+		return
+	}
+	if f.entry.Message != "" {
+		f.buf.WriteString(fmt.Sprintf("| [msg] %s |", f.entry.Message))
+	}
+}
+
+// Fields
+//
+//
+func (f *Formatter) Fields() {
+	fields, ok := f.entry.Data["fields"].(logrus.Fields)
+	if !ok {
+		return
+	}
+	f.buf.WriteString("| ")
+	for k, v := range fields {
+		f.buf.WriteString(fmt.Sprintf("%s: %s ", k, v))
+	}
+}
+
+// Error
+//
+//
+func (f *Formatter) Error() {
+	err, ok := f.entry.Data["error"]
+	if !ok || err == nil {
+		return
+	}
+
+	f.buf.WriteString("|")
+
+	switch v := err.(type) {
+	case *errors.Error:
+		f.printError(v)
+	case errors.Error:
+		f.printError(&v)
+	case error:
+		f.printError(&errors.Error{Err: v})
+	case string:
+		f.printError(&errors.Error{Err: fmt.Errorf(v)})
+	}
+}
+
+// printError
+//
+//
+func (f *Formatter) printError(err *errors.Error) {
+	if err.Code != "" {
+		f.buf.WriteString(color.Red.Sprintf(" [code] %s", err.Code))
+	}
+
+	if err.Message != "" {
+		f.buf.WriteString(color.Red.Sprintf(" [msg] %s", err.Message))
+	}
+
+	if err.Operation != "" && api.SuperAdmin {
+		f.buf.WriteString(color.Red.Sprintf(" [op] %s", err.Operation))
+	}
+
+	if err.Err != nil {
+		f.buf.WriteString(color.Red.Sprintf(" [error] %s", err.Err.Error()))
+	}
 }
