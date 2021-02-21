@@ -9,12 +9,15 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
 )
 
-func frontend(d *deps.Deps, s *server.Server) {
+// frontendRoutes
+//
+// Public facing routes.
+func frontendRoutes(d *deps.Deps, s *server.Server) {
+	h := handler.NewFrontend(d)
 
 	// TODO: This check should be in config
 	uploadPath := d.Config.Media.UploadPath
@@ -22,12 +25,10 @@ func frontend(d *deps.Deps, s *server.Server) {
 		uploadPath = "uploads"
 	}
 
-	h := handler.NewFrontend(d, render.NewRender(d))
-
-	s.Use(middleware.Redirects(d))
-
-	_ = s.Group("")
+	frontend := s.Group("")
 	{
+		frontend.Use(middleware.Redirects(d))
+
 		// Serve assets
 		s.GET("/assets/*any", h.Public.Assets)
 

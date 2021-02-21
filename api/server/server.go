@@ -6,14 +6,12 @@ package server
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
-	//"github.com/ainsleyclark/verbis/api/http/csrf"
-	//"github.com/ainsleyclark/verbis/api/http/handler/api"
-	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/gin-contrib/gzip"
+	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/gin-contrib/location"
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
+
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
@@ -26,7 +24,7 @@ type Server struct {
 	*gin.Engine
 }
 
-func New(m models.OptionsRepository) *Server {
+func New(d *deps.Deps) *Server {
 
 	// Force log's color
 	gin.ForceConsoleColor()
@@ -42,13 +40,14 @@ func New(m models.OptionsRepository) *Server {
 
 	server := &Server{r}
 
+	// Global middleware
+	r.Use(middleware.Log())
 	r.Use(location.Default())
 
-	// Set up Gzip compression
-	server.setupGzip(m)
+	r.Use(gin.Recovery())
 
-	store := cookie.NewStore([]byte("verbis"))
-	r.Use(sessions.Sessions("csrf", store))
+	// Set up Gzip compression
+	server.setupGzip(d)
 
 	// Instantiate the server.
 	return server
@@ -80,10 +79,10 @@ func (s *Server) ListenAndServe(port int) error {
 
 // setupGzip - inits the default gzip compression for the server bt
 // looking for the options & setting.
-func (s *Server) setupGzip(o models.OptionsRepository) {
+func (s *Server) setupGzip(d *deps.Deps) {
 	const op = "router.ListenAndServe"
 
-	options := o.GetStruct()
+	options := d.Options
 
 	// Bail if there is no
 	if !options.Gzip {

@@ -14,7 +14,6 @@ import (
 
 func EmptyBody() gin.HandlerFunc {
 	return func(g *gin.Context) {
-
 		contentType := g.Request.Header.Get("Content-Type")
 		if contentType != "application/json" && contentType != "application/json; charset=utf-8" {
 			g.Next()
