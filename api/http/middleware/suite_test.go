@@ -29,5 +29,3 @@ func (t *MiddlewareTestSuite) DefaultHandler(g *gin.Context) {
 	g.String(200, "verbis")
 	return
 }
-
-
