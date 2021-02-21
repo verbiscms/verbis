@@ -6,9 +6,11 @@ package spa
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"strings"
 )
@@ -45,13 +47,18 @@ func (s *SPA) Serve(ctx *gin.Context) {
 //
 // Returns any files for the SPA.
 func (s *SPA) file(path string, ctx *gin.Context) {
-	path = strings.Replace(path, "/admin", "", -1)
-	extensionArr := strings.Split(path, ".")
-	extension := extensionArr[len(extensionArr)-1]
+	const op = "SPA.Serve"
 
-	data, err := ioutil.ReadFile(s.Paths.Admin + path)
+	file := strings.Replace(path, "/admin", "", -1)
+	extensionArr := strings.Split(file, ".")
+	extension := extensionArr[len(extensionArr)-1]
+	path = s.Paths.Admin + file
+
+	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		// TODO, log here! Error getting admin file
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err},
+		})
 		s.Publisher.NotFound(ctx)
 		return
 	}
@@ -64,10 +71,15 @@ func (s *SPA) file(path string, ctx *gin.Context) {
 //
 // Returns the index.html in bytes
 func (s *SPA) page(ctx *gin.Context) {
-	data, err := ioutil.ReadFile(s.Paths.Admin + "/index.html")
+	const op = "SPA.Serve"
+
+	path := s.Paths.Admin + "/index.html"
+	data, err := ioutil.ReadFile(path)
 
 	if err != nil {
-		// TODO, log here! Error getting admin file
+		log.WithFields(log.Fields{
+			"error": &errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err},
+		})
 		s.Publisher.NotFound(ctx)
 		return
 	}

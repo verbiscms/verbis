@@ -50,7 +50,6 @@ up the server on the port specified in the .env file.`,
 			scheduler := cron.New(store)
 			go scheduler.Run()
 
-
 			d := deps.New(deps.DepsConfig{
 				Store:   store,
 				Config:  cfg,
