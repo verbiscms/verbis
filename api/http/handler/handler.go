@@ -23,7 +23,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/render"
 )
 
-// Handler defines all of handler funcs for the API.
+// ApiHandler defines all handler functions for API
+// routes.
 type ApiHandler struct {
 	Auth       auth.Handler
 	Cache      cache.Handler
@@ -40,7 +41,7 @@ type ApiHandler struct {
 
 // NewApi
 //
-// Returns a new API handler for routes.
+// Returns a new API handler.
 func NewApi(d *deps.Deps) *ApiHandler {
 	return &ApiHandler{
 		Auth:       &auth.Auth{Deps: d},
@@ -57,11 +58,16 @@ func NewApi(d *deps.Deps) *ApiHandler {
 	}
 }
 
+// FrontendHandler defines all handler functions for
+// frontend routes.
 type FrontendHandler struct {
 	Public public.Handler
 	SEO    seo.Handler
 }
 
+// NewFrontend
+//
+// Returns a new frontend handler.
 func NewFrontend(d *deps.Deps) *FrontendHandler {
 	p := render.NewRender(d)
 	return &FrontendHandler{
@@ -70,10 +76,15 @@ func NewFrontend(d *deps.Deps) *FrontendHandler {
 	}
 }
 
+// SPAHandler defines all handler functions for SPA
+// routes.
 type SPAHandler struct {
 	spa.Handler
 }
 
+// NewSPA
+//
+// Returns a new SPA handler.
 func NewSPA(d *deps.Deps) *SPAHandler {
 	return &SPAHandler{
 		&spa.SPA{Deps: d},
