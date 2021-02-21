@@ -84,7 +84,9 @@ func (t *HandlerSuite) ContentType() string {
 	return t.Recorder.Header().Get("Content-Type")
 }
 
-// NewRequest makes a new http.Request and assigns the gin testing
+// NewRequest
+//
+// Creates a new http.Request and assigns the gin testing
 // the request.
 func (t *HandlerSuite) NewRequest(method string, url string, body io.Reader) {
 	req, err := http.NewRequest(method, url, body)
@@ -92,6 +94,10 @@ func (t *HandlerSuite) NewRequest(method string, url string, body io.Reader) {
 		t.Fail("error creating http request", err)
 	}
 	t.Context.Request = req
+}
+
+func (t *HandlerSuite) ServeHTTP() {
+	t.Engine.ServeHTTP(t.Recorder, t.Context.Request)
 }
 
 // RequestAndServe
