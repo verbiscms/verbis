@@ -9,17 +9,19 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/server"
-	"github.com/gin-gonic/gin"
 )
 
-func api(d *deps.Deps, s *server.Server) {
+// api
+//
+func apiRoutes(d *deps.Deps, s *server.Server) {
 
 	h := handler.NewApi(d)
 
 	// API Routes
 	api := s.Group("/api/v1")
 	{
-		// Set API Middleware
+		// API Middleware
+		api.Use(middleware.CORS())
 		api.Use(middleware.EmptyBody())
 
 		// Site
@@ -120,6 +122,4 @@ func api(d *deps.Deps, s *server.Server) {
 			admin.DELETE("/users/:id", h.Users.Delete)
 		}
 	}
-
-	api.Use(gin.Recovery())
 }

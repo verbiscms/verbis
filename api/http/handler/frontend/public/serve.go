@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Copyright 2020 The Verbis Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
-
 package public
 
 import (
@@ -19,6 +15,9 @@ import (
 // from the store. If the error code is anything
 // but errors.NOTFOUND, a 500 response will
 // be sent.
+//
+// Returns a 404 if the post was not found.
+// Returns a 500 if the template file failed to execute.
 func (p *Public) Serve(ctx *gin.Context) {
 	const op = "FrontendHandler.Serve"
 
