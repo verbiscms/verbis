@@ -27,6 +27,11 @@ var App = struct {
 	Version:     "0.0.1",
 }
 
+const (
+	// The web route of the API.
+	APIRoute = "/api/v1"
+)
+
 // 50
 var AssetsChan = make(chan int, 10)
 var UploadChan = make(chan int, 10)

@@ -5,151 +5,147 @@
 package middleware
 
 import (
+	"fmt"
+	app "github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/gin-contrib/location"
-	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
+	"github.com/ainsleyclark/verbis/api/models"
 	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
-// TestRedirects - Test redirects from options are working correctly
-// with correct code & locationjson.
-func Test_Redirects(t *testing.T) {
+const (
+	// The default redirect path used for testing.
+	RedirectPath = "/page"
+)
+
+func (t *MiddlewareTestSuite) Test_Redirects() {
 
 	tt := map[string]struct {
 		status      int
 		url         string
 		redirectUrl string
-		mock        func(u *mocks.OptionsRepository)
+		mock        func(m *mocks.RedirectRepository)
 	}{
+		"Admin Path": {
+			200,
+			"/admin",
+			"",
+			nil,
+		},
+		"API Path": {
+			200,
+			app.APIRoute,
+			"",
+			nil,
+		},
 		"No Redirects": {
-			status: 200,
-			url:    "/page",
-			mock: func(m *mocks.OptionsRepository) {
-				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects: nil,
-				})
+			200,
+			RedirectPath,
+			"",
+			func(m *mocks.RedirectRepository) {
+				m.On("GetByFrom", RedirectPath).Return(domain.Redirect{}, fmt.Errorf("err"))
 			},
 		},
 		"300": {
-			status:      300,
-			url:         "/page/test",
-			redirectUrl: "/page",
-			mock: func(m *mocks.OptionsRepository) {
-				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects: []domain.Redirect{
-						{To: "/page", From: "http://localhost:8080/page/test", Code: 300},
-					},
-				})
+			300,
+			"/page/test",
+			RedirectPath,
+			func(m *mocks.RedirectRepository) {
+				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+					To: RedirectPath, From: "/page/test", Code: 300,
+				}, nil)
 			},
 		},
 		"301": {
-			status:      301,
-			url:         "/page/test",
-			redirectUrl: "/page",
-			mock: func(m *mocks.OptionsRepository) {
-				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects: []domain.Redirect{
-						{To: "/page", From: "http://localhost:8080/page/test", Code: 301},
-					},
-				})
+			301,
+			"/page/test",
+			RedirectPath,
+			func(m *mocks.RedirectRepository) {
+				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+					To: RedirectPath, From: "/page/test", Code: 301,
+				}, nil)
 			},
 		},
 		"302": {
-			status:      302,
-			url:         "/page/test",
-			redirectUrl: "/page",
-			mock: func(m *mocks.OptionsRepository) {
-				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects: []domain.Redirect{
-						{To: "/page", From: "http://localhost:8080/page/test", Code: 302},
-					},
-				})
+			302,
+			"/page/test",
+			RedirectPath,
+			func(m *mocks.RedirectRepository) {
+				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+					To: RedirectPath, From: "/page/test", Code: 302,
+				}, nil)
 			},
 		},
 		"303": {
-			status:      303,
-			url:         "/page/test",
-			redirectUrl: "/page",
-			mock: func(m *mocks.OptionsRepository) {
-				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects: []domain.Redirect{
-						{To: "/page", From: "http://localhost:8080/page/test", Code: 303},
-					},
-				})
+			303,
+			"/page/test",
+			RedirectPath,
+			func(m *mocks.RedirectRepository) {
+				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+					To: RedirectPath, From: "/page/test", Code: 303,
+				}, nil)
 			},
 		},
 		"304": {
-			status:      304,
-			url:         "/page/test",
-			redirectUrl: "/page",
-			mock: func(m *mocks.OptionsRepository) {
-				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects: []domain.Redirect{
-						{To: "/page", From: "http://localhost:8080/page/test", Code: 304},
-					},
-				})
+			304,
+			"/page/test",
+			RedirectPath,
+			func(m *mocks.RedirectRepository) {
+				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+					To: RedirectPath, From: "/page/test", Code: 304,
+				}, nil)
 			},
 		},
 		"307": {
-			status:      307,
-			url:         "/page/test",
-			redirectUrl: "/page",
-			mock: func(m *mocks.OptionsRepository) {
-				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects: []domain.Redirect{
-						{To: "/page", From: "http://localhost:8080/page/test", Code: 307},
-					},
-				})
+			307,
+			"/page/test",
+			RedirectPath,
+			func(m *mocks.RedirectRepository) {
+				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+					To: RedirectPath, From: "/page/test", Code: 307,
+				}, nil)
 			},
 		},
 		"308": {
-			status:      308,
-			url:         "/page/test",
-			redirectUrl: "/page",
-			mock: func(m *mocks.OptionsRepository) {
-				m.On("GetStruct").Return(domain.Options{
-					SeoRedirects: []domain.Redirect{
-						{To: "/page", From: "http://localhost:8080/page/test", Code: 308},
-					},
-				})
+			308,
+			"/page/test",
+			RedirectPath,
+			func(m *mocks.RedirectRepository) {
+				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+					To: RedirectPath, From: "/page/test", Code: 308,
+				}, nil)
 			},
 		},
 	}
 
 	for name, test := range tt {
-
-		t.Run(name, func(t *testing.T) {
-			gin.SetMode(gin.TestMode)
-
-			rr := httptest.NewRecorder()
-			g, engine := gin.CreateTestContext(rr)
-			engine.Use(location.Default())
-
-			mock := &mocks.OptionsRepository{}
-			test.mock(mock)
-			engine.Use(Redirects(mock))
-
-			engine.GET("/page", func(context *gin.Context) {
-				g.String(200, "verbis")
-				return
-			})
-
-			req, err := http.NewRequest("GET", test.url, nil)
-			assert.NoError(t, err)
-
-			engine.ServeHTTP(rr, req)
-
-			assert.Equal(t, test.status, rr.Result().StatusCode)
-
-			if test.redirectUrl != "" {
-				loc, err := rr.Result().Location()
-				assert.NoError(t, err)
-				assert.Equal(t, test.redirectUrl, loc.Path)
+		t.Run(name, func() {
+			mock := &mocks.RedirectRepository{}
+			if test.mock != nil {
+				test.mock(mock)
 			}
+
+			t.Engine.Use(Redirects(&deps.Deps{
+				Store: &models.Store{Redirects: mock},
+				Config: &config.Configuration{
+					Admin: config.Admin{
+						Path:                "admin",
+					},
+				},
+			}))
+
+			t.RequestAndServe(http.MethodGet, test.url, test.url, nil, t.DefaultHandler)
+			
+			t.Equal(test.status, t.Status())
+			if test.redirectUrl != "" {
+				loc, err := t.Recorder.Result().Location()
+				t.NoError(err)
+				t.Equal(test.redirectUrl, loc.Path)
+			}
+
+			t.Reset()
 		})
 	}
 }

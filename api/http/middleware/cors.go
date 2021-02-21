@@ -8,6 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// CORS
+//
+// Sets up CORS headers for the API, if the request
+// method is options, the request will be aborted
+// with a status of 200.
 func CORS() gin.HandlerFunc {
 	return func(g *gin.Context) {
 		g.Writer.Header().Set("Access-Control-Allow-Origin", "*")
