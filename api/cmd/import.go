@@ -6,8 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/importer/wordpress"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/kyokomi/emoji"
@@ -24,18 +22,12 @@ and convert the data into Verbis content. `,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
-			db, err := doctor()
+			db, cfg, err := doctor()
 			if err != nil {
 				printError(err.Error())
 			}
 
 			fmt.Println()
-
-			// Init Config
-			cfg, err := config.New()
-			if err != nil {
-				printError(errors.Message(err))
-			}
 
 			// Set up stores & pass the database.
 			store := models.New(db, *cfg)
