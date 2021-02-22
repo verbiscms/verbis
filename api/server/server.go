@@ -41,7 +41,7 @@ func New(d *deps.Deps) *Server {
 	server := &Server{r}
 
 	// Global middleware
-	r.Use(logger.Log())
+	r.Use(logger.Handler())
 	r.Use(location.Default())
 
 	r.Use(gin.Recovery())
