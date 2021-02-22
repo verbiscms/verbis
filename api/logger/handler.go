@@ -11,73 +11,56 @@ import (
 	"time"
 )
 
-func Log() gin.HandlerFunc {
-	return func(g *gin.Context) {
+// Log
+//
+//
+func Handler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
 		// Start time
 		startTime := time.Now()
+
 		// Set request time for execution
-		g.Set("request_time", startTime)
+		ctx.Set("request_time", startTime)
+
 		// Processing request
-		g.Next()
+		ctx.Next()
+
 		// Error
-		var verbisError errors.Error
-		e, exists := g.Get("verbis_error")
-		if exists {
-			e, ok := e.(*errors.Error)
+		var verbisError *errors.Error
+		err, ok := ctx.Get("verbis_error")
+		if ok {
+			e, ok := err.(*errors.Error)
 			if ok {
-				verbisError = *e
+				verbisError = e
 			}
 		}
+
 		// Message
 		var verbisMessage string
-		m, exists := g.Get("verbis_message")
-		if exists {
+		m, ok := ctx.Get("verbis_message")
+		if ok {
 			m, ok := m.(string)
 			if ok {
 				verbisMessage = m
 			}
-		} else if verbisError.Message != "" {
-			verbisMessage = verbisError.Message
-		} else {
-			verbisMessage = ""
 		}
+
 		// End time
 		endTime := time.Now()
-		// Execution time
-		latencyTime := endTime.Sub(startTime)
-		// Request mode
-		reqMethod := g.Request.Method
-		// Request routing
-		reqUri := g.Request.RequestURI
-		// Status code
-		statusCode := g.Writer.Status()
-		// Request IP
-		clientIP := g.ClientIP()
-		// Data Length
-		dataLength := g.Writer.Size()
-		// User agent
-		clientUserAgent := g.Request.UserAgent()
+
 		// Log fields
+		status := ctx.Writer.Status()
 		fields := log.Fields{
-			"status_code":    statusCode,
-			"latency_time":   latencyTime,
-			"client_ip":      clientIP,
-			"request_method": reqMethod,
-			"request_url":    reqUri,
-			"data_length":    dataLength,
-			"user_agent":     clientUserAgent,
+			"status_code":    status,
+			"latency_time":   endTime.Sub(startTime),
+			"client_ip":      ctx.ClientIP(),
+			"request_method": ctx.Request.Method,
+			"request_url":    ctx.Request.RequestURI,
 			"message":        verbisMessage,
 			"error":          verbisError,
 		}
 
-		if verbisError.Code == errors.TEMPLATE {
-			fields["status_code"] = 500
-		}
-
-		// Log format
-		if verbisError.Code == errors.TEMPLATE || verbisError.Code == errors.INTERNAL {
-			log.WithFields(fields).Panic()
-		} else if statusCode >= 200 && statusCode < 400 {
+		if status >= 200 && status < 400 {
 			log.WithFields(fields).Info()
 		} else {
 			log.WithFields(fields).Error()

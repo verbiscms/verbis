@@ -25,7 +25,7 @@ var (
 Verbis install. It will check if the database has been set up correctly as well as the
 environment.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if _, err := doctor(); err != nil {
+			if _, _, err := doctor(); err != nil {
 				return
 			}
 
@@ -37,21 +37,21 @@ environment.`,
 // doctor checks if the environment is validated and checks
 // to see if there is a valid database connection and the
 // database exists before proceeding.
-func doctor() (*database.MySql, error) {
+func doctor() (*database.MySql, *config.Configuration, error) {
 
 	printSpinner("Running doctor...")
 
 	// Check paths are correct
 	if err := paths.BaseCheck(); err != nil {
 		printError(err.Error())
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Load the environment (.env file)
 	err := environment.Load()
 	if err != nil {
 		printError(err.Error())
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Check if the environment values are valid
@@ -60,37 +60,37 @@ func doctor() (*database.MySql, error) {
 		for _, v := range vErrors {
 			printError(fmt.Sprintf("Obtaining environment variable: %s", strings.ToUpper(v.Key)))
 		}
-		return nil, fmt.Errorf("Validation failed for the enviroment")
+		return nil, nil, fmt.Errorf("Validation failed for the enviroment")
 	}
 
 	// Get the database and ping
 	db, err := database.New()
 	if err != nil {
 		printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
-		return nil, fmt.Errorf("Error establishing database connection")
+		return nil, nil, fmt.Errorf("Error establishing database connection")
 	}
 
 	// Check if the database exists
 	if err := db.CheckExists(); err != nil {
 		printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
-		return nil, fmt.Errorf("error establishing database connection")
+		return nil, nil, fmt.Errorf("error establishing database connection")
 	}
 
 	// Init Cache
 	cache.Init()
 
 	// Init Config
-	con, err := config.New()
+	cfg, err := config.New()
 	if err != nil {
 		printError(errors.Message(err))
 	}
 
 	// Init logging
-	if err := logger.Init(*con); err != nil {
+	if err := logger.Init(); err != nil {
 		printError(err.Error())
 	}
 
 	printSuccess("All checks passed.")
 
-	return db, nil
+	return db, cfg, nil
 }

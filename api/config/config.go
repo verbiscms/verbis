@@ -17,7 +17,6 @@ import (
 type Configuration struct {
 	Admin Admin
 	Media Media
-	Logs  Logs
 }
 
 // Admin
@@ -30,12 +29,6 @@ type Admin struct {
 type Media struct {
 	UploadPath       string   `yaml:"upload_path"`
 	AllowedFileTypes []string `yaml:"allowed_file_types"`
-}
-
-// Logs
-type Logs struct {
-	AccessLog string `yaml:"access_log"`
-	ErrorLog  string `yaml:"error_log"`
 }
 
 //
@@ -69,10 +62,6 @@ func New() (*Configuration, error) {
 			UploadPath:       "",
 			AllowedFileTypes: nil,
 		},
-		Logs: Logs{
-			AccessLog: "default",
-			ErrorLog:  "default",
-		},
 	}
 
 	if err := c.Init(); err != nil {
@@ -104,15 +93,6 @@ func (c *Configuration) Init() error {
 	}
 	if err := yaml.Unmarshal(m, &c.Media); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the media.yml file", Operation: op, Err: err}
-	}
-
-	// Logs
-	l, err := files.LoadFile(paths.Base() + "/config/logs.yml")
-	if err != nil {
-		return err
-	}
-	if err := yaml.Unmarshal(l, &c.Logs); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the logs.yml file", Operation: op, Err: err}
 	}
 
 	return nil

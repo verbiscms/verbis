@@ -8,12 +8,10 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/sirupsen/logrus"
-	"github.com/stretchr/testify/assert"
-	"testing"
 	"time"
 )
 
-func TestFormatter(t *testing.T) {
+func (t *LoggerTestSuite) TestFormatter() {
 
 	now := time.Now()
 	nowStr := now.Format(time.StampMilli)
@@ -34,7 +32,7 @@ func TestFormatter(t *testing.T) {
 				Level:   logrus.InfoLevel,
 				Message: "message",
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [INFO] | [msg] message\n", nowStr),
+			fmt.Sprintf("[VERBIS] %s | VRB | [INFO]  | [msg] message\n", nowStr),
 		},
 		"Warning": {
 			&logrus.Entry{
@@ -69,9 +67,9 @@ func TestFormatter(t *testing.T) {
 				Data: logrus.Fields{
 					"fields": logrus.Fields{"key1": "test1", "key2": "test2"},
 				},
-				Level:   logrus.InfoLevel,
+				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [INFO] | key1: test1 key2: test2\n", nowStr),
+			fmt.Sprintf("[VERBIS] %s | VRB | [INFO]  | key1: test1 key2: test2\n", nowStr),
 		},
 		"Print Verbis Error Pointer": {
 			&logrus.Entry{
@@ -120,7 +118,7 @@ func TestFormatter(t *testing.T) {
 				},
 				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | 200 | [INFO] | 127.0.0.1 |   GET    \"/page\"\n", nowStr),
+			fmt.Sprintf("[VERBIS] %s | 200 | [INFO]  | 127.0.0.1 |   GET    \"/page\"\n", nowStr),
 		},
 		"Server Not Found": {
 			&logrus.Entry{
@@ -133,7 +131,7 @@ func TestFormatter(t *testing.T) {
 				},
 				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | 404 | [INFO] | 127.0.0.1 |   GET    \"/page\"\n", nowStr),
+			fmt.Sprintf("[VERBIS] %s | 404 | [INFO]  | 127.0.0.1 |   GET    \"/page\"\n", nowStr),
 		},
 		"Message": {
 			&logrus.Entry{
@@ -142,17 +140,17 @@ func TestFormatter(t *testing.T) {
 				},
 				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [INFO] | [msg] message\n", nowStr),
+			fmt.Sprintf("[VERBIS] %s | VRB | [INFO]  | [msg] message\n", nowStr),
 		},
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			test.entry.Time = now
 			f := Formatter{Colours: false}
 			got, err := f.Format(test.entry)
-			assert.NoError(t, err)
-			assert.Equal(t, test.want, string(got))
+			t.NoError(err)
+			t.Equal(test.want, string(got))
 		})
 	}
 }

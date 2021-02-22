@@ -51,7 +51,7 @@ continue to drop the database. Use with caution!`,
 			printSpinner("Uninstalling Verbis...")
 
 			// Run doctor
-			db, err := doctor()
+			db, _, err := doctor()
 			if err != nil {
 				printError(err.Error())
 			}

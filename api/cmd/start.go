@@ -6,11 +6,9 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/cron"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/server/routes"
@@ -29,15 +27,9 @@ up the server on the port specified in the .env file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
-			db, err := doctor()
+			db, cfg, err := doctor()
 			if err != nil {
 				printError(err.Error())
-			}
-
-			// Init Config
-			cfg, err := config.New()
-			if err != nil {
-				printError(errors.Message(err))
 			}
 
 			// Set up stores & pass the database.

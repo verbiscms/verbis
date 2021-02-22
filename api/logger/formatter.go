@@ -49,6 +49,7 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 	str := b.String()
 	str = strings.TrimSuffix(str, "|")
+	str = strings.TrimSuffix(str, "|")
 	str = strings.TrimSuffix(str, " ")
 	str += "\n"
 
@@ -110,6 +111,11 @@ func (f *Formatter) Level() {
 	}
 
 	level := strings.ToUpper(f.entry.Level.String())
+	if len(level) == 4 {
+		f.buf.WriteString(cc.Sprintf("[%s] ", level))
+		return
+	}
+
 	f.buf.WriteString(cc.Sprintf("[%s]", level))
 }
 
@@ -143,7 +149,7 @@ func (f *Formatter) Method() {
 func (f *Formatter) Url() {
 	url, ok := f.entry.Data["request_url"].(string)
 	if ok {
-		f.buf.WriteString(fmt.Sprintf(" \"%s\"", url))
+		f.buf.WriteString(fmt.Sprintf(" \"%s\" ", url))
 	}
 }
 
@@ -202,6 +208,10 @@ func (f *Formatter) Error() {
 //
 //
 func (f *Formatter) printError(err *errors.Error) {
+	if err == nil {
+		return
+	}
+
 	if err.Code != "" {
 		f.buf.WriteString(color.Red.Sprintf(" [code] %s", err.Code))
 	}
