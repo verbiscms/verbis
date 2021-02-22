@@ -7,11 +7,9 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database/seeds"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -50,7 +48,7 @@ func Install(cmd *cobra.Command, args []string) {
 	//	figure.Print()
 
 	// Run doctor
-	db, err := doctor()
+	db, cfg, err := doctor()
 	if err != nil {
 		printError(err.Error())
 	}
@@ -75,14 +73,8 @@ func Install(cmd *cobra.Command, args []string) {
 		printError(fmt.Sprintf("Error installing the Verbis database: %v", err))
 	}
 
-	// Init Config
-	con, err := config.New()
-	if err != nil {
-		printError(errors.Message(err))
-	}
-
 	// Set up stores & pass the database.
-	store := models.New(db, *con)
+	store := models.New(db, *cfg)
 	if err != nil {
 		printError(err.Error())
 	}

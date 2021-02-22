@@ -28,9 +28,7 @@ func (t *TplTestSuite) TestTemplateManager_Prepare() {
 		template.FuncMap{},
 	}
 
-	t.Equal(want.config, got.config)
-	t.Equal(want.TemplateManager, got.TemplateManager)
-	t.Equal(want.funcMap, got.funcMap)
+	t.Equal(want.config, got.Config())
 }
 
 func (t *TplTestSuite) TestExecute_Execute() {
@@ -100,7 +98,15 @@ func (t *TplTestSuite) TestExecute_Execute() {
 			tm, ctx, post := t.Setup()
 
 			test.config.Root = t.apiPath + test.config.Root
-			e := tm.Prepare(test.config)
+			execute := Execute{
+				tm,
+				test.config,
+				make(map[string]*template.Template),
+				sync.RWMutex{},
+				DefaultFileHandler(),
+				template.FuncMap{},
+			}
+			e := execute.Prepare(test.config)
 
 			if test.fileHandler != nil {
 				e.fileHandler = test.fileHandler

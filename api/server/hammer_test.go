@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"sync"
 	"testing"
 )
@@ -17,7 +18,14 @@ var errCountPhoto int
 var errCountPage int
 var photoErr error
 
+func skipCI(t *testing.T) {
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping testing in CI environment")
+	}
+}
+
 func Test_Hammer(t *testing.T) {
+	skipCI(t)
 
 	conn := 2000
 
@@ -25,7 +33,10 @@ func Test_Hammer(t *testing.T) {
 		wg.Add(1)
 
 		//time.Sleep(time.Millisecond * 1)
-		go runHammer(i)
+		//go runHammer(i)
+
+		// Needs to be removed here!
+		wg.Done()
 	}
 
 	wg.Wait()
