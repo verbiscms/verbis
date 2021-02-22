@@ -12,19 +12,19 @@ import (
 	"io"
 )
 
-type mockFormatErr struct {}
+type mockFormatErr struct{}
 
 func (m *mockFormatErr) Format(entry *logrus.Entry) ([]byte, error) {
 	return nil, fmt.Errorf("err")
 }
 
-type mockFormat struct {}
+type mockFormat struct{}
 
 func (m *mockFormat) Format(entry *logrus.Entry) ([]byte, error) {
 	return []byte("test"), nil
 }
 
-type mockWriterErr struct {}
+type mockWriterErr struct{}
 
 func (m *mockWriterErr) Write(p []byte) (n int, err error) {
 	return 0, fmt.Errorf("err")
@@ -43,7 +43,7 @@ func (t *LoggerTestSuite) TestWriterHook_Fire() {
 		"Error Entry": {
 			&bytes.Buffer{},
 			&logrus.Entry{
-				Logger:  &logrus.Logger{Formatter: &mockFormatErr{}},
+				Logger: &logrus.Logger{Formatter: &mockFormatErr{}},
 			},
 			&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining the entry string", Operation: "Logger.Hook.Fire", Err: fmt.Errorf("err")},
 			"",
@@ -51,7 +51,7 @@ func (t *LoggerTestSuite) TestWriterHook_Fire() {
 		"Error Writer": {
 			&mockWriterErr{},
 			&logrus.Entry{
-				Logger:  &logrus.Logger{Formatter: &mockFormat{}},
+				Logger: &logrus.Logger{Formatter: &mockFormat{}},
 			},
 			&errors.Error{Code: errors.INTERNAL, Message: "Error writing entry to io.Writer", Operation: "Logger.Hook.Fire", Err: fmt.Errorf("err")},
 			"",
@@ -59,7 +59,7 @@ func (t *LoggerTestSuite) TestWriterHook_Fire() {
 		"Success": {
 			buf,
 			&logrus.Entry{
-				Logger:  &logrus.Logger{Formatter: &mockFormat{}},
+				Logger: &logrus.Logger{Formatter: &mockFormat{}},
 			},
 			nil,
 			"test",

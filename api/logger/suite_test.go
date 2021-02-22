@@ -67,7 +67,7 @@ func (t *LoggerTestSuite) SetupHandler(fn func(ctx *gin.Context)) *bytes.Buffer 
 // testing.
 func (t *LoggerTestSuite) SetupHooks(writer io.Writer) WriterHook {
 	return WriterHook{
-		Writer:    writer,
+		Writer: writer,
 		LogLevels: []logrus.Level{
 			logrus.InfoLevel,
 			logrus.DebugLevel,
