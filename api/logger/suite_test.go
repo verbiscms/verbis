@@ -48,7 +48,7 @@ func (t *LoggerTestSuite) Setup() *bytes.Buffer {
 	logger.SetOutput(buf)
 	logger.SetFormatter(&Formatter{
 		Colours: false,
-		Debug: true,
+		Debug:   true,
 	})
 	return buf
 }

@@ -19,7 +19,7 @@ type tags []string
 // build up a tags array to be sent back.
 func (v *Value) tags(value domain.FieldValue) (interface{}, error) {
 	var t tags
-	for _, v := range value.Array() {
+	for _, v := range value.Slice() {
 		if v != "" {
 			t = append(t, v)
 		}

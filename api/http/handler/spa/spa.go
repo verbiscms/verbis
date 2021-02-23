@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/render"
+	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"strings"
@@ -23,7 +23,7 @@ type Handler interface {
 // Public defines the handler for all SPA routes.
 type SPA struct {
 	*deps.Deps
-	Publisher render.Renderer
+	Publisher publisher.Renderer
 }
 
 // Serve

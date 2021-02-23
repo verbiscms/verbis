@@ -6,7 +6,7 @@ package public
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/render"
+	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,5 +21,5 @@ type Handler interface {
 // Public defines the handler for all public routes.
 type Public struct {
 	*deps.Deps
-	Publisher render.Renderer
+	Publisher publisher.Renderer
 }

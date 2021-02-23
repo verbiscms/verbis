@@ -19,29 +19,29 @@ import (
 // Env defines the environment variables set in the .env file.
 type Env struct {
 	// Prod, production or dev.
-	AppEnv          string `json:"APP_ENV"`
+	AppEnv string `json:"APP_ENV"`
 	// If Verbis is in debug mode (true, false).
-	AppDebug        string `json:"APP_DEBUG"`
+	AppDebug string `json:"APP_DEBUG"`
 	// The port the server should listen to.
-	AppPort         string `json:"APP_PORT" binding:"required"`
+	AppPort string `json:"APP_PORT" binding:"required"`
 	// The database host (IP) for the store.
-	DbHost          string `json:"DB_HOST" binding:"required"`
+	DbHost string `json:"DB_HOST" binding:"required"`
 	// The database port for the store.
-	DbPort          string `json:"DB_PORT" binding:"required"`
+	DbPort string `json:"DB_PORT" binding:"required"`
 	// The database name.
-	DbDatabase      string `json:"DB_DATABASE" binding:"required"`
+	DbDatabase string `json:"DB_DATABASE" binding:"required"`
 	// The database user name.
-	DbUser          string `json:"DB_USERNAME" binding:"required"`
+	DbUser string `json:"DB_USERNAME" binding:"required"`
 	// The database port.
-	DbPassword      string `json:"DB_PASSWORD" binding:"required"`
+	DbPassword string `json:"DB_PASSWORD" binding:"required"`
 	// The key for Sparkpost (mailer).
 	SparkpostApiKey string `json:"SPARKPOST_API_KEY"`
 	// The url for Sparkpost (could be EU).
-	SparkpostUrl    string `json:"SPARKPOST_URL"`
+	SparkpostUrl string `json:"SPARKPOST_URL"`
 	// The mailing from address.
 	MailFromAddress string `json:"MAIL_FROM_ADDRESS"`
 	// The mailing from name.
-	MailFromName    string `json:"MAIL_FROM_NAME"`
+	MailFromName string `json:"MAIL_FROM_NAME"`
 }
 
 var (
@@ -49,7 +49,7 @@ var (
 	// .env is stored.
 	basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
 	// The environment file extension.
-	envExt      = ".env"
+	envExt = ".env"
 )
 
 // Load
