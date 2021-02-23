@@ -13,6 +13,8 @@ import (
 )
 
 type (
+	// TODO Array of Posts and PostData
+
 	//
 	Post struct {
 		Id                int         `db:"id" json:"id" binding:"numeric"`
