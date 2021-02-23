@@ -11,9 +11,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -391,7 +391,7 @@ func (s *PostStore) checkOwner(p domain.PostCreate) int {
 	if p.Author == 0 || !s.userModel.Exists(p.Author) {
 		owner, err := s.userModel.GetOwner()
 		if err != nil {
-			log.Panic(err)
+			logger.Panic(err)
 		}
 		return owner.Id
 	}

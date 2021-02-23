@@ -13,7 +13,6 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-
 		},
 	}
 )

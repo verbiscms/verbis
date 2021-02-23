@@ -58,7 +58,7 @@ type Config struct {
 func (h *Handler) newRecover(cfg Config) *Recover {
 	r := &Recover{
 		deps:   h.deps,
-		err:    getError(cfg.Error),
+		err:    errors.ToError(cfg.Error),
 		config: cfg,
 		tracer: trace.New(),
 	}

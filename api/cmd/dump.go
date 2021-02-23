@@ -6,7 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/spf13/cobra"
 	"time"
@@ -23,13 +22,13 @@ database to file`,
 		Run: func(cmd *cobra.Command, args []string) {
 			printSpinner("Dumping database...")
 
-			db, _, err := doctor()
+			cfg, db, err := doctor()
 			if err != nil {
 				printError("Could not dump the database, is your database connection valid?")
 			}
 
 			time := time.Now().Format(time.RFC3339)
-			fileName := fmt.Sprintf("%s-dump-%v", environment.GetDatabaseName(), time)
+			fileName := fmt.Sprintf("%s-dump-%v", cfg.Env.DbDatabase, time)
 			if err := db.Dump(paths.Storage()+"/dumps", fileName); err != nil {
 				printError("Could not dump the database, is your database connection valid?")
 			}

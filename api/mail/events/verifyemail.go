@@ -7,7 +7,6 @@ package events
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/mail"
 	"strconv"
@@ -41,7 +40,7 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 	md5String := encryption.MD5Hash(strconv.Itoa(u.Id) + u.Email)
 
 	data := mail.Data{
-		"AppUrl":    environment.GetAppName(),
+		"AppUrl":    e.mailer.Env.AppName,
 		"AppTitle":  title,
 		"AdminPath": e.mailer.Config.Admin.Path,
 		"Token":     md5String,

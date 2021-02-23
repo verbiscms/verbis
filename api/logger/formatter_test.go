@@ -65,11 +65,11 @@ func (t *LoggerTestSuite) TestFormatter() {
 		"Fields": {
 			&logrus.Entry{
 				Data: logrus.Fields{
-					"fields": logrus.Fields{"key1": "test1", "key2": "test2"},
+					"fields": logrus.Fields{"key1": "test1"},
 				},
 				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [INFO]  | key1: test1 key2: test2\n", nowStr),
+			fmt.Sprintf("[VERBIS] %s | VRB | [INFO]  | key1: test1\n", nowStr),
 		},
 		"Print Verbis Error Pointer": {
 			&logrus.Entry{

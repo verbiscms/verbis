@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/spf13/cast"
 )
 
@@ -45,9 +45,7 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 
 	name, err := cast.ToStringE(input)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err},
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err}).Error()
 		return nil
 	}
 
@@ -55,14 +53,12 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
+		logger.WithError(err).Error()
 		return nil
 	}
 
 	if field.Type != "flexible" {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)},
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Field is not flexible content", Operation: op, Err: fmt.Errorf("field with the name: %s, is not flexible content", name)}).Error()
 		return nil
 	}
 

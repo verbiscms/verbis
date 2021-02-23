@@ -22,7 +22,7 @@ and convert the data into Verbis content. `,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
-			db, cfg, err := doctor()
+			cfg, db, err := doctor()
 			if err != nil {
 				printError(err.Error())
 			}
@@ -30,7 +30,7 @@ and convert the data into Verbis content. `,
 			fmt.Println()
 
 			// Set up stores & pass the database.
-			store := models.New(db, *cfg)
+			store := models.New(db, *cfg.Config)
 			if err != nil {
 				printError(err.Error())
 			}

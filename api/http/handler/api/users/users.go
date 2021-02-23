@@ -8,8 +8,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 )
 
 // Handler defines methods for users to interact with the server
@@ -38,7 +38,7 @@ func (u *Users) clearCache(id int) {
 	go func() {
 		posts, _, err := u.Store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
 		if err != nil {
-			log.WithFields(log.Fields{"error": err}).Error()
+			logger.WithError(err).Error()
 		}
 		cache.ClearUserCache(id, posts)
 	}()

@@ -13,7 +13,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/forms"
 	"github.com/ainsleyclark/verbis/api/helpers/html"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 )
 
 type Mailer struct {
@@ -22,6 +22,7 @@ type Mailer struct {
 	Transmission Sender
 	FromAddress  string
 	FromName     string
+	Env          *environment.Env
 }
 
 type Sender struct {
@@ -36,7 +37,10 @@ type Data map[string]interface{}
 // New, Create a new mailable instance using environment variables.
 func New() (*Mailer, error) {
 	const op = "mail.New"
-	m := &Mailer{}
+	env, _ := environment.Load()
+	m := &Mailer{
+		Env: env,
+	}
 	if err := m.load(); err != nil {
 		return &Mailer{}, err
 	}
@@ -48,8 +52,7 @@ func New() (*Mailer, error) {
 func (m *Mailer) load() error {
 	const op = "mail.Load"
 
-	mailConf := environment.GetMailConfiguration()
-
+	mailConf := m.Env.MailConfig()
 	config := &sp.Config{
 		BaseUrl:    mailConf.SparkpostUrl,
 		ApiKey:     mailConf.SparkpostApiKey,
@@ -100,9 +103,7 @@ func (m *Mailer) Send(t *Sender) {
 
 	id, _, err := m.client.Send(tx)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err},
-		})
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err}).Error()
 		return
 	}
 

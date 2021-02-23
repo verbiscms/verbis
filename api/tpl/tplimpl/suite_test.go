@@ -8,9 +8,9 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"net/http/httptest"
@@ -28,9 +28,10 @@ type TplTestSuite struct {
 func (t *TplTestSuite) BeforeTest(suiteName, testName string) {
 	b := bytes.Buffer{}
 	t.logWriter = b
-	log.SetOutput(&t.logWriter)
+	logger.SetOutput(&t.logWriter)
 	t.SetApiPath()
 }
+
 func TestTpl(t *testing.T) {
 	suite.Run(t, new(TplTestSuite))
 }

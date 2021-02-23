@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/fields/resolve"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/spf13/cast"
 	"strings"
 )
@@ -38,9 +38,7 @@ func (s *Service) handleArgs(args []interface{}) []domain.PostField {
 
 	id, err := cast.ToIntE(args[0])
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Invalid argument passed to ", Operation: op, Err: fmt.Errorf("unable to cast post id to integer")},
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Invalid argument passed to ", Operation: op, Err: fmt.Errorf("unable to cast post id to integer")}).Error()
 		return nil
 	}
 
@@ -57,7 +55,7 @@ func (s *Service) getFieldsByPost(id int) []domain.PostField {
 
 	fields, err := s.deps.Store.Fields.GetByPost(id)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
+		logger.WithError(err).Error()
 		return nil
 	}
 
