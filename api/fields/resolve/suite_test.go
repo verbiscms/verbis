@@ -6,6 +6,7 @@ package resolve
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/stretchr/testify/suite"
@@ -13,21 +14,33 @@ import (
 	"testing"
 )
 
+// ResolverTestSuite defines the helper used for resolver
+// field testing.
 type ResolverTestSuite struct {
 	suite.Suite
 }
 
-type noStringer struct{}
-
+// TestResolver
+//
+// Assert testing has begun.
 func TestResolver(t *testing.T) {
 	suite.Run(t, new(ResolverTestSuite))
 }
 
-func (t *ResolverTestSuite) BeforeTest(suiteName, testName string) {
-	logger.Init()
+// Cannot parse helper.
+type noStringer struct{}
+
+// SetupSuite
+//
+// Discard the logger on setup.
+func (t *ResolverTestSuite) SetupSuite() {
+	logger.Init(&environment.Env{})
 	logger.SetOutput(ioutil.Discard)
 }
 
+// GetValue
+//
+// Returns a default value.
 func (t *ResolverTestSuite) GetValue() *Value {
 	return &Value{
 		&deps.Deps{

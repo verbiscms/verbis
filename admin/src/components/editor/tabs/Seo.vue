@@ -98,6 +98,7 @@ export default {
 		if (this.seo) {
 			this.data = this.seo;
 		}
+		// Update the parent with default options when mounted.
 		this.emit();
 	},
 	methods: {

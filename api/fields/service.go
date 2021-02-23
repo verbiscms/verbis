@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 )
 
-// FieldService defines methods for obtaining fields for the front end templates
+// FieldService defines methods for obtaining fields for the front end templates.
 type FieldService interface {
 	GetField(name string, args ...interface{}) interface{}
 	GetFieldObject(name string, args ...interface{}) domain.PostField
@@ -28,7 +28,8 @@ const (
 
 // Service
 //
-// Defines the helper for obtaining fields for front end templates.
+// Defines the helper for obtaining fields for front end
+// templates.
 type Service struct {
 	// Used for obtaining categories, media items, posts and
 	// users from the database when resolving fields.
@@ -45,7 +46,10 @@ type Service struct {
 	layout []domain.FieldGroup
 }
 
-// NewService - Construct
+// NewService
+//
+// Construct, creates a new slice of post fields and slice
+// of layouts.
 func NewService(d *deps.Deps, p *domain.PostData) *Service {
 	fields := make([]domain.PostField, 0)
 	if p.Fields != nil {

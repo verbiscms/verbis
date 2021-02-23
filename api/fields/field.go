@@ -19,7 +19,6 @@ func (s *Service) GetField(name string, args ...interface{}) interface{} {
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		logger.WithError(err).Error()
 		return nil
 	}
 

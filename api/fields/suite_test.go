@@ -15,27 +15,42 @@ import (
 	"testing"
 )
 
+// FieldTestSuite defines the helper used for field
+// testing.
 type FieldTestSuite struct {
 	suite.Suite
 	logWriter bytes.Buffer
 }
 
-type noStringer struct{}
-
+// TestFields
+//
+// Assert testing has begun.
 func TestFields(t *testing.T) {
 	suite.Run(t, new(FieldTestSuite))
 }
 
+// Cannot parse helper.
+type noStringer struct{}
+
+// BeforeTest
+//
+// Assign the logger to a buffer.
 func (t *FieldTestSuite) BeforeTest(suiteName, testName string) {
 	b := bytes.Buffer{}
 	t.logWriter = b
 	logger.SetOutput(&t.logWriter)
 }
 
+// Reset
+//
+// Reset the log writer.
 func (t *FieldTestSuite) Reset() {
 	t.logWriter.Reset()
 }
 
+// GetMockService
+//
+// Mock service for testing.
 func (t *FieldTestSuite) GetMockService(fields []domain.PostField, fnc func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)) *Service {
 	fieldsMock := &mocks.FieldsRepository{}
 	categoryMock := &mocks.CategoryRepository{}
@@ -55,6 +70,9 @@ func (t *FieldTestSuite) GetMockService(fields []domain.PostField, fnc func(f *m
 	return s
 }
 
+// GetPostsMockService
+//
+// Mock posts service for testing.
 func (t *FieldTestSuite) GetPostsMockService(fields []domain.PostField, fnc func(p *mocks.PostsRepository)) *Service {
 	postsMocks := &mocks.PostsRepository{}
 
@@ -72,6 +90,9 @@ func (t *FieldTestSuite) GetPostsMockService(fields []domain.PostField, fnc func
 	return s
 }
 
+// GetTypeMockService
+//
+// Mock store service for testing.
 func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository)) *Service {
 
 	categoryMock := &mocks.CategoryRepository{}
@@ -96,6 +117,9 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository
 	return s
 }
 
+// GetService
+//
+// Mock service for testing.
 func (t *FieldTestSuite) GetService(fields []domain.PostField) *Service {
 	return &Service{
 		fields: fields,

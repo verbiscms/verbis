@@ -47,7 +47,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 		"No Field": {
 			fields: nil,
 			input:  "test",
-			want:   "no field exists with the name: test",
+			want:   "",
 			err:    true,
 		},
 		"Wrong Field Type": {

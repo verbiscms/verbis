@@ -46,7 +46,7 @@ func NewApi(d *deps.Deps) *ApiHandler {
 	return &ApiHandler{
 		Auth:       &auth.Auth{Deps: d},
 		Cache:      &cache.Cache{Deps: d},
-		Categories: &categories.Categories{d},
+		Categories: &categories.Categories{Deps: d},
 		Fields:     &fields.Fields{Deps: d},
 		Forms:      &forms.Forms{Deps: d},
 		Media:      &media.Media{Deps: d},
