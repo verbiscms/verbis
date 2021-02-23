@@ -53,7 +53,6 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		logger.WithError(err).Error()
 		return nil
 	}
 

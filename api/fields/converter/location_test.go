@@ -7,6 +7,7 @@ package location
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -17,19 +18,27 @@ import (
 	"testing"
 )
 
+// LocationTestSuite defines the helper used for location
+// field testing.
 type LocationTestSuite struct {
 	suite.Suite
 	Path string
 }
 
+// TestLocation
+//
+// Assert testing has begun.
 func TestLocation(t *testing.T) {
 	suite.Run(t, new(LocationTestSuite))
 }
 
-func (t *LocationTestSuite) BeforeTest(suiteName, testName string) {
+// SetupSuite
+//
+// Discard the logger on setup and init caching.
+func (t *LocationTestSuite) SetupSuite() {
 	cache.Init()
 
-	logger.Init()
+	logger.Init(&environment.Env{})
 	logger.SetOutput(ioutil.Discard)
 
 	wd, err := os.Getwd()
