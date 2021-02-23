@@ -12,6 +12,8 @@ import (
 )
 
 type (
+	// TODO Array of Categories
+
 	// Form defines the data for sending data to the API
 	// from the client side.
 	Form struct {

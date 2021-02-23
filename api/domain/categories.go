@@ -10,6 +10,8 @@ import (
 )
 
 type (
+	// TODO Array of Categories
+
 	// Category defines the groups used for categorising
 	// individual posts.
 	Category struct {
