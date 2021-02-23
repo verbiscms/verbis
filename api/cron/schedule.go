@@ -7,7 +7,7 @@ package cron
 import (
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/render"
+	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/jasonlvhit/gocron"
 )
 
@@ -33,7 +33,7 @@ func (s *Scheduler) Run() {
 	}
 
 	// Clean sitemap cache
-	if err := gocron.Every(6).Hours().Do(render.NewSitemap(s.store).ClearCache); err != nil {
+	if err := gocron.Every(6).Hours().Do(publisher.NewSitemap(s.store).ClearCache); err != nil {
 		logger.WithError(err).Error()
 	}
 

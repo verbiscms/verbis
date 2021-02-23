@@ -72,7 +72,7 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 // Fields are resolved dependant on the format parameter.
 // Returns a new Flexible.
 func (s *Service) resolveFlexible(key string, field domain.PostField, fields []domain.PostField) Flexible {
-	layouts := field.OriginalValue.Array()
+	layouts := field.OriginalValue.Slice()
 
 	var flexible = make(Flexible, len(layouts))
 	for index := 0; index < len(flexible); index++ {

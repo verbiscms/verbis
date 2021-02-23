@@ -8,25 +8,47 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-type DBMap map[string]interface{}
+type (
+	// DBMap defines the helper for unmarshalling into a
+	// map directly from the database.
+	DBMap map[string]interface{}
+)
 
+// Scan
+//
+// Scanner for DBMap. unmarshal the DBMap when
+// the entity is pulled from the database.
 func (m DBMap) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("scan not supported")
-	}
-	if bytes == nil || value == nil {
+	const op = "Domain.DBMap.Scan"
+	if value == nil {
 		return nil
 	}
-	return json.Unmarshal(bytes, &m)
+	bytes, ok := value.([]byte)
+	if !ok || bytes == nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Scan unsupported for DBMap", Operation: op, Err: fmt.Errorf("scan not supported")}
+	}
+	err := json.Unmarshal(bytes, &m)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling into DBMap", Operation: op, Err: err}
+	}
+	return nil
 }
 
+// Value
+//
+// Valuer for DBMap. marshal the DBMap when
+// the entity is inserted to the database.
 func (m DBMap) Value() (driver.Value, error) {
+	const op = "Domain.MediaSizes.DBMap"
+	if len(m) == 0 {
+		return nil, nil
+	}
 	j, err := json.Marshal(m)
 	if err != nil {
-		return nil, fmt.Errorf("could not unmarshal to map[string]interface")
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling DBMap", Operation: op, Err: err}
 	}
 	return driver.Value(j), nil
 }

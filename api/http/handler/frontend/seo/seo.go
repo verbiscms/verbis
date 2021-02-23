@@ -6,7 +6,7 @@ package seo
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/render"
+	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,5 +23,5 @@ type Handler interface {
 // such as sitemaps and robots.txt
 type SEO struct {
 	*deps.Deps
-	Publisher render.Renderer
+	Publisher publisher.Renderer
 }
