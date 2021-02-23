@@ -54,7 +54,7 @@ func (e *Error) Error() string {
 	return buf.String()
 }
 
-// ErrorCode
+// Code
 //
 // Returns the code of the root error, if available.
 // Otherwise returns INTERNAL.
@@ -69,7 +69,7 @@ func Code(err error) string {
 	return INTERNAL
 }
 
-// ErrorMessage
+// Message
 //
 // Returns the human-readable message of the error, if
 // available. Otherwise returns a generic error
@@ -83,4 +83,23 @@ func Message(err error) string {
 		return Message(e.Err)
 	}
 	return GlobalError
+}
+
+// ToError
+//
+// Returns a Verbis error from input. If The type is
+// not of type Error, nil will be returned.
+func ToError(err interface{}) *Error {
+	switch v := err.(type) {
+	case *Error:
+		return v
+	case Error:
+		return &v
+	case error:
+		return &Error{Err: fmt.Errorf(v.Error())}
+	case string:
+		return &Error{Err: fmt.Errorf(v)}
+	default:
+		return nil
+	}
 }

@@ -7,7 +7,6 @@ package recovery
 import (
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/recovery/trace"
 	"github.com/gin-contrib/location"
 	"io/ioutil"
@@ -78,7 +77,8 @@ func (r *Recover) getData() *Data {
 		Post:       r.config.Post,
 		Stack:      r.getStackData(),
 		Context:    r.getContextData(),
-		Debug:      environment.IsDebug(),
+		// TEMPORARY
+		Debug: true,
 	}
 }
 

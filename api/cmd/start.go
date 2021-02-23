@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cron"
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/server/routes"
 	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
@@ -27,26 +25,17 @@ up the server on the port specified in the .env file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
-			db, cfg, err := doctor()
-			if err != nil {
-				printError(err.Error())
-			}
-
-			// Set up stores & pass the database.
-			store := models.New(db, *cfg)
+			cfg, _, err := doctor()
 			if err != nil {
 				printError(err.Error())
 			}
 
 			// Load cron jobs
-			scheduler := cron.New(store)
+			scheduler := cron.New(cfg.Store)
 			go scheduler.Run()
 
-			d := deps.New(deps.DepsConfig{
-				Store:   store,
-				Config:  cfg,
-				Running: true,
-			})
+			cfg.Running = true
+			d := deps.New(*cfg)
 
 			d.SetTmpl(tplimpl.New(d))
 
@@ -57,13 +46,13 @@ up the server on the port specified in the .env file.`,
 			routes.Load(d, serve)
 
 			// Print listening success
-			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", environment.GetPort()))
+			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", cfg.Env.Port()))
 			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", d.Options.SiteUrl)
 			emoji.Printf(":key: Or visit the admin area at:  %s \n", d.Options.SiteUrl+"/admin")
 			fmt.Println()
 
 			// Listen & serve.
-			err = serve.ListenAndServe(environment.GetPort())
+			err = serve.ListenAndServe(cfg.Env.Port())
 			if err != nil {
 				printError(err.Error())
 			}

@@ -6,6 +6,7 @@ package logger
 
 import (
 	"bytes"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
@@ -29,24 +30,38 @@ func TestLogger(t *testing.T) {
 	suite.Run(t, new(LoggerTestSuite))
 }
 
+// TearDownTestSuite
+//
+// Teardown logging after testing.
+func (t *LoggerTestSuite) TearDownTestSuite() {
+	Init(&environment.Env{})
+}
+
+// Setup
+//
+// Helper function for setting up the logger suite.
+func (t *LoggerTestSuite) Setup() *bytes.Buffer {
+	buf := &bytes.Buffer{}
+	logger.SetLevel(logrus.TraceLevel)
+	logger.SetOutput(buf)
+	logger.SetFormatter(&Formatter{
+		Colours: false,
+	})
+	return buf
+}
+
 // SetupHandler
 //
 // Helper function for setting up the handler
 // testing.
 func (t *LoggerTestSuite) SetupHandler(fn func(ctx *gin.Context)) *bytes.Buffer {
-	buf := &bytes.Buffer{}
-	logrus.SetOutput(buf)
-	logrus.SetFormatter(&Formatter{
-		Colours: false,
-	})
+	buf := t.Setup()
 
 	gin.SetMode(gin.TestMode)
 	gin.DefaultWriter = ioutil.Discard
 	rr := httptest.NewRecorder()
 	ctx, engine := gin.CreateTestContext(rr)
-	engine.Use(Handler())
-
-	ctx.Set("test", "fuck")
+	engine.Use(Middleware())
 
 	engine.GET("/test", func(ctx *gin.Context) {
 		fn(ctx)

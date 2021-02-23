@@ -14,8 +14,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/models"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"time"
 )
@@ -300,9 +300,7 @@ func (s *Sitemap) getRedirects() []viewItem {
 	redirects, _, err := s.store.Redirects.Get(params.Params{LimitAll: true, OrderBy: "created_at", OrderDirection: "desc"})
 
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining site redirects", Operation: op, Err: err},
-		})
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining site redirects", Operation: op, Err: err}).Error()
 		return nil
 	}
 

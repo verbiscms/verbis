@@ -86,3 +86,38 @@ func Test_Message(t *testing.T) {
 		})
 	}
 }
+
+func TestError_ToError(t *testing.T) {
+
+	tt := map[string]struct {
+		input interface{}
+		want  *Error
+	}{
+		"Pointer": {
+			&Error{Code: INTERNAL, Message: "test", Operation: "op", Err: fmt.Errorf("err")},
+			&Error{Code: INTERNAL, Message: "test", Operation: "op", Err: fmt.Errorf("err")},
+		},
+		"Non Pointer": {
+			Error{Code: INTERNAL, Message: "test", Operation: "op", Err: fmt.Errorf("err")},
+			&Error{Code: INTERNAL, Message: "test", Operation: "op", Err: fmt.Errorf("err")},
+		},
+		"Error": {
+			fmt.Errorf("err"),
+			&Error{Err: fmt.Errorf("err")},
+		},
+		"String": {
+			"err",
+			&Error{Err: fmt.Errorf("err")},
+		},
+		"Default": {
+			nil,
+			nil,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.want, ToError(test.input))
+		})
+	}
+}

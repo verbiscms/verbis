@@ -5,10 +5,10 @@
 package cron
 
 import (
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/jasonlvhit/gocron"
-	log "github.com/sirupsen/logrus"
 )
 
 // Scheduler defines all necessary cron jobs for the application
@@ -29,16 +29,12 @@ func (s *Scheduler) Run() {
 
 	// Clean password resets table every 15 minutes
 	if err := gocron.Every(15).Minutes().Do(s.store.Auth.CleanPasswordResets); err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error()
+		logger.WithError(err).Error()
 	}
 
 	// Clean sitemap cache
 	if err := gocron.Every(6).Hours().Do(render.NewSitemap(s.store).ClearCache); err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Error()
+		logger.WithError(err).Error()
 	}
 
 	// Start all the pending jobs

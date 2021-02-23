@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	pkgValidate "github.com/go-playground/validator/v10"
+	log "github.com/sirupsen/logrus"
 	"strconv"
 
 	"github.com/joho/godotenv"
@@ -15,10 +16,8 @@ import (
 	"path/filepath"
 )
 
-var env envMap
-
-type envMap struct {
-	AppName         string `json:"APP_NAME"`
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+type Env struct {
 	AppEnv          string `json:"APP_ENV"`
 	AppDebug        string `json:"APP_DEBUG"`
 	AppPort         string `json:"APP_PORT" binding:"required"`
@@ -40,25 +39,27 @@ type Mail struct {
 	FromName        string `json:"MAIL_FROM_NAME"`
 }
 
+var (
+	// The absolute path of the Verbis project, where the
+	// .env is stored.
+	basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+	// The environment file extension.
+	envExt      = ".env"
+)
+
+// Load
+//
 // Load populates environment, loads and validates the environment file.
 // Returns errors.INVALID if the env file failed to load.
-func Load() error {
+func Load() (*Env, error) {
 	const op = "environment.Load"
 
-	var (
-		basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-		envPath     = ".env"
-	)
-
-	if _, err := os.Stat(basePath + "/.env"); err == nil {
-		envPath = basePath + "/.env"
+	err := godotenv.Overload(basePath + "/" + envExt)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not load the .env file", Operation: op, Err: err}
 	}
 
-	if err := godotenv.Overload(envPath); err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not load the enviromnent file, is there a .env file in the root of the verbis project?", Operation: op, Err: err}
-	}
-
-	env = envMap{
+	return &Env{
 		AppEnv:          os.Getenv("APP_ENV"),
 		AppDebug:        os.Getenv("APP_DEBUG"),
 		AppPort:         os.Getenv("APP_PORT"),
@@ -71,15 +72,15 @@ func Load() error {
 		SparkpostUrl:    os.Getenv("SPARKPOST_URL"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
 		MailFromName:    os.Getenv("MAIL_FROM_NAME"),
-	}
-
-	return nil
+	}, nil
 }
 
-// Validate the environment file for missing keys
-func Validate() []validation.Error {
+// Validate
+//
+// the environment file for missing keys
+func (e *Env) Validate() validation.Errors {
 	v := validation.New()
-	err := v.Package.Struct(env)
+	err := v.Package.Struct(e)
 	if err != nil {
 		validationErrors := err.(pkgValidate.ValidationErrors)
 		return v.Process(validationErrors)
@@ -87,53 +88,53 @@ func Validate() []validation.Error {
 	return nil
 }
 
-// App - GetAppName
-func GetAppName() string {
-	return env.AppName
+// Port
+//
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//
+func (e *Env) Port() int {
+	const op = "Env.Port"
+	port, err := strconv.Atoi(e.AppPort)
+	if err != nil {
+		log.WithError(&errors.Error{Code: errors.INVALID, Message: "Unable to cast app port to int using port 5000", Operation: op, Err: err}).Error()
+		return 5000
+	}
+	return port
 }
 
-// App - GetAppEv
-func GetAppEnv() string {
-	return env.AppEnv
+// ConnectString
+//
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//
+func (e *Env) ConnectString() string {
+	return e.DbUser + ":" + e.DbPassword + "@tcp(" + e.DbHost + ":" + e.DbPort + ")/" + e.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
 }
 
-// Database - GetPort
-func GetPort() int {
-	n, _ := strconv.Atoi(env.AppPort)
-	return n
-}
-
-// Database - ConnectString
-func ConnectString() string {
-	return env.DbUser + ":" + env.DbPassword + "@tcp(" + env.DbHost + ":" + env.DbPort + ")/" + env.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
-}
-
-// Database - GetDatabaseName
-func GetDatabaseName() string {
-	return env.DbDatabase
-}
-
-// Mail - GetMailConfiguration
-func GetMailConfiguration() Mail {
+// MailConfig
+//
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//
+func (e *Env) MailConfig() Mail {
 	return Mail{
-		FromAddress:     env.MailFromAddress,
-		FromName:        env.MailFromName,
-		SparkpostApiKey: env.SparkpostApiKey,
-		SparkpostUrl:    env.SparkpostUrl,
+		FromAddress:     e.MailFromAddress,
+		FromName:        e.MailFromName,
+		SparkpostApiKey: e.SparkpostApiKey,
+		SparkpostUrl:    e.SparkpostUrl,
 	}
 }
 
-// Env - IsProduction
-func IsProduction() bool {
-	return env.AppEnv == "production" || env.AppEnv == "prod"
+// IsProduction
+//
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//
+func (e *Env) IsProduction() bool {
+	return e.AppEnv == "production" || e.AppEnv == "prod"
 }
 
-// Env - IsDevelopment
-func IsDevelopment() bool {
-	return env.AppEnv != "production" && env.AppEnv != "prod"
-}
-
-// Env - IsDebug
-func IsDebug() bool {
-	return env.AppDebug != "false"
+// IsDebug
+//
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+//
+func (e *Env) IsDebug() bool {
+	return e.AppDebug != "false"
 }

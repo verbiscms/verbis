@@ -7,7 +7,6 @@ package logger
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
@@ -19,6 +18,7 @@ import (
 type Formatter struct {
 	Colours         bool
 	TimestampFormat string
+	Debug           bool
 	entry           *logrus.Entry
 	buf             *bytes.Buffer
 }
@@ -58,7 +58,8 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 
 // Time
 //
-//
+// Prints the timestamp for the log, if no format is set
+// on the formatter, time.StampMilli will be used.
 func (f *Formatter) Time() {
 	timestampFormat := f.TimestampFormat
 	if timestampFormat == "" {
@@ -69,7 +70,8 @@ func (f *Formatter) Time() {
 
 // StatusCode
 //
-//
+// Prints the status code of the request, if there is none
+// set the log is internal and "VRB" will be printed.
 func (f *Formatter) StatusCode() {
 	f.buf.WriteString(" | ")
 
@@ -96,7 +98,7 @@ func (f *Formatter) StatusCode() {
 
 // Level
 //
-//
+// Prints the entry level of the log entry in uppercase.
 func (f *Formatter) Level() {
 	cc := color.Style{}
 	switch f.entry.Level {
@@ -121,7 +123,7 @@ func (f *Formatter) Level() {
 
 // IP
 //
-// Print the IP address if there is any.
+// Prints the IP address if there is any.
 func (f *Formatter) IP() {
 	ip, ok := f.entry.Data["client_ip"].(string)
 	if ok {
@@ -133,7 +135,7 @@ func (f *Formatter) IP() {
 
 // Method
 //
-// Print the request method if there is any.
+// Prints the entry request method if there is one set.
 func (f *Formatter) Method() {
 	method, ok := f.entry.Data["request_method"].(string)
 	if !ok {
@@ -145,7 +147,7 @@ func (f *Formatter) Method() {
 
 // Url
 //
-// Print the request
+// Prints the entry request url if there is one set.
 func (f *Formatter) Url() {
 	url, ok := f.entry.Data["request_url"].(string)
 	if ok {
@@ -155,7 +157,7 @@ func (f *Formatter) Url() {
 
 // Message
 //
-//
+// Prints the entry message if there is obe set.
 func (f *Formatter) Message() {
 	msg, ok := f.entry.Data["message"].(string)
 	if ok && msg != "" {
@@ -169,7 +171,7 @@ func (f *Formatter) Message() {
 
 // Fields
 //
-//
+// Prints the entry fields
 func (f *Formatter) Fields() {
 	fields, ok := f.entry.Data["fields"].(logrus.Fields)
 	if !ok {
@@ -183,48 +185,39 @@ func (f *Formatter) Fields() {
 
 // Error
 //
-//
+// Prints out the error if there is one set. If the error
+// is nil, nothing will be printed.
 func (f *Formatter) Error() {
-	err, ok := f.entry.Data["error"]
-	if !ok || err == nil {
+	e, ok := f.entry.Data["error"]
+	if !ok || e == nil {
 		return
 	}
 
 	f.buf.WriteString("|")
 
-	switch v := err.(type) {
-	case *errors.Error:
-		f.printError(v)
-	case errors.Error:
-		f.printError(&v)
-	case error:
-		f.printError(&errors.Error{Err: v})
-	case string:
-		f.printError(&errors.Error{Err: fmt.Errorf(v)})
-	}
-}
+	err := errors.ToError(e)
 
-// printError
-//
-//
-func (f *Formatter) printError(err *errors.Error) {
 	if err == nil {
 		return
 	}
 
 	if err.Code != "" {
-		f.buf.WriteString(color.Red.Sprintf(" [code] %s", err.Code))
+		f.buf.WriteString(color.Red.Sprintf(" [code] "))
+		f.buf.WriteString(err.Code)
 	}
 
 	if err.Message != "" {
-		f.buf.WriteString(color.Red.Sprintf(" [msg] %s", err.Message))
+		f.buf.WriteString(color.Red.Sprintf(" [msg] "))
+		f.buf.WriteString(err.Message)
 	}
 
-	if err.Operation != "" && api.SuperAdmin {
-		f.buf.WriteString(color.Red.Sprintf(" [op] %s", err.Operation))
+	if err.Operation != "" && f.Debug {
+		f.buf.WriteString(color.Red.Sprintf(" [op] "))
+		f.buf.WriteString(err.Operation)
 	}
 
 	if err.Err != nil {
-		f.buf.WriteString(color.Red.Sprintf(" [error] %s", err.Err.Error()))
+		f.buf.WriteString(color.Red.Sprintf(" [error] "))
+		f.buf.WriteString(err.Err.Error())
 	}
 }

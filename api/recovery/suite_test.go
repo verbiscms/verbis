@@ -8,9 +8,9 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"io"
 	"net/http"
@@ -29,14 +29,16 @@ type RecoverTestSuite struct {
 
 type noStringer struct{}
 
-func TestFields(t *testing.T) {
+// LoggerTestSuite defines the helper used for logger
+// testing.
+func TestRecovery(t *testing.T) {
 	suite.Run(t, new(RecoverTestSuite))
 }
 
 func (t *RecoverTestSuite) BeforeTest(suiteName, testName string) {
 	b := bytes.Buffer{}
 	t.logWriter = b
-	log.SetOutput(&t.logWriter)
+	logger.SetOutput(&t.logWriter)
 	t.SetPath()
 	t.SetDeps()
 }

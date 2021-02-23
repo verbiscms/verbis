@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 )
 
 // RoleRepository defines methods for Posts to interact with the database
@@ -61,7 +60,6 @@ func (s *RoleStore) GetById(id int) (domain.UserRole, error) {
 	const op = "RoleRepository.GetById"
 	var r domain.UserRole
 	if err := s.db.Get(&r, "SELECT * FROM roles WHERE id = ? LIMIT 1", id); err != nil {
-		log.Info(err)
 		return domain.UserRole{}, fmt.Errorf("Could not get role with the ID: %v", id)
 	}
 	return r, nil

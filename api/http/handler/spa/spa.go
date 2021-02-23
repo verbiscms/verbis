@@ -8,9 +8,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/render"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"strings"
 )
@@ -56,9 +56,12 @@ func (s *SPA) file(path string, ctx *gin.Context) {
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err},
-		})
+		logger.WithError(&errors.Error{
+			Code:      errors.INTERNAL,
+			Message:   "Error reading admin admin file with the path: " + path,
+			Operation: op,
+			Err:       err,
+		}).Error()
 		s.Publisher.NotFound(ctx)
 		return
 	}
@@ -77,9 +80,12 @@ func (s *SPA) page(ctx *gin.Context) {
 	data, err := ioutil.ReadFile(path)
 
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err},
-		})
+		logger.WithError(&errors.Error{
+			Code:      errors.INTERNAL,
+			Message:   "Error reading admin admin file with the path: " + path,
+			Operation: op,
+			Err:       err,
+		}).Error()
 		s.Publisher.NotFound(ctx)
 		return
 	}

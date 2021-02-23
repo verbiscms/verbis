@@ -8,9 +8,9 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -29,7 +29,7 @@ func TestFields(t *testing.T) {
 func (t *FieldTestSuite) BeforeTest(suiteName, testName string) {
 	b := bytes.Buffer{}
 	t.logWriter = b
-	log.SetOutput(&t.logWriter)
+	logger.SetOutput(&t.logWriter)
 }
 
 func (t *FieldTestSuite) Reset() {

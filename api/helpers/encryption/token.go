@@ -9,7 +9,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"strconv"
@@ -42,9 +42,7 @@ func GenerateSessionToken(email string) string {
 	const op = "encryption.GenerateSessionToken"
 	hash, err := bcrypt.GenerateFromPassword([]byte(email), bcrypt.DefaultCost)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not generate the session token.", Operation: op, Err: err},
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not generate the session token.", Operation: op, Err: err}).Error()
 	}
 	hasher := md5.New()
 	hasher.Write(hash)

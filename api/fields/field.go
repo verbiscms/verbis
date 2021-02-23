@@ -7,7 +7,7 @@ package fields
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/fields/resolve"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 )
 
 // GetField
@@ -19,7 +19,7 @@ func (s *Service) GetField(name string, args ...interface{}) interface{} {
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
+		logger.WithError(err).Error()
 		return nil
 	}
 
@@ -37,7 +37,7 @@ func (s *Service) GetFieldObject(name string, args ...interface{}) domain.PostFi
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
+		logger.WithError(err).Error()
 		return domain.PostField{}
 	}
 
