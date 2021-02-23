@@ -98,6 +98,7 @@ export default {
 		if (this.seo) {
 			this.data = this.seo;
 		}
+		this.emit();
 	},
 	methods: {
 		/*

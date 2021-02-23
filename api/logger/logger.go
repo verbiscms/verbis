@@ -51,7 +51,7 @@ func Init(env *environment.Env) {
 
 	// Send info and debug logs to stdout
 	logger.AddHook(&WriterHook{
-		Writer: os.Stderr,
+		Writer: os.Stdout,
 		LogLevels: []logrus.Level{
 			logrus.InfoLevel,
 			logrus.DebugLevel,
