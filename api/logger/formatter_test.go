@@ -149,7 +149,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 			test.entry.Time = now
 			f := Formatter{
 				Colours: false,
-				Debug: true,
+				Debug:   true,
 			}
 			got, err := f.Format(test.entry)
 			t.NoError(err)

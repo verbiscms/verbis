@@ -40,6 +40,13 @@ type minify struct {
 func New(cfg ...Config) *minify {
 	m := min.New()
 
+	m.AddFunc(htmlMime, html.Minify)
+	m.AddFunc(cssMime, css.Minify)
+	m.AddFuncRegexp(regexp.MustCompile(jsMime), js.Minify)
+	m.AddFunc(svgMime, svg.Minify)
+	m.AddFuncRegexp(regexp.MustCompile(jsonMime), json.Minify)
+	m.AddFuncRegexp(regexp.MustCompile(xmlMime), xml.Minify)
+
 	config := defaultConfig
 	if len(cfg) == 1 {
 		config = cfg[0]
@@ -87,22 +94,16 @@ func (m *minify) compare(b *bytes.Buffer, mime string) ([]byte, error) {
 
 	switch mime {
 	case HTML:
-		m.pkg.AddFunc(htmlMime, html.Minify)
 		render, err = m.execute(b, m.config.MinifyHTML, mime)
 	case CSS:
-		m.pkg.AddFunc(cssMime, css.Minify)
 		render, err = m.execute(b, m.config.MinifyCSS, mime)
 	case Javascript:
-		m.pkg.AddFuncRegexp(regexp.MustCompile(jsMime), js.Minify)
 		render, err = m.execute(b, m.config.MinifyJS, mime)
 	case SVG:
-		m.pkg.AddFunc(svgMime, svg.Minify)
 		render, err = m.execute(b, m.config.MinifySVG, mime)
 	case JSON:
-		m.pkg.AddFuncRegexp(regexp.MustCompile(jsonMime), json.Minify)
 		render, err = m.execute(b, m.config.MinifyJSON, mime)
 	case XML:
-		m.pkg.AddFuncRegexp(regexp.MustCompile(xmlMime), xml.Minify)
 		render, err = m.execute(b, m.config.MinifyXML, mime)
 	default:
 		return b.Bytes(), nil

@@ -98,7 +98,7 @@ func (v *Value) resolve(field domain.PostField) domain.PostField {
 	}
 
 	var items []interface{}
-	for _, f := range original.Array() {
+	for _, f := range original.Slice() {
 		res := v.execute(f, field.Type)
 		if res != nil {
 			items = append(items, res)
