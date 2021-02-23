@@ -34,7 +34,9 @@ func TestLogger(t *testing.T) {
 //
 // Teardown logging after testing.
 func (t *LoggerTestSuite) TearDownTestSuite() {
-	Init(&environment.Env{})
+	Init(&environment.Env{
+		AppDebug: "true",
+	})
 }
 
 // Setup
@@ -46,6 +48,7 @@ func (t *LoggerTestSuite) Setup() *bytes.Buffer {
 	logger.SetOutput(buf)
 	logger.SetFormatter(&Formatter{
 		Colours: false,
+		Debug: true,
 	})
 	return buf
 }

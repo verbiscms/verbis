@@ -147,7 +147,10 @@ func (t *LoggerTestSuite) TestFormatter() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			test.entry.Time = now
-			f := Formatter{Colours: false}
+			f := Formatter{
+				Colours: false,
+				Debug: true,
+			}
 			got, err := f.Format(test.entry)
 			t.NoError(err)
 			t.Equal(test.want, string(got))
