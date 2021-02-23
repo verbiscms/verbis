@@ -37,12 +37,7 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 
 	name, err := cast.ToStringE(input)
 	if err != nil {
-		logger.WithError(&errors.Error{
-			Code:      errors.INVALID,
-			Message:   "Could not cast input to string",
-			Operation: op,
-			Err:       err,
-		}).Error()
+		logger.WithError(&errors.Error{Code:      errors.INVALID, Message:   "Could not cast input to string", Operation: op, Err:       err,}).Error()
 		return nil
 	}
 
@@ -50,16 +45,11 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		logger.WithError(err).Error()
 		return nil
 	}
 
 	if field.Type != "repeater" {
-		logger.WithError(&errors.Error{
-			Code:      errors.INVALID,
-			Message:   "Field is not a repeater",
-			Operation: op,
-			Err:       fmt.Errorf("field with the name: %s, is not a repeater", name),
+		logger.WithError(&errors.Error{Code:      errors.INVALID, Message:   "Field is not a repeater", Operation: op, Err:       fmt.Errorf("field with the name: %s, is not a repeater", name),
 		}).Error()
 		return nil
 	}

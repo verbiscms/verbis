@@ -37,7 +37,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 		"No Field": {
 			fields: nil,
 			input:  "test",
-			want:   "no field exists with the name: test",
+			want:   "",
 			err:    true,
 		},
 		"Wrong Field Type": {

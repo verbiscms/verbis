@@ -33,7 +33,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			key:    "wrongval",
 			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
 			args:   nil,
-			want:   "no field exists with the name: wrongval",
+			want:   "",
 			err:    true,
 		},
 		"Post": {

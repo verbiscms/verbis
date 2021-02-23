@@ -52,13 +52,11 @@ func (s *Service) handleArgs(args []interface{}) []domain.PostField {
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining the post.
 func (s *Service) getFieldsByPost(id int) []domain.PostField {
-
 	fields, err := s.deps.Store.Fields.GetByPost(id)
 	if err != nil {
 		logger.WithError(err).Error()
 		return nil
 	}
-
 	return fields
 }
 
