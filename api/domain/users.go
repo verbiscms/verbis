@@ -17,6 +17,7 @@ type (
 		Token         string     `db:"token" json:"token,omitempty"`
 		TokenLastUsed *time.Time `db:"token_last_used" json:"token_last_used,omitempty"`
 	}
+	//
 	Users []User
 	// UserPart defines the User with non-sensitive information
 	UserPart struct {

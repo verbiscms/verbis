@@ -12,6 +12,8 @@ import (
 )
 
 type (
+	// TODO Array of Categories
+
 	// FieldGroup defines a group of JSON fields.
 	FieldGroup struct {
 		UUID      uuid.UUID         `json:"uuid"`
