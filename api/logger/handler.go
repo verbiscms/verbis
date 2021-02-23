@@ -7,14 +7,19 @@ package logger
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"time"
 )
 
-// Log
+// Middleware
 //
-//
-func Handler() gin.HandlerFunc {
+// Middleware is the handler function for logging system
+// application messages, if there was an error or
+// message set, it will be retrieved from the
+// context. Status codes between 200 and 400
+// will be logged as info, otherwise an
+// error.
+func Middleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		// Start time
 		startTime := time.Now()
@@ -50,7 +55,7 @@ func Handler() gin.HandlerFunc {
 
 		// Log fields
 		status := ctx.Writer.Status()
-		fields := log.Fields{
+		fields := logrus.Fields{
 			"status_code":    status,
 			"latency_time":   endTime.Sub(startTime),
 			"client_ip":      ctx.ClientIP(),
@@ -61,9 +66,9 @@ func Handler() gin.HandlerFunc {
 		}
 
 		if status >= 200 && status < 400 {
-			log.WithFields(fields).Info()
+			logger.WithFields(fields).Info()
 		} else {
-			log.WithFields(fields).Error()
+			logger.WithFields(fields).Error()
 		}
 	}
 }

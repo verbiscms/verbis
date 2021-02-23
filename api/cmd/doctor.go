@@ -9,10 +9,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -28,7 +30,6 @@ environment.`,
 			if _, _, err := doctor(); err != nil {
 				return
 			}
-
 			return
 		},
 	}
@@ -37,7 +38,7 @@ environment.`,
 // doctor checks if the environment is validated and checks
 // to see if there is a valid database connection and the
 // database exists before proceeding.
-func doctor() (*database.MySql, *config.Configuration, error) {
+func doctor() (*deps.DepsConfig, *database.MySql, error) {
 
 	printSpinner("Running doctor...")
 
@@ -48,14 +49,17 @@ func doctor() (*database.MySql, *config.Configuration, error) {
 	}
 
 	// Load the environment (.env file)
-	err := environment.Load()
+	env, err := environment.Load()
 	if err != nil {
 		printError(err.Error())
 		return nil, nil, err
 	}
 
+	// Init logging
+	logger.Init(env)
+
 	// Check if the environment values are valid
-	vErrors := environment.Validate()
+	vErrors := env.Validate()
 	if vErrors != nil {
 		for _, v := range vErrors {
 			printError(fmt.Sprintf("Obtaining environment variable: %s", strings.ToUpper(v.Key)))
@@ -64,7 +68,7 @@ func doctor() (*database.MySql, *config.Configuration, error) {
 	}
 
 	// Get the database and ping
-	db, err := database.New()
+	db, err := database.New(env)
 	if err != nil {
 		printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
 		return nil, nil, fmt.Errorf("Error establishing database connection")
@@ -85,12 +89,17 @@ func doctor() (*database.MySql, *config.Configuration, error) {
 		printError(errors.Message(err))
 	}
 
-	// Init logging
-	if err := logger.Init(); err != nil {
+	// Set up stores & pass the database.
+	store := models.New(db, *cfg)
+	if err != nil {
 		printError(err.Error())
 	}
 
 	printSuccess("All checks passed.")
 
-	return db, cfg, nil
+	return &deps.DepsConfig{
+		Store:  store,
+		Env:    env,
+		Config: cfg,
+	}, db, nil
 }

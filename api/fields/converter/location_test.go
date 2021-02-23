@@ -6,11 +6,9 @@ package location
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
@@ -31,9 +29,8 @@ func TestLocation(t *testing.T) {
 func (t *LocationTestSuite) BeforeTest(suiteName, testName string) {
 	cache.Init()
 
-	err := logger.Init(config.Configuration{})
-	log.SetOutput(ioutil.Discard)
-	t.NoError(err)
+	logger.Init()
+	logger.SetOutput(ioutil.Discard)
 
 	wd, err := os.Getwd()
 	t.NoError(err)

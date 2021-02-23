@@ -8,7 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/fields/layout"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/spf13/cast"
 )
 
@@ -17,7 +17,7 @@ import (
 func (s *Service) GetLayout(name string, args ...interface{}) domain.Field {
 	l, err := layout.ByName(name, s.handleLayoutArgs(args))
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
+		logger.WithError(err).Error()
 		return domain.Field{}
 	}
 	return l
@@ -51,15 +51,13 @@ func (s *Service) getLayoutByPost(id interface{}) []domain.FieldGroup {
 
 	i, err := cast.ToIntE(id)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err},
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err}).Error()
 		return nil
 	}
 
 	post, err := s.deps.Store.Posts.GetById(i, true)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
+		logger.WithError(err).Error()
 		return nil
 	}
 

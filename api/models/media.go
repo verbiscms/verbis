@@ -17,9 +17,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
-	log "github.com/sirupsen/logrus"
 	"regexp"
 	"strings"
 
@@ -418,9 +418,7 @@ func (s *MediaStore) Delete(id int) error {
 	if m.Url == s.options.SiteLogo {
 		logo, _ := json.Marshal(api.App.Logo)
 		if err := s.optionsModel.Update("site_logo", logo); err != nil {
-			log.WithFields(log.Fields{
-				"error": errors.Error{Code: errors.INTERNAL, Message: "Could not update the site logo", Operation: op, Err: err},
-			}).Error()
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not update the site logo", Operation: op, Err: err})
 		}
 	}
 

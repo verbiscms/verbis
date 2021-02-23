@@ -7,7 +7,7 @@ package resolve
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 )
 
 // Value defines the methods used for resolving
@@ -126,7 +126,7 @@ func (v *Value) execute(value string, typ string) interface{} {
 
 	val, err := fn(domain.FieldValue(value))
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
+		logger.WithError(err).Error()
 	}
 
 	return val

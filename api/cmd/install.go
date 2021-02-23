@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/seeds"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -48,7 +47,7 @@ func Install(cmd *cobra.Command, args []string) {
 	//	figure.Print()
 
 	// Run doctor
-	db, cfg, err := doctor()
+	cfg, db, err := doctor()
 	if err != nil {
 		printError(err.Error())
 	}
@@ -57,7 +56,7 @@ func Install(cmd *cobra.Command, args []string) {
 	// TODO NOT WORKING
 	err = db.CheckExists()
 	if err != nil {
-		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", environment.GetDatabaseName()))
+		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DbDatabase))
 	}
 
 	// Get the user & site variables
@@ -74,7 +73,7 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Set up stores & pass the database.
-	store := models.New(db, *cfg)
+	store := models.New(db, *cfg.Config)
 	if err != nil {
 		printError(err.Error())
 	}

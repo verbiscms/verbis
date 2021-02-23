@@ -7,6 +7,7 @@ package deps
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/tpl"
@@ -69,6 +70,9 @@ type DepsConfig struct {
 
 	// The database layer
 	Store *models.Store
+
+	// Env
+	Env *environment.Env
 
 	// Config
 	Config *config.Configuration

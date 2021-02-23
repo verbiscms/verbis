@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/spf13/cast"
 )
 
@@ -37,8 +37,11 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 
 	name, err := cast.ToStringE(input)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Could not cast input to string", Operation: op, Err: err},
+		logger.WithError(&errors.Error{
+			Code:      errors.INVALID,
+			Message:   "Could not cast input to string",
+			Operation: op,
+			Err:       err,
 		}).Error()
 		return nil
 	}
@@ -47,13 +50,16 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
-		log.WithFields(log.Fields{"error": err}).Error()
+		logger.WithError(err).Error()
 		return nil
 	}
 
 	if field.Type != "repeater" {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Field is not a repeater", Operation: op, Err: fmt.Errorf("field with the name: %s, is not a repeater", name)},
+		logger.WithError(&errors.Error{
+			Code:      errors.INVALID,
+			Message:   "Field is not a repeater",
+			Operation: op,
+			Err:       fmt.Errorf("field with the name: %s, is not a repeater", name),
 		}).Error()
 		return nil
 	}
@@ -73,9 +79,12 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields []d
 
 	amount, err := field.OriginalValue.Int()
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INVALID, Message: "Unable to cast repeater value to integer", Operation: op, Err: err},
-		}).Error()
+		logger.WithError(&errors.Error{
+			Code:      errors.INVALID,
+			Message:   "Unable to cast repeater value to integer",
+			Operation: op,
+			Err:       err,
+		})
 		return Repeater{}
 	}
 

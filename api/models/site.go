@@ -12,9 +12,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ghodss/yaml"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"path/filepath"
 	"strings"
@@ -82,14 +82,10 @@ func (s *SiteStore) GetThemeConfig() domain.ThemeConfig {
 	var dc = getDefaultThemeConfig()
 	y, err := files.LoadFile(paths.Theme() + "/config.yml")
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Unable to get retrieve theme config file", Operation: op, Err: err},
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get retrieve theme config file", Operation: op, Err: err}).Error()
 	}
 	if err := yaml.Unmarshal(y, &dc); err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the config.yml file", Operation: op, Err: err},
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the config.yml file", Operation: op, Err: err}).Error()
 	}
 
 	return dc

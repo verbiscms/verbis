@@ -17,12 +17,17 @@ import (
 
 // MySql defines the driver for the database
 type MySql struct {
-	Sqlx *sqlx.DB
+	Sqlx     *sqlx.DB
+	env      *environment.Env
+	database string
 }
 
 // New - Creates a new MySql instance.
-func New() (*MySql, error) {
-	db := MySql{}
+func New(env *environment.Env) (*MySql, error) {
+	db := MySql{
+		env:      env,
+		database: env.DbDatabase,
+	}
 
 	sql, err := db.GetDatabase()
 	if err != nil {
@@ -42,7 +47,7 @@ func New() (*MySql, error) {
 func (db *MySql) GetDatabase() (*sqlx.DB, error) {
 	const op = "Database.GetDatabase"
 	var driver *sqlx.DB
-	driver, err := sqlx.Connect("mysql", environment.ConnectString())
+	driver, err := sqlx.Connect("mysql", db.env.ConnectString())
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not establish a database connection", Operation: op, Err: err}
 	}
@@ -55,9 +60,9 @@ func (db *MySql) GetDatabase() (*sqlx.DB, error) {
 // Returns errors.INVALID if the database was not found.
 func (db *MySql) CheckExists() error {
 	const op = "Database.CheckExists"
-	_, err := db.Sqlx.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", environment.GetDatabaseName())
+	_, err := db.Sqlx.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", db.database)
 	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("No database found with the name: %s", environment.GetDatabaseName()), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("No database found with the name: %s", db.database), Operation: op, Err: err}
 	}
 	return nil
 }
@@ -92,9 +97,9 @@ func (db *MySql) Install() error {
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (db *MySql) Drop() error {
 	const op = "Database.Drop"
-	_, err := db.Sqlx.Exec("DROP DATABASE " + environment.GetDatabaseName() + ";")
+	_, err := db.Sqlx.Exec("DROP DATABASE " + db.database + ";")
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not drop the database with the name: %s", environment.GetDatabaseName()), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not drop the database with the name: %s", db.database), Operation: op, Err: err}
 	}
 	return nil
 }
@@ -103,9 +108,9 @@ func (db *MySql) Drop() error {
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (db *MySql) Create() error {
 	const op = "Database.Create"
-	_, err := db.Sqlx.Exec("CREATE DATABASE " + environment.GetDatabaseName() + ";")
+	_, err := db.Sqlx.Exec("CREATE DATABASE " + db.database + ";")
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the database with the name: %s", environment.GetDatabaseName()), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the database with the name: %s", db.database), Operation: op, Err: err}
 	}
 	return nil
 }

@@ -6,7 +6,7 @@ package logger
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"io"
 )
 
@@ -16,7 +16,7 @@ type WriterHook struct {
 	// The io.Writer, this can be stdout or stderr.
 	Writer io.Writer
 	// The slice of log levels the writer can too.
-	LogLevels []log.Level
+	LogLevels []logrus.Level
 }
 
 // Fire
@@ -25,7 +25,7 @@ type WriterHook struct {
 // called with current hook. It will format log
 // entry to string and write it to
 // appropriate writer
-func (hook *WriterHook) Fire(entry *log.Entry) error {
+func (hook *WriterHook) Fire(entry *logrus.Entry) error {
 	const op = "Logger.Hook.Fire"
 
 	line, err := entry.String()
@@ -44,6 +44,6 @@ func (hook *WriterHook) Fire(entry *log.Entry) error {
 // Levels
 //
 // Define on which log levels this hook would trigger
-func (hook *WriterHook) Levels() []log.Level {
+func (hook *WriterHook) Levels() []logrus.Level {
 	return hook.LogLevels
 }

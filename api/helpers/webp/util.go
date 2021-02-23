@@ -6,8 +6,8 @@ package webp
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"strings"
 )
@@ -44,8 +44,6 @@ func Convert(path string, compression int) {
 		Run()
 
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": errors.Error{Code: errors.INTERNAL, Message: "Could not convert the image to webp", Operation: op, Err: err},
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not convert the image to webp", Operation: op, Err: err}).Error()
 	}
 }

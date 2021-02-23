@@ -13,11 +13,8 @@ import (
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
-	"os"
 	"strconv"
-	"syscall"
 )
 
 type Server struct {
@@ -41,7 +38,7 @@ func New(d *deps.Deps) *Server {
 	server := &Server{r}
 
 	// Global middleware
-	r.Use(logger.Handler())
+	r.Use(logger.Middleware())
 	r.Use(location.Default())
 
 	r.Use(gin.Recovery())
@@ -51,15 +48,6 @@ func New(d *deps.Deps) *Server {
 
 	// Instantiate the server.
 	return server
-}
-
-func SendRestart() {
-	if proc, err := os.FindProcess(os.Getpid()); err != nil {
-		log.Printf("FindProcess: %s", err)
-		return
-	} else {
-		_ = proc.Signal(syscall.Signal(0x1))
-	}
 }
 
 // ListenAndServe runs Verbis on a given port
@@ -93,15 +81,9 @@ func (s *Server) setupGzip(d *deps.Deps) {
 	compression := gzip.DefaultCompression
 	switch options.GzipCompression {
 	case "best-compression":
-		{
-			compression = gzip.BestCompression
-			break
-		}
+		compression = gzip.BestCompression
 	case "best-speed":
-		{
-			compression = gzip.BestSpeed
-			break
-		}
+		compression = gzip.BestSpeed
 	}
 
 	// If the use paths is not set, use the excluded extensions

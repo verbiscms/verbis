@@ -11,8 +11,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/jmoiron/sqlx"
-	log "github.com/sirupsen/logrus"
 )
 
 // OptionsRepository defines methods for Options to interact with the database
@@ -92,9 +92,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 
 	var opts []domain.OptionDB
 	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 		return domain.Options{}
 	}
 
@@ -102,9 +100,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 	for _, v := range opts {
 		unValue, err := s.unmarshalValue(v.Value)
 		if err != nil {
-			log.WithFields(log.Fields{
-				"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-			}).Fatal()
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 			return domain.Options{}
 		}
 		unOpts[v.Name] = unValue
@@ -112,17 +108,13 @@ func (s *OptionsStore) GetStruct() domain.Options {
 
 	mOpts, err := json.Marshal(unOpts)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 		return domain.Options{}
 	}
 
 	var options domain.Options
 	if err := json.Unmarshal(mOpts, &options); err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err},
-		}).Fatal()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 		return domain.Options{}
 	}
 

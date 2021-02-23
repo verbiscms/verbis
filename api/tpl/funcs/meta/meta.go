@@ -11,8 +11,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	log "github.com/sirupsen/logrus"
 	"html/template"
 )
 
@@ -46,7 +46,8 @@ func (tm *TemplateMeta) GetImage(id int) string {
 	if err != nil {
 		return ""
 	}
-	return img.Url
+	// TODO: This should be dynamic, not dependant on Site URL.
+	return tm.deps.Site.Url + img.Url
 }
 
 // Header
@@ -137,9 +138,7 @@ func (ns *Namespace) executeTemplates(tm *TemplateMeta, templates []string) stri
 		}).Execute(&b, name, tm)
 
 		if err != nil {
-			log.WithFields(log.Fields{
-				"error": &errors.Error{Code: errors.INTERNAL, Message: "Error executing template", Operation: op, Err: err},
-			})
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error executing template", Operation: op, Err: err}).Error()
 			return ""
 		}
 

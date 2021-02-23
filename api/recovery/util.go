@@ -5,32 +5,13 @@
 package recovery
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"io/ioutil"
 	"regexp"
 	"strconv"
 	"strings"
 )
-
-// getError
-//
-// Converts an interface{} to a Verbis internal error
-// ready for processing and to return to the recovery
-// page.
-func getError(e interface{}) *errors.Error {
-	switch v := e.(type) {
-	case errors.Error:
-		return &v
-	case *errors.Error:
-		return v
-	case error:
-		return &errors.Error{Code: errors.TEMPLATE, Message: v.Error(), Operation: "", Err: v}
-	default:
-		return &errors.Error{Code: errors.TEMPLATE, Message: "Internal Verbis error, please report", Operation: "Internal", Err: fmt.Errorf("%v", e)}
-	}
-}
 
 // tplLineNumber
 //
@@ -58,9 +39,7 @@ func tplFileContents(path string) string {
 
 	contents, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.WithFields(log.Fields{
-			"error": &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the file contents with the path: " + path, Operation: op, Err: err},
-		})
+		logger.WithError(&errors.Error{Code: errors.NOTFOUND, Message: "Could not get the file contents with the path: " + path, Operation: op, Err: err}).Error()
 		return ""
 	}
 
