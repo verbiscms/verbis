@@ -50,15 +50,15 @@ func (_m *FormRepository) Delete(id int) error {
 }
 
 // Get provides a mock function with given fields: meta
-func (_m *FormRepository) Get(meta params.Params) ([]domain.Form, int, error) {
+func (_m *FormRepository) Get(meta params.Params) (domain.Forms, int, error) {
 	ret := _m.Called(meta)
 
-	var r0 []domain.Form
-	if rf, ok := ret.Get(0).(func(params.Params) []domain.Form); ok {
+	var r0 domain.Forms
+	if rf, ok := ret.Get(0).(func(params.Params) domain.Forms); ok {
 		r0 = rf(meta)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Form)
+			r0 = ret.Get(0).(domain.Forms)
 		}
 	}
 

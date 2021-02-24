@@ -14,12 +14,12 @@ import (
 
 func TestPostDatum_Tpl(t *testing.T) {
 	got := PostDatum{
-		Post: Post{Title:  "title",},
-		Author:   UserPart{},
-		Fields:   PostFields{{Name: "test"}},
+		Post:   Post{Title: "title"},
+		Author: UserPart{},
+		Fields: PostFields{{Name: "test"}},
 	}
 	want := PostTemplate{
-		Post: got.Post,
+		Post:   got.Post,
 		Author: got.Author,
 		Fields: got.Fields,
 	}

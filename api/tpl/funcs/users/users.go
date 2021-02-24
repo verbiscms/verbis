@@ -43,7 +43,7 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 // categories and pagination back to the
 // template.
 type Users struct {
-	Users      []domain.UserPart
+	Users      domain.UsersParts
 	Pagination *http.Pagination
 }
 

@@ -78,15 +78,15 @@ func (_m *RedirectRepository) ExistsByFromPath(from string) bool {
 }
 
 // Get provides a mock function with given fields: meta
-func (_m *RedirectRepository) Get(meta params.Params) ([]domain.Redirect, int, error) {
+func (_m *RedirectRepository) Get(meta params.Params) (domain.Redirects, int, error) {
 	ret := _m.Called(meta)
 
-	var r0 []domain.Redirect
-	if rf, ok := ret.Get(0).(func(params.Params) []domain.Redirect); ok {
+	var r0 domain.Redirects
+	if rf, ok := ret.Get(0).(func(params.Params) domain.Redirects); ok {
 		r0 = rf(meta)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Redirect)
+			r0 = ret.Get(0).(domain.Redirects)
 		}
 	}
 

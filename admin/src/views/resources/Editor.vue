@@ -163,7 +163,7 @@
 					<FormGroup label="Page template">
 						<div class="form-select-cont form-input">
 							<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
-								<option value="" disabled selected>Select template</option>
+								<option value="" disabled v-if="templates.length > 1">Select template</option>
 								<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
 							</select>
 						</div>
@@ -450,7 +450,32 @@ export default {
 		async getTemplates() {
 			await this.axios.get("/templates")
 			.then(res => {
-				this.templates = res.data.data.templates
+				const templates = res.data.data.templates;
+				if (this.resource.name === "pages") {
+					this.templates = templates;
+					return;
+				}
+
+				const available = this.getTheme['resources'][this.resource.name]['available_templates'];
+				if (!available) {
+					this.templates = templates;
+					return;
+				}
+
+				let tpl = [];
+				available.forEach(a => {
+					templates.forEach(t => {
+						if (a === t.key) {
+							tpl.push(t);
+						}
+					})
+				});
+
+				if (tpl.length === 1) {
+					this.$set(this.data, "page_template", tpl[0].key);
+				}
+
+				this.templates = tpl;
 			})
 			.catch(err => {
 				this.helpers.handleResponse(err);
@@ -494,7 +519,8 @@ export default {
 				"friendly_name": "Page",
 				"singular_name": "Page",
 				"slug": "",
-				"icon": 'fal fa-file'
+				"icon": 'fal fa-file',
+				"available_templates": [],
 			} : resource
 		},
 		/*

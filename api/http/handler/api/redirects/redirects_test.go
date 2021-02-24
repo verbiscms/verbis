@@ -63,7 +63,7 @@ var (
 		Code: 301,
 	}
 	// The default redirects used for testing.
-	redirects = []domain.Redirect{
+	redirects = domain.Redirects{
 		{
 			Id:   123,
 			From: "/test",

@@ -9,13 +9,6 @@ import (
 	"testing"
 )
 
-func TestTrace_Test(t *testing.T) {
-
-	m := New()
-	m.Test()
-
-}
-
 func TestStack_Append(t *testing.T) {
 
 	tt := map[string]struct {

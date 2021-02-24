@@ -18,7 +18,7 @@ import (
 
 // FormRepository defines methods for Posts to interact with the database
 type FormRepository interface {
-	Get(meta params.Params) ([]domain.Form, int, error)
+	Get(meta params.Params) (domain.Forms, int, error)
 	GetById(id int) (domain.Form, error)
 	GetByUUID(uuid string) (domain.Form, error)
 	//GetValidation(form *domain.Form) dynamicstruct.Builder
@@ -48,7 +48,7 @@ func newForms(db *sqlx.DB, config config.Configuration) *FormsStore {
 //
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no forms available.
-func (s *FormsStore) Get(meta params.Params) ([]domain.Form, int, error) {
+func (s *FormsStore) Get(meta params.Params) (domain.Forms, int, error) {
 	const op = "FormsRepository.Get"
 
 	var f []domain.Form
