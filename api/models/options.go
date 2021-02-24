@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
@@ -29,11 +28,11 @@ type OptionsRepository interface {
 // OptionsStore defines the data layer for Posts
 type OptionsStore struct {
 	db     *sqlx.DB
-	config config.Configuration
+	config *domain.ThemeConfig
 }
 
 // newOptions - Construct
-func newOptions(db *sqlx.DB, config config.Configuration) *OptionsStore {
+func newOptions(db *sqlx.DB, config *domain.ThemeConfig) *OptionsStore {
 	return &OptionsStore{
 		db:     db,
 		config: config,

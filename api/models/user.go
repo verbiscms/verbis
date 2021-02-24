@@ -6,7 +6,6 @@ package models
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
@@ -39,16 +38,16 @@ type UserRepository interface {
 // UserStore defines the data layer for Users
 type UserStore struct {
 	db          *sqlx.DB
-	config      config.Configuration
+	config      *domain.ThemeConfig
 	optionsRepo domain.Options
 }
 
 // newUser - Construct
-func newUser(db *sqlx.DB, config config.Configuration) *UserStore {
+func newUser(db *sqlx.DB, cfg *domain.ThemeConfig) *UserStore {
 	return &UserStore{
 		db:          db,
-		config:      config,
-		optionsRepo: newOptions(db, config).GetStruct(),
+		config:      cfg,
+		optionsRepo: newOptions(db, cfg).GetStruct(),
 	}
 }
 

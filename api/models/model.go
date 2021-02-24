@@ -6,8 +6,8 @@ package models
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
@@ -30,24 +30,24 @@ type Store struct {
 	Roles      RoleRepository
 	Site       SiteRepository
 	User       UserRepository
-	Config     config.Configuration
+	Config     *domain.ThemeConfig
 }
 
 // Create a new database instance, connect to database.
-func New(db *database.MySql, config config.Configuration) *Store {
+func New(db *database.MySql, cfg *domain.ThemeConfig) *Store {
 	return &Store{
-		Auth:       newAuth(db.Sqlx, config),
-		Categories: newCategories(db.Sqlx, config),
-		Forms:      newForms(db.Sqlx, config),
-		Fields:     newFields(db.Sqlx, config),
-		Media:      newMedia(db.Sqlx, config),
-		Options:    newOptions(db.Sqlx, config),
-		Posts:      newPosts(db.Sqlx, config),
-		Redirects:  newRedirects(db.Sqlx, config),
-		Roles:      newRoles(db.Sqlx, config),
-		Site:       newSite(db.Sqlx, config),
-		User:       newUser(db.Sqlx, config),
-		Config:     config,
+		Auth:       newAuth(db.Sqlx, cfg),
+		Categories: newCategories(db.Sqlx, cfg),
+		Forms:      newForms(db.Sqlx, cfg),
+		Fields:     newFields(db.Sqlx, cfg),
+		Media:      newMedia(db.Sqlx, cfg),
+		Options:    newOptions(db.Sqlx, cfg),
+		Posts:      newPosts(db.Sqlx, cfg),
+		Redirects:  newRedirects(db.Sqlx, cfg),
+		Roles:      newRoles(db.Sqlx, cfg),
+		Site:       newSite(db.Sqlx, cfg),
+		User:       newUser(db.Sqlx, cfg),
+		Config:     cfg,
 	}
 }
 

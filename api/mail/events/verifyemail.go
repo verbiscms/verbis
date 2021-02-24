@@ -5,7 +5,6 @@
 package events
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/mail"
@@ -15,11 +14,10 @@ import (
 // VerifyEmail defines the event instance for verifying emails
 type VerifyEmail struct {
 	mailer *mail.Mailer
-	config config.Configuration
 }
 
 // NewVerifyEmail creates a new verify email event.
-func NewVerifyEmail(config config.Configuration) (*VerifyEmail, error) {
+func NewVerifyEmail() (*VerifyEmail, error) {
 	const op = "events.NewResetPassword"
 
 	m, err := mail.New()
@@ -29,7 +27,6 @@ func NewVerifyEmail(config config.Configuration) (*VerifyEmail, error) {
 
 	return &VerifyEmail{
 		mailer: m,
-		config: config,
 	}, nil
 }
 
@@ -42,7 +39,7 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 	data := mail.Data{
 		"AppUrl":    "Verbis",
 		"AppTitle":  title,
-		"AdminPath": e.mailer.Config.Admin.Path,
+		"AdminPath": "/admin",
 		"Token":     md5String,
 		"UserName":  u.FirstName,
 	}

@@ -5,7 +5,6 @@
 package deps
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -32,7 +31,7 @@ type Deps struct {
 	Store *models.Store
 
 	// Configuration file of the site
-	Config *config.Configuration
+	Config *domain.ThemeConfig
 
 	// Cache
 
@@ -75,7 +74,7 @@ type DepsConfig struct {
 	Env *environment.Env
 
 	// Config
-	Config *config.Configuration
+	Config *domain.ThemeConfig
 
 	Running bool
 }

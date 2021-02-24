@@ -6,7 +6,6 @@ package events
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/forms"
 	"github.com/ainsleyclark/verbis/api/mail"
@@ -15,7 +14,6 @@ import (
 // FormSend defines the event instance for emailing forms
 type FormSend struct {
 	mailer *mail.Mailer
-	config config.Configuration
 }
 
 type FormSendData struct {
@@ -25,7 +23,7 @@ type FormSendData struct {
 }
 
 // NewVerifyEmail creates a new verify email event
-func NewFormSend(config config.Configuration) (*FormSend, error) {
+func NewFormSend() (*FormSend, error) {
 	const op = "events.NewFormSend"
 
 	m, err := mail.New()
@@ -35,7 +33,6 @@ func NewFormSend(config config.Configuration) (*FormSend, error) {
 
 	return &FormSend{
 		mailer: m,
-		config: config,
 	}, nil
 }
 

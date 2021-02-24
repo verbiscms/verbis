@@ -16,7 +16,7 @@ import (
 func spaRoutes(d *deps.Deps, s *server.Server) {
 	h := handler.NewSPA(d)
 
-	spa := s.Group(d.Config.Admin.Path)
+	spa := s.Group("/admin")
 	{
 		spa.GET("/*any", h.Serve)
 		spa.GET("", h.Serve)
