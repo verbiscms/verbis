@@ -34,7 +34,7 @@ type Convert struct {
 	XML       WpXml
 	failed    Failures
 	store     *models.Store
-	authors   []domain.User
+	authors   domain.Users
 	owner     domain.User
 	sendEmail bool
 }
@@ -42,7 +42,7 @@ type Convert struct {
 type Result struct {
 	Failed     Failures
 	Posts      domain.PostData
-	Authors    []domain.UserPart
+	Authors    domain.UsersParts
 	Categories domain.Categories
 }
 
@@ -337,9 +337,9 @@ func (c *Convert) findAuthor(item Item) int {
 // sent with there their password. If they do exist, the author
 // will be appended to the Convert author array.
 // The user will be added to the FailedAuthors array in any case of error.
-func (c *Convert) populateAuthors() []domain.UserPart {
+func (c *Convert) populateAuthors() domain.UsersParts {
 
-	var users []domain.UserPart
+	var users domain.UsersParts
 
 	for _, v := range c.XML.Channel.Authors {
 		exists := c.store.User.ExistsByEmail(v.AuthorEmail)

@@ -30,6 +30,11 @@ type PostsRepository interface {
 	Total() (int, error)
 }
 
+// TODO
+// 		- Need to validate page templates, if its not in the available templates, needs to be a 400.
+
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
 // PostStore defines the data layer for Posts
 type PostStore struct {
 	db              *sqlx.DB

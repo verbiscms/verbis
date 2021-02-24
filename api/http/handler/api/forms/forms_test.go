@@ -89,7 +89,7 @@ var (
 		}{},
 	}
 	// The default forms used for testing.
-	forms = []domain.Form{
+	forms = domain.Forms{
 		{
 			Id:   123,
 			Name: "Form",

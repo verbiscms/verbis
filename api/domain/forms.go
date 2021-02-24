@@ -28,6 +28,8 @@ type (
 		CreatedAt    *time.Time    `db:"created_at" json:"created_at"`
 		UpdatedAt    *time.Time    `db:"updated_at" json:"updated_at"`
 	}
+	// Forms represents the slice of Form's.
+	Forms []Form
 	// FormField defines a individual field from the pivot
 	// table.
 	FormField struct {

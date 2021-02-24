@@ -10,16 +10,17 @@ import (
 )
 
 type (
-	//
+	// User defines the main author entity for Verbis.
 	User struct {
 		UserPart
 		Password      string     `db:"password" json:"password,omitempty" binding:""`
 		Token         string     `db:"token" json:"token,omitempty"`
 		TokenLastUsed *time.Time `db:"token_last_used" json:"token_last_used,omitempty"`
 	}
-	//
+	// Users represents the slice of User's.
 	Users []User
-	// UserPart defines the User with non-sensitive information
+	// UserPart defines the User with non-sensitive
+	// information.
 	UserPart struct {
 		Id               int        `db:"id" json:"id"`
 		UUID             uuid.UUID  `db:"uuid" json:"uuid"`
@@ -38,22 +39,24 @@ type (
 		CreatedAt        time.Time  `db:"created_at" json:"created_at"`
 		UpdatedAt        time.Time  `db:"updated_at" json:"updated_at"`
 	}
-	//
+	// UsersParts represents the slice of UserPart's.
 	UsersParts []UserPart
-	//
+	// PostCreate defines the data when a user is created.
 	UserCreate struct {
 		User
 		Password        string `db:"password" json:"password,omitempty" binding:"required,min=8,max=60"`
 		ConfirmPassword string `json:"confirm_password,omitempty" binding:"required,eqfield=Password,required"`
 	}
-	//
+	// UserPasswordReset defines the data for when a user
+	// resets their password.
 	UserPasswordReset struct {
 		DBPassword      string `json:"-" binding:""`
 		CurrentPassword string `json:"current_password" binding:"required,password"`
 		NewPassword     string `json:"new_password" binding:"required,min=8,max=60"`
 		ConfirmPassword string `json:"confirm_password" binding:"eqfield=NewPassword,required"`
 	}
-	//
+	// UserRole defines the role a user has, from the pivot
+	// table.
 	UserRole struct {
 		Id          int    `db:"id" json:"id" binding:"required,numeric"`
 		Name        string `db:"name" json:"name"`
@@ -61,10 +64,18 @@ type (
 	}
 )
 
+// HidePassword
+//
+// Sets the users password to an empty string.
+func (u *User) HidePassword() {
+	u.Password = ""
+}
+
 // HideCredentials
 //
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-//
+// Returns a slice of UserParts from the given input,
+// hiding any sensitive information such as
+// passwords and tokens.
 func (u Users) HideCredentials() UsersParts {
 	var p UsersParts
 	for _, v := range u {
@@ -73,18 +84,10 @@ func (u Users) HideCredentials() UsersParts {
 	return p
 }
 
-// HidePassword
-//
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-//
-func (u *User) HidePassword() {
-	u.Password = ""
-}
-
 // HideCredentials
 //
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-//
+// Returns a new UserPart, hiding any sensitive
+// information such as passwords and tokens.
 func (u *User) HideCredentials() UserPart {
 	return UserPart{
 		Id:               u.Id,

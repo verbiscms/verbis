@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-contrib/location"
 
@@ -40,6 +41,7 @@ func New(d *deps.Deps) *Server {
 	// Global middleware
 	r.Use(logger.Middleware())
 	r.Use(location.Default())
+	r.Use(middleware.Redirects(d))
 
 	r.Use(gin.Recovery())
 

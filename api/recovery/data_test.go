@@ -7,8 +7,11 @@ package recovery
 import (
 	"bytes"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
+	mockOptions "github.com/ainsleyclark/verbis/api/mocks/models"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/recovery/trace"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -46,8 +49,11 @@ func (t *RecoverTestSuite) TestRecover_GetData() {
 		Debug: true,
 	}
 
+	mock := &mockOptions.OptionsRepository{}
+	mock.On("Get").Return(nil, nil)
+
 	r := Recover{
-		deps:   nil,
+		deps:   &deps.Deps{Store: &models.Store{Options: mock}},
 		err:    &errors.Error{Code: errors.TEMPLATE, Message: "message", Operation: "operation", Err: fmt.Errorf("error")},
 		config: Config{},
 		tracer: trace.New(),
@@ -102,7 +108,8 @@ func (t *RecoverTestSuite) TestRecover_GetStackData() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			r := Recover{config: test.input, tracer: trace.New()}
+			t.SetDeps()
+			r := Recover{config: test.input, tracer: trace.New(), deps: t.deps}
 			stack := trace.New().Trace(StackDepth, 1)
 			t.Equal(len(test.want(stack)), len(r.getStackData()))
 		})

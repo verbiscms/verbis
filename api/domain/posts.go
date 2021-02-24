@@ -14,7 +14,7 @@ import (
 )
 
 type (
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// Post defines the main page entity of Verbis.
 	Post struct {
 		Id                int         `db:"id" json:"id" binding:"numeric"`
 		UUID              uuid.UUID   `db:"uuid" json:"uuid"`
@@ -32,23 +32,21 @@ type (
 		UpdatedAt         *time.Time  `db:"updated_at" json:"updated_at"`
 		SeoMeta           PostOptions `db:"options" json:"options"`
 	}
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	//
+	// Posts represents the slice of Post's.
 	Posts []Post
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	//
+	// PostDatum defines the post including author, category,
+	// layout and field information.
 	PostDatum struct {
 		Post     `json:"post"`
 		Author   UserPart     `json:"author"`
 		Category *Category    `json:"category"`
 		Layout   []FieldGroup `json:"layout,omitempty"`
-		Fields   PostFields  `json:"fields,omitempty"`
+		Fields   PostFields   `json:"fields,omitempty"`
 	}
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	//
+	// PostData represents the slice of PostDatum's.
 	PostData []PostDatum
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	//
+	// PostField defines the individual field that is attached
+	// to a post.
 	PostField struct {
 		Id            int         `db:"id" json:"-"`
 		PostId        int         `db:"post_id" json:"-"`
@@ -59,19 +57,17 @@ type (
 		Value         interface{} `json:"-"`
 		OriginalValue FieldValue  `db:"value" json:"value"`
 	}
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	//
+	// PostFields represents the slice of PostField's.
 	PostFields []PostField
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	//
+	// PostCreate defines the data when a post is created.
 	PostCreate struct {
 		Post
 		Author   int         `json:"author,omitempty" binding:"numeric"`
 		Category *int        `json:"category,omitempty" binding:"omitempty,numeric"`
 		Fields   []PostField `json:"fields,omitempty"`
 	}
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	//
+	// PostOptions defines the global post options that
+	// includes post meta and post seo information.
 	PostOptions struct {
 		Id       int       `json:"-"`
 		PageId   int       `json:"-" binding:"required|numeric"`

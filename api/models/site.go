@@ -84,7 +84,8 @@ func (s *SiteStore) GetThemeConfig() domain.ThemeConfig {
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get retrieve theme config file", Operation: op, Err: err}).Error()
 	}
-	if err := yaml.Unmarshal(y, &dc); err != nil {
+	err = yaml.Unmarshal(y, &dc)
+	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the config.yml file", Operation: op, Err: err}).Error()
 	}
 

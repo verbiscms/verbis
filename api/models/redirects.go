@@ -11,7 +11,7 @@ import (
 
 // RedirectRepository defines methods for Redirects to interact with the database
 type RedirectRepository interface {
-	Get(meta params.Params) ([]domain.Redirect, int, error)
+	Get(meta params.Params) (domain.Redirects, int, error)
 	GetById(id int64) (domain.Redirect, error)
 	GetByFrom(from string) (domain.Redirect, error)
 	Create(r *domain.Redirect) (domain.Redirect, error)
@@ -38,10 +38,10 @@ func newRedirects(db *sqlx.DB, config config.Configuration) *RedirectStore {
 // Get all categories
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
-func (s *RedirectStore) Get(meta params.Params) ([]domain.Redirect, int, error) {
+func (s *RedirectStore) Get(meta params.Params) (domain.Redirects, int, error) {
 	const op = "RedirectStore.Get"
 
-	var r []domain.Redirect
+	var r domain.Redirects
 	q := fmt.Sprintf("SELECT * FROM redirects")
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM redirects")
 

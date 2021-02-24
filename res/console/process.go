@@ -2,7 +2,7 @@ package console
 
 import (
 	"bufio"
-	"cms/core/bootstrap"
+	//"cms/core/bootstrap"
 	"fmt"
 	"github.com/gookit/color"
 	"os"
@@ -46,7 +46,7 @@ func Process() {
 			print("\033[H\033[2J")
 			break
 		case "serve":
-			bootstrap.Load()
+			//bootstrap.Load()
 			break
 		case "make":
 			make(argument1, argument2)

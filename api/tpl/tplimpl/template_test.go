@@ -106,16 +106,15 @@ func (t *TplTestSuite) TestExecute_Execute() {
 				DefaultFileHandler(),
 				template.FuncMap{},
 			}
-			e := execute.Prepare(test.config)
 
 			if test.fileHandler != nil {
-				e.fileHandler = test.fileHandler
+				execute.fileHandler = test.fileHandler
 			}
 
 			// Normal
 			t.Run("Normal", func() {
 				normalBuf := &bytes.Buffer{}
-				normalPath, err := e.Execute(normalBuf, test.name, test.data)
+				normalPath, err := execute.Execute(normalBuf, test.name, test.data)
 				t.Equal(normalPath, test.wantName)
 				if err != nil {
 					t.Contains(err.Error(), test.want)
@@ -131,7 +130,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 				}
 
 				postBuf := &bytes.Buffer{}
-				postPath, err := e.ExecutePost(postBuf, test.name, ctx, post)
+				postPath, err := execute.ExecutePost(postBuf, test.name, ctx, post)
 				t.Equal(postPath, test.wantName)
 				if err != nil {
 					t.Contains(err.Error(), test.want)
