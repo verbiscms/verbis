@@ -94,7 +94,7 @@ func (t *RecoverTestSuite) TestRecover_GetStackData() {
 				TplExec: m,
 			},
 			func(s trace.Stack) trace.Stack {
-				s.Append(&trace.File{File: "tt", Line: 0, Name: "tt", Contents: "tt"})
+				s.Append(&trace.File{File: "tt", Line: 0, Contents: "tt"})
 				return s
 			},
 		},

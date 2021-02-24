@@ -15,7 +15,7 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 	tt := map[string]struct {
 		id     interface{}
 		name   string
-		layout []domain.FieldGroup
+		layout domain.FieldGroups
 		args   []interface{}
 		want   interface{}
 		err    bool
@@ -23,14 +23,14 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 		"Success": {
 			id:   1,
 			name: "key3",
-			layout: []domain.FieldGroup{
+			layout: domain.FieldGroups{
 				{
 					Title:  "test1",
-					Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}},
+					Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}},
 				},
 				{
 					Title:  "test2",
-					Fields: []domain.Field{{Name: "key3"}, {Name: "key4"}},
+					Fields: domain.Fields{{Name: "key3"}, {Name: "key4"}},
 				},
 			},
 			args: nil,
@@ -65,22 +65,22 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 
 func (t *FieldTestSuite) TestService_GetLayouts() {
 
-	var f []domain.FieldGroup
+	var f domain.FieldGroups
 
-	fg := []domain.FieldGroup{
+	fg := domain.FieldGroups{
 		{
 			Title:  "test1",
-			Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}},
+			Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}},
 		},
 		{
 			Title:  "test2",
-			Fields: []domain.Field{{Name: "key3"}, {Name: "key4"}},
+			Fields: domain.Fields{{Name: "key3"}, {Name: "key4"}},
 		},
 	}
 
 	tt := map[string]struct {
 		id     interface{}
-		layout []domain.FieldGroup
+		layout domain.FieldGroups
 		args   []interface{}
 		want   interface{}
 	}{
@@ -110,43 +110,43 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 
 func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 
-	var f []domain.FieldGroup
+	var f domain.FieldGroups
 
 	tt := map[string]struct {
-		layout []domain.FieldGroup
+		layout domain.FieldGroups
 		args   []interface{}
 		mock   func(p *mocks.PostsRepository)
 		want   interface{}
 	}{
 		"Default": {
-			layout: []domain.FieldGroup{
-				{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
+			layout: domain.FieldGroups{
+				{Title: "test1", Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}}},
 			},
 			args: nil,
-			want: []domain.FieldGroup{
-				{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
+			want: domain.FieldGroups{
+				{Title: "test1", Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}}},
 			},
 		},
 		"1 Args (Post)": {
 			layout: nil,
 			args:   []interface{}{1},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, true).Return(domain.PostData{
+				p.On("GetById", 1, true).Return(domain.PostDatum{
 					Post: domain.Post{Id: 1, Title: "post"},
-					Layout: []domain.FieldGroup{
-						{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
+					Layout: domain.FieldGroups{
+						{Title: "test1", Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}}},
 					},
 				}, nil)
 			},
-			want: []domain.FieldGroup{
-				{Title: "test1", Fields: []domain.Field{{Name: "key1"}, {Name: "key2"}}},
+			want: domain.FieldGroups{
+				{Title: "test1", Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}}},
 			},
 		},
 		"1 Args (Post Error)": {
 			layout: nil,
 			args:   []interface{}{1},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, true).Return(domain.PostData{}, fmt.Errorf("error"))
+				p.On("GetById", 1, true).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			want: f,
 		},
@@ -166,17 +166,17 @@ func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 	tt := map[string]struct {
 		id   interface{}
 		mock func(p *mocks.PostsRepository)
-		want []domain.FieldGroup
+		want domain.FieldGroups
 	}{
 		"Success": {
 			id: 1,
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, true).Return(domain.PostData{
+				p.On("GetById", 1, true).Return(domain.PostDatum{
 					Post:   domain.Post{Id: 1, Title: "post"},
-					Layout: []domain.FieldGroup{{Title: "test"}},
+					Layout: domain.FieldGroups{{Title: "test"}},
 				}, nil)
 			},
-			want: []domain.FieldGroup{{Title: "test"}},
+			want: domain.FieldGroups{{Title: "test"}},
 		},
 		"Cast Error": {
 			id:   noStringer{},
@@ -185,7 +185,7 @@ func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 		"Not Found": {
 			id: 1,
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, true).Return(domain.PostData{}, fmt.Errorf("error"))
+				p.On("GetById", 1, true).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			want: nil,
 		},

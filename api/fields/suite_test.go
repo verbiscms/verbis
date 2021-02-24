@@ -51,7 +51,7 @@ func (t *FieldTestSuite) Reset() {
 // GetMockService
 //
 // Mock service for testing.
-func (t *FieldTestSuite) GetMockService(fields []domain.PostField, fnc func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)) *Service {
+func (t *FieldTestSuite) GetMockService(fields domain.PostFields, fnc func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)) *Service {
 	fieldsMock := &mocks.FieldsRepository{}
 	categoryMock := &mocks.CategoryRepository{}
 
@@ -73,7 +73,7 @@ func (t *FieldTestSuite) GetMockService(fields []domain.PostField, fnc func(f *m
 // GetPostsMockService
 //
 // Mock posts service for testing.
-func (t *FieldTestSuite) GetPostsMockService(fields []domain.PostField, fnc func(p *mocks.PostsRepository)) *Service {
+func (t *FieldTestSuite) GetPostsMockService(fields domain.PostFields, fnc func(p *mocks.PostsRepository)) *Service {
 	postsMocks := &mocks.PostsRepository{}
 
 	if fnc != nil {
@@ -120,7 +120,7 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository
 // GetService
 //
 // Mock service for testing.
-func (t *FieldTestSuite) GetService(fields []domain.PostField) *Service {
+func (t *FieldTestSuite) GetService(fields domain.PostFields) *Service {
 	return &Service{
 		fields: fields,
 		deps:   &deps.Deps{},

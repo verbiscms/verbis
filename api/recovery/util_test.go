@@ -35,7 +35,7 @@ func (t *RecoverTestSuite) Test_GetError() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			got := getError(test.input)
+			got := errors.ToError(test.input)
 			t.Equal(test.want.Operation, got.Operation)
 			t.Equal(test.want.Message, got.Message)
 			t.Equal(test.want.Code, got.Code)

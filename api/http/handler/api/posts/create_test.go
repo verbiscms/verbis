@@ -39,7 +39,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 			"Validation failed",
 			postBadValidation,
 			func(m *mocks.PostsRepository) {
-				m.On("Create", &postBadValidation).Return(domain.PostData{}, fmt.Errorf("error"))
+				m.On("Create", &postBadValidation).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 		},
 		"Invalid": {
@@ -48,7 +48,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 			"invalid",
 			post,
 			func(m *mocks.PostsRepository) {
-				m.On("Create", &postCreate).Return(domain.PostData{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Create", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
@@ -57,7 +57,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 			"conflict",
 			post,
 			func(m *mocks.PostsRepository) {
-				m.On("Create", &postCreate).Return(domain.PostData{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Create", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
@@ -66,7 +66,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 			"internal",
 			post,
 			func(m *mocks.PostsRepository) {
-				m.On("Create", &postCreate).Return(domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Create", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

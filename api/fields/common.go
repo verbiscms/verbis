@@ -20,7 +20,7 @@ import (
 // [0] for Post ID, fields are obtained by the post given.
 //
 // Returns the fields to be modified & processed.
-func (s *Service) handleArgs(args []interface{}) []domain.PostField {
+func (s *Service) handleArgs(args []interface{}) domain.PostFields {
 	const op = "FieldsService.handleArgs"
 
 	if len(args) == 0 {
@@ -28,9 +28,9 @@ func (s *Service) handleArgs(args []interface{}) []domain.PostField {
 	}
 
 	switch f := args[0].(type) {
-	case domain.PostData:
+	case domain.PostDatum:
 		return f.Fields
-	case []domain.PostField:
+	case domain.PostFields:
 		return f
 	case domain.PostTemplate:
 		return f.Fields
@@ -51,7 +51,7 @@ func (s *Service) handleArgs(args []interface{}) []domain.PostField {
 // Returns the fields by Post with the given ID.
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining the post.
-func (s *Service) getFieldsByPost(id int) []domain.PostField {
+func (s *Service) getFieldsByPost(id int) domain.PostFields {
 	fields, err := s.deps.Store.Fields.GetByPost(id)
 	if err != nil {
 		logger.WithError(err).Error()
@@ -64,7 +64,7 @@ func (s *Service) getFieldsByPost(id int) []domain.PostField {
 //
 // Returns a singular domain.PostField by the given name.
 // Returns errors.NOTFOUND if the field does not exist.
-func (s *Service) findFieldByName(name string, fields []domain.PostField) (domain.PostField, error) {
+func (s *Service) findFieldByName(name string, fields domain.PostFields) (domain.PostField, error) {
 	const op = "FieldsService.findFieldByName"
 	for _, field := range fields {
 		if name == field.Name {
@@ -80,7 +80,7 @@ type walker struct {
 	Key    string
 	Index  int
 	Field  domain.PostField
-	Fields []domain.PostField
+	Fields domain.PostFields
 	*Service
 }
 

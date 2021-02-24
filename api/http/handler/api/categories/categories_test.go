@@ -41,7 +41,7 @@ func (t *CategoriesTestSuite) Setup(mf func(m *mocks.CategoryRepository)) *Categ
 		mf(m)
 	}
 	pm := &mocks.PostsRepository{}
-	pm.On("Get", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]domain.PostData{}, 0, nil)
+	pm.On("Get", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(domain.PostData{}, 0, nil)
 	return &Categories{
 		Deps: &deps.Deps{
 			Store: &models.Store{
@@ -67,7 +67,7 @@ var (
 		Resource: "test",
 	}
 	// The default categories used for testing.
-	categories = []domain.Category{
+	categories = domain.Categories{
 		{
 			Id:   123,
 			Slug: "/cat",

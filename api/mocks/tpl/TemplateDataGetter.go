@@ -15,11 +15,11 @@ type TemplateDataGetter struct {
 }
 
 // Data provides a mock function with given fields: ctx, post
-func (_m *TemplateDataGetter) Data(ctx *gin.Context, post *domain.PostData) interface{} {
+func (_m *TemplateDataGetter) Data(ctx *gin.Context, post *domain.PostDatum) interface{} {
 	ret := _m.Called(ctx, post)
 
 	var r0 interface{}
-	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.PostData) interface{}); ok {
+	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.PostDatum) interface{}); ok {
 		r0 = rf(ctx, post)
 	} else {
 		if ret.Get(0) != nil {

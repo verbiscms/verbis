@@ -66,7 +66,7 @@ var (
 		MediaCompression: 10,
 	}
 	// The default options used for testing.
-	options = domain.OptionsDB{
+	options = domain.OptionsDBMap{
 		"test1": domain.OptionDB{
 			ID:   123,
 			Name: "test",

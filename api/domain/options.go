@@ -8,17 +8,23 @@ import (
 	"encoding/json"
 )
 
-
 type (
-	//
-	OptionsDB map[string]interface{}
-	//
+	// OptionsDBMap defines the map of key value pair options
+	// that are stored in the database, used for marshalling
+	// and unmarshalling into the Options struct.
+	OptionsDBMap map[string]interface{}
+	// OptionDB represents a singular entity of an option
+	// that's stored in the database.
 	OptionDB struct {
 		ID    int             `db:"id" json:"id"`
 		Name  string          `db:"option_name" json:"option_name" binding:"required"`
 		Value json.RawMessage `db:"option_value" json:"option_value" binding:"required"`
 	}
-	//
+	// OptionsDB represents the slice of OptionDB's.
+	OptionsDB []OptionDB
+	// Options defines the main system options defined in the
+	// store this is used throughout the application for
+	// user defined choices.
 	Options struct {
 		// Site
 		SiteTitle       string `json:"site_title" binding:"required"`

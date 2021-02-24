@@ -90,7 +90,7 @@ var (
 	// The default media item with wrong validation used for testing.
 	mediaBadValidation = &domain.Media{}
 	// The default media items used for testing.
-	mediaItems = []domain.Media{
+	mediaItems = domain.MediaItems{
 		{
 			Id:    1,
 			Url:   "/uploads/1",

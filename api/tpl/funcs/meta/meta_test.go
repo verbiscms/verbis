@@ -34,7 +34,7 @@ func Setup(opts domain.Options, site domain.Site, post domain.Post, tpl tpl.Temp
 
 	ns := Namespace{
 		deps: d,
-		post: &domain.PostData{Post: post},
+		post: &domain.PostDatum{Post: post},
 		funcs: template.FuncMap{
 			"safeHTML": safe.New(d).HTML,
 		},

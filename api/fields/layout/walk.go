@@ -17,7 +17,7 @@ import (
 // field UUID until a match has been found.
 // Returns a domain.Field if the fields was resolved.
 // Returns errors.NOTFOUND if the field was unable to be located or no groups exist.
-func ByUUID(uuid uuid.UUID, groups []domain.FieldGroup) (domain.Field, error) {
+func ByUUID(uuid uuid.UUID, groups domain.FieldGroups) (domain.Field, error) {
 	const op = "Fields.Walker.ByUUID"
 
 	if len(groups) == 0 {
@@ -43,7 +43,7 @@ func ByUUID(uuid uuid.UUID, groups []domain.FieldGroup) (domain.Field, error) {
 // field name until a match has been found.
 // Returns a domain.Field if the fields was resolved.
 // Returns errors.NOTFOUND if the field was unable to be located or no groups exist.
-func ByName(name string, groups []domain.FieldGroup) (domain.Field, error) {
+func ByName(name string, groups domain.FieldGroups) (domain.Field, error) {
 	const op = "Fields.Walker.ByUUID"
 
 	if len(groups) == 0 {

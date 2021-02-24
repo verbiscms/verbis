@@ -47,10 +47,10 @@ func (e *Execute) Execute(w io.Writer, name string, data interface{}) (string, e
 //
 // Satisfies the tpl.TemplateExecutor interface by executing
 // a template with a io.Writer, the name of the template
-// the context and the domain.PostData. Data is not
+// the context and the domain.PostDatum. Data is not
 // needed to be  passed as data is obtained from
 // the variables package.
-func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) (string, error) {
+func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostDatum) (string, error) {
 	data := e.Data(ctx, post)
 	e.funcMap = e.FuncMap(ctx, post, e.config)
 	return e.executeRender(w, name, data)
@@ -90,7 +90,7 @@ func (e *Execute) Executor() tpl.TemplateExecutor {
 // Satisfies the tpl.TemplateDataGetter interface by returning
 // data for the front end that relies on context and post
 // data.
-func (t *TemplateManager) Data(ctx *gin.Context, post *domain.PostData) interface{} {
+func (t *TemplateManager) Data(ctx *gin.Context, post *domain.PostDatum) interface{} {
 	return variables.Data(t.deps, ctx, post)
 }
 
@@ -99,7 +99,7 @@ func (t *TemplateManager) Data(ctx *gin.Context, post *domain.PostData) interfac
 // Satisfies the tpl.TemplateFuncGetter interface by returning
 // functions that relies on context and post data such as
 // `Meta` and `Url`. Generic functions are also included.
-func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostData, cfg tpl.TemplateConfig) template.FuncMap {
+func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostDatum, cfg tpl.TemplateConfig) template.FuncMap {
 	td := &internal.TemplateDeps{
 		Context: ctx,
 		Post:    post,

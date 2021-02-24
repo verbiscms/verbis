@@ -12,7 +12,7 @@ import (
 func (t *FieldTestSuite) TestService_GetField() {
 
 	tt := map[string]struct {
-		fields []domain.PostField
+		fields domain.PostFields
 		key    string
 		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
 		args   []interface{}
@@ -20,7 +20,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 		err    bool
 	}{
 		"Success": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key:  "key1",
@@ -37,12 +37,12 @@ func (t *FieldTestSuite) TestService_GetField() {
 			err:    true,
 		},
 		"Post": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key: "key2",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 2).Return([]domain.PostField{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
+				f.On("GetByPost", 2).Return(domain.PostFields{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},
 			want: "test",
@@ -69,7 +69,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 func (t *FieldTestSuite) TestService_GetFieldObject() {
 
 	tt := map[string]struct {
-		fields []domain.PostField
+		fields domain.PostFields
 		key    string
 		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
 		args   []interface{}
@@ -77,7 +77,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 		err    bool
 	}{
 		"Success": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key:  "key1",
@@ -95,12 +95,12 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			err:    true,
 		},
 		"Post": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "key1"},
 			},
 			key: "key2",
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 2).Return([]domain.PostField{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
+				f.On("GetByPost", 2).Return(domain.PostFields{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},
 			want: domain.PostField{Id: 2, Type: "text", Name: "key2", OriginalValue: "test", Value: "test"},

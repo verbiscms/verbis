@@ -17,10 +17,10 @@ import (
 
 // OptionsRepository defines methods for Options to interact with the database
 type OptionsRepository interface {
-	Get() (domain.OptionsDB, error)
+	Get() (domain.OptionsDBMap, error)
 	GetByName(name string) (interface{}, error)
 	GetStruct() domain.Options
-	UpdateCreate(options *domain.OptionsDB) error
+	UpdateCreate(options *domain.OptionsDBMap) error
 	Create(name string, value interface{}) error
 	Update(name string, value interface{}) error
 	Exists(name string) bool
@@ -43,19 +43,19 @@ func newOptions(db *sqlx.DB, config config.Configuration) *OptionsStore {
 // Get all options
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no options available.
-func (s *OptionsStore) Get() (domain.OptionsDB, error) {
+func (s *OptionsStore) Get() (domain.OptionsDBMap, error) {
 	const op = "OptionsRepository.Get"
 
-	var o []domain.OptionDB
+	var o domain.OptionsDB
 	if err := s.db.Select(&o, "SELECT * FROM options"); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get options", Operation: op, Err: err}
 	}
 
-	opts := make(domain.OptionsDB)
+	opts := make(domain.OptionsDBMap)
 	for _, v := range o {
 		unValue, err := s.unmarshalValue(v.Value)
 		if err != nil {
-			return domain.OptionsDB{}, err
+			return domain.OptionsDBMap{}, err
 		}
 		opts[v.Name] = unValue
 	}
@@ -90,13 +90,13 @@ func (s *OptionsStore) GetStruct() domain.Options {
 		return cachedOpts.(domain.Options)
 	}
 
-	var opts []domain.OptionDB
+	var opts domain.OptionsDB
 	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 		return domain.Options{}
 	}
 
-	unOpts := make(domain.OptionsDB)
+	unOpts := make(domain.OptionsDBMap)
 	for _, v := range opts {
 		unValue, err := s.unmarshalValue(v.Value)
 		if err != nil {
@@ -126,7 +126,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 }
 
 // UpdateCreate update's or create options depending on Exists check
-func (s *OptionsStore) UpdateCreate(options *domain.OptionsDB) error {
+func (s *OptionsStore) UpdateCreate(options *domain.OptionsDBMap) error {
 	const op = "OptionsRepository.UpdateCreate"
 	for name, value := range *options {
 		jsonValue, err := s.marshalValue(value)

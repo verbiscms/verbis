@@ -19,11 +19,11 @@ type TemplateFuncGetter struct {
 }
 
 // FuncMap provides a mock function with given fields: ctx, post, cfg
-func (_m *TemplateFuncGetter) FuncMap(ctx *gin.Context, post *domain.PostData, cfg tpl.TemplateConfig) template.FuncMap {
+func (_m *TemplateFuncGetter) FuncMap(ctx *gin.Context, post *domain.PostDatum, cfg tpl.TemplateConfig) template.FuncMap {
 	ret := _m.Called(ctx, post, cfg)
 
 	var r0 template.FuncMap
-	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.PostData, tpl.TemplateConfig) template.FuncMap); ok {
+	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.PostDatum, tpl.TemplateConfig) template.FuncMap); ok {
 		r0 = rf(ctx, post, cfg)
 	} else {
 		if ret.Get(0) != nil {

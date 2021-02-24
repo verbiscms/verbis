@@ -20,7 +20,7 @@ type (
 		Error      Error
 		StatusCode int
 		Request    Request
-		Post       *domain.PostData
+		Post       *domain.PostDatum
 		Stack      trace.Stack
 		Context    Context
 		Debug      bool

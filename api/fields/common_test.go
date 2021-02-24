@@ -13,50 +13,50 @@ import (
 func (t *FieldTestSuite) TestService_HandleArgs() {
 
 	tt := map[string]struct {
-		fields []domain.PostField
+		fields domain.PostFields
 		args   []interface{}
 		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
-		want   []domain.PostField
+		want   domain.PostFields
 	}{
 		"Default": {
-			fields: []domain.PostField{{Name: "test"}},
+			fields: domain.PostFields{{Name: "test"}},
 			args:   nil,
-			want:   []domain.PostField{{Name: "test"}},
+			want:   domain.PostFields{{Name: "test"}},
 		},
 		"1 Args (Post Fields)": {
-			args: []interface{}{domain.PostData{
+			args: []interface{}{domain.PostDatum{
 				Post:   domain.Post{Id: 1, Title: "post"},
-				Fields: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+				Fields: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 			}},
-			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"1 Args (Post)": {
 			fields: nil,
 			args:   []interface{}{1},
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 1).Return([]domain.PostField{
+				f.On("GetByPost", 1).Return(domain.PostFields{
 					{Id: 1, Type: "text", Name: "post"},
 				}, nil)
 			},
-			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"1 Args (Post Template)": {
 			fields: nil,
 			args: []interface{}{domain.PostTemplate{
 				Post:   domain.Post{Id: 1, Title: "post"},
-				Fields: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+				Fields: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 			}},
 			mock: nil,
-			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"1 Args (Fields)": {
 			fields: nil,
-			args:   []interface{}{[]domain.PostField{{Id: 1, Type: "text", Name: "post"}}},
+			args:   []interface{}{domain.PostFields{{Id: 1, Type: "text", Name: "post"}}},
 			mock:   nil,
-			want:   []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want:   domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"1 Args (Post Error)": {
-			fields: []domain.PostField{{Name: "test"}},
+			fields: domain.PostFields{{Name: "test"}},
 			args:   []interface{}{1},
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
 				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
@@ -83,16 +83,16 @@ func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 	tt := map[string]struct {
 		id   int
 		mock func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
-		want []domain.PostField
+		want domain.PostFields
 	}{
 		"Success": {
 			id: 1,
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 1).Return([]domain.PostField{
+				f.On("GetByPost", 1).Return(domain.PostFields{
 					{Id: 1, Type: "text", Name: "post"},
 				}, nil)
 			},
-			want: []domain.PostField{{Id: 1, Type: "text", Name: "post"}},
+			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 		},
 		"Get Error": {
 			id: 1,
@@ -114,12 +114,12 @@ func (t *FieldTestSuite) TestService_FindFieldByName() {
 
 	tt := map[string]struct {
 		name   string
-		fields []domain.PostField
+		fields domain.PostFields
 		want   interface{}
 	}{
 		"Success": {
 			name:   "test",
-			fields: []domain.PostField{{Id: 1, Type: "text", Name: "test"}},
+			fields: domain.PostFields{{Id: 1, Type: "text", Name: "test"}},
 			want:   domain.PostField{Id: 1, Type: "text", Name: "test"},
 		},
 		"Fail": {
@@ -155,7 +155,7 @@ func (t *FieldTestSuite) TestService_FindFieldByName() {
 //				Key:   "",
 //				Index: 0,
 //				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
-//				Fields: []domain.PostField{
+//				Fields: domain.PostFields{
 //					{Type: "text", Name: "text", OriginalValue: "text1", Key: ""},
 //				},
 //			},
@@ -166,7 +166,7 @@ func (t *FieldTestSuite) TestService_FindFieldByName() {
 //				Key:   "",
 //				Index: 0,
 //				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
-//				Fields: []domain.PostField{
+//				Fields: domain.PostFields{
 //					{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
 //				},
 //			},

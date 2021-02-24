@@ -58,7 +58,7 @@ var (
 	form = domain.Form{
 		Id:   123,
 		Name: "Form",
-		Fields: []domain.FormField{
+		Fields: domain.FormFields{
 			{
 				Key:      "key",
 				Label:    "label",
@@ -71,7 +71,7 @@ var (
 	formBody = domain.Form{
 		Id:   123,
 		Name: "Form",
-		Fields: []domain.FormField{
+		Fields: domain.FormFields{
 			{
 				Key:      "key",
 				Label:    "label",

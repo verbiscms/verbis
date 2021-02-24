@@ -12,17 +12,22 @@ type Handler struct {
 	mock.Mock
 }
 
-// Assets provides a mock function with given fields: ctx
-func (_m *Handler) Assets(ctx *gin.Context) {
+// Robots provides a mock function with given fields: ctx
+func (_m *Handler) Robots(ctx *gin.Context) {
 	_m.Called(ctx)
 }
 
-// Serve provides a mock function with given fields: ctx
-func (_m *Handler) Serve(ctx *gin.Context) {
+// SiteMapIndex provides a mock function with given fields: ctx
+func (_m *Handler) SiteMapIndex(ctx *gin.Context) {
 	_m.Called(ctx)
 }
 
-// Uploads provides a mock function with given fields: ctx
-func (_m *Handler) Uploads(ctx *gin.Context) {
+// SiteMapResource provides a mock function with given fields: ctx
+func (_m *Handler) SiteMapResource(ctx *gin.Context) {
 	_m.Called(ctx)
+}
+
+// SiteMapXSL provides a mock function with given fields: ctx, index
+func (_m *Handler) SiteMapXSL(ctx *gin.Context, index bool) {
+	_m.Called(ctx, index)
 }

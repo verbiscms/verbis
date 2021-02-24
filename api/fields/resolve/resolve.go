@@ -87,12 +87,12 @@ func (v *Value) resolve(field domain.PostField) domain.PostField {
 		return field
 	}
 
-	if field.TypeIsInArray(Choice) && field.Key != "map" {
+	if field.TypeIsInSlice(Choice) && field.Key != "map" {
 		field.Value = field.OriginalValue.String()
 		return field
 	}
 
-	if !field.TypeIsInArray(Iterable) {
+	if !field.TypeIsInSlice(Iterable) {
 		field.Value = v.execute(field.OriginalValue.String(), field.Type)
 		return field
 	}

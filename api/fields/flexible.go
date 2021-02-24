@@ -26,7 +26,7 @@ type Layout struct {
 // Subfields represents the collection of fields used
 // for templates. It has various functions attached
 // to it making it easier to loop over.
-type SubFields []domain.PostField
+type SubFields domain.PostFields
 
 // GetFlexible
 //
@@ -71,7 +71,7 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 // layout.
 // Fields are resolved dependant on the format parameter.
 // Returns a new Flexible.
-func (s *Service) resolveFlexible(key string, field domain.PostField, fields []domain.PostField) Flexible {
+func (s *Service) resolveFlexible(key string, field domain.PostField, fields domain.PostFields) Flexible {
 	layouts := field.OriginalValue.Slice()
 
 	var flexible = make(Flexible, len(layouts))

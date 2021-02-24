@@ -185,7 +185,7 @@ func TestNamespace_Parent(t *testing.T) {
 
 func TestNamespace_List(t *testing.T) {
 
-	categories := []domain.Category{
+	categories := domain.Categories{
 		{Id: 1, Name: "cat1"},
 		{Id: 1, Name: "cat2"},
 	}

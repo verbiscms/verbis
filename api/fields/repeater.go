@@ -18,7 +18,7 @@ type Repeater []Row
 
 // Row represents the collection of the repeaters
 // containing `sub_fields.
-type Row []domain.PostField
+type Row domain.PostFields
 
 // GetRepeater
 //
@@ -63,7 +63,7 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 // It's not necessary to use a database call for this look up, as we will
 // be looping through them anyway to append and format the fields.
 // Returns the sorted slice of fields.
-func (s *Service) resolveRepeater(key string, field domain.PostField, fields []domain.PostField) Repeater {
+func (s *Service) resolveRepeater(key string, field domain.PostField, fields domain.PostFields) Repeater {
 	const op = "FieldsService.resolveRepeater"
 
 	amount, err := field.OriginalValue.Int()

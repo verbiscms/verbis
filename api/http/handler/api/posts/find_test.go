@@ -43,7 +43,7 @@ func (t *PostsTestSuite) TestPosts_Find() {
 			200,
 			"no posts found",
 			func(m *mocks.PostsRepository) {
-				m.On("GetById", 123, true).Return(domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+				m.On("GetById", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 				m.On("Format", post).Return(post, nil)
 			},
 			"/posts/123",
@@ -53,7 +53,7 @@ func (t *PostsTestSuite) TestPosts_Find() {
 			500,
 			"internal",
 			func(m *mocks.PostsRepository) {
-				m.On("GetById", 123, true).Return(domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("GetById", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/posts/123",
 		},

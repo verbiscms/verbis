@@ -6,7 +6,7 @@ package seo
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/render"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	"net/http"

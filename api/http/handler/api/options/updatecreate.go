@@ -25,7 +25,7 @@ import (
 func (o *Options) UpdateCreate(ctx *gin.Context) {
 	const op = "OptionsHandler.UpdateCreate"
 
-	var options domain.OptionsDB
+	var options domain.OptionsDBMap
 	err := ctx.ShouldBindBodyWith(&options, binding.JSON)
 	if err != nil {
 		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})

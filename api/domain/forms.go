@@ -12,8 +12,6 @@ import (
 )
 
 type (
-	// TODO Array of Categories
-
 	// Form defines the data for sending data to the API
 	// from the client side.
 	Form struct {
@@ -43,6 +41,8 @@ type (
 		Required   types.BitBool `db:"required" json:"required"`
 		Options    DBMap         `db:"options" json:"options"`
 	}
+	// FormFields represents the slice of FormField's.
+	FormFields []FormField
 	// FormSubmission defines a submission of the of a form.
 	FormSubmission struct {
 		Id        int        `db:"id" json:"id" binding:"numeric"`

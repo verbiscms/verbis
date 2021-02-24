@@ -65,7 +65,7 @@ var (
 			Slug:  "/post",
 		},
 	}
-	postData = domain.PostData{
+	postData = domain.PostDatum{
 		Post: domain.Post{
 			Id:    123,
 			Slug:  "/post",
@@ -80,7 +80,7 @@ var (
 		},
 	}
 	// The default posts used for testing.
-	posts = []domain.PostData{
+	posts = domain.PostData{
 		{
 			Post: domain.Post{
 				Id:    123,

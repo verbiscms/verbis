@@ -29,7 +29,7 @@ func (r *Render) NotFound(g *gin.Context) {
 		Master:    "",
 	})
 
-	_, err := exec.ExecutePost(g.Writer, "404", g, &domain.PostData{})
+	_, err := exec.ExecutePost(g.Writer, "404", g, &domain.PostDatum{})
 
 	if err != nil {
 		color.Green.Println(err)

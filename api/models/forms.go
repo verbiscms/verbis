@@ -139,9 +139,9 @@ func (s *FormsStore) GetByUUID(uuid string) (domain.Form, error) {
 // GetFields returns form fields by form ID.
 //
 // Returns errors.NOTFOUND if there were no fields found by the given form ID.
-func (s *FormsStore) GetFields(id int) ([]domain.FormField, error) {
+func (s *FormsStore) GetFields(id int) (domain.FormFields, error) {
 	const op = "FormsRepository.GetFields"
-	var f []domain.FormField
+	var f domain.FormFields
 	if err := s.db.Select(&f, "SELECT * FROM form_fields WHERE form_id = ?", id); err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the form fields with the form ID: %v", id), Operation: op, Err: err}
 	}

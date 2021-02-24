@@ -10,8 +10,6 @@ import (
 )
 
 type (
-	// TODO Array of Categories
-
 	// Category defines the groups used for categorising
 	// individual posts.
 	Category struct {
@@ -26,4 +24,6 @@ type (
 		UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
 		CreatedAt   time.Time `db:"created_at" json:"created_at"`
 	}
+	// Categories represents the slice of Category's.
+	Categories []Category
 )
