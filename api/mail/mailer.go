@@ -7,7 +7,6 @@ package mail
 import (
 	"fmt"
 	sp "github.com/SparkPost/gosparkpost"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/forms"
@@ -18,7 +17,6 @@ import (
 
 type Mailer struct {
 	client       sp.Client
-	Config       config.Configuration
 	Transmission Sender
 	FromAddress  string
 	FromName     string

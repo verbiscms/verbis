@@ -27,7 +27,7 @@ type Namespace struct {
 
 const name = "auth"
 
-//  Creates a new Namespace and returns a new internal.FuncsNamespace
+// Creates a new Namespace and returns a new internal.FuncsNamespace
 func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ctx := New(d, t)
 

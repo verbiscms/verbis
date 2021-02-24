@@ -6,7 +6,6 @@ package models
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/forms"
@@ -31,16 +30,16 @@ type FormRepository interface {
 // FormsStore defines the data layer for Forms
 type FormsStore struct {
 	db        *sqlx.DB
-	config    config.Configuration
+	config    *domain.ThemeConfig
 	siteModel SiteRepository
 }
 
 // newSeoMeta - Construct
-func newForms(db *sqlx.DB, config config.Configuration) *FormsStore {
+func newForms(db *sqlx.DB, cfg *domain.ThemeConfig) *FormsStore {
 	return &FormsStore{
 		db:        db,
-		config:    config,
-		siteModel: newSite(db, config),
+		config:    cfg,
+		siteModel: newSite(db, cfg),
 	}
 }
 
@@ -265,7 +264,7 @@ func (s *FormsStore) Send(form *domain.Form, ip string, agent string) error {
 
 func (s *FormsStore) mailSubmission(form *domain.Form, values forms.FormValues, attachments forms.Attachments) error {
 	const op = "FormsRepository.mailSubmission"
-	fs, err := events.NewFormSend(s.config)
+	fs, err := events.NewFormSend()
 	if err != nil {
 		return err
 	}

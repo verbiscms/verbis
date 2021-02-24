@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
@@ -52,19 +51,19 @@ type MediaRepository interface {
 // MediaStore defines the data layer for Media
 type MediaStore struct {
 	db           *sqlx.DB
-	config       config.Configuration
+	config       *domain.ThemeConfig
 	optionsModel OptionsRepository
 	userModel    UserRepository
 	options      domain.Options
 }
 
 // newMedia - Construct
-func newMedia(db *sqlx.DB, config config.Configuration) *MediaStore {
+func newMedia(db *sqlx.DB, cfg *domain.ThemeConfig) *MediaStore {
 	ms := &MediaStore{
 		db:           db,
-		config:       config,
-		optionsModel: newOptions(db, config),
-		userModel:    newUser(db, config),
+		config:       cfg,
+		optionsModel: newOptions(db, cfg),
+		userModel:    newUser(db, cfg),
 	}
 	ms.getOptionsStruct()
 	return ms

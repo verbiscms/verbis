@@ -73,7 +73,7 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Set up stores & pass the database.
-	store := models.New(db, *cfg.Config)
+	store := models.New(db, cfg.Config)
 	if err != nil {
 		printError(err.Error())
 	}

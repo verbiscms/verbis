@@ -6,7 +6,6 @@ package models
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	location "github.com/ainsleyclark/verbis/api/fields/converter"
 	"github.com/google/uuid"
 	//"github.com/ainsleyclark/verbis/api/cache"
@@ -28,17 +27,17 @@ type FieldsRepository interface {
 // FieldsStore defines the data layer for Posts
 type FieldsStore struct {
 	db      *sqlx.DB
-	config  config.Configuration
+	config  *domain.ThemeConfig
 	options domain.Options
 	finder  location.Finder
 }
 
 // newFields - Construct
-func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
+func newFields(db *sqlx.DB, cfg *domain.ThemeConfig) *FieldsStore {
 	return &FieldsStore{
 		db:      db,
-		config:  config,
-		options: newOptions(db, config).GetStruct(),
+		config:  cfg,
+		options: newOptions(db, cfg).GetStruct(),
 		finder:  location.NewLocation(),
 	}
 }

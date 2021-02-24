@@ -7,7 +7,6 @@ package models
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
@@ -31,7 +30,7 @@ type SiteRepository interface {
 // SiteStore defines the data layer for Posts
 type SiteStore struct {
 	db           *sqlx.DB
-	config       config.Configuration
+	config       *domain.ThemeConfig
 	optionsModel OptionsRepository
 	cache        siteCache
 }
@@ -45,15 +44,15 @@ type siteCache struct {
 }
 
 // newSite - Construct
-func newSite(db *sqlx.DB, config config.Configuration) *SiteStore {
+func newSite(db *sqlx.DB, cfg *domain.ThemeConfig) *SiteStore {
 	const op = "SiteRepository.newSite"
 
 	s := &SiteStore{
 		db:     db,
-		config: config,
+		config: cfg,
 	}
 
-	om := newOptions(db, config)
+	om := newOptions(db, cfg)
 	s.optionsModel = om
 
 	return s
