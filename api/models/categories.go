@@ -17,7 +17,7 @@ import (
 
 // CategoryRepository defines methods for Categories to interact with the database
 type CategoryRepository interface {
-	Get(meta params.Params) ([]domain.Category, int, error)
+	Get(meta params.Params) (domain.Categories, int, error)
 	GetById(id int) (domain.Category, error)
 	GetByPost(pageId int) (*domain.Category, error)
 	GetBySlug(slug string) (domain.Category, error)
@@ -51,10 +51,10 @@ func newCategories(db *sqlx.DB, config config.Configuration) *CategoryStore {
 // Get all categories
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
-func (s *CategoryStore) Get(meta params.Params) ([]domain.Category, int, error) {
+func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) {
 	const op = "CategoryRepository.Get"
 
-	var c []domain.Category
+	var c domain.Categories
 	q := fmt.Sprintf("SELECT * FROM categories")
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM categories")
 

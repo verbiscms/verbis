@@ -31,6 +31,8 @@ type (
 		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
 	}
+	// MediaItems represents the slice of Media.
+	MediaItems []Media
 	// MediaSizes defines the map of MediaSizes, by key value
 	// pair.
 	MediaSizes map[string]MediaSize
@@ -81,7 +83,7 @@ func (m MediaSizes) Scan(value interface{}) error {
 // Valuer for MediaSize. marshal the MediaSize when
 // the entity is inserted to the database.
 func (m MediaSizes) Value() (driver.Value, error) {
-	const op = "Domain.MediaSizes.Scan"
+	const op = "Domain.MediaSizes.Value"
 	if len(m) == 0 {
 		return nil, nil
 	}

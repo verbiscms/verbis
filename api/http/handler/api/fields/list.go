@@ -37,7 +37,7 @@ func (c *Fields) List(ctx *gin.Context) {
 		categoryId = 0
 	}
 
-	post := domain.PostData{
+	post := domain.PostDatum{
 		Post: domain.Post{
 			Id:                0,
 			Slug:              "",

@@ -36,7 +36,7 @@ import (
 
 // MediaRepository defines methods for Media to interact with the database
 type MediaRepository interface {
-	Get(meta params.Params) ([]domain.Media, int, error)
+	Get(meta params.Params) (domain.MediaItems, int, error)
 	GetById(id int) (domain.Media, error)
 	GetByName(name string) (domain.Media, error)
 	GetByUrl(url string) (string, string, error)
@@ -79,10 +79,10 @@ func (s *MediaStore) getOptionsStruct() {
 // Get all media
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no media available.
-func (s *MediaStore) Get(meta params.Params) ([]domain.Media, int, error) {
+func (s *MediaStore) Get(meta params.Params) (domain.MediaItems, int, error) {
 	const op = "MediaRepository.Get"
 
-	var m []domain.Media
+	var m domain.MediaItems
 	q := `SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at,
     CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
     CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt',
@@ -114,7 +114,7 @@ func (s *MediaStore) Get(meta params.Params) ([]domain.Media, int, error) {
 
 	// Return not found error if no forms are available
 	if len(m) == 0 {
-		return []domain.Media{}, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No media available", Operation: op}
+		return domain.MediaItems{}, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No media available", Operation: op}
 	}
 
 	// Count the total number of media

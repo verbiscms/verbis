@@ -19,11 +19,11 @@ import (
 
 // PostsRepository defines methods for Posts to interact with the database
 type PostsRepository interface {
-	Get(meta params.Params, layout bool, resource string, status string) ([]domain.PostData, int, error)
-	GetById(id int, layout bool) (domain.PostData, error)
-	GetBySlug(slug string) (domain.PostData, error)
-	Create(p *domain.PostCreate) (domain.PostData, error)
-	Update(p *domain.PostCreate) (domain.PostData, error)
+	Get(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error)
+	GetById(id int, layout bool) (domain.PostDatum, error)
+	GetBySlug(slug string) (domain.PostDatum, error)
+	Create(p *domain.PostCreate) (domain.PostDatum, error)
+	Update(p *domain.PostCreate) (domain.PostDatum, error)
 	Delete(id int) error
 	Exists(id int) bool
 	ExistsBySlug(slug string) bool
@@ -89,7 +89,7 @@ FROM (%s) posts
       LEFT JOIN post_fields pf on posts.id = pf.post_id`, query)
 }
 
-func (s *PostStore) Get(meta params.Params, layout bool, resource string, status string) ([]domain.PostData, int, error) {
+func (s *PostStore) Get(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error) {
 	const op = "PostsRepository.Get"
 
 	q := "SELECT * FROM posts"
@@ -179,19 +179,19 @@ func (s *PostStore) Get(meta params.Params, layout bool, resource string, status
 // GetById returns a post by Id
 //
 // Returns errors.NOTFOUND if the post was not found by the given Id.
-func (s *PostStore) GetById(id int, layout bool) (domain.PostData, error) {
+func (s *PostStore) GetById(id int, layout bool) (domain.PostDatum, error) {
 	const op = "PostsRepository.GetById"
 
 	var p []PostRaw
 	err := s.db.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.id = ? LIMIT 1"), id)
 
 	if err != nil {
-		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op, Err: err}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op, Err: err}
 	}
 
 	formatted := s.format(p, layout)
 	if len(formatted) == 0 {
-		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the ID: %d", id), Operation: op, Err: fmt.Errorf("could not format the post with the ID: %d", id)}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the ID: %d", id), Operation: op, Err: fmt.Errorf("could not format the post with the ID: %d", id)}
 	}
 
 	return formatted[0], nil
@@ -200,19 +200,19 @@ func (s *PostStore) GetById(id int, layout bool) (domain.PostData, error) {
 // GetBySlug returns a a post by slug
 //
 // Returns errors.NOTFOUND if the post was not found by the given slug.
-func (s *PostStore) GetBySlug(slug string) (domain.PostData, error) {
+func (s *PostStore) GetBySlug(slug string) (domain.PostDatum, error) {
 	const op = "PostsRepository.GetBySlug"
 
 	var p []PostRaw
 	err := s.db.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.slug = ? LIMIT 1"), slug)
 
 	if err != nil {
-		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op, Err: err}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op, Err: err}
 	}
 
 	formatted := s.format(p, false)
 	if len(formatted) == 0 {
-		return domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the slug: %s", slug), Operation: op, Err: fmt.Errorf("could not format the post with the slug: %s", slug)}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the slug: %s", slug), Operation: op, Err: fmt.Errorf("could not format the post with the slug: %s", slug)}
 	}
 
 	return formatted[0], nil
@@ -222,11 +222,11 @@ func (s *PostStore) GetBySlug(slug string) (domain.PostData, error) {
 // Returns errors.CONFLICT if the the post slug already exists.
 // Returns errors.INTERNAL if the SQL query was invalid or the function
 // could not get the newly created ID.
-func (s *PostStore) Create(p *domain.PostCreate) (domain.PostData, error) {
+func (s *PostStore) Create(p *domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostsRepository.Create"
 
 	if err := s.validateUrl(p.Slug); err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	// Check if the author is set assign to owner if not.
@@ -251,33 +251,33 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostData, error) {
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
 	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
 	if err != nil {
-		return domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
+		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	id, err := c.LastInsertId()
 	if err != nil {
-		return domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post ID with the title: %v", p.Title), Operation: op, Err: err}
+		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post ID with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	post, err := s.GetById(int(id), true)
 	if err != nil {
-		return domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post with the title: %v", p.Title), Operation: op, Err: err}
+		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	// Update the categories based on the array of integers that
 	// are passed.
 	if err := s.categoriesModel.InsertPostCategory(int(id), p.Category); err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	// Update or create the fields
 	if err := s.fieldsModel.UpdateCreate(int(id), p.Fields); err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	// Update the post meta
 	if err := s.seoMetaModel.UpdateCreate(int(id), p.SeoMeta); err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	return post, nil
@@ -286,17 +286,17 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostData, error) {
 // Update a post by Id
 // Returns errors.NOTFOUND if the post was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *PostStore) Update(p *domain.PostCreate) (domain.PostData, error) {
+func (s *PostStore) Update(p *domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostsRepository.Update"
 
 	oldPost, err := s.GetById(p.Id, false)
 	if err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	if oldPost.Slug != p.Slug {
 		if err := s.validateUrl(p.Slug); err != nil {
-			return domain.PostData{}, err
+			return domain.PostDatum{}, err
 		}
 	}
 
@@ -313,28 +313,28 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.PostData, error) {
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
 	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
 	if err != nil {
-		return domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
+		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}
 
 	// Update the categories based on the array of integers that
 	// are passed. If the categories
 	if err := s.categoriesModel.InsertPostCategory(p.Id, p.Category); err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	// Update or create the fields
 	if err := s.fieldsModel.UpdateCreate(p.Id, p.Fields); err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	post, err := s.GetById(p.Id, true)
 	if err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	// Update the post meta
 	if err := s.seoMetaModel.UpdateCreate(p.Id, p.SeoMeta); err != nil {
-		return domain.PostData{}, err
+		return domain.PostDatum{}, err
 	}
 
 	// Clear the cache
@@ -420,7 +420,7 @@ func (s *PostStore) validateUrl(slug string) error {
 	return nil
 }
 
-func (s *PostStore) find(posts []domain.PostData, id int) bool {
+func (s *PostStore) find(posts domain.PostData, id int) bool {
 	for _, v := range posts {
 		if v.Id == id {
 			return true
@@ -429,8 +429,8 @@ func (s *PostStore) find(posts []domain.PostData, id int) bool {
 	return false
 }
 
-func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
-	var posts = make([]domain.PostData, 0)
+func (s *PostStore) format(rawPosts []PostRaw, layout bool) domain.PostData {
+	var posts = make(domain.PostData, 0)
 
 	for _, v := range rawPosts {
 
@@ -441,11 +441,11 @@ func (s *PostStore) format(rawPosts []PostRaw, layout bool) []domain.PostData {
 				category = v.Category
 			}
 
-			p := domain.PostData{
+			p := domain.PostDatum{
 				Post:     v.Post,
 				Author:   v.Author.HideCredentials(),
 				Category: &category,
-				Fields:   make([]domain.PostField, 0),
+				Fields:   make(domain.PostFields, 0),
 			}
 
 			if layout {

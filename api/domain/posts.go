@@ -8,14 +8,13 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 	"time"
 )
 
 type (
-	// TODO Array of Posts and PostData
-
-	//
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	Post struct {
 		Id                int         `db:"id" json:"id" binding:"numeric"`
 		UUID              uuid.UUID   `db:"uuid" json:"uuid"`
@@ -33,14 +32,22 @@ type (
 		UpdatedAt         *time.Time  `db:"updated_at" json:"updated_at"`
 		SeoMeta           PostOptions `db:"options" json:"options"`
 	}
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	//
-	PostData struct {
+	Posts []Post
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	//
+	PostDatum struct {
 		Post     `json:"post"`
 		Author   UserPart     `json:"author"`
 		Category *Category    `json:"category"`
 		Layout   []FieldGroup `json:"layout,omitempty"`
-		Fields   []PostField  `json:"fields,omitempty"`
+		Fields   PostFields  `json:"fields,omitempty"`
 	}
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	//
+	PostData []PostDatum
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	//
 	PostField struct {
 		Id            int         `db:"id" json:"-"`
@@ -52,6 +59,10 @@ type (
 		Value         interface{} `json:"-"`
 		OriginalValue FieldValue  `db:"value" json:"value"`
 	}
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	//
+	PostFields []PostField
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	//
 	PostCreate struct {
 		Post
@@ -59,6 +70,7 @@ type (
 		Category *int        `json:"category,omitempty" binding:"omitempty,numeric"`
 		Fields   []PostField `json:"fields,omitempty"`
 	}
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	//
 	PostOptions struct {
 		Id       int       `json:"-"`
@@ -67,33 +79,39 @@ type (
 		Seo      *PostSeo  `db:"seo" json:"seo"`
 		EditLock string    `db:"edit_lock" json:"edit_lock"`
 	}
-	//
+	// PostMeta defines the global meta information for the
+	// post used when calling the VerbisHeader.
 	PostMeta struct {
 		Title       string       `json:"title,omitempty"`
 		Description string       `json:"description,omitempty"`
 		Twitter     PostTwitter  `json:"twitter,omitempty"`
 		Facebook    PostFacebook `json:"facebook,omitempty"`
 	}
-	//
+	// PostTwitter defines the twitter meta information
+	// used when calling the VerbisHeader.
 	PostTwitter struct {
 		Title       string `json:"title,omitempty"`
 		Description string `json:"description,omitempty"`
 		ImageId     int    `json:"image_id,numeric,omitempty"`
 	}
-	//
+	// PostFacebook defines the opengraph meta information
+	// used when calling the VerbisHeader.
 	PostFacebook struct {
 		Title       string `json:"title,omitempty"`
 		Description string `json:"description,omitempty"`
 		ImageId     int    `json:"image_id,numeric,omitempty"`
 	}
-	//
+	// PostSeo defines the options for Seo on the post,
+	// including if the post is indexable, if it
+	// should appear in the sitemap and any
+	// canonical overrides.
 	PostSeo struct {
 		Public         bool   `json:"public"`
 		ExcludeSitemap bool   `json:"exclude_sitemap"`
 		Canonical      string `json:"canonical"`
 	}
-	// TplPost defines the Post data for
-	// templates.
+	// PostTemplate defines the Post data for templates when they
+	// are used in the front end.
 	PostTemplate struct {
 		Post
 		Author   UserPart
@@ -102,7 +120,11 @@ type (
 	}
 )
 
-func (p *PostData) Tpl() PostTemplate {
+// Tpl
+//
+// Converts a PostDatum to a PostTemplate and hides
+// layouts.
+func (p *PostDatum) Tpl() PostTemplate {
 	return PostTemplate{
 		Post:     p.Post,
 		Author:   p.Author,
@@ -111,10 +133,11 @@ func (p *PostData) Tpl() PostTemplate {
 	}
 }
 
-// TypeIsInArray
+// TypeIsInSlice
 //
-//
-func (f PostField) TypeIsInArray(arr []string) bool {
+// Determines if the given field values is in the slice
+// passed.
+func (f *PostField) TypeIsInSlice(arr []string) bool {
 	for _, v := range arr {
 		if v == f.Type {
 			return true
@@ -128,14 +151,19 @@ func (f PostField) TypeIsInArray(arr []string) bool {
 // Scanner for PostMeta. unmarshal the PostMeta when
 // the entity is pulled from the database.
 func (m *PostMeta) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("scan not supported")
-	}
-	if bytes == nil || value == nil {
+	const op = "Domain.PostMeta.Scan"
+	if value == nil {
 		return nil
 	}
-	return json.Unmarshal(bytes, &m)
+	bytes, ok := value.([]byte)
+	if !ok || bytes == nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Scan unsupported for PostMeta", Operation: op, Err: fmt.Errorf("scan not supported")}
+	}
+	err := json.Unmarshal(bytes, &m)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling into PostMeta", Operation: op, Err: err}
+	}
+	return nil
 }
 
 // Value
@@ -143,9 +171,10 @@ func (m *PostMeta) Scan(value interface{}) error {
 // Valuer for PostMeta. marshal the PostMeta when
 // the entity is inserted to the database.
 func (m *PostMeta) Value() (driver.Value, error) {
+	const op = "Domain.PostMeta.Value"
 	j, err := json.Marshal(m)
 	if err != nil {
-		return nil, fmt.Errorf("could not unmarshal to domain.PostMeta")
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling PostMeta", Operation: op, Err: err}
 	}
 	return driver.Value(j), nil
 }
@@ -155,14 +184,19 @@ func (m *PostMeta) Value() (driver.Value, error) {
 // Scanner for PostSeo. unmarshal the PostSeo when
 // the entity is pulled from the database.
 func (m *PostSeo) Scan(value interface{}) error {
-	bytes, ok := value.([]byte)
-	if !ok {
-		return fmt.Errorf("scan not supported")
-	}
-	if bytes == nil || value == nil {
+	const op = "Domain.PostSeo.Scan"
+	if value == nil {
 		return nil
 	}
-	return json.Unmarshal(bytes, &m)
+	bytes, ok := value.([]byte)
+	if !ok || bytes == nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Scan unsupported for PostSeo", Operation: op, Err: fmt.Errorf("scan not supported")}
+	}
+	err := json.Unmarshal(bytes, &m)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling into PostSeo", Operation: op, Err: err}
+	}
+	return nil
 }
 
 // Value
@@ -170,9 +204,10 @@ func (m *PostSeo) Scan(value interface{}) error {
 // Valuer for PostSeo. marshal the PostSeo when
 // the entity is inserted to the database.
 func (m *PostSeo) Value() (driver.Value, error) {
+	const op = "Domain.PostSeo.Value"
 	j, err := json.Marshal(m)
 	if err != nil {
-		return nil, fmt.Errorf("could not unmarshal to domain.PostSeo")
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling PostSeo", Operation: op, Err: err}
 	}
 	return driver.Value(j), nil
 }

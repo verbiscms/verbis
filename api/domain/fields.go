@@ -12,8 +12,22 @@ import (
 )
 
 type (
-	// TODO Array of Categories
-
+	// Field defines an individual field type.
+	Field struct {
+		UUID         uuid.UUID                 `json:"uuid"`
+		Label        string                    `json:"label"`
+		Name         string                    `json:"name"`
+		Type         string                    `json:"type"`
+		Instructions string                    `json:"instructions"`
+		Required     bool                      `json:"required"`
+		Logic        [][]FieldConditionalLogic `json:"conditional_logic"`
+		Wrapper      *FieldWrapper             `json:"wrapper"`
+		Options      map[string]interface{}    `json:"options"`
+		SubFields    []Field                   `json:"sub_fields,omitempty"`
+		Layouts      map[string]FieldLayout    `json:"layouts,omitempty"`
+	}
+	// Fields defines the slice of Fields.
+	Fields []Field
 	// FieldGroup defines a group of JSON fields.
 	FieldGroup struct {
 		UUID      uuid.UUID         `json:"uuid"`
@@ -21,21 +35,8 @@ type (
 		Fields    []Field           `json:"fields,omitempty"`
 		Locations [][]FieldLocation `json:"location,omitempty"`
 	}
-	// Field defines an individual field type.
-	Field struct {
-		UUID         uuid.UUID                  `json:"uuid"`
-		Label        string                     `json:"label"`
-		Name         string                     `json:"name"`
-		Type         string                     `json:"type"`
-		Instructions string                     `json:"instructions"`
-		Required     bool                       `json:"required"`
-		Logic        *[][]FieldConditionalLogic `json:"conditional_logic"`
-		Wrapper      *FieldWrapper              `json:"wrapper"`
-		Options      map[string]interface{}     `json:"options"`
-		SubFields    *[]Field                   `json:"sub_fields,omitempty"`
-		Layouts      map[string]FieldLayout     `json:"layouts,omitempty"`
-	}
-
+	// FieldGroups defines the slice of JSON fields.
+	FieldGroups []FieldGroup
 	// FieldLayout defines the structure of fields for
 	// individual pages and resources.
 	FieldLayout struct {
@@ -43,7 +44,7 @@ type (
 		Name      string    `json:"name"`
 		Label     string    `json:"label"`
 		Display   string    `json:"didpslay"`
-		SubFields *[]Field  `json:"sub_fields,omitempty"`
+		SubFields []Field   `json:"sub_fields,omitempty"`
 	}
 	// FieldLocation defines where the FieldGroup will appear.
 	FieldLocation struct {

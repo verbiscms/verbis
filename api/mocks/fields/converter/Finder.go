@@ -14,15 +14,15 @@ type Finder struct {
 }
 
 // GetLayout provides a mock function with given fields: post, cacheable
-func (_m *Finder) GetLayout(post domain.PostData, cacheable bool) []domain.FieldGroup {
+func (_m *Finder) GetLayout(post domain.PostDatum, cacheable bool) domain.FieldGroups {
 	ret := _m.Called(post, cacheable)
 
-	var r0 []domain.FieldGroup
-	if rf, ok := ret.Get(0).(func(domain.PostData, bool) []domain.FieldGroup); ok {
+	var r0 domain.FieldGroups
+	if rf, ok := ret.Get(0).(func(domain.PostDatum, bool) domain.FieldGroups); ok {
 		r0 = rf(post, cacheable)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.FieldGroup)
+			r0 = ret.Get(0).(domain.FieldGroups)
 		}
 	}
 

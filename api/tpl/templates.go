@@ -26,7 +26,7 @@ type TemplateHandler interface {
 type TemplateExecutor interface {
 	Exists(template string) bool
 	Execute(w io.Writer, name string, data interface{}) (string, error)
-	ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostData) (string, error)
+	ExecutePost(w io.Writer, name string, ctx *gin.Context, post *domain.PostDatum) (string, error)
 	Config() TemplateConfig
 	Executor() TemplateExecutor
 }
@@ -34,7 +34,7 @@ type TemplateExecutor interface {
 // TemplateFuncGetter represents the functions for obtaining
 // template.FuncMap's for use in Verbis templates.
 type TemplateFuncGetter interface {
-	FuncMap(ctx *gin.Context, post *domain.PostData, cfg TemplateConfig) template.FuncMap
+	FuncMap(ctx *gin.Context, post *domain.PostDatum, cfg TemplateConfig) template.FuncMap
 	GenericFuncMap() template.FuncMap
 }
 
@@ -42,7 +42,7 @@ type TemplateFuncGetter interface {
 // for obtaining post relevant data to send back to
 // the template.
 type TemplateDataGetter interface {
-	Data(ctx *gin.Context, post *domain.PostData) interface{}
+	Data(ctx *gin.Context, post *domain.PostDatum) interface{}
 }
 
 // TemplateConfig represents the functions for obtaining

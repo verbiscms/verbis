@@ -12,16 +12,16 @@ import (
 
 func TestWalkerByName(t *testing.T) {
 
-	repeater := []domain.Field{
+	repeater := domain.Fields{
 		{Name: "test"},
 	}
 
-	nested := []domain.Field{
-		{Name: "wrong", SubFields: &repeater},
+	nested := domain.Fields{
+		{Name: "wrong", SubFields: repeater},
 	}
 
-	doubleNested := []domain.Field{
-		{Name: "wrong", SubFields: &nested},
+	doubleNested := domain.Fields{
+		{Name: "wrong", SubFields: nested},
 	}
 
 	tt := map[string]struct {
@@ -35,17 +35,17 @@ func TestWalkerByName(t *testing.T) {
 			want:  domain.Field{Name: "test"},
 		},
 		"Repeater": {
-			field: domain.Field{Name: "wrong", SubFields: &repeater},
+			field: domain.Field{Name: "wrong", SubFields: repeater},
 			found: true,
 			want:  domain.Field{Name: "test"},
 		},
 		"Nested Repeater": {
-			field: domain.Field{Name: "wrong", SubFields: &nested},
+			field: domain.Field{Name: "wrong", SubFields: nested},
 			found: true,
 			want:  domain.Field{Name: "test"},
 		},
 		"Double Nested Repeater": {
-			field: domain.Field{Name: "wrong", SubFields: &doubleNested},
+			field: domain.Field{Name: "wrong", SubFields: doubleNested},
 			found: true,
 			want:  domain.Field{Name: "test"},
 		},
@@ -57,7 +57,7 @@ func TestWalkerByName(t *testing.T) {
 		"Flexible Content": {
 			field: domain.Field{Name: "wrong", Layouts: map[string]domain.FieldLayout{
 				"layout": {
-					SubFields: &repeater,
+					SubFields: repeater,
 				},
 			}},
 			found: true,
@@ -66,7 +66,7 @@ func TestWalkerByName(t *testing.T) {
 		"Flexible Content Repeater": {
 			field: domain.Field{Name: "wrong", Layouts: map[string]domain.FieldLayout{
 				"layout": {
-					SubFields: &repeater,
+					SubFields: repeater,
 				},
 			}},
 			found: true,
@@ -75,7 +75,7 @@ func TestWalkerByName(t *testing.T) {
 		"Flexible Content Nested Repeater": {
 			field: domain.Field{Name: "wrong", Layouts: map[string]domain.FieldLayout{
 				"layout": {
-					SubFields: &nested,
+					SubFields: nested,
 				},
 			}},
 			found: true,
@@ -84,7 +84,7 @@ func TestWalkerByName(t *testing.T) {
 		"Flexible Content Double Nested Repeater": {
 			field: domain.Field{Name: "wrong", Layouts: map[string]domain.FieldLayout{
 				"layout": {
-					SubFields: &doubleNested,
+					SubFields: doubleNested,
 				},
 			}},
 			found: true,

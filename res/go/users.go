@@ -2,9 +2,9 @@ package res
 
 import (
 	"bufio"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
-	"fmt"
 	"github.com/spf13/cobra"
 	"os"
 	"strconv"

@@ -25,12 +25,12 @@ var (
 		Title:  "test title",
 		UserId: 1,
 	}
-	postData = domain.PostData{
+	postData = domain.PostDatum{
 		Post:     post,
 		Author:   domain.UserPart{},
 		Category: cat,
 	}
-	postDataSlice = []domain.PostData{
+	postDataSlice = domain.PostData{
 		postData, postData,
 	}
 	tplPost = domain.PostTemplate{
@@ -71,7 +71,7 @@ func TestNamespace_Find(t *testing.T) {
 		"Not Found": {
 			1,
 			func(m *mocks.PostsRepository) {
-				m.On("GetById", 1, false).Return(domain.PostData{}, fmt.Errorf("error"))
+				m.On("GetById", 1, false).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			nil,
 		},

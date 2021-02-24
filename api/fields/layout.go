@@ -25,13 +25,13 @@ func (s *Service) GetLayout(name string, args ...interface{}) domain.Field {
 
 // GetGroups
 //
-func (s *Service) GetLayouts(args ...interface{}) []domain.FieldGroup {
+func (s *Service) GetLayouts(args ...interface{}) domain.FieldGroups {
 	return s.handleLayoutArgs(args)
 }
 
 // handleLayoutArgs
 //
-func (s *Service) handleLayoutArgs(args []interface{}) []domain.FieldGroup {
+func (s *Service) handleLayoutArgs(args []interface{}) domain.FieldGroups {
 	switch len(args) {
 	case 1:
 		layout := s.getLayoutByPost(args[0])
@@ -46,7 +46,7 @@ func (s *Service) handleLayoutArgs(args []interface{}) []domain.FieldGroup {
 // Returns the layout by Post with the given ID.
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining/formatting the post.
-func (s *Service) getLayoutByPost(id interface{}) []domain.FieldGroup {
+func (s *Service) getLayoutByPost(id interface{}) domain.FieldGroups {
 	const op = "FieldsService.getFieldsByPost"
 
 	i, err := cast.ToIntE(id)

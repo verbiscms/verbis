@@ -37,7 +37,7 @@ type WalkerFunc func(field domain.PostField)
 // Ranges over the fields and resolves all of the values from the given
 // slice. If the field has a parent of field layout, the field will
 // be skipped.
-func (s *Service) mapper(fields []domain.PostField, walkerFunc WalkerFunc) {
+func (s *Service) mapper(fields domain.PostFields, walkerFunc WalkerFunc) {
 	for _, field := range fields {
 
 		if field.Type == "repeater" {

@@ -75,7 +75,7 @@ func TestNamespace_Body(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			post := &domain.PostData{Post: test.post}
+			post := &domain.PostDatum{Post: test.post}
 
 			ns := Namespace{
 				deps: nil,

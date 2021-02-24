@@ -15,7 +15,7 @@ import (
 
 func TestNamespace_Init(t *testing.T) {
 	d := &deps.Deps{}
-	p := &domain.PostData{}
+	p := &domain.PostDatum{}
 	td := &internal.TemplateDeps{Post: p}
 
 	ns := Init(d, td)

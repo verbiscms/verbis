@@ -45,15 +45,15 @@ func (_m *MediaRepository) Exists(name string) bool {
 }
 
 // Get provides a mock function with given fields: meta
-func (_m *MediaRepository) Get(meta params.Params) ([]domain.Media, int, error) {
+func (_m *MediaRepository) Get(meta params.Params) (domain.MediaItems, int, error) {
 	ret := _m.Called(meta)
 
-	var r0 []domain.Media
-	if rf, ok := ret.Get(0).(func(params.Params) []domain.Media); ok {
+	var r0 domain.MediaItems
+	if rf, ok := ret.Get(0).(func(params.Params) domain.MediaItems); ok {
 		r0 = rf(meta)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Media)
+			r0 = ret.Get(0).(domain.MediaItems)
 		}
 	}
 

@@ -19,11 +19,11 @@ type TemplateHandler struct {
 }
 
 // Data provides a mock function with given fields: ctx, post
-func (_m *TemplateHandler) Data(ctx *gin.Context, post *domain.PostData) interface{} {
+func (_m *TemplateHandler) Data(ctx *gin.Context, post *domain.PostDatum) interface{} {
 	ret := _m.Called(ctx, post)
 
 	var r0 interface{}
-	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.PostData) interface{}); ok {
+	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.PostDatum) interface{}); ok {
 		r0 = rf(ctx, post)
 	} else {
 		if ret.Get(0) != nil {
@@ -35,11 +35,11 @@ func (_m *TemplateHandler) Data(ctx *gin.Context, post *domain.PostData) interfa
 }
 
 // FuncMap provides a mock function with given fields: ctx, post, cfg
-func (_m *TemplateHandler) FuncMap(ctx *gin.Context, post *domain.PostData, cfg tpl.TemplateConfig) template.FuncMap {
+func (_m *TemplateHandler) FuncMap(ctx *gin.Context, post *domain.PostDatum, cfg tpl.TemplateConfig) template.FuncMap {
 	ret := _m.Called(ctx, post, cfg)
 
 	var r0 template.FuncMap
-	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.PostData, tpl.TemplateConfig) template.FuncMap); ok {
+	if rf, ok := ret.Get(0).(func(*gin.Context, *domain.PostDatum, tpl.TemplateConfig) template.FuncMap); ok {
 		r0 = rf(ctx, post, cfg)
 	} else {
 		if ret.Get(0) != nil {

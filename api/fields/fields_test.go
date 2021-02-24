@@ -12,18 +12,18 @@ import (
 func (t *FieldTestSuite) TestService_GetFields() {
 
 	tt := map[string]struct {
-		fields []domain.PostField
+		fields domain.PostFields
 		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
 		args   []interface{}
 		want   interface{}
 	}{
 		"None": {
-			fields: []domain.PostField{},
+			fields: domain.PostFields{},
 			args:   nil,
 			want:   Fields{},
 		},
 		"Simple": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "key1", OriginalValue: "1"},
 				{Id: 2, Type: "text", Name: "key2", OriginalValue: "2"},
 				{Id: 3, Type: "text", Name: "key3", OriginalValue: "3"},
@@ -46,19 +46,19 @@ func (t *FieldTestSuite) TestService_GetFields() {
 func (t *FieldTestSuite) TestService_Mapper() {
 
 	tt := map[string]struct {
-		fields []domain.PostField
+		fields domain.PostFields
 		want   interface{}
 	}{
 		"Simple": {
-			fields: []domain.PostField{{Id: 1, Type: "text", Name: "key1", Value: "1"}},
+			fields: domain.PostFields{{Id: 1, Type: "text", Name: "key1", Value: "1"}},
 			want:   domain.PostField{Id: 1, Type: "text", Name: "key1", Value: "1"},
 		},
 		"No Separator": {
-			fields: []domain.PostField{{Id: 1, Type: "text", Name: "key1", Key: "map", Value: 1}},
+			fields: domain.PostFields{{Id: 1, Type: "text", Name: "key1", Key: "map", Value: 1}},
 			want:   domain.PostField{Id: 1, Type: "text", Name: "key1", Key: "map", Value: 1},
 		},
 		"Repeater": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Type: "repeater", Name: "repeater", OriginalValue: "1"},
 				{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "repeater|0|text2"},
@@ -71,7 +71,7 @@ func (t *FieldTestSuite) TestService_Mapper() {
 			},
 		},
 		"Flexible": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1"},
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|text2"},

@@ -17,9 +17,9 @@ import (
 
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
-	GetByPost(postId int) ([]domain.PostField, error)
-	GetLayout(post domain.PostData) []domain.FieldGroup
-	UpdateCreate(postId int, f []domain.PostField) error
+	GetByPost(postId int) (domain.PostFields, error)
+	GetLayout(post domain.PostDatum) domain.FieldGroups
+	UpdateCreate(postId int, f domain.PostFields) error
 	Create(f domain.PostField) (domain.PostField, error)
 	Update(f domain.PostField) (domain.PostField, error)
 	Exists(postId int, uuid uuid.UUID, key string) bool
@@ -45,7 +45,7 @@ func newFields(db *sqlx.DB, config config.Configuration) *FieldsStore {
 
 // UpdateCreate checks to see if the record exists before updating
 // or creating the new record.
-func (s *FieldsStore) UpdateCreate(postId int, f []domain.PostField) error {
+func (s *FieldsStore) UpdateCreate(postId int, f domain.PostFields) error {
 	fields, err := s.GetByPost(postId)
 	if err != nil {
 		return err
@@ -82,9 +82,9 @@ func (s *FieldsStore) UpdateCreate(postId int, f []domain.PostField) error {
 
 // GetByPost fields by a post ID.
 // Returns errors.NOTFOUND if there were no records found.
-func (s *FieldsStore) GetByPost(postId int) ([]domain.PostField, error) {
+func (s *FieldsStore) GetByPost(postId int) (domain.PostFields, error) {
 	const op = "FieldsStore.GetByPost"
-	var f []domain.PostField
+	var f domain.PostFields
 	if err := s.db.Select(&f, "SELECT * FROM post_fields WHERE post_id = ?", postId); err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the ID: %d", postId), Operation: op, Err: err}
 	}
@@ -145,13 +145,13 @@ func (s *FieldsStore) Exists(postId int, uuid uuid.UUID, key string) bool {
 // GetLayout loops over all of the locations within the config json
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
-func (s *FieldsStore) GetLayout(post domain.PostData) []domain.FieldGroup {
+func (s *FieldsStore) GetLayout(post domain.PostDatum) domain.FieldGroups {
 	return s.finder.GetLayout(post, s.options.CacheServerFields)
 }
 
 // shouldDelete
 // Finds fields in the domain.PostField array that should be deleted.
-func (s *FieldsStore) shouldDelete(f domain.PostField, fields []domain.PostField) bool {
+func (s *FieldsStore) shouldDelete(f domain.PostField, fields domain.PostFields) bool {
 	for _, v := range fields {
 		if (f.Key == v.Key) && (f.UUID == v.UUID) && (f.Name == v.Name) {
 			return true

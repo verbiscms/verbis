@@ -14,10 +14,10 @@ import (
 func (t *FieldTestSuite) TestNewService() {
 	m := &models.Store{}
 
-	var l = make([]domain.FieldGroup, 0)
-	var f = make([]domain.PostField, 0)
+	var l = make(domain.FieldGroups, 0)
+	var f = make(domain.PostFields, 0)
 
-	pd := &domain.PostData{
+	pd := &domain.PostDatum{
 		Post: domain.Post{
 			Id: 1,
 		},

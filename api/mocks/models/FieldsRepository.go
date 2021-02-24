@@ -50,15 +50,15 @@ func (_m *FieldsRepository) Exists(postId int, _a1 uuid.UUID, key string) bool {
 }
 
 // GetByPost provides a mock function with given fields: postId
-func (_m *FieldsRepository) GetByPost(postId int) ([]domain.PostField, error) {
+func (_m *FieldsRepository) GetByPost(postId int) (domain.PostFields, error) {
 	ret := _m.Called(postId)
 
-	var r0 []domain.PostField
-	if rf, ok := ret.Get(0).(func(int) []domain.PostField); ok {
+	var r0 domain.PostFields
+	if rf, ok := ret.Get(0).(func(int) domain.PostFields); ok {
 		r0 = rf(postId)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.PostField)
+			r0 = ret.Get(0).(domain.PostFields)
 		}
 	}
 
@@ -73,15 +73,15 @@ func (_m *FieldsRepository) GetByPost(postId int) ([]domain.PostField, error) {
 }
 
 // GetLayout provides a mock function with given fields: post
-func (_m *FieldsRepository) GetLayout(post domain.PostData) []domain.FieldGroup {
+func (_m *FieldsRepository) GetLayout(post domain.PostDatum) domain.FieldGroups {
 	ret := _m.Called(post)
 
-	var r0 []domain.FieldGroup
-	if rf, ok := ret.Get(0).(func(domain.PostData) []domain.FieldGroup); ok {
+	var r0 domain.FieldGroups
+	if rf, ok := ret.Get(0).(func(domain.PostDatum) domain.FieldGroups); ok {
 		r0 = rf(post)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.FieldGroup)
+			r0 = ret.Get(0).(domain.FieldGroups)
 		}
 	}
 
@@ -110,11 +110,11 @@ func (_m *FieldsRepository) Update(f domain.PostField) (domain.PostField, error)
 }
 
 // UpdateCreate provides a mock function with given fields: postId, f
-func (_m *FieldsRepository) UpdateCreate(postId int, f []domain.PostField) error {
+func (_m *FieldsRepository) UpdateCreate(postId int, f domain.PostFields) error {
 	ret := _m.Called(postId, f)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int, []domain.PostField) error); ok {
+	if rf, ok := ret.Get(0).(func(int, domain.PostFields) error); ok {
 		r0 = rf(postId, f)
 	} else {
 		r0 = ret.Error(0)

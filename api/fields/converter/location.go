@@ -20,14 +20,14 @@ import (
 
 // Finder defines the method for obtaining field layouts.
 type Finder interface {
-	GetLayout(post domain.PostData, cacheable bool) []domain.FieldGroup
+	GetLayout(post domain.PostDatum, cacheable bool) domain.FieldGroups
 }
 
 // Location defines
 type Location struct {
 	// Groups defines the current field groups that
 	// are saved to disk in storage.
-	Groups []domain.FieldGroup
+	Groups domain.FieldGroups
 	// jsonPath defines where JSON files containing
 	// domain.FieldGroups are kept
 	JsonPath string
@@ -51,7 +51,7 @@ func NewLocation() *Location {
 // caching allows and the domain.FieldGroups have
 // been cached, it will return the cached
 // version
-func (l *Location) GetLayout(post domain.PostData, cacheable bool) []domain.FieldGroup {
+func (l *Location) GetLayout(post domain.PostDatum, cacheable bool) domain.FieldGroups {
 
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
@@ -59,7 +59,7 @@ func (l *Location) GetLayout(post domain.PostData, cacheable bool) []domain.Fiel
 	if cacheable {
 		cached, found := cache.Store.Get("field_layout_" + post.UUID.String())
 		if found {
-			return cached.([]domain.FieldGroup)
+			return cached.(domain.FieldGroups)
 		}
 	}
 
@@ -87,8 +87,8 @@ func (l *Location) GetLayout(post domain.PostData, cacheable bool) []domain.Fiel
 // properties of the post, user and category passed.
 // Produces an array of field groups that can be
 // returned for the post.
-func (l *Location) groupResolver(post domain.PostData) []domain.FieldGroup {
-	var fg []domain.FieldGroup
+func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups {
+	var fg domain.FieldGroups
 
 	// Loop over the groups
 	for _, group := range l.Groups {
@@ -148,7 +148,7 @@ func (l *Location) groupResolver(post domain.PostData) []domain.FieldGroup {
 
 	// Append empty if nil
 	if fg == nil {
-		fg = []domain.FieldGroup{}
+		fg = domain.FieldGroups{}
 	}
 
 	return fg
@@ -161,10 +161,10 @@ func (l *Location) groupResolver(post domain.PostData) []domain.FieldGroup {
 // returned.
 //
 // Returns errors.INTERNAL if the path file not be read or be unmarshalled
-func (l *Location) fieldGroupWalker() ([]domain.FieldGroup, error) {
+func (l *Location) fieldGroupWalker() (domain.FieldGroups, error) {
 	const op = "Fields.GetFieldGroups"
 
-	var fg []domain.FieldGroup
+	var fg domain.FieldGroups
 	err := filepath.Walk(l.JsonPath, func(path string, info os.FileInfo, err error) error {
 
 		if err != nil {
@@ -246,7 +246,7 @@ func checkMatch(matches []bool) bool {
 // Checks to see if there already been a match within
 // the array of field groups by comparing key and
 // the UUID.
-func hasBeenAdded(key string, fg []domain.FieldGroup) bool {
+func hasBeenAdded(key string, fg domain.FieldGroups) bool {
 	for _, v := range fg {
 		if v.UUID.String() == key {
 			return true

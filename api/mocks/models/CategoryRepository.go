@@ -106,15 +106,15 @@ func (_m *CategoryRepository) ExistsBySlug(slug string) bool {
 }
 
 // Get provides a mock function with given fields: meta
-func (_m *CategoryRepository) Get(meta params.Params) ([]domain.Category, int, error) {
+func (_m *CategoryRepository) Get(meta params.Params) (domain.Categories, int, error) {
 	ret := _m.Called(meta)
 
-	var r0 []domain.Category
-	if rf, ok := ret.Get(0).(func(params.Params) []domain.Category); ok {
+	var r0 domain.Categories
+	if rf, ok := ret.Get(0).(func(params.Params) domain.Categories); ok {
 		r0 = rf(meta)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.Category)
+			r0 = ret.Get(0).(domain.Categories)
 		}
 	}
 

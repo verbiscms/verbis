@@ -21,7 +21,7 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 		t.Error(err)
 	}
 
-	dbOptions := domain.OptionsDB{}
+	dbOptions := domain.OptionsDBMap{}
 	err = json.Unmarshal(jsonVOptions, &dbOptions)
 	t.NoError(err)
 

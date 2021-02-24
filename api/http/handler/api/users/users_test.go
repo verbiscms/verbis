@@ -45,7 +45,7 @@ func (t *UsersTestSuite) Setup(mf func(m *mocks.UserRepository)) *Users {
 		mf(m)
 	}
 	pm := &mocks.PostsRepository{}
-	pm.On("Get", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]domain.PostData{}, 2, nil)
+	pm.On("Get", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(domain.PostData{}, 2, nil)
 
 	if v, ok := binding.Validator.Engine().(*pkgValidate.Validate); ok {
 		err := v.RegisterValidation("password", func(fl pkgValidate.FieldLevel) bool {

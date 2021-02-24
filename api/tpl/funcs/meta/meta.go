@@ -29,7 +29,7 @@ const (
 // templates.
 type TemplateMeta struct {
 	Site          domain.Site
-	Post          *domain.PostData
+	Post          *domain.PostDatum
 	Options       domain.Options
 	FacebookImage string
 	TwitterImage  string

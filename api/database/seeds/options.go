@@ -14,7 +14,7 @@ import (
 func (s *Seeder) runOptions() error {
 	const op = "Seeder.runOptions"
 
-	optionsSeed := domain.OptionsDB{
+	optionsSeed := domain.OptionsDBMap{
 		// Site
 		"site_title":       api.App.Title,
 		"site_description": api.App.Description,
