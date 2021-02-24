@@ -2,7 +2,6 @@ package models
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
@@ -24,14 +23,14 @@ type RedirectRepository interface {
 // RedirectStore defines the data layer for Categories
 type RedirectStore struct {
 	db     *sqlx.DB
-	config config.Configuration
+	config *domain.ThemeConfig
 }
 
 // newRedirects - Construct
-func newRedirects(db *sqlx.DB, config config.Configuration) *RedirectStore {
+func newRedirects(db *sqlx.DB, cfg *domain.ThemeConfig) *RedirectStore {
 	return &RedirectStore{
 		db:     db,
-		config: config,
+		config: cfg,
 	}
 }
 

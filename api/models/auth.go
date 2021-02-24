@@ -7,7 +7,6 @@ package models
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
@@ -31,19 +30,19 @@ type AuthRepository interface {
 // AuthStore defines the data layer for Authentication
 type AuthStore struct {
 	db          *sqlx.DB
-	config      config.Configuration
+	config      *domain.ThemeConfig
 	optionsRepo domain.Options
 }
 
 // newAuth - Construct
-func newAuth(db *sqlx.DB, config config.Configuration) *AuthStore {
+func newAuth(db *sqlx.DB, cfg *domain.ThemeConfig) *AuthStore {
 	const op = "AuthRepository.newAuth"
 
 	a := &AuthStore{
 		db: db,
 	}
 
-	om := newOptions(db, config)
+	om := newOptions(db, cfg)
 	a.optionsRepo = om.GetStruct()
 
 	return a

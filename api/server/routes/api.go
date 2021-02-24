@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
+	"github.com/ainsleyclark/verbis/api/http/sockets"
 	"github.com/ainsleyclark/verbis/api/server"
 )
 
@@ -25,6 +26,9 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// API Middleware
 		api.Use(middleware.CORS())
 		api.Use(middleware.EmptyBody())
+
+		// Sockets
+		api.GET("/ws", sockets.Handler(d))
 
 		// Site
 		api.GET("/site", h.Site.Global)
@@ -46,6 +50,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// Operator
 		operator := api.Group("")
 		{
+			// Middleware
 			operator.Use(middleware.OperatorTokenCheck(d))
 			operator.Use(middleware.SessionCheck(d))
 

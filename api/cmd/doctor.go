@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -84,13 +83,15 @@ func doctor() (*deps.DepsConfig, *database.MySql, error) {
 	cache.Init()
 
 	// Init Config
-	cfg, err := config.New()
-	if err != nil {
-		printError(errors.Message(err))
-	}
+	cfg := config.Config()
+	//if err != nil {
+	//	printError(errors.Message(err))
+	//}
+
+	fmt.Println(cfg.Admin.InactiveSessionTime)
 
 	// Set up stores & pass the database.
-	store := models.New(db, *cfg)
+	store := models.New(db, cfg)
 	if err != nil {
 		printError(err.Error())
 	}

@@ -36,7 +36,7 @@ func (e *ChangedPassword) Send(u domain.UserPart, password string, site domain.S
 	data := mail.Data{
 		"AppUrl":    site.Url,
 		"AppTitle":  site.Title,
-		"AdminPath": e.mailer.Config.Admin.Path,
+		"AdminPath": "/admin",
 		"UserName":  u.FirstName,
 		"Password":  password,
 		"Email":     u.Email,

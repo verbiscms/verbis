@@ -84,9 +84,6 @@ function build() {
 	mkdir $path/admin
 	rsync -av --quiet admin/dist/ build/$os/admin/
 
-	# Config
-	mkdir $path/config/ && cp -a config/ $path/config/
-
 	# Storage
 	mkdir $path/storage && touch $path/storage/.keep
 	mkdir $path/storage/fields && touch $path/storage/fields/.keep

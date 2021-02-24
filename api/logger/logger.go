@@ -24,9 +24,9 @@ func Init(env *environment.Env) {
 
 	// Set log level depending on SuperAdmin var
 	if isDebug {
-		logrus.SetLevel(logrus.DebugLevel)
+		logger.SetLevel(logrus.TraceLevel)
 	} else {
-		logrus.SetLevel(logrus.InfoLevel)
+		logger.SetLevel(logrus.InfoLevel)
 	}
 
 	logger.SetFormatter(&Formatter{
@@ -110,7 +110,7 @@ func Panic(args ...interface{}) {
 
 // WithField
 //
-//
+// Logs with field, sets a new map containing "fields"
 func WithField(key string, value interface{}) *logrus.Entry {
 	return logger.WithFields(logrus.Fields{"fields": logrus.Fields{
 		key: value,
@@ -119,21 +119,22 @@ func WithField(key string, value interface{}) *logrus.Entry {
 
 // WithFields
 //
-//
+// Logs with fields, sets a new map containing "fields"
 func WithFields(fields logrus.Fields) *logrus.Entry {
 	return logger.WithFields(logrus.Fields{"fields": fields})
 }
 
 // WithError
 //
-//
+// Logs with a Verbis error.
 func WithError(err interface{}) *logrus.Entry {
 	return logger.WithField("error", err)
 }
 
 // SetOutput
 //
-//
+// Set the output of the logger to an io.Writer, useful
+// for testing.
 func SetOutput(writer io.Writer) {
 	logger.SetOutput(writer)
 }

@@ -7,7 +7,6 @@ package middleware
 import (
 	"fmt"
 	app "github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
@@ -129,8 +128,8 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 
 			t.Engine.Use(Redirects(&deps.Deps{
 				Store: &models.Store{Redirects: mock},
-				Config: &config.Configuration{
-					Admin: config.Admin{
+				Config: &domain.ThemeConfig{
+					Admin: domain.AdminConfig{
 						Path: "admin",
 					},
 				},

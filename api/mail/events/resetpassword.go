@@ -36,7 +36,7 @@ func (e *ResetPassword) Send(u *domain.User, url string, token string, title str
 	data := mail.Data{
 		"AppUrl":    url,
 		"AppTitle":  title,
-		"AdminPath": e.mailer.Config.Admin.Path,
+		"AdminPath": "/admin",
 		"Token":     token,
 		"UserName":  u.FirstName,
 	}
