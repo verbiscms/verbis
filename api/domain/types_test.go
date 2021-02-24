@@ -19,26 +19,26 @@ func TestDBMap_Scan(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			[]byte(`{"large": {"url": "/test"}}`),
+			[]byte(`{"test": "test"}`),
 			nil,
 		},
 		"Bad Unmarshal": {
-			[]byte(`{"large": wrong}`),
-			"Error unmarshalling into MediaSize",
+			[]byte(`{"test": wrong}`),
+			"Error unmarshalling into DBMap",
 		},
 		"Nil": {
 			nil,
-			MediaSizes{},
+			DBMap{},
 		},
 		"Unsupported Scan": {
 			"wrong",
-			"Scan unsupported for MediaSize",
+			"Scan unsupported for DBMap",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			m := MediaSizes{}
+			m := DBMap{}
 			err := m.Scan(test.input)
 			if err != nil {
 				assert.Contains(t, errors.Message(err), test.want)
@@ -52,16 +52,16 @@ func TestDBMap_Scan(t *testing.T) {
 func TestDBMap_Value(t *testing.T) {
 
 	tt := map[string]struct {
-		input MediaSizes
+		input DBMap
 		want  interface{}
 	}{
 		"Success": {
-			MediaSizes{
-				"test": MediaSize{Url: "/test"},
-			},
-			MediaSizes{
-				"test": MediaSize{Url: "/test"},
-			},
+			DBMap{"test": "test"},
+			DBMap{"test": "test"},
+		},
+		"Bad Unmarshal": {
+			DBMap{"test": make(chan int)},
+			"Error marshalling DBMap",
 		},
 		"Nil Length": {
 			nil,

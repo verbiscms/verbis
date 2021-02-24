@@ -19,6 +19,10 @@ import (
 // the line number could not be retrieved using a regex
 // find, -1 will be returned.
 func tplLineNumber(err *errors.Error) int {
+	if err == nil {
+		return -1
+	}
+
 	reg := regexp.MustCompile(`:\d+:`)
 	lc := string(reg.Find([]byte(err.Error())))
 	line := strings.ReplaceAll(lc, ":", "")

@@ -23,7 +23,7 @@ mock:
 	cd api && rm -rf mocks && mockery --all --keeptree
 
 test:
-	go test -v -coverprofile cover.out ./api/...
+	go test $(go list ./... | grep -v /res/)
 
 install:
-	go install cms
+	go install verbis

@@ -32,6 +32,9 @@ resources:
         icon: feather feather-clipboard
         hidden: false
         hide_category_slug: true
+        available_templates: [
+            archive
+        ]
     team:
         name: team
         friendly_name: Team Members
@@ -119,6 +122,84 @@ template_dir: templates
 # |
 # |
 layout_dir: layouts
+
+
+# |
+# |--------------------------------------------------------------------------
+# | Admin
+# |--------------------------------------------------------------------------
+# |
+# | Global Admin options
+# |
+# |
+admin:
+    # |
+    # |--------------------------------------------------------------------------
+    # | Admin Path
+    # |--------------------------------------------------------------------------
+    # |
+    # | This dictates where the admin url will sit, and where the user will
+    # | login. Defaults to "admin", but can be "dashboard" etc.
+    # |
+    # |
+    admin_path: admin
+
+    # |
+    # |--------------------------------------------------------------------------
+    # | Inactive Session Time
+    # |--------------------------------------------------------------------------
+    # |
+    # | The amount of time in minutes for how long the user was last seen to
+    # | them being ejected from the system.
+    # |
+    # |
+    inactive_session_time: 60
+
+# |
+# |--------------------------------------------------------------------------
+# | Media
+# |--------------------------------------------------------------------------
+# |
+# | Global Media options
+# |
+# |
+media:
+
+    # |
+    # |--------------------------------------------------------------------------
+    # | Upload Path
+    # |--------------------------------------------------------------------------
+    # |
+    # | The upload path defines where the media will be requested from the
+    # | front-end of the website. For example, a file requested with the
+    # | path "/uploads" would be similar to "/uploads/2020/09/photo.jpg"
+    # |
+    # |
+    upload_path: /uploads
+
+    # |
+    # |--------------------------------------------------------------------------
+    # | Allowed File Types
+    # |--------------------------------------------------------------------------
+    # |
+    # | The upload path defines where the media will be requested from the
+    # | front-end of the website. For example, a file requested with the
+    # | path "/uploads" would be similar to "/uploads/2020/09/photo.jpg"
+    # |
+    # |
+    allowed_file_types: [
+            image/png,
+            image/jpeg,
+            image/gif,
+            image/webp,
+            image/bmp,
+            image/svg+xml,
+            video/mpeg,
+            video/mp4,
+            video/webm,
+            application/pdf,
+            application/msword,
+    ]
 
 # |
 # |--------------------------------------------------------------------------
