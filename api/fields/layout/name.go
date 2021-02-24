@@ -24,7 +24,7 @@ func walkerByName(name string, field domain.Field) (domain.Field, bool) {
 
 	// Account for repeaters
 	if field.SubFields != nil {
-		for _, subField := range *field.SubFields {
+		for _, subField := range field.SubFields {
 			if f, found := walkerByName(name, subField); found {
 				return f, true
 			}
@@ -34,7 +34,7 @@ func walkerByName(name string, field domain.Field) (domain.Field, bool) {
 	// Account for flexible content
 	if len(field.Layouts) != 0 {
 		for _, layout := range field.Layouts {
-			for _, subField := range *layout.SubFields {
+			for _, subField := range layout.SubFields {
 				if f, found := walkerByName(name, subField); found {
 					return f, true
 				}

@@ -15,16 +15,16 @@ func TestWalkerByUUID(t *testing.T) {
 
 	id := uuid.New()
 
-	repeater := []domain.Field{
+	repeater := domain.Fields{
 		{UUID: id},
 	}
 
-	nested := []domain.Field{
-		{UUID: uuid.New(), SubFields: &repeater},
+	nested := domain.Fields{
+		{UUID: uuid.New(), SubFields: repeater},
 	}
 
-	doubleNested := []domain.Field{
-		{UUID: uuid.New(), SubFields: &nested},
+	doubleNested := domain.Fields{
+		{UUID: uuid.New(), SubFields: nested},
 	}
 
 	tt := map[string]struct {
@@ -41,19 +41,19 @@ func TestWalkerByUUID(t *testing.T) {
 		},
 		"Repeater": {
 			uuid:  id,
-			field: domain.Field{UUID: uuid.New(), SubFields: &repeater},
+			field: domain.Field{UUID: uuid.New(), SubFields: repeater},
 			found: true,
 			want:  domain.Field{UUID: id},
 		},
 		"Nested Repeater": {
 			uuid:  id,
-			field: domain.Field{UUID: uuid.New(), SubFields: &nested},
+			field: domain.Field{UUID: uuid.New(), SubFields: nested},
 			found: true,
 			want:  domain.Field{UUID: id},
 		},
 		"Double Nested Repeater": {
 			uuid:  id,
-			field: domain.Field{UUID: uuid.New(), SubFields: &doubleNested},
+			field: domain.Field{UUID: uuid.New(), SubFields: doubleNested},
 			found: true,
 			want:  domain.Field{UUID: id},
 		},
@@ -67,7 +67,7 @@ func TestWalkerByUUID(t *testing.T) {
 			uuid: id,
 			field: domain.Field{UUID: uuid.New(), Layouts: map[string]domain.FieldLayout{
 				"layout": {
-					SubFields: &repeater,
+					SubFields: repeater,
 				},
 			}},
 			found: true,
@@ -77,7 +77,7 @@ func TestWalkerByUUID(t *testing.T) {
 			uuid: id,
 			field: domain.Field{UUID: uuid.New(), Layouts: map[string]domain.FieldLayout{
 				"layout": {
-					SubFields: &repeater,
+					SubFields: repeater,
 				},
 			}},
 			found: true,
@@ -87,7 +87,7 @@ func TestWalkerByUUID(t *testing.T) {
 			uuid: id,
 			field: domain.Field{UUID: uuid.New(), Layouts: map[string]domain.FieldLayout{
 				"layout": {
-					SubFields: &nested,
+					SubFields: nested,
 				},
 			}},
 			found: true,
@@ -97,7 +97,7 @@ func TestWalkerByUUID(t *testing.T) {
 			uuid: id,
 			field: domain.Field{UUID: uuid.New(), Layouts: map[string]domain.FieldLayout{
 				"layout": {
-					SubFields: &doubleNested,
+					SubFields: doubleNested,
 				},
 			}},
 			found: true,

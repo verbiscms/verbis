@@ -41,7 +41,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			"Validation failed",
 			postBadValidation,
 			func(m *mocks.PostsRepository) {
-				m.On("Update", postBadValidation).Return(domain.PostData{}, fmt.Errorf("error"))
+				m.On("Update", postBadValidation).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			"/posts/123",
 		},
@@ -51,7 +51,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			"A valid ID is required to update the post",
 			post,
 			func(m *mocks.PostsRepository) {
-				m.On("Update", &postCreate).Return(domain.PostData{}, fmt.Errorf("error"))
+				m.On("Update", &postCreate).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			"/posts/wrongid",
 		},
@@ -61,7 +61,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			"not found",
 			post,
 			func(m *mocks.PostsRepository) {
-				m.On("Update", &postCreate).Return(domain.PostData{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Update", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/posts/123",
 		},
@@ -71,7 +71,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			"internal",
 			post,
 			func(m *mocks.PostsRepository) {
-				m.On("Update", &postCreate).Return(domain.PostData{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Update", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/posts/123",
 		},

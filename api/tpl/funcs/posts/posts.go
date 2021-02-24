@@ -21,7 +21,7 @@ const (
 
 // Find
 //
-// Obtains the post by ID and returns a domain.PostData type
+// Obtains the post by ID and returns a domain.PostDatum type
 // or nil if not found.
 //
 // Example: {{ post 123 }}

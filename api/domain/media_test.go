@@ -6,7 +6,6 @@ package domain
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
 	"github.com/stretchr/testify/assert"
@@ -50,13 +49,6 @@ func TestMediaSizes_Scan(t *testing.T) {
 	}
 }
 
-//func TestMediaSizes_BadMarshal(t *testing.T) {
-//	m := map[string]interface{}{
-//		"foo": make(chan int),
-//	}
-//
-//}
-
 func TestMediaSizes_Value(t *testing.T) {
 
 	tt := map[string]struct {
@@ -86,15 +78,7 @@ func TestMediaSizes_Value(t *testing.T) {
 				return
 			}
 
-			fmt.Println(err)
-
-			if err != nil {
-				assert.Contains(t, errors.Message(err), test.want)
-				return
-			}
-
 			got, err := cast.ToStringE(value)
-			fmt.Println(got)
 			assert.NoError(t, err)
 
 			want, err := json.Marshal(test.input)

@@ -20,13 +20,13 @@ var GenericNamespaceRegistry []func(d *deps.Deps) *FuncsNamespace
 type FuncNamespaces []*FuncsNamespace
 
 // TemplateDeps represents the data to be passed to templates
-// that rely on either context or domain.PostData such as
+// that rely on either context or domain.PostDatum such as
 // "url", "fields" or "meta".
 type TemplateDeps struct {
 	// The context to be used used for obtaining URL's & query parameters etc...
 	Context *gin.Context
 	// The post to be used for rendering meta information for the page
-	Post *domain.PostData
+	Post *domain.PostDatum
 	// The config of the executor used in partials to obtain the root path.
 	Cfg tpl.TemplateConfig
 }

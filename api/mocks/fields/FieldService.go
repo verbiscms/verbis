@@ -105,17 +105,17 @@ func (_m *FieldService) GetLayout(name string, args ...interface{}) domain.Field
 }
 
 // GetLayouts provides a mock function with given fields: args
-func (_m *FieldService) GetLayouts(args ...interface{}) []domain.FieldGroup {
+func (_m *FieldService) GetLayouts(args ...interface{}) domain.FieldGroups {
 	var _ca []interface{}
 	_ca = append(_ca, args...)
 	ret := _m.Called(_ca...)
 
-	var r0 []domain.FieldGroup
-	if rf, ok := ret.Get(0).(func(...interface{}) []domain.FieldGroup); ok {
+	var r0 domain.FieldGroups
+	if rf, ok := ret.Get(0).(func(...interface{}) domain.FieldGroups); ok {
 		r0 = rf(args...)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.FieldGroup)
+			r0 = ret.Get(0).(domain.FieldGroups)
 		}
 	}
 

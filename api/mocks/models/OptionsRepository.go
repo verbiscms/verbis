@@ -41,15 +41,15 @@ func (_m *OptionsRepository) Exists(name string) bool {
 }
 
 // Get provides a mock function with given fields:
-func (_m *OptionsRepository) Get() (domain.OptionsDB, error) {
+func (_m *OptionsRepository) Get() (domain.OptionsDBMap, error) {
 	ret := _m.Called()
 
-	var r0 domain.OptionsDB
-	if rf, ok := ret.Get(0).(func() domain.OptionsDB); ok {
+	var r0 domain.OptionsDBMap
+	if rf, ok := ret.Get(0).(func() domain.OptionsDBMap); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(domain.OptionsDB)
+			r0 = ret.Get(0).(domain.OptionsDBMap)
 		}
 	}
 
@@ -115,11 +115,11 @@ func (_m *OptionsRepository) Update(name string, value interface{}) error {
 }
 
 // UpdateCreate provides a mock function with given fields: options
-func (_m *OptionsRepository) UpdateCreate(options *domain.OptionsDB) error {
+func (_m *OptionsRepository) UpdateCreate(options *domain.OptionsDBMap) error {
 	ret := _m.Called(options)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*domain.OptionsDB) error); ok {
+	if rf, ok := ret.Get(0).(func(*domain.OptionsDBMap) error); ok {
 		r0 = rf(options)
 	} else {
 		r0 = ret.Error(0)

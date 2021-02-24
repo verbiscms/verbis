@@ -52,7 +52,7 @@ type Config struct {
 	Error   interface{}
 	TplFile string
 	TplExec tpl.TemplateExecutor
-	Post    *domain.PostData
+	Post    *domain.PostDatum
 }
 
 func (h *Handler) newRecover(cfg Config) *Recover {

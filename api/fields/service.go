@@ -15,7 +15,7 @@ type FieldService interface {
 	GetFieldObject(name string, args ...interface{}) domain.PostField
 	GetFields(args ...interface{}) Fields
 	GetLayout(name string, args ...interface{}) domain.Field
-	GetLayouts(args ...interface{}) []domain.FieldGroup
+	GetLayouts(args ...interface{}) domain.FieldGroups
 	GetRepeater(input interface{}, args ...interface{}) Repeater
 	GetFlexible(input interface{}, args ...interface{}) Flexible
 }
@@ -35,28 +35,28 @@ type Service struct {
 	// users from the database when resolving fields.
 	deps *deps.Deps
 	// The original post to sort and filter the fields
-	post domain.PostData
+	post domain.PostDatum
 	// The original post ID.
 	postId int
 	// The slice of domain.PostField to create repeaters,
 	// flexible content and resolving normal fields.
-	fields []domain.PostField
+	fields domain.PostFields
 	// The slice of domain.FieldGroup to iterate over
 	// groups and layouts.
-	layout []domain.FieldGroup
+	layout domain.FieldGroups
 }
 
 // NewService
 //
 // Construct, creates a new slice of post fields and slice
 // of layouts.
-func NewService(d *deps.Deps, p *domain.PostData) *Service {
-	fields := make([]domain.PostField, 0)
+func NewService(d *deps.Deps, p *domain.PostDatum) *Service {
+	fields := make(domain.PostFields, 0)
 	if p.Fields != nil {
 		fields = p.Fields
 	}
 
-	layouts := make([]domain.FieldGroup, 0)
+	layouts := make(domain.FieldGroups, 0)
 	if p.Layout != nil {
 		layouts = p.Layout
 	}

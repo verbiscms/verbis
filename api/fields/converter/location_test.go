@@ -66,29 +66,29 @@ func (t *LocationTestSuite) TestLocation_GetLayout() {
 		"Bad Path": {
 			cacheable: false,
 			jsonPath:  "wrongval",
-			want:      []domain.FieldGroup{},
+			want:      domain.FieldGroups{},
 		},
 		"Not Cached": {
 			cacheable: false,
 			jsonPath:  "/test-get-layout",
-			want:      []domain.FieldGroup{{Title: "title", Fields: []domain.Field{{Name: "test"}}}},
+			want:      domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
 		},
 		"Cacheable Nil": {
 			cacheable: true,
 			jsonPath:  "/test-get-layout",
-			want:      []domain.FieldGroup{{Title: "title", Fields: []domain.Field{{Name: "test"}}}},
+			want:      domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
 		},
 		"Cacheable": {
 			cacheable: true,
 			jsonPath:  "/test-get-layout",
-			want:      []domain.FieldGroup{{Title: "title", Fields: []domain.Field{{Name: "test"}}}},
+			want:      domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			l := &Location{JsonPath: t.Path + test.jsonPath}
-			t.Equal(test.want, l.GetLayout(domain.PostData{}, test.cacheable))
+			t.Equal(test.want, l.GetLayout(domain.PostDatum{}, test.cacheable))
 		})
 	}
 }
@@ -99,24 +99,24 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 	uu := uuid.New()
 
 	tt := map[string]struct {
-		post   domain.PostData
-		groups []domain.FieldGroup
+		post   domain.PostDatum
+		groups domain.FieldGroups
 		want   interface{}
 	}{
 		"None": {
-			want: []domain.FieldGroup{},
+			want: domain.FieldGroups{},
 		},
 		"Already Added": {
-			post: domain.PostData{Post: domain.Post{Id: 1, Title: "title", Status: "published"}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Post: domain.Post{Id: 1, Title: "title", Status: "published"}},
+			groups: domain.FieldGroups{
 				{Title: "status", UUID: uu},
 				{Title: "status", UUID: uu},
 			},
-			want: []domain.FieldGroup{{Title: "status", UUID: uu}},
+			want: domain.FieldGroups{{Title: "status", UUID: uu}},
 		},
 		"Status": {
-			post: domain.PostData{Post: domain.Post{Id: 1, Title: "title", Status: "published"}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Post: domain.Post{Id: 1, Title: "title", Status: "published"}},
+			groups: domain.FieldGroups{
 				{
 					Title: "status",
 					Locations: [][]domain.FieldLocation{
@@ -124,11 +124,11 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title: "status"}},
+			want: domain.FieldGroups{{Title: "status"}},
 		},
 		"Post": {
-			post: domain.PostData{Post: domain.Post{Id: 1}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Post: domain.Post{Id: 1}},
+			groups: domain.FieldGroups{
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
@@ -136,11 +136,11 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title: "post"}},
+			want: domain.FieldGroups{{Title: "post"}},
 		},
 		"Page Template": {
-			post: domain.PostData{Post: domain.Post{PageTemplate: "template"}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Post: domain.Post{PageTemplate: "template"}},
+			groups: domain.FieldGroups{
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
@@ -148,11 +148,11 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title: "post"}},
+			want: domain.FieldGroups{{Title: "post"}},
 		},
 		"Layout": {
-			post: domain.PostData{Post: domain.Post{PageLayout: "layout"}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Post: domain.Post{PageLayout: "layout"}},
+			groups: domain.FieldGroups{
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
@@ -160,11 +160,11 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title: "post"}},
+			want: domain.FieldGroups{{Title: "post"}},
 		},
 		"Resource": {
-			post: domain.PostData{Post: domain.Post{Resource: &r}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Post: domain.Post{Resource: &r}},
+			groups: domain.FieldGroups{
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
@@ -172,11 +172,11 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title: "post"}},
+			want: domain.FieldGroups{{Title: "post"}},
 		},
 		"Nil Resource": {
-			post: domain.PostData{Post: domain.Post{Resource: nil}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Post: domain.Post{Resource: nil}},
+			groups: domain.FieldGroups{
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
@@ -184,11 +184,11 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{},
+			want: domain.FieldGroups{},
 		},
 		"Category": {
-			post: domain.PostData{Category: &domain.Category{Id: 1}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Category: &domain.Category{Id: 1}},
+			groups: domain.FieldGroups{
 				{
 					Title: "category",
 					Locations: [][]domain.FieldLocation{
@@ -196,11 +196,11 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title: "category"}},
+			want: domain.FieldGroups{{Title: "category"}},
 		},
 		"Nil Category": {
-			post: domain.PostData{Category: nil},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Category: nil},
+			groups: domain.FieldGroups{
 				{
 					Title: "category",
 					Locations: [][]domain.FieldLocation{
@@ -208,11 +208,11 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{},
+			want: domain.FieldGroups{},
 		},
 		"Author": {
-			post: domain.PostData{Author: domain.UserPart{Id: 1}},
-			groups: []domain.FieldGroup{
+			post: domain.PostDatum{Author: domain.UserPart{Id: 1}},
+			groups: domain.FieldGroups{
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
@@ -220,16 +220,16 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title: "post"}},
+			want: domain.FieldGroups{{Title: "post"}},
 		},
 		"Role": {
-			post: domain.PostData{Author: domain.UserPart{
+			post: domain.PostDatum{Author: domain.UserPart{
 				Role: domain.UserRole{
 					Id: 1,
 				},
 			},
 			},
-			groups: []domain.FieldGroup{
+			groups: domain.FieldGroups{
 				{
 					Title: "role",
 					Locations: [][]domain.FieldLocation{
@@ -237,7 +237,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 					},
 				},
 			},
-			want: []domain.FieldGroup{{Title: "role"}},
+			want: domain.FieldGroups{{Title: "role"}},
 		},
 	}
 
@@ -253,7 +253,7 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 
 	testPath := "/test-field-groups/"
 
-	var fg []domain.FieldGroup
+	var fg domain.FieldGroups
 
 	id, err := uuid.Parse("6a4d7442-1020-490f-a3e2-436f9135bc24")
 	t.NoError(err)
@@ -272,7 +272,7 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 	}{
 		"Success": {
 			path: testPath + "/success",
-			want: []domain.FieldGroup{{UUID: id, Title: "Title", Fields: []domain.Field{{Name: "test"}}}, {UUID: id, Title: "Title", Fields: []domain.Field{{Name: "test"}}}},
+			want: domain.FieldGroups{{UUID: id, Title: "Title", Fields: domain.Fields{{Name: "test"}}}, {UUID: id, Title: "Title", Fields: domain.Fields{{Name: "test"}}}},
 		},
 		"Bad Path": {
 			path: testPath + "/wrongval",
@@ -379,17 +379,17 @@ func (t *LocationTestSuite) Test_HasBeenAdded() {
 	key := uuid.New()
 
 	tt := map[string]struct {
-		fg   []domain.FieldGroup
+		fg   domain.FieldGroups
 		key  string
 		want bool
 	}{
 		"Added": {
-			fg:   []domain.FieldGroup{{UUID: key}},
+			fg:   domain.FieldGroups{{UUID: key}},
 			key:  key.String(),
 			want: true,
 		},
 		"Not Added": {
-			fg:   []domain.FieldGroup{{UUID: uuid.New()}},
+			fg:   domain.FieldGroups{{UUID: uuid.New()}},
 			key:  key.String(),
 			want: false,
 		},

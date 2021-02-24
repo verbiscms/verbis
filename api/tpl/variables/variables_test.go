@@ -12,7 +12,7 @@ func TestData(t *testing.T) {
 	td := TemplateData{
 		Site:    domain.Site{},
 		Theme:   domain.ThemeConfig{},
-		Post:    domain.PostData{},
+		Post:    domain.PostDatum{},
 		Options: Options{},
 	}
 
@@ -20,7 +20,7 @@ func TestData(t *testing.T) {
 		Site:    domain.Site{},
 		Theme:   &domain.ThemeConfig{},
 		Options: &domain.Options{},
-	}, &gin.Context{}, &domain.PostData{})
+	}, &gin.Context{}, &domain.PostDatum{})
 
 	assert.Equal(t, td, got)
 }

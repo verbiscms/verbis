@@ -83,7 +83,7 @@ func (ns *Namespace) Parent(id interface{}) interface{} {
 // categories and pagination back to the
 // template.
 type Categories struct {
-	Categories []domain.Category
+	Categories domain.Categories
 	Pagination *http.Pagination
 }
 

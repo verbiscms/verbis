@@ -12,7 +12,7 @@ import (
 // post
 //
 // Resolves a post from the given value.
-// Returns the domain.PostData if it was found and no error occurred.
+// Returns the domain.PostDatum if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) post(value domain.FieldValue) (interface{}, error) {
 	const op = "FieldResolver.post"

@@ -29,7 +29,7 @@ func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 // as template functions.
 type Namespace struct {
 	deps  *deps.Deps
-	post  *domain.PostData
+	post  *domain.PostDatum
 	funcs template.FuncMap
 }
 

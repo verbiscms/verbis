@@ -20,16 +20,16 @@ func (t *ResolverTestSuite) TestValue_Post() {
 		"Post": {
 			value: domain.FieldValue("1"),
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, false).Return(domain.PostData{Post: domain.Post{Title: "post"}}, nil)
+				p.On("GetById", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post"}}, nil)
 			},
-			want: domain.PostData{
+			want: domain.PostDatum{
 				Post: domain.Post{Title: "post"},
 			},
 		},
 		"Post Error": {
 			value: domain.FieldValue("1"),
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, false).Return(domain.PostData{}, fmt.Errorf("not found"))
+				p.On("GetById", 1, false).Return(domain.PostDatum{}, fmt.Errorf("not found"))
 			},
 			want: "not found",
 		},
@@ -69,40 +69,40 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 		"Post": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "post"},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, false).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("GetById", 2, false).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("GetById", 3, false).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+				p.On("GetById", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("GetById", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("GetById", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3", Type: "post", Value: []interface{}{
-				domain.PostData{Post: domain.Post{Title: "post1"}},
-				domain.PostData{Post: domain.Post{Title: "post2"}},
-				domain.PostData{Post: domain.Post{Title: "post3"}},
+				domain.PostDatum{Post: domain.Post{Title: "post1"}},
+				domain.PostDatum{Post: domain.Post{Title: "post2"}},
+				domain.PostDatum{Post: domain.Post{Title: "post3"}},
 			}},
 		},
 		"Trailing Comma": {
 			field: domain.PostField{OriginalValue: "1,2,3,", Type: "post"},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, false).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("GetById", 2, false).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("GetById", 3, false).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+				p.On("GetById", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("GetById", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("GetById", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3,", Type: "post", Value: []interface{}{
-				domain.PostData{Post: domain.Post{Title: "post1"}},
-				domain.PostData{Post: domain.Post{Title: "post2"}},
-				domain.PostData{Post: domain.Post{Title: "post3"}},
+				domain.PostDatum{Post: domain.Post{Title: "post1"}},
+				domain.PostDatum{Post: domain.Post{Title: "post2"}},
+				domain.PostDatum{Post: domain.Post{Title: "post3"}},
 			}},
 		},
 		"Leading Comma": {
 			field: domain.PostField{OriginalValue: ",1,2,3", Type: "post"},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, false).Return(domain.PostData{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("GetById", 2, false).Return(domain.PostData{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("GetById", 3, false).Return(domain.PostData{Post: domain.Post{Title: "post3"}}, nil)
+				p.On("GetById", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("GetById", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("GetById", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: ",1,2,3", Type: "post", Value: []interface{}{
-				domain.PostData{Post: domain.Post{Title: "post1"}},
-				domain.PostData{Post: domain.Post{Title: "post2"}},
-				domain.PostData{Post: domain.Post{Title: "post3"}},
+				domain.PostDatum{Post: domain.Post{Title: "post1"}},
+				domain.PostDatum{Post: domain.Post{Title: "post2"}},
+				domain.PostDatum{Post: domain.Post{Title: "post3"}},
 			}},
 		},
 	}

@@ -41,9 +41,9 @@ type Convert struct {
 
 type Result struct {
 	Failed     Failures
-	Posts      []domain.PostData
+	Posts      domain.PostData
 	Authors    []domain.UserPart
-	Categories []domain.Category
+	Categories domain.Categories
 }
 
 // New - Construct
@@ -124,17 +124,17 @@ type FailedAuthor struct {
 }
 
 var (
-	posts      []domain.PostData // Successful posts that have been inserted
-	categories []domain.Category // Successful categories that have been inserted
+	posts      domain.PostData   // Successful posts that have been inserted
+	categories domain.Categories // Successful categories that have been inserted
 )
 
 // populatePosts
 //
 // Loops over all of the Wordpress item and creates a Verbis post.
 // Spawns a new process to insert into the database.
-func (c *Convert) populatePosts() ([]domain.PostData, []domain.Category) {
-	posts = []domain.PostData{}
-	categories = []domain.Category{}
+func (c *Convert) populatePosts() (domain.PostData, domain.Categories) {
+	posts = domain.PostData{}
+	categories = domain.Categories{}
 
 	for _, item := range c.XML.Channel.Items {
 		trackChan <- 1
@@ -188,7 +188,7 @@ func (c *Convert) addItem(item Item) {
 			SeoMeta:      c.getSeoMeta(item.Title, item.Meta),
 		},
 		Author: c.findAuthor(item),
-		Fields: []domain.PostField{
+		Fields: domain.PostFields{
 			{
 				UUID:          uuid,
 				Type:          "richtext",

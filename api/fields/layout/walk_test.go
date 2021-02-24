@@ -16,21 +16,21 @@ func TestByUUID(t *testing.T) {
 
 	id := uuid.New()
 	field := domain.Field{UUID: id, Type: "text"}
-	fields := []domain.Field{field}
+	fields := domain.Fields{field}
 
 	tt := map[string]struct {
 		uuid   uuid.UUID
-		groups []domain.FieldGroup
+		groups domain.FieldGroups
 		want   interface{}
 	}{
 		"Found": {
 			uuid:   id,
-			groups: []domain.FieldGroup{{Fields: fields}},
+			groups: domain.FieldGroups{{Fields: fields}},
 			want:   field,
 		},
 		"Not Found": {
 			uuid:   uuid.New(),
-			groups: []domain.FieldGroup{{Fields: fields}},
+			groups: domain.FieldGroups{{Fields: fields}},
 			want:   fmt.Sprintf("unable to find field with UUID of"),
 		},
 		"No Layouts": {
@@ -55,21 +55,21 @@ func TestByUUID(t *testing.T) {
 func TestByName(t *testing.T) {
 
 	field := domain.Field{Name: "test", Type: "text"}
-	fields := []domain.Field{field}
+	fields := domain.Fields{field}
 
 	tt := map[string]struct {
 		name   string
-		groups []domain.FieldGroup
+		groups domain.FieldGroups
 		want   interface{}
 	}{
 		"Found": {
 			name:   "test",
-			groups: []domain.FieldGroup{{Fields: fields}},
+			groups: domain.FieldGroups{{Fields: fields}},
 			want:   field,
 		},
 		"Not Found": {
 			name:   "wrong",
-			groups: []domain.FieldGroup{{Fields: fields}},
+			groups: domain.FieldGroups{{Fields: fields}},
 			want:   fmt.Sprintf("unable to find field with name of"),
 		},
 		"No Layouts": {

@@ -15,14 +15,14 @@ type PostsRepository struct {
 }
 
 // Create provides a mock function with given fields: p
-func (_m *PostsRepository) Create(p *domain.PostCreate) (domain.PostData, error) {
+func (_m *PostsRepository) Create(p *domain.PostCreate) (domain.PostDatum, error) {
 	ret := _m.Called(p)
 
-	var r0 domain.PostData
-	if rf, ok := ret.Get(0).(func(*domain.PostCreate) domain.PostData); ok {
+	var r0 domain.PostDatum
+	if rf, ok := ret.Get(0).(func(*domain.PostCreate) domain.PostDatum); ok {
 		r0 = rf(p)
 	} else {
-		r0 = ret.Get(0).(domain.PostData)
+		r0 = ret.Get(0).(domain.PostDatum)
 	}
 
 	var r1 error
@@ -78,15 +78,15 @@ func (_m *PostsRepository) ExistsBySlug(slug string) bool {
 }
 
 // Get provides a mock function with given fields: meta, layout, resource, status
-func (_m *PostsRepository) Get(meta params.Params, layout bool, resource string, status string) ([]domain.PostData, int, error) {
+func (_m *PostsRepository) Get(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error) {
 	ret := _m.Called(meta, layout, resource, status)
 
-	var r0 []domain.PostData
-	if rf, ok := ret.Get(0).(func(params.Params, bool, string, string) []domain.PostData); ok {
+	var r0 domain.PostData
+	if rf, ok := ret.Get(0).(func(params.Params, bool, string, string) domain.PostData); ok {
 		r0 = rf(meta, layout, resource, status)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.PostData)
+			r0 = ret.Get(0).(domain.PostData)
 		}
 	}
 
@@ -108,14 +108,14 @@ func (_m *PostsRepository) Get(meta params.Params, layout bool, resource string,
 }
 
 // GetById provides a mock function with given fields: id, layout
-func (_m *PostsRepository) GetById(id int, layout bool) (domain.PostData, error) {
+func (_m *PostsRepository) GetById(id int, layout bool) (domain.PostDatum, error) {
 	ret := _m.Called(id, layout)
 
-	var r0 domain.PostData
-	if rf, ok := ret.Get(0).(func(int, bool) domain.PostData); ok {
+	var r0 domain.PostDatum
+	if rf, ok := ret.Get(0).(func(int, bool) domain.PostDatum); ok {
 		r0 = rf(id, layout)
 	} else {
-		r0 = ret.Get(0).(domain.PostData)
+		r0 = ret.Get(0).(domain.PostDatum)
 	}
 
 	var r1 error
@@ -129,14 +129,14 @@ func (_m *PostsRepository) GetById(id int, layout bool) (domain.PostData, error)
 }
 
 // GetBySlug provides a mock function with given fields: slug
-func (_m *PostsRepository) GetBySlug(slug string) (domain.PostData, error) {
+func (_m *PostsRepository) GetBySlug(slug string) (domain.PostDatum, error) {
 	ret := _m.Called(slug)
 
-	var r0 domain.PostData
-	if rf, ok := ret.Get(0).(func(string) domain.PostData); ok {
+	var r0 domain.PostDatum
+	if rf, ok := ret.Get(0).(func(string) domain.PostDatum); ok {
 		r0 = rf(slug)
 	} else {
-		r0 = ret.Get(0).(domain.PostData)
+		r0 = ret.Get(0).(domain.PostDatum)
 	}
 
 	var r1 error
@@ -171,14 +171,14 @@ func (_m *PostsRepository) Total() (int, error) {
 }
 
 // Update provides a mock function with given fields: p
-func (_m *PostsRepository) Update(p *domain.PostCreate) (domain.PostData, error) {
+func (_m *PostsRepository) Update(p *domain.PostCreate) (domain.PostDatum, error) {
 	ret := _m.Called(p)
 
-	var r0 domain.PostData
-	if rf, ok := ret.Get(0).(func(*domain.PostCreate) domain.PostData); ok {
+	var r0 domain.PostDatum
+	if rf, ok := ret.Get(0).(func(*domain.PostCreate) domain.PostDatum); ok {
 		r0 = rf(p)
 	} else {
-		r0 = ret.Get(0).(domain.PostData)
+		r0 = ret.Get(0).(domain.PostDatum)
 	}
 
 	var r1 error

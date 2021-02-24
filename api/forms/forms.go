@@ -69,7 +69,7 @@ func (r *Reader) Values() (FormValues, Attachments, error) {
 			totalSize += a.Size
 
 			// Append to the attachments
-			attachments = append(attachments, a)
+			attachments = append(attachments, *a)
 
 			// Set the key of the FormValues to the MD5
 			// name of the file.

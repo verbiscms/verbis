@@ -46,7 +46,7 @@ func (t *TplTestSuite) Reset() {
 	t.logWriter.Reset()
 }
 
-func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostData) {
+func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostDatum) {
 	gin.SetMode(gin.TestMode)
 
 	rr := httptest.NewRecorder()
@@ -65,7 +65,7 @@ func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostData
 
 	os.Setenv("foo", "bar")
 
-	post := &domain.PostData{
+	post := &domain.PostDatum{
 		Post: domain.Post{
 			Id:           1,
 			Slug:         "/page",
@@ -76,7 +76,7 @@ func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostData
 			PageLayout:   "main",
 			UserId:       1,
 		},
-		Fields: []domain.PostField{
+		Fields: domain.PostFields{
 			{PostId: 1, Type: "text", Name: "text", Key: "", OriginalValue: "Hello World!"},
 		},
 	}

@@ -46,7 +46,7 @@ var (
 )
 
 // Attachments defines the slice of mail attachments
-type Attachments []*Attachment
+type Attachments []Attachment
 
 // Attachment defines the mail file that has been
 // uploaded via the forms endpoint. It contains

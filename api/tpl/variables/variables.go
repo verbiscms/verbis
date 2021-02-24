@@ -16,7 +16,7 @@ type (
 	TemplateData struct {
 		Site    domain.Site
 		Theme   domain.ThemeConfig
-		Post    domain.PostData
+		Post    domain.PostDatum
 		Options Options
 	}
 	// Options represents Verbis options to be returned
@@ -46,7 +46,7 @@ type (
 
 // Data returns the TemplateData for the front end which are
 // bound to posts and the context.
-func Data(d *deps.Deps, ctx *gin.Context, post *domain.PostData) interface{} {
+func Data(d *deps.Deps, ctx *gin.Context, post *domain.PostDatum) interface{} {
 	return TemplateData{
 		Site:  d.Site,
 		Theme: *d.Theme,

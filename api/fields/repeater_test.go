@@ -11,7 +11,7 @@ import (
 func (t *FieldTestSuite) TestService_GetRepeater() {
 
 	tt := map[string]struct {
-		fields []domain.PostField
+		fields domain.PostFields
 		input  interface{}
 		want   interface{}
 		err    bool
@@ -41,7 +41,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 			err:    true,
 		},
 		"Wrong Field Type": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "test", OriginalValue: "text", Key: ""},
 			},
 			input: "test",
@@ -69,12 +69,12 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 func (t *FieldTestSuite) TestService_ResolveRepeater() {
 
 	tt := map[string]struct {
-		fields []domain.PostField
+		fields domain.PostFields
 		key    string
 		want   interface{}
 	}{
 		"Bad Cast to Int": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "repeater", Name: "repeater", OriginalValue: "@£$$%^&%$^&"},
 				{Id: 2, Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
 			},
@@ -82,7 +82,7 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 			want: Repeater{},
 		},
 		"Simple": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Type: "repeater", Name: "repeater", OriginalValue: "3"},
 				{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "repeater|0|text2"},
@@ -108,7 +108,7 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 			},
 		},
 		"Nested": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Type: "repeater", Name: "repeater", OriginalValue: "2"},
 				{Type: "text", Name: "parent_text", OriginalValue: "R1", Key: "repeater|0|parent_text"},
 				{Type: "text", Name: "parent_text", OriginalValue: "R2", Key: "repeater|1|parent_text"},
@@ -138,7 +138,7 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 			},
 		},
 		"Nested Nested": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Type: "repeater", Name: "repeater", OriginalValue: "2"},
 				{Type: "text", Name: "parent_text", OriginalValue: "R1", Key: "repeater|0|parent_text"},
 				{Type: "text", Name: "parent_text", OriginalValue: "R2", Key: "repeater|1|parent_text"},

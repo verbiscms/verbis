@@ -11,7 +11,7 @@ import (
 func (t *FieldTestSuite) TestService_GetFlexible() {
 
 	tt := map[string]struct {
-		fields []domain.PostField
+		fields domain.PostFields
 		input  interface{}
 		want   interface{}
 		err    bool
@@ -51,7 +51,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 			err:    true,
 		},
 		"Wrong Field Type": {
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "test", OriginalValue: "text", Key: ""},
 			},
 			input: "test",
@@ -80,13 +80,13 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 
 	tt := map[string]struct {
 		flexible domain.PostField
-		fields   []domain.PostField
+		fields   domain.PostFields
 		key      string
 		want     interface{}
 	}{
 		"One Layout": {
 			flexible: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1"},
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|text2"},
@@ -104,7 +104,7 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 		},
 		"Simple": {
 			flexible: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|text2"},
@@ -140,7 +140,7 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 		},
 		"Nested": {
 			flexible: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1"},
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "flexible", Name: "nested", OriginalValue: "nestedlayout", Key: "flex|0|nested"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|nested|0|text1"},
@@ -165,7 +165,7 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 		},
 		"Repeater": {
 			flexible: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout1"},
-			fields: []domain.PostField{
+			fields: domain.PostFields{
 				{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2"},
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|text2"},
