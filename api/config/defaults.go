@@ -7,12 +7,11 @@ package config
 import "github.com/ainsleyclark/verbis/api/domain"
 
 var (
-	// defaults
+	// DefaultTheme
 	//
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	// Global Configuration, sets defaults to ensure that there
-	// are no empty values within the themes config to
-	// prevent any errors.
+	// Global configuration for the theme, sets defaults to
+	// ensure that there are no empty values within the
+	// themes config to prevent any errors.
 	DefaultTheme = domain.ThemeConfig{
 		Theme:         domain.Theme{},
 		Resources:     nil,
