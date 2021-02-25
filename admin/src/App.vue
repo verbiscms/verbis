@@ -61,7 +61,9 @@ export default {
 		}
 
 		ws.onmessage = (msg) => {
+			console.log(msg);
 			let response = JSON.parse(msg.data);
+			console.log(response);
 			this.$store.commit("setTheme", response)
 		};
 	},
