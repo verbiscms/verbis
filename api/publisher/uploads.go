@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (r *Render) Upload(g *gin.Context) (string, *[]byte, error) {
-	const op = "Render.Upload"
+func (r *publish) Upload(g *gin.Context) (string, *[]byte, error) {
+	const op = "publish.Upload"
 
 	api.UploadChan <- 1
 	defer func() {

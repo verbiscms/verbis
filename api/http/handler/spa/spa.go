@@ -23,7 +23,7 @@ type Handler interface {
 // Public defines the handler for all SPA routes.
 type SPA struct {
 	*deps.Deps
-	Publisher publisher.Renderer
+	Publisher publisher.Publisher
 }
 
 // Serve

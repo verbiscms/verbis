@@ -10,27 +10,29 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
+	"github.com/jmoiron/sqlx/types"
 	"time"
 )
 
 type (
 	// Post defines the main page entity of Verbis.
 	Post struct {
-		Id                int         `db:"id" json:"id" binding:"numeric"`
-		UUID              uuid.UUID   `db:"uuid" json:"uuid"`
-		Slug              string      `db:"slug" json:"slug" binding:"required,max=150"`
-		Title             string      `db:"title" json:"title" binding:"required,max=500"`
-		Status            string      `db:"status" json:"status,omitempty"`
-		Resource          *string     `db:"resource" json:"resource,max=150"`
-		PageTemplate      string      `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
-		PageLayout        string      `db:"layout" json:"layout,omitempty" binding:"max=150"`
-		CodeInjectionHead *string     `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
-		CodeInjectionFoot *string     `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
-		UserId            int         `db:"user_id" json:"-"`
-		PublishedAt       *time.Time  `db:"published_at" json:"published_at"`
-		CreatedAt         *time.Time  `db:"created_at" json:"created_at"`
-		UpdatedAt         *time.Time  `db:"updated_at" json:"updated_at"`
-		SeoMeta           PostOptions `db:"options" json:"options"`
+		Id                int           `db:"id" json:"id" binding:"numeric"`
+		UUID              uuid.UUID     `db:"uuid" json:"uuid"`
+		Slug              string        `db:"slug" json:"slug" binding:"required,max=150"`
+		Title             string        `db:"title" json:"title" binding:"required,max=500"`
+		Status            string        `db:"status" json:"status,omitempty"`
+		Resource          *string       `db:"resource" json:"resource,max=150"`
+		PageTemplate      string        `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
+		PageLayout        string        `db:"layout" json:"layout,omitempty" binding:"max=150"`
+		CodeInjectionHead *string       `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
+		CodeInjectionFoot *string       `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
+		UserId            int           `db:"user_id" json:"-"`
+		IsArchive         types.BitBool `db:"archive" json:"archive"`
+		PublishedAt       *time.Time    `db:"published_at" json:"published_at"`
+		CreatedAt         *time.Time    `db:"created_at" json:"created_at"`
+		UpdatedAt         *time.Time    `db:"updated_at" json:"updated_at"`
+		SeoMeta           PostOptions   `db:"options" json:"options"`
 	}
 	// Posts represents the slice of Post's.
 	Posts []Post
@@ -115,6 +117,29 @@ type (
 		Fields   []PostField
 	}
 )
+
+// IsPublic
+//
+// Determines if the post is published.
+func (p *Post) IsPublic() bool {
+	return p.Status == "published"
+}
+
+// HasCategories
+//
+// Determines if a post has any resources attached
+// to it.
+func (p *PostDatum) HasResource() bool {
+	return p.Resource != nil
+}
+
+// HasCategories
+//
+// Determines if a post has any categories attached
+// to it.
+func (p *PostDatum) HasCategories() bool {
+	return p.Category != nil
+}
 
 // Tpl
 //
