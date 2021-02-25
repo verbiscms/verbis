@@ -7,7 +7,7 @@ package categories
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/http/pagination"
 	"github.com/ainsleyclark/verbis/api/tpl/params"
 	"github.com/spf13/cast"
 )
@@ -84,7 +84,7 @@ func (ns *Namespace) Parent(id interface{}) interface{} {
 // template.
 type Categories struct {
 	Categories domain.Categories
-	Pagination *http.Pagination
+	Pagination *pagination.Pagination
 }
 
 // List
@@ -117,6 +117,6 @@ func (ns *Namespace) List(query params.Query) (interface{}, error) {
 
 	return Categories{
 		Categories: categories,
-		Pagination: http.NewPagination().Get(p, total),
+		Pagination: pagination.Get(p, total),
 	}, nil
 }

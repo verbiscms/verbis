@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package http
+package pagination
 
 import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"math"
 )
-
-// Paginate defines the function for getting http params
-type Paginate interface {
-	Get() params.Params
-}
 
 // Pagination represents the data to be sent back from the
 // API on list routes.
@@ -25,16 +20,11 @@ type Pagination struct {
 	Prev  interface{} `json:"prev"`
 }
 
-// NewPagination - create a new pagination type
-func NewPagination() *Pagination {
-	return &Pagination{}
-}
-
 // Get
 //
 // Uses the parameters to return formatted pagination on
 // list routes.
-func (p *Pagination) Get(params params.Params, total int) *Pagination {
+func Get(params params.Params, total int) *Pagination {
 
 	// Calculate total pages
 	var pages int

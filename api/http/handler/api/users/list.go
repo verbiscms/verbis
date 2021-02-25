@@ -6,8 +6,8 @@ package users
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/ainsleyclark/verbis/api/http/pagination"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,7 +33,5 @@ func (u *Users) List(ctx *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().Get(p, total)
-
-	api.Respond(ctx, 200, "Successfully obtained users", users.HideCredentials(), pagination)
+	api.Respond(ctx, 200, "Successfully obtained users", users.HideCredentials(),  pagination.Get(p, total))
 }

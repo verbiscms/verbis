@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
-	vhttp "github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/http/pagination"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/tpl/params"
@@ -123,7 +123,7 @@ func TestNamespace_List(t *testing.T) {
 			},
 			Posts{
 				Posts: tplPostSlice,
-				Pagination: &vhttp.Pagination{
+				Pagination: &pagination.Pagination{
 					Page:  1,
 					Pages: 1,
 					Limit: 15,
@@ -140,7 +140,7 @@ func TestNamespace_List(t *testing.T) {
 			},
 			Posts{
 				Posts: tplPostSlice,
-				Pagination: &vhttp.Pagination{
+				Pagination: &pagination.Pagination{
 					Page:  1,
 					Pages: 1,
 					Limit: 15,
