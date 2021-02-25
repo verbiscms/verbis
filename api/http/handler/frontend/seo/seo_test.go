@@ -6,8 +6,8 @@ package seo
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -16,7 +16,7 @@ import (
 // SEOTestSuite defines the helper used for seo
 // testing.
 type SEOTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 	bytes *[]byte
 }
 
@@ -26,7 +26,7 @@ type SEOTestSuite struct {
 func TestSEO(t *testing.T) {
 	b := []byte(testString)
 	suite.Run(t, &SEOTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 		bytes:        &b,
 	})
 }

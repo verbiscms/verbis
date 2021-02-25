@@ -6,7 +6,7 @@ package cache
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -14,7 +14,7 @@ import (
 // CacheTestSuite defines the helper used for cache
 // testing.
 type CacheTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestCache
@@ -22,7 +22,7 @@ type CacheTestSuite struct {
 // Assert testing has begun.
 func TestCache(t *testing.T) {
 	suite.Run(t, &CacheTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 

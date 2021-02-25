@@ -7,9 +7,9 @@ package site
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -17,7 +17,7 @@ import (
 // SiteTestSuite defines the helper used for site
 // testing.
 type SiteTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestSite
@@ -25,7 +25,7 @@ type SiteTestSuite struct {
 // Assert testing has begun.
 func TestSite(t *testing.T) {
 	suite.Run(t, &SiteTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 

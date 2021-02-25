@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -18,7 +19,7 @@ import (
 // FormsTestSuite defines the helper used for form
 // testing.
 type FormsTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestForms
@@ -26,7 +27,7 @@ type FormsTestSuite struct {
 // Assert testing has begun.
 func TestForms(t *testing.T) {
 	suite.Run(t, &FormsTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 
@@ -101,8 +102,8 @@ var (
 			Body: body{Name: "test"},
 		},
 	}
-	// The default pagination used for testing.
-	pagination = params.Params{
+	// The default params used for testing.
+	defaultParams = params.Params{
 		Page:           api.DefaultParams.Page,
 		Limit:          15,
 		OrderBy:        api.DefaultParams.OrderBy,

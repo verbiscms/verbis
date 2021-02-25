@@ -24,7 +24,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			200,
 			"Successfully obtained media",
 			func(m *mocks.MediaRepository) {
-				m.On("Get", pagination).Return(mediaItems, 1, nil)
+				m.On("Get", defaultParams).Return(mediaItems, 1, nil)
 			},
 		},
 		"Not Found": {
@@ -32,7 +32,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			200,
 			"no media found",
 			func(m *mocks.MediaRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no media found"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no media found"})
 			},
 		},
 		"Conflict": {
@@ -40,7 +40,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			400,
 			"conflict",
 			func(m *mocks.MediaRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
@@ -48,7 +48,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			400,
 			"invalid",
 			func(m *mocks.MediaRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -56,7 +56,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			500,
 			"internal",
 			func(m *mocks.MediaRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

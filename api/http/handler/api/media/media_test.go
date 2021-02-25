@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"io"
 	"mime/multipart"
@@ -24,7 +25,7 @@ import (
 // MediaTestSuite defines the helper used for media
 // testing.
 type MediaTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestCategories
@@ -32,7 +33,7 @@ type MediaTestSuite struct {
 // Assert testing has begun.
 func TestMedia(t *testing.T) {
 	suite.Run(t, &MediaTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 
@@ -102,8 +103,8 @@ var (
 			Title: "title",
 		},
 	}
-	// The default pagination used for testing.
-	pagination = params.Params{
+	// The default params used for testing.
+	defaultParams = params.Params{
 		Page:           api.DefaultParams.Page,
 		Limit:          15,
 		OrderBy:        api.DefaultParams.OrderBy,
