@@ -23,5 +23,5 @@ type Handler interface {
 // such as sitemaps and robots.txt
 type SEO struct {
 	*deps.Deps
-	Publisher publisher.Renderer
+	Publisher publisher.Publisher
 }

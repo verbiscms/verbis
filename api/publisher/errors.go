@@ -21,7 +21,7 @@ type Errors struct {
 	*deps.Deps
 }
 
-func (r *Render) NotFound(g *gin.Context) {
+func (r *publish) NotFound(g *gin.Context) {
 
 	exec := r.Tmpl().Prepare(tpl.Config{
 		Root:      paths.Theme(),
