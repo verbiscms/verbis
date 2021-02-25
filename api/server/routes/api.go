@@ -28,7 +28,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		api.Use(middleware.EmptyBody())
 
 		// Sockets
-		api.GET("/ws", sockets.Handler(d))
+		api.GET("/ws", sockets.Admin)
 
 		// Site
 		api.GET("/site", h.Site.Global)

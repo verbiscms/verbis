@@ -26,7 +26,7 @@ theme:
 resources:
     news:
         name: news
-        friendly_name: Newsff
+        friendly_name: News
         singular_name: News Item
         slug: /news
         icon: feather feather-clipboard
