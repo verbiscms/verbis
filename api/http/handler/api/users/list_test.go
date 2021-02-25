@@ -24,7 +24,7 @@ func (t *UsersTestSuite) TestUser_List() {
 			200,
 			"Successfully obtained users",
 			func(m *mocks.UserRepository) {
-				m.On("Get", pagination).Return(users, 1, nil)
+				m.On("Get", defaultParams).Return(users, 1, nil)
 			},
 		},
 		"Not Found": {
@@ -32,7 +32,7 @@ func (t *UsersTestSuite) TestUser_List() {
 			200,
 			"no users found",
 			func(m *mocks.UserRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
 			},
 		},
 		"Conflict": {
@@ -40,7 +40,7 @@ func (t *UsersTestSuite) TestUser_List() {
 			400,
 			"conflict",
 			func(m *mocks.UserRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
@@ -48,7 +48,7 @@ func (t *UsersTestSuite) TestUser_List() {
 			400,
 			"invalid",
 			func(m *mocks.UserRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -56,7 +56,7 @@ func (t *UsersTestSuite) TestUser_List() {
 			500,
 			"internal",
 			func(m *mocks.UserRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

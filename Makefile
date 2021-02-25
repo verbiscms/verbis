@@ -23,7 +23,7 @@ mock:
 	cd api && rm -rf mocks && mockery --all --keeptree
 
 test:
-	go test $(go list ./... | grep -v /res/)
+	go test ./... $(go list ./... | grep -v /res/ | grep -v /api/mocks/)
 
 install:
 	go install verbis

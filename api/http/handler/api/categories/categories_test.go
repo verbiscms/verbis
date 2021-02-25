@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -19,7 +20,7 @@ import (
 // CategoriesTestSuite defines the helper used for category
 // testing.
 type CategoriesTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestCategories
@@ -27,7 +28,7 @@ type CategoriesTestSuite struct {
 // Assert testing has begun.
 func TestCategories(t *testing.T) {
 	suite.Run(t, &CategoriesTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 
@@ -59,28 +60,32 @@ var (
 		Slug:     "/cat",
 		Name:     "Category",
 		Resource: "test",
+		Primary:  true,
 	}
 	// The default category with wrong validation used for testing.
 	categoryBadValidation = domain.Category{
 		Id:       123,
 		Name:     "Category",
 		Resource: "test",
+		Primary:  true,
 	}
 	// The default categories used for testing.
 	categories = domain.Categories{
 		{
-			Id:   123,
-			Slug: "/cat",
-			Name: "Category",
+			Id:      123,
+			Slug:    "/cat",
+			Name:    "Category",
+			Primary: true,
 		},
 		{
-			Id:   124,
-			Slug: "/cat1",
-			Name: "Category1",
+			Id:      124,
+			Slug:    "/cat1",
+			Name:    "Category1",
+			Primary: false,
 		},
 	}
-	// The default pagination used for testing.
-	pagination = params.Params{
+	// The default params used for testing.
+	defaultParams = params.Params{
 		Page:           api.DefaultParams.Page,
 		Limit:          15,
 		OrderBy:        api.DefaultParams.OrderBy,

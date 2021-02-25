@@ -101,9 +101,11 @@ func writer(ws *websocket.Conn) {
 }
 
 func Admin(ctx *gin.Context) {
+	const op = "OPCHANGE"
+
 	ws, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 	if err != nil {
-		logger.Error(err)
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error upgrading request to websocket", Operation: op, Err: err})
 	}
 
 	logger.Info("Admin client webhook connected")

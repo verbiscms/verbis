@@ -7,9 +7,9 @@ package auth
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -17,7 +17,7 @@ import (
 // AuthTestSuite defines the helper used for auth
 // testing.
 type AuthTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestAuth
@@ -25,7 +25,7 @@ type AuthTestSuite struct {
 // Assert testing has begun.
 func TestAuth(t *testing.T) {
 	suite.Run(t, &AuthTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 

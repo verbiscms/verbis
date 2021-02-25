@@ -24,7 +24,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			200,
 			"Successfully obtained redirects",
 			func(m *mocks.RedirectRepository) {
-				m.On("Get", pagination).Return(redirects, 1, nil)
+				m.On("Get", defaultParams).Return(redirects, 1, nil)
 			},
 		},
 		"Not Found": {
@@ -32,7 +32,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			200,
 			"no redirects found",
 			func(m *mocks.RedirectRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
 			},
 		},
 		"Conflict": {
@@ -40,7 +40,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			400,
 			"conflict",
 			func(m *mocks.RedirectRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
@@ -48,7 +48,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			400,
 			"invalid",
 			func(m *mocks.RedirectRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -56,7 +56,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			500,
 			"internal",
 			func(m *mocks.RedirectRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

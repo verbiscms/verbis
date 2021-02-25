@@ -24,7 +24,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			200,
 			"Successfully obtained posts",
 			func(m *mocks.PostsRepository) {
-				m.On("Get", pagination, true, "", "").Return(posts, 2, nil)
+				m.On("Get", defaultParams, true, "", "").Return(posts, 2, nil)
 			},
 		},
 		"Not Found": {
@@ -32,7 +32,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			200,
 			"no posts found",
 			func(m *mocks.PostsRepository) {
-				m.On("Get", pagination, true, "", "").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+				m.On("Get", defaultParams, true, "", "").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 			},
 		},
 		"Conflict": {
@@ -40,7 +40,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			400,
 			"conflict",
 			func(m *mocks.PostsRepository) {
-				m.On("Get", pagination, true, "", "").Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Get", defaultParams, true, "", "").Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
@@ -48,7 +48,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			400,
 			"invalid",
 			func(m *mocks.PostsRepository) {
-				m.On("Get", pagination, true, "", "").Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Get", defaultParams, true, "", "").Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -56,7 +56,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			500,
 			"internal",
 			func(m *mocks.PostsRepository) {
-				m.On("Get", pagination, true, "", "").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Get", defaultParams, true, "", "").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

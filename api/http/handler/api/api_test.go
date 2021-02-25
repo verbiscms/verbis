@@ -6,6 +6,7 @@ package api
 
 import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -16,7 +17,7 @@ import (
 // ApiTestSuite defines the helper used for api
 // testing.
 type ApiTestSuite struct {
-	HandlerSuite
+	test.HandlerSuite
 }
 
 // TestApi
@@ -24,7 +25,7 @@ type ApiTestSuite struct {
 // Assert testing has begun.
 func TestApi(t *testing.T) {
 	suite.Run(t, &ApiTestSuite{
-		HandlerSuite: TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 

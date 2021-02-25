@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package api
+package test
 
 import (
 	"bytes"
@@ -20,6 +20,20 @@ const (
 	// The header to be expected to be recieved from the API.
 	JsonHeader = "application/json; charset=utf-8"
 )
+
+// RespondJSON is an abstraction of the api.RespondJSON
+type RespondJSON struct {
+	Status  int    `json:"status"`
+	Error   bool   `json:"error"`
+	Message string `json:"message"`
+	Meta    struct {
+		RequestTime  string      `json:"request_time"`
+		ResponseTime string      `json:"response_time"`
+		LatencyTime  string      `json:"latency_time"`
+		Pagination   interface{} `json:"pagination,omitempty"`
+	} `json:"meta"`
+	Data interface{} `json:"data"`
+}
 
 // HandlerSuite represents the suite of testing methods for controllers.
 type HandlerSuite struct {
@@ -172,8 +186,8 @@ func (t *HandlerSuite) marshalWant(i interface{}) string {
 // Unmarshal the result of the recorder into a
 // RespondJSON ready for testing.
 func (t *HandlerSuite) decode() (RespondJSON, string) {
-	responder := &RespondJSON{}
-	err := json.NewDecoder(t.Recorder.Body).Decode(responder)
+	responder := RespondJSON{}
+	err := json.NewDecoder(t.Recorder.Body).Decode(&responder)
 	if err != nil {
 		t.Fail("error decoding body", err)
 	}
@@ -183,5 +197,5 @@ func (t *HandlerSuite) decode() (RespondJSON, string) {
 		t.Fail("error marshalling data", err)
 	}
 
-	return *responder, string(out)
+	return responder, string(out)
 }

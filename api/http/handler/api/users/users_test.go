@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin/binding"
 	pkgValidate "github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/mock"
@@ -22,7 +23,7 @@ import (
 // UsersTestSuite defines the helper used for category
 // testing.
 type UsersTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestUsers
@@ -31,7 +32,7 @@ type UsersTestSuite struct {
 func TestUsers(t *testing.T) {
 	cache.Init()
 	suite.Run(t, &UsersTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 
@@ -151,8 +152,8 @@ var (
 		NewPassword:     "verbiscms",
 		ConfirmPassword: "verbiscmss",
 	}
-	// The default pagination used for testing.
-	pagination = params.Params{
+	// The default params used for testing.
+	defaultParams = params.Params{
 		Page:           api.DefaultParams.Page,
 		Limit:          15,
 		OrderBy:        api.DefaultParams.OrderBy,

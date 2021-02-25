@@ -36,7 +36,6 @@ func (r *publish) resolve(url string) (*domain.PostDatum, TypeOfPage, error) {
 	post, err := r.Store.Posts.GetBySlug(last)
 	if err != nil {
 
-
 		// go cherck category
 
 		// fails 404 handle 404
@@ -69,7 +68,6 @@ func (r *publish) resolve(url string) (*domain.PostDatum, TypeOfPage, error) {
 	}
 
 	// news/my-category
-
 
 	// Check for category archives
 	category, err := r.Store.Categories.GetBySlug(last)
