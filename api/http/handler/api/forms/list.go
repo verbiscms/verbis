@@ -6,8 +6,8 @@ package forms
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/ainsleyclark/verbis/api/http/pagination"
 	"github.com/gin-gonic/gin"
 )
 
@@ -33,7 +33,5 @@ func (f *Forms) List(ctx *gin.Context) {
 		return
 	}
 
-	pagination := http.NewPagination().Get(p, total)
-
-	api.Respond(ctx, 200, "Successfully obtained forms", forms, pagination)
+	api.Respond(ctx, 200, "Successfully obtained forms", forms, pagination.Get(p, total))
 }

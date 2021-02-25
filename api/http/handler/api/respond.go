@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
-	"github.com/ainsleyclark/verbis/api/http"
+	"github.com/ainsleyclark/verbis/api/http/pagination"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"reflect"
@@ -46,7 +46,7 @@ type ErrorJson struct {
 //
 // Returns RespondJSON and sends back the main data for
 // use with the API. Returns status, message and data.
-func Respond(ctx *gin.Context, status int, message string, data interface{}, pagination ...*http.Pagination) {
+func Respond(ctx *gin.Context, status int, message string, data interface{}, pagination ...*pagination.Pagination) {
 	ctx.Set("verbis_message", message)
 
 	hasError := false
@@ -141,7 +141,7 @@ func checkResponseData(ctx *gin.Context, data interface{}) interface{} {
 // Processes the request and response time and calculates
 // latency time. Sets pagination if the length is
 // greater than one.
-func GetMeta(ctx *gin.Context, pagination []*http.Pagination) Meta {
+func GetMeta(ctx *gin.Context, pagination []*pagination.Pagination) Meta {
 
 	// Calculate start, end and latency time
 	var startTime = time.Now()
