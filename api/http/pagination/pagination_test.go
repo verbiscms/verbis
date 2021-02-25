@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package http
+package pagination
 
 import (
 	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
@@ -10,15 +10,7 @@ import (
 	"testing"
 )
 
-// TestNewPagination - Test construct
-func TestNewPagination(t *testing.T) {
-	want := &Pagination{}
-	got := NewPagination()
-	assert.Equal(t, got, want)
-}
-
-// // TestPagination_Get - Test get Pagination
-func TestPagination_Get(t *testing.T) {
+func Test_Get(t *testing.T) {
 
 	tt := map[string]struct {
 		params params2.Params
@@ -59,8 +51,7 @@ func TestPagination_Get(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			p := NewPagination()
-			got := p.Get(test.params, test.total)
+			got := Get(test.params, test.total)
 			assert.Equal(t, test.want, got)
 		})
 	}

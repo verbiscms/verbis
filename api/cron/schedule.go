@@ -28,12 +28,22 @@ func New(m *models.Store) *Scheduler {
 func (s *Scheduler) Run() {
 
 	// Clean password resets table every 15 minutes
-	if err := gocron.Every(15).Minutes().Do(s.store.Auth.CleanPasswordResets); err != nil {
+	err := gocron.Every(15).Minutes().Do(func() {
+		logger.Info("Cleaning password resets table")
+		err := s.store.Auth.CleanPasswordResets()
+		if err != nil {
+			logger.WithError(err).Error()
+		}
+	})
+	if err != nil {
 		logger.WithError(err).Error()
 	}
 
 	// Clean sitemap cache
-	if err := gocron.Every(6).Hours().Do(publisher.NewSitemap(s.store).ClearCache); err != nil {
+	err = gocron.Every(6).Hours().Do(func() {
+		publisher.NewSitemap(s.store).ClearCache()
+	})
+	if err != nil {
 		logger.WithError(err).Error()
 	}
 
