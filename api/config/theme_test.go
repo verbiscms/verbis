@@ -49,22 +49,9 @@ func (t *ConfigTestSuite) SetupSuite() {
 }
 
 func (t *ConfigTestSuite) TestConfig() {
-
-	tt := map[string]struct {
-		want domain.ThemeConfig
-	}{
-		"Singular": {
-			t.config,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func() {
-			got := Get(t.apiPath + TestPath)
-			t.NotNil(cfg)
-			t.Equal(test.want, *got)
-		})
-	}
+	got := Get(t.apiPath + TestPath)
+	t.NotNil(cfg)
+	t.Equal(t.config, *got)
 }
 
 func (t *ConfigTestSuite) TestSet() {

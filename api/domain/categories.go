@@ -17,6 +17,7 @@ type (
 		UUID        uuid.UUID `db:"uuid" json:"uuid"`
 		Slug        string    `db:"slug" json:"slug" binding:"required,max=150"`
 		Name        string    `db:"name" json:"name" binding:"required,max=150"`
+		Primary     bool	`db:"primary" json:"primary" binding:"required"`
 		Description *string   `db:"description" json:"description,max=500"`
 		Resource    string    `db:"resource" json:"resource" binding:"required,max=150"`
 		ParentId    *int      `db:"parent_id" json:"parent_id" binding:"omitempty,numeric"`
