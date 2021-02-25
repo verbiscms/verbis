@@ -83,12 +83,10 @@ func doctor() (*deps.DepsConfig, *database.MySql, error) {
 	cache.Init()
 
 	// Init Config
-	cfg := config.Config()
+	cfg := config.Get(paths.Theme())
 	//if err != nil {
 	//	printError(errors.Message(err))
 	//}
-
-	fmt.Println(cfg.Admin.InactiveSessionTime)
 
 	// Set up stores & pass the database.
 	store := models.New(db, cfg)
