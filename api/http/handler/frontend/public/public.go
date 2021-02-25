@@ -21,5 +21,5 @@ type Handler interface {
 // Public defines the handler for all public routes.
 type Public struct {
 	*deps.Deps
-	Publisher publisher.Renderer
+	Publisher publisher.Publisher
 }

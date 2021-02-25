@@ -25,8 +25,8 @@ import (
 // It then sets cache headers using the cacher interface & checks if a webp
 // image is available with the path of .jpg.webp. The minify is the used
 // to see if the file can be minfied.
-func (r *Render) Asset(g *gin.Context) (string, *[]byte, error) {
-	const op = "Render.GetAsset"
+func (r *publish) Asset(g *gin.Context) (string, *[]byte, error) {
+	const op = "publish.GetAsset"
 
 	api.AssetsChan <- 1
 	defer func() {

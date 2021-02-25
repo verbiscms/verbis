@@ -9,7 +9,7 @@ import ()
 //
 //// getPublicMock is a helper to obtain a mock Public
 //// handler for testing.
-//func getPublicMock(r Renderer, gin *gin.Context) *frontend.Public {
+//func getPublicMock(r Publisher, gin *gin.Context) *frontend.Public {
 //	mockError := mocks.ErrorHandler{}
 //	mockError.On("NotFound", gin).Run(func(args mock.Arguments) {
 //		gin.AbortWithStatus(404)
@@ -92,7 +92,7 @@ import ()
 //		assert.NoError(t, err)
 //		mimeType := mime.TypeByExtension(strings.ReplaceAll(filepath.Ext(image), ".", ""))
 //
-//		renderMock := mocks.Renderer{}
+//		renderMock := mocks.Publisher{}
 //		renderMock.On("Upload", rr.gin).Return(&mimeType, &file, nil)
 //
 //		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
@@ -111,7 +111,7 @@ import ()
 //		req, err := http.NewRequest("GET", "/uploads/gopher.svg", nil)
 //		assert.NoError(t, err)
 //
-//		renderMock := mocks.Renderer{}
+//		renderMock := mocks.Publisher{}
 //		renderMock.On("Upload", rr.gin).Return(nil, nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 //
 //		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
@@ -139,7 +139,7 @@ import ()
 //		assert.NoError(t, err)
 //		mimeType := mime.TypeByExtension(strings.ReplaceAll(filepath.Ext(image), ".", ""))
 //
-//		renderMock := mocks.Renderer{}
+//		renderMock := mocks.Publisher{}
 //		renderMock.On("Asset", rr.gin).Return(&mimeType, &file, nil)
 //
 //		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
@@ -158,7 +158,7 @@ import ()
 //		req, err := http.NewRequest("GET", "/uploads/gopher.svg", nil)
 //		assert.NoError(t, err)
 //
-//		renderMock := mocks.Renderer{}
+//		renderMock := mocks.Publisher{}
 //		renderMock.On("Asset", rr.gin).Return(nil, nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 //
 //		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
@@ -186,7 +186,7 @@ import ()
 //		assert.NoError(t, err)
 //		mimeType := mime.TypeByExtension(strings.ReplaceAll(filepath.Ext(html), ".", ""))
 //
-//		renderMock := mocks.Renderer{}
+//		renderMock := mocks.Publisher{}
 //		renderMock.On("Page", rr.gin).Return(file, nil)
 //
 //		rr.engine.GET("/page", func(g *gin.Context) {
@@ -205,7 +205,7 @@ import ()
 //		req, err := http.NewRequest("GET", "/page", nil)
 //		assert.NoError(t, err)
 //
-//		renderMock := mocks.Renderer{}
+//		renderMock := mocks.Publisher{}
 //		renderMock.On("Page", rr.gin).Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 //
 //		rr.engine.GET("/page", func(g *gin.Context) {

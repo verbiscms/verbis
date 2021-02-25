@@ -10,8 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Renderer
-type Renderer interface {
+// Publisher
+type Publisher interface {
 	Asset(g *gin.Context) (string, *[]byte, error)
 	Upload(g *gin.Context) (string, *[]byte, error)
 	Page(g *gin.Context) ([]byte, error)
@@ -19,22 +19,22 @@ type Renderer interface {
 	SiteMap() SiteMapper
 }
 
-// Render
-type Render struct {
+// publish
+type publish struct {
 	*deps.Deps
 	minify  minify.Minifier
 	cacher  headerWriter
 	sitemap *Sitemap
 }
 
-func (r *Render) SiteMap() SiteMapper {
+func (r *publish) SiteMap() SiteMapper {
 	return r.sitemap
 }
 
 // NewRender - Construct
-func NewRender(d *deps.Deps) *Render {
+func NewRender(d *deps.Deps) *publish {
 	options := d.Store.Options.GetStruct()
-	return &Render{
+	return &publish{
 		d,
 		minify.New(minify.Config{
 			MinifyHTML: options.MinifyHTML,

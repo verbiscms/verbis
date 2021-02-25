@@ -12,6 +12,86 @@ import (
 	"testing"
 )
 
+func TestPostDatum_IsPublic(t *testing.T) {
+
+	tt := map[string]struct {
+		input string
+		want  bool
+	}{
+		"Public": {
+			"published",
+			true,
+		},
+		"Not Public": {
+			"private",
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			p := PostDatum{
+				Post: Post{Status: test.input},
+			}
+			got := p.IsPublic()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+func TestPostDatum_HasResource(t *testing.T) {
+
+	r := "news"
+
+	tt := map[string]struct {
+		input *string
+		want  bool
+	}{
+		"Resource": {
+			&r,
+			true,
+		},
+		"No Resource": {
+			nil,
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			p := PostDatum{
+				Post: Post{Resource: test.input},
+			}
+			got := p.HasResource()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestPostDatum_HasCategories(t *testing.T) {
+
+	tt := map[string]struct {
+		input *Category
+		want  bool
+	}{
+		"Categories": {
+			&Category{Name: "test"},
+			true,
+		},
+		"No Category": {
+			nil,
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			p := PostDatum{Category: test.input}
+			got := p.HasCategories()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
 func TestPostDatum_Tpl(t *testing.T) {
 	got := PostDatum{
 		Post:   Post{Title: "title"},
