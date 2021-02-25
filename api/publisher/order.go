@@ -7,7 +7,6 @@ package publisher
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"strings"
 )
 
@@ -22,6 +21,7 @@ type TypeOfPage struct {
 	Data     string
 }
 
+
 func (r *publish) resolve(url string) (*domain.PostDatum, TypeOfPage, error) {
 
 	// Split the url segments.
@@ -29,26 +29,21 @@ func (r *publish) resolve(url string) (*domain.PostDatum, TypeOfPage, error) {
 	urlSplit := strings.Split(urlTrimmed, "/")
 	last := urlSplit[len(urlSplit)-1]
 
-	// news/my-blog-post
-
-	// my-blog-post
 
 	post, err := r.Store.Posts.GetBySlug(last)
 	if err != nil {
-
-		// go cherck category
-
-		// fails 404 handle 404
-
-		logger.Debug(err)
+		top, found := r.categories(last)
+		if found {
+			return &post, top, nil
+		}
+		return nil, TypeOfPage{
+			"error",
+			url,
+		}, fmt.Errorf("404")
 	}
 
 	// Check if the segment is an archive, or the last part
 	// of the url matches a resource in the theme config.
-
-	// news
-	// insights
-
 	_, ok := r.Theme.Resources[last]
 	if bool(post.IsArchive) || ok {
 		return &post, TypeOfPage{
@@ -57,8 +52,6 @@ func (r *publish) resolve(url string) (*domain.PostDatum, TypeOfPage, error) {
 		}, nil
 	}
 
-	// news
-
 	// Single with categories
 	if post.HasResource() {
 		return &post, TypeOfPage{
@@ -66,19 +59,6 @@ func (r *publish) resolve(url string) (*domain.PostDatum, TypeOfPage, error) {
 			Data:     *post.Resource,
 		}, nil
 	}
-
-	// news/my-category
-
-	// Check for category archives
-	category, err := r.Store.Categories.GetBySlug(last)
-	if err == nil {
-		return &post, TypeOfPage{
-			PageType: "category",
-			Data:     category.Name,
-		}, nil
-	}
-
-	// category parent
 
 	// Check if the post has no resources or categories
 	// It must be a normal page.
@@ -94,3 +74,18 @@ func (r *publish) resolve(url string) (*domain.PostDatum, TypeOfPage, error) {
 		url,
 	}, fmt.Errorf("404")
 }
+
+
+// category parent
+
+func (r *publish) categories(url string) (TypeOfPage, bool){
+	category, err := r.Store.Categories.GetBySlug(url)
+	if err == nil {
+		return TypeOfPage{}, true
+	}
+	return TypeOfPage{
+		PageType: "category",
+		Data:     category.Name,
+	}, false
+}
+
