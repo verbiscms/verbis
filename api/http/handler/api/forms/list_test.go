@@ -24,7 +24,7 @@ func (t *FormsTestSuite) TestForms_List() {
 			200,
 			"Successfully obtained forms",
 			func(m *mocks.FormRepository) {
-				m.On("Get", pagination).Return(forms, 1, nil)
+				m.On("Get", defaultParams).Return(forms, 1, nil)
 			},
 		},
 		"Not Found": {
@@ -32,7 +32,7 @@ func (t *FormsTestSuite) TestForms_List() {
 			200,
 			"no forms found",
 			func(m *mocks.FormRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no forms found"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no forms found"})
 			},
 		},
 		"Conflict": {
@@ -40,7 +40,7 @@ func (t *FormsTestSuite) TestForms_List() {
 			400,
 			"conflict",
 			func(m *mocks.FormRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
@@ -48,7 +48,7 @@ func (t *FormsTestSuite) TestForms_List() {
 			400,
 			"invalid",
 			func(m *mocks.FormRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -56,7 +56,7 @@ func (t *FormsTestSuite) TestForms_List() {
 			500,
 			"internal",
 			func(m *mocks.FormRepository) {
-				m.On("Get", pagination).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

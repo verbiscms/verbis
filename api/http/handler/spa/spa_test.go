@@ -6,8 +6,8 @@ package spa
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -26,7 +26,7 @@ const (
 // SPATestSuite defines the helper used for SPA
 // testing.
 type SPATestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestSPA
@@ -34,7 +34,7 @@ type SPATestSuite struct {
 // Assert testing has begun.
 func TestSPA(t *testing.T) {
 	suite.Run(t, &SPATestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 

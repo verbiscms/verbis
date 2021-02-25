@@ -6,9 +6,9 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -16,7 +16,7 @@ import (
 // FieldTestSuite defines the helper used for cache
 // testing.
 type FieldTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 }
 
 // TestFields
@@ -24,7 +24,7 @@ type FieldTestSuite struct {
 // Assert testing has begun.
 func TestFields(t *testing.T) {
 	suite.Run(t, &FieldTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 	})
 }
 

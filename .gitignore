@@ -7,9 +7,9 @@ node_modules
 .idea/
 
 # local environment files
-.env
-.env.local
-.env.*.local
+/.env
+/.env.local
+/.env.*.local
 
 # Log files
 npm-debug.log*

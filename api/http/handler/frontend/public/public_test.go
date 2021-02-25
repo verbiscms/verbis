@@ -5,8 +5,8 @@
 package public
 
 import (
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
+	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -15,7 +15,7 @@ import (
 // PublicTestSuite defines the helper used for public
 // testing.
 type PublicTestSuite struct {
-	api.HandlerSuite
+	test.HandlerSuite
 	bytes *[]byte
 }
 
@@ -25,7 +25,7 @@ type PublicTestSuite struct {
 func TestPublic(t *testing.T) {
 	b := []byte(testString)
 	suite.Run(t, &PublicTestSuite{
-		HandlerSuite: api.TestSuite(),
+		HandlerSuite: test.TestSuite(),
 		bytes:        &b,
 	})
 }

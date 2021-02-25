@@ -33,5 +33,5 @@ func (u *Users) List(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, 200, "Successfully obtained users", users.HideCredentials(),  pagination.Get(p, total))
+	api.Respond(ctx, 200, "Successfully obtained users", users.HideCredentials(), pagination.Get(p, total))
 }

@@ -7,7 +7,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/errors"
-	pagination2 "github.com/ainsleyclark/verbis/api/http/pagination"
+	"github.com/ainsleyclark/verbis/api/http/pagination"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	gohttp "net/http"
@@ -20,14 +20,14 @@ type tester struct {
 
 func (t *ApiTestSuite) TestRespond() {
 
-	pagination := pagination2.Pagination{Page: 1, Pages: 2, Limit: 10, Total: 0, Next: false, Prev: false}
+	paginate := pagination.Pagination{Page: 1, Pages: 2, Limit: 10, Total: 0, Next: false, Prev: false}
 	var verr = errors.Error{Err: nil}
 
 	tt := map[string]struct {
 		status     int
 		message    string
 		data       interface{}
-		pagination *pagination2.Pagination
+		pagination *pagination.Pagination
 		want       RespondJSON
 	}{
 		"Nil Data": {
@@ -58,7 +58,7 @@ func (t *ApiTestSuite) TestRespond() {
 			200,
 			"message",
 			nil,
-			&pagination,
+			&paginate,
 			RespondJSON{
 				Status:  200,
 				Error:   false,
