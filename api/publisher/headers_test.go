@@ -14,7 +14,6 @@ import (
 	"testing"
 )
 
-// TestHeaders_Cache - Test of cache headers
 func TestHeaders_Cache(t *testing.T) {
 
 	tt := map[string]struct {
@@ -93,13 +92,6 @@ func TestHeaders_Cache(t *testing.T) {
 			url:  "/assets/images/test.jpg",
 			options: domain.Options{
 				CacheFrontend: false,
-			},
-		},
-		"Admin": {
-			want: "",
-			url:  "/admin",
-			options: domain.Options{
-				CacheFrontend: true,
 			},
 		},
 		"Wrong Request": {
