@@ -5,87 +5,72 @@
 package publisher
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"strings"
 )
-
-// Check if there is a resource
-//  Check if there is  a category
-// If there
-
-//
 
 type TypeOfPage struct {
 	PageType string
 	Data     string
 }
 
+const (
+	Page     = "page"
+	Single   = "single"
+	Archive  = "archive"
+	Category = "category"
+)
 
-func (r *publish) resolve(url string) (*domain.PostDatum, TypeOfPage, error) {
+// resolve
+//
+//
+func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 
 	// Split the url segments.
 	urlTrimmed := strings.TrimSuffix(url, "/")
 	urlSplit := strings.Split(urlTrimmed, "/")
 	last := urlSplit[len(urlSplit)-1]
 
-
 	post, err := r.Store.Posts.GetBySlug(last)
 	if err != nil {
-		top, found := r.categories(last)
-		if found {
-			return &post, top, nil
+		post, err := r.Store.Posts.GetBySlug(urlTrimmed)
+		if err != nil {
+			return nil, nil, err
 		}
-		return nil, TypeOfPage{
-			"error",
-			url,
-		}, fmt.Errorf("404")
+		return &post, &TypeOfPage{
+			PageType: Page,
+		}, nil
 	}
 
 	// Check if the segment is an archive, or the last part
 	// of the url matches a resource in the theme config.
-	_, ok := r.Theme.Resources[last]
+	resource, ok := r.Theme.Resources[last]
 	if bool(post.IsArchive) || ok {
-		return &post, TypeOfPage{
-			PageType: "archive",
-			Data:     *post.Resource,
+		return &post, &TypeOfPage{
+			PageType: Archive,
+			Data:     resource.Name,
 		}, nil
 	}
 
-	// Single with categories
+	// Single with resource
 	if post.HasResource() {
-		return &post, TypeOfPage{
-			PageType: "single",
+		return &post, &TypeOfPage{
+			PageType: Single,
 			Data:     *post.Resource,
 		}, nil
 	}
 
-	// Check if the post has no resources or categories
-	// It must be a normal page.
-	if !post.HasResource() {
-		return &post, TypeOfPage{
-			PageType: "page",
-		}, nil
-	}
-
-	// No post found, it must be a 404.
-	return nil, TypeOfPage{
-		"error",
-		url,
-	}, fmt.Errorf("404")
-}
-
-
-// category parent
-
-func (r *publish) categories(url string) (TypeOfPage, bool){
 	category, err := r.Store.Categories.GetBySlug(url)
 	if err == nil {
-		return TypeOfPage{}, true
+		return &post, &TypeOfPage{
+			PageType: Category,
+			Data:     category.Name,
+		}, nil
 	}
-	return TypeOfPage{
-		PageType: "category",
-		Data:     category.Name,
-	}, false
-}
 
+	// Check if the post has no resources/
+	// It must be a normal page.
+	return &post, &TypeOfPage{
+		PageType: Page,
+	}, nil
+}
