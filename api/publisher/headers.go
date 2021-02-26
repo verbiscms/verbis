@@ -11,7 +11,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"path/filepath"
 	"strconv"
-	"strings"
 )
 
 // Cacher represents the cache function to set cache headers.
@@ -46,11 +45,6 @@ func (c *headers) Cache(g *gin.Context) {
 	}
 
 	path := g.Request.URL.Path
-
-	// Don't cache any admin assets
-	if strings.Contains(path, "admin") {
-		return
-	}
 
 	// Get the expiration
 	expiration := c.options.CacheFrontendSeconds

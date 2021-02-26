@@ -4,44 +4,139 @@
 
 package publisher
 
-func orderOfSearch() TypeOfPage {
-	const op = "Templates.orderOfSearch"
+import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
 
-	data := TypeOfPage{
-		PageType: "page",
-		Data:     nil,
+var (
+	newsResource = "news"
+	testResources = map[string]domain.Resource{
+		"news": {
+			Name:         newsResource,
+			FriendlyName: "News",
+			SingularName: "News Item",
+			Slug:         "news",
+			Hidden:       false,
+		},
+	}
+	singlePost = domain.PostDatum{
+		Post: domain.Post{Slug:  "news-item", Title: "News Item", Resource: &newsResource},
+	}
+	archivePost = domain.PostDatum{
+		Post: domain.Post{Slug:  "news", Title: "News"},
+	}
+	pagePost = domain.PostDatum{
+		Post: domain.Post{Slug:  "contact", Title: "Contact"},
+	}
+	customSlugPost = domain.PostDatum{
+		Post: domain.Post{Slug:  "custom/slug", Title: "Contact"},
+	}
+	category = domain.Category{
+		Name:        "category",
+	}
+	categoryPost = domain.PostDatum{
+		Post: domain.Post{Slug:  "custom/slug", Title: "Contact"}, Category: &category,
+	}
+)
+
+func TestRennder(t *testing.T) {
+
+	tt := map[string]struct {
+		input string
+		mock  func(m *mocks.PostsRepository, mc *mocks.CategoryRepository, url string)
+		post  *domain.PostDatum
+		top   *TypeOfPage
+		err   error
+	}{
+		"Single": {
+			"news-article",
+			func(m *mocks.PostsRepository, mc *mocks.CategoryRepository, url string) {
+				m.On("GetBySlug", url).Return(singlePost, nil)
+			},
+			&singlePost,
+			&TypeOfPage{Single, "news"},
+			nil,
+		},
+		"Archive": {
+			"news",
+			func(m *mocks.PostsRepository, mc *mocks.CategoryRepository, url string) {
+				m.On("GetBySlug", url).Return(archivePost, nil)
+			},
+			&archivePost,
+			&TypeOfPage{Archive, "news"},
+			nil,
+		},
+		"Page": {
+			"contact",
+			func(m *mocks.PostsRepository, mc *mocks.CategoryRepository, url string) {
+				m.On("GetBySlug", url).Return(pagePost, nil)
+				mc.On("GetBySlug", url).Return(domain.Category{}, fmt.Errorf("err"))
+			},
+			&pagePost,
+			&TypeOfPage{Page,  ""},
+			nil,
+		},
+		"Custom Slug": {
+			"custom/slug",
+			func(m *mocks.PostsRepository, mc *mocks.CategoryRepository, url string) {
+				m.On("GetBySlug", "slug").Return(domain.PostDatum{}, fmt.Errorf("err")).Once()
+				m.On("GetBySlug", url).Return(customSlugPost, nil)
+			},
+			&customSlugPost,
+			&TypeOfPage{Page,  ""},
+			nil,
+		},
+		"Not Found": {
+			"wrong",
+			func(m *mocks.PostsRepository, mc *mocks.CategoryRepository, url string) {
+				m.On("GetBySlug", url).Return(domain.PostDatum{}, fmt.Errorf("err")).Times(2)
+			},
+			nil,
+			nil,
+			fmt.Errorf("err"),
+		},
+		"Categories": {
+			"category",
+			func(m *mocks.PostsRepository, mc *mocks.CategoryRepository, url string) {
+				m.On("GetBySlug", url).Return(categoryPost, nil)
+				mc.On("GetBySlug", url).Return(category, nil)
+			},
+			&categoryPost,
+			&TypeOfPage{PageType: "category", Data: "category"},
+			nil,
+		},
 	}
 
-	slug := t.post.Slug
-	slugArr := strings.Split(slug, "/")
-	last := slugArr[len(slugArr)-1]
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			m := &mocks.PostsRepository{}
+			mc := &mocks.CategoryRepository{}
 
-	theme := t.store.Site.GetThemeConfig()
+			test.mock(m, mc, test.input)
 
-	if _, ok := theme.Resources[last]; ok {
-		data.PageType = "archive"
-		data.Data = t.post.Post.Resource
-		return data
+			p := publish{
+				Deps: &deps.Deps{
+					Store: &models.Store{
+						Categories: mc,
+						Posts:      m,
+					},
+					Theme: &domain.ThemeConfig{
+						Resources: testResources,
+					},
+				},
+			}
+
+			post, top, err := p.resolve(test.input)
+
+			assert.Equal(t, test.post, post)
+			assert.Equal(t, test.top, top)
+			assert.Equal(t, test.err, err)
+		})
 	}
-
-	if t.store.Categories.ExistsBySlug(last) {
-
-		cat, err := t.store.Categories.GetBySlug(last)
-		if err != nil {
-			return data
-		}
-
-		parentCat, err := t.store.Categories.GetById(cat.Id)
-		if err != nil {
-			data.PageType = "category_child_archive"
-			data.Data = cat
-			return data
-		} else {
-			data.PageType = "category_archive"
-			data.Data = parentCat
-			return data
-		}
-	}
-
-	return data
 }

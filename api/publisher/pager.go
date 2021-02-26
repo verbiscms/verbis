@@ -29,7 +29,7 @@ type page struct {
 	Url        string
 	CacheKey   string
 	FoundCache bool
-	Type       TypeOfPage
+	Type       *TypeOfPage
 }
 
 // Execute
