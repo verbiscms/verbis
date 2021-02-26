@@ -11,6 +11,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-contrib/location"
+	"net/http"
+	"net/http/pprof"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
@@ -43,6 +45,23 @@ func New(d *deps.Deps) *Server {
 	r.Use(location.Default())
 	r.Use(middleware.Redirects(d))
 
+	prefixRouter := r.Group("/debug/pprof")
+	{
+		prefixRouter.GET("/", pprofHandler(pprof.Index))
+		prefixRouter.GET("/cmdline", pprofHandler(pprof.Cmdline))
+		prefixRouter.GET("/profile", pprofHandler(pprof.Profile))
+		prefixRouter.POST("/symbol", pprofHandler(pprof.Symbol))
+		prefixRouter.GET("/symbol", pprofHandler(pprof.Symbol))
+		prefixRouter.GET("/trace", pprofHandler(pprof.Trace))
+		prefixRouter.GET("/allocs", pprofHandler(pprof.Handler("allocs").ServeHTTP))
+		prefixRouter.GET("/block", pprofHandler(pprof.Handler("block").ServeHTTP))
+		prefixRouter.GET("/goroutine", pprofHandler(pprof.Handler("goroutine").ServeHTTP))
+		prefixRouter.GET("/heap", pprofHandler(pprof.Handler("heap").ServeHTTP))
+		prefixRouter.GET("/mutex", pprofHandler(pprof.Handler("mutex").ServeHTTP))
+		prefixRouter.GET("/threadcreate", pprofHandler(pprof.Handler("threadcreate").ServeHTTP))
+	}
+
+
 	r.Use(gin.Recovery())
 
 	// Set up Gzip compression
@@ -50,6 +69,13 @@ func New(d *deps.Deps) *Server {
 
 	// Instantiate the server.
 	return server
+}
+
+func pprofHandler(h http.HandlerFunc) gin.HandlerFunc {
+	handler := http.HandlerFunc(h)
+	return func(c *gin.Context) {
+		handler.ServeHTTP(c.Writer, c.Request)
+	}
 }
 
 // ListenAndServe runs Verbis on a given port
