@@ -27,7 +27,7 @@ type FormsTestSuite struct {
 // Assert testing has begun.
 func TestForms(t *testing.T) {
 	suite.Run(t, &FormsTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

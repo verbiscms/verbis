@@ -35,7 +35,7 @@ type SPATestSuite struct {
 // Assert testing has begun.
 func TestSPA(t *testing.T) {
 	suite.Run(t, &SPATestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

@@ -28,7 +28,7 @@ type PostsTestSuite struct {
 // Assert testing has begun.
 func TestPosts(t *testing.T) {
 	suite.Run(t, &PostsTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

@@ -26,7 +26,7 @@ type SEOTestSuite struct {
 func TestSEO(t *testing.T) {
 	b := []byte(testString)
 	suite.Run(t, &SEOTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 		bytes:        &b,
 	})
 }

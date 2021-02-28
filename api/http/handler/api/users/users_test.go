@@ -32,7 +32,7 @@ type UsersTestSuite struct {
 func TestUsers(t *testing.T) {
 	cache.Init()
 	suite.Run(t, &UsersTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 
@@ -73,7 +73,7 @@ var (
 			FirstName: "Verbis",
 			LastName:  "CMS",
 			Email:     "verbis@verbiscms.com",
-			Role: domain.UserRole{
+			Role: domain.Role{
 				Id: 1,
 			},
 		},
@@ -93,7 +93,7 @@ var (
 				FirstName: "Verbis",
 				LastName:  "CMS",
 				Email:     "verbis@verbiscms.com",
-				Role: domain.UserRole{
+				Role: domain.Role{
 					Id: 123,
 				},
 			},
@@ -127,7 +127,7 @@ var (
 		},
 	}
 	// The default roles used for testing.
-	roles = []domain.UserRole{
+	roles = []domain.Role{
 		{
 			Id:          1,
 			Name:        "Banned",

@@ -22,7 +22,7 @@ type CacheTestSuite struct {
 // Assert testing has begun.
 func TestCache(t *testing.T) {
 	suite.Run(t, &CacheTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

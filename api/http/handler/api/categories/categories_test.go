@@ -28,7 +28,7 @@ type CategoriesTestSuite struct {
 // Assert testing has begun.
 func TestCategories(t *testing.T) {
 	suite.Run(t, &CategoriesTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

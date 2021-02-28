@@ -25,7 +25,7 @@ type AuthTestSuite struct {
 // Assert testing has begun.
 func TestAuth(t *testing.T) {
 	suite.Run(t, &AuthTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

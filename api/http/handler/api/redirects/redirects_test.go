@@ -27,7 +27,7 @@ type RedirectsTestSuite struct {
 // Assert testing has begun.
 func TestRedirects(t *testing.T) {
 	suite.Run(t, &RedirectsTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 
