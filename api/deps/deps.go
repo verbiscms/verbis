@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/tpl"
+	"os"
 )
 
 // Deps holds dependencies used by many.
@@ -41,7 +42,7 @@ type Deps struct {
 }
 
 func (d *Deps) ThemePath() string {
-	return d.Paths.Base + "/theme"
+	return d.Paths.Base + string(os.PathSeparator) + "themes" + string(os.PathSeparator) + d.Options.ActiveTheme
 }
 
 func (d *Deps) Tmpl() tpl.TemplateHandler {

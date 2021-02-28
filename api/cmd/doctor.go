@@ -87,16 +87,14 @@ func doctor() (*deps.DepsConfig, *database.MySql, error) {
 	// Init Config
 	// TODO: We need pass the default theme (Verbis 2021)
 
-	cfg := config.Get(paths.Base + "/theme")
 	//if err != nil {
 	//	printError(errors.Message(err))
 	//}
 
 	// Set up stores & pass the database.
 	store := models.New(&models.StoreConfig{
-		DB:     db.Sqlx,
-		Config: cfg,
-		Paths:  paths,
+		DB:    db.Sqlx,
+		Paths: paths,
 	})
 
 	printSuccess("All checks passed.")
@@ -104,7 +102,7 @@ func doctor() (*deps.DepsConfig, *database.MySql, error) {
 	return &deps.DepsConfig{
 		Store:  store,
 		Env:    env,
-		Config: cfg,
+		Config: config.Get(),
 		Paths:  paths,
 	}, db, nil
 }

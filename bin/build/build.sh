@@ -78,7 +78,7 @@ function build() {
 	mkdir $path/api/web && rsync -av --quiet api/web/ build/$os/api/web/ --exclude node_modules --exclude src --exclude package.json --exclude package-lock.json
 
 	# Theme
-	mkdir $path/theme && cp -a theme/ $path/theme/
+	mkdir $path/themes && cp -a theme/ $path/themes/
 
 	# Admin
 	mkdir $path/admin

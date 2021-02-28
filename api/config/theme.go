@@ -27,13 +27,20 @@ var (
 	once = sync.Once{}
 )
 
-// Get
+// Init
 //
 // Fetches and returns the theme configuration once.
-func Get(path string) *domain.ThemeConfig {
+func Init(path string) *domain.ThemeConfig {
 	once.Do(func() {
 		Fetch(path)
 	})
+	return cfg
+}
+
+// Get
+//
+// Returns the pointer to the theme configuration.
+func Get() *domain.ThemeConfig {
 	return cfg
 }
 
