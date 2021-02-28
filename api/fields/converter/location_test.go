@@ -218,7 +218,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 		},
 		"Role": {
 			post: domain.PostDatum{Author: domain.UserPart{
-				Role: domain.UserRole{
+				Role: domain.Role{
 					Id: 1,
 				},
 			},

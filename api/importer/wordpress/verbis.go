@@ -395,7 +395,7 @@ func (c *Convert) createUser(a Author) (domain.User, string, error) {
 				FirstName: a.AuthorFirstName,
 				LastName:  a.AuthorLastName,
 				Email:     a.AuthorEmail,
-				Role: domain.UserRole{
+				Role: domain.Role{
 					Id: userRoleId,
 				},
 			},

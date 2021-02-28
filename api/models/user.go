@@ -22,7 +22,7 @@ type UserRepository interface {
 	GetOwner() (domain.User, error)
 	GetByToken(token string) (domain.User, error)
 	GetByEmail(email string) (domain.User, error)
-	GetRoles() ([]domain.UserRole, error)
+	GetRoles() ([]domain.Role, error)
 	Create(u *domain.UserCreate) (domain.User, error)
 	Update(u *domain.User) (domain.User, error)
 	Delete(id int) error
@@ -153,9 +153,9 @@ func (s *UserStore) GetByEmail(email string) (domain.User, error) {
 
 // GetRoles gets all of the roles in the roles table
 // Returns errors.INTERNAL if the roles table was inaccessible.
-func (s *UserStore) GetRoles() ([]domain.UserRole, error) {
+func (s *UserStore) GetRoles() ([]domain.Role, error) {
 	const op = "UserRepository.GetRoles"
-	var r []domain.UserRole
+	var r []domain.Role
 	if err := s.DB.Select(&r, "SELECT * FROM roles"); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the user roles", Operation: op, Err: err}
 	}

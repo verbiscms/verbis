@@ -88,7 +88,7 @@ func Test_Admin(t *testing.T) {
 			cookie: "verbis-session=token",
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetByToken", "token").Return(domain.User{
-					UserPart: domain.UserPart{Id: 0, Role: domain.UserRole{Id: 6}},
+					UserPart: domain.UserPart{Id: 0, Role: domain.Role{Id: 6}},
 				}, nil)
 			},
 		},
@@ -97,7 +97,7 @@ func Test_Admin(t *testing.T) {
 			cookie: "verbis-session=token",
 			mock: func(m *mocks.UserRepository) {
 				m.On("GetByToken", "token").Return(domain.User{
-					UserPart: domain.UserPart{Id: 0, Role: domain.UserRole{Id: 1}},
+					UserPart: domain.UserPart{Id: 0, Role: domain.Role{Id: 1}},
 				}, nil)
 			},
 		},

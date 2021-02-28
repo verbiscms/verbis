@@ -13,18 +13,18 @@ type RoleRepository struct {
 }
 
 // Create provides a mock function with given fields: r
-func (_m *RoleRepository) Create(r *domain.UserRole) (domain.UserRole, error) {
+func (_m *RoleRepository) Create(r *domain.Role) (domain.Role, error) {
 	ret := _m.Called(r)
 
-	var r0 domain.UserRole
-	if rf, ok := ret.Get(0).(func(*domain.UserRole) domain.UserRole); ok {
+	var r0 domain.Role
+	if rf, ok := ret.Get(0).(func(*domain.Role) domain.Role); ok {
 		r0 = rf(r)
 	} else {
-		r0 = ret.Get(0).(domain.UserRole)
+		r0 = ret.Get(0).(domain.Role)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*domain.UserRole) error); ok {
+	if rf, ok := ret.Get(1).(func(*domain.Role) error); ok {
 		r1 = rf(r)
 	} else {
 		r1 = ret.Error(1)
@@ -62,15 +62,15 @@ func (_m *RoleRepository) Exists(name string) bool {
 }
 
 // Get provides a mock function with given fields:
-func (_m *RoleRepository) Get() ([]domain.UserRole, error) {
+func (_m *RoleRepository) Get() ([]domain.Role, error) {
 	ret := _m.Called()
 
-	var r0 []domain.UserRole
-	if rf, ok := ret.Get(0).(func() []domain.UserRole); ok {
+	var r0 []domain.Role
+	if rf, ok := ret.Get(0).(func() []domain.Role); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.UserRole)
+			r0 = ret.Get(0).([]domain.Role)
 		}
 	}
 
@@ -85,14 +85,14 @@ func (_m *RoleRepository) Get() ([]domain.UserRole, error) {
 }
 
 // GetById provides a mock function with given fields: id
-func (_m *RoleRepository) GetById(id int) (domain.UserRole, error) {
+func (_m *RoleRepository) GetById(id int) (domain.Role, error) {
 	ret := _m.Called(id)
 
-	var r0 domain.UserRole
-	if rf, ok := ret.Get(0).(func(int) domain.UserRole); ok {
+	var r0 domain.Role
+	if rf, ok := ret.Get(0).(func(int) domain.Role); ok {
 		r0 = rf(id)
 	} else {
-		r0 = ret.Get(0).(domain.UserRole)
+		r0 = ret.Get(0).(domain.Role)
 	}
 
 	var r1 error
@@ -106,18 +106,18 @@ func (_m *RoleRepository) GetById(id int) (domain.UserRole, error) {
 }
 
 // Update provides a mock function with given fields: r
-func (_m *RoleRepository) Update(r *domain.UserRole) (domain.UserRole, error) {
+func (_m *RoleRepository) Update(r *domain.Role) (domain.Role, error) {
 	ret := _m.Called(r)
 
-	var r0 domain.UserRole
-	if rf, ok := ret.Get(0).(func(*domain.UserRole) domain.UserRole); ok {
+	var r0 domain.Role
+	if rf, ok := ret.Get(0).(func(*domain.Role) domain.Role); ok {
 		r0 = rf(r)
 	} else {
-		r0 = ret.Get(0).(domain.UserRole)
+		r0 = ret.Get(0).(domain.Role)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*domain.UserRole) error); ok {
+	if rf, ok := ret.Get(1).(func(*domain.Role) error); ok {
 		r1 = rf(r)
 	} else {
 		r1 = ret.Error(1)

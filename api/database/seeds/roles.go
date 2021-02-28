@@ -11,7 +11,7 @@ import (
 // runRoles will insert all default values for the user roles
 // including the Id.
 func (s *Seeder) runRoles() error {
-	r := []domain.UserRole{
+	r := []domain.Role{
 		{
 			Id:          1,
 			Name:        "Banned",

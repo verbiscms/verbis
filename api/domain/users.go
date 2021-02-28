@@ -33,7 +33,7 @@ type (
 		Linkedin         *string    `db:"linked_in" json:"linked_in"`
 		Instagram        *string    `db:"instagram" json:"instagram"`
 		Biography        *string    `db:"biography" json:"biography"`
-		Role             UserRole   `db:"roles" json:"role"`
+		Role             Role       `db:"roles" json:"role"`
 		ProfilePictureID *int       `db:"profile_picture_id" json:"profile_picture_id"`
 		EmailVerifiedAt  *time.Time `db:"email_verified_at" json:"email_verified_at"`
 		CreatedAt        time.Time  `db:"created_at" json:"created_at"`
@@ -55,9 +55,9 @@ type (
 		NewPassword     string `json:"new_password" binding:"required,min=8,max=60"`
 		ConfirmPassword string `json:"confirm_password" binding:"eqfield=NewPassword,required"`
 	}
-	// UserRole defines the role a user has, from the pivot
+	// Role defines the role a user has, from the pivot
 	// table.
-	UserRole struct {
+	Role struct {
 		Id          int    `db:"id" json:"id" binding:"required,numeric"`
 		Name        string `db:"name" json:"name"`
 		Description string `db:"description" json:"description"`
