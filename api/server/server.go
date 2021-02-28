@@ -61,7 +61,6 @@ func New(d *deps.Deps) *Server {
 		prefixRouter.GET("/threadcreate", pprofHandler(pprof.Handler("threadcreate").ServeHTTP))
 	}
 
-
 	r.Use(gin.Recovery())
 
 	// Set up Gzip compression
