@@ -23,13 +23,13 @@ const (
 
 // Params represents the http params for interacting with the DB
 type Params struct {
-	Page           int                 `json:"page"`
-	Limit          int                 `json:"limit"`
-	LimitAll       bool                `json:"all"`
-	OrderBy        string              `json:"order_by"`
-	OrderDirection string              `json:"order_direction"`
-	Filters        map[string][]Filter `json:"-"`
-	defaults       Defaults            `json:"-"`
+	Page           int      `json:"page"`
+	Limit          int      `json:"limit"`
+	LimitAll       bool     `json:"all"`
+	OrderBy        string   `json:"order_by"`
+	OrderDirection string   `json:"order_direction"`
+	Filters        Filters  `json:"-"`
+	defaults       Defaults `json:"-"`
 	Stringer       `json:"-"`
 }
 
@@ -37,6 +37,9 @@ type Params struct {
 type Stringer interface {
 	Param(string) string
 }
+
+// Filters represents the map and slice of filters
+type Filters map[string][]Filter
 
 // Filter represents the searching fields for searching through records.
 type Filter struct {

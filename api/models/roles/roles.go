@@ -5,7 +5,7 @@
 package roles
 
 import (
-	"github.com/ainsleyclark/verbis/api/database/builder"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/jmoiron/sqlx"
 )
@@ -23,17 +23,13 @@ type Repository interface {
 
 // RedirectStore defines the data layer for Redirects
 type Store struct {
-	Builder builder.Sqlbuilder
-	DB      *sqlx.DB
+	*database.Model
 }
 
 const TableName = "roles"
 
 func New(db *sqlx.DB) *Store {
 	return &Store{
-		Builder: builder.Sqlbuilder{
-			Dialect: "mysql",
-		},
-		DB: db,
+		Model: database.NewModel(db),
 	}
 }
