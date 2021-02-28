@@ -25,11 +25,11 @@ type CategoryRepository interface {
 	Update(c *domain.Category) (domain.Category, error)
 	Delete(id int) error
 	Exists(id int) bool
-	ExistsByName(name string) bool
-	ExistsBySlug(slug string) bool
+	//ExistsByName(name string) bool
+	//ExistsBySlug(slug string) bool
 	InsertPostCategory(postId int, categoryId *int) error
 	DeletePostCategories(id int) error
-	Total() (int, error)
+	//Total() (int, error)
 }
 
 // CategoryStore defines the data layer for Categories
@@ -293,16 +293,6 @@ func (s *CategoryStore) DeletePostCategories(id int) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the post categories with the post ID of: %d", id), Operation: op, Err: err}
 	}
 	return nil
-}
-
-// Get the total number of categories
-func (s *CategoryStore) Total() (int, error) {
-	const op = "CategoryRepository.Total"
-	var total int
-	if err := s.DB.QueryRow("SELECT COUNT(*) FROM categories").Scan(&total); err != nil {
-		return -1, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the total number of categories"), Operation: op, Err: err}
-	}
-	return total, nil
 }
 
 // changeArchivePostSlug changes the archive post slug when updating.

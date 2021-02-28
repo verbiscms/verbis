@@ -14,7 +14,7 @@ import (
 
 func (t *RolesTestSuite) TestStore_Find() {
 
-	query := "SELECT * FROM `roles` WHERE `id` = '1' LIMIT 1"
+	query := "SELECT * FROM `roles` WHERE `id` = ? LIMIT 1"
 
 	tt := map[string]struct {
 		want interface{}
@@ -25,7 +25,7 @@ func (t *RolesTestSuite) TestStore_Find() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name", "description"}).
 					AddRow(role.Id, role.Name, role.Description)
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(1).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {

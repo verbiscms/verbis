@@ -133,7 +133,7 @@ func TestParams_Filter(t *testing.T) {
 	}{
 		"Filter": {
 			`{"resource":[{"operator":"=", "value":"verbis"}]}`,
-			map[string][]Filter{
+			Filters{
 				"resource": {
 					{Operator: "=", Value: "verbis"},
 				},
