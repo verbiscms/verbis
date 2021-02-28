@@ -1,9 +1,7 @@
 package builder
 
 import (
-	"errors"
 	"fmt"
-	"github.com/google/uuid"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -264,26 +262,36 @@ func (s *Sqlbuilder) Build() string {
 	return returnString
 }
 
-func (s *Sqlbuilder) BuildInsert(table string, data interface{}, additionalQuery string) (string, error) {
-	dbCols, dbVals, err := mapStruct(data)
+func (s *Sqlbuilder) BuildInsert(table string, data interface{}, additionalQuery ...string) string {
+	dbCols, dbVals, err := mapStruct(data, false)
 	if err != nil {
-		return "", err
+		return ""
 	}
 
-	sql := "INSERT INTO " + s.formatSchema(table) + " (" + strings.Join(dbCols, ", ") + ") VALUES (" + strings.Join(dbVals, ", ") + ") " + additionalQuery
+	additional := ""
+	if len(additionalQuery) == 1 {
+		additional = additionalQuery[0]
+	}
 
-	return sql, nil
+	sql := "INSERT INTO " + s.formatSchema(table) + " (" + strings.Join(dbCols, ", ") + ") VALUES (" + strings.Join(dbVals, ", ") + ") " + additional
+
+	return sql
 }
 
-func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery string) (string, error) {
+func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery ...string) string {
 
-	dbCols, dbVals, err := mapStruct(data)
+	dbCols, dbVals, err := mapStruct(data, true)
 	if err != nil {
-		return "", err
+		return ""
 	}
 
 	setString := ""
 	sql := ""
+
+	additional := ""
+	if len(additionalQuery) == 1 {
+		additional = additionalQuery[0]
+	}
 
 	for i, col := range dbCols {
 		setString += col + ` = ` + dbVals[i] + `, `
@@ -297,12 +305,12 @@ func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery
 			sql += `WHERE ` + strings.TrimSuffix(s.wherestmt, ` AND `) + ` `
 		}
 
-		sql += additionalQuery
+		sql += additional
 
-		return sql, nil
+		return sql
 	}
 
-	return sql, errors.New("sql build failed")
+	return sql
 }
 
 /**
@@ -363,7 +371,7 @@ func toSnakeCase(str string) string {
 	return strings.ToLower(snake)
 }
 
-func mapStruct(data interface{}) (dbCols []string, dbVals []string, error error) {
+func mapStruct(data interface{}, update bool) (dbCols []string, dbVals []string, error error) {
 	fields := reflect.TypeOf(data)
 	values := reflect.ValueOf(data)
 
@@ -384,46 +392,47 @@ func mapStruct(data interface{}) (dbCols []string, dbVals []string, error error)
 
 		var v string
 
-		fmt.Println(value.CanInterface())
-		fmt.Println(value.Interface())
+		if val == "created_at" {
+			v = "NOW()"
+		}
 
-		if reflect.ValueOf(value).IsNil() {
+		if val == "updated_at" {
+			v = "NOW()"
+		}
+
+		if update && val == "updated_at" {
 			continue
 		}
-		if reflect.ValueOf(value).Interface() == nil {
-			break
-		}
-		if value.Kind() == reflect.Ptr {
-			value = value.Elem()
-		}
 
-		fmt.Println(val)
-		switch t := value.Interface().(type) {
-		//	switch value.Interface() {
-		case string:
+		switch value.Kind() {
+		case reflect.String:
 			v = "'" + sanitiseString(value.String()) + "'"
-		case int:
+		case reflect.Int:
 			v = strconv.FormatInt(value.Int(), 10)
-		case int8:
+		case reflect.Int8:
 			v = strconv.FormatInt(value.Int(), 10)
-		case int32:
+		case reflect.Int32:
 			v = strconv.FormatInt(value.Int(), 10)
-		case int64:
+		case reflect.Int64:
 			v = strconv.FormatInt(value.Int(), 10)
-		case float64:
+		case reflect.Float64:
 			v = fmt.Sprintf("%f", value.Float())
-		case float32:
+		case reflect.Float32:
 			v = fmt.Sprintf("%f", value.Float())
-		case uuid.UUID:
-			v = t.String()
-		case bool:
+		case reflect.Slice:
+			v = fmt.Sprintf("%v", value)
+		case reflect.Array:
+			v = fmt.Sprintf("%v", value)
+		case reflect.Ptr:
+			v = fmt.Sprintf("%v", value)
+		case reflect.Bool:
 			if value.Bool() {
 				v = "TRUE"
 			} else {
 				v = "FALSE"
 			}
-		default:
-			return dbCols, dbVals, errors.New("type: " + value.Kind().String() + " unsupported")
+			//default:
+			//	return dbCols, dbVals, errors.New("type: " + value.Kind().String() + " unsupported")
 		}
 
 		dbVals = append(dbVals, v)

@@ -13,7 +13,7 @@ type (
 	// Category defines the groups used for categorising
 	// individual posts.
 	Category struct {
-		Id          int       `db:"id" json:"id"`
+		Id          int64     `db:"id" json:"id"`
 		UUID        uuid.UUID `db:"uuid" json:"uuid"`
 		Slug        string    `db:"slug" json:"slug" binding:"required,max=150"`
 		Name        string    `db:"name" json:"name" binding:"required,max=150"`

@@ -205,7 +205,8 @@ func (c *Convert) addItem(item Item) {
 	}
 
 	if err == nil {
-		p.Category = &category.Id
+		cid := int(category.Id)
+		p.Category = &cid
 	}
 
 	post, err := c.store.Posts.Create(&p)
