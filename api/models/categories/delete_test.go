@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package roles
+package categories
 
 import (
 	"database/sql"
@@ -12,32 +12,34 @@ import (
 	"regexp"
 )
 
-func (t *RolesTestSuite) TestStore_Find() {
+const (
+	DeleteQuery = "SELECT * FROM `categories` WHERE `id` = ? LIMIT 1"
+)
 
-	query := "SELECT * FROM `roles` WHERE `id` = ? LIMIT 1"
+func (t *CategoriesTestSuite) TestStore_Delete() {
 
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			role,
+			category,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "name", "description"}).
-					AddRow(role.Id, role.Name, role.Description)
-				m.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(1).WillReturnRows(rows)
+				rows := sqlmock.NewRows([]string{"id", "slug", "name", "primary"}).
+					AddRow(category.Id, category.Slug, category.Name, category.Primary)
+				m.ExpectQuery(regexp.QuoteMeta(DeleteQuery)).WithArgs(category.Id).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"No redirect exists with the ID: 1",
+			"No category exists with the ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnError(sql.ErrNoRows)
+				m.ExpectQuery(regexp.QuoteMeta(DeleteQuery)).WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal": {
 			"Error executing sql query",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(DeleteQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
@@ -45,7 +47,7 @@ func (t *RolesTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(int64(role.Id))
+			got, err := s.Find(int64(category.Id))
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

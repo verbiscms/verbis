@@ -268,10 +268,6 @@ func (c *Convert) getCategory(categories []Category) (domain.Category, error) {
 
 	wp := categories[0]
 
-	if c.store.Categories.ExistsBySlug(wp.URLSlug) {
-		return c.store.Categories.GetBySlug(wp.URLSlug)
-	}
-
 	return c.store.Categories.Create(&domain.Category{
 		Slug:     wp.URLSlug,
 		Name:     wp.DisplayName,

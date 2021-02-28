@@ -17,10 +17,10 @@ import (
 func (s *Store) Find(id int64) (domain.Role, error) {
 	const op = "Redirects.Find"
 
-	q := s.Builder.Select("*").From(TableName).Where("id", "=", id).Limit(1).Build()
+	q := s.Builder.Select("*").From(TableName).WhereRaw("`id` = ?").Limit(1)
 
 	var r domain.Role
-	err := s.DB.Get(&r, q)
+	err := s.Get(&r, q.Build(), id)
 	if err == sql.ErrNoRows {
 		return domain.Role{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No redirect exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
