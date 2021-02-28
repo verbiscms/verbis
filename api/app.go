@@ -30,6 +30,8 @@ var App = struct {
 const (
 	// The web route of the API.
 	APIRoute = "/api/v1"
+
+	DefaultTheme = ""
 )
 
 // 50

@@ -29,8 +29,6 @@ type RecoverTestSuite struct {
 	apiPath   string
 }
 
-type noStringer struct{}
-
 // LoggerTestSuite defines the helper used for logger
 // testing.
 func TestRecovery(t *testing.T) {
@@ -59,10 +57,7 @@ func (t *RecoverTestSuite) SetDeps() {
 		Store: &models.Store{
 			Options: mock,
 		},
-		Paths: deps.Paths{
-			Theme: "theme",
-		},
-		Theme: &domain.ThemeConfig{
+		Config: &domain.ThemeConfig{
 			FileExtension: "cms",
 			TemplateDir:   "template",
 		},

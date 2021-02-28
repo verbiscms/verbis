@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/mail/events"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 )
 
 // FormRepository defines methods for Posts to interact with the database
@@ -29,17 +28,15 @@ type FormRepository interface {
 
 // FormsStore defines the data layer for Forms
 type FormsStore struct {
-	db        *sqlx.DB
-	config    *domain.ThemeConfig
+	*StoreConfig
 	siteModel SiteRepository
 }
 
 // newSeoMeta - Construct
-func newForms(db *sqlx.DB, cfg *domain.ThemeConfig) *FormsStore {
+func newForms(cfg *StoreConfig) *FormsStore {
 	return &FormsStore{
-		db:        db,
-		config:    cfg,
-		siteModel: newSite(db, cfg),
+		StoreConfig: cfg,
+		siteModel:   newSite(cfg),
 	}
 }
 
@@ -55,7 +52,7 @@ func (s *FormsStore) Get(meta params.Params) (domain.Forms, int, error) {
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM forms")
 
 	// Apply filters to total and original query
-	filter, err := filterRows(s.db, meta.Filters, "forms")
+	filter, err := filterRows(s.DB, meta.Filters, "forms")
 	if err != nil {
 		return nil, -1, err
 	}
@@ -71,7 +68,7 @@ func (s *FormsStore) Get(meta params.Params) (domain.Forms, int, error) {
 	}
 
 	// Select forms
-	if err := s.db.Select(&f, q); err != nil {
+	if err := s.DB.Select(&f, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get forms", Operation: op, Err: err}
 	}
 
@@ -82,7 +79,7 @@ func (s *FormsStore) Get(meta params.Params) (domain.Forms, int, error) {
 
 	// Count the total number of forms
 	var total int
-	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+	if err := s.DB.QueryRow(countQ).Scan(&total); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of forms", Operation: op, Err: err}
 	}
 
@@ -100,7 +97,7 @@ func (s *FormsStore) GetById(id int) (domain.Form, error) {
 	const op = "FormsRepository.GetByUUID"
 
 	var f domain.Form
-	if err := s.db.Get(&f, "SELECT * FROM forms WHERE id = ? LIMIT 1", id); err != nil {
+	if err := s.DB.Get(&f, "SELECT * FROM forms WHERE id = ? LIMIT 1", id); err != nil {
 		return domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the form with the ID: %v", id), Operation: op, Err: err}
 	}
 
@@ -121,7 +118,7 @@ func (s *FormsStore) GetByUUID(uuid string) (domain.Form, error) {
 	const op = "FormsRepository.GetByUUID"
 
 	var f domain.Form
-	if err := s.db.Get(&f, "SELECT * FROM forms WHERE uuid = ? LIMIT 1", uuid); err != nil {
+	if err := s.DB.Get(&f, "SELECT * FROM forms WHERE uuid = ? LIMIT 1", uuid); err != nil {
 		return domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the form with the UUID: %s", uuid), Operation: op, Err: err}
 	}
 
@@ -141,7 +138,7 @@ func (s *FormsStore) GetByUUID(uuid string) (domain.Form, error) {
 func (s *FormsStore) GetFields(id int) (domain.FormFields, error) {
 	const op = "FormsRepository.GetFields"
 	var f domain.FormFields
-	if err := s.db.Select(&f, "SELECT * FROM form_fields WHERE form_id = ?", id); err != nil {
+	if err := s.DB.Select(&f, "SELECT * FROM form_fields WHERE form_id = ?", id); err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the form fields with the form ID: %v", id), Operation: op, Err: err}
 	}
 	if len(f) == 0 {
@@ -157,7 +154,7 @@ func (s *FormsStore) GetFields(id int) (domain.FormFields, error) {
 func (s *FormsStore) Create(f *domain.Form) (domain.Form, error) {
 	const op = "FormsRepository.Create"
 
-	e, err := s.db.Exec("INSERT INTO forms (uuid, name, email_send, email_message, email_subject, store_db, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())", uuid.New().String(), f.Name, f.EmailSend, f.EmailMessage, f.EmailSubject, f.StoreDB)
+	e, err := s.DB.Exec("INSERT INTO forms (uuid, name, email_send, email_message, email_subject, store_db, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())", uuid.New().String(), f.Name, f.EmailSend, f.EmailMessage, f.EmailSubject, f.StoreDB)
 	if err != nil {
 		return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the form with the name: %v", f.Name), Operation: op, Err: err}
 	}
@@ -169,7 +166,7 @@ func (s *FormsStore) Create(f *domain.Form) (domain.Form, error) {
 	f.Id = int(id)
 
 	for _, v := range f.Fields {
-		_, err := s.db.Exec("INSERT INTO form_fields (uuid, form_id, key, label, type, validation, required, options, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())", uuid.New().String(), f.Id, v.Key, v.Type, v.Validation, v.Required, v.Options)
+		_, err := s.DB.Exec("INSERT INTO form_fields (uuid, form_id, key, label, type, validation, required, options, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())", uuid.New().String(), f.Id, v.Key, v.Type, v.Validation, v.Required, v.Options)
 		if err != nil {
 			return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the form fields with the key: %v", v.Key), Operation: op, Err: err}
 		}
@@ -195,17 +192,17 @@ func (s *FormsStore) Update(f *domain.Form) (domain.Form, error) {
 		return domain.Form{}, err
 	}
 
-	_, err = s.db.Exec("UPDATE forms SET name = ?, email_send = ?, email_message = ?, email_subject = ?, store_db = ?, updated_at = NOW() WHERE id = ?", f.Name, f.EmailSend, f.EmailMessage, f.EmailSubject, f.StoreDB, f.Id)
+	_, err = s.DB.Exec("UPDATE forms SET name = ?, email_send = ?, email_message = ?, email_subject = ?, store_db = ?, updated_at = NOW() WHERE id = ?", f.Name, f.EmailSend, f.EmailMessage, f.EmailSubject, f.StoreDB, f.Id)
 	if err != nil {
 		return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the form with the name: %s", f.Name), Operation: op, Err: err}
 	}
 
-	if _, err := s.db.Exec("DELETE FROM form_fields WHERE form_id = ?", f.Id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM form_fields WHERE form_id = ?", f.Id); err != nil {
 		return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete form fields with the form ID: %v", f.Id), Operation: op, Err: err}
 	}
 
 	for _, v := range f.Fields {
-		_, err := s.db.Exec("INSERT INTO form_fields (uuid, form_id, key, label, type, validation, required, options, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())", uuid.New().String(), f.Id, v.Key, v.Type, v.Validation, v.Required, v.Options)
+		_, err := s.DB.Exec("INSERT INTO form_fields (uuid, form_id, key, label, type, validation, required, options, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())", uuid.New().String(), f.Id, v.Key, v.Type, v.Validation, v.Required, v.Options)
 		if err != nil {
 			return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the form fields with the key: %v", v.Key), Operation: op, Err: err}
 		}
@@ -226,11 +223,11 @@ func (s *FormsStore) Delete(id int) error {
 		return err
 	}
 
-	if _, err := s.db.Exec("DELETE FROM forms WHERE id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM forms WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the form with the ID: %v", id), Operation: op, Err: err}
 	}
 
-	if _, err := s.db.Exec("DELETE FROM form_fields WHERE form_id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM form_fields WHERE form_id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete form fields with the form ID: %v", id), Operation: op, Err: err}
 	}
 
@@ -240,7 +237,7 @@ func (s *FormsStore) Delete(id int) error {
 func (s *FormsStore) Send(form *domain.Form, ip string, agent string) error {
 	const op = "FormsRepository.GetFields"
 
-	fv, att, err := forms.NewReader(form).Values()
+	fv, att, err := forms.NewReader(form, s.Paths.Storage).Values()
 	if err != nil {
 		return err
 	}
@@ -286,7 +283,7 @@ func (s *FormsStore) storeSubmission(form *domain.Form, values forms.FormValues,
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not process the form fields for storing"), Operation: op, Err: err}
 	}
 
-	_, err = s.db.Exec("INSERT INTO form_submissions (uuid, form_id, fields, ip_address, user_agent, sent_at) VALUES (?, ?, ?, ?, ?, NOW())", uuid.New().String(), form.Id, f, ip, agent)
+	_, err = s.DB.Exec("INSERT INTO form_submissions (uuid, form_id, fields, ip_address, user_agent, sent_at) VALUES (?, ?, ?, ?, ?, NOW())", uuid.New().String(), form.Id, f, ip, agent)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the form submission with the ID: %v", form.Id), Operation: op, Err: err}
 	}

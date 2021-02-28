@@ -45,6 +45,6 @@ func NewRender(d *deps.Deps) *publish {
 			MinifyXML:  options.MinifyXML,
 		}),
 		newHeaders(options),
-		NewSitemap(d.Store),
+		NewSitemap(d),
 	}
 }

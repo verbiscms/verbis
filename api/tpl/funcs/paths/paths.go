@@ -4,6 +4,8 @@
 
 package paths
 
+import "os"
+
 // Base
 //
 // Returns the base path of the project.
@@ -37,7 +39,7 @@ func (ns *Namespace) API() string {
 //
 // Example: {{ themePath }}
 func (ns *Namespace) Theme() string {
-	return ns.deps.Paths.Theme
+	return ns.deps.ThemePath()
 }
 
 // Uploads
@@ -64,7 +66,7 @@ func (ns *Namespace) Storage() string {
 //
 // Example: {{ uploadsPath }}
 func (ns *Namespace) Assets() string {
-	return ns.deps.Theme.AssetsPath
+	return ns.deps.Config.AssetsPath
 }
 
 // Templates
@@ -74,7 +76,7 @@ func (ns *Namespace) Assets() string {
 //
 // Example: {{ templatesPath }}
 func (ns *Namespace) Templates() string {
-	return ns.deps.Paths.Theme + ns.deps.Theme.TemplateDir
+	return ns.deps.ThemePath() + string(os.PathSeparator) + ns.deps.Config.TemplateDir
 }
 
 // Layouts
@@ -84,5 +86,5 @@ func (ns *Namespace) Templates() string {
 //
 // Example: {{ layoutsPath }}
 func (ns *Namespace) Layouts() string {
-	return ns.deps.Paths.Theme + ns.deps.Theme.LayoutDir
+	return ns.deps.ThemePath() + string(os.PathSeparator) + ns.deps.Config.LayoutDir
 }

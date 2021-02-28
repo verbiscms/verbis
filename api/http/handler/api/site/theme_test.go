@@ -5,16 +5,14 @@
 package site
 
 import (
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
 func (t *SiteTestSuite) TestSite_Theme() {
 	t.RequestAndServe(http.MethodGet, "/theme", "/theme", nil, func(ctx *gin.Context) {
-		t.Setup(func(m *mocks.SiteRepository) {
-			m.On("GetThemeConfig").Return(theme)
-		}).Theme(ctx)
+		t.Setup(nil).Theme(ctx)
 	})
-	t.RunT(theme, 200, "Successfully obtained theme config")
+	t.RunT(config.DefaultTheme, 200, "Successfully obtained theme config")
 }

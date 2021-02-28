@@ -67,17 +67,3 @@ func (_m *SiteRepository) GetTemplates() (domain.Templates, error) {
 
 	return r0, r1
 }
-
-// GetThemeConfig provides a mock function with given fields:
-func (_m *SiteRepository) GetThemeConfig() domain.ThemeConfig {
-	ret := _m.Called()
-
-	var r0 domain.ThemeConfig
-	if rf, ok := ret.Get(0).(func() domain.ThemeConfig); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(domain.ThemeConfig)
-	}
-
-	return r0
-}

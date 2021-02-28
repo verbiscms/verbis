@@ -5,6 +5,7 @@
 package site
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
@@ -43,6 +44,7 @@ func (t *SiteTestSuite) Setup(mf func(m *mocks.SiteRepository)) *Site {
 			Store: &models.Store{
 				Site: m,
 			},
+			Config: &config.DefaultTheme,
 		},
 	}
 }

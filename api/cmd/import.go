@@ -7,7 +7,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/importer/wordpress"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/kyokomi/emoji"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -22,22 +21,16 @@ and convert the data into Verbis content. `,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
-			cfg, db, err := doctor()
+			cfg, _, err := doctor()
 			if err != nil {
 				printError(err.Error())
 			}
 
 			fmt.Println()
 
-			// Set up stores & pass the database.
-			store := models.New(db, cfg.Config)
-			if err != nil {
-				printError(err.Error())
-			}
-
 			file := getXMLFile()
 
-			wp, err := wordpress.New(file, store, true)
+			wp, err := wordpress.New(file, cfg.Store, true)
 			if err != nil {
 				printError(err.Error())
 			}

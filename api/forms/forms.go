@@ -15,8 +15,9 @@ import (
 )
 
 type Reader struct {
-	Form   *domain.Form
-	Reader dynamicstruct.Reader
+	Form        *domain.Form
+	Reader      dynamicstruct.Reader
+	StoragePath string
 }
 
 type FormValues map[string]interface{}
@@ -35,10 +36,11 @@ type Sender struct {
 	Fields      FormValues
 }
 
-func NewReader(form *domain.Form) *Reader {
+func NewReader(form *domain.Form, path string) *Reader {
 	return &Reader{
-		Form:   form,
-		Reader: dynamicstruct.NewReader(form.Body),
+		Form:        form,
+		Reader:      dynamicstruct.NewReader(form.Body),
+		StoragePath: path,
 	}
 }
 
@@ -55,7 +57,7 @@ func (r *Reader) Values() (FormValues, Attachments, error) {
 		switch v.Type {
 		case "file":
 
-			a, err := getAttachment(field.Interface())
+			a, err := getAttachment(field.Interface(), r.StoragePath)
 			if err != nil {
 				return nil, nil, err
 			}

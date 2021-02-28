@@ -51,7 +51,7 @@ type (
 	Context struct {
 		Version string
 		Site    domain.Site
-		Options map[string]interface{}
+		Options domain.Options
 	}
 )
 
@@ -146,13 +146,9 @@ func (r *Recover) getRequestData() Request {
 //
 // Returns error friendly request Context for the template.
 func (r *Recover) getContextData() Context {
-	opts, err := r.deps.Store.Options.Get()
-	if err != nil {
-		opts = nil
-	}
 	return Context{
 		Version: api.App.Version,
 		Site:    r.deps.Site,
-		Options: opts,
+		Options: *r.deps.Options,
 	}
 }

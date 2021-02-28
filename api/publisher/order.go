@@ -44,7 +44,7 @@ func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 
 	// Check if the segment is an archive, or the last part
 	// of the url matches a resource in the theme config.
-	resource, ok := r.Theme.Resources[last]
+	resource, ok := r.Config.Resources[last]
 	if bool(post.IsArchive) || ok {
 		return &post, &TypeOfPage{
 			PageType: Archive,

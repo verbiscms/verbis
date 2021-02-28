@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 	"strings"
 	"time"
 )
@@ -37,17 +36,15 @@ type UserRepository interface {
 
 // UserStore defines the data layer for Users
 type UserStore struct {
-	db          *sqlx.DB
-	config      *domain.ThemeConfig
+	*StoreConfig
 	optionsRepo domain.Options
 }
 
 // newUser - Construct
-func newUser(db *sqlx.DB, cfg *domain.ThemeConfig) *UserStore {
+func newUser(cfg *StoreConfig) *UserStore {
 	return &UserStore{
-		db:          db,
-		config:      cfg,
-		optionsRepo: newOptions(db, cfg).GetStruct(),
+		StoreConfig: cfg,
+		optionsRepo: newOptions(cfg).GetStruct(),
 	}
 }
 
@@ -76,7 +73,7 @@ func (s *UserStore) Get(meta params.Params) (domain.Users, int, error) {
 	}
 
 	// Apply filters to total and original query
-	filter, err := filterRows(s.db, meta.Filters, table)
+	filter, err := filterRows(s.DB, meta.Filters, table)
 	if err != nil {
 		return nil, -1, err
 	}
@@ -92,7 +89,7 @@ func (s *UserStore) Get(meta params.Params) (domain.Users, int, error) {
 	}
 
 	// Select users
-	if err := s.db.Select(&u, q); err != nil {
+	if err := s.DB.Select(&u, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get users", Operation: op, Err: err}
 	}
 
@@ -103,7 +100,7 @@ func (s *UserStore) Get(meta params.Params) (domain.Users, int, error) {
 
 	// Count the total number of users
 	var total int
-	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+	if err := s.DB.QueryRow(countQ).Scan(&total); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
 	}
 
@@ -115,7 +112,7 @@ func (s *UserStore) Get(meta params.Params) (domain.Users, int, error) {
 func (s *UserStore) GetById(id int) (domain.User, error) {
 	const op = "UserRepository.GetById"
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE users.id = ?", id); err != nil {
+	if err := s.DB.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE users.id = ?", id); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the ID: %d", id), Operation: op, Err: err}
 	}
 	return u, nil
@@ -126,7 +123,7 @@ func (s *UserStore) GetById(id int) (domain.User, error) {
 func (s *UserStore) GetOwner() (domain.User, error) {
 	const op = "UserRepository.GetOwner"
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
+	if err := s.DB.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE roles.id = 6 LIMIT 1"); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "Could not get the owner of the site", Operation: op, Err: err}
 	}
 	return u, nil
@@ -137,7 +134,7 @@ func (s *UserStore) GetOwner() (domain.User, error) {
 func (s *UserStore) GetByToken(token string) (domain.User, error) {
 	const op = "UserRepository.GetOwner"
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE token = ? LIMIT 1", token); err != nil {
+	if err := s.DB.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE token = ? LIMIT 1", token); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the token: %s", token), Operation: op, Err: err}
 	}
 	return u, nil
@@ -148,7 +145,7 @@ func (s *UserStore) GetByToken(token string) (domain.User, error) {
 func (s *UserStore) GetByEmail(email string) (domain.User, error) {
 	const op = "UserRepository.GetByEmail"
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE email = ? LIMIT 1", email); err != nil {
+	if err := s.DB.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE email = ? LIMIT 1", email); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the email: %s", email), Operation: op, Err: err}
 	}
 	return u, nil
@@ -159,7 +156,7 @@ func (s *UserStore) GetByEmail(email string) (domain.User, error) {
 func (s *UserStore) GetRoles() ([]domain.UserRole, error) {
 	const op = "UserRepository.GetRoles"
 	var r []domain.UserRole
-	if err := s.db.Select(&r, "SELECT * FROM roles"); err != nil {
+	if err := s.DB.Select(&r, "SELECT * FROM roles"); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the user roles", Operation: op, Err: err}
 	}
 	return r, nil
@@ -184,7 +181,7 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 	token := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
 	userQ := "INSERT INTO users (uuid, first_name, last_name, email, password, website, facebook, twitter, linked_in, instagram, biography, profile_picture_id, token, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.db.Exec(userQ, uuid.New().String(), u.FirstName, u.LastName, u.Email, hashedPassword, u.Website, u.Facebook, u.Twitter, u.Linkedin, u.Instagram, u.Biography, u.ProfilePictureID, token)
+	c, err := s.DB.Exec(userQ, uuid.New().String(), u.FirstName, u.LastName, u.Email, hashedPassword, u.Website, u.Facebook, u.Twitter, u.Linkedin, u.Instagram, u.Biography, u.ProfilePictureID, token)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the user with the email: %s", u.Email), Operation: op, Err: err}
 	}
@@ -195,7 +192,7 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 	}
 
 	roleQ := "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)"
-	_, err = s.db.Exec(roleQ, id, u.Role.Id)
+	_, err = s.DB.Exec(roleQ, id, u.Role.Id)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the user role for user with the email: %s", u.Email), Operation: op, Err: err}
 	}
@@ -235,13 +232,13 @@ func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 	}
 
 	userQ := "UPDATE users SET first_name = ?, last_name = ?, email = ?, website = ?, facebook = ?, twitter = ?, linked_in = ?, instagram = ?, biography = ?, profile_picture_id = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(userQ, u.FirstName, u.LastName, u.Email, u.Website, u.Facebook, u.Twitter, u.Linkedin, u.Instagram, u.Biography, u.ProfilePictureID, u.Id)
+	_, err = s.DB.Exec(userQ, u.FirstName, u.LastName, u.Email, u.Website, u.Facebook, u.Twitter, u.Linkedin, u.Instagram, u.Biography, u.ProfilePictureID, u.Id)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user with the email: %s", u.Email), Operation: op, Err: err}
 	}
 
 	roleQ := "UPDATE user_roles SET role_id = ? WHERE user_id = ?"
-	_, err = s.db.Exec(roleQ, u.Role.Id, u.Id)
+	_, err = s.DB.Exec(roleQ, u.Role.Id, u.Id)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user roles with the user ID: %d", u.Id), Operation: op, Err: err}
 	}
@@ -265,11 +262,11 @@ func (s *UserStore) Delete(id int) error {
 		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("The owner of the site cannot be deleted."), Operation: op, Err: err}
 	}
 
-	if _, err := s.db.Exec("DELETE FROM users WHERE id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM users WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete user with the ID: %d", id), Operation: op, Err: err}
 	}
 
-	if _, err := s.db.Exec("DELETE FROM user_roles WHERE user_id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM user_roles WHERE user_id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not from the user roles with the ID: %d", id), Operation: op, Err: err}
 	}
 
@@ -294,10 +291,10 @@ func (s *UserStore) CheckSession(token string) error {
 		// Destroy the token and create a new one if session expired.
 		inactiveFor := time.Now().Sub(*u.TokenLastUsed).Minutes()
 
-		if int(inactiveFor) > s.config.Admin.InactiveSessionTime {
+		if int(inactiveFor) > s.Config.Admin.InactiveSessionTime {
 			newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
-			_, err := s.db.Exec("UPDATE users SET token = ?, updated_at = NOW() WHERE token = token", newToken)
+			_, err := s.DB.Exec("UPDATE users SET token = ?, updated_at = NOW() WHERE token = token", newToken)
 			if err != nil {
 				fmt.Println(err)
 				return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user's token with the name: %v", u.FirstName+" "+u.LastName), Operation: op, Err: err}
@@ -307,7 +304,7 @@ func (s *UserStore) CheckSession(token string) error {
 		}
 	}
 
-	_, err = s.db.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", token)
+	_, err = s.DB.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", token)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user token last used."), Operation: op, Err: err}
 	}
@@ -326,7 +323,7 @@ func (s *UserStore) ResetPassword(id int, reset domain.UserPasswordReset) error 
 		return err
 	}
 
-	_, err = s.db.Exec("UPDATE users SET password = ? WHERE id = ?", hashedPassword, id)
+	_, err = s.DB.Exec("UPDATE users SET password = ? WHERE id = ?", hashedPassword, id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not update the users table with the new password", Operation: op, Err: err}
 	}
@@ -339,7 +336,7 @@ func (s *UserStore) ResetPassword(id int, reset domain.UserPasswordReset) error 
 func (s *UserStore) CheckToken(token string) (domain.User, error) {
 	const op = "UserRepository.CheckToken"
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id WHERE users.token = ?", token); err != nil {
+	if err := s.DB.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id LEFT JOIN roles ON user_roles.role_id = roles.id WHERE users.token = ?", token); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get user with token: %v", token), Operation: op, Err: err}
 	}
 	return u, nil
@@ -348,14 +345,14 @@ func (s *UserStore) CheckToken(token string) (domain.User, error) {
 // Exists checks if the user record exists by ID
 func (s *UserStore) Exists(id int) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM users WHERE id = ?)", id).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM users WHERE id = ?)", id).Scan(&exists)
 	return exists
 }
 
 // ExistsByEmail checks if the user record exists by email
 func (s *UserStore) ExistsByEmail(email string) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM users WHERE email = ?)", email).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM users WHERE email = ?)", email).Scan(&exists)
 	return exists
 }
 
@@ -364,7 +361,7 @@ func (s *UserStore) ExistsByEmail(email string) bool {
 func (s *UserStore) Total() (int, error) {
 	const op = "UserRepository.Total"
 	var total int
-	if err := s.db.QueryRow("SELECT COUNT(*) FROM users").Scan(&total); err != nil {
+	if err := s.DB.QueryRow("SELECT COUNT(*) FROM users").Scan(&total); err != nil {
 		return -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of users", Operation: op, Err: err}
 	}
 	return total, nil

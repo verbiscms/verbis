@@ -7,8 +7,8 @@ package sockets
 import (
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -51,7 +51,7 @@ func reader(conn *websocket.Conn) {
 	}
 }
 
-func writer(ws *websocket.Conn) {
+func writer(ws *websocket.Conn, themePath string) {
 	const op = "OPCHANGE"
 
 	w := watcher.New()
@@ -63,7 +63,7 @@ func writer(ws *websocket.Conn) {
 			case _ = <-w.Event:
 				logger.Info("Updating theme configuration file, sending message")
 
-				b, err := json.Marshal(config.Fetch(paths.Theme()))
+				b, err := json.Marshal(config.Fetch(themePath))
 				if err != nil {
 					logger.WithError(errors.Error{
 						Code:      op,
@@ -90,7 +90,7 @@ func writer(ws *websocket.Conn) {
 	}()
 
 	// Watch this folder for changes.
-	if err := w.Add(paths.Theme()); err != nil {
+	if err := w.Add(themePath); err != nil {
 		logger.Error(err)
 	}
 
@@ -100,16 +100,18 @@ func writer(ws *websocket.Conn) {
 	}
 }
 
-func Admin(ctx *gin.Context) {
-	const op = "OPCHANGE"
+func Admin(d *deps.Deps) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		const op = "OPCHANGE"
 
-	ws, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error upgrading request to websocket", Operation: op, Err: err})
+		ws, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error upgrading request to websocket", Operation: op, Err: err})
+		}
+
+		logger.Info("Admin client webhook connected")
+
+		go writer(ws, d.ThemePath())
+		reader(ws)
 	}
-
-	logger.Info("Admin client webhook connected")
-
-	go writer(ws)
-	reader(ws)
 }

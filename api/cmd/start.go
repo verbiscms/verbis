@@ -30,10 +30,6 @@ up the server on the port specified in the .env file.`,
 				printError(err.Error())
 			}
 
-			// Load cron jobs
-			scheduler := cron.New(cfg.Store)
-			go scheduler.Run()
-
 			cfg.Running = true
 			d := deps.New(*cfg)
 
@@ -51,6 +47,10 @@ up the server on the port specified in the .env file.`,
 			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", d.Options.SiteUrl)
 			emoji.Printf(":key: Or visit the admin area at:  %s \n", d.Options.SiteUrl+"/admin")
 			fmt.Println()
+
+			// Load cron jobs
+			scheduler := cron.New(d)
+			go scheduler.Run()
 
 			// Listen & serve.
 			err = serve.ListenAndServe(cfg.Env.Port())

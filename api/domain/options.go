@@ -31,6 +31,8 @@ type (
 		SiteDescription string `json:"site_description" binding:"required"`
 		SiteLogo        string `json:"site_logo" binding:"required"`
 		SiteUrl         string `json:"site_url" binding:"required,url"`
+		// Theme
+		ActiveTheme string `json:"active_theme" binding:"required"`
 		// General
 		GeneralLocale string `json:"general_locale" binding:"required"`
 		// Contact

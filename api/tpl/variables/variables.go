@@ -49,7 +49,7 @@ type (
 func Data(d *deps.Deps, ctx *gin.Context, post *domain.PostDatum) interface{} {
 	return TemplateData{
 		Site:  d.Site,
-		Theme: *d.Theme,
+		Theme: *d.Config,
 		Post:  *post,
 		Options: Options{
 			Social: Social{

@@ -14,7 +14,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/disintegration/imaging"
@@ -22,7 +21,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jmoiron/sqlx"
 	"image"
 	"image/jpeg"
 	"image/png"
@@ -50,20 +48,18 @@ type MediaRepository interface {
 
 // MediaStore defines the data layer for Media
 type MediaStore struct {
-	db           *sqlx.DB
-	config       *domain.ThemeConfig
+	*StoreConfig
 	optionsModel OptionsRepository
 	userModel    UserRepository
 	options      domain.Options
 }
 
 // newMedia - Construct
-func newMedia(db *sqlx.DB, cfg *domain.ThemeConfig) *MediaStore {
+func newMedia(cfg *StoreConfig) *MediaStore {
 	ms := &MediaStore{
-		db:           db,
-		config:       cfg,
-		optionsModel: newOptions(db, cfg),
-		userModel:    newUser(db, cfg),
+		StoreConfig:  cfg,
+		optionsModel: cfg.Options,
+		userModel:    newUser(cfg),
 	}
 	ms.getOptionsStruct()
 	return ms
@@ -91,7 +87,7 @@ func (s *MediaStore) Get(meta params.Params) (domain.MediaItems, int, error) {
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM media")
 
 	// Apply filters to total and original query
-	filter, err := filterRows(s.db, meta.Filters, "media")
+	filter, err := filterRows(s.DB, meta.Filters, "media")
 	if err != nil {
 		return nil, -1, err
 	}
@@ -107,7 +103,7 @@ func (s *MediaStore) Get(meta params.Params) (domain.MediaItems, int, error) {
 	}
 
 	// Select media
-	if err := s.db.Select(&m, q); err != nil {
+	if err := s.DB.Select(&m, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get media", Operation: op, Err: err}
 	}
 
@@ -118,7 +114,7 @@ func (s *MediaStore) Get(meta params.Params) (domain.MediaItems, int, error) {
 
 	// Count the total number of media
 	var total int
-	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+	if err := s.DB.QueryRow(countQ).Scan(&total); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of media items", Operation: op, Err: err}
 	}
 
@@ -136,7 +132,7 @@ func (s *MediaStore) GetById(id int) (domain.Media, error) {
     CASE WHEN description IS NULL THEN '' ELSE description END AS 'description'
 	FROM media 
 	WHERE id = ? LIMIT 1`
-	if err := s.db.Get(&m, q, id); err != nil {
+	if err := s.DB.Get(&m, q, id); err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the ID: %d", id), Operation: op, Err: err}
 	}
 	return m, nil
@@ -153,7 +149,7 @@ func (s *MediaStore) GetByName(name string) (domain.Media, error) {
     CASE WHEN description IS NULL THEN '' ELSE description END AS 'description'
 	FROM media 
 	WHERE name = ? LIMIT 1`
-	if err := s.db.Get(&m, q, name); err != nil {
+	if err := s.DB.Get(&m, q, name); err != nil {
 
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the name: %s", name), Operation: op, Err: err}
 	}
@@ -173,12 +169,12 @@ func (s *MediaStore) GetByUrl(url string) (string, string, error) {
 	FROM media `
 
 	// Test normal size
-	if err := s.db.Get(&m, q+"WHERE url = ? LIMIT 1", url); err == nil {
+	if err := s.DB.Get(&m, q+"WHERE url = ? LIMIT 1", url); err == nil {
 		return m.FilePath + "/" + m.UUID.String(), m.Type, nil
 	}
 
 	// Test Sizes
-	err := s.db.Get(&m, q+"WHERE sizes LIKE '%"+url+"%' LIMIT 1")
+	err := s.DB.Get(&m, q+"WHERE sizes LIKE '%"+url+"%' LIMIT 1")
 	if err != nil {
 		return "", "", &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the url: %s", url), Operation: op, Err: fmt.Errorf("no media item exists with the url: %s", url)}
 	}
@@ -206,7 +202,7 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, 
 	}
 
 	extension := files.GetFileExtension(uploadPath)
-	absPath := paths.Uploads() + "/" + path
+	absPath := s.Paths.Uploads + "/" + path
 
 	var data []byte
 	var found error
@@ -294,7 +290,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 		return err
 	}
 
-	valid := mime.IsValidMime(s.config.Media.AllowedFileTypes, mimeType)
+	valid := mime.IsValidMime(s.Config.Media.AllowedFileTypes, mimeType)
 	if !valid {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The %s mime type, is not in the whitelist for uploading.", mimeType), Operation: op, Err: err}
 	}
@@ -343,7 +339,7 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 	}
 
 	q := "INSERT INTO media (uuid, url, title, alt, description, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.db.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
+	c, err := s.DB.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
 
 	if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the new media item with the name: %v", name), Operation: op, Err: err}
@@ -370,7 +366,7 @@ func (s *MediaStore) Update(m *domain.Media) error {
 	}
 
 	q := "UPDATE media SET title = ?, alt = ?, description = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, m.Title, m.Alt, m.Description, m.Id)
+	_, err = s.DB.Exec(q, m.Title, m.Alt, m.Description, m.Id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the media item with the ID: %v", m.Id), Operation: op, Err: err}
 	}
@@ -398,7 +394,7 @@ func (s *MediaStore) Delete(id int) error {
 	extension := files.GetFileExtension(m.Url)
 
 	// Delete entry from database
-	if _, err := s.db.Exec("DELETE FROM media WHERE id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM media WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete media item with the ID: %v", id), Operation: op, Err: err}
 	}
 
@@ -428,7 +424,7 @@ func (s *MediaStore) Delete(id int) error {
 func (s *MediaStore) Exists(name string) bool {
 	const op = "MediaRepository.Exists"
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM media WHERE file_name = ?)", name).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM media WHERE file_name = ?)", name).Scan(&exists)
 	return exists
 }
 
@@ -437,7 +433,7 @@ func (s *MediaStore) Exists(name string) bool {
 func (s *MediaStore) Total() (int, error) {
 	const op = "MediaRepository.Total"
 	var total int
-	if err := s.db.QueryRow("SELECT COUNT(*) FROM media").Scan(&total); err != nil {
+	if err := s.DB.QueryRow("SELECT COUNT(*) FROM media").Scan(&total); err != nil {
 		return -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of media items", Operation: op, Err: err}
 	}
 	return total, nil
@@ -539,14 +535,13 @@ func (s *MediaStore) createDirectory() (string, string) {
 	const op = "MediaRepository.createDirectory"
 
 	s.getOptionsStruct()
-	uploadsPath := paths.Uploads()
 
 	if !s.options.MediaOrganiseDate {
-		return uploadsPath, ""
+		return s.Paths.Uploads, ""
 	} else {
 		t := time.Now()
 		datePath := t.Format("2006") + "/" + t.Format("01")
-		path := uploadsPath + "/" + datePath
+		path := s.Paths.Uploads + "/" + datePath
 
 		if _, err := os.Stat(path); os.IsNotExist(err) {
 			_ = os.MkdirAll(path, os.ModePerm)
@@ -560,10 +555,10 @@ func (s *MediaStore) createDirectory() (string, string) {
 // return the public uploads folder by default.
 func (s *MediaStore) getUrl() string {
 	if !s.options.MediaOrganiseDate {
-		return s.config.Media.UploadPath
+		return s.Config.Media.UploadPath
 	} else {
 		t := time.Now()
-		return s.config.Media.UploadPath + "/" + t.Format("2006") + "/" + t.Format("01")
+		return s.Config.Media.UploadPath + "/" + t.Format("2006") + "/" + t.Format("01")
 	}
 }
 

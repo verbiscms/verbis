@@ -47,13 +47,7 @@ func (t *LocationTestSuite) SetupSuite() {
 }
 
 func TestNewLocation(t *testing.T) {
-	oldStoragePath := storagePath
-	defer func() {
-		storagePath = oldStoragePath
-	}()
-	storagePath = "test"
-
-	assert.Equal(t, &Location{JsonPath: "test/fields"}, NewLocation())
+	assert.Equal(t, &Location{JsonPath: "test/fields"}, NewLocation("test"))
 }
 
 func (t *LocationTestSuite) TestLocation_GetLayout() {

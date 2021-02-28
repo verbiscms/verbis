@@ -7,7 +7,6 @@ package publisher
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/gin-gonic/gin"
 	"github.com/gookit/color"
@@ -24,8 +23,8 @@ type Errors struct {
 func (r *publish) NotFound(g *gin.Context) {
 
 	exec := r.Tmpl().Prepare(tpl.Config{
-		Root:      paths.Theme(),
-		Extension: r.Theme.FileExtension,
+		Root:      r.ThemePath(),
+		Extension: r.Config.FileExtension,
 		Master:    "",
 	})
 
