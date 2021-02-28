@@ -24,11 +24,6 @@ type Repository interface {
 	Update(c *domain.Category) (domain.Category, error)
 	Delete(id int) error
 	Exists(id int) bool
-	ExistsByName(name string) bool
-	ExistsBySlug(slug string) bool
-	InsertPostCategory(postId int, categoryId *int) error
-	DeletePostCategories(id int) error
-	Total() (int, error)
 }
 
 // Store defines the data layer for Categories.
