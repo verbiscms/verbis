@@ -118,7 +118,7 @@ func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups {
 							}
 						case "category":
 							if post.Category != nil {
-								locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Category.Id), rule))
+								locationSet = append(locationSet, checkLocation(strconv.FormatInt(post.Category.Id, 10), rule))
 							} else {
 								locationSet = append(locationSet, checkLocation("", rule))
 							}

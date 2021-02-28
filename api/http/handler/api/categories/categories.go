@@ -32,7 +32,7 @@ type Categories struct {
 //
 // Clear the post cache that have the given category ID
 // attached to it.
-func (c *Categories) clearCache(id int) {
+func (c *Categories) clearCache(id int64) {
 	go func() {
 		posts, _, err := c.Store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
 		if err != nil {
