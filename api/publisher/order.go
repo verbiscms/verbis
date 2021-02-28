@@ -6,6 +6,7 @@ package publisher
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/gookit/color"
 	"strings"
 )
 
@@ -33,6 +34,8 @@ func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 
 	post, err := r.Store.Posts.GetBySlug(last)
 	if err != nil {
+
+		color.Green.Println(url)
 		post, err := r.Store.Posts.GetBySlug(urlTrimmed)
 		if err != nil {
 			return nil, nil, err
