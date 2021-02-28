@@ -5,6 +5,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/jmoiron/sqlx"
@@ -18,6 +19,16 @@ type DBSuite struct {
 	suite.Suite
 	DB   *sqlx.DB
 	Mock sqlmock.Sqlmock
+}
+
+type DBMockResultErr struct{}
+
+func (m DBMockResultErr) LastInsertId() (int64, error) {
+	return 0, fmt.Errorf("error")
+}
+
+func (m DBMockResultErr) RowsAffected() (int64, error) {
+	return 0, fmt.Errorf("error")
 }
 
 // NewDBSuite

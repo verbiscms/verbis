@@ -27,7 +27,7 @@ func (c *Categories) Update(ctx *gin.Context) {
 		return
 	}
 
-	id, err := strconv.Atoi(ctx.Param("id"))
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
 	if err != nil {
 		api.Respond(ctx, 400, "A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
@@ -45,5 +45,5 @@ func (c *Categories) Update(ctx *gin.Context) {
 
 	defer c.clearCache(updatedCategory.Id)
 
-	api.Respond(ctx, 200, "Successfully updated category with ID: "+strconv.Itoa(category.Id), updatedCategory)
+	api.Respond(ctx, 200, "Successfully updated category with ID: "+strconv.FormatInt(category.Id, 10), updatedCategory)
 }
