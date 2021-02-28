@@ -18,13 +18,13 @@ func (t *SEOTestSuite) TestSEO_SitemapIndex() {
 		want    interface{}
 		status  int
 		content string
-		mock    func(m *mocks.Renderer, ms *mocks.SiteMapper, ctx *gin.Context)
+		mock    func(m *mocks.Publisher, ms *mocks.SiteMapper, ctx *gin.Context)
 	}{
 		"Success": {
 			testString,
 			200,
 			"application/xml; charset=utf-8",
-			func(m *mocks.Renderer, ms *mocks.SiteMapper, ctx *gin.Context) {
+			func(m *mocks.Publisher, ms *mocks.SiteMapper, ctx *gin.Context) {
 				ms.On("Index").Return(*t.bytes, nil)
 			},
 		},
@@ -32,7 +32,7 @@ func (t *SEOTestSuite) TestSEO_SitemapIndex() {
 			testString,
 			404,
 			"text/html",
-			func(m *mocks.Renderer, ms *mocks.SiteMapper, ctx *gin.Context) {
+			func(m *mocks.Publisher, ms *mocks.SiteMapper, ctx *gin.Context) {
 				ms.On("Index").Return(nil, fmt.Errorf("error"))
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(404, "text/html", []byte(testString))

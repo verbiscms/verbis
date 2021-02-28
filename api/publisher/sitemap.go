@@ -9,13 +9,12 @@ import (
 	"encoding/xml"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/models"
 	"io/ioutil"
 	"time"
 )
@@ -38,8 +37,8 @@ type SiteMapper interface {
 // Sitemap represents the generation of sitemap.xml files for use
 // with the sitemap controller.
 type Sitemap struct {
-	store        *models.Store
-	options      domain.Options
+	deps         *deps.Deps
+	options      *domain.Options
 	resources    map[string]domain.Resource
 	templatePath string
 	indexXSL     string
@@ -82,10 +81,8 @@ const (
 )
 
 // NewSitemap - Construct
-func NewSitemap(m *models.Store) *Sitemap {
+func NewSitemap(d *deps.Deps) *Sitemap {
 	const op = "SiteMapper.NewSitemap"
-
-	theme := m.Site.GetThemeConfig()
 
 	// TODO: Causing issue! Returning pages to frontend?
 	//resources := theme.Resources
@@ -95,10 +92,10 @@ func NewSitemap(m *models.Store) *Sitemap {
 	//}
 
 	s := &Sitemap{
-		store:        m,
-		options:      m.Options.GetStruct(),
-		resources:    theme.Resources,
-		templatePath: paths.Api() + "/web/sitemaps/",
+		deps:         d,
+		options:      d.Options,
+		resources:    d.Config.Resources,
+		templatePath: d.Paths.Web + "/sitemaps/",
 		indexXSL:     "main-sitemap.xsl",
 		resourceXSL:  "resource-sitemap.xsl",
 	}
@@ -247,7 +244,7 @@ func (s *Sitemap) ClearCache() {
 func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 	const op = "SiteMapper.retrievePages"
 
-	posts, _, err := s.store.Posts.Get(params.Params{
+	posts, _, err := s.deps.Store.Posts.Get(params.Params{
 		Page:           1,
 		Limit:          0,
 		LimitAll:       true,
@@ -297,7 +294,7 @@ func (s *Sitemap) getRedirects() []viewItem {
 	}
 
 	var data []viewItem
-	redirects, _, err := s.store.Redirects.Get(params.Params{LimitAll: true, OrderBy: "created_at", OrderDirection: "desc"})
+	redirects, _, err := s.deps.Store.Redirects.Get(params.Params{LimitAll: true, OrderBy: "created_at", OrderDirection: "desc"})
 
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining site redirects", Operation: op, Err: err}).Error()
@@ -350,7 +347,7 @@ func (s *Sitemap) canServeResource(resource string) error {
 // getHomeCreatedAt - Get the homepage created at time or now if it
 // is not set.
 func (s *Sitemap) getHomeCreatedAt() string {
-	home, err := s.store.Posts.GetBySlug("/")
+	home, err := s.deps.Store.Posts.GetBySlug("/")
 	createdAt := time.Now().Format(time.RFC3339)
 	if err == nil {
 		createdAt = home.CreatedAt.Format(time.RFC3339)

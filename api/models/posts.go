@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 	"strings"
 )
 
@@ -36,7 +35,7 @@ type PostsRepository interface {
 
 // PostStore defines the data layer for Posts
 type PostStore struct {
-	db              *sqlx.DB
+	*StoreConfig
 	seoMetaModel    SeoMetaRepository
 	userModel       UserRepository
 	categoriesModel CategoryRepository
@@ -44,13 +43,13 @@ type PostStore struct {
 }
 
 // newPosts - Construct
-func newPosts(db *sqlx.DB, cfg *domain.ThemeConfig) *PostStore {
+func newPosts(cfg *StoreConfig) *PostStore {
 	return &PostStore{
-		db:              db,
-		seoMetaModel:    newSeoMeta(db),
-		userModel:       newUser(db, cfg),
-		categoriesModel: newCategories(db, cfg),
-		fieldsModel:     newFields(db, cfg),
+		StoreConfig:     cfg,
+		seoMetaModel:    newSeoMeta(cfg),
+		userModel:       newUser(cfg),
+		categoriesModel: newCategories(cfg),
+		fieldsModel:     newFields(cfg),
 	}
 }
 
@@ -100,7 +99,7 @@ func (s *PostStore) Get(meta params.Params, layout bool, resource string, status
 	countQ := "SELECT COUNT(*) FROM posts"
 
 	// Apply filters to total and original query
-	filter, err := filterRows(s.db, meta.Filters, "posts")
+	filter, err := filterRows(s.DB, meta.Filters, "posts")
 	if err != nil {
 		return nil, -1, err
 	}
@@ -161,13 +160,13 @@ func (s *PostStore) Get(meta params.Params, layout bool, resource string, status
 
 	var rawPosts []PostRaw
 
-	if err := s.db.Select(&rawPosts, q); err != nil {
+	if err := s.DB.Select(&rawPosts, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get posts", Operation: op, Err: err}
 	}
 
 	// Count the total number of posts
 	var total int
-	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+	if err := s.DB.QueryRow(countQ).Scan(&total); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
 	}
 
@@ -187,7 +186,7 @@ func (s *PostStore) GetById(id int, layout bool) (domain.PostDatum, error) {
 	const op = "PostsRepository.GetById"
 
 	var p []PostRaw
-	err := s.db.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.id = ? LIMIT 1"), id)
+	err := s.DB.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.id = ? LIMIT 1"), id)
 
 	if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the post with the ID: %d", id), Operation: op, Err: err}
@@ -208,7 +207,7 @@ func (s *PostStore) GetBySlug(slug string) (domain.PostDatum, error) {
 	const op = "PostsRepository.GetBySlug"
 
 	var p []PostRaw
-	err := s.db.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.slug = ? LIMIT 1"), slug)
+	err := s.DB.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.slug = ? LIMIT 1"), slug)
 
 	if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post with the slug %s", slug), Operation: op, Err: err}
@@ -253,7 +252,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostDatum, error) {
 	}
 
 	q := "INSERT INTO posts (uuid, slug, title, status, resource, page_template, layout, codeinjection_head, codeinjection_foot, user_id, published_at, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.db.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
+	c, err := s.DB.Exec(q, uuid.New().String(), p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt)
 	if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the post with the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -315,7 +314,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.PostDatum, error) {
 
 	// Update the posts table with data
 	q := "UPDATE posts SET slug = ?, title = ?, status = ?, resource = ?, page_template = ?, layout = ?, codeinjection_head = ?, codeinjection_foot = ?, user_id = ?, published_at = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
+	_, err = s.DB.Exec(q, p.Slug, p.Title, p.Status, p.Resource, p.PageTemplate, p.PageLayout, p.CodeInjectionHead, p.CodeInjectionFoot, p.UserId, p.PublishedAt, p.Id)
 	if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post wuth the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -357,7 +356,7 @@ func (s *PostStore) Delete(id int) error {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No post exists with the ID: %v", id), Operation: op, Err: fmt.Errorf("no post exists")}
 	}
 
-	if _, err := s.db.Exec("DELETE FROM posts WHERE id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM posts WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete post with the ID: %v", id), Operation: op, Err: err}
 	}
 
@@ -369,7 +368,7 @@ func (s *PostStore) Delete(id int) error {
 func (s *PostStore) Total() (int, error) {
 	const op = "PostsRepository.Total"
 	var total int
-	if err := s.db.QueryRow("SELECT COUNT(*) FROM posts").Scan(&total); err != nil {
+	if err := s.DB.QueryRow("SELECT COUNT(*) FROM posts").Scan(&total); err != nil {
 		return -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of posts", Operation: op, Err: err}
 	}
 	return total, nil
@@ -378,14 +377,14 @@ func (s *PostStore) Total() (int, error) {
 // Exists Checks if a post exists by the given slug
 func (s *PostStore) Exists(id int) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM posts WHERE id = ?)", id).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM posts WHERE id = ?)", id).Scan(&exists)
 	return exists
 }
 
 // Exists Checks if a post exists by the given slug
 func (s *PostStore) ExistsBySlug(slug string) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM posts WHERE slug = ?)", slug).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM posts WHERE slug = ?)", slug).Scan(&exists)
 	return exists
 }
 

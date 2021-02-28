@@ -11,7 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/jmoiron/sqlx"
+	"github.com/spf13/cast"
 )
 
 // OptionsRepository defines methods for Options to interact with the database
@@ -20,6 +20,7 @@ type OptionsRepository interface {
 	GetByName(name string) (interface{}, error)
 	GetStruct() domain.Options
 	UpdateCreate(options *domain.OptionsDBMap) error
+	Theme() string
 	Create(name string, value interface{}) error
 	Update(name string, value interface{}) error
 	Exists(name string) bool
@@ -27,15 +28,13 @@ type OptionsRepository interface {
 
 // OptionsStore defines the data layer for Posts
 type OptionsStore struct {
-	db     *sqlx.DB
-	config *domain.ThemeConfig
+	*StoreConfig
 }
 
 // newOptions - Construct
-func newOptions(db *sqlx.DB, config *domain.ThemeConfig) *OptionsStore {
+func newOptions(cfg *StoreConfig) *OptionsStore {
 	return &OptionsStore{
-		db:     db,
-		config: config,
+		StoreConfig: cfg,
 	}
 }
 
@@ -46,7 +45,7 @@ func (s *OptionsStore) Get() (domain.OptionsDBMap, error) {
 	const op = "OptionsRepository.Get"
 
 	var o domain.OptionsDB
-	if err := s.db.Select(&o, "SELECT * FROM options"); err != nil {
+	if err := s.DB.Select(&o, "SELECT * FROM options"); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get options", Operation: op, Err: err}
 	}
 
@@ -90,7 +89,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 	}
 
 	var opts domain.OptionsDB
-	if err := s.db.Select(&opts, "SELECT * FROM options"); err != nil {
+	if err := s.DB.Select(&opts, "SELECT * FROM options"); err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 		return domain.Options{}
 	}
@@ -149,7 +148,7 @@ func (s *OptionsStore) UpdateCreate(options *domain.OptionsDBMap) error {
 func (s *OptionsStore) Exists(name string) bool {
 	const op = "OptionsRepository.Exists"
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT option_name FROM options WHERE option_name = ?)", name).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT option_name FROM options WHERE option_name = ?)", name).Scan(&exists)
 	return exists
 }
 
@@ -158,7 +157,7 @@ func (s *OptionsStore) Exists(name string) bool {
 func (s *OptionsStore) Create(name string, value interface{}) error {
 	const op = "OptionsRepository.create"
 	q := "INSERT INTO options (option_name, option_value) VALUES (?, ?)"
-	_, err := s.db.Exec(q, name, value)
+	_, err := s.DB.Exec(q, name, value)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the option with the name: %s", name), Operation: op, Err: err}
 	}
@@ -170,11 +169,23 @@ func (s *OptionsStore) Create(name string, value interface{}) error {
 func (s *OptionsStore) Update(name string, value interface{}) error {
 	const op = "OptionsRepository.update"
 	q := "UPDATE options SET option_name = ?, option_value = ? WHERE option_name = ?"
-	_, err := s.db.Exec(q, name, value, name)
+	_, err := s.DB.Exec(q, name, value, name)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the option with the name: %s", name), Operation: op, Err: err}
 	}
 	return nil
+}
+
+func (s OptionsStore) Theme() string {
+	opt, err := s.GetByName("active_theme")
+	if err != nil {
+		logger.WithError(err).Fatal()
+	}
+	theme, err := cast.ToStringE(opt)
+	if err != nil {
+		logger.WithError(err).Fatal()
+	}
+	return theme
 }
 
 // Unmarshal the value

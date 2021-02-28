@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	newsResource = "news"
+	newsResource  = "news"
 	testResources = map[string]domain.Resource{
 		"news": {
 			Name:         newsResource,
@@ -26,22 +26,22 @@ var (
 		},
 	}
 	singlePost = domain.PostDatum{
-		Post: domain.Post{Slug:  "news-item", Title: "News Item", Resource: &newsResource},
+		Post: domain.Post{Slug: "news-item", Title: "News Item", Resource: &newsResource},
 	}
 	archivePost = domain.PostDatum{
-		Post: domain.Post{Slug:  "news", Title: "News"},
+		Post: domain.Post{Slug: "news", Title: "News"},
 	}
 	pagePost = domain.PostDatum{
-		Post: domain.Post{Slug:  "contact", Title: "Contact"},
+		Post: domain.Post{Slug: "contact", Title: "Contact"},
 	}
 	customSlugPost = domain.PostDatum{
-		Post: domain.Post{Slug:  "custom/slug", Title: "Contact"},
+		Post: domain.Post{Slug: "custom/slug", Title: "Contact"},
 	}
 	category = domain.Category{
-		Name:        "category",
+		Name: "category",
 	}
 	categoryPost = domain.PostDatum{
-		Post: domain.Post{Slug:  "custom/slug", Title: "Contact"}, Category: &category,
+		Post: domain.Post{Slug: "custom/slug", Title: "Contact"}, Category: &category,
 	}
 )
 
@@ -79,7 +79,7 @@ func TestRennder(t *testing.T) {
 				mc.On("GetBySlug", url).Return(domain.Category{}, fmt.Errorf("err"))
 			},
 			&pagePost,
-			&TypeOfPage{Page,  ""},
+			&TypeOfPage{Page, ""},
 			nil,
 		},
 		"Custom Slug": {
@@ -89,7 +89,7 @@ func TestRennder(t *testing.T) {
 				m.On("GetBySlug", url).Return(customSlugPost, nil)
 			},
 			&customSlugPost,
-			&TypeOfPage{Page,  ""},
+			&TypeOfPage{Page, ""},
 			nil,
 		},
 		"Not Found": {
@@ -126,7 +126,7 @@ func TestRennder(t *testing.T) {
 						Categories: mc,
 						Posts:      m,
 					},
-					Theme: &domain.ThemeConfig{
+					Config: &domain.ThemeConfig{
 						Resources: testResources,
 					},
 				},

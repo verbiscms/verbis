@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
@@ -36,7 +35,7 @@ func (r *publish) Asset(g *gin.Context) (string, *[]byte, error) {
 	url := g.Request.URL.Path
 
 	// Get the relevant paths
-	assetsPath := paths.Theme() + r.Theme.AssetsPath
+	assetsPath := r.ThemePath() + r.Config.AssetsPath
 	fileName := strings.Replace(url, "/assets", "", 1)
 	mimeType := mime.TypeByExtension(strings.Replace(filepath.Ext(fileName), ".", "", 1))
 

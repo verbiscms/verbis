@@ -12,16 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl"
 )
 
-type Paths struct {
-	Base    string
-	Admin   string
-	API     string
-	Theme   string
-	Uploads string
-	Storage string
-	Web     string
-}
-
 // Deps holds dependencies used by many.
 // There will be normally only one instance of deps in play
 // at a given time, i.e. one per Site built.
@@ -43,14 +33,15 @@ type Deps struct {
 	Options *domain.Options
 
 	// Paths
-	Paths Paths
-
-	// Theme
-	Theme *domain.ThemeConfig
+	Paths paths.Paths
 
 	tmpl tpl.TemplateHandler
 
 	Running bool
+}
+
+func (d *Deps) ThemePath() string {
+	return d.Paths.Base + "/theme"
 }
 
 func (d *Deps) Tmpl() tpl.TemplateHandler {
@@ -76,6 +67,8 @@ type DepsConfig struct {
 	// Config
 	Config *domain.ThemeConfig
 
+	Paths paths.Paths
+
 	Running bool
 }
 
@@ -91,23 +84,12 @@ func New(cfg DepsConfig) *Deps {
 
 	opts := cfg.Store.Options.GetStruct()
 
-	theme := cfg.Store.Site.GetThemeConfig()
-
 	d := &Deps{
 		Store:   cfg.Store,
 		Config:  cfg.Config,
 		Site:    cfg.Store.Site.GetGlobalConfig(),
 		Options: &opts,
-		Paths: Paths{
-			Base:    paths.Base(),
-			Admin:   paths.Admin(),
-			API:     paths.Api(),
-			Theme:   paths.Theme(),
-			Uploads: paths.Uploads(),
-			Storage: paths.Storage(),
-			Web:     paths.Web(),
-		},
-		Theme:   &theme,
+		Paths:   paths.Get(),
 		tmpl:    nil,
 		Running: cfg.Running,
 	}

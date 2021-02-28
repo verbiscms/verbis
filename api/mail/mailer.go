@@ -5,14 +5,15 @@
 package mail
 
 import (
+	"bytes"
 	"fmt"
 	sp "github.com/SparkPost/gosparkpost"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/forms"
-	"github.com/ainsleyclark/verbis/api/helpers/html"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"html/template"
 )
 
 type Mailer struct {
@@ -21,6 +22,7 @@ type Mailer struct {
 	FromAddress  string
 	FromName     string
 	Env          *environment.Env
+	Paths        paths.Paths
 }
 
 type Sender struct {
@@ -37,7 +39,8 @@ func New() (*Mailer, error) {
 	const op = "mail.New"
 	env, _ := environment.Load()
 	m := &Mailer{
-		Env: env,
+		Env:   env,
+		Paths: paths.Get(),
 	}
 	if err := m.load(); err != nil {
 		return &Mailer{}, err
@@ -50,6 +53,7 @@ func New() (*Mailer, error) {
 func (m *Mailer) load() error {
 	const op = "mail.Load"
 
+	// TODO this is temporary
 	mailConf := m.Env.MailConfig()
 	config := &sp.Config{
 		BaseUrl:    mailConf.SparkpostUrl,
@@ -113,10 +117,29 @@ func (m *Mailer) Send(t *Sender) {
 // Returns errors.INTERNAL if the render failed
 func (m *Mailer) ExecuteHTML(file string, data interface{}) (string, error) {
 	const op = "mail.ExecuteHTML"
-	path := paths.Web() + "/mail/" + file
-	tmpl, err := html.RenderTemplate("main", data, paths.Web()+"/mail/main-layout.html", path)
+	path := m.Paths.Web + "/mail/" + file
+	tmpl, err := RenderTemplate("main", data, m.Paths.Web+"/mail/main-layout.html", path)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to render the template: %s", path), Operation: op, Err: err}
 	}
 	return tmpl, nil
+}
+
+// RenderTemplate executes the html and returns a string
+// Returns errors.INTERNAL if the template failed to be created
+// or be executed.
+func RenderTemplate(layout string, data interface{}, files ...string) (string, error) {
+	const op = "html.RenderTemplate"
+
+	t, err := template.New("").ParseFiles(files...)
+	if err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to create a new template", Operation: op, Err: err}
+	}
+
+	var tpl bytes.Buffer
+	if err := t.ExecuteTemplate(&tpl, layout, data); err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to render the template", Operation: op, Err: err}
+	}
+
+	return tpl.String(), nil
 }

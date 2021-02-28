@@ -6,16 +6,23 @@ package models
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"regexp"
 	"strings"
 )
+
+type StoreConfig struct {
+	DB      *sqlx.DB
+	Config  *domain.ThemeConfig
+	Paths   paths.Paths
+	Options OptionsRepository
+}
 
 // Store defines all of the repositories used to interact with the database
 type Store struct {
@@ -34,20 +41,22 @@ type Store struct {
 }
 
 // Create a new database instance, connect to database.
-func New(db *database.MySql, cfg *domain.ThemeConfig) *Store {
+func New(cfg *StoreConfig) *Store {
+
+	cfg.Options = newOptions(cfg)
+
 	return &Store{
-		Auth:       newAuth(db.Sqlx, cfg),
-		Categories: newCategories(db.Sqlx, cfg),
-		Forms:      newForms(db.Sqlx, cfg),
-		Fields:     newFields(db.Sqlx, cfg),
-		Media:      newMedia(db.Sqlx, cfg),
-		Options:    newOptions(db.Sqlx, cfg),
-		Posts:      newPosts(db.Sqlx, cfg),
-		Redirects:  newRedirects(db.Sqlx, cfg),
-		Roles:      newRoles(db.Sqlx, cfg),
-		Site:       newSite(db.Sqlx, cfg),
-		User:       newUser(db.Sqlx, cfg),
-		Config:     cfg,
+		Auth:       newAuth(cfg),
+		Categories: newCategories(cfg),
+		Forms:      newForms(cfg),
+		Fields:     newFields(cfg),
+		Media:      newMedia(cfg),
+		Options:    newOptions(cfg),
+		Posts:      newPosts(cfg),
+		Redirects:  newRedirects(cfg),
+		Roles:      newRoles(cfg),
+		Site:       newSite(cfg),
+		User:       newUser(cfg),
 	}
 }
 

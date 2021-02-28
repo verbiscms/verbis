@@ -15,11 +15,18 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+type DbCfg struct {
+	Sqlx  *sqlx.DB
+	En    environment.Env
+	Paths paths.Paths
+}
+
 // MySql defines the driver for the database
 type MySql struct {
 	Sqlx     *sqlx.DB
 	env      *environment.Env
 	database string
+	paths    paths.Paths
 }
 
 // New - Creates a new MySql instance.
@@ -27,6 +34,7 @@ func New(env *environment.Env) (*MySql, error) {
 	db := MySql{
 		env:      env,
 		database: env.DbDatabase,
+		paths:    paths.Get(),
 	}
 
 	sql, err := db.GetDatabase()
@@ -82,7 +90,7 @@ func (db *MySql) Ping() error {
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (db *MySql) Install() error {
 	const op = "Database.Install"
-	path := paths.Migration() + "/schema.sql"
+	path := db.paths.Migration + "/schema.sql"
 	sql, err := files.GetFileContents(path)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Unable to load the sql migration file from the path: %s", path), Operation: op, Err: err}

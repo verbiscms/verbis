@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/jmoiron/sqlx"
 )
 
 // SeoMetaRepository defines methods for Posts to interact with the database
@@ -18,13 +17,13 @@ type SeoMetaRepository interface {
 
 // SeoMetaStore defines the data layer for Seo & Meta Options
 type SeoMetaStore struct {
-	db *sqlx.DB
+	*StoreConfig
 }
 
 // newSeoMeta - Construct
-func newSeoMeta(db *sqlx.DB) *SeoMetaStore {
+func newSeoMeta(cfg *StoreConfig) *SeoMetaStore {
 	return &SeoMetaStore{
-		db: db,
+		StoreConfig: cfg,
 	}
 }
 
@@ -46,7 +45,7 @@ func (s *SeoMetaStore) UpdateCreate(id int, p domain.PostOptions) error {
 // Exists Checks if a seo meta record exists by Id
 func (s *SeoMetaStore) exists(id int) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT post_id FROM post_options WHERE post_id = ?)", id).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT post_id FROM post_options WHERE post_id = ?)", id).Scan(&exists)
 	return exists
 }
 
@@ -54,7 +53,7 @@ func (s *SeoMetaStore) exists(id int) bool {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *SeoMetaStore) create(id int, p domain.PostOptions) error {
 	const op = "SeoMetaRepository.create"
-	_, err := s.db.Exec("INSERT INTO post_options (post_id, seo, meta) VALUES (?, ?, ?)", id, p.Seo, p.Meta)
+	_, err := s.DB.Exec("INSERT INTO post_options (post_id, seo, meta) VALUES (?, ?, ?)", id, p.Seo, p.Meta)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the seo meta options record with the post id: %d", id), Operation: op, Err: err}
 	}
@@ -65,7 +64,7 @@ func (s *SeoMetaStore) create(id int, p domain.PostOptions) error {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *SeoMetaStore) update(id int, p domain.PostOptions) error {
 	const op = "SeoMetaRepository.update"
-	_, err := s.db.Exec("UPDATE post_options SET seo = ?, meta = ? WHERE post_id = ?", p.Seo, p.Meta, id)
+	_, err := s.DB.Exec("UPDATE post_options SET seo = ?, meta = ? WHERE post_id = ?", p.Seo, p.Meta, id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the seo meta options with the post id: %d", id), Operation: op, Err: err}
 	}

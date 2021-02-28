@@ -37,8 +37,8 @@ func (r *Recover) resolveErrorPage(custom bool) (string, tpl.TemplateExecutor, b
 
 	path := ""
 	e := r.deps.Tmpl().Prepare(tpl.Config{
-		Root:      r.deps.Paths.Theme + "/" + r.deps.Theme.TemplateDir,
-		Extension: r.deps.Theme.FileExtension,
+		Root:      r.deps.ThemePath() + "/" + r.deps.Config.TemplateDir,
+		Extension: r.deps.Config.FileExtension,
 	})
 
 	// Look for `errors-404.cms` for example

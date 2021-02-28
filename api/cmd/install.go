@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/seeds"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
@@ -73,7 +74,12 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Set up stores & pass the database.
-	store := models.New(db, cfg.Config)
+	store := models.New(&models.StoreConfig{
+		DB:      db.Sqlx,
+		Config:  cfg.Config,
+		Paths:   paths.Get(),
+		Options: nil,
+	})
 	if err != nil {
 		printError(err.Error())
 	}

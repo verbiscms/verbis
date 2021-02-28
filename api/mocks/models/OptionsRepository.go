@@ -100,6 +100,20 @@ func (_m *OptionsRepository) GetStruct() domain.Options {
 	return r0
 }
 
+// Theme provides a mock function with given fields:
+func (_m *OptionsRepository) Theme() string {
+	ret := _m.Called()
+
+	var r0 string
+	if rf, ok := ret.Get(0).(func() string); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(string)
+	}
+
+	return r0
+}
+
 // Update provides a mock function with given fields: name, value
 func (_m *OptionsRepository) Update(name string, value interface{}) error {
 	ret := _m.Called(name, value)

@@ -7,22 +7,22 @@ package paths
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 var (
 	ns = New(&deps.Deps{
-		Paths: deps.Paths{
-			Base:    "/base/",
+		Paths: paths.Paths{
+			Base:    "/base",
 			Admin:   "/admin/",
 			API:     "/api/",
-			Theme:   "/theme/",
 			Uploads: "/uploads/",
 			Storage: "/storage/",
 			Web:     "/web/",
 		},
-		Theme: &domain.ThemeConfig{
+		Config: &domain.ThemeConfig{
 			TemplateDir: "templates",
 			LayoutDir:   "layouts",
 			AssetsPath:  "/assets/",
@@ -32,7 +32,7 @@ var (
 
 func TestNamespace_Base(t *testing.T) {
 	got := ns.Base()
-	assert.Equal(t, "/base/", got)
+	assert.Equal(t, "/base", got)
 }
 
 func TestNamespace_Admin(t *testing.T) {
@@ -47,7 +47,7 @@ func TestNamespace_API(t *testing.T) {
 
 func TestNamespace_Theme(t *testing.T) {
 	got := ns.Theme()
-	assert.Equal(t, "/theme/", got)
+	assert.Equal(t, "/base/theme", got)
 }
 
 func TestNamespace_Uploads(t *testing.T) {
@@ -67,10 +67,10 @@ func TestNamespace_Assets(t *testing.T) {
 
 func TestNamespace_Templates(t *testing.T) {
 	got := ns.Templates()
-	assert.Equal(t, "/theme/templates", got)
+	assert.Equal(t, "/base/theme/templates", got)
 }
 
 func TestNameSpace_Layouts(t *testing.T) {
 	got := ns.Layouts()
-	assert.Equal(t, "/theme/layouts", got)
+	assert.Equal(t, "/base/theme/layouts", got)
 }

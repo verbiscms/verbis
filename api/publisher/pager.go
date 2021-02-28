@@ -43,7 +43,7 @@ func (p *page) Execute() ([]byte, error) {
 	var buf bytes.Buffer
 
 	exec := p.Prepare()
-	template := p.Theme.TemplateDir + string(os.PathSeparator) + p.Post.PageTemplate
+	template := p.Config.TemplateDir + string(os.PathSeparator) + p.Post.PageTemplate
 	failed, err := exec.ExecutePost(&buf, template, p.Context, p.Post)
 
 	if err != nil {
@@ -72,9 +72,9 @@ func (p *page) Execute() ([]byte, error) {
 // post data and paths.
 func (p *page) Prepare() tpl.TemplateExecutor {
 	return p.Tmpl().Prepare(&tpl.Config{
-		Root:      p.Paths.Theme,
-		Extension: p.Theme.FileExtension,
-		Master:    p.Theme.LayoutDir + string(os.PathSeparator) + p.Post.PageLayout,
+		Root:      p.ThemePath(),
+		Extension: p.Config.FileExtension,
+		Master:    p.Config.LayoutDir + string(os.PathSeparator) + p.Post.PageLayout,
 	})
 }
 
@@ -97,7 +97,7 @@ func (p *page) IsResourcePublic() error {
 
 	resource := p.Post.Resource
 	if resource != nil {
-		for _, v := range p.Theme.Resources {
+		for _, v := range p.Config.Resources {
 			if v.Hidden && v.Name == *resource {
 				return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("The post resource is not public: %v", resource), Operation: op, Err: fmt.Errorf("resource not public")}
 			}

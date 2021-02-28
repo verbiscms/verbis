@@ -54,6 +54,7 @@ var (
 		SiteDescription:  "test",
 		SiteLogo:         "test",
 		SiteUrl:          "http://verbiscms.com",
+		ActiveTheme:      "theme",
 		GeneralLocale:    "test",
 		MediaCompression: 10,
 	}
@@ -63,6 +64,7 @@ var (
 		SiteDescription:  "test",
 		SiteLogo:         "test",
 		GeneralLocale:    "test",
+		ActiveTheme:      "test",
 		MediaCompression: 10,
 	}
 	// The default options used for testing.

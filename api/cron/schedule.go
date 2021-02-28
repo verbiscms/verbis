@@ -5,8 +5,8 @@
 package cron
 
 import (
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/jasonlvhit/gocron"
 )
@@ -14,13 +14,13 @@ import (
 // Scheduler defines all necessary cron jobs for the application
 // when running.
 type Scheduler struct {
-	store *models.Store
+	*deps.Deps
 }
 
 // New - Construct for a new Scheduler
-func New(m *models.Store) *Scheduler {
+func New(d *deps.Deps) *Scheduler {
 	return &Scheduler{
-		store: m,
+		Deps: d,
 	}
 }
 
@@ -30,7 +30,7 @@ func (s *Scheduler) Run() {
 	// Clean password resets table every 15 minutes
 	err := gocron.Every(15).Minutes().Do(func() {
 		logger.Info("Cleaning password resets table")
-		err := s.store.Auth.CleanPasswordResets()
+		err := s.Store.Auth.CleanPasswordResets()
 		if err != nil {
 			logger.WithError(err).Error()
 		}
@@ -41,7 +41,8 @@ func (s *Scheduler) Run() {
 
 	// Clean sitemap cache
 	err = gocron.Every(6).Hours().Do(func() {
-		publisher.NewSitemap(s.store).ClearCache()
+		logger.Info("Clearing sitemap cache")
+		publisher.NewSitemap(s.Deps).ClearCache()
 	})
 	if err != nil {
 		logger.WithError(err).Error()

@@ -33,8 +33,8 @@ func TestPublic(t *testing.T) {
 // Setup
 //
 // A helper to obtain a public handler for testing.
-func (t *PublicTestSuite) Setup(mf func(m *mocks.Renderer, ctx *gin.Context), ctx *gin.Context) *Public {
-	m := &mocks.Renderer{}
+func (t *PublicTestSuite) Setup(mf func(m *mocks.Publisher, ctx *gin.Context), ctx *gin.Context) *Public {
+	m := &mocks.Publisher{}
 	if mf != nil {
 		mf(m, ctx)
 	}

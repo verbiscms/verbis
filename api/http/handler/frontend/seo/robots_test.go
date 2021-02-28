@@ -19,7 +19,7 @@ func (t *SEOTestSuite) TestSEO_Robots() {
 		status  int
 		content string
 		options *domain.Options
-		mock    func(m *mocks.Renderer, ctx *gin.Context)
+		mock    func(m *mocks.Publisher, ctx *gin.Context)
 	}{
 		"Success": {
 			"test",
@@ -38,7 +38,7 @@ func (t *SEOTestSuite) TestSEO_Robots() {
 			&domain.Options{
 				SeoRobotsServe: false,
 			},
-			func(m *mocks.Renderer, ctx *gin.Context) {
+			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(404, "text/html", []byte("test"))
 				})
