@@ -27,6 +27,9 @@ var (
 			LayoutDir:   "layouts",
 			AssetsPath:  "/assets/",
 		},
+		Options: &domain.Options{
+			ActiveTheme: "theme",
+		},
 	})
 )
 
@@ -47,7 +50,7 @@ func TestNamespace_API(t *testing.T) {
 
 func TestNamespace_Theme(t *testing.T) {
 	got := ns.Theme()
-	assert.Equal(t, "/base/theme", got)
+	assert.Equal(t, "/base/themes/theme", got)
 }
 
 func TestNamespace_Uploads(t *testing.T) {
@@ -67,10 +70,10 @@ func TestNamespace_Assets(t *testing.T) {
 
 func TestNamespace_Templates(t *testing.T) {
 	got := ns.Templates()
-	assert.Equal(t, "/base/theme/templates", got)
+	assert.Equal(t, "/base/themes/theme/templates", got)
 }
 
 func TestNameSpace_Layouts(t *testing.T) {
 	got := ns.Layouts()
-	assert.Equal(t, "/base/theme/layouts", got)
+	assert.Equal(t, "/base/themes/theme/layouts", got)
 }

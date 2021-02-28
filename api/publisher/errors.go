@@ -7,9 +7,9 @@ package publisher
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
 )
 
 type ErrorHandler interface {
@@ -31,7 +31,7 @@ func (r *publish) NotFound(g *gin.Context) {
 	_, err := exec.ExecutePost(g.Writer, "404", g, &domain.PostDatum{})
 
 	if err != nil {
-		color.Green.Println(err)
+		logger.WithError(err).Error()
 	}
 
 	return

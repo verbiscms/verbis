@@ -6,6 +6,7 @@ package models
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers"
@@ -13,6 +14,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"os"
 	"regexp"
 	"strings"
 )
@@ -37,13 +39,14 @@ type Store struct {
 	Roles      RoleRepository
 	Site       SiteRepository
 	User       UserRepository
-	Config     *domain.ThemeConfig
 }
 
 // Create a new database instance, connect to database.
 func New(cfg *StoreConfig) *Store {
 
 	cfg.Options = newOptions(cfg)
+	ps := string(os.PathSeparator)
+	cfg.Config = config.Init(cfg.Paths.Base + ps + "themes" + ps + cfg.Options.Theme())
 
 	return &Store{
 		Auth:       newAuth(cfg),
