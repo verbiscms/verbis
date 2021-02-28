@@ -22,7 +22,7 @@ type MiddlewareTestSuite struct {
 // Assert testing has begun.
 func TestMiddleware(t *testing.T) {
 	suite.Run(t, &MiddlewareTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

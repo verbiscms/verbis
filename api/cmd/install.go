@@ -229,7 +229,7 @@ func createOwner() *domain.UserCreate {
 				FirstName: firstName,
 				LastName:  lastName,
 				Email:     email,
-				Role: domain.UserRole{
+				Role: domain.Role{
 					Id: 6,
 				},
 			},

@@ -26,7 +26,7 @@ type SiteTestSuite struct {
 // Assert testing has begun.
 func TestSite(t *testing.T) {
 	suite.Run(t, &SiteTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

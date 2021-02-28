@@ -227,15 +227,15 @@ func (_m *UserRepository) GetOwner() (domain.User, error) {
 }
 
 // GetRoles provides a mock function with given fields:
-func (_m *UserRepository) GetRoles() ([]domain.UserRole, error) {
+func (_m *UserRepository) GetRoles() ([]domain.Role, error) {
 	ret := _m.Called()
 
-	var r0 []domain.UserRole
-	if rf, ok := ret.Get(0).(func() []domain.UserRole); ok {
+	var r0 []domain.Role
+	if rf, ok := ret.Get(0).(func() []domain.Role); ok {
 		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]domain.UserRole)
+			r0 = ret.Get(0).([]domain.Role)
 		}
 	}
 

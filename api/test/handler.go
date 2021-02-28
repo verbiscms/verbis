@@ -43,11 +43,11 @@ type HandlerSuite struct {
 	Engine   *gin.Engine
 }
 
-// TestSuite
+// NewHandlerSuite
 //
 // New recorder for testing
 // controllers, initialises gin & sets gin mode.
-func TestSuite() HandlerSuite {
+func NewHandlerSuite() HandlerSuite {
 	gin.SetMode(gin.TestMode)
 	gin.DefaultWriter = ioutil.Discard
 	rr := httptest.NewRecorder()

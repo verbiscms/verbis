@@ -24,7 +24,7 @@ type FieldTestSuite struct {
 // Assert testing has begun.
 func TestFields(t *testing.T) {
 	suite.Run(t, &FieldTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

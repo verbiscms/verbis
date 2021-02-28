@@ -25,7 +25,7 @@ type PublicTestSuite struct {
 func TestPublic(t *testing.T) {
 	b := []byte(testString)
 	suite.Run(t, &PublicTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 		bytes:        &b,
 	})
 }

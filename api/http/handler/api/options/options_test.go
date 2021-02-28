@@ -25,7 +25,7 @@ type OptionsTestSuite struct {
 // Assert testing has begun.
 func TestOptions(t *testing.T) {
 	suite.Run(t, &OptionsTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

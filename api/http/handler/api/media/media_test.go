@@ -33,7 +33,7 @@ type MediaTestSuite struct {
 // Assert testing has begun.
 func TestMedia(t *testing.T) {
 	suite.Run(t, &MediaTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 

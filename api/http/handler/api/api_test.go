@@ -25,7 +25,7 @@ type ApiTestSuite struct {
 // Assert testing has begun.
 func TestApi(t *testing.T) {
 	suite.Run(t, &ApiTestSuite{
-		HandlerSuite: test.TestSuite(),
+		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 
