@@ -34,8 +34,8 @@ func TestSEO(t *testing.T) {
 // Setup
 //
 // A helper to obtain a seo handler for testing.
-func (t *SEOTestSuite) Setup(mf func(ms *mocks.Renderer, ctx *gin.Context), ctx *gin.Context) *SEO {
-	m := &mocks.Renderer{}
+func (t *SEOTestSuite) Setup(mf func(ms *mocks.Publisher, ctx *gin.Context), ctx *gin.Context) *SEO {
+	m := &mocks.Publisher{}
 	if mf != nil {
 		mf(m, ctx)
 	}
@@ -49,9 +49,9 @@ func (t *SEOTestSuite) Setup(mf func(ms *mocks.Renderer, ctx *gin.Context), ctx 
 //
 // A helper to obtain a seo handler for testing
 // for sitemap handle funcs.
-func (t *SEOTestSuite) SetupSitemap(mf func(m *mocks.Renderer, ms *mocks.SiteMapper, ctx *gin.Context), ctx *gin.Context) *SEO {
+func (t *SEOTestSuite) SetupSitemap(mf func(m *mocks.Publisher, ms *mocks.SiteMapper, ctx *gin.Context), ctx *gin.Context) *SEO {
 	ms := &mocks.SiteMapper{}
-	m := &mocks.Renderer{}
+	m := &mocks.Publisher{}
 	m.On("SiteMap").Return(ms)
 	if mf != nil {
 		mf(m, ms, ctx)

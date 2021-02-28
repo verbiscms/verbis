@@ -5,7 +5,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/jmoiron/sqlx"
 )
 
 // RedirectRepository defines methods for Redirects to interact with the database
@@ -22,15 +21,13 @@ type RedirectRepository interface {
 
 // RedirectStore defines the data layer for Categories
 type RedirectStore struct {
-	db     *sqlx.DB
-	config *domain.ThemeConfig
+	*StoreConfig
 }
 
 // newRedirects - Construct
-func newRedirects(db *sqlx.DB, cfg *domain.ThemeConfig) *RedirectStore {
+func newRedirects(cfg *StoreConfig) *RedirectStore {
 	return &RedirectStore{
-		db:     db,
-		config: cfg,
+		StoreConfig: cfg,
 	}
 }
 
@@ -45,7 +42,7 @@ func (s *RedirectStore) Get(meta params.Params) (domain.Redirects, int, error) {
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM redirects")
 
 	// Apply filters to total and original query
-	filter, err := filterRows(s.db, meta.Filters, "redirects")
+	filter, err := filterRows(s.DB, meta.Filters, "redirects")
 	if err != nil {
 		return nil, -1, err
 	}
@@ -61,7 +58,7 @@ func (s *RedirectStore) Get(meta params.Params) (domain.Redirects, int, error) {
 	}
 
 	// Select redirects
-	if err := s.db.Select(&r, q); err != nil {
+	if err := s.DB.Select(&r, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get redirects", Operation: op, Err: err}
 	}
 
@@ -72,7 +69,7 @@ func (s *RedirectStore) Get(meta params.Params) (domain.Redirects, int, error) {
 
 	// Count the total number of redirects
 	var total int
-	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+	if err := s.DB.QueryRow(countQ).Scan(&total); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of redirect items", Operation: op, Err: err}
 	}
 
@@ -84,7 +81,7 @@ func (s *RedirectStore) Get(meta params.Params) (domain.Redirects, int, error) {
 func (s *RedirectStore) GetById(id int64) (domain.Redirect, error) {
 	const op = "RedirectStore.GetByPost"
 	var r domain.Redirect
-	if err := s.db.Get(&r, "SELECT * FROM redirects WHERE id = ?", id); err != nil {
+	if err := s.DB.Get(&r, "SELECT * FROM redirects WHERE id = ?", id); err != nil {
 		return domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get redirect with the ID: %d", id), Operation: op, Err: err}
 	}
 	return r, nil
@@ -95,7 +92,7 @@ func (s *RedirectStore) GetById(id int64) (domain.Redirect, error) {
 func (s *RedirectStore) GetByFrom(from string) (domain.Redirect, error) {
 	const op = "RedirectStore.GetByPost"
 	var r domain.Redirect
-	if err := s.db.Get(&r, "SELECT * FROM redirects WHERE from_path = ?", from); err != nil {
+	if err := s.DB.Get(&r, "SELECT * FROM redirects WHERE from_path = ?", from); err != nil {
 		return domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get redirect with the path: %s", from), Operation: op, Err: err}
 	}
 	return r, nil
@@ -112,7 +109,7 @@ func (s *RedirectStore) Create(r *domain.Redirect) (domain.Redirect, error) {
 	}
 
 	q := "INSERT INTO redirects (from_path, to_path, code, updated_at, created_at) VALUES (?, ?, ?, NOW(), NOW())"
-	e, err := s.db.Exec(q, r.From, r.To, r.Code)
+	e, err := s.DB.Exec(q, r.From, r.To, r.Code)
 	if err != nil {
 		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the redirect with the from path: %v", r.From), Operation: op, Err: err}
 	}
@@ -137,7 +134,7 @@ func (s *RedirectStore) Update(r *domain.Redirect) (domain.Redirect, error) {
 	}
 
 	q := "UPDATE redirects SET from_path = ?, to_path = ?, code = ?, updated_at = NOW() WHERE id = ?"
-	_, err := s.db.Exec(q, r.From, r.To, r.Code, r.Id)
+	_, err := s.DB.Exec(q, r.From, r.To, r.Code, r.Id)
 	if err != nil {
 		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the redirect with the from path: %s", r.From), Operation: op, Err: err}
 	}
@@ -155,7 +152,7 @@ func (s *RedirectStore) Delete(id int64) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the Id: %d", id), Operation: op, Err: fmt.Errorf("no redirect exists with the id: %d", id)}
 	}
 
-	if _, err := s.db.Exec("DELETE FROM redirects WHERE id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM redirects WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the redirect with the ID: %v", id), Operation: op, Err: err}
 	}
 
@@ -165,13 +162,13 @@ func (s *RedirectStore) Delete(id int64) error {
 // Exists Checks if a redirect exists by the given Id
 func (s *RedirectStore) Exists(id int64) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM redirects WHERE id = ?)", id).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM redirects WHERE id = ?)", id).Scan(&exists)
 	return exists
 }
 
 // Exists Checks if a redirect exists by the given from path
 func (s *RedirectStore) ExistsByFromPath(from string) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT from_path FROM redirects WHERE from_path = ?)", from).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT from_path FROM redirects WHERE from_path = ?)", from).Scan(&exists)
 	return exists
 }

@@ -18,13 +18,13 @@ func (t *PublicTestSuite) TestPublic_Serve() {
 		want    interface{}
 		status  int
 		content string
-		mock    func(m *mocks.Renderer, ctx *gin.Context)
+		mock    func(m *mocks.Publisher, ctx *gin.Context)
 	}{
 		"Success": {
 			testString,
 			200,
 			"text/html",
-			func(m *mocks.Renderer, ctx *gin.Context) {
+			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("Page", ctx).Return(*t.bytes, nil)
 			},
 		},
@@ -32,7 +32,7 @@ func (t *PublicTestSuite) TestPublic_Serve() {
 			testString,
 			404,
 			"text/html",
-			func(m *mocks.Renderer, ctx *gin.Context) {
+			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("Page", ctx).Return(nil, &errors.Error{Code: errors.NOTFOUND})
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(404, "text/html", []byte(testString))
@@ -43,7 +43,7 @@ func (t *PublicTestSuite) TestPublic_Serve() {
 			testString,
 			500,
 			"text/html",
-			func(m *mocks.Renderer, ctx *gin.Context) {
+			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("Page", ctx).Return(*t.bytes, &errors.Error{Code: errors.INTERNAL})
 			},
 		},

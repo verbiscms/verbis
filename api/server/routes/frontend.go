@@ -6,7 +6,6 @@ package routes
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/server"
@@ -33,7 +32,7 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 		s.GET("/assets/*any", h.Public.Assets)
 
 		// Serve Verbis Assets
-		s.Static("/verbis", paths.Api()+"/web/public")
+		s.Static("/verbis", d.Paths.API+"/web/public")
 
 		// Serve uploads
 		s.GET("/"+uploadPath+"/*any", h.Public.Uploads)
@@ -52,7 +51,7 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 		})
 
 		// Favicon
-		s.StaticFile("/favicon.ico", paths.Theme()+"/favicon.ico")
+		s.StaticFile("/favicon.ico", d.ThemePath()+"/favicon.ico")
 
 		// Serve the front end
 		s.NoRoute(h.Public.Serve)

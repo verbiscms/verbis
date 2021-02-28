@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/gabriel-vasile/mimetype"
 	"io"
 	"io/ioutil"
@@ -70,7 +69,7 @@ func (a *Attachment) SizeMB() int {
 // getAttachment
 //
 //
-func getAttachment(i interface{}) (*Attachment, error) {
+func getAttachment(i interface{}, uploadsPath string) (*Attachment, error) {
 	const op = "Forms.getAttachement"
 
 	m, ok := i.(*multipart.FileHeader)
@@ -94,7 +93,7 @@ func getAttachment(i interface{}) (*Attachment, error) {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
 	}
 
-	md5Name, err := dumpFile(bytes, m.Filename)
+	md5Name, err := dumpFile(bytes, m.Filename, uploadsPath)
 	if err != nil {
 		return nil, err
 	}
@@ -182,12 +181,12 @@ func b64(data []byte) string {
 // saved to the forms storage folder.
 //
 // Returns errors.INTERNAL if the file could not be created or saved.
-func dumpFile(b []byte, name string) (string, error) {
+func dumpFile(b []byte, name string, path string) (string, error) {
 	const op = "Forms.dumpFile"
 
 	ext := filepath.Ext(name)
 	file := encryption.MD5Hash(name+time.Now().String()) + ext
-	dst := paths.Forms() + "/" + file
+	dst := path + "/forms/" + file
 
 	err := ioutil.WriteFile(dst, b, 777)
 	if err != nil {

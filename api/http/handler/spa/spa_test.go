@@ -6,6 +6,7 @@ package spa
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
@@ -41,19 +42,19 @@ func TestSPA(t *testing.T) {
 // Setup
 //
 // A helper to obtain a SPA handler for testing.
-func (t *SPATestSuite) Setup(mf func(m *mocks.Renderer, ctx *gin.Context), admin string, ctx *gin.Context) *SPA {
+func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, ctx *gin.Context), admin string, ctx *gin.Context) *SPA {
 	wd, err := os.Getwd()
 	t.NoError(err)
 	apiPath := filepath.Join(filepath.Dir(wd), "../..")
 
-	m := &mocks.Renderer{}
+	m := &mocks.Publisher{}
 	if mf != nil {
 		mf(m, ctx)
 	}
 
 	return &SPA{
 		Deps: &deps.Deps{
-			Paths: deps.Paths{
+			Paths: paths.Paths{
 				API:   apiPath,
 				Admin: apiPath + admin,
 			},
@@ -70,7 +71,7 @@ func (t *SPATestSuite) TestSPA() {
 		content   string
 		url       string
 		adminPath string
-		mock      func(m *mocks.Renderer, ctx *gin.Context)
+		mock      func(m *mocks.Publisher, ctx *gin.Context)
 	}{
 		"Success File": {
 			"/images/gopher.svg",
@@ -86,7 +87,7 @@ func (t *SPATestSuite) TestSPA() {
 			"text/html",
 			"/images/wrongpath.svg",
 			TestPath,
-			func(m *mocks.Renderer, ctx *gin.Context) {
+			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(404, "text/html", []byte("test"))
 				})
@@ -106,7 +107,7 @@ func (t *SPATestSuite) TestSPA() {
 			"text/html",
 			"/",
 			"wrong",
-			func(m *mocks.Renderer, ctx *gin.Context) {
+			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(404, "text/html", []byte("test"))
 				})

@@ -12,7 +12,6 @@ import (
 // Theme
 //
 // Returns 200 if theme config was obtained successfully.
-// Returns 500 if there was an error getting the theme config.
 func (s *Site) Theme(ctx *gin.Context) {
-	api.Respond(ctx, 200, "Successfully obtained theme config", s.Store.Site.GetThemeConfig())
+	api.Respond(ctx, 200, "Successfully obtained theme config", s.Config)
 }

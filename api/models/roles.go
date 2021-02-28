@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/jmoiron/sqlx"
 )
 
 // RoleRepository defines methods for Posts to interact with the database
@@ -23,15 +22,13 @@ type RoleRepository interface {
 
 // PostStore defines the data layer for Posts
 type RoleStore struct {
-	db     *sqlx.DB
-	config *domain.ThemeConfig
+	*StoreConfig
 }
 
 // newRoles - Construct
-func newRoles(db *sqlx.DB, cfg *domain.ThemeConfig) *RoleStore {
+func newRoles(cfg *StoreConfig) *RoleStore {
 	return &RoleStore{
-		db:     db,
-		config: cfg,
+		StoreConfig: cfg,
 	}
 }
 
@@ -42,7 +39,7 @@ func (s *RoleStore) Get() ([]domain.UserRole, error) {
 	const op = "RoleRepository.Get"
 
 	var r []domain.UserRole
-	if err := s.db.Select(&r, "SELECT * FROM roles"); err != nil {
+	if err := s.DB.Select(&r, "SELECT * FROM roles"); err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not get roles", Operation: op, Err: err}
 	}
 
@@ -58,7 +55,7 @@ func (s *RoleStore) Get() ([]domain.UserRole, error) {
 func (s *RoleStore) GetById(id int) (domain.UserRole, error) {
 	const op = "RoleRepository.GetById"
 	var r domain.UserRole
-	if err := s.db.Get(&r, "SELECT * FROM roles WHERE id = ? LIMIT 1", id); err != nil {
+	if err := s.DB.Get(&r, "SELECT * FROM roles WHERE id = ? LIMIT 1", id); err != nil {
 		return domain.UserRole{}, fmt.Errorf("Could not get role with the ID: %v", id)
 	}
 	return r, nil
@@ -76,7 +73,7 @@ func (s *RoleStore) Create(r *domain.UserRole) (domain.UserRole, error) {
 	}
 
 	q := "INSERT INTO roles (id, name, description) VALUES (?, ?, ?)"
-	c, err := s.db.Exec(q, r.Id, r.Name, r.Description)
+	c, err := s.DB.Exec(q, r.Id, r.Name, r.Description)
 	if err != nil {
 		return domain.UserRole{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the role with the name: %v", r.Name), Operation: op, Err: err}
 	}
@@ -102,7 +99,7 @@ func (s *RoleStore) Update(r *domain.UserRole) (domain.UserRole, error) {
 	}
 
 	q := "UPDATE roles SET name = ?, description = ? WHERE id = ?"
-	_, err = s.db.Exec(q, r.Name, r.Description)
+	_, err = s.DB.Exec(q, r.Name, r.Description)
 	if err != nil {
 		return domain.UserRole{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the role with the name: %v", r.Name), Operation: op, Err: err}
 	}
@@ -121,7 +118,7 @@ func (s *RoleStore) Delete(id int) error {
 		return err
 	}
 
-	if _, err := s.db.Exec("DELETE FROM roles WHERE id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM roles WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the role with the ID: %v", id), Operation: op, Err: err}
 	}
 
@@ -131,6 +128,6 @@ func (s *RoleStore) Delete(id int) error {
 // Exists Checks if a role exists by the given name
 func (s *RoleStore) Exists(name string) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM roles WHERE name = ?)", name).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM roles WHERE name = ?)", name).Scan(&exists)
 	return exists
 }

@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
@@ -82,14 +83,13 @@ func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostDatu
 	}
 
 	d := &deps.Deps{
-		Store:  nil,
-		Config: nil,
-		Site:   domain.Site{},
+		Store: nil,
+		Site:  domain.Site{},
 		Options: &domain.Options{
 			GeneralLocale: "en-gb",
 		},
-		Paths:   deps.Paths{},
-		Theme:   &domain.ThemeConfig{},
+		Paths:   paths.Paths{},
+		Config:  &domain.ThemeConfig{},
 		Running: false,
 	}
 

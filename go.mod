@@ -13,7 +13,6 @@ require (
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/foolin/goview v0.3.0
 	github.com/frankban/quicktest v1.11.0 // indirect
-	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gabriel-vasile/mimetype v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-contrib/gzip v0.0.3
@@ -44,7 +43,6 @@ require (
 	github.com/ompluscator/dynamic-struct v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.5.2+incompatible // indirect
-	github.com/pkg/profile v1.5.0
 	github.com/radovskyb/watcher v1.0.7
 	github.com/sanity-io/litter v1.5.0
 	github.com/sirupsen/logrus v1.7.0

@@ -13,8 +13,40 @@ import (
 	"path/filepath"
 )
 
+type Paths struct {
+	Base      string
+	Admin     string
+	API       string
+	Uploads   string
+	Migration string
+	Storage   string
+	Web       string
+	Forms     string
+}
+
+const (
+	Admin   = "/admin"
+	Api     = "/api"
+	Storage = "/storage"
+	Web     = Api + "/web"
+	Uploads = Storage + "/uploads"
+)
+
+func Get() Paths {
+	base := base()
+	return Paths{
+		Base:      base,
+		Admin:     base + Admin,
+		API:       base + Api,
+		Migration: base + Api + migration(),
+		Uploads:   base + Uploads,
+		Storage:   base + Storage,
+		Web:       base + Web,
+	}
+}
+
 // Base path of project
-func Base() string {
+func base() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		return ""
@@ -25,7 +57,7 @@ func Base() string {
 // BaseCheck environment is passable to run Terminal
 func BaseCheck() error {
 	const op = "paths.BaseCheck"
-	basePath := Base()
+	basePath := base()
 
 	if !files.Exists(basePath + "/.env") {
 		return fmt.Errorf("Could not locate the .env file in the current directory")
@@ -46,45 +78,45 @@ func BaseCheck() error {
 	return nil
 }
 
-// Admin path of project
-func Admin() string {
-	return Base() + "/admin"
-}
-
-// API path of project
-func Api() string {
-	return Base() + "/api"
-}
+//// Admin path of project
+//func Admin() string {
+//	return Base() + "/admin"
+//}
+//
+//// API path of project
+//func Api() string {
+//	return Base() + "/api"
+//}
 
 // Migration is the Database migration path
-func Migration() string {
+func migration() string {
 	if api.SuperAdmin {
-		return Api() + "/database/migrations"
+		return "/database/migrations"
 	} else {
-		return Api() + "/database"
+		return "/database"
 	}
 }
 
 // Theme path
-func Theme() string {
-	return Base() + "/theme"
-}
+//func Theme() string {
+//	return Base() + "/theme"
+//}
+
+//// Storage path
+//func Storage() string {
+//	return Base() + "/storage"
+//}
 
 // Storage path
-func Storage() string {
-	return Base() + "/storage"
-}
-
-// Storage path
-func Uploads() string {
-	return Storage() + "/uploads"
-}
+//func Uploads() string {
+//	return Storage() + "/uploads"
+//}
 
 // Web (Verbis specific)
-func Web() string {
-	return Api() + "/web"
-}
+//func Web() string {
+//	return Api() + "/web"
+//}
 
-func Forms() string {
-	return Storage() + "/forms"
-}
+//func Forms() string {
+//	return Storage() + "/forms"
+//}

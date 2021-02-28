@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"io/ioutil"
 	"os"
@@ -33,15 +32,10 @@ type Location struct {
 	JsonPath string
 }
 
-var (
-	// Storage path of the application.
-	storagePath = paths.Storage()
-)
-
 // NewLocation - Construct
-func NewLocation() *Location {
+func NewLocation(path string) *Location {
 	return &Location{
-		JsonPath: storagePath + "/fields",
+		JsonPath: path + "/fields",
 	}
 }
 

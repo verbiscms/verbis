@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/google/uuid"
-	"github.com/jmoiron/sqlx"
 	"strconv"
 )
 
@@ -35,15 +34,13 @@ type CategoryRepository interface {
 
 // CategoryStore defines the data layer for Categories
 type CategoryStore struct {
-	db     *sqlx.DB
-	config *domain.ThemeConfig
+	*StoreConfig
 }
 
 // newCategories - Construct
-func newCategories(db *sqlx.DB, cfg *domain.ThemeConfig) *CategoryStore {
+func newCategories(cfg *StoreConfig) *CategoryStore {
 	return &CategoryStore{
-		db:     db,
-		config: cfg,
+		StoreConfig: cfg,
 	}
 }
 
@@ -58,7 +55,7 @@ func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) 
 	countQ := fmt.Sprintf("SELECT COUNT(*) FROM categories")
 
 	// Apply filters to total and original query
-	filter, err := filterRows(s.db, meta.Filters, "categories")
+	filter, err := filterRows(s.DB, meta.Filters, "categories")
 	if err != nil {
 		return nil, -1, err
 	}
@@ -74,7 +71,7 @@ func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) 
 	}
 
 	// Select categories
-	if err := s.db.Select(&c, q); err != nil {
+	if err := s.DB.Select(&c, q); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
 	}
 
@@ -85,7 +82,7 @@ func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) 
 
 	// Count the total number of media
 	var total int
-	if err := s.db.QueryRow(countQ).Scan(&total); err != nil {
+	if err := s.DB.QueryRow(countQ).Scan(&total); err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of category items", Operation: op, Err: err}
 	}
 
@@ -97,7 +94,7 @@ func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) 
 func (s *CategoryStore) GetById(id int) (domain.Category, error) {
 	const op = "CategoryRepository.GetById"
 	var c domain.Category
-	if err := s.db.Get(&c, "SELECT * FROM categories WHERE id = ?", id); err != nil {
+	if err := s.DB.Get(&c, "SELECT * FROM categories WHERE id = ?", id); err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the ID: %d", id), Operation: op, Err: err}
 	}
 	return c, nil
@@ -108,7 +105,7 @@ func (s *CategoryStore) GetById(id int) (domain.Category, error) {
 func (s *CategoryStore) GetByPost(postId int) (*domain.Category, error) {
 	const op = "CategoryRepository.GetByPost"
 	var c domain.Category
-	if err := s.db.Get(&c, "SELECT * FROM categories c WHERE EXISTS (SELECT post_id FROM post_categories p WHERE p.post_id = ? AND c.id = p.category_id) LIMIT 1", postId); err != nil {
+	if err := s.DB.Get(&c, "SELECT * FROM categories c WHERE EXISTS (SELECT post_id FROM post_categories p WHERE p.post_id = ? AND c.id = p.category_id) LIMIT 1", postId); err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the post ID: %d", postId), Operation: op, Err: err}
 	}
 	return &c, nil
@@ -119,7 +116,7 @@ func (s *CategoryStore) GetByPost(postId int) (*domain.Category, error) {
 func (s *CategoryStore) GetBySlug(slug string) (domain.Category, error) {
 	const op = "CategoryRepository.GetBySlug"
 	var c domain.Category
-	if err := s.db.Get(&c, "SELECT * FROM categories WHERE slug = ?", slug); err != nil {
+	if err := s.DB.Get(&c, "SELECT * FROM categories WHERE slug = ?", slug); err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the slug: %v", slug), Operation: op, Err: err}
 	}
 	return c, nil
@@ -130,7 +127,7 @@ func (s *CategoryStore) GetBySlug(slug string) (domain.Category, error) {
 func (s *CategoryStore) GetByName(name string) (domain.Category, error) {
 	const op = "CategoryRepository.GetByName"
 	var c domain.Category
-	if err := s.db.Get(&c, "SELECT * FROM categories WHERE name = ?", name); err != nil {
+	if err := s.DB.Get(&c, "SELECT * FROM categories WHERE name = ?", name); err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the name: %v", name), Operation: op, Err: err}
 	}
 	return c, nil
@@ -141,7 +138,7 @@ func (s *CategoryStore) GetByName(name string) (domain.Category, error) {
 func (s *CategoryStore) GetParent(id int) (domain.Category, error) {
 	const op = "CategoryRepository.GetByParent"
 	var c domain.Category
-	if err := s.db.Get(&c, "SELECT * FROM categories WHERE parent_id = ?", id); err != nil {
+	if err := s.DB.Get(&c, "SELECT * FROM categories WHERE parent_id = ?", id); err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the parent ID: %d", id), Operation: op, Err: err}
 	}
 	return c, nil
@@ -158,7 +155,7 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 	}
 
 	q := "INSERT INTO categories (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	e, err := s.db.Exec(q, uuid.New().String(), c.Slug, c.Name, c.Description, c.ParentId, c.Resource, c.ArchiveId)
+	e, err := s.DB.Exec(q, uuid.New().String(), c.Slug, c.Name, c.Description, c.ParentId, c.Resource, c.ArchiveId)
 	if err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the category with the name: %v", c.Name), Operation: op, Err: err}
 	}
@@ -195,7 +192,7 @@ func (s *CategoryStore) Update(c *domain.Category) (domain.Category, error) {
 	}
 
 	q := "UPDATE categories SET slug = ?, name = ?, description = ?, resource = ?, parent_id = ?, archive_id = ?, updated_at = NOW() WHERE id = ?"
-	_, err = s.db.Exec(q, c.Slug, c.Name, c.Description, c.Resource, c.ParentId, c.ArchiveId, c.Id)
+	_, err = s.DB.Exec(q, c.Slug, c.Name, c.Description, c.Resource, c.ParentId, c.ArchiveId, c.Id)
 	if err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the category with the name: %s", c.Name), Operation: op, Err: err}
 	}
@@ -206,7 +203,7 @@ func (s *CategoryStore) Update(c *domain.Category) (domain.Category, error) {
 
 	if oldCategory.Slug != c.Slug {
 		var posts []domain.Post
-		if err := s.db.Select(&posts, "SELECT * FROM posts WHERE slug LIKE '%"+oldCategory.Slug+"%'"); err != nil {
+		if err := s.DB.Select(&posts, "SELECT * FROM posts WHERE slug LIKE '%"+oldCategory.Slug+"%'"); err != nil {
 			return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not get categories", Operation: op, Err: err}
 		}
 	}
@@ -232,11 +229,11 @@ func (s *CategoryStore) Delete(id int) error {
 		return err
 	}
 
-	if _, err := s.db.Exec("DELETE FROM categories WHERE id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM categories WHERE id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the category with the ID: %v", id), Operation: op, Err: err}
 	}
 
-	if _, err := s.db.Exec("DELETE FROM post_categories WHERE category_id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM post_categories WHERE category_id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete post category with the ID: %v", id), Operation: op, Err: err}
 	}
 
@@ -250,21 +247,21 @@ func (s *CategoryStore) Delete(id int) error {
 // Exists Checks if a category exists by the given Id
 func (s *CategoryStore) Exists(id int) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT id FROM categories WHERE id = ?)", id).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM categories WHERE id = ?)", id).Scan(&exists)
 	return exists
 }
 
 // Exists Checks if a category exists by the given name
 func (s *CategoryStore) ExistsByName(name string) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT name FROM categories WHERE name = ?)", name).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT name FROM categories WHERE name = ?)", name).Scan(&exists)
 	return exists
 }
 
 // Exists Checks if a category exists by the given slug
 func (s *CategoryStore) ExistsBySlug(slug string) bool {
 	var exists bool
-	_ = s.db.QueryRow("SELECT EXISTS (SELECT name FROM categories WHERE slug = ?)", slug).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT name FROM categories WHERE slug = ?)", slug).Scan(&exists)
 	return exists
 }
 
@@ -274,13 +271,13 @@ func (s *CategoryStore) ExistsBySlug(slug string) bool {
 func (s *CategoryStore) InsertPostCategory(postId int, categoryId *int) error {
 	const op = "CategoryRepository.InsertPostCategories"
 
-	if _, err := s.db.Exec("DELETE FROM post_categories WHERE post_id = ?", postId); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM post_categories WHERE post_id = ?", postId); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postId), Operation: op, Err: err}
 	}
 
 	if categoryId != nil {
 		q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
-		_, err := s.db.Exec(q, postId, categoryId)
+		_, err := s.DB.Exec(q, postId, categoryId)
 		if err != nil {
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postId), Operation: op, Err: err}
 		}
@@ -292,7 +289,7 @@ func (s *CategoryStore) InsertPostCategory(postId int, categoryId *int) error {
 // Delete from the post categories table
 func (s *CategoryStore) DeletePostCategories(id int) error {
 	const op = "CategoryRepository.DeletePostCategories"
-	if _, err := s.db.Exec("DELETE FROM post_categories WHERE category_id = ?", id); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM post_categories WHERE category_id = ?", id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the post categories with the post ID of: %d", id), Operation: op, Err: err}
 	}
 	return nil
@@ -302,7 +299,7 @@ func (s *CategoryStore) DeletePostCategories(id int) error {
 func (s *CategoryStore) Total() (int, error) {
 	const op = "CategoryRepository.Total"
 	var total int
-	if err := s.db.QueryRow("SELECT COUNT(*) FROM categories").Scan(&total); err != nil {
+	if err := s.DB.QueryRow("SELECT COUNT(*) FROM categories").Scan(&total); err != nil {
 		return -1, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the total number of categories"), Operation: op, Err: err}
 	}
 	return total, nil
@@ -317,7 +314,7 @@ func (s *CategoryStore) changeArchivePostSlug(id int, slug string, resource stri
 		newSlug += "/" + resource
 	}
 	newSlug += "/" + slug
-	if _, err := s.db.Exec("UPDATE posts SET slug = ? WHERE id = ?", newSlug, id); err != nil {
+	if _, err := s.DB.Exec("UPDATE posts SET slug = ? WHERE id = ?", newSlug, id); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the posts table with the new slug: %s", slug), Operation: op, Err: err}
 	}
 	return nil

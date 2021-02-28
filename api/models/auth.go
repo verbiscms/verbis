@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/mail/events"
-	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,23 +28,16 @@ type AuthRepository interface {
 
 // AuthStore defines the data layer for Authentication
 type AuthStore struct {
-	db          *sqlx.DB
-	config      *domain.ThemeConfig
+	*StoreConfig
 	optionsRepo domain.Options
 }
 
 // newAuth - Construct
-func newAuth(db *sqlx.DB, cfg *domain.ThemeConfig) *AuthStore {
-	const op = "AuthRepository.newAuth"
-
-	a := &AuthStore{
-		db: db,
+func newAuth(cfg *StoreConfig) *AuthStore {
+	return &AuthStore{
+		StoreConfig: cfg,
+		optionsRepo: cfg.Options.GetStruct(),
 	}
-
-	om := newOptions(db, cfg)
-	a.optionsRepo = om.GetStruct()
-
-	return a
 }
 
 // Authenticate compares the email & password for a match in the DB.
@@ -54,7 +46,7 @@ func (s *AuthStore) Authenticate(email string, password string) (domain.User, er
 	const op = "AuthRepository.Authenticate"
 
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT * FROM users WHERE email = ? LIMIT 1", email); err != nil {
+	if err := s.DB.Get(&u, "SELECT * FROM users WHERE email = ? LIMIT 1", email); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "These credentials don't match our records.", Operation: op, Err: err}
 	}
 
@@ -63,7 +55,7 @@ func (s *AuthStore) Authenticate(email string, password string) (domain.User, er
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "These credentials don't match our records.", Operation: op, Err: err}
 	}
 
-	_, err = s.db.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", u.Token)
+	_, err = s.DB.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", u.Token)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user token last used."), Operation: op, Err: err}
 	}
@@ -79,12 +71,12 @@ func (s *AuthStore) Logout(token string) (int, error) {
 	const op = "AuthRepository.Logout"
 
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT * FROM users WHERE token = ? LIMIT 1", token); err != nil {
+	if err := s.DB.Get(&u, "SELECT * FROM users WHERE token = ? LIMIT 1", token); err != nil {
 		return -1, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get user with token: %v", token), Operation: op, Err: err}
 	}
 
 	newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
-	_, err := s.db.Exec("UPDATE users SET token = ?, updated_at = NOW() WHERE token = ?", newToken, token)
+	_, err := s.DB.Exec("UPDATE users SET token = ?, updated_at = NOW() WHERE token = ?", newToken, token)
 	if err != nil {
 		return -1, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user's token with the name: %v", u.FirstName+" "+u.LastName), Operation: op, Err: err}
 	}
@@ -103,7 +95,7 @@ func (s *AuthStore) ResetPassword(token string, password string) error {
 	const op = "AuthRepository.ResetPassword"
 
 	var rp domain.PasswordReset
-	if err := s.db.Get(&rp, "SELECT * FROM password_resets WHERE token = ? LIMIT 1", token); err != nil {
+	if err := s.DB.Get(&rp, "SELECT * FROM password_resets WHERE token = ? LIMIT 1", token); err != nil {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get user with token: %v", token), Operation: op}
 	}
 
@@ -112,12 +104,12 @@ func (s *AuthStore) ResetPassword(token string, password string) error {
 		return err
 	}
 
-	_, err = s.db.Exec("UPDATE users SET password = ? WHERE email = ?", hashedPassword, rp.Email)
+	_, err = s.DB.Exec("UPDATE users SET password = ? WHERE email = ?", hashedPassword, rp.Email)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not update the users table with the new password", Operation: op, Err: err}
 	}
 
-	if _, err := s.db.Exec("DELETE FROM password_resets WHERE token = ?", token); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM password_resets WHERE token = ?", token); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not delete from the password resets table", Operation: op, Err: err}
 	}
 
@@ -133,7 +125,7 @@ func (s *AuthStore) SendResetPassword(email string) error {
 	const op = "AuthRepository.SendResetPassword"
 
 	var u domain.User
-	if err := s.db.Get(&u, "SELECT * FROM users WHERE email = ? LIMIT 1", email); err != nil {
+	if err := s.DB.Get(&u, "SELECT * FROM users WHERE email = ? LIMIT 1", email); err != nil {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not find the user with the email: %s", email), Operation: op, Err: err}
 	}
 
@@ -143,7 +135,7 @@ func (s *AuthStore) SendResetPassword(email string) error {
 	}
 
 	q := "INSERT INTO password_resets (email, token, created_at) VALUES (?, ?, NOW())"
-	_, err = s.db.Exec(q, email, token)
+	_, err = s.DB.Exec(q, email, token)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could not insert into password resets", Operation: op, Err: err}
 	}
@@ -178,12 +170,12 @@ func (s *AuthStore) VerifyEmail(md5String string) error {
 		Hash string `db:"hash"`
 	}{}
 
-	if err := s.db.Get(&userVerified, "SELECT id AS id, MD5(CONCAT(id, email)) AS hash FROM users WHERE MD5(CONCAT(id, email)) = ?", md5String); err != nil {
+	if err := s.DB.Get(&userVerified, "SELECT id AS id, MD5(CONCAT(id, email)) AS hash FROM users WHERE MD5(CONCAT(id, email)) = ?", md5String); err != nil {
 		return &errors.Error{Code: errors.NOTFOUND, Message: "Could not find the user for email verification", Operation: op, Err: err}
 	}
 
 	q := "UPDATE users SET email_verified_at = NOW() WHERE ID = ?"
-	_, err := s.db.Exec(q, userVerified.Id)
+	_, err := s.DB.Exec(q, userVerified.Id)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could update the user with the Id: %d", userVerified.Id), Operation: op, Err: err}
 	}
@@ -196,7 +188,7 @@ func (s *AuthStore) VerifyEmail(md5String string) error {
 func (s *AuthStore) VerifyPasswordToken(token string) error {
 	const op = "AuthRepository.VerifyPasswordToken"
 	var pr domain.PasswordReset
-	if err := s.db.Get(&pr, "SELECT * FROM password_resets WHERE token = ? LIMIT 1", token); err != nil {
+	if err := s.DB.Get(&pr, "SELECT * FROM password_resets WHERE token = ? LIMIT 1", token); err != nil {
 		return &errors.Error{Code: errors.NOTFOUND, Message: "We couldn't find a email matching that token", Operation: op, Err: err}
 	}
 	return nil
@@ -206,7 +198,7 @@ func (s *AuthStore) VerifyPasswordToken(token string) error {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *AuthStore) CleanPasswordResets() error {
 	const op = "AuthRepository.CleanPasswordResets"
-	if _, err := s.db.Exec("DELETE FROM password_resets WHERE created_at < (NOW() - INTERVAL 2 HOUR)"); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM password_resets WHERE created_at < (NOW() - INTERVAL 2 HOUR)"); err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Could not delete from the reset passwords table", Operation: op, Err: err}
 	}
 	return nil
