@@ -48,8 +48,15 @@ func (t *ConfigTestSuite) SetupSuite() {
 	t.config = d
 }
 
-func (t *ConfigTestSuite) TestConfig() {
-	got := Get(t.apiPath + TestPath)
+func (t *ConfigTestSuite) TestInit() {
+	got := Init(t.apiPath + TestPath)
+	t.NotNil(cfg)
+	t.Equal(t.config, *got)
+}
+
+func (t *ConfigTestSuite) TestGet() {
+	Init(t.apiPath + TestPath)
+	got := Get()
 	t.NotNil(cfg)
 	t.Equal(t.config, *got)
 }
