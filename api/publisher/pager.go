@@ -156,7 +156,7 @@ func (p *page) CheckSession() error {
 	const op = "Publisher.Page.CheckSession"
 
 	_, err := p.Context.Cookie("verbis-session")
-	if err != nil && p.Post.IsPublic() {
+	if err != nil && !p.Post.IsPublic() {
 		return &errors.Error{Code: errors.NOTFOUND, Message: "Page not published, or user is not logged in", Operation: op, Err: err}
 	}
 
