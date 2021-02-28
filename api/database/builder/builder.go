@@ -3,6 +3,7 @@ package builder
 import (
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -372,7 +373,8 @@ func mapStruct(data interface{}) (dbCols []string, dbVals []string, error error)
 		field := fields.Field(i)
 		value := values.Field(i)
 
-		val, exists := field.Tag.Lookup("sqlb")
+		//val, exists := field.Tag.Lookup("sqlb")
+		val, exists := field.Tag.Lookup("db")
 
 		if exists {
 			dbCols = append(dbCols, "\""+val+"\"")
@@ -382,22 +384,39 @@ func mapStruct(data interface{}) (dbCols []string, dbVals []string, error error)
 
 		var v string
 
-		switch value.Kind() {
-		case reflect.String:
+		fmt.Println(value.CanInterface())
+		fmt.Println(value.Interface())
+
+		if reflect.ValueOf(value).IsNil() {
+			continue
+		}
+		if reflect.ValueOf(value).Interface() == nil {
+			break
+		}
+		if value.Kind() == reflect.Ptr {
+			value = value.Elem()
+		}
+
+		fmt.Println(val)
+		switch t := value.Interface().(type) {
+		//	switch value.Interface() {
+		case string:
 			v = "'" + sanitiseString(value.String()) + "'"
-		case reflect.Int:
+		case int:
 			v = strconv.FormatInt(value.Int(), 10)
-		case reflect.Int8:
+		case int8:
 			v = strconv.FormatInt(value.Int(), 10)
-		case reflect.Int32:
+		case int32:
 			v = strconv.FormatInt(value.Int(), 10)
-		case reflect.Int64:
+		case int64:
 			v = strconv.FormatInt(value.Int(), 10)
-		case reflect.Float64:
+		case float64:
 			v = fmt.Sprintf("%f", value.Float())
-		case reflect.Float32:
+		case float32:
 			v = fmt.Sprintf("%f", value.Float())
-		case reflect.Bool:
+		case uuid.UUID:
+			v = t.String()
+		case bool:
 			if value.Bool() {
 				v = "TRUE"
 			} else {
