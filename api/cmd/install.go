@@ -48,7 +48,7 @@ func Install(cmd *cobra.Command, args []string) {
 	//	figure.Print()
 
 	// Run doctor
-	cfg, db, err := doctor()
+	cfg, db, err := doctor(false)
 	if err != nil {
 		printError(err.Error())
 	}

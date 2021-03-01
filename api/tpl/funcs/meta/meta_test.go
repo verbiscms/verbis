@@ -9,19 +9,20 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	tplMocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/safe"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"html/template"
 	"io"
+	"io/ioutil"
 	"testing"
 )
 
-func Setup(opts domain.Options, site domain.Site, post domain.Post, tpl tpl.TemplateHandler) (*Namespace, *mocks.MediaRepository) {
+func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace, *mocks.MediaRepository) {
 
 	mock := &mocks.MediaRepository{}
 	d := &deps.Deps{
@@ -30,7 +31,7 @@ func Setup(opts domain.Options, site domain.Site, post domain.Post, tpl tpl.Temp
 		Options: &opts,
 	}
 
-	d.SetTmpl(tpl)
+	logger.SetOutput(ioutil.Discard)
 
 	ns := Namespace{
 		deps: d,
@@ -77,7 +78,7 @@ func TestNamespace_MetaTitle(t *testing.T) {
 			post := domain.Post{
 				SeoMeta: test.meta,
 			}
-			ns, _ := Setup(test.options, domain.Site{}, post, nil)
+			ns, _ := Setup(test.options, domain.Site{}, post)
 			got := ns.MetaTitle()
 			assert.Equal(t, test.want, got)
 		})
@@ -87,59 +88,51 @@ func TestNamespace_MetaTitle(t *testing.T) {
 func TestNamespace(t *testing.T) {
 
 	tt := map[string]struct {
-		mock func(th *tplMocks.TemplateHandler, te *tplMocks.TemplateExecutor)
+		mock func(th *tplMocks.TemplateHandler)
 		fn   func(ns *Namespace) interface{}
 		want interface{}
 	}{
 		"Header": {
-			func(th *tplMocks.TemplateHandler, te *tplMocks.TemplateExecutor) {
-				th.On("Prepare", tpl.Config{Root: DevEmbeddedPath, Extension: EmbeddedExtension}).Return(te)
-				buf := bytes.Buffer{}
-				te.On("Execute", &buf, mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
+			func(th *tplMocks.TemplateHandler) {
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
 					arg := args.Get(0).(io.Writer)
 					_, err := arg.Write([]byte("test"))
 					assert.NoError(t, err)
-				}).Return("", nil)
+				}).Return(nil)
 			},
 			func(ns *Namespace) interface{} {
 				return ns.Header()
 			},
-			template.HTML("test\ntest\ntest\n"),
+			template.HTML("test\ntest\ntest"),
 		},
 		"Header Error": {
-			func(th *tplMocks.TemplateHandler, te *tplMocks.TemplateExecutor) {
-				th.On("Prepare", tpl.Config{Root: DevEmbeddedPath, Extension: EmbeddedExtension}).Return(te)
-				te.On("Execute", &bytes.Buffer{}, mock.Anything, mock.Anything).Return("", fmt.Errorf("error"))
+			func(th *tplMocks.TemplateHandler) {
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
 			},
 			func(ns *Namespace) interface{} {
 				return ns.Header()
-
 			},
 			template.HTML(""),
 		},
 		"Footer": {
-			func(th *tplMocks.TemplateHandler, te *tplMocks.TemplateExecutor) {
-				th.On("Prepare", tpl.Config{Root: DevEmbeddedPath, Extension: EmbeddedExtension}).Return(te)
-				buf := bytes.Buffer{}
-				te.On("Execute", &buf, "footer", mock.Anything).Run(func(args mock.Arguments) {
+			func(th *tplMocks.TemplateHandler) {
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
 					arg := args.Get(0).(io.Writer)
 					_, err := arg.Write([]byte("test"))
 					assert.NoError(t, err)
-				}).Return("", nil)
+				}).Return(nil)
 			},
 			func(ns *Namespace) interface{} {
 				return ns.Footer()
 			},
-			template.HTML("test\n"),
+			template.HTML("test"),
 		},
 		"Footer Error": {
-			func(th *tplMocks.TemplateHandler, te *tplMocks.TemplateExecutor) {
-				th.On("Prepare", tpl.Config{Root: DevEmbeddedPath, Extension: EmbeddedExtension}).Return(te)
-				te.On("Execute", &bytes.Buffer{}, "footer", mock.Anything).Return("", fmt.Errorf("error"))
+			func(th *tplMocks.TemplateHandler) {
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
 			},
 			func(ns *Namespace) interface{} {
 				return ns.Footer()
-
 			},
 			template.HTML(""),
 		},
@@ -148,16 +141,13 @@ func TestNamespace(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			tplMock := &tplMocks.TemplateHandler{}
-			tplExecutor := &tplMocks.TemplateExecutor{}
+			ns, _ := Setup(domain.Options{}, domain.Site{}, domain.Post{})
+			ns.deps.SetTmpl(tplMock)
 
-			test.mock(tplMock, tplExecutor)
-			ns, _ := Setup(domain.Options{}, domain.Site{}, domain.Post{}, tplMock)
-
+			test.mock(tplMock)
 			got := test.fn(ns)
 
 			assert.Equal(t, test.want, got)
-			tplMock.AssertExpectations(t)
-			tplExecutor.AssertExpectations(t)
 		})
 	}
 }
@@ -186,7 +176,7 @@ func TestTemplateMeta_GetImage(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			ns, mock := Setup(domain.Options{}, domain.Site{}, domain.Post{}, nil)
+			ns, mock := Setup(domain.Options{}, domain.Site{}, domain.Post{})
 			test.mock(mock)
 			tm := TemplateMeta{deps: ns.deps}
 			got := tm.GetImage(1)

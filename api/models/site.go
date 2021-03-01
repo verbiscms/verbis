@@ -72,7 +72,8 @@ func (s *SiteStore) GetGlobalConfig() domain.Site {
 func (s *SiteStore) GetTemplates() (domain.Templates, error) {
 	const op = "SiteRepository.GetTemplates"
 
-	templateDir := s.Paths.Base + "/theme" + s.Options.Theme() + "/" + s.Config.TemplateDir
+	// TODO: This needs to be dynamic?
+	templateDir := s.Paths.Base + "/themes/" + s.Options.Theme() + "/" + s.Config.TemplateDir
 
 	files, err := s.walkMatch(templateDir, "*"+s.Config.FileExtension)
 	if err != nil {
@@ -112,7 +113,8 @@ func (s *SiteStore) GetTemplates() (domain.Templates, error) {
 func (s *SiteStore) GetLayouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
-	layoutDir := s.Paths.Base + "/theme" + s.Options.Theme() + "/" + s.Config.LayoutDir
+	// TODO: This needs to be dynamic?
+	layoutDir := s.Paths.Base + "/themes/" + s.Options.Theme() + "/" + s.Config.LayoutDir
 
 	files, err := s.walkMatch(layoutDir, "*"+s.Config.FileExtension)
 	if err != nil {

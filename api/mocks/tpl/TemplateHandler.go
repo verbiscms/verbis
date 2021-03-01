@@ -6,6 +6,8 @@ import (
 	domain "github.com/ainsleyclark/verbis/api/domain"
 	gin "github.com/gin-gonic/gin"
 
+	io "io"
+
 	mock "github.com/stretchr/testify/mock"
 
 	template "html/template"
@@ -29,6 +31,20 @@ func (_m *TemplateHandler) Data(ctx *gin.Context, post *domain.PostDatum) interf
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(interface{})
 		}
+	}
+
+	return r0
+}
+
+// ExecuteTpl provides a mock function with given fields: w, text, data
+func (_m *TemplateHandler) ExecuteTpl(w io.Writer, text string, data interface{}) error {
+	ret := _m.Called(w, text, data)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(io.Writer, string, interface{}) error); ok {
+		r0 = rf(w, text, data)
+	} else {
+		r0 = ret.Error(0)
 	}
 
 	return r0

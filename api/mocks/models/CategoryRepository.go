@@ -77,34 +77,6 @@ func (_m *CategoryRepository) Exists(id int) bool {
 	return r0
 }
 
-// ExistsByName provides a mock function with given fields: name
-func (_m *CategoryRepository) ExistsByName(name string) bool {
-	ret := _m.Called(name)
-
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(string) bool); ok {
-		r0 = rf(name)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	return r0
-}
-
-// ExistsBySlug provides a mock function with given fields: slug
-func (_m *CategoryRepository) ExistsBySlug(slug string) bool {
-	ret := _m.Called(slug)
-
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(string) bool); ok {
-		r0 = rf(slug)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	return r0
-}
-
 // Get provides a mock function with given fields: meta
 func (_m *CategoryRepository) Get(meta params.Params) (domain.Categories, int, error) {
 	ret := _m.Called(meta)
@@ -254,27 +226,6 @@ func (_m *CategoryRepository) InsertPostCategory(postId int, categoryId *int) er
 	}
 
 	return r0
-}
-
-// Total provides a mock function with given fields:
-func (_m *CategoryRepository) Total() (int, error) {
-	ret := _m.Called()
-
-	var r0 int
-	if rf, ok := ret.Get(0).(func() int); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(int)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
 }
 
 // Update provides a mock function with given fields: c
