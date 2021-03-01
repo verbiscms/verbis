@@ -5,6 +5,7 @@
 package categories
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -13,8 +14,16 @@ import (
 )
 
 const (
-	CreateQuery = "INSERT INTO `categories` (\"id\", \"uuid\", \"slug\", \"name\", \"primary\", \"description\", \"resource\", \"parent_id\", \"archive_id\", \"updated_at\", \"created_at\") VALUES (123, 00000000-0000-0000-0000-000000000000, '/cat', 'Category', TRUE, <nil>, '', <nil>, <nil>, NOW(), NOW()) "
+	CreateQuery = "INSERT INTO `categories` (\"uuid\", \"slug\", \"name\", \"primary\", \"description\", \"resource\", \"parent_id\", \"archive_id\", \"updated_at\", \"created_at\") VALUES (?, '/cat', 'Category', TRUE, NULL, '', NULL, NULL, NOW(), NOW()) "
 )
+
+type AnyUUID struct{}
+
+// Match satisfies sqlmock.Argument interface
+func (a AnyUUID) Match(v driver.Value) bool {
+	_, ok := v.(string)
+	return ok
+}
 
 func (t *CategoriesTestSuite) TestStore_Create() {
 
@@ -24,7 +33,9 @@ func (t *CategoriesTestSuite) TestStore_Create() {
 	}{
 		"Success": {
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WithArgs(AnyUUID{}).
+					WillReturnResult(sqlmock.NewResult(category.Id, 1))
 			},
 			category,
 		},
