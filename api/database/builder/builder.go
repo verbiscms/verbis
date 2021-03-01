@@ -19,6 +19,8 @@ type Sqlbuilder struct {
 	limitstmt      string
 	offsetstmt     string
 	orderbystmt    string
+	args           []string
+	skip           []string
 	Dialect        string //Can be postgres, mysql or (more to come)
 }
 
@@ -262,8 +264,18 @@ func (s *Sqlbuilder) Build() string {
 	return returnString
 }
 
+func (s *Sqlbuilder) Skip(skip []string) *Sqlbuilder {
+	s.skip = skip
+	return s
+}
+
+func (s *Sqlbuilder) Args(args []string) *Sqlbuilder {
+	s.args = args
+	return s
+}
+
 func (s *Sqlbuilder) BuildInsert(table string, data interface{}, additionalQuery ...string) string {
-	dbCols, dbVals, err := mapStruct(data, false)
+	dbCols, dbVals, err := mapStruct(data, s.args, s.skip, false)
 	if err != nil {
 		return ""
 	}
@@ -280,7 +292,7 @@ func (s *Sqlbuilder) BuildInsert(table string, data interface{}, additionalQuery
 
 func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery ...string) string {
 
-	dbCols, dbVals, err := mapStruct(data, true)
+	dbCols, dbVals, err := mapStruct(data, s.args, s.skip, true)
 	if err != nil {
 		return ""
 	}
@@ -371,7 +383,7 @@ func toSnakeCase(str string) string {
 	return strings.ToLower(snake)
 }
 
-func mapStruct(data interface{}, update bool) (dbCols []string, dbVals []string, error error) {
+func mapStruct(data interface{}, args []string, skip []string, update bool) (dbCols []string, dbVals []string, error error) {
 	fields := reflect.TypeOf(data)
 	values := reflect.ValueOf(data)
 
@@ -381,8 +393,13 @@ func mapStruct(data interface{}, update bool) (dbCols []string, dbVals []string,
 		field := fields.Field(i)
 		value := values.Field(i)
 
+		// TODO this needs to be dynamic in options
 		//val, exists := field.Tag.Lookup("sqlb")
 		val, exists := field.Tag.Lookup("db")
+
+		if stringInSlice(skip, val) {
+			continue
+		}
 
 		if exists {
 			dbCols = append(dbCols, "\""+val+"\"")
@@ -390,7 +407,7 @@ func mapStruct(data interface{}, update bool) (dbCols []string, dbVals []string,
 			dbCols = append(dbCols, "\""+toSnakeCase(field.Name)+"\"")
 		}
 
-		var v string
+		v := compareFields(value)
 
 		if val == "created_at" {
 			v = "NOW()"
@@ -404,41 +421,64 @@ func mapStruct(data interface{}, update bool) (dbCols []string, dbVals []string,
 			continue
 		}
 
-		switch value.Kind() {
-		case reflect.String:
-			v = "'" + sanitiseString(value.String()) + "'"
-		case reflect.Int:
-			v = strconv.FormatInt(value.Int(), 10)
-		case reflect.Int8:
-			v = strconv.FormatInt(value.Int(), 10)
-		case reflect.Int32:
-			v = strconv.FormatInt(value.Int(), 10)
-		case reflect.Int64:
-			v = strconv.FormatInt(value.Int(), 10)
-		case reflect.Float64:
-			v = fmt.Sprintf("%f", value.Float())
-		case reflect.Float32:
-			v = fmt.Sprintf("%f", value.Float())
-		case reflect.Slice:
-			v = fmt.Sprintf("%v", value)
-		case reflect.Array:
-			v = fmt.Sprintf("%v", value)
-		case reflect.Ptr:
-			v = fmt.Sprintf("%v", value)
-		case reflect.Bool:
-			if value.Bool() {
-				v = "TRUE"
-			} else {
-				v = "FALSE"
-			}
-			//default:
-			//	return dbCols, dbVals, errors.New("type: " + value.Kind().String() + " unsupported")
+		if stringInSlice(args, val) {
+			v = "?"
 		}
 
 		dbVals = append(dbVals, v)
 	}
 
 	return dbCols, dbVals, nil
+}
+
+func compareFields(value reflect.Value) string {
+	var v string
+
+	switch value.Kind() {
+	case reflect.String:
+		v = "'" + sanitiseString(value.String()) + "'"
+	case reflect.Int:
+		v = strconv.FormatInt(value.Int(), 10)
+	case reflect.Int8:
+		v = strconv.FormatInt(value.Int(), 10)
+	case reflect.Int32:
+		v = strconv.FormatInt(value.Int(), 10)
+	case reflect.Int64:
+		v = strconv.FormatInt(value.Int(), 10)
+	case reflect.Float64:
+		v = fmt.Sprintf("%f", value.Float())
+	case reflect.Float32:
+		v = fmt.Sprintf("%f", value.Float())
+	case reflect.Slice:
+		v = fmt.Sprintf("%v", value)
+	case reflect.Array:
+		v = fmt.Sprintf("%v", value)
+	case reflect.Ptr:
+		if value.IsNil() {
+			v = fmt.Sprintf("NULL")
+		} else {
+			v = compareFields(reflect.ValueOf(value.Elem().Interface()))
+		}
+	case reflect.Bool:
+		if value.Bool() {
+			v = "TRUE"
+		} else {
+			v = "FALSE"
+		}
+		//default:
+		//	return dbCols, dbVals, errors.New("type: " + value.Kind().String() + " unsupported")
+	}
+
+	return v
+}
+
+func stringInSlice(slice []string, needle string) bool {
+	for _, v := range slice {
+		if v == needle {
+			return true
+		}
+	}
+	return false
 }
 
 func sanitiseString(str string) string {

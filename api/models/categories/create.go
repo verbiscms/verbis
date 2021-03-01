@@ -5,8 +5,10 @@
 package categories
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/google/uuid"
 )
 
 // Create
@@ -17,13 +19,15 @@ import (
 func (s *Store) Create(c domain.Category) (domain.Category, error) {
 	const op = "CategoryRepository.Create"
 
+	// TODO Validate function, check the unique column?
 	//if s.ExistsByName(c.Name) {
 	//	return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op, Err: fmt.Errorf("name already exists")}
 	//}
 
-	q := s.Builder.BuildInsert(TableName, c)
+	q := s.Builder.Skip([]string{"id"}).Args([]string{"uuid"}).BuildInsert(TableName, c)
 
-	result, err := s.DB.Exec(q)
+	fmt.Println(q)
+	result, err := s.DB.Exec(q, uuid.New().String())
 	if err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
 	}
