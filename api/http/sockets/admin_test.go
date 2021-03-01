@@ -6,37 +6,40 @@ package sockets
 
 import (
 	"fmt"
+	"github.com/gookit/color"
 	"github.com/gorilla/websocket"
-	"time"
 )
 
-func (t *SocketsTestSuite) TestCategories_Create() {
+func (t *SocketsTestSuite) Test_AdminSocket() {
 
-	ws, teardown := t.Setup()
-	defer teardown()
-
-	//// Send message to server, read response and check to see if it's what we expect.
-	//for i := 0; i < 10; i++ {
-	//
-
-	//}
-
-	if err := ws.WriteMessage(websocket.TextMessage, []byte("hello")); err != nil {
-		t.Error(err)
+	tt := map[string]struct {
+		message string
+		want    interface{}
+	}{
+		"Success": {
+			"test",
+			"test",
+		},
 	}
 
-	_, p, err := ws.ReadMessage()
-	if err != nil {
-		t.Error(err)
+	for name, test := range tt {
+		t.Run(name, func() {
+			conn, teardown := t.Setup()
+			defer teardown()
+
+			err := conn.WriteMessage(websocket.TextMessage, []byte(test.message))
+			if err != nil {
+				t.Error(err)
+			}
+
+			message, p, err := conn.ReadMessage()
+
+			color.Red.Println(t.logger.String())
+
+			t.Equal(test.want, string(p))
+			fmt.Println(message)
+			fmt.Println(string(p))
+			fmt.Println(err)
+		})
 	}
-
-	time.Sleep(10 * time.Second)
-
-	fmt.Println("hh")
-	if string(p) != "hello" {
-		t.Error(err)
-	}
-
-	fmt.Println("hh")
-	ws.Close()
 }

@@ -1,10 +1,11 @@
 package sockets
 
 import (
+	"bytes"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/suite"
 	"net/http"
@@ -16,16 +17,24 @@ import (
 // SocketsTestSuite defines the helper used for websocket
 // testing.
 type SocketsTestSuite struct {
-	test.HandlerSuite
+	suite.Suite
+	logger bytes.Buffer
 }
 
 // TestSockets
 //
 // Assert testing has begun.
 func TestSockets(t *testing.T) {
-	suite.Run(t, &SocketsTestSuite{
-		HandlerSuite: test.NewHandlerSuite(),
-	})
+	suite.Run(t, &SocketsTestSuite{})
+}
+
+// BeforeTest
+//
+// Assign the logger to a buffer.
+func (t *SocketsTestSuite) BeforeTest(suiteName, testName string) {
+	b := bytes.Buffer{}
+	t.logger = b
+	logger.SetOutput(&t.logger)
 }
 
 // Setup
@@ -33,6 +42,10 @@ func TestSockets(t *testing.T) {
 // A helper to obtain a a new test server handler
 // for testing.
 func (t *SocketsTestSuite) Setup() (*websocket.Conn, func()) {
+	//log := &bytes.Buffer{}
+	//logger.Init(&environment.Env{})
+	//logger.SetOutput(log)
+
 	d := &deps.Deps{
 		Store:  nil,
 		Config: nil,
