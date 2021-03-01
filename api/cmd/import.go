@@ -21,7 +21,7 @@ and convert the data into Verbis content. `,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
-			cfg, _, err := doctor()
+			cfg, _, err := doctor(false)
 			if err != nil {
 				printError(err.Error())
 			}

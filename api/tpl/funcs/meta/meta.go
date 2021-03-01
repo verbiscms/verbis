@@ -7,20 +7,16 @@ package meta
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/ainsleyclark/verbis/api/tpl/embedded"
 	"html/template"
+	"strings"
 )
 
 const (
-	// The path of the embedded files to execute when super admin.
-	DevEmbeddedPath = "/tpl/embedded/"
-	// The path of the embedded files to execute when compiled.
-	EmbeddedPath = "/tpl/"
 	// The extension of the embedded files.
 	EmbeddedExtension = ".cms"
 )
@@ -57,8 +53,6 @@ func (tm *TemplateMeta) GetImage(id int) string {
 //
 // Example: {{ verbisHead }}
 func (ns *Namespace) Header() template.HTML {
-	const op = "Templates.Meta.Header"
-
 	tm := &TemplateMeta{
 		Site:    ns.deps.Site,
 		Post:    ns.post,
@@ -126,24 +120,20 @@ func (ns *Namespace) executeTemplates(tm *TemplateMeta, templates []string) stri
 	meta := ""
 	for _, name := range templates {
 
-		root := ns.deps.Paths.API + EmbeddedPath
-		if api.SuperAdmin {
-			root = ns.deps.Paths.API + DevEmbeddedPath
+		path := name + EmbeddedExtension
+		file, err := embedded.Static.ReadFile(path)
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading static file: " + path, Operation: op, Err: err}).Error()
 		}
 
 		var b bytes.Buffer
-		_, err := ns.deps.Tmpl().Prepare(tpl.Config{
-			Root:      root,
-			Extension: EmbeddedExtension,
-		}).Execute(&b, name, tm)
-
+		err = ns.deps.Tmpl().ExecuteTpl(&b, string(file), tm)
 		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error executing template", Operation: op, Err: err}).Error()
-			return ""
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error parsing template", Operation: op, Err: err}).Error()
 		}
 
 		meta += fmt.Sprintf("%s\n", b.String())
 	}
 
-	return meta
+	return strings.TrimRight(meta, "\n")
 }
