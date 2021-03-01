@@ -32,7 +32,7 @@ func (s *Store) Create(c domain.Category) (domain.Category, error) {
 	if err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
 	}
-	c.Id = int(id)
+	c.Id = id
 
 	return c, nil
 }
