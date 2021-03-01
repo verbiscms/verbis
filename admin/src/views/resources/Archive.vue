@@ -9,7 +9,7 @@
 				<div class="col-12">
 					<header class="header header-with-actions">
 						<div class="header-title">
-							<h1>{{ resource['friendly_name'] }}</h1>
+							<h1>{{ getResource['friendly_name'] }}</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<!-- Actions -->
@@ -34,8 +34,8 @@
 									</select>
 								</div>
 								<button class="btn btn-fixed-height btn-margin btn-white header-hide-mob" :class="{ 'btn-loading' : isDoingBulk }" @click.prevent="doBulkAction">Apply</button>
-								<router-link class="btn btn-orange btn-fixed-height btn-flex" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: resource['name'] }}">
-									New {{ resource['singular_name'] }}
+								<router-link class="btn btn-orange btn-fixed-height btn-flex" :to="{ name: 'editor', params: { id: 'new' }, query: { resource: getResource['name'] }}">
+									New {{ getResource['singular_name'] }}
 								</router-link>
 							</form>
 						</div><!-- /Actions -->
@@ -205,7 +205,7 @@
 							</div><!-- /Table Wrapper -->
 							<Alert v-else colour="orange">
 								<slot>
-									<h3>No {{ activeTabName === "all" ? "" : (activeTabName === "bin" ? "binned" : activeTabName ) }} {{ resource['friendly_name'].toLowerCase() }} available. </h3>
+									<h3>No {{ activeTabName === "all" ? "" : (activeTabName === "bin" ? "binned" : activeTabName ) }} {{ getResource['friendly_name'].toLowerCase() }} available. </h3>
 									<p>To create a new one, click the button above.</p>
 								</slot>
 							</Alert>
@@ -230,8 +230,8 @@
 			</template>
 			<template slot="text">
 				<h2>Are you sure?</h2>
-				<p v-if="selectedPost">Are you sure want to delete this {{ resource['singular_name'] }}?</p>
-				<p v-else>Are you sure want to delete {{ checked.length }} {{ resource['friendly_name'] }}?</p>
+				<p v-if="selectedPost">Are you sure want to delete this {{ getResource['singular_name'] }}?</p>
+				<p v-else>Are you sure want to delete {{ checked.length }} {{ getResource['friendly_name'] }}?</p>
 			</template>
 		</Modal>
 	</section>
@@ -262,7 +262,6 @@ export default {
 	},
 	data: () => ({
 		doingAxios: true,
-		resource: {},
 		posts: [],
 		selectedPost: false,
 		paginationObj: {},
@@ -288,11 +287,9 @@ export default {
 	}),
 	mounted() {
 		this.filterTabs(1);
-		this.setResource();
 	},
 	watch: {
 		'$route.params.resource': function() {
-			this.setResource();
 			this.getPosts();
 			this.activeTab = 1;
 		},
@@ -338,7 +335,7 @@ export default {
 			// Send all requests
 			Promise.all(promises)
 				.then(() => {
-					const successMsg = toDelete.length === 1 ? `${this.resource['singular_name']} deleted successfully.` : `${this.resource['name']} deleted successfully.`
+					const successMsg = toDelete.length === 1 ? `${this.getResource['singular_name']} deleted successfully.` : `${this.getResource['name']} deleted successfully.`
 					this.$noty.success(successMsg);
 					this.getPosts();
 				})
@@ -393,7 +390,7 @@ export default {
 			Promise.all(promises)
 				.then(() => {
 					const plural = checkedArr.length === 1 ? "" : "s";
-					const successMsg = `${checkedArr.length} ${this.resource['singular_name']}${plural} moved to ${status}.`;
+					const successMsg = `${checkedArr.length} ${this.getResource['singular_name']}${plural} moved to ${status}.`;
 					this.$noty.success(successMsg);
 					this.getPosts();
 				})
@@ -416,21 +413,6 @@ export default {
 		 */
 		async updateStatusAxios(id, post) {
 			return await this.axios.put("/posts/" + id, post);
-		},
-		/*
-		 * setResource()
-		 * Set the resource from the query parameter, if none defined,
-		 * set default page 'resource'.
-		 */
-		setResource() {
-			const resource = this.getResources[this.$route.params.resource]
-			this.resource = resource === undefined ? {
-				"name": "pages",
-				"friendly_name": "Pages",
-				"singular_name": "Page",
-				"slug": "",
-				"icon": 'fal fa-file'
-			} : resource;
 		},
 		/*
 		 * changeOrderBy()
@@ -594,7 +576,7 @@ export default {
 			this.axios.post("/posts", post)
 				.then(() => {
 					this.getPosts();
-					this.$noty.success(`${this.resource['singular_name']} cloned successfully`);
+					this.$noty.success(`${this.getResource['singular_name']} cloned successfully`);
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
@@ -608,6 +590,23 @@ export default {
 		 */
 		getResources() {
 			return this.$store.state.theme.resources;
+		},
+		/*
+		 * getResource()
+		 * Gets the resource from the query parameter, if none defined,
+		 * gets default page 'resource'.
+		 */
+		getResource() {
+			const resource = this.getTheme['resources'][this.$route.params.resource];
+			//console.log(resource);
+			return resource === undefined ? {
+				"name": "pages",
+				"friendly_name": "Page",
+				"singular_name": "Page",
+				"slug": "",
+				"icon": 'fal fa-file',
+				"available_templates": [],
+			} : resource
 		},
 		/*
 		 * checkedAll()

@@ -27,7 +27,7 @@ resources:
     news:
         name: news
         friendly_name: News
-        singular_name: News Item
+        singular_name: News Items
         slug: /news
         icon: feather feather-clipboard
         hidden: false
@@ -37,7 +37,7 @@ resources:
         ]
     team:
         name: team
-        friendly_name: Team Members
+        friendly_name: Team Member
         singular_name: Team Member
         slug: /team
         icon: feather feather-user
@@ -45,7 +45,7 @@ resources:
         hide_category_slug: true
     jobs:
         name: jobs
-        friendly_name: Jobs
+        friendly_name: Job
         singular_name: Job
         slug: /jobs
         icon: feather feather-inbox
