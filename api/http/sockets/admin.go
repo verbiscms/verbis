@@ -6,7 +6,6 @@ package sockets
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -54,6 +53,7 @@ func Admin(d *deps.Deps) http.HandlerFunc {
 			ConfigPath: d.ThemePath() + string(os.PathSeparator) + config.FileName,
 			Watcher:    watcher.New(),
 		}
+		defer a.Watcher.Close()
 
 		a.Init(ws)
 	}
@@ -73,13 +73,16 @@ func (a *adminSocket) Init(ws *websocket.Conn) {
 	err := a.Watcher.Add(a.ConfigPath)
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error adding configuration watcher", Operation: op, Err: err}).Error()
+		ws.Close()
 		return
 	}
 
 	// Start the watching process - it'll check for changes every 100ms.
 	err = a.Watcher.Start(time.Millisecond * 100)
+	defer a.Watcher.Close()
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error starting configuration watcher", Operation: op, Err: err}).Error()
+		ws.Close()
 		return
 	}
 
@@ -89,18 +92,23 @@ func (a *adminSocket) Init(ws *websocket.Conn) {
 // Reader
 //
 //
-func (a *adminSocket) Reader(ws *websocket.Conn) {
-	defer ws.Close()
-	ws.SetReadDeadline(time.Now().Add(pongWait))
-	ws.SetPongHandler(func(string) error {
-		ws.SetReadDeadline(time.Now().Add(pongWait))
-		fmt.Println("closingf")
-		return nil
-	})
+func (a *adminSocket) Reader(conn *websocket.Conn) {
+
 	for {
-		_, _, err := ws.ReadMessage()
+		// Read in a message
+		messageType, p, err := conn.ReadMessage()
 		if err != nil {
-			break
+			logger.WithError(err)
+			return
+		}
+
+		// Print out that message for clarity
+		logger.Info(string(p))
+
+		err = conn.WriteMessage(messageType, p)
+		if err != nil {
+			logger.Error(err)
+			return
 		}
 	}
 }
@@ -126,12 +134,10 @@ func (a *adminSocket) Writer(ws *websocket.Conn) {
 
 				// Write the file back to the socket.
 				err = ws.WriteMessage(websocket.TextMessage, b)
-				ws.SetWriteDeadline(time.Now().Add(writeWait))
 				if err != nil {
 					logger.WithError(&errors.Error{Code: op, Message: "Error sending socket message", Operation: op, Err: err}).Error()
 					return
 				}
-
 			case err := <-a.Watcher.Error:
 				if err != syscall.EPIPE {
 					logger.WithError(&errors.Error{Code: op, Message: "Error watching theme configuration", Operation: op, Err: err}).Error()
