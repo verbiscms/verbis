@@ -25,6 +25,9 @@ var (
 	// Ensure the theme configuration is set only once upon
 	// initialisation.
 	once = sync.Once{}
+	// Required to avoid concurrent map writes when writing
+	// via a websocket.
+	mutex = &sync.Mutex{}
 )
 
 // Init
@@ -49,6 +52,8 @@ func Get() *domain.ThemeConfig {
 // Sets the cfg variable to a new theme configuration when
 // a theme has been set by the user.
 func Set(config domain.ThemeConfig) {
+	mutex.Lock()
+	defer mutex.Unlock()
 	cfg = &config
 }
 
