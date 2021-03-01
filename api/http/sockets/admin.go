@@ -6,19 +6,22 @@ package sockets
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"github.com/radovskyb/watcher"
 	"net/http"
+	"os"
+	"syscall"
 	"time"
 )
 
 var (
-	upgrader = websocket.Upgrader{
+	// upgrader
+	adminUpgrader = websocket.Upgrader{
 		ReadBufferSize:  1024,
 		WriteBufferSize: 1024,
 		CheckOrigin: func(r *http.Request) bool {
@@ -27,91 +30,117 @@ var (
 	}
 )
 
-func reader(conn *websocket.Conn) {
-	const op = "Sockets.Admin.reader"
-
-	defer conn.Close()
-
-	for {
-		// Read in a message
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			logger.WithError(err)
-			return
-		}
-
-		// Print out that message for clarity
-		logger.Info(string(p))
-
-		err = conn.WriteMessage(messageType, p)
-		if err != nil {
-			logger.Error(err)
-			return
-		}
-	}
+// adminSocket
+type adminSocket struct {
+	ThemePath  string
+	ConfigPath string
+	Watcher    *watcher.Watcher
 }
 
-func writer(ws *websocket.Conn, themePath string) {
-	const op = "OPCHANGE"
+// Admin
+//
+//
+func Admin(d *deps.Deps) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		const op = "AdminSocket.Handler"
 
-	w := watcher.New()
-	w.SetMaxEvents(1)
-
-	go func() {
-		for {
-			select {
-			case _ = <-w.Event:
-				logger.Info("Updating theme configuration file, sending message")
-
-				b, err := json.Marshal(config.Fetch(themePath))
-				if err != nil {
-					logger.WithError(errors.Error{
-						Code:      op,
-						Message:   "Error marshalling ",
-						Operation: "",
-						Err:       nil,
-					})
-					logger.Error(err)
-					return
-				}
-
-				err = ws.WriteMessage(websocket.TextMessage, b)
-				if err != nil {
-					logger.Error(err)
-					return
-				}
-
-			case err := <-w.Error:
-				logger.Error(err)
-			case <-w.Closed:
-				return
-			}
-		}
-	}()
-
-	// Watch this folder for changes.
-	if err := w.Add(themePath); err != nil {
-		logger.Error(err)
-	}
-
-	// Start the watching process - it'll check for changes every 100ms.
-	if err := w.Start(time.Millisecond * 100); err != nil {
-		logger.Error(err)
-	}
-}
-
-func Admin(d *deps.Deps) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
-		const op = "OPCHANGE"
-
-		ws, err := upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
+		ws, err := adminUpgrader.Upgrade(w, r, nil)
 		if err != nil {
 			logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error upgrading request to websocket", Operation: op, Err: err})
 		}
 
-		logger.Info("Admin client webhook connected")
+		a := &adminSocket{
+			ThemePath:  d.ThemePath(),
+			ConfigPath: d.ThemePath() + string(os.PathSeparator) + config.FileName,
+			Watcher:    watcher.New(),
+		}
 
-		go writer(ws, d.ThemePath())
-		reader(ws)
+		a.Init(ws)
 	}
+}
+
+// Init
+//
+//
+func (a *adminSocket) Init(ws *websocket.Conn) {
+	const op = "AdminSocket.Init"
+
+	a.Watcher.SetMaxEvents(1)
+
+	go a.Writer(ws)
+
+	// Watch this folder for changes.
+	err := a.Watcher.Add(a.ConfigPath)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error adding configuration watcher", Operation: op, Err: err}).Error()
+		return
+	}
+
+	// Start the watching process - it'll check for changes every 100ms.
+	err = a.Watcher.Start(time.Millisecond * 100)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error starting configuration watcher", Operation: op, Err: err}).Error()
+		return
+	}
+
+	a.Reader(ws)
+}
+
+// Reader
+//
+//
+func (a *adminSocket) Reader(ws *websocket.Conn) {
+	defer ws.Close()
+	ws.SetReadDeadline(time.Now().Add(pongWait))
+	ws.SetPongHandler(func(string) error {
+		ws.SetReadDeadline(time.Now().Add(pongWait))
+		fmt.Println("closingf")
+		return nil
+	})
+	for {
+		_, _, err := ws.ReadMessage()
+		if err != nil {
+			break
+		}
+	}
+}
+
+// Writer
+//
+//
+func (a *adminSocket) Writer(ws *websocket.Conn) {
+	const op = "AdminSocket.Writer"
+
+	go func() {
+		for {
+			select {
+			case _ = <-a.Watcher.Event:
+				logger.Info("Updating theme configuration file, sending socket")
+
+				// Marshal the configuration file.
+				b, err := json.Marshal(config.Fetch(a.ThemePath))
+				if err != nil {
+					logger.WithError(&errors.Error{Code: op, Message: "Error marshalling theme configuration", Operation: op, Err: err}).Error()
+					return
+				}
+
+				// Write the file back to the socket.
+				err = ws.WriteMessage(websocket.TextMessage, b)
+				ws.SetWriteDeadline(time.Now().Add(writeWait))
+				if err != nil {
+					logger.WithError(&errors.Error{Code: op, Message: "Error sending socket message", Operation: op, Err: err}).Error()
+					return
+				}
+
+			case err := <-a.Watcher.Error:
+				if err != syscall.EPIPE {
+					logger.WithError(&errors.Error{Code: op, Message: "Error watching theme configuration", Operation: op, Err: err}).Error()
+				}
+				return
+			case <-a.Watcher.Closed:
+				logger.Info("Closing watcher on theme configuration file")
+				return
+			}
+		}
+	}()
 }

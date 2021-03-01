@@ -12,8 +12,8 @@
 					<!-- Header -->
 					<header class="header header-with-actions">
 						<div class="header-title">
-							<h1 v-if="newItem">Add a new {{ resource.friendly_name }}</h1>
-							<h1 v-else>Edit {{ resource['singular_name'] ? resource['singular_name'] : resource['friendly_name'] }}</h1>
+							<h1 v-if="newItem">Add a new {{ getResource.friendly_name }}</h1>
+							<h1 v-else>Edit {{ getResource['singular_name'] ? getResource['singular_name'] : getResource['friendly_name'] }}</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<!-- Actions -->
@@ -229,7 +229,7 @@ export default {
 		fieldLayout: [],
 		templates: [],
 		layouts: [],
-		resource: {},
+	//	resource: {},
 		categories: [],
 		newItem: false,
 		categoryArchive: false,
@@ -278,7 +278,6 @@ export default {
 		 */
 		init() {
 			this.getSuccessMessage();
-			this.setResource();
 			this.setTab();
 			if (this.newItem) {
 				Promise.all([this.getUsers(), this.getCategories(), this.getLayouts(), this.getTemplates()])
@@ -405,7 +404,7 @@ export default {
 			await this.axios.get("/fields", {
 				params: {
 					"layout": this.data['layout'],
-					"resource": this.resource.name,
+					"resource": this.getResource.name,
 					"page_template": this.data['page_template'],
 					"user_id": this.data['author'],
 				}
@@ -425,7 +424,7 @@ export default {
 		 * Obtain the categories.
 		 */
 		async getCategories() {
-			await this.axios.get(`/categories?limit=all&filter={"resource":[{"operator":"=", "value": "${this.resource['name']}"}]}`, {
+			await this.axios.get(`/categories?limit=all&filter={"resource":[{"operator":"=", "value": "${this.getResource['name']}"}]}`, {
 				paramsSerializer: function (params) {
 					return params;
 				}
@@ -451,12 +450,12 @@ export default {
 			await this.axios.get("/templates")
 			.then(res => {
 				const templates = res.data.data.templates;
-				if (this.resource.name === "pages") {
+				if (this.getResource.name === "pages") {
 					this.templates = templates;
 					return;
 				}
 
-				const available = this.getTheme['resources'][this.resource.name]['available_templates'];
+				const available = this.getTheme['resources'][this.getResource.name]['available_templates'];
 				if (!available) {
 					this.templates = templates;
 					return;
@@ -508,22 +507,6 @@ export default {
 			})
 		},
 		/*
-		 * setResource()
-		 * Set the resource from the query parameter, if none defined,
-		 * set default page 'resource'.
-		 */
-		async setResource() {
-			const resource = this.getTheme['resources'][this.$route.query.resource];
-			this.resource = resource === undefined ? {
-				"name": "pages",
-				"friendly_name": "Page",
-				"singular_name": "Page",
-				"slug": "",
-				"icon": 'fal fa-file',
-				"available_templates": [],
-			} : resource
-		},
-		/*
 		 * setNewUpdate()
 		 * Determine if the page is new or if it already exists.
 		 */
@@ -558,8 +541,8 @@ export default {
 				if (document.querySelectorAll(".field-cont-error").length === 0) {
 					this.$set(this.data, 'slug', this.computedSlug);
 
-					if (this.resource.name !== "pages") {
-						this.$set(this.data, 'resource', this.resource.name)
+					if (this.getResource.name !== "pages") {
+						this.$set(this.data, 'resource', this.getResource.name)
 					} else {
 						this.$set(this.data, 'resource', null)
 					}
@@ -583,7 +566,7 @@ export default {
 										errors = err.response.data.data.errors;
 									if (msg && !errors) this.$noty.error(msg);
 									this.validate(errors);
-									this.$noty.error("Fix the errors before saving the " + this.resource['singular_name'] + ".");
+									this.$noty.error("Fix the errors before saving the " + this.getResource['singular_name'] + ".");
 									return;
 								}
 								this.helpers.handleResponse(err);
@@ -607,7 +590,7 @@ export default {
 										return;
 									}
 									this.validate(errors);
-									this.$noty.error("Fix the errors before saving the " + this.resource['singular_name'] + ".");
+									this.$noty.error("Fix the errors before saving the " + this.getResource['singular_name'] + ".");
 									return;
 								}
 								this.helpers.handleResponse(err);
@@ -661,7 +644,7 @@ export default {
 		 * return the nice slug.
 		 */
 		resolveCategorySlug() {
-			if (this.resource['hide_category_slug']) {
+			if (this.getResource['hide_category_slug']) {
 				return "";
 			}
 
@@ -717,8 +700,8 @@ export default {
 	},
 	computed: {
 		isPublic() {
-			if ('hidden' in this.resource) {
-				return !this.resource.hidden;
+			if ('hidden' in this.getResource) {
+				return !this.getResource.hidden;
 			}
 			return true
 		},
@@ -727,10 +710,10 @@ export default {
 		 * Get the base slug (resource).
 		 */
 		getBaseSlug() {
-			if (this.resource.name === "pages") {
+			if (this.getResource.name === "pages") {
 				return "/" + this.resolveCategorySlug();
 			}
-			return this.resource.slug + "/" + this.resolveCategorySlug();
+			return this.getResource.slug + "/" + this.resolveCategorySlug();
 		},
 		/*
 		 * getCategory()
@@ -738,6 +721,22 @@ export default {
 		 */
 		getCategory() {
 			return this.data.category;
+		},
+		/*
+		 * getResource()
+		 * Gets the resource from the query parameter, if none defined,
+		 * gets default page 'resource'.
+		 */
+		getResource() {
+			const resource = this.getTheme['resources'][this.$route.query.resource];
+			return resource === undefined ? {
+				"name": "pages",
+				"friendly_name": "Page",
+				"singular_name": "Page",
+				"slug": "",
+				"icon": 'fal fa-file',
+				"available_templates": [],
+			} : resource
 		},
 		/*
 		 * computedSlug()
