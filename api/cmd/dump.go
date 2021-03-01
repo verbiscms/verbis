@@ -21,7 +21,7 @@ database to file`,
 		Run: func(cmd *cobra.Command, args []string) {
 			printSpinner("Dumping database...")
 
-			cfg, db, err := doctor()
+			cfg, db, err := doctor(false)
 			if err != nil {
 				printError("Could not dump the database, is your database connection valid?")
 			}

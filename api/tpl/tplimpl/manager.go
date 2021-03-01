@@ -6,8 +6,10 @@ package tplimpl
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"html/template"
+	"io"
 	"sync"
 )
 
@@ -42,4 +44,24 @@ type Execute struct {
 	tplMutex    sync.RWMutex
 	fileHandler fileHandler
 	funcMap     template.FuncMap
+}
+
+// ExecuteTpl
+//
+// Is a helper function for executing standard templates
+// that are embedded.
+func (t *TemplateManager) ExecuteTpl(w io.Writer, text string, data interface{}) error {
+	const op = "TemplateEngine.ExecuteTpl"
+
+	tmpl, err := template.New("").Funcs(t.GenericFuncMap()).Parse(text)
+	if err != nil {
+		return &errors.Error{Code: errors.TEMPLATE, Message: "Error parsing template", Operation: op, Err: err}
+	}
+
+	err = tmpl.Execute(w, data)
+	if err != nil {
+		return &errors.Error{Code: errors.TEMPLATE, Message: "Error executing template", Operation: op, Err: err}
+	}
+
+	return nil
 }

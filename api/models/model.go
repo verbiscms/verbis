@@ -24,6 +24,7 @@ type StoreConfig struct {
 	Config  *domain.ThemeConfig
 	Paths   paths.Paths
 	Options OptionsRepository
+	Running bool
 }
 
 // Store defines all of the repositories used to interact with the database
@@ -45,8 +46,10 @@ type Store struct {
 func New(cfg *StoreConfig) *Store {
 
 	cfg.Options = newOptions(cfg)
-	ps := string(os.PathSeparator)
-	cfg.Config = config.Init(cfg.Paths.Base + ps + "themes" + ps + cfg.Options.Theme())
+	if cfg.Running {
+		ps := string(os.PathSeparator)
+		cfg.Config = config.Init(cfg.Paths.Base + ps + "themes" + ps + cfg.Options.Theme())
+	}
 
 	return &Store{
 		Auth:       newAuth(cfg),

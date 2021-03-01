@@ -5,11 +5,11 @@
 package database
 
 import (
+	_ "embed"
 	"fmt"
 	"github.com/JamesStewy/go-mysqldump"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -20,6 +20,11 @@ type DbCfg struct {
 	En    environment.Env
 	Paths paths.Paths
 }
+
+var (
+	//go:embed schema.sql
+	migration string
+)
 
 // MySql defines the driver for the database
 type MySql struct {
@@ -90,12 +95,7 @@ func (db *MySql) Ping() error {
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (db *MySql) Install() error {
 	const op = "Database.Install"
-	path := db.paths.Migration + "/schema.sql"
-	sql, err := files.GetFileContents(path)
-	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Unable to load the sql migration file from the path: %s", path), Operation: op, Err: err}
-	}
-	if _, err := db.Sqlx.Exec(sql); err != nil {
+	if _, err := db.Sqlx.Exec(migration); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Could execute the migration file", Operation: op, Err: err}
 	}
 	return nil

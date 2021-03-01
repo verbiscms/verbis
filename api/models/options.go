@@ -90,7 +90,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 
 	var opts domain.OptionsDB
 	if err := s.DB.Select(&opts, "SELECT * FROM options"); err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
+		//logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 		return domain.Options{}
 	}
 
@@ -98,7 +98,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 	for _, v := range opts {
 		unValue, err := s.unmarshalValue(v.Value)
 		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
+			//logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 			return domain.Options{}
 		}
 		unOpts[v.Name] = unValue
@@ -106,13 +106,13 @@ func (s *OptionsStore) GetStruct() domain.Options {
 
 	mOpts, err := json.Marshal(unOpts)
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
+		//logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 		return domain.Options{}
 	}
 
 	var options domain.Options
 	if err := json.Unmarshal(mOpts, &options); err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
+		//logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 		return domain.Options{}
 	}
 
@@ -176,14 +176,14 @@ func (s *OptionsStore) Update(name string, value interface{}) error {
 	return nil
 }
 
-func (s OptionsStore) Theme() string {
+func (s *OptionsStore) Theme() string {
 	opt, err := s.GetByName("active_theme")
 	if err != nil {
-		logger.WithError(err).Fatal()
+		logger.WithError(err).Error()
 	}
 	theme, err := cast.ToStringE(opt)
 	if err != nil {
-		logger.WithError(err).Fatal()
+		logger.WithError(err).Error()
 	}
 	return theme
 }

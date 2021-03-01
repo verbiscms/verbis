@@ -26,7 +26,7 @@ var (
 Verbis install. It will check if the database has been set up correctly as well as the
 environment.`,
 		Run: func(cmd *cobra.Command, args []string) {
-			if _, _, err := doctor(); err != nil {
+			if _, _, err := doctor(false); err != nil {
 				return
 			}
 			return
@@ -37,7 +37,7 @@ environment.`,
 // doctor checks if the environment is validated and checks
 // to see if there is a valid database connection and the
 // database exists before proceeding.
-func doctor() (*deps.DepsConfig, *database.MySql, error) {
+func doctor(running bool) (*deps.DepsConfig, *database.MySql, error) {
 
 	printSpinner("Running doctor...")
 
@@ -93,8 +93,9 @@ func doctor() (*deps.DepsConfig, *database.MySql, error) {
 
 	// Set up stores & pass the database.
 	store := models.New(&models.StoreConfig{
-		DB:    db.Sqlx,
-		Paths: paths,
+		DB:      db.Sqlx,
+		Paths:   paths,
+		Running: running,
 	})
 
 	printSuccess("All checks passed.")

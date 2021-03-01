@@ -34,9 +34,11 @@ function build() {
     if [[ $1 == "mac" ]]
 		then
 			echo "Building for mac..."
-			CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "./build/mac/verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false' -X 'github.com/ainsleyclark/verbis/api.Stack=heythere'"
+			CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "./build/mac/verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
 			CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "./build/mac/verbis-linux" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
 			CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o "./build/mac/verbis-windows.exe" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
+
+			CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o verbis -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
     fi
 
 	# Linux
@@ -72,13 +74,12 @@ function build() {
 
 	# API (Database)
 	mkdir $path/api/
-	mkdir $path/api/database && cp -a api/database/migrations/schema.sql $path/api/database
 
 	# API (Web)
 	mkdir $path/api/web && rsync -av --quiet api/web/ build/$os/api/web/ --exclude node_modules --exclude src --exclude package.json --exclude package-lock.json
 
 	# Theme
-	mkdir $path/themes && cp -a theme/ $path/themes/
+	mkdir $path/themes && cp -a themes/Verbis $path/themes/
 
 	# Admin
 	mkdir $path/admin
@@ -96,8 +97,8 @@ function build() {
 	mkdir $path/api/tpl && rsync -av --quiet api/tpl/embedded build/$os/api/tpl
 
 	# Mail
-	mkdir $path/mail
-	rsync -av --quiet api/mail/ $path/mail --exclude mailer.go
+	#mkdir $path/mail
+	#rsync -av --quiet api/mail/ $path/mail --exclude mailer.go
 
 	# .gitignore
 	printf 'node_modules\n.env\n.env.local\n.env.*.local\n.idea\n.vscode\n*.suo\n*.ntvs*\n*.njsproj\n*.sln\n*.sw?\n.DS_Store\n' > $path/.gitignore

@@ -38,7 +38,7 @@ func newFields(cfg *StoreConfig) *FieldsStore {
 		StoreConfig: cfg,
 		options:     cfg.Options.GetStruct(),
 		// This wont work when changing themes
-		finder: location.NewLocation(cfg.Paths.Storage + cfg.Options.Theme()),
+		finder: location.NewLocation(cfg.Paths.Storage),
 	}
 }
 

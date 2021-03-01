@@ -25,7 +25,7 @@ up the server on the port specified in the .env file.`,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
-			cfg, _, err := doctor()
+			cfg, _, err := doctor(true)
 			if err != nil {
 				printError(err.Error())
 			}

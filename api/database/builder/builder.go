@@ -24,6 +24,12 @@ type Sqlbuilder struct {
 	Dialect        string //Can be postgres, mysql or (more to come)
 }
 
+func Builder() *Sqlbuilder {
+	return &Sqlbuilder{
+		Dialect: "whatever",
+	}
+}
+
 func (s *Sqlbuilder) From(fromstmt string) *Sqlbuilder {
 	s.fromstmt = s.formatSchema(fromstmt)
 

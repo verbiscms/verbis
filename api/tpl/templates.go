@@ -19,6 +19,7 @@ type TemplateHandler interface {
 	TemplateFuncGetter
 	TemplateDataGetter
 	Prepare(c TemplateConfig) TemplateExecutor
+	ExecuteTpl(w io.Writer, text string, data interface{}) error
 }
 
 // TemplateExecute represents the functions for executing

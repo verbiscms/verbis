@@ -5,8 +5,6 @@
 package cmd
 
 import (
-	"fmt"
-	"github.com/ainsleyclark/verbis/api/models/roles"
 	"github.com/spf13/cobra"
 )
 
@@ -15,14 +13,6 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-
-			_, db, _ := doctor()
-
-			r := roles.New(db.Sqlx)
-			redir, err := r.Find(int64(99))
-
-			fmt.Print(redir)
-			fmt.Println(err)
 		},
 	}
 )
