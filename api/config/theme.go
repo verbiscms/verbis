@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ghodss/yaml"
-	"github.com/gookit/color"
 	"io/ioutil"
 	"os"
 	"sync"
@@ -45,6 +44,8 @@ func Init(path string) *domain.ThemeConfig {
 //
 // Returns the pointer to the theme configuration.
 func Get() *domain.ThemeConfig {
+	mutex.Lock()
+	defer mutex.Unlock()
 	return cfg
 }
 
@@ -73,13 +74,15 @@ func Fetch(path string) *domain.ThemeConfig {
 	return theme
 }
 
+// Config
+//
 // TODO: Need Config E, REWORD THIS FUNCTION ITS NO GOOD
-func Config(path string) (domain.ThemeConfig, error) {
+func Config(path string) (*domain.ThemeConfig, error) {
 	theme, err := getThemeConfig(path, FileName)
 	if err != nil {
-		return domain.ThemeConfig{}, err
+		return nil, err
 	}
-	return *theme, nil
+	return theme, nil
 }
 
 // getThemeConfig
@@ -90,20 +93,16 @@ func Config(path string) (domain.ThemeConfig, error) {
 func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
 	const op = "Config.Fetch"
 
-	t := DefaultTheme
-
-	color.Red.Println(path + string(os.PathSeparator) + filename)
-	theme, err := ioutil.ReadFile(path + string(os.PathSeparator) + filename)
+	cfg, err := ioutil.ReadFile(path + string(os.PathSeparator) + filename)
 	if err != nil {
-		return &t, &errors.Error{Code: errors.INTERNAL, Message: "Unable to get retrieve theme config file", Operation: op, Err: err}
+		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Unable to get retrieve theme config file", Operation: op, Err: err}
 	}
 
-	err = yaml.Unmarshal(theme, &t)
+	var theme domain.ThemeConfig
+	err = yaml.Unmarshal(cfg, &theme)
 	if err != nil {
-		return &t, &errors.Error{Code: errors.INTERNAL, Message: "Syntax error in theme config file", Operation: op, Err: err}
+		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Syntax error in theme config file", Operation: op, Err: err}
 	}
 
-	color.Red.Println("got here")
-
-	return cfg, nil
+	return &theme, nil
 }

@@ -5,43 +5,93 @@
 package site
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/gookit/color"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
-// Templates
+const (
+	// The default screenshot name within the theme's
+	// directory.
+	ScreenshotName = "screenshot"
+
+	// TODO: TEMPORARY
+	path = "/Users/ainsley/Desktop/Reddico/apis/verbis/themes"
+)
+
+var (
+	ScrenshotExtensions = []string{
+		".png",
+		".svg",
+		".jpg",
+	}
+)
+
+// Themes
 //
-// Retrieves all templates stored within the templates
-// directory of the theme path.
+// TODO
 //
-// Returns errors.NOTFOUND if no templates were found.
-// Returns errors.INTERNAL if the template path is invalid.
 func (s *Site) Themes(themePath string) (domain.Themes, error) {
 	const op = "SiteRepository.Themes"
 
-	path := "/Users/ainsley/Desktop/Reddico/apis/verbis/themes"
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error finding themes", Err: err, Operation: op}
 	}
 
+	var themes domain.Themes
 	for _, f := range files {
 		if !f.IsDir() {
 			continue
 		}
-
 		cfg, err := config.Config(path + string(os.PathSeparator) + f.Name())
 		if err != nil {
 			logger.WithError(err).Error()
 		}
 
-		color.Green.Println(cfg.Theme.Title)
+		p, err := s.findScreenshot(path, f.Name())
+		fmt.Println(p)
+		fmt.Println(err)
+		themes = append(themes, cfg.Theme)
 	}
 
-	return nil, nil
+	return themes, nil
+}
+
+func (s *Site) findScreenshot(path string, theme string) (string, error) {
+	for _, v := range ScrenshotExtensions {
+		name := path + string(os.PathSeparator) + theme + string(os.PathSeparator) + ScreenshotName + v
+		fmt.Println(name)
+		info, err := os.Stat(name)
+		if err != nil {
+			continue
+		}
+		fmt.Println(info.Name())
+		return "test", nil
+	}
+	return "", fmt.Errorf("no screenshot found")
+}
+
+// Screenshot
+//
+// TODO
+//
+func (s *Site) Screenshot(basePath string, theme string, file string) ([]byte, string, error) {
+	const op = "SiteRepository.Screenshot"
+
+	ps := string(os.PathSeparator)
+	filePath := basePath + ps + "themes" + ps + theme + ps + file
+
+	b, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return nil, "", &errors.Error{Code: errors.NOTFOUND, Message: "Error finding screenshot with the path " + file, Operation: op, Err: fmt.Errorf("err")}
+	}
+
+	return b, mime.TypeByExtension(filepath.Ext(file)), nil
 }

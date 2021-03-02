@@ -53,6 +53,7 @@ type (
 		Title       string `yaml:"title" json:"title"`
 		Description string `yaml:"description" json:"description"`
 		Version     string `yaml:"version" json:"version"`
+		Screenshot  string `json:"screenshot"`
 	}
 	// Resources defines the slice of resources declared in
 	// the theme config.
