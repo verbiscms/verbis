@@ -22,6 +22,10 @@ func (s *Seeder) runOptions() error {
 		"site_url":         api.App.Url,
 		// General
 		"general_locale": "en_GB",
+		// Theme
+		// TODO: This theme needs to be a constant
+		"active_theme": "Verbis",
+		"homepage":     0,
 		// Contact
 		"contact_email":     "",
 		"contact_telephone": "",

@@ -82,8 +82,11 @@
 								<FormGroup class="form-group-no-margin" :error="errors['title']">
 									<input class="editor-title-text" type="text" placeholder="Add title" v-model="data.title">
 								</FormGroup>
-								<div class="editor-slug" :class="{ 'editor-slug-disabled' : categoryArchive }">
-									<div class="editor-slug-text" @click="slugBtn = !categoryArchive ">
+								<div class="editor-slug" :class="{ 'editor-slug-disabled' : categoryArchive || isHomepage }">
+									<div v-if="isHomepage" class="editor-homepage">
+										<p class="c-danger">Marked as the homepage</p>
+									</div>
+									<div v-else class="editor-slug-text" @click="slugBtn = !categoryArchive">
 										<i class="feather feather-edit-2" v-if="!categoryArchive"></i>
 										<i class="feather feather-slash" v-else></i>
 										<p>{{ computedSlug }}</p>
@@ -254,6 +257,7 @@ export default {
 		isSaving: false,
 		sidebarOpen: false,
 		loadingFields: true,
+		isHomepage: false,
 	}),
 	beforeMount() {
 		this.setNewUpdate();
@@ -290,7 +294,7 @@ export default {
 						this.getFieldLayout();
 					})
 			} else {
-				Promise.all([this.getUsers(), this.getLayouts(), this.getTemplates()])
+				Promise.all([this.getUsers(), this.getLayouts(), this.getTemplates(), this.getOptions()])
 					.then(() => {
 						this.doingAxios = false;
 						this.loadingLayouts = false;
@@ -505,6 +509,20 @@ export default {
 			.catch(err => {
 				this.helpers.handleResponse(err);
 			})
+		},
+		/*
+		 * save()
+		 * Save the updated options, check for field validation.
+		 */
+		async getOptions() {
+			this.axios.get("/options")
+				.then(res => {
+					const id = this.$route.params.id,
+						homepage = res.data.data['homepage'];
+					if (id == homepage) {
+						this.isHomepage = true;
+					}
+				})
 		},
 		/*
 		 * setNewUpdate()
@@ -908,6 +926,18 @@ export default {
 						margin: 0 6px;
 					}
 				}
+			}
+		}
+
+		// Homepage
+		// =========================================================================
+
+		&-homepage {
+			cursor: initial;
+
+			p {
+				color: $green;
+				font-weight: bold;
 			}
 		}
 
