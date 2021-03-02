@@ -8,8 +8,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/suite"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -18,7 +21,8 @@ import (
 // testing.
 type SocketsTestSuite struct {
 	suite.Suite
-	logger bytes.Buffer
+	logger  bytes.Buffer
+	apiPath string
 }
 
 // TestSockets
@@ -37,6 +41,16 @@ func (t *SocketsTestSuite) BeforeTest(suiteName, testName string) {
 	logger.SetOutput(&t.logger)
 }
 
+// SetupSuite
+//
+// Reassign API path for testing.
+func (t *SocketsTestSuite) SetupSuite() {
+	logger.SetOutput(ioutil.Discard)
+	wd, err := os.Getwd()
+	t.NoError(err)
+	t.apiPath = filepath.Join(filepath.Dir(wd), "../")
+}
+
 // Setup
 //
 // A helper to obtain a a new test server handler
@@ -51,9 +65,11 @@ func (t *SocketsTestSuite) Setup() (*websocket.Conn, func()) {
 		Config: nil,
 		Site:   domain.Site{},
 		Options: &domain.Options{
-			ActiveTheme: "test",
+			ActiveTheme: "verbis",
 		},
-		Paths:   paths.Paths{},
+		Paths: paths.Paths{
+			Base: t.apiPath + "/test/testdata",
+		},
 		Running: false,
 	}
 
