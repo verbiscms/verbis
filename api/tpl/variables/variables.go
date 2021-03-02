@@ -48,7 +48,7 @@ type (
 // bound to posts and the context.
 func Data(d *deps.Deps, ctx *gin.Context, post *domain.PostDatum) interface{} {
 	return TemplateData{
-		Site:  d.Site,
+		Site:  d.Site.Global(),
 		Theme: *d.Config,
 		Post:  *post,
 		Options: Options{

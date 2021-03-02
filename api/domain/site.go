@@ -43,6 +43,8 @@ type (
 		AllowedFileTypes []string `yaml:"allowed_file_types" json:"allowed_file_types"`
 	}
 
+	Themes []Theme
+
 	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
 	// Theme defines the information for the currently active
@@ -69,16 +71,22 @@ type (
 		HideCategorySlug   bool     `yaml:"hide_category_slug" json:"hide_category_slug"`
 		AvailableTemplates []string `yaml:"available_templates" json:"available_templates"`
 	}
-	// Templates defines the slice of page templates that are
-	// available from the templates directory.
-	Templates struct {
-		Template []map[string]interface{} `json:"templates"`
+	// Template defines a page template that are available
+	// from the theme's template directory.
+	Template struct {
+		Key  string `json:"key"`
+		Name string `json:"name"`
 	}
-	// Layouts defines the slice of page layouts that are
-	// available from the layouts directory.
-	Layouts struct {
-		Layout []map[string]interface{} `json:"layouts"`
+	// Layouts represents the slice of Layout's.
+	Templates []Template
+	// Layout defines a page layout that are available
+	// from the theme's layouts directory.
+	Layout struct {
+		Key  string `json:"key"`
+		Name string `json:"name"`
 	}
+	// Layouts represents the slice of Layout's.
+	Layouts []Layout
 	// Editor defines editor options for the admin interface.
 	Editor struct {
 		Modules []string               `yaml:"modules" json:"modules"`

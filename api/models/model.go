@@ -38,7 +38,6 @@ type Store struct {
 	Posts      PostsRepository
 	Redirects  RedirectRepository
 	Roles      RoleRepository
-	Site       SiteRepository
 	User       UserRepository
 }
 
@@ -61,7 +60,6 @@ func New(cfg *StoreConfig) *Store {
 		Posts:      newPosts(cfg),
 		Redirects:  newRedirects(cfg),
 		Roles:      newRoles(cfg),
-		Site:       newSite(cfg),
 		User:       newUser(cfg),
 	}
 }

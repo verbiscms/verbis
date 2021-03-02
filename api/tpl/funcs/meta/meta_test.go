@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	siteMocks "github.com/ainsleyclark/verbis/api/mocks/site"
 	tplMocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/safe"
@@ -24,10 +25,13 @@ import (
 
 func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace, *mocks.MediaRepository) {
 
+	mockSite := &siteMocks.Repository{}
+	mockSite.On("Global").Return(domain.Site{})
+
 	mock := &mocks.MediaRepository{}
 	d := &deps.Deps{
 		Store:   &models.Store{Media: mock},
-		Site:    site,
+		Site:    mockSite,
 		Options: &opts,
 	}
 
