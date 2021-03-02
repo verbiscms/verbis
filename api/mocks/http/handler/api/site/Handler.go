@@ -12,6 +12,11 @@ type Handler struct {
 	mock.Mock
 }
 
+// Config provides a mock function with given fields: ctx
+func (_m *Handler) Config(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
 // Global provides a mock function with given fields: ctx
 func (_m *Handler) Global(ctx *gin.Context) {
 	_m.Called(ctx)
@@ -27,7 +32,7 @@ func (_m *Handler) Templates(ctx *gin.Context) {
 	_m.Called(ctx)
 }
 
-// Theme provides a mock function with given fields: ctx
-func (_m *Handler) Theme(ctx *gin.Context) {
+// Themes provides a mock function with given fields: ctx
+func (_m *Handler) Themes(ctx *gin.Context) {
 	_m.Called(ctx)
 }

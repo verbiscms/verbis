@@ -1,7 +1,6 @@
 <!-- =====================
 	Settings - General
 	===================== -->
-<link rel="stylesheet" href="../../assets/scss/abstracts/_variables.scss">
 <template>
 	<section>
 		<div class="auth-container">

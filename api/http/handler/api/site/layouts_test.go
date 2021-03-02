@@ -7,7 +7,7 @@ package site
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,30 +18,30 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.SiteRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			layouts,
 			200,
 			"Successfully obtained layouts",
-			func(m *mocks.SiteRepository) {
-				m.On("GetLayouts").Return(layouts, nil)
+			func(m *mocks.Repository) {
+				m.On("Layouts", t.ThemePath).Return(layouts, nil)
 			},
 		},
 		"Not Found": {
-			`{}`,
+			nil,
 			200,
 			"not found",
-			func(m *mocks.SiteRepository) {
-				m.On("GetLayouts").Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("Layouts", t.ThemePath).Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
-			`{}`,
+			nil,
 			500,
 			"internal",
-			func(m *mocks.SiteRepository) {
-				m.On("GetLayouts").Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Layouts", t.ThemePath).Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

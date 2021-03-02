@@ -13,5 +13,5 @@ import (
 //
 // Returns 200 if site config was obtained successfully.
 func (s *Site) Global(ctx *gin.Context) {
-	api.Respond(ctx, 200, "Successfully obtained site config", s.Store.Site.GetGlobalConfig())
+	api.Respond(ctx, 200, "Successfully obtained site config", s.Site.Global())
 }

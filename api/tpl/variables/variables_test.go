@@ -3,6 +3,7 @@ package variables
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -16,8 +17,11 @@ func TestData(t *testing.T) {
 		Options: Options{},
 	}
 
+	mockSite := &mocks.Repository{}
+	mockSite.On("Global").Return(domain.Site{})
+
 	got := Data(&deps.Deps{
-		Site:    domain.Site{},
+		Site:    mockSite,
 		Config:  &domain.ThemeConfig{},
 		Options: &domain.Options{},
 	}, &gin.Context{}, &domain.PostDatum{})

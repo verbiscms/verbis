@@ -29,14 +29,14 @@ type FormRepository interface {
 // FormsStore defines the data layer for Forms
 type FormsStore struct {
 	*StoreConfig
-	siteModel SiteRepository
+	//siteModel SiteRepository
 }
 
 // newSeoMeta - Construct
 func newForms(cfg *StoreConfig) *FormsStore {
 	return &FormsStore{
 		StoreConfig: cfg,
-		siteModel:   newSite(cfg),
+		//siteModel:   newSite(cfg),
 	}
 }
 
@@ -266,7 +266,7 @@ func (s *FormsStore) mailSubmission(form *domain.Form, values forms.FormValues, 
 		return err
 	}
 	if err := fs.Send(&events.FormSendData{
-		Site:   s.siteModel.GetGlobalConfig(),
+		//Site:   s.siteModel.GetGlobalConfig(),
 		Form:   form,
 		Values: values,
 	}, attachments); err != nil {

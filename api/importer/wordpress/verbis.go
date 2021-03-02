@@ -352,11 +352,12 @@ func (c *Convert) populateAuthors() domain.UsersParts {
 
 			if c.sendEmail {
 				// User can't login!
-				err = importer.SendNewPassword(user.HideCredentials(), password, c.store.Site.GetGlobalConfig())
-				if err != nil {
-					color.Red.Println(err)
-					continue
-				}
+				// FIX HERE
+				//err = importer.SendNewPassword(user.HideCredentials(), password, c.store.Site.GetGlobalConfig())
+				//if err != nil {
+				//	color.Red.Println(err)
+				//	continue
+				//}
 			}
 
 			users = append(users, user.HideCredentials())

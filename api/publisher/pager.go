@@ -29,6 +29,7 @@ type page struct {
 	Url        string
 	CacheKey   string
 	FoundCache bool
+	HomepageId int
 	Type       *TypeOfPage
 }
 
@@ -169,7 +170,7 @@ func (p *page) CheckSession() error {
 func (p *page) HandleTrailingSlash() (string, bool) {
 	pth := p.Context.Request.URL.Path
 
-	if p.HasQuery() {
+	if p.HasQuery() || p.IsHomepage() {
 		return pth, false
 	}
 
@@ -188,10 +189,6 @@ func (p *page) HandleTrailingSlash() (string, bool) {
 		return pth, false
 	}
 
-	// Must be homepage
-	if p.IsHomepage() {
-		return "/", false
-	}
 
 	if lastChar != "/" && trailing {
 		p.Context.Redirect(301, pth+"/")

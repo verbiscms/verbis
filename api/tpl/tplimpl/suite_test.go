@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -82,9 +83,12 @@ func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostDatu
 		},
 	}
 
+	mockSite := &mocks.Repository{}
+	mockSite.On("Global").Return(domain.Site{})
+
 	d := &deps.Deps{
 		Store: nil,
-		Site:  domain.Site{},
+		Site:  mockSite,
 		Options: &domain.Options{
 			GeneralLocale: "en-gb",
 		},

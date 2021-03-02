@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/site"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"os"
 )
@@ -26,7 +27,7 @@ type Deps struct {
 
 	// Cache
 
-	Site domain.Site
+	Site site.Repository
 
 	// Logger
 
@@ -88,11 +89,11 @@ func New(cfg DepsConfig) *Deps {
 	d := &Deps{
 		Store:   cfg.Store,
 		Config:  cfg.Config,
-		Site:    cfg.Store.Site.GetGlobalConfig(),
 		Options: &opts,
 		Paths:   paths.Get(),
 		tmpl:    nil,
 		Running: cfg.Running,
+		Site:    site.New(&opts),
 	}
 
 	return d
