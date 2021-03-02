@@ -33,6 +33,7 @@ type (
 		SiteUrl         string `json:"site_url" binding:"required,url"`
 		// Theme
 		ActiveTheme string `json:"active_theme" binding:"required"`
+		Homepage    int    `json:"homepage" binding:"required"`
 		// General
 		GeneralLocale string `json:"general_locale" binding:"required"`
 		// Contact
