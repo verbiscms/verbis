@@ -6,6 +6,7 @@ package sockets
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -98,15 +99,19 @@ func (a *adminSocket) Reader(conn *websocket.Conn) {
 		// Read in a message
 		messageType, p, err := conn.ReadMessage()
 		if err != nil {
+			fmt.Println(err)
 			logger.WithError(err)
 			return
 		}
+
+		fmt.Println(string(p))
 
 		// Print out that message for clarity
 		logger.Info(string(p))
 
 		err = conn.WriteMessage(messageType, p)
 		if err != nil {
+			fmt.Println(err)
 			logger.Error(err)
 			return
 		}
@@ -119,34 +124,34 @@ func (a *adminSocket) Reader(conn *websocket.Conn) {
 func (a *adminSocket) Writer(ws *websocket.Conn) {
 	const op = "AdminSocket.Writer"
 
-	go func() {
-		for {
-			select {
-			case _ = <-a.Watcher.Event:
-				logger.Info("Updating theme configuration file, sending socket")
+	//go func() {
+	for {
+		select {
+		case _ = <-a.Watcher.Event:
+			logger.Info("Updating theme configuration file, sending socket")
 
-				// Marshal the configuration file.
-				b, err := json.Marshal(config.Fetch(a.ThemePath))
-				if err != nil {
-					logger.WithError(&errors.Error{Code: op, Message: "Error marshalling theme configuration", Operation: op, Err: err}).Error()
-					return
-				}
-
-				// Write the file back to the socket.
-				err = ws.WriteMessage(websocket.TextMessage, b)
-				if err != nil {
-					logger.WithError(&errors.Error{Code: op, Message: "Error sending socket message", Operation: op, Err: err}).Error()
-					return
-				}
-			case err := <-a.Watcher.Error:
-				if err != syscall.EPIPE {
-					logger.WithError(&errors.Error{Code: op, Message: "Error watching theme configuration", Operation: op, Err: err}).Error()
-				}
-				return
-			case <-a.Watcher.Closed:
-				logger.Info("Closing watcher on theme configuration file")
+			// Marshal the configuration file.
+			b, err := json.Marshal(config.Fetch(a.ThemePath))
+			if err != nil {
+				logger.WithError(&errors.Error{Code: op, Message: "Error marshalling theme configuration", Operation: op, Err: err}).Error()
 				return
 			}
+
+			// Write the file back to the socket.
+			err = ws.WriteMessage(websocket.TextMessage, b)
+			if err != nil {
+				logger.WithError(&errors.Error{Code: op, Message: "Error sending socket message", Operation: op, Err: err}).Error()
+				return
+			}
+		case err := <-a.Watcher.Error:
+			if err != syscall.EPIPE {
+				logger.WithError(&errors.Error{Code: op, Message: "Error watching theme configuration", Operation: op, Err: err}).Error()
+			}
+			return
+		case <-a.Watcher.Closed:
+			logger.Info("Closing watcher on theme configuration file")
+			return
 		}
-	}()
+	}
+	//}()
 }
