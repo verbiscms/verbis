@@ -6,8 +6,9 @@ package sockets
 
 import (
 	"fmt"
-	"github.com/gookit/color"
 	"github.com/gorilla/websocket"
+	"testing"
+	"time"
 )
 
 func (t *SocketsTestSuite) Test_AdminSocket() {
@@ -24,22 +25,48 @@ func (t *SocketsTestSuite) Test_AdminSocket() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			conn, teardown := t.Setup()
-			defer teardown()
+			conn, _ := t.Setup()
+			//defer teardown()
 
 			err := conn.WriteMessage(websocket.TextMessage, []byte(test.message))
 			if err != nil {
 				t.Error(err)
 			}
 
-			message, p, err := conn.ReadMessage()
+			conn.WriteMessage(websocket.TextMessage, []byte("ffff"))
 
-			color.Red.Println(t.logger.String())
+			time.Sleep(10 * time.Millisecond)
 
-			t.Equal(test.want, string(p))
-			fmt.Println(message)
-			fmt.Println(string(p))
-			fmt.Println(err)
+			fmt.Println(t.logger.String())
+
+			within(t.T(), 1000*time.Millisecond, func() {
+				tj, p, err := conn.ReadMessage()
+				fmt.Println(tj)
+				fmt.Println(err)
+				fmt.Println(string(p))
+			})
+
+			//color.Red.Println(t.logger.String())
+
+			// t.Equal(test.want, string(p))
 		})
+	}
+}
+
+func within(t testing.TB, d time.Duration, assert func()) {
+	t.Helper()
+
+	done := make(chan struct{}, 1)
+
+	go func() {
+		assert()
+		done <- struct{}{}
+	}()
+
+	select {
+	case m := <-time.After(d):
+		fmt.Println(m)
+		t.Error("timed out")
+	case <-done:
 	}
 }
