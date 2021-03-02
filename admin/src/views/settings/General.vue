@@ -1,6 +1,7 @@
 <!-- =====================
 	Settings - General
 	===================== -->
+<link rel="stylesheet" href="../../assets/scss/abstracts/_variables.scss">
 <template>
 	<section>
 		<div class="auth-container">
@@ -115,6 +116,40 @@
 				<div class="col-12">
 					<h6 class="margin">General</h6>
 					<div class="card card-small-box-shadow card-expand">
+						<!-- Locale -->
+						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['homepage']}">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Homepage</h4>
+										<p>Set the site's homepage.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body" ref="homepage">
+									<FormGroup label="Homepage">
+										<!-- Post Tags -->
+										<vue-tags-input
+											v-model="tag"
+											:tags="selectedTags"
+											:autocomplete-items="filteredItems"
+											@tags-changed="updateTags"
+											add-only-from-autocomplete
+											:max-tags="1"
+											:autocomplete-min-length="0"
+											@max-tags-reached="maxTagsReached"
+											placeholder="Add Post"
+											@focus="updateHeight"
+											:add-on-key="[13, ':', ';']"
+										/>
+									</FormGroup>
+								</div>
+							</template>
+						</Collapse><!-- /Locale -->
 						<!-- Locale -->
 						<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['general_locale']}">
 							<template v-slot:header>
@@ -292,6 +327,7 @@ import ImageWithActions from "@/components/misc/ImageWithActions";
 import Collapse from "@/components/misc/Collapse";
 import {validationMixin} from "@/util/validation";
 import localeObj from "@/util/locale.js";
+import VueTagsInput from '@jack_reddico/vue-tags-input';
 
 export default {
 	name: "General",
@@ -303,7 +339,8 @@ export default {
 		Uploader,
 		Modal,
 		FormGroup,
-		Breadcrumbs
+		Breadcrumbs,
+		VueTagsInput,
 	},
 	data: () => ({
 		errorMsg: "Fix the errors before saving settings.",
@@ -311,9 +348,13 @@ export default {
 		hasLogo: true,
 		showImageModal: false,
 		locale: {},
+		posts: [],
+		tag: '',
+		selectedTags: [],
 	}),
 	mounted() {
 		this.locale = localeObj;
+		this.getPosts();
 	},
 	methods: {
 		/*
@@ -329,6 +370,83 @@ export default {
 			site['logo'] = e.url;
 			this.$store.commit("setSite", site)
 		},
+		/*
+		 * getPosts()
+		 * Obtain the posts or resources & apply query strings.
+		 * NOTE: paramsSerializer is required here.
+		 */
+		getPosts() {
+			this.axios.get(`/posts?resource=pages&limit=all"`)
+				.then(res => {
+					this.mapPosts(res.data.data);
+					this.setTags();
+				})
+				.catch(err => {
+					this.helpers.handleResponse(err);
+				})
+		},
+		/*
+		 * mapPosts()
+		 * If the posts are undefined, return an empty array.
+		 * If resources are set, they are filters and returned.
+		 * Or all posts are returned for filtering.
+		 */
+		mapPosts(posts) {
+			if (posts === undefined || Object.keys(posts).length === 0 && posts.constructor === Object) {
+				this.posts = [];
+				return
+			}
+
+			if (this.getResources) {
+				this.posts = posts.filter(p => {
+					if (this.getResources.includes(p.post.resource)) {
+						return p
+					}
+				}).map(p => ({text: p.post.title, id: p.post.id}))
+				return
+			}
+
+			this.posts = posts.map(a => ({text: a.post.title, id: a.post.id}));
+		},
+		/*
+		 * setTags()
+		 * Set the existing tags on mounted if there is any by
+		 * filtering through existing posts.
+		 */
+		setTags() {
+			if (this.data['homepage'] !== "") {
+				const post = this.posts.find(p => p.id === this.data['homepage']);
+				this.selectedTags = [{text: post.text, id: post.id}];
+			}
+		},
+		/*
+		 * updateTags()
+		 * Update tags when fired.
+		 */
+		updateTags(tags) {
+			delete this.errors['homepage'];
+			this.selectedTags = tags;
+			if (tags.length) {
+				this.$set(this.data, "homepage", tags[0].id)
+			}
+		},
+		/*
+		 * updateHeight()
+		 * Update the height of the container when searching.
+		 */
+		updateHeight() {
+			this.$nextTick(() => {
+				this.helpers.setHeight(this.$refs.homepage.closest(".collapse-content"));
+			});
+		},
+		/*
+		 * maxTagsReached()
+		 * Handler for maximum tags reached.
+		 */
+		maxTagsReached() {
+			this.$set(this.errors, 'homepage', true);
+			this.$noty.error(`Only one homepage can be assigned.`);
+		}
 	},
 	computed: {
 		/*
@@ -336,6 +454,15 @@ export default {
 		 */
 		getSiteTitle() {
 			return this.getSite.title === "Verbis" ? "the business" : this.getSite.title;
+		},
+		/*
+		 * filteredItems()
+		 * Filter tags.
+		 */
+		filteredItems() {
+			return this.posts.filter(i => {
+				return i.text.toLowerCase().indexOf(this.tag.toLowerCase()) !== -1;
+			});
 		},
 		computedLocale: {
 			/*
