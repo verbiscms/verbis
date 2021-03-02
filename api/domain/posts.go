@@ -141,6 +141,17 @@ func (p *PostDatum) HasCategories() bool {
 	return p.Category != nil
 }
 
+// IsHomepage
+//
+// Determines if the post is the homepage by comparing
+// the domain options.
+func (p *PostDatum) IsHomepage(id int) bool {
+	if id == p.Post.Id {
+		return true
+	}
+	return false
+}
+
 // Tpl
 //
 // Converts a PostDatum to a PostTemplate and hides

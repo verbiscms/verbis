@@ -148,7 +148,7 @@ func (r *Recover) getRequestData() Request {
 func (r *Recover) getContextData() Context {
 	return Context{
 		Version: api.App.Version,
-		Site:    r.deps.Site,
+		Site:    r.deps.Site.Global(),
 		Options: *r.deps.Options,
 	}
 }

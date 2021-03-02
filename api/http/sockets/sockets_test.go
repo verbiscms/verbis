@@ -63,7 +63,6 @@ func (t *SocketsTestSuite) Setup() (*websocket.Conn, func()) {
 	d := &deps.Deps{
 		Store:  nil,
 		Config: nil,
-		Site:   domain.Site{},
 		Options: &domain.Options{
 			ActiveTheme: "verbis",
 		},

@@ -12,6 +12,6 @@ import (
 // Theme
 //
 // Returns 200 if theme config was obtained successfully.
-func (s *Site) Theme(ctx *gin.Context) {
-	api.Respond(ctx, 200, "Successfully obtained theme config", s.Config)
+func (s *Site) Config(ctx *gin.Context) {
+	api.Respond(ctx, 200, "Successfully obtained theme config", s.Deps.Config)
 }

@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func (t *SiteTestSuite) TestSite_Layouts() {
+func (t *SiteTestSuite) TestSite_Themes() {
 
 	tt := map[string]struct {
 		want    interface{}
@@ -21,11 +21,11 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
-			layouts,
+			themes,
 			200,
-			"Successfully obtained layouts",
+			"Successfully obtained themes",
 			func(m *mocks.Repository) {
-				m.On("Layouts", t.ThemePath).Return(layouts, nil)
+				m.On("Themes", t.ThemePath).Return(themes, nil)
 			},
 		},
 		"Not Found": {
@@ -33,7 +33,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 			200,
 			"not found",
 			func(m *mocks.Repository) {
-				m.On("Layouts", t.ThemePath).Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Themes", t.ThemePath).Return(domain.Themes{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
@@ -41,7 +41,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 			500,
 			"internal",
 			func(m *mocks.Repository) {
-				m.On("Layouts", t.ThemePath).Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Themes", t.ThemePath).Return(domain.Themes{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}
@@ -49,7 +49,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.RequestAndServe(http.MethodGet, "/theme", "/theme", nil, func(ctx *gin.Context) {
-				t.Setup(test.mock).Layouts(ctx)
+				t.Setup(test.mock).Themes(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

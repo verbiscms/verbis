@@ -7,7 +7,7 @@ package site
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,30 +18,30 @@ func (t *SiteTestSuite) TestSite_Templates() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.SiteRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			templates,
 			200,
 			"Successfully obtained templates",
-			func(m *mocks.SiteRepository) {
-				m.On("GetTemplates").Return(templates, nil)
+			func(m *mocks.Repository) {
+				m.On("Templates", t.ThemePath).Return(templates, nil)
 			},
 		},
 		"Not Found": {
 			nil,
 			200,
 			"not found",
-			func(m *mocks.SiteRepository) {
-				m.On("GetTemplates").Return(domain.Templates{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("Templates", t.ThemePath).Return(domain.Templates{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			500,
 			"internal",
-			func(m *mocks.SiteRepository) {
-				m.On("GetTemplates").Return(domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Templates", t.ThemePath).Return(domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

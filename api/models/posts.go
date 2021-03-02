@@ -194,7 +194,7 @@ func (s *PostStore) GetById(id int, layout bool) (domain.PostDatum, error) {
 
 	formatted := s.format(p, layout)
 	if len(formatted) == 0 {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the ID: %d", id), Operation: op, Err: fmt.Errorf("could not format the post with the ID: %d", id)}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "Post not found", Operation: op, Err: fmt.Errorf("no post found")}
 	}
 
 	return formatted[0], nil
@@ -215,7 +215,7 @@ func (s *PostStore) GetBySlug(slug string) (domain.PostDatum, error) {
 
 	formatted := s.format(p, false)
 	if len(formatted) == 0 {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not format the post with the slug: %s", slug), Operation: op, Err: fmt.Errorf("could not format the post with the slug: %s", slug)}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "Post not found", Operation: op, Err: fmt.Errorf("no post found")}
 	}
 
 	return formatted[0], nil

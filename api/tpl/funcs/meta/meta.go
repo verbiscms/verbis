@@ -43,7 +43,7 @@ func (tm *TemplateMeta) GetImage(id int) string {
 		return ""
 	}
 	// TODO: This should be dynamic, not dependant on Site URL.
-	return tm.deps.Site.Url + img.Url
+	return tm.deps.Site.Global().Url + img.Url
 }
 
 // Header
@@ -54,7 +54,6 @@ func (tm *TemplateMeta) GetImage(id int) string {
 // Example: {{ verbisHead }}
 func (ns *Namespace) Header() template.HTML {
 	tm := &TemplateMeta{
-		Site:    ns.deps.Site,
 		Post:    ns.post,
 		Options: *ns.deps.Options,
 		deps:    ns.deps,

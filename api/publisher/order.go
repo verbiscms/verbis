@@ -5,6 +5,7 @@
 package publisher
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"strings"
 )
@@ -30,14 +31,30 @@ func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 	urlTrimmed := strings.TrimSuffix(url, "/")
 	urlSplit := strings.Split(urlTrimmed, "/")
 	last := urlSplit[len(urlSplit)-1]
+	homepage := r.Deps.Options.Homepage
 
-	post, err := r.Store.Posts.GetBySlug(last)
-	if err != nil {
-		post, err := r.Store.Posts.GetBySlug(urlTrimmed)
+	if last == "" {
+		post, err := r.Store.Posts.GetById(homepage, false)
 		if err != nil {
 			return nil, nil, err
 		}
 		return &post, &TypeOfPage{
+			PageType: "home",
+		}, nil
+	}
+
+	post, err := r.Store.Posts.GetBySlug(last)
+	if err != nil {
+		trimmedPost, pErr := r.Store.Posts.GetBySlug(urlTrimmed)
+		if pErr != nil {
+			fmt.Println(err)
+			return nil, nil, err
+		}
+		// Check if its the homepage, return 404 if it is.
+		if trimmedPost.IsHomepage(homepage) {
+			return nil, nil, fmt.Errorf("post is the homepage")
+		}
+		return &trimmedPost, &TypeOfPage{
 			PageType: Page,
 		}, nil
 	}

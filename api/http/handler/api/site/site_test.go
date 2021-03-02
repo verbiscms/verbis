@@ -8,8 +8,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -19,6 +19,7 @@ import (
 // testing.
 type SiteTestSuite struct {
 	test.HandlerSuite
+	ThemePath string
 }
 
 // TestSite
@@ -27,6 +28,7 @@ type SiteTestSuite struct {
 func TestSite(t *testing.T) {
 	suite.Run(t, &SiteTestSuite{
 		HandlerSuite: test.NewHandlerSuite(),
+		ThemePath:    "/themes/",
 	})
 }
 
@@ -34,17 +36,21 @@ func TestSite(t *testing.T) {
 //
 // A helper to obtain a mock categories handler
 // for testing.
-func (t *SiteTestSuite) Setup(mf func(m *mocks.SiteRepository)) *Site {
-	m := &mocks.SiteRepository{}
+func (t *SiteTestSuite) Setup(mf func(m *mocks.Repository)) *Site {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
 	return &Site{
 		Deps: &deps.Deps{
-			Store: &models.Store{
-				Site: m,
-			},
+			Site:   m,
 			Config: &config.DefaultTheme,
+			Paths: paths.Paths{
+				Base: "",
+			},
+			Options: &domain.Options{
+				ActiveTheme: "",
+			},
 		},
 	}
 }
@@ -60,18 +66,16 @@ var (
 	}
 	// The default templates used for testing.
 	templates = domain.Templates{
-		Template: []map[string]interface{}{
-			{
-				"test": "testing",
-			},
+		domain.Template{
+			Key:  "test",
+			Name: "testing",
 		},
 	}
 	// The default layouts used for testing.
 	layouts = domain.Layouts{
-		Layout: []map[string]interface{}{
-			{
-				"test": "testing",
-			},
+		domain.Layout{
+			Key:  "test",
+			Name: "testing",
 		},
 	}
 	// The default theme used for testing.
@@ -79,6 +83,19 @@ var (
 		Theme: domain.Theme{
 			Title:       "Verbis",
 			Description: "VerbisCMS",
+			Version:     "0.1",
+		},
+	}
+	// The default themes used for testing.
+	themes = domain.Themes{
+		{
+			Title:       "Verbis",
+			Description: "VerbisCMS",
+			Version:     "0.1",
+		},
+		{
+			Title:       "Verbis2",
+			Description: "VerbisCMS2",
 			Version:     "0.1",
 		},
 	}

@@ -12,9 +12,10 @@ import (
 // Handler defines methods for the site to interact with the server.
 type Handler interface {
 	Global(ctx *gin.Context)
-	Theme(ctx *gin.Context)
+	Config(ctx *gin.Context)
 	Templates(ctx *gin.Context)
 	Layouts(ctx *gin.Context)
+	Themes(ctx *gin.Context)
 }
 
 // Site defines the handler for all site routes.
