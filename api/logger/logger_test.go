@@ -6,49 +6,37 @@ package logger
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/sirupsen/logrus"
 )
 
-// func (t *LoggerTestSuite) TestInit() {
-//
-//	tt := map[string]struct {
-//		entry *logrus.Entry
-//		fn    func()
-//		want  interface{}
-//	}{
-//		"Not Debug": {
-//			&logrus.Entry{
-//				Logger: &logrus.Logger{Formatter: &mockFormat{}},
-//			},
-//			func() {
-//				os.Setenv("APP_DEBUG", "false")
-//			},
-//			"",
-//		},
-//		"Debug": {
-//			&logrus.Entry{
-//				Logger: &logrus.Logger{Formatter: &mockFormatErr{}},
-//			},
-//			func() {
-//				os.Setenv("APP_DEBUG", "true")
-//			},
-//			"DEBUG",
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			// TODO Environment in STRUCT!
-//
-//			test.fn()
-//			Init()
-//			buf := t.Setup()
-//			logrus.Debug("test")
-//			t.Contains(buf.String(), test.want)
-//		})
-//	}
-//}
+func (t *LoggerTestSuite) TestInit() {
+	tt := map[string]struct {
+		env  environment.Env
+		want interface{}
+	}{
+		"Not Debug": {
+			environment.Env{AppDebug: "false"},
+			"info",
+		},
+		"Debug": {
+			environment.Env{AppDebug: "true"},
+			"trace",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			defer func() {
+				logger = nil
+				logger = logrus.New()
+			}()
+			Init(&test.env)
+			t.Equal(test.want, logger.Level.String())
+		})
+	}
+}
 
 func (t *LoggerTestSuite) TestLogger() {
 	tt := map[string]struct {

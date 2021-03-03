@@ -5,6 +5,7 @@
 package routes
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
@@ -35,6 +36,9 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 
 	// Serve uploads
 	s.GET("/"+uploadPath+"/*any", h.Public.Uploads)
+
+
+	s.GET(config.ScreenshotURL + ":theme/:file", h.Public.Screenshot)
 
 	// Robots
 	s.GET("/robots.txt", h.SEO.Robots)

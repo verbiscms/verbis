@@ -37,7 +37,7 @@ var (
 //
 // TODO
 //
-func (s *Site) Themes(themePath string) (domain.Themes, error) {
+func (s *Site) Themes() (domain.Themes, error) {
 	const op = "SiteRepository.Themes"
 
 	files, err := ioutil.ReadDir(path)
@@ -82,11 +82,11 @@ func (s *Site) findScreenshot(path, theme string) (string, error) {
 //
 // TODO
 //
-func (s *Site) Screenshot(basePath, theme, file string) ([]byte, string, error) {
+func (s *Site) Screenshot(theme, file string) ([]byte, string, error) {
 	const op = "SiteRepository.Screenshot"
 
 	ps := string(os.PathSeparator)
-	filePath := basePath + ps + "themes" + ps + theme + ps + file
+	filePath := s.theme + ps + theme + ps + file
 
 	b, err := ioutil.ReadFile(filePath)
 	if err != nil {

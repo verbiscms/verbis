@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package public
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/color"
 	"net/http"
 )
 
@@ -14,24 +15,27 @@ import (
 //
 // Returns http.StatusInternalServerError if there was an error getting the layouts.
 // Returns http.StatusOK if the themes were obtained successfully or there were none found.
-func (s *Site) Screenshot(ctx *gin.Context) {
-	const op = "SiteHandler.Layouts"
+func (p *Public) Screenshot(ctx *gin.Context) {
+	const op = "FrontendHandler.Screenshot"
 
 	theme := ctx.Param("theme")
 	if theme == "" {
-		ctx.AbortWithStatus(http.StatusNotFound)
+		p.Publisher.NotFound(ctx)
 		return
 	}
 
 	file := ctx.Param("file")
 	if file == "" {
-		ctx.AbortWithStatus(http.StatusNotFound)
+		p.Publisher.NotFound(ctx)
 		return
 	}
 
-	screenshot, mime, err := s.Site.Screenshot(s.Paths.Base, theme, file)
+	color.Green.Println("file:", file)
+	color.Green.Println("theme:", theme)
+
+	screenshot, mime, err := p.Site.Screenshot(theme, file)
 	if errors.Code(err) == errors.NOTFOUND {
-		ctx.AbortWithStatus(http.StatusNotFound)
+		p.Publisher.NotFound(ctx)
 		return
 	}
 

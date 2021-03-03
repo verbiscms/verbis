@@ -22,6 +22,8 @@ run:
     # "/" will be replaced by current OS file path separator to properly work
     # on Windows.
     skip-dirs:
+        - api/database/builder/*
+        - api/helpers/webp/*
 
 # output configuration options
 output:
