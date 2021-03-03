@@ -160,6 +160,12 @@ func (f *Formatter) URL() {
 //
 // Prints the entry message if there is obe set.
 func (f *Formatter) Message() {
+	_, method := f.entry.Data["request_method"].(string)
+	_, ok := f.HasError()
+	if ok && !method {
+		return
+	}
+
 	msg, ok := f.entry.Data["message"].(string)
 	if ok && msg != "" {
 		f.buf.WriteString(fmt.Sprintf("| [msg] %s |", msg))
@@ -184,13 +190,24 @@ func (f *Formatter) Fields() {
 	}
 }
 
+// HasError
+//
+// Determines if a verbis error has been logged.
+func (f *Formatter) HasError() (interface{}, bool) {
+	e, _ := f.entry.Data["error"]
+	if e == nil {
+		return nil, false
+	}
+	return e, true
+}
+
 // Error
 //
 // Prints out the error if there is one set. If the error
 // is nil, nothing will be printed.
 func (f *Formatter) Error() {
-	e, ok := f.entry.Data["error"]
-	if !ok || e == nil {
+	e, ok := f.HasError()
+	if !ok {
 		return
 	}
 

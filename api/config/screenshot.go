@@ -6,6 +6,7 @@ package config
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"os"
 )
 
@@ -13,26 +14,32 @@ const (
 	// The default screenshot name within the theme's
 	// directory.
 	ScreenshotName = "screenshot"
+
+	ScreenshotURL = "/themes/"
 )
 
 var (
-	ScrenshotExtensions = []string{
+	ScreenshotExtensions = []string{
 		".png",
 		".svg",
 		".jpg",
 	}
 )
 
-func FindScreenshot(path, theme string) (string, error) {
-	for _, v := range ScrenshotExtensions {
-		name := path + string(os.PathSeparator) + theme + string(os.PathSeparator) + ScreenshotName + v
-		fmt.Println(name)
+// findScreenshot
+//
+//
+func findScreenshot(path string) (string, error) {
+	const op = "Config.FindScreenshot"
+
+	for _, v := range ScreenshotExtensions {
+		name := path + string(os.PathSeparator) + ScreenshotName + v
 		info, err := os.Stat(name)
 		if err != nil {
 			continue
 		}
-		fmt.Println(info.Name())
-		return "test", nil
+		return ScreenshotURL + info.Name(), nil
 	}
-	return "", fmt.Errorf("no screenshot found")
+
+	return "", &errors.Error{Code: errors.NOTFOUND, Message: "No screenshot found from the theme", Operation: op, Err: fmt.Errorf("no theme screenshot found")}
 }

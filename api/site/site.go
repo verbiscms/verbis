@@ -8,15 +8,17 @@ import (
 	"errors"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"os"
 )
 
 // SiteRepository defines methods for the site.
 type Repository interface {
 	Global() domain.Site
-	Templates(path string) (domain.Templates, error)
-	Layouts(path string) (domain.Layouts, error)
-	Themes(path string) (domain.Themes, error)
-	Screenshot(path string, theme string, file string) ([]byte, string, error)
+	Templates() (domain.Templates, error)
+	Layouts() (domain.Layouts, error)
+	Themes() (domain.Themes, error)
+	Screenshot(theme string, file string) ([]byte, string, error)
 }
 
 // TODO
@@ -32,6 +34,7 @@ type Repository interface {
 type Site struct {
 	config  *domain.ThemeConfig
 	options *domain.Options
+	theme   string
 }
 
 var (
@@ -52,5 +55,6 @@ func New(opts *domain.Options) *Site {
 	return &Site{
 		config:  config.Get(),
 		options: opts,
+		theme:   paths.Get().Base + string(os.PathSeparator) + "themes" + string(os.PathSeparator),
 	}
 }

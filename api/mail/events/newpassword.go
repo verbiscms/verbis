@@ -34,7 +34,7 @@ func (e *ChangedPassword) Send(u domain.UserPart, password string, site domain.S
 	const op = "events.ResetPassword.Send"
 
 	data := mail.Data{
-		"AppUrl":    site.URL,
+		"AppUrl":    site.Url,
 		"AppTitle":  site.Title,
 		"AdminPath": "/admin",
 		"UserName":  u.FirstName,

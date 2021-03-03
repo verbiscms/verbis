@@ -16,6 +16,7 @@ type Handler interface {
 	Uploads(ctx *gin.Context)
 	Assets(ctx *gin.Context)
 	Serve(ctx *gin.Context)
+	Screenshot(ctx *gin.Context)
 }
 
 // Public defines the handler for all public routes.

@@ -17,6 +17,11 @@ func (_m *Handler) Assets(ctx *gin.Context) {
 	_m.Called(ctx)
 }
 
+// Screenshot provides a mock function with given fields: ctx
+func (_m *Handler) Screenshot(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
 // Serve provides a mock function with given fields: ctx
 func (_m *Handler) Serve(ctx *gin.Context) {
 	_m.Called(ctx)

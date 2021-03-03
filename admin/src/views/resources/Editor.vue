@@ -453,7 +453,7 @@ export default {
 		async getTemplates() {
 			await this.axios.get("/templates")
 			.then(res => {
-				const templates = res.data.data.templates;
+				const templates = res.data.data;
 				if (this.getResource.name === "pages") {
 					this.templates = templates;
 					return;
@@ -491,7 +491,7 @@ export default {
 		async getLayouts() {
 			await this.axios.get("/layouts")
 			.then(res => {
-				this.layouts = res.data.data.layouts
+				this.layouts = res.data.data;
 			})
 			.catch(err => {
 				this.helpers.handleResponse(err);

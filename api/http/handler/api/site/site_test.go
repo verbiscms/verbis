@@ -61,7 +61,7 @@ var (
 		Title:       "Verbis",
 		Description: "VerbisCMS",
 		Logo:        "/logo.svg",
-		URL:         "verbiscms.com",
+		Url:         "verbiscms.com",
 		Version:     "0.1",
 	}
 	// The default templates used for testing.

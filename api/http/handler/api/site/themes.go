@@ -16,7 +16,8 @@ import (
 // Returns http.StatusInternalServerError if there was an error getting the layouts.
 // Returns http.StatusOK if the themes were obtained successfully or there were none found.
 func (s *Site) Themes(ctx *gin.Context) {
-	themes, err := s.Site.Themes(s.ThemePath())
+	themes, err := s.Site.Themes()
+
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

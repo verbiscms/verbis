@@ -28,7 +28,7 @@ func Setup() (*Namespace, *mocks.MediaRepository) {
 func TestNamespace_Find(t *testing.T) {
 	media := domain.Media{
 		Id:  1,
-		URL: "/uploads/test.jpg",
+		Url: "/uploads/test.jpg",
 	}
 
 	id := 1
