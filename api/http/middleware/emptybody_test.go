@@ -25,7 +25,7 @@ func (t *MiddlewareTestSuite) TestEmptyBody() {
 		"Valid": {
 			http.MethodDelete,
 			`{verbis: "cms"}`,
-			200,
+			http.StatusOK,
 			"",
 			"application/json",
 			"text/plain; charset=utf-8",
@@ -34,7 +34,7 @@ func (t *MiddlewareTestSuite) TestEmptyBody() {
 		"Not JSON": {
 			http.MethodGet,
 			"",
-			200,
+			http.StatusOK,
 			"",
 			"text/plain; charset=utf-8",
 			"text/plain; charset=utf-8",
@@ -43,7 +43,7 @@ func (t *MiddlewareTestSuite) TestEmptyBody() {
 		"Empty Body": {
 			http.MethodPost,
 			"",
-			401,
+			http.StatusUnauthorized,
 			"Empty JSON body",
 			"application/json; charset=utf-8",
 			"application/json; charset=utf-8",
@@ -52,7 +52,7 @@ func (t *MiddlewareTestSuite) TestEmptyBody() {
 		"Invalid JSON": {
 			http.MethodPost,
 			"notjson",
-			401,
+			http.StatusUnauthorized,
 			"Invalid JSON",
 			"application/json; charset=utf-8",
 			"application/json; charset=utf-8",

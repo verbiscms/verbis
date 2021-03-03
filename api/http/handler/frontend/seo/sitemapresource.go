@@ -16,7 +16,7 @@ import (
 // []bytes to send back as data when
 // /:resource/sitemap.xml is visited.
 //
-// Returns a 404 if there was an error obtaining the XML
+// Returns a http.StatusNotFound if there was an error obtaining the XML
 // file or there was no resource items found.
 func (s *SEO) SiteMapResource(ctx *gin.Context) {
 	const op = "FrontendHandler.SiteMap"

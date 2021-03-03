@@ -29,12 +29,12 @@ func (t *PublicTestSuite) TestPublic_Uploads() {
 		},
 		"Fail": {
 			testString,
-			404,
+			http.StatusNotFound,
 			"text/html",
 			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("Upload", ctx).Return("", nil, fmt.Errorf("error"))
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
-					ctx.Data(404, "text/html", []byte(testString))
+					ctx.Data(http.StatusNotFound, "text/html", []byte(testString))
 				})
 			},
 		},

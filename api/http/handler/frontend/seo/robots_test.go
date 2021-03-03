@@ -32,14 +32,14 @@ func (t *SEOTestSuite) TestSEO_Robots() {
 		},
 		"Disabled Serve": {
 			"test",
-			404,
+			http.StatusNotFound,
 			"text/html",
 			&domain.Options{
 				SeoRobotsServe: false,
 			},
 			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
-					ctx.Data(404, "text/html", []byte("test"))
+					ctx.Data(http.StatusNotFound, "text/html", []byte("test"))
 				})
 			},
 		},

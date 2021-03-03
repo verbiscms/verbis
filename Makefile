@@ -22,6 +22,9 @@ format:
 mock:
 	cd api && rm -rf mocks && mockery --all --keeptree
 
+lint:
+	golangci-lint run ./api/...
+
 test:
 	go clean -testcache && go test $$(go list ./... | grep -v /res/ | grep -v /api/mocks/)
 

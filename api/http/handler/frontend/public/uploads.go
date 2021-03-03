@@ -14,7 +14,7 @@ import (
 // Returns assets from the uploads dir and returns webp
 // file if the browser accepts it.
 //
-// Returns a 404 if the upload was not found.
+// Returns a http.StatusNotFound if the upload was not found.
 func (p *Public) Uploads(ctx *gin.Context) {
 	const op = "FrontendHandler.GetUploads"
 

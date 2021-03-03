@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
+	"net/http"
 	"testing"
 )
 
@@ -30,5 +31,5 @@ func TestMiddleware(t *testing.T) {
 //
 // Is a helper func for returning data for testing.
 func (t *MiddlewareTestSuite) DefaultHandler(g *gin.Context) {
-	g.String(200, "verbis")
+	g.String(http.StatusOK, "verbis")
 }

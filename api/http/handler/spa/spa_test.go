@@ -82,13 +82,13 @@ func (t *SPATestSuite) TestSPA() {
 		},
 		"Not Found File": {
 			"test",
-			404,
+			http.StatusNotFound,
 			"text/html",
 			"/images/wrongpath.svg",
 			TestPath,
 			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
-					ctx.Data(404, "text/html", []byte("test"))
+					ctx.Data(http.StatusNotFound, "text/html", []byte("test"))
 				})
 			},
 		},
@@ -102,13 +102,13 @@ func (t *SPATestSuite) TestSPA() {
 		},
 		"Not Found Page": {
 			"test",
-			404,
+			http.StatusNotFound,
 			"text/html",
 			"/",
 			"wrong",
 			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
-					ctx.Data(404, "text/html", []byte("test"))
+					ctx.Data(http.StatusNotFound, "text/html", []byte("test"))
 				})
 			},
 		},

@@ -17,7 +17,7 @@ import (
 // but errors.NOTFOUND, a http.StatusInternalServerError response will
 // be sent.
 //
-// Returns a 404 if the post was not found.
+// Returns a http.StatusNotFound if the post was not found.
 // Returns a http.StatusInternalServerError if the template file failed to execute.
 func (p *Public) Serve(ctx *gin.Context) {
 	const op = "FrontendHandler.Serve"
