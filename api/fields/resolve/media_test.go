@@ -57,7 +57,6 @@ func (t *ResolverTestSuite) TestValue_Media() {
 }
 
 func (t *ResolverTestSuite) TestValue_MediaResolve() {
-
 	tt := map[string]struct {
 		field domain.PostField
 		mock  func(m *mocks.MediaRepository)

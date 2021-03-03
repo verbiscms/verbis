@@ -19,7 +19,6 @@ func (t *ResolverTestSuite) Test_Field() {
 }
 
 func (t *ResolverTestSuite) TestValue_Resolve() {
-
 	tt := map[string]struct {
 		field domain.PostField
 		want  domain.PostField
@@ -50,7 +49,6 @@ func (t *ResolverTestSuite) TestValue_Resolve() {
 }
 
 func (t *ResolverTestSuite) TestValue_Execute() {
-
 	tt := map[string]struct {
 		value string
 		typ   string

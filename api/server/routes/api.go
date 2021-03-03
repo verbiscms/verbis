@@ -18,7 +18,6 @@ import (
 //
 // API facing routes.
 func apiRoutes(d *deps.Deps, s *server.Server) {
-
 	h := handler.NewAPI(d)
 
 	// API Routes

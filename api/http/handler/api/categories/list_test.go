@@ -12,7 +12,6 @@ import (
 )
 
 func (t *CategoriesTestSuite) TestCategories_List() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

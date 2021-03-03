@@ -13,7 +13,6 @@ import (
 )
 
 func TestDBMap_Scan(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -50,7 +49,6 @@ func TestDBMap_Scan(t *testing.T) {
 }
 
 func TestDBMap_Value(t *testing.T) {
-
 	tt := map[string]struct {
 		input DBMap
 		want  interface{}

@@ -14,7 +14,6 @@ import (
 )
 
 func (t *RedirectsTestSuite) TestRedirects_Find() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

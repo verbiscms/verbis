@@ -9,7 +9,6 @@ import (
 )
 
 func (t *FieldTestSuite) TestService_GetRepeater() {
-
 	tt := map[string]struct {
 		fields domain.PostFields
 		input  interface{}
@@ -67,7 +66,6 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 }
 
 func (t *FieldTestSuite) TestService_ResolveRepeater() {
-
 	tt := map[string]struct {
 		fields domain.PostFields
 		key    string
@@ -204,7 +202,6 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 }
 
 func (t *FieldTestSuite) TestRepeater_HasRows() {
-
 	tt := map[string]struct {
 		repeater Repeater
 		want     interface{}
@@ -231,7 +228,6 @@ func (t *FieldTestSuite) TestRepeater_HasRows() {
 }
 
 func (t *FieldTestSuite) TestRow_SubField() {
-
 	row := Row{
 		{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
 		{Id: 2, Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
@@ -268,7 +264,6 @@ func (t *FieldTestSuite) TestRow_SubField() {
 }
 
 func (t *FieldTestSuite) TestRow_HasField() {
-
 	row := Row{
 		{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
 		{Id: 2, Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
@@ -297,7 +292,6 @@ func (t *FieldTestSuite) TestRow_HasField() {
 }
 
 func (t *FieldTestSuite) TestRow_First() {
-
 	tt := map[string]struct {
 		row  Row
 		want interface{}
@@ -324,7 +318,6 @@ func (t *FieldTestSuite) TestRow_First() {
 }
 
 func (t *FieldTestSuite) TestRow_Last() {
-
 	tt := map[string]struct {
 		row  Row
 		want interface{}

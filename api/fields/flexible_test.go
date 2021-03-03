@@ -9,7 +9,6 @@ import (
 )
 
 func (t *FieldTestSuite) TestService_GetFlexible() {
-
 	tt := map[string]struct {
 		fields domain.PostFields
 		input  interface{}
@@ -77,7 +76,6 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 }
 
 func (t *FieldTestSuite) TestService_ResolveFlexible() {
-
 	tt := map[string]struct {
 		flexible domain.PostField
 		fields   domain.PostFields
@@ -220,7 +218,6 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 }
 
 func (t *FieldTestSuite) TestFlexible_HasRows() {
-
 	tt := map[string]struct {
 		flexible Flexible
 		want     interface{}
@@ -245,7 +242,6 @@ func (t *FieldTestSuite) TestFlexible_HasRows() {
 }
 
 func (t *FieldTestSuite) TestSubFields_SubField() {
-
 	subfield := SubFields{
 		{Id: 1, Name: "test1", Value: 1},
 		{Id: 2, Name: "test2", Value: 2},
@@ -274,7 +270,6 @@ func (t *FieldTestSuite) TestSubFields_SubField() {
 }
 
 func (t *FieldTestSuite) TestSubFields_First() {
-
 	tt := map[string]struct {
 		subfields SubFields
 		want      interface{}
@@ -301,7 +296,6 @@ func (t *FieldTestSuite) TestSubFields_First() {
 }
 
 func (t *FieldTestSuite) TestSubFields_Last() {
-
 	tt := map[string]struct {
 		subfields SubFields
 		want      interface{}

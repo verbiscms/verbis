@@ -19,7 +19,6 @@ type tester struct {
 }
 
 func (t *APITestSuite) TestRespond() {
-
 	paginate := pagination.Pagination{Page: 1, Pages: 2, Limit: 10, Total: 0, Next: false, Prev: false}
 	var verr = errors.Error{Err: nil}
 

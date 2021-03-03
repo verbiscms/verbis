@@ -12,7 +12,6 @@ import (
 )
 
 func (t *OptionsTestSuite) TestOptions_Find() {
-
 	tt := map[string]struct {
 		want    string
 		status  int

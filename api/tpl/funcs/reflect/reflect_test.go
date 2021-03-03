@@ -121,7 +121,6 @@ func TestNamespace_TypeOf(t *testing.T) {
 }
 
 func TestNamespace_TypeIs(t *testing.T) {
-
 	tt := map[string]struct {
 		target string
 		src    interface{}
@@ -153,7 +152,6 @@ func TestNamespace_TypeIs(t *testing.T) {
 }
 
 func TestNamespace_TypeIsLike(t *testing.T) {
-
 	tt := map[string]struct {
 		target string
 		src    interface{}

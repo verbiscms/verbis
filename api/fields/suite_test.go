@@ -94,7 +94,6 @@ func (t *FieldTestSuite) GetPostsMockService(fields domain.PostFields, fnc func(
 //
 // Mock store service for testing.
 func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository)) *Service {
-
 	categoryMock := &mocks.CategoryRepository{}
 	mediaMock := &mocks.MediaRepository{}
 	postsMock := &mocks.PostsRepository{}

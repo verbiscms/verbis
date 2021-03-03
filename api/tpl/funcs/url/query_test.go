@@ -15,7 +15,6 @@ import (
 type noStringer struct{}
 
 func TestNamespace_Query(t *testing.T) {
-
 	tt := map[string]struct {
 		url   string
 		input interface{}
@@ -65,7 +64,6 @@ func TestNamespace_Query(t *testing.T) {
 }
 
 func TestGetPagination(t *testing.T) {
-
 	tt := map[string]struct {
 		url  string
 		want interface{}

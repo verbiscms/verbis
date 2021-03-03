@@ -30,7 +30,6 @@ func Setup() (*Namespace, *mocks.CategoryRepository) {
 }
 
 func TestNamespace_Find(t *testing.T) {
-
 	category := domain.Category{Id: 1, Name: "cat"}
 
 	tt := map[string]struct {
@@ -79,7 +78,6 @@ func TestNamespace_Find(t *testing.T) {
 }
 
 func TestNamespace_ByName(t *testing.T) {
-
 	category := domain.Category{Id: 1, Name: "cat"}
 
 	tt := map[string]struct {
@@ -128,7 +126,6 @@ func TestNamespace_ByName(t *testing.T) {
 }
 
 func TestNamespace_Parent(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		mock  func(m *mocks.CategoryRepository)
@@ -184,7 +181,6 @@ func TestNamespace_Parent(t *testing.T) {
 }
 
 func TestNamespace_List(t *testing.T) {
-
 	categories := domain.Categories{
 		{Id: 1, Name: "cat1"},
 		{Id: 1, Name: "cat2"},

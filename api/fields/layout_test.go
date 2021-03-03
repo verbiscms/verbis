@@ -11,7 +11,6 @@ import (
 )
 
 func (t *FieldTestSuite) TestService_GetLayout() {
-
 	tt := map[string]struct {
 		id     interface{}
 		name   string
@@ -64,7 +63,6 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 }
 
 func (t *FieldTestSuite) TestService_GetLayouts() {
-
 	var f domain.FieldGroups
 
 	fg := domain.FieldGroups{
@@ -109,7 +107,6 @@ func (t *FieldTestSuite) TestService_GetLayouts() {
 }
 
 func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
-
 	var f domain.FieldGroups
 
 	tt := map[string]struct {
@@ -162,7 +159,6 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 }
 
 func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
-
 	tt := map[string]struct {
 		id   interface{}
 		mock func(p *mocks.PostsRepository)

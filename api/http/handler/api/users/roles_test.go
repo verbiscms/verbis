@@ -11,7 +11,6 @@ import (
 )
 
 func (t *UsersTestSuite) TestUser_Roles() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

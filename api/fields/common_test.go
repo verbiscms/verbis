@@ -109,7 +109,6 @@ func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 }
 
 func (t *FieldTestSuite) TestService_FindFieldByName() {
-
 	tt := map[string]struct {
 		name   string
 		fields domain.PostFields

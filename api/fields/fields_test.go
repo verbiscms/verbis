@@ -10,7 +10,6 @@ import (
 )
 
 func (t *FieldTestSuite) TestService_GetFields() {
-
 	tt := map[string]struct {
 		fields domain.PostFields
 		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
@@ -44,7 +43,6 @@ func (t *FieldTestSuite) TestService_GetFields() {
 }
 
 func (t *FieldTestSuite) TestService_Mapper() {
-
 	tt := map[string]struct {
 		fields domain.PostFields
 		want   interface{}

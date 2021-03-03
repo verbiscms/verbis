@@ -130,7 +130,6 @@ func TestNamespace_Prepend(t *testing.T) {
 }
 
 func TestNamespace_First(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -174,7 +173,6 @@ func TestNamespace_First(t *testing.T) {
 }
 
 func TestNamespace_Last(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -218,7 +216,6 @@ func TestNamespace_Last(t *testing.T) {
 }
 
 func TestNamespace_Reverse(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
