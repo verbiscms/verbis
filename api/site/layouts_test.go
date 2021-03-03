@@ -4,7 +4,6 @@
 
 package site
 
-//nolint
 //func (t *SiteTestSuite) TestSite_Templates() {
 //
 //	tt := map[string]struct {

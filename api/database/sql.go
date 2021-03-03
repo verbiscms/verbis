@@ -44,7 +44,7 @@ type MySQL struct {
 func New(env *environment.Env) (*MySQL, error) {
 	db := MySQL{
 		env:      env,
-		database: env.DBDatabase,
+		database: env.DbDatabase,
 		paths:    paths.Get(),
 	}
 
@@ -132,7 +132,7 @@ func (db *MySQL) Create() error {
 // Dump the database to file with the given path and file name.
 // Returns errors.INTERNAL if the connection, dump failed as well as closing
 // the database.
-func (db *MySQL) Dump(path string, filename string) error {
+func (db *MySQL) Dump(path, filename string) error {
 	const op = "Database.Dump"
 	dumper, err := mysqldump.Register(db.Sqlx.DB, path, filename)
 	if err != nil {

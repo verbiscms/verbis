@@ -21,7 +21,7 @@ func (t *PublicTestSuite) TestPublic_Uploads() {
 	}{
 		"Success": {
 			testString,
-			200,
+			http.StatusOK,
 			"image/png",
 			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("Upload", ctx).Return("image/png", t.bytes, nil)

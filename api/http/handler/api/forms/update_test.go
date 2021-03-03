@@ -26,7 +26,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 	}{
 		"Success": {
 			form,
-			200,
+			http.StatusOK,
 			"Successfully updated form with ID: 123",
 			form,
 			func(m *mocks.FormRepository) {
@@ -36,7 +36,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			formBadValidation,
 			func(m *mocks.FormRepository) {
@@ -46,7 +46,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"A valid ID is required to update the form",
 			form,
 			func(m *mocks.FormRepository) {
@@ -56,7 +56,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			form,
 			func(m *mocks.FormRepository) {
@@ -66,7 +66,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			form,
 			func(m *mocks.FormRepository) {

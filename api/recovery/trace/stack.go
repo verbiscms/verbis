@@ -65,7 +65,7 @@ func (s *Stack) Find(fn string) *File {
 // If there was an error reading the file, or the
 // runtime.Caller function failed, it will not
 // be appended to the stack.
-func (t *trace) Trace(depth int, skip int) Stack {
+func (t *trace) Trace(depth, skip int) Stack {
 	var stack Stack
 
 	for c := skip; c < depth; c++ {

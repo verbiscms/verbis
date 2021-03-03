@@ -25,35 +25,33 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 	}
 
 	frontend := s.Group("")
-	{
-		frontend.Use(middleware.Redirects(d))
+	frontend.Use(middleware.Redirects(d))
 
-		// Serve assets
-		s.GET("/assets/*any", h.Public.Assets)
+	// Serve assets
+	s.GET("/assets/*any", h.Public.Assets)
 
-		// Serve Verbis Assets
-		s.Static("/verbis", d.Paths.API+"/web/public")
+	// Serve Verbis Assets
+	s.Static("/verbis", d.Paths.API+"/web/public")
 
-		// Serve uploads
-		s.GET("/"+uploadPath+"/*any", h.Public.Uploads)
+	// Serve uploads
+	s.GET("/"+uploadPath+"/*any", h.Public.Uploads)
 
-		// Robots
-		s.GET("/robots.txt", h.SEO.Robots)
+	// Robots
+	s.GET("/robots.txt", h.SEO.Robots)
 
-		// Sitemap
-		s.GET("/sitemap.xml", h.SEO.SiteMapIndex)
-		s.GET("/sitemaps/:resource/:map", h.SEO.SiteMapResource)
-		s.GET("/resource-sitemap.xsl", func(g *gin.Context) {
-			h.SEO.SiteMapXSL(g, true)
-		})
-		s.GET("/main-sitemap.xsl", func(g *gin.Context) {
-			h.SEO.SiteMapXSL(g, false)
-		})
+	// Sitemap
+	s.GET("/sitemap.xml", h.SEO.SiteMapIndex)
+	s.GET("/sitemaps/:resource/:map", h.SEO.SiteMapResource)
+	s.GET("/resource-sitemap.xsl", func(g *gin.Context) {
+		h.SEO.SiteMapXSL(g, true)
+	})
+	s.GET("/main-sitemap.xsl", func(g *gin.Context) {
+		h.SEO.SiteMapXSL(g, false)
+	})
 
-		// Favicon
-		s.StaticFile("/favicon.ico", d.ThemePath()+"/favicon.ico")
+	// Favicon
+	s.StaticFile("/favicon.ico", d.ThemePath()+"/favicon.ico")
 
-		// Serve the front end
-		s.NoRoute(h.Public.Serve)
-	}
+	// Serve the front end
+	s.NoRoute(h.Public.Serve)
 }

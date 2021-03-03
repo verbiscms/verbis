@@ -14,11 +14,11 @@ import (
 //
 // Serves the front end website by obtaining the post
 // from the store. If the error code is anything
-// but errors.NOTFOUND, a 500 response will
+// but errors.NOTFOUND, a http.StatusInternalServerError response will
 // be sent.
 //
 // Returns a 404 if the post was not found.
-// Returns a 500 if the template file failed to execute.
+// Returns a http.StatusInternalServerError if the template file failed to execute.
 func (p *Public) Serve(ctx *gin.Context) {
 	const op = "FrontendHandler.Serve"
 

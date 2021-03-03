@@ -16,5 +16,5 @@ func (t *SiteTestSuite) TestSite_Global() {
 			m.On("Global").Return(site)
 		}).Global(ctx)
 	})
-	t.RunT(site, 200, "Successfully obtained site config")
+	t.RunT(site, http.StatusOK, "Successfully obtained site config")
 }

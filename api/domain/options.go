@@ -30,7 +30,7 @@ type (
 		SiteTitle       string `json:"site_title" binding:"required"`
 		SiteDescription string `json:"site_description" binding:"required"`
 		SiteLogo        string `json:"site_logo" binding:"required"`
-		SiteURL         string `json:"site_url" binding:"required,url"`
+		SiteUrl         string `json:"site_url" binding:"required,url"` //nolint
 		// Theme
 		ActiveTheme string `json:"active_theme" binding:"required"`
 		Homepage    int    `json:"homepage"`

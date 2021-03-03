@@ -42,7 +42,7 @@ func newAuth(cfg *StoreConfig) *AuthStore {
 
 // Authenticate compares the email & password for a match in the DB.
 // Returns errors.NOTFOUND if the user is not found.
-func (s *AuthStore) Authenticate(email string, password string) (domain.User, error) {
+func (s *AuthStore) Authenticate(email, password string) (domain.User, error) {
 	const op = "AuthRepository.Authenticate"
 
 	var u domain.User
@@ -91,7 +91,7 @@ func (s *AuthStore) Logout(token string) (int, error) {
 // Returns errors.NOTFOUND if the user was not found by the given token.
 // Returns errors.INTERNAL if the SQL query was invalid, unable to
 // create a new password or delete from the password resets table.
-func (s *AuthStore) ResetPassword(token string, password string) error {
+func (s *AuthStore) ResetPassword(token, password string) error {
 	const op = "AuthRepository.ResetPassword"
 
 	var rp domain.PasswordReset
@@ -146,7 +146,7 @@ func (s *AuthStore) SendResetPassword(email string) error {
 	}
 
 	// TODO: Clean up here
-	siteURL := s.optionsRepo.SiteURL + "/admin"
+	siteURL := s.optionsRepo.SiteUrl + "/admin"
 	if api.SuperAdmin {
 		siteURL = "http://127.0.0.1:8090/admin"
 	}

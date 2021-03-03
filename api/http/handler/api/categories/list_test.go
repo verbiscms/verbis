@@ -20,7 +20,7 @@ func (t *CategoriesTestSuite) TestCategories_List() {
 	}{
 		"Success": {
 			categories,
-			200,
+			http.StatusOK,
 			"Successfully obtained categories",
 			func(m *mocks.CategoryRepository) {
 				m.On("Get", defaultParams).Return(categories, 1, nil)
@@ -28,7 +28,7 @@ func (t *CategoriesTestSuite) TestCategories_List() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"no categories found",
 			func(m *mocks.CategoryRepository) {
 				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
@@ -36,7 +36,7 @@ func (t *CategoriesTestSuite) TestCategories_List() {
 		},
 		"Conflict": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"conflict",
 			func(m *mocks.CategoryRepository) {
 				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
@@ -44,7 +44,7 @@ func (t *CategoriesTestSuite) TestCategories_List() {
 		},
 		"Invalid": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"invalid",
 			func(m *mocks.CategoryRepository) {
 				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
@@ -52,7 +52,7 @@ func (t *CategoriesTestSuite) TestCategories_List() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.CategoryRepository) {
 				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

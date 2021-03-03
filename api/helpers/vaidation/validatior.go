@@ -122,7 +122,7 @@ func (v *Validation) CmdCheck(key string, data interface{}) error {
 
 // message checks the kind, field and parameters and binds custom
 // error messages.
-func (v *Validation) message(kind string, field string, param string) string {
+func (v *Validation) message(kind, field, param string) string {
 	var errorMsg string
 
 	field = helpers.StringsAddSpace(field)

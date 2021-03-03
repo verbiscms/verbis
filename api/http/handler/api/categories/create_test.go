@@ -25,7 +25,7 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 	}{
 		"Success": {
 			&category,
-			200,
+			http.StatusOK,
 			"Successfully created category with ID: 123",
 			category,
 			func(m *mocks.CategoryRepository) {
@@ -34,7 +34,7 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "slug", Message: "Slug is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			categoryBadValidation,
 			func(m *mocks.CategoryRepository) {
@@ -43,7 +43,7 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 		},
 		"Invalid": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"invalid",
 			category,
 			func(m *mocks.CategoryRepository) {
@@ -52,7 +52,7 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 		},
 		"Conflict": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"conflict",
 			category,
 			func(m *mocks.CategoryRepository) {
@@ -61,7 +61,7 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			category,
 			func(m *mocks.CategoryRepository) {

@@ -22,54 +22,54 @@ func (t *MediaTestSuite) TestMedia_Update() {
 		url     string
 	}{
 		"Success": {
-			want:    mediaItem,
-			status:  200,
-			message: "Successfully updated media item with ID: 123",
-			input:   mediaItem,
-			mock: func(m *mocks.MediaRepository) {
+			mediaItem,
+			http.StatusOK,
+			"Successfully updated media item with ID: 123",
+			mediaItem,
+			func(m *mocks.MediaRepository) {
 				m.On("Update", &mediaItem).Return(nil)
 			},
-			url: "/media/123",
+			"/media/123",
 		},
 		"Validation Failed": {
-			want:    nil,
-			status:  400,
-			message: "Validation failed",
-			input:   `{"id": "wrongid"}`,
-			mock: func(m *mocks.MediaRepository) {
+			nil,
+			http.StatusBadRequest,
+			"Validation failed",
+			`{"id": "wrongid"}`,
+			func(m *mocks.MediaRepository) {
 				m.On("Update", mediaBadValidation).Return(fmt.Errorf("error"))
 			},
-			url: "/media/123",
+			"/media/123",
 		},
 		"Invalid ID": {
-			want:    nil,
-			status:  400,
-			message: "A valid ID is required to update the media item",
-			input:   mediaItem,
-			mock: func(m *mocks.MediaRepository) {
+			nil,
+			http.StatusBadRequest,
+			"A valid ID is required to update the media item",
+			mediaItem,
+			func(m *mocks.MediaRepository) {
 				m.On("Update", mediaItem).Return(fmt.Errorf("error"))
 			},
-			url: "/media/wrongid",
+			"/media/wrongid",
 		},
 		"Not Found": {
-			want:    nil,
-			status:  400,
-			message: "not found",
-			input:   &mediaItem,
-			mock: func(m *mocks.MediaRepository) {
+			nil,
+			http.StatusBadRequest,
+			"not found",
+			&mediaItem,
+			func(m *mocks.MediaRepository) {
 				m.On("Update", &mediaItem).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
-			url: "/media/123",
+			"/media/123",
 		},
 		"Internal": {
-			want:    nil,
-			status:  500,
-			message: "internal",
-			input:   mediaItem,
-			mock: func(m *mocks.MediaRepository) {
+			nil,
+			http.StatusInternalServerError,
+			"internal",
+			mediaItem,
+			func(m *mocks.MediaRepository) {
 				m.On("Update", &mediaItem).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
-			url: "/media/123",
+			"/media/123",
 		},
 	}
 

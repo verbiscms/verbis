@@ -56,7 +56,6 @@ func TestMinify_MinifyBytes(t *testing.T) {
 	}
 }
 
-//nolint
 func TestMinify_MinifyBytesError(t *testing.T) {
 	// NIL POINTER
 	// m := New(defaultConfig)

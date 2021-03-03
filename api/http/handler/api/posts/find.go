@@ -14,16 +14,16 @@ import (
 
 // Find
 //
-// Returns 200 if the posts were obtained.
-// Returns 400 if the ID wasn't passed or failed to convert.
-// Returns 500 if there as an error obtaining or formatting the post.
+// Returns http.StatusOK if the posts were obtained.
+// Returns http.StatusBadRequest if the ID wasn't passed or failed to convert.
+// Returns http.StatusInternalServerError if there as an error obtaining or formatting the post.
 func (c *Posts) Find(ctx *gin.Context) {
 	const op = "PostHandler.Find"
 
 	paramID := ctx.Param("id")
 	id, err := strconv.Atoi(paramID)
 	if err != nil {
-		api.Respond(ctx, 400, "Pass a valid number to obtain the post by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		api.Respond(ctx, http.StatusBadRequest, "Pass a valid number to obtain the post by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 

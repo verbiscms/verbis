@@ -21,7 +21,7 @@ func (t *UsersTestSuite) TestUser_Delete() {
 	}{
 		"Success": {
 			nil,
-			200,
+			http.StatusOK,
 			"Successfully deleted user with ID: 123",
 			func(m *mocks.UserRepository) {
 				m.On("Delete", 123).Return(nil)
@@ -30,7 +30,7 @@ func (t *UsersTestSuite) TestUser_Delete() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"A valid ID is required to delete a user",
 			func(m *mocks.UserRepository) {
 				m.On("Delete", 123).Return(nil)
@@ -39,7 +39,7 @@ func (t *UsersTestSuite) TestUser_Delete() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			func(m *mocks.UserRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
@@ -48,7 +48,7 @@ func (t *UsersTestSuite) TestUser_Delete() {
 		},
 		"Conflict": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"conflict",
 			func(m *mocks.UserRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
@@ -57,7 +57,7 @@ func (t *UsersTestSuite) TestUser_Delete() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.UserRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})

@@ -324,11 +324,11 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 
 // Inserts a media item into the database
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSize int, mime string, sizes domain.MediaSizes, userID int) (domain.Media, error) {
+func (s *MediaStore) insert(uniq uuid.UUID, name, filePath string, fileSize int, mimeType string, sizes domain.MediaSizes, userID int) (domain.Media, error) {
 	const op = "MediaRepository.insert"
 
 	m := domain.Media{
-		UUID:        uuid,
+		UUID:        uniq,
 		URL:         s.getURL() + "/" + name,
 		Title:       "",
 		Description: "",
@@ -337,7 +337,7 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 		FileSize:    fileSize,
 		FileName:    name,
 		Sizes:       sizes,
-		Type:        mime,
+		Type:        mimeType,
 		UserID:      userID,
 	}
 
@@ -444,18 +444,18 @@ func (s *MediaStore) Total() (int, error) {
 
 // saveResizedImages saves all of the resized images and returns
 // an array of media DB sizes if successful.
-func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, path string, mime string, extension string) domain.MediaSizes {
+func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name, path, mimeType, extension string) domain.MediaSizes {
 	const op = "MediaRepository.saveResizedImages"
 
 	s.getOptionsStruct()
 
 	savedSizes := make(domain.MediaSizes)
-	if mime == "image/png" || mime == "image/jpeg" {
+	if mimeType == "image/png" || mimeType == "image/jpeg" {
 		for key, size := range s.options.MediaSizes {
 			mediaUUID := uuid.New()
 			fileName := name + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + extension
 
-			if err := s.processImageSize(file, path+"/"+mediaUUID.String(), mime, size); err == nil {
+			if err := s.processImageSize(file, path+"/"+mediaUUID.String(), mimeType, size); err == nil {
 				savedSizes[key] = domain.MediaSize{
 					UUID:     mediaUUID,
 					Url:      s.getURL() + "/" + fileName,
@@ -475,16 +475,16 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, 
 
 // processImageSize processes image sizes, convert WebPs and saves various image sizes based on configuration
 // Returns errors.INTERNAL if the image was unable to be saved or decoded.
-func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath string, mime string, size domain.MediaSize) error {
+func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath, mimeType string, size domain.MediaSize) error {
 	const op = "MediaRepository.processImageSize"
 
 	s.getOptionsStruct()
 
 	// PNG Type
-	if mime == "image/png" {
+	if mimeType == "image/png" {
 		filePath = filePath + ".png"
 
-		decodedImage, err := s.decodeImage(file, mime)
+		decodedImage, err := s.decodeImage(file, mimeType)
 		if err != nil {
 			return err
 		}
@@ -502,10 +502,10 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 	}
 
 	// Jpg Type
-	if mime == "image/jpeg" || mime == "image/jp2" {
+	if mimeType == "image/jpeg" || mimeType == "image/jp2" {
 		filePath = filePath + ".jpg"
 
-		decodedImage, err := s.decodeImage(file, mime)
+		decodedImage, err := s.decodeImage(file, mimeType)
 		if err != nil {
 			return err
 		}
@@ -568,7 +568,8 @@ func (s *MediaStore) getURL() string {
 // decodeImage decodes the image from a file dependant on the mime type
 // Returns errors.INTERNAL if the file was unable to be decoded or the file
 // was unable to be opened.
-func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) (*image.Image, error) {
+// TODO: ptrToRefParam: consider to make non-pointer type for `*image.Image`
+func (s *MediaStore) decodeImage(file *multipart.FileHeader, mimeType string) (*image.Image, error) { //nolint
 	const op = "MediaRepository.decodeImage"
 
 	reader, err := file.Open()
@@ -576,13 +577,13 @@ func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) (*imag
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to open the file with the filename: %s", file.Filename), Operation: op, Err: err}
 	}
 
-	if mime == "image/png" {
+	if mimeType == "image/png" {
 		pngFile, err := png.Decode(reader)
 		if err != nil {
 			return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not decode the image with the filename: %s", file.Filename), Operation: op, Err: err}
 		}
 		return &pngFile, nil
-	} else if mime == "image/jpeg" || mime == "image/jp2" {
+	} else if mimeType == "image/jpeg" || mimeType == "image/jp2" {
 		jpgFile, err := jpeg.Decode(reader)
 		if err != nil {
 			return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not decode the image with the filename: %s", file.Filename), Operation: op, Err: err}
@@ -594,7 +595,7 @@ func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) (*imag
 }
 
 // Process file name
-func (s *MediaStore) processFileName(file string, extension string) string {
+func (s *MediaStore) processFileName(file, extension string) string {
 	// Remove the file extension
 	name := files.RemoveFileExtension(file)
 

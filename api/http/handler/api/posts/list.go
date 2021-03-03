@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/http/pagination"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // List
@@ -16,9 +17,9 @@ import (
 // Get all posts, obtain resource param to pass to the get
 // function.
 //
-// Returns 200 if there are no posts or success.
-// Returns 400 if there was conflict or the request was invalid.
-// Returns 500 if there was an error getting or formatting the posts.
+// Returns http.StatusOK if there are no posts or success.
+// Returns http.StatusBadRequest if there was conflict or the request was invalid.
+// Returns http.StatusInternalServerError if there was an error getting or formatting the posts.
 func (c *Posts) List(ctx *gin.Context) {
 	const op = "PostHandler.List"
 
@@ -26,15 +27,15 @@ func (c *Posts) List(ctx *gin.Context) {
 
 	posts, total, err := c.Store.Posts.Get(p, true, ctx.Query("resource"), ctx.Query("status"))
 	if errors.Code(err) == errors.NOTFOUND {
-		api.Respond(ctx, 200, errors.Message(err), err)
+		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return
 	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
-		api.Respond(ctx, 400, errors.Message(err), err)
+		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
 	} else if err != nil {
-		api.Respond(ctx, 500, errors.Message(err), err)
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
 
-	api.Respond(ctx, 200, "Successfully obtained posts", posts, pagination.Get(p, total))
+	api.Respond(ctx, http.StatusOK, "Successfully obtained posts", posts, pagination.Get(p, total))
 }

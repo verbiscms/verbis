@@ -41,7 +41,7 @@ func (ns *Namespace) Len(i interface{}) int64 {
 //
 // Example: {{ explode "," "hello there !" }}
 // Returns: `[hello there !]`
-func (ns *Namespace) Explode(delim interface{}, text interface{}) []string {
+func (ns *Namespace) Explode(delim, text interface{}) []string {
 	d, err := cast.ToStringE(delim)
 	if err != nil {
 		return nil
@@ -66,7 +66,7 @@ func (ns *Namespace) Explode(delim interface{}, text interface{}) []string {
 //
 // Example: {{ slice 1 2 3 | explode "," }}
 // Returns: `[1 2 3]`
-func (ns *Namespace) Implode(glue interface{}, slice interface{}) string {
+func (ns *Namespace) Implode(glue, slice interface{}) string {
 	str, err := cast.ToStringE(glue)
 	if err != nil || slice == nil {
 		return ""

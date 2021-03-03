@@ -17,7 +17,7 @@ import (
 )
 
 // GenerateUserToken generates a new user token based on name & email.
-func GenerateUserToken(name string, email string) string {
+func GenerateUserToken(name, email string) string {
 	emailHash := MD5Hash(email)
 	hash := MD5Hash(name + time.Now().String() + "3de" + strconv.Itoa(rand.Intn(143-0)+0) + emailHash) //nolint
 	token := strconv.Itoa(rand.Intn(143-0)+0) + hash + strconv.Itoa(rand.Intn(143-0)+0)                //nolint

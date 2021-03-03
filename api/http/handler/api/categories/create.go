@@ -9,32 +9,33 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"strconv"
 )
 
 // Create
 //
-// Returns 200 if the category was created.
-// Returns 500 if there was an error creating the category.
-// Returns 400 if the the validation failed or there was a conflict.
+// Returns http.StatusOK if the category was created.
+// Returns http.StatusInternalServerError if there was an error creating the category.
+// Returns http.StatusBadRequest if the the validation failed or there was a conflict.
 func (c *Categories) Create(ctx *gin.Context) {
 	const op = "CategoryHandler.Create"
 
 	var category domain.Category
 	err := ctx.ShouldBindJSON(&category)
 	if err != nil {
-		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	newCategory, err := c.Store.Categories.Create(&category)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
-		api.Respond(ctx, 400, errors.Message(err), err)
+		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
 	} else if err != nil {
-		api.Respond(ctx, 500, errors.Message(err), err)
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
 
-	api.Respond(ctx, 200, "Successfully created category with ID: "+strconv.FormatInt(category.Id, 10), newCategory)
+	api.Respond(ctx, http.StatusOK, "Successfully created category with ID: "+strconv.FormatInt(category.Id, 10), newCategory)
 }

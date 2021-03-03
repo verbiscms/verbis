@@ -23,7 +23,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 	}{
 		"Success": {
 			user,
-			200,
+			http.StatusOK,
 			"Successfully obtained user with ID: 123",
 			func(m *mocks.UserRepository) {
 				m.On("GetByID", 123).Return(user, nil)
@@ -32,7 +32,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"Pass a valid number to obtain the user by ID",
 			func(m *mocks.UserRepository) {
 				m.On("GetByID", 123).Return(domain.User{}, fmt.Errorf("error"))
@@ -41,7 +41,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"no users found",
 			func(m *mocks.UserRepository) {
 				m.On("GetByID", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
@@ -50,7 +50,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.UserRepository) {
 				m.On("GetByID", 123).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

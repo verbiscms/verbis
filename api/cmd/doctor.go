@@ -80,7 +80,7 @@ func doctor(running bool) (*deps.Config, *database.MySQL, error) {
 	// Init Cache
 	cache.Init()
 
-	paths := paths.Get()
+	p := paths.Get()
 
 	// Init Config
 	// TODO: We need pass the default theme (Verbis 2021)
@@ -92,7 +92,7 @@ func doctor(running bool) (*deps.Config, *database.MySQL, error) {
 	// Set up stores & pass the database.
 	store := models.New(&models.StoreConfig{
 		DB:      db.Sqlx,
-		Paths:   paths,
+		Paths:   p,
 		Running: running,
 	})
 
@@ -102,6 +102,6 @@ func doctor(running bool) (*deps.Config, *database.MySQL, error) {
 		Store:  store,
 		Env:    env,
 		Config: config.Get(),
-		Paths:  paths,
+		Paths:  p,
 	}, db, nil
 }

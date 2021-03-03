@@ -297,7 +297,7 @@ func (s *CategoryStore) DeletePostCategories(id int) error {
 
 // changeArchivePostSlug changes the archive post slug when updating.
 // Returns errors.INTERNAL if the SQL query was invalid or the new slug exists
-func (s *CategoryStore) changeArchivePostSlug(id int, slug string, resource string) error {
+func (s *CategoryStore) changeArchivePostSlug(id int, slug, resource string) error {
 	const op = "CategoryRepository.ChangeArchivePostSlug"
 	newSlug := ""
 	if resource != "pages" {

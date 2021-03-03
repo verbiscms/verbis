@@ -797,7 +797,7 @@ var mimeTypes = map[string]string{
 	"sema":                     "application/vnd.sema",
 	"semd":                     "application/vnd.semd",
 	"semf":                     "application/vnd.semf",
-	"ser":                      "application/java-serialized-object",
+	"ser":                      "application/java-serialized-object", //nolint
 	"setpay":                   "application/set-payment-initiation",
 	"setreg":                   "application/set-registration-initiation",
 	"sfd-hdstx":                "application/vnd.hydrostatix.sof-data",

@@ -32,7 +32,7 @@ func (t *AuthTestSuite) TestAuth_Login() {
 	}{
 		"Success": {
 			user,
-			200,
+			http.StatusOK,
 			"Successfully logged in & session started",
 			login,
 			true,
@@ -42,7 +42,7 @@ func (t *AuthTestSuite) TestAuth_Login() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "email", Message: "Email is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			loginBadValidation,
 			false,
@@ -52,7 +52,7 @@ func (t *AuthTestSuite) TestAuth_Login() {
 		},
 		"Not Authorised": {
 			nil,
-			401,
+			http.StatusUnauthorized,
 			"unauthorised",
 			login,
 			false,

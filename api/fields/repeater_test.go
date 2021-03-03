@@ -189,13 +189,7 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.GetService(test.fields)
-
 			got := s.GetRepeater(test.key)
-			//if err != nil {
-			//	t.Contains(err.Error(), test.want)
-			//	return
-			//}
-
 			t.Equal(test.want, got)
 		})
 	}

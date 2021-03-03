@@ -14,5 +14,5 @@ func (t *SiteTestSuite) TestSite_Theme() {
 	t.RequestAndServe(http.MethodGet, "/theme", "/theme", nil, func(ctx *gin.Context) {
 		t.Setup(nil).Config(ctx)
 	})
-	t.RunT(config.DefaultTheme, 200, "Successfully obtained theme config")
+	t.RunT(config.DefaultTheme, http.StatusOK, "Successfully obtained theme config")
 }

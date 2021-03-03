@@ -20,7 +20,7 @@ func (t *OptionsTestSuite) TestOptions_List() {
 	}{
 		"Success": {
 			options,
-			200,
+			http.StatusOK,
 			"Successfully obtained options",
 			func(m *mocks.OptionsRepository) {
 				m.On("Get").Return(options, nil)
@@ -28,7 +28,7 @@ func (t *OptionsTestSuite) TestOptions_List() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"no options found",
 			func(m *mocks.OptionsRepository) {
 				m.On("Get").Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "no options found"})
@@ -36,7 +36,7 @@ func (t *OptionsTestSuite) TestOptions_List() {
 		},
 		"Conflict": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"conflict",
 			func(m *mocks.OptionsRepository) {
 				m.On("Get").Return(nil, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
@@ -44,7 +44,7 @@ func (t *OptionsTestSuite) TestOptions_List() {
 		},
 		"Invalid": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"invalid",
 			func(m *mocks.OptionsRepository) {
 				m.On("Get").Return(nil, &errors.Error{Code: errors.INVALID, Message: "invalid"})
@@ -52,7 +52,7 @@ func (t *OptionsTestSuite) TestOptions_List() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.OptionsRepository) {
 				m.On("Get").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

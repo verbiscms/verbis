@@ -21,7 +21,7 @@ func (t *SEOTestSuite) TestSEO_SitemapIndex() {
 	}{
 		"Success": {
 			testString,
-			200,
+			http.StatusOK,
 			"application/xml; charset=utf-8",
 			func(m *mocks.Publisher, ms *mocks.SiteMapper, ctx *gin.Context) {
 				ms.On("Index").Return(*t.bytes, nil)

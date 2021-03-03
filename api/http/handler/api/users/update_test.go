@@ -26,7 +26,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 	}{
 		"Success": {
 			user,
-			200,
+			http.StatusOK,
 			"Successfully updated user with ID: 123",
 			user,
 			func(m *mocks.UserRepository) {
@@ -36,7 +36,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "role_id", Message: "Role Id is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			userBadValidation,
 			func(m *mocks.UserRepository) {
@@ -46,7 +46,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"A valid ID is required to update the user",
 			user,
 			func(m *mocks.UserRepository) {
@@ -56,7 +56,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			user,
 			func(m *mocks.UserRepository) {
@@ -66,7 +66,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			user,
 			func(m *mocks.UserRepository) {

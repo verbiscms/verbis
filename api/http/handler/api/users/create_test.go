@@ -25,7 +25,7 @@ func (t *UsersTestSuite) TestUser_Create() {
 	}{
 		"Success": {
 			user,
-			200,
+			http.StatusOK,
 			"Successfully created user with ID: 123",
 			userCreate,
 			func(m *mocks.UserRepository) {
@@ -34,7 +34,7 @@ func (t *UsersTestSuite) TestUser_Create() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "role_id", Message: "Role Id is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			userCreateBadValidation,
 			func(m *mocks.UserRepository) {
@@ -43,7 +43,7 @@ func (t *UsersTestSuite) TestUser_Create() {
 		},
 		"Invalid": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"invalid",
 			userCreate,
 			func(m *mocks.UserRepository) {
@@ -52,7 +52,7 @@ func (t *UsersTestSuite) TestUser_Create() {
 		},
 		"Conflict": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"conflict",
 			userCreate,
 			func(m *mocks.UserRepository) {
@@ -61,7 +61,7 @@ func (t *UsersTestSuite) TestUser_Create() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			userCreate,
 			func(m *mocks.UserRepository) {

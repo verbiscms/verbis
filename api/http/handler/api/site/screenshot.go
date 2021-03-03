@@ -12,8 +12,8 @@ import (
 
 // Themes
 //
-// Returns 500 if there was an error getting the layouts.
-// Returns 200 if the themes were obtained successfully or there were none found.
+// Returns http.StatusInternalServerError if there was an error getting the layouts.
+// Returns http.StatusOK if the themes were obtained successfully or there were none found.
 func (s *Site) Screenshot(ctx *gin.Context) {
 	const op = "SiteHandler.Layouts"
 

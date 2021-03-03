@@ -27,9 +27,9 @@ func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace,
 	mockSite := &siteMocks.Repository{}
 	mockSite.On("Global").Return(domain.Site{})
 
-	mock := &mocks.MediaRepository{}
+	m := &mocks.MediaRepository{}
 	d := &deps.Deps{
-		Store:   &models.Store{Media: mock},
+		Store:   &models.Store{Media: m},
 		Site:    mockSite,
 		Options: &opts,
 	}
@@ -44,7 +44,7 @@ func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace,
 		},
 	}
 
-	return &ns, mock
+	return &ns, m
 }
 
 func TestNamespace_MetaTitle(t *testing.T) {
@@ -176,8 +176,8 @@ func TestTemplateMeta_GetImage(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			ns, mock := Setup(domain.Options{}, domain.Site{}, domain.Post{})
-			test.mock(mock)
+			ns, m := Setup(domain.Options{}, domain.Site{}, domain.Post{})
+			test.mock(m)
 			tm := TemplateMeta{deps: ns.deps}
 			got := tm.GetImage(1)
 			assert.Equal(t, test.want, got)

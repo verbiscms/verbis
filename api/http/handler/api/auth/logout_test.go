@@ -24,7 +24,7 @@ func (t *AuthTestSuite) TestAuth_Logout() {
 	}{
 		"Success": {
 			nil,
-			200,
+			http.StatusOK,
 			"Successfully logged out",
 			"test",
 			true,
@@ -34,7 +34,7 @@ func (t *AuthTestSuite) TestAuth_Logout() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			token,
 			false,
@@ -44,7 +44,7 @@ func (t *AuthTestSuite) TestAuth_Logout() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			token,
 			false,

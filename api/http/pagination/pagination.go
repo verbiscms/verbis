@@ -24,23 +24,23 @@ type Pagination struct {
 //
 // Uses the parameters to return formatted pagination on
 // list routes.
-func Get(params params.Params, total int) *Pagination {
+func Get(p params.Params, total int) *Pagination {
 	// Calculate total pages
 	var pages int
-	pages = int(math.Ceil(float64(total) / float64(params.Limit)))
+	pages = int(math.Ceil(float64(total) / float64(p.Limit)))
 
 	// Set page to 1 if the user has passed "?limit=all"
 	var limit interface{}
-	if params.LimitAll {
+	if p.LimitAll {
 		pages = 1
 		limit = "all"
 	} else {
-		limit = params.Limit
+		limit = p.Limit
 	}
 
 	// Construct pagination meta
 	pagination := &Pagination{
-		Page:  params.Page,
+		Page:  p.Page,
 		Pages: pages,
 		Limit: limit,
 		Total: total,
@@ -49,11 +49,11 @@ func Get(params params.Params, total int) *Pagination {
 	}
 
 	// Calculate prev and next variables
-	if params.Page < pages {
-		pagination.Next = params.Page + 1
+	if p.Page < pages {
+		pagination.Next = p.Page + 1
 	}
-	if params.Page > 1 {
-		pagination.Prev = params.Page - 1
+	if p.Page > 1 {
+		pagination.Prev = p.Page - 1
 	}
 
 	return pagination
