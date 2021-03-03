@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func (t *UsersTestSuite) TestUser_Roles() {

@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"net/http"
 )
 
 // EmptyBody
@@ -30,12 +31,12 @@ func EmptyBody() gin.HandlerFunc {
 			bodyBytes, _ := ioutil.ReadAll(g.Request.Body)
 
 			if isEmpty(g, bodyBytes) {
-				api.AbortJSON(g, 401, "Empty JSON body", nil)
+				api.AbortJSON(g, http.StatusUnauthorized, "Empty JSON body", nil)
 				return
 			}
 
 			if !isJSON(string(bodyBytes)) {
-				api.AbortJSON(g, 401, "Invalid JSON", nil)
+				api.AbortJSON(g, http.StatusUnauthorized, "Invalid JSON", nil)
 				return
 			}
 		}

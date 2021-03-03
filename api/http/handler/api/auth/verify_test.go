@@ -34,7 +34,7 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 		},
 		"Not Found": {
 			nil,
-			404,
+			http.StatusNotFound,
 			"not found",
 			token,
 			func(m *mocks.AuthRepository) {

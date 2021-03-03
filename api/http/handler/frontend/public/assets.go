@@ -14,7 +14,7 @@ import (
 // Returns assets from the theme path and returns webp
 // file if the browser accepts it.
 //
-// Returns a 404 if the asset was not found.
+// Returns a http.StatusNotFound if the asset was not found.
 func (p *Public) Assets(ctx *gin.Context) {
 	const op = "FrontendHandler.GetAssets"
 

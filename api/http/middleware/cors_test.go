@@ -53,5 +53,5 @@ func (t *MiddlewareTestSuite) TestCORS_AbortOptions() {
 	t.ServeHTTP()
 
 	t.Empty(t.Recorder.Body)
-	t.Equal(200, t.Recorder.Code)
+	t.Equal(http.StatusOK, t.Recorder.Code)
 }

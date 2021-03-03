@@ -15,7 +15,7 @@ import (
 // which is set in the settings, and returns the
 // robots.txt file.
 //
-// Returns a 404 if the options don't allow serving of
+// Returns a http.StatusNotFound if the options don't allow serving of
 // robots.txt
 func (s *SEO) Robots(ctx *gin.Context) {
 	const op = "FrontendHandler.Robots"

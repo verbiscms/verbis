@@ -27,7 +27,7 @@ func (t *MiddlewareTestSuite) Test_SessionCheck() {
 	}{
 		"Expired": {
 			`{"errors":{"session":"expired"}}`,
-			401,
+			http.StatusUnauthorized,
 			"Session expired, please login again",
 			&http.Cookie{
 				Name:     "verbis-session",
@@ -45,7 +45,7 @@ func (t *MiddlewareTestSuite) Test_SessionCheck() {
 		},
 		"Continue": {
 			"",
-			200,
+			http.StatusOK,
 			"",
 			nil,
 			func(m *mocks.UserRepository) {

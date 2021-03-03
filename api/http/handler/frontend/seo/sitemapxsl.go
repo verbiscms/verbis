@@ -14,7 +14,7 @@ import (
 // Serves the XSL files for use with any .xml file that
 // is used to serve the sitemap.
 //
-// Returns a 404 if there was an error obtaining the XSL.
+// Returns a http.StatusNotFound if there was an error obtaining the XSL.
 func (s *SEO) SiteMapXSL(ctx *gin.Context, index bool) {
 	const op = "FrontendHandler.SiteMapIndexXSL"
 
