@@ -7,6 +7,7 @@ package files
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -42,15 +43,15 @@ func DirectoryExists(filename string) bool {
 
 // Check the file exists and delete
 // Returns errors.NOTFOUND if the file was not found.
-func CheckAndDelete(path string) error {
+func CheckAndDelete(path string) {
 	const op = "files.Delete"
 	if Exists(path) {
 		if err := Delete(path); err != nil {
-			return err
+			logger.WithError(err).Error()
+			return
 		}
-		return nil
 	}
-	return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Failed to delete file with the path: %s", path), Operation: op, Err: fmt.Errorf("filepath %v not found", path)}
+	logger.WithError(&errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Failed to delete file with the path: %s", path), Operation: op, Err: fmt.Errorf("filepath %v not found", path)}).Error()
 }
 
 // Save File
