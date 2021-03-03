@@ -55,8 +55,8 @@ func (s *UserStore) Get(meta params.Params) (domain.Users, int, error) {
 	const op = "UserRepository.Get"
 
 	var u domain.Users
-	q := fmt.Sprintf("SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id")
+	q := "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id"
+	countQ := "SELECT COUNT(*) FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id"
 
 	// Check if there is a role filter, for example
 	// roles.name and reorder meta.Filters
@@ -259,7 +259,7 @@ func (s *UserStore) Delete(id int) error {
 	}
 
 	if u.Role.Name == "Owner" {
-		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("The owner of the site cannot be deleted."), Operation: op, Err: err}
+		return &errors.Error{Code: errors.CONFLICT, Message: "The owner of the site cannot be deleted.", Operation: op, Err: err}
 	}
 
 	if _, err := s.DB.Exec("DELETE FROM users WHERE id = ?", id); err != nil {
@@ -289,7 +289,7 @@ func (s *UserStore) CheckSession(token string) error {
 	if u.TokenLastUsed != nil {
 
 		// Destroy the token and create a new one if session expired.
-		inactiveFor := time.Now().Sub(*u.TokenLastUsed).Minutes()
+		inactiveFor := time.Since(*u.TokenLastUsed).Minutes()
 
 		if int(inactiveFor) > s.Config.Admin.InactiveSessionTime {
 			newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
@@ -300,13 +300,13 @@ func (s *UserStore) CheckSession(token string) error {
 				return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user's token with the name: %v", u.FirstName+" "+u.LastName), Operation: op, Err: err}
 			}
 
-			return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("User seesion expiered, please login again."), Operation: op, Err: fmt.Errorf("user session expiered")}
+			return &errors.Error{Code: errors.CONFLICT, Message: "User seesion expiered, please login again.", Operation: op, Err: fmt.Errorf("user session expiered")}
 		}
 	}
 
 	_, err = s.DB.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", token)
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user token last used."), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not update the user token last used.", Operation: op, Err: err}
 	}
 
 	return nil

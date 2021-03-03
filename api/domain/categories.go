@@ -18,7 +18,7 @@ type (
 		Slug        string    `db:"slug" json:"slug" binding:"required,max=150"`
 		Name        string    `db:"name" json:"name" binding:"required,max=150"`
 		Primary     bool      `db:"primary" json:"primary" binding:"required"`
-		Description *string   `db:"description" json:"description,max=500"`
+		Description *string   `db:"description" json:"description" binding:"max=500"`
 		Resource    string    `db:"resource" json:"resource" binding:"required,max=150"`
 		ParentId    *int      `db:"parent_id" json:"parent_id" binding:"omitempty,numeric"`
 		ArchiveId   *int      `db:"archive_id" json:"archive_id" binding:"omitempty,numeric"`

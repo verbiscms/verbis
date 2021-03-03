@@ -109,17 +109,17 @@ func (s *PostStore) Get(meta params.Params, layout bool, resource string, status
 	// Get by resource
 	if resource != "all" && resource != "" {
 		if len(meta.Filters) > 0 {
-			q += fmt.Sprintf(" AND")
-			countQ += fmt.Sprintf(" AND")
+			q += " AND"
+			countQ += " AND"
 		} else {
-			q += fmt.Sprintf(" WHERE")
-			countQ += fmt.Sprintf(" WHERE")
+			q += " WHERE"
+			countQ += " WHERE"
 		}
 
 		// If the resource is pages or a resource
 		resourceQ := ""
 		if resource == "pages" {
-			resourceQ = fmt.Sprintf(" posts.resource IS NULL")
+			resourceQ = " posts.resource IS NULL"
 		} else {
 			resourceQ = fmt.Sprintf(" posts.resource = '%s'", resource)
 		}
@@ -131,11 +131,11 @@ func (s *PostStore) Get(meta params.Params, layout bool, resource string, status
 	// Get Status
 	if status != "" {
 		if resource != "" {
-			q += fmt.Sprintf(" AND")
-			countQ += fmt.Sprintf(" AND")
+			q += " AND"
+			countQ += " AND"
 		} else {
-			q += fmt.Sprintf(" WHERE")
-			countQ += fmt.Sprintf(" WHERE")
+			q += " WHERE"
+			countQ += " WHERE"
 		}
 		q += fmt.Sprintf(" posts.status = '%s'", status)
 		countQ += fmt.Sprintf(" posts.status = '%s'", status)
@@ -416,7 +416,7 @@ func (s *PostStore) validateUrl(slug string) error {
 	slugArr := strings.Split(slug, "/")
 	if len(slugArr) > 1 {
 		if strings.Contains(slugArr[1], "admin") {
-			return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the path /admin is reserved"), Operation: op}
+			return &errors.Error{Code: errors.CONFLICT, Message: "Could not create the post, the path /admin is reserved", Operation: op}
 		}
 	}
 

@@ -118,11 +118,11 @@ func filterRows(db *sqlx.DB, filters map[string][]params.Filter, table string) (
 				}
 
 				if counter > 0 {
-					q += fmt.Sprintf(" OR ")
+					q += " OR "
 				} else if index > 0 {
-					q += fmt.Sprintf(" AND ")
+					q += " AND "
 				} else {
-					q += fmt.Sprintf(" WHERE ")
+					q += " WHERE "
 				}
 
 				q += fmt.Sprintf("(%s%s %s '%s')", fTable, column, operator, value)

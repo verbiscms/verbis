@@ -62,10 +62,7 @@ func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *
 // if a template file exists with the given name.
 func (e *Execute) Exists(template string) bool {
 	_, err := e.fileHandler(e.config, template)
-	if err != nil {
-		return false
-	}
-	return true
+	return err == nil
 }
 
 // Config

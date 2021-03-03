@@ -68,7 +68,6 @@ func (t *LoggerTestSuite) SetupHandler(fn func(ctx *gin.Context)) *bytes.Buffer 
 
 	engine.GET("/test", func(ctx *gin.Context) {
 		fn(ctx)
-		return
 	})
 
 	req := httptest.NewRequest(http.MethodGet, "/test", nil)

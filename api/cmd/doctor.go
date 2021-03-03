@@ -29,7 +29,6 @@ environment.`,
 			if _, _, err := doctor(false); err != nil {
 				return
 			}
-			return
 		},
 	}
 )

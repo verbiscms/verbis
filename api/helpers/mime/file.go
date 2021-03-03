@@ -34,8 +34,5 @@ func TypeByFile(file *multipart.FileHeader) (string, error) {
 // IsValidMime checks a whitelist of MIME types
 // Returns true if the file is in the whitelist.
 func IsValidMime(allowed []string, mime string) bool {
-	if mimetype.EqualsAny(mime, allowed...) {
-		return true
-	}
-	return false
+	return mimetype.EqualsAny(mime, allowed...)
 }

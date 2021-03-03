@@ -24,7 +24,6 @@ func Setup(t *testing.T, request string, f func(ns *Namespace) string) string {
 	engine.GET("/page", func(g *gin.Context) {
 		ns := &Namespace{ctx: g}
 		got = f(ns)
-		return
 	})
 
 	req, err := http.NewRequest("GET", request, nil)

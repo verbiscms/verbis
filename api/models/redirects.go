@@ -38,8 +38,8 @@ func (s *RedirectStore) Get(meta params.Params) (domain.Redirects, int, error) {
 	const op = "RedirectStore.Get"
 
 	var r domain.Redirects
-	q := fmt.Sprintf("SELECT * FROM redirects")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM redirects")
+	q := "SELECT * FROM redirects"
+	countQ := "SELECT COUNT(*) FROM redirects"
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.DB, meta.Filters, "redirects")

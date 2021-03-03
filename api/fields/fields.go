@@ -19,7 +19,7 @@ type Fields map[string]interface{}
 func (s *Service) GetFields(args ...interface{}) Fields {
 	fields := s.handleArgs(args)
 
-	var f = make(Fields, 0)
+	var f = make(Fields)
 	s.mapper(fields, func(field domain.PostField) {
 		f[field.Name] = resolve.Field(field, s.deps).Value
 	})

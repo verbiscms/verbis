@@ -12,17 +12,11 @@ package auth
 // Example: {{ auth }}
 func (ns *Namespace) Auth() bool {
 	cookie, err := ns.ctx.Cookie("verbis-session")
-
 	if err != nil {
 		return false
 	}
-
 	_, err = ns.deps.Store.User.GetByToken(cookie)
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }
 
 // Admin

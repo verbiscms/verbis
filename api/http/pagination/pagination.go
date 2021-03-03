@@ -40,8 +40,7 @@ func Get(params params.Params, total int) *Pagination {
 	}
 
 	// Construct pagination meta
-	var pagination *Pagination
-	pagination = &Pagination{
+	pagination := &Pagination{
 		Page:  params.Page,
 		Pages: pages,
 		Limit: limit,

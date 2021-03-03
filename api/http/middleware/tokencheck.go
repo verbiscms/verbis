@@ -85,17 +85,17 @@ func checkUserToken(d *deps.Deps, g *gin.Context) (*domain.User, error) {
 }
 
 // Check to see if the session has expired
-func checkSession(g *gin.Context, userId int) error {
+//func checkSession(g *gin.Context, userId int) error {
 
-	//if hasSession := m.Has(userId); !hasSession {
-	//	return nil
-	//}
+//if hasSession := m.Has(userId); !hasSession {
+//	return nil
+//}
 
-	//err := m.Check(userId);
-	//if err != nil {
-	//	controllers.AbortJSON(g, 401, errors.Message(err), err)
-	//	return err
-	//}
+//err := m.Check(userId);
+//if err != nil {
+//	controllers.AbortJSON(g, 401, errors.Message(err), err)
+//	return err
+//}
 
-	return nil
-}
+//return nil
+//}

@@ -51,8 +51,8 @@ func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) 
 	const op = "CategoryRepository.Get"
 
 	var c domain.Categories
-	q := fmt.Sprintf("SELECT * FROM categories")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM categories")
+	q := "SELECT * FROM categories"
+	countQ := "SELECT COUNT(*) FROM categories"
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.DB, meta.Filters, "categories")

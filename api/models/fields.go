@@ -7,7 +7,6 @@ package models
 import (
 	"fmt"
 	location "github.com/ainsleyclark/verbis/api/fields/converter"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/google/uuid"
 	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -29,7 +28,6 @@ type FieldsStore struct {
 	*StoreConfig
 	options domain.Options
 	finder  location.Finder
-	paths   paths.Paths
 }
 
 // newFields - Construct

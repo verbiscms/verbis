@@ -26,7 +26,7 @@ func (f FormValues) JSON() ([]byte, error) {
 	const op = "FormValues.JSON"
 	v, err := json.Marshal(f)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not process the form fields for storing"), Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not process the form fields for storing", Operation: op, Err: err}
 	}
 	return v, nil
 }

@@ -33,6 +33,4 @@ func (r *publish) NotFound(g *gin.Context) {
 	if err != nil {
 		logger.WithError(err).Error()
 	}
-
-	return
 }

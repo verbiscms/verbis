@@ -22,7 +22,7 @@ type (
 		Slug              string        `db:"slug" json:"slug" binding:"required,max=150"`
 		Title             string        `db:"title" json:"title" binding:"required,max=500"`
 		Status            string        `db:"status" json:"status,omitempty"`
-		Resource          *string       `db:"resource" json:"resource,max=150"`
+		Resource          *string       `db:"resource" json:"resource" binding:"max=150"`
 		PageTemplate      string        `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
 		PageLayout        string        `db:"layout" json:"layout,omitempty" binding:"max=150"`
 		CodeInjectionHead *string       `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
@@ -90,14 +90,14 @@ type (
 	PostTwitter struct {
 		Title       string `json:"title,omitempty"`
 		Description string `json:"description,omitempty"`
-		ImageId     int    `json:"image_id,numeric,omitempty"`
+		ImageId     int    `json:"image_id,omitempty" binding:"numeric"`
 	}
 	// PostFacebook defines the opengraph meta information
 	// used when calling the VerbisHeader.
 	PostFacebook struct {
 		Title       string `json:"title,omitempty"`
 		Description string `json:"description,omitempty"`
-		ImageId     int    `json:"image_id,numeric,omitempty"`
+		ImageId     int    `json:"image_id,omitempty" binding:"numeric"`
 	}
 	// PostSeo defines the options for Seo on the post,
 	// including if the post is indexable, if it
@@ -146,10 +146,7 @@ func (p *PostDatum) HasCategories() bool {
 // Determines if the post is the homepage by comparing
 // the domain options.
 func (p *PostDatum) IsHomepage(id int) bool {
-	if id == p.Post.Id {
-		return true
-	}
-	return false
+	return id == p.Post.Id
 }
 
 // Tpl
