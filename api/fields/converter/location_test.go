@@ -47,11 +47,10 @@ func (t *LocationTestSuite) SetupSuite() {
 }
 
 func TestNewLocation(t *testing.T) {
-	assert.Equal(t, &Location{JsonPath: "test/fields"}, NewLocation("test"))
+	assert.Equal(t, &Location{JSONPath: "test/fields"}, NewLocation("test"))
 }
 
 func (t *LocationTestSuite) TestLocation_GetLayout() {
-
 	tt := map[string]struct {
 		cacheable bool
 		jsonPath  string
@@ -81,14 +80,13 @@ func (t *LocationTestSuite) TestLocation_GetLayout() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			l := &Location{JsonPath: t.Path + test.jsonPath}
+			l := &Location{JSONPath: t.Path + test.jsonPath}
 			t.Equal(test.want, l.GetLayout(domain.PostDatum{}, test.cacheable))
 		})
 	}
 }
 
 func (t *LocationTestSuite) TestLocation_GroupResolver() {
-
 	r := "resource"
 	uu := uuid.New()
 
@@ -244,7 +242,6 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 }
 
 func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
-
 	testPath := "/test-field-groups/"
 
 	var fg domain.FieldGroups
@@ -288,9 +285,8 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-
 			l := &Location{
-				JsonPath: t.Path + test.path,
+				JSONPath: t.Path + test.path,
 			}
 			got, err := l.fieldGroupWalker()
 
@@ -305,7 +301,6 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 }
 
 func (t *LocationTestSuite) Test_CheckLocation() {
-
 	tt := map[string]struct {
 		check    string
 		location domain.FieldLocation

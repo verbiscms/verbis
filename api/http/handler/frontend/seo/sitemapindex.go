@@ -4,7 +4,10 @@
 
 package seo
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 // SiteMapIndex obtains the sitemap index file from the sitemap
 // model Obtains the []bytes to send back as data when
@@ -21,5 +24,5 @@ func (s *SEO) SiteMapIndex(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Data(200, "application/xml; charset=utf-8", sitemap)
+	ctx.Data(http.StatusOK, "application/xml; charset=utf-8", sitemap)
 }

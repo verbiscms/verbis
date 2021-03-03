@@ -18,7 +18,6 @@ var (
 type noStringer struct{}
 
 func TestNamespace_SafeHTML(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -54,7 +53,6 @@ func TestNamespace_SafeHTML(t *testing.T) {
 }
 
 func TestNamespace_SafeHTMLAttr(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -86,7 +84,6 @@ func TestNamespace_SafeHTMLAttr(t *testing.T) {
 }
 
 func TestNamespace_SafeCSS(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -203,7 +200,7 @@ func TestNamespace_SafeURL(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			got, err := ns.Url(test.input)
+			got, err := ns.URL(test.input)
 			if err != nil {
 				assert.Contains(t, err.Error(), test.want)
 				return

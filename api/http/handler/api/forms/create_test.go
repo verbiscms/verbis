@@ -16,7 +16,6 @@ import (
 )
 
 func (t *FormsTestSuite) TestForms_Create() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -34,7 +33,7 @@ func (t *FormsTestSuite) TestForms_Create() {
 			},
 		},
 		"Validation Failed": {
-			api.ErrorJson{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
 			400,
 			"Validation failed",
 			formBadValidation,

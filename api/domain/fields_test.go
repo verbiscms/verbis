@@ -11,7 +11,6 @@ import (
 )
 
 func TestFieldValue_Array(t *testing.T) {
-
 	tt := map[string]struct {
 		input string
 		want  interface{}
@@ -58,7 +57,6 @@ func TestFieldValue_String(t *testing.T) {
 }
 
 func TestFieldValue_Int(t *testing.T) {
-
 	tt := map[string]struct {
 		input string
 		want  interface{}

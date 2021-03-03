@@ -14,7 +14,6 @@ import (
 )
 
 func (t *AuthTestSuite) TestAuth_ResetPassword() {
-
 	var (
 		rp = ResetPassword{
 			NewPassword:     "password",
@@ -44,7 +43,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			},
 		},
 		"Validation Failed": {
-			api.ErrorJson{Errors: validation.Errors{{Key: "confirm_password", Message: "Confirm Password must equal the New Password.", Type: "eqfield"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "confirm_password", Message: "Confirm Password must equal the New Password.", Type: "eqfield"}}},
 			400,
 			"Validation failed",
 			rpdBadValidation,

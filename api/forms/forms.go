@@ -84,7 +84,7 @@ func (r *Reader) Values() (FormValues, Attachments, error) {
 		}
 	}
 
-	if float64(totalSize/1024)/1024 > UploadLimit {
+	if float64(totalSize/1024)/1024 > UploadLimit { //nolint
 		return nil, nil, &errors.Error{Code: errors.INVALID, Message: "File attachments have exceeded the upload limit", Operation: op, Err: fmt.Errorf("attachements exceed the upload limit defined")}
 	}
 

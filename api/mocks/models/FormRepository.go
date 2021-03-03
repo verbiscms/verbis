@@ -79,8 +79,8 @@ func (_m *FormRepository) Get(meta params.Params) (domain.Forms, int, error) {
 	return r0, r1, r2
 }
 
-// GetById provides a mock function with given fields: id
-func (_m *FormRepository) GetById(id int) (domain.Form, error) {
+// GetByID provides a mock function with given fields: id
+func (_m *FormRepository) GetByID(id int) (domain.Form, error) {
 	ret := _m.Called(id)
 
 	var r0 domain.Form

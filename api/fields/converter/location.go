@@ -29,13 +29,13 @@ type Location struct {
 	Groups domain.FieldGroups
 	// jsonPath defines where JSON files containing
 	// domain.FieldGroups are kept
-	JsonPath string
+	JSONPath string
 }
 
 // NewLocation - Construct
 func NewLocation(path string) *Location {
 	return &Location{
-		JsonPath: path + "/fields",
+		JSONPath: path + "/fields",
 	}
 }
 
@@ -46,7 +46,6 @@ func NewLocation(path string) *Location {
 // been cached, it will return the cached
 // version
 func (l *Location) GetLayout(post domain.PostDatum, cacheable bool) domain.FieldGroups {
-
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
 	var found bool
@@ -86,21 +85,16 @@ func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups {
 
 	// Loop over the groups
 	for _, group := range l.Groups {
-
 		// Check for empty locations json
 		if len(group.Locations) == 0 && !hasBeenAdded(group.UUID.String(), fg) {
 			fg = append(fg, group)
 		} else {
-
 			// Check and Loop over locations
 			for _, location := range group.Locations {
-
 				if !hasBeenAdded(group.UUID.String(), fg) {
-
 					// Loop over rule sets
 					var locationSet []bool
 					for _, rule := range location {
-
 						switch rule.Param {
 						case "status":
 							locationSet = append(locationSet, checkLocation(post.Status, rule))
@@ -159,14 +153,12 @@ func (l *Location) fieldGroupWalker() (domain.FieldGroups, error) {
 	const op = "Fields.GetFieldGroups"
 
 	var fg domain.FieldGroups
-	err := filepath.Walk(l.JsonPath, func(path string, info os.FileInfo, err error) error {
-
+	err := filepath.Walk(l.JSONPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No file or directory with the path: %s", path), Operation: op, Err: err}
 		}
 
 		if filepath.Ext(info.Name()) == ".json" {
-
 			file, err := ioutil.ReadFile(path)
 			if err != nil {
 				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field file with the path: %s", path), Operation: op, Err: err}).Error()

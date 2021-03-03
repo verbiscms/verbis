@@ -53,7 +53,6 @@ func (t *EnvTestSuite) ChangePath(path string) func() {
 }
 
 func (t *EnvTestSuite) TestLoad() {
-
 	tt := map[string]struct {
 		path string
 		want interface{}
@@ -64,13 +63,13 @@ func (t *EnvTestSuite) TestLoad() {
 				AppEnv:          "dev",
 				AppDebug:        "true",
 				AppPort:         "8080",
-				DbHost:          "127.0.0.1",
-				DbPort:          "3306",
-				DbDatabase:      "verbis",
-				DbUser:          "root",
-				DbPassword:      "password",
-				SparkpostApiKey: "key",
-				SparkpostUrl:    "url",
+				DBHost:          "127.0.0.1",
+				DBPort:          "3306",
+				DBDatabase:      "verbis",
+				DBUser:          "root",
+				DBPassword:      "password",
+				SparkpostAPIKey: "key",
+				SparkpostURL:    "url",
 				MailFromAddress: "hello@verbiscms.com",
 				MailFromName:    "Verbis",
 			},
@@ -98,7 +97,6 @@ func (t *EnvTestSuite) TestLoad() {
 }
 
 func (t *EnvTestSuite) TestEnv_Validate() {
-
 	var ve validation.Errors
 
 	tt := map[string]struct {
@@ -108,11 +106,11 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 		"No Errors": {
 			Env{
 				AppPort:    "8080",
-				DbHost:     "127.0.0.1",
-				DbPort:     "3306",
-				DbDatabase: "verbis",
-				DbUser:     "root",
-				DbPassword: "password",
+				DBHost:     "127.0.0.1",
+				DBPort:     "3306",
+				DBDatabase: "verbis",
+				DBUser:     "root",
+				DBPassword: "password",
 			},
 			ve,
 		},
@@ -138,7 +136,6 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 }
 
 func (t *EnvTestSuite) TestEnv_Port() {
-
 	tt := map[string]struct {
 		port string
 		want int
@@ -163,11 +160,11 @@ func (t *EnvTestSuite) TestEnv_Port() {
 
 func (t *EnvTestSuite) TestEnv_ConnectString() {
 	e := Env{
-		DbHost:     "127.0.0.1",
-		DbPort:     "3000",
-		DbDatabase: "verbis",
-		DbUser:     "verbis",
-		DbPassword: "password",
+		DBHost:     "127.0.0.1",
+		DBPort:     "3000",
+		DBDatabase: "verbis",
+		DBUser:     "verbis",
+		DBPassword: "password",
 	}
 	want := "verbis:password@tcp(127.0.0.1:3000)/verbis?tls=false&parseTime=true&multiStatements=true"
 	t.Equal(want, e.ConnectString())
@@ -175,14 +172,14 @@ func (t *EnvTestSuite) TestEnv_ConnectString() {
 
 func (t *EnvTestSuite) TestEnv_MailConfig() {
 	e := Env{
-		SparkpostApiKey: "key",
-		SparkpostUrl:    "sparkpost",
+		SparkpostAPIKey: "key",
+		SparkpostURL:    "sparkpost",
 		MailFromAddress: "hello@verbiscms.com",
 		MailFromName:    "verbis",
 	}
 	want := Mail{
-		SparkpostApiKey: "key",
-		SparkpostUrl:    "sparkpost",
+		SparkpostAPIKey: "key",
+		SparkpostURL:    "sparkpost",
 		FromAddress:     "hello@verbiscms.com",
 		FromName:        "verbis",
 	}
@@ -190,7 +187,6 @@ func (t *EnvTestSuite) TestEnv_MailConfig() {
 }
 
 func (t *EnvTestSuite) TestEnv_IsProduction() {
-
 	tt := map[string]struct {
 		env  string
 		want bool
@@ -218,7 +214,6 @@ func (t *EnvTestSuite) TestEnv_IsProduction() {
 }
 
 func (t *EnvTestSuite) TestEnv_IsDebug() {
-
 	tt := map[string]struct {
 		debug string
 		want  bool

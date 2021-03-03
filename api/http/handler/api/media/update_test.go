@@ -13,7 +13,6 @@ import (
 )
 
 func (t *MediaTestSuite) TestMedia_Update() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

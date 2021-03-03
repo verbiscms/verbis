@@ -26,7 +26,7 @@ func (ns *Namespace) Dict(values ...interface{}) (map[string]interface{}, error)
 	if len(values)%2 != 0 {
 		return nil, &errors.Error{Code: errors.TEMPLATE, Message: "Invalid dict call", Operation: op, Err: fmt.Errorf("dict values are not divisable by two")}
 	}
-	dict := make(map[string]interface{}, len(values)/2)
+	dict := make(map[string]interface{}, len(values)/2) //nolint
 
 	for i := 0; i < len(values); i += 2 {
 		key, ok := values[i].(string)

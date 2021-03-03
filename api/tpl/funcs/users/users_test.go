@@ -17,7 +17,6 @@ import (
 	"testing"
 
 	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	//"time"
 )
 
 type noStringer struct{}
@@ -32,7 +31,6 @@ func Setup() (*Namespace, *mocks.UserRepository) {
 }
 
 func TestNamespace_Find(t *testing.T) {
-
 	user := domain.User{
 		UserPart: domain.UserPart{Id: 1, FirstName: "verbis"},
 	}
@@ -45,28 +43,28 @@ func TestNamespace_Find(t *testing.T) {
 		"Success": {
 			1,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 1).Return(user, nil).Once()
+				m.On("GetByID", 1).Return(user, nil).Once()
 			},
 			user.HideCredentials(),
 		},
 		"Not Found": {
 			1,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 1).Return(domain.User{}, fmt.Errorf("error")).Once()
+				m.On("GetByID", 1).Return(domain.User{}, fmt.Errorf("error")).Once()
 			},
 			nil,
 		},
 		"No Stringer": {
 			noStringer{},
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 1).Return(user, nil).Once()
+				m.On("GetByID", 1).Return(user, nil).Once()
 			},
 			nil,
 		},
 		"Nil": {
 			nil,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 1).Return(user, nil).Once()
+				m.On("GetByID", 1).Return(user, nil).Once()
 			},
 			nil,
 		},
@@ -83,7 +81,6 @@ func TestNamespace_Find(t *testing.T) {
 }
 
 func TestNamespace_List(t *testing.T) {
-
 	users := domain.Users{
 		domain.User{UserPart: domain.UserPart{Id: 1, FirstName: "verbis"}},
 		domain.User{UserPart: domain.UserPart{Id: 1, FirstName: "cms"}},

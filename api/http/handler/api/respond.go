@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/pagination"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"net/http"
 	"reflect"
 	"time"
 )
@@ -36,9 +37,9 @@ type Meta struct {
 	Pagination   interface{} `json:"pagination,omitempty"`
 }
 
-// ErrorJson defines the validation errors if there any
+// ErrorJSON defines the validation errors if there any
 // when processing data via handlers.
-type ErrorJson struct {
+type ErrorJSON struct {
 	Errors validation.Errors `json:"errors"`
 }
 
@@ -50,7 +51,7 @@ func Respond(ctx *gin.Context, status int, message string, data interface{}, pag
 	ctx.Set("verbis_message", message)
 
 	hasError := false
-	if status != 200 {
+	if status != http.StatusOK {
 		hasError = true
 	}
 
@@ -69,7 +70,7 @@ func Respond(ctx *gin.Context, status int, message string, data interface{}, pag
 // status, message and data.
 func AbortJSON(g *gin.Context, status int, message string, data interface{}) {
 	hasError := false
-	if status != 200 {
+	if status != http.StatusOK {
 		hasError = true
 	}
 
@@ -90,7 +91,6 @@ func AbortJSON(g *gin.Context, status int, message string, data interface{}) {
 // if the type passed is not of type error or
 // nil
 func checkResponseData(ctx *gin.Context, data interface{}) interface{} {
-
 	switch v := data.(type) {
 	case nil:
 		return gin.H{}
@@ -105,14 +105,14 @@ func checkResponseData(ctx *gin.Context, data interface{}) interface{} {
 		if errType.String() == "validator.ValidationErrors" && v.Code == errors.INVALID {
 			validationErrors := v.Err.(validator.ValidationErrors)
 			val := validation.New()
-			return &ErrorJson{
+			return &ErrorJSON{
 				Errors: val.Process(validationErrors),
 			}
 		} else {
 			return gin.H{}
 		}
 	case *json.UnmarshalTypeError:
-		return ErrorJson{
+		return ErrorJSON{
 			Errors: validation.Errors{
 				{
 					Key:     v.Field,

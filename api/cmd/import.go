@@ -43,7 +43,6 @@ and convert the data into Verbis content. `,
 )
 
 func getXMLFile() string {
-
 	emoji.Println(":backhand_index_pointing_right: Enter the absolute path of the XML file to be imported")
 	fmt.Println()
 
@@ -51,7 +50,7 @@ func getXMLFile() string {
 		Label: "XML File",
 		Validate: func(input string) error {
 			if input == "" {
-				return fmt.Errorf("Enter a the XML file path")
+				return fmt.Errorf("enter a the XML file path")
 			}
 			return nil
 		},

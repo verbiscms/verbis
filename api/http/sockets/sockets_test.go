@@ -79,7 +79,7 @@ func (t *SocketsTestSuite) Setup() (*websocket.Conn, func()) {
 	u := "ws" + strings.TrimPrefix(s.URL, "http")
 
 	// Connect to the server
-	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
+	ws, _, err := websocket.DefaultDialer.Dial(u, nil) //nolint
 	if err != nil {
 		t.Fail("error dialing websocket", err)
 	}

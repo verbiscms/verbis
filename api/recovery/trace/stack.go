@@ -27,7 +27,7 @@ type Tracer interface {
 type trace struct{}
 
 // Return a new tracer
-func New() *trace {
+func New() Tracer {
 	return &trace{}
 }
 

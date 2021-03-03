@@ -13,7 +13,6 @@ import (
 )
 
 func (t *SEOTestSuite) TestSEO_SitemapResource() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

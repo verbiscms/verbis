@@ -14,9 +14,9 @@ type Connector interface {
 }
 
 const (
-	// Time allowed to write the file to the client.
-	//writeWait = 10 * time.Second
+// Time allowed to write the file to the client.
+//writeWait = 10 * time.Second
 
-	// Time allowed to read the next pong message from the client.
-	//pongWait = 5 * time.Second
+// Time allowed to read the next pong message from the client.
+//pongWait = 5 * time.Second
 )

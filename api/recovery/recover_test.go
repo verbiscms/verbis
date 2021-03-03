@@ -20,41 +20,41 @@ func (t *RecoverTestSuite) TestHandler_New() {
 	t.Equal(h, New(d))
 }
 
-func (t *RecoverTestSuite) TestHandler_HttpRecovery() {
-	//gin.SetMode(gin.TestMode)
-	//
-	//rr := httptest.NewRecorder()
-	//_, engine := gin.CreateTestContext(rr)
-	//engine.Use(location.Default())
-	//
-	//handlerMock := &mocks.TemplateHandler{}
-	//templateMock := &mocks.TemplateExecutor{}
-	//handlerMock.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(templateMock)
-	//templateMock.On("Exists", "error-500").Return(true)
-	//templateMock.On("Execute", &bytes.Buffer{}, "error-500", mock.Anything).Run(func(args mock.Arguments) {
-	//	arg := args.Get(0).(io.Writer)
-	//	_, err := arg.Write([]byte("test"))
-	//	t.NoError(err)
-	//}).Return(nil)
-	//
-	//t.deps.SetTmpl(handlerMock)
-	//engine.Use(New(t.deps).HttpRecovery())
-	//
-	//engine.GET("/test", func(ctx *gin.Context) {
-	//	panic(&errors.Error{Message: "test"})
-	//})
-	//
-	//request, err := http.NewRequest("GET", "/test", &bytes.Buffer{})
-	//t.NoError(err)
-	//
-	//engine.ServeHTTP(rr, request)
-	//
-	//t.Equal("test", rr.Body.String())
-	//t.Equal(500, rr.Code)
-}
+//nolint
+//func (t *RecoverTestSuite) TestHandler_HttpRecovery() {
+//gin.SetMode(gin.TestMode)
+//
+//rr := httptest.NewRecorder()
+//_, engine := gin.CreateTestContext(rr)
+//engine.Use(location.Default())
+//
+//handlerMock := &mocks.TemplateHandler{}
+//templateMock := &mocks.TemplateExecutor{}
+//handlerMock.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(templateMock)
+//templateMock.On("Exists", "error-500").Return(true)
+//templateMock.On("Execute", &bytes.Buffer{}, "error-500", mock.Anything).Run(func(args mock.Arguments) {
+//	arg := args.Get(0).(io.Writer)
+//	_, err := arg.Write([]byte("test"))
+//	t.NoError(err)
+//}).Return(nil)
+//
+//t.deps.SetTmpl(handlerMock)
+//engine.Use(New(t.deps).HttpRecovery())
+//
+//engine.GET("/test", func(ctx *gin.Context) {
+//	panic(&errors.Error{Message: "test"})
+//})
+//
+//request, err := http.NewRequest("GET", "/test", &bytes.Buffer{})
+//t.NoError(err)
+//
+//engine.ServeHTTP(rr, request)
+//
+//t.Equal("test", rr.Body.String())
+//t.Equal(500, rr.Code)
+//}
 
 func (t *RecoverTestSuite) TestHandler_HttpRecovery_Panics() {
-
 	expectMsgs := map[syscall.Errno]string{
 		syscall.EPIPE:      "broken pipe",
 		syscall.ECONNRESET: "connection reset by peer",
@@ -67,7 +67,7 @@ func (t *RecoverTestSuite) TestHandler_HttpRecovery_Panics() {
 
 				rr := httptest.NewRecorder()
 				_, engine := gin.CreateTestContext(rr)
-				engine.Use(New(t.deps).HttpRecovery())
+				engine.Use(New(t.deps).HTTPRecovery())
 
 				engine.GET("/test", func(ctx *gin.Context) {
 					ctx.Header("X-Test", "Value")

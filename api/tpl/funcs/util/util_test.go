@@ -17,7 +17,6 @@ var (
 type noStringer struct{}
 
 func TestNamespace_Len(t *testing.T) {
-
 	ptr := "hello"
 
 	tt := map[string]struct {
@@ -131,7 +130,6 @@ func TestNamespace_Explode(t *testing.T) {
 }
 
 func TestNamespace_Implode(t *testing.T) {
-
 	tt := map[string]struct {
 		glue  interface{}
 		slice interface{}

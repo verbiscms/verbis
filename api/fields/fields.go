@@ -39,7 +39,6 @@ type WalkerFunc func(field domain.PostField)
 // be skipped.
 func (s *Service) mapper(fields domain.PostFields, walkerFunc WalkerFunc) {
 	for _, field := range fields {
-
 		if field.Type == "repeater" {
 			repeater := s.GetRepeater(field.Name)
 			if repeater != nil {

@@ -23,9 +23,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/publisher"
 )
 
-// ApiHandler defines all handler functions for API
+// APIHandler defines all handler functions for API
 // routes.
-type ApiHandler struct {
+type APIHandler struct {
 	Auth       auth.Handler
 	Cache      cache.Handler
 	Categories categories.Handler
@@ -39,11 +39,11 @@ type ApiHandler struct {
 	Users      users.Handler
 }
 
-// NewApi
+// NewAPI
 //
 // Returns a new API handler.
-func NewApi(d *deps.Deps) *ApiHandler {
-	return &ApiHandler{
+func NewAPI(d *deps.Deps) *APIHandler {
+	return &APIHandler{
 		Auth:       &auth.Auth{Deps: d},
 		Cache:      &cache.Cache{Deps: d},
 		Categories: &categories.Categories{Deps: d},

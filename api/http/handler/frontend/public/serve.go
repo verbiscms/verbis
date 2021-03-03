@@ -7,6 +7,7 @@ package public
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Serve
@@ -26,9 +27,9 @@ func (p *Public) Serve(ctx *gin.Context) {
 		p.Publisher.NotFound(ctx)
 		return
 	} else if err != nil {
-		ctx.Data(500, "text/html", page)
+		ctx.Data(http.StatusInternalServerError, "text/html", page)
 		return
 	}
 
-	ctx.Data(200, "text/html", page)
+	ctx.Data(http.StatusOK, "text/html", page)
 }

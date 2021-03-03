@@ -7,6 +7,7 @@ package site
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Themes
@@ -18,21 +19,21 @@ func (s *Site) Screenshot(ctx *gin.Context) {
 
 	theme := ctx.Param("theme")
 	if theme == "" {
-		ctx.AbortWithStatus(404)
+		ctx.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
 	file := ctx.Param("file")
 	if file == "" {
-		ctx.AbortWithStatus(404)
+		ctx.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
 	screenshot, mime, err := s.Site.Screenshot(s.Paths.Base, theme, file)
 	if errors.Code(err) == errors.NOTFOUND {
-		ctx.AbortWithStatus(404)
+		ctx.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
-	ctx.Data(200, mime, screenshot)
+	ctx.Data(http.StatusOK, mime, screenshot)
 }

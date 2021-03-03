@@ -17,8 +17,8 @@ var (
 	// Defaults represents the default params if
 	// none were passed for templates.
 	Defaults = params.Defaults{
-		Page:           1,
-		Limit:          15,
+		Page:           params.DefaultLimit,
+		Limit:          params.DefaultPage,
 		OrderBy:        "created_at",
 		OrderDirection: "desc",
 	}

@@ -27,7 +27,7 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 			200,
 			"Successfully obtained redirect with ID: 123",
 			func(m *mocks.RedirectRepository) {
-				m.On("GetById", int64(123)).Return(redirect, nil)
+				m.On("GetByID", int64(123)).Return(redirect, nil)
 			},
 			"/redirects/123",
 		},
@@ -36,7 +36,7 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 			400,
 			"Pass a valid number to obtain the redirect by ID",
 			func(m *mocks.RedirectRepository) {
-				m.On("GetById", int64(123)).Return(domain.Redirect{}, fmt.Errorf("error"))
+				m.On("GetByID", int64(123)).Return(domain.Redirect{}, fmt.Errorf("error"))
 			},
 			"/redirects/wrongid",
 		},
@@ -45,7 +45,7 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 			200,
 			"no redirects found",
 			func(m *mocks.RedirectRepository) {
-				m.On("GetById", int64(123)).Return(domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
+				m.On("GetByID", int64(123)).Return(domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
 			},
 			"/redirects/123",
 		},
@@ -54,7 +54,7 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 			500,
 			"internal",
 			func(m *mocks.RedirectRepository) {
-				m.On("GetById", int64(123)).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("GetByID", int64(123)).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/redirects/123",
 		},

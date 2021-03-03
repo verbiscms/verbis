@@ -18,7 +18,7 @@ type tester struct {
 	Name string `json:"name"`
 }
 
-func (t *ApiTestSuite) TestRespond() {
+func (t *APITestSuite) TestRespond() {
 
 	paginate := pagination.Pagination{Page: 1, Pages: 2, Limit: 10, Total: 0, Next: false, Prev: false}
 	var verr = errors.Error{Err: nil}
@@ -188,7 +188,7 @@ func (t *ApiTestSuite) TestRespond() {
 	}
 }
 
-func (t *ApiTestSuite) Test_GetMeta() {
+func (t *APITestSuite) Test_GetMeta() {
 	var got Meta
 	t.RequestAndServe(gohttp.MethodGet, "/meta", "/meta", nil, func(ctx *gin.Context) {
 		ctx.Set("request_time", time.Now())

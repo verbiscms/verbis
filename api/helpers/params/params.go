@@ -10,8 +10,10 @@ import (
 )
 
 const (
+	// DefaulPage defines the page number if none is set.
+	DefaultPage = 15
 	// DefaultLimit defines how many items will be returned if
-	// the limit is set to list all
+	// the limit is set to list all.
 	DefaultLimit = 15
 	// DefaultOrderBy defines the default order by if an error
 	// occurred.
@@ -33,7 +35,7 @@ type Params struct {
 	Stringer       `json:"-"`
 }
 
-// Stringer defines the method for obtaining paramaters.
+// Stringer defines the method for obtaining parameters.
 type Stringer interface {
 	Param(string) string
 }

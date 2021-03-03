@@ -26,9 +26,8 @@ func New(d *deps.Deps) *Scheduler {
 
 // Run all cron jobs
 func (s *Scheduler) Run() {
-
 	// Clean password resets table every 15 minutes
-	err := gocron.Every(15).Minutes().Do(func() {
+	err := gocron.Every(15).Minutes().Do(func() { //nolint
 		logger.Info("Cleaning password resets table")
 		err := s.Store.Auth.CleanPasswordResets()
 		if err != nil {
@@ -40,7 +39,7 @@ func (s *Scheduler) Run() {
 	}
 
 	// Clean sitemap cache
-	err = gocron.Every(6).Hours().Do(func() {
+	err = gocron.Every(6).Hours().Do(func() { //nolint
 		logger.Info("Clearing sitemap cache")
 		publisher.NewSitemap(s.Deps).ClearCache()
 	})

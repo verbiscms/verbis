@@ -11,7 +11,6 @@ import (
 )
 
 func (t *FieldTestSuite) TestService_HandleArgs() {
-
 	tt := map[string]struct {
 		fields domain.PostFields
 		args   []interface{}
@@ -79,7 +78,6 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 }
 
 func (t *FieldTestSuite) TestService_GetFieldsByPost() {
-
 	tt := map[string]struct {
 		id   int
 		mock func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)

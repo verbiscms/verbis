@@ -33,7 +33,7 @@ continue to drop the database. Use with caution!`,
 
 				fmt.Print("-> ")
 				text, _ := reader.ReadString('\n')
-				text = strings.Replace(text, "\n", "", -1)
+				text = strings.ReplaceAll(text, "\n", "")
 
 				if strings.Contains(text, "yes") {
 					break

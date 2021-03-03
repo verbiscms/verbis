@@ -18,7 +18,7 @@ import (
 // UserRepository defines methods for Users to interact with the database
 type UserRepository interface {
 	Get(meta params.Params) (domain.Users, int, error)
-	GetById(id int) (domain.User, error)
+	GetByID(id int) (domain.User, error)
 	GetOwner() (domain.User, error)
 	GetByToken(token string) (domain.User, error)
 	GetByEmail(email string) (domain.User, error)
@@ -107,10 +107,10 @@ func (s *UserStore) Get(meta params.Params) (domain.Users, int, error) {
 	return u, total, nil
 }
 
-// GetById returns a user by Id
+// GetByID returns a user by Id
 // Returns errors.NOTFOUND if the user was not found by the given Id.
-func (s *UserStore) GetById(id int) (domain.User, error) {
-	const op = "UserRepository.GetById"
+func (s *UserStore) GetByID(id int) (domain.User, error) {
+	const op = "UserRepository.GetByID"
 	var u domain.User
 	if err := s.DB.Get(&u, "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM users LEFT JOIN user_roles ON users.id = user_roles.user_id INNER JOIN roles ON user_roles.role_id = roles.id WHERE users.id = ?", id); err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the user with the ID: %d", id), Operation: op, Err: err}
@@ -197,7 +197,7 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the user role for user with the email: %s", u.Email), Operation: op, Err: err}
 	}
 
-	newUser, err := s.GetById(int(id))
+	newUser, err := s.GetByID(int(id))
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created user with the id: %v", u.Id), Operation: op, Err: err}
 	}
@@ -226,7 +226,7 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 	const op = "UserRepository.Update"
 
-	_, err := s.GetById(u.Id)
+	_, err := s.GetByID(u.Id)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -253,7 +253,7 @@ func (s *UserStore) Update(u *domain.User) (domain.User, error) {
 func (s *UserStore) Delete(id int) error {
 	const op = "UserRepository.Delete"
 
-	u, err := s.GetById(id)
+	u, err := s.GetByID(id)
 	if err != nil {
 		return err
 	}

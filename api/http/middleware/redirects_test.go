@@ -20,11 +20,10 @@ const (
 )
 
 func (t *MiddlewareTestSuite) Test_Redirects() {
-
 	tt := map[string]struct {
 		status      int
 		url         string
-		redirectUrl string
+		redirectURL string
 		mock        func(m *mocks.RedirectRepository)
 	}{
 		"Admin Path": {
@@ -138,10 +137,10 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			t.RequestAndServe(http.MethodGet, test.url, test.url, nil, t.DefaultHandler)
 
 			t.Equal(test.status, t.Status())
-			if test.redirectUrl != "" {
+			if test.redirectURL != "" {
 				loc, err := t.Recorder.Result().Location()
 				t.NoError(err)
-				t.Equal(test.redirectUrl, loc.Path)
+				t.Equal(test.redirectURL, loc.Path)
 			}
 
 			t.Reset()

@@ -17,12 +17,12 @@ type tags []string
 // Uses the Array() function on the domain.FieldValue type to split
 // the value by a comma delimiter, and loops over the values to
 // build up a tags array to be sent back.
-func (v *Value) tags(value domain.FieldValue) (interface{}, error) {
+func (v *Value) tags(value domain.FieldValue) interface{} {
 	var t tags
 	for _, v := range value.Slice() {
 		if v != "" {
 			t = append(t, v)
 		}
 	}
-	return t, nil
+	return t
 }

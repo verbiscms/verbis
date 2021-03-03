@@ -21,7 +21,6 @@ type Errors struct {
 }
 
 func (r *publish) NotFound(g *gin.Context) {
-
 	exec := r.Tmpl().Prepare(tpl.Config{
 		Root:      r.ThemePath(),
 		Extension: r.Config.FileExtension,

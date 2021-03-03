@@ -6,7 +6,6 @@ package resolve
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 )
@@ -29,7 +28,7 @@ func (v *Value) choice(value domain.FieldValue) (interface{}, error) {
 	var c choice
 	err := json.Unmarshal([]byte(value), &c)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Unable to unmarshal to choice map"), Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to unmarshal to choice map", Operation: op, Err: err}
 	}
 
 	return c, nil

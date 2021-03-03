@@ -15,11 +15,12 @@ type mockStringer struct {
 	def map[string]interface{}
 }
 
-func Setup(t *testing.T, def Defaults) *mockStringer {
+func Setup(t *testing.T, def Defaults) Stringer {
 	data, err := json.Marshal(def) // Convert to a json string
 	assert.NoError(t, err)
 	var m = make(map[string]interface{})
 	err = json.Unmarshal(data, &m) // Convert to a map
+	assert.NoError(t, err)
 
 	ms := mockStringer{def: m}
 
@@ -39,7 +40,6 @@ func (m *mockStringer) Param(param string) string {
 }
 
 func TestParams_Get(t *testing.T) {
-
 	tt := map[string]struct {
 		def  Defaults
 		want Params
@@ -126,7 +126,6 @@ func (m *mockFilter) Param(param string) string {
 }
 
 func TestParams_Filter(t *testing.T) {
-
 	tt := map[string]struct {
 		filter string
 		want   map[string][]Filter

@@ -28,7 +28,6 @@ func TestAddFuncsNamespace(t *testing.T) {
 }
 
 func TestFuncsNamespace_AddMethodMapping(t *testing.T) {
-
 	fns := FuncsNamespace{Name: "test"}
 
 	tt := map[string]struct {

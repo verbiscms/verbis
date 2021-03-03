@@ -18,7 +18,7 @@ import (
 // PostsRepository defines methods for Posts to interact with the database
 type PostsRepository interface {
 	Get(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error)
-	GetById(id int, layout bool) (domain.PostDatum, error)
+	GetByID(id int, layout bool) (domain.PostDatum, error)
 	GetBySlug(slug string) (domain.PostDatum, error)
 	Create(p *domain.PostCreate) (domain.PostDatum, error)
 	Update(p *domain.PostCreate) (domain.PostDatum, error)
@@ -58,8 +58,8 @@ type PostRaw struct {
 	Author   domain.User     `db:"author"`
 	Category domain.Category `db:"category"`
 	Field    struct {
-		Id            int        `db:"field_id"`
-		PostId        int        `db:"post_id"`
+		Id            int        `db:"field_id"` //nolint
+		PostId        int        `db:"post_id"`  //nolint
 		UUID          *uuid.UUID `db:"uuid"`
 		Type          string     `db:"type"`
 		Name          string     `db:"name"`
@@ -179,11 +179,11 @@ func (s *PostStore) Get(meta params.Params, layout bool, resource string, status
 	return formattedPosts, total, nil
 }
 
-// GetById returns a post by Id
+// GetByID returns a post by Id
 //
 // Returns errors.NOTFOUND if the post was not found by the given Id.
-func (s *PostStore) GetById(id int, layout bool) (domain.PostDatum, error) {
-	const op = "PostsRepository.GetById"
+func (s *PostStore) GetByID(id int, layout bool) (domain.PostDatum, error) {
+	const op = "PostsRepository.GetByID"
 
 	var p []PostRaw
 	err := s.DB.Select(&p, s.getQuery("SELECT * FROM posts WHERE posts.id = ? LIMIT 1"), id)
@@ -228,7 +228,7 @@ func (s *PostStore) GetBySlug(slug string) (domain.PostDatum, error) {
 func (s *PostStore) Create(p *domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostsRepository.Create"
 
-	if err := s.validateUrl(p.Slug); err != nil {
+	if err := s.validateURL(p.Slug); err != nil {
 		return domain.PostDatum{}, err
 	}
 
@@ -262,7 +262,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostDatum, error) {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post ID with the title: %v", p.Title), Operation: op, Err: err}
 	}
 
-	post, err := s.GetById(int(id), true)
+	post, err := s.GetByID(int(id), true)
 	if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created post with the title: %v", p.Title), Operation: op, Err: err}
 	}
@@ -292,13 +292,13 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostDatum, error) {
 func (s *PostStore) Update(p *domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostsRepository.Update"
 
-	oldPost, err := s.GetById(p.Id, false)
+	oldPost, err := s.GetByID(p.Id, false)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
 
 	if oldPost.Slug != p.Slug {
-		if err := s.validateUrl(p.Slug); err != nil {
+		if err := s.validateURL(p.Slug); err != nil {
 			return domain.PostDatum{}, err
 		}
 	}
@@ -330,7 +330,7 @@ func (s *PostStore) Update(p *domain.PostCreate) (domain.PostDatum, error) {
 		return domain.PostDatum{}, err
 	}
 
-	post, err := s.GetById(p.Id, true)
+	post, err := s.GetByID(p.Id, true)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
@@ -401,13 +401,13 @@ func (s *PostStore) checkOwner(p domain.PostCreate) int {
 	return p.Author
 }
 
-// validateUrl checks if the url is valid for creating or updating a new
+// validateURL checks if the url is valid for creating or updating a new
 // post.
 //
 // Returns errors.CONFLICT if the post slug already exists
 // Or the slug contains the admin path, .i.e /admin
-func (s *PostStore) validateUrl(slug string) error {
-	const op = "PostsRepository.validateUrl"
+func (s *PostStore) validateURL(slug string) error {
+	const op = "PostsRepository.validateURLvalidateURL"
 
 	if s.ExistsBySlug(slug) {
 		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the slug %v, already exists", slug), Operation: op}
@@ -436,9 +436,7 @@ func (s *PostStore) format(rawPosts []PostRaw, layout bool) domain.PostData {
 	var posts = make(domain.PostData, 0)
 
 	for _, v := range rawPosts {
-
 		if !s.find(posts, v.Id) {
-
 			var category domain.Category
 			if v.Category.Id != 0 {
 				category = v.Category

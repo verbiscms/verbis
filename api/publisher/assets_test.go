@@ -16,7 +16,6 @@ import (
 )
 
 func TestRender_GetAsset(t *testing.T) {
-
 	cache.Init()
 
 	tt := map[string]struct {
@@ -37,7 +36,6 @@ func TestRender_GetAsset(t *testing.T) {
 	}
 
 	for name, test := range tt {
-
 		t.Run(name, func(t *testing.T) {
 
 			gin.SetMode(gin.TestMode)
@@ -59,6 +57,7 @@ func TestRender_GetAsset(t *testing.T) {
 			assert.NoError(t, err)
 
 			get, err := client.Do(req)
+			defer client.CloseIdleConnections()
 			assert.NoError(t, err)
 
 			o := get.Header.Get("Cache-Control")

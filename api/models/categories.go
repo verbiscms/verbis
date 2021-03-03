@@ -16,8 +16,8 @@ import (
 // CategoryRepository defines methods for Categories to interact with the database
 type CategoryRepository interface {
 	Get(meta params.Params) (domain.Categories, int, error)
-	GetById(id int) (domain.Category, error)
-	GetByPost(pageId int) (*domain.Category, error)
+	GetByID(id int) (domain.Category, error)
+	GetByPost(pageID int) (*domain.Category, error)
 	GetBySlug(slug string) (domain.Category, error)
 	GetByName(name string) (domain.Category, error)
 	GetParent(id int) (domain.Category, error)
@@ -25,11 +25,11 @@ type CategoryRepository interface {
 	Update(c *domain.Category) (domain.Category, error)
 	Delete(id int) error
 	Exists(id int) bool
-	//ExistsByName(name string) bool
-	//ExistsBySlug(slug string) bool
-	InsertPostCategory(postId int, categoryId *int) error
+	// ExistsByName(name string) bool
+	// ExistsBySlug(slug string) bool
+	InsertPostCategory(postID int, categoryID *int) error
 	DeletePostCategories(id int) error
-	//Total() (int, error)
+	// Total() (int, error)
 }
 
 // CategoryStore defines the data layer for Categories
@@ -91,8 +91,8 @@ func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) 
 
 // Get the category by Id
 // Returns errors.NOTFOUND if the category was not found by the given Id.
-func (s *CategoryStore) GetById(id int) (domain.Category, error) {
-	const op = "CategoryRepository.GetById"
+func (s *CategoryStore) GetByID(id int) (domain.Category, error) {
+	const op = "CategoryRepository.GetByID"
 	var c domain.Category
 	if err := s.DB.Get(&c, "SELECT * FROM categories WHERE id = ?", id); err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the ID: %d", id), Operation: op, Err: err}
@@ -102,11 +102,11 @@ func (s *CategoryStore) GetById(id int) (domain.Category, error) {
 
 // Get the category by post
 // Returns errors.NOTFOUND if the category was not found by the given Post Id.
-func (s *CategoryStore) GetByPost(postId int) (*domain.Category, error) {
+func (s *CategoryStore) GetByPost(postID int) (*domain.Category, error) {
 	const op = "CategoryRepository.GetByPost"
 	var c domain.Category
-	if err := s.DB.Get(&c, "SELECT * FROM categories c WHERE EXISTS (SELECT post_id FROM post_categories p WHERE p.post_id = ? AND c.id = p.category_id) LIMIT 1", postId); err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the post ID: %d", postId), Operation: op, Err: err}
+	if err := s.DB.Get(&c, "SELECT * FROM categories c WHERE EXISTS (SELECT post_id FROM post_categories p WHERE p.post_id = ? AND c.id = p.category_id) LIMIT 1", postID); err != nil {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the post ID: %d", postID), Operation: op, Err: err}
 	}
 	return &c, nil
 }
@@ -172,7 +172,7 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 		}
 	}
 
-	nc, err := s.GetById(int(id))
+	nc, err := s.GetByID(int(id))
 	if err != nil {
 		return domain.Category{}, err
 	}
@@ -186,7 +186,7 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 func (s *CategoryStore) Update(c *domain.Category) (domain.Category, error) {
 	const op = "CategoryRepository.Update"
 
-	oldCategory, err := s.GetById(int(c.Id))
+	oldCategory, err := s.GetByID(int(c.Id))
 	if err != nil {
 		return domain.Category{}, err
 	}
@@ -224,7 +224,7 @@ func (s *CategoryStore) Update(c *domain.Category) (domain.Category, error) {
 func (s *CategoryStore) Delete(id int) error {
 	const op = "CategoryRepository.Delete"
 
-	c, err := s.GetById(id)
+	c, err := s.GetByID(id)
 	if err != nil {
 		return err
 	}
@@ -268,18 +268,18 @@ func (s *CategoryStore) ExistsBySlug(slug string) bool {
 // InsertPostCategories - Insert into post categories with array of ID's.
 // This function deletes all categories from the pivot before
 // inserting again.
-func (s *CategoryStore) InsertPostCategory(postId int, categoryId *int) error {
+func (s *CategoryStore) InsertPostCategory(postID int, categoryID *int) error {
 	const op = "CategoryRepository.InsertPostCategories"
 
-	if _, err := s.DB.Exec("DELETE FROM post_categories WHERE post_id = ?", postId); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postId), Operation: op, Err: err}
+	if _, err := s.DB.Exec("DELETE FROM post_categories WHERE post_id = ?", postID); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete from the post categories table with the ID: %v", postID), Operation: op, Err: err}
 	}
 
-	if categoryId != nil {
+	if categoryID != nil {
 		q := "INSERT INTO post_categories (post_id, category_id) VALUES (?, ?)"
-		_, err := s.DB.Exec(q, postId, categoryId)
+		_, err := s.DB.Exec(q, postID, categoryID)
 		if err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postId), Operation: op, Err: err}
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not insert into the post categories table with the ID: %v", postID), Operation: op, Err: err}
 		}
 	}
 

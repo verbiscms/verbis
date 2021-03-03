@@ -11,7 +11,6 @@ import (
 )
 
 func (t *ResolverTestSuite) TestValue_Media() {
-
 	tt := map[string]struct {
 		value domain.FieldValue
 		mock  func(m *mocks.MediaRepository)
@@ -20,14 +19,14 @@ func (t *ResolverTestSuite) TestValue_Media() {
 		"Media": {
 			value: domain.FieldValue("1"),
 			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{Url: "image"}, nil)
+				m.On("GetByID", 1).Return(domain.Media{URL: "image"}, nil)
 			},
-			want: domain.Media{Url: "image"},
+			want: domain.Media{URL: "image"},
 		},
 		"Media Error": {
 			value: domain.FieldValue("1"),
 			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("not found"))
+				m.On("GetByID", 1).Return(domain.Media{}, fmt.Errorf("not found"))
 			},
 			want: "not found",
 		},
@@ -67,40 +66,40 @@ func (t *ResolverTestSuite) TestValue_MediaResolve() {
 		"Success": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "image"},
 			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{Url: "image1"}, nil)
-				m.On("GetById", 2).Return(domain.Media{Url: "image2"}, nil)
-				m.On("GetById", 3).Return(domain.Media{Url: "image3"}, nil)
+				m.On("GetByID", 1).Return(domain.Media{URL: "image1"}, nil)
+				m.On("GetByID", 2).Return(domain.Media{URL: "image2"}, nil)
+				m.On("GetByID", 3).Return(domain.Media{URL: "image3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3", Type: "image", Value: []interface{}{
-				domain.Media{Url: "image1"},
-				domain.Media{Url: "image2"},
-				domain.Media{Url: "image3"},
+				domain.Media{URL: "image1"},
+				domain.Media{URL: "image2"},
+				domain.Media{URL: "image3"},
 			}},
 		},
 		"Trailing Comma": {
 			field: domain.PostField{OriginalValue: "1,2,3,", Type: "image"},
 			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{Url: "image1"}, nil)
-				m.On("GetById", 2).Return(domain.Media{Url: "image2"}, nil)
-				m.On("GetById", 3).Return(domain.Media{Url: "image3"}, nil)
+				m.On("GetByID", 1).Return(domain.Media{URL: "image1"}, nil)
+				m.On("GetByID", 2).Return(domain.Media{URL: "image2"}, nil)
+				m.On("GetByID", 3).Return(domain.Media{URL: "image3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3,", Type: "image", Value: []interface{}{
-				domain.Media{Url: "image1"},
-				domain.Media{Url: "image2"},
-				domain.Media{Url: "image3"},
+				domain.Media{URL: "image1"},
+				domain.Media{URL: "image2"},
+				domain.Media{URL: "image3"},
 			}},
 		},
 		"Leading Comma": {
 			field: domain.PostField{OriginalValue: ",1,2,3", Type: "image"},
 			mock: func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{Url: "image1"}, nil)
-				m.On("GetById", 2).Return(domain.Media{Url: "image2"}, nil)
-				m.On("GetById", 3).Return(domain.Media{Url: "image3"}, nil)
+				m.On("GetByID", 1).Return(domain.Media{URL: "image1"}, nil)
+				m.On("GetByID", 2).Return(domain.Media{URL: "image2"}, nil)
+				m.On("GetByID", 3).Return(domain.Media{URL: "image3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: ",1,2,3", Type: "image", Value: []interface{}{
-				domain.Media{Url: "image1"},
-				domain.Media{Url: "image2"},
-				domain.Media{Url: "image3"},
+				domain.Media{URL: "image1"},
+				domain.Media{URL: "image2"},
+				domain.Media{URL: "image3"},
 			}},
 		},
 	}

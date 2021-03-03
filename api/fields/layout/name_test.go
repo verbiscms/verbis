@@ -11,7 +11,6 @@ import (
 )
 
 func TestWalkerByName(t *testing.T) {
-
 	repeater := domain.Fields{
 		{Name: "test"},
 	}

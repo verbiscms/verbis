@@ -17,8 +17,8 @@ import (
 )
 
 const (
-	// The header to be expected to be recieved from the API.
-	JsonHeader = "application/json; charset=utf-8"
+	// The header to be expected to be received from the API.
+	JSONHeader = "application/json; charset=utf-8"
 )
 
 // RespondJSON is an abstraction of the api.RespondJSON
@@ -72,7 +72,7 @@ func (t *HandlerSuite) RunT(want interface{}, status int, message string) {
 	got, data := t.decode()
 	t.Equal(message, got.Message)
 	t.Equal(status, t.Status())
-	t.Equal(JsonHeader, t.ContentType())
+	t.Equal(JSONHeader, t.ContentType())
 	t.JSONEq(t.marshalWant(want), data)
 }
 
@@ -118,16 +118,16 @@ func (t *HandlerSuite) ServeHTTP() {
 //
 // Makes a new http.Request and assigns the gin testing
 // the request, serves HTTP.
-func (t *HandlerSuite) RequestAndServe(method string, url string, engineUrl string, body interface{}, handler func(ctx *gin.Context)) {
+func (t *HandlerSuite) RequestAndServe(method string, url string, engineURL string, body interface{}, handler func(ctx *gin.Context)) {
 	switch method {
 	case http.MethodGet:
-		t.Engine.GET(engineUrl, handler)
+		t.Engine.GET(engineURL, handler)
 	case http.MethodPost:
-		t.Engine.POST(engineUrl, handler)
+		t.Engine.POST(engineURL, handler)
 	case http.MethodPut:
-		t.Engine.PUT(engineUrl, handler)
+		t.Engine.PUT(engineURL, handler)
 	case http.MethodDelete:
-		t.Engine.DELETE(engineUrl, handler)
+		t.Engine.DELETE(engineURL, handler)
 	}
 	t.NewRequest(method, url, t.marshalInput(body))
 	t.Engine.ServeHTTP(t.Recorder, t.Context.Request)

@@ -26,7 +26,6 @@ const (
 //
 //
 func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
-
 	// Split the url segments.
 	urlTrimmed := strings.TrimSuffix(url, "/")
 	urlSplit := strings.Split(urlTrimmed, "/")
@@ -34,7 +33,7 @@ func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 	homepage := r.Deps.Options.Homepage
 
 	if last == "" {
-		post, err := r.Store.Posts.GetById(homepage, false)
+		post, err := r.Store.Posts.GetByID(homepage, false)
 		if err != nil {
 			return nil, nil, err
 		}

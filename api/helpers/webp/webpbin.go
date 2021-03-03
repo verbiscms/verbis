@@ -103,7 +103,7 @@ func version(b *binwrapper.BinWrapper) (string, error) {
 	}
 
 	version := string(b.StdOut())
-	version = strings.Replace(version, "\n", "", -1)
-	version = strings.Replace(version, "\r", "", -1)
+	version = strings.ReplaceAll(version, "\n", "")
+	version = strings.ReplaceAll(version, "\r", "")
 	return version, nil
 }

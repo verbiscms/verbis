@@ -38,12 +38,12 @@ type TemplateMeta struct {
 // Returns an media item URL or an empty string if
 // the media item did not exist.
 func (tm *TemplateMeta) GetImage(id int) string {
-	img, err := tm.deps.Store.Media.GetById(id)
+	img, err := tm.deps.Store.Media.GetByID(id)
 	if err != nil {
 		return ""
 	}
 	// TODO: This should be dynamic, not dependant on Site URL.
-	return tm.deps.Site.Global().Url + img.Url
+	return tm.deps.Site.Global().URL + img.URL
 }
 
 // Header
@@ -118,7 +118,6 @@ func (ns *Namespace) executeTemplates(tm *TemplateMeta, templates []string) stri
 
 	meta := ""
 	for _, name := range templates {
-
 		path := name + EmbeddedExtension
 		file, err := embedded.Static.ReadFile(path)
 		if err != nil {

@@ -15,7 +15,6 @@ var (
 )
 
 func TestNamespace_Slice(t *testing.T) {
-
 	tt := map[string]struct {
 		input []interface{}
 		want  interface{}
@@ -47,7 +46,6 @@ func TestNamespace_Slice(t *testing.T) {
 }
 
 func TestNamespace_Append(t *testing.T) {
-
 	slice := []string{"a", "b", "c"}
 
 	tt := map[string]struct {
@@ -90,7 +88,6 @@ func TestNamespace_Append(t *testing.T) {
 }
 
 func TestNamespace_Prepend(t *testing.T) {
-
 	slice := []string{"a", "b", "c"}
 
 	tt := map[string]struct {

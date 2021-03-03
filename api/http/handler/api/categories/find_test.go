@@ -14,7 +14,6 @@ import (
 )
 
 func (t *CategoriesTestSuite) TestCategories_Find() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -27,7 +26,7 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 			200,
 			"Successfully obtained category with ID: 123",
 			func(m *mocks.CategoryRepository) {
-				m.On("GetById", 123).Return(category, nil)
+				m.On("GetByID", 123).Return(category, nil)
 			},
 			"/categories/123",
 		},
@@ -36,7 +35,7 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 			400,
 			"Pass a valid number to obtain the category by ID",
 			func(m *mocks.CategoryRepository) {
-				m.On("GetById", 123).Return(domain.Category{}, fmt.Errorf("error"))
+				m.On("GetByID", 123).Return(domain.Category{}, fmt.Errorf("error"))
 			},
 			"/categories/wrongid",
 		},
@@ -45,7 +44,7 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 			200,
 			"no categories found",
 			func(m *mocks.CategoryRepository) {
-				m.On("GetById", 123).Return(domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
+				m.On("GetByID", 123).Return(domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
 			},
 			"/categories/123",
 		},
@@ -54,7 +53,7 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 			500,
 			"internal",
 			func(m *mocks.CategoryRepository) {
-				m.On("GetById", 123).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("GetByID", 123).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/categories/123",
 		},

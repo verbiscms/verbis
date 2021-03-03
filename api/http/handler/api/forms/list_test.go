@@ -12,7 +12,6 @@ import (
 )
 
 func (t *FormsTestSuite) TestForms_List() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

@@ -31,7 +31,7 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 		return nil
 	}
 
-	post, err := ns.deps.Store.Posts.GetById(i, false)
+	post, err := ns.deps.Store.Posts.GetByID(i, false)
 	if err != nil {
 		return nil
 	}

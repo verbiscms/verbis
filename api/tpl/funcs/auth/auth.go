@@ -4,6 +4,8 @@
 
 package auth
 
+import "github.com/ainsleyclark/verbis/api/domain"
+
 // Auth
 //
 // If the user is authenticated (logged in).
@@ -37,7 +39,7 @@ func (ns *Namespace) Admin() bool {
 		return false
 	}
 
-	if user.Role.Id < 5 {
+	if user.Role.Id < domain.AdminRoleID {
 		return false
 	}
 

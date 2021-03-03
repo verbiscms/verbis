@@ -121,7 +121,7 @@ func (c *CWebP) Run() error {
 		if c.quality == 100 {
 			c.Arg("-lossless")
 			c.Arg("-exact")
-			//c.Arg("-q", fmt.Sprintf("%d", c.quality))
+			// c.Arg("-q", fmt.Sprintf("%d", c.quality))
 		} else {
 			c.Arg("-q", fmt.Sprintf("%d", c.quality))
 		}
@@ -166,7 +166,7 @@ func (c *CWebP) Reset() *CWebP {
 }
 
 func (c *CWebP) setInput() error {
-	if c.input != nil {
+	if c.input != nil { //nolint
 		c.Arg("--").Arg("-")
 		c.StdIn(c.input)
 	} else if c.inputImage != nil {
@@ -181,18 +181,18 @@ func (c *CWebP) setInput() error {
 	} else if c.inputFile != "" {
 		c.Arg(c.inputFile)
 	} else {
-		return errors.New("Undefined input")
+		return errors.New("undefined input")
 	}
 
 	return nil
 }
 
 func (c *CWebP) getOutput() (string, error) {
-	if c.output != nil {
+	if c.output != nil { //nolint
 		return "-", nil
 	} else if c.outputFile != "" {
 		return c.outputFile, nil
 	} else {
-		return "", errors.New("Undefined output")
+		return "", errors.New("undefined output")
 	}
 }

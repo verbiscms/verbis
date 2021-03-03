@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-type WpXml struct {
+type WpXML struct {
 	Channel        Channel `xml:"channel"`
 	CreatorCounts  map[string]int
 	CreatorToIndex map[string]int
@@ -92,14 +92,14 @@ type Meta struct {
 	MetaValue string `xml:"meta_value"`
 }
 
-func NewWordpressXml() WpXml {
-	return WpXml{
+func NewWordpressXML() WpXML {
+	return WpXML{
 		CreatorCounts:  map[string]int{},
 		CreatorToIndex: map[string]int{}}
 }
 
 // ReadXml reads a WordPress XML file from the provided path.
-func (wpxml *WpXml) ReadFile(filepath string) error {
+func (wpxml *WpXML) ReadFile(filepath string) error {
 	bytes, err := ioutil.ReadFile(filepath)
 	if err != nil {
 		return err
@@ -115,11 +115,12 @@ func (wpxml *WpXml) ReadFile(filepath string) error {
 	return nil
 }
 
-func (wpxml *WpXml) inflate() error {
+func (wpxml *WpXML) inflate() error {
 	creatorMap := map[string]int{}
 	for i, item := range wpxml.Channel.Items {
 		if len(item.Creator) > 0 {
-			if _, ok := creatorMap[item.Creator]; ok {
+			_, ok := creatorMap[item.Creator]
+			if ok {
 				creatorMap[item.Creator]++
 			} else {
 				creatorMap[item.Creator] = 1
@@ -137,7 +138,7 @@ func (wpxml *WpXml) inflate() error {
 	return nil
 }
 
-func (wpxml *WpXml) inflateItem(item Item) Item {
+func (wpxml *WpXML) inflateItem(item Item) Item {
 	if len(item.Encoded) > 0 && len(item.Encoded[0]) > 0 {
 		item.Content = item.Encoded[0]
 		item.Encoded[0] = ""
@@ -157,7 +158,7 @@ func (wpxml *WpXml) inflateItem(item Item) Item {
 	return item
 }
 
-func (wpxml *WpXml) inflateAuthors() error {
+func (wpxml *WpXML) inflateAuthors() error {
 	a2i := wpxml.AuthorsToIndex()
 	for i, item := range wpxml.Channel.Items {
 		if len(item.Creator) > 0 {
@@ -176,7 +177,7 @@ func (wpxml *WpXml) inflateAuthors() error {
 	return nil
 }
 
-func (wpxml *WpXml) AuthorsToIndex() map[string]int {
+func (wpxml *WpXML) AuthorsToIndex() map[string]int {
 	a2i := map[string]int{}
 	for i, author := range wpxml.Channel.Authors {
 		a2i[author.AuthorLogin] = i
@@ -186,7 +187,7 @@ func (wpxml *WpXml) AuthorsToIndex() map[string]int {
 
 // AuthorForLogin returns the Author object for a given AuthorLogin
 // or username.
-func (wpxml *WpXml) AuthorForLogin(authorLogin string) (Author, error) {
+func (wpxml *WpXML) AuthorForLogin(authorLogin string) (Author, error) {
 	a2i := wpxml.CreatorToIndex
 	if index, ok := a2i[authorLogin]; ok {
 		author := wpxml.Channel.Authors[index]

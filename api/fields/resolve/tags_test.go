@@ -37,13 +37,7 @@ func (t *ResolverTestSuite) TestValue_Tags() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			v := t.GetValue()
-
-			got, err := v.tags(test.value)
-			if err != nil {
-				t.Contains(err.Error(), test.want)
-				return
-			}
-
+			got := v.tags(test.value)
 			t.Equal(test.want, got)
 		})
 	}

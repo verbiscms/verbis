@@ -15,7 +15,6 @@ var (
 )
 
 func TestNamespace_Replace(t *testing.T) {
-
 	tt := map[string]struct {
 		old  string
 		new  string
@@ -45,7 +44,6 @@ func TestNamespace_Replace(t *testing.T) {
 }
 
 func TestNamespace_Substr(t *testing.T) {
-
 	tt := map[string]struct {
 		str   string
 		start interface{}
@@ -93,7 +91,6 @@ func TestNamespace_Substr(t *testing.T) {
 }
 
 func TestNamespace_Trunc(t *testing.T) {
-
 	tt := map[string]struct {
 		str   string
 		trunc interface{}
@@ -130,7 +127,6 @@ func TestNamespace_Trunc(t *testing.T) {
 }
 
 func TestNamespace_Ellipsis(t *testing.T) {
-
 	tt := map[string]struct {
 		str  string
 		len  interface{}

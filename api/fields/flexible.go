@@ -76,7 +76,6 @@ func (s *Service) resolveFlexible(key string, field domain.PostField, fields dom
 
 	var flexible = make(Flexible, len(layouts))
 	for index := 0; index < len(flexible); index++ {
-
 		r := walker{
 			Key:     key,
 			Index:   index,

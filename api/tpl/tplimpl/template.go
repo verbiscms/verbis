@@ -95,7 +95,7 @@ func (t *TemplateManager) Data(ctx *gin.Context, post *domain.PostDatum) interfa
 //
 // Satisfies the tpl.TemplateFuncGetter interface by returning
 // functions that relies on context and post data such as
-// `Meta` and `Url`. Generic functions are also included.
+// `Meta` and `URL`. Generic functions are also included.
 func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostDatum, cfg tpl.TemplateConfig) template.FuncMap {
 	td := &internal.TemplateDeps{
 		Context: ctx,

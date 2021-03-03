@@ -10,7 +10,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-//func (t *LoggerTestSuite) TestInit() {
+// func (t *LoggerTestSuite) TestInit() {
 //
 //	tt := map[string]struct {
 //		entry *logrus.Entry
@@ -39,7 +39,7 @@ import (
 //
 //	for name, test := range tt {
 //		t.Run(name, func() {
-//			// TODO Enviorment in STRUCT!
+//			// TODO Environment in STRUCT!
 //
 //			test.fn()
 //			Init()
@@ -115,6 +115,7 @@ func (t *LoggerTestSuite) TestLogger() {
 	}
 }
 
+//nolint
 func (t *LoggerTestSuite) TestLogger_Fatal() {
 	//buf := t.Setup()
 	//

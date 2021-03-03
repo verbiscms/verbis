@@ -9,7 +9,6 @@ import (
 )
 
 func (t *MiddlewareTestSuite) TestCORS() {
-
 	tt := map[string]struct {
 		origin string
 		want   string

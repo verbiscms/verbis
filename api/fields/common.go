@@ -43,7 +43,6 @@ func (s *Service) handleArgs(args []interface{}) domain.PostFields {
 	}
 
 	return s.getFieldsByPost(id)
-
 }
 
 // getFieldsByPost
@@ -94,16 +93,13 @@ type walker struct {
 // all values will be resolved.
 // The appender func outputs the field to the caller once resolved.
 func (r *walker) Walk(appender func(domain.PostField)) {
-
 	pipe := r.Key + r.Field.Name + SEPARATOR + cast.ToString(r.Index)
 
 	for _, v := range r.Fields {
-
 		pipeLen := strings.Split(pipe, SEPARATOR)
 		keyLen := strings.Split(v.Key, SEPARATOR)
 
 		if strings.HasPrefix(v.Key, pipe) && len(pipeLen)+1 == len(keyLen) {
-
 			fieldType := v.Type
 			if fieldType == "repeater" {
 				v.Value = r.resolveRepeater(pipe+SEPARATOR, v, r.Fields)

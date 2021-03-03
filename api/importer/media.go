@@ -31,7 +31,7 @@ func DownloadFile(url string) (*multipart.FileHeader, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.StatusCode != http.StatusOK {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("File with the path %s not found", path.Base(url)), Operation: op, Err: fmt.Errorf("status code of %v with the url of: %s", resp.StatusCode, url)}
 	}
 
@@ -54,7 +54,7 @@ func DownloadFile(url string) (*multipart.FileHeader, error) {
 	}
 
 	mr := multipart.NewReader(body, writer.Boundary())
-	mt, err := mr.ReadForm(99999)
+	mt, err := mr.ReadForm(99999) //nolint
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not read new file", Operation: op, Err: err}
 	}

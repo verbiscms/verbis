@@ -43,7 +43,6 @@ type Store struct {
 
 // Create a new database instance, connect to database.
 func New(cfg *StoreConfig) *Store {
-
 	cfg.Options = newOptions(cfg)
 	if cfg.Running {
 		ps := string(os.PathSeparator)
@@ -67,6 +66,7 @@ func New(cfg *StoreConfig) *Store {
 // filterRows takes in the filters from the params set in http.Params
 // If there is no filters set, an empty string will be returned.
 // Returns errors.INVALID if the operator or column name was not found.
+// nolint
 func filterRows(db *sqlx.DB, filters map[string][]params.Filter, table string) (string, error) {
 	const op = "Model.filterRows"
 

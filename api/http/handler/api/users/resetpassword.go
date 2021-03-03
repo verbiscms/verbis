@@ -26,7 +26,7 @@ func (u *Users) ResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	user, err := u.Store.User.GetById(id)
+	user, err := u.Store.User.GetByID(id)
 	if err != nil {
 		api.Respond(ctx, 400, "No user has been found with the ID: "+strconv.Itoa(id), err)
 		return

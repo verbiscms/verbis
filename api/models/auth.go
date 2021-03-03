@@ -146,12 +146,12 @@ func (s *AuthStore) SendResetPassword(email string) error {
 	}
 
 	// TODO: Clean up here
-	siteUrl := s.optionsRepo.SiteUrl + "/admin"
+	siteURL := s.optionsRepo.SiteURL + "/admin"
 	if api.SuperAdmin {
-		siteUrl = "http://127.0.0.1:8090/admin"
+		siteURL = "http://127.0.0.1:8090/admin"
 	}
 
-	err = rp.Send(&u, siteUrl, token, s.optionsRepo.SiteTitle)
+	err = rp.Send(&u, siteURL, token, s.optionsRepo.SiteTitle)
 	if err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func (s *AuthStore) VerifyEmail(md5String string) error {
 	const op = "AuthRepository.VerifyEmail"
 
 	var userVerified = struct {
-		Id   int    `db:"id"`
+		Id   int    `db:"id"` //nolint
 		Hash string `db:"hash"`
 	}{}
 
