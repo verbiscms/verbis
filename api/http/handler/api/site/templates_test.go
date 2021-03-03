@@ -24,7 +24,7 @@ func (t *SiteTestSuite) TestSite_Templates() {
 			http.StatusOK,
 			"Successfully obtained templates",
 			func(m *mocks.Repository) {
-				m.On("Templates", t.ThemePath).Return(templates, nil)
+				m.On("Templates").Return(templates, nil)
 			},
 		},
 		"Not Found": {
@@ -32,7 +32,7 @@ func (t *SiteTestSuite) TestSite_Templates() {
 			http.StatusOK,
 			"not found",
 			func(m *mocks.Repository) {
-				m.On("Templates", t.ThemePath).Return(domain.Templates{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Templates").Return(domain.Templates{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
@@ -40,7 +40,7 @@ func (t *SiteTestSuite) TestSite_Templates() {
 			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.Repository) {
-				m.On("Templates", t.ThemePath).Return(domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Templates").Return(domain.Templates{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

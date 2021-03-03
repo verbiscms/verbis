@@ -18,7 +18,7 @@ type (
 	Media struct {
 		Id          int        `db:"id" json:"id"` //nolint
 		UUID        uuid.UUID  `db:"uuid" json:"uuid"`
-		Url         string     `db:"url" json:"url"`  //nolint
+		Url         string     `db:"url" json:"url"` //nolint
 		Title       string     `db:"title" json:"title"`
 		Alt         string     `db:"alt" json:"alt"`
 		Description string     `db:"description" json:"description"`

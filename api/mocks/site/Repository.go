@@ -26,13 +26,13 @@ func (_m *Repository) Global() domain.Site {
 	return r0
 }
 
-// Layouts provides a mock function with given fields: path
-func (_m *Repository) Layouts(path string) (domain.Layouts, error) {
-	ret := _m.Called(path)
+// Layouts provides a mock function with given fields:
+func (_m *Repository) Layouts() (domain.Layouts, error) {
+	ret := _m.Called()
 
 	var r0 domain.Layouts
-	if rf, ok := ret.Get(0).(func(string) domain.Layouts); ok {
-		r0 = rf(path)
+	if rf, ok := ret.Get(0).(func() domain.Layouts); ok {
+		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Layouts)
@@ -40,8 +40,8 @@ func (_m *Repository) Layouts(path string) (domain.Layouts, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(path)
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -49,13 +49,13 @@ func (_m *Repository) Layouts(path string) (domain.Layouts, error) {
 	return r0, r1
 }
 
-// Screenshot provides a mock function with given fields: path, theme, file
-func (_m *Repository) Screenshot(path string, theme string, file string) ([]byte, string, error) {
-	ret := _m.Called(path, theme, file)
+// Screenshot provides a mock function with given fields: theme, file
+func (_m *Repository) Screenshot(theme string, file string) ([]byte, string, error) {
+	ret := _m.Called(theme, file)
 
 	var r0 []byte
-	if rf, ok := ret.Get(0).(func(string, string, string) []byte); ok {
-		r0 = rf(path, theme, file)
+	if rf, ok := ret.Get(0).(func(string, string) []byte); ok {
+		r0 = rf(theme, file)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]byte)
@@ -63,15 +63,15 @@ func (_m *Repository) Screenshot(path string, theme string, file string) ([]byte
 	}
 
 	var r1 string
-	if rf, ok := ret.Get(1).(func(string, string, string) string); ok {
-		r1 = rf(path, theme, file)
+	if rf, ok := ret.Get(1).(func(string, string) string); ok {
+		r1 = rf(theme, file)
 	} else {
 		r1 = ret.Get(1).(string)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(string, string, string) error); ok {
-		r2 = rf(path, theme, file)
+	if rf, ok := ret.Get(2).(func(string, string) error); ok {
+		r2 = rf(theme, file)
 	} else {
 		r2 = ret.Error(2)
 	}
@@ -79,13 +79,13 @@ func (_m *Repository) Screenshot(path string, theme string, file string) ([]byte
 	return r0, r1, r2
 }
 
-// Templates provides a mock function with given fields: path
-func (_m *Repository) Templates(path string) (domain.Templates, error) {
-	ret := _m.Called(path)
+// Templates provides a mock function with given fields:
+func (_m *Repository) Templates() (domain.Templates, error) {
+	ret := _m.Called()
 
 	var r0 domain.Templates
-	if rf, ok := ret.Get(0).(func(string) domain.Templates); ok {
-		r0 = rf(path)
+	if rf, ok := ret.Get(0).(func() domain.Templates); ok {
+		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Templates)
@@ -93,8 +93,8 @@ func (_m *Repository) Templates(path string) (domain.Templates, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(path)
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -102,13 +102,13 @@ func (_m *Repository) Templates(path string) (domain.Templates, error) {
 	return r0, r1
 }
 
-// Themes provides a mock function with given fields: path
-func (_m *Repository) Themes(path string) (domain.Themes, error) {
-	ret := _m.Called(path)
+// Themes provides a mock function with given fields:
+func (_m *Repository) Themes() (domain.Themes, error) {
+	ret := _m.Called()
 
 	var r0 domain.Themes
-	if rf, ok := ret.Get(0).(func(string) domain.Themes); ok {
-		r0 = rf(path)
+	if rf, ok := ret.Get(0).(func() domain.Themes); ok {
+		r0 = rf()
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Themes)
@@ -116,8 +116,8 @@ func (_m *Repository) Themes(path string) (domain.Themes, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(path)
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
 	} else {
 		r1 = ret.Error(1)
 	}
