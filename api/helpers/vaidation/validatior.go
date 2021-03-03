@@ -40,6 +40,7 @@ type Error struct {
 
 // New - Construct & set tag name
 func New() *Validation {
+	const op = "Validation.New"
 	v := &Validation{
 		Package: pkgValidate.New(),
 	}
@@ -47,7 +48,12 @@ func New() *Validation {
 	v.Package.SetTagName("binding")
 
 	if v, ok := binding.Validator.Engine().(*pkgValidate.Validate); ok {
-		v.RegisterValidation("password", comparePassword)
+		err := v.RegisterValidation("password", comparePassword)
+		if err != nil {
+			fmt.Println(err)
+			// Using logger has an import cycle.
+			//logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error registering password validation", Operation: op, Err: err})
+		}
 	}
 
 	return v
@@ -156,11 +162,6 @@ func (v *Validation) message(kind string, field string, param string) string {
 func comparePassword(fl pkgValidate.FieldLevel) bool {
 	curPass := fl.Field().String()
 	reset := fl.Parent().Interface().(*domain.UserPasswordReset)
-
 	err := bcrypt.CompareHashAndPassword([]byte(reset.DBPassword), []byte(curPass))
-	if err != nil {
-		return false
-	}
-
-	return true
+	return err == nil
 }

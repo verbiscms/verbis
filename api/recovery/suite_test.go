@@ -77,7 +77,6 @@ func (t *RecoverTestSuite) RequestSetup(body io.Reader, cookie *http.Cookie, fn 
 
 	engine.GET("/test", func(g *gin.Context) {
 		fn(g)
-		return
 	})
 
 	request, err := http.NewRequest("GET", "/test?page=test", body)

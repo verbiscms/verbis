@@ -33,8 +33,6 @@ database to file`,
 			}
 
 			printSuccess(fmt.Sprintf("Successfully exported database to filename: %s", fileName))
-
-			return
 		},
 	}
 )

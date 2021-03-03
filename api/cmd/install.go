@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database/seeds"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/kyokomi/emoji"
@@ -21,11 +20,10 @@ import (
 
 // Add child commands
 func init() {
-	v = validation.New()
+	//v = validation.New()
 }
 
 var (
-	v          validation.Validator
 	installCmd = &cobra.Command{
 		Use:   "install",
 		Short: "Install will run the doctor command and then run database schema and insert any data dependant on Verbis.",
@@ -39,7 +37,7 @@ database.`,
 
 // Add child commands/init
 func init() {
-	v = validation.New()
+
 }
 
 func Install(cmd *cobra.Command, args []string) {
@@ -105,14 +103,12 @@ func Install(cmd *cobra.Command, args []string) {
 	// Get webp executables
 	bin := webp.CreateBinWrapper()
 	bin.ExecPath("cwebp")
-	if err := bin.Run(); err != nil {
-		// TODO: Log here, dont print error. doesnt work on GCP
-	}
+	//if err := bin.Run(); err != nil {
+	// TODO: Log here, dont print error. doesnt work on GCP
+	//}
 
 	// Print success
 	printSuccess("Successfully installed verbis")
-
-	return
 }
 
 // setUrl

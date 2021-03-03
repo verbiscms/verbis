@@ -6,7 +6,6 @@ package minify
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	min "github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
@@ -67,7 +66,7 @@ func (m *minify) Minify(name string, mime string) ([]byte, error) {
 
 	b, err := ioutil.ReadFile(name)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read file contents"), Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to read file contents", Operation: op, Err: err}
 	}
 
 	return m.compare(bytes.NewBuffer(b), mime)
@@ -129,7 +128,7 @@ func (m *minify) execute(buf *bytes.Buffer, allow bool, mime string) ([]byte, er
 	if allow {
 		render, err := m.pkg.Bytes(mime, buf.Bytes())
 		if err != nil {
-			return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not minify the file"), Operation: op, Err: err}
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not minify the file", Operation: op, Err: err}
 		}
 		return render, nil
 	}

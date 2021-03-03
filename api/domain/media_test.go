@@ -75,6 +75,7 @@ func TestMediaSizes_Value(t *testing.T) {
 
 			if test.input == nil {
 				assert.Nil(t, value)
+				assert.NotNil(t, err)
 				return
 			}
 

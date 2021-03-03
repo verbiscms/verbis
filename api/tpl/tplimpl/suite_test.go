@@ -58,7 +58,6 @@ func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostDatu
 
 	engine.GET("/page", func(g *gin.Context) {
 		ctx = g
-		return
 	})
 
 	req, err := http.NewRequest("GET", "http://verbiscms.com/page?page=2&foo=bar", nil)

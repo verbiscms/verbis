@@ -78,14 +78,6 @@ var (
 			Name: "testing",
 		},
 	}
-	// The default theme used for testing.
-	theme = domain.ThemeConfig{
-		Theme: domain.Theme{
-			Title:       "Verbis",
-			Description: "VerbisCMS",
-			Version:     "0.1",
-		},
-	}
 	// The default themes used for testing.
 	themes = domain.Themes{
 		{

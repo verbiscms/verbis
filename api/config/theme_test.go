@@ -95,7 +95,8 @@ func (t *ConfigTestSuite) TestFetch() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			got := getThemeConfig(t.apiPath+test.path, test.filename)
+			got, _ := getThemeConfig(t.apiPath+test.path, test.filename)
+
 			t.NotNil(cfg)
 			t.Equal(test.want, *got)
 		})

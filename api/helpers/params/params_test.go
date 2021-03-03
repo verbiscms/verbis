@@ -18,7 +18,7 @@ type mockStringer struct {
 func Setup(t *testing.T, def Defaults) *mockStringer {
 	data, err := json.Marshal(def) // Convert to a json string
 	assert.NoError(t, err)
-	var m = make(map[string]interface{}, 0)
+	var m = make(map[string]interface{})
 	err = json.Unmarshal(data, &m) // Convert to a map
 
 	ms := mockStringer{def: m}

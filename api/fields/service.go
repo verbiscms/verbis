@@ -34,8 +34,6 @@ type Service struct {
 	// Used for obtaining categories, media items, posts and
 	// users from the database when resolving fields.
 	deps *deps.Deps
-	// The original post to sort and filter the fields
-	post domain.PostDatum
 	// The original post ID.
 	postId int
 	// The slice of domain.PostField to create repeaters,

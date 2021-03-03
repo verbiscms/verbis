@@ -6,10 +6,40 @@ package sockets
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gorilla/websocket"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 )
+
+func TestAdminSocket(t *testing.T) {
+	s := httptest.NewServer(http.Handler(Admin(&deps.Deps{})))
+	defer s.Close()
+
+	u := "ws" + strings.TrimPrefix(s.URL, "http")
+
+	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
+	defer ws.Close()
+	if err != nil {
+		t.Error("error dialing websocket", err)
+	}
+
+	err = ws.WriteMessage(websocket.TextMessage, []byte("test"))
+	if err != nil {
+		t.Error(err)
+	}
+
+	_, p, err := ws.ReadMessage()
+	if err != nil {
+		t.Fatalf("%v", err)
+	}
+
+	// Hanging here
+	fmt.Println(p)
+}
 
 func (t *SocketsTestSuite) Test_AdminSocket() {
 
