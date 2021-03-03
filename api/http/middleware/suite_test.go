@@ -31,5 +31,4 @@ func TestMiddleware(t *testing.T) {
 // Is a helper func for returning data for testing.
 func (t *MiddlewareTestSuite) DefaultHandler(g *gin.Context) {
 	g.String(200, "verbis")
-	return
 }

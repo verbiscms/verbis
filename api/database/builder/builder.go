@@ -104,7 +104,6 @@ func (s *Sqlbuilder) WhereIn(column string, params interface{}) *Sqlbuilder {
 	switch foo := params.(type) {
 	case []int, []float32:
 		output += "(" + strings.Trim(strings.Join(strings.Fields(fmt.Sprint(foo)), ", "), "[]") + ")"
-		break
 	case []string:
 		output += "("
 		for _, v := range foo {
@@ -112,10 +111,8 @@ func (s *Sqlbuilder) WhereIn(column string, params interface{}) *Sqlbuilder {
 		}
 		output = strings.TrimSuffix(output, ", ")
 		output += ")"
-		break
 	case string:
 		output = "(" + sanitiseString(foo) + ")"
-		break
 	default:
 		output = ""
 	}
@@ -344,10 +341,8 @@ func (s *Sqlbuilder) formatSchema(schema string) string {
 	switch strings.ToLower(s.Dialect) {
 	case "postgres":
 		dialectFormat = `"`
-		break
 	case "mysql":
 		dialectFormat = "`"
-		break
 	default:
 		dialectFormat = `"`
 	}
@@ -461,7 +456,7 @@ func compareFields(value reflect.Value) string {
 		v = fmt.Sprintf("%v", value)
 	case reflect.Ptr:
 		if value.IsNil() {
-			v = fmt.Sprintf("NULL")
+			v = "NULL"
 		} else {
 			v = compareFields(reflect.ValueOf(value.Elem().Interface()))
 		}

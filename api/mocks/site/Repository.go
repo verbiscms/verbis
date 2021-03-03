@@ -26,13 +26,13 @@ func (_m *Repository) Global() domain.Site {
 	return r0
 }
 
-// Layouts provides a mock function with given fields: themePath
-func (_m *Repository) Layouts(themePath string) (domain.Layouts, error) {
-	ret := _m.Called(themePath)
+// Layouts provides a mock function with given fields: path
+func (_m *Repository) Layouts(path string) (domain.Layouts, error) {
+	ret := _m.Called(path)
 
 	var r0 domain.Layouts
 	if rf, ok := ret.Get(0).(func(string) domain.Layouts); ok {
-		r0 = rf(themePath)
+		r0 = rf(path)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Layouts)
@@ -41,7 +41,7 @@ func (_m *Repository) Layouts(themePath string) (domain.Layouts, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(themePath)
+		r1 = rf(path)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -49,13 +49,43 @@ func (_m *Repository) Layouts(themePath string) (domain.Layouts, error) {
 	return r0, r1
 }
 
-// Templates provides a mock function with given fields: themePath
-func (_m *Repository) Templates(themePath string) (domain.Templates, error) {
-	ret := _m.Called(themePath)
+// Screenshot provides a mock function with given fields: path, theme, file
+func (_m *Repository) Screenshot(path string, theme string, file string) ([]byte, string, error) {
+	ret := _m.Called(path, theme, file)
+
+	var r0 []byte
+	if rf, ok := ret.Get(0).(func(string, string, string) []byte); ok {
+		r0 = rf(path, theme, file)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]byte)
+		}
+	}
+
+	var r1 string
+	if rf, ok := ret.Get(1).(func(string, string, string) string); ok {
+		r1 = rf(path, theme, file)
+	} else {
+		r1 = ret.Get(1).(string)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(string, string, string) error); ok {
+		r2 = rf(path, theme, file)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
+// Templates provides a mock function with given fields: path
+func (_m *Repository) Templates(path string) (domain.Templates, error) {
+	ret := _m.Called(path)
 
 	var r0 domain.Templates
 	if rf, ok := ret.Get(0).(func(string) domain.Templates); ok {
-		r0 = rf(themePath)
+		r0 = rf(path)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Templates)
@@ -64,7 +94,7 @@ func (_m *Repository) Templates(themePath string) (domain.Templates, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(themePath)
+		r1 = rf(path)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -72,13 +102,13 @@ func (_m *Repository) Templates(themePath string) (domain.Templates, error) {
 	return r0, r1
 }
 
-// Themes provides a mock function with given fields: themePath
-func (_m *Repository) Themes(themePath string) (domain.Themes, error) {
-	ret := _m.Called(themePath)
+// Themes provides a mock function with given fields: path
+func (_m *Repository) Themes(path string) (domain.Themes, error) {
+	ret := _m.Called(path)
 
 	var r0 domain.Themes
 	if rf, ok := ret.Get(0).(func(string) domain.Themes); ok {
-		r0 = rf(themePath)
+		r0 = rf(path)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Themes)
@@ -87,7 +117,7 @@ func (_m *Repository) Themes(themePath string) (domain.Themes, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(themePath)
+		r1 = rf(path)
 	} else {
 		r1 = ret.Error(1)
 	}

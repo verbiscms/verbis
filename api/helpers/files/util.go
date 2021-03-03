@@ -37,10 +37,7 @@ func Exists(filename string) bool {
 // DirectoryExists checks if directory exists using os.Stat
 func DirectoryExists(filename string) bool {
 	_, err := os.Stat(filename)
-	if os.IsNotExist(err) {
-		return false
-	}
-	return true
+	return !os.IsNotExist(err)
 }
 
 // Check the file exists and delete

@@ -63,8 +63,6 @@ continue to drop the database. Use with caution!`,
 
 			// Print success
 			printSuccess("Successfully uninstalled verbis")
-
-			return
 		},
 	}
 )

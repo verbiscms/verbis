@@ -84,7 +84,7 @@ func (s *MediaStore) Get(meta params.Params) (domain.MediaItems, int, error) {
     CASE WHEN description IS NULL THEN '' ELSE description END AS 'description'
 	FROM media`
 
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM media")
+	countQ := "SELECT COUNT(*) FROM media"
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.DB, meta.Filters, "media")
@@ -488,7 +488,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)
 
 		if err := imaging.Save(resized, filePath, imaging.PNGCompressionLevel(png.CompressionLevel(s.options.MediaCompression))); err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not save the resized image"), Operation: op, Err: err}
+			return &errors.Error{Code: errors.INTERNAL, Message: "Could not save the resized image", Operation: op, Err: err}
 		}
 
 		if s.options.MediaConvertWebP {
@@ -509,7 +509,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)
 
 		if err := imaging.Save(resized, filePath, imaging.JPEGQuality(s.options.MediaCompression)); err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not save the resized image"), Operation: op, Err: err}
+			return &errors.Error{Code: errors.INTERNAL, Message: "Could not save the resized image", Operation: op, Err: err}
 		}
 
 		if s.options.MediaConvertWebP {

@@ -61,8 +61,6 @@ func Respond(ctx *gin.Context, status int, message string, data interface{}, pag
 		Meta:    GetMeta(ctx, pagination),
 		Data:    checkResponseData(ctx, data),
 	})
-
-	return
 }
 
 // AbortJSON

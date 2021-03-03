@@ -5,7 +5,6 @@
 package layout
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
@@ -31,12 +30,12 @@ func TestByUUID(t *testing.T) {
 		"Not Found": {
 			uuid:   uuid.New(),
 			groups: domain.FieldGroups{{Fields: fields}},
-			want:   fmt.Sprintf("unable to find field with UUID of"),
+			want:   "unable to find field with UUID of",
 		},
 		"No Layouts": {
 			uuid:   uuid.New(),
 			groups: nil,
-			want:   fmt.Sprintf("no groups exist, unable to range over groups and find fields"),
+			want:   "no groups exist, unable to range over groups and find fields",
 		},
 	}
 
@@ -70,12 +69,12 @@ func TestByName(t *testing.T) {
 		"Not Found": {
 			name:   "wrong",
 			groups: domain.FieldGroups{{Fields: fields}},
-			want:   fmt.Sprintf("unable to find field with name of"),
+			want:   "unable to find field with name of",
 		},
 		"No Layouts": {
 			name:   "test",
 			groups: nil,
-			want:   fmt.Sprintf("no groups exist, unable to range over groups and find fields"),
+			want:   "no groups exist, unable to range over groups and find fields",
 		},
 	}
 

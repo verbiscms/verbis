@@ -127,7 +127,7 @@ func (a *adminSocket) Writer(ws *websocket.Conn) {
 	//go func() {
 	for {
 		select {
-		case _ = <-a.Watcher.Event:
+		case <-a.Watcher.Event:
 			logger.Info("Updating theme configuration file, sending socket")
 
 			// Marshal the configuration file.

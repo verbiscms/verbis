@@ -48,8 +48,8 @@ func (s *FormsStore) Get(meta params.Params) (domain.Forms, int, error) {
 	const op = "FormsRepository.Get"
 
 	var f []domain.Form
-	q := fmt.Sprintf("SELECT * FROM forms")
-	countQ := fmt.Sprintf("SELECT COUNT(*) FROM forms")
+	q := "SELECT * FROM forms"
+	countQ := "SELECT COUNT(*) FROM forms"
 
 	// Apply filters to total and original query
 	filter, err := filterRows(s.DB, meta.Filters, "forms")
@@ -280,7 +280,7 @@ func (s *FormsStore) storeSubmission(form *domain.Form, values forms.FormValues,
 
 	f, err := values.JSON()
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not process the form fields for storing"), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Could not process the form fields for storing", Operation: op, Err: err}
 	}
 
 	_, err = s.DB.Exec("INSERT INTO form_submissions (uuid, form_id, fields, ip_address, user_agent, sent_at) VALUES (?, ?, ?, ?, ?, NOW())", uuid.New().String(), form.Id, f, ip, agent)

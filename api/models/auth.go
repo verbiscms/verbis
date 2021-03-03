@@ -57,7 +57,7 @@ func (s *AuthStore) Authenticate(email string, password string) (domain.User, er
 
 	_, err = s.DB.Exec("UPDATE users SET token_last_used = NOW() WHERE token = ?", u.Token)
 	if err != nil {
-		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the user token last used."), Operation: op, Err: err}
+		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "Could not update the user token last used.", Operation: op, Err: err}
 	}
 
 	return u, nil

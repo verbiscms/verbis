@@ -350,15 +350,15 @@ func (c *Convert) populateAuthors() domain.UsersParts {
 
 			color.Green.Println(fmt.Sprintf("User: %s Password: %s", user.Email, password))
 
-			if c.sendEmail {
-				// User can't login!
-				// FIX HERE
-				//err = importer.SendNewPassword(user.HideCredentials(), password, c.store.Site.GetGlobalConfig())
-				//if err != nil {
-				//	color.Red.Println(err)
-				//	continue
-				//}
-			}
+			//if c.sendEmail {
+			// User can't login!
+			// FIX HERE
+			//err = importer.SendNewPassword(user.HideCredentials(), password, c.store.Site.GetGlobalConfig())
+			//if err != nil {
+			//	color.Red.Println(err)
+			//	continue
+			//}
+			//}
 
 			users = append(users, user.HideCredentials())
 			continue

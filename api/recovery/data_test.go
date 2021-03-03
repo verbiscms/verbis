@@ -4,12 +4,8 @@
 
 package recovery
 
-import (
-	"net/http"
-)
-
 var (
-	cookie = http.Cookie{Name: "test"}
+//cookie = http.Cookie{Name: "test"}
 )
 
 //

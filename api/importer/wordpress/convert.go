@@ -108,7 +108,10 @@ func (wpxml *WpXml) ReadFile(filepath string) error {
 	if err != nil {
 		return err
 	}
-	wpxml.inflate()
+	err = wpxml.inflate()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -127,7 +130,10 @@ func (wpxml *WpXml) inflate() error {
 		wpxml.Channel.Items[i] = item
 	}
 	wpxml.CreatorCounts = creatorMap
-	wpxml.inflateAuthors()
+	err := wpxml.inflateAuthors()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
