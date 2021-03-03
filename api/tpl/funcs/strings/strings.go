@@ -15,7 +15,7 @@ import (
 //
 // Example: {{ replace " " "-" "hello verbis cms" }}
 // Returns: `hello-verbis-cms`
-func (ns *Namespace) Replace(old, new, src string) string {
+func (ns *Namespace) Replace(old, new, src string) string { //nolint
 	return strings.ReplaceAll(src, old, new)
 }
 
@@ -66,8 +66,8 @@ const (
 //
 // Example: {{ ellipsis "hello verbis cms!" 11 }
 // Returns: `hello verbis...`}
-func (ns *Namespace) Ellipsis(str string, len interface{}) string {
-	i := cast.ToInt(len)
+func (ns *Namespace) Ellipsis(str string, length interface{}) string {
+	i := cast.ToInt(length)
 	marker := "..."
 	if i < EllipsisCount {
 		return str

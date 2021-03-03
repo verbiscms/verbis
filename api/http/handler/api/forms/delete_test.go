@@ -21,7 +21,7 @@ func (t *FormsTestSuite) TestForms_Delete() {
 	}{
 		"Success": {
 			nil,
-			200,
+			http.StatusOK,
 			"Successfully deleted form with ID: 123",
 			func(m *mocks.FormRepository) {
 				m.On("Delete", 123).Return(nil)
@@ -30,7 +30,7 @@ func (t *FormsTestSuite) TestForms_Delete() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"A valid ID is required to delete a form",
 			func(m *mocks.FormRepository) {
 				m.On("Delete", 123).Return(nil)
@@ -39,7 +39,7 @@ func (t *FormsTestSuite) TestForms_Delete() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			func(m *mocks.FormRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
@@ -48,7 +48,7 @@ func (t *FormsTestSuite) TestForms_Delete() {
 		},
 		"Conflict": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"conflict",
 			func(m *mocks.FormRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
@@ -57,7 +57,7 @@ func (t *FormsTestSuite) TestForms_Delete() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.FormRepository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})

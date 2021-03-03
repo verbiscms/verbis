@@ -51,7 +51,7 @@ func NewDBSuite(t *testing.T) DBSuite {
 // RunT
 //
 // Run the DB test.
-func (t *DBSuite) RunT(want interface{}, actual interface{}) {
+func (t *DBSuite) RunT(want, actual interface{}) {
 	err := t.Mock.ExpectationsWereMet()
 	if err != nil {
 		t.Fail("expectations were not met for mock call: ", err)

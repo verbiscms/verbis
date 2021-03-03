@@ -16,16 +16,16 @@ import (
 // fields of flexible content.
 // Returns a domain.Field and true if it was found.
 // Returns false if it wasn't.
-func walkerByUUID(uuid uuid.UUID, field domain.Field) (domain.Field, bool) {
+func walkerByUUID(uniq uuid.UUID, field domain.Field) (domain.Field, bool) {
 	// Account for normal field
-	if field.UUID == uuid {
+	if field.UUID == uniq {
 		return field, true
 	}
 
 	// Account for repeaters
 	if field.SubFields != nil {
 		for _, subField := range field.SubFields {
-			if f, found := walkerByUUID(uuid, subField); found {
+			if f, found := walkerByUUID(uniq, subField); found {
 				return f, true
 			}
 		}
@@ -35,7 +35,7 @@ func walkerByUUID(uuid uuid.UUID, field domain.Field) (domain.Field, bool) {
 	if len(field.Layouts) != 0 {
 		for _, layout := range field.Layouts {
 			for _, subField := range layout.SubFields {
-				if f, found := walkerByUUID(uuid, subField); found {
+				if f, found := walkerByUUID(uniq, subField); found {
 					return f, true
 				}
 			}

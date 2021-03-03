@@ -193,5 +193,5 @@ func (wpxml *WpXML) AuthorForLogin(authorLogin string) (Author, error) {
 		author := wpxml.Channel.Authors[index]
 		return author, nil
 	}
-	return Author{}, errors.New("Author Not Found")
+	return Author{}, errors.New("author Not Found")
 }

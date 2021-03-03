@@ -33,38 +33,38 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 		mock    func(m *mocks.OptionsRepository)
 	}{
 		"Success": {
-			want:    nil,
-			status:  200,
-			message: "Successfully created/updated options",
-			input:   optionsStruct,
-			mock: func(m *mocks.OptionsRepository) {
+			nil,
+			http.StatusOK,
+			"Successfully created/updated options",
+			optionsStruct,
+			func(m *mocks.OptionsRepository) {
 				m.On("UpdateCreate", &dbOptions).Return(nil)
 			},
 		},
 		"Validation Failed": {
-			want:    api.ErrorJSON{Errors: validation.Errors{{Key: "site_url", Message: "Site URL is required.", Type: "required"}}},
-			status:  400,
-			message: "Validation failed",
-			input:   optionsBadValidation,
-			mock: func(m *mocks.OptionsRepository) {
+			api.ErrorJSON{Errors: validation.Errors{{Key: "site_url", Message: "Site Url is required.", Type: "required"}}},
+			http.StatusBadRequest,
+			"Validation failed",
+			optionsBadValidation,
+			func(m *mocks.OptionsRepository) {
 				m.On("UpdateCreate", &dbOptions).Return(nil)
 			},
 		},
 		"Validation Failed DB": {
-			want:    nil,
-			status:  400,
-			message: "Validation failed",
-			input:   "test",
-			mock: func(m *mocks.OptionsRepository) {
+			nil,
+			http.StatusBadRequest,
+			"Validation failed",
+			"test",
+			func(m *mocks.OptionsRepository) {
 				m.On("UpdateCreate", &dbOptions).Return(nil)
 			},
 		},
 		"Internal Error": {
-			want:    nil,
-			status:  500,
-			message: "internal",
-			input:   optionsStruct,
-			mock: func(m *mocks.OptionsRepository) {
+			nil,
+			http.StatusInternalServerError,
+			"internal",
+			optionsStruct,
+			func(m *mocks.OptionsRepository) {
 				m.On("UpdateCreate", &dbOptions).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},

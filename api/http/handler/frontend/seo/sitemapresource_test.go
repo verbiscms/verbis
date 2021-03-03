@@ -21,7 +21,7 @@ func (t *SEOTestSuite) TestSEO_SitemapResource() {
 	}{
 		"Success": {
 			testString,
-			200,
+			http.StatusOK,
 			"application/xml; charset=utf-8",
 			func(m *mocks.Publisher, ms *mocks.SiteMapper, ctx *gin.Context) {
 				ms.On("Pages", mock.Anything).Return(*t.bytes, nil)

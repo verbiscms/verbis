@@ -23,7 +23,7 @@ var (
 	}
 )
 
-func FindScreenshot(path string, theme string) (string, error) {
+func FindScreenshot(path, theme string) (string, error) {
 	for _, v := range ScrenshotExtensions {
 		name := path + string(os.PathSeparator) + theme + string(os.PathSeparator) + ScreenshotName + v
 		fmt.Println(name)

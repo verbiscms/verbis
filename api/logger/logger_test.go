@@ -114,7 +114,6 @@ func (t *LoggerTestSuite) TestLogger() {
 	}
 }
 
-//nolint
 func (t *LoggerTestSuite) TestLogger_Fatal() {
 	//buf := t.Setup()
 	//

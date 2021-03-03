@@ -118,7 +118,7 @@ var (
 // Is a helper for setting up test files for the upload
 // endpoint. Creates a new file upload http request
 //  with optional extra params.
-func (t *MediaTestSuite) UploadRequest(filesAmount int, uri string, path string) (*gohttp.Request, []multipart.FileHeader) {
+func (t *MediaTestSuite) UploadRequest(filesAmount int, uri, path string) (*gohttp.Request, []multipart.FileHeader) {
 	file, err := os.Open(path)
 	t.NoError(err)
 	defer file.Close()

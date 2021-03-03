@@ -24,17 +24,17 @@ func (t *FieldTestSuite) TestNewService() {
 		Fields: f,
 	}
 
-	deps := &deps.Deps{
+	d := &deps.Deps{
 		Store:  m,
 		Config: &domain.ThemeConfig{},
 	}
 
 	service := &Service{
-		deps:   deps,
+		deps:   d,
 		postID: 1,
 		fields: f,
 		layout: l,
 	}
 
-	t.Equal(NewService(deps, pd), service)
+	t.Equal(NewService(d, pd), service)
 }

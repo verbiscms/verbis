@@ -53,7 +53,6 @@ func TestPage(t *testing.T) {
 			assert.NoError(t, err)
 
 			get, err := client.Do(req)
-			defer client.CloseIdleConnections()
 			assert.NoError(t, err)
 
 			o := get.Header.Get("Cache-Control")

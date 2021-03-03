@@ -24,7 +24,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 	}{
 		"Success": {
 			mediaItem,
-			200,
+			http.StatusOK,
 			"Successfully uploaded media item",
 			1,
 			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
@@ -35,7 +35,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 		},
 		"No Form": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"No files attached to the upload",
 			0,
 			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
@@ -46,7 +46,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 		},
 		"No Files": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"Attach a file to the request to be uploaded",
 			0,
 			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
@@ -57,7 +57,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 		},
 		"Too Many Files": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"Files are only permitted to be uploaded one at a time",
 			5,
 			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
@@ -68,7 +68,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 		},
 		"Invalid": {
 			nil,
-			415,
+			http.StatusUnsupportedMediaType,
 			"invalid",
 			1,
 			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
@@ -79,7 +79,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			1,
 			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {

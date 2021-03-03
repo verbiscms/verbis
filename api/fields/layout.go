@@ -34,8 +34,7 @@ func (s *Service) GetLayouts(args ...interface{}) domain.FieldGroups {
 func (s *Service) handleLayoutArgs(args []interface{}) domain.FieldGroups {
 	switch len(args) {
 	case 1:
-		layout := s.getLayoutByPost(args[0])
-		return layout
+		return s.getLayoutByPost(args[0])
 	default:
 		return s.layout
 	}

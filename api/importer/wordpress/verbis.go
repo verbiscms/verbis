@@ -433,7 +433,7 @@ func (c *Convert) failPost(item Item, media []FailedMedia, err error) {
 // Append
 //
 // Append to the failed authors array.
-func (c *Convert) failAuthor(fName string, lName string, email string, err error) {
+func (c *Convert) failAuthor(fName, lName, email string, err error) {
 	c.failed.Authors = append(c.failed.Authors, FailedAuthor{
 		FirstName: fName,
 		LastName:  lName,

@@ -13,7 +13,7 @@ import "regexp"
 //
 // Example: {{ regexMatch "^Verbis" "Verbis CMS" }}
 // Returns `true`
-func (ns *Namespace) Match(regex string, str string) bool {
+func (ns *Namespace) Match(regex, str string) bool {
 	match, _ := regexp.MatchString(regex, str)
 	return match
 }
@@ -25,7 +25,7 @@ func (ns *Namespace) Match(regex string, str string) bool {
 //
 // Example: {{ regexFindAll "[1,3,5,7]" "123456789" -1 }}
 // Returns: `[1 3 5 7]`
-func (ns *Namespace) FindAll(regex string, str string, i int) []string {
+func (ns *Namespace) FindAll(regex, str string, i int) []string {
 	r := regexp.MustCompile(regex)
 	return r.FindAllString(str, i)
 }
@@ -37,7 +37,7 @@ func (ns *Namespace) FindAll(regex string, str string, i int) []string {
 //
 // Example: {{ regexFind "verbis.?" "verbiscms" }}
 // Returns `verbisc`
-func (ns *Namespace) Find(regex string, str string) string {
+func (ns *Namespace) Find(regex, str string) string {
 	r := regexp.MustCompile(regex)
 	return r.FindString(str)
 }
@@ -50,7 +50,7 @@ func (ns *Namespace) Find(regex string, str string) string {
 //
 // Example: {{ regexReplaceAll "a(x*)b" "-ab-axxb-" "\${1}W" }}
 // Returns: `-W-xxW-`
-func (ns *Namespace) ReplaceAll(regex string, str string, repl string) string {
+func (ns *Namespace) ReplaceAll(regex, str, repl string) string {
 	r := regexp.MustCompile(regex)
 	return r.ReplaceAllString(str, repl)
 }
@@ -62,7 +62,7 @@ func (ns *Namespace) ReplaceAll(regex string, str string, repl string) string {
 //
 // Example: {{ regexReplaceAllLiteral "a(x*)b" "-ab-axxb-" "${1}" }}
 // Returns: `-${1}-${1}-`
-func (ns *Namespace) ReplaceAllLiteral(regex string, str string, repl string) string {
+func (ns *Namespace) ReplaceAllLiteral(regex, str, repl string) string {
 	r := regexp.MustCompile(regex)
 	return r.ReplaceAllLiteralString(str, repl)
 }
@@ -75,7 +75,7 @@ func (ns *Namespace) ReplaceAllLiteral(regex string, str string, repl string) st
 //
 // Example: {{ regexSplit "b+" "verbis" -1 }}
 // Returns: `[ver is]`
-func (ns *Namespace) Split(regex string, str string, i int) []string {
+func (ns *Namespace) Split(regex, str string, i int) []string {
 	r := regexp.MustCompile(regex)
 	return r.Split(str, i)
 }

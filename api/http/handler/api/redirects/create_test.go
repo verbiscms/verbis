@@ -25,7 +25,7 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 	}{
 		"Success": {
 			&redirect,
-			200,
+			http.StatusOK,
 			"Successfully created redirect with ID: 123",
 			redirect,
 			func(m *mocks.RedirectRepository) {
@@ -34,7 +34,7 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "to", Message: "To is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			redirectBadValidation,
 			func(m *mocks.RedirectRepository) {
@@ -43,7 +43,7 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 		},
 		"Invalid": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"invalid",
 			redirect,
 			func(m *mocks.RedirectRepository) {
@@ -52,7 +52,7 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 		},
 		"Conflict": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"conflict",
 			redirect,
 			func(m *mocks.RedirectRepository) {
@@ -61,7 +61,7 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			redirect,
 			func(m *mocks.RedirectRepository) {

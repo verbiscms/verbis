@@ -23,7 +23,7 @@ func (t *MediaTestSuite) TestMedia_Find() {
 	}{
 		"Success": {
 			mediaItem,
-			200,
+			http.StatusOK,
 			"Successfully obtained media item with ID: 123",
 			func(m *mocks.MediaRepository) {
 				m.On("GetByID", 123).Return(mediaItem, nil)
@@ -32,7 +32,7 @@ func (t *MediaTestSuite) TestMedia_Find() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"Pass a valid number to obtain the media item by ID",
 			func(m *mocks.MediaRepository) {
 				m.On("GetByID", 123).Return(domain.Media{}, fmt.Errorf("error"))
@@ -41,7 +41,7 @@ func (t *MediaTestSuite) TestMedia_Find() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"no media items found",
 			func(m *mocks.MediaRepository) {
 				m.On("GetByID", 123).Return(domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "no media items found"})
@@ -50,7 +50,7 @@ func (t *MediaTestSuite) TestMedia_Find() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.MediaRepository) {
 				m.On("GetByID", 123).Return(domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

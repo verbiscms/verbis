@@ -35,7 +35,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 	}{
 		"Success": {
 			nil,
-			200,
+			http.StatusOK,
 			"Successfully reset password",
 			rp,
 			func(m *mocks.AuthRepository) {
@@ -44,7 +44,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "confirm_password", Message: "Confirm Password must equal the New Password.", Type: "eqfield"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			rpdBadValidation,
 			func(m *mocks.AuthRepository) {
@@ -53,7 +53,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			rp,
 			func(m *mocks.AuthRepository) {
@@ -62,7 +62,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			rp,
 			func(m *mocks.AuthRepository) {

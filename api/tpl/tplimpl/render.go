@@ -70,7 +70,7 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 	const op = "TemplateEngine.Execute"
 
 	var (
-		tpl *template.Template
+		tpl *template.Template //nolint
 		err error
 		ok  bool
 	)

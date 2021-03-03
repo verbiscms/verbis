@@ -35,7 +35,6 @@ func (s *Store) Find(id int64) (domain.Category, error) {
 // Returns errors.NOTFOUND if the category was not found by the given Post Id.
 //func (s *Store) FindByPost(id int64) (domain.Category, error) {
 //const op = "CategoryRepository.GetByPost"
-//nolint
 //q := s.Builder.Select("*").From(TableName).WhereRaw("post_id = ?").Limit(1) //nolint
 //
 //var category domain.Category

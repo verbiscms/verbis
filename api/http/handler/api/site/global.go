@@ -7,11 +7,12 @@ package site
 import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Global
 //
-// Returns 200 if site config was obtained successfully.
+// Returns http.StatusOK if site config was obtained successfully.
 func (s *Site) Global(ctx *gin.Context) {
-	api.Respond(ctx, 200, "Successfully obtained site config", s.Site.Global())
+	api.Respond(ctx, http.StatusOK, "Successfully obtained site config", s.Site.Global())
 }

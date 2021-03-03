@@ -31,17 +31,18 @@ func ParseHTML(content string, upload uploader) (string, error) {
 	f = func(n *html.Node) bool {
 		if n.Type == html.ElementNode && n.Data == "img" {
 			for index, img := range n.Attr {
-				if img.Key == "src" {
-					file, err := DownloadFile(img.Val)
-					url := upload(file, img.Val, err)
-
-					if url == "" {
-						break
-					}
-
-					n.Attr[index].Val = url
+				if img.Key != "src" {
 					break
 				}
+
+				file, err := DownloadFile(img.Val)
+				url := upload(file, img.Val, err)
+
+				if url == "" {
+					break
+				}
+
+				n.Attr[index].Val = url
 			}
 		}
 		for c := n.FirstChild; c != nil; c = c.NextSibling {

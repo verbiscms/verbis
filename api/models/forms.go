@@ -108,12 +108,12 @@ func (s *FormsStore) GetByID(id int) (domain.Form, error) {
 // GetByUUID returns a form by UUID.
 //
 // Returns errors.NOTFOUND if the form was not found by the given UUID.
-func (s *FormsStore) GetByUUID(uuid string) (domain.Form, error) {
+func (s *FormsStore) GetByUUID(uniq string) (domain.Form, error) {
 	const op = "FormsRepository.GetByUUID"
 
 	var f domain.Form
-	if err := s.DB.Get(&f, "SELECT * FROM forms WHERE uuid = ? LIMIT 1", uuid); err != nil {
-		return domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the form with the UUID: %s", uuid), Operation: op, Err: err}
+	if err := s.DB.Get(&f, "SELECT * FROM forms WHERE uuid = ? LIMIT 1", uniq); err != nil {
+		return domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the form with the UUID: %s", uniq), Operation: op, Err: err}
 	}
 
 	fields, err := s.GetFields(f.Id)
@@ -228,7 +228,7 @@ func (s *FormsStore) Delete(id int) error {
 	return nil
 }
 
-func (s *FormsStore) Send(form *domain.Form, ip string, agent string) error {
+func (s *FormsStore) Send(form *domain.Form, ip, agent string) error {
 	const op = "FormsRepository.GetFields"
 
 	fv, att, err := forms.NewReader(form, s.Paths.Storage).Values()
@@ -269,7 +269,7 @@ func (s *FormsStore) mailSubmission(form *domain.Form, values forms.FormValues, 
 	return nil
 }
 
-func (s *FormsStore) storeSubmission(form *domain.Form, values forms.FormValues, ip string, agent string) error {
+func (s *FormsStore) storeSubmission(form *domain.Form, values forms.FormValues, ip, agent string) error {
 	const op = "FormsRepository.storeSubmission"
 
 	f, err := values.JSON()

@@ -21,7 +21,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 	}{
 		"Success": {
 			layouts,
-			200,
+			http.StatusOK,
 			"Successfully obtained layouts",
 			func(m *mocks.Repository) {
 				m.On("Layouts", t.ThemePath).Return(layouts, nil)
@@ -29,7 +29,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"not found",
 			func(m *mocks.Repository) {
 				m.On("Layouts", t.ThemePath).Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
@@ -37,7 +37,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.Repository) {
 				m.On("Layouts", t.ThemePath).Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

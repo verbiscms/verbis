@@ -22,7 +22,7 @@ func (t *PostsTestSuite) TestPosts_Find() {
 	}{
 		"Success": {
 			postData,
-			200,
+			http.StatusOK,
 			"Successfully obtained post with ID: 123",
 			func(m *mocks.PostsRepository) {
 				m.On("GetByID", 123, true).Return(postData, nil)
@@ -31,7 +31,7 @@ func (t *PostsTestSuite) TestPosts_Find() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"Pass a valid number to obtain the post by ID",
 			func(m *mocks.PostsRepository) {
 			},
@@ -39,7 +39,7 @@ func (t *PostsTestSuite) TestPosts_Find() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"no posts found",
 			func(m *mocks.PostsRepository) {
 				m.On("GetByID", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
@@ -49,7 +49,7 @@ func (t *PostsTestSuite) TestPosts_Find() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.PostsRepository) {
 				m.On("GetByID", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

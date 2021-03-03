@@ -20,7 +20,6 @@ func (t *RecoverTestSuite) TestHandler_New() {
 	t.Equal(h, New(d))
 }
 
-//nolint
 //func (t *RecoverTestSuite) TestHandler_HttpRecovery() {
 //gin.SetMode(gin.TestMode)
 //
@@ -89,7 +88,7 @@ func (t *RecoverTestSuite) TestHandler_HttpRecovery_Panics() {
 
 func (t *RecoverTestSuite) TestRecover_RecoverWrapper() {
 
-	//var data = func() *Data {
+	// var data = func() *Data {
 	//	return &Data{}
 	//}
 	//

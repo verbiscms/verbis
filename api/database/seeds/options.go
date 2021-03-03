@@ -11,7 +11,6 @@ import (
 
 // runOptions will insert all default values for the options
 // into the database when installing Verbis.
-//nolint:gomnd
 func (s *Seeder) runOptions() error {
 	const op = "Seeder.runOptions"
 

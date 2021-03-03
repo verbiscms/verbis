@@ -102,7 +102,7 @@ func (t *HandlerSuite) ContentType() string {
 //
 // Creates a new http.Request and assigns the gin testing
 // the request.
-func (t *HandlerSuite) NewRequest(method string, url string, body io.Reader) {
+func (t *HandlerSuite) NewRequest(method, url string, body io.Reader) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		t.Fail("error creating http request", err)
@@ -118,7 +118,7 @@ func (t *HandlerSuite) ServeHTTP() {
 //
 // Makes a new http.Request and assigns the gin testing
 // the request, serves HTTP.
-func (t *HandlerSuite) RequestAndServe(method string, url string, engineURL string, body interface{}, handler func(ctx *gin.Context)) {
+func (t *HandlerSuite) RequestAndServe(method, url, engineURL string, body interface{}, handler func(ctx *gin.Context)) {
 	switch method {
 	case http.MethodGet:
 		t.Engine.GET(engineURL, handler)

@@ -15,10 +15,7 @@ import (
 // Vue (SPA) routes.
 func spaRoutes(d *deps.Deps, s *server.Server) {
 	h := handler.NewSPA(d)
-
 	spa := s.Group("/admin")
-	{
-		spa.GET("/*any", h.Serve)
-		spa.GET("", h.Serve)
-	}
+	spa.GET("/*any", h.Serve)
+	spa.GET("", h.Serve)
 }

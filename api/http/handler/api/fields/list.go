@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"strconv"
 )
 
@@ -16,8 +17,8 @@ import (
 //
 // Filter fields and get layouts based on query params.
 //
-// Returns 200 if login was successful.
-// Returns 500 if the layouts failed to be obtained.
+// Returns http.StatusOK if login was successful.
+// Returns http.StatusInternalServerError if the layouts failed to be obtained.
 func (c *Fields) List(ctx *gin.Context) {
 	const op = "FieldHandler.List"
 
@@ -27,7 +28,7 @@ func (c *Fields) List(ctx *gin.Context) {
 	if err != nil || userID == 0 {
 		owner, err := c.Store.User.GetOwner()
 		if err != nil {
-			api.Respond(ctx, 500, errors.Message(err), err)
+			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		}
 		userID = owner.Id
 	}
@@ -66,5 +67,5 @@ func (c *Fields) List(ctx *gin.Context) {
 
 	fields := c.Store.Fields.GetLayout(post)
 
-	api.Respond(ctx, 200, "Successfully obtained fields", fields)
+	api.Respond(ctx, http.StatusOK, "Successfully obtained fields", fields)
 }

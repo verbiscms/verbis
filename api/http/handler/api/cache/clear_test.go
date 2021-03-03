@@ -6,19 +6,19 @@ package cache
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func (t *CacheTestSuite) TestCache_Clear() {
 	tt := map[string]struct {
-		want    interface{}
 		status  int
 		message string
-		input   string
+		want    interface{}
 	}{
 		"Success": {
-			want:    nil,
-			status:  200,
-			message: "Successfully cleared server cache",
+			http.StatusOK,
+			"Successfully cleared server cache",
+			nil,
 		},
 	}
 

@@ -19,7 +19,7 @@ func (t *UsersTestSuite) TestUser_Roles() {
 	}{
 		"Success": {
 			roles,
-			200,
+			http.StatusOK,
 			"Successfully obtained user roles",
 			func(m *mocks.UserRepository) {
 				m.On("GetRoles").Return(roles, nil)
@@ -27,7 +27,7 @@ func (t *UsersTestSuite) TestUser_Roles() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.UserRepository) {
 				m.On("GetRoles").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

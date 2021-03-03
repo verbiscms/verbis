@@ -43,82 +43,76 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 
 		// Forms
 		forms := api.Group("/forms")
-		{
-			forms.POST("/:uuid", h.Forms.Send)
-		}
+		forms.POST("/:uuid", h.Forms.Send)
 
 		// Operator
 		operator := api.Group("")
-		{
-			// Middleware
-			operator.Use(middleware.OperatorTokenCheck(d))
-			operator.Use(middleware.SessionCheck(d))
+		// Middleware
+		operator.Use(middleware.OperatorTokenCheck(d))
+		operator.Use(middleware.SessionCheck(d))
 
-			// Site
-			operator.GET("/config", h.Site.Config)
-			operator.GET("/templates", h.Site.Templates)
-			operator.GET("/layouts", h.Site.Layouts)
-			operator.GET("/themes", h.Site.Themes)
-			operator.GET("/themes/screenshot/:theme/:file", h.Site.Screenshot)
+		// Site
+		operator.GET("/config", h.Site.Config)
+		operator.GET("/templates", h.Site.Templates)
+		operator.GET("/layouts", h.Site.Layouts)
+		operator.GET("/themes", h.Site.Themes)
+		operator.GET("/themes/screenshot/:theme/:file", h.Site.Screenshot)
 
-			// Posts
-			operator.GET("/posts", h.Posts.List)
-			operator.GET("/posts/:id", h.Posts.Find)
-			operator.POST("/posts", h.Posts.Create)
-			operator.PUT("/posts/:id", h.Posts.Update)
-			operator.DELETE("/posts/:id", h.Posts.Delete)
+		// Posts
+		operator.GET("/posts", h.Posts.List)
+		operator.GET("/posts/:id", h.Posts.Find)
+		operator.POST("/posts", h.Posts.Create)
+		operator.PUT("/posts/:id", h.Posts.Update)
+		operator.DELETE("/posts/:id", h.Posts.Delete)
 
-			// Categories
-			operator.GET("/categories", h.Categories.List)
-			operator.GET("/categories/:id", h.Categories.Find)
-			operator.POST("/categories", h.Categories.Create)
-			operator.PUT("/categories/:id", h.Categories.Update)
-			operator.DELETE("/categories/:id", h.Categories.Delete)
+		// Categories
+		operator.GET("/categories", h.Categories.List)
+		operator.GET("/categories/:id", h.Categories.Find)
+		operator.POST("/categories", h.Categories.Create)
+		operator.PUT("/categories/:id", h.Categories.Update)
+		operator.DELETE("/categories/:id", h.Categories.Delete)
 
-			// Media
-			operator.GET("/media", h.Media.List)
-			operator.GET("/media/:id", h.Media.Find)
-			operator.POST("/media", h.Media.Upload)
-			operator.PUT("/media/:id", h.Media.Update)
-			operator.DELETE("/media/:id", h.Media.Delete)
+		// Media
+		operator.GET("/media", h.Media.List)
+		operator.GET("/media/:id", h.Media.Find)
+		operator.POST("/media", h.Media.Upload)
+		operator.PUT("/media/:id", h.Media.Update)
+		operator.DELETE("/media/:id", h.Media.Delete)
 
-			// Users
-			operator.GET("/users", h.Users.List)
-			operator.GET("/users/:id", h.Users.Find)
-			operator.PUT("/users/:id", h.Users.Update)
-			operator.POST("/users/:id/reset-password", h.Users.ResetPassword)
+		// Users
+		operator.GET("/users", h.Users.List)
+		operator.GET("/users/:id", h.Users.Find)
+		operator.PUT("/users/:id", h.Users.Update)
+		operator.POST("/users/:id/reset-password", h.Users.ResetPassword)
 
-			// Fields
-			operator.GET("/fields", h.Fields.List)
+		// Fields
+		operator.GET("/fields", h.Fields.List)
 
-			// Options
-			operator.GET("/options", h.Options.List)
-			operator.GET("/options/:name", h.Options.Find)
-			operator.POST("/options", h.Options.UpdateCreate)
+		// Options
+		operator.GET("/options", h.Options.List)
+		operator.GET("/options/:name", h.Options.Find)
+		operator.POST("/options", h.Options.UpdateCreate)
 
-			// Roles
-			operator.GET("/roles", h.Users.Roles)
+		// Roles
+		operator.GET("/roles", h.Users.Roles)
 
-			// Redirects
-			operator.GET("/redirects", h.Redirects.List)
-			operator.GET("/redirects/:id", h.Redirects.Find)
-			operator.POST("/redirects", h.Redirects.Create)
-			operator.PUT("/redirects/:id", h.Redirects.Update)
-			operator.DELETE("/redirects/:id", h.Redirects.Delete)
+		// Redirects
+		operator.GET("/redirects", h.Redirects.List)
+		operator.GET("/redirects/:id", h.Redirects.Find)
+		operator.POST("/redirects", h.Redirects.Create)
+		operator.PUT("/redirects/:id", h.Redirects.Update)
+		operator.DELETE("/redirects/:id", h.Redirects.Delete)
 
-			// Cache
-			operator.POST("/cache", h.Cache.Clear)
-		}
+		// Cache
+		operator.POST("/cache", h.Cache.Clear)
 
 		// Administrator
 		admin := api.Group("")
-		{
-			admin.Use(middleware.AdminTokenCheck(d))
-			operator.Use(middleware.SessionCheck(d))
+		admin.Use(middleware.AdminTokenCheck(d))
+		operator.Use(middleware.SessionCheck(d))
 
-			// Users
-			admin.POST("/users", h.Users.Create)
-			admin.DELETE("/users/:id", h.Users.Delete)
-		}
+		// Users
+		admin.POST("/users", h.Users.Create)
+		admin.DELETE("/users/:id", h.Users.Delete)
 	}
 }

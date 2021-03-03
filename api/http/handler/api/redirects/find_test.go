@@ -23,7 +23,7 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 	}{
 		"Success": {
 			redirect,
-			200,
+			http.StatusOK,
 			"Successfully obtained redirect with ID: 123",
 			func(m *mocks.RedirectRepository) {
 				m.On("GetByID", int64(123)).Return(redirect, nil)
@@ -32,7 +32,7 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"Pass a valid number to obtain the redirect by ID",
 			func(m *mocks.RedirectRepository) {
 				m.On("GetByID", int64(123)).Return(domain.Redirect{}, fmt.Errorf("error"))
@@ -41,7 +41,7 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"no redirects found",
 			func(m *mocks.RedirectRepository) {
 				m.On("GetByID", int64(123)).Return(domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
@@ -50,7 +50,7 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.RedirectRepository) {
 				m.On("GetByID", int64(123)).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

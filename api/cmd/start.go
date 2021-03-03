@@ -44,8 +44,8 @@ up the server on the port specified in the .env file.`,
 
 			// Print listening success
 			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", cfg.Env.Port()))
-			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", d.Options.SiteURL)
-			emoji.Printf(":key: Or visit the admin area at:  %s \n", d.Options.SiteURL+"/admin")
+			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", d.Options.SiteUrl)
+			emoji.Printf(":key: Or visit the admin area at:  %s \n", d.Options.SiteUrl+"/admin")
 			fmt.Println()
 
 			// Load cron jobs

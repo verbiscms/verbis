@@ -47,7 +47,7 @@ type ErrorJSON struct {
 //
 // Returns RespondJSON and sends back the main data for
 // use with the API. Returns status, message and data.
-func Respond(ctx *gin.Context, status int, message string, data interface{}, pagination ...*pagination.Pagination) {
+func Respond(ctx *gin.Context, status int, message string, data interface{}, p ...*pagination.Pagination) {
 	ctx.Set("verbis_message", message)
 
 	hasError := false
@@ -59,7 +59,7 @@ func Respond(ctx *gin.Context, status int, message string, data interface{}, pag
 		Status:  status,
 		Message: message,
 		Error:   hasError,
-		Meta:    GetMeta(ctx, pagination),
+		Meta:    GetMeta(ctx, p),
 		Data:    checkResponseData(ctx, data),
 	})
 }
@@ -139,7 +139,7 @@ func checkResponseData(ctx *gin.Context, data interface{}) interface{} {
 // Processes the request and response time and calculates
 // latency time. Sets pagination if the length is
 // greater than one.
-func GetMeta(ctx *gin.Context, pagination []*pagination.Pagination) Meta {
+func GetMeta(ctx *gin.Context, p []*pagination.Pagination) Meta {
 	// Calculate start, end and latency time
 	var startTime = time.Now()
 	requestTime, exists := ctx.Get("request_time")
@@ -149,15 +149,15 @@ func GetMeta(ctx *gin.Context, pagination []*pagination.Pagination) Meta {
 	latencyTime := time.Since(startTime)
 
 	// Check if the pagination is empty
-	var p interface{} = nil
-	if len(pagination) == 1 {
-		p = pagination[0]
+	var pag interface{} = nil
+	if len(p) == 1 {
+		pag = p[0]
 	}
 
 	return Meta{
 		RequestTime:  startTime.UTC().String(),
 		ResponseTime: time.Now().UTC().String(),
 		LatencyTime:  latencyTime.Round(time.Microsecond).String(),
-		Pagination:   p,
+		Pagination:   pag,
 	}
 }

@@ -24,7 +24,7 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 	}{
 		"Success": {
 			nil,
-			200,
+			http.StatusOK,
 			"Successfully verified token",
 			token,
 			func(m *mocks.AuthRepository) {

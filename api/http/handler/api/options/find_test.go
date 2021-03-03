@@ -21,7 +21,7 @@ func (t *OptionsTestSuite) TestOptions_Find() {
 	}{
 		"Success": {
 			`"testing"`,
-			200,
+			http.StatusOK,
 			"Successfully obtained option with name: test",
 			func(m *mocks.OptionsRepository) {
 				m.On("GetByName", "test").Return("testing", nil)
@@ -30,7 +30,7 @@ func (t *OptionsTestSuite) TestOptions_Find() {
 		},
 		"Not Found": {
 			`{}`,
-			200,
+			http.StatusOK,
 			"no option found",
 			func(m *mocks.OptionsRepository) {
 				m.On("GetByName", "test").Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "no option found"})
@@ -39,7 +39,7 @@ func (t *OptionsTestSuite) TestOptions_Find() {
 		},
 		"Internal Error": {
 			`{}`,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.OptionsRepository) {
 				m.On("GetByName", "test").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

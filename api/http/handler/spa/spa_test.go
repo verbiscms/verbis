@@ -74,7 +74,7 @@ func (t *SPATestSuite) TestSPA() {
 	}{
 		"Success File": {
 			"/images/gopher.svg",
-			200,
+			http.StatusOK,
 			"image/svg+xml",
 			"/images/gopher.svg",
 			TestPath,
@@ -94,7 +94,7 @@ func (t *SPATestSuite) TestSPA() {
 		},
 		"Success Page": {
 			"/index.html",
-			200,
+			http.StatusOK,
 			"text/html; charset=utf-8",
 			"/",
 			TestPath,

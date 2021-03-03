@@ -61,7 +61,7 @@ func New(cfg ...Config) Minifier {
 //
 // Minifies a file & calls the compare function to render
 // the file.
-func (m *minify) Minify(name string, mime string) ([]byte, error) {
+func (m *minify) Minify(name, mime string) ([]byte, error) {
 	const op = "Minifier.Minify"
 
 	b, err := ioutil.ReadFile(name)
