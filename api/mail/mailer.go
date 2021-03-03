@@ -56,8 +56,8 @@ func (m *Mailer) load() error {
 	// TODO this is temporary
 	mailConf := m.Env.MailConfig()
 	config := &sp.Config{
-		BaseUrl:    mailConf.SparkpostUrl,
-		ApiKey:     mailConf.SparkpostApiKey,
+		BaseUrl:    mailConf.SparkpostURL,
+		ApiKey:     mailConf.SparkpostAPIKey,
 		ApiVersion: 1,
 	}
 

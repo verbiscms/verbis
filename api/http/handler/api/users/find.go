@@ -25,7 +25,7 @@ func (u *Users) Find(ctx *gin.Context) {
 		return
 	}
 
-	user, err := u.Store.User.GetById(id)
+	user, err := u.Store.User.GetByID(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 200, errors.Message(err), err)
 		return

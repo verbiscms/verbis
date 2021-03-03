@@ -94,12 +94,12 @@ var (
 	mediaItems = domain.MediaItems{
 		{
 			Id:    1,
-			Url:   "/uploads/1",
+			URL:   "/uploads/1",
 			Title: "title",
 		},
 		{
 			Id:    1,
-			Url:   "/uploads/1",
+			URL:   "/uploads/1",
 			Title: "title",
 		},
 	}
@@ -149,6 +149,7 @@ func (t *MediaTestSuite) UploadRequest(filesAmount int, uri string, path string)
 	}
 
 	req, err := gohttp.NewRequest("POST", uri, bytes.NewBuffer(reqBody.Bytes()))
+	t.NoError(err)
 	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	return req, multi

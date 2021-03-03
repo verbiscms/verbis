@@ -36,7 +36,7 @@ func (t *CategoriesTestSuite) TestCategories_Update() {
 			"/categories/123",
 		},
 		"Validation Failed": {
-			api.ErrorJson{Errors: validation.Errors{{Key: "slug", Message: "Slug is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "slug", Message: "Slug is required.", Type: "required"}}},
 			400,
 			"Validation failed",
 			categoryBadValidation,

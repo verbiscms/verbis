@@ -10,7 +10,6 @@ import (
 )
 
 func TestStack_Append(t *testing.T) {
-
 	tt := map[string]struct {
 		stack Stack
 		input *File
@@ -44,7 +43,6 @@ func TestStack_Append(t *testing.T) {
 }
 
 func TestStack_Prepend(t *testing.T) {
-
 	tt := map[string]struct {
 		stack Stack
 		input *File
@@ -78,7 +76,6 @@ func TestStack_Prepend(t *testing.T) {
 }
 
 func TestStack_Find(t *testing.T) {
-
 	f := &File{File: "test", Line: 1, Function: "function", Contents: "contents"}
 
 	tt := map[string]struct {
@@ -107,7 +104,6 @@ func TestStack_Find(t *testing.T) {
 }
 
 func Test_Language(t *testing.T) {
-
 	tt := map[string]struct {
 		input string
 		want  string
@@ -128,7 +124,6 @@ func Test_Language(t *testing.T) {
 }
 
 func Test_GetStack(t *testing.T) {
-
 	tt := map[string]struct {
 		depth    int
 		traverse int
@@ -148,7 +143,6 @@ func Test_GetStack(t *testing.T) {
 }
 
 func TestFile_Vendor(t *testing.T) {
-
 	tt := map[string]struct {
 		input File
 		want  bool
@@ -176,7 +170,6 @@ func TestFile_Vendor(t *testing.T) {
 }
 
 func TestFile_Lines(t *testing.T) {
-
 	tt := map[string]struct {
 		input Stack
 		want  []*FileLine

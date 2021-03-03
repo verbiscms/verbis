@@ -12,7 +12,6 @@ import (
 )
 
 func TestWalkerByUUID(t *testing.T) {
-
 	id := uuid.New()
 
 	repeater := domain.Fields{

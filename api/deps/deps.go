@@ -58,7 +58,7 @@ func (d *Deps) SetOptions(options *domain.Options) {
 	d.Options = options
 }
 
-type DepsConfig struct {
+type Config struct {
 
 	// The database layer
 	Store *models.Store
@@ -74,8 +74,7 @@ type DepsConfig struct {
 	Running bool
 }
 
-func New(cfg DepsConfig) *Deps {
-
+func New(cfg Config) *Deps {
 	if cfg.Store == nil {
 		panic("Must have a store")
 	}

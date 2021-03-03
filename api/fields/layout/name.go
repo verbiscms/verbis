@@ -16,7 +16,6 @@ import (
 // Returns a domain.Field and true if it was found.
 // Returns false if it wasn't.
 func walkerByName(name string, field domain.Field) (domain.Field, bool) {
-
 	// Account for normal field
 	if field.Name == name {
 		return field, true

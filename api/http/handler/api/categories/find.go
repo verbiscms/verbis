@@ -25,7 +25,7 @@ func (c *Categories) Find(ctx *gin.Context) {
 		return
 	}
 
-	category, err := c.Store.Categories.GetById(id)
+	category, err := c.Store.Categories.GetByID(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 200, errors.Message(err), err)
 		return

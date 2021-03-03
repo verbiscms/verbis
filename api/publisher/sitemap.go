@@ -127,14 +127,14 @@ func (s *Sitemap) Index() ([]byte, error) {
 		}
 
 		viewData.Items = append(viewData.Items, viewItem{
-			Slug:      s.options.SiteUrl + "/sitemaps" + v.Slug + "/sitemap.xml",
+			Slug:      s.options.SiteURL + "/sitemaps" + v.Slug + "/sitemap.xml",
 			CreatedAt: time.Now().Format(time.RFC3339),
 		})
 	}
 
 	if s.hasRedirects() {
 		viewData.Items = append(viewData.Items, viewItem{
-			Slug:      s.options.SiteUrl + "/sitemaps/redirects/sitemap.xml",
+			Slug:      s.options.SiteURL + "/sitemaps/redirects/sitemap.xml",
 			CreatedAt: time.Now().Format(time.RFC3339),
 		})
 	}
@@ -272,7 +272,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 
 		if !helpers.StringInSlice(resource, s.options.SeoSitemapExcluded) && !exclude {
 			items = append(items, viewItem{
-				Slug:      s.options.SiteUrl + v.Slug,
+				Slug:      s.options.SiteURL + v.Slug,
 				CreatedAt: v.CreatedAt.Format(time.RFC3339),
 			})
 		}
@@ -346,6 +346,8 @@ func (s *Sitemap) canServeResource(resource string) error {
 
 // getHomeCreatedAt - Get the homepage created at time or now if it
 // is not set.
+//
+//nolint
 func (s *Sitemap) getHomeCreatedAt() string {
 	home, err := s.deps.Store.Posts.GetBySlug("/")
 	createdAt := time.Now().Format(time.RFC3339)
@@ -372,9 +374,9 @@ func (s *Sitemap) formatXML(data interface{}, index bool) ([]byte, error) {
 	b.WriteString(xml.Header)
 
 	if index {
-		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/main-sitemap.xsl"?>`+"\n", s.options.SiteUrl))
+		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/main-sitemap.xsl"?>`+"\n", s.options.SiteURL))
 	} else {
-		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/resources-sitemap.xsl"?>`+"\n", s.options.SiteUrl))
+		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/resources-sitemap.xsl"?>`+"\n", s.options.SiteURL))
 	}
 
 	b.Write(xmlString)

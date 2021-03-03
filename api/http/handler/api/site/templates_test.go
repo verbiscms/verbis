@@ -13,7 +13,6 @@ import (
 )
 
 func (t *SiteTestSuite) TestSite_Templates() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

@@ -30,7 +30,7 @@ func (s *Site) walkMatch(root, pattern string) ([]string, error) {
 			return err
 		} else if matched {
 			template := strings.Replace(path, root+"/", "", 1)
-			template = strings.Replace(template, s.config.FileExtension, "", -1)
+			template = strings.ReplaceAll(template, s.config.FileExtension, "")
 			matches = append(matches, template)
 		}
 		return nil
@@ -48,5 +48,5 @@ func (s *Site) walkMatch(root, pattern string) ([]string, error) {
 // Cleans the file name to a friendly string for
 // page templates and layouts.
 func (s *Site) fileName(file string) string {
-	return strings.Title(strings.ToLower(strings.Replace(file, "-", " ", -1)))
+	return strings.Title(strings.ToLower(strings.ReplaceAll(file, "-", " ")))
 }

@@ -7,7 +7,6 @@ package resolve
 import "github.com/ainsleyclark/verbis/api/domain"
 
 func (t *ResolverTestSuite) TestValue_Checkbox() {
-
 	tt := map[string]struct {
 		value domain.FieldValue
 		want  interface{}

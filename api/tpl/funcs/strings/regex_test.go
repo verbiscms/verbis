@@ -10,7 +10,6 @@ import (
 )
 
 func TestNamespace_RegexMatch(t *testing.T) {
-
 	tt := map[string]struct {
 		regex string
 		str   string
@@ -47,7 +46,6 @@ func TestNamespace_RegexMatch(t *testing.T) {
 }
 
 func TestNamespace_RegexFindAll(t *testing.T) {
-
 	var s []string
 
 	tt := map[string]struct {
@@ -85,7 +83,6 @@ func TestNamespace_RegexFindAll(t *testing.T) {
 }
 
 func TestNamespace_RegexFind(t *testing.T) {
-
 	tt := map[string]struct {
 		regex string
 		str   string
@@ -117,7 +114,6 @@ func TestNamespace_RegexFind(t *testing.T) {
 }
 
 func TestNamespace_RegexReplaceAll(t *testing.T) {
-
 	tt := map[string]struct {
 		regex string
 		str   string
@@ -159,7 +155,6 @@ func TestNamespace_RegexReplaceAll(t *testing.T) {
 }
 
 func TestNamespace_RegexReplaceAllLiteral(t *testing.T) {
-
 	tt := map[string]struct {
 		regex string
 		str   string
@@ -201,7 +196,6 @@ func TestNamespace_RegexReplaceAllLiteral(t *testing.T) {
 }
 
 func TestNamespace_RegexSplit(t *testing.T) {
-
 	tt := map[string]struct {
 		regex string
 		str   string
@@ -243,7 +237,6 @@ func TestNamespace_RegexSplit(t *testing.T) {
 }
 
 func TestNamespace_RegexQuoteMeta(t *testing.T) {
-
 	tt := map[string]struct {
 		input string
 		want  interface{}

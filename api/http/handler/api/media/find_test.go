@@ -14,7 +14,6 @@ import (
 )
 
 func (t *MediaTestSuite) TestMedia_Find() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -27,7 +26,7 @@ func (t *MediaTestSuite) TestMedia_Find() {
 			200,
 			"Successfully obtained media item with ID: 123",
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 123).Return(mediaItem, nil)
+				m.On("GetByID", 123).Return(mediaItem, nil)
 			},
 			"/media/123",
 		},
@@ -36,7 +35,7 @@ func (t *MediaTestSuite) TestMedia_Find() {
 			400,
 			"Pass a valid number to obtain the media item by ID",
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 123).Return(domain.Media{}, fmt.Errorf("error"))
+				m.On("GetByID", 123).Return(domain.Media{}, fmt.Errorf("error"))
 			},
 			"/media/wrongid",
 		},
@@ -45,7 +44,7 @@ func (t *MediaTestSuite) TestMedia_Find() {
 			200,
 			"no media items found",
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 123).Return(domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "no media items found"})
+				m.On("GetByID", 123).Return(domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "no media items found"})
 			},
 			"/media/123",
 		},
@@ -54,7 +53,7 @@ func (t *MediaTestSuite) TestMedia_Find() {
 			500,
 			"internal",
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 123).Return(domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("GetByID", 123).Return(domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/media/123",
 		},

@@ -13,7 +13,6 @@ import (
 )
 
 func (t *UsersTestSuite) TestUser_ResetPassword() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -28,7 +27,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			"Successfully updated password for the user with ID: 123",
 			reset,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, nil)
+				m.On("GetByID", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(nil)
 			},
 			"/users/reset/123",
@@ -39,7 +38,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			"A valid ID is required to update a user's password",
 			reset,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, nil)
+				m.On("GetByID", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(nil)
 			},
 			"/users/reset/wrongid",
@@ -50,7 +49,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			"No user has been found with the ID: 123",
 			reset,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("GetByID", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 				m.On("ResetPassword", 123, reset).Return(nil)
 			},
 			"/users/reset/123",
@@ -61,7 +60,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			"Validation failed",
 			resetBadValidation,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, nil)
+				m.On("GetByID", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(nil)
 			},
 			"/users/reset/123",
@@ -72,7 +71,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			"invalid",
 			reset,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, nil)
+				m.On("GetByID", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 			"/users/reset/123",
@@ -83,7 +82,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			"internal",
 			reset,
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, nil)
+				m.On("GetByID", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/users/reset/123",

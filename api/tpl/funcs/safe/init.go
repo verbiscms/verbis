@@ -69,7 +69,7 @@ func init() {
 			[][2]string{},
 		)
 
-		ns.AddMethodMapping(ctx.Url,
+		ns.AddMethodMapping(ctx.URL,
 			"safeUrl",
 			nil,
 			[][2]string{

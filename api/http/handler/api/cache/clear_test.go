@@ -9,7 +9,6 @@ import (
 )
 
 func (t *CacheTestSuite) TestCache_Clear() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

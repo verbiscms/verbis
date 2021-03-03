@@ -20,7 +20,6 @@ var (
 )
 
 func TestNamespace_KindIs(t *testing.T) {
-
 	tt := map[string]struct {
 		target string
 		src    interface{}
@@ -52,7 +51,6 @@ func TestNamespace_KindIs(t *testing.T) {
 }
 
 func TestNamespace_KindOf(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -88,7 +86,6 @@ func TestNamespace_KindOf(t *testing.T) {
 }
 
 func TestNamespace_TypeOf(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}

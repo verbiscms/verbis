@@ -13,7 +13,6 @@ import (
 type noStringer struct{}
 
 func TestQuery_Get(t *testing.T) {
-
 	q := Query{}
 
 	tt := map[string]struct {
@@ -68,7 +67,6 @@ func TestQuery_Get(t *testing.T) {
 }
 
 func TestQuery_Param(t *testing.T) {
-
 	tt := map[string]struct {
 		query Query
 		param string
@@ -105,7 +103,6 @@ func TestQuery_Param(t *testing.T) {
 }
 
 func TestQuery_Default(t *testing.T) {
-
 	tt := map[string]struct {
 		query Query
 		param string

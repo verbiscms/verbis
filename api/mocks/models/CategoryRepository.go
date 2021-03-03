@@ -107,8 +107,8 @@ func (_m *CategoryRepository) Get(meta params.Params) (domain.Categories, int, e
 	return r0, r1, r2
 }
 
-// GetById provides a mock function with given fields: id
-func (_m *CategoryRepository) GetById(id int) (domain.Category, error) {
+// GetByID provides a mock function with given fields: id
+func (_m *CategoryRepository) GetByID(id int) (domain.Category, error) {
 	ret := _m.Called(id)
 
 	var r0 domain.Category
@@ -149,13 +149,13 @@ func (_m *CategoryRepository) GetByName(name string) (domain.Category, error) {
 	return r0, r1
 }
 
-// GetByPost provides a mock function with given fields: pageId
-func (_m *CategoryRepository) GetByPost(pageId int) (*domain.Category, error) {
-	ret := _m.Called(pageId)
+// GetByPost provides a mock function with given fields: pageID
+func (_m *CategoryRepository) GetByPost(pageID int) (*domain.Category, error) {
+	ret := _m.Called(pageID)
 
 	var r0 *domain.Category
 	if rf, ok := ret.Get(0).(func(int) *domain.Category); ok {
-		r0 = rf(pageId)
+		r0 = rf(pageID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Category)
@@ -164,7 +164,7 @@ func (_m *CategoryRepository) GetByPost(pageId int) (*domain.Category, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(pageId)
+		r1 = rf(pageID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -214,13 +214,13 @@ func (_m *CategoryRepository) GetParent(id int) (domain.Category, error) {
 	return r0, r1
 }
 
-// InsertPostCategory provides a mock function with given fields: postId, categoryId
-func (_m *CategoryRepository) InsertPostCategory(postId int, categoryId *int) error {
-	ret := _m.Called(postId, categoryId)
+// InsertPostCategory provides a mock function with given fields: postID, categoryID
+func (_m *CategoryRepository) InsertPostCategory(postID int, categoryID *int) error {
+	ret := _m.Called(postID, categoryID)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(int, *int) error); ok {
-		r0 = rf(postId, categoryId)
+		r0 = rf(postID, categoryID)
 	} else {
 		r0 = ret.Error(0)
 	}

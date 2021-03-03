@@ -17,9 +17,9 @@ import (
 // FormRepository defines methods for Posts to interact with the database
 type FormRepository interface {
 	Get(meta params.Params) (domain.Forms, int, error)
-	GetById(id int) (domain.Form, error)
+	GetByID(id int) (domain.Form, error)
 	GetByUUID(uuid string) (domain.Form, error)
-	//GetValidation(form *domain.Form) dynamicstruct.Builder
+	// GetValidation(form *domain.Form) dynamicstruct.Builder
 	Create(f *domain.Form) (domain.Form, error)
 	Update(f *domain.Form) (domain.Form, error)
 	Delete(id int) error
@@ -29,7 +29,7 @@ type FormRepository interface {
 // FormsStore defines the data layer for Forms
 type FormsStore struct {
 	*StoreConfig
-	//siteModel SiteRepository
+	// siteModel SiteRepository
 }
 
 // newSeoMeta - Construct
@@ -83,17 +83,13 @@ func (s *FormsStore) Get(meta params.Params) (domain.Forms, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Could not get the total number of forms", Operation: op, Err: err}
 	}
 
-	//for _, v := range f {
-	//forms.ToStruct(&v)
-	//}
-
 	return f, total, nil
 }
 
-// GetById - Get the form by Id
+// GetByID - Get the form by Id
 //
 // Returns errors.NOTFOUND if the form was not found by the given ID.
-func (s *FormsStore) GetById(id int) (domain.Form, error) {
+func (s *FormsStore) GetByID(id int) (domain.Form, error) {
 	const op = "FormsRepository.GetByUUID"
 
 	var f domain.Form
@@ -105,8 +101,6 @@ func (s *FormsStore) GetById(id int) (domain.Form, error) {
 	if err == nil {
 		f.Fields = fields
 	}
-
-	//f.Body = forms.ToStruct(&f)
 
 	return f, nil
 }
@@ -172,7 +166,7 @@ func (s *FormsStore) Create(f *domain.Form) (domain.Form, error) {
 		}
 	}
 
-	nf, err := s.GetById(int(id))
+	nf, err := s.GetByID(int(id))
 	if err != nil {
 		return domain.Form{}, err
 	}
@@ -187,7 +181,7 @@ func (s *FormsStore) Create(f *domain.Form) (domain.Form, error) {
 func (s *FormsStore) Update(f *domain.Form) (domain.Form, error) {
 	const op = "FormsRepository.Update"
 
-	_, err := s.GetById(f.Id)
+	_, err := s.GetByID(f.Id)
 	if err != nil {
 		return domain.Form{}, err
 	}
@@ -218,7 +212,7 @@ func (s *FormsStore) Update(f *domain.Form) (domain.Form, error) {
 func (s *FormsStore) Delete(id int) error {
 	const op = "FormsRepository.Delete"
 
-	_, err := s.GetById(id)
+	_, err := s.GetByID(id)
 	if err != nil {
 		return err
 	}

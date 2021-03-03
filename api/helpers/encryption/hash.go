@@ -18,12 +18,12 @@ import (
 // Returns errors.INTERNAL if the hash failed to generate.
 func GenerateRandomHash() (string, error) {
 	const op = "encryption.GenerateRandomHash"
-	hash, err := bcrypt.GenerateFromPassword([]byte(newSHA1Hash(36)), bcrypt.DefaultCost)
+	hash, err := bcrypt.GenerateFromPassword([]byte(newSHA1Hash(36)), bcrypt.DefaultCost) //nolint
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Could not generate a random hash", Operation: op, Err: err}
 	}
 	hasher := md5.New()
-	hasher.Write(hash)
+	hasher.Write(hash) //nolint
 	return hex.EncodeToString(hasher.Sum(nil)), nil
 }
 
@@ -39,7 +39,7 @@ func newSHA1Hash(n ...int) string {
 	randString := RandomString(int64(noRandomCharacters), true)
 
 	hash := sha1.New()
-	hash.Write([]byte(randString))
+	hash.Write([]byte(randString)) //nolint
 	bs := hash.Sum(nil)
 
 	return fmt.Sprintf("%x", bs)

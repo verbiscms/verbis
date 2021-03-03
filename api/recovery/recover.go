@@ -14,6 +14,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/gin-gonic/gin"
 	"net"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -95,14 +96,13 @@ func (h *Handler) Recover(cfg Config) []byte {
 	return tpl
 }
 
-// HttpRecovery
+// HTTPRecovery
 //
 //
-func (h *Handler) HttpRecovery() gin.HandlerFunc {
+func (h *Handler) HTTPRecovery() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {
 			if err := recover(); err != nil {
-
 				// Check for a broken connection, as it is not really a
 				// condition that warrants a panic stack trace.
 				var brokenPipe bool
@@ -116,7 +116,7 @@ func (h *Handler) HttpRecovery() gin.HandlerFunc {
 				// If the connection is dead, we can't write a status to it.
 				// Otherwise we will send the recover data back.
 				if brokenPipe {
-					ctx.Error(err.(error)) // nolint: errcheck
+					ctx.Error(err.(error)) //nolint: errcheck
 					ctx.Abort()
 					return
 				} else {
@@ -124,7 +124,7 @@ func (h *Handler) HttpRecovery() gin.HandlerFunc {
 						Context: ctx,
 						Error:   err,
 					})
-					ctx.Data(500, "text/html", b)
+					ctx.Data(http.StatusInternalServerError, "text/html", b)
 					return
 				}
 			}

@@ -185,6 +185,7 @@ func TestPostMeta_Value(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			value, err := test.input.Value()
+			assert.NoError(t, err)
 
 			got, err := cast.ToStringE(value)
 			assert.NoError(t, err)
@@ -249,6 +250,7 @@ func TestPostSeo_Value(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			value, err := test.input.Value()
+			assert.NoError(t, err)
 
 			got, err := cast.ToStringE(value)
 			assert.NoError(t, err)

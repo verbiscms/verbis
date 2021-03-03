@@ -12,7 +12,6 @@ import (
 )
 
 func (t *LoggerTestSuite) TestFormatter() {
-
 	now := time.Now()
 	nowStr := now.Format(time.StampMilli)
 

@@ -42,7 +42,7 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 			},
 		},
 		"Validation Failed": {
-			want:    api.ErrorJson{Errors: validation.Errors{{Key: "site_url", Message: "Site Url is required.", Type: "required"}}},
+			want:    api.ErrorJSON{Errors: validation.Errors{{Key: "site_url", Message: "Site URL is required.", Type: "required"}}},
 			status:  400,
 			message: "Validation failed",
 			input:   optionsBadValidation,

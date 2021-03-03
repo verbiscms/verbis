@@ -22,8 +22,8 @@ import (
 var (
 	// upgrader
 	adminUpgrader = websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
+		ReadBufferSize:  1024, //nolint
+		WriteBufferSize: 1024, //nolint
 		CheckOrigin: func(r *http.Request) bool {
 			return true
 		},
@@ -79,7 +79,7 @@ func (a *adminSocket) Init(ws *websocket.Conn) {
 	}
 
 	// Start the watching process - it'll check for changes every 100ms.
-	err = a.Watcher.Start(time.Millisecond * 100)
+	err = a.Watcher.Start(time.Millisecond * 100) //nolint
 	defer a.Watcher.Close()
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error starting configuration watcher", Operation: op, Err: err}).Error()
@@ -94,7 +94,6 @@ func (a *adminSocket) Init(ws *websocket.Conn) {
 //
 //
 func (a *adminSocket) Reader(conn *websocket.Conn) {
-
 	for {
 		// Read in a message
 		messageType, p, err := conn.ReadMessage()
@@ -124,7 +123,7 @@ func (a *adminSocket) Reader(conn *websocket.Conn) {
 func (a *adminSocket) Writer(ws *websocket.Conn) {
 	const op = "AdminSocket.Writer"
 
-	//go func() {
+	// go func() {
 	for {
 		select {
 		case <-a.Watcher.Event:
@@ -153,5 +152,5 @@ func (a *adminSocket) Writer(ws *websocket.Conn) {
 			return
 		}
 	}
-	//}()
+	// }()
 }

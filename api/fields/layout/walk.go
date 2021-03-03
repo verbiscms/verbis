@@ -58,7 +58,6 @@ func ByName(name string, groups domain.FieldGroups) (domain.Field, error) {
 			}
 			return field, nil
 		}
-
 	}
 
 	return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "Unable to find field", Operation: op, Err: fmt.Errorf("unable to find field with name of: %s", name)}

@@ -13,7 +13,7 @@ import (
 // RoleRepository defines methods for Posts to interact with the database
 type RoleRepository interface {
 	Get() ([]domain.Role, error)
-	GetById(id int) (domain.Role, error)
+	GetByID(id int) (domain.Role, error)
 	Create(r *domain.Role) (domain.Role, error)
 	Update(r *domain.Role) (domain.Role, error)
 	Delete(id int) error
@@ -52,11 +52,11 @@ func (s *RoleStore) Get() ([]domain.Role, error) {
 
 // Get the role by ID
 // Returns errors.NOTFOUND if the post was not found by the given Id.
-func (s *RoleStore) GetById(id int) (domain.Role, error) {
-	const op = "RoleRepository.GetById"
+func (s *RoleStore) GetByID(id int) (domain.Role, error) {
+	const op = "RoleRepository.GetByID"
 	var r domain.Role
 	if err := s.DB.Get(&r, "SELECT * FROM roles WHERE id = ? LIMIT 1", id); err != nil {
-		return domain.Role{}, fmt.Errorf("Could not get role with the ID: %v", id)
+		return domain.Role{}, fmt.Errorf("could not get role with the ID: %v", id)
 	}
 	return r, nil
 }
@@ -93,7 +93,7 @@ func (s *RoleStore) Create(r *domain.Role) (domain.Role, error) {
 func (s *RoleStore) Update(r *domain.Role) (domain.Role, error) {
 	const op = "RoleRepository.Update"
 
-	_, err := s.GetById(r.Id)
+	_, err := s.GetByID(r.Id)
 	if err != nil {
 		return domain.Role{}, err
 	}
@@ -113,7 +113,7 @@ func (s *RoleStore) Update(r *domain.Role) (domain.Role, error) {
 func (s *RoleStore) Delete(id int) error {
 	const op = "RoleRepository.Delete"
 
-	_, err := s.GetById(id)
+	_, err := s.GetByID(id)
 	if err != nil {
 		return err
 	}

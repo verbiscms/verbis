@@ -1,4 +1,4 @@
-  // Copyright 2020 The Verbis Authors. All rights reserved.
+// Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -31,13 +31,13 @@ func (r *publish) Page(ctx *gin.Context) ([]byte, error) {
 	}
 
 	p := &page{
-		Deps:     r.Deps,
-		Context:  ctx,
-		Post:     post,
-		Url:      url,
-		CacheKey: cache.GetPostKey(post.Id),
-		Type:     typ,
-		HomepageId: r.Deps.Options.Homepage,
+		Deps:       r.Deps,
+		Context:    ctx,
+		Post:       post,
+		URL:        url,
+		CacheKey:   cache.GetPostKey(post.Id),
+		Type:       typ,
+		HomepageID: r.Deps.Options.Homepage,
 	}
 
 	err = p.CheckSession()

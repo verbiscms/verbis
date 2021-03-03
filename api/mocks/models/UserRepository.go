@@ -163,8 +163,8 @@ func (_m *UserRepository) GetByEmail(email string) (domain.User, error) {
 	return r0, r1
 }
 
-// GetById provides a mock function with given fields: id
-func (_m *UserRepository) GetById(id int) (domain.User, error) {
+// GetByID provides a mock function with given fields: id
+func (_m *UserRepository) GetByID(id int) (domain.User, error) {
 	ret := _m.Called(id)
 
 	var r0 domain.User

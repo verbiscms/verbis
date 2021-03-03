@@ -15,7 +15,6 @@ import (
 // Returns 500 if there was an error getting the layouts.
 // Returns 200 if the themes were obtained successfully or there were none found.
 func (s *Site) Themes(ctx *gin.Context) {
-
 	themes, err := s.Site.Themes(s.ThemePath())
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 200, errors.Message(err), err)

@@ -18,18 +18,17 @@ var (
 type noStringer struct{}
 
 func TestNamespace_Date(t *testing.T) {
-
 	tm, err := time.Parse("02 Jan 06 15:04:05 MST", "22 May 90 20:39:39 GMT")
 	if err != nil {
 		t.Error(err)
 	}
 
 	got, err := ns.Date("02/01/2006", tm)
+	assert.NoError(t, err)
 	assert.Equal(t, "22/05/1990", got)
 }
 
 func TestNamespace_DateInZone(t *testing.T) {
-
 	tt := map[string]struct {
 		zone string
 		time func(tm time.Time) interface{}
@@ -96,7 +95,6 @@ func TestNamespace_DateInZone(t *testing.T) {
 }
 
 func TestNamespace_Ago(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  string
@@ -132,7 +130,6 @@ func TestNamespace_Ago(t *testing.T) {
 }
 
 func TestNamespace_Duration(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  string

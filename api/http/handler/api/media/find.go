@@ -19,14 +19,14 @@ import (
 func (m *Media) Find(ctx *gin.Context) {
 	const op = "MediaHandler.Find"
 
-	paramId := ctx.Param("id")
-	id, err := strconv.Atoi(paramId)
+	paramID := ctx.Param("id")
+	id, err := strconv.Atoi(paramID)
 	if err != nil {
 		api.Respond(ctx, 400, "Pass a valid number to obtain the media item by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	media, err := m.Store.Media.GetById(id)
+	media, err := m.Store.Media.GetByID(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, 200, errors.Message(err), err)
 		return
@@ -35,5 +35,5 @@ func (m *Media) Find(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, 200, "Successfully obtained media item with ID: "+paramId, media)
+	api.Respond(ctx, 200, "Successfully obtained media item with ID: "+paramID, media)
 }

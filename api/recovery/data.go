@@ -36,7 +36,7 @@ type (
 	// Request represents the data obtained from the context with
 	// detailed information about the http request made.
 	Request struct {
-		Url        string
+		URL        string
 		Method     string
 		IP         string
 		Referer    string
@@ -130,7 +130,7 @@ func (r *Recover) getRequestData() Request {
 	}
 
 	return Request{
-		Url:        location.Get(ctx).String() + ctx.Request.URL.Path,
+		URL:        location.Get(ctx).String() + ctx.Request.URL.Path,
 		Method:     ctx.Request.Method,
 		IP:         ctx.ClientIP(),
 		Referer:    ctx.Request.Referer(),

@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"net/http"
 	"strings"
 )
 
@@ -49,7 +50,7 @@ func (s *SPA) Serve(ctx *gin.Context) {
 func (s *SPA) file(path string, ctx *gin.Context) {
 	const op = "SPA.Serve"
 
-	file := strings.Replace(path, "/admin", "", -1)
+	file := strings.ReplaceAll(path, "/admin", "")
 	extensionArr := strings.Split(file, ".")
 	extension := extensionArr[len(extensionArr)-1]
 	path = s.Paths.Admin + file
@@ -67,7 +68,7 @@ func (s *SPA) file(path string, ctx *gin.Context) {
 	}
 
 	contentType := mime.TypeByExtension(extension)
-	ctx.Data(200, contentType, data)
+	ctx.Data(http.StatusOK, contentType, data)
 }
 
 // page
@@ -90,5 +91,5 @@ func (s *SPA) page(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Data(200, "text/html; charset=utf-8", data)
+	ctx.Data(http.StatusOK, "text/html; charset=utf-8", data)
 }

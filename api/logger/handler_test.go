@@ -11,7 +11,6 @@ import (
 )
 
 func (t *LoggerTestSuite) TestHandler() {
-
 	tt := map[string]struct {
 		err     interface{}
 		message interface{}

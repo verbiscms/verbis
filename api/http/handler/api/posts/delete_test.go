@@ -12,7 +12,6 @@ import (
 )
 
 func (t *PostsTestSuite) TestPosts_Delete() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

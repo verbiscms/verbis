@@ -40,10 +40,8 @@ func (m *Model) FilterRows(q *builder.Sqlbuilder, filters map[string][]params.Fi
 	operators := []string{"=", ">", ">=", "<", "<=", "<>", "LIKE", "IN", "NOT LIKE", "like", "in", "not like"}
 
 	if len(filters) != 0 {
-
 		counter := 0
 		for column, v := range filters {
-
 			// Strip tags
 			column = stripAlphaNum(strings.ToLower(column))
 
@@ -64,7 +62,6 @@ func (m *Model) FilterRows(q *builder.Sqlbuilder, filters map[string][]params.Fi
 			}
 
 			for _, filter := range v {
-
 				// Strip tags
 				operator := stripAlphaNum(filter.Operator)
 				value := stripAlphaNum(filter.Value)

@@ -10,7 +10,6 @@ import (
 )
 
 func TestPaths_Get(t *testing.T) {
-
 	tt := map[string]struct {
 		def  string
 		want string

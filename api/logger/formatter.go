@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
+	"net/http"
 	"strings"
 	"time"
 )
@@ -42,7 +43,7 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	f.Level()
 	f.IP()
 	f.Method()
-	f.Url()
+	f.URL()
 	f.Message()
 	f.Error()
 	f.Fields()
@@ -84,7 +85,7 @@ func (f *Formatter) StatusCode() {
 	}
 
 	if codeInt, ok := status.(int); ok {
-		if codeInt < 400 {
+		if codeInt < http.StatusBadRequest {
 			cc = color.Style{color.FgLightWhite, color.BgGreen, color.OpBold}
 		}
 	}
@@ -100,7 +101,7 @@ func (f *Formatter) StatusCode() {
 //
 // Prints the entry level of the log entry in uppercase.
 func (f *Formatter) Level() {
-	cc := color.Style{}
+	cc := color.Style{} //nolint
 	switch f.entry.Level {
 	case logrus.DebugLevel:
 		cc = color.Style{color.FgGray, color.OpBold}
@@ -113,7 +114,7 @@ func (f *Formatter) Level() {
 	}
 
 	level := strings.ToUpper(f.entry.Level.String())
-	if len(level) == 4 {
+	if len(level) == 4 { //nolint
 		f.buf.WriteString(cc.Sprintf("[%s] ", level))
 		return
 	}
@@ -145,10 +146,10 @@ func (f *Formatter) Method() {
 	f.buf.WriteString(rc.Sprintf("  %s   ", method))
 }
 
-// Url
+// URL
 //
 // Prints the entry request url if there is one set.
-func (f *Formatter) Url() {
+func (f *Formatter) URL() {
 	url, ok := f.entry.Data["request_url"].(string)
 	if ok {
 		f.buf.WriteString(fmt.Sprintf(" \"%s\" ", url))

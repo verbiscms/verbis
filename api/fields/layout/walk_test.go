@@ -12,7 +12,6 @@ import (
 )
 
 func TestByUUID(t *testing.T) {
-
 	id := uuid.New()
 	field := domain.Field{UUID: id, Type: "text"}
 	fields := domain.Fields{field}
@@ -52,7 +51,6 @@ func TestByUUID(t *testing.T) {
 }
 
 func TestByName(t *testing.T) {
-
 	field := domain.Field{Name: "test", Type: "text"}
 	fields := domain.Fields{field}
 

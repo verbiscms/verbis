@@ -17,17 +17,17 @@ import (
 type (
 	// Post defines the main page entity of Verbis.
 	Post struct {
-		Id                int           `db:"id" json:"id" binding:"numeric"`
+		Id                int           `db:"id" json:"id" binding:"numeric"` //nolint
 		UUID              uuid.UUID     `db:"uuid" json:"uuid"`
 		Slug              string        `db:"slug" json:"slug" binding:"required,max=150"`
 		Title             string        `db:"title" json:"title" binding:"required,max=500"`
 		Status            string        `db:"status" json:"status,omitempty"`
-		Resource          *string       `db:"resource" json:"resource" binding:"max=150"`
+		Resource          *string       `db:"resource" json:"resource"`
 		PageTemplate      string        `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
 		PageLayout        string        `db:"layout" json:"layout,omitempty" binding:"max=150"`
 		CodeInjectionHead *string       `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 		CodeInjectionFoot *string       `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
-		UserId            int           `db:"user_id" json:"-"`
+		UserId            int           `db:"user_id" json:"-"` //nolint
 		IsArchive         types.BitBool `db:"archive" json:"archive"`
 		PublishedAt       *time.Time    `db:"published_at" json:"published_at"`
 		CreatedAt         *time.Time    `db:"created_at" json:"created_at"`
@@ -50,8 +50,8 @@ type (
 	// PostField defines the individual field that is attached
 	// to a post.
 	PostField struct {
-		Id            int         `db:"id" json:"-"`
-		PostId        int         `db:"post_id" json:"-"`
+		Id            int         `db:"id" json:"-"`      //nolint
+		PostId        int         `db:"post_id" json:"-"` //nolint
 		UUID          uuid.UUID   `db:"uuid" json:"uuid" binding:"required"`
 		Type          string      `db:"type" json:"type"`
 		Name          string      `db:"name" json:"name"`
@@ -71,8 +71,8 @@ type (
 	// PostOptions defines the global post options that
 	// includes post meta and post seo information.
 	PostOptions struct {
-		Id       int       `json:"-"`
-		PageId   int       `json:"-" binding:"required|numeric"`
+		Id       int       `json:"-"` //nolint
+		PageId   int       `json:"-" binding:"required|numeric"` //nolint
 		Meta     *PostMeta `db:"meta" json:"meta"`
 		Seo      *PostSeo  `db:"seo" json:"seo"`
 		EditLock string    `db:"edit_lock" json:"edit_lock"`
@@ -90,14 +90,14 @@ type (
 	PostTwitter struct {
 		Title       string `json:"title,omitempty"`
 		Description string `json:"description,omitempty"`
-		ImageId     int    `json:"image_id,omitempty" binding:"numeric"`
+		ImageId     int    `json:"image_id,omitempty" binding:"numeric"` //nolint
 	}
 	// PostFacebook defines the opengraph meta information
 	// used when calling the VerbisHeader.
 	PostFacebook struct {
 		Title       string `json:"title,omitempty"`
 		Description string `json:"description,omitempty"`
-		ImageId     int    `json:"image_id,omitempty" binding:"numeric"`
+		ImageId     int    `json:"image_id,omitempty" binding:"numeric"` //nolint
 	}
 	// PostSeo defines the options for Seo on the post,
 	// including if the post is indexable, if it

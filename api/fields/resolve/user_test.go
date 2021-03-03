@@ -20,7 +20,7 @@ func (t *ResolverTestSuite) TestValue_User() {
 		"User": {
 			value: domain.FieldValue("1"),
 			mock: func(u *mocks.UserRepository) {
-				u.On("GetById", 1).Return(domain.User{
+				u.On("GetByID", 1).Return(domain.User{
 					UserPart: domain.UserPart{FirstName: "user"},
 				}, nil)
 			},
@@ -29,7 +29,7 @@ func (t *ResolverTestSuite) TestValue_User() {
 		"User Error": {
 			value: domain.FieldValue("1"),
 			mock: func(u *mocks.UserRepository) {
-				u.On("GetById", 1).Return(domain.User{}, fmt.Errorf("not found"))
+				u.On("GetByID", 1).Return(domain.User{}, fmt.Errorf("not found"))
 			},
 			want: "not found",
 		},
@@ -69,9 +69,9 @@ func (t *ResolverTestSuite) TestValue_UserResolve() {
 		"Success": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "user"},
 			mock: func(u *mocks.UserRepository) {
-				u.On("GetById", 1).Return(domain.User{UserPart: domain.UserPart{FirstName: "user1"}}, nil)
-				u.On("GetById", 2).Return(domain.User{UserPart: domain.UserPart{FirstName: "user2"}}, nil)
-				u.On("GetById", 3).Return(domain.User{UserPart: domain.UserPart{FirstName: "user3"}}, nil)
+				u.On("GetByID", 1).Return(domain.User{UserPart: domain.UserPart{FirstName: "user1"}}, nil)
+				u.On("GetByID", 2).Return(domain.User{UserPart: domain.UserPart{FirstName: "user2"}}, nil)
+				u.On("GetByID", 3).Return(domain.User{UserPart: domain.UserPart{FirstName: "user3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3", Type: "user", Value: []interface{}{
 				domain.UserPart{FirstName: "user1"},
@@ -82,9 +82,9 @@ func (t *ResolverTestSuite) TestValue_UserResolve() {
 		"Trailing Comma": {
 			field: domain.PostField{OriginalValue: "1,2,3,", Type: "user"},
 			mock: func(u *mocks.UserRepository) {
-				u.On("GetById", 1).Return(domain.User{UserPart: domain.UserPart{FirstName: "user1"}}, nil)
-				u.On("GetById", 2).Return(domain.User{UserPart: domain.UserPart{FirstName: "user2"}}, nil)
-				u.On("GetById", 3).Return(domain.User{UserPart: domain.UserPart{FirstName: "user3"}}, nil)
+				u.On("GetByID", 1).Return(domain.User{UserPart: domain.UserPart{FirstName: "user1"}}, nil)
+				u.On("GetByID", 2).Return(domain.User{UserPart: domain.UserPart{FirstName: "user2"}}, nil)
+				u.On("GetByID", 3).Return(domain.User{UserPart: domain.UserPart{FirstName: "user3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3,", Type: "user", Value: []interface{}{
 				domain.UserPart{FirstName: "user1"},
@@ -95,9 +95,9 @@ func (t *ResolverTestSuite) TestValue_UserResolve() {
 		"Leading Comma": {
 			field: domain.PostField{OriginalValue: ",1,2,3", Type: "user"},
 			mock: func(u *mocks.UserRepository) {
-				u.On("GetById", 1).Return(domain.User{UserPart: domain.UserPart{FirstName: "user1"}}, nil)
-				u.On("GetById", 2).Return(domain.User{UserPart: domain.UserPart{FirstName: "user2"}}, nil)
-				u.On("GetById", 3).Return(domain.User{UserPart: domain.UserPart{FirstName: "user3"}}, nil)
+				u.On("GetByID", 1).Return(domain.User{UserPart: domain.UserPart{FirstName: "user1"}}, nil)
+				u.On("GetByID", 2).Return(domain.User{UserPart: domain.UserPart{FirstName: "user2"}}, nil)
+				u.On("GetByID", 3).Return(domain.User{UserPart: domain.UserPart{FirstName: "user3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: ",1,2,3", Type: "user", Value: []interface{}{
 				domain.UserPart{FirstName: "user1"},

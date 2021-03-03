@@ -4,7 +4,10 @@
 
 package seo
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 // SiteMapResource
 //
@@ -24,5 +27,5 @@ func (s *SEO) SiteMapResource(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Data(200, "application/xml; charset=utf-8", sitemap)
+	ctx.Data(http.StatusOK, "application/xml; charset=utf-8", sitemap)
 }

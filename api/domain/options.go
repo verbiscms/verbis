@@ -30,10 +30,10 @@ type (
 		SiteTitle       string `json:"site_title" binding:"required"`
 		SiteDescription string `json:"site_description" binding:"required"`
 		SiteLogo        string `json:"site_logo" binding:"required"`
-		SiteUrl         string `json:"site_url" binding:"required,url"`
+		SiteURL         string `json:"site_url" binding:"required,url"`
 		// Theme
 		ActiveTheme string `json:"active_theme" binding:"required"`
-		Homepage    int    `json:"homepage" binding:"required"`
+		Homepage    int    `json:"homepage"`
 		// General
 		GeneralLocale string `json:"general_locale" binding:"required"`
 		// Contact
@@ -55,10 +55,10 @@ type (
 		MetaDescription         string `json:"meta_description" binding:"omitempty"`
 		MetaFacebookTitle       string `json:"meta_facebook_title" binding:"omitempty"`
 		MetaFacebookDescription string `json:"meta_facebook_description" binding:"omitempty"`
-		MetaFacebookImageId     int    `json:"meta_facebook_image_id" binding:"numeric"`
+		MetaFacebookImageId     int    `json:"meta_facebook_image_id" binding:"numeric"` //nolint
 		MetaTwitterTitle        string `json:"meta_twitter_title" binding:"omitempty"`
 		MetaTwitterDescription  string `json:"meta_twitter_description" binding:"omitempty"`
-		MetaTwitterImageId      int    `json:"meta_twitter_image_id" binding:"omitempty,numeric"`
+		MetaTwitterImageID      int    `json:"meta_twitter_image_id" binding:"omitempty,numeric"`
 		// SEO
 		SeoPublic           bool     `json:"seo_public"`
 		SeoSitemapServe     bool     `json:"seo_sitemap_serve"`

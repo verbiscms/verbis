@@ -17,7 +17,6 @@ import (
 // Returns a domain.Field and true if it was found.
 // Returns false if it wasn't.
 func walkerByUUID(uuid uuid.UUID, field domain.Field) (domain.Field, bool) {
-
 	// Account for normal field
 	if field.UUID == uuid {
 		return field, true

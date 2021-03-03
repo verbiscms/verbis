@@ -6,7 +6,7 @@ type (
 	// Redirects defines the data used for redirecting http
 	// requests.
 	Redirect struct {
-		Id        int64      `db:"id" json:"id"`
+		Id        int64      `db:"id" json:"id"` //nolint
 		From      string     `db:"from_path" json:"from_path" binding:"required"`
 		To        string     `db:"to_path" json:"to_path" binding:"required"`
 		Code      int        `db:"code" json:"code" binding:"required,numeric"`

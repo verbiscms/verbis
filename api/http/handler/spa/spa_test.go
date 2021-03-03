@@ -64,7 +64,6 @@ func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, ctx *gin.Context), admi
 }
 
 func (t *SPATestSuite) TestSPA() {
-
 	tt := map[string]struct {
 		want      string
 		status    int

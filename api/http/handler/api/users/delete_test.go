@@ -12,7 +12,6 @@ import (
 )
 
 func (t *UsersTestSuite) TestUser_Delete() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

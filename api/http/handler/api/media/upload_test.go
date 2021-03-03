@@ -14,7 +14,6 @@ import (
 )
 
 func (t *MediaTestSuite) TestMedia_Upload() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

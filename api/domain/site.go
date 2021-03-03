@@ -13,7 +13,7 @@ type (
 		Title       string `json:"title"`
 		Description string `json:"description"`
 		Logo        string `json:"logo"`
-		Url         string `json:"url"`
+		URL         string `json:"url"`
 		Version     string `json:"version"`
 	}
 	// ThemeConfig defines the data used for unmarshalling the
@@ -30,7 +30,7 @@ type (
 		Editor        Editor              `yaml:"editor" json:"editor"`
 	}
 
-	//TODO
+	// TODO
 	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
 	AdminConfig struct {

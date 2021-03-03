@@ -105,13 +105,13 @@ func (_m *Repository) FindByName(name string) (domain.Category, error) {
 	return r0, r1
 }
 
-// FindByPost provides a mock function with given fields: pageId
-func (_m *Repository) FindByPost(pageId int) (*domain.Category, error) {
-	ret := _m.Called(pageId)
+// FindByPost provides a mock function with given fields: pageID
+func (_m *Repository) FindByPost(pageID int) (*domain.Category, error) {
+	ret := _m.Called(pageID)
 
 	var r0 *domain.Category
 	if rf, ok := ret.Get(0).(func(int) *domain.Category); ok {
-		r0 = rf(pageId)
+		r0 = rf(pageID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Category)
@@ -120,7 +120,7 @@ func (_m *Repository) FindByPost(pageId int) (*domain.Category, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(pageId)
+		r1 = rf(pageID)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -12,7 +12,6 @@ import (
 )
 
 func (t *AuthTestSuite) TestAuth_SendResetPassword() {
-
 	var (
 		srp = SendResetPassword{
 			Email: "info@verbiscms.com",

@@ -22,7 +22,7 @@ func (v *Value) user(value domain.FieldValue) (interface{}, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast user ID to an integer", Operation: op, Err: err}
 	}
 
-	user, err := v.deps.Store.User.GetById(id)
+	user, err := v.deps.Store.User.GetByID(id)
 	if err != nil {
 		return nil, err
 	}

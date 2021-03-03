@@ -49,6 +49,7 @@ func Test_Hammer(t *testing.T) {
 	fmt.Println(photoErr)
 }
 
+//nolint
 func runHammer(i int) {
 	defer func() {
 		wg.Done()

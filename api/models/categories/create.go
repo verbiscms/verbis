@@ -20,9 +20,9 @@ func (s *Store) Create(c domain.Category) (domain.Category, error) {
 	const op = "CategoryRepository.Create"
 
 	// TODO Validate function, check the unique column?
-	//if s.ExistsByName(c.Name) {
+	// if s.ExistsByName(c.Name) { //nolint
 	//	return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op, Err: fmt.Errorf("name already exists")}
-	//}
+	// }
 
 	q := s.Builder.Skip([]string{"id"}).Args([]string{"uuid"}).BuildInsert(TableName, c)
 

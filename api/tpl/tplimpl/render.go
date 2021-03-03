@@ -27,7 +27,7 @@ type fileHandler func(config tpl.TemplateConfig, template string) (content strin
 // engine.
 //
 // Returns errors.TEMPLATE if thee file does not exist or filepath.Abs failed.
-func DefaultFileHandler() fileHandler {
+func DefaultFileHandler() fileHandler { //nolint
 	const op = "TemplateEngine.defaultFileHandler"
 
 	return func(config tpl.TemplateConfig, template string) (content string, err error) {

@@ -16,7 +16,6 @@ var (
 )
 
 func TestNamespace_RandInt(t *testing.T) {
-
 	tt := map[string]struct {
 		a    interface{}
 		b    interface{}
@@ -60,7 +59,6 @@ func TestNamespace_RandInt(t *testing.T) {
 }
 
 func TestNamespace_RandFloat(t *testing.T) {
-
 	tt := map[string]struct {
 		a    interface{}
 		b    interface{}
@@ -104,7 +102,6 @@ func TestNamespace_RandFloat(t *testing.T) {
 }
 
 func TestNamespace_RandAlpha(t *testing.T) {
-
 	tt := map[string]struct {
 		len  int64
 		want int

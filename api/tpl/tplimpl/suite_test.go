@@ -31,14 +31,14 @@ func (t *TplTestSuite) BeforeTest(suiteName, testName string) {
 	b := bytes.Buffer{}
 	t.logWriter = b
 	logger.SetOutput(&t.logWriter)
-	t.SetApiPath()
+	t.SetAPIPath()
 }
 
 func TestTpl(t *testing.T) {
 	suite.Run(t, new(TplTestSuite))
 }
 
-func (t *TplTestSuite) SetApiPath() {
+func (t *TplTestSuite) SetAPIPath() {
 	wd, err := os.Getwd()
 	t.NoError(err)
 	t.apiPath = filepath.Join(filepath.Dir(wd), "..")

@@ -49,7 +49,7 @@ func (t *CategoriesTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(int64(category.Id))
+			got, err := s.Find(category.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

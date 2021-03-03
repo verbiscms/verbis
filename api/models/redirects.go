@@ -10,7 +10,7 @@ import (
 // RedirectRepository defines methods for Redirects to interact with the database
 type RedirectRepository interface {
 	Get(meta params.Params) (domain.Redirects, int, error)
-	GetById(id int64) (domain.Redirect, error)
+	GetByID(id int64) (domain.Redirect, error)
 	GetByFrom(from string) (domain.Redirect, error)
 	Create(r *domain.Redirect) (domain.Redirect, error)
 	Update(r *domain.Redirect) (domain.Redirect, error)
@@ -76,9 +76,9 @@ func (s *RedirectStore) Get(meta params.Params) (domain.Redirects, int, error) {
 	return r, total, nil
 }
 
-// Get the redirect by ID.
+// GetByID the redirect by ID.
 // Returns errors.NOTFOUND if the redirect was not found by the given from path.
-func (s *RedirectStore) GetById(id int64) (domain.Redirect, error) {
+func (s *RedirectStore) GetByID(id int64) (domain.Redirect, error) {
 	const op = "RedirectStore.GetByPost"
 	var r domain.Redirect
 	if err := s.DB.Get(&r, "SELECT * FROM redirects WHERE id = ?", id); err != nil {

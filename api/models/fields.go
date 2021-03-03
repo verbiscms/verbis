@@ -6,21 +6,20 @@ package models
 
 import (
 	"fmt"
-	location "github.com/ainsleyclark/verbis/api/fields/converter"
-	"github.com/google/uuid"
-	//"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	location "github.com/ainsleyclark/verbis/api/fields/converter"
+	"github.com/google/uuid"
 )
 
 // FieldsRepository defines methods for Posts to interact with the database
 type FieldsRepository interface {
-	GetByPost(postId int) (domain.PostFields, error)
+	GetByPost(postID int) (domain.PostFields, error)
 	GetLayout(post domain.PostDatum) domain.FieldGroups
-	UpdateCreate(postId int, f domain.PostFields) error
+	UpdateCreate(postID int, f domain.PostFields) error
 	Create(f domain.PostField) (domain.PostField, error)
 	Update(f domain.PostField) (domain.PostField, error)
-	Exists(postId int, uuid uuid.UUID, key string) bool
+	Exists(postID int, uuid uuid.UUID, key string) bool
 }
 
 // FieldsStore defines the data layer for Posts
@@ -42,8 +41,8 @@ func newFields(cfg *StoreConfig) *FieldsStore {
 
 // UpdateCreate checks to see if the record exists before updating
 // or creating the new record.
-func (s *FieldsStore) UpdateCreate(postId int, f domain.PostFields) error {
-	fields, err := s.GetByPost(postId)
+func (s *FieldsStore) UpdateCreate(postID int, f domain.PostFields) error {
+	fields, err := s.GetByPost(postID)
 	if err != nil {
 		return err
 	}
@@ -51,7 +50,7 @@ func (s *FieldsStore) UpdateCreate(postId int, f domain.PostFields) error {
 	// Find fields that should be deleted (not in the array)
 	for _, v := range fields {
 		if !s.shouldDelete(v, f) {
-			err := s.Delete(postId, v)
+			err := s.Delete(postID, v)
 			if err != nil {
 				return err
 			}
@@ -60,8 +59,8 @@ func (s *FieldsStore) UpdateCreate(postId int, f domain.PostFields) error {
 
 	// Update or create the existing fields passed.
 	for _, v := range f {
-		v.PostId = postId
-		if s.Exists(postId, v.UUID, v.Key) {
+		v.PostId = postID
+		if s.Exists(postID, v.UUID, v.Key) {
 			_, err := s.Update(v)
 			if err != nil {
 				return err
@@ -79,22 +78,22 @@ func (s *FieldsStore) UpdateCreate(postId int, f domain.PostFields) error {
 
 // GetByPost fields by a post ID.
 // Returns errors.NOTFOUND if there were no records found.
-func (s *FieldsStore) GetByPost(postId int) (domain.PostFields, error) {
+func (s *FieldsStore) GetByPost(postID int) (domain.PostFields, error) {
 	const op = "FieldsStore.GetByPost"
 	var f domain.PostFields
-	if err := s.DB.Select(&f, "SELECT * FROM post_fields WHERE post_id = ?", postId); err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the ID: %d", postId), Operation: op, Err: err}
+	if err := s.DB.Select(&f, "SELECT * FROM post_fields WHERE post_id = ?", postID); err != nil {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the ID: %d", postID), Operation: op, Err: err}
 	}
 	return f, nil
 }
 
 // GetByPost fields by a post ID and key.
 // Returns errors.NOTFOUND if there were no records found.
-func (s *FieldsStore) GetByPostAndKey(key string, postId int) (domain.PostField, error) {
+func (s *FieldsStore) GetByPostAndKey(key string, postID int) (domain.PostField, error) {
 	const op = "FieldsRepository.GetByPostAndKey"
 	var f domain.PostField
-	if err := s.DB.Select(&f, "SELECT * FROM post_fields WHERE post_id = ? AND field_key = ? LIMIT = 1", postId, key); err != nil {
-		return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the page ID: %d and key: %s", postId, key), Operation: op, Err: err}
+	if err := s.DB.Select(&f, "SELECT * FROM post_fields WHERE post_id = ? AND field_key = ? LIMIT = 1", postID, key); err != nil {
+		return domain.PostField{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get post field with the page ID: %d and key: %s", postID, key), Operation: op, Err: err}
 	}
 	return f, nil
 }
@@ -124,18 +123,18 @@ func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
 
 // Update a post field by Id
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *FieldsStore) Delete(postId int, f domain.PostField) error {
+func (s *FieldsStore) Delete(postID int, f domain.PostField) error {
 	const op = "FieldsRepository.Delete"
-	if _, err := s.DB.Exec("DELETE FROM post_fields WHERE uuid = ? AND field_key = ? AND post_id = ?", f.UUID, f.Key, postId); err != nil {
+	if _, err := s.DB.Exec("DELETE FROM post_fields WHERE uuid = ? AND field_key = ? AND post_id = ?", f.UUID, f.Key, postID); err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete post field with the uuid: %v", f.UUID), Operation: op, Err: err}
 	}
 	return nil
 }
 
 // Exists Checks if a post field exists by the given UUID and key
-func (s *FieldsStore) Exists(postId int, uuid uuid.UUID, key string) bool {
+func (s *FieldsStore) Exists(postID int, uuid uuid.UUID, key string) bool {
 	var exists bool
-	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND post_id = ? AND field_key = ?)", uuid.String(), postId, key).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND post_id = ? AND field_key = ?)", uuid.String(), postID, key).Scan(&exists)
 	return exists
 }
 

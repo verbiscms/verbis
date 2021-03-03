@@ -36,7 +36,7 @@ type minify struct {
 //
 // Creates a new Minify instance, if no config options are
 // passed the defaultConfig is used.
-func New(cfg ...Config) *minify {
+func New(cfg ...Config) Minifier {
 	m := min.New()
 
 	m.AddFunc(htmlMime, html.Minify)

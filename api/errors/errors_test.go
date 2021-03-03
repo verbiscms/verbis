@@ -7,7 +7,6 @@ import (
 )
 
 func TestError_Error(t *testing.T) {
-
 	tt := map[string]struct {
 		input *Error
 		want  string
@@ -34,7 +33,6 @@ func TestError_Error(t *testing.T) {
 }
 
 func TestError_Code(t *testing.T) {
-
 	tt := map[string]struct {
 		input error
 		want  string
@@ -61,7 +59,6 @@ func TestError_Code(t *testing.T) {
 }
 
 func Test_Message(t *testing.T) {
-
 	tt := map[string]struct {
 		input error
 		want  string
@@ -88,7 +85,6 @@ func Test_Message(t *testing.T) {
 }
 
 func TestError_ToError(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  *Error

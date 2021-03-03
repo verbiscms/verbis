@@ -79,7 +79,6 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields dom
 
 	var repeater = make(Repeater, amount)
 	for index := 0; index < len(repeater); index++ {
-
 		r := walker{
 			Key:     key,
 			Index:   index,

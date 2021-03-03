@@ -13,9 +13,9 @@ import (
 	"strings"
 )
 
-// PartialFunc describes the function for includes or rendering
+// Func describes the function for includes or rendering
 // partials within the template.
-type PartialFunc func(name string, data ...interface{}) (template.HTML, error)
+type Func func(name string, data ...interface{}) (template.HTML, error)
 
 // Partial
 //
@@ -27,7 +27,7 @@ type PartialFunc func(name string, data ...interface{}) (template.HTML, error)
 // could not be executed.
 //
 // Example: {{ partial "partials/circle.svg" (dict "radius" 50 "fill" "red") }}
-func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) PartialFunc {
+func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) Func {
 	const op = "Templates.Partial"
 
 	return func(name string, data ...interface{}) (template.HTML, error) {

@@ -18,7 +18,7 @@ func (s *Site) Global() domain.Site {
 		Title:       s.options.SiteTitle,
 		Description: s.options.SiteDescription,
 		Logo:        s.options.SiteLogo,
-		Url:         s.options.SiteUrl,
+		URL:         s.options.SiteURL,
 		Version:     api.App.Version,
 	}
 }

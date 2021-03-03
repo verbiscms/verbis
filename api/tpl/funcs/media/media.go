@@ -16,14 +16,14 @@ import (
 //
 // Example:
 // {{ $image := media 10 }}
-// {{ $image.Url }}
+// {{ $image.URL }}
 func (ns *Namespace) Find(i interface{}) interface{} {
 	id, err := cast.ToIntE(i)
 	if err != nil || i == nil {
 		return nil
 	}
 
-	m, err := ns.deps.Store.Media.GetById(id)
+	m, err := ns.deps.Store.Media.GetByID(id)
 	if err != nil {
 		return nil
 	}
