@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"os"
 )
 
 // Templates
@@ -17,10 +18,10 @@ import (
 //
 // Returns errors.NOTFOUND if no templates were found.
 // Returns errors.INTERNAL if the template path is invalid.
-func (s *Site) Templates(themePath string) (domain.Templates, error) {
+func (s *Site) Templates() (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 
-	tplDir := themePath + s.config.TemplateDir
+	tplDir := s.theme + s.options.ActiveTheme + string(os.PathSeparator) + s.config.TemplateDir
 	files, err := s.walkMatch(tplDir, "*"+s.config.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting templates with the path: %s", tplDir), Operation: op, Err: ErrNoTemplates}

@@ -27,11 +27,6 @@ func (_m *Handler) Layouts(ctx *gin.Context) {
 	_m.Called(ctx)
 }
 
-// Screenshot provides a mock function with given fields: ctx
-func (_m *Handler) Screenshot(ctx *gin.Context) {
-	_m.Called(ctx)
-}
-
 // Templates provides a mock function with given fields: ctx
 func (_m *Handler) Templates(ctx *gin.Context) {
 	_m.Called(ctx)

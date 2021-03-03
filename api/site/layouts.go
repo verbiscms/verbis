@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"os"
 )
 
 // Layouts
@@ -17,10 +18,10 @@ import (
 //
 // Returns errors.NOTFOUND if no layouts were found.
 // Returns errors.INTERNAL if the layout path is invalid.
-func (s *Site) Layouts(themePath string) (domain.Layouts, error) {
+func (s *Site) Layouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
-	layoutDir := themePath + s.config.TemplateDir
+	layoutDir := s.theme + s.options.ActiveTheme + string(os.PathSeparator) + s.config.LayoutDir
 	files, err := s.walkMatch(layoutDir, "*"+s.config.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting templates with the path: %s", layoutDir), Operation: op, Err: ErrNoLayouts}

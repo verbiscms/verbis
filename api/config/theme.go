@@ -5,12 +5,13 @@
 package config
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ghodss/yaml"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"sync"
 )
 
@@ -68,7 +69,6 @@ func Set(config domain.ThemeConfig) {
 func Fetch(path string) *domain.ThemeConfig {
 	theme, err := getThemeConfig(path, FileName)
 	if err != nil {
-		fmt.Println(err)
 		logger.WithError(err).Error()
 	}
 	Set(*theme)
@@ -94,17 +94,24 @@ func Config(path string) (*domain.ThemeConfig, error) {
 func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
 	const op = "Config.Fetch"
 
-	theme := DefaultTheme
+	cfg := DefaultTheme
 
-	cfg, err := ioutil.ReadFile(path + filename)
+	file, err := ioutil.ReadFile(path + string(os.PathSeparator) + filename)
 	if err != nil {
 		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Unable to get retrieve theme config file", Operation: op, Err: err}
 	}
 
-	err = yaml.Unmarshal(cfg, &theme)
+	err = yaml.Unmarshal(file, &cfg)
 	if err != nil {
 		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Syntax error in theme config file", Operation: op, Err: err}
 	}
 
-	return &theme, nil
+	screenshot, err := findScreenshot(path)
+	if err == nil {
+		cfg.Theme.Screenshot = screenshot
+	}
+
+	cfg.Theme.FileName = filepath.Base(path)
+
+	return &cfg, nil
 }

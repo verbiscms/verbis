@@ -94,12 +94,12 @@ var (
 	mediaItems = domain.MediaItems{
 		{
 			Id:    1,
-			URL:   "/uploads/1",
+			Url:   "/uploads/1",
 			Title: "title",
 		},
 		{
 			Id:    1,
-			URL:   "/uploads/1",
+			Url:   "/uploads/1",
 			Title: "title",
 		},
 	}

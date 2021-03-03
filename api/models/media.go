@@ -329,7 +329,7 @@ func (s *MediaStore) insert(uniq uuid.UUID, name, filePath string, fileSize int,
 
 	m := domain.Media{
 		UUID:        uniq,
-		URL:         s.getURL() + "/" + name,
+		Url:         s.getURL() + "/" + name,
 		Title:       "",
 		Description: "",
 		Alt:         "",
@@ -342,7 +342,7 @@ func (s *MediaStore) insert(uniq uuid.UUID, name, filePath string, fileSize int,
 	}
 
 	q := "INSERT INTO media (uuid, url, title, alt, description, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.DB.Exec(q, m.UUID, m.URL, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
+	c, err := s.DB.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
 
 	if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the new media item with the name: %v", name), Operation: op, Err: err}
@@ -375,7 +375,7 @@ func (s *MediaStore) Update(m *domain.Media) error {
 	}
 
 	// Clear the cache
-	cache.Store.Delete(m.URL)
+	cache.Store.Delete(m.Url)
 
 	return nil
 }
@@ -394,7 +394,7 @@ func (s *MediaStore) Delete(id int) error {
 		return err
 	}
 
-	extension := files.GetFileExtension(m.URL)
+	extension := files.GetFileExtension(m.Url)
 
 	// Delete entry from database
 	if _, err := s.DB.Exec("DELETE FROM media WHERE id = ?", id); err != nil {
@@ -413,7 +413,7 @@ func (s *MediaStore) Delete(id int) error {
 	}
 
 	// Check if the file deleted was the one stored in the site logo
-	if m.URL == s.options.SiteLogo {
+	if m.Url == s.options.SiteLogo {
 		logo, _ := json.Marshal(api.App.Logo)
 		if err := s.optionsModel.Update("site_logo", logo); err != nil {
 			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not update the site logo", Operation: op, Err: err})

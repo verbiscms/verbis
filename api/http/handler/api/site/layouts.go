@@ -18,7 +18,7 @@ import (
 func (s *Site) Layouts(ctx *gin.Context) {
 	const op = "SiteHandler.Layouts"
 
-	templates, err := s.Site.Layouts(s.ThemePath())
+	templates, err := s.Site.Layouts()
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

@@ -13,7 +13,7 @@ type (
 		Title       string `json:"title"`
 		Description string `json:"description"`
 		Logo        string `json:"logo"`
-		URL         string `json:"url"`
+		Url         string `json:"url"` //nolint
 		Version     string `json:"version"`
 	}
 	// ThemeConfig defines the data used for unmarshalling the
@@ -53,7 +53,8 @@ type (
 		Title       string `yaml:"title" json:"title"`
 		Description string `yaml:"description" json:"description"`
 		Version     string `yaml:"version" json:"version"`
-		Screenshot  string `json:"screenshot"`
+		Screenshot  string `yaml:"-" json:"screenshot"`
+		FileName    string `yaml:"-" json:"-"`
 	}
 	// Resources defines the slice of resources declared in
 	// the theme config.
