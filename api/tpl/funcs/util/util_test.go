@@ -71,7 +71,6 @@ func TestNamespace_Len(t *testing.T) {
 }
 
 func TestNamespace_Explode(t *testing.T) {
-
 	var str []string
 
 	tt := map[string]struct {

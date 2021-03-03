@@ -115,7 +115,6 @@ func TestNamespace_SafeCSS(t *testing.T) {
 }
 
 func TestNamespace_SafeJS(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -147,7 +146,6 @@ func TestNamespace_SafeJS(t *testing.T) {
 }
 
 func TestNamespace_SafeJSStr(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -179,7 +177,6 @@ func TestNamespace_SafeJSStr(t *testing.T) {
 }
 
 func TestNamespace_SafeURL(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}

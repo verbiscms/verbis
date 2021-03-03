@@ -55,7 +55,6 @@ func Setup() (*Namespace, *mocks.PostsRepository) {
 }
 
 func TestNamespace_Find(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		mock  func(m *mocks.PostsRepository)
@@ -102,7 +101,6 @@ func TestNamespace_Find(t *testing.T) {
 }
 
 func TestNamespace_List(t *testing.T) {
-
 	p := params2.Params{
 		Page:           1,
 		Limit:          15,

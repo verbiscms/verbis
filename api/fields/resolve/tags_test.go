@@ -7,7 +7,6 @@ package resolve
 import "github.com/ainsleyclark/verbis/api/domain"
 
 func (t *ResolverTestSuite) TestValue_Tags() {
-
 	tt := map[string]struct {
 		value domain.FieldValue
 		want  tags
@@ -44,7 +43,6 @@ func (t *ResolverTestSuite) TestValue_Tags() {
 }
 
 func (t *ResolverTestSuite) TestValue_TagsResolve() {
-
 	tt := map[string]struct {
 		field domain.PostField
 		want  domain.PostField

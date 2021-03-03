@@ -19,7 +19,6 @@ const (
 )
 
 func (t *CategoriesTestSuite) TestStore_Find() {
-
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -60,7 +59,6 @@ func (t *CategoriesTestSuite) TestStore_Find() {
 }
 
 func (t *CategoriesTestSuite) TestStore_FindBySlug() {
-
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -101,7 +99,6 @@ func (t *CategoriesTestSuite) TestStore_FindBySlug() {
 }
 
 func (t *CategoriesTestSuite) TestStore_FindByName() {
-
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)

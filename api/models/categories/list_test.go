@@ -20,7 +20,6 @@ var (
 )
 
 func (t *CategoriesTestSuite) TestStore_List() {
-
 	tt := map[string]struct {
 		meta  params.Params
 		mock  func(m sqlmock.Sqlmock)

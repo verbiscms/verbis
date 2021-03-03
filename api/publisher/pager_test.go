@@ -15,7 +15,6 @@ import (
 )
 
 func TestPage(t *testing.T) {
-
 	tt := map[string]struct {
 		url     string
 		want    string
@@ -34,9 +33,7 @@ func TestPage(t *testing.T) {
 	}
 
 	for name, test := range tt {
-
 		t.Run(name, func(t *testing.T) {
-
 			gin.SetMode(gin.TestMode)
 			gin.DefaultWriter = ioutil.Discard
 			r := gin.Default()

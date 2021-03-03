@@ -88,7 +88,6 @@ func TestNamespace_MetaTitle(t *testing.T) {
 }
 
 func TestNamespace(t *testing.T) {
-
 	tt := map[string]struct {
 		mock func(th *tplMocks.TemplateHandler)
 		fn   func(ns *Namespace) interface{}
@@ -155,7 +154,6 @@ func TestNamespace(t *testing.T) {
 }
 
 func TestTemplateMeta_GetImage(t *testing.T) {
-
 	media := domain.Media{Id: 1, URL: "testurl"}
 
 	tt := map[string]struct {

@@ -287,10 +287,8 @@ func (s *UserStore) CheckSession(token string) error {
 
 	// If not login
 	if u.TokenLastUsed != nil {
-
 		// Destroy the token and create a new one if session expired.
 		inactiveFor := time.Since(*u.TokenLastUsed).Minutes()
-
 		if int(inactiveFor) > s.Config.Admin.InactiveSessionTime {
 			newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 

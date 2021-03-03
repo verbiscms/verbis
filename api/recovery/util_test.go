@@ -74,7 +74,6 @@ func (t *RecoverTestSuite) Test_TplLineNumber() {
 }
 
 func (t *RecoverTestSuite) Test_TplFileContents() {
-
 	tt := map[string]struct {
 		input string
 		want  string

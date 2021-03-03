@@ -17,7 +17,6 @@ var (
 )
 
 func TestNamespace_Debug(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  template.HTML
@@ -53,7 +52,6 @@ func TestNamespace_Debug(t *testing.T) {
 }
 
 func TestNamespace_Dump(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}

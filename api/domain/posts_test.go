@@ -13,7 +13,6 @@ import (
 )
 
 func TestPostDatum_IsPublic(t *testing.T) {
-
 	tt := map[string]struct {
 		input string
 		want  bool
@@ -39,7 +38,6 @@ func TestPostDatum_IsPublic(t *testing.T) {
 	}
 }
 func TestPostDatum_HasResource(t *testing.T) {
-
 	r := "news"
 
 	tt := map[string]struct {
@@ -68,7 +66,6 @@ func TestPostDatum_HasResource(t *testing.T) {
 }
 
 func TestPostDatum_HasCategories(t *testing.T) {
-
 	tt := map[string]struct {
 		input *Category
 		want  bool
@@ -107,7 +104,6 @@ func TestPostDatum_Tpl(t *testing.T) {
 }
 
 func TestPostField_TypeIsInSlice(t *testing.T) {
-
 	tt := map[string]struct {
 		input []string
 		field *PostField
@@ -134,7 +130,6 @@ func TestPostField_TypeIsInSlice(t *testing.T) {
 }
 
 func TestPostMeta_Scan(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -171,7 +166,6 @@ func TestPostMeta_Scan(t *testing.T) {
 }
 
 func TestPostMeta_Value(t *testing.T) {
-
 	tt := map[string]struct {
 		input PostMeta
 		want  interface{}
@@ -199,7 +193,6 @@ func TestPostMeta_Value(t *testing.T) {
 }
 
 func TestPostSeo_Scan(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -236,7 +229,6 @@ func TestPostSeo_Scan(t *testing.T) {
 }
 
 func TestPostSeo_Value(t *testing.T) {
-
 	tt := map[string]struct {
 		input PostSeo
 		want  interface{}

@@ -10,7 +10,6 @@ import (
 )
 
 func (t *FieldTestSuite) TestService_GetField() {
-
 	tt := map[string]struct {
 		fields domain.PostFields
 		key    string
@@ -67,7 +66,6 @@ func (t *FieldTestSuite) TestService_GetField() {
 }
 
 func (t *FieldTestSuite) TestService_GetFieldObject() {
-
 	tt := map[string]struct {
 		fields domain.PostFields
 		key    string

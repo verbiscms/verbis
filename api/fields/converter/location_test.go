@@ -341,7 +341,6 @@ func (t *LocationTestSuite) Test_CheckLocation() {
 }
 
 func (t *LocationTestSuite) Test_CheckMatch() {
-
 	tt := map[string]struct {
 		matches []bool
 		want    bool
@@ -364,7 +363,6 @@ func (t *LocationTestSuite) Test_CheckMatch() {
 }
 
 func (t *LocationTestSuite) Test_HasBeenAdded() {
-
 	key := uuid.New()
 
 	tt := map[string]struct {

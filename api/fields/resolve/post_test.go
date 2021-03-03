@@ -11,7 +11,6 @@ import (
 )
 
 func (t *ResolverTestSuite) TestValue_Post() {
-
 	tt := map[string]struct {
 		value domain.FieldValue
 		mock  func(p *mocks.PostsRepository)
@@ -60,7 +59,6 @@ func (t *ResolverTestSuite) TestValue_Post() {
 }
 
 func (t *ResolverTestSuite) TestValue_PostResolve() {
-
 	tt := map[string]struct {
 		field domain.PostField
 		mock  func(p *mocks.PostsRepository)

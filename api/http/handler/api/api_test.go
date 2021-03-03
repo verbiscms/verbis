@@ -39,7 +39,6 @@ func Test_Params(t *testing.T) {
 }
 
 func (t *APITestSuite) TestApiParams_Param() {
-
 	tt := map[string]struct {
 		query string
 		param string

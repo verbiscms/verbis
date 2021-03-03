@@ -129,7 +129,6 @@ func TestNamespace_RandAlpha(t *testing.T) {
 }
 
 func TestNamespace_RandAlphaNum(t *testing.T) {
-
 	tt := map[string]struct {
 		len  int64
 		want int
