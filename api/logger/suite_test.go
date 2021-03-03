@@ -37,7 +37,6 @@ func (t *LoggerTestSuite) TearDownTestSuite() {
 	Init(&environment.Env{
 		AppDebug: "true",
 	})
-
 }
 
 // Setup

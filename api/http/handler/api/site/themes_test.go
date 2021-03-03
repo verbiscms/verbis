@@ -13,6 +13,8 @@ import (
 )
 
 func (t *SiteTestSuite) TestSite_Themes() {
+	t.T().Skip()
+
 	tt := map[string]struct {
 		want    interface{}
 		status  int
