@@ -13,7 +13,6 @@ func (t *TplTestSuite) TestNew() {
 }
 
 func (t *TplTestSuite) TestTemplateManager_ExecuteTpl() {
-
 	tt := map[string]struct {
 		text string
 		data interface{}

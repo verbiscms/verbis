@@ -43,7 +43,6 @@ func (t *TplTestSuite) TestFuncs() {
 }
 
 func (t *TplTestSuite) TestFuncs_FuncMap() {
-
 	tt := map[string]struct {
 		namespaces internal.FuncNamespaces
 		want       template.FuncMap

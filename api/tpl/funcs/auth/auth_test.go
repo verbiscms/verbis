@@ -37,7 +37,6 @@ func Setup(cookie string) (*Namespace, *mocks.UserRepository) {
 }
 
 func Test_Auth(t *testing.T) {
-
 	tt := map[string]struct {
 		want   interface{}
 		cookie string
@@ -77,7 +76,6 @@ func Test_Auth(t *testing.T) {
 }
 
 func Test_Admin(t *testing.T) {
-
 	tt := map[string]struct {
 		want   interface{}
 		cookie string

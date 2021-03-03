@@ -16,7 +16,6 @@ var (
 )
 
 func TestNamespace_Env(t *testing.T) {
-
 	tt := map[string]struct {
 		env   func() error
 		input string
@@ -50,7 +49,6 @@ func TestNamespace_Env(t *testing.T) {
 }
 
 func TestNamespace_ExpandEnv(t *testing.T) {
-
 	tt := map[string]struct {
 		env   func() error
 		input string

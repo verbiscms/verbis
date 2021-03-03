@@ -32,7 +32,6 @@ func (t *TplTestSuite) TestTemplateManager_Prepare() {
 }
 
 func (t *TplTestSuite) TestExecute_Execute() {
-
 	tt := map[string]struct {
 		config      tpl.Config
 		name        string
@@ -143,7 +142,6 @@ func (t *TplTestSuite) TestExecute_Execute() {
 }
 
 func (t *TplTestSuite) TestExecute_Exists() {
-
 	tt := map[string]struct {
 		handler fileHandler
 		want    bool

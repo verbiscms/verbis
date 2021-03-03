@@ -12,7 +12,6 @@ import (
 )
 
 func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
-
 	token := "test"
 
 	tt := map[string]struct {

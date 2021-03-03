@@ -16,7 +16,6 @@ import (
 )
 
 func (t *RedirectsTestSuite) TestCategories_Update() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

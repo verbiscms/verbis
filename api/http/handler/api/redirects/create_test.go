@@ -15,8 +15,7 @@ import (
 	"net/http"
 )
 
-func (t *RedirectsTestSuite) TestCategories_Create() {
-
+func (t *RedirectsTestSuite) TestRedirects_Create() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int

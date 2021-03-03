@@ -35,7 +35,6 @@ func Setup(t *testing.T, request string, f func(ns *Namespace) string) string {
 }
 
 func TestNamespace_Base(t *testing.T) {
-
 	tt := map[string]struct {
 		request string
 		want    string
@@ -65,7 +64,6 @@ func TestNamespace_Base(t *testing.T) {
 }
 
 func TestNamespace_Scheme(t *testing.T) {
-
 	tt := map[string]struct {
 		request string
 		want    string
@@ -95,7 +93,6 @@ func TestNamespace_Scheme(t *testing.T) {
 }
 
 func TestNamespace_Host(t *testing.T) {
-
 	tt := map[string]struct {
 		request string
 		want    string
@@ -125,7 +122,6 @@ func TestNamespace_Host(t *testing.T) {
 }
 
 func TestNamespace_Full(t *testing.T) {
-
 	tt := map[string]struct {
 		request string
 		want    string
@@ -155,7 +151,6 @@ func TestNamespace_Full(t *testing.T) {
 }
 
 func TestNamespace_Path(t *testing.T) {
-
 	tt := map[string]struct {
 		request string
 		want    string

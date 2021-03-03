@@ -140,7 +140,6 @@ func checkResponseData(ctx *gin.Context, data interface{}) interface{} {
 // latency time. Sets pagination if the length is
 // greater than one.
 func GetMeta(ctx *gin.Context, pagination []*pagination.Pagination) Meta {
-
 	// Calculate start, end and latency time
 	var startTime = time.Now()
 	requestTime, exists := ctx.Get("request_time")

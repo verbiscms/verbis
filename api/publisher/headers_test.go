@@ -15,7 +15,6 @@ import (
 )
 
 func TestHeaders_Cache(t *testing.T) {
-
 	tt := map[string]struct {
 		url     string
 		want    string
@@ -107,7 +106,6 @@ func TestHeaders_Cache(t *testing.T) {
 	}
 
 	for name, test := range tt {
-
 		t.Run(name, func(t *testing.T) {
 			gin.SetMode(gin.TestMode)
 			gin.DefaultWriter = ioutil.Discard

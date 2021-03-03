@@ -51,7 +51,6 @@ import (
 //}
 
 func (t *LoggerTestSuite) TestLogger() {
-
 	tt := map[string]struct {
 		fn   func()
 		want string

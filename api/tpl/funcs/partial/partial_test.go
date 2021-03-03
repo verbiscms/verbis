@@ -34,7 +34,6 @@ func Setup(t *testing.T) *mocks.TemplateExecutor {
 }
 
 func TestNamespace_Partial(t *testing.T) {
-
 	tt := map[string]struct {
 		name     string
 		data     interface{}

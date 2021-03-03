@@ -16,7 +16,6 @@ import (
 )
 
 func (t *UsersTestSuite) TestUser_Update() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int
