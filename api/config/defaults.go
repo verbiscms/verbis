@@ -6,7 +6,6 @@ package config
 
 import "github.com/ainsleyclark/verbis/api/domain"
 
-//nolint
 var (
 	// DefaultTheme is Global configuration for the theme,
 	// sets defaults to ensure that there are no

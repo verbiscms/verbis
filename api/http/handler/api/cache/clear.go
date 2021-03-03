@@ -8,15 +8,16 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Clear
 //
-// Returns 200 upon cache clearing.
+// Returns http.StatusOK upon cache clearing.
 func (c *Cache) Clear(ctx *gin.Context) {
 	const op = "CacheHandler.Clear"
 
 	cache.Store.Flush()
 
-	api.Respond(ctx, 200, "Successfully cleared server cache", nil)
+	api.Respond(ctx, http.StatusOK, "Successfully cleared server cache", nil)
 }

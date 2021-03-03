@@ -23,7 +23,7 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 	}{
 		"Success": {
 			category,
-			200,
+			http.StatusOK,
 			"Successfully obtained category with ID: 123",
 			func(m *mocks.CategoryRepository) {
 				m.On("GetByID", 123).Return(category, nil)
@@ -32,7 +32,7 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"Pass a valid number to obtain the category by ID",
 			func(m *mocks.CategoryRepository) {
 				m.On("GetByID", 123).Return(domain.Category{}, fmt.Errorf("error"))
@@ -41,7 +41,7 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"no categories found",
 			func(m *mocks.CategoryRepository) {
 				m.On("GetByID", 123).Return(domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
@@ -50,7 +50,7 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.CategoryRepository) {
 				m.On("GetByID", 123).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

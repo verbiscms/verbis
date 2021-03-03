@@ -28,7 +28,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 	}{
 		"Success": {
 			nil,
-			200,
+			http.StatusOK,
 			"A fresh verification link has been sent to your email",
 			srp,
 			func(m *mocks.AuthRepository) {
@@ -37,7 +37,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 		},
 		"Validation Failed": {
 			`{"errors":[{"key":"email","message":"Email is required.","type":"required"}]}`,
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			srpBadValidation,
 			func(m *mocks.AuthRepository) {
@@ -46,7 +46,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			srp,
 			func(m *mocks.AuthRepository) {
@@ -55,7 +55,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			srp,
 			func(m *mocks.AuthRepository) {

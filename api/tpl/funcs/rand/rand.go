@@ -56,8 +56,8 @@ func (ns *Namespace) Float(a, b interface{}) float64 {
 // Returns a random alpha string by the given length.
 //
 // Example: {{ randAlpha 20 }}
-func (ns *Namespace) Alpha(len int64) string {
-	return encryption.RandomString(len, false)
+func (ns *Namespace) Alpha(length int64) string {
+	return encryption.RandomString(length, false)
 }
 
 // AlphaNum
@@ -65,6 +65,6 @@ func (ns *Namespace) Alpha(len int64) string {
 // Returns a random alpha numeric string by the given length.
 //
 // Example: {{ randAlphaNum 20 }}
-func (ns *Namespace) AlphaNum(len int64) string {
-	return encryption.RandomString(len, true)
+func (ns *Namespace) AlphaNum(length int64) string {
+	return encryption.RandomString(length, true)
 }

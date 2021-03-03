@@ -203,8 +203,8 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 	}
 
 	// TODO: Determine of email verified is turned on.
-	//If the user is not the owner, send the verification email
-	//if u.Role.Id != 6 {
+	// If the user is not the owner, send the verification email
+	// if u.Role.Id != 6 {
 	//	ve, err := events.NewVerifyEmail()
 	//	if err != nil {
 	//		return domain.User{}, err
@@ -214,7 +214,7 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 	//	if err != nil {
 	//		return domain.User{}, err
 	//	}
-	//}
+	// }
 
 	return newUser, nil
 }

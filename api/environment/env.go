@@ -17,6 +17,7 @@ import (
 )
 
 // Env defines the environment variables set in the .env file.
+//nolint
 type Env struct {
 
 	// Prod, production or dev.
@@ -29,19 +30,19 @@ type Env struct {
 	AppPort string `json:"APP_PORT" binding:"required"`
 
 	// The database host (IP) for the store.
-	DBHost string `json:"DB_HOST" binding:"required"`
+	DbHost string `json:"DB_HOST" binding:"required"`
 
 	// The database port for the store.
-	DBPort string `json:"DB_PORT" binding:"required"`
+	DbPort string `json:"DB_PORT" binding:"required"`
 
 	// The database name.
-	DBDatabase string `json:"DB_DATABASE" binding:"required"`
+	DbDatabase string `json:"DB_DATABASE" binding:"required"`
 
 	// The database user name.
-	DBUser string `json:"DB_USERNAME" binding:"required"`
+	DbUser string `json:"DB_USERNAME" binding:"required"`
 
 	// The database port.
-	DBPassword string `json:"DB_PASSWORD" binding:"required"`
+	DbPassword string `json:"DB_PASSWORD" binding:"required"`
 
 	// The key for Sparkpost (mailer).
 	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
@@ -88,11 +89,11 @@ func Load() (*Env, error) {
 		AppEnv:          os.Getenv("APP_ENV"),
 		AppDebug:        os.Getenv("APP_DEBUG"),
 		AppPort:         os.Getenv("APP_PORT"),
-		DBHost:          os.Getenv("DB_HOST"),
-		DBPort:          os.Getenv("DB_PORT"),
-		DBDatabase:      os.Getenv("DB_DATABASE"),
-		DBUser:          os.Getenv("DB_USERNAME"),
-		DBPassword:      os.Getenv("DB_PASSWORD"),
+		DbHost:          os.Getenv("DB_HOST"),
+		DbPort:          os.Getenv("DB_PORT"),
+		DbDatabase:      os.Getenv("DB_DATABASE"),
+		DbUser:          os.Getenv("DB_USERNAME"),
+		DbPassword:      os.Getenv("DB_PASSWORD"),
 		SparkpostAPIKey: os.Getenv("SPARKPOST_API_KEY"),
 		SparkpostURL:    os.Getenv("SPARKPOST_URL"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
@@ -134,7 +135,7 @@ func (e *Env) Port() int {
 //
 // Returns the MySQL database connection string.
 func (e *Env) ConnectString() string {
-	return e.DBUser + ":" + e.DBPassword + "@tcp(" + e.DBHost + ":" + e.DBPort + ")/" + e.DBDatabase + "?tls=false&parseTime=true&multiStatements=true"
+	return e.DbUser + ":" + e.DbPassword + "@tcp(" + e.DbHost + ":" + e.DbPort + ")/" + e.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
 }
 
 // Mail defines the configuration for sending emails.

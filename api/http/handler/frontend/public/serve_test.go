@@ -21,7 +21,7 @@ func (t *PublicTestSuite) TestPublic_Serve() {
 	}{
 		"Success": {
 			testString,
-			200,
+			http.StatusOK,
 			"text/html",
 			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("Page", ctx).Return(*t.bytes, nil)
@@ -40,7 +40,7 @@ func (t *PublicTestSuite) TestPublic_Serve() {
 		},
 		"Internal": {
 			testString,
-			500,
+			http.StatusInternalServerError,
 			"text/html",
 			func(m *mocks.Publisher, ctx *gin.Context) {
 				m.On("Page", ctx).Return(*t.bytes, &errors.Error{Code: errors.INTERNAL})

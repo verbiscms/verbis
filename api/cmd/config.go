@@ -16,8 +16,8 @@ var (
 )
 
 func init() {
-	//configCmd.AddCommand(configStoreCmd)
-	//configCmd.AddCommand(configClearCmd)
+	// configCmd.AddCommand(configStoreCmd)
+	// configCmd.AddCommand(configClearCmd)
 }
 
 // cacheClearCmd represents the down command

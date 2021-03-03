@@ -60,8 +60,8 @@ func (e *Execute) ExecutePost(w io.Writer, name string, ctx *gin.Context, post *
 //
 // Satisfies the tpl.TemplateExecutor interface by determining
 // if a template file exists with the given name.
-func (e *Execute) Exists(template string) bool {
-	_, err := e.fileHandler(e.config, template)
+func (e *Execute) Exists(name string) bool {
+	_, err := e.fileHandler(e.config, name)
 	return err == nil
 }
 

@@ -14,9 +14,9 @@ import (
 
 // List
 //
-// Returns 200 if there are no redirects or success.
-// Returns 500 if there was an error getting the redirects.
-// Returns 400 if there was conflict or the request was invalid.
+// Returns http.StatusOK if there are no redirects or success.
+// Returns http.StatusInternalServerError if there was an error getting the redirects.
+// Returns http.StatusBadRequest if there was conflict or the request was invalid.
 func (r *Redirects) List(ctx *gin.Context) {
 	const op = "RedirectHandler.List"
 

@@ -17,7 +17,7 @@ import (
 // field UUID until a match has been found.
 // Returns a domain.Field if the fields was resolved.
 // Returns errors.NOTFOUND if the field was unable to be located or no groups exist.
-func ByUUID(uuid uuid.UUID, groups domain.FieldGroups) (domain.Field, error) {
+func ByUUID(uniq uuid.UUID, groups domain.FieldGroups) (domain.Field, error) {
 	const op = "Fields.Walker.ByUUID"
 
 	if len(groups) == 0 {
@@ -26,7 +26,7 @@ func ByUUID(uuid uuid.UUID, groups domain.FieldGroups) (domain.Field, error) {
 
 	for _, g := range groups {
 		for _, f := range g.Fields {
-			field, found := walkerByUUID(uuid, f)
+			field, found := walkerByUUID(uniq, f)
 			if !found {
 				continue
 			}
@@ -34,7 +34,7 @@ func ByUUID(uuid uuid.UUID, groups domain.FieldGroups) (domain.Field, error) {
 		}
 	}
 
-	return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "Unable to find field", Operation: op, Err: fmt.Errorf("unable to find field with UUID of: %v", uuid)}
+	return domain.Field{}, &errors.Error{Code: errors.NOTFOUND, Message: "Unable to find field", Operation: op, Err: fmt.Errorf("unable to find field with UUID of: %v", uniq)}
 }
 
 // ByName

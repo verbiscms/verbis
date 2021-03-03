@@ -73,14 +73,14 @@ func (h *Handler) newRecover(cfg Config) *Recover {
 //
 func (h *Handler) Recover(cfg Config) []byte {
 	r := h.newRecover(cfg)
-	var tpl []byte
+	var tmpl []byte
 	custom := true
 
 	r.recoverWrapper(custom, func(b []byte, err *errors.Error) {
 		if err != nil {
 			custom = false
 		}
-		tpl = b
+		tmpl = b
 	})
 
 	//
@@ -89,11 +89,11 @@ func (h *Handler) Recover(cfg Config) []byte {
 			if err != nil {
 				fmt.Println(err)
 			}
-			tpl = b
+			tmpl = b
 		})
 	}
 
-	return tpl
+	return tmpl
 }
 
 // HTTPRecovery

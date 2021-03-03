@@ -26,7 +26,7 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 	}{
 		"Success": {
 			redirect,
-			200,
+			http.StatusOK,
 			"Successfully updated redirect with ID: 123",
 			redirect,
 			func(m *mocks.RedirectRepository) {
@@ -36,7 +36,7 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "to", Message: "To is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			redirectBadValidation,
 			func(m *mocks.RedirectRepository) {
@@ -46,7 +46,7 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"A valid ID is required to update the redirect",
 			redirect,
 			func(m *mocks.RedirectRepository) {
@@ -56,7 +56,7 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			redirect,
 			func(m *mocks.RedirectRepository) {
@@ -66,7 +66,7 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			redirect,
 			func(m *mocks.RedirectRepository) {

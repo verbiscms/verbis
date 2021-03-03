@@ -22,7 +22,7 @@ func (t *SEOTestSuite) TestSEO_Robots() {
 	}{
 		"Success": {
 			"test",
-			200,
+			http.StatusOK,
 			"text/plain",
 			&domain.Options{
 				SeoRobotsServe: true,

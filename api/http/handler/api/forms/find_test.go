@@ -23,7 +23,7 @@ func (t *FormsTestSuite) TestForms_Find() {
 	}{
 		"Success": {
 			form,
-			200,
+			http.StatusOK,
 			"Successfully obtained form with ID: 123",
 			func(m *mocks.FormRepository) {
 				m.On("GetByID", 123).Return(form, nil)
@@ -32,7 +32,7 @@ func (t *FormsTestSuite) TestForms_Find() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"Pass a valid number to obtain the form by ID",
 			func(m *mocks.FormRepository) {
 				m.On("GetByID", 123).Return(domain.Form{}, fmt.Errorf("error"))
@@ -41,7 +41,7 @@ func (t *FormsTestSuite) TestForms_Find() {
 		},
 		"Not Found": {
 			nil,
-			200,
+			http.StatusOK,
 			"no forms found",
 			func(m *mocks.FormRepository) {
 				m.On("GetByID", 123).Return(domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "no forms found"})
@@ -50,7 +50,7 @@ func (t *FormsTestSuite) TestForms_Find() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.FormRepository) {
 				m.On("GetByID", 123).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})

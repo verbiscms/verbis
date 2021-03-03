@@ -54,13 +54,13 @@ func Install(cmd *cobra.Command, args []string) {
 	// TODO NOT WORKING
 	err = db.CheckExists()
 	if err != nil {
-		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DBDatabase))
+		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DbDatabase))
 	}
 
 	// Get the user & site variables
 	user := createOwner()
 	fmt.Println()
-	url := setURL()
+	uri := setURL()
 
 	// Start the spinner
 	printSpinner("Installing Verbis...")
@@ -92,11 +92,11 @@ func Install(cmd *cobra.Command, args []string) {
 		printError(fmt.Sprintf("Error creating the owner: %s", err.Error()))
 	}
 
-	// Insert the site url
+	// Insert the site uri
 	fmt.Println()
-	mURL, _ := json.Marshal(url)
+	mURL, _ := json.Marshal(uri)
 	if err := store.Options.Update("site_url", mURL); err != nil {
-		printError(fmt.Sprintf("Error not inserting the site url: %s", err.Error()))
+		printError(fmt.Sprintf("Error not inserting the site uri: %s", err.Error()))
 	}
 
 	// Get webp executables

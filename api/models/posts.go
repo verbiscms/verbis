@@ -92,7 +92,7 @@ FROM (%s) posts
       LEFT JOIN post_fields pf on posts.id = pf.post_id`, query)
 }
 
-func (s *PostStore) Get(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error) {
+func (s *PostStore) Get(meta params.Params, layout bool, resource, status string) (domain.PostData, int, error) {
 	const op = "PostsRepository.Get"
 
 	q := "SELECT * FROM posts"

@@ -26,7 +26,7 @@ func (t *FormsTestSuite) TestForms_Send() {
 	}{
 		"Success": {
 			nil,
-			200,
+			http.StatusOK,
 			"Successfully sent form with ID: 123",
 			formBody,
 			func(m *mocks.FormRepository) {
@@ -37,7 +37,7 @@ func (t *FormsTestSuite) TestForms_Send() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			formBadValidation,
 			func(m *mocks.FormRepository) {
@@ -47,7 +47,7 @@ func (t *FormsTestSuite) TestForms_Send() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			form,
 			func(m *mocks.FormRepository) {
@@ -57,7 +57,7 @@ func (t *FormsTestSuite) TestForms_Send() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			form,
 			func(m *mocks.FormRepository) {
@@ -67,7 +67,7 @@ func (t *FormsTestSuite) TestForms_Send() {
 		},
 		"Send Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"error",
 			form,
 			func(m *mocks.FormRepository) {

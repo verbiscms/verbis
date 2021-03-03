@@ -132,9 +132,9 @@ func (s *FieldsStore) Delete(postID int, f domain.PostField) error {
 }
 
 // Exists Checks if a post field exists by the given UUID and key
-func (s *FieldsStore) Exists(postID int, uuid uuid.UUID, key string) bool {
+func (s *FieldsStore) Exists(postID int, uniq uuid.UUID, key string) bool {
 	var exists bool
-	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND post_id = ? AND field_key = ?)", uuid.String(), postID, key).Scan(&exists)
+	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND post_id = ? AND field_key = ?)", uniq.String(), postID, key).Scan(&exists)
 	return exists
 }
 

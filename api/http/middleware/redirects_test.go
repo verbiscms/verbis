@@ -143,6 +143,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 				t.Equal(test.redirectURL, loc.Path)
 			}
 
+			t.Context.Request.Body.Close()
 			t.Reset()
 		})
 	}

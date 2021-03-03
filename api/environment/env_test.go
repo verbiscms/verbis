@@ -63,11 +63,11 @@ func (t *EnvTestSuite) TestLoad() {
 				AppEnv:          "dev",
 				AppDebug:        "true",
 				AppPort:         "8080",
-				DBHost:          "127.0.0.1",
-				DBPort:          "3306",
-				DBDatabase:      "verbis",
-				DBUser:          "root",
-				DBPassword:      "password",
+				DbHost:          "127.0.0.1",
+				DbPort:          "3306",
+				DbDatabase:      "verbis",
+				DbUser:          "root",
+				DbPassword:      "password",
 				SparkpostAPIKey: "key",
 				SparkpostURL:    "url",
 				MailFromAddress: "hello@verbiscms.com",
@@ -106,11 +106,11 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 		"No Errors": {
 			Env{
 				AppPort:    "8080",
-				DBHost:     "127.0.0.1",
-				DBPort:     "3306",
-				DBDatabase: "verbis",
-				DBUser:     "root",
-				DBPassword: "password",
+				DbHost:     "127.0.0.1",
+				DbPort:     "3306",
+				DbDatabase: "verbis",
+				DbUser:     "root",
+				DbPassword: "password",
 			},
 			ve,
 		},
@@ -160,11 +160,11 @@ func (t *EnvTestSuite) TestEnv_Port() {
 
 func (t *EnvTestSuite) TestEnv_ConnectString() {
 	e := Env{
-		DBHost:     "127.0.0.1",
-		DBPort:     "3000",
-		DBDatabase: "verbis",
-		DBUser:     "verbis",
-		DBPassword: "password",
+		DbHost:     "127.0.0.1",
+		DbPort:     "3000",
+		DbDatabase: "verbis",
+		DbUser:     "verbis",
+		DbPassword: "password",
 	}
 	want := "verbis:password@tcp(127.0.0.1:3000)/verbis?tls=false&parseTime=true&multiStatements=true"
 	t.Equal(want, e.ConnectString())

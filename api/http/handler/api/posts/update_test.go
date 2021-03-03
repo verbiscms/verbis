@@ -26,7 +26,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 	}{
 		"Success": {
 			postData,
-			200,
+			http.StatusOK,
 			"Successfully updated post with ID: 123",
 			post,
 			func(m *mocks.PostsRepository) {
@@ -36,7 +36,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "slug", Message: "Post Slug is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			postBadValidation,
 			func(m *mocks.PostsRepository) {
@@ -46,7 +46,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"A valid ID is required to update the post",
 			post,
 			func(m *mocks.PostsRepository) {
@@ -56,7 +56,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 		},
 		"Not Found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"not found",
 			post,
 			func(m *mocks.PostsRepository) {
@@ -66,7 +66,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			post,
 			func(m *mocks.PostsRepository) {

@@ -10,21 +10,22 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"strconv"
 )
 
 // Update
 //
-// Returns 200 if the post was updated.
-// Returns 500 if there was an error updating or formatting the post.
-// Returns 400 if the the validation failed, there was a conflict, or the post wasn't found.
+// Returns http.StatusOK if the post was updated.
+// Returns http.StatusInternalServerError if there was an error updating or formatting the post.
+// Returns http.StatusBadRequest if the the validation failed, there was a conflict, or the post wasn't found.
 func (c *Posts) Update(ctx *gin.Context) {
 	const op = "PostHandler.Update"
 
 	var post domain.PostCreate
 	err := ctx.ShouldBindJSON(&post)
 	if err != nil {
-		api.Respond(ctx, 400, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
@@ -33,19 +34,19 @@ func (c *Posts) Update(ctx *gin.Context) {
 
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		api.Respond(ctx, 400, "A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 	post.Id = id
 
 	updatedPost, err := c.Store.Posts.Update(&post)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
-		api.Respond(ctx, 400, errors.Message(err), err)
+		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
 	} else if err != nil {
-		api.Respond(ctx, 500, errors.Message(err), err)
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
 
-	api.Respond(ctx, 200, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.Id), updatedPost)
+	api.Respond(ctx, http.StatusOK, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.Id), updatedPost)
 }

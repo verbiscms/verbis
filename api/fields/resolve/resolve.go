@@ -118,7 +118,7 @@ func (v *Value) resolve(field domain.PostField) domain.PostField {
 // Executes the function based on the fields type.
 // If the function is not within the valueMap,
 // the original value will be returned.
-func (v *Value) execute(value string, typ string) interface{} {
+func (v *Value) execute(value, typ string) interface{} {
 	fn, ok := v.getMap()[typ]
 	if !ok {
 		return value

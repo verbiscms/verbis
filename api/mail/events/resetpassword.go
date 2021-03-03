@@ -30,7 +30,7 @@ func NewResetPassword() (*ResetPassword, error) {
 }
 
 // Send the reset password event.
-func (e *ResetPassword) Send(u *domain.User, url string, token string, title string) error {
+func (e *ResetPassword) Send(u *domain.User, url, token, title string) error {
 	const op = "events.ResetPassword.Send"
 
 	data := mail.Data{

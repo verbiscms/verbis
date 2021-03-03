@@ -23,7 +23,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 	}{
 		"Success": {
 			nil,
-			200,
+			http.StatusOK,
 			"Successfully updated password for the user with ID: 123",
 			reset,
 			func(m *mocks.UserRepository) {
@@ -34,7 +34,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 		},
 		"Invalid ID": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"A valid ID is required to update a user's password",
 			reset,
 			func(m *mocks.UserRepository) {
@@ -45,7 +45,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 		},
 		"Not found": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"No user has been found with the ID: 123",
 			reset,
 			func(m *mocks.UserRepository) {
@@ -56,7 +56,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 		},
 		"Validation Failed": {
 			`{"errors":[{"key":"confirm_password", "message":"Confirm Password must equal the New Password.", "type":"eqfield"}]}`,
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			resetBadValidation,
 			func(m *mocks.UserRepository) {
@@ -67,7 +67,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 		},
 		"Invalid": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"invalid",
 			reset,
 			func(m *mocks.UserRepository) {
@@ -78,7 +78,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 		},
 		"Internal": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			reset,
 			func(m *mocks.UserRepository) {

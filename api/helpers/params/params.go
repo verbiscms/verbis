@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	// DefaulPage defines the page number if none is set.
-	DefaultPage = 15
+	// DefaultPage defines the page number if none is set.
+	DefaultPage = 1
 	// DefaultLimit defines how many items will be returned if
 	// the limit is set to list all.
 	DefaultLimit = 15

@@ -80,7 +80,8 @@ func (l *Location) GetLayout(post domain.PostDatum, cacheable bool) domain.Field
 // properties of the post, user and category passed.
 // Produces an array of field groups that can be
 // returned for the post.
-func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups {
+// TODO: cyclomatic complexity 19 of func `(*Location).groupResolver` is high (> 15)
+func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups { // nolint
 	var fg domain.FieldGroups
 
 	// Loop over the groups

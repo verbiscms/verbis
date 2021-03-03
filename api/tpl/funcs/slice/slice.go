@@ -26,7 +26,7 @@ func (ns *Namespace) Slice(i ...interface{}) []interface{} {
 //
 // Example: {{ append (slice "hello" "world" "!") "verbis" }}
 // Returns: `[hello world ! verbis]`
-func (ns *Namespace) Append(slice interface{}, i interface{}) ([]interface{}, error) {
+func (ns *Namespace) Append(slice, i interface{}) ([]interface{}, error) {
 	const op = "Templates.Append"
 
 	typ := reflect.TypeOf(slice).Kind()
@@ -52,7 +52,7 @@ func (ns *Namespace) Append(slice interface{}, i interface{}) ([]interface{}, er
 //
 // Example: {{ prepend (slice "hello" "world" "!") "verbis" }}
 // Returns: `[verbis hello world !]`
-func (ns *Namespace) Prepend(slice interface{}, i interface{}) ([]interface{}, error) {
+func (ns *Namespace) Prepend(slice, i interface{}) ([]interface{}, error) {
 	const op = "Templates.Prepend"
 
 	typ := reflect.TypeOf(slice).Kind()

@@ -8,31 +8,32 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"strconv"
 )
 
 // Find
 //
-// Returns 200 if the user was obtained.
-// Returns 500 if there as an error obtaining the user.
-// Returns 400 if the ID wasn't passed or failed to convert.
+// Returns http.StatusOK if the user was obtained.
+// Returns http.StatusInternalServerError if there as an error obtaining the user.
+// Returns http.StatusBadRequest if the ID wasn't passed or failed to convert.
 func (u *Users) Find(ctx *gin.Context) {
 	const op = "UserHandler.Find"
 
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		api.Respond(ctx, 400, "Pass a valid number to obtain the user by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		api.Respond(ctx, http.StatusBadRequest, "Pass a valid number to obtain the user by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
 	user, err := u.Store.User.GetByID(id)
 	if errors.Code(err) == errors.NOTFOUND {
-		api.Respond(ctx, 200, errors.Message(err), err)
+		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return
 	} else if err != nil {
-		api.Respond(ctx, 500, errors.Message(err), err)
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
 
-	api.Respond(ctx, 200, "Successfully obtained user with ID: "+strconv.Itoa(id), user.HideCredentials())
+	api.Respond(ctx, http.StatusOK, "Successfully obtained user with ID: "+strconv.Itoa(id), user.HideCredentials())
 }

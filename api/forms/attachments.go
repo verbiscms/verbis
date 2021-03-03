@@ -106,7 +106,8 @@ func getAttachment(i interface{}, uploadsPath string) (*Attachment, error) {
 	}, nil
 }
 
-func createTempFile(m *multipart.FileHeader) (string, *multipart.File, func(), error) {
+// TODO: ptrToRefParam: consider to make non-pointer type for `*multipart.File`
+func createTempFile(m *multipart.FileHeader) (string, *multipart.File, func(), error) { //nolint
 	const op = "Forms.createTempFile"
 
 	path := os.TempDir() + "/verbis-" + encryption.MD5Hash(time.Now().String()) + filepath.Ext(m.Filename)
@@ -142,7 +143,9 @@ func createTempFile(m *multipart.FileHeader) (string, *multipart.File, func(), e
 // Returns errors.INVALID if the mime type could not to be detected,
 // the mime type is not in the list of permitted types or the
 // file is above the UploadLimit.
-func validateFile(file *multipart.File, size int64) (string, error) {
+//
+// TODO: ptrToRefParam: consider `file' to be of non-pointer type
+func validateFile(file *multipart.File, size int64) (string, error) { //nolint
 	const op = "Forms.validateFile"
 
 	typ, err := mimetype.DetectReader(*file)
@@ -178,7 +181,7 @@ func b64(data []byte) string {
 // saved to the forms storage folder.
 //
 // Returns errors.INTERNAL if the file could not be created or saved.
-func dumpFile(b []byte, name string, path string) (string, error) {
+func dumpFile(b []byte, name, path string) (string, error) {
 	const op = "Forms.dumpFile"
 
 	ext := filepath.Ext(name)

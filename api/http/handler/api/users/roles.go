@@ -8,20 +8,21 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Roles
 //
-// Returns 200 if the user roles were obtained.
-// Returns 500 if there as an error obtaining the user roles.
+// Returns http.StatusOK if the user roles were obtained.
+// Returns http.StatusInternalServerError if there as an error obtaining the user roles.
 func (u *Users) Roles(ctx *gin.Context) {
 	const op = "UserHandler.Roles"
 
 	roles, err := u.Store.User.GetRoles()
 	if err != nil {
-		api.Respond(ctx, 500, errors.Message(err), err)
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
 
-	api.Respond(ctx, 200, "Successfully obtained user roles", roles)
+	api.Respond(ctx, http.StatusOK, "Successfully obtained user roles", roles)
 }

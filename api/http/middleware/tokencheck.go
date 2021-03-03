@@ -67,17 +67,14 @@ func checkTokenExists(g *gin.Context) error {
 // Check the user token and return the user if passes
 func checkUserToken(d *deps.Deps, g *gin.Context) (*domain.User, error) {
 	token := g.Request.Header.Get("token")
-
 	u, err := d.Store.User.CheckToken(token)
 	if err != nil {
 		api.AbortJSON(g, 401, "Invalid token in the request header", nil)
 		return &domain.User{}, err
 	}
-
-	if u.Role.Id == 0 {
+	if u.Role.Id == domain.BannedRoleID {
 		api.AbortJSON(g, 403, "Your account has been suspended by the administration team", nil)
 		return &domain.User{}, err
 	}
-
 	return &u, nil
 }

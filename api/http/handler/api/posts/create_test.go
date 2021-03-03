@@ -25,7 +25,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 	}{
 		"Success": {
 			postData,
-			200,
+			http.StatusOK,
 			"Successfully created post with ID: 123",
 			post,
 			func(m *mocks.PostsRepository) {
@@ -34,7 +34,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "slug", Message: "Post Slug is required.", Type: "required"}}},
-			400,
+			http.StatusBadRequest,
 			"Validation failed",
 			postBadValidation,
 			func(m *mocks.PostsRepository) {
@@ -43,7 +43,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 		},
 		"Invalid": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"invalid",
 			post,
 			func(m *mocks.PostsRepository) {
@@ -52,7 +52,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 		},
 		"Conflict": {
 			nil,
-			400,
+			http.StatusBadRequest,
 			"conflict",
 			post,
 			func(m *mocks.PostsRepository) {
@@ -61,7 +61,7 @@ func (t *PostsTestSuite) TestPosts_Create() {
 		},
 		"Internal Error": {
 			nil,
-			500,
+			http.StatusInternalServerError,
 			"internal",
 			post,
 			func(m *mocks.PostsRepository) {

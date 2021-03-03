@@ -64,7 +64,7 @@ func (s *Site) Themes(themePath string) (domain.Themes, error) {
 	return themes, nil
 }
 
-func (s *Site) findScreenshot(path string, theme string) (string, error) {
+func (s *Site) findScreenshot(path, theme string) (string, error) {
 	for _, v := range ScrenshotExtensions {
 		name := path + string(os.PathSeparator) + theme + string(os.PathSeparator) + ScreenshotName + v
 		fmt.Println(name)
@@ -82,7 +82,7 @@ func (s *Site) findScreenshot(path string, theme string) (string, error) {
 //
 // TODO
 //
-func (s *Site) Screenshot(basePath string, theme string, file string) ([]byte, string, error) {
+func (s *Site) Screenshot(basePath, theme, file string) ([]byte, string, error) {
 	const op = "SiteRepository.Screenshot"
 
 	ps := string(os.PathSeparator)

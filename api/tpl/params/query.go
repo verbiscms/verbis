@@ -17,8 +17,8 @@ var (
 	// Defaults represents the default params if
 	// none were passed for templates.
 	Defaults = params.Defaults{
-		Page:           params.DefaultLimit,
-		Limit:          params.DefaultPage,
+		Page:           params.DefaultPage,
+		Limit:          params.DefaultLimit,
 		OrderBy:        "created_at",
 		OrderDirection: "desc",
 	}
@@ -29,7 +29,7 @@ var (
 // Returns parameters for the store to used for obtaining
 // multiple entities. If the orderBy or orderDirection
 // arguments are not passed, defaults will be used.
-func (q Query) Get(orderBy string, orderDirection string) params.Params {
+func (q Query) Get(orderBy, orderDirection string) params.Params {
 	def := Defaults
 	if orderBy != "" {
 		def.OrderBy = orderBy
@@ -61,7 +61,7 @@ func (q Query) Param(param string) string {
 // Sets or gets default parameters for the Query.
 // If the parameter is not found, it will
 // return the default string passed.
-func (q Query) Default(param string, def string) interface{} {
+func (q Query) Default(param, def string) interface{} {
 	val, ok := q[param]
 	if !ok {
 		return def
