@@ -194,7 +194,7 @@ func (f *Formatter) Fields() {
 //
 // Determines if a verbis error has been logged.
 func (f *Formatter) HasError() (interface{}, bool) {
-	e, _ := f.entry.Data["error"]
+	e := f.entry.Data["error"]
 	if e == nil {
 		return nil, false
 	}

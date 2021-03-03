@@ -5,6 +5,7 @@
 package logger
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -102,19 +103,20 @@ func (t *LoggerTestSuite) TestLogger() {
 	}
 }
 
-func (t *LoggerTestSuite) TestLogger_Fatal() {
-	//buf := t.Setup()
-	//
-	//defer func() {
-	//	logger = logrus.New()
-	//}()
-	//logger.Fatal = func(args ...interface{}) {
-	//
-	//}
-	//
-	//Fatal("fatal")
-	//t.Contains(buf.String(), "fatal")
-}
+//func (t *LoggerTestSuite) TestLogger_Fatal() {
+//	buf := t.Setup()
+//
+//	defer func() {
+//		logger = logrus.New()
+//	}()
+//	logger.Fatal = func(args ...interface{}) {
+//
+//	}
+//
+//
+//	Fatal("fatal")
+//	t.Contains(buf.String(), "fatal")
+//}
 
 func (t *LoggerTestSuite) TestLogger_Panic() {
 	buf := t.Setup()
@@ -122,4 +124,10 @@ func (t *LoggerTestSuite) TestLogger_Panic() {
 		Panic("panic")
 	})
 	t.Contains(buf.String(), "panic")
+}
+
+func (t *LoggerTestSuite) TestLogger_SetOutput() {
+	buf := &bytes.Buffer{}
+	SetOutput(buf)
+	t.Equal(buf, logger.Out)
 }

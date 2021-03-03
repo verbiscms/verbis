@@ -37,8 +37,7 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 	// Serve uploads
 	s.GET("/"+uploadPath+"/*any", h.Public.Uploads)
 
-
-	s.GET(config.ScreenshotURL + ":theme/:file", h.Public.Screenshot)
+	s.GET(config.ScreenshotURL+":theme/:file", h.Public.Screenshot)
 
 	// Robots
 	s.GET("/robots.txt", h.SEO.Robots)
