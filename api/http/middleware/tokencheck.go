@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Administrator middleware
@@ -58,7 +59,7 @@ func OperatorTokenCheck(d *deps.Deps) gin.HandlerFunc {
 func checkTokenExists(g *gin.Context) error {
 	token := g.Request.Header.Get("token")
 	if token == "" {
-		api.AbortJSON(g, 401, "Missing token in the request header", nil)
+		api.AbortJSON(g, http.StatusUnauthorized, "Missing token in the request header", nil)
 		return fmt.Errorf("missing token")
 	}
 	return nil
@@ -69,7 +70,7 @@ func checkUserToken(d *deps.Deps, g *gin.Context) (*domain.User, error) {
 	token := g.Request.Header.Get("token")
 	u, err := d.Store.User.CheckToken(token)
 	if err != nil {
-		api.AbortJSON(g, 401, "Invalid token in the request header", nil)
+		api.AbortJSON(g, http.StatusUnauthorized, "Invalid token in the request header", nil)
 		return &domain.User{}, err
 	}
 	if u.Role.Id == domain.BannedRoleID {

@@ -27,19 +27,19 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 		mock        func(m *mocks.RedirectRepository)
 	}{
 		"Admin Path": {
-			200,
+			http.StatusOK,
 			"/admin",
 			"",
 			nil,
 		},
 		"API Path": {
-			200,
+			http.StatusOK,
 			app.APIRoute,
 			"",
 			nil,
 		},
 		"No Redirects": {
-			200,
+			http.StatusOK,
 			RedirectPath,
 			"",
 			func(m *mocks.RedirectRepository) {
@@ -47,7 +47,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			},
 		},
 		"300": {
-			300,
+			http.StatusMultipleChoices,
 			"/page/test",
 			RedirectPath,
 			func(m *mocks.RedirectRepository) {
@@ -57,7 +57,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			},
 		},
 		"301": {
-			301,
+			http.StatusMovedPermanently,
 			"/page/test",
 			RedirectPath,
 			func(m *mocks.RedirectRepository) {
@@ -67,7 +67,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			},
 		},
 		"302": {
-			302,
+			http.StatusFound,
 			"/page/test",
 			RedirectPath,
 			func(m *mocks.RedirectRepository) {
@@ -77,7 +77,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			},
 		},
 		"303": {
-			303,
+			http.StatusSeeOther,
 			"/page/test",
 			RedirectPath,
 			func(m *mocks.RedirectRepository) {
@@ -87,7 +87,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			},
 		},
 		"304": {
-			304,
+			http.StatusNotModified,
 			"/page/test",
 			RedirectPath,
 			func(m *mocks.RedirectRepository) {
@@ -97,7 +97,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			},
 		},
 		"307": {
-			307,
+			http.StatusTemporaryRedirect,
 			"/page/test",
 			RedirectPath,
 			func(m *mocks.RedirectRepository) {
@@ -107,7 +107,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			},
 		},
 		"308": {
-			308,
+			http.StatusPermanentRedirect,
 			"/page/test",
 			RedirectPath,
 			func(m *mocks.RedirectRepository) {

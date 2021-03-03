@@ -13,7 +13,7 @@ import (
 //
 // Sets up CORS headers for the API, if the request
 // method is options, the request will be aborted
-// with a status of 200.
+// with a status of http.StatusOK.
 func CORS() gin.HandlerFunc {
 	return func(g *gin.Context) {
 		g.Writer.Header().Set("Access-Control-Allow-Origin", "*")

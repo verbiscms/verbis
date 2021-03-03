@@ -13,7 +13,7 @@ import (
 // model Obtains the []bytes to send back as data when
 // /sitemap.xml is visited.
 //
-// Returns a 404 if there was an error obtaining the XML file.
+// Returns a http.StatusNotFound if there was an error obtaining the XML file.
 // or there was no resource items found.
 func (s *SEO) SiteMapIndex(ctx *gin.Context) {
 	const op = "FrontendHandler.SiteMapIndex"

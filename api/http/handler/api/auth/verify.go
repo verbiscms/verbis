@@ -16,7 +16,7 @@ import (
 // Checks to see if the token is valid for resetting.
 //
 // Returns http.StatusOK if successful.
-// Returns 404 if the token does not exist.
+// Returns http.StatusNotFound if the token does not exist.
 func (a *Auth) VerifyPasswordToken(ctx *gin.Context) {
 	const op = "AuthHandler.VerifyPasswordToken"
 
