@@ -52,7 +52,7 @@ func New() *Validation {
 		if err != nil {
 			fmt.Println(err)
 			// Using logger has an import cycle.
-			//logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error registering password validation", Operation: op, Err: err})
+			// logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error registering password validation", Operation: op, Err: err})
 		}
 	}
 
@@ -61,10 +61,8 @@ func New() *Validation {
 
 // Process handles validation errors and passes back to respond.
 func (v *Validation) Process(errors pkgValidate.ValidationErrors) []Error {
-
 	var returnErrors []Error
 	for _, e := range errors {
-
 		field := e.Field()
 		result := strings.Split(e.Namespace(), ".")
 
@@ -76,8 +74,8 @@ func (v *Validation) Process(errors pkgValidate.ValidationErrors) []Error {
 			}
 		}
 
-		field = strings.Replace(field, "Part", "", -1)
-		field = strings.Replace(field, "User", "", -1)
+		field = strings.ReplaceAll(field, "Part", "")
+		field = strings.ReplaceAll(field, "User", "")
 
 		reg := regexp.MustCompile(`[A-Z][^A-Z]*`)
 		fieldString := ""
@@ -106,7 +104,6 @@ func (v *Validation) Process(errors pkgValidate.ValidationErrors) []Error {
 
 // CmdCheck is a function for checking validation by struct on the command line.
 func (v *Validation) CmdCheck(key string, data interface{}) error {
-
 	err := v.Package.Struct(data)
 
 	if err != nil {

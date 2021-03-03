@@ -47,7 +47,7 @@ func printSuccess(msg string) {
 // Print spinner
 func printSpinner(msg string) {
 	fmt.Println()
-	s := spinner.New(spinner.CharSets[14], 50*time.Millisecond)
+	s := spinner.New(spinner.CharSets[14], 50*time.Millisecond) //nolint
 	s.Suffix = " " + msg
 	s.Start()
 	fmt.Printf("\n")
@@ -55,6 +55,7 @@ func printSpinner(msg string) {
 }
 
 // isEmailValid checks if the email provided passes the required structure and length.
+//nolint
 func isEmailValid(e string) bool {
 	var emailRegex = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 	if len(e) < 3 && len(e) > 254 {

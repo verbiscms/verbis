@@ -70,7 +70,6 @@ func (t *ConfigTestSuite) TestSet() {
 }
 
 func (t *ConfigTestSuite) TestFetch() {
-
 	tt := map[string]struct {
 		path     string
 		filename string

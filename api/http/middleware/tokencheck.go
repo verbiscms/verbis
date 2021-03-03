@@ -15,7 +15,6 @@ import (
 // Administrator middleware
 func AdminTokenCheck(d *deps.Deps) gin.HandlerFunc {
 	return func(g *gin.Context) {
-
 		if err := checkTokenExists(g); err != nil {
 			return
 		}
@@ -37,7 +36,6 @@ func AdminTokenCheck(d *deps.Deps) gin.HandlerFunc {
 // Operator middleware
 func OperatorTokenCheck(d *deps.Deps) gin.HandlerFunc {
 	return func(g *gin.Context) {
-
 		if err := checkTokenExists(g); err != nil {
 			return
 		}
@@ -61,7 +59,7 @@ func checkTokenExists(g *gin.Context) error {
 	token := g.Request.Header.Get("token")
 	if token == "" {
 		api.AbortJSON(g, 401, "Missing token in the request header", nil)
-		return fmt.Errorf("Missing token")
+		return fmt.Errorf("missing token")
 	}
 	return nil
 }
@@ -83,19 +81,3 @@ func checkUserToken(d *deps.Deps, g *gin.Context) (*domain.User, error) {
 
 	return &u, nil
 }
-
-// Check to see if the session has expired
-//func checkSession(g *gin.Context, userId int) error {
-
-//if hasSession := m.Has(userId); !hasSession {
-//	return nil
-//}
-
-//err := m.Check(userId);
-//if err != nil {
-//	controllers.AbortJSON(g, 401, errors.Message(err), err)
-//	return err
-//}
-
-//return nil
-//}

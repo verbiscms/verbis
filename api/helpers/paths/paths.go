@@ -26,9 +26,9 @@ type Paths struct {
 
 const (
 	Admin   = "/admin"
-	Api     = "/api"
+	API     = "/api"
 	Storage = "/storage"
-	Web     = Api + "/web"
+	Web     = API + "/web"
 	Uploads = Storage + "/uploads"
 )
 
@@ -37,8 +37,8 @@ func Get() Paths {
 	return Paths{
 		Base:      base,
 		Admin:     base + Admin,
-		API:       base + Api,
-		Migration: base + Api + migration(),
+		API:       base + API,
+		Migration: base + API + migration(),
 		Uploads:   base + Uploads,
 		Storage:   base + Storage,
 		Web:       base + Web,
@@ -60,7 +60,7 @@ func BaseCheck() error {
 	basePath := base()
 
 	if !files.Exists(basePath + "/.env") {
-		return fmt.Errorf("Could not locate the .env file in the current directory")
+		return fmt.Errorf("could not locate the .env file in the current directory")
 	}
 
 	if !files.DirectoryExists(basePath + "/admin") {
@@ -78,16 +78,6 @@ func BaseCheck() error {
 	return nil
 }
 
-//// Admin path of project
-//func Admin() string {
-//	return Base() + "/admin"
-//}
-//
-//// API path of project
-//func Api() string {
-//	return Base() + "/api"
-//}
-
 // Migration is the Database migration path
 func migration() string {
 	if api.SuperAdmin {
@@ -96,27 +86,3 @@ func migration() string {
 		return "/database"
 	}
 }
-
-// Theme path
-//func Theme() string {
-//	return Base() + "/theme"
-//}
-
-//// Storage path
-//func Storage() string {
-//	return Base() + "/storage"
-//}
-
-// Storage path
-//func Uploads() string {
-//	return Storage() + "/uploads"
-//}
-
-// Web (Verbis specific)
-//func Web() string {
-//	return Api() + "/web"
-//}
-
-//func Forms() string {
-//	return Storage() + "/forms"
-//}

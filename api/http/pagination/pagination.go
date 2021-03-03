@@ -25,7 +25,6 @@ type Pagination struct {
 // Uses the parameters to return formatted pagination on
 // list routes.
 func Get(params params.Params, total int) *Pagination {
-
 	// Calculate total pages
 	var pages int
 	pages = int(math.Ceil(float64(total) / float64(params.Limit)))

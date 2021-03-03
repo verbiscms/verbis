@@ -35,7 +35,7 @@ type Service struct {
 	// users from the database when resolving fields.
 	deps *deps.Deps
 	// The original post ID.
-	postId int
+	postID int
 	// The slice of domain.PostField to create repeaters,
 	// flexible content and resolving normal fields.
 	fields domain.PostFields
@@ -61,7 +61,7 @@ func NewService(d *deps.Deps, p *domain.PostDatum) *Service {
 
 	return &Service{
 		deps:   d,
-		postId: p.Id,
+		postID: p.Id,
 		fields: fields,
 		layout: layouts,
 	}

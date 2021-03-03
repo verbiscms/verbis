@@ -128,8 +128,8 @@ func (_m *RedirectRepository) GetByFrom(from string) (domain.Redirect, error) {
 	return r0, r1
 }
 
-// GetById provides a mock function with given fields: id
-func (_m *RedirectRepository) GetById(id int64) (domain.Redirect, error) {
+// GetByID provides a mock function with given fields: id
+func (_m *RedirectRepository) GetByID(id int64) (domain.Redirect, error) {
 	ret := _m.Called(id)
 
 	var r0 domain.Redirect

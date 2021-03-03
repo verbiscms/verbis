@@ -74,8 +74,8 @@ func (_m *MediaRepository) Get(meta params.Params) (domain.MediaItems, int, erro
 	return r0, r1, r2
 }
 
-// GetById provides a mock function with given fields: id
-func (_m *MediaRepository) GetById(id int) (domain.Media, error) {
+// GetByID provides a mock function with given fields: id
+func (_m *MediaRepository) GetByID(id int) (domain.Media, error) {
 	ret := _m.Called(id)
 
 	var r0 domain.Media
@@ -116,8 +116,8 @@ func (_m *MediaRepository) GetByName(name string) (domain.Media, error) {
 	return r0, r1
 }
 
-// GetByUrl provides a mock function with given fields: url
-func (_m *MediaRepository) GetByUrl(url string) (string, string, error) {
+// GetByURL provides a mock function with given fields: url
+func (_m *MediaRepository) GetByURL(url string) (string, string, error) {
 	ret := _m.Called(url)
 
 	var r0 string

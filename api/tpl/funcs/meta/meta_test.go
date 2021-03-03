@@ -24,7 +24,6 @@ import (
 )
 
 func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace, *mocks.MediaRepository) {
-
 	mockSite := &siteMocks.Repository{}
 	mockSite.On("Global").Return(domain.Site{})
 
@@ -49,7 +48,6 @@ func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace,
 }
 
 func TestNamespace_MetaTitle(t *testing.T) {
-
 	tt := map[string]struct {
 		meta    domain.PostOptions
 		options domain.Options
@@ -158,7 +156,7 @@ func TestNamespace(t *testing.T) {
 
 func TestTemplateMeta_GetImage(t *testing.T) {
 
-	media := domain.Media{Id: 1, Url: "testurl"}
+	media := domain.Media{Id: 1, URL: "testurl"}
 
 	tt := map[string]struct {
 		mock func(m *mocks.MediaRepository)
@@ -166,13 +164,13 @@ func TestTemplateMeta_GetImage(t *testing.T) {
 	}{
 		"Success": {
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
+				m.On("GetByID", 1).Return(media, nil)
 			},
-			media.Url,
+			media.URL,
 		},
 		"Error": {
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("error"))
+				m.On("GetByID", 1).Return(domain.Media{}, fmt.Errorf("error"))
 			},
 			"",
 		},

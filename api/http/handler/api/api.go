@@ -9,12 +9,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const (
+	// The default page number when none is passed.
+	DefaultPage = 1
+	// The default limit when none is passed.
+	DefaultLimit = 15
+)
+
 var (
 	// DefaultParams represents the default params if
 	// none were passed for the API.
 	DefaultParams = params.Defaults{
-		Page:           1,
-		Limit:          15,
+		Page:           DefaultPage,
+		Limit:          DefaultLimit,
 		OrderBy:        "created_at",
 		OrderDirection: "desc",
 	}

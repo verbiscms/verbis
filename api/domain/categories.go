@@ -13,15 +13,15 @@ type (
 	// Category defines the groups used for categorising
 	// individual posts.
 	Category struct {
-		Id          int64     `db:"id" json:"id"`
+		Id          int64     `db:"id" json:"id"` //nolint
 		UUID        uuid.UUID `db:"uuid" json:"uuid"`
 		Slug        string    `db:"slug" json:"slug" binding:"required,max=150"`
 		Name        string    `db:"name" json:"name" binding:"required,max=150"`
 		Primary     bool      `db:"primary" json:"primary" binding:"required"`
-		Description *string   `db:"description" json:"description" binding:"max=500"`
+		Description *string   `db:"description" json:"description" binding:"omitempty,max=500"`
 		Resource    string    `db:"resource" json:"resource" binding:"required,max=150"`
-		ParentId    *int      `db:"parent_id" json:"parent_id" binding:"omitempty,numeric"`
-		ArchiveId   *int      `db:"archive_id" json:"archive_id" binding:"omitempty,numeric"`
+		ParentId    *int      `db:"parent_id" json:"parent_id" binding:"omitempty,numeric"`   //nolint
+		ArchiveId   *int      `db:"archive_id" json:"archive_id" binding:"omitempty,numeric"` //nolint
 		UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
 		CreatedAt   time.Time `db:"created_at" json:"created_at"`
 	}

@@ -14,9 +14,9 @@ import (
 	"testing"
 )
 
-// ApiTestSuite defines the helper used for api
+// APITestSuite defines the helper used for api
 // testing.
-type ApiTestSuite struct {
+type APITestSuite struct {
 	test.HandlerSuite
 }
 
@@ -24,7 +24,7 @@ type ApiTestSuite struct {
 //
 // Assert testing has begun.
 func TestApi(t *testing.T) {
-	suite.Run(t, &ApiTestSuite{
+	suite.Run(t, &APITestSuite{
 		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
@@ -38,7 +38,7 @@ func Test_Params(t *testing.T) {
 	assert.Equal(t, want.Stringer, got.Stringer)
 }
 
-func (t *ApiTestSuite) TestApiParams_Param() {
+func (t *APITestSuite) TestApiParams_Param() {
 
 	tt := map[string]struct {
 		query string

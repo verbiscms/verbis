@@ -1,3 +1,7 @@
+# This file contains all available configuration options
+# with their default values.
+
+# options for analysis running
 run:
     # default concurrency is a available CPU number
     concurrency: 4
@@ -18,8 +22,8 @@ run:
     # "/" will be replaced by current OS file path separator to properly work
     # on Windows.
     skip-dirs:
-        - ./res
-
+        - api/database/builder/*
+        - api/helpers/webp/*
 
 # output configuration options
 output:
@@ -40,3 +44,47 @@ output:
 
     # sorts results by: filepath, line and column
     sort-results: false
+
+issues:
+    # List of regexps of issue texts to exclude, empty list by default.
+    # But independently from this option we use default exclude patterns,
+    # it can be disabled by `exclude-use-default: false`. To list all
+    # excluded by default patterns execute `golangci-lint run --help`
+    exclude:
+        - op
+
+linters:
+    # please, do not use `enable-all`: it's deprecated and will be removed soon.
+    # inverted configuration with `enable-all` and `disable` is not scalable during updates of golangci-lint
+    disable-all: true
+    enable:
+#        - bodyclose
+#        - deadcode
+#        - depguard
+#        - dogsled
+#        - errcheck
+#        - gocritic
+#        - gocyclo
+#        - gofmt
+#        - goimports
+#        - golint
+#        - gomnd
+#        - goprintffuncname
+#        - gosimple
+#        - govet
+#        - ineffassign
+#        - misspell
+#        - nakedret
+#        - noctx
+#        - nolintlint
+#        - rowserrcheck
+#        - scopelint
+#        - staticcheck
+#        - structcheck
+#        - stylecheck
+#        - typecheck
+#        - unconvert
+#        - unparam
+#        - unused
+#        - varcheck
+        - whitespace

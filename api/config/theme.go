@@ -5,12 +5,12 @@
 package config
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ghodss/yaml"
 	"io/ioutil"
-	"os"
 	"sync"
 )
 
@@ -68,6 +68,7 @@ func Set(config domain.ThemeConfig) {
 func Fetch(path string) *domain.ThemeConfig {
 	theme, err := getThemeConfig(path, FileName)
 	if err != nil {
+		fmt.Println(err)
 		logger.WithError(err).Error()
 	}
 	Set(*theme)
@@ -93,12 +94,13 @@ func Config(path string) (*domain.ThemeConfig, error) {
 func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
 	const op = "Config.Fetch"
 
-	cfg, err := ioutil.ReadFile(path + string(os.PathSeparator) + filename)
+	theme := DefaultTheme
+
+	cfg, err := ioutil.ReadFile(path + filename)
 	if err != nil {
 		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Unable to get retrieve theme config file", Operation: op, Err: err}
 	}
 
-	var theme domain.ThemeConfig
 	err = yaml.Unmarshal(cfg, &theme)
 	if err != nil {
 		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Syntax error in theme config file", Operation: op, Err: err}

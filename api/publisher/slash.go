@@ -6,6 +6,7 @@ package publisher
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"net/url"
 	"path"
 	"path/filepath"
@@ -40,12 +41,12 @@ func (r *publish) handleTrailingSlash(ctx *gin.Context) (string, bool) {
 	}
 
 	if lastChar != "/" && trailing {
-		ctx.Redirect(301, p+"/")
+		ctx.Redirect(http.StatusMovedPermanently, p+"/")
 		return "", true
 	}
 
 	if lastChar == "/" && !trailing {
-		ctx.Redirect(301, strings.TrimSuffix(p, "/"))
+		ctx.Redirect(http.StatusMovedPermanently, strings.TrimSuffix(p, "/"))
 		return "", true
 	}
 

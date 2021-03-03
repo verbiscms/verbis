@@ -47,7 +47,6 @@ import (
 //}
 
 func (t *RecoverTestSuite) Test_TplLineNumber() {
-
 	tt := map[string]struct {
 		input *errors.Error
 		want  int

@@ -9,6 +9,8 @@ import (
 )
 
 // runPosts will insert all demo psots for the user.
+//
+//nolint
 func (s *Seeder) runPosts() error {
 
 	p := domain.PostCreate{

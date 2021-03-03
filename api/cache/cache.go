@@ -23,35 +23,37 @@ type Cacher interface {
 
 const (
 	// For use with functions that take an expiration time.
-	RememberForever time.Duration = -1
-	postIdKey                     = "post-id-"
+	RememberForever   time.Duration = -1
+	postIDKey         string        = "post-id-"
+	DefaultExpiration               = 5 * time.Minute
+	DefaultCleanup                  = 10 * time.Minute
 )
 
 // Init set-ups go-cache with defaults
 func Init() {
-	Store = cache.New(5*time.Minute, 10*time.Minute)
+	Store = cache.New(DefaultExpiration, DefaultCleanup)
 }
 
 func ClearPostCache(id int) {
 	Store.Delete(GetPostKey(id))
 }
 
-func ClearUserCache(userId int, posts domain.PostData) {
+func ClearUserCache(userID int, posts domain.PostData) {
 	for _, v := range posts {
-		if v.UserId == userId {
+		if v.UserId == userID {
 			ClearPostCache(v.Id)
 		}
 	}
 }
 
-func ClearCategoryCache(categoryId int64, posts domain.PostData) {
+func ClearCategoryCache(categoryID int64, posts domain.PostData) {
 	for _, v := range posts {
-		if v.Category.Id == categoryId {
+		if v.Category.Id == categoryID {
 			ClearPostCache(v.Id)
 		}
 	}
 }
 
 func GetPostKey(id int) string {
-	return fmt.Sprintf("%s%d", postIdKey, id)
+	return fmt.Sprintf("%s%d", postIDKey, id)
 }

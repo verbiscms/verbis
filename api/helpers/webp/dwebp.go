@@ -106,13 +106,13 @@ func (c *DWebP) Run() (image.Image, error) {
 }
 
 func (c *DWebP) setInput() error {
-	if c.input != nil {
+	if c.input != nil { //nolint
 		c.Arg("--").Arg("-")
 		c.StdIn(c.input)
 	} else if c.inputFile != "" {
 		c.Arg(c.inputFile)
 	} else {
-		return errors.New("Undefined input")
+		return errors.New("undefined input")
 	}
 
 	return nil
@@ -122,6 +122,5 @@ func (c *DWebP) getOutput() (string, error) {
 	if c.outputFile != "" {
 		return c.outputFile, nil
 	}
-
 	return "-", nil
 }

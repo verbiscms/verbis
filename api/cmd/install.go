@@ -41,7 +41,6 @@ func init() {
 }
 
 func Install(cmd *cobra.Command, args []string) {
-
 	//figure := figure.NewColorFigure("Verbis", "cybermedium", "reset", true)
 	//	figure.Print()
 
@@ -55,13 +54,13 @@ func Install(cmd *cobra.Command, args []string) {
 	// TODO NOT WORKING
 	err = db.CheckExists()
 	if err != nil {
-		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DbDatabase))
+		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DBDatabase))
 	}
 
 	// Get the user & site variables
 	user := createOwner()
 	fmt.Println()
-	url := setUrl()
+	url := setURL()
 
 	// Start the spinner
 	printSpinner("Installing Verbis...")
@@ -95,8 +94,8 @@ func Install(cmd *cobra.Command, args []string) {
 
 	// Insert the site url
 	fmt.Println()
-	mUrl, _ := json.Marshal(url)
-	if err := store.Options.Update("site_url", mUrl); err != nil {
+	mURL, _ := json.Marshal(url)
+	if err := store.Options.Update("site_url", mURL); err != nil {
 		printError(fmt.Sprintf("Error not inserting the site url: %s", err.Error()))
 	}
 
@@ -111,43 +110,41 @@ func Install(cmd *cobra.Command, args []string) {
 	printSuccess("Successfully installed verbis")
 }
 
-// setUrl
-func setUrl() string {
-
+// setURL
+func setURL() string {
 	emoji.Println(":backhand_index_pointing_right: Enter the url will sit on:")
 	fmt.Println("If in development, be sure to append a port (for example: http://127.0.0.1:8080):")
 
 	prompt := promptui.Prompt{
-		Label: "Url",
+		Label: "URL",
 		Validate: func(input string) error {
 			if input == "" {
-				return fmt.Errorf("Enter URL")
+				return fmt.Errorf("enter URL")
 			}
 			_, err := url.ParseRequestURI("http://google.com/")
 			if err != nil {
-				return fmt.Errorf("Enter a valid URL")
+				return fmt.Errorf("enter a valid URL")
 			}
 			return nil
 		},
 	}
-	homeUrl, err := prompt.Run()
+	homeURL, err := prompt.Run()
 	if err != nil {
 		printError(fmt.Sprintf("Install failed: %v\n", err))
 	}
 
-	return homeUrl
+	return homeURL
 }
 
 // createOwner Create's the owner of the site for the install.
 func createOwner() *domain.UserCreate {
-
 	emoji.Print(":backhand_index_pointing_right: Enter the owner's details:")
 
 	promptFirstName := promptui.Prompt{
 		Label: "First name",
 		Validate: func(input string) error {
 			if input == "" {
-				return fmt.Errorf("Enter a first name")
+				return fmt.Errorf("enter a first name")
 			}
 			return nil
 		},
@@ -161,24 +158,24 @@ func createOwner() *domain.UserCreate {
 		Label: "Last name",
 		Validate: func(input string) error {
 			if input == "" {
-				return fmt.Errorf("Enter a last name")
+				return fmt.Errorf("enter a last name")
 			}
 			return nil
 		},
 	}
 	lastName, err := promptLastName.Run()
 	if err != nil {
-		printError(fmt.Sprintf("Install failed: %v\n", err))
+		printError(fmt.Sprintf("install failed: %v\n", err))
 	}
 
 	promptEmail := promptui.Prompt{
 		Label: "Email",
 		Validate: func(input string) error {
 			if input == "" {
-				return fmt.Errorf("Enter a email address")
+				return fmt.Errorf("enter a email address")
 			}
 			if !isEmailValid(input) {
-				return fmt.Errorf("Enter a valid email address")
+				return fmt.Errorf("enter a valid email address")
 			}
 			return nil
 		},
@@ -191,8 +188,8 @@ func createOwner() *domain.UserCreate {
 	promptPassword := promptui.Prompt{
 		Label: "Password",
 		Validate: func(input string) error {
-			if len(input) < 8 {
-				return fmt.Errorf("Password must have more than 8 characters")
+			if len(input) < 8 { //nolint
+				return fmt.Errorf("password must have more than 8 characters")
 			}
 			return nil
 		},
@@ -207,7 +204,7 @@ func createOwner() *domain.UserCreate {
 		Label: "Password",
 		Validate: func(input string) error {
 			if input != password {
-				return fmt.Errorf("Password and confirm password must match.")
+				return fmt.Errorf("password and confirm password must match")
 			}
 			return nil
 		},
@@ -226,7 +223,7 @@ func createOwner() *domain.UserCreate {
 				LastName:  lastName,
 				Email:     email,
 				Role: domain.Role{
-					Id: 6,
+					Id: domain.OwnerRoleID,
 				},
 			},
 		},

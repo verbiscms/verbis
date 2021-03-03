@@ -26,7 +26,6 @@ func (a AnyUUID) Match(v driver.Value) bool {
 }
 
 func (t *CategoriesTestSuite) TestStore_Create() {
-
 	tt := map[string]struct {
 		mock func(m sqlmock.Sqlmock)
 		want interface{}

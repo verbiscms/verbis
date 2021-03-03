@@ -8,7 +8,6 @@ import (
 )
 
 func TestMinify_MinifyBytes(t *testing.T) {
-
 	m := New(defaultConfig)
 
 	tt := map[string]struct {
@@ -57,11 +56,12 @@ func TestMinify_MinifyBytes(t *testing.T) {
 	}
 }
 
+//nolint
 func TestMinify_MinifyBytesError(t *testing.T) {
 	// NIL POINTER
-	//m := New(defaultConfig)
+	// m := New(defaultConfig)
 	//
-	//t.Run("Error", func(t *testing.T) {
+	// t.Run("Error", func(t *testing.T) {
 	//	orignal := htmlMime
 	//	defer func() {
 	//		htmlMime = orignal
@@ -75,7 +75,6 @@ func TestMinify_MinifyBytesError(t *testing.T) {
 }
 
 func TestMinify_MinifyBytesNotParsed(t *testing.T) {
-
 	m := New(Config{
 		MinifyHTML: false,
 		MinifyCSS:  false,

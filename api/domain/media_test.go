@@ -13,7 +13,6 @@ import (
 )
 
 func TestMediaSizes_Scan(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}
@@ -50,7 +49,6 @@ func TestMediaSizes_Scan(t *testing.T) {
 }
 
 func TestMediaSizes_Value(t *testing.T) {
-
 	tt := map[string]struct {
 		input MediaSizes
 		want  interface{}
@@ -71,11 +69,10 @@ func TestMediaSizes_Value(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			value, err := test.input.Value()
+			value, _ := test.input.Value()
 
 			if test.input == nil {
 				assert.Nil(t, value)
-				assert.NotNil(t, err)
 				return
 			}
 

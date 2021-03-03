@@ -41,28 +41,28 @@ func TestNamespace_Find(t *testing.T) {
 		"Success": {
 			1,
 			func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(category, nil)
+				m.On("GetByID", 1).Return(category, nil)
 			},
 			category,
 		},
 		"Not Found": {
 			1,
 			func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(domain.Category{}, fmt.Errorf("error"))
+				m.On("GetByID", 1).Return(domain.Category{}, fmt.Errorf("error"))
 			},
 			nil,
 		},
 		"No Stringer": {
 			noStringer{},
 			func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(category, nil)
+				m.On("GetByID", 1).Return(category, nil)
 			},
 			nil,
 		},
 		"Nil": {
 			nil,
 			func(m *mocks.CategoryRepository) {
-				m.On("GetById", 1).Return(category, nil)
+				m.On("GetByID", 1).Return(category, nil)
 			},
 			nil,
 		},

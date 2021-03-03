@@ -5,7 +5,6 @@
 package date
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
 	"time"
@@ -35,7 +34,7 @@ func (ns *Namespace) DateInZone(format string, date interface{}, zone string) (s
 
 	tm, err := cast.ToTimeE(date)
 	if err != nil {
-		return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Cannot cast interfaace to time.Time"), Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Cannot cast interfaace to time.Time", Operation: op, Err: err}
 	}
 
 	loc, err := time.LoadLocation(zone)

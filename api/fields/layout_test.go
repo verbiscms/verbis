@@ -131,7 +131,7 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 			layout: nil,
 			args:   []interface{}{1},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, true).Return(domain.PostDatum{
+				p.On("GetByID", 1, true).Return(domain.PostDatum{
 					Post: domain.Post{Id: 1, Title: "post"},
 					Layout: domain.FieldGroups{
 						{Title: "test1", Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}}},
@@ -146,7 +146,7 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 			layout: nil,
 			args:   []interface{}{1},
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, true).Return(domain.PostDatum{}, fmt.Errorf("error"))
+				p.On("GetByID", 1, true).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			want: f,
 		},
@@ -171,7 +171,7 @@ func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 		"Success": {
 			id: 1,
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, true).Return(domain.PostDatum{
+				p.On("GetByID", 1, true).Return(domain.PostDatum{
 					Post:   domain.Post{Id: 1, Title: "post"},
 					Layout: domain.FieldGroups{{Title: "test"}},
 				}, nil)
@@ -185,7 +185,7 @@ func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 		"Not Found": {
 			id: 1,
 			mock: func(p *mocks.PostsRepository) {
-				p.On("GetById", 1, true).Return(domain.PostDatum{}, fmt.Errorf("error"))
+				p.On("GetByID", 1, true).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			want: nil,
 		},

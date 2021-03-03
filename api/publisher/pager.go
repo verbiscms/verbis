@@ -26,10 +26,10 @@ type page struct {
 	*deps.Deps
 	Context    *gin.Context
 	Post       *domain.PostDatum
-	Url        string
+	URL        string
 	CacheKey   string
 	FoundCache bool
-	HomepageId int
+	HomepageID int
 	Type       *TypeOfPage
 }
 
@@ -83,7 +83,7 @@ func (p *page) Prepare() tpl.TemplateExecutor {
 //
 // Determines if the page is the index.
 func (p *page) IsHomepage() bool {
-	return p.Url == "/" || p.Url == ""
+	return p.URL == "/" || p.URL == ""
 }
 
 // IsResourcePublic
@@ -189,14 +189,13 @@ func (p *page) HandleTrailingSlash() (string, bool) {
 		return pth, false
 	}
 
-
 	if lastChar != "/" && trailing {
-		p.Context.Redirect(301, pth+"/")
+		p.Context.Redirect(http.StatusMovedPermanently, pth+"/")
 		return "", true
 	}
 
 	if lastChar == "/" && !trailing {
-		p.Context.Redirect(301, strings.TrimSuffix(pth, "/"))
+		p.Context.Redirect(http.StatusMovedPermanently, strings.TrimSuffix(pth, "/"))
 		return "", true
 	}
 

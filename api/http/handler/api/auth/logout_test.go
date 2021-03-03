@@ -12,7 +12,6 @@ import (
 )
 
 func (t *AuthTestSuite) TestAuth_Logout() {
-
 	token := "test"
 
 	tt := map[string]struct {

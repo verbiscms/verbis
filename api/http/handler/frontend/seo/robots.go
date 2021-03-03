@@ -6,6 +6,7 @@ package seo
 
 import (
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 // Robots
@@ -24,5 +25,5 @@ func (s *SEO) Robots(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Data(200, "text/plain", []byte(s.Deps.Options.SeoRobots))
+	ctx.Data(http.StatusOK, "text/plain", []byte(s.Deps.Options.SeoRobots))
 }

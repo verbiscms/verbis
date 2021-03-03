@@ -21,7 +21,7 @@ type Sqlbuilder struct {
 	orderbystmt    string
 	args           []string
 	skip           []string
-	Dialect        string //Can be postgres, mysql or (more to come)
+	Dialect        string // Can be postgres, mysql or (more to come)
 }
 
 func Builder() *Sqlbuilder {
@@ -51,7 +51,6 @@ func (s *Sqlbuilder) SelectRaw(selectstmt string) *Sqlbuilder {
 }
 
 func (s *Sqlbuilder) Select(selectstmt ...string) *Sqlbuilder {
-
 	for _, ss := range selectstmt {
 		s.selectstmt += s.formatSchema(ss) + `, `
 	}
@@ -96,7 +95,7 @@ func (s *Sqlbuilder) WhereRaw(wherestmt string) *Sqlbuilder {
 	return s
 }
 
-//Accepts Slice of INT, FLOAT32, STRING, or a simple comma separated STRING
+// Accepts Slice of INT, FLOAT32, STRING, or a simple comma separated STRING
 func (s *Sqlbuilder) WhereIn(column string, params interface{}) *Sqlbuilder {
 
 	output := ""
@@ -222,7 +221,7 @@ func (s *Sqlbuilder) Count() string {
 
 func (s *Sqlbuilder) Build() string {
 
-	//build selects
+	// build selects
 	if s.deletefromstmt == `` {
 		if s.selectstmt == `` {
 			s.string = `SELECT * `
@@ -231,7 +230,7 @@ func (s *Sqlbuilder) Build() string {
 		}
 	}
 
-	//build from
+	// build from
 	if s.fromstmt == `` {
 		if s.deletefromstmt != `` {
 			s.string += `DELETE FROM ` + strings.TrimSuffix(s.deletefromstmt, `.`) + ` `
@@ -242,20 +241,20 @@ func (s *Sqlbuilder) Build() string {
 		s.string += `FROM ` + strings.TrimSuffix(s.fromstmt, `.`) + ` `
 	}
 
-	//left joins
+	// left joins
 	s.string += s.leftjoinstmt + ` `
 
-	//where
+	// where
 	if s.wherestmt != `` {
 		s.string += `WHERE ` + strings.TrimSuffix(s.wherestmt, ` AND `) + ` `
 	}
 
-	//orderby
+	// orderby
 	if s.orderbystmt != `` {
 		s.string += s.orderbystmt + ` `
 	}
 
-	//limit and offset
+	// limit and offset
 	s.string += s.limitstmt
 	s.string += s.offsetstmt
 
@@ -357,7 +356,6 @@ func (s *Sqlbuilder) formatSchema(schema string) string {
 			} else {
 				finalSchemaStmt += dialectFormat + part + dialectFormat + `.`
 			}
-
 		}
 	}
 
@@ -395,7 +393,7 @@ func mapStruct(data interface{}, args []string, skip []string, update bool) (dbC
 		value := values.Field(i)
 
 		// TODO this needs to be dynamic in options
-		//val, exists := field.Tag.Lookup("sqlb")
+		// val, exists := field.Tag.Lookup("sqlb")
 		val, exists := field.Tag.Lookup("db")
 
 		if stringInSlice(skip, val) {

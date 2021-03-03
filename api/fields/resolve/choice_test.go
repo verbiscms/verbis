@@ -7,7 +7,6 @@ package resolve
 import "github.com/ainsleyclark/verbis/api/domain"
 
 func (t *ResolverTestSuite) TestValue_Choice() {
-
 	tt := map[string]struct {
 		value domain.FieldValue
 		want  interface{}
@@ -45,7 +44,6 @@ func (t *ResolverTestSuite) TestValue_Choice() {
 }
 
 func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
-
 	tt := map[string]struct {
 		field domain.PostField
 		want  domain.PostField

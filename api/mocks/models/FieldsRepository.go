@@ -35,13 +35,13 @@ func (_m *FieldsRepository) Create(f domain.PostField) (domain.PostField, error)
 	return r0, r1
 }
 
-// Exists provides a mock function with given fields: postId, _a1, key
-func (_m *FieldsRepository) Exists(postId int, _a1 uuid.UUID, key string) bool {
-	ret := _m.Called(postId, _a1, key)
+// Exists provides a mock function with given fields: postID, _a1, key
+func (_m *FieldsRepository) Exists(postID int, _a1 uuid.UUID, key string) bool {
+	ret := _m.Called(postID, _a1, key)
 
 	var r0 bool
 	if rf, ok := ret.Get(0).(func(int, uuid.UUID, string) bool); ok {
-		r0 = rf(postId, _a1, key)
+		r0 = rf(postID, _a1, key)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
@@ -49,13 +49,13 @@ func (_m *FieldsRepository) Exists(postId int, _a1 uuid.UUID, key string) bool {
 	return r0
 }
 
-// GetByPost provides a mock function with given fields: postId
-func (_m *FieldsRepository) GetByPost(postId int) (domain.PostFields, error) {
-	ret := _m.Called(postId)
+// GetByPost provides a mock function with given fields: postID
+func (_m *FieldsRepository) GetByPost(postID int) (domain.PostFields, error) {
+	ret := _m.Called(postID)
 
 	var r0 domain.PostFields
 	if rf, ok := ret.Get(0).(func(int) domain.PostFields); ok {
-		r0 = rf(postId)
+		r0 = rf(postID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.PostFields)
@@ -64,7 +64,7 @@ func (_m *FieldsRepository) GetByPost(postId int) (domain.PostFields, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(postId)
+		r1 = rf(postID)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -109,13 +109,13 @@ func (_m *FieldsRepository) Update(f domain.PostField) (domain.PostField, error)
 	return r0, r1
 }
 
-// UpdateCreate provides a mock function with given fields: postId, f
-func (_m *FieldsRepository) UpdateCreate(postId int, f domain.PostFields) error {
-	ret := _m.Called(postId, f)
+// UpdateCreate provides a mock function with given fields: postID, f
+func (_m *FieldsRepository) UpdateCreate(postID int, f domain.PostFields) error {
+	ret := _m.Called(postID, f)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(int, domain.PostFields) error); ok {
-		r0 = rf(postId, f)
+		r0 = rf(postID, f)
 	} else {
 		r0 = ret.Error(0)
 	}

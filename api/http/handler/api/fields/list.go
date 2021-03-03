@@ -23,18 +23,18 @@ func (c *Fields) List(ctx *gin.Context) {
 
 	resource := ctx.Query("resource")
 
-	userId, err := strconv.Atoi(ctx.Query("user_id"))
-	if err != nil || userId == 0 {
+	userID, err := strconv.Atoi(ctx.Query("user_id"))
+	if err != nil || userID == 0 {
 		owner, err := c.Store.User.GetOwner()
 		if err != nil {
 			api.Respond(ctx, 500, errors.Message(err), err)
 		}
-		userId = owner.Id
+		userID = owner.Id
 	}
 
-	categoryId, err := strconv.Atoi(ctx.Query("category_id"))
+	categoryID, err := strconv.Atoi(ctx.Query("category_id"))
 	if err != nil {
-		categoryId = 0
+		categoryID = 0
 	}
 
 	post := domain.PostDatum{
@@ -48,18 +48,18 @@ func (c *Fields) List(ctx *gin.Context) {
 			PageLayout:        ctx.Query("layout"),
 			CodeInjectionHead: nil,
 			CodeInjectionFoot: nil,
-			UserId:            userId,
+			UserId:            userID,
 		},
 	}
 
 	// Get the author associated with the post
-	author, err := c.Store.User.GetById(post.UserId)
+	author, err := c.Store.User.GetByID(post.UserId)
 	if err != nil {
 		post.Author = author.HideCredentials()
 	}
 
 	// Get the categories associated with the post
-	category, err := c.Store.Categories.GetById(categoryId)
+	category, err := c.Store.Categories.GetByID(categoryID)
 	if err != nil {
 		post.Category = &category
 	}

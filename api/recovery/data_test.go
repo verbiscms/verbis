@@ -23,7 +23,7 @@ var (
 //			Err:       "operation: error",
 //		},
 //		Request: Request{
-//			Url:        "http://localhost:8080/test",
+//			URL:        "http://localhost:8080/test",
 //			Method:     "GET",
 //			Headers:    map[string][]string{"Header": {"test"}},
 //			Query:      map[string][]string{"page": {"test"}},
@@ -130,7 +130,7 @@ var (
 //
 //func (t *RecoverTestSuite) TestRecover_GetRequestData() {
 //	want := Request{
-//		Url:        "http://localhost:8080/test",
+//		URL:        "http://localhost:8080/test",
 //		Method:     "GET",
 //		Headers:    map[string][]string{"Header": {"test"}, "Cookie": {"test="}},
 //		Query:      map[string][]string{"page": {"test"}},
@@ -156,7 +156,7 @@ var (
 //
 //func (t *RecoverTestSuite) TestRecover_GetRequestData_NilBody() {
 //	want := Request{
-//		Url:        "http://localhost:8080/test",
+//		URL:        "http://localhost:8080/test",
 //		Method:     "GET",
 //		Headers:    map[string][]string{"Header": {"test"}, "Cookie": {"test="}},
 //		Query:      map[string][]string{"page": {"test"}},

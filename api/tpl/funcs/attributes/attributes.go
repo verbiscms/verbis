@@ -70,7 +70,7 @@ func (ns *Namespace) Lang() string {
 // Example:
 // `My Page !Template` would return `my-page-template`.
 func cssValidString(str string) string {
-	r := regexp.MustCompile("[^A-Za-z0-9\\s-/]")
+	r := regexp.MustCompile("[^A-Za-z0-9\\s-/]") //nolint
 
 	str = r.ReplaceAllString(str, "")
 	str = strings.ReplaceAll(str, "/", "-")

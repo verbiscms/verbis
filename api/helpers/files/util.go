@@ -91,7 +91,7 @@ func GetFileSize(path string) int {
 	if err != nil {
 		return 0
 	}
-	return int(fi.Size() / 1024)
+	return int(fi.Size() / 1024) //nolint
 }
 
 // GetFileContents of given path

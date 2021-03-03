@@ -13,7 +13,6 @@ import (
 )
 
 func (t *MiddlewareTestSuite) TestEmptyBody() {
-
 	tt := map[string]struct {
 		method  string
 		input   string
@@ -92,7 +91,6 @@ func (t *MiddlewareTestSuite) TestEmptyBody() {
 }
 
 func (t *MiddlewareTestSuite) Test_isEmpty() {
-
 	tt := map[string]struct {
 		want  bool
 		input interface{}
@@ -126,7 +124,6 @@ func (t *MiddlewareTestSuite) Test_isEmpty() {
 }
 
 func (t *MiddlewareTestSuite) Test_isJSON() {
-
 	tt := map[string]struct {
 		want  bool
 		input string

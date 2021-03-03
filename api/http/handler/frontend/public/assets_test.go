@@ -13,7 +13,6 @@ import (
 )
 
 func (t *PublicTestSuite) TestPublic_Assets() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

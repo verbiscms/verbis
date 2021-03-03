@@ -27,9 +27,6 @@ func TestResolver(t *testing.T) {
 	suite.Run(t, new(ResolverTestSuite))
 }
 
-// Cannot parse helper.
-type noStringer struct{}
-
 // SetupSuite
 //
 // Discard the logger on setup.

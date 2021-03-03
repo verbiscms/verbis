@@ -106,7 +106,7 @@ func Recover(g *gin.Context, err interface{}) {
 		"Highlight":     rc.Highlight,
 		"LineNumber":    rc.Line,
 		"FileLanguage":  rc.Language,
-		"Url":           g.Request.URL.Path,
+		"URL":           g.Request.URL.Path,
 		"Ip":            g.ClientIP(),
 		"DataLength":    g.Writer.Size(),
 	}); err != nil {

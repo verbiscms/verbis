@@ -14,7 +14,6 @@ import (
 )
 
 func (t *UsersTestSuite) TestUser_Find() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -27,7 +26,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 			200,
 			"Successfully obtained user with ID: 123",
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(user, nil)
+				m.On("GetByID", 123).Return(user, nil)
 			},
 			"/users/123",
 		},
@@ -36,7 +35,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 			400,
 			"Pass a valid number to obtain the user by ID",
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, fmt.Errorf("error"))
+				m.On("GetByID", 123).Return(domain.User{}, fmt.Errorf("error"))
 			},
 			"/users/wrongid",
 		},
@@ -45,7 +44,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 			200,
 			"no users found",
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
+				m.On("GetByID", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
 			},
 			"/users/123",
 		},
@@ -54,7 +53,7 @@ func (t *UsersTestSuite) TestUser_Find() {
 			500,
 			"internal",
 			func(m *mocks.UserRepository) {
-				m.On("GetById", 123).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("GetByID", 123).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/users/123",
 		},

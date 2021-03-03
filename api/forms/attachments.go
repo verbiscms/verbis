@@ -5,7 +5,6 @@
 package forms
 
 import (
-	//"bytes"
 	"encoding/base64"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -14,8 +13,6 @@ import (
 	"github.com/gabriel-vasile/mimetype"
 	"io"
 	"io/ioutil"
-
-	//"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -63,7 +60,7 @@ type Attachment struct {
 //
 // Returns the attachment file size in megabytes.
 func (a *Attachment) SizeMB() int {
-	return int(a.Size / 1024)
+	return int(a.Size / 1024) //nolint
 }
 
 // getAttachment
@@ -157,7 +154,7 @@ func validateFile(file *multipart.File, size int64) (string, error) {
 		return "", &errors.Error{Code: errors.INVALID, Message: "Mime type not permitted", Operation: op, Err: fmt.Errorf("mime for the uploaded file is not permitted")}
 	}
 
-	fileSize := int(1024 / size)
+	fileSize := int(1024 / size) //nolint
 	if fileSize > UploadLimit {
 		return "", &errors.Error{Code: errors.INVALID, Message: "File is too large to upload", Operation: op, Err: fmt.Errorf("the file exceeds the upload limit for uploading")}
 	}

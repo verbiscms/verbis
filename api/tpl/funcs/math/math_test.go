@@ -15,7 +15,6 @@ var (
 )
 
 func TestNamespace_Add(t *testing.T) {
-
 	tt := map[string]struct {
 		input []interface{}
 		want  int64
@@ -47,7 +46,6 @@ func TestNamespace_Add(t *testing.T) {
 }
 
 func TestNamespace_Subtract(t *testing.T) {
-
 	tt := map[string]struct {
 		a    interface{}
 		b    interface{}
@@ -81,7 +79,6 @@ func TestNamespace_Subtract(t *testing.T) {
 }
 
 func TestNamespace_Divide(t *testing.T) {
-
 	tt := map[string]struct {
 		a    interface{}
 		b    interface{}
@@ -122,7 +119,6 @@ func TestNamespace_Divide(t *testing.T) {
 }
 
 func TestNamespace_Multiply(t *testing.T) {
-
 	tt := map[string]struct {
 		a    interface{}
 		b    []interface{}
@@ -159,7 +155,6 @@ func TestNamespace_Multiply(t *testing.T) {
 }
 
 func TestNamespace_Modulus(t *testing.T) {
-
 	tt := map[string]struct {
 		a    interface{}
 		b    interface{}
@@ -200,7 +195,6 @@ func TestNamespace_Modulus(t *testing.T) {
 }
 
 func TestNamespace_Round(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  float64
@@ -232,7 +226,6 @@ func TestNamespace_Round(t *testing.T) {
 }
 
 func TestNamespace_Ceil(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  float64
@@ -264,7 +257,6 @@ func TestNamespace_Ceil(t *testing.T) {
 }
 
 func TestNamespace_Floor(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  float64
@@ -296,7 +288,6 @@ func TestNamespace_Floor(t *testing.T) {
 }
 
 func TestNamespace_Min(t *testing.T) {
-
 	tt := map[string]struct {
 		a    interface{}
 		b    []interface{}
@@ -338,7 +329,6 @@ func TestNamespace_Min(t *testing.T) {
 }
 
 func TestNamespace_Max(t *testing.T) {
-
 	tt := map[string]struct {
 		a    interface{}
 		b    []interface{}

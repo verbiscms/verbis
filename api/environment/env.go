@@ -29,25 +29,25 @@ type Env struct {
 	AppPort string `json:"APP_PORT" binding:"required"`
 
 	// The database host (IP) for the store.
-	DbHost string `json:"DB_HOST" binding:"required"`
+	DBHost string `json:"DB_HOST" binding:"required"`
 
 	// The database port for the store.
-	DbPort string `json:"DB_PORT" binding:"required"`
+	DBPort string `json:"DB_PORT" binding:"required"`
 
 	// The database name.
-	DbDatabase string `json:"DB_DATABASE" binding:"required"`
+	DBDatabase string `json:"DB_DATABASE" binding:"required"`
 
 	// The database user name.
-	DbUser string `json:"DB_USERNAME" binding:"required"`
+	DBUser string `json:"DB_USERNAME" binding:"required"`
 
 	// The database port.
-	DbPassword string `json:"DB_PASSWORD" binding:"required"`
+	DBPassword string `json:"DB_PASSWORD" binding:"required"`
 
 	// The key for Sparkpost (mailer).
-	SparkpostApiKey string `json:"SPARKPOST_API_KEY"`
+	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
 
 	// The url for Sparkpost (could be EU).
-	SparkpostUrl string `json:"SPARKPOST_URL"`
+	SparkpostURL string `json:"SPARKPOST_URL"`
 
 	// The mailing from address.
 	MailFromAddress string `json:"MAIL_FROM_ADDRESS"`
@@ -62,6 +62,12 @@ var (
 	basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
 	// The environment file extension.
 	envExt = ".env"
+)
+
+const (
+	// The default port Verbis should sit on when none
+	// is defined.
+	DefaultPort = 5000
 )
 
 // Load
@@ -82,13 +88,13 @@ func Load() (*Env, error) {
 		AppEnv:          os.Getenv("APP_ENV"),
 		AppDebug:        os.Getenv("APP_DEBUG"),
 		AppPort:         os.Getenv("APP_PORT"),
-		DbHost:          os.Getenv("DB_HOST"),
-		DbPort:          os.Getenv("DB_PORT"),
-		DbDatabase:      os.Getenv("DB_DATABASE"),
-		DbUser:          os.Getenv("DB_USERNAME"),
-		DbPassword:      os.Getenv("DB_PASSWORD"),
-		SparkpostApiKey: os.Getenv("SPARKPOST_API_KEY"),
-		SparkpostUrl:    os.Getenv("SPARKPOST_URL"),
+		DBHost:          os.Getenv("DB_HOST"),
+		DBPort:          os.Getenv("DB_PORT"),
+		DBDatabase:      os.Getenv("DB_DATABASE"),
+		DBUser:          os.Getenv("DB_USERNAME"),
+		DBPassword:      os.Getenv("DB_PASSWORD"),
+		SparkpostAPIKey: os.Getenv("SPARKPOST_API_KEY"),
+		SparkpostURL:    os.Getenv("SPARKPOST_URL"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
 		MailFromName:    os.Getenv("MAIL_FROM_NAME"),
 	}, nil
@@ -119,7 +125,7 @@ func (e *Env) Port() int {
 	port, err := strconv.Atoi(e.AppPort)
 	if err != nil {
 		log.WithError(&errors.Error{Code: errors.INVALID, Message: "Unable to cast app port to int using port 5000", Operation: op, Err: err}).Error()
-		return 5000
+		return DefaultPort
 	}
 	return port
 }
@@ -128,13 +134,13 @@ func (e *Env) Port() int {
 //
 // Returns the MySQL database connection string.
 func (e *Env) ConnectString() string {
-	return e.DbUser + ":" + e.DbPassword + "@tcp(" + e.DbHost + ":" + e.DbPort + ")/" + e.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
+	return e.DBUser + ":" + e.DBPassword + "@tcp(" + e.DBHost + ":" + e.DBPort + ")/" + e.DBDatabase + "?tls=false&parseTime=true&multiStatements=true"
 }
 
 // Mail defines the configuration for sending emails.
 type Mail struct {
-	SparkpostApiKey string `json:"SPARKPOST_API_KEY"`
-	SparkpostUrl    string `json:"SPARKPOST_URL"`
+	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
+	SparkpostURL    string `json:"SPARKPOST_URL"`
 	FromAddress     string `json:"MAIL_FROM_ADDRESS"`
 	FromName        string `json:"MAIL_FROM_NAME"`
 }
@@ -146,8 +152,8 @@ func (e *Env) MailConfig() Mail {
 	return Mail{
 		FromAddress:     e.MailFromAddress,
 		FromName:        e.MailFromName,
-		SparkpostApiKey: e.SparkpostApiKey,
-		SparkpostUrl:    e.SparkpostUrl,
+		SparkpostAPIKey: e.SparkpostAPIKey,
+		SparkpostURL:    e.SparkpostURL,
 	}
 }
 

@@ -36,8 +36,7 @@ environment.`,
 // doctor checks if the environment is validated and checks
 // to see if there is a valid database connection and the
 // database exists before proceeding.
-func doctor(running bool) (*deps.DepsConfig, *database.MySql, error) {
-
+func doctor(running bool) (*deps.Config, *database.MySQL, error) {
 	printSpinner("Running doctor...")
 
 	// Check paths are correct
@@ -62,14 +61,14 @@ func doctor(running bool) (*deps.DepsConfig, *database.MySql, error) {
 		for _, v := range vErrors {
 			printError(fmt.Sprintf("Obtaining environment variable: %s", strings.ToUpper(v.Key)))
 		}
-		return nil, nil, fmt.Errorf("Validation failed for the enviroment")
+		return nil, nil, fmt.Errorf("validation failed for the environment")
 	}
 
 	// Get the database and ping
 	db, err := database.New(env)
 	if err != nil {
 		printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
-		return nil, nil, fmt.Errorf("Error establishing database connection")
+		return nil, nil, fmt.Errorf("error establishing database connection")
 	}
 
 	// Check if the database exists
@@ -99,7 +98,7 @@ func doctor(running bool) (*deps.DepsConfig, *database.MySql, error) {
 
 	printSuccess("All checks passed.")
 
-	return &deps.DepsConfig{
+	return &deps.Config{
 		Store:  store,
 		Env:    env,
 		Config: config.Get(),

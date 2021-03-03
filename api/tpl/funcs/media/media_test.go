@@ -26,10 +26,9 @@ func Setup() (*Namespace, *mocks.MediaRepository) {
 }
 
 func TestNamespace_Find(t *testing.T) {
-
 	media := domain.Media{
 		Id:  1,
-		Url: "/uploads/test.jpg",
+		URL: "/uploads/test.jpg",
 	}
 
 	id := 1
@@ -44,77 +43,77 @@ func TestNamespace_Find(t *testing.T) {
 		"Success": {
 			1,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
+				m.On("GetByID", 1).Return(media, nil)
 			},
 			media,
 		},
 		"No Item": {
 			1,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("no media"))
+				m.On("GetByID", 1).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
 			nil,
 		},
 		"nil": {
 			nil,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", nil).Return(domain.Media{}, fmt.Errorf("no media"))
+				m.On("GetByID", nil).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
 			nil,
 		},
 		"int": {
 			id,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
+				m.On("GetByID", 1).Return(media, nil)
 			},
 			media,
 		},
 		"*int": {
 			&id,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
+				m.On("GetByID", 1).Return(media, nil)
 			},
 			media,
 		},
 		"float32": {
 			idFloat32,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
+				m.On("GetByID", 1).Return(media, nil)
 			},
 			media,
 		},
 		"*float32": {
 			&idFloat32,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
+				m.On("GetByID", 1).Return(media, nil)
 			},
 			media,
 		},
 		"float64": {
 			idFloat64,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
+				m.On("GetByID", 1).Return(media, nil)
 			},
 			media,
 		},
 		"*float64": {
 			&idFloat64,
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(media, nil)
+				m.On("GetByID", 1).Return(media, nil)
 			},
 			media,
 		},
 		"string": {
 			"wrongval",
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("no media"))
+				m.On("GetByID", 1).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
 			nil,
 		},
 		"noStringer": {
 			noStringer{},
 			func(m *mocks.MediaRepository) {
-				m.On("GetById", 1).Return(domain.Media{}, fmt.Errorf("no media"))
+				m.On("GetByID", 1).Return(domain.Media{}, fmt.Errorf("no media"))
 			},
 			nil,
 		},

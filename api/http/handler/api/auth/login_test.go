@@ -17,7 +17,6 @@ import (
 )
 
 func (t *AuthTestSuite) TestAuth_Login() {
-
 	var (
 		login              = Login{Email: "info@verbiscms.com", Password: "password"}
 		loginBadValidation = Login{Password: "password"}
@@ -42,7 +41,7 @@ func (t *AuthTestSuite) TestAuth_Login() {
 			},
 		},
 		"Validation Failed": {
-			api.ErrorJson{Errors: validation.Errors{{Key: "email", Message: "Email is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "email", Message: "Email is required.", Type: "required"}}},
 			400,
 			"Validation failed",
 			loginBadValidation,

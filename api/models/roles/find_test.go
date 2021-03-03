@@ -13,7 +13,6 @@ import (
 )
 
 func (t *RolesTestSuite) TestStore_Find() {
-
 	query := "SELECT * FROM `roles` WHERE `id` = ? LIMIT 1"
 
 	tt := map[string]struct {

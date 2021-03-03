@@ -34,9 +34,9 @@ import (
 // MediaRepository defines methods for Media to interact with the database
 type MediaRepository interface {
 	Get(meta params.Params) (domain.MediaItems, int, error)
-	GetById(id int) (domain.Media, error)
+	GetByID(id int) (domain.Media, error)
 	GetByName(name string) (domain.Media, error)
-	GetByUrl(url string) (string, string, error)
+	GetByURL(url string) (string, string, error)
 	Serve(uploadPath string, acceptWeb bool) ([]byte, string, error)
 	Upload(file *multipart.FileHeader, token string) (domain.Media, error)
 	Validate(file *multipart.FileHeader) error
@@ -121,10 +121,10 @@ func (s *MediaStore) Get(meta params.Params) (domain.MediaItems, int, error) {
 	return m, total, nil
 }
 
-// GetById returns a media item by Id
+// GetByID returns a media item by Id
 // Returns errors.NOTFOUND if the media item was not found by the given Id.
-func (s *MediaStore) GetById(id int) (domain.Media, error) {
-	const op = "MediaRepository.GetById"
+func (s *MediaStore) GetByID(id int) (domain.Media, error) {
+	const op = "MediaRepository.GetByID"
 	var m domain.Media
 	q := `SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at,
     CASE WHEN title IS NULL THEN '' ELSE title END AS 'title',
@@ -150,16 +150,15 @@ func (s *MediaStore) GetByName(name string) (domain.Media, error) {
 	FROM media 
 	WHERE name = ? LIMIT 1`
 	if err := s.DB.Get(&m, q, name); err != nil {
-
 		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the media item with the name: %s", name), Operation: op, Err: err}
 	}
 	return m, nil
 }
 
-// GetByUrl Obtains a media file by the URL from the database
+// GetByURL Obtains a media file by the URL from the database
 // Returns errors.NOTFOUND if the media item was not found by the given url.
-func (s *MediaStore) GetByUrl(url string) (string, string, error) {
-	const op = "MediaRepository.GetByUrl"
+func (s *MediaStore) GetByURL(url string) (string, string, error) {
+	const op = "MediaRepository.GetByURL"
 	var m domain.Media
 
 	q := `SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at,
@@ -194,9 +193,9 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, 
 	const op = "MediaRepository.Serve"
 
 	// NOTE: Not concurrent safe
-	//s.getOptionsStruct()
+	// s.getOptionsStruct()
 
-	path, mimeType, err := s.GetByUrl(uploadPath)
+	path, mimeType, err := s.GetByURL(uploadPath)
 	if err != nil {
 		return nil, "", err
 	}
@@ -295,12 +294,16 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The %s mime type, is not in the whitelist for uploading.", mimeType), Operation: op, Err: err}
 	}
 
-	fileSize := int(file.Size / 1024)
+	fileSize := int(file.Size / 1024) //nolint
 	if fileSize > s.options.MediaUploadMaxSize && s.options.MediaUploadMaxSize != 0 {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The file exceeds the maximum size restriction of %vkb.", s.options.MediaUploadMaxSize), Operation: op, Err: err}
 	}
 
 	io, err := file.Open()
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error opening file", Operation: op, Err: err}
+	}
+
 	img, _, err := image.Decode(io)
 	if err != nil {
 		return nil // Is not an image
@@ -321,12 +324,12 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 
 // Inserts a media item into the database
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSize int, mime string, sizes domain.MediaSizes, userId int) (domain.Media, error) {
+func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSize int, mime string, sizes domain.MediaSizes, userID int) (domain.Media, error) {
 	const op = "MediaRepository.insert"
 
 	m := domain.Media{
 		UUID:        uuid,
-		Url:         s.getUrl() + "/" + name,
+		URL:         s.getURL() + "/" + name,
 		Title:       "",
 		Description: "",
 		Alt:         "",
@@ -335,11 +338,11 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 		FileName:    name,
 		Sizes:       sizes,
 		Type:        mime,
-		UserID:      userId,
+		UserID:      userID,
 	}
 
 	q := "INSERT INTO media (uuid, url, title, alt, description, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.DB.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
+	c, err := s.DB.Exec(q, m.UUID, m.URL, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
 
 	if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the new media item with the name: %v", name), Operation: op, Err: err}
@@ -360,7 +363,7 @@ func (s *MediaStore) insert(uuid uuid.UUID, name string, filePath string, fileSi
 func (s *MediaStore) Update(m *domain.Media) error {
 	const op = "MediaRepository.Update"
 
-	_, err := s.GetById(m.Id)
+	_, err := s.GetByID(m.Id)
 	if err != nil {
 		return err
 	}
@@ -372,7 +375,7 @@ func (s *MediaStore) Update(m *domain.Media) error {
 	}
 
 	// Clear the cache
-	cache.Store.Delete(m.Url)
+	cache.Store.Delete(m.URL)
 
 	return nil
 }
@@ -386,12 +389,12 @@ func (s *MediaStore) Delete(id int) error {
 
 	s.getOptionsStruct()
 
-	m, err := s.GetById(id)
+	m, err := s.GetByID(id)
 	if err != nil {
 		return err
 	}
 
-	extension := files.GetFileExtension(m.Url)
+	extension := files.GetFileExtension(m.URL)
 
 	// Delete entry from database
 	if _, err := s.DB.Exec("DELETE FROM media WHERE id = ?", id); err != nil {
@@ -410,7 +413,7 @@ func (s *MediaStore) Delete(id int) error {
 	}
 
 	// Check if the file deleted was the one stored in the site logo
-	if m.Url == s.options.SiteLogo {
+	if m.URL == s.options.SiteLogo {
 		logo, _ := json.Marshal(api.App.Logo)
 		if err := s.optionsModel.Update("site_logo", logo); err != nil {
 			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not update the site logo", Operation: op, Err: err})
@@ -455,7 +458,7 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name string, 
 			if err := s.processImageSize(file, path+"/"+mediaUUID.String(), mime, size); err == nil {
 				savedSizes[key] = domain.MediaSize{
 					UUID:     mediaUUID,
-					Url:      s.getUrl() + "/" + fileName,
+					Url:      s.getURL() + "/" + fileName,
 					Name:     fileName,
 					SizeName: size.Name,
 					FileSize: files.GetFileSize(path + "/" + mediaUUID.String() + extension),
@@ -493,7 +496,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath strin
 
 		if s.options.MediaConvertWebP {
 			// 100 - compression level
-			//go webp.Convert(filePath, 100 - s.options.MediaCompression)
+			// go webp.Convert(filePath, 100 - s.options.MediaCompression)
 			go webp.Convert(filePath, s.options.MediaCompression)
 		}
 	}
@@ -553,7 +556,7 @@ func (s *MediaStore) createDirectory() (string, string) {
 // Get the public url of the file according to date and month if the organise
 // year variable in the media store is set to true. If not the function will
 // return the public uploads folder by default.
-func (s *MediaStore) getUrl() string {
+func (s *MediaStore) getURL() string {
 	if !s.options.MediaOrganiseDate {
 		return s.Config.Media.UploadPath
 	} else {
@@ -579,7 +582,6 @@ func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) (*imag
 			return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not decode the image with the filename: %s", file.Filename), Operation: op, Err: err}
 		}
 		return &pngFile, nil
-
 	} else if mime == "image/jpeg" || mime == "image/jp2" {
 		jpgFile, err := jpeg.Decode(reader)
 		if err != nil {
@@ -593,7 +595,6 @@ func (s *MediaStore) decodeImage(file *multipart.FileHeader, mime string) (*imag
 
 // Process file name
 func (s *MediaStore) processFileName(file string, extension string) string {
-
 	// Remove the file extension
 	name := files.RemoveFileExtension(file)
 

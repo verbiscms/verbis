@@ -31,7 +31,7 @@ func (t *FieldTestSuite) TestNewService() {
 
 	service := &Service{
 		deps:   deps,
-		postId: 1,
+		postID: 1,
 		fields: f,
 		layout: l,
 	}

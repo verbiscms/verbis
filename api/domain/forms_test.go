@@ -10,7 +10,6 @@ import (
 )
 
 func TestForm_GetRecipients(t *testing.T) {
-
 	tt := map[string]struct {
 		input string
 		want  interface{}

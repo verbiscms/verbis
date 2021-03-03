@@ -104,7 +104,6 @@ func TestNamespace_Body(t *testing.T) {
 }
 
 func TestNamespace_CSSValidString(t *testing.T) {
-
 	tt := map[string]struct {
 		input string
 		want  string

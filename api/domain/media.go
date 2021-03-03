@@ -16,9 +16,9 @@ import (
 type (
 	// Media defines the core media entity for Verbis.
 	Media struct {
-		Id          int        `db:"id" json:"id"`
+		Id          int        `db:"id" json:"id"` //nolint
 		UUID        uuid.UUID  `db:"uuid" json:"uuid"`
-		Url         string     `db:"url" json:"url"`
+		URL         string     `db:"url" json:"url"`
 		Title       string     `db:"title" json:"title"`
 		Alt         string     `db:"alt" json:"alt"`
 		Description string     `db:"description" json:"description"`
@@ -40,7 +40,7 @@ type (
 	// stored in the database.
 	MediaSize struct {
 		UUID     uuid.UUID `db:"uuid" json:"uuid"`
-		Url      string    `db:"url" json:"url"`
+		Url      string    `db:"url" json:"url"` //nolint
 		Name     string    `db:"name" json:"name"`
 		SizeName string    `db:"size_name" json:"size_name"`
 		FileSize int       `db:"file_size" json:"file_size"`

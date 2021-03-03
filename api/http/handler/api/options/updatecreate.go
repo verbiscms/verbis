@@ -50,7 +50,7 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 	go func() {
 		// Set the deps options, TODO, were restarting the server here.
 		o.SetOptions(&vOptions)
-		time.Sleep(time.Second * 2)
+		time.Sleep(time.Second * 2) //nolint
 		reload.Exec()
 	}()
 }

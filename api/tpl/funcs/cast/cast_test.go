@@ -15,7 +15,6 @@ var (
 )
 
 func TestNamespace_ToSlice(t *testing.T) {
-
 	tt := map[string]struct {
 		input interface{}
 		want  interface{}

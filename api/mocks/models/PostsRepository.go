@@ -107,8 +107,8 @@ func (_m *PostsRepository) Get(meta params.Params, layout bool, resource string,
 	return r0, r1, r2
 }
 
-// GetById provides a mock function with given fields: id, layout
-func (_m *PostsRepository) GetById(id int, layout bool) (domain.PostDatum, error) {
+// GetByID provides a mock function with given fields: id, layout
+func (_m *PostsRepository) GetByID(id int, layout bool) (domain.PostDatum, error) {
 	ret := _m.Called(id, layout)
 
 	var r0 domain.PostDatum

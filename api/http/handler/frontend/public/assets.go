@@ -4,7 +4,10 @@
 
 package public
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 // Assets
 //
@@ -21,5 +24,5 @@ func (p *Public) Assets(ctx *gin.Context) {
 		return
 	}
 
-	ctx.Data(200, mimeType, *file)
+	ctx.Data(http.StatusOK, mimeType, *file)
 }

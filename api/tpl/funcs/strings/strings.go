@@ -16,7 +16,7 @@ import (
 // Example: {{ replace " " "-" "hello verbis cms" }}
 // Returns: `hello-verbis-cms`
 func (ns *Namespace) Replace(old, new, src string) string {
-	return strings.Replace(src, old, new, -1)
+	return strings.ReplaceAll(src, old, new)
 }
 
 // Substr
@@ -54,6 +54,12 @@ func (ns *Namespace) Trunc(str string, a interface{}) string {
 	return str
 }
 
+const (
+	// The amount of characters to check before returning
+	// an ellipsis.
+	EllipsisCount = 4
+)
+
 // Ellipsis
 //
 // Returns a ellipsis (...) string from the given length.
@@ -63,7 +69,7 @@ func (ns *Namespace) Trunc(str string, a interface{}) string {
 func (ns *Namespace) Ellipsis(str string, len interface{}) string {
 	i := cast.ToInt(len)
 	marker := "..."
-	if i < 4 {
+	if i < EllipsisCount {
 		return str
 	}
 	return ns.Substr(str, 0, i) + marker

@@ -31,7 +31,6 @@ func (m *mockWriterErr) Write(p []byte) (n int, err error) {
 }
 
 func (t *LoggerTestSuite) TestWriterHook_Fire() {
-
 	buf := &bytes.Buffer{}
 
 	tt := map[string]struct {

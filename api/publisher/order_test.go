@@ -5,34 +5,34 @@
 package publisher
 
 var (
-	//newsResource  = "news"
-	//testResources = map[string]domain.Resource{
-	//	"news": {
-	//		Name:         newsResource,
-	//		FriendlyName: "News",
-	//		SingularName: "News Item",
-	//		Slug:         "news",
-	//		Hidden:       false,
-	//	},
-	//}
-	//singlePost = domain.PostDatum{
-	//	Post: domain.Post{Slug: "news-item", Title: "News Item", Resource: &newsResource},
-	//}
-	//archivePost = domain.PostDatum{
-	//	Post: domain.Post{Slug: "news", Title: "News"},
-	//}
-	//pagePost = domain.PostDatum{
-	//	Post: domain.Post{Slug: "contact", Title: "Contact"},
-	//}
-	//customSlugPost = domain.PostDatum{
-	//	Post: domain.Post{Slug: "custom/slug", Title: "Contact"},
-	//}
-	//category = domain.Category{
-	//	Name: "category",
-	//}
-	//categoryPost = domain.PostDatum{
-	//	Post: domain.Post{Slug: "custom/slug", Title: "Contact"}, Category: &category,
-	//}
+//newsResource  = "news"
+//testResources = map[string]domain.Resource{
+//	"news": {
+//		Name:         newsResource,
+//		FriendlyName: "News",
+//		SingularName: "News Item",
+//		Slug:         "news",
+//		Hidden:       false,
+//	},
+//}
+//singlePost = domain.PostDatum{
+//	Post: domain.Post{Slug: "news-item", Title: "News Item", Resource: &newsResource},
+//}
+//archivePost = domain.PostDatum{
+//	Post: domain.Post{Slug: "news", Title: "News"},
+//}
+//pagePost = domain.PostDatum{
+//	Post: domain.Post{Slug: "contact", Title: "Contact"},
+//}
+//customSlugPost = domain.PostDatum{
+//	Post: domain.Post{Slug: "custom/slug", Title: "Contact"},
+//}
+//category = domain.Category{
+//	Name: "category",
+//}
+//categoryPost = domain.PostDatum{
+//	Post: domain.Post{Slug: "custom/slug", Title: "Contact"}, Category: &category,
+//}
 )
 
 //func TestRennder(t *testing.T) {

@@ -16,7 +16,7 @@ import (
 type Repository interface {
 	Get(meta params.Params) (domain.Categories, int, error)
 	Find(id int64) (domain.Category, error)
-	FindByPost(pageId int) (*domain.Category, error)
+	FindByPost(pageID int) (*domain.Category, error)
 	FindBySlug(slug string) (domain.Category, error)
 	FindByName(name string) (domain.Category, error)
 	GetParent(id int) (domain.Category, error)

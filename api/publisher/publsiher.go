@@ -32,7 +32,7 @@ func (r *publish) SiteMap() SiteMapper {
 }
 
 // NewRender - Construct
-func NewRender(d *deps.Deps) *publish {
+func NewRender(d *deps.Deps) Publisher {
 	options := d.Store.Options.GetStruct()
 	return &publish{
 		d,

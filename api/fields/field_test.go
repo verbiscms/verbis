@@ -120,7 +120,6 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			}
 
 			t.Equal(test.want, got)
-
 		})
 	}
 }

@@ -64,28 +64,28 @@ func TestNamespace_Find(t *testing.T) {
 		"Success": {
 			1,
 			func(m *mocks.PostsRepository) {
-				m.On("GetById", 1, false).Return(postData, nil)
+				m.On("GetByID", 1, false).Return(postData, nil)
 			},
 			tplPost,
 		},
 		"Not Found": {
 			1,
 			func(m *mocks.PostsRepository) {
-				m.On("GetById", 1, false).Return(domain.PostDatum{}, fmt.Errorf("error"))
+				m.On("GetByID", 1, false).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			nil,
 		},
 		"No Stringer": {
 			noStringer{},
 			func(m *mocks.PostsRepository) {
-				m.On("GetById", 1, false).Return(postData, nil)
+				m.On("GetByID", 1, false).Return(postData, nil)
 			},
 			nil,
 		},
 		"Nil": {
 			nil,
 			func(m *mocks.PostsRepository) {
-				m.On("GetById", 1, false).Return(postData, nil)
+				m.On("GetByID", 1, false).Return(postData, nil)
 			},
 			nil,
 		},

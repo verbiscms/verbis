@@ -19,19 +19,21 @@ import (
 	"sync"
 )
 
+const maxCPUNum = 4
+
 // TODO: This needs to be dynamic.
 var (
 	resource   = "news"
 	layout     = "main"
 	template   = "news-single"
-	fieldUuid  = "2dedc760-5016-11eb-ae93-0242ac130002"
-	userRoleId = 2
-	trackChan  = make(chan int, runtime.NumCPU()*4)
+	fieldUUID  = "2dedc760-5016-11eb-ae93-0242ac130002"
+	userRoleID = 2
+	trackChan  = make(chan int, runtime.NumCPU()*maxCPUNum)
 	wg         = sync.WaitGroup{}
 )
 
 type Convert struct {
-	XML       WpXml
+	XML       WpXML
 	failed    Failures
 	store     *models.Store
 	authors   domain.Users
@@ -48,7 +50,7 @@ type Result struct {
 
 // New - Construct
 func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
-	wp := NewWordpressXml()
+	wp := NewWordpressXML()
 	err := wp.ReadFile(xmlPath)
 	if err != nil {
 		return nil, err
@@ -73,7 +75,6 @@ func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
 // The XML file into Wordpress by populating Authors
 // and Posts.
 func (c *Convert) Import() {
-
 	authors := c.populateAuthors()
 	posts, categories := c.populatePosts()
 
@@ -86,16 +87,16 @@ func (c *Convert) Import() {
 
 	// TODO: To be returned here as a WebHook or placed in a Debug Table
 	emoji.Println(":check_mark: Successful entries:")
-	fmt.Println(fmt.Sprintf("Posts: %d", len(r.Posts)))
-	fmt.Println(fmt.Sprintf("Authors: %d", len(r.Authors)))
-	fmt.Println(fmt.Sprintf("Categories: %d", len(r.Authors)))
+	fmt.Printf("Posts: %d\n", len(r.Posts))
+	fmt.Printf("Authors: %d\n", len(r.Authors))
+	fmt.Printf("Categories: %d\n", len(r.Authors))
 	fmt.Println()
 	emoji.Println(":cross_mark: Failed entries")
-	fmt.Println(fmt.Sprintf("Posts: %d", len(r.Failed.Posts)))
-	fmt.Println(fmt.Sprintf("Authors: %d", len(r.Failed.Authors)))
+	fmt.Printf("Posts: %d\n", len(r.Failed.Posts))
+	fmt.Printf("Authors: %d\n", len(r.Failed.Authors))
 }
 
-// Failed import defines the errors that occured when importing
+// Failed import defines the errors that occurred when importing
 // multiple entities into Verbis.
 type Failures struct {
 	Posts   []FailedPost
@@ -111,7 +112,7 @@ type FailedPost struct {
 
 // FailedMedia defines a failure of an upload to the media library
 type FailedMedia struct {
-	Url   string
+	URL   string
 	Error error
 }
 
@@ -151,7 +152,6 @@ func (c *Convert) populatePosts() (domain.PostData, domain.Categories) {
 // This function will append to the FailedPosts array if there
 // was a problem parsing any of the content.
 func (c *Convert) addItem(item Item) {
-
 	wg.Add(1)
 	defer func() {
 		wg.Done()
@@ -164,7 +164,7 @@ func (c *Convert) addItem(item Item) {
 		return
 	}
 
-	uuid, err := importer.ParseUUID(fieldUuid)
+	uuid, err := importer.ParseUUID(fieldUUID)
 	if err != nil {
 		c.failPost(item, nil, err)
 	}
@@ -231,19 +231,18 @@ func (c *Convert) addItem(item Item) {
 func (c *Convert) parseContent(content string) (string, []FailedMedia, error) {
 	var failed []FailedMedia
 	parsed, err := importer.ParseHTML(content, func(file *multipart.FileHeader, url string, err error) string {
-
 		if err != nil {
-			failed = append(failed, FailedMedia{Url: url, Error: err})
+			failed = append(failed, FailedMedia{URL: url, Error: err})
 			return ""
 		}
 
 		media, err := c.store.Media.Upload(file, c.owner.Token)
 		if err != nil {
-			failed = append(failed, FailedMedia{Url: url, Error: err})
+			failed = append(failed, FailedMedia{URL: url, Error: err})
 			return ""
 		}
 
-		return media.Url
+		return media.URL
 	})
 
 	if err != nil {
@@ -335,14 +334,11 @@ func (c *Convert) findAuthor(item Item) int {
 // will be appended to the Convert author array.
 // The user will be added to the FailedAuthors array in any case of error.
 func (c *Convert) populateAuthors() domain.UsersParts {
-
 	var users domain.UsersParts
 
 	for _, v := range c.XML.Channel.Authors {
 		exists := c.store.User.ExistsByEmail(v.AuthorEmail)
-
 		if !exists {
-
 			user, password, err := c.createUser(v)
 			if err != nil {
 				continue
@@ -350,7 +346,7 @@ func (c *Convert) populateAuthors() domain.UsersParts {
 
 			color.Green.Println(fmt.Sprintf("User: %s Password: %s", user.Email, password))
 
-			//if c.sendEmail {
+			// if c.sendEmail {
 			// User can't login!
 			// FIX HERE
 			//err = importer.SendNewPassword(user.HideCredentials(), password, c.store.Site.GetGlobalConfig())
@@ -394,7 +390,7 @@ func (c *Convert) createUser(a Author) (domain.User, string, error) {
 				LastName:  a.AuthorLastName,
 				Email:     a.AuthorEmail,
 				Role: domain.Role{
-					Id: userRoleId,
+					Id: userRoleID,
 				},
 			},
 		},

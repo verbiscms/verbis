@@ -1,6 +1,5 @@
 package sockets
 
-
 // Not current as in Reader not go Reader
 //func (a *adminSocket) Reader(conn *websocket.Conn) {
 //	const op = "AdminSocket.Reader"

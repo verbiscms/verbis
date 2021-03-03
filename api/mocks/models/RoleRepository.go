@@ -84,8 +84,8 @@ func (_m *RoleRepository) Get() ([]domain.Role, error) {
 	return r0, r1
 }
 
-// GetById provides a mock function with given fields: id
-func (_m *RoleRepository) GetById(id int) (domain.Role, error) {
+// GetByID provides a mock function with given fields: id
+func (_m *RoleRepository) GetByID(id int) (domain.Role, error) {
 	ret := _m.Called(id)
 
 	var r0 domain.Role

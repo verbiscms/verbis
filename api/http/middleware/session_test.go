@@ -18,7 +18,6 @@ const (
 )
 
 func (t *MiddlewareTestSuite) Test_SessionCheck() {
-
 	tt := map[string]struct {
 		want    interface{}
 		status  int

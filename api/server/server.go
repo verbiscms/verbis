@@ -25,7 +25,6 @@ type Server struct {
 }
 
 func New(d *deps.Deps) *Server {
-
 	// Force log's color
 	gin.ForceConsoleColor()
 
@@ -71,9 +70,8 @@ func New(d *deps.Deps) *Server {
 }
 
 func pprofHandler(h http.HandlerFunc) gin.HandlerFunc {
-	handler := http.HandlerFunc(h)
 	return func(c *gin.Context) {
-		handler.ServeHTTP(c.Writer, c.Request)
+		h.ServeHTTP(c.Writer, c.Request)
 	}
 }
 
@@ -104,7 +102,7 @@ func (s *Server) setupGzip(d *deps.Deps) {
 		return
 	}
 
-	/// Set the default compression & check options
+	// Set the default compression & check options
 	compression := gzip.DefaultCompression
 	switch options.GzipCompression {
 	case "best-compression":

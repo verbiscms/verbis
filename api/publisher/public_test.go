@@ -4,8 +4,6 @@
 
 package publisher
 
-import ()
-
 //
 //// getPublicMock is a helper to obtain a mock Public
 //// handler for testing.
