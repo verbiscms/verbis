@@ -7,8 +7,8 @@ package fields
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/fields/layout"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/verbis/fields/layout"
 	"github.com/spf13/cast"
 )
 

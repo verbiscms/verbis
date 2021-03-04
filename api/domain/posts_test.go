@@ -89,6 +89,35 @@ func TestPostDatum_HasCategories(t *testing.T) {
 	}
 }
 
+func TestPostDatum_IsHomepage(t *testing.T) {
+	tt := map[string]struct {
+		input int
+		id    int
+		want  bool
+	}{
+		"Resource": {
+			1,
+			1,
+			true,
+		},
+		"No Resource": {
+			1,
+			2,
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			p := PostDatum{
+				Post: Post{Id: test.id},
+			}
+			got := p.IsHomepage(test.input)
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
 func TestPostDatum_Tpl(t *testing.T) {
 	got := PostDatum{
 		Post:   Post{Title: "title"},

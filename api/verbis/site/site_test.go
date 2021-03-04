@@ -18,8 +18,7 @@ import (
 // testing.
 type SiteTestSuite struct {
 	suite.Suite
-	apiPath   string
-	themePath string
+	apiPath string
 }
 
 // TestSite

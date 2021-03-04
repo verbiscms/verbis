@@ -63,6 +63,7 @@ func Set(config domain.ThemeConfig) {
 // Fetch
 //
 // Get"s the themes configuration from the themes path
+//
 // Logs errors.INTERNAL if the unmarshalling was
 // unsuccessful and returns the DefaultTheme
 // variable.
@@ -75,10 +76,15 @@ func Fetch(path string) *domain.ThemeConfig {
 	return theme
 }
 
-// Config
+// Find
 //
-// TODO: Need Config E, REWORD THIS FUNCTION ITS NO GOOD
-func Config(path string) (*domain.ThemeConfig, error) {
+// Looks up for theme configuration file by the given path
+// and default file name.
+//
+// Returns errors.INTERNAL if the unmarshalling was
+// unsuccessful and returns the DefaultTheme
+// variable.
+func Find(path string) (*domain.ThemeConfig, error) {
 	theme, err := getThemeConfig(path, FileName)
 	if err != nil {
 		return nil, err
@@ -98,7 +104,7 @@ func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
 
 	file, err := ioutil.ReadFile(path + string(os.PathSeparator) + filename)
 	if err != nil {
-		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Unable to get retrieve theme config file", Operation: op, Err: err}
+		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Error retrieving theme config file", Operation: op, Err: err}
 	}
 
 	err = yaml.Unmarshal(file, &cfg)
@@ -106,7 +112,7 @@ func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
 		return &DefaultTheme, &errors.Error{Code: errors.INTERNAL, Message: "Syntax error in theme config file", Operation: op, Err: err}
 	}
 
-	screenshot, err := findScreenshot(path)
+	screenshot, err := FindScreenshot(path)
 	if err == nil {
 		cfg.Theme.Screenshot = screenshot
 	}

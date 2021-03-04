@@ -7,8 +7,8 @@ package fields
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/fields"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/ainsleyclark/verbis/api/verbis/fields"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

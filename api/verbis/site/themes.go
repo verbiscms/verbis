@@ -35,7 +35,7 @@ func (s *Site) Themes() (domain.Themes, error) {
 		if !f.IsDir() {
 			continue
 		}
-		cfg, err := config.Config(s.theme + string(os.PathSeparator) + f.Name())
+		cfg, err := config.Find(s.theme + string(os.PathSeparator) + f.Name())
 		if err != nil {
 			logger.WithError(err).Error()
 			continue
