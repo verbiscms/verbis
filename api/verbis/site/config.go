@@ -5,7 +5,7 @@
 package site
 
 import (
-	"github.com/ainsleyclark/verbis/api"
+	app "github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
 )
 
@@ -19,6 +19,6 @@ func (s *Site) Global() domain.Site {
 		Description: s.options.SiteDescription,
 		Logo:        s.options.SiteLogo,
 		Url:         s.options.SiteUrl,
-		Version:     api.App.Version,
+		Version:     app.App.Version,
 	}
 }

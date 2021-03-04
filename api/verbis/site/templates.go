@@ -16,12 +16,13 @@ import (
 // Retrieves all templates stored within the templates
 // directory of the theme path.
 //
+// Returns ErrNoTemplates in any error case.
 // Returns errors.NOTFOUND if no templates were found.
 // Returns errors.INTERNAL if the template path is invalid.
 func (s *Site) Templates() (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 
-	tplDir := s.theme + s.options.ActiveTheme + string(os.PathSeparator) + s.config.TemplateDir
+	tplDir := s.theme + string(os.PathSeparator) + s.config.Theme.FileName + string(os.PathSeparator) + s.config.TemplateDir
 	files, err := s.walkMatch(tplDir, "*"+s.config.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting templates with the path: %s", tplDir), Operation: op, Err: ErrNoTemplates}
@@ -36,7 +37,7 @@ func (s *Site) Templates() (domain.Templates, error) {
 	}
 
 	if len(templates) == 0 {
-		return domain.Templates{}, &errors.Error{Code: errors.NOTFOUND, Message: "No page templates available", Operation: op, Err: ErrNoTemplates}
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "No templates available", Operation: op, Err: ErrNoTemplates}
 	}
 
 	return templates, nil
