@@ -15,11 +15,11 @@ func (t *ConfigTestSuite) Test_FindScreenshot() {
 	}{
 		"SVG": {
 			t.apiPath + TestPath,
-			"/themes/screenshot.svg",
+			"/themes/verbis/screenshot.svg",
 		},
 		"PNG": {
 			t.apiPath + "/test/testdata/themes/verbis2",
-			"/themes/screenshot.png",
+			"/themes/verbis2/screenshot.png",
 		},
 		"Wrong Path": {
 			"wrong",
