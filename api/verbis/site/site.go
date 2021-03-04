@@ -21,15 +21,6 @@ type Repository interface {
 	Screenshot(theme string, file string) ([]byte, string, error)
 }
 
-// TODO
-//  - Consider changing the router path for screenshots, looks a bit messy
-// 	- Test this package
-//  - Need to return the screenshot path in the API for Vue to use.
-// 	- Consider moving the find screenshot path to config or even the domain package.
-//  - The screenshot should come back with every request, even on configuration.
-//  - Add comments to functions
-//  - Check if we dont have the pass the path here, would be better not to pass anything.
-
 // Site defines the data layer for Posts
 type Site struct {
 	config  *domain.ThemeConfig
