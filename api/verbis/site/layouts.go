@@ -16,15 +16,16 @@ import (
 // Retrieves all layouts stored within the layouts
 // directory of the theme path.
 //
+// Returns ErrNoLayouts in any error case.
 // Returns errors.NOTFOUND if no layouts were found.
 // Returns errors.INTERNAL if the layout path is invalid.
 func (s *Site) Layouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
-	layoutDir := s.theme + s.options.ActiveTheme + string(os.PathSeparator) + s.config.LayoutDir
+	layoutDir := s.theme + string(os.PathSeparator) + s.config.Theme.FileName + string(os.PathSeparator) + s.config.LayoutDir
 	files, err := s.walkMatch(layoutDir, "*"+s.config.FileExtension)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting templates with the path: %s", layoutDir), Operation: op, Err: ErrNoLayouts}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting layouts with the path: %s", layoutDir), Operation: op, Err: ErrNoLayouts}
 	}
 
 	var layouts domain.Layouts
@@ -36,7 +37,7 @@ func (s *Site) Layouts() (domain.Layouts, error) {
 	}
 
 	if len(layouts) == 0 {
-		return domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "No layouts available", Operation: op, Err: ErrNoLayouts}
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "No layouts available", Operation: op, Err: ErrNoLayouts}
 	}
 
 	return layouts, nil

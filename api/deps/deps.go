@@ -9,8 +9,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/site"
 	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/ainsleyclark/verbis/api/verbis/site"
 	"os"
 )
 

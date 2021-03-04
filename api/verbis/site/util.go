@@ -26,18 +26,19 @@ func (s *Site) walkMatch(root, pattern string) ([]string, error) {
 		if info.IsDir() {
 			return nil
 		}
-		if matched, err := filepath.Match(pattern, filepath.Base(path)); err != nil {
+		matched, err := filepath.Match(pattern, filepath.Base(path))
+		if err != nil {
 			return err
 		} else if matched {
 			template := strings.Replace(path, root+"/", "", 1)
-			template = strings.ReplaceAll(template, s.config.FileExtension, "")
+			template = strings.Replace(template, s.config.FileExtension, "", -1)
 			matches = append(matches, template)
 		}
 		return nil
 	})
 
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error finding templates", Err: err, Operation: op}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to find page templates", Err: err, Operation: op}
 	}
 
 	return matches, nil
