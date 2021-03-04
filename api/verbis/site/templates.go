@@ -22,7 +22,7 @@ import (
 func (s *Site) Templates() (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 
-	tplDir := s.theme + string(os.PathSeparator) + s.config.Theme.FileName + string(os.PathSeparator) + s.config.TemplateDir
+	tplDir := s.theme + string(os.PathSeparator) + s.config.Theme.Name + string(os.PathSeparator) + s.config.TemplateDir
 	files, err := s.walkMatch(tplDir, "*"+s.config.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting templates with the path: %s", tplDir), Operation: op, Err: ErrNoTemplates}

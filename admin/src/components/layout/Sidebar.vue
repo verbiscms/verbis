@@ -205,6 +205,13 @@
 											<span>Media</span>
 										</router-link>
 									</li><!-- /Media -->
+									<!-- Themes -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-themes' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'settings-themes' }">
+											<i class="feather feather-monitor"></i>
+											<span>Themes</span>
+										</router-link>
+									</li><!-- /Media -->
 									<!-- Redirects -->
 									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-redirects' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'settings-redirects' }">

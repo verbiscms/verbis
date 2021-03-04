@@ -175,6 +175,12 @@ const routes = [
 		meta: { transitionName : 'fade' },
 	},
 	{
+		path: '/settings/themes',
+		name: 'settings-themes',
+		component: () => import('../views/settings/Themes.vue'),
+		meta: { transitionName : 'fade' },
+	},
+	{
 		path: '/settings/redirects',
 		name: 'settings-redirects',
 		component: () => import('../views/settings/Redirects.vue'),

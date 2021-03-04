@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>
+
+    </title>
+{{ verbisHead }}
+    <!-- CSS Files -->
+    <link href="/assets/css/argon-design-system.css?v=1.2.0" rel="stylesheet" />
+</head>
+<body class="landing-page">
+    {{ include "partials/header.cms" }}
+    {{ template "content" . }}
+{{ verbisFoot }}
+</body>
+</html>

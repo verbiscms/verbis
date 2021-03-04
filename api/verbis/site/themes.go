@@ -40,6 +40,9 @@ func (s *Site) Themes() (domain.Themes, error) {
 			logger.WithError(err).Error()
 			continue
 		}
+		if cfg.Theme.Name == s.options.ActiveTheme {
+			cfg.Theme.Active = true
+		}
 		themes = append(themes, cfg.Theme)
 	}
 

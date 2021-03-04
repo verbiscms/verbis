@@ -45,6 +45,8 @@ type Store struct {
 // Create a new database instance, connect to database.
 func New(cfg *StoreConfig) *Store {
 	cfg.Options = newOptions(cfg)
+
+	fmt.Println(cfg.Options.Theme())
 	if cfg.Running {
 		ps := string(os.PathSeparator)
 		cfg.Config = config.Init(cfg.Paths.Base + ps + "themes" + ps + cfg.Options.Theme())

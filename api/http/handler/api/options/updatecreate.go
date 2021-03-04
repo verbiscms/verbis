@@ -5,14 +5,14 @@
 package options
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/teamwork/reload"
 	"net/http"
-	"time"
+	"os"
 )
 
 // UpdateCreate
@@ -46,12 +46,14 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created/updated options", nil)
+	config.Fetch(o.Paths.Themes + string(os.PathSeparator) + vOptions.ActiveTheme)
+
+	api.Respond(ctx, http.StatusOK, "Successfully created/updated options", config.Get())
 
 	go func() {
 		// Set the deps options, TODO, were restarting the server here.
-		o.SetOptions(&vOptions)
-		time.Sleep(time.Second * 2) //nolint
-		reload.Exec()
+		//o.SetOptions(&vOptions)
+		//time.Sleep(time.Second * 2) //nolint
+		//reload.Exec()
 	}()
 }

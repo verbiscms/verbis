@@ -56,6 +56,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator.GET("/templates", h.Site.Templates)
 		operator.GET("/layouts", h.Site.Layouts)
 		operator.GET("/themes", h.Site.Themes)
+		operator.POST("/themes", h.Site.Themes)
 
 		// Posts
 		operator.GET("/posts", h.Posts.List)

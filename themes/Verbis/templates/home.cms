@@ -1,12 +1,5 @@
 {{ define "content" }}
 
-
-
-    {{ baseUrl }}
-
-{{/*    {{ dumphh . }}*/}}
-
-
-
+    <h1>Theme 1 :)</h1>
 
 {{ end }}
