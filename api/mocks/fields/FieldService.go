@@ -4,7 +4,7 @@ package mocks
 
 import (
 	domain "github.com/ainsleyclark/verbis/api/domain"
-	fields "github.com/ainsleyclark/verbis/api/fields"
+	fields "github.com/ainsleyclark/verbis/api/verbis/fields"
 
 	mock "github.com/stretchr/testify/mock"
 )

@@ -6,8 +6,8 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/fields"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/ainsleyclark/verbis/api/verbis/fields"
 )
 
 // Creates a new fields Namespace

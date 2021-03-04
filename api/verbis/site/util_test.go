@@ -11,7 +11,6 @@ import (
 )
 
 func (t *SiteTestSuite) TestSite_Util() {
-
 	if runtime.GOOS == "windows" {
 		t.T().Skip("Skipping for pattern matches on windows.")
 	}
