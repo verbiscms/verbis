@@ -1,0 +1,215 @@
+# |
+# |--------------------------------------------------------------------------
+# | Theme
+# |--------------------------------------------------------------------------
+# |
+# | Include a title, description and version for your custom Verbis
+# | theme here.
+# |
+# |
+theme:
+    title: A Verbis Theme Number 2!
+    description: Stock theme for verbis
+    version: 0.0.1
+
+# |
+# |--------------------------------------------------------------------------
+# | Resources
+# |--------------------------------------------------------------------------
+# |
+# | Defines the resources to be used for the site. Each resource should
+# | contain a name (key) a friendly name (for use within the admin)
+# | a slug and an icon, if the icon is omitted, a default one
+# | will be used.
+# |
+# |
+resources:
+    news:
+        name: news
+        friendly_name: News
+        singular_name: News Items
+        slug: /news
+        icon: feather feather-clipboard
+        hidden: false
+        hide_category_slug: true
+        available_templates: [
+            archive
+        ]
+
+# |
+# |--------------------------------------------------------------------------
+# | Assets Path
+# |--------------------------------------------------------------------------
+# |
+# | The file path for the all static assets to be served by the CMS such as
+# | images, fonts, favicon etc. is not resolved by the cms. Note - it
+# | should not contain the file extension and is relative to the
+# | theme's root.
+# |
+# |
+assets_path: /assets
+
+# |
+# |--------------------------------------------------------------------------
+# | File Extension
+# |--------------------------------------------------------------------------
+# |
+# | The file extension of the files used to be created for templates
+# | and partials etc.. The template extension can be anything,
+# | for example - ".html, .cms, .tmpl" defaults to ".cms".
+# |
+# |
+file_extension: .cms
+
+# |
+# |--------------------------------------------------------------------------
+# | Template Directory
+# |--------------------------------------------------------------------------
+# |
+# | Defines where the main templates reside relative to the theme's
+# | path.
+# |
+# |
+template_dir: templates
+
+# |
+# |--------------------------------------------------------------------------
+# | Layout Directory
+# |--------------------------------------------------------------------------
+# |
+# | Defines where the main layouts reside relative to the theme's
+# | path.
+# |
+# |
+layout_dir: layouts
+
+# |
+# |--------------------------------------------------------------------------
+# | Admin
+# |--------------------------------------------------------------------------
+# |
+# | Global Admin options
+# |
+# |
+admin:
+    # |
+    # |--------------------------------------------------------------------------
+    # | Admin Path
+    # |--------------------------------------------------------------------------
+    # |
+    # | This dictates where the admin url will sit, and where the user will
+    # | login. Defaults to "admin", but can be "dashboard" etc.
+    # |
+    # |
+    admin_path: admin
+
+    # |
+    # |--------------------------------------------------------------------------
+    # | Inactive Session Time
+    # |--------------------------------------------------------------------------
+    # |
+    # | The amount of time in minutes for how long the user was last seen to
+    # | them being ejected from the system.
+    # |
+    # |
+    inactive_session_time: 60
+
+# |
+# |--------------------------------------------------------------------------
+# | Media
+# |--------------------------------------------------------------------------
+# |
+# | Global Media options
+# |
+# |
+media:
+
+    # |
+    # |--------------------------------------------------------------------------
+    # | Upload Path
+    # |--------------------------------------------------------------------------
+    # |
+    # | The upload path defines where the media will be requested from the
+    # | front-end of the website. For example, a file requested with the
+    # | path "/uploads" would be similar to "/uploads/2020/09/photo.jpg"
+    # |
+    # |
+    upload_path: /uploads
+
+    # |
+    # |--------------------------------------------------------------------------
+    # | Allowed File Types
+    # |--------------------------------------------------------------------------
+    # |
+    # | The upload path defines where the media will be requested from the
+    # | front-end of the website. For example, a file requested with the
+    # | path "/uploads" would be similar to "/uploads/2020/09/photo.jpg"
+    # |
+    # |
+    allowed_file_types: [
+            image/png,
+            image/jpeg,
+            image/gif,
+            image/webp,
+            image/bmp,
+            image/svg+xml,
+            video/mpeg,
+            video/mp4,
+            video/webm,
+            application/pdf,
+            application/msword,
+    ]
+
+# |
+# |--------------------------------------------------------------------------
+# | Editor
+# |--------------------------------------------------------------------------
+# |
+# |
+# |
+# |
+# |
+# |
+# |
+editor:
+    modules: [
+        blockquote,
+        code_block,
+        code_block_highlight,
+        code_view,
+        hardbreak,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6,
+        paragraph,
+        hr,
+        ul,
+        ol,
+        bold,
+        code,
+        italic,
+        link,
+        strike,
+        underline,
+        history,
+        search,
+        trailing_node,
+        color,
+        table
+    ]
+    options:
+        ul:
+            class: list
+        ol:
+            class: list list-ordered
+        link:
+            rel: noopener noreferrer nofollow
+        palette: [
+            '#fad839',
+            '#ca1f26',
+            '#1b3990',
+            '#333',
+        ]

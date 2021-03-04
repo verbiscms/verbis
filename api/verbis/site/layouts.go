@@ -22,7 +22,7 @@ import (
 func (s *Site) Layouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
-	layoutDir := s.theme + string(os.PathSeparator) + s.config.Theme.FileName + string(os.PathSeparator) + s.config.LayoutDir
+	layoutDir := s.theme + string(os.PathSeparator) + s.config.Theme.Name + string(os.PathSeparator) + s.config.LayoutDir
 	files, err := s.walkMatch(layoutDir, "*"+s.config.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting layouts with the path: %s", layoutDir), Operation: op, Err: ErrNoLayouts}

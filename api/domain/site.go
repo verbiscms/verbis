@@ -54,7 +54,8 @@ type (
 		Description string `yaml:"description" json:"description"`
 		Version     string `yaml:"version" json:"version"`
 		Screenshot  string `yaml:"-" json:"screenshot"`
-		FileName    string `yaml:"-" json:"-"`
+		Name        string `yaml:"-" json:"name"`
+		Active      bool   `yaml:"-" json:"active"`
 	}
 	// Resources defines the slice of resources declared in
 	// the theme config.

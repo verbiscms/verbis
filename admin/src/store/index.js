@@ -111,10 +111,11 @@ export default new Vuex.Store({
 					axios.get(`/config`)
 						.then(res => {
 							const theme = res.data.data;
+							console.log(theme);
 							this.commit("setTheme", theme);
-							resolve(theme);
 						})
 						.catch(err => {
+							console.log(err)
 							reject(err)
 						})
 				} else {

@@ -1,0 +1,6 @@
+<!-- =====================
+    Footer
+    ===================== -->
+<h1>footer yey</h1>
+
+{{ partial "/partials/header.cms" }}

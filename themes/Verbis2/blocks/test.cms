@@ -1,0 +1,2 @@
+{{ $layout := index . 0 }}
+<h1>{{ getSubField "text" $layout }}</h1>

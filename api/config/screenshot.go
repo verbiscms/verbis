@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"os"
+	"path/filepath"
 )
 
 const (
@@ -25,6 +26,7 @@ var (
 		".png",
 		".svg",
 		".jpg",
+		".jpeg",
 	}
 )
 
@@ -44,7 +46,7 @@ func FindScreenshot(path string) (string, error) {
 		if err != nil {
 			continue
 		}
-		return ScreenshotURL + info.Name(), nil
+		return ScreenshotURL + string(os.PathSeparator) + filepath.Base(path) + string(os.PathSeparator) + info.Name(), nil
 	}
 
 	return "", &errors.Error{Code: errors.NOTFOUND, Message: "No screenshot found from the theme", Operation: op, Err: fmt.Errorf("no theme screenshot found")}
