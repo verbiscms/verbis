@@ -22,13 +22,15 @@ func (t *SiteTestSuite) TestSite_Themes() {
 			domain.Themes{
 				domain.Theme{
 					Title:      "test",
-					Screenshot: "/themes/screenshot.svg",
+					Screenshot: "/themes/verbis/screenshot.svg",
 					Name:       "verbis",
+					Active:     true,
 				},
 				domain.Theme{
 					Title:      "test",
-					Screenshot: "/themes/screenshot.png",
+					Screenshot: "/themes/verbis2/screenshot.png",
 					Name:       "verbis2",
+					Active:     false,
 				},
 			},
 		},
@@ -47,6 +49,9 @@ func (t *SiteTestSuite) TestSite_Themes() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.root, test.theme)
+			s.options = &domain.Options{
+				ActiveTheme: test.theme,
+			}
 			got, err := s.Themes()
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
