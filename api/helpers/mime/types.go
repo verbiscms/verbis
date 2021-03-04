@@ -8,7 +8,8 @@ import "strings"
 
 // TypeByExtension returns the content type based on the extension of the file
 func TypeByExtension(extension string) string {
-	return mimeTypes[strings.ToLower(extension)]
+	trimmed := strings.ReplaceAll(extension, ".", "")
+	return mimeTypes[strings.ToLower(trimmed)]
 }
 
 var mimeTypes = map[string]string{

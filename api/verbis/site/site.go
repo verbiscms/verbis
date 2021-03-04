@@ -44,9 +44,11 @@ var (
 	// ErrNoLayouts is returned by Layouts when no page
 	// layouts have been found by the walk matcher.
 	ErrNoLayouts = errors.New("no page templates found")
+	// ErrNoThemes is returned by Themes when no themes
+	// have been found by looping over the theme's
+	// directory.
+	ErrNoThemes = errors.New("no page templates found")
 )
-
-// TODO, if we already have the options, can we not just construct the theme path ourselves?
 
 // New
 //
@@ -55,6 +57,6 @@ func New(opts *domain.Options) *Site {
 	return &Site{
 		config:  config.Get(),
 		options: opts,
-		theme:   paths.Get().Base + string(os.PathSeparator) + "themes" + string(os.PathSeparator),
+		theme:   paths.Get().Base + string(os.PathSeparator) + "themes",
 	}
 }
