@@ -19,8 +19,8 @@ const (
 )
 
 var (
-	// The allowed screenshot extensions that the
-	// function will scan for.
+	// ScreenshotExtensions is the allowed extensions
+	// that the function will scan for.
 	ScreenshotExtensions = []string{
 		".png",
 		".svg",
