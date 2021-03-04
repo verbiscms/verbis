@@ -43,7 +43,7 @@ func (t *LocationTestSuite) SetupSuite() {
 
 	wd, err := os.Getwd()
 	t.NoError(err)
-	t.Path = filepath.Join(filepath.Dir(wd)+"./..") + "/test/testdata/fields"
+	t.Path = filepath.Join(filepath.Dir(wd)+"./../..") + "/test/testdata/fields"
 }
 
 func TestNewLocation(t *testing.T) {

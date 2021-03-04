@@ -6,7 +6,7 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/fields/resolve"
+	"github.com/ainsleyclark/verbis/api/verbis/fields/resolve"
 	"strings"
 )
 

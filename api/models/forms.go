@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/forms"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/mail/events"
+	"github.com/ainsleyclark/verbis/api/verbis/forms"
 	"github.com/google/uuid"
 )
 

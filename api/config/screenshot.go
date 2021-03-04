@@ -14,11 +14,13 @@ const (
 	// The default screenshot name within the theme's
 	// directory.
 	ScreenshotName = "screenshot"
-
+	// The URL of the screenshot.
 	ScreenshotURL = "/themes/"
 )
 
 var (
+	// The allowed screenshot extensions that the
+	// function will scan for.
 	ScreenshotExtensions = []string{
 		".png",
 		".svg",
@@ -26,10 +28,14 @@ var (
 	}
 )
 
-// findScreenshot
+// FindScreenshot
 //
+// Ranges over the allowed screenshot extensions and
+// checks for a match, if the screenshot has been
+// found, a URL will be returned.
 //
-func findScreenshot(path string) (string, error) {
+// Returns errors.NOTFOUND if no screenshot was found.
+func FindScreenshot(path string) (string, error) {
 	const op = "Config.FindScreenshot"
 
 	for _, v := range ScreenshotExtensions {
