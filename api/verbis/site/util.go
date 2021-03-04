@@ -38,7 +38,7 @@ func (s *Site) walkMatch(root, pattern string) ([]string, error) {
 	})
 
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to find page templates", Err: err, Operation: op}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Unable to find files.", Err: err, Operation: op}
 	}
 
 	return matches, nil

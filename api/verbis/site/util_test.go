@@ -16,6 +16,8 @@ func (t *SiteTestSuite) TestSite_Util() {
 		t.T().Skip("Skipping for pattern matches on windows.")
 	}
 
+	var s []string
+
 	tt := map[string]struct {
 		root    string
 		pattern string
@@ -25,6 +27,16 @@ func (t *SiteTestSuite) TestSite_Util() {
 			t.apiPath + ThemesPath + string(os.PathSeparator) + "verbis",
 			"\\",
 			filepath.ErrBadPattern.Error(),
+		},
+		"Is Directory": {
+			t.apiPath + ThemesPath + string(os.PathSeparator) + "empty",
+			"*.cms",
+			s,
+		},
+		"No Files": {
+			"wrong",
+			"",
+			"no such file or directory",
 		},
 	}
 
