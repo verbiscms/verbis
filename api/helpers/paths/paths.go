@@ -20,6 +20,7 @@ type Paths struct {
 	Uploads   string
 	Migration string
 	Storage   string
+	Themes    string
 	Web       string
 	Forms     string
 }
@@ -28,6 +29,7 @@ const (
 	Admin   = "/admin"
 	API     = "/api"
 	Storage = "/storage"
+	Themes  = "/themes"
 	Web     = API + "/web"
 	Uploads = Storage + "/uploads"
 )
@@ -41,6 +43,7 @@ func Get() Paths {
 		Migration: base + API + migration(),
 		Uploads:   base + Uploads,
 		Storage:   base + Storage,
+		Themes:    base + Themes,
 		Web:       base + Web,
 	}
 }

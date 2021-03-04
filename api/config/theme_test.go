@@ -50,7 +50,7 @@ func (t *ConfigTestSuite) SetupSuite() {
 
 	d := DefaultTheme
 	d.Theme.Title = "test"
-	d.Theme.FileName = "verbis"
+	d.Theme.Name = "verbis"
 	d.Theme.Screenshot = "/themes/screenshot.svg"
 
 	t.config = d

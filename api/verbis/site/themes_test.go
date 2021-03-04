@@ -23,12 +23,12 @@ func (t *SiteTestSuite) TestSite_Themes() {
 				domain.Theme{
 					Title:      "test",
 					Screenshot: "/themes/screenshot.svg",
-					FileName:   "verbis",
+					Name:       "verbis",
 				},
 				domain.Theme{
 					Title:      "test",
 					Screenshot: "/themes/screenshot.png",
-					FileName:   "verbis2",
+					Name:       "verbis2",
 				},
 			},
 		},

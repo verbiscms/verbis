@@ -37,7 +37,7 @@ func (t *SiteTestSuite) Setup(themes, path string) *Site {
 	return &Site{
 		config: &domain.ThemeConfig{
 			Theme: domain.Theme{
-				FileName: path,
+				Name: path,
 			},
 			FileExtension: ".cms",
 			LayoutDir:     "layouts",

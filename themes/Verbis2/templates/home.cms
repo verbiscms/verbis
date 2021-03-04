@@ -1,0 +1,5 @@
+{{ define "content" }}
+
+    <h1>Theme 2 :)</h1>
+
+{{ end }}

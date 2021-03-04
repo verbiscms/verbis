@@ -117,7 +117,7 @@ func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
 		cfg.Theme.Screenshot = screenshot
 	}
 
-	cfg.Theme.FileName = filepath.Base(path)
+	cfg.Theme.Name = filepath.Base(path)
 
 	return &cfg, nil
 }

@@ -7,11 +7,12 @@ package public
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
 	"net/http"
 )
 
-// Themes
+// Screenshot
+//
+// Retrieves the screenshot of the theme passed.
 //
 // Returns http.StatusInternalServerError if there was an error getting the layouts.
 // Returns http.StatusOK if the themes were obtained successfully or there were none found.
@@ -29,9 +30,6 @@ func (p *Public) Screenshot(ctx *gin.Context) {
 		p.Publisher.NotFound(ctx)
 		return
 	}
-
-	color.Green.Println("file:", file)
-	color.Green.Println("theme:", theme)
 
 	screenshot, mime, err := p.Site.Screenshot(theme, file)
 	if errors.Code(err) == errors.NOTFOUND {
