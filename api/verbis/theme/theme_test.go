@@ -78,3 +78,27 @@ func (t *ThemeTestSuite) TestTheme_Find() {
 	want, _ := config.Find(s.themesPath + string(os.PathSeparator) + "verbis")
 	t.Equal(got, want)
 }
+
+func (t *ThemeTestSuite) TestTheme_Exists() {
+	tt := map[string]struct {
+		theme string
+		want  bool
+	}{
+		"True": {
+			"verbis",
+			true,
+		},
+		"False": {
+			"wrong",
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup()
+			got := s.Exists(test.theme)
+			t.Equal(test.want, got)
+		})
+	}
+}
