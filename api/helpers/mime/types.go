@@ -4,7 +4,9 @@
 
 package mime
 
-import "strings"
+import (
+	"strings"
+)
 
 // TypeByExtension returns the content type based on the extension of the file
 func TypeByExtension(extension string) string {

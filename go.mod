@@ -13,6 +13,7 @@ require (
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/foolin/goview v0.3.0
 	github.com/frankban/quicktest v1.11.0 // indirect
+	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gabriel-vasile/mimetype v1.1.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-contrib/gzip v0.0.3

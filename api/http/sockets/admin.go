@@ -11,12 +11,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/watchers"
 	"github.com/gorilla/websocket"
 	"github.com/radovskyb/watcher"
 	"net/http"
-	"os"
 	"syscall"
-	"time"
 )
 
 var (
@@ -44,113 +43,53 @@ func Admin(d *deps.Deps) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const op = "AdminSocket.Handler"
 
-		ws, err := adminUpgrader.Upgrade(w, r, nil)
+		conn, err := adminUpgrader.Upgrade(w, r, nil)
 		if err != nil {
 			logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error upgrading request to websocket", Operation: op, Err: err})
 		}
 
-		a := &adminSocket{
-			ThemePath:  d.ThemePath(),
-			ConfigPath: d.ThemePath() + string(os.PathSeparator) + config.FileName,
-			Watcher:    watcher.New(),
+		go func() {
+			for {
+				writer(conn, d.Watcher, d.ThemePath())
+			}
+		}()
+	}
+}
+
+func writer(conn *websocket.Conn, w *watchers.Batch, path string) {
+	const op = "AdminSocket.Handler.Writer"
+
+	select {
+	case event := <-w.Event:
+		if event.Name() != config.FileName && event.Op != watcher.Write {
+			return
 		}
-		defer a.Watcher.Close()
 
-		a.Init(ws)
-	}
-}
+		logger.Info("Updating theme configuration file, sending socket")
 
-// Init
-//
-//
-func (a *adminSocket) Init(ws *websocket.Conn) {
-	const op = "AdminSocket.Init"
-
-	a.Watcher.SetMaxEvents(1)
-
-	go a.Writer(ws)
-
-	// Watch this folder for changes.
-	err := a.Watcher.Add(a.ConfigPath)
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error adding configuration watcher", Operation: op, Err: err}).Error()
-		ws.Close()
-		return
-	}
-
-	// Start the watching process - it'll check for changes every 100ms.
-	err = a.Watcher.Start(time.Millisecond * 100) //nolint
-	defer a.Watcher.Close()
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error starting configuration watcher", Operation: op, Err: err}).Error()
-		ws.Close()
-		return
-	}
-
-	a.Reader(ws)
-}
-
-// Reader
-//
-//
-func (a *adminSocket) Reader(conn *websocket.Conn) {
-	for {
-		// Read in a message
-		messageType, p, err := conn.ReadMessage()
+		cfg, err := config.Find(path)
 		if err != nil {
 			fmt.Println(err)
-			logger.WithError(err)
 			return
 		}
+		config.Set(*cfg)
 
-		fmt.Println(string(p))
-
-		// Print out that message for clarity
-		logger.Info(string(p))
-
-		err = conn.WriteMessage(messageType, p)
+		// Marshal the configuration file.
+		b, err := json.Marshal(cfg)
 		if err != nil {
-			fmt.Println(err)
-			logger.Error(err)
+			logger.WithError(&errors.Error{Code: op, Message: "Error marshalling theme configuration", Operation: op, Err: err}).Error()
 			return
 		}
-	}
-}
 
-// Writer
-//
-//
-func (a *adminSocket) Writer(ws *websocket.Conn) {
-	const op = "AdminSocket.Writer"
+		// Write the file back to the socket.
+		err = conn.WriteMessage(websocket.TextMessage, b)
+		if err != nil {
+			logger.WithError(&errors.Error{Code: op, Message: "Error sending socket message", Operation: op, Err: err}).Error()
+		}
 
-	// go func() {
-	for {
-		select {
-		case <-a.Watcher.Event:
-			logger.Info("Updating theme configuration file, sending socket")
-
-			// Marshal the configuration file.
-			b, err := json.Marshal(config.Fetch(a.ThemePath))
-			if err != nil {
-				logger.WithError(&errors.Error{Code: op, Message: "Error marshalling theme configuration", Operation: op, Err: err}).Error()
-				return
-			}
-
-			// Write the file back to the socket.
-			err = ws.WriteMessage(websocket.TextMessage, b)
-			if err != nil {
-				logger.WithError(&errors.Error{Code: op, Message: "Error sending socket message", Operation: op, Err: err}).Error()
-				return
-			}
-		case err := <-a.Watcher.Error:
-			if err != syscall.EPIPE {
-				logger.WithError(&errors.Error{Code: op, Message: "Error watching theme configuration", Operation: op, Err: err}).Error()
-			}
-			return
-		case <-a.Watcher.Closed:
-			logger.Info("Closing watcher on theme configuration file")
-			return
+	case err := <-w.Error:
+		if err.Err != syscall.EPIPE {
+			logger.WithError(err).Error()
 		}
 	}
-	// }()
 }
