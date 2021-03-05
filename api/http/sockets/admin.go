@@ -6,7 +6,6 @@ package sockets
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -66,13 +65,7 @@ func writer(conn *websocket.Conn, w *watchers.Batch, path string) {
 		}
 
 		logger.Info("Updating theme configuration file, sending socket")
-
-		cfg, err := config.Find(path)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		config.Set(*cfg)
+		cfg := config.Fetch(path)
 
 		// Marshal the configuration file.
 		b, err := json.Marshal(cfg)
