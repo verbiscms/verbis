@@ -3,7 +3,7 @@ package variables
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/site"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"testing"

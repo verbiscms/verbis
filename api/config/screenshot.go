@@ -16,7 +16,7 @@ const (
 	// directory.
 	ScreenshotName = "screenshot"
 	// The URL of the screenshot.
-	ScreenshotURL = "themes"
+	ScreenshotURL = "/themes/"
 )
 
 var (
@@ -46,8 +46,7 @@ func FindScreenshot(path string) (string, error) {
 		if err != nil {
 			continue
 		}
-		ps := string(os.PathSeparator)
-		return ps + ScreenshotURL + ps + filepath.Base(path) + ps + info.Name(), nil
+		return ScreenshotURL + filepath.Base(path) + "/" + info.Name(), nil
 	}
 
 	return "", &errors.Error{Code: errors.NOTFOUND, Message: "No screenshot found from the theme", Operation: op, Err: fmt.Errorf("no theme screenshot found")}

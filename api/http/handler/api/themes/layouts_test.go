@@ -7,12 +7,12 @@ package themes
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/theme"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func (t *SiteTestSuite) TestSite_Layouts() {
+func (t *ThemesTestSuite) TestThemes_Layouts() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -24,7 +24,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 			http.StatusOK,
 			"Successfully obtained layouts",
 			func(m *mocks.Repository) {
-				m.On("Layouts").Return(layouts, nil)
+				m.On("Layouts", TestActiveTheme).Return(layouts, nil)
 			},
 		},
 		"Not Found": {
@@ -32,7 +32,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 			http.StatusOK,
 			"not found",
 			func(m *mocks.Repository) {
-				m.On("Layouts").Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Layouts", TestActiveTheme).Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
@@ -40,7 +40,7 @@ func (t *SiteTestSuite) TestSite_Layouts() {
 			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.Repository) {
-				m.On("Layouts").Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Layouts", TestActiveTheme).Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

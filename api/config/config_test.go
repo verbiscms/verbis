@@ -52,10 +52,10 @@ func (t *ConfigTestSuite) SetupSuite() {
 
 	d := DefaultTheme
 	d.Theme = domain.Theme{
-		Title:       "test",
-		Screenshot:  "/themes/verbis/screenshot.svg",
-		Name:        "verbis",
-		Active:      true,
+		Title:      "test",
+		Screenshot: "/themes/verbis/screenshot.svg",
+		Name:       "verbis",
+		Active:     true,
 	}
 
 	t.config = d
