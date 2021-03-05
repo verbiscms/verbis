@@ -5,57 +5,26 @@
 package site
 
 import (
+	app "github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/stretchr/testify/suite"
-	"io/ioutil"
-	"os"
-	"path/filepath"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-// SiteTestSuite defines the helper used for site
-// testing.
-type SiteTestSuite struct {
-	suite.Suite
-	apiPath string
-}
-
-// TestSite
-//
-// Assert testing has begun.
-func TestSite(t *testing.T) {
-	suite.Run(t, &SiteTestSuite{})
-}
-
-const (
-	// The default themes path used for testing.
-	ThemesPath = "/test/testdata/themes"
-)
-
-func (t *SiteTestSuite) Setup(themes, path string) *Site {
-	return &Site{
-		config: &domain.ThemeConfig{
-			Theme: domain.Theme{
-				Name: path,
-			},
-			FileExtension: ".cms",
-			LayoutDir:     "layouts",
-			TemplateDir:   "templates",
-		},
-		options: nil,
-		theme:   t.apiPath + themes,
+func TestSite_Config(t *testing.T) {
+	opts := &domain.Options{
+		SiteTitle:       "title",
+		SiteDescription: "description",
+		SiteLogo:        "logo",
+		SiteUrl:         "url",
 	}
-}
-
-// SetupSuite
-//
-// Reassign API path for testing.
-func (t *SiteTestSuite) SetupSuite() {
-	logger.SetOutput(ioutil.Discard)
-	wd, err := os.Getwd()
-	t.NoError(err)
-
-	apiPath := filepath.Join(filepath.Dir(wd), "../")
-	t.apiPath = apiPath
+	want := domain.Site{
+		Title:       opts.SiteTitle,
+		Description: opts.SiteDescription,
+		Logo:        opts.SiteLogo,
+		Url:         opts.SiteUrl,
+		Version:     app.App.Version,
+	}
+	s := New(opts)
+	assert.Equal(t, want, s.Global())
 }

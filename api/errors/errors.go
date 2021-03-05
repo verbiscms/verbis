@@ -6,6 +6,7 @@ package errors
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 )
 
@@ -102,4 +103,11 @@ func ToError(err interface{}) *Error {
 	default:
 		return nil
 	}
+}
+
+// New
+//
+// Is a wrapper for the stdlib new function.
+func New(text string) error {
+	return errors.New(text)
 }

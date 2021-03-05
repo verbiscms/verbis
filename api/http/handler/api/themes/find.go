@@ -2,22 +2,28 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package themes
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-// Themes
+// Find
 //
-// Returns http.StatusInternalServerError if there was an error getting the layouts.
-// Returns http.StatusOK if the themes were obtained successfully or there were none found.
-func (s *Site) Themes(ctx *gin.Context) {
-	themes, err := s.Site.Themes()
+// Returns http.StatusOK if theme config was obtained successfully.
+func (t *Themes) Find(ctx *gin.Context) {
+	const op = "ThemeHandler.Find"
 
+	name := ctx.Param("name")
+	if name == "" {
+		api.Respond(ctx, http.StatusBadRequest, "Pass a valid string to obtain the redirect by name", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("no theme passed"), Operation: op})
+	}
+
+	theme, err := t.Theme.Find(name)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return
@@ -26,5 +32,5 @@ func (s *Site) Themes(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully obtained themes", themes)
+	api.Respond(ctx, http.StatusOK, "Successfully obtained theme config", theme)
 }

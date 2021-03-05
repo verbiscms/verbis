@@ -46,6 +46,8 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 		return
 	}
 
+	o.SetOptions(&vOptions)
+
 	config.Fetch(o.Paths.Themes + string(os.PathSeparator) + vOptions.ActiveTheme)
 
 	api.Respond(ctx, http.StatusOK, "Successfully created/updated options", config.Get())

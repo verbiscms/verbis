@@ -117,3 +117,9 @@ func TestError_ToError(t *testing.T) {
 		})
 	}
 }
+
+func TestNew(t *testing.T) {
+	want := fmt.Errorf("error")
+	got := New("error")
+	assert.Errorf(t, want, got.Error())
+}

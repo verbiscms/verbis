@@ -16,8 +16,10 @@ import (
 )
 
 const (
-	// The configuration test path.
-	TestPath = "/test/testdata/themes/verbis"
+	// The singular configuration test path.
+	TestSingularPath = "/test/testdata/themes/verbis"
+	// The multiple themes path.
+	TestMultiPath = "/test/testdata/themes"
 )
 
 // ConfigTestSuite defines the helper used for config
@@ -49,21 +51,24 @@ func (t *ConfigTestSuite) SetupSuite() {
 	t.apiPath = filepath.Join(filepath.Dir(wd), "")
 
 	d := DefaultTheme
-	d.Theme.Title = "test"
-	d.Theme.Name = "verbis"
-	d.Theme.Screenshot = "/themes/screenshot.svg"
+	d.Theme = domain.Theme{
+		Title:       "test",
+		Screenshot:  "/themes/verbis/screenshot.svg",
+		Name:        "verbis",
+		Active:      true,
+	}
 
 	t.config = d
 }
 
 func (t *ConfigTestSuite) Test_Init() {
-	got := Init(t.apiPath + TestPath)
+	got := Init(t.apiPath + TestSingularPath)
 	t.NotNil(cfg)
 	t.Equal(t.config, *got)
 }
 
 func (t *ConfigTestSuite) Test_Get() {
-	Init(t.apiPath + TestPath)
+	Init(t.apiPath + TestSingularPath)
 	got := Get()
 	t.NotNil(cfg)
 	t.Equal(t.config, *got)
@@ -92,7 +97,7 @@ func (t *ConfigTestSuite) Test_Find() {
 		err      string
 	}{
 		"Success": {
-			TestPath,
+			TestSingularPath,
 			FileName,
 			t.config,
 			"",
@@ -118,6 +123,60 @@ func (t *ConfigTestSuite) Test_Find() {
 	}
 }
 
+func (t *ConfigTestSuite) Test_All() {
+	tt := map[string]struct {
+		path  string
+		theme string
+		want  domain.Themes
+		err   string
+	}{
+		"Success": {
+			TestMultiPath,
+			"verbis",
+			[]domain.Theme{
+				{
+					Title:      "test",
+					Screenshot: "/themes/verbis/screenshot.svg",
+					Name:       "verbis",
+					Active:     true,
+				},
+				{
+					Title:      "test",
+					Screenshot: "/themes/verbis2/screenshot.png",
+					Name:       "verbis2",
+					Active:     false,
+				},
+			},
+			"",
+		},
+		"Wrong Path": {
+			"wrong",
+			"wrong",
+			nil,
+			"Error finding themes",
+		},
+		"No Themes": {
+			TestMultiPath + string(os.PathSeparator) + "empty",
+			"",
+			nil,
+			"No themes available",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			got, err := All(t.apiPath+test.path, "verbis")
+			if err != nil {
+				t.Contains(errors.Message(err), test.err)
+				return
+			}
+			for i, v := range got {
+				t.Equal(test.want[i], v.Theme)
+			}
+		})
+	}
+}
+
 func (t *ConfigTestSuite) Test_GetThemeConfig() {
 	tt := map[string]struct {
 		path     string
@@ -126,7 +185,7 @@ func (t *ConfigTestSuite) Test_GetThemeConfig() {
 		err      string
 	}{
 		"Success": {
-			TestPath,
+			TestSingularPath,
 			FileName,
 			t.config,
 			"",
@@ -138,7 +197,7 @@ func (t *ConfigTestSuite) Test_GetThemeConfig() {
 			"Error retrieving theme config file",
 		},
 		"Bad Unmarshal": {
-			TestPath,
+			TestSingularPath,
 			"/badconfig.yml",
 			DefaultTheme,
 			"Syntax error in theme config file",

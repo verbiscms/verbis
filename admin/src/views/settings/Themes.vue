@@ -74,7 +74,7 @@ export default {
 		getThemes() {
 			this.axios.get("/themes")
 				.then(res => {
-					this.themes = res.data.data;
+					this.themes = res.data.data.map(t => t.theme);
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
@@ -87,9 +87,18 @@ export default {
 		 * setTheme()
 		 */
 		setTheme(name) {
+			this.axios.post("/theme", {
+				theme: name,
+			}).then(res => {
+				console.log(res);
+			}).catch(err => {
+				this.helpers.handleResponse(err);
+				console.log(err);
+			}).finally(() => {
+
+			})
 			this.$set(this.data, 'active_theme', name)
 			this.save();
-
 		},
 		/*
 		 * isActive()
