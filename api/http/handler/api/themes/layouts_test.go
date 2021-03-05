@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package themes
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -12,9 +12,7 @@ import (
 	"net/http"
 )
 
-func (t *SiteTestSuite) TestSite_Themes() {
-	t.T().Skip()
-
+func (t *SiteTestSuite) TestSite_Layouts() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -22,11 +20,11 @@ func (t *SiteTestSuite) TestSite_Themes() {
 		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
-			themes,
+			layouts,
 			http.StatusOK,
-			"Successfully obtained themes",
+			"Successfully obtained layouts",
 			func(m *mocks.Repository) {
-				m.On("Themes", t.ThemePath).Return(themes, nil)
+				m.On("Layouts").Return(layouts, nil)
 			},
 		},
 		"Not Found": {
@@ -34,7 +32,7 @@ func (t *SiteTestSuite) TestSite_Themes() {
 			http.StatusOK,
 			"not found",
 			func(m *mocks.Repository) {
-				m.On("Themes", t.ThemePath).Return(domain.Themes{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Layouts").Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
@@ -42,7 +40,7 @@ func (t *SiteTestSuite) TestSite_Themes() {
 			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.Repository) {
-				m.On("Themes", t.ThemePath).Return(domain.Themes{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Layouts").Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}
@@ -50,7 +48,7 @@ func (t *SiteTestSuite) TestSite_Themes() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.RequestAndServe(http.MethodGet, "/theme", "/theme", nil, func(ctx *gin.Context) {
-				t.Setup(test.mock).Themes(ctx)
+				t.Setup(test.mock).Layouts(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

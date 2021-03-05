@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package theme
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-func (t *SiteTestSuite) TestSite_Screenshot() {
+func (t *ThemeTestSuite) TestSite_Screenshot() {
 	tt := map[string]struct {
 		theme string
 		file  string
@@ -33,7 +33,7 @@ func (t *SiteTestSuite) TestSite_Screenshot() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(ThemesPath, test.theme)
+			s := t.Setup()
 			_, mime, err := s.Screenshot(test.theme, test.file)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package theme
 
 import (
 	"os"
@@ -10,7 +10,7 @@ import (
 	"runtime"
 )
 
-func (t *SiteTestSuite) TestSite_Util() {
+func (t *ThemeTestSuite) TestSite_Util() {
 	if runtime.GOOS == "windows" {
 		t.T().Skip("Skipping for pattern matches on windows.")
 	}
@@ -41,7 +41,7 @@ func (t *SiteTestSuite) TestSite_Util() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup("", "")
+			s := t.Setup()
 			got, err := s.walkMatch(test.root, test.pattern)
 			if err != nil {
 				t.Contains(err.Error(), test.want)

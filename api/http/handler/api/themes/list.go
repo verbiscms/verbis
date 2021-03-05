@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package themes
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -11,14 +11,14 @@ import (
 	"net/http"
 )
 
-// Templates
+// List
 //
-// Returns http.StatusInternalServerError if there was an error getting the templates.
-// Returns http.StatusOK if the templates were obtained successfully or there were none found.
-func (s *Site) Templates(ctx *gin.Context) {
-	const op = "SiteHandler.Templates"
+// Returns http.StatusInternalServerError if there was an error getting the themes.
+// Returns http.StatusOK if the themes were obtained successfully or there were none found.
+func (t *Themes) List(ctx *gin.Context) {
+	const op = "ThemeHandler.Layouts"
 
-	templates, err := s.Site.Templates()
+	themes, err := t.Theme.List(t.Options.ActiveTheme)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return
@@ -27,5 +27,5 @@ func (s *Site) Templates(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully obtained templates", templates)
+	api.Respond(ctx, http.StatusOK, "Successfully obtained themes", themes)
 }

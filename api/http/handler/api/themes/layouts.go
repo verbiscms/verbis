@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package themes
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -15,10 +15,10 @@ import (
 //
 // Returns http.StatusInternalServerError if there was an error getting the layouts.
 // Returns http.StatusOK if the layouts were obtained successfully or there were none found.
-func (s *Site) Layouts(ctx *gin.Context) {
-	const op = "SiteHandler.Layouts"
+func (t *Themes) Layouts(ctx *gin.Context) {
+	const op = "ThemeHandler.Layouts"
 
-	templates, err := s.Site.Layouts()
+	templates, err := t.Theme.Layouts(t.Deps.Options.ActiveTheme)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

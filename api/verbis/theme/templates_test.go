@@ -2,40 +2,40 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package theme
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-func (t *SiteTestSuite) TestSite_Layouts() {
+func (t *ThemeTestSuite) TestSite_Templates() {
 	tt := map[string]struct {
 		theme string
 		want  interface{}
 	}{
 		"Success": {
 			"verbis",
-			domain.Layouts{
-				{Key: "layout-hyphen", Name: "Layout Hyphen"},
-				{Key: "layout", Name: "Layout"},
-				{Key: "nested/layout-nested", Name: "Nested/Layout Nested"},
+			domain.Templates{
+				{Key: "nested/template-nested", Name: "Nested/Template Nested"},
+				{Key: "template-hyphen", Name: "Template Hyphen"},
+				{Key: "template", Name: "Template"},
 			},
 		},
 		"Wrong Path": {
 			"wrong",
-			"Error getting layouts with the path:",
+			"Error getting templates with the path:",
 		},
 		"No Layouts": {
 			"empty",
-			"No layouts available",
+			"No templates available",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(ThemesPath, test.theme)
-			got, err := s.Layouts()
+			s := t.Setup()
+			got, err := s.Templates(test.theme)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

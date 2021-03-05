@@ -29,6 +29,10 @@ var (
 	// Required to avoid concurrent map writes when writing
 	// via a websocket.
 	mutex = &sync.Mutex{}
+	// ErrNoThemes is returned by All when no themes
+	// have been found by looping over the theme's
+	// directory.
+	ErrNoThemes = errors.New("no page templates found")
 )
 
 // Init
@@ -92,6 +96,45 @@ func Find(path string) (*domain.ThemeConfig, error) {
 	return theme, nil
 }
 
+// All
+//
+// Returns a slice of domain.ThemeConfig's by reading the
+// path. If the file is a directory, it will be skipped
+// until a config file has been found.
+//
+// Returns errors.NOTFOUND if no themes were found.
+// Returns errors.INTERNAL if the theme path is invalid.
+func All(path, activeTheme string) ([]*domain.ThemeConfig, error) {
+	const op = "Config.All"
+
+	files, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error finding themes", Err: err, Operation: op}
+	}
+
+	var themes []*domain.ThemeConfig
+	for _, f := range files {
+		if !f.IsDir() {
+			continue
+		}
+		cfg, err := Find(path + string(os.PathSeparator) + f.Name())
+		if err != nil {
+			logger.WithError(err).Error()
+			continue
+		}
+		if activeTheme != cfg.Theme.Name {
+			cfg.Theme.Active = false
+		}
+		themes = append(themes, cfg)
+	}
+
+	if len(themes) == 0 {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "No themes available", Operation: op, Err: ErrNoThemes}
+	}
+
+	return themes, nil
+}
+
 // getThemeConfig
 //
 // Is a wrapper for Fetch taking in a path and filename
@@ -118,6 +161,7 @@ func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
 	}
 
 	cfg.Theme.Name = filepath.Base(path)
+	cfg.Theme.Active = true
 
 	return &cfg, nil
 }

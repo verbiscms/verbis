@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package theme
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -14,12 +14,15 @@ import (
 
 // Screenshot
 //
-// TODO
+// Finds a screenshot in the theme directory based on the
+// theme passed (e.g. verbis) and the file passed
+// (e.g. screenshot.png).
 //
-func (s *Site) Screenshot(theme, file string) ([]byte, string, error) {
+// Returns errors.NOTFOUND if there was not screenshot found.
+func (t *theme) Screenshot(theme, file string) ([]byte, string, error) {
 	const op = "SiteRepository.Screenshot"
 
-	filePath := s.theme + string(os.PathSeparator) + theme + string(os.PathSeparator) + file
+	filePath := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + file
 	b, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		return nil, "", &errors.Error{Code: errors.NOTFOUND, Message: "Error finding screenshot with the path " + file, Operation: op, Err: err}

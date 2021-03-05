@@ -14,7 +14,7 @@ func (t *ConfigTestSuite) Test_FindScreenshot() {
 		want interface{}
 	}{
 		"SVG": {
-			t.apiPath + TestPath,
+			t.apiPath + TestSingularPath,
 			"/themes/verbis/screenshot.svg",
 		},
 		"PNG": {

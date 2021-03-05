@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/verbis/site"
+	"github.com/ainsleyclark/verbis/api/verbis/theme"
 	"os"
 )
 
@@ -25,11 +26,11 @@ type Deps struct {
 	// Configuration file of the site
 	Config *domain.ThemeConfig
 
-	// Cache
-
+	// Site
 	Site site.Repository
 
-	// Logger
+	// Theme
+	Theme theme.Repository
 
 	// Options
 	Options *domain.Options
@@ -37,6 +38,7 @@ type Deps struct {
 	// Paths
 	Paths paths.Paths
 
+	// Template
 	tmpl tpl.TemplateHandler
 
 	Running bool
@@ -56,6 +58,15 @@ func (d *Deps) SetTmpl(tmpl tpl.TemplateHandler) {
 
 func (d *Deps) SetOptions(options *domain.Options) {
 	d.Options = options
+}
+
+func (d *Deps) SetTheme(theme string) error {
+	err := d.Store.Options.SetTheme(theme)
+	if err != nil {
+		return err
+	}
+	d.Options.ActiveTheme = theme
+	return nil
 }
 
 type Config struct {
@@ -93,6 +104,7 @@ func New(cfg Config) *Deps {
 		tmpl:    nil,
 		Running: cfg.Running,
 		Site:    site.New(&opts),
+		Theme:   theme.New(),
 	}
 
 	return d

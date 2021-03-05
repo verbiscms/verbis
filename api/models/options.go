@@ -20,7 +20,8 @@ type OptionsRepository interface {
 	GetByName(name string) (interface{}, error)
 	GetStruct() domain.Options
 	UpdateCreate(options *domain.OptionsDBMap) error
-	Theme() string
+	GetTheme() string
+	SetTheme(theme string) error
 	Create(name string, value interface{}) error
 	Update(name string, value interface{}) error
 	Exists(name string) bool
@@ -176,7 +177,7 @@ func (s *OptionsStore) Update(name string, value interface{}) error {
 	return nil
 }
 
-func (s *OptionsStore) Theme() string {
+func (s *OptionsStore) GetTheme() string {
 	opt, err := s.GetByName("active_theme")
 	if err != nil {
 		logger.WithError(err).Error()
@@ -186,6 +187,15 @@ func (s *OptionsStore) Theme() string {
 		logger.WithError(err).Error()
 	}
 	return theme
+}
+
+func (s *OptionsStore) SetTheme(theme string) error {
+	const op = "OptionsRepository.SetTheme"
+	m, err := s.marshalValue(theme)
+	if err != nil {
+		return err
+	}
+	return s.Update("active_theme", m)
 }
 
 // Unmarshal the value

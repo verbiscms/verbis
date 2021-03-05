@@ -46,7 +46,6 @@ func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 	if err != nil {
 		trimmedPost, pErr := r.Store.Posts.GetBySlug(urlTrimmed)
 		if pErr != nil {
-			fmt.Println(err)
 			return nil, nil, err
 		}
 		// Check if its the homepage, return 404 if it is.

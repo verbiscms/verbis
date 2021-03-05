@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package site
+package themes
 
 import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
@@ -10,9 +10,9 @@ import (
 	"net/http"
 )
 
-// Theme
+// Config
 //
 // Returns http.StatusOK if theme config was obtained successfully.
-func (s *Site) Config(ctx *gin.Context) {
-	api.Respond(ctx, http.StatusOK, "Successfully obtained theme config", s.Deps.Config)
+func (t *Themes) Config(ctx *gin.Context) {
+	api.Respond(ctx, http.StatusOK, "Successfully obtained theme config", t.Deps.Config)
 }
