@@ -9,9 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/http/sockets"
 	"github.com/ainsleyclark/verbis/api/server"
-	"github.com/gin-gonic/gin"
 )
 
 // apiRoutes
@@ -28,7 +26,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		api.Use(middleware.EmptyBody())
 
 		// Sockets
-		api.GET("/ws", gin.WrapF(sockets.Admin(d)))
+		//api.GET("/ws", gin.WrapF(sockets.Admin(d)))
 
 		// Site
 		api.GET("/site", h.Site.Global)
@@ -56,7 +54,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator.GET("/themes/:name", h.Themes.Find)
 
 		// Theme Config
-		operator.GET("/layout", h.Themes.Layouts)
+		operator.GET("/layouts", h.Themes.Layouts)
 		operator.GET("/templates", h.Themes.Templates)
 		operator.GET("/config", h.Themes.Config)
 		operator.POST("/theme", h.Themes.Update)

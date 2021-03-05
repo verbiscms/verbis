@@ -55,6 +55,9 @@ func Admin(d *deps.Deps) http.HandlerFunc {
 	}
 }
 
+// writer
+//
+//
 func writer(conn *websocket.Conn, w *watchers.Batch, path string) {
 	const op = "AdminSocket.Handler.Writer"
 
@@ -82,7 +85,7 @@ func writer(conn *websocket.Conn, w *watchers.Batch, path string) {
 
 	case err := <-w.Error:
 		if err.Err != syscall.EPIPE {
-			logger.WithError(err).Error()
+			logger.WithError(&errors.Error{Code: op, Message: "Error watching theme configuration", Operation: op, Err: err}).Error()
 		}
 	}
 }
