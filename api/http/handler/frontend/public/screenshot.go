@@ -31,7 +31,7 @@ func (p *Public) Screenshot(ctx *gin.Context) {
 		return
 	}
 
-	screenshot, mime, err := p.Site.Screenshot(theme, file)
+	screenshot, mime, err := p.Theme.Screenshot(theme, file)
 	if errors.Code(err) == errors.NOTFOUND {
 		p.Publisher.NotFound(ctx)
 		return
