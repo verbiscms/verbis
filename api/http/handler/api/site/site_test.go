@@ -9,9 +9,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/site"
 	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
+	"net/http"
 	"testing"
 )
 
@@ -64,31 +66,13 @@ var (
 		Url:         "verbiscms.com",
 		Version:     "0.1",
 	}
-	// The default templates used for testing.
-	templates = domain.Templates{
-		domain.Template{
-			Key:  "test",
-			Name: "testing",
-		},
-	}
-	// The default layouts used for testing.
-	layouts = domain.Layouts{
-		domain.Layout{
-			Key:  "test",
-			Name: "testing",
-		},
-	}
-	// The default themes used for testing.
-	themes = domain.Themes{
-		{
-			Title:       "Verbis",
-			Description: "VerbisCMS",
-			Version:     "0.1",
-		},
-		{
-			Title:       "Verbis2",
-			Description: "VerbisCMS2",
-			Version:     "0.1",
-		},
-	}
 )
+
+func (t *SiteTestSuite) TestSite_Global() {
+	t.RequestAndServe(http.MethodGet, "/site", "/site", nil, func(ctx *gin.Context) {
+		t.Setup(func(m *mocks.Repository) {
+			m.On("Global").Return(site)
+		}).Global(ctx)
+	})
+	t.RunT(site, http.StatusOK, "Successfully obtained site config")
+}

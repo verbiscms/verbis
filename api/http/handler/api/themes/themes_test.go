@@ -8,62 +8,83 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
+	"github.com/ainsleyclark/verbis/api/logger"
+	mockStore "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/theme"
+	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"io/ioutil"
 	"testing"
 )
 
-// SiteTestSuite defines the helper used for site
+// ThemesTestSuite defines the helper used for site
 // testing.
-type SiteTestSuite struct {
+type ThemesTestSuite struct {
 	test.HandlerSuite
 	ThemePath string
 }
 
-// TestSite
+// TestThemes
 //
 // Assert testing has begun.
-func TestSite(t *testing.T) {
-	suite.Run(t, &SiteTestSuite{
+func TestThemes(t *testing.T) {
+	suite.Run(t, &ThemesTestSuite{
 		HandlerSuite: test.NewHandlerSuite(),
 		ThemePath:    "/themes/",
 	})
 }
 
+const (
+	// The default active theme used for testing.
+	TestActiveTheme = "verbis"
+)
+
 // Setup
 //
-// A helper to obtain a mock categories handler
+// A helper to obtain a mock themes handler
 // for testing.
-func (t *SiteTestSuite) Setup(mf func(m *mocks.Repository)) *Site {
+func (t *ThemesTestSuite) Setup(mf func(m *mocks.Repository)) *Themes {
+	logger.SetOutput(ioutil.Discard)
+
 	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
-	return &Site{
+	return &Themes{
 		Deps: &deps.Deps{
-			Site:   m,
 			Config: &config.DefaultTheme,
-			Paths: paths.Paths{
-				Base: "",
-			},
 			Options: &domain.Options{
-				ActiveTheme: "",
+				ActiveTheme: TestActiveTheme,
 			},
+			Theme: m,
 		},
 	}
 }
 
-var (
-	// The default site config used for testing.
-	site = domain.Site{
-		Title:       "Verbis",
-		Description: "VerbisCMS",
-		Logo:        "/logo.svg",
-		Url:         "verbiscms.com",
-		Version:     "0.1",
+// SetupOptions
+//
+// A helper to obtain a mock themes handler
+// with options for testing.
+func (t *ThemesTestSuite) SetupOptions(mf func(m *mocks.Repository, mo *mockStore.OptionsRepository)) *Themes {
+	s := t.Setup(nil)
+
+	m := &mocks.Repository{}
+	mo := &mockStore.OptionsRepository{}
+
+	if mf != nil {
+		mf(m, mo)
 	}
+
+	s.Store = &models.Store{
+		Options: mo,
+	}
+	s.Theme = m
+
+	return s
+}
+
+var (
 	// The default templates used for testing.
 	templates = domain.Templates{
 		domain.Template{
@@ -78,17 +99,21 @@ var (
 			Name: "testing",
 		},
 	}
-	// The default themes used for testing.
-	themes = domain.Themes{
+	// The default themes configs used for testing.
+	themes = []*domain.ThemeConfig{
 		{
-			Title:       "Verbis",
-			Description: "VerbisCMS",
-			Version:     "0.1",
+			Theme: domain.Theme{
+				Title:       "Verbis",
+				Description: "VerbisCMS",
+				Version:     "0.1",
+			},
 		},
 		{
-			Title:       "Verbis2",
-			Description: "VerbisCMS2",
-			Version:     "0.1",
+			Theme: domain.Theme{
+				Title:       "Verbis2",
+				Description: "VerbisCMS2",
+				Version:     "0.1",
+			},
 		},
 	}
 )

@@ -68,7 +68,6 @@ func (t *HandlerSuite) RunT(want interface{}, status int, message string) {
 	defer func() {
 		t.Reset()
 	}()
-
 	got, data := t.decode()
 	t.Equal(message, got.Message)
 	t.Equal(status, t.Status())

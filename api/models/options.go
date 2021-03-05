@@ -190,7 +190,6 @@ func (s *OptionsStore) GetTheme() string {
 }
 
 func (s *OptionsStore) SetTheme(theme string) error {
-	const op = "OptionsRepository.SetTheme"
 	m, err := s.marshalValue(theme)
 	if err != nil {
 		return err

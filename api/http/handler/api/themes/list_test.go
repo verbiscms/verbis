@@ -5,16 +5,13 @@
 package themes
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/site"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/theme"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func (t *SiteTestSuite) TestSite_Themes() {
-	t.T().Skip()
-
+func (t *ThemesTestSuite) TestThemes_List() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -26,7 +23,7 @@ func (t *SiteTestSuite) TestSite_Themes() {
 			http.StatusOK,
 			"Successfully obtained themes",
 			func(m *mocks.Repository) {
-				m.On("Themes", t.ThemePath).Return(themes, nil)
+				m.On("List", TestActiveTheme).Return(themes, nil)
 			},
 		},
 		"Not Found": {
@@ -34,7 +31,7 @@ func (t *SiteTestSuite) TestSite_Themes() {
 			http.StatusOK,
 			"not found",
 			func(m *mocks.Repository) {
-				m.On("Themes", t.ThemePath).Return(domain.Themes{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("List", TestActiveTheme).Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
@@ -42,7 +39,7 @@ func (t *SiteTestSuite) TestSite_Themes() {
 			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.Repository) {
-				m.On("Themes", t.ThemePath).Return(domain.Themes{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("List", TestActiveTheme).Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}
@@ -50,7 +47,7 @@ func (t *SiteTestSuite) TestSite_Themes() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.RequestAndServe(http.MethodGet, "/theme", "/theme", nil, func(ctx *gin.Context) {
-				t.Setup(test.mock).Themes(ctx)
+				t.Setup(test.mock).List(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

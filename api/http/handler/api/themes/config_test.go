@@ -10,7 +10,7 @@ import (
 	"net/http"
 )
 
-func (t *SiteTestSuite) TestSite_Theme() {
+func (t *ThemesTestSuite) TestThemes_Config() {
 	t.RequestAndServe(http.MethodGet, "/theme", "/theme", nil, func(ctx *gin.Context) {
 		t.Setup(nil).Config(ctx)
 	})

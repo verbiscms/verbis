@@ -60,12 +60,12 @@ func (d *Deps) SetOptions(options *domain.Options) {
 	d.Options = options
 }
 
-func (d *Deps) SetTheme(theme string) error {
-	err := d.Store.Options.SetTheme(theme)
+func (d *Deps) SetTheme(name string) error {
+	err := d.Store.Options.SetTheme(name)
 	if err != nil {
 		return err
 	}
-	d.Options.ActiveTheme = theme
+	d.Options.ActiveTheme = name
 	return nil
 }
 

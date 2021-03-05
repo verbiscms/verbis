@@ -37,7 +37,7 @@ const (
 // Setup
 //
 // Sets defaults and returns a new Theme repo.
-func (t *ThemeTestSuite) Setup() *theme {
+func (t *ThemeTestSuite) Setup() *theme { //nolint
 	return &theme{
 		config: &domain.ThemeConfig{
 			FileExtension: ".cms",
@@ -59,10 +59,6 @@ func (t *ThemeTestSuite) SetupSuite() {
 
 	apiPath := filepath.Join(filepath.Dir(wd), "../")
 	t.apiPath = apiPath
-}
-
-func (t *ThemeTestSuite) Test_New() {
-	t.T().Skip()
 }
 
 func (t *ThemeTestSuite) TestTheme_List() {
