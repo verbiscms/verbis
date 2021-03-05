@@ -5,7 +5,6 @@
 package themes
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
@@ -14,16 +13,13 @@ import (
 
 // Find
 //
-// Returns http.StatusOK if theme config was obtained successfully.
+// Returns http.StatusOK if the theme config was obtained.
+// Returns http.StatusBadRequest if the name wasn't passed.
+// Returns http.StatusInternalServerError if there as an error obtaining the config.
 func (t *Themes) Find(ctx *gin.Context) {
 	const op = "ThemeHandler.Find"
 
-	name := ctx.Param("name")
-	if name == "" {
-		api.Respond(ctx, http.StatusBadRequest, "Pass a valid string to obtain the redirect by name", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("no theme passed"), Operation: op})
-	}
-
-	theme, err := t.Theme.Find(name)
+	theme, err := t.Theme.Find(ctx.Param("name"))
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return
