@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/verbis/site"
 	"github.com/ainsleyclark/verbis/api/verbis/theme"
+	"github.com/ainsleyclark/verbis/api/watchers"
 	"os"
 )
 
@@ -31,6 +32,8 @@ type Deps struct {
 
 	// Theme
 	Theme theme.Repository
+
+	Watcher *watchers.Batch
 
 	// Options
 	Options *domain.Options
@@ -106,6 +109,9 @@ func New(cfg Config) *Deps {
 		Site:    site.New(&opts),
 		Theme:   theme.New(),
 	}
+
+	d.Watcher = watchers.New(d.ThemePath())
+	d.Watcher.Start()
 
 	return d
 }

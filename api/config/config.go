@@ -72,7 +72,9 @@ func Set(config domain.ThemeConfig) {
 // unsuccessful and returns the DefaultTheme
 // variable.
 func Fetch(path string) *domain.ThemeConfig {
+	mutex.Lock()
 	theme, err := getThemeConfig(path, FileName)
+	mutex.Unlock()
 	if err != nil {
 		logger.WithError(err).Error()
 	}
@@ -89,7 +91,9 @@ func Fetch(path string) *domain.ThemeConfig {
 // unsuccessful and returns the DefaultTheme
 // variable.
 func Find(path string) (*domain.ThemeConfig, error) {
+	mutex.Lock()
 	theme, err := getThemeConfig(path, FileName)
+	mutex.Unlock()
 	if err != nil {
 		return nil, err
 	}

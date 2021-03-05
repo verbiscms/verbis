@@ -10,13 +10,13 @@
 
 
 {{/*    {{ $result := categories (dict "limit" 10) }}*/}}
-{{/*    {{ with $result.Categories }}*/}}
+{{/*    {{ with $result.Categories }}*/}}j
 {{/*        {{ range $post := . }}*/}}
 {{/*            {{ . }}*/}}
 {{/*        {{ end }}*/}}
 {{/*    {{ end }}*/}}
 
-    head{{ field "test" }}
+    head{{ field "test" ddddd}}
     {{ baseUrl }}
 </h1>
 
