@@ -47,25 +47,25 @@ export default {
 	}),
 	created: function() {
 	//	this.ws = new WebSocket('ws://127.0.0.1:8080/api/v1/ws');
-		let url = "ws://127.0.0.1:8080/api/v1/ws";
-		const ws = new WebSocket(url);
-
-		ws.onopen = function(ctx){
-			console.log(ctx);
-			console.log("Web socket open")
-		}
-
-		ws.onerror = function(ctx){
-			console.log(ctx);
-			console.log("** WS ERROR **")
-		}
-
-		ws.onmessage = (msg) => {
-			console.log(msg);
-			let response = JSON.parse(msg.data);
-			console.log(response);
-			this.$store.commit("setTheme", response)
-		};
+	// 	let url = "ws://127.0.0.1:8080/api/v1/ws";
+	// 	const ws = new WebSocket(url);
+	//
+	// 	ws.onopen = function(ctx){
+	// 		console.log(ctx);
+	// 		console.log("Web socket open")
+	// 	}
+	//
+	// 	ws.onerror = function(ctx){
+	// 		console.log(ctx);
+	// 		console.log("** WS ERROR **")
+	// 	}
+	//
+	// 	ws.onmessage = (msg) => {
+	// 		console.log(msg);
+	// 		let response = JSON.parse(msg.data);
+	// 		console.log(response);
+	// 		this.$store.commit("setTheme", response)
+	// 	};
 	},
 	computed: {
 		/*

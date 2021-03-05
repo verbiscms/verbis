@@ -10,12 +10,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/radovskyb/watcher"
 	"path/filepath"
+	"time"
 )
 
-type Batcher interface {
-	Start()
-	Close()
-}
+const (
+	PollingDuration = time.Millisecond * 100
+)
 
 // Batch
 type Batch struct {
@@ -72,7 +72,7 @@ func New(themePath string) *Batch {
 // UpdateTheme
 //
 //
-func (b *Batch) UpdateTheme(themePath string) {
+func (b *Batch) SetTheme(themePath string) {
 	b.Close()
 	b.path = themePath
 	b.Start()
@@ -104,17 +104,14 @@ func (b *Batch) run() {
 	b.watcher.SetMaxEvents(1)
 
 	go func() {
-		//OuterLoop:
+	OuterLoop:
 		for {
 			select {
 			case event := <-b.watcher.Event:
-				//name := event.Name()
-				//if event.IsDir() {
-				//	continue OuterLoop
-				//}
-				//if isExcludedDir(name) || isExcludedFile(name) || name == b.path {
-				//	continue OuterLoop
-				//}
+				name := event.Name()
+				if isExcludedDir(name) || isExcludedFile(name) || name == b.path {
+					continue OuterLoop
+				}
 				ext := filepath.Ext(event.Path)
 				b.Event <- Event{
 					Event:     event,
