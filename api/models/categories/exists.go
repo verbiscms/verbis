@@ -55,7 +55,7 @@ func (s *Store) ExistsByName(name string) (bool, error) {
 func (s *Store) ExistsBySlug(slug string) (bool, error) {
 	const op = "CategoryStore.Exists"
 
-	q := s.Builder().Select("id").From(TableName).Where("name", "=", slug).Exists()
+	q := s.Builder().Select("id").From(TableName).Where("slug", "=", slug).Exists()
 
 	var exists bool
 	err := s.DB.QueryRow(q).Scan(&exists)

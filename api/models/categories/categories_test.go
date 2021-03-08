@@ -48,21 +48,21 @@ const (
 var (
 	// The default category used for testing.
 	category = domain.Category{
-		Id:      1,
-		Slug:    "/cat",
-		Name:    "Category",
+		Id:   1,
+		Slug: "/cat",
+		Name: "Category",
 	}
 	// The default categories used for testing.
 	categories = domain.Categories{
 		{
-			Id:      1,
-			Slug:    "/cat",
-			Name:    "Category",
+			Id:   1,
+			Slug: "/cat",
+			Name: "Category",
 		},
 		{
-			Id:      2,
-			Slug:    "/cat1",
-			Name:    "Category1",
+			Id:   2,
+			Slug: "/cat1",
+			Name: "Category1",
 		},
 	}
 	// The default params used for testing.

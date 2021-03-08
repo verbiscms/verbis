@@ -5,6 +5,7 @@
 package test
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/cache"
@@ -29,6 +30,14 @@ func (m DBMockResultErr) LastInsertId() (int64, error) {
 
 func (m DBMockResultErr) RowsAffected() (int64, error) {
 	return 0, fmt.Errorf("error")
+}
+
+type AnyUUID struct{}
+
+// Match satisfies sqlmock.Argument interface
+func (a AnyUUID) Match(v driver.Value) bool {
+	_, ok := v.(string)
+	return ok
 }
 
 // NewDBSuite

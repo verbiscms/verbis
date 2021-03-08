@@ -17,7 +17,6 @@ const (
 )
 
 func (t *CategoriesTestSuite) TestStore_Delete() {
-
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)

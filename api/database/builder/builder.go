@@ -245,7 +245,8 @@ func (s *Sqlbuilder) Count() string {
 func (s *Sqlbuilder) Exists() string {
 	sqlquery := s.Build()
 
-	existsQuery := `SELECT EXISTS (` + sqlquery + `)`
+	q := strings.TrimSuffix(sqlquery, " ")
+	existsQuery := `SELECT EXISTS (` + q + `)`
 
 	return existsQuery
 }
