@@ -31,7 +31,7 @@ func (s *Sqlbuilder) Update(table string) *Sqlbuilder {
 func (s *Sqlbuilder) Column(column string, value interface{}) *Sqlbuilder {
 	val, ok := printInterface(reflect.ValueOf(value))
 	if !ok {
-		return s
+		val = "NULL"
 	}
 	col := [2]string{column, val}
 	s.columns = append(s.columns, col)

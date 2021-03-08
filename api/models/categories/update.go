@@ -37,10 +37,9 @@ func (s *Store) Update(c domain.Category) (domain.Category, error) {
 		Where("id", "=", c.Id).
 		Build()
 
-	fmt.Println(q)
-
 	result, err := s.DB.Exec(q, uuid.New().String())
 	if err != nil {
+		fmt.Println(err)
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
 	}
 

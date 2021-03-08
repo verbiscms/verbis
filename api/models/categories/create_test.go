@@ -5,7 +5,6 @@
 package categories
 
 import (
-	"database/sql/driver"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -15,18 +14,10 @@ import (
 
 var (
 	CreateQuery = "INSERT INTO `categories` (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, '/cat', 'Category', NULL, NULL, '', NULL, NOW(), NOW())"
+	t           = "INSERT INTO `categories` (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, '/cat', 'Category', '', '', '', '', NOW(), NOW())"
 )
 
-type AnyUUID struct{}
-
-// Match satisfies sqlmock.Argument interface
-func (a AnyUUID) Match(v driver.Value) bool {
-	_, ok := v.(string)
-	return ok
-}
-
 func (t *CategoriesTestSuite) TestStore_Create() {
-
 	tt := map[string]struct {
 		mock func(m sqlmock.Sqlmock)
 		want interface{}
@@ -34,7 +25,7 @@ func (t *CategoriesTestSuite) TestStore_Create() {
 		"Success": {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(AnyUUID{}).
+					WithArgs(test.AnyUUID{}).
 					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
 			},
 			category,

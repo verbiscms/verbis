@@ -15,6 +15,7 @@ import (
 var (
 	ExistsQuery       = "SELECT EXISTS (SELECT `id` FROM `categories` WHERE `id` =  '" + categoryID + "')"
 	ExistsByFromQuery = "SELECT EXISTS (SELECT `id` FROM `categories` WHERE `name` =  '" + category.Name + "')"
+	ExistsBySlugQuery = "SELECT EXISTS (SELECT `id` FROM `categories` WHERE `slug` =  '" + category.Slug + "')"
 )
 
 func (t *CategoriesTestSuite) TestStore_Exists() {
@@ -92,6 +93,48 @@ func (t *CategoriesTestSuite) TestStore_ExistsByName() {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
 			got, err := s.ExistsByName(category.Name)
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.RunT(test.want, got)
+		})
+	}
+}
+
+func (t *CategoriesTestSuite) TestStore_ExistsBySlug() {
+	tt := map[string]struct {
+		want interface{}
+		mock func(m sqlmock.Sqlmock)
+	}{
+		"Exists": {
+			true,
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).WillReturnRows(rows)
+			},
+		},
+		"Not Found": {
+			false,
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(false)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).WillReturnRows(rows)
+			},
+		},
+		"Internal": {
+			database.ErrQueryMessage,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).WillReturnError(fmt.Errorf("error"))
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(test.mock)
+			got, err := s.ExistsBySlug(category.Slug)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
