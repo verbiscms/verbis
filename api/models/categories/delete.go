@@ -17,7 +17,7 @@ import (
 // Returns errors.NOTFOUND if the category was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) Delete(id int) error {
-	const op = "CategoryRepository.Delete"
+	const op = "CategoryStore.Delete"
 
 	q := s.Builder().DeleteFrom(TableName).WhereRaw("`id` = ?")
 	_, err := s.DB.Exec(q.Build(), id)
@@ -29,6 +29,7 @@ func (s *Store) Delete(id int) error {
 
 	err = s.DeleteFromPivot(id)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
@@ -39,7 +40,7 @@ func (s *Store) Delete(id int) error {
 //
 //
 func (s *Store) DeleteFromPivot(id int) error {
-	const op = "CategoryRepository.DeleteFromPivot"
+	const op = "CategoryStore.DeleteFromPivot"
 
 	q := s.Builder().DeleteFrom(PivotTableName).WhereRaw("`category_id` = ?")
 	_, err := s.DB.Exec(q.Build(), id)

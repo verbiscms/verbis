@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `categories` (\"uuid\", \"slug\", \"name\", \"primary\", \"description\", \"resource\", \"parent_id\", \"archive_id\", \"updated_at\", \"created_at\") VALUES (?, '/cat', 'Category', TRUE, NULL, '', NULL, NULL, NOW(), NOW()) "
+	CreateQuery = "INSERT INTO `categories` (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, '/cat', 'Category', NULL, NULL, '', NULL, NOW(), NOW())"
 )
 
 type AnyUUID struct{}
@@ -35,7 +35,7 @@ func (t *CategoriesTestSuite) TestStore_Create() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(AnyUUID{}).
-					WillReturnResult(sqlmock.NewResult(category.Id, 1))
+					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
 			},
 			category,
 		},

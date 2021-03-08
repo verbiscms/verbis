@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package redirects
+package categories
 
 import (
 	"fmt"
@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	ExistsQuery       = "SELECT EXISTS (SELECT `id` FROM `redirects` WHERE `id` =  '" + redirectID + "')"
-	ExistsByFromQuery = "SELECT EXISTS (SELECT `id` FROM `redirects` WHERE `from_path` =  '" + redirect.From + "')"
+	ExistsQuery       = "SELECT EXISTS (SELECT `id` FROM `categories` WHERE `id` =  '" + categoryID + "')"
+	ExistsByFromQuery = "SELECT EXISTS (SELECT `id` FROM `categories` WHERE `name` =  '" + category.Name + "')"
 )
 
-func (t *RedirectsTestSuite) TestStore_Exists() {
+func (t *CategoriesTestSuite) TestStore_Exists() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -49,7 +49,7 @@ func (t *RedirectsTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Exists(redirect.Id)
+			got, err := s.Exists(category.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -59,7 +59,7 @@ func (t *RedirectsTestSuite) TestStore_Exists() {
 	}
 }
 
-func (t *RedirectsTestSuite) TestStore_ExistsByFrom() {
+func (t *CategoriesTestSuite) TestStore_ExistsByName() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -91,7 +91,7 @@ func (t *RedirectsTestSuite) TestStore_ExistsByFrom() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.ExistsByFrom(redirect.From)
+			got, err := s.ExistsByName(category.Name)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

@@ -1,21 +1,17 @@
+// Copyright 2020 The GoQueryBuilder Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package builder
 
 import (
+	"errors"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 )
-
-//s.Builder().InserInto("tablename").InsertCol("my_col","hello")
-// skipinsert
-// skipcreate
-// timefield
-// sqlb for functional
-// interface for where instead of string
-// resets
 
 type Sqlbuilder struct {
 	string         string
@@ -28,7 +24,13 @@ type Sqlbuilder struct {
 	limitStmt      string
 	offsetStmt     string
 	orderbyStmt    string
-	Dialect        string //Can be postgres, mysql or (more to come)
+	// Insert table
+	insertStmt string
+	// Update table
+	updateStmt string
+	// Slice of columns, key value for updates & inserts.
+	columns [][2]string
+	Dialect string //Can be postgres, mysql or (more to come)
 }
 
 func New(dialect string) *Sqlbuilder {
@@ -243,8 +245,6 @@ func (s *Sqlbuilder) Count() string {
 func (s *Sqlbuilder) Exists() string {
 	sqlquery := s.Build()
 
-	sqlquery = strings.TrimSuffix(sqlquery, " ")
-
 	existsQuery := `SELECT EXISTS (` + sqlquery + `)`
 
 	return existsQuery
@@ -252,16 +252,15 @@ func (s *Sqlbuilder) Exists() string {
 
 func (s *Sqlbuilder) Build() string {
 
-	// TODO
-	//// insert
-	//if s.insertStmt != `` {
-	//	return `INSERT INTO ` + s.insertStmt + ` (` + s.columns + `) VALUES (` + s.values + `)`
-	//}
-	//
-	//// update
-	//if s.updateStmt != `` {
-	//	return `UPDATE ` + s.insertStmt + ` (` + s.columns + `) VALUES (` + s.values + `)`
-	//}
+	// insert
+	if s.insertStmt != `` {
+		return s.buildInsert()
+	}
+
+	// update
+	if s.updateStmt != `` {
+		return s.buildUpdate()
+	}
 
 	//build selects
 	if s.deletefromStmt == `` {
@@ -309,7 +308,7 @@ func (s *Sqlbuilder) Build() string {
 }
 
 func (s *Sqlbuilder) BuildInsert(table string, data interface{}, additionalQuery ...string) (string, error) {
-	dbCols, dbVals, err := mapStruct(data, false)
+	dbCols, dbVals, err := mapStruct(data)
 	if err != nil {
 		return "", err
 	}
@@ -326,7 +325,7 @@ func (s *Sqlbuilder) BuildInsert(table string, data interface{}, additionalQuery
 
 func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery string) (string, error) {
 
-	dbCols, dbVals, err := mapStruct(data, true)
+	dbCols, dbVals, err := mapStruct(data)
 	if err != nil {
 		return "", err
 	}
@@ -352,178 +351,4 @@ func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery
 	}
 
 	return sql, errors.New("sql build failed")
-}
-
-/**
-Helpers
-*/
-
-func (s *Sqlbuilder) formatSchema(schema string) string {
-	schemaParts := strings.Split(schema, ".")
-	finalSchemaStmt := ``
-
-	var dialectFormat string
-
-	switch strings.ToLower(s.Dialect) {
-	case "postgres":
-		dialectFormat = `"`
-		break
-	case "mysql":
-		dialectFormat = "`"
-		break
-	default:
-		dialectFormat = `"`
-	}
-
-	for _, v := range schemaParts {
-		if v == `*` {
-			finalSchemaStmt += `*`
-		} else {
-			part := strings.TrimSpace(v)
-			if string(part[0]) == dialectFormat && string(part[len(part)-1]) == dialectFormat {
-				finalSchemaStmt += part + `.`
-			} else {
-				finalSchemaStmt += dialectFormat + part + dialectFormat + `.`
-			}
-
-		}
-	}
-
-	return strings.TrimSuffix(finalSchemaStmt, `.`)
-}
-
-func (s *Sqlbuilder) formatJoinOn(joinStmt string) string {
-	joinParts := strings.Split(joinStmt, "=")
-	finalJoinStmt := ``
-
-	for _, v := range joinParts {
-		finalJoinStmt += s.formatSchema(v) + ` = `
-	}
-
-	return strings.TrimSuffix(finalJoinStmt, ` = `)
-}
-
-var matchFirstCap = regexp.MustCompile("(.)([A-Z][a-z]+)")
-var matchAllCap = regexp.MustCompile("([a-z0-9])([A-Z])")
-
-func toSnakeCase(str string) string {
-	snake := matchFirstCap.ReplaceAllString(str, "${1}_${2}")
-	snake = matchAllCap.ReplaceAllString(snake, "${1}_${2}")
-	return strings.ToLower(snake)
-}
-
-func mapStruct(data interface{}, update bool) (dbCols []string, dbVals []string, error error) {
-	fields := reflect.TypeOf(data)
-	values := reflect.ValueOf(data)
-
-	num := fields.NumField()
-
-	for i := 0; i < num; i++ {
-		field := fields.Field(i)
-		value := values.Field(i)
-
-		val, exists := getTags(field)
-		split := splitTags(val)
-
-		if isSkipped(split) {
-			continue
-		}
-
-		if exists {
-			if len(split) > 0 {
-				dbCols = append(dbCols, "\""+split[0]+"\"")
-			} else {
-				dbCols = append(dbCols, "\""+toSnakeCase(field.Name)+"\"")
-			}
-		} else {
-			dbCols = append(dbCols, "\""+toSnakeCase(field.Name)+"\"")
-		}
-
-		if isAutoUpdateTime(val) {
-			dbVals = append(dbVals, "NOW()")
-			continue
-		}
-
-		if !update && isAutoCreateTime(val) {
-			dbVals = append(dbVals, "NOW()")
-			continue
-		}
-
-		var v string
-		v, ok := printInterface(value)
-		if !ok {
-			return dbCols, dbVals, errors.New("name: " + val + " type: " + value.Kind().String() + " unsupported")
-		}
-
-		dbVals = append(dbVals, v)
-	}
-
-	return dbCols, dbVals, nil
-}
-
-func printInterface(value reflect.Value) (string, bool) {
-	var v string
-
-	switch value.Kind() {
-	case reflect.String:
-		v = "'" + sanitiseString(value.String()) + "'"
-	case reflect.Int:
-		v = strconv.FormatInt(value.Int(), 10)
-	case reflect.Int8:
-		v = strconv.FormatInt(value.Int(), 10)
-	case reflect.Int32:
-		v = strconv.FormatInt(value.Int(), 10)
-	case reflect.Int64:
-		v = strconv.FormatInt(value.Int(), 10)
-	case reflect.Float64:
-		v = fmt.Sprintf("%f", value.Float())
-	case reflect.Float32:
-		v = fmt.Sprintf("%f", value.Float())
-	case reflect.Slice:
-		v = fmt.Sprintf("'%v'", value)
-	case reflect.Array:
-		v = fmt.Sprintf("'%v'", value)
-	case reflect.Ptr:
-		if value.IsNil() {
-			v = "NULL"
-		} else {
-			val, ok := printInterface(reflect.ValueOf(value.Elem().Interface()))
-			if !ok {
-				return "", false
-			}
-			v = val
-		}
-	case reflect.Struct:
-		return "", false
-	case reflect.Bool:
-		if value.Bool() {
-			v = "TRUE"
-		} else {
-			v = "FALSE"
-		}
-	default:
-		return "", false
-	}
-
-	return v, true
-}
-
-func sanitiseString(str string) string {
-
-	if len(str) > 0 {
-		rebuildSingles := false
-
-		if string(str[0]) == "'" && string(str[len(str)-1]) == "'" {
-			rebuildSingles = true
-		}
-
-		str = strings.TrimSuffix(strings.TrimPrefix(str, "'"), "'")
-		str = strings.ReplaceAll(str, "'", "''")
-
-		if rebuildSingles {
-			str = "'" + str + "'"
-		}
-	}
-
-	return str
 }
