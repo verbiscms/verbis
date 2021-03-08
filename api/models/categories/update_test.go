@@ -7,23 +7,23 @@ package categories
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	UpdateQuery = "INSERT INTO `categories` (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, '/cat', 'Category', NULL, NULL, '', NULL, NOW(), NOW())"
+	UpdateQuery = "UPDATE `categories` SET uuid=?, slug='/cat', name='Category', description=NULL, parent_id=NULL, resource='', archive_id=NULL, updated_at=NOW(), created_at=NOW() WHERE `id` = '1' "
 )
 
 func (t *CategoriesTestSuite) TestStore_Update() {
-
 	tt := map[string]struct {
 		mock func(m sqlmock.Sqlmock)
 		want interface{}
 	}{
 		"Success": {
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(AnyUUID{}).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.AnyUUID{}).
 					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
 			},
 			category,

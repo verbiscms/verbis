@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/gookit/color"
 )
 
 // List
@@ -42,7 +41,6 @@ func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
 	if err == sql.ErrNoRows {
 		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No categories available", Operation: op, Err: err}
 	} else if err != nil {
-		color.Red.Println(err)
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
 	}
 
