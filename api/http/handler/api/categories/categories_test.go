@@ -60,28 +60,24 @@ var (
 		Slug:     "/cat",
 		Name:     "Category",
 		Resource: "test",
-		Primary:  true,
 	}
 	// The default category with wrong validation used for testing.
 	categoryBadValidation = domain.Category{
 		Id:       123,
 		Name:     "Category",
 		Resource: "test",
-		Primary:  true,
 	}
 	// The default categories used for testing.
 	categories = domain.Categories{
 		{
-			Id:      123,
-			Slug:    "/cat",
-			Name:    "Category",
-			Primary: true,
+			Id:   123,
+			Slug: "/cat",
+			Name: "Category",
 		},
 		{
-			Id:      124,
-			Slug:    "/cat1",
-			Name:    "Category1",
-			Primary: false,
+			Id:   124,
+			Slug: "/cat1",
+			Name: "Category1",
 		},
 	}
 	// The default params used for testing.

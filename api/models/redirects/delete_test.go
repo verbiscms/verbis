@@ -2,41 +2,44 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package roles
+package redirects
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
 
-func (t *RolesTestSuite) TestStore_Find() {
-	query := "SELECT * FROM `roles` WHERE `id` = ? LIMIT 1"
+const (
+	DeleteQuery = "DELETE FROM `redirects` WHERE `id` = '" + redirectID + "'"
+)
 
+func (t *RedirectsTestSuite) TestStore_Delete() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			role,
+			redirect,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "name", "description"}).
-					AddRow(role.Id, role.Name, role.Description)
-				m.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(1).WillReturnRows(rows)
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 		"No Rows": {
-			"No redirect exists with the ID: 1",
+			"No redirect exists with the ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnError(sql.ErrNoRows)
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 0))
 			},
 		},
-		"Internal": {
-			"Error executing sql query",
+		"Internal Error": {
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
@@ -44,12 +47,12 @@ func (t *RolesTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(role.Id)
+			err := s.Delete(redirect.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(test.want, got)
+			t.Nil(err)
 		})
 	}
 }

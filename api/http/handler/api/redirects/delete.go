@@ -20,7 +20,8 @@ import (
 func (r *Redirects) Delete(ctx *gin.Context) {
 	const op = "RedirectHandler.Delete"
 
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	paramID := ctx.Param("id")
+	id, err := strconv.Atoi(paramID)
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to delete a redirect", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
@@ -35,5 +36,5 @@ func (r *Redirects) Delete(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully deleted redirect with ID: "+strconv.FormatInt(id, 10), nil)
+	api.Respond(ctx, http.StatusOK, "Successfully deleted redirect with ID: "+paramID, nil)
 }

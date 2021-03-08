@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package redirects
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
@@ -15,11 +16,11 @@ import (
 )
 
 var (
-	ListQuery  = "SELECT * FROM `categories` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `categories` ORDER BY \"created_at\" desc"
+	ListQuery  = "SELECT * FROM `redirects` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
+	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `redirects` ORDER BY \"created_at\" desc"
 )
 
-func (t *CategoriesTestSuite) TestStore_List() {
+func (t *RedirectsTestSuite) TestStore_List() {
 	tt := map[string]struct {
 		meta  params.Params
 		mock  func(m sqlmock.Sqlmock)
@@ -29,15 +30,15 @@ func (t *CategoriesTestSuite) TestStore_List() {
 		"Success": {
 			defaultParams,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name).
-					AddRow(categories[1].Id, categories[1].Slug, categories[1].Name)
+				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
+					AddRow(redirects[0].Id, redirects[0].From, redirects[0].To, redirects[0].Code).
+					AddRow(redirects[1].Id, redirects[1].From, redirects[1].To, redirects[1].Code)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
 			},
 			2,
-			categories,
+			redirects,
 		},
 		"Filter Error": {
 			params.Params{
@@ -56,7 +57,7 @@ func (t *CategoriesTestSuite) TestStore_List() {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(sql.ErrNoRows)
 			},
 			-1,
-			"No categories available",
+			"No redirects available",
 		},
 		"Internal": {
 			defaultParams,
@@ -64,19 +65,19 @@ func (t *CategoriesTestSuite) TestStore_List() {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 			-1,
-			"Error executing sql query",
+			database.ErrQueryMessage,
 		},
 		"Count Error": {
 			defaultParams,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name).
-					AddRow(categories[1].Id, categories[1].Slug, categories[1].Name)
+				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
+					AddRow(redirects[0].Id, redirects[0].From, redirects[0].To, redirects[0].Code).
+					AddRow(redirects[1].Id, redirects[1].From, redirects[1].To, redirects[1].Code)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 			-1,
-			"Error getting the total number of categories",
+			"Error getting the total number of redirects",
 		},
 	}
 

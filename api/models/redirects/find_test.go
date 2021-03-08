@@ -2,41 +2,44 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package roles
+package redirects
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
 
-func (t *RolesTestSuite) TestStore_Find() {
-	query := "SELECT * FROM `roles` WHERE `id` = ? LIMIT 1"
+var (
+	FindQuery = "SELECT * FROM `redirects` WHERE `id` = '" + redirectID + "' LIMIT 1"
+)
 
+func (t *RedirectsTestSuite) TestStore_Find() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			role,
+			redirect,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "name", "description"}).
-					AddRow(role.Id, role.Name, role.Description)
-				m.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(1).WillReturnRows(rows)
+				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
+					AddRow(redirect.Id, redirect.From, redirect.To, redirect.Code)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"No redirect exists with the ID: 1",
+			"No redirect exists with the ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnError(sql.ErrNoRows)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal": {
-			"Error executing sql query",
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
@@ -44,7 +47,7 @@ func (t *RolesTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(role.Id)
+			got, err := s.Find(redirect.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

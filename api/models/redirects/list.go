@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package redirects
 
 import (
 	"database/sql"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
@@ -13,10 +14,12 @@ import (
 
 // List
 //
+// Lists all redirects based on meta & returns total.
+//
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
-func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
-	const op = "CategoryRepository.List"
+func (s *Store) List(meta params.Params) (domain.Redirects, int, error) {
+	const op = "RedirectRepository.List"
 
 	q := s.Builder().From(TableName)
 
@@ -36,20 +39,20 @@ func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
 	}
 
 	// Select categories
-	var categories domain.Categories
-	err = s.DB.Select(&categories, q.Build())
+	var redirects domain.Redirects
+	err = s.DB.Select(&redirects, q.Build())
 	if err == sql.ErrNoRows {
-		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No categories available", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No redirects available", Operation: op, Err: err}
 	} else if err != nil {
-		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	// Count the total number of media
 	var total int
 	err = s.DB.QueryRow(countQ).Scan(&total)
 	if err != nil {
-		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of categories", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of redirects", Operation: op, Err: err}
 	}
 
-	return categories, total, nil
+	return redirects, total, nil
 }

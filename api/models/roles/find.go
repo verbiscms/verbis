@@ -14,15 +14,15 @@ import (
 // Find
 //
 //
-func (s *Store) Find(id int64) (domain.Role, error) {
+func (s *Store) Find(id int) (domain.Role, error) {
 	const op = "Redirects.Find"
 
-	q := s.Builder.Select("*").From(TableName).WhereRaw("`id` = ?").Limit(1)
+	q := s.Builder().From(TableName).Where("id", "=", id).Limit(1)
 
 	var r domain.Role
 	err := s.Get(&r, q.Build(), id)
 	if err == sql.ErrNoRows {
-		return domain.Role{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No redirect exists with the ID: %d", id), Operation: op, Err: err}
+		return domain.Role{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No role exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
 		return domain.Role{}, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
 	}

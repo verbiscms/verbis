@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package redirects
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
@@ -14,9 +14,9 @@ import (
 	"testing"
 )
 
-// CategoriesTestSuite defines the helper used for role
+// RedirectsTestSuite defines the helper used for role
 // testing.
-type CategoriesTestSuite struct {
+type RedirectsTestSuite struct {
 	test.DBSuite
 }
 
@@ -24,7 +24,7 @@ type CategoriesTestSuite struct {
 //
 // Assert testing has begun.
 func TestCategories(t *testing.T) {
-	suite.Run(t, &CategoriesTestSuite{
+	suite.Run(t, &RedirectsTestSuite{
 		DBSuite: test.NewDBSuite(t),
 	})
 }
@@ -33,7 +33,7 @@ func TestCategories(t *testing.T) {
 //
 // A helper to obtain a mock roles database
 // for testing.
-func (t *CategoriesTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
+func (t *RedirectsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	if mf != nil {
 		mf(t.Mock)
 	}
@@ -41,28 +41,31 @@ func (t *CategoriesTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 }
 
 const (
-	// The default category ID used for testing.
-	categoryID = "123"
+	// The default redirect ID used for testing.
+	redirectID = "1"
 )
 
 var (
-	// The default category used for testing.
-	category = domain.Category{
-		Id:      123,
-		Slug:    "/cat",
-		Name:    "Category",
+	// The default redirect used for testing.
+	redirect = domain.Redirect{
+		Id:        1,
+		From:      "/from",
+		To:        "/to",
+		Code:      301,
 	}
-	// The default categories used for testing.
-	categories = domain.Categories{
+	// The default redirects used for testing.
+	redirects = domain.Redirects{
 		{
-			Id:      123,
-			Slug:    "/cat",
-			Name:    "Category",
+			Id:        1,
+			From:      "/from",
+			To:        "/to",
+			Code:      301,
 		},
 		{
-			Id:      124,
-			Slug:    "/cat1",
-			Name:    "Category1",
+			Id:        2,
+			From:      "/from",
+			To:        "/to",
+			Code:      301,
 		},
 	}
 	// The default params used for testing.

@@ -28,7 +28,7 @@ func (r *Redirects) Create(ctx *gin.Context) {
 		return
 	}
 
-	newForm, err := r.Store.Redirects.Create(&redirect)
+	newRedirect, err := r.Store.Redirects.Create(&redirect)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
@@ -37,5 +37,5 @@ func (r *Redirects) Create(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created redirect with ID: "+strconv.FormatInt(redirect.Id, 10), newForm)
+	api.Respond(ctx, http.StatusOK, "Successfully created redirect with ID: "+strconv.Itoa(newRedirect.Id), newRedirect)
 }
