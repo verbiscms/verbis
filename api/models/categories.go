@@ -186,7 +186,7 @@ func (s *CategoryStore) Create(c *domain.Category) (domain.Category, error) {
 func (s *CategoryStore) Update(c *domain.Category) (domain.Category, error) {
 	const op = "CategoryRepository.Update"
 
-	oldCategory, err := s.GetByID(int(c.Id))
+	oldCategory, err := s.GetByID(c.Id)
 	if err != nil {
 		return domain.Category{}, err
 	}

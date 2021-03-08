@@ -6,6 +6,8 @@ package categories
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/google/uuid"
 )
 
 // Create
@@ -14,27 +16,35 @@ import (
 // Returns errors.CONFLICT if the the category (name) already exists.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
 func (s *Store) Create(c domain.Category) (domain.Category, error) {
-	const op = "CategoryRepository.Create"
+	const op = "CategoryStore.Create"
 
-	// TODO Validate function, check the unique column?
-	// if s.ExistsByName(c.Name) { //nolint
+	//exists, err := s.ExistsByName(c.Name)
+	//if exists || err != nil {
 	//	return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op, Err: fmt.Errorf("name already exists")}
-	// }
-
-	//c.UUID = uuid.New()
-	////q := s.Builder().BuildInsert(TableName, c)
-	//
-	//result, err := s.DB.Exec(q)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
 	//}
-	//
-	//id, err := result.LastInsertId()
-	//if err != nil {
-	//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
-	//}
-	//c.Id = id
 
-	return domain.Category{}, nil
+	q := s.Builder().Insert(TableName).
+		Column("uuid", "?").
+		Column("slug", c.Slug).
+		Column("name", c.Name).
+		Column("description", c.Description).
+		Column("parent_id", c.ParentId).
+		Column("resource", c.Resource).
+		Column("archive_id", c.ArchiveId).
+		Column("updated_at", "NOW()").
+		Column("created_at", "NOW()").
+		Build()
+
+	result, err := s.DB.Exec(q, uuid.New().String())
+	if err != nil {
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
+	}
+	c.Id = int(id)
+
+	return c, nil
 }

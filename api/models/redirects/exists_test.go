@@ -26,7 +26,15 @@ func (t *RedirectsTestSuite) TestStore_Exists() {
 			true,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
-					AddRow(redirect.Id)
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+			},
+		},
+		"Not Found": {
+			false,
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(false)
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
 			},
 		},
@@ -60,7 +68,15 @@ func (t *RedirectsTestSuite) TestStore_ExistsByFrom() {
 			true,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
-					AddRow(redirect.Id)
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnRows(rows)
+			},
+		},
+		"Not Found": {
+			false,
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(false)
 				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnRows(rows)
 			},
 		},
