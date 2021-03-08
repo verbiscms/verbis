@@ -13,17 +13,16 @@ type (
 	// Category defines the groups used for categorising
 	// individual posts.
 	Category struct {
-		Id          int64     `db:"id" json:"id"` //nolint
-		UUID        uuid.UUID `db:"uuid" json:"uuid"`
-		Slug        string    `db:"slug" json:"slug" binding:"required,max=150"`
-		Name        string    `db:"name" json:"name" binding:"required,max=150"`
-		Primary     bool      `db:"primary" json:"primary" binding:"required"`
-		Description *string   `db:"description" json:"description" binding:"omitempty,max=500"`
-		Resource    string    `db:"resource" json:"resource" binding:"required,max=150"`
-		ParentId    *int      `db:"parent_id" json:"parent_id" binding:"omitempty,numeric"`   //nolint
-		ArchiveId   *int      `db:"archive_id" json:"archive_id" binding:"omitempty,numeric"` //nolint
-		UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
-		CreatedAt   time.Time `db:"created_at" json:"created_at"`
+		Id          int       `sqlb:"id,skipAll" db:"id" json:"id"` //nolint
+		UUID        uuid.UUID `sqlb:"uuid" db:"uuid" json:"uuid"`
+		Slug        string    `sqlb:"slug" db:"slug" json:"slug" binding:"required,max=150"`
+		Name        string    `sqlb:"name" db:"name" json:"name" binding:"required,max=150"`
+		Description *string   `sqlb:"description" db:"description" json:"description" binding:"omitempty,max=500"`
+		Resource    string    `sqlb:"resource" db:"resource" json:"resource" binding:"required,max=150"`
+		ParentId    *int      `sqlb:"parent_id" db:"parent_id" json:"parent_id" binding:"omitempty,numeric"`    //nolint
+		ArchiveId   *int      `sqlb:"archive_id" db:"archive_id" json:"archive_id" binding:"omitempty,numeric"` //nolint
+		CreatedAt   time.Time `sqlb:"created_at,autoCreateTime" db:"created_at" json:"created_at"`
+		UpdatedAt   time.Time `sqlb:"updated_at,autoUpdateTime" db:"updated_at" json:"updated_at"`
 	}
 	// Categories represents the slice of Category's.
 	Categories []Category

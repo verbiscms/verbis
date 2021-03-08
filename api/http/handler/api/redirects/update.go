@@ -33,7 +33,7 @@ func (r *Redirects) Update(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the redirect", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	redirect.Id = id
+	redirect.Id = int(id)
 
 	updatedForm, err := r.Store.Redirects.Update(&redirect)
 	if errors.Code(err) == errors.NOTFOUND {
@@ -44,5 +44,5 @@ func (r *Redirects) Update(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully updated redirect with ID: "+strconv.FormatInt(redirect.Id, 10), updatedForm)
+	api.Respond(ctx, http.StatusOK, "Successfully updated redirect with ID: "+strconv.Itoa(redirect.Id), updatedForm)
 }

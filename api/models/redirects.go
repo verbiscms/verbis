@@ -10,12 +10,12 @@ import (
 // RedirectRepository defines methods for Redirects to interact with the database
 type RedirectRepository interface {
 	Get(meta params.Params) (domain.Redirects, int, error)
-	GetByID(id int64) (domain.Redirect, error)
+	GetByID(id int) (domain.Redirect, error)
 	GetByFrom(from string) (domain.Redirect, error)
 	Create(r *domain.Redirect) (domain.Redirect, error)
 	Update(r *domain.Redirect) (domain.Redirect, error)
-	Delete(id int64) error
-	Exists(id int64) bool
+	Delete(id int) error
+	Exists(id int) bool
 	ExistsByFromPath(from string) bool
 }
 
@@ -78,7 +78,7 @@ func (s *RedirectStore) Get(meta params.Params) (domain.Redirects, int, error) {
 
 // GetByID the redirect by ID.
 // Returns errors.NOTFOUND if the redirect was not found by the given from path.
-func (s *RedirectStore) GetByID(id int64) (domain.Redirect, error) {
+func (s *RedirectStore) GetByID(id int) (domain.Redirect, error) {
 	const op = "RedirectStore.GetByPost"
 	var r domain.Redirect
 	if err := s.DB.Get(&r, "SELECT * FROM redirects WHERE id = ?", id); err != nil {
@@ -118,7 +118,7 @@ func (s *RedirectStore) Create(r *domain.Redirect) (domain.Redirect, error) {
 	if err != nil {
 		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the newly created redirect ID with the from path: %v", r.From), Operation: op, Err: err}
 	}
-	r.Id = id
+	r.Id = int(id)
 
 	return *r, nil
 }
@@ -145,7 +145,7 @@ func (s *RedirectStore) Update(r *domain.Redirect) (domain.Redirect, error) {
 // Delete redirect
 // Returns errors.NOTFOUND if the redirect was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *RedirectStore) Delete(id int64) error {
+func (s *RedirectStore) Delete(id int) error {
 	const op = "RedirectStore.Delete"
 
 	if !s.Exists(id) {
@@ -160,7 +160,7 @@ func (s *RedirectStore) Delete(id int64) error {
 }
 
 // Exists Checks if a redirect exists by the given Id
-func (s *RedirectStore) Exists(id int64) bool {
+func (s *RedirectStore) Exists(id int) bool {
 	var exists bool
 	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM redirects WHERE id = ?)", id).Scan(&exists)
 	return exists

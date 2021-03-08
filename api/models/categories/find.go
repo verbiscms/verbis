@@ -13,15 +13,17 @@ import (
 
 // Find
 //
-// Get the category by Id
+// Find a category by ID.
+//
+// Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Id.
-func (s *Store) Find(id int64) (domain.Category, error) {
+func (s *Store) Find(id int) (domain.Category, error) {
 	const op = "CategoryRepository.Find"
 
-	q := s.Builder.Select("*").From(TableName).WhereRaw("`id` = ?").Limit(1)
+	q := s.Builder().From(TableName).Where("id", "=", id).Limit(1)
 
 	var category domain.Category
-	err := s.DB.Get(&category, q.Build(), id)
+	err := s.DB.Get(&category, q.Build())
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
@@ -31,40 +33,45 @@ func (s *Store) Find(id int64) (domain.Category, error) {
 	return category, nil
 }
 
-// Get the category by post
+// FindByPost
+//
+// Find a category by post name.
+//
+// Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Post Id.
-//func (s *Store) FindByPost(id int64) (domain.Category, error) {
-//const op = "CategoryRepository.GetByPost"
-//q := s.Builder.Select("*").From(TableName).WhereRaw("post_id = ?").Limit(1) //nolint
-//
-//var category domain.Category
-//err := s.DB.Get(&category, q.Build(), id)
-//if err == sql.ErrNoRows {
-//	return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the post ID: %d", id), Operation: op, Err: err}
-//} else if err != nil {
-//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
-//}
-//
-////return category, nil
-//
-//var c domain.Category
-//if err := s.DB.Get(&c, "SELECT * FROM categories c WHERE EXISTS (SELECT post_id FROM post_categories p WHERE p.post_id = ? AND c.id = p.category_id) LIMIT 1", postId); err != nil {
-//	return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get category with the post ID: %d", postId), Operation: op, Err: err}
-//}
-//return &c, nil
-//}
+func (s *Store) FindByPost(id int) (domain.Category, error) {
+	const op = "CategoryRepository.FindByPost"
+
+	q := s.Builder().From("post_categories").
+		LeftJoin("categories", "c", "post_categories.post_id = c.id").
+		Select("c.*").
+		Where("post_categories.post_id", "=", id)
+
+	var category domain.Category
+	err := s.DB.Get(&category, q.Build(), id)
+	if err == sql.ErrNoRows {
+		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the post ID: %d", id), Operation: op, Err: err}
+	} else if err != nil {
+		fmt.Println(err)
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+	}
+
+	return category, nil
+}
 
 // FindBySlug
 //
 // Find a category by the given slug.
+//
+// Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindBySlug(slug string) (domain.Category, error) {
 	const op = "CategoryRepository.FindBySlug"
 
-	q := s.Builder.Select("*").From(TableName).WhereRaw("`slug` = ?").Limit(1)
+	q := s.Builder().From(TableName).Where("slug", "=", slug).Limit(1)
 
 	var category domain.Category
-	err := s.DB.Get(&category, q.Build(), slug)
+	err := s.DB.Get(&category, q.Build())
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "No category exists with the slug: " + slug, Operation: op, Err: err}
 	} else if err != nil {
@@ -77,14 +84,16 @@ func (s *Store) FindBySlug(slug string) (domain.Category, error) {
 // FindByName
 //
 // Find a category by the given name.
+//
+// Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindByName(name string) (domain.Category, error) {
 	const op = "CategoryRepository.FindByName"
 
-	q := s.Builder.Select("*").From(TableName).WhereRaw("`name` = ?").Limit(1)
+	q := s.Builder().From(TableName).Where("name", "=", name).Limit(1)
 
 	var category domain.Category
-	err := s.DB.Get(&category, q.Build(), name)
+	err := s.DB.Get(&category, q.Build())
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "No category exists with the name: " + name, Operation: op, Err: err}
 	} else if err != nil {

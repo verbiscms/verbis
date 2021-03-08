@@ -18,7 +18,7 @@ import (
 func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
 	const op = "CategoryRepository.List"
 
-	q := s.Builder.Select("*").From(TableName)
+	q := s.Builder().From(TableName)
 
 	// Apply filters
 	err := s.FilterRows(q, meta.Filters, TableName)
@@ -53,10 +53,3 @@ func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
 
 	return categories, total, nil
 }
-
-// skipinsert
-// skipcreate
-// timefield
-// sqlb for functional
-// interface for where instead of string
-// resets

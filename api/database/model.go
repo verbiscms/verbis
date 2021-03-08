@@ -17,16 +17,22 @@ import (
 
 type Model struct {
 	*sqlx.DB
-	Builder builder.Sqlbuilder
+	dialect string
 }
 
 func NewModel(db *sqlx.DB) *Model {
 	return &Model{
 		db,
-		builder.Sqlbuilder{
-			Dialect: "mysql",
-		},
+		"mysql",
 	}
+}
+
+var (
+	ErrQueryMessage = "Error executing sql query"
+)
+
+func (m *Model) Builder() *builder.Sqlbuilder {
+	return builder.New(m.dialect)
 }
 
 // FilterRows

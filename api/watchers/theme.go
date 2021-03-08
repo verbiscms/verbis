@@ -5,11 +5,10 @@
 package watchers
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/mime"
-	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/fsnotify/fsnotify"
 	"github.com/radovskyb/watcher"
-	"path/filepath"
 	"time"
 )
 
@@ -20,6 +19,10 @@ const (
 // Batch
 type Batch struct {
 	watcher *watcher.Watcher
+
+	fsWatcher *fsnotify.Watcher
+	Events    chan []fsnotify.Event // Events are returned on this channel
+	done      chan struct{}
 
 	// Events for the file system are returned on this
 	// channel.
@@ -36,7 +39,7 @@ type Batch struct {
 	Running bool
 
 	// Done chan
-	done chan struct{}
+	stop chan struct{}
 }
 
 // Event
@@ -60,12 +63,16 @@ var (
 )
 
 func New(themePath string) *Batch {
+
+	kk, _ := fsnotify.NewWatcher()
+
 	return &Batch{
-		watcher: watcher.New(),
-		Event:   make(chan Event),
-		Error:   make(chan *errors.Error),
-		path:    themePath,
-		done:    make(chan struct{}),
+		watcher:   watcher.New(),
+		fsWatcher: kk,
+		Event:     make(chan Event),
+		Error:     make(chan *errors.Error),
+		path:      themePath,
+		stop:      make(chan struct{}, 1),
 	}
 }
 
@@ -91,54 +98,95 @@ func (b *Batch) Start() {
 //
 func (b *Batch) Close() {
 	b.Running = false
+	//close(b.stop)
+	//fmt.Println("got here")
+	//b.stop = make(chan struct{}, 1)
 	b.done <- struct{}{}
-	b.Close()
+	b.fsWatcher.Close()
+	//b.watcher.Close()
+
 }
 
 // run
 //
 //
+
 func (b *Batch) run() {
-	const op = "Watcher.Start"
 
-	b.watcher.SetMaxEvents(1)
-
-	go func() {
-	OuterLoop:
-		for {
-			select {
-			case event := <-b.watcher.Event:
-				name := event.Name()
-				if isExcludedDir(name) || isExcludedFile(name) || name == b.path {
-					continue OuterLoop
-				}
-				ext := filepath.Ext(event.Path)
-				b.Event <- Event{
-					Event:     event,
-					Extension: ext,
-					Mime:      mime.TypeByExtension(ext),
-				}
-			case err := <-b.watcher.Error:
-				b.Error <- &errors.Error{Code: op, Message: "Error watching theme", Operation: op, Err: err}
-			case <-b.watcher.Closed:
-				b.Close()
-				return
+	interval := time.Millisecond * 100
+	tick := time.Tick(interval)
+	evs := make([]fsnotify.Event, 0)
+OuterLoop:
+	for {
+		select {
+		case ev := <-b.fsWatcher.Events:
+			evs = append(evs, ev)
+			fmt.Println(ev)
+		case <-tick:
+			if len(evs) == 0 {
+				continue
 			}
+			b.Events <- evs
+			evs = make([]fsnotify.Event, 0)
+		case <-b.done:
+			break OuterLoop
 		}
-	}()
-
-	err := b.watcher.AddRecursive(b.path)
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error adding watcher", Operation: op, Err: err}).Error()
-		return
 	}
-
-	err = b.watcher.Start(PollingDuration)
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error starting configuration watcher", Operation: op, Err: err}).Error()
-		return
-	}
+	close(b.done)
 }
+
+//func (b *Batch) run() {
+//	const op = "Watcher.Start"
+//
+//	b.watcher.SetMaxEvents(1)
+//
+//	//select {
+//	//case b.done <- struct{}{}:
+//	//	// thing will close eventually
+//	//default:
+//	//	// thing already has a close; Close probably called twice
+//	//}
+//	fmt.Println("in run")
+//
+//	go func() {
+//	OuterLoop:
+//		for {
+//			select {
+//			case event := <-b.watcher.Event:
+//				name := event.Name()
+//				if isExcludedDir(name) || isExcludedFile(name) || name == b.path {
+//					continue OuterLoop
+//				}
+//				ext := filepath.Ext(event.Path)
+//				b.Event <- Event{
+//					Event:     event,
+//					Extension: ext,
+//					Mime:      mime.TypeByExtension(ext),
+//				}
+//			case err := <-b.watcher.Error:
+//				b.Error <- &errors.Error{Code: op, Message: "Error watching theme", Operation: op, Err: err}
+//			case b.stop <- struct{}{}:
+//				break OuterLoop
+//			case <-b.watcher.Closed:
+//				break OuterLoop
+//			default:
+//				return
+//			}
+//		}
+//	}()
+//
+//	err := b.watcher.AddRecursive(b.path)
+//	if err != nil {
+//		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error adding watcher", Operation: op, Err: err}).Error()
+//		return
+//	}
+//
+//	err = b.watcher.Start(PollingDuration)
+//	if err != nil {
+//		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error starting configuration watcher", Operation: op, Err: err}).Error()
+//		return
+//	}
+//}
 
 // isExcludedDir
 //

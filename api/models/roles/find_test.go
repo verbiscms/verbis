@@ -44,7 +44,7 @@ func (t *RolesTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(int64(role.Id))
+			got, err := s.Find(role.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

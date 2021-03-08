@@ -29,9 +29,9 @@ func (t *CategoriesTestSuite) TestStore_List() {
 		"Success": {
 			defaultParams,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "slug", "name", "primary"}).
-					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name, categories[0].Primary).
-					AddRow(categories[1].Id, categories[1].Slug, categories[1].Name, categories[1].Primary)
+				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
+					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name).
+					AddRow(categories[1].Id, categories[1].Slug, categories[1].Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
@@ -69,9 +69,9 @@ func (t *CategoriesTestSuite) TestStore_List() {
 		"Count Error": {
 			defaultParams,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "slug", "name", "primary"}).
-					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name, categories[0].Primary).
-					AddRow(categories[1].Id, categories[1].Slug, categories[1].Name, categories[1].Primary)
+				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
+					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name).
+					AddRow(categories[1].Id, categories[1].Slug, categories[1].Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},

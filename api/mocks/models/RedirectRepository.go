@@ -36,11 +36,11 @@ func (_m *RedirectRepository) Create(r *domain.Redirect) (domain.Redirect, error
 }
 
 // Delete provides a mock function with given fields: id
-func (_m *RedirectRepository) Delete(id int64) error {
+func (_m *RedirectRepository) Delete(id int) error {
 	ret := _m.Called(id)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(int64) error); ok {
+	if rf, ok := ret.Get(0).(func(int) error); ok {
 		r0 = rf(id)
 	} else {
 		r0 = ret.Error(0)
@@ -50,11 +50,11 @@ func (_m *RedirectRepository) Delete(id int64) error {
 }
 
 // Exists provides a mock function with given fields: id
-func (_m *RedirectRepository) Exists(id int64) bool {
+func (_m *RedirectRepository) Exists(id int) bool {
 	ret := _m.Called(id)
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(int64) bool); ok {
+	if rf, ok := ret.Get(0).(func(int) bool); ok {
 		r0 = rf(id)
 	} else {
 		r0 = ret.Get(0).(bool)
@@ -129,18 +129,18 @@ func (_m *RedirectRepository) GetByFrom(from string) (domain.Redirect, error) {
 }
 
 // GetByID provides a mock function with given fields: id
-func (_m *RedirectRepository) GetByID(id int64) (domain.Redirect, error) {
+func (_m *RedirectRepository) GetByID(id int) (domain.Redirect, error) {
 	ret := _m.Called(id)
 
 	var r0 domain.Redirect
-	if rf, ok := ret.Get(0).(func(int64) domain.Redirect); ok {
+	if rf, ok := ret.Get(0).(func(int) domain.Redirect); ok {
 		r0 = rf(id)
 	} else {
 		r0 = ret.Get(0).(domain.Redirect)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(int64) error); ok {
+	if rf, ok := ret.Get(1).(func(int) error); ok {
 		r1 = rf(id)
 	} else {
 		r1 = ret.Error(1)
