@@ -5,6 +5,7 @@
 package categories
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
@@ -15,7 +16,7 @@ import (
 // Create a new category
 // Returns errors.CONFLICT if the the category (name) already exists.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
-func (s *Store) Create(c domain.Category) (domain.Category, error) {
+func (s *Store) Update(c domain.Category) (domain.Category, error) {
 	const op = "CategoryStore.Create"
 
 	//exists, err := s.ExistsByName(c.Name)
@@ -23,7 +24,7 @@ func (s *Store) Create(c domain.Category) (domain.Category, error) {
 	//	return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op, Err: fmt.Errorf("name already exists")}
 	//}
 
-	q := s.Builder().Insert(TableName).
+	q := s.Builder().Update(TableName).
 		Column("uuid", "?").
 		Column("slug", c.Slug).
 		Column("name", c.Name).
@@ -33,7 +34,10 @@ func (s *Store) Create(c domain.Category) (domain.Category, error) {
 		Column("archive_id", c.ArchiveId).
 		Column("updated_at", "NOW()").
 		Column("created_at", "NOW()").
+		Where("id", "=", c.Id).
 		Build()
+
+	fmt.Println(q)
 
 	result, err := s.DB.Exec(q, uuid.New().String())
 	if err != nil {

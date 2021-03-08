@@ -18,7 +18,7 @@ import (
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Id.
 func (s *Store) Find(id int) (domain.Category, error) {
-	const op = "CategoryRepository.Find"
+	const op = "CategoryStore.Find"
 
 	q := s.Builder().From(TableName).Where("id", "=", id).Limit(1)
 
@@ -40,7 +40,7 @@ func (s *Store) Find(id int) (domain.Category, error) {
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Post Id.
 func (s *Store) FindByPost(id int) (domain.Category, error) {
-	const op = "CategoryRepository.FindByPost"
+	const op = "CategoryStore.FindByPost"
 
 	q := s.Builder().From("post_categories").
 		LeftJoin("categories", "c", "post_categories.post_id = c.id").
@@ -52,7 +52,6 @@ func (s *Store) FindByPost(id int) (domain.Category, error) {
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the post ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
-		fmt.Println(err)
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
 	}
 
@@ -66,7 +65,7 @@ func (s *Store) FindByPost(id int) (domain.Category, error) {
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindBySlug(slug string) (domain.Category, error) {
-	const op = "CategoryRepository.FindBySlug"
+	const op = "CategoryStore.FindBySlug"
 
 	q := s.Builder().From(TableName).Where("slug", "=", slug).Limit(1)
 
@@ -88,7 +87,7 @@ func (s *Store) FindBySlug(slug string) (domain.Category, error) {
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindByName(name string) (domain.Category, error) {
-	const op = "CategoryRepository.FindByName"
+	const op = "CategoryStore.FindByName"
 
 	q := s.Builder().From(TableName).Where("name", "=", name).Limit(1)
 

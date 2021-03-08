@@ -42,25 +42,25 @@ func (t *CategoriesTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 
 const (
 	// The default category ID used for testing.
-	categoryID = "123"
+	categoryID = "1"
 )
 
 var (
 	// The default category used for testing.
 	category = domain.Category{
-		Id:      123,
+		Id:      1,
 		Slug:    "/cat",
 		Name:    "Category",
 	}
 	// The default categories used for testing.
 	categories = domain.Categories{
 		{
-			Id:      123,
+			Id:      1,
 			Slug:    "/cat",
 			Name:    "Category",
 		},
 		{
-			Id:      124,
+			Id:      2,
 			Slug:    "/cat1",
 			Name:    "Category1",
 		},

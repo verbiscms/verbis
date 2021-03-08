@@ -52,6 +52,12 @@ func NewDBSuite(t *testing.T) DBSuite {
 //
 // Run the DB test.
 func (t *DBSuite) RunT(want, actual interface{}) {
+	defer func() {
+		db, mock, err := sqlmock.New()
+		t.NoError(err)
+		t.DB = sqlx.NewDb(db, "sqlmock")
+		t.Mock = mock
+	}()
 	err := t.Mock.ExpectationsWereMet()
 	if err != nil {
 		t.Fail("expectations were not met for mock call: ", err)
