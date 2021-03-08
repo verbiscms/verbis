@@ -119,6 +119,20 @@ func printInterface(value reflect.Value) (string, bool) {
 		v = fmt.Sprintf("%f", value.Float())
 	case reflect.Float32:
 		v = fmt.Sprintf("%f", value.Float())
+	case reflect.Slice:
+		v = fmt.Sprintf("%v", value)
+	case reflect.Array:
+		v = fmt.Sprintf("%v", value)
+	case reflect.Ptr:
+		if value.IsNil() {
+			v = "NULL"
+		} else {
+			val, ok := printInterface(reflect.ValueOf(value.Elem().Interface()))
+			if !ok {
+				return "", false
+			}
+			return val, true
+		}
 	case reflect.Bool:
 		if value.Bool() {
 			v = "TRUE"
