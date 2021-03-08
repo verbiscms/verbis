@@ -12,8 +12,8 @@ import (
 )
 
 const (
-	DeleteQuery      = "DELETE FROM `categories` WHERE `id` = ?"
-	DeletePivotQuery = "DELETE FROM `post_categories` WHERE `id` = ?"
+	DeleteQuery      = "DELETE FROM `categories` WHERE `id` = '" + categoryID + "'"
+	DeletePivotQuery = "DELETE FROM `post_categories` WHERE `id` = '" + categoryID + "'"
 )
 
 func (t *CategoriesTestSuite) TestStore_Delete() {
