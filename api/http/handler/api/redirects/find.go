@@ -20,7 +20,8 @@ import (
 func (r *Redirects) Find(ctx *gin.Context) {
 	const op = "RedirectHandler.Find"
 
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	paramID := ctx.Param("id")
+	id, err := strconv.Atoi(paramID)
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "Pass a valid number to obtain the redirect by ID", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
@@ -35,5 +36,5 @@ func (r *Redirects) Find(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully obtained redirect with ID: "+strconv.FormatInt(redirect.Id, 10), redirect)
+	api.Respond(ctx, http.StatusOK, "Successfully obtained redirect with ID: "+paramID, redirect)
 }

@@ -69,7 +69,7 @@ func (d *Deps) SetTheme(name string) error {
 		return err
 	}
 	d.Options.ActiveTheme = name
-	go d.Watcher.SetTheme(d.Paths.Themes + string(os.PathSeparator) + name)
+	d.Watcher.SetTheme(d.Paths.Themes + string(os.PathSeparator) + name)
 	return nil
 }
 

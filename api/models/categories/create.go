@@ -5,10 +5,7 @@
 package categories
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 )
 
 // Create
@@ -24,19 +21,20 @@ func (s *Store) Create(c domain.Category) (domain.Category, error) {
 	//	return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op, Err: fmt.Errorf("name already exists")}
 	// }
 
-	q := s.Builder.Skip([]string{"id"}).Args([]string{"uuid"}).BuildInsert(TableName, c)
+	//c.UUID = uuid.New()
+	////q := s.Builder().BuildInsert(TableName, c)
+	//
+	//result, err := s.DB.Exec(q)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
+	//}
+	//
+	//id, err := result.LastInsertId()
+	//if err != nil {
+	//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
+	//}
+	//c.Id = id
 
-	fmt.Println(q)
-	result, err := s.DB.Exec(q, uuid.New().String())
-	if err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
-	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
-	}
-	c.Id = id
-
-	return c, nil
+	return domain.Category{}, nil
 }

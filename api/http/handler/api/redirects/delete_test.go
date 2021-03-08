@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-func (t *RedirectsTestSuite) TestCategories_Delete() {
+func (t *RedirectsTestSuite) TestRedirects_Delete() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -24,7 +24,7 @@ func (t *RedirectsTestSuite) TestCategories_Delete() {
 			http.StatusOK,
 			"Successfully deleted redirect with ID: 123",
 			func(m *mocks.RedirectRepository) {
-				m.On("Delete", int64(123)).Return(nil)
+				m.On("Delete", 123).Return(nil)
 			},
 			"/redirects/123",
 		},
@@ -33,7 +33,7 @@ func (t *RedirectsTestSuite) TestCategories_Delete() {
 			http.StatusBadRequest,
 			"A valid ID is required to delete a redirect",
 			func(m *mocks.RedirectRepository) {
-				m.On("Delete", int64(123)).Return(nil)
+				m.On("Delete", 123).Return(nil)
 			},
 			"/redirects/wrongid",
 		},
@@ -42,7 +42,7 @@ func (t *RedirectsTestSuite) TestCategories_Delete() {
 			http.StatusBadRequest,
 			"not found",
 			func(m *mocks.RedirectRepository) {
-				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/redirects/123",
 		},
@@ -51,7 +51,7 @@ func (t *RedirectsTestSuite) TestCategories_Delete() {
 			http.StatusBadRequest,
 			"conflict",
 			func(m *mocks.RedirectRepository) {
-				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/redirects/123",
 		},
@@ -60,7 +60,7 @@ func (t *RedirectsTestSuite) TestCategories_Delete() {
 			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.RedirectRepository) {
-				m.On("Delete", int64(123)).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/redirects/123",
 		},

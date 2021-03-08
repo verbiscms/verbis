@@ -2,100 +2,113 @@ package builder
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 )
 
+//s.Builder().InserInto("tablename").InsertCol("my_col","hello")
+// skipinsert
+// skipcreate
+// timefield
+// sqlb for functional
+// interface for where instead of string
+// resets
+
 type Sqlbuilder struct {
 	string         string
-	selectstmt     string
-	wherestmt      string
-	whereinstmt    string
-	fromstmt       string
-	deletefromstmt string
-	leftjoinstmt   string
-	limitstmt      string
-	offsetstmt     string
-	orderbystmt    string
-	args           []string
-	skip           []string
-	Dialect        string // Can be postgres, mysql or (more to come)
+	selectStmt     string
+	whereStmt      string
+	whereinStmt    string
+	fromStmt       string
+	deletefromStmt string
+	leftjoinStmt   string
+	limitStmt      string
+	offsetStmt     string
+	orderbyStmt    string
+	Dialect        string //Can be postgres, mysql or (more to come)
 }
 
-func Builder() *Sqlbuilder {
+func New(dialect string) *Sqlbuilder {
 	return &Sqlbuilder{
-		Dialect: "whatever",
+		Dialect: dialect,
 	}
 }
 
-func (s *Sqlbuilder) From(fromstmt string) *Sqlbuilder {
-	s.fromstmt = s.formatSchema(fromstmt)
+func (s *Sqlbuilder) From(fromStmt string) *Sqlbuilder {
+	s.fromStmt = s.formatSchema(fromStmt)
 
 	return s
 }
 
-func (s *Sqlbuilder) DeleteFrom(fromstmt string) *Sqlbuilder {
-	s.deletefromstmt = s.formatSchema(fromstmt)
+func (s *Sqlbuilder) DeleteFrom(fromStmt string) *Sqlbuilder {
+	s.deletefromStmt = s.formatSchema(fromStmt)
 
 	return s
 }
 
-func (s *Sqlbuilder) SelectRaw(selectstmt string) *Sqlbuilder {
+func (s *Sqlbuilder) SelectRaw(selectStmt string) *Sqlbuilder {
 	re := regexp.MustCompile(`\r?\n`)
-	selectstmt = re.ReplaceAllString(selectstmt, " ")
+	selectStmt = re.ReplaceAllString(selectStmt, " ")
 
-	s.selectstmt += selectstmt + `, `
+	s.selectStmt += selectStmt + `, `
 	return s
 }
 
-func (s *Sqlbuilder) Select(selectstmt ...string) *Sqlbuilder {
-	for _, ss := range selectstmt {
-		s.selectstmt += s.formatSchema(ss) + `, `
+func (s *Sqlbuilder) Select(selectStmt ...string) *Sqlbuilder {
+
+	for _, ss := range selectStmt {
+		s.selectStmt += s.formatSchema(ss) + `, `
 	}
 
 	return s
 }
 
-func (s *Sqlbuilder) Where(table string, operator string, input interface{}) *Sqlbuilder {
+func (s *Sqlbuilder) Where(table string, operator string, value interface{}) *Sqlbuilder {
 
-	value := fmt.Sprintf("%v", input)
+	val, ok := printInterface(reflect.ValueOf(value))
+	if !ok {
+		// TODO: handle
+		return s
+	}
+
 	operator = strings.ToUpper(operator)
-	value = strings.TrimSuffix(value, `'`)
-	value = strings.TrimSuffix(value, `"`)
-	value = strings.TrimSuffix(value, "`")
-	value = strings.TrimPrefix(value, `'`)
-	value = strings.TrimPrefix(value, `"`)
-	value = strings.TrimPrefix(value, "`")
+	val = strings.TrimSuffix(val, `'`)
+	val = strings.TrimSuffix(val, `"`)
+	val = strings.TrimSuffix(val, "`")
+	val = strings.TrimPrefix(val, `'`)
+	val = strings.TrimPrefix(val, `"`)
+	val = strings.TrimPrefix(val, "`")
 
 	switch operator {
 	case `BETWEEN`:
 		re := regexp.MustCompile("and|AND|And")
-		vp := re.Split(value, -1)
+		vp := re.Split(val, -1)
 
-		value = ``
+		val = ``
 
 		for _, v := range vp {
-			value += sanitiseString(`'`+strings.TrimSpace(v)+`'`) + ` AND `
+			val += sanitiseString(`'`+strings.TrimSpace(v)+`'`) + ` AND `
 		}
 
-		value = strings.TrimSuffix(value, ` AND `)
+		val = strings.TrimSuffix(val, ` AND `)
 	default:
-		value = sanitiseString(`'` + value + `'`)
+		val = sanitiseString(`'` + val + `'`)
 	}
 
-	s.wherestmt += s.formatSchema(table) + " " + operator + " " + value + ` AND `
+	s.whereStmt += s.formatSchema(table) + " " + operator + " " + val + ` AND `
 
 	return s
 }
 
-func (s *Sqlbuilder) WhereRaw(wherestmt string) *Sqlbuilder {
-	s.wherestmt += wherestmt + ` AND `
+func (s *Sqlbuilder) WhereRaw(whereStmt string) *Sqlbuilder {
+	s.whereStmt += whereStmt + ` AND `
 	return s
 }
 
-// Accepts Slice of INT, FLOAT32, STRING, or a simple comma separated STRING
+//Accepts Slice of INT, FLOAT32, STRING, or a simple comma separated STRING
 func (s *Sqlbuilder) WhereIn(column string, params interface{}) *Sqlbuilder {
 
 	output := ""
@@ -103,6 +116,7 @@ func (s *Sqlbuilder) WhereIn(column string, params interface{}) *Sqlbuilder {
 	switch foo := params.(type) {
 	case []int, []float32:
 		output += "(" + strings.Trim(strings.Join(strings.Fields(fmt.Sprint(foo)), ", "), "[]") + ")"
+		break
 	case []string:
 		output += "("
 		for _, v := range foo {
@@ -110,8 +124,10 @@ func (s *Sqlbuilder) WhereIn(column string, params interface{}) *Sqlbuilder {
 		}
 		output = strings.TrimSuffix(output, ", ")
 		output += ")"
+		break
 	case string:
 		output = "(" + sanitiseString(foo) + ")"
+		break
 	default:
 		output = ""
 	}
@@ -165,48 +181,53 @@ func (s *Sqlbuilder) LeftJoin(table string, as string, on string) *Sqlbuilder {
 	on = s.formatJoinOn(on)
 	as = s.formatSchema(as)
 
-	s.leftjoinstmt += `LEFT JOIN ` + table + ` AS ` + as + ` ON ` + on + ` `
+	s.leftjoinStmt += `LEFT JOIN ` + table + ` AS ` + as + ` ON ` + on + ` `
 	return s
 }
 
-func (s *Sqlbuilder) LeftJoinExtended(table string, as string, on string, additionalQuery string) *Sqlbuilder {
+func (s *Sqlbuilder) LeftJoinExtended(table string, as string, on string, additionalQuery ...string) *Sqlbuilder {
 
 	table = s.formatSchema(table)
 	on = s.formatJoinOn(on)
 
-	s.leftjoinstmt += `LEFT JOIN ` + table + ` AS "` + as + `" ON ` + on + ` ` + additionalQuery + ` `
+	var q string
+	if len(additionalQuery) == 1 {
+		q = additionalQuery[0]
+	}
+
+	s.leftjoinStmt += `LEFT JOIN ` + table + ` AS "` + as + `" ON ` + on + ` ` + q + ` `
 	return s
 }
 
 func (s *Sqlbuilder) Limit(limit int) *Sqlbuilder {
-	s.limitstmt = `LIMIT ` + strconv.Itoa(limit) + ` `
+	s.limitStmt = `LIMIT ` + strconv.Itoa(limit) + ` `
 
 	return s
 }
 
 func (s *Sqlbuilder) Offset(offset int) *Sqlbuilder {
-	s.offsetstmt = `OFFSET ` + strconv.Itoa(offset) + ` `
+	s.offsetStmt = `OFFSET ` + strconv.Itoa(offset) + ` `
 
 	return s
 }
 
 func (s *Sqlbuilder) OrderBy(column string, diretion string) *Sqlbuilder {
 
-	s.orderbystmt = `ORDER BY "` + column + `" ` + diretion
+	s.orderbyStmt = `ORDER BY "` + column + `" ` + diretion
 
 	return s
 }
 
 func (s *Sqlbuilder) Reset() *Sqlbuilder {
 	s.string = ``
-	s.selectstmt = ``
-	s.orderbystmt = ``
-	s.whereinstmt = ``
-	s.limitstmt = ``
-	s.fromstmt = ``
-	s.leftjoinstmt = ``
-	s.wherestmt = ``
-	s.offsetstmt = ``
+	s.selectStmt = ``
+	s.orderbyStmt = ``
+	s.whereinStmt = ``
+	s.limitStmt = ``
+	s.fromStmt = ``
+	s.leftjoinStmt = ``
+	s.whereStmt = ``
+	s.offsetStmt = ``
 
 	return s
 }
@@ -219,44 +240,65 @@ func (s *Sqlbuilder) Count() string {
 	return countQuery
 }
 
+func (s *Sqlbuilder) Exists() string {
+	sqlquery := s.Build()
+
+	sqlquery = strings.TrimSuffix(sqlquery, " ")
+
+	existsQuery := `SELECT EXISTS (` + sqlquery + `)`
+
+	return existsQuery
+}
+
 func (s *Sqlbuilder) Build() string {
 
-	// build selects
-	if s.deletefromstmt == `` {
-		if s.selectstmt == `` {
+	// TODO
+	//// insert
+	//if s.insertStmt != `` {
+	//	return `INSERT INTO ` + s.insertStmt + ` (` + s.columns + `) VALUES (` + s.values + `)`
+	//}
+	//
+	//// update
+	//if s.updateStmt != `` {
+	//	return `UPDATE ` + s.insertStmt + ` (` + s.columns + `) VALUES (` + s.values + `)`
+	//}
+
+	//build selects
+	if s.deletefromStmt == `` {
+		if s.selectStmt == `` {
 			s.string = `SELECT * `
 		} else {
-			s.string = `SELECT ` + strings.TrimSuffix(s.selectstmt, `, `) + ` `
+			s.string = `SELECT ` + strings.TrimSuffix(s.selectStmt, `, `) + ` `
 		}
 	}
 
-	// build from
-	if s.fromstmt == `` {
-		if s.deletefromstmt != `` {
-			s.string += `DELETE FROM ` + strings.TrimSuffix(s.deletefromstmt, `.`) + ` `
+	//build from
+	if s.fromStmt == `` {
+		if s.deletefromStmt != `` {
+			s.string += `DELETE FROM ` + strings.TrimSuffix(s.deletefromStmt, `.`) + ` `
 		} else {
 			return ``
 		}
 	} else {
-		s.string += `FROM ` + strings.TrimSuffix(s.fromstmt, `.`) + ` `
+		s.string += `FROM ` + strings.TrimSuffix(s.fromStmt, `.`) + ` `
 	}
 
-	// left joins
-	s.string += s.leftjoinstmt + ` `
+	//left joins
+	s.string += s.leftjoinStmt + ` `
 
-	// where
-	if s.wherestmt != `` {
-		s.string += `WHERE ` + strings.TrimSuffix(s.wherestmt, ` AND `) + ` `
+	//where
+	if s.whereStmt != `` {
+		s.string += `WHERE ` + strings.TrimSuffix(s.whereStmt, ` AND `) + ` `
 	}
 
-	// orderby
-	if s.orderbystmt != `` {
-		s.string += s.orderbystmt + ` `
+	//orderby
+	if s.orderbyStmt != `` {
+		s.string += s.orderbyStmt + ` `
 	}
 
-	// limit and offset
-	s.string += s.limitstmt
-	s.string += s.offsetstmt
+	//limit and offset
+	s.string += s.limitStmt
+	s.string += s.offsetStmt
 
 	space := regexp.MustCompile(`\s+`)
 	s.string = space.ReplaceAllString(s.string, " ")
@@ -266,46 +308,31 @@ func (s *Sqlbuilder) Build() string {
 	return returnString
 }
 
-func (s *Sqlbuilder) Skip(skip []string) *Sqlbuilder {
-	s.skip = skip
-	return s
-}
-
-func (s *Sqlbuilder) Args(args []string) *Sqlbuilder {
-	s.args = args
-	return s
-}
-
-func (s *Sqlbuilder) BuildInsert(table string, data interface{}, additionalQuery ...string) string {
-	dbCols, dbVals, err := mapStruct(data, s.args, s.skip, false)
+func (s *Sqlbuilder) BuildInsert(table string, data interface{}, additionalQuery ...string) (string, error) {
+	dbCols, dbVals, err := mapStruct(data, false)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
-	additional := ""
+	var q string
 	if len(additionalQuery) == 1 {
-		additional = additionalQuery[0]
+		q = additionalQuery[0]
 	}
 
-	sql := "INSERT INTO " + s.formatSchema(table) + " (" + strings.Join(dbCols, ", ") + ") VALUES (" + strings.Join(dbVals, ", ") + ") " + additional
+	sql := "INSERT INTO " + s.formatSchema(table) + " (" + strings.Join(dbCols, ", ") + ") VALUES (" + strings.Join(dbVals, ", ") + ") " + q
 
-	return sql
+	return sql, nil
 }
 
-func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery ...string) string {
+func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery string) (string, error) {
 
-	dbCols, dbVals, err := mapStruct(data, s.args, s.skip, true)
+	dbCols, dbVals, err := mapStruct(data, true)
 	if err != nil {
-		return ""
+		return "", err
 	}
 
 	setString := ""
 	sql := ""
-
-	additional := ""
-	if len(additionalQuery) == 1 {
-		additional = additionalQuery[0]
-	}
 
 	for i, col := range dbCols {
 		setString += col + ` = ` + dbVals[i] + `, `
@@ -315,16 +342,16 @@ func (s *Sqlbuilder) BuildUpdate(table string, data interface{}, additionalQuery
 	if setString != "" {
 		sql = "UPDATE " + s.formatSchema(table) + ` SET ` + setString
 
-		if s.wherestmt != `` {
-			sql += `WHERE ` + strings.TrimSuffix(s.wherestmt, ` AND `) + ` `
+		if s.whereStmt != `` {
+			sql += `WHERE ` + strings.TrimSuffix(s.whereStmt, ` AND `) + ` `
 		}
 
-		sql += additional
+		sql += additionalQuery
 
-		return sql
+		return sql, nil
 	}
 
-	return sql
+	return sql, errors.New("sql build failed")
 }
 
 /**
@@ -340,8 +367,10 @@ func (s *Sqlbuilder) formatSchema(schema string) string {
 	switch strings.ToLower(s.Dialect) {
 	case "postgres":
 		dialectFormat = `"`
+		break
 	case "mysql":
 		dialectFormat = "`"
+		break
 	default:
 		dialectFormat = `"`
 	}
@@ -356,14 +385,15 @@ func (s *Sqlbuilder) formatSchema(schema string) string {
 			} else {
 				finalSchemaStmt += dialectFormat + part + dialectFormat + `.`
 			}
+
 		}
 	}
 
 	return strings.TrimSuffix(finalSchemaStmt, `.`)
 }
 
-func (s *Sqlbuilder) formatJoinOn(joinstmt string) string {
-	joinParts := strings.Split(joinstmt, "=")
+func (s *Sqlbuilder) formatJoinOn(joinStmt string) string {
+	joinParts := strings.Split(joinStmt, "=")
 	finalJoinStmt := ``
 
 	for _, v := range joinParts {
@@ -382,7 +412,7 @@ func toSnakeCase(str string) string {
 	return strings.ToLower(snake)
 }
 
-func mapStruct(data interface{}, args []string, skip []string, update bool) (dbCols []string, dbVals []string, error error) {
+func mapStruct(data interface{}, update bool) (dbCols []string, dbVals []string, error error) {
 	fields := reflect.TypeOf(data)
 	values := reflect.ValueOf(data)
 
@@ -392,36 +422,37 @@ func mapStruct(data interface{}, args []string, skip []string, update bool) (dbC
 		field := fields.Field(i)
 		value := values.Field(i)
 
-		// TODO this needs to be dynamic in options
-		// val, exists := field.Tag.Lookup("sqlb")
-		val, exists := field.Tag.Lookup("db")
+		val, exists := getTags(field)
+		split := splitTags(val)
 
-		if stringInSlice(skip, val) {
+		if isSkipped(split) {
 			continue
 		}
 
 		if exists {
-			dbCols = append(dbCols, "\""+val+"\"")
+			if len(split) > 0 {
+				dbCols = append(dbCols, "\""+split[0]+"\"")
+			} else {
+				dbCols = append(dbCols, "\""+toSnakeCase(field.Name)+"\"")
+			}
 		} else {
 			dbCols = append(dbCols, "\""+toSnakeCase(field.Name)+"\"")
 		}
 
-		v := compareFields(value)
-
-		if val == "created_at" {
-			v = "NOW()"
-		}
-
-		if val == "updated_at" {
-			v = "NOW()"
-		}
-
-		if update && val == "updated_at" {
+		if isAutoUpdateTime(val) {
+			dbVals = append(dbVals, "NOW()")
 			continue
 		}
 
-		if stringInSlice(args, val) {
-			v = "?"
+		if !update && isAutoCreateTime(val) {
+			dbVals = append(dbVals, "NOW()")
+			continue
+		}
+
+		var v string
+		v, ok := printInterface(value)
+		if !ok {
+			return dbCols, dbVals, errors.New("name: " + val + " type: " + value.Kind().String() + " unsupported")
 		}
 
 		dbVals = append(dbVals, v)
@@ -430,7 +461,7 @@ func mapStruct(data interface{}, args []string, skip []string, update bool) (dbC
 	return dbCols, dbVals, nil
 }
 
-func compareFields(value reflect.Value) string {
+func printInterface(value reflect.Value) (string, bool) {
 	var v string
 
 	switch value.Kind() {
@@ -449,35 +480,32 @@ func compareFields(value reflect.Value) string {
 	case reflect.Float32:
 		v = fmt.Sprintf("%f", value.Float())
 	case reflect.Slice:
-		v = fmt.Sprintf("%v", value)
+		v = fmt.Sprintf("'%v'", value)
 	case reflect.Array:
-		v = fmt.Sprintf("%v", value)
+		v = fmt.Sprintf("'%v'", value)
 	case reflect.Ptr:
 		if value.IsNil() {
 			v = "NULL"
 		} else {
-			v = compareFields(reflect.ValueOf(value.Elem().Interface()))
+			val, ok := printInterface(reflect.ValueOf(value.Elem().Interface()))
+			if !ok {
+				return "", false
+			}
+			v = val
 		}
+	case reflect.Struct:
+		return "", false
 	case reflect.Bool:
 		if value.Bool() {
 			v = "TRUE"
 		} else {
 			v = "FALSE"
 		}
-		//default:
-		//	return dbCols, dbVals, errors.New("type: " + value.Kind().String() + " unsupported")
+	default:
+		return "", false
 	}
 
-	return v
-}
-
-func stringInSlice(slice []string, needle string) bool {
-	for _, v := range slice {
-		if v == needle {
-			return true
-		}
-	}
-	return false
+	return v, true
 }
 
 func sanitiseString(str string) string {

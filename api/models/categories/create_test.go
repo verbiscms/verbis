@@ -13,7 +13,7 @@ import (
 	"regexp"
 )
 
-const (
+var (
 	CreateQuery = "INSERT INTO `categories` (\"uuid\", \"slug\", \"name\", \"primary\", \"description\", \"resource\", \"parent_id\", \"archive_id\", \"updated_at\", \"created_at\") VALUES (?, '/cat', 'Category', TRUE, NULL, '', NULL, NULL, NOW(), NOW()) "
 )
 
@@ -26,6 +26,7 @@ func (a AnyUUID) Match(v driver.Value) bool {
 }
 
 func (t *CategoriesTestSuite) TestStore_Create() {
+
 	tt := map[string]struct {
 		mock func(m sqlmock.Sqlmock)
 		want interface{}

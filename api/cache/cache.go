@@ -46,7 +46,7 @@ func ClearUserCache(userID int, posts domain.PostData) {
 	}
 }
 
-func ClearCategoryCache(categoryID int64, posts domain.PostData) {
+func ClearCategoryCache(categoryID int, posts domain.PostData) {
 	for _, v := range posts {
 		if v.Category.Id == categoryID {
 			ClearPostCache(v.Id)
