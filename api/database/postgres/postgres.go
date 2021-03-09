@@ -7,8 +7,8 @@ package mysql
 import (
 	_ "embed"
 	"fmt"
-	"github.com/JamesStewy/go-mysqldump"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
@@ -81,6 +81,13 @@ func (p *postgres) Close() error {
 	return p.driver.Close()
 }
 
+// Builder
+//
+// Returns a new query builder instance.
+func (p *postgres) Builder() *builder.Sqlbuilder {
+	return builder.New("postgres")
+}
+
 // Install
 //
 // Migrate the db by executing the Postgres migration file.
@@ -115,21 +122,8 @@ func (p *postgres) Exists() error {
 // Returns errors.INTERNAL if the connection, dump failed.
 func (p *postgres) Dump(path, filename string) error {
 	const op = "Database.Dump"
-	dumper, err := mysqldump.Register(p.driver.DB, path, filename)
-	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Unable to register with mysqldump", Operation: op, Err: err}
-	}
-
-	_, err = dumper.Dump()
-	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not dump the database with the path and filename: %s", path+filename), Operation: op, Err: err}
-	}
-
-	if err := dumper.Close(); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Could not close the database connection", Operation: op, Err: err}
-	}
-
-	return nil
+	// TODO: Implement!
+	return &errors.Error{Code: errors.INTERNAL, Message: "Not yet implemented", Operation: op, Err: fmt.Errorf("function not available")}
 }
 
 // Drop

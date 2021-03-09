@@ -6,10 +6,12 @@ package test
 
 import (
 	"database/sql/driver"
-	"fmt"
-	"github.com/DATA-DOG/go-sqlmock"
+	sqlMock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/mocks/database"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
@@ -20,18 +22,10 @@ import (
 // HandlerSuite represents the suite of testing methods for controllers.
 type DBSuite struct {
 	suite.Suite
-	DB   *sqlx.DB
-	Mock sqlmock.Sqlmock
-}
-
-type DBMockResultErr struct{}
-
-func (m DBMockResultErr) LastInsertId() (int64, error) {
-	return 0, fmt.Errorf("error")
-}
-
-func (m DBMockResultErr) RowsAffected() (int64, error) {
-	return 0, fmt.Errorf("error")
+	DB         *sqlx.DB
+	Driver     database.Driver
+	Mock       sqlMock.Sqlmock
+	mockDriver *mocks.Driver
 }
 
 type AnyUUID struct{}
@@ -50,27 +44,49 @@ func NewDBSuite(t *testing.T) DBSuite {
 	cache.Init()
 	logger.SetOutput(ioutil.Discard)
 
-	db, mock, err := sqlmock.New()
+	db, m, err := sqlMock.New()
 	assert.NoError(t, err)
 
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
 
+	mockDriver := &mocks.Driver{}
+	mockDriver.On("DB").Return(sqlxDB)
+
+	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
+	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
+
+	mockDriver.On("Schema").Return("")
+
 	return DBSuite{
-		DB:   sqlxDB,
-		Mock: mock,
+		DB:         sqlxDB,
+		Driver:     mockDriver,
+		Mock:       m,
+		mockDriver: mockDriver,
 	}
+}
+
+// Reset
+//
+// Sets up a new mock, driver and database upon
+// test completion.
+func (t *DBSuite) Reset() {
+	db := NewDBSuite(t.T())
+	t.Driver = db.Driver
+	t.DB = db.DB
+	t.Mock = db.Mock
+	t.mockDriver = db.mockDriver
 }
 
 // RunT
 //
 // Run the DB test.
-func (t *DBSuite) RunT(want, actual interface{}) {
-	defer func() {
-		db, mock, err := sqlmock.New()
-		t.NoError(err)
-		t.DB = sqlx.NewDb(db, "sqlmock")
-		t.Mock = mock
-	}()
+func (t *DBSuite) RunT(want, actual interface{}, times ...int) {
+	if len(times) == 1 {
+		t.mockDriver.AssertNumberOfCalls(t.T(), "Schema", times[0])
+	}
+
+	t.mockDriver.AssertCalled(t.T(), "Schema")
+
 	err := t.Mock.ExpectationsWereMet()
 	if err != nil {
 		t.Fail("expectations were not met for mock call: ", err)

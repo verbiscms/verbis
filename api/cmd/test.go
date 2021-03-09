@@ -5,11 +5,6 @@
 package cmd
 
 import (
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/ainsleyclark/verbis/api/models/categories"
-	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
 
@@ -18,27 +13,27 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			env, err := environment.Load()
-			if err != nil {
-				color.Red.Println(err)
-			}
-
-			driver := database.TestPostgres(env)
-			err = driver.Ping()
-			if err != nil {
-				color.Red.Println(err)
-			}
-
-			store := categories.New(&models.StoreCfgOld{
-				DB: driver,
-			})
-
-			cat, err := store.Find(2)
-			if err != nil {
-				color.Red.Println(err)
-			}
-
-			color.Green.Println(cat)
+			//env, err := environment.Load()
+			//if err != nil {
+			//	color.Red.Println(err)
+			//}
+			//
+			//driver := database.TestPostgres(env)
+			//err = driver.Ping()
+			//if err != nil {
+			//	color.Red.Println(err)
+			//}
+			//
+			//store := categories.New(&models.StoreCfgOld{
+			//	DB: driver,
+			//})
+			//
+			//cat, err := store.Find(2)
+			//if err != nil {
+			//	color.Red.Println(err)
+			//}
+			//
+			//color.Green.Println(cat)
 		},
 	}
 )

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/JamesStewy/go-mysqldump"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
@@ -71,6 +72,13 @@ func (m *mySql) Schema() string {
 	return ""
 }
 
+// Builder
+//
+// Returns a new query builder instance.
+func (m *mySql) Builder() *builder.Sqlbuilder {
+	return builder.New("mysql")
+}
+
 // Close
 //
 // Closes the MySQL connection.
@@ -112,6 +120,7 @@ func (m *mySql) Exists() error {
 // Returns errors.INTERNAL if the connection, dump failed.
 func (m *mySql) Dump(path, filename string) error {
 	const op = "Database.Dump"
+
 	dumper, err := mysqldump.Register(m.driver.DB, path, filename)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Unable to register with mysqldump", Operation: op, Err: err}
