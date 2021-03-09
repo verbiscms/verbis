@@ -14,12 +14,11 @@ import (
 
 // List
 //
-// Lists all redirects based on meta & returns total.
-//
+// Returns a slice of redirects with the total amount.
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
 func (s *Store) List(meta params.Params) (domain.Redirects, int, error) {
-	const op = "RedirectRepository.List"
+	const op = "RedirectStore.List"
 
 	q := s.Builder().From(TableName)
 

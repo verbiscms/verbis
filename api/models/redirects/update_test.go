@@ -10,14 +10,15 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	DeleteQuery = "DELETE FROM `redirects` WHERE `id` = '" + redirectID + "'"
+	UpdateQuery = "UPDATE `redirects` SET from_path='/from', to_path='/to', code=301, updated_at=NOW() WHERE `id` = '1'"
 )
 
-func (t *RedirectsTestSuite) TestStore_Delete() {
+func (t *RedirectsTestSuite) TestStore_Update() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -25,21 +26,32 @@ func (t *RedirectsTestSuite) TestStore_Delete() {
 		"Success": {
 			redirect,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WillReturnResult(sqlmock.NewResult(0, 1))
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.AnyUUID{}).
+					WillReturnResult(sqlmock.NewResult(int64(redirect.Id), 1))
+			},
+		},
+		"Validation Failed": {
+			"Validation failed, the redirect from path already exists",
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"No redirect exists with the ID",
+			"Error updating redirect with the from path",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.AnyUUID{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.AnyUUID{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -48,12 +60,12 @@ func (t *RedirectsTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Delete(redirect.Id)
+			cat, err := s.Update(redirect)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.Nil(err)
+			t.Equal(cat, test.want)
 		})
 	}
 }

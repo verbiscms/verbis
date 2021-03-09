@@ -14,7 +14,7 @@ import (
 
 // Find
 //
-// Returns a category by finding a category by ID.
+// Returns a category by searching with the given ID.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Id.
 func (s *Store) Find(id int) (domain.Category, error) {
@@ -35,7 +35,7 @@ func (s *Store) Find(id int) (domain.Category, error) {
 
 // FindByPost
 //
-// Returns a category by finding a category by post ID.
+// Returns a category by searching with the given post ID.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Post Id.
 func (s *Store) FindByPost(id int) (domain.Category, error) {
@@ -59,7 +59,7 @@ func (s *Store) FindByPost(id int) (domain.Category, error) {
 
 // FindBySlug
 //
-// Returns a category by finding a category by slug.
+// Returns a category by searching with the given slug.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindBySlug(slug string) (domain.Category, error) {
@@ -80,7 +80,7 @@ func (s *Store) FindBySlug(slug string) (domain.Category, error) {
 
 // FindByName
 //
-// Returns a category by finding a category by name.
+// Returns a category by searching with the given name.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindByName(name string) (domain.Category, error) {
@@ -101,9 +101,9 @@ func (s *Store) FindByName(name string) (domain.Category, error) {
 
 // FindParent
 //
-// Returns a category by finding a category by parent ID.
+// Returns a category by searching with the given parent ID.
 // Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the category was not found by the given slug..
+// Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindParent(id int) (domain.Category, error) {
 	const op = "CategoryRepository.GetByParent"
 
