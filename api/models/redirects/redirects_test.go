@@ -20,10 +20,10 @@ type RedirectsTestSuite struct {
 	test.DBSuite
 }
 
-// TestCategories
+// TestRedirects
 //
 // Assert testing has begun.
-func TestCategories(t *testing.T) {
+func TestRedirects(t *testing.T) {
 	suite.Run(t, &RedirectsTestSuite{
 		DBSuite: test.NewDBSuite(t),
 	})
@@ -31,7 +31,7 @@ func TestCategories(t *testing.T) {
 
 // Setup
 //
-// A helper to obtain a mock roles database
+// A helper to obtain a mock redirects database
 // for testing.
 func (t *RedirectsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	if mf != nil {

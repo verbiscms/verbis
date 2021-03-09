@@ -62,6 +62,8 @@ type (
 		Name        string `db:"name" json:"name"`
 		Description string `db:"description" json:"description"`
 	}
+	// Roles represents the slice of Role's.
+	Roles []Role
 )
 
 const (

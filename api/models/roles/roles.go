@@ -7,27 +7,39 @@ package roles
 import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
 )
 
-// RedirectRepository defines methods for Redirects
+// Repository defines methods for roles
 // to interact with the database.
 type Repository interface {
-	List() ([]domain.Role, error)
-	Find(id int64) (domain.Role, error)
-	Create(r *domain.Role) (domain.Role, error)
-	Update(r *domain.Role) (domain.Role, error)
-	Delete(id int64) error
+	List() (domain.Roles, error)
+	Find(id int) (domain.Role, error)
+	Create(r domain.Role) (domain.Role, error)
+	Update(r domain.Role) (domain.Role, error)
 	Exists(name string) bool
 }
 
-// RedirectStore defines the data layer for Redirects
+// Store defines the data layer for roles.
 type Store struct {
 	*database.Model
 }
 
-const TableName = "roles"
+const (
+	// The database table name for roles.
+	TableName = "roles"
+)
 
+var (
+	// ErrRoleExists is returned by validate when
+	// a role name already exists.
+	ErrRoleExists = errors.New("role already exists")
+)
+
+// New
+//
+// Creates a new roles store.
 func New(db *sqlx.DB) *Store {
 	return &Store{
 		Model: database.NewModel(db),

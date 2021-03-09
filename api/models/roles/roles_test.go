@@ -34,11 +34,29 @@ func (t *RolesTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	return New(t.DB)
 }
 
+const (
+	// The default role ID used for testing.
+	roleID = "1"
+)
+
 var (
 	// The default role used for testing.
 	role = domain.Role{
-		Id:          1,
-		Name:        "Owner",
-		Description: "Description",
+		Id:          domain.BannedRoleID,
+		Name:        "Banned",
+		Description: "The user has been banned from the system.",
+	}
+	// The default roles used for testing.
+	roles = domain.Roles{
+		{
+			Id:          domain.BannedRoleID,
+			Name:        "Banned",
+			Description: "The user has been banned from the system.",
+		},
+		{
+			Id:          domain.ContributorRoleID,
+			Name:        "Contributor",
+			Description: "The user can create and edit their own draft posts, but they are unable to edit drafts of users or published posts.",
+		},
 	}
 )
