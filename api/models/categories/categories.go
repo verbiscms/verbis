@@ -20,7 +20,7 @@ type Repository interface {
 	FindByPost(id int) (domain.Category, error)
 	FindBySlug(slug string) (domain.Category, error)
 	FindByName(name string) (domain.Category, error)
-	//GetParent(id int) (domain.Category, error)
+	FindParent(id int) (domain.Category, error)
 	Create(c domain.Category) (domain.Category, error)
 	Update(c domain.Category) (domain.Category, error)
 	Delete(id int) error
@@ -35,7 +35,8 @@ type Store struct {
 }
 
 var (
-	// Validation error when a category already exists.
+	// ErrCategoryExists is returned by validate when
+	// a category already exists.
 	ErrCategoryExists = errors.New("category already exists")
 )
 

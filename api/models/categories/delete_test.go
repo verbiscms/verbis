@@ -13,7 +13,7 @@ import (
 	"regexp"
 )
 
-const (
+var (
 	DeleteQuery      = "DELETE FROM `categories` WHERE `id` = '" + categoryID + "'"
 	DeletePivotQuery = "DELETE FROM `post_categories` WHERE `id` = '" + categoryID + "'"
 )

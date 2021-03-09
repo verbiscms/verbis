@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package test
+package dummy
 
 import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
@@ -10,7 +10,8 @@ import (
 )
 
 var (
-	// The default params used for testing.
+	// DefaultParams are the dummy params used
+	// for testing.
 	DefaultParams = params.Params{
 		Page:           api.DefaultParams.Page,
 		Limit:          15,

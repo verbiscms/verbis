@@ -7,6 +7,7 @@ package redirects
 import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/jmoiron/sqlx"
 )
@@ -14,13 +15,13 @@ import (
 // Repository defines methods for redirects
 // to interact with the database.
 type Repository interface {
-	List(meta params.Params) (domain.Categories, int, error)
+	List(meta params.Params) (domain.Redirects, int, error)
 	Find(id int) (domain.Redirect, error)
 	Create(redirect domain.Redirect) (domain.Redirect, error)
 	Update(redirect domain.Redirect) (domain.Redirect, error)
 	Delete(id int) error
 	Exists(id int) bool
-	ExistsByFromPath(from string) bool
+	ExistsByFrom(from string) bool
 }
 
 // Store defines the data layer for Redirects.
@@ -28,8 +29,14 @@ type Store struct {
 	*database.Model
 }
 
+var (
+	// ErrRedirectExists is returned by validate when
+	// a redirect from path already exists.
+	ErrRedirectExists = errors.New("redirect already exists")
+)
+
 const (
-	// The redirects database table name.
+	// The database table name for redirects.
 	TableName = "redirects"
 )
 
