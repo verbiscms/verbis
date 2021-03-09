@@ -29,16 +29,10 @@ type Repository interface {
 	ExistsBySlug(slug string) bool
 }
 
-// Store defines the data layer for Categories.
+// Store defines the data layer for categories.
 type Store struct {
 	*database.Model
 }
-
-var (
-	// ErrCategoryExists is returned by validate when
-	// a category already exists.
-	ErrCategoryExists = errors.New("category already exists")
-)
 
 const (
 	// The database table name for categories.
@@ -47,9 +41,15 @@ const (
 	PivotTableName = "post_categories"
 )
 
+var (
+	// ErrCategoryExists is returned by validate when
+	// a category already exists.
+	ErrCategoryExists = errors.New("category already exists")
+)
+
 // New
 //
-// Creates a new Categories store.
+// Creates a new categories store.
 func New(db *sqlx.DB) *Store {
 	return &Store{
 		Model: database.NewModel(db),

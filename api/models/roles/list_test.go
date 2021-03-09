@@ -14,32 +14,33 @@ import (
 )
 
 var (
-	FindQuery = "SELECT * FROM `roles` WHERE `id` = '" + roleID + "' LIMIT 1"
+	ListQuery = "SELECT * FROM `roles` ORDER BY \"id\" desc"
 )
 
-func (t *RolesTestSuite) TestStore_Find() {
+func (t *RolesTestSuite) TestStore_List() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			role,
+			roles,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name", "description"}).
-					AddRow(role.Id, role.Name, role.Description)
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
+					AddRow(roles[0].Id, roles[0].Name, roles[0].Description).
+					AddRow(roles[1].Id, roles[1].Name, roles[1].Description)
+				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"No role exists with the ID",
+			"No roles available",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnError(sql.ErrNoRows)
+				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
@@ -47,7 +48,7 @@ func (t *RolesTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(role.Id)
+			got, err := s.List()
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

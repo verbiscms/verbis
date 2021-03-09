@@ -25,10 +25,15 @@ type Repository interface {
 	ExistsByFrom(from string) bool
 }
 
-// Store defines the data layer for Redirects.
+// Store defines the data layer for redirects.
 type Store struct {
 	*database.Model
 }
+
+const (
+	// The database table name for redirects.
+	TableName = "redirects"
+)
 
 var (
 	// ErrRedirectExists is returned by validate when
@@ -36,14 +41,9 @@ var (
 	ErrRedirectExists = errors.New("redirect already exists")
 )
 
-const (
-	// The database table name for redirects.
-	TableName = "redirects"
-)
-
 // New
 //
-// Creates a new Redirects store.
+// Creates a new redirects store.
 func New(db *sqlx.DB) *Store {
 	return &Store{
 		Model: database.NewModel(db),
