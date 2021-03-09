@@ -5,7 +5,10 @@
 package categories
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
@@ -17,16 +20,40 @@ var (
 
 func (t *CategoriesTestSuite) TestStore_Update() {
 	tt := map[string]struct {
-		mock func(m sqlmock.Sqlmock)
 		want interface{}
+		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
+			category,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(test.AnyUUID{}).
 					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
 			},
-			category,
+		},
+		"Validation Failed": {
+			"Validation failed, the category name already exists",
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnRows(rows)
+			},
+		},
+		"No Rows": {
+			"Error updating category with the name",
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.AnyUUID{}).
+					WillReturnError(sql.ErrNoRows)
+			},
+		},
+		"Internal Error": {
+			database.ErrQueryMessage,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.AnyUUID{}).
+					WillReturnError(fmt.Errorf("error"))
+			},
 		},
 	}
 
