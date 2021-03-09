@@ -33,20 +33,6 @@ func (_m *RoleRepository) Create(r *domain.Role) (domain.Role, error) {
 	return r0, r1
 }
 
-// Delete provides a mock function with given fields: id
-func (_m *RoleRepository) Delete(id int) error {
-	ret := _m.Called(id)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(int) error); ok {
-		r0 = rf(id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // Exists provides a mock function with given fields: name
 func (_m *RoleRepository) Exists(name string) bool {
 	ret := _m.Called(name)
