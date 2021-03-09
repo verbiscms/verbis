@@ -17,6 +17,7 @@ import (
 type Repository interface {
 	List(meta params.Params) (domain.Redirects, int, error)
 	Find(id int) (domain.Redirect, error)
+	FindByFrom(from string) (domain.Redirect, error)
 	Create(redirect domain.Redirect) (domain.Redirect, error)
 	Update(redirect domain.Redirect) (domain.Redirect, error)
 	Delete(id int) error
