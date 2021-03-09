@@ -98,3 +98,24 @@ func (s *Store) FindByName(name string) (domain.Category, error) {
 
 	return category, nil
 }
+
+// FindParent
+//
+// Returns a category by finding a category by parent ID.
+// Returns errors.INTERNAL if there was an error executing the query.
+// Returns errors.NOTFOUND if the category was not found by the given slug..
+func (s *Store) FindParent(id int) (domain.Category, error) {
+	const op = "CategoryRepository.GetByParent"
+
+	q := s.Builder().From(TableName).Where("parent_id", "=", id).Limit(1)
+
+	var category domain.Category
+	err := s.DB.Get(&category, q.Build())
+	if err == sql.ErrNoRows {
+		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the parent ID: %d", id), Operation: op, Err: err}
+	} else if err != nil {
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	}
+
+	return category, nil
+}
