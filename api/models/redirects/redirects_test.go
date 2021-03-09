@@ -7,8 +7,6 @@ package redirects
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -67,13 +65,5 @@ var (
 			To:   "/to",
 			Code: 301,
 		},
-	}
-	// The default params used for testing.
-	defaultParams = params.Params{
-		Page:           api.DefaultParams.Page,
-		Limit:          15,
-		OrderBy:        api.DefaultParams.OrderBy,
-		OrderDirection: api.DefaultParams.OrderDirection,
-		Filters:        nil,
 	}
 )

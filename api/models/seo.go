@@ -17,13 +17,13 @@ type SeoMetaRepository interface {
 
 // SeoMetaStore defines the data layer for Seo & Meta Options
 type SeoMetaStore struct {
-	*StoreConfig
+	*StoreCfgOld
 }
 
 // newSeoMeta - Construct
-func newSeoMeta(cfg *StoreConfig) *SeoMetaStore {
+func newSeoMeta(cfg *StoreCfgOld) *SeoMetaStore {
 	return &SeoMetaStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 	}
 }
 

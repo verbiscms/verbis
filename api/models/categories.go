@@ -34,13 +34,13 @@ type CategoryRepository interface {
 
 // CategoryStore defines the data layer for Categories
 type CategoryStore struct {
-	*StoreConfig
+	*StoreCfgOld
 }
 
 // newCategories - Construct
-func newCategories(cfg *StoreConfig) *CategoryStore {
+func newCategories(cfg *StoreCfgOld) *CategoryStore {
 	return &CategoryStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 	}
 }
 

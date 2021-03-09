@@ -29,13 +29,13 @@ type OptionsRepository interface {
 
 // OptionsStore defines the data layer for Posts
 type OptionsStore struct {
-	*StoreConfig
+	*StoreCfgOld
 }
 
 // newOptions - Construct
-func newOptions(cfg *StoreConfig) *OptionsStore {
+func newOptions(cfg *StoreCfgOld) *OptionsStore {
 	return &OptionsStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 	}
 }
 

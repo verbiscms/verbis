@@ -20,7 +20,7 @@ import (
 	"strings"
 )
 
-type StoreConfig struct {
+type StoreCfgOld struct {
 	DB      *sqlx.DB
 	Config  *domain.ThemeConfig
 	Paths   paths.Paths
@@ -43,7 +43,7 @@ type Store struct {
 }
 
 // Create a new database instance, connect to database.
-func New(cfg *StoreConfig) *Store {
+func New(cfg *StoreCfgOld) *Store {
 	cfg.Options = newOptions(cfg)
 
 	fmt.Println(cfg.Options.GetTheme())

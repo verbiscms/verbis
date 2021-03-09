@@ -36,7 +36,7 @@ environment.`,
 // doctor checks if the environment is validated and checks
 // to see if there is a valid database connection and the
 // database exists before proceeding.
-func doctor(running bool) (*deps.Config, *database.MySQL, error) {
+func doctor(running bool) (*deps.Config, *database.MySQLOld, error) {
 	printSpinner("Running doctor...")
 
 	// Check paths are correct
@@ -90,7 +90,7 @@ func doctor(running bool) (*deps.Config, *database.MySQL, error) {
 	//}
 
 	// Set up stores & pass the database.
-	store := models.New(&models.StoreConfig{
+	store := models.New(&models.StoreCfgOld{
 		DB:      db.Sqlx,
 		Paths:   p,
 		Running: running,
