@@ -24,15 +24,15 @@ type FieldsRepository interface {
 
 // FieldsStore defines the data layer for Posts
 type FieldsStore struct {
-	*StoreConfig
+	*StoreCfgOld
 	options domain.Options
 	finder  location.Finder
 }
 
 // newFields - Construct
-func newFields(cfg *StoreConfig) *FieldsStore {
+func newFields(cfg *StoreCfgOld) *FieldsStore {
 	return &FieldsStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 		options:     cfg.Options.GetStruct(),
 		// This wont work when changing themes
 		finder: location.NewLocation(cfg.Paths.Storage),

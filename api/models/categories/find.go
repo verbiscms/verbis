@@ -20,7 +20,7 @@ import (
 func (s *Store) Find(id int) (domain.Category, error) {
 	const op = "CategoryStore.Find"
 
-	q := s.Builder().From(TableName).Where("id", "=", id).Limit(1)
+	q := s.Builder().From("test."+TableName).Where("id", "=", id).Limit(1)
 
 	var category domain.Category
 	err := s.DB.Get(&category, q.Build())

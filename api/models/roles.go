@@ -21,13 +21,13 @@ type RoleRepository interface {
 
 // PostStore defines the data layer for Posts
 type RoleStore struct {
-	*StoreConfig
+	*StoreCfgOld
 }
 
 // newRoles - Construct
-func newRoles(cfg *StoreConfig) *RoleStore {
+func newRoles(cfg *StoreCfgOld) *RoleStore {
 	return &RoleStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 	}
 }
 

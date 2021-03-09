@@ -28,14 +28,14 @@ type AuthRepository interface {
 
 // AuthStore defines the data layer for Authentication
 type AuthStore struct {
-	*StoreConfig
+	*StoreCfgOld
 	optionsRepo domain.Options
 }
 
 // newAuth - Construct
-func newAuth(cfg *StoreConfig) *AuthStore {
+func newAuth(cfg *StoreCfgOld) *AuthStore {
 	return &AuthStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 		optionsRepo: cfg.Options.GetStruct(),
 	}
 }

@@ -106,6 +106,7 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 		"No Errors": {
 			Env{
 				AppPort:    "8080",
+				DbDriver:   "mysql",
 				DbHost:     "127.0.0.1",
 				DbPort:     "3306",
 				DbDatabase: "verbis",
@@ -118,6 +119,7 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 			Env{},
 			validation.Errors{
 				validation.Error{Key: "app_port", Type: "required", Message: "App Port is required."},
+				validation.Error{Key: "db_driver", Type: "required", Message: "Db Driver is required."},
 				validation.Error{Key: "db_host", Type: "required", Message: "Db Host is required."},
 				validation.Error{Key: "db_port", Type: "required", Message: "Db Port is required."},
 				validation.Error{Key: "db_database", Type: "required", Message: "Db Database is required."},

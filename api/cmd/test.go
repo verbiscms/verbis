@@ -5,7 +5,10 @@
 package cmd
 
 import (
-	"github.com/ainsleyclark/verbis/api/watchers"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/models/categories"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
@@ -15,23 +18,27 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
+			env, err := environment.Load()
+			if err != nil {
+				color.Red.Println(err)
+			}
 
-			w := watchers.New("/Users/ainsley/Desktop/Reddico/apis/verbis/themes/Verbis")
+			driver := database.TestPostgres(env)
+			err = driver.Ping()
+			if err != nil {
+				color.Red.Println(err)
+			}
 
-			go func() {
-				for {
-					select {
-					case event := <-w.Event:
-						color.Green.Println(event.Path)
-						color.Green.Println(event.Extension)
-						color.Green.Println(event.Mime)
-					case err := <-w.Error:
-						color.Red.Println(err)
-					}
-				}
-			}()
+			store := categories.New(&models.StoreCfgOld{
+				DB: driver,
+			})
 
-			w.Start()
+			cat, err := store.Find(2)
+			if err != nil {
+				color.Red.Println(err)
+			}
+
+			color.Green.Println(cat)
 		},
 	}
 )

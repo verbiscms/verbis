@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"regexp"
 )
 
@@ -28,7 +29,7 @@ func (t *RedirectsTestSuite) TestStore_List() {
 		want  interface{}
 	}{
 		"Success": {
-			defaultParams,
+			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
 					AddRow(redirects[0].Id, redirects[0].From, redirects[0].To, redirects[0].Code).
@@ -52,7 +53,7 @@ func (t *RedirectsTestSuite) TestStore_List() {
 			"The wrong_column search query does not exist",
 		},
 		"No Rows": {
-			defaultParams,
+			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(sql.ErrNoRows)
 			},
@@ -60,7 +61,7 @@ func (t *RedirectsTestSuite) TestStore_List() {
 			"No redirects available",
 		},
 		"Internal": {
-			defaultParams,
+			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -68,7 +69,7 @@ func (t *RedirectsTestSuite) TestStore_List() {
 			database.ErrQueryMessage,
 		},
 		"Count Error": {
-			defaultParams,
+			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
 					AddRow(redirects[0].Id, redirects[0].From, redirects[0].To, redirects[0].Code).

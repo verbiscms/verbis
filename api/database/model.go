@@ -23,7 +23,7 @@ type Model struct {
 func NewModel(db *sqlx.DB) *Model {
 	return &Model{
 		db,
-		"mysql",
+		"postgres",
 	}
 }
 
