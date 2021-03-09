@@ -18,7 +18,7 @@ import (
 // mysql defines the implementation of the
 // database.Driver if MySQL is selected
 // as the main driver.
-type mySql struct {
+type mySQL struct {
 	driver *sqlx.DB
 	env    *environment.Env
 }
@@ -30,13 +30,13 @@ var (
 
 // Setup
 //
-// New - Creates a new mySql instance and returns
+// New - Creates a new mySQL instance and returns
 // a new database driver.
 // Returns errors.INVALID if there was an error establishing a connection or pinging.
 func Setup(env *environment.Env) (database.Driver, error) {
 	const op = "Database.Setup"
 
-	m := mySql{
+	m := mySQL{
 		env: env,
 	}
 
@@ -61,28 +61,28 @@ func Setup(env *environment.Env) (database.Driver, error) {
 // DB
 //
 // Returns the sqlx driver.
-func (m *mySql) DB() *sqlx.DB {
+func (m *mySQL) DB() *sqlx.DB {
 	return m.driver
 }
 
 // Schema
 //
 // Returns the schema (blank for MySQL),
-func (m *mySql) Schema() string {
+func (m *mySQL) Schema() string {
 	return ""
 }
 
 // Builder
 //
 // Returns a new query builder instance.
-func (m *mySql) Builder() *builder.Sqlbuilder {
+func (m *mySQL) Builder() *builder.Sqlbuilder {
 	return builder.New("mysql")
 }
 
 // Close
 //
 // Closes the MySQL connection.
-func (m *mySql) Close() error {
+func (m *mySQL) Close() error {
 	return m.driver.Close()
 }
 
@@ -91,7 +91,7 @@ func (m *mySql) Close() error {
 // Migrate the db by executing the MySQL migration file.
 // Returns errors.INVALID if the sql file could not be located.
 // Returns errors.INTERNAL if the exec command could not be ran.
-func (m *mySql) Install() error {
+func (m *mySQL) Install() error {
 	const op = "Database.Install"
 	_, err := m.driver.Exec(migration)
 	if err != nil {
@@ -104,7 +104,7 @@ func (m *mySql) Install() error {
 //
 // CheckExists check's if the database exists.
 // Returns errors.INVALID if the database was not found.
-func (m *mySql) Exists() error {
+func (m *mySQL) Exists() error {
 	const op = "Database.CheckExists"
 	_, err := m.driver.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", m.env.DbDatabase)
 	if err != nil {
@@ -118,7 +118,7 @@ func (m *mySql) Exists() error {
 // Dump the database to file with the given path and
 // file name.
 // Returns errors.INTERNAL if the connection, dump failed.
-func (m *mySql) Dump(path, filename string) error {
+func (m *mySQL) Dump(path, filename string) error {
 	const op = "Database.Dump"
 
 	dumper, err := mysqldump.Register(m.driver.DB, path, filename)
@@ -142,7 +142,7 @@ func (m *mySql) Dump(path, filename string) error {
 //
 // Drop deletes the database with the environments database name.
 // Returns errors.INTERNAL if the exec command could not be ran.
-func (m *mySql) Drop() error {
+func (m *mySQL) Drop() error {
 	const op = "Database.Drop"
 	_, err := m.driver.Exec("DROP DATABASE " + m.env.DbDatabase + ";")
 	if err != nil {
@@ -154,6 +154,6 @@ func (m *mySql) Drop() error {
 // connectString
 //
 // Returns the MySQL database connection string.
-func (m *mySql) connectString() string {
+func (m *mySQL) connectString() string {
 	return m.env.DbUser + ":" + m.env.DbPassword + "@tcp(" + m.env.DbHost + ":" + m.env.DbPort + ")/" + m.env.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
 }

@@ -72,7 +72,7 @@ type (
 	// includes post meta and post seo information.
 	PostOptions struct {
 		Id       int       `json:"-"`                            //nolint
-		PageId   int       `json:"-" binding:"required|numeric"` //nolint
+		PostId   int       `json:"-" binding:"required|numeric"` //nolint
 		Meta     *PostMeta `db:"meta" json:"meta"`
 		Seo      *PostSeo  `db:"seo" json:"seo"`
 		EditLock string    `db:"edit_lock" json:"edit_lock"`
