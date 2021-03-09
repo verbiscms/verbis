@@ -38,7 +38,7 @@ func (s *Store) List(meta params.Params) (domain.Redirects, int, error) {
 		q.Limit(meta.Limit).Offset((meta.Page - 1) * meta.Limit)
 	}
 
-	// Select categories
+	// Select redirects
 	var redirects domain.Redirects
 	err = s.DB.Select(&redirects, q.Build())
 	if err == sql.ErrNoRows {
@@ -47,7 +47,7 @@ func (s *Store) List(meta params.Params) (domain.Redirects, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// Count the total number of media
+	// Count the total number of redirects
 	var total int
 	err = s.DB.QueryRow(countQ).Scan(&total)
 	if err != nil {

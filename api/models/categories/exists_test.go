@@ -7,8 +7,6 @@ package categories
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
 
@@ -40,7 +38,7 @@ func (t *CategoriesTestSuite) TestStore_Exists() {
 			},
 		},
 		"Internal": {
-			database.ErrQueryMessage,
+			false,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -50,11 +48,7 @@ func (t *CategoriesTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Exists(category.Id)
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
-				return
-			}
+			got := s.Exists(category.Id)
 			t.RunT(test.want, got)
 		})
 	}
@@ -82,7 +76,7 @@ func (t *CategoriesTestSuite) TestStore_ExistsByName() {
 			},
 		},
 		"Internal": {
-			database.ErrQueryMessage,
+			false,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -92,11 +86,7 @@ func (t *CategoriesTestSuite) TestStore_ExistsByName() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.ExistsByName(category.Name)
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
-				return
-			}
+			got := s.ExistsByName(category.Name)
 			t.RunT(test.want, got)
 		})
 	}
@@ -124,7 +114,7 @@ func (t *CategoriesTestSuite) TestStore_ExistsBySlug() {
 			},
 		},
 		"Internal": {
-			database.ErrQueryMessage,
+			false,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -134,11 +124,7 @@ func (t *CategoriesTestSuite) TestStore_ExistsBySlug() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.ExistsBySlug(category.Slug)
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
-				return
-			}
+			got := s.ExistsBySlug(category.Slug)
 			t.RunT(test.want, got)
 		})
 	}

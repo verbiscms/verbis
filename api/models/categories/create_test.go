@@ -5,8 +5,10 @@
 package categories
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
@@ -14,33 +16,52 @@ import (
 
 var (
 	CreateQuery = "INSERT INTO `categories` (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, '/cat', 'Category', NULL, NULL, '', NULL, NOW(), NOW())"
-	t           = "INSERT INTO `categories` (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, '/cat', 'Category', '', '', '', '', NOW(), NOW())"
 )
 
 func (t *CategoriesTestSuite) TestStore_Create() {
 	tt := map[string]struct {
-		mock func(m sqlmock.Sqlmock)
 		want interface{}
+		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
+			category,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.AnyUUID{}).
 					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
 			},
-			category,
+		},
+		"Validation Failed": {
+			"Validation failed, the category name already exists",
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnRows(rows)
+			},
+		},
+		"No Rows": {
+			"Error creating category with the name",
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WithArgs(test.AnyUUID{}).
+					WillReturnError(sql.ErrNoRows)
+			},
 		},
 		"Internal Error": {
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WithArgs(test.AnyUUID{}).
+					WillReturnError(fmt.Errorf("error"))
 			},
-			"Error creating category with the name",
 		},
-		"Last Inserted ID Error": {
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).WillReturnResult(test.DBMockResultErr{})
-			},
+		"Last Insert ID Error": {
 			"Error getting the newly created category ID",
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WithArgs(test.AnyUUID{}).
+					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
+			},
 		},
 	}
 

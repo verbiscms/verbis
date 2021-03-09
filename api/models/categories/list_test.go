@@ -8,9 +8,11 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
@@ -27,7 +29,7 @@ func (t *CategoriesTestSuite) TestStore_List() {
 		want  interface{}
 	}{
 		"Success": {
-			defaultParams,
+			test.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
 					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name).
@@ -51,7 +53,7 @@ func (t *CategoriesTestSuite) TestStore_List() {
 			"The wrong_column search query does not exist",
 		},
 		"No Rows": {
-			defaultParams,
+			test.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(sql.ErrNoRows)
 			},
@@ -59,15 +61,15 @@ func (t *CategoriesTestSuite) TestStore_List() {
 			"No categories available",
 		},
 		"Internal": {
-			defaultParams,
+			test.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 			-1,
-			"Error executing sql query",
+			database.ErrQueryMessage,
 		},
 		"Count Error": {
-			defaultParams,
+			test.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
 					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name).

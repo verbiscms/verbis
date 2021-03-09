@@ -9,9 +9,11 @@ import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"io/ioutil"
 	"testing"
 )
 
@@ -46,6 +48,8 @@ func (a AnyUUID) Match(v driver.Value) bool {
 // controllers, initialises gin & sets gin mode.
 func NewDBSuite(t *testing.T) DBSuite {
 	cache.Init()
+	logger.SetOutput(ioutil.Discard)
+
 	db, mock, err := sqlmock.New()
 	assert.NoError(t, err)
 

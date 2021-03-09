@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
@@ -38,8 +39,8 @@ func (t *CategoriesTestSuite) TestStore_Find() {
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnError(sql.ErrNoRows)
 			},
 		},
-		"Internal": {
-			"Error executing sql query",
+		"Internal Error": {
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -78,8 +79,8 @@ func (t *CategoriesTestSuite) TestStore_FindByPost() {
 				m.ExpectQuery(regexp.QuoteMeta(FindByPostQuery)).WillReturnError(sql.ErrNoRows)
 			},
 		},
-		"Internal": {
-			"Error executing sql query",
+		"Internal Error": {
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindByPostQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -118,8 +119,8 @@ func (t *CategoriesTestSuite) TestStore_FindBySlug() {
 				m.ExpectQuery(regexp.QuoteMeta(FindBySlugQuery)).WillReturnError(sql.ErrNoRows)
 			},
 		},
-		"Internal": {
-			"Error executing sql query",
+		"Internal Error": {
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindBySlugQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -158,8 +159,8 @@ func (t *CategoriesTestSuite) TestStore_FindByName() {
 				m.ExpectQuery(regexp.QuoteMeta(FindByNameQuery)).WillReturnError(sql.ErrNoRows)
 			},
 		},
-		"Internal": {
-			"Error executing sql query",
+		"Internal Error": {
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindByNameQuery)).WillReturnError(fmt.Errorf("error"))
 			},

@@ -7,6 +7,7 @@ package categories
 import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/jmoiron/sqlx"
 )
@@ -30,6 +31,10 @@ type Repository interface {
 type Store struct {
 	*database.Model
 }
+
+var (
+	ErrCategoryExists = errors.New("category already exists")
+)
 
 const (
 	TableName      = "categories"
