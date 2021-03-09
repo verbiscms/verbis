@@ -12,7 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"regexp"
 )
 
@@ -29,7 +29,7 @@ func (t *CategoriesTestSuite) TestStore_List() {
 		want  interface{}
 	}{
 		"Success": {
-			test.DefaultParams,
+			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
 					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name).
@@ -53,7 +53,7 @@ func (t *CategoriesTestSuite) TestStore_List() {
 			"The wrong_column search query does not exist",
 		},
 		"No Rows": {
-			test.DefaultParams,
+			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(sql.ErrNoRows)
 			},
@@ -61,7 +61,7 @@ func (t *CategoriesTestSuite) TestStore_List() {
 			"No categories available",
 		},
 		"Internal": {
-			test.DefaultParams,
+			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -69,7 +69,7 @@ func (t *CategoriesTestSuite) TestStore_List() {
 			database.ErrQueryMessage,
 		},
 		"Count Error": {
-			test.DefaultParams,
+			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
 					AddRow(categories[0].Id, categories[0].Slug, categories[0].Name).

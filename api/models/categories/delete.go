@@ -19,6 +19,7 @@ func (s *Store) Delete(id int) error {
 	const op = "CategoryStore.Delete"
 
 	q := s.Builder().DeleteFrom(TableName).Where("id", "=", id)
+
 	_, err := s.DB.Exec(q.Build(), id)
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
@@ -43,6 +44,7 @@ func (s *Store) DeleteFromPivot(id int) error {
 	const op = "CategoryStore.DeleteFromPivot"
 
 	q := s.Builder().DeleteFrom(PivotTableName).Where("id", "=", id)
+
 	_, err := s.DB.Exec(q.Build(), id)
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}

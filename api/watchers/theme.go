@@ -104,7 +104,6 @@ func (b *Batch) Close() {
 	b.done <- struct{}{}
 	b.fsWatcher.Close()
 	//b.watcher.Close()
-
 }
 
 // run
@@ -112,7 +111,6 @@ func (b *Batch) Close() {
 //
 
 func (b *Batch) run() {
-
 	interval := time.Millisecond * 100
 	tick := time.Tick(interval)
 	evs := make([]fsnotify.Event, 0)

@@ -48,24 +48,24 @@ const (
 var (
 	// The default redirect used for testing.
 	redirect = domain.Redirect{
-		Id:        1,
-		From:      "/from",
-		To:        "/to",
-		Code:      301,
+		Id:   1,
+		From: "/from",
+		To:   "/to",
+		Code: 301,
 	}
 	// The default redirects used for testing.
 	redirects = domain.Redirects{
 		{
-			Id:        1,
-			From:      "/from",
-			To:        "/to",
-			Code:      301,
+			Id:   1,
+			From: "/from",
+			To:   "/to",
+			Code: 301,
 		},
 		{
-			Id:        2,
-			From:      "/from",
-			To:        "/to",
-			Code:      301,
+			Id:   2,
+			From: "/from",
+			To:   "/to",
+			Code: 301,
 		},
 	}
 	// The default params used for testing.

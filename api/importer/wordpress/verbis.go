@@ -205,7 +205,7 @@ func (c *Convert) addItem(item Item) {
 	}
 
 	if err == nil {
-		cid := int(category.Id)
+		cid := category.Id
 		p.Category = &cid
 	}
 

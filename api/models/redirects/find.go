@@ -14,12 +14,11 @@ import (
 
 // Find
 //
-// Find a redirect by ID.
-//
+// Returns a redirect by searching with the given ID.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the redirect was not found by the given ID.
 func (s *Store) Find(id int) (domain.Redirect, error) {
-	const op = "RedirectRepository.Find"
+	const op = "RedirectStore.Find"
 
 	q := s.Builder().From(TableName).Where("id", "=", id).Limit(1)
 

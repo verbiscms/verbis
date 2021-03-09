@@ -7,8 +7,6 @@ package redirects
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
 
@@ -39,7 +37,7 @@ func (t *RedirectsTestSuite) TestStore_Exists() {
 			},
 		},
 		"Internal": {
-			database.ErrQueryMessage,
+			false,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -49,11 +47,7 @@ func (t *RedirectsTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Exists(redirect.Id)
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
-				return
-			}
+			got := s.Exists(redirect.Id)
 			t.RunT(test.want, got)
 		})
 	}
@@ -81,7 +75,7 @@ func (t *RedirectsTestSuite) TestStore_ExistsByFrom() {
 			},
 		},
 		"Internal": {
-			database.ErrQueryMessage,
+			false,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -91,11 +85,7 @@ func (t *RedirectsTestSuite) TestStore_ExistsByFrom() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.ExistsByFrom(redirect.From)
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
-				return
-			}
+			got := s.ExistsByFrom(redirect.From)
 			t.RunT(test.want, got)
 		})
 	}

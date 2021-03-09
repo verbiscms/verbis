@@ -14,11 +14,11 @@ import (
 // Delete
 //
 // Deletes a redirect.
-//
+// Returns nil if the redirect was successfully deleted.
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if the redirect was not found.
 func (s *Store) Delete(id int) error {
-	const op = "RedirectRepository.Delete"
+	const op = "RedirectStore.Delete"
 
 	q := s.Builder().DeleteFrom(TableName).Where("id", "=", id)
 

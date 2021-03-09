@@ -13,6 +13,7 @@ import (
 
 // List
 //
+// Returns a slice of categories with the total amount.
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
 func (s *Store) List(meta params.Params) (domain.Categories, int, error) {

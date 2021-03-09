@@ -34,11 +34,9 @@ func (s *Store) Update(c domain.Category) (domain.Category, error) {
 		Column("resource", c.Resource).
 		Column("archive_id", c.ArchiveId).
 		Column("updated_at", "NOW()").
-		Column("created_at", "NOW()").
-		Where("id", "=", c.Id).
-		Build()
+		Where("id", "=", c.Id)
 
-	_, err = s.DB.Exec(q, uuid.New().String())
+	_, err = s.DB.Exec(q.Build(), uuid.New().String())
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating category with the name: " + c.Name, Operation: op, Err: err}
 	} else if err != nil {
