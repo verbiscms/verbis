@@ -80,7 +80,7 @@ func (m *mySql) Close() error {
 
 // Install
 //
-// Install Verbis by executing the MySQL migration file.
+// Migrate the db by executing the MySQL migration file.
 // Returns errors.INVALID if the sql file could not be located.
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (m *mySql) Install() error {
@@ -137,7 +137,7 @@ func (m *mySql) Drop() error {
 	const op = "Database.Drop"
 	_, err := m.driver.Exec("DROP DATABASE " + m.env.DbDatabase + ";")
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not drop the database with the name: %s", m.env.DbDatabase), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error dropping the database with the name: " + m.env.DbDatabase}
 	}
 	return nil
 }
