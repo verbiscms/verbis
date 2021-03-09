@@ -6,6 +6,7 @@ package options
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -31,8 +32,11 @@ func TestOptions(t *testing.T) {
 // A helper to obtain a mock options database
 // for testing.
 func (t *OptionsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
+	t.Reset()
 	if mf != nil {
 		mf(t.Mock)
 	}
-	return New(t.DB)
+	return New(&store.Config{
+		Driver: t.Driver,
+	})
 }
