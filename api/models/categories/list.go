@@ -6,6 +6,7 @@ package categories
 
 import (
 	"database/sql"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
@@ -42,7 +43,7 @@ func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
 	if err == sql.ErrNoRows {
 		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No categories available", Operation: op, Err: err}
 	} else if err != nil {
-		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	// Count the total number of categories

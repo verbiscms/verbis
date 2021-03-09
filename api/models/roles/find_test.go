@@ -8,13 +8,16 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
 
-func (t *RolesTestSuite) TestStore_Find() {
-	query := "SELECT * FROM `roles` WHERE `id` = ? LIMIT 1"
+var (
+	FindQuery = "SELECT * FROM `roles` WHERE `id` = '" + roleID + "' LIMIT 1"
+)
 
+func (t *RolesTestSuite) TestStore_Find() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -24,19 +27,19 @@ func (t *RolesTestSuite) TestStore_Find() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name", "description"}).
 					AddRow(role.Id, role.Name, role.Description)
-				m.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(1).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"No redirect exists with the ID: 1",
+			"No role exists with the ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnError(sql.ErrNoRows)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal": {
-			"Error executing sql query",
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(query)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}

@@ -16,7 +16,6 @@ type RoleRepository interface {
 	GetByID(id int) (domain.Role, error)
 	Create(r *domain.Role) (domain.Role, error)
 	Update(r *domain.Role) (domain.Role, error)
-	Delete(id int) error
 	Exists(name string) bool
 }
 
@@ -105,24 +104,6 @@ func (s *RoleStore) Update(r *domain.Role) (domain.Role, error) {
 	}
 
 	return *r, nil
-}
-
-// Delete role
-// Returns errors.NOTFOUND if the role was not found.
-// Returns errors.INTERNAL if the SQL query was invalid.
-func (s *RoleStore) Delete(id int) error {
-	const op = "RoleRepository.Delete"
-
-	_, err := s.GetByID(id)
-	if err != nil {
-		return err
-	}
-
-	if _, err := s.DB.Exec("DELETE FROM roles WHERE id = ?", id); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete the role with the ID: %v", id), Operation: op, Err: err}
-	}
-
-	return nil
 }
 
 // Exists Checks if a role exists by the given name

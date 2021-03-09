@@ -18,7 +18,7 @@ import (
 // Returns errors.CONFLICT if the validation failed.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not obtain the newly created ID.
 func (s *Store) Update(r domain.Redirect) (domain.Redirect, error) {
-	const op = "RedirectStore.Create"
+	const op = "RedirectStore.Update"
 
 	err := s.validate(r)
 	if err != nil {
