@@ -29,6 +29,9 @@ type Env struct {
 	// The port the server should listen to.
 	AppPort string `json:"APP_PORT" binding:"required"`
 
+	// The database port.
+	DbDriver string `json:"DB_DRIVER" binding:"required"`
+
 	// The database host (IP) for the store.
 	DbHost string `json:"DB_HOST" binding:"required"`
 
@@ -43,6 +46,9 @@ type Env struct {
 
 	// The database port.
 	DbPassword string `json:"DB_PASSWORD" binding:"required"`
+
+	// The database port.
+	DbSchema string `json:"DB_SCHEMA"`
 
 	// The key for Sparkpost (mailer).
 	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
@@ -89,11 +95,13 @@ func Load() (*Env, error) {
 		AppEnv:          os.Getenv("APP_ENV"),
 		AppDebug:        os.Getenv("APP_DEBUG"),
 		AppPort:         os.Getenv("APP_PORT"),
+		DbDriver:        os.Getenv("DB_DRIVER"),
 		DbHost:          os.Getenv("DB_HOST"),
 		DbPort:          os.Getenv("DB_PORT"),
 		DbDatabase:      os.Getenv("DB_DATABASE"),
 		DbUser:          os.Getenv("DB_USERNAME"),
 		DbPassword:      os.Getenv("DB_PASSWORD"),
+		DbSchema:        os.Getenv("DB_SCHEMA"),
 		SparkpostAPIKey: os.Getenv("SPARKPOST_API_KEY"),
 		SparkpostURL:    os.Getenv("SPARKPOST_URL"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),

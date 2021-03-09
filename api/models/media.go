@@ -48,16 +48,16 @@ type MediaRepository interface {
 
 // MediaStore defines the data layer for Media
 type MediaStore struct {
-	*StoreConfig
+	*StoreCfgOld
 	optionsModel OptionsRepository
 	userModel    UserRepository
 	options      domain.Options
 }
 
 // newMedia - Construct
-func newMedia(cfg *StoreConfig) *MediaStore {
+func newMedia(cfg *StoreCfgOld) *MediaStore {
 	ms := &MediaStore{
-		StoreConfig:  cfg,
+		StoreCfgOld:  cfg,
 		optionsModel: cfg.Options,
 		userModel:    newUser(cfg),
 	}

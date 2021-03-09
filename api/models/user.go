@@ -36,14 +36,14 @@ type UserRepository interface {
 
 // UserStore defines the data layer for Users
 type UserStore struct {
-	*StoreConfig
+	*StoreCfgOld
 	optionsRepo domain.Options
 }
 
 // newUser - Construct
-func newUser(cfg *StoreConfig) *UserStore {
+func newUser(cfg *StoreCfgOld) *UserStore {
 	return &UserStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 		optionsRepo: newOptions(cfg).GetStruct(),
 	}
 }

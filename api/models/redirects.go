@@ -21,13 +21,13 @@ type RedirectRepository interface {
 
 // RedirectStore defines the data layer for Categories
 type RedirectStore struct {
-	*StoreConfig
+	*StoreCfgOld
 }
 
 // newRedirects - Construct
-func newRedirects(cfg *StoreConfig) *RedirectStore {
+func newRedirects(cfg *StoreCfgOld) *RedirectStore {
 	return &RedirectStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 	}
 }
 

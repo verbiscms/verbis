@@ -28,14 +28,14 @@ type FormRepository interface {
 
 // FormsStore defines the data layer for Forms
 type FormsStore struct {
-	*StoreConfig
+	*StoreCfgOld
 	// siteModel SiteRepository
 }
 
 // newSeoMeta - Construct
-func newForms(cfg *StoreConfig) *FormsStore {
+func newForms(cfg *StoreCfgOld) *FormsStore {
 	return &FormsStore{
-		StoreConfig: cfg,
+		StoreCfgOld: cfg,
 		//siteModel:   newSite(cfg),
 	}
 }

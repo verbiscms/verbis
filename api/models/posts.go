@@ -35,7 +35,7 @@ type PostsRepository interface {
 
 // PostStore defines the data layer for Posts
 type PostStore struct {
-	*StoreConfig
+	*StoreCfgOld
 	seoMetaModel    SeoMetaRepository
 	userModel       UserRepository
 	categoriesModel CategoryRepository
@@ -43,9 +43,9 @@ type PostStore struct {
 }
 
 // newPosts - Construct
-func newPosts(cfg *StoreConfig) *PostStore {
+func newPosts(cfg *StoreCfgOld) *PostStore {
 	return &PostStore{
-		StoreConfig:     cfg,
+		StoreCfgOld:     cfg,
 		seoMetaModel:    newSeoMeta(cfg),
 		userModel:       newUser(cfg),
 		categoriesModel: newCategories(cfg),

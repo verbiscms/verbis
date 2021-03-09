@@ -71,7 +71,7 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Set up stores & pass the database.
-	store := models.New(&models.StoreConfig{
+	store := models.New(&models.StoreCfgOld{
 		DB:      db.Sqlx,
 		Config:  cfg.Config,
 		Paths:   paths.Get(),

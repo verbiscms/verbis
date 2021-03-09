@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/jmoiron/sqlx"
+	"github.com/ainsleyclark/verbis/api/models"
 )
 
 // Repository defines methods for redirects
@@ -28,6 +28,7 @@ type Repository interface {
 // Store defines the data layer for redirects.
 type Store struct {
 	*database.Model
+	Config *domain.ThemeConfig
 }
 
 const (
@@ -44,8 +45,9 @@ var (
 // New
 //
 // Creates a new redirects store.
-func New(db *sqlx.DB) *Store {
+func New(cfg *models.StoreCfgOld) *Store {
 	return &Store{
-		Model: database.NewModel(db),
+		Model:  database.NewModel(cfg.DB),
+		Config: cfg.Config,
 	}
 }
