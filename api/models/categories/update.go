@@ -5,24 +5,25 @@
 package categories
 
 import (
-	"fmt"
+	"database/sql"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 )
 
-// Create
+// Update
 //
-// Create a new category
-// Returns errors.CONFLICT if the the category (name) already exists.
-// Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
+// Returns an updated category.
+// Returns errors.CONFLICT if the validation failed.
+// Returns errors.INTERNAL if the SQL query was invalid or the function could not obtain the newly created ID.
 func (s *Store) Update(c domain.Category) (domain.Category, error) {
 	const op = "CategoryStore.Create"
 
-	//exists, err := s.ExistsByName(c.Name)
-	//if exists || err != nil {
-	//	return domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Could not create the post, the name %v, already exists", c.Name), Operation: op, Err: fmt.Errorf("name already exists")}
-	//}
+	err := s.validate(c)
+	if err != nil {
+		return domain.Category{}, err
+	}
 
 	q := s.Builder().Update(TableName).
 		Column("uuid", "?").
@@ -37,17 +38,12 @@ func (s *Store) Update(c domain.Category) (domain.Category, error) {
 		Where("id", "=", c.Id).
 		Build()
 
-	result, err := s.DB.Exec(q, uuid.New().String())
-	if err != nil {
-		fmt.Println(err)
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
+	_, err = s.DB.Exec(q, uuid.New().String())
+	if err == sql.ErrNoRows {
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating category with the name: " + c.Name, Operation: op, Err: err}
+	} else if err != nil {
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
-
-	id, err := result.LastInsertId()
-	if err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
-	}
-	c.Id = int(id)
 
 	return c, nil
 }

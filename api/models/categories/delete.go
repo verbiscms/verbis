@@ -12,24 +12,22 @@ import (
 
 // Delete
 //
-// Deletes a category from categories and post categories table.
-//
-// Returns errors.NOTFOUND if the category was not found.
+// Returns nil if the category was successfully deleted.
 // Returns errors.INTERNAL if the SQL query was invalid.
+// Returns errors.NOTFOUND if the category was not found.
 func (s *Store) Delete(id int) error {
 	const op = "CategoryStore.Delete"
 
 	q := s.Builder().DeleteFrom(TableName).Where("id", "=", id)
 	_, err := s.DB.Exec(q.Build(), id)
 	if err == sql.ErrNoRows {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No category exists with the ID: %v", id), Operation: op, Err: err}
+		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
 	}
 
 	err = s.DeleteFromPivot(id)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -38,14 +36,16 @@ func (s *Store) Delete(id int) error {
 
 // DeleteFromPivot
 //
-//
+// Returns nil if the category was successfully deleted.
+// Returns errors.INTERNAL if the SQL query was invalid.
+// Returns errors.NOTFOUND if the category was not found.
 func (s *Store) DeleteFromPivot(id int) error {
 	const op = "CategoryStore.DeleteFromPivot"
 
 	q := s.Builder().DeleteFrom(PivotTableName).Where("id", "=", id)
 	_, err := s.DB.Exec(q.Build(), id)
 	if err == sql.ErrNoRows {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No category exists with the ID: %v", id), Operation: op, Err: err}
+		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
 	}

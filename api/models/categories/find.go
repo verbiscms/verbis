@@ -7,14 +7,14 @@ package categories
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
 // Find
 //
-// Find a category by ID.
-//
+// Returns a category by finding a category by ID.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Id.
 func (s *Store) Find(id int) (domain.Category, error) {
@@ -27,7 +27,7 @@ func (s *Store) Find(id int) (domain.Category, error) {
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	return category, nil
@@ -35,8 +35,7 @@ func (s *Store) Find(id int) (domain.Category, error) {
 
 // FindByPost
 //
-// Find a category by post name.
-//
+// Returns a category by finding a category by post ID.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Post Id.
 func (s *Store) FindByPost(id int) (domain.Category, error) {
@@ -52,7 +51,7 @@ func (s *Store) FindByPost(id int) (domain.Category, error) {
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the post ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	return category, nil
@@ -60,8 +59,7 @@ func (s *Store) FindByPost(id int) (domain.Category, error) {
 
 // FindBySlug
 //
-// Find a category by the given slug.
-//
+// Returns a category by finding a category by slug.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindBySlug(slug string) (domain.Category, error) {
@@ -74,7 +72,7 @@ func (s *Store) FindBySlug(slug string) (domain.Category, error) {
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "No category exists with the slug: " + slug, Operation: op, Err: err}
 	} else if err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	return category, nil
@@ -82,8 +80,7 @@ func (s *Store) FindBySlug(slug string) (domain.Category, error) {
 
 // FindByName
 //
-// Find a category by the given name.
-//
+// Returns a category by finding a category by name.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given slug.
 func (s *Store) FindByName(name string) (domain.Category, error) {
@@ -96,7 +93,7 @@ func (s *Store) FindByName(name string) (domain.Category, error) {
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "No category exists with the name: " + name, Operation: op, Err: err}
 	} else if err != nil {
-		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	return category, nil

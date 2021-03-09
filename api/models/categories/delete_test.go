@@ -5,8 +5,10 @@
 package categories
 
 import (
+	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
@@ -24,35 +26,47 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 		"Success": {
 			category,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 1))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 1))
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WithArgs(category.Id).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
+					WithArgs(category.Id).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 		"No Rows": {
 			"No category exists with the ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 0))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 1))
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WithArgs(category.Id).
+					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"No Rows Pivot": {
 			"No category exists with the ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 1))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 0))
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WithArgs(category.Id).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
+					WithArgs(category.Id).
+					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
-			"Error executing sql query",
+			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 		"Internal Error Pivot": {
 			"Error executing sql query",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 0))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 0))
+				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
