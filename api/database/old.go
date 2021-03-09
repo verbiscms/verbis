@@ -5,7 +5,7 @@
 package database
 
 import (
-	_ "embed"
+	_ "embed" //nolint
 	"fmt"
 	"github.com/JamesStewy/go-mysqldump"
 	"github.com/ainsleyclark/verbis/api/environment"

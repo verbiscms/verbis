@@ -5,8 +5,7 @@
 package options
 
 import (
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/jmoiron/sqlx"
+	"github.com/ainsleyclark/verbis/api/store"
 )
 
 // Repository defines methods for options
@@ -16,7 +15,7 @@ type Repository interface {
 
 // Store defines the data layer for options.
 type Store struct {
-	*database.Model
+	*store.Config
 }
 
 const (
@@ -27,8 +26,8 @@ const (
 // New
 //
 // Creates a new options store.
-func New(db *sqlx.DB) *Store {
+func New(cfg *store.Config) *Store {
 	return &Store{
-		Model: database.NewModel(db),
+		Config: cfg,
 	}
 }
