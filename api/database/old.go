@@ -22,7 +22,7 @@ type DBCfg struct {
 }
 
 var (
-	//go:embed schemas/schema.sql
+	//go:embed schema.sql
 	sqlMigration string
 )
 
