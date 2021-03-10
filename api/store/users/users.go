@@ -40,6 +40,8 @@ type Store struct {
 const (
 	// The database table name for users.
 	TableName = "users"
+	// The database table name for the user-roles pivot.
+	PivotTableName = "user_roles"
 )
 
 var (
@@ -71,7 +73,7 @@ func New(cfg *store.Config) *Store {
 // by user id
 func (s *Store) SelectStmt() *builder.Sqlbuilder {
 	return s.Builder().
-		SelectRaw(s.Schema()+"users.*, "+s.Schema()+"roles.id 'roles.id', "+s.Schema()+"roles.name 'roles.name', "+s.Schema()+"roles.description 'roles.description'").
+		SelectRaw(s.Schema()+"users.*, "+s.Schema()+"roles.id `roles.id`, "+s.Schema()+"roles.name `roles.name`, "+s.Schema()+"roles.description `roles.description`").
 		From(s.Schema()+TableName).
 		LeftJoin(s.Schema()+"user_roles", "user_roles", s.Schema()+"users.id = "+s.Schema()+"user_roles.user_id").
 		LeftJoin(s.Schema()+"roles", "roles", s.Schema()+"user_roles.role_id = "+s.Schema()+"roles.id")

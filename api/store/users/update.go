@@ -50,7 +50,11 @@ func (s *Store) Update(u domain.User) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// UPDATE USER ROLES
+	// Update the pivot table
+	err = s.updateUserRoles(u.Id, u.Role.Id)
+	if err != nil {
+		return domain.User{}, err
+	}
 
 	return u, nil
 }
