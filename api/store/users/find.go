@@ -20,9 +20,8 @@ import (
 func (s *Store) Find(id int) (domain.User, error) {
 	const op = "UserStore.Find"
 
-	q := s.Builder().
-		From(s.Schema()+TableName).
-		Where("id", "=", id).
+	q := s.SelectStmt().
+		Where(s.Schema()+"users.id", "=", id).
 		Limit(1)
 
 	var user domain.User
@@ -44,9 +43,8 @@ func (s *Store) Find(id int) (domain.User, error) {
 func (s *Store) FindByToken(token string) (domain.User, error) {
 	const op = "UserStore.FindByToken"
 
-	q := s.Builder().
-		From(s.Schema()+TableName).
-		Where("token", "=", token).
+	q := s.SelectStmt().
+		Where(s.Schema()+"users.token", "=", token).
 		Limit(1)
 
 	var user domain.User
@@ -68,9 +66,8 @@ func (s *Store) FindByToken(token string) (domain.User, error) {
 func (s *Store) FindByEmail(email string) (domain.User, error) {
 	const op = "UserStore.FindByEmail"
 
-	q := s.Builder().
-		From(s.Schema()+TableName).
-		Where("email", "=", email).
+	q := s.SelectStmt().
+		Where(s.Schema()+"users.email", "=", email).
 		Limit(1)
 
 	var user domain.User

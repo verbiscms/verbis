@@ -19,10 +19,10 @@ type UsersTestSuite struct {
 	test.DBSuite
 }
 
-// TestCategories
+// TestUsers
 //
 // Assert testing has begun.
-func TestCategories(t *testing.T) {
+func TestUsers(t *testing.T) {
 	suite.Run(t, &UsersTestSuite{
 		DBSuite: test.NewDBSuite(t),
 	})
@@ -30,7 +30,7 @@ func TestCategories(t *testing.T) {
 
 // Setup
 //
-// A helper to obtain a mock roles database
+// A helper to obtain a mock users database
 // for testing.
 func (t *UsersTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	t.Reset()
@@ -42,9 +42,24 @@ func (t *UsersTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	})
 }
 
+// SetupSession
+//
+// Helper for checking session testing.
+func (t *UsersTestSuite) SetupSession(session int, mf func(m sqlmock.Sqlmock)) *Store {
+	s := t.Setup(mf)
+	s.Config.Config = &domain.ThemeConfig{
+		Admin: domain.AdminConfig{
+			InactiveSessionTime: session,
+		},
+	}
+	return s
+}
+
 const (
-	// The default category ID used for testing.
+	// The default user ID used for testing.
 	userID = "1"
+	// The select statement
+	SelectStatement = "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM `users` LEFT JOIN `user_roles` AS `user_roles` ON `users`.`id` = `user_roles`.`user_id` LEFT JOIN `roles` AS `roles` ON `user_roles`.`role_id` = `roles`.`id` "
 )
 
 var (
@@ -55,6 +70,9 @@ var (
 			FirstName: "Verbis",
 			LastName:  "CMS",
 			Email:     "verbis@verbiscms.com",
+			Role: domain.Role{
+				Name: "Role",
+			},
 		},
 		Token: "token",
 	}
@@ -62,6 +80,7 @@ var (
 	userCreate = domain.UserCreate{
 		User: domain.User{
 			UserPart: domain.UserPart{
+				Id:        1,
 				FirstName: "Verbis",
 				LastName:  "CMS",
 				Email:     "verbis@verbiscms.com",
@@ -74,13 +93,22 @@ var (
 	users = domain.Users{
 		{
 			UserPart: domain.UserPart{
-				Id: 1, FirstName: "Verbis", LastName: "CMS",
+				Id: 1, FirstName: "Verbis", LastName: "CMS", Role: domain.Role{
+					Name: "Role",
+				},
 			},
 		},
 		{
 			UserPart: domain.UserPart{
-				Id: 2, FirstName: "Verbis", LastName: "CMS",
+				Id: 2, FirstName: "Verbis", LastName: "CMS", Role: domain.Role{
+					Name: "Role",
+				},
 			},
 		},
+	}
+	// The default reset password used for testing.
+	passwordReset = domain.UserPasswordReset{
+		NewPassword:     "password1",
+		ConfirmPassword: "password1",
 	}
 )

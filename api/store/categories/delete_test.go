@@ -79,7 +79,7 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.Nil(err)
+			t.RunT(nil, err)
 		})
 	}
 }
