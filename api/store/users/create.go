@@ -64,7 +64,11 @@ func (s *Store) Create(u domain.UserCreate) (domain.User, error) {
 	}
 	u.User.Id = int(id)
 
-	// INSERT USER ROLES
+	// Insert into the pivot table
+	err = s.createUserRoles(int(id), u.Role.Id)
+	if err != nil {
+		return domain.User{}, err
+	}
 
 	return u.User, nil
 }

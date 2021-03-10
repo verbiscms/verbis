@@ -29,6 +29,9 @@ func (t *UsersTestSuite) TestStore_Create() {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}, test.DBAnyString{}, test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
+
+				m.ExpectExec(regexp.QuoteMeta(CreatePivotQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 		"Validation Failed": {
@@ -63,6 +66,17 @@ func (t *UsersTestSuite) TestStore_Create() {
 					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
 			},
 		},
+		"Error Pivot": {
+			database.ErrQueryMessage,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WithArgs(test.DBAnyString{}, test.DBAnyString{}, test.DBAnyString{}).
+					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
+
+				m.ExpectExec(regexp.QuoteMeta(CreatePivotQuery)).
+					WillReturnError(fmt.Errorf("error"))
+			},
+		},
 	}
 
 	for name, test := range tt {
@@ -73,7 +87,7 @@ func (t *UsersTestSuite) TestStore_Create() {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(cat, test.want, 2)
+			t.RunT(cat, test.want, 3)
 		})
 	}
 }

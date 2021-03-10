@@ -35,7 +35,11 @@ func (s *Store) Delete(id int) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// TODO Delete from USER_ROLES
+	// Delete from the pivot table
+	err = s.deleteUserRoles(id)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

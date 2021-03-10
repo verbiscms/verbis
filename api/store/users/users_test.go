@@ -59,7 +59,7 @@ const (
 	// The default user ID used for testing.
 	userID = "1"
 	// The select statement
-	SelectStatement = "SELECT users.*, roles.id 'roles.id', roles.name 'roles.name', roles.description 'roles.description' FROM `users` LEFT JOIN `user_roles` AS `user_roles` ON `users`.`id` = `user_roles`.`user_id` LEFT JOIN `roles` AS `roles` ON `user_roles`.`role_id` = `roles`.`id` "
+	SelectStatement = "SELECT users.*, roles.id `roles.id`, roles.name `roles.name`, roles.description `roles.description` FROM `users` LEFT JOIN `user_roles` AS `user_roles` ON `users`.`id` = `user_roles`.`user_id` LEFT JOIN `roles` AS `roles` ON `user_roles`.`role_id` = `roles`.`id` "
 )
 
 var (
