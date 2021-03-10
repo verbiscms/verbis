@@ -17,6 +17,17 @@ import (
 Helpers
 */
 
+func (s *Sqlbuilder) getDelim() string {
+	switch strings.ToLower(s.Dialect) {
+	case "postgres":
+		return `"`
+	case "mysql":
+		return "`"
+	default:
+		return `"`
+	}
+}
+
 func (s *Sqlbuilder) formatSchema(schema string) string {
 	schemaParts := strings.Split(schema, ".")
 	finalSchemaStmt := ``

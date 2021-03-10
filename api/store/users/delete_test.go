@@ -31,6 +31,9 @@ func (t *UsersTestSuite) TestStore_Delete() {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WithArgs(user.Id).
 					WillReturnResult(sqlmock.NewResult(0, 1))
+
+				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 		"Owner": {
@@ -52,6 +55,18 @@ func (t *UsersTestSuite) TestStore_Delete() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnError(fmt.Errorf("error"))
+			},
+		},
+		"Error Pivot": {
+			user.Id,
+			database.ErrQueryMessage,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WithArgs(user.Id).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+
+				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
