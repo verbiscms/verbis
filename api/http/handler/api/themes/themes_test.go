@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/logger"
 	mockStore "github.com/ainsleyclark/verbis/api/mocks/models"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/theme"
-	mockWatcher "github.com/ainsleyclark/verbis/api/mocks/watchers"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
@@ -53,7 +52,6 @@ func (t *ThemesTestSuite) Setup(mf func(m *mocks.Repository)) *Themes {
 		mf(m)
 	}
 
-	watcher := &mockWatcher.{}
 	return &Themes{
 		Deps: &deps.Deps{
 			Config: &config.DefaultTheme,
@@ -61,7 +59,6 @@ func (t *ThemesTestSuite) Setup(mf func(m *mocks.Repository)) *Themes {
 				ActiveTheme: TestActiveTheme,
 			},
 			Theme: m,
-
 		},
 	}
 }
