@@ -28,10 +28,12 @@ type DBSuite struct {
 	mockDriver *mocks.Driver
 }
 
-type AnyUUID struct{}
+// Any string for mock string args.
+type DBAnyString struct{}
 
 // Match satisfies sqlmock.Argument interface
-func (a AnyUUID) Match(v driver.Value) bool {
+// for any strings.
+func (a DBAnyString) Match(v driver.Value) bool {
 	_, ok := v.(string)
 	return ok
 }
@@ -52,6 +54,7 @@ func NewDBSuite(t *testing.T) DBSuite {
 	mockDriver := &mocks.Driver{}
 	mockDriver.On("DB").Return(sqlxDB)
 
+	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
 	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
 	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
 

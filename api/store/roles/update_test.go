@@ -10,7 +10,6 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
@@ -27,7 +26,6 @@ func (t *RolesTestSuite) TestStore_Update() {
 			role,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
 					WillReturnResult(sqlmock.NewResult(int64(role.Id), 1))
 			},
 		},
@@ -43,7 +41,6 @@ func (t *RolesTestSuite) TestStore_Update() {
 			"Error updating role with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -51,7 +48,6 @@ func (t *RolesTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},

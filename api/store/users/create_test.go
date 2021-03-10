@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package users
 
 import (
 	"database/sql"
@@ -15,35 +15,35 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `categories` (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, '/cat', 'Category', NULL, NULL, '', NULL, NOW(), NOW())"
+	CreateQuery = "INSERT INTO `users` (uuid, first_name, last_name, email, password, website, facebook, twitter, linked_in, instagram, biography, profile_picture_id, token, updated_at, created_at) VALUES (?, 'Verbis', 'CMS', 'verbis@verbiscms.com', ?, NULL, 'Verbis', NULL, NULL, NULL, NULL, NULL, ?, NOW(), NOW())"
 )
 
-func (t *CategoriesTestSuite) TestStore_Create() {
+func (t *UsersTestSuite) TestStore_Create() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			category,
+			userCreate.User,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
+					WithArgs(test.DBAnyString{}, test.DBAnyString{}, test.DBAnyString{}).
+					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
 			},
 		},
 		"Validation Failed": {
-			"Validation failed, the category name already exists",
+			"Validation failed, choose another email address",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsByEmailQuery)).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"Error creating category with the name",
+			"Error creating user with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
+					WithArgs(test.DBAnyString{}, test.DBAnyString{}, test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -51,15 +51,15 @@ func (t *CategoriesTestSuite) TestStore_Create() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
+					WithArgs(test.DBAnyString{}, test.DBAnyString{}, test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 		"Last Insert ID Error": {
-			"Error getting the newly created category ID",
+			"Error getting the newly created user ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
+					WithArgs(test.DBAnyString{}, test.DBAnyString{}, test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
 			},
 		},
@@ -68,7 +68,7 @@ func (t *CategoriesTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			cat, err := s.Create(category)
+			cat, err := s.Create(userCreate)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -76,4 +76,14 @@ func (t *CategoriesTestSuite) TestStore_Create() {
 			t.RunT(cat, test.want, 2)
 		})
 	}
+}
+
+func (t *UsersTestSuite) TestStore_Create_FailedHash() {
+	s := t.Setup(nil)
+	s.hashPasswordFunc = func(password string) (string, error) {
+		return "", fmt.Errorf("error")
+	}
+	_, err := s.Create(userCreate)
+	want := "error"
+	t.Equal(want, err.Error())
 }

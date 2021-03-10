@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 )
 
 // Update
@@ -31,7 +30,7 @@ func (s *Store) Update(r domain.Role) (domain.Role, error) {
 		Column("description", r.Description).
 		Where("id", "=", r.Id)
 
-	_, err = s.DB().Exec(q.Build(), uuid.New().String())
+	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return domain.Role{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating role with the name: " + r.Name, Operation: op, Err: err}
 	} else if err != nil {
