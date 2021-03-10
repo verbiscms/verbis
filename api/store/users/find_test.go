@@ -14,9 +14,9 @@ import (
 )
 
 var (
-	FindQuery        = "SELECT * FROM `users` WHERE `id` = '" + userID + "' LIMIT 1"
-	FindByTokenQuery = "SELECT * FROM `users` WHERE `token` = '" + user.Token + "' LIMIT 1"
-	FindByEmailQuery = "SELECT * FROM `users` WHERE `email` = '" + user.Email + "' LIMIT 1"
+	FindQuery        = SelectStatement + "WHERE `users`.`id` = '" + userID + "' LIMIT 1"
+	FindByTokenQuery = SelectStatement + "WHERE `users`.`token` = '" + user.Token + "' LIMIT 1"
+	FindByEmailQuery = SelectStatement + "WHERE `users`.`email` = '" + user.Email + "' LIMIT 1"
 )
 
 func (t *UsersTestSuite) TestStore_Find() {
@@ -27,8 +27,8 @@ func (t *UsersTestSuite) TestStore_Find() {
 		"Success": {
 			user,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token"}).
-					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token)
+				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token", "roles.name"}).
+					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
@@ -54,7 +54,7 @@ func (t *UsersTestSuite) TestStore_Find() {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(test.want, got)
+			t.RunT(test.want, got, 12)
 		})
 	}
 }
@@ -67,8 +67,8 @@ func (t *UsersTestSuite) TestStore_FindByToken() {
 		"Success": {
 			user,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token"}).
-					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token)
+				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token", "roles.name"}).
+					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByTokenQuery)).WillReturnRows(rows)
 			},
 		},
@@ -94,7 +94,7 @@ func (t *UsersTestSuite) TestStore_FindByToken() {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(test.want, got)
+			t.RunT(test.want, got, 12)
 		})
 	}
 }
@@ -107,8 +107,8 @@ func (t *UsersTestSuite) TestStore_FindByEmail() {
 		"Success": {
 			user,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token"}).
-					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token)
+				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token", "roles.name"}).
+					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByEmailQuery)).WillReturnRows(rows)
 			},
 		},
@@ -134,7 +134,7 @@ func (t *UsersTestSuite) TestStore_FindByEmail() {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(test.want, got)
+			t.RunT(test.want, got, 12)
 		})
 	}
 }

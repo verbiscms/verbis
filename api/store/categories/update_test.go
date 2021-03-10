@@ -27,7 +27,7 @@ func (t *CategoriesTestSuite) TestStore_Update() {
 			category,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
+					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
 			},
 		},
@@ -43,7 +43,7 @@ func (t *CategoriesTestSuite) TestStore_Update() {
 			"Error updating category with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
+					WithArgs(test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -51,7 +51,7 @@ func (t *CategoriesTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
+					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},

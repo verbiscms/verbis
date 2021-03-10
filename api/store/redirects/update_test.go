@@ -27,7 +27,7 @@ func (t *RedirectsTestSuite) TestStore_Update() {
 			redirect,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
+					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(redirect.Id), 1))
 			},
 		},
@@ -43,7 +43,7 @@ func (t *RedirectsTestSuite) TestStore_Update() {
 			"Error updating redirect with the from path",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
+					WithArgs(test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -51,7 +51,7 @@ func (t *RedirectsTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.AnyUUID{}).
+					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},

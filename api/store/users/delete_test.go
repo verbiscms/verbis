@@ -2,52 +2,56 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package roles
+package users
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
 
 var (
-	CreateQuery = "INSERT INTO `roles` (id, name, description) VALUES (1, 'Banned', 'The user has been banned from the system.')"
+	DeleteQuery = "DELETE FROM `users` WHERE `id` = '" + userID + "'"
 )
 
-func (t *RolesTestSuite) TestStore_Create() {
+func (t *UsersTestSuite) TestStore_Delete() {
 	tt := map[string]struct {
+		id   int
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			role,
+			user.Id,
+			user,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(role.Id), 1))
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WithArgs(user.Id).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
-		"Validation Failed": {
-			"Validation failed, the role ID already exists",
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id"}).
-					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
-			},
+		"Owner": {
+			domain.OwnerRoleID,
+			"The owner of the site cannot be deleted",
+			nil,
 		},
 		"No Rows": {
-			"Error creating role with the name",
+			user.Id,
+			"No user exists with the ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WithArgs(user.Id).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
+			user.Id,
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -56,12 +60,12 @@ func (t *RolesTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			cat, err := s.Create(role)
+			err := s.Delete(test.id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(cat, test.want, 2)
+			t.RunT(nil, err)
 		})
 	}
 }

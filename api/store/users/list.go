@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"strings"
 )
 
 // List
@@ -20,11 +21,25 @@ import (
 func (s *Store) List(meta params.Params) (domain.Users, int, error) {
 	const op = "UserStore.List"
 
-	q := s.Builder().
-		From(s.Schema() + TableName)
+	q := s.SelectStmt()
+
+	// Check if there is a role filter, for example
+	// roles.name and reorder meta.Filters
+	// TODO: This should be separate (in FilterRows function)
+	table := TableName
+	for k, v := range meta.Filters {
+		if strings.Contains(k, "roles") {
+			arr := strings.Split(k, ".")
+			if len(arr) > 1 {
+				meta.Filters[arr[1]] = v
+				delete(meta.Filters, k)
+				table = "roles"
+			}
+		}
+	}
 
 	// Apply filters
-	err := database.FilterRows(s.Driver, meta.Filters, TableName)
+	err := database.FilterRows(s.Driver, meta.Filters, table)
 	if err != nil {
 		return nil, -1, err
 	}

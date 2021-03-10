@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	ListQuery  = "SELECT * FROM `users` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `users` ORDER BY \"created_at\" desc"
+	ListQuery  = SelectStatement + "ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
+	CountQuery = "SELECT COUNT(*) AS rowcount FROM (" + SelectStatement + " ORDER BY \"created_at\" desc"
 )
 
 func (t *UsersTestSuite) TestStore_List() {
@@ -31,9 +31,9 @@ func (t *UsersTestSuite) TestStore_List() {
 		"Success": {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email"}).
-					AddRow(users[0].Id, users[0].FirstName, users[0].LastName, users[0].Email).
-					AddRow(users[1].Id, users[0].FirstName, users[1].LastName, users[1].Email)
+				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "roles.name"}).
+					AddRow(users[0].Id, users[0].FirstName, users[0].LastName, users[0].Email, users[0].Role.Name).
+					AddRow(users[1].Id, users[0].FirstName, users[1].LastName, users[1].Email, users[1].Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
@@ -71,9 +71,9 @@ func (t *UsersTestSuite) TestStore_List() {
 		"Count Error": {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email"}).
-					AddRow(users[0].Id, users[0].FirstName, users[0].LastName, users[0].Email).
-					AddRow(users[1].Id, users[0].FirstName, users[1].LastName, users[1].Email)
+				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "roles.name"}).
+					AddRow(users[0].Id, users[0].FirstName, users[0].LastName, users[0].Email, users[0].Role.Name).
+					AddRow(users[1].Id, users[0].FirstName, users[1].LastName, users[1].Email, users[1].Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},

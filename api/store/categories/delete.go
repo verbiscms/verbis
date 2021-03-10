@@ -7,6 +7,7 @@ package categories
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
@@ -26,7 +27,7 @@ func (s *Store) Delete(id int) error {
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	err = s.DeleteFromPivot(id)
@@ -53,7 +54,7 @@ func (s *Store) DeleteFromPivot(id int) error {
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	return nil

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package roles
+package users
 
 import (
 	"database/sql"
@@ -10,44 +10,48 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	CreateQuery = "INSERT INTO `roles` (id, name, description) VALUES (1, 'Banned', 'The user has been banned from the system.')"
+	UpdateQuery = "UPDATE `users` SET uuid=?, first_name='Verbis', last_name='CMS', email='verbis@verbiscms.com', password=?, website=NULL, facebook='Verbis', twitter=NULL, linked_in=NULL, instagram=NULL, biography=NULL, profile_picture_id=NULL, token=?, updated_at=NOW() WHERE `id` = '1'"
 )
 
-func (t *RolesTestSuite) TestStore_Create() {
+func (t *UsersTestSuite) TestStore_Update() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			role,
+			user,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(role.Id), 1))
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.DBAnyString{}).
+					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
 			},
 		},
 		"Validation Failed": {
-			"Validation failed, the role ID already exists",
+			"Validation failed, choose another email address",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsByEmailQuery)).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"Error creating role with the name",
+			"Error updating user with the name",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -56,9 +60,9 @@ func (t *RolesTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			cat, err := s.Create(role)
+			cat, err := s.Update(user)
 			if err != nil {
-				t.Contains(errors.Message(err), test.want)
+				t.Contains(errors.Message(err), test.want, err)
 				return
 			}
 			t.RunT(cat, test.want, 2)

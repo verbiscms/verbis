@@ -46,9 +46,9 @@ func (s *Store) FindByPost(id int) (domain.Category, error) {
 
 	q := s.Builder().
 		From(s.Schema()+"post_categories").
-		LeftJoin("categories", "c", "post_categories.post_id = c.id").
+		LeftJoin(s.Schema()+"categories", "c", s.Schema()+"post_categories.post_id = c.id").
 		Select("c.*").
-		Where("post_categories.post_id", "=", id)
+		Where(s.Schema()+"post_categories.post_id", "=", id)
 
 	var category domain.Category
 	err := s.DB().Get(&category, q.Build(), id)
