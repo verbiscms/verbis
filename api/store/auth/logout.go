@@ -4,10 +4,6 @@
 
 package auth
 
-import (
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
-)
-
 // Logout
 //
 // Logout checks to see if see if the the token is valid & then
@@ -22,7 +18,7 @@ func (s *Store) Logout(token string) (int, error) {
 		return -1, err
 	}
 
-	newToken := encryption.GenerateUserToken(user.FirstName+user.LastName, user.Email)
+	newToken := s.generateTokeFunc(user.FirstName+user.LastName, user.Email)
 
 	err = s.UserStore.UpdateToken(newToken)
 	if err != nil {

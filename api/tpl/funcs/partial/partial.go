@@ -22,7 +22,7 @@ type Func func(name string, data ...interface{}) (template.HTML, error)
 // Takes in the name of a template relative to the theme as well
 // as any data to be passed. The template is executed and
 // returns an error if no
-
+//
 // Returns errors.TEMPLATE if no file was found or the template
 // could not be executed.
 //

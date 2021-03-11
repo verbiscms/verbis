@@ -15,7 +15,7 @@ import (
 // Authenticate compares the email & password for a match in the DB.
 // Returns errors.NOTFOUND if the user is not found.
 func (s *Store) Login(email, password string) (domain.User, error) {
-	const op = "AuthStore.Authenticate"
+	const op = "AuthStore.Login"
 
 	user, err := s.UserStore.FindByEmail(email)
 	if err != nil {
