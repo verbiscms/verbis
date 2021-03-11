@@ -6,6 +6,7 @@ package auth
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
@@ -41,14 +42,25 @@ func (t *AuthTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	})
 }
 
-const (
-	// The default user ID used for testing.
-	categoryID = "1"
-)
-
 var (
-// The default category used for testing.
-
-// The default categories used for testing.
-
+	// The default user used for testing.
+	user = domain.User{
+		UserPart: domain.UserPart{
+			Id:        1,
+			FirstName: "Verbis",
+			LastName:  "CMS",
+			Email:     "verbis@verbiscms.com",
+			Role: domain.Role{
+				Name: "Role",
+			},
+		},
+		Token: "token",
+	}
+	// The default password reset used for
+	// testing.
+	passwordReset = domain.PasswordReset{
+		Id:    1,
+		Email: user.Email,
+		Token: user.Token,
+	}
 )

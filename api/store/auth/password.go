@@ -94,7 +94,8 @@ func (s *Store) SendResetPassword(email string) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error inserting into password resets", Operation: op, Err: err}
 	}
 
-	// TODO: Mailer!
+	// TODO: Mailer! This should be an interface with sending
+	// 	methods. To test.
 	rp, err := events.NewResetPassword()
 	if err != nil {
 		return err
@@ -129,7 +130,7 @@ func (s *Store) VerifyPasswordToken(token string) (domain.PasswordReset, error) 
 		return domain.PasswordReset{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	return domain.PasswordReset{}, nil
+	return pr, nil
 }
 
 // CleanPasswordResets
