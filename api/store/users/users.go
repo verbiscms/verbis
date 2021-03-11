@@ -26,6 +26,7 @@ type Repository interface {
 	Delete(id int) error
 	CheckSession(token string) error
 	ResetPassword(id int, reset domain.UserPasswordReset) error
+	UpdateToken(token string) error
 	Exists(id int) bool
 	ExistsByEmail(email string) bool
 }

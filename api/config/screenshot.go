@@ -38,7 +38,7 @@ var (
 //
 // Returns errors.NOTFOUND if no screenshot was found.
 func FindScreenshot(path string) (string, error) {
-	const op = "Config.FindScreenshot"
+	const op = "Theme.FindScreenshot"
 
 	for _, v := range ScreenshotExtensions {
 		name := path + string(os.PathSeparator) + ScreenshotName + v

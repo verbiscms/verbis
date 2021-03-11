@@ -12,7 +12,8 @@ import (
 
 type Config struct {
 	database.Driver
-	Config  *domain.ThemeConfig
+	Theme   *domain.ThemeConfig
+	Options *domain.Options
 	Paths   paths.Paths
 	Running bool
 }
