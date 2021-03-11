@@ -20,6 +20,7 @@ import (
 // creates a new hash, it then updates the user table
 // with the new details and removes the temporary
 // entry in the PasswordTableName table.
+//
 // Returns errors.NOTFOUND if the user was not found by the given token.
 // Returns errors.INTERNAL if the SQL query was invalid, unable to
 // create a new password or delete from the password resets table.
