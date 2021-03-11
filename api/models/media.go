@@ -338,11 +338,11 @@ func (s *MediaStore) insert(uniq uuid.UUID, name, filePath string, fileSize int,
 		FileName:    name,
 		Sizes:       sizes,
 		Type:        mimeType,
-		UserID:      userID,
+		UserId:      userID,
 	}
 
 	q := "INSERT INTO media (uuid, url, title, alt, description, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.DB.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserID)
+	c, err := s.DB.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserId)
 
 	if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the new media item with the name: %v", name), Operation: op, Err: err}

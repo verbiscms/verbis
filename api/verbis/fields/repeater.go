@@ -68,12 +68,7 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields dom
 
 	amount, err := field.OriginalValue.Int()
 	if err != nil {
-		logger.WithError(&errors.Error{
-			Code:      errors.INVALID,
-			Message:   "Unable to cast repeater value to integer",
-			Operation: op,
-			Err:       err,
-		})
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Unable to cast repeater value to integer", Operation: op, Err: err})
 		return Repeater{}
 	}
 

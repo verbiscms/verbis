@@ -28,7 +28,7 @@ export default class FieldParser {
      * the editor to process.
      */
     expandFields() {
-        if (this.fields === null) {
+        if (this.fields === null || this.fields === undefined) {
             return {}
         }
 
