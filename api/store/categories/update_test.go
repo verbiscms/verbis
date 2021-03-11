@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	UpdateQuery = "UPDATE `categories` SET uuid=?, slug='/cat', name='Category', description=NULL, parent_id=NULL, resource='', archive_id=NULL, updated_at=NOW() WHERE `id` = '1' "
+	UpdateQuery = "UPDATE `categories` SET `uuid` = ?, `slug` = '/cat', `name` = 'Category', `description` = NULL, `parent_id` = NULL, `resource` = '', `archive_id` = NULL, `updated_at` = NOW() WHERE `id` = '1'"
 )
 
 func (t *CategoriesTestSuite) TestStore_Update() {

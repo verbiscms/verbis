@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	UpdateQuery = "UPDATE `redirects` SET from_path='/from', to_path='/to', code=301, updated_at=NOW() WHERE `id` = '1'"
+	UpdateQuery = "UPDATE `redirects` SET `from_path` = '/from', `to_path` = '/to', `code` = 301, `updated_at` = NOW() WHERE `id` = '1'"
 )
 
 func (t *RedirectsTestSuite) TestStore_Update() {

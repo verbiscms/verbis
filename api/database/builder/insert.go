@@ -44,7 +44,7 @@ func (s *Sqlbuilder) Column(column string, value interface{}) *Sqlbuilder {
 func (s *Sqlbuilder) buildUpdate() string {
 	var set string
 	for _, v := range s.columns {
-		set += v[0] + "=" + v[1] + ", "
+		set += s.formatSchema(v[0]) + " = " + v[1] + ", "
 	}
 
 	set = strings.TrimSuffix(set, ", ")
@@ -66,7 +66,7 @@ func (s *Sqlbuilder) buildInsert() string {
 	var values string
 
 	for _, v := range s.columns {
-		cols += v[0] + ", "
+		cols += s.formatSchema(v[0]) + ", "
 		values += v[1] + ", "
 	}
 

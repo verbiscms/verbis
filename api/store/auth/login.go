@@ -19,12 +19,12 @@ func (s *Store) Login(email, password string) (domain.User, error) {
 
 	user, err := s.UserStore.FindByEmail(email)
 	if err != nil {
-		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "These credentials don't match our records.", Operation: op, Err: err}
+		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: ErrLoginMsg, Operation: op, Err: err}
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
-		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "These credentials don't match our records.", Operation: op, Err: err}
+		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: ErrLoginMsg, Operation: op, Err: err}
 	}
 
 	err = s.UserStore.UpdateToken(user.Token)

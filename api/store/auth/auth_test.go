@@ -21,7 +21,7 @@ type AuthTestSuite struct {
 // TestAuth
 //
 // Assert testing has begun.
-func TestCategories(t *testing.T) {
+func TestAuth(t *testing.T) {
 	suite.Run(t, &AuthTestSuite{
 		DBSuite: test.NewDBSuite(t),
 	})
@@ -42,7 +42,7 @@ func (t *AuthTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 }
 
 const (
-	// The default category ID used for testing.
+	// The default user ID used for testing.
 	categoryID = "1"
 )
 

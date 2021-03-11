@@ -132,14 +132,21 @@ func (s *Store) VerifyPasswordToken(token string) (domain.PasswordReset, error) 
 	return domain.PasswordReset{}, nil
 }
 
-
-// TODO
+// CleanPasswordResets
+//
 // Verify the token is valid from the password resets table
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) CleanPasswordResets() error {
-	const op = "AuthRepository.CleanPasswordResets"
-	if _, err := s.DB().Exec("DELETE FROM password_resets WHERE created_at < (NOW() - INTERVAL 2 HOUR)"); err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not delete from the reset passwords table", Operation: op, Err: err}
+	const op = "AuthStore.CleanPasswordResets"
+
+	q := s.Builder().
+		DeleteFrom(s.Schema() + PasswordTableName).
+		WhereRaw("created_at < (NOW() - INTERVAL 2 HOUR")
+
+	_, err := s.DB().Exec(q.Build())
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error deleting from the reset passwords table", Operation: op, Err: err}
 	}
+
 	return nil
 }
