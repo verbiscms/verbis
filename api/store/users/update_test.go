@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	UpdateQuery = "UPDATE `users` SET uuid=?, first_name='Verbis', last_name='CMS', email='verbis@verbiscms.com', password=?, website=NULL, facebook='Verbis', twitter=NULL, linked_in=NULL, instagram=NULL, biography=NULL, profile_picture_id=NULL, token=?, updated_at=NOW() WHERE `id` = '1'"
+	UpdateQuery = "UPDATE `users` SET `uuid` = ?, `first_name` = 'Verbis', `last_name` = 'CMS', `email` = 'verbis@verbiscms.com', `password` = ?, `website` = NULL, `facebook` = 'Verbis', `twitter` = NULL, `linked_in` = NULL, `instagram` = NULL, `biography` = NULL, `profile_picture_id` = NULL, `token` = ?, `updated_at` = NOW() WHERE `id` = '1'"
 )
 
 func (t *UsersTestSuite) TestStore_Update() {

@@ -27,7 +27,7 @@ func Setup(t *testing.T) *mocks.TemplateExecutor {
 	m := &mocks.TemplateExecutor{}
 	mc := &mocks.TemplateConfig{}
 
-	m.On("Theme").Return(mc)
+	m.On("Config").Return(mc)
 	mc.On("GetRoot").Return(apiPath + TestPath)
 
 	return m

@@ -6,7 +6,6 @@ package auth
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/store/users"
@@ -35,12 +34,9 @@ type Store struct {
 const (
 	// The database table name for password resets.
 	PasswordTableName = "password_resets"
-)
-
-var (
-	// ErrCategoryExists is returned by validate when
-	// a category already exists.
-	ErrCategoryExists = errors.New("category already exists")
+	// ErrLoginMsg is returned by login when
+	// authentication failed.
+	ErrLoginMsg = "These credentials don't match our records."
 )
 
 // New

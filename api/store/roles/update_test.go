@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	UpdateQuery = "UPDATE `roles` SET name='Banned', description='The user has been banned from the system.' WHERE `id` = '1' "
+	UpdateQuery = "UPDATE `roles` SET `name` = 'Banned', `description` = 'The user has been banned from the system.' WHERE `id` = '1'"
 )
 
 func (t *RolesTestSuite) TestStore_Update() {

@@ -4,8 +4,8 @@
 
 package auth
 
-const (
+var (
 	UpdatePasswordQuery      = "UPDATE users SET password = ? WHERE email = ?"
 	DeletePasswordResetQuery = "DELETE FROM password_resets WHERE token = ?"
-	InsertPasswordQuery = "INSERT INTO password_resets (email, token, created_at) VALUES (?, ?, NOW())"
+	InsertPasswordQuery      = "INSERT INTO password_resets (email, token, created_at) VALUES (?, ?, NOW())"
 )

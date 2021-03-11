@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `categories` (uuid, slug, name, description, parent_id, resource, archive_id, updated_at, created_at) VALUES (?, '/cat', 'Category', NULL, NULL, '', NULL, NOW(), NOW())"
+	CreateQuery = "INSERT INTO `categories` (`uuid`, `slug`, `name`, `description`, `parent_id`, `resource`, `archive_id`, `updated_at`, `created_at`) VALUES (?, '/cat', 'Category', NULL, NULL, '', NULL, NOW(), NOW())"
 )
 
 func (t *CategoriesTestSuite) TestStore_Create() {

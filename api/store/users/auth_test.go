@@ -17,9 +17,9 @@ import (
 )
 
 var (
-	UpdateTokenQuery     = "UPDATE `users` SET token=?, updated_at=NOW() WHERE `token` = 'token'"
-	UpdateTokenUsedQuery = "UPDATE `users` SET token_last_used=NOW() WHERE `token` = 'token'"
-	RestPasswordQuery    = "UPDATE `users` SET password=? WHERE `id` = '1'"
+	UpdateTokenQuery     = "UPDATE `users` SET `token` = ?, `updated_at` = NOW() WHERE `token` = 'token'"
+	UpdateTokenUsedQuery = "UPDATE `users` SET `token_last_used` = NOW() WHERE `token` = 'token'"
+	RestPasswordQuery    = "UPDATE `users` SET `password` = ? WHERE `id` = '1'"
 )
 
 func (t *UsersTestSuite) TestStore_CheckSession() {
