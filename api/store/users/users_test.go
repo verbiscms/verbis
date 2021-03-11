@@ -47,7 +47,7 @@ func (t *UsersTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 // Helper for checking session testing.
 func (t *UsersTestSuite) SetupSession(session int, mf func(m sqlmock.Sqlmock)) *Store {
 	s := t.Setup(mf)
-	s.Config.Config = &domain.ThemeConfig{
+	s.Config.Theme = &domain.ThemeConfig{
 		Admin: domain.AdminConfig{
 			InactiveSessionTime: session,
 		},

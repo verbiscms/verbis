@@ -43,7 +43,7 @@ var (
 //	r := Recover{
 //		deps:   &deps.Deps{Store: &models.Store{Options: nil}},
 //		err:    &errors.Error{Code: errors.TEMPLATE, Message: "message", Operation: "operation", Err: fmt.Errorf("error")},
-//		config: Config{},
+//		config: Theme{},
 //		tracer: trace.New(),
 //	}
 //
@@ -64,26 +64,26 @@ var (
 //	mc := &mocks.TemplateConfig{}
 //	mc.On("GetRoot").Return("test")
 //	mc.On("GetExtension").Return("cms")
-//	m.On("Config").Return(mc)
+//	m.On("Theme").Return(mc)
 //
 //	tt := map[string]struct {
-//		input Config
+//		input Theme
 //		want  func(s trace.Stack) trace.Stack
 //	}{
 //		"Nil Exec": {
-//			Config{TplExec: nil},
+//			Theme{TplExec: nil},
 //			func(s trace.Stack) trace.Stack {
 //				return s
 //			},
 //		},
 //		"Nil TplFile": {
-//			Config{TplFile: ""},
+//			Theme{TplFile: ""},
 //			func(s trace.Stack) trace.Stack {
 //				return s
 //			},
 //		},
 //		"With Template": {
-//			Config{
+//			Theme{
 //				TplFile: "test",
 //				TplExec: m,
 //			},
@@ -142,7 +142,7 @@ var (
 //	}
 //
 //	t.RequestSetup(bytes.NewBuffer([]byte("test")), &cookie, func(ctx *gin.Context) {
-//		r := Recover{config: Config{Context: ctx}}
+//		r := Recover{config: Theme{Context: ctx}}
 //		got := r.getRequestData()
 //		t.Equal(want, got)
 //	})
@@ -168,7 +168,7 @@ var (
 //	}
 //
 //	t.RequestSetup(errReader(0), &cookie, func(ctx *gin.Context) {
-//		r := Recover{config: Config{Context: ctx}}
+//		r := Recover{config: Theme{Context: ctx}}
 //		got := r.getRequestData()
 //		t.Equal(want, got)
 //	})

@@ -109,7 +109,7 @@ func Find(path string) (*domain.ThemeConfig, error) {
 // Returns errors.NOTFOUND if no themes were found.
 // Returns errors.INTERNAL if the theme path is invalid.
 func All(path, activeTheme string) ([]*domain.ThemeConfig, error) {
-	const op = "Config.All"
+	const op = "Theme.All"
 
 	files, err := ioutil.ReadDir(path)
 	if err != nil {
@@ -145,7 +145,7 @@ func All(path, activeTheme string) ([]*domain.ThemeConfig, error) {
 // and unmarshalling the yaml file into the theme
 // configuration.
 func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
-	const op = "Config.Fetch"
+	const op = "Theme.Fetch"
 
 	cfg := DefaultTheme
 

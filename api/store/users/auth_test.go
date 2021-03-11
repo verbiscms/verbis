@@ -170,3 +170,37 @@ func (t *UsersTestSuite) TestStore_ResetPassword_FailedHash() {
 	want := "error"
 	t.Equal(want, err.Error())
 }
+
+func (t *UsersTestSuite) TestStore_UpdateToken() {
+	tt := map[string]struct {
+		want interface{}
+		mock func(m sqlmock.Sqlmock)
+	}{
+		"Success": {
+			nil,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(UpdateTokenUsedQuery)).
+					WillReturnResult(sqlmock.NewResult(1, 1))
+			},
+		},
+		"Internal Error": {
+			"Error updating the user last token used column",
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(UpdateTokenUsedQuery)).
+					WillReturnError(fmt.Errorf("error"))
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(test.mock)
+			err := s.UpdateToken(user.Token)
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.RunT(nil, err)
+		})
+	}
+}

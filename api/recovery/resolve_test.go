@@ -19,7 +19,7 @@ package recovery
 //			0,
 //			"error-500",
 //			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-//				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(m)
+//				mh.On("Prepare", tpl.Theme{Root: "theme/template", Extension: "cms"}).Return(m)
 //				m.On("Exists", path).Return(true)
 //			},
 //			true,
@@ -29,7 +29,7 @@ package recovery
 //			404,
 //			"error-404",
 //			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-//				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(m)
+//				mh.On("Prepare", tpl.Theme{Root: "theme/template", Extension: "cms"}).Return(m)
 //				m.On("Exists", path).Return(true)
 //			},
 //			true,
@@ -39,7 +39,7 @@ package recovery
 //			500,
 //			"error-500",
 //			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-//				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(m)
+//				mh.On("Prepare", tpl.Theme{Root: "theme/template", Extension: "cms"}).Return(m)
 //				m.On("Exists", path).Return(true)
 //			},
 //			true,
@@ -49,7 +49,7 @@ package recovery
 //			500,
 //			"error",
 //			func(mh *mocks.TemplateHandler, m *mocks.TemplateExecutor, path string) {
-//				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(m)
+//				mh.On("Prepare", tpl.Theme{Root: "theme/template", Extension: "cms"}).Return(m)
 //				m.On("Exists", "error-500").Return(false).Once()
 //				m.On("Exists", path).Return(true).Once()
 //			},
@@ -63,8 +63,8 @@ package recovery
 //				fe := &mocks.TemplateExecutor{}
 //				fe.On("Exists", "error-500").Return(false).Once()
 //				fe.On("Exists", "error").Return(false).Once()
-//				mh.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(fe).Once()
-//				mh.On("Prepare", tpl.Config{Root: t.deps.Paths.Web, Extension: VerbisErrorExtension, Master: VerbisErrorLayout}).Return(m).Once()
+//				mh.On("Prepare", tpl.Theme{Root: "theme/template", Extension: "cms"}).Return(fe).Once()
+//				mh.On("Prepare", tpl.Theme{Root: t.deps.Paths.Web, Extension: VerbisErrorExtension, Master: VerbisErrorLayout}).Return(m).Once()
 //			},
 //			false,
 //		},
@@ -78,7 +78,7 @@ package recovery
 //
 //			t.deps.SetTmpl(handlerMock)
 //
-//			r := Recover{deps: t.deps, config: Config{Code: test.code}}
+//			r := Recover{deps: t.deps, config: Theme{Code: test.code}}
 //			path, exec, custom := r.resolveErrorPage(test.custom)
 //
 //			t.Equal(test.custom, custom)

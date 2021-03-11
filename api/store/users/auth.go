@@ -35,7 +35,7 @@ func (s *Store) CheckSession(token string) error {
 
 	// Destroy the token and create a new one if session expired.
 	inactiveFor := time.Since(*u.TokenLastUsed).Minutes()
-	if int(inactiveFor) > s.Config.Config.Admin.InactiveSessionTime {
+	if int(inactiveFor) > s.Config.Theme.Admin.InactiveSessionTime {
 		newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
 		q := s.Builder().
@@ -52,12 +52,7 @@ func (s *Store) CheckSession(token string) error {
 		return &errors.Error{Code: errors.CONFLICT, Message: "Session expired, please login again.", Operation: op, Err: ErrSessionExpired}
 	}
 
-	q := s.Builder().
-		Update(s.Schema()+TableName).
-		Column("token_last_used", "NOW()").
-		Where("token", "=", token)
-
-	_, err = s.DB().Exec(q.Build(), token)
+	err = s.UpdateToken(token)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating the user last token used column.", Operation: op, Err: err}
 	}
@@ -88,6 +83,26 @@ func (s *Store) ResetPassword(id int, reset domain.UserPasswordReset) error {
 		return &errors.Error{Code: errors.INVALID, Message: "Error updating user password", Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	}
+
+	return nil
+}
+
+// UpdateToken
+//
+// Returns nil if the token last used column was successfully updated.
+// Returns errors.INTERNAL if the sql query failed to execute or the token does not exist.
+func (s *Store) UpdateToken(token string) error {
+	const op = "UserStore.UpdateToken"
+
+	q := s.Builder().
+		Update(s.Schema()+TableName).
+		Column("token_last_used", "NOW()").
+		Where("token", "=", token)
+
+	_, err := s.DB().Exec(q.Build(), token)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating the user last token used column.", Operation: op, Err: err}
 	}
 
 	return nil
