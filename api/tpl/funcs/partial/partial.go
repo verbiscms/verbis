@@ -31,7 +31,6 @@ func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) Func {
 	const op = "Templates.Partial"
 
 	return func(name string, data ...interface{}) (template.HTML, error) {
-		//path := exec.Theme().GetRoot() + "/" + name + exec.Theme().GetExtension()
 		path := exec.Config().GetRoot() + "/" + name
 
 		var context interface{}

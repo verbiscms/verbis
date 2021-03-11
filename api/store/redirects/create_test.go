@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `redirects` (from_path, to_path, code, updated_at, created_at) VALUES ('/from', '/to', 301, NOW(), NOW())"
+	CreateQuery = "INSERT INTO `redirects` (`from_path`, `to_path`, `code`, `updated_at`, `created_at`) VALUES ('/from', '/to', 301, NOW(), NOW())"
 )
 
 func (t *RedirectsTestSuite) TestStore_Create() {

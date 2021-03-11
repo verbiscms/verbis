@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `users` (uuid, first_name, last_name, email, password, website, facebook, twitter, linked_in, instagram, biography, profile_picture_id, token, updated_at, created_at) VALUES (?, 'Verbis', 'CMS', 'verbis@verbiscms.com', ?, NULL, 'Verbis', NULL, NULL, NULL, NULL, NULL, ?, NOW(), NOW())"
+	CreateQuery = "INSERT INTO `users` (`uuid`, `first_name`, `last_name`, `email`, `password`, `website`, `facebook`, `twitter`, `linked_in`, `instagram`, `biography`, `profile_picture_id`, `token`, `updated_at`, `created_at`) VALUES (?, 'Verbis', 'CMS', 'verbis@verbiscms.com', ?, NULL, 'Verbis', NULL, NULL, NULL, NULL, NULL, ?, NOW(), NOW())"
 )
 
 func (t *UsersTestSuite) TestStore_Create() {

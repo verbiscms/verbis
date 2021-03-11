@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `roles` (id, name, description) VALUES (1, 'Banned', 'The user has been banned from the system.')"
+	CreateQuery = "INSERT INTO `roles` (`id`, `name`, `description`) VALUES (1, 'Banned', 'The user has been banned from the system.')"
 )
 
 func (t *RolesTestSuite) TestStore_Create() {

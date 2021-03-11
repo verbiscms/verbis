@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	CreatePivotQuery = "INSERT INTO `user_roles` (user_id, role_id) VALUES (1, 0)"
-	UpdatePivotQuery = "UPDATE `user_roles` SET role_id=0 WHERE `user_id` = '" + userID + "'"
+	CreatePivotQuery = "INSERT INTO `user_roles` (`user_id`, `role_id`) VALUES (1, 0)"
+	UpdatePivotQuery = "UPDATE `user_roles` SET `role_id` = 0 WHERE `user_id` = '" + userID + "'"
 	DeletePivotQuery = "DELETE FROM `user_roles` WHERE `user_id` = '" + userID + "'"
 )
 
