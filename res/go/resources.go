@@ -79,7 +79,7 @@ func (s *Resources) Load() (*Config, error) {
 		return &Config{}, err
 	}
 
-	// Unmarshal the config file into the Config struct
+	// Unmarshal the config file into the Theme struct
 	var c Config
 	err = gojson.Unmarshal(jsonFile, &c)
 	if err != nil {

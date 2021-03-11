@@ -116,7 +116,7 @@ var (
 //						Categories: mc,
 //						Posts:      m,
 //					},
-//					Config: &domain.ThemeConfig{
+//					Theme: &domain.ThemeConfig{
 //						Resources: testResources,
 //					},
 //					Options: &domain.Options{},

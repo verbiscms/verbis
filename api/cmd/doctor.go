@@ -82,7 +82,7 @@ func doctor(running bool) (*deps.Config, *database.MySQLOld, error) {
 
 	p := paths.Get()
 
-	// Init Config
+	// Init Theme
 	// TODO: We need pass the default theme (Verbis 2021)
 
 	//if err != nil {

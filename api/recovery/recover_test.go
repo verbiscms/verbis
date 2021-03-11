@@ -29,7 +29,7 @@ func (t *RecoverTestSuite) TestHandler_New() {
 //
 //handlerMock := &mocks.TemplateHandler{}
 //templateMock := &mocks.TemplateExecutor{}
-//handlerMock.On("Prepare", tpl.Config{Root: "theme/template", Extension: "cms"}).Return(templateMock)
+//handlerMock.On("Prepare", tpl.Theme{Root: "theme/template", Extension: "cms"}).Return(templateMock)
 //templateMock.On("Exists", "error-500").Return(true)
 //templateMock.On("Execute", &bytes.Buffer{}, "error-500", mock.Anything).Run(func(args mock.Arguments) {
 //	arg := args.Get(0).(io.Writer)
@@ -142,7 +142,7 @@ func (t *RecoverTestSuite) TestRecover_RecoverWrapper() {
 	//	t.Run(name, func() {
 	//		r := &Recover{
 	//			deps:   t.deps,
-	//			config: Config{},
+	//			config: Theme{},
 	//			tracer: trace.New(),
 	//		}
 	//		r.resolve = test.resolver
