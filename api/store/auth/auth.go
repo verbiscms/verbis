@@ -25,10 +25,15 @@ type Repository interface {
 // Store defines the data layer for auth.
 type Store struct {
 	*store.Config
+
 	// Common util functions from the user repo.
 	UserStore users.Repository
+
 	// The function used for hashing passwords.
 	hashPasswordFunc func(password string) (string, error)
+
+	// The function used for generating tokens.
+	generateTokeFunc func(name, email string) string
 }
 
 const (
@@ -47,5 +52,6 @@ func New(cfg *store.Config) *Store {
 		Config:           cfg,
 		UserStore:        users.New(cfg),
 		hashPasswordFunc: encryption.HashPassword,
+		generateTokeFunc: encryption.GenerateUserToken,
 	}
 }

@@ -1,10 +1,7 @@
 # To Do
 
-
-Need to add backticks to builder!
-
 ## Store
-- Auth
+- Auth - Password testing
 - Media
 - Posts
 - Options
