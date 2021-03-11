@@ -12,7 +12,7 @@
 					<!-- Header -->
 					<header class="header header-with-actions">
 						<div class="header-title">
-							<h1 v-if="newItem">Add a new {{ getResource.friendly_name }}</h1>
+							<h1 v-if="newItem">Add a new {{ getResource['singular_name'] ? getResource['singular_name'] : getResource['friendly_name'] }}</h1>
 							<h1 v-else>Edit {{ getResource['singular_name'] ? getResource['singular_name'] : getResource['friendly_name'] }}</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
