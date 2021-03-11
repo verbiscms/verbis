@@ -1,0 +1,107 @@
+{
+	"uuid": "ca26110c-81b5-11eb-8dcd-0242ac130003",
+	"title": "Chapters",
+	"fields": [
+		{
+			"uuid": "6c4cf562-8248-11eb-8dcd-0242ac130003",
+			"label": "Chapter",
+			"name": "chapter",
+			"type": "repeater",
+			"instructions": "Add a chapter.",
+			"required": false,
+			"conditional_logic": null,
+			"wrapper": {
+				"width": 100
+			},
+			"options": {
+				"collapsed": "",
+				"min": 0,
+				"max": 0,
+				"layout": "table",
+				"button_label": "Add Chapter"
+			},
+			"sub_fields": [
+				{
+					"uuid": "6c4cf788-8248-11eb-8dcd-0242ac130003",
+					"label": "Title",
+					"name": "title",
+					"type": "text",
+					"instructions": "Add a title for the chapter.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 50
+					},
+					"options": {}
+				},
+				{
+					"uuid": "6c4cfa58-8248-11eb-8dcd-0242ac130003",
+					"label": "Image",
+					"name": "image",
+					"type": "image",
+					"instructions": "Add a featured image for the chapter.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 50
+					},
+					"options": {
+						"default_value": "",
+						"tabs": "all",
+						"toolbar": "full",
+						"media_upload": 1
+					}
+				},
+				{
+					"uuid": "6c4cfb34-8248-11eb-8dcd-0242ac130003",
+					"label": "Read Time",
+					"name": "read_time",
+					"type": "range",
+					"instructions": "Add a read time for the chapter.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {
+						"default_value": 20,
+						"min": 0,
+						"max": 300,
+						"step": 1,
+						"prepend": "",
+						"append": ""
+					}
+				},
+				{
+					"uuid": "6c4cfc7e-8248-11eb-8dcd-0242ac130003",
+					"label": "Section",
+					"name": "section",
+					"type": "repeater",
+					"instructions": "Add a section title.",
+					"required": false,
+					"conditional_logic": null,
+					"wrapper": {
+						"width": 100
+					},
+					"options": {},
+					"sub_fields": [
+						{
+							"uuid": "6c4cfd78-8248-11eb-8dcd-0242ac130003",
+							"label": "Title",
+							"name": "section-title",
+							"type": "text",
+							"instructions": "Add a title section for the chapter, e.g How many people struggle with sleep?",
+							"required": false,
+							"conditional_logic": null,
+							"wrapper": {
+								"width": 100
+							},
+							"options": {}
+						}
+					]
+				}
+			]
+		}
+	],
+	"location": []
+}

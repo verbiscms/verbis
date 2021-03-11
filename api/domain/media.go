@@ -27,7 +27,7 @@ type (
 		FileName    string     `db:"file_name" json:"file_name"`
 		Sizes       MediaSizes `db:"sizes" json:"sizes"`
 		Type        string     `db:"type" json:"type"`
-		UserID      int        `db:"user_id" json:"user_id"`
+		UserId      int        `db:"user_id" json:"user_id"` //nolint
 		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
 	}

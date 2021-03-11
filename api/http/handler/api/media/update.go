@@ -21,8 +21,8 @@ import (
 func (m *Media) Update(ctx *gin.Context) {
 	const op = "MediaHandler.Update"
 
-	var media domain.Media
-	err := ctx.ShouldBindJSON(&m)
+	var item domain.Media
+	err := ctx.ShouldBindJSON(&item)
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
@@ -33,9 +33,9 @@ func (m *Media) Update(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	media.Id = id
+	item.Id = id
 
-	err = m.Store.Media.Update(&media)
+	err = m.Store.Media.Update(&item)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
@@ -44,5 +44,5 @@ func (m *Media) Update(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully updated media item with ID: "+strconv.Itoa(id), media)
+	api.Respond(ctx, http.StatusOK, "Successfully updated media item with ID: "+strconv.Itoa(id), item)
 }

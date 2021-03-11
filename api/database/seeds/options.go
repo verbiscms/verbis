@@ -94,8 +94,8 @@ func (s *Seeder) runOptions() error {
 			},
 		},
 		// Cache
-		"cache_server_templates":     true,
-		"cache_server_field_layouts": true,
+		"cache_server_templates":     false,
+		"cache_server_field_layouts": false,
 		// Frontend Caching
 		"cache_frontend":            true,
 		"cache_frontend_request":    "max-age",
