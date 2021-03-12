@@ -59,7 +59,7 @@ func (t *AuthTestSuite) TestStore_Login() {
 			u := &mocks.Repository{}
 			test.mock(u)
 			s := &Store{
-				UserStore: u,
+				userStore: u,
 			}
 			user, err := s.Login(user.Email, test.password)
 			if err != nil {

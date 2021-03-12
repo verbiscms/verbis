@@ -18,9 +18,9 @@ import (
 // Logs errors.INTERNAL if there was an error executing the query.
 // Logs errors.NOTFOUND if the category was not found by the given Id.
 func (s *Store) Owner() domain.User {
-	const op = "UserStore.Owner"
+	const op = "userStore.Owner"
 
-	q := s.SelectStmt().
+	q := s.selectStmt().
 		Where(s.Schema()+"roles.id", "=", domain.OwnerRoleID).
 		Limit(1)
 

@@ -19,7 +19,7 @@ import (
 
 // Finder defines the method for obtaining field layouts.
 type Finder interface {
-	GetLayout(post domain.PostDatum, cacheable bool) domain.FieldGroups
+	Layout(post domain.PostDatum, cacheable bool) domain.FieldGroups
 }
 
 // Location defines
@@ -45,7 +45,7 @@ func NewLocation(path string) *Location {
 // caching allows and the domain.FieldGroups have
 // been cached, it will return the cached
 // version
-func (l *Location) GetLayout(post domain.PostDatum, cacheable bool) domain.FieldGroups {
+func (l *Location) Layout(post domain.PostDatum, cacheable bool) domain.FieldGroups {
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
 	var found bool

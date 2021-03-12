@@ -27,7 +27,7 @@ type Store struct {
 	*store.Config
 
 	// Common util functions from the user repo.
-	UserStore users.Repository
+	userStore users.Repository
 
 	// The function used for hashing passwords.
 	hashPasswordFunc func(password string) (string, error)
@@ -50,7 +50,7 @@ const (
 func New(cfg *store.Config) *Store {
 	return &Store{
 		Config:           cfg,
-		UserStore:        users.New(cfg),
+		userStore:        users.New(cfg),
 		hashPasswordFunc: encryption.HashPassword,
 		generateTokeFunc: encryption.GenerateUserToken,
 	}

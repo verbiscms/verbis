@@ -13,8 +13,8 @@ type Finder struct {
 	mock.Mock
 }
 
-// GetLayout provides a mock function with given fields: post, cacheable
-func (_m *Finder) GetLayout(post domain.PostDatum, cacheable bool) domain.FieldGroups {
+// Layout provides a mock function with given fields: post, cacheable
+func (_m *Finder) Layout(post domain.PostDatum, cacheable bool) domain.FieldGroups {
 	ret := _m.Called(post, cacheable)
 
 	var r0 domain.FieldGroups
