@@ -5,66 +5,115 @@
 package media
 
 import (
-	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gabriel-vasile/mimetype"
 	"image"
 	"mime/multipart"
 )
 
 var (
-	ErrMimeType = errors.New("mimetype is not permitted")
+	ErrMimeType   = errors.New("mimetype is not permitted")
+	ErrFileTooBig = errors.New("file size to big to be uploaded")
 )
+
+//
+type validator struct {
+	Config  *domain.ThemeConfig
+	Options *domain.Options
+	Size    int64
+	File    multipart.File
+}
 
 // Validate
 //
 //
-func (c *Library) Validate(file *multipart.FileHeader) error {
-	const op = "Client.Validate"
+func validate(h *multipart.FileHeader, opts *domain.Options, cfg *domain.ThemeConfig) error {
+	const op = "client.Validate"
 
-	io, teardown, err := c.openFile(file)
-	defer teardown()
+	file, err := h.Open()
+	defer func() {
+		err := file.Close()
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing file with the name: " + h.Filename, Operation: op, Err: err})
+		}
+	}()
+
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error opening file with the name: " + h.Filename, Operation: op, Err: err}
+	}
+
+	v := validator{
+		Config:  cfg,
+		Options: opts,
+		Size:    h.Size,
+		File:    file,
+	}
+
+	err = v.Mime()
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "The file is not permitted to be uploaded", Operation: op, Err: err}
+	}
+
+	err = v.FileSize()
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "The file exceeds the maximum size restriction", Operation: op, Err: err}
+	}
+
+	err = v.Image()
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "The image exceeds the width/height restrictions", Operation: op, Err: err}
+	}
+
+	return nil
+}
+
+// Mime
+//
+//
+func (v *validator) Mime() error {
+	m, err := mimetype.DetectReader(v.File)
 	if err != nil {
 		return err
 	}
 
-	mimeType, err := mimetype.DetectReader(io)
-	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Mime type not permitted", Operation: op, Err: ErrMimeType}
-	}
-
-	valid := mime.IsValidMime(c.Config.Media.AllowedFileTypes, mimeType.String())
+	valid := mime.IsValidMime(v.Config.Media.AllowedFileTypes, m.String())
 	if !valid {
-		return &errors.Error{Code: errors.INVALID, Message: "Mime type not permitted", Operation: op, Err: ErrMimeType}
+		return ErrMimeType
 	}
 
-	fileSize := int(file.Size / 1024) //nolint
-	if fileSize > c.Options.MediaUploadMaxSize && c.Options.MediaUploadMaxSize != 0 {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The file exceeds the maximum size restriction of %vkb.", c.Options.MediaUploadMaxSize), Operation: op, Err: err}
-	}
-
-	return c.validateImage(io)
+	return nil
 }
 
-// validateImage
+// FileSize
 //
 //
-func (c *Library) validateImage(file multipart.File) error {
-	const op = "Client.ValidateImage"
+func (v *validator) FileSize() error {
+	fileSize := int(v.Size / 1024) //nolint
+	if fileSize > v.Options.MediaUploadMaxSize && v.Options.MediaUploadMaxSize != 0 {
+		return ErrFileTooBig
+	}
+	return nil
+}
 
-	img, _, err := image.Decode(file)
+// Image
+//
+//
+func (v *validator) Image() error {
+	img, _, err := image.Decode(v.File)
 	if err != nil {
 		return nil // Is not an image
 	}
 
 	bounds := img.Bounds().Max
-	if bounds.X > c.Options.MediaUploadMaxWidth && c.Options.MediaUploadMaxWidth != 0 {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max width of %vpx.", c.Options.MediaUploadMaxWidth), Operation: op, Err: err}
+	if bounds.X > v.Options.MediaUploadMaxWidth && v.Options.MediaUploadMaxWidth != 0 {
+		return errors.New("image exceeds the maximum upload width")
 	}
 
-	if img.Bounds().Max.Y > c.Options.MediaUploadMaxHeight && c.Options.MediaUploadMaxHeight != 0 {
-		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max height of %vpx.", c.Options.MediaUploadMaxHeight), Operation: op, Err: err}
+	if img.Bounds().Max.Y > v.Options.MediaUploadMaxHeight && v.Options.MediaUploadMaxHeight != 0 {
+		return errors.New("image exceeds the maximum upload height")
 	}
 
 	return nil
