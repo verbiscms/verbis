@@ -2,33 +2,32 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package meta
+package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/store"
 )
 
-// Repository defines methods for meta options
-// to interact with the database.
+// Repository defines methods for fields
+// to interact with the local FS.
 type Repository interface {
-	Insert(id int, p domain.PostOptions) error
-	Exists(id int) bool
 }
 
-// Store defines the data layer for meta.
+// Store defines the data layer for fields.
 type Store struct {
 	*store.Config
 }
 
-const (
-	// The database table name for meta options.
-	TableName = "post_options"
+var (
+	// ErrFieldGroupExists is returned by validate when
+	// a field group already exists.
+	ErrFieldGroupExists = errors.New("field group already exists")
 )
 
 // New
 //
-// Creates a new meta store.
+// Creates a new categories store.
 func New(cfg *store.Config) *Store {
 	return &Store{
 		Config: cfg,

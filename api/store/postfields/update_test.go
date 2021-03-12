@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package redirects
+package postfields
 
 import (
 	"database/sql"
@@ -14,32 +14,32 @@ import (
 )
 
 var (
-	DeleteQuery = "DELETE FROM `redirects` WHERE `id` = '" + redirectID + "'"
+	UpdateQuery = "UPDATE `post_fields` SET `type` = 'text', `name` = 'name', `value` = 'val', `field_key` = 'key' WHERE `uuid` = '00000000-0000-0000-0000-000000000000' AND `post_id` = '1' AND `field_key` = 'key' AND `name` 'name'"
 )
 
-func (t *RedirectsTestSuite) TestStore_Delete() {
+func (t *PostFieldsTestSuite) TestStore_Update() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			nil,
+			field,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WillReturnResult(sqlmock.NewResult(0, 1))
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WillReturnResult(sqlmock.NewResult(int64(field.Id), 1))
 			},
 		},
 		"No Rows": {
-			"No redirect exists with the ID",
+			"Error updating the post field name the uuid",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -48,12 +48,12 @@ func (t *RedirectsTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Delete(redirect.Id)
+			cat, err := s.update(field)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.Nil(err)
+			t.RunT(cat, test.want)
 		})
 	}
 }

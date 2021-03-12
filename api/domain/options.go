@@ -6,9 +6,11 @@ package domain
 
 import (
 	"encoding/json"
+	"github.com/ainsleyclark/verbis/api/errors"
 )
 
 type (
+	OptionValue []byte
 	// OptionsDBMap defines the map of key value pair options
 	// that are stored in the database, used for marshalling
 	// and unmarshalling into the Options struct.
@@ -104,3 +106,46 @@ type (
 		FormEmailDisclosure    string   `json:"form_email_disclosure"`
 	}
 )
+
+//func (o OptionsDB) ToOptions() (Options, error) {
+//	unOpts := make(OptionsDBMap)
+//	for _, v := range o {
+//		unValue, err := v.Value.UnmarshalJSON
+//		if err != nil {
+//			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
+//			return domain.Options{}
+//		}
+//		unOpts[v.Name] = unValue
+//	}
+//	return Options{}, nil
+//}
+
+// Unmarshal
+//
+// Unmarshal the value
+// Returns errors.INTERNAL if the unmarshalling failed
+func (v OptionValue) Unmarshal() (interface{}, error) {
+	const op = "OptionValue.Unmarshal"
+
+	var value interface{}
+	if err := json.Unmarshal(v, &value); err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not unmarshal the option", Operation: op, Err: err}
+	}
+
+	return value, nil
+}
+
+// Marshal
+//
+// Marshal the value
+// Returns errors.INTERNAL if the mmarshalling failed
+func (v OptionValue) Marshal() (json.RawMessage, error) {
+	const op = "OptionValue.Marshal"
+
+	m, err := json.Marshal(v)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not marshal the option", Operation: op}
+	}
+
+	return m, nil
+}

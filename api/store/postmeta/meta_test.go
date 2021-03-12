@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package meta
+package postmeta
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"

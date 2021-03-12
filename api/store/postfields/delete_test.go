@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package redirects
+package postfields
 
 import (
 	"database/sql"
@@ -14,10 +14,10 @@ import (
 )
 
 var (
-	DeleteQuery = "DELETE FROM `redirects` WHERE `id` = '" + redirectID + "'"
+	DeleteQuery = "DELETE FROM `post_fields` WHERE `uuid` = '00000000-0000-0000-0000-000000000000' AND `post_id` = '1' AND `field_key` = 'key' AND `name` = 'name'"
 )
 
-func (t *RedirectsTestSuite) TestStore_Delete() {
+func (t *PostFieldsTestSuite) TestStore_Delete() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -30,7 +30,7 @@ func (t *RedirectsTestSuite) TestStore_Delete() {
 			},
 		},
 		"No Rows": {
-			"No redirect exists with the ID",
+			"No field exists",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(sql.ErrNoRows)
@@ -48,7 +48,7 @@ func (t *RedirectsTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Delete(redirect.Id)
+			err := s.delete(field.PostId, field)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

@@ -4,7 +4,6 @@ package mocks
 
 import (
 	domain "github.com/ainsleyclark/verbis/api/domain"
-
 	mock "github.com/stretchr/testify/mock"
 )
 
