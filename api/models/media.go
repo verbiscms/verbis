@@ -285,7 +285,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 	s.getOptionsStruct()
 
 	mimeType, err := mime.TypeByFile(file)
-	if err != nil {
+	if err != nil  {
 		return err
 	}
 
@@ -485,7 +485,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath, mime
 		filePath = filePath + ".png"
 
 		decodedImage, err := s.decodeImage(file, mimeType)
-		if err != nil {
+		if err != nil   {
 			return err
 		}
 		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)

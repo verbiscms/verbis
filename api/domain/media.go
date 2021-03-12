@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
+	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -57,6 +59,43 @@ type (
 		Crop   bool   `db:"crop" json:"crop"`
 	}
 )
+
+const (
+	WebPExtension = ".webp"
+)
+
+// UploadPath
+//
+// Returns the upload path of the media item without the
+// storage uploads path, for example:
+// 2020/01/photo.jpg
+func (m *Media) UploadPath() string {
+	return m.FilePath + string(os.PathSeparator) + m.UUID.String() + m.Extension()
+}
+
+// Extension
+//
+// Returns the extension of the file by stripping from
+// the URL.
+func (m *Media) Extension() string {
+	return filepath.Ext(m.Url)
+}
+
+// PossibleFiles
+//
+//
+func (m *Media) PossibleFiles() []string {
+	files := []string{
+		m.UploadPath(),
+		m.UploadPath() + ".webp",
+	}
+	for _, v := range m.Sizes {
+		path := m.FilePath + string(os.PathSeparator) + v.UUID.String() + m.Extension()
+		files = append(files, path)
+		files = append(files, path + WebPExtension)
+	}
+	return files
+}
 
 // Scan
 //
