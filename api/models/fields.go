@@ -154,7 +154,7 @@ func (s *FieldsStore) Exists(postID int, uniq uuid.UUID, key string, name string
 // file that is defined. Produces an array of field groups that
 // can be returned for the post
 func (s *FieldsStore) GetLayout(post domain.PostDatum) domain.FieldGroups {
-	return s.finder.GetLayout(post, s.options.CacheServerFields)
+	return s.finder.Layout(post, s.options.CacheServerFields)
 }
 
 // shouldDelete

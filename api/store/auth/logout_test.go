@@ -43,7 +43,7 @@ func (t *AuthTestSuite) TestStore_Logout() {
 			u := &mocks.Repository{}
 			test.mock(u)
 			s := &Store{
-				UserStore: u,
+				userStore: u,
 				generateTokeFunc: func(name, email string) string {
 					return "newtoken"
 				},

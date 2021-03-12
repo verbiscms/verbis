@@ -17,7 +17,7 @@ import (
 func (s *Store) Login(email, password string) (domain.User, error) {
 	const op = "AuthStore.Login"
 
-	user, err := s.UserStore.FindByEmail(email)
+	user, err := s.userStore.FindByEmail(email)
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: ErrLoginMsg, Operation: op, Err: err}
 	}
@@ -27,7 +27,7 @@ func (s *Store) Login(email, password string) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: ErrLoginMsg, Operation: op, Err: err}
 	}
 
-	err = s.UserStore.UpdateToken(user.Token)
+	err = s.userStore.UpdateToken(user.Token)
 	if err != nil {
 		return domain.User{}, err
 	}

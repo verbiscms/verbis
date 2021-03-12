@@ -13,14 +13,14 @@ package auth
 func (s *Store) Logout(token string) (int, error) {
 	const op = "AuthStore.Logout"
 
-	user, err := s.UserStore.FindByToken(token)
+	user, err := s.userStore.FindByToken(token)
 	if err != nil {
 		return -1, err
 	}
 
 	newToken := s.generateTokeFunc(user.FirstName+user.LastName, user.Email)
 
-	err = s.UserStore.UpdateToken(newToken)
+	err = s.userStore.UpdateToken(newToken)
 	if err != nil {
 		return -1, err
 	}
