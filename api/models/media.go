@@ -268,7 +268,7 @@ func (s *MediaStore) Upload(file *multipart.FileHeader, token string) (domain.Me
 	sizes := s.saveResizedImages(file, cleanName, path, mimeType, extension)
 
 	// Insert into the database
-	dm, err := s.insert(key, cleanName+extension, path, int(file.Size), mimeType, sizes, user.Id)
+	dm, err := s.insert(key, cleanName+extension, path, file.Size, mimeType, sizes, user.Id)
 	if err != nil {
 		return domain.Media{}, err
 	}
@@ -285,7 +285,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 	s.getOptionsStruct()
 
 	mimeType, err := mime.TypeByFile(file)
-	if err != nil  {
+	if err != nil {
 		return err
 	}
 
@@ -324,7 +324,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 
 // Inserts a media item into the database
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *MediaStore) insert(uniq uuid.UUID, name, filePath string, fileSize int, mimeType string, sizes domain.MediaSizes, userID int) (domain.Media, error) {
+func (s *MediaStore) insert(uniq uuid.UUID, name, filePath string, fileSize int64, mimeType string, sizes domain.MediaSizes, userID int) (domain.Media, error) {
 	const op = "MediaRepository.insert"
 
 	m := domain.Media{
@@ -402,14 +402,14 @@ func (s *MediaStore) Delete(id int) error {
 	}
 
 	// Delete the main file
-	go files.CheckAndDelete(m.FilePath + "/" + m.UUID.String() + extension)
-	go files.CheckAndDelete(m.FilePath + "/" + m.UUID.String() + extension + ".webp")
+	go files.CheckAndDelete(s.Paths.Uploads + m.FilePath + "/" + m.UUID.String() + extension)
+	go files.CheckAndDelete(s.Paths.Uploads + m.FilePath + "/" + m.UUID.String() + extension + ".webp")
 
 	// Delete the sizes and webp versions if stored
 	for _, v := range m.Sizes {
 		filePath := m.FilePath + "/" + v.UUID.String() + extension
-		go files.CheckAndDelete(filePath)
-		go files.CheckAndDelete(filePath + ".webp")
+		go files.CheckAndDelete(s.Paths.Uploads + filePath)
+		go files.CheckAndDelete(s.Paths.Uploads + filePath + ".webp")
 	}
 
 	// Check if the file deleted was the one stored in the site logo
@@ -455,7 +455,7 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name, path, m
 			mediaUUID := uuid.New()
 			fileName := name + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + extension
 
-			if err := s.processImageSize(file, path+"/"+mediaUUID.String(), mimeType, size); err == nil {
+			if err := s.processImageSize(file, s.Paths.Uploads+"/"+path+"/"+mediaUUID.String(), mimeType, size); err == nil {
 				savedSizes[key] = domain.MediaSize{
 					UUID:     mediaUUID,
 					Url:      s.getURL() + "/" + fileName,
@@ -485,7 +485,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath, mime
 		filePath = filePath + ".png"
 
 		decodedImage, err := s.decodeImage(file, mimeType)
-		if err != nil   {
+		if err != nil {
 			return err
 		}
 		resized := resizeImage(*decodedImage, size.Width, size.Height, size.Crop)

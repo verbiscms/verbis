@@ -5,114 +5,74 @@
 package media
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"mime/multipart"
-	"os"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 )
 
-type Client interface {
-	Upload(file *multipart.FileHeader) error
+// Library defines methods for media items to
+// save, validate and delete from the
+// local file system.
+type Library interface {
+	Upload(file *multipart.FileHeader) (domain.Media, error)
 	Validate(file *multipart.FileHeader) error
-	Delete(path string, sizes domain.MediaSizes) error
+	Delete(item domain.Media)
 }
 
-type Library struct {
-	Options  *domain.Options
-	Config   *domain.ThemeConfig
-	paths    paths.Paths
-	datePath string
-	ext      string
-	Exists   func(fileName string) bool
+type client struct {
+	Options *domain.Options
+	Config  *domain.ThemeConfig
+	paths   paths.Paths
+	Exists  func(fileName string) bool
 }
 
-func (c *Library) Upload(file *multipart.FileHeader) error {
-	const op = "Client.Upload"
+// ExistsFunc is used by the uploader to determine if a
+// media item exists in the library.
+type ExistsFunc func(fileName string) bool
 
-	// E.G: Image20@.png
-	name := file.Filename
-
-	// E.G: .png
-	//extension := files.GetFileExtension(name)
-
-	src, err := file.Open()
-	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error opening file with the name: " + name, Operation: op, Err: err}
-	}
-	defer src.Close()
-
-	return nil
-}
-
-func (c *Library) openFile(file *multipart.FileHeader) (multipart.File, func() error, error) {
-	const op = "MediaClient.openFile"
-
-	src, err := file.Open()
-	if err != nil {
-		return nil, nil, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file with the name: " + file.Filename, Operation: op, Err: err}
-	}
-	return src, src.Close, nil
-}
-
-// Dir
+// New
 //
-//
-func (c *Library) Dir() string {
-	const op = "MediaClient.Dir"
-
-	if !c.Options.MediaOrganiseDate {
-		return c.paths.Uploads
+// Creates a new client.
+func (c client) New(opts *domain.Options, fn ExistsFunc) Library {
+	return &client{
+		Options: opts,
+		Config:  config.Get(),
+		paths:   paths.Get(),
+		Exists:  fn,
 	}
-
-	t := time.Now()
-
-	// 2020/01
-	datePath := t.Format("2006") + string(os.PathSeparator) + t.Format("01")
-	path := c.paths.Uploads + "/" + datePath
-
-	_, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		err := os.MkdirAll(path, os.ModePerm)
-		if err != nil {
-			// Handle
-		}
-	}
-
-	c.datePath = datePath
-	return path
 }
 
-// fileName
+// Upload
 //
+// Satisfies the Library to upload a media item to the
+// library.
+// TODO: Carry on!
+func (c *client) Upload(file *multipart.FileHeader) (domain.Media, error) {
+	return upload(file, c.paths.Uploads, c.Options, c.Config, c.Exists)
+}
+
+// Delete
 //
-func (c *Library) fileName(file, extension string) {
-	name := files.RemoveFileExtension(file)
+// Satisfies the Library to remove possible media item
+// combinations from the file system, if the file
+// does not exist (user moved) it will be
+// skipped.
+//
+// Logs errors.INTERNAL if the file could not be deleted.
+func (c *client) Delete(item domain.Media) {
+	deleteItem(item, c.paths.Uploads)
+}
 
-	cleanedFile := strings.ReplaceAll(name, " ", "-")
-	reg := regexp.MustCompile("[^A-Za-z0-9 -]+")
-	cleanedFile = strings.ToLower(reg.ReplaceAllString(cleanedFile, ""))
-
-	// Check if the file exists and add a version number, continue if not
-	version := 0
-	for {
-		if version == 0 {
-			exists := c.Exists(cleanedFile + extension)
-			if !exists {
-				break
-			}
-		} else {
-			exists := c.Exists(cleanedFile + "-" + strconv.Itoa(version) + extension)
-			if !exists {
-				cleanedFile = cleanedFile + "-" + strconv.Itoa(version)
-				break
-			}
-		}
-		version++
-	}
+// Validate
+//
+// Satisfies the Library to see if the media item passed
+// is valid. It will check if the file is a valid
+// mime type, if the file size is less than the
+// size specified in the options and finally
+// checks the image boundaries.
+//
+// Returns errors.INVALID any of the conditions fail.
+func (c *client) Validate(file *multipart.FileHeader) error {
+	return validate(file, c.Options, c.Config)
 }
