@@ -24,7 +24,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 			}
 
 			if layout {
-				//p.Layout = s.fieldsModel.GetLayout(p)
+				//p.Layout = s.fieldsModel.Layout(p)
 			}
 
 			posts = append(posts, p)

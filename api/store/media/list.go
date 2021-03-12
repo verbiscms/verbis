@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package users
+package media
 
 import (
 	"database/sql"
@@ -14,17 +14,13 @@ import (
 
 // List
 //
-// Returns a slice of users with the total amount.
+// Returns a slice of media items with the total amount.
 // Returns errors.INTERNAL if the SQL query was invalid.
-// Returns errors.NOTFOUND if there are no categories available.
-func (s *Store) List(meta params.Params, role string) (domain.Users, int, error) {
-	const op = "userStore.List"
+// Returns errors.NOTFOUND if there are no media items available.
+func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
+	const op = "MediaStore.List"
 
 	q := s.selectStmt()
-
-	if role != "" {
-		q.Where(s.Schema()+"roles.name", "=", role)
-	}
 
 	// Apply filters.
 	err := database.FilterRows(s.Driver, meta.Filters, TableName)
@@ -41,21 +37,21 @@ func (s *Store) List(meta params.Params, role string) (domain.Users, int, error)
 		q.Limit(meta.Limit).Offset((meta.Page - 1) * meta.Limit)
 	}
 
-	// Select users.
-	var users domain.Users
-	err = s.DB().Select(&users, q.Build())
+	// Select categories.
+	var media domain.MediaItems
+	err = s.DB().Select(&media, q.Build())
 	if err == sql.ErrNoRows {
-		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No users available", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No media items available", Operation: op, Err: err}
 	} else if err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// Count the total number of users.
+	// Count the total number of categories.
 	var total int
 	err = s.DB().QueryRow(countQ).Scan(&total)
 	if err != nil {
-		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of users", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of media items", Operation: op, Err: err}
 	}
 
-	return users, total, nil
+	return media, total, nil
 }

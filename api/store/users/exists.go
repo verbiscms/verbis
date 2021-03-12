@@ -15,7 +15,7 @@ import (
 // Returns a bool indicating if the user exists by ID.
 // Logs errors.INTERNAL if there was an error executing the query.
 func (s *Store) Exists(id int) bool {
-	const op = "UserStore.Exists"
+	const op = "userStore.Exists"
 
 	q := s.Builder().
 		Select("id").
@@ -37,7 +37,7 @@ func (s *Store) Exists(id int) bool {
 // Returns a bool indicating if the user exists by email.
 // Logs errors.INTERNAL if there was an error executing the query.
 func (s *Store) ExistsByEmail(email string) bool {
-	const op = "UserStore.ExistsByEmail"
+	const op = "userStore.ExistsByEmail"
 
 	q := s.Builder().
 		Select("id").

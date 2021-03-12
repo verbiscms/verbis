@@ -75,7 +75,7 @@ func (s *Store) ResetPassword(token, password string) error {
 func (s *Store) SendResetPassword(email string) error {
 	const op = "AuthRepository.SendResetPassword"
 
-	user, err := s.UserStore.FindByEmail(email)
+	user, err := s.userStore.FindByEmail(email)
 	if err != nil {
 		return err
 	}

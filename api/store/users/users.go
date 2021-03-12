@@ -68,11 +68,11 @@ func New(cfg *store.Config) *Store {
 	}
 }
 
-// SelectStmt
+// selectStmt
 //
 // Helper for SELECT Statements, joining roles
 // by user id
-func (s *Store) SelectStmt() *builder.Sqlbuilder {
+func (s *Store) selectStmt() *builder.Sqlbuilder {
 	return s.Builder().
 		SelectRaw(s.Schema()+"users.*, "+s.Schema()+"roles.id `roles.id`, "+s.Schema()+"roles.name `roles.name`, "+s.Schema()+"roles.description `roles.description`").
 		From(s.Schema()+TableName).

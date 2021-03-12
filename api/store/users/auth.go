@@ -21,7 +21,7 @@ import (
 // Returns errors.CONFLICT if the user session expired.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) CheckSession(token string) error {
-	const op = "UserStore.CheckSession"
+	const op = "userStore.CheckSession"
 
 	u, err := s.FindByToken(token)
 	if err != nil {
@@ -66,7 +66,7 @@ func (s *Store) CheckSession(token string) error {
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.INVALID if the user could not be updated.
 func (s *Store) ResetPassword(id int, reset domain.UserPasswordReset) error {
-	const op = "UserStore.ResetPassword"
+	const op = "userStore.ResetPassword"
 
 	password, err := s.hashPasswordFunc(reset.NewPassword)
 	if err != nil {
@@ -93,7 +93,7 @@ func (s *Store) ResetPassword(id int, reset domain.UserPasswordReset) error {
 // Returns nil if the token last used column was successfully updated.
 // Returns errors.INTERNAL if the sql query failed to execute or the token does not exist.
 func (s *Store) UpdateToken(token string) error {
-	const op = "UserStore.UpdateToken"
+	const op = "userStore.UpdateToken"
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).

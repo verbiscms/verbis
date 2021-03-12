@@ -5,25 +5,23 @@
 package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store"
+	location "github.com/ainsleyclark/verbis/api/verbis/fields/converter"
 )
 
 // Repository defines methods for fields
 // to interact with the local FS.
 type Repository interface {
+	Layout(post domain.PostDatum) domain.FieldGroups
+	// TODO: Create, Update & save to storage
 }
 
 // Store defines the data layer for fields.
 type Store struct {
 	*store.Config
+	finder location.Finder
 }
-
-var (
-	// ErrFieldGroupExists is returned by validate when
-	// a field group already exists.
-	ErrFieldGroupExists = errors.New("field group already exists")
-)
 
 // New
 //
@@ -31,5 +29,6 @@ var (
 func New(cfg *store.Config) *Store {
 	return &Store{
 		Config: cfg,
+		finder: location.NewLocation(cfg.Paths.Storage),
 	}
 }

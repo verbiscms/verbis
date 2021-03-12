@@ -18,9 +18,9 @@ import (
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Id.
 func (s *Store) Find(id int) (domain.User, error) {
-	const op = "UserStore.Find"
+	const op = "userStore.Find"
 
-	q := s.SelectStmt().
+	q := s.selectStmt().
 		Where(s.Schema()+"users.id", "=", id).
 		Limit(1)
 
@@ -41,9 +41,9 @@ func (s *Store) Find(id int) (domain.User, error) {
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Id.
 func (s *Store) FindByToken(token string) (domain.User, error) {
-	const op = "UserStore.FindByToken"
+	const op = "userStore.FindByToken"
 
-	q := s.SelectStmt().
+	q := s.selectStmt().
 		Where(s.Schema()+"users.token", "=", token).
 		Limit(1)
 
@@ -64,9 +64,9 @@ func (s *Store) FindByToken(token string) (domain.User, error) {
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given Id.
 func (s *Store) FindByEmail(email string) (domain.User, error) {
-	const op = "UserStore.FindByEmail"
+	const op = "userStore.FindByEmail"
 
-	q := s.SelectStmt().
+	q := s.selectStmt().
 		Where(s.Schema()+"users.email", "=", email).
 		Limit(1)
 

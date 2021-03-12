@@ -14,7 +14,7 @@ import (
 // Returns nil if the upon inserting into the pivot table.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) createUserRoles(userID, roleID int) error {
-	const op = "UserStore.InsertUserRoles"
+	const op = "userStore.InsertUserRoles"
 
 	q := s.Builder().
 		Insert(s.Schema()+PivotTableName).
@@ -34,7 +34,7 @@ func (s *Store) createUserRoles(userID, roleID int) error {
 // Returns nil if the upon updating the pivot table.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) updateUserRoles(userID, roleID int) error {
-	const op = "UserStore.UpdateUserRoles"
+	const op = "userStore.UpdateUserRoles"
 
 	q := s.Builder().
 		Update(s.Schema()+PivotTableName).
@@ -54,7 +54,7 @@ func (s *Store) updateUserRoles(userID, roleID int) error {
 // Returns nil if the upon deleting from the pivot table.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) deleteUserRoles(userID int) error {
-	const op = "UserStore.UpdateUserRoles"
+	const op = "userStore.UpdateUserRoles"
 
 	q := s.Builder().
 		DeleteFrom(s.Schema()+PivotTableName).
