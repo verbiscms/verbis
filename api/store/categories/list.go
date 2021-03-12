@@ -23,22 +23,22 @@ func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
 	q := s.Builder().
 		From(s.Schema() + TableName)
 
-	// Apply filters
+	// Apply filters.
 	err := database.FilterRows(s.Driver, meta.Filters, TableName)
 	if err != nil {
 		return nil, -1, err
 	}
 
-	// Apply order
+	// Apply order.
 	q.OrderBy(meta.OrderBy, meta.OrderDirection)
 	countQ := q.Count()
 
-	// Apply pagination
+	// Apply pagination.
 	if !meta.LimitAll {
 		q.Limit(meta.Limit).Offset((meta.Page - 1) * meta.Limit)
 	}
 
-	// Select categories
+	// Select categories.
 	var categories domain.Categories
 	err = s.DB().Select(&categories, q.Build())
 	if err == sql.ErrNoRows {
@@ -47,7 +47,7 @@ func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// Count the total number of categories
+	// Count the total number of categories.
 	var total int
 	err = s.DB().QueryRow(countQ).Scan(&total)
 	if err != nil {

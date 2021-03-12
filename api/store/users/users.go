@@ -16,7 +16,7 @@ import (
 // Repository defines methods for users
 // to interact with the database.
 type Repository interface {
-	List(meta params.Params) (domain.Users, int, error)
+	List(meta params.Params, role string) (domain.Users, int, error)
 	Find(id int) (domain.User, error)
 	FindByToken(token string) (domain.User, error)
 	FindByEmail(email string) (domain.User, error)
