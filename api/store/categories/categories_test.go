@@ -13,8 +13,8 @@ import (
 	"testing"
 )
 
-// CategoriesTestSuite defines the helper used for role
-// testing.
+// CategoriesTestSuite defines the helper used for
+// category testing.
 type CategoriesTestSuite struct {
 	test.DBSuite
 }

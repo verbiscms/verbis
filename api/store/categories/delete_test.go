@@ -24,7 +24,7 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			category,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WithArgs(category.Id).

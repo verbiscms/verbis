@@ -35,13 +35,13 @@ func (_m *FieldsRepository) Create(f domain.PostField) (domain.PostField, error)
 	return r0, r1
 }
 
-// Exists provides a mock function with given fields: postID, _a1, key
-func (_m *FieldsRepository) Exists(postID int, _a1 uuid.UUID, key string) bool {
-	ret := _m.Called(postID, _a1, key)
+// Exists provides a mock function with given fields: postID, _a1, key, name
+func (_m *FieldsRepository) Exists(postID int, _a1 uuid.UUID, key string, name string) bool {
+	ret := _m.Called(postID, _a1, key, name)
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(int, uuid.UUID, string) bool); ok {
-		r0 = rf(postID, _a1, key)
+	if rf, ok := ret.Get(0).(func(int, uuid.UUID, string, string) bool); ok {
+		r0 = rf(postID, _a1, key, name)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}

@@ -99,7 +99,7 @@ func (s *OptionsStore) GetStruct() domain.Options {
 	for _, v := range opts {
 		unValue, err := s.unmarshalValue(v.Value)
 		if err != nil {
-			// logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
 			return domain.Options{}
 		}
 		unOpts[v.Name] = unValue

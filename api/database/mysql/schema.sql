@@ -180,6 +180,8 @@ CREATE TABLE `post_fields` (
     `value` longtext NULL,
     PRIMARY KEY (`id`),
     KEY `post_id_index` (`post_id`)
+    CONSTRAINT post_fields_unique
+        UNIQUE (uuid, field_key, post_id, name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

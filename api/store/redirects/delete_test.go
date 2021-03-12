@@ -23,7 +23,7 @@ func (t *RedirectsTestSuite) TestStore_Delete() {
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			redirect,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnResult(sqlmock.NewResult(0, 1))
