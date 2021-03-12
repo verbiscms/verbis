@@ -57,6 +57,9 @@ func NewDBSuite(t *testing.T) DBSuite {
 	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
 	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
 	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
+	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
+	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
+	mockDriver.On("Builder").Return(builder.New("mysql")).Once()
 
 	mockDriver.On("Schema").Return("")
 

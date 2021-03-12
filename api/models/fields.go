@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	location "github.com/ainsleyclark/verbis/api/verbis/fields/converter"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 )
 
 // FieldsRepository defines methods for Posts to interact with the database
@@ -19,7 +20,7 @@ type FieldsRepository interface {
 	UpdateCreate(postID int, f domain.PostFields) error
 	Create(f domain.PostField) (domain.PostField, error)
 	Update(f domain.PostField) (domain.PostField, error)
-	Exists(postID int, uuid uuid.UUID, key string) bool
+	Exists(postID int, uuid uuid.UUID, key string, name string) bool
 }
 
 // FieldsStore defines the data layer for Posts
@@ -57,15 +58,22 @@ func (s *FieldsStore) UpdateCreate(postID int, f domain.PostFields) error {
 		}
 	}
 
+	// slice of to update
+	// slice of to create
+	//
+
 	// Update or create the existing fields passed.
 	for _, v := range f {
 		v.PostId = postID
-		if s.Exists(postID, v.UUID, v.Key) {
+
+		if s.Exists(postID, v.UUID, v.Key, v.Name) {
+			color.Blue.Println("updating: ", v.Key, v.Name, v.PostId, v.OriginalValue)
 			_, err := s.Update(v)
 			if err != nil {
 				return err
 			}
 		} else {
+			color.Blue.Println("creating: ", v.Key, v.Name, v.PostId, v.OriginalValue)
 			_, err := s.Create(v)
 			if err != nil {
 				return err
@@ -114,7 +122,7 @@ func (s *FieldsStore) Create(f domain.PostField) (domain.PostField, error) {
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
 	const op = "FieldsRepository.Update"
-	_, err := s.DB.Exec("UPDATE post_fields SET type = ?, name = ?, value = ?, field_key = ? WHERE uuid = ? AND post_id = ?", f.Type, f.Name, f.OriginalValue, f.Key, f.UUID.String(), f.PostId)
+	_, err := s.DB.Exec("UPDATE post_fields SET type = ?, name = ?, value = ?, field_key = ? WHERE uuid = ? AND post_id = ? AND field_key = ? AND name = ?", f.Type, f.Name, f.OriginalValue, f.Key, f.UUID.String(), f.PostId, f.Key, f.Name)
 	if err != nil {
 		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not update the post field wuth the uuid: %s", f.UUID.String()), Operation: op, Err: err}
 	}
@@ -132,10 +140,14 @@ func (s *FieldsStore) Delete(postID int, f domain.PostField) error {
 }
 
 // Exists Checks if a post field exists by the given UUID and key
-func (s *FieldsStore) Exists(postID int, uniq uuid.UUID, key string) bool {
-	var exists bool
-	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM post_fields WHERE uuid = ? AND post_id = ? AND field_key = ?)", uniq.String(), postID, key).Scan(&exists)
-	return exists
+func (s *FieldsStore) Exists(postID int, uniq uuid.UUID, key string, name string) bool {
+	var normalAmount int
+	err := s.DB.QueryRow("SELECT COUNT(*) FROM `post_fields` WHERE `uuid` = ? AND `post_id` = ? AND `field_key` = ? AND `name` = ?", uniq.String(), postID, key, name).Scan(&normalAmount)
+	if err != nil {
+		color.Red.Println(err)
+		return true
+	}
+	return normalAmount > 0
 }
 
 // GetLayout loops over all of the locations within the config json
