@@ -25,7 +25,7 @@ type (
 		Alt         string     `db:"alt" json:"alt"`
 		Description string     `db:"description" json:"description"`
 		FilePath    string     `db:"file_path" json:"-"`
-		FileSize    int        `db:"file_size" json:"file_size"`
+		FileSize    int64      `db:"file_size" json:"file_size"`
 		FileName    string     `db:"file_name" json:"file_name"`
 		Sizes       MediaSizes `db:"sizes" json:"sizes"`
 		Type        string     `db:"type" json:"type"`
@@ -61,6 +61,7 @@ type (
 )
 
 const (
+	// WebPExtension defines the extension used for webp images.
 	WebPExtension = ".webp"
 )
 
@@ -70,7 +71,18 @@ const (
 // storage uploads path, for example:
 // 2020/01/photo.jpg
 func (m *Media) UploadPath() string {
+	if !m.IsOrganiseYearMonth() {
+		return m.UUID.String() + m.Extension()
+	}
 	return m.FilePath + string(os.PathSeparator) + m.UUID.String() + m.Extension()
+}
+
+// IsOrganiseYearMonth
+//
+// Returns a bool indicating if the file has been saved
+// a year month path, i.e 2020/01.
+func (m *Media) IsOrganiseYearMonth() bool {
+	return m.FilePath != ""
 }
 
 // Extension
@@ -83,7 +95,9 @@ func (m *Media) Extension() string {
 
 // PossibleFiles
 //
-//
+// Returns a the possible files saved to the system after
+// the files have been uploaded. Note: This does not
+// include the upload path.
 func (m *Media) PossibleFiles() []string {
 	files := []string{
 		m.UploadPath(),
@@ -91,8 +105,7 @@ func (m *Media) PossibleFiles() []string {
 	}
 	for _, v := range m.Sizes {
 		path := m.FilePath + string(os.PathSeparator) + v.UUID.String() + m.Extension()
-		files = append(files, path)
-		files = append(files, path + WebPExtension)
+		files = append(files, path, path+WebPExtension)
 	}
 	return files
 }

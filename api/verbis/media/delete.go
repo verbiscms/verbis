@@ -11,19 +11,25 @@ import (
 	"os"
 )
 
-// Delete
+// deleteItem
 //
-//
-func (c *Library) Delete(item domain.Media) {
-	const op = "Client.Delete"
+// Removes possible file combinations from the file
+// system.
+func deleteItem(item domain.Media, uploadPath string) {
+	const op = "client.Delete"
 
 	items := item.PossibleFiles()
-	go func() {
-		for _, v := range items {
-			err := os.Remove(v)
-			if err != nil {
-				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + v, Operation: op, Err: err})
-			}
+	for _, v := range items {
+		path := uploadPath + string(os.PathSeparator) + v
+
+		_, err := os.Stat(path)
+		if os.IsNotExist(err) {
+			continue
 		}
-	}()
+
+		err = os.Remove(path)
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + v, Operation: op, Err: err})
+		}
+	}
 }
