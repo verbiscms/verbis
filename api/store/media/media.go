@@ -22,9 +22,9 @@ type Repository interface {
 	Serve(uploadPath string, acceptWeb bool) ([]byte, string, error)
 	Upload(file *multipart.FileHeader, token string) (domain.Media, error)
 	Validate(file *multipart.FileHeader) error
-	Update(m *domain.Media) error
+	Update(m *domain.Media) error // done
 	Delete(id int) error
-	Exists(fileName string) bool
+	Exists(fileName string) bool // done
 }
 
 // Store defines the data layer for media.
