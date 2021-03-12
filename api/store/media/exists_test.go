@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `media` WHERE `filename` = 'test.jpg')"
+	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `media` WHERE `file_name` = 'test.jpg')"
 )
 
 func (t *MediaTestSuite) TestStore_Exists() {
