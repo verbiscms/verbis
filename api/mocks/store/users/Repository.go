@@ -154,13 +154,13 @@ func (_m *Repository) FindByToken(token string) (domain.User, error) {
 	return r0, r1
 }
 
-// List provides a mock function with given fields: meta
-func (_m *Repository) List(meta params.Params) (domain.Users, int, error) {
-	ret := _m.Called(meta)
+// List provides a mock function with given fields: meta, role
+func (_m *Repository) List(meta params.Params, role string) (domain.Users, int, error) {
+	ret := _m.Called(meta, role)
 
 	var r0 domain.Users
-	if rf, ok := ret.Get(0).(func(params.Params) domain.Users); ok {
-		r0 = rf(meta)
+	if rf, ok := ret.Get(0).(func(params.Params, string) domain.Users); ok {
+		r0 = rf(meta, role)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Users)
@@ -168,15 +168,15 @@ func (_m *Repository) List(meta params.Params) (domain.Users, int, error) {
 	}
 
 	var r1 int
-	if rf, ok := ret.Get(1).(func(params.Params) int); ok {
-		r1 = rf(meta)
+	if rf, ok := ret.Get(1).(func(params.Params, string) int); ok {
+		r1 = rf(meta, role)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(params.Params) error); ok {
-		r2 = rf(meta)
+	if rf, ok := ret.Get(2).(func(params.Params, string) error); ok {
+		r2 = rf(meta, role)
 	} else {
 		r2 = ret.Error(2)
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/mail/events"
 	"github.com/ainsleyclark/verbis/api/store/users"
 )
@@ -41,10 +42,10 @@ func (s *Store) ResetPassword(token, password string) error {
 	// Update the users table.
 	q := s.Builder().
 		Update(s.Schema()+users.TableName).
-		Column("password", hash).
+		Column("password", "?").
 		Where("email", "=", rp.Email)
 
-	_, err = s.DB().Exec(q.Build())
+	_, err = s.DB().Exec(q.Build(), hash)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating the users table with the new password", Operation: op, Err: err}
 	}
@@ -56,7 +57,7 @@ func (s *Store) ResetPassword(token, password string) error {
 
 	_, err = s.DB().Exec(q.Build())
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Could not delete from the password resets table", Operation: op, Err: err}
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting from the password resets table", Operation: op, Err: err})
 	}
 
 	return nil

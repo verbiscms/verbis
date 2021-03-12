@@ -23,22 +23,22 @@ func (s *Store) List(meta params.Params) (domain.Redirects, int, error) {
 	q := s.Builder().
 		From(s.Schema() + TableName)
 
-	// Apply filters
+	// Apply filters.
 	err := database.FilterRows(s.Driver, meta.Filters, TableName)
 	if err != nil {
 		return nil, -1, err
 	}
 
-	// Apply order
+	// Apply order.
 	q.OrderBy(meta.OrderBy, meta.OrderDirection)
 	countQ := q.Count()
 
-	// Apply pagination
+	// Apply pagination.
 	if !meta.LimitAll {
 		q.Limit(meta.Limit).Offset((meta.Page - 1) * meta.Limit)
 	}
 
-	// Select redirects
+	// Select redirects.
 	var redirects domain.Redirects
 	err = s.DB().Select(&redirects, q.Build())
 	if err == sql.ErrNoRows {
@@ -47,7 +47,7 @@ func (s *Store) List(meta params.Params) (domain.Redirects, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// Count the total number of redirects
+	// Count the total number of redirects.
 	var total int
 	err = s.DB().QueryRow(countQ).Scan(&total)
 	if err != nil {
