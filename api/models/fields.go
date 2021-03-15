@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	location "github.com/ainsleyclark/verbis/api/verbis/fields/converter"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
 )
 
 // FieldsRepository defines methods for Posts to interact with the database
@@ -35,7 +34,6 @@ func newFields(cfg *StoreCfgOld) *FieldsStore {
 	return &FieldsStore{
 		StoreCfgOld: cfg,
 		options:     cfg.Options.GetStruct(),
-		// This wont work when changing themes
 		finder: location.NewLocation(cfg.Paths.Storage),
 	}
 }
@@ -58,22 +56,15 @@ func (s *FieldsStore) UpdateCreate(postID int, f domain.PostFields) error {
 		}
 	}
 
-	// slice of to update
-	// slice of to create
-	//
-
 	// Update or create the existing fields passed.
 	for _, v := range f {
 		v.PostId = postID
-
 		if s.Exists(postID, v.UUID, v.Key, v.Name) {
-			color.Blue.Println("updating: ", v.Key, v.Name, v.PostId, v.OriginalValue)
 			_, err := s.Update(v)
 			if err != nil {
 				return err
 			}
 		} else {
-			color.Blue.Println("creating: ", v.Key, v.Name, v.PostId, v.OriginalValue)
 			_, err := s.Create(v)
 			if err != nil {
 				return err
@@ -144,7 +135,6 @@ func (s *FieldsStore) Exists(postID int, uniq uuid.UUID, key string, name string
 	var normalAmount int
 	err := s.DB.QueryRow("SELECT COUNT(*) FROM `post_fields` WHERE `uuid` = ? AND `post_id` = ? AND `field_key` = ? AND `name` = ?", uniq.String(), postID, key, name).Scan(&normalAmount)
 	if err != nil {
-		color.Red.Println(err)
 		return true
 	}
 	return normalAmount > 0
