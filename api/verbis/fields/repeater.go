@@ -72,15 +72,16 @@ func (s *Service) resolveRepeater(key string, field domain.PostField, fields dom
 		return Repeater{}
 	}
 
+	r := walker{
+		Key:     key,
+		Field:   field,
+		Fields:  fields,
+		Service: s,
+	}
+
 	var repeater = make(Repeater, amount)
 	for index := 0; index < len(repeater); index++ {
-		r := walker{
-			Key:     key,
-			Index:   index,
-			Field:   field,
-			Fields:  fields,
-			Service: s,
-		}
+		r.Index = index
 
 		var row Row
 		r.Walk(func(f domain.PostField) {

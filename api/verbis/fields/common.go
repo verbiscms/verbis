@@ -104,13 +104,13 @@ func (r *walker) Walk(appender func(domain.PostField)) {
 			if fieldType == "repeater" {
 				v.Value = r.resolveRepeater(pipe+SEPARATOR, v, r.Fields)
 				appender(v)
-				return
+				continue
 			}
 
 			if fieldType == "flexible" {
 				v.Value = r.resolveFlexible(pipe+SEPARATOR, v, r.Fields)
 				appender(v)
-				return
+				continue
 			}
 
 			appender(resolve.Field(v, r.deps))

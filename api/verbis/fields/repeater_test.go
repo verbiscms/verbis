@@ -105,23 +105,6 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 				},
 			},
 		},
-		"Duplicate Values": {
-			fields: domain.PostFields{
-				{Type: "repeater", Name: "repeater", OriginalValue: "1"},
-				{Type: "text", Name: "repeater_test", OriginalValue: "R1", Key: "repeater|0|nested_test"},
-				{Type: "repeater", Name: "repeater", OriginalValue: "1", Key: "repeater|0|repeater"},
-				{Type: "text", Name: "repeater_text", OriginalValue: "N1", Key: "repeater|0|repeater|0|repeater_text"},
-			},
-			key: "repeater",
-			want: Repeater{
-				Row{
-					{Type: "text", Name: "repeater_test", OriginalValue: "R1", Value: "R1", Key: "repeater|0|nested_test"},
-					{Type: "repeater", Name: "repeater", OriginalValue: "1", Key: "repeater|0|repeater", Value: Repeater{
-						Row{{Type: "text", Name: "repeater_text", OriginalValue: "N1", Value: "N1", Key: "repeater|0|repeater|0|repeater_text"}},
-					}},
-				},
-			},
-		},
 		"Nested": {
 			fields: domain.PostFields{
 				{Type: "repeater", Name: "repeater", OriginalValue: "2"},
