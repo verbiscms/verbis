@@ -10,9 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
-	"github.com/teamwork/reload"
 	"net/http"
-	"time"
 )
 
 // UpdateCreate
@@ -50,10 +48,11 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 
 	api.Respond(ctx, http.StatusOK, "Successfully created/updated options", nil)
 
+	o.SetOptions(&vOptions)
+
 	go func() {
 		// Set the deps options, TODO, were restarting the server here.
-		o.SetOptions(&vOptions)
-		time.Sleep(time.Second * 2) //nolint
-		reload.Exec()
+		//time.Sleep(time.Second * 2) //nolint
+		//reload.Exec()
 	}()
 }

@@ -108,7 +108,7 @@ type Categories struct {
 func (ns *Namespace) List(query params.Query) (interface{}, error) {
 	p := query.Get(OrderBy, OrderDirection)
 
-	categories, total, err := ns.deps.Store.Categories.Get(p)
+	categories, total, err := ns.deps.Store.Categories.Get(p, "")
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
 	} else if err != nil {

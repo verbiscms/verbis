@@ -50,8 +50,7 @@ export const optionsMixin = {
 			}
 
 			this.axios.post("/options", this.data)
-				.then(res => {
-					this.$store.commit('setTheme', res.data.data);
+				.then(() => {
 					this.errors = [];
 					this.$noty.success("Site options updated successfully.");
 				})
