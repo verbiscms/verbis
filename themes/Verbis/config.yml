@@ -8,8 +8,8 @@
 # |
 # |
 theme:
-    title: A Verbis Theme
-    description: Stock theme for verbis
+    title: Verbis
+    description: How to Slep Theme for Verbis
     version: 0.0.1
 
 # |
@@ -24,57 +24,72 @@ theme:
 # |
 # |
 resources:
-    news:
-        name: news
-        friendly_name: News
-        singular_name: News Items
-        slug: /news
+    team:
+        name: team
+        friendly_name: Team Members
+        singular_name: Team Member
+        slug: /about-us
+        icon: feather feather-user
+        hidden: false
+        hide_category_slug: true
+        available_templates: [
+                about-single
+        ]
+    guides:
+        name: guides
+        friendly_name: Guides
+        singular_name: Guide
+        slug: /guides
+        icon: feather feather-inbox
+        hidden: false
+        hide_category_slug: true
+        available_templates: [
+                guide
+        ]
+    best-mattresses:
+        name: best-mattresses
+        friendly_name: Best Mattresses
+        singular_name: Best Mattress
+        slug: /best-mattresses
+        icon: feather feather-cloud
+        hidden: false
+        hide_category_slug: true
+        available_templates: [
+                single
+        ]
+    best-pillows:
+        name: best-pillows
+        friendly_name: Best Pillows
+        singular_name: Best Pillow
+        slug: /best-pillows
+        icon: feather feather-feather
+        hidden: false
+        hide_category_slug: true
+        available_templates: [
+                single
+        ]
+    mattress-reviews:
+        name: mattress-reviews
+        friendly_name: Mattress Reviews
+        singular_name: Mattress Review
+        slug: /mattress-reviews
+        icon: feather feather-pie-chart
+        hidden: false
+        hide_category_slug: true
+        available_templates: [
+                single
+        ]
+    product-reviews:
+        name: product-reviews
+        friendly_name: Product Reviews
+        singular_name: Product Review
+        slug: /product-reviews
         icon: feather feather-clipboard
         hidden: false
         hide_category_slug: true
         available_templates: [
-            archive
+                single
         ]
-    team:
-        name: team
-        friendly_name: Team Member
-        singular_name: Team Member
-        slug: /team
-        icon: feather feather-user
-        hidden: true
-        hide_category_slug: true
-    jobs:
-        name: jobs
-        friendly_name: Job
-        singular_name: Job
-        slug: /jobs
-        icon: feather feather-inbox
-        hidden: false
-        hide_category_slug: true
-    casestudies:
-        name: casestudies
-        friendly_name: Case Studies
-        singular_name: Case Study
-        slug: /work
-        icon: feather feather-book
-        hidden: false
-        hide_category_slug: true
-    industries:
-        name: industries
-        friendly_name: Industries
-        singular_name: Industry
-        slug: /industries
-        icon: feather feather-folder
-        hidden: false
-        hide_category_slug: true
-    tools:
-        name: tools
-        friendly_name: Tools
-        singular_name: Tool
-        slug: /tools
-        icon: feather feather-layers
-        hidden: true
-        hide_category_slug: true
 
 # |
 # |--------------------------------------------------------------------------
@@ -152,7 +167,7 @@ admin:
     # | them being ejected from the system.
     # |
     # |
-    inactive_session_time: 60
+    inactive_session_time: 480
 
 # |
 # |--------------------------------------------------------------------------
@@ -213,32 +228,32 @@ media:
 # |
 editor:
     modules: [
-        blockquote,
-        code_block,
-        code_block_highlight,
-        code_view,
-        hardbreak,
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6,
-        paragraph,
-        hr,
-        ul,
-        ol,
-        bold,
-        code,
-        italic,
-        link,
-        strike,
-        underline,
-        history,
-        search,
-        trailing_node,
-        color,
-        table
+            blockquote,
+            code_block,
+            code_block_highlight,
+            code_view,
+            hardbreak,
+            h1,
+            h2,
+            h3,
+            h4,
+            h5,
+            h6,
+            paragraph,
+            hr,
+            ul,
+            ol,
+            bold,
+            code,
+            italic,
+            link,
+            strike,
+            underline,
+            history,
+            search,
+            trailing_node,
+            color,
+            table
     ]
     options:
         ul:
@@ -248,8 +263,8 @@ editor:
         link:
             rel: noopener noreferrer nofollow
         palette: [
-            '#fad839',
-            '#ca1f26',
-            '#1b3990',
-            '#333',
+                '#fad839',
+                '#ca1f26',
+                '#1b3990',
+                '#333',
         ]
