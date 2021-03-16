@@ -43,6 +43,12 @@ func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 	}
 
 	post, err := r.Store.Posts.GetBySlug(last)
+
+	isURLValid := r.testCheck(last, &post, urlTrimmed)
+	if !isURLValid {
+		return nil, nil, fmt.Errorf("not found")
+	}
+
 	if err != nil {
 		trimmedPost, pErr := r.Store.Posts.GetBySlug(urlTrimmed)
 		if pErr != nil {
@@ -88,4 +94,54 @@ func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 	return &post, &TypeOfPage{
 		PageType: Page,
 	}, nil
+}
+
+// check if url parts match, if it doesnt return 404.
+// Pass back resource category
+
+// DONT ALLOW FORWARD SLASHES IN VUE
+func (r *publish) testCheck(last string, post *domain.PostDatum, full string) bool {
+	checkUrl := ""
+
+	postResource := post.Resource
+	hiddenCategory := true
+
+	if postResource != nil {
+		resource, ok := r.Config.Resources[*postResource]
+		if ok {
+			checkUrl += resource.Slug
+			hiddenCategory = resource.HideCategorySlug
+		}
+	}
+
+	var catSlugs []string
+
+	if post.Category != nil && !hiddenCategory {
+		catSlugs = append(catSlugs, post.Category.Slug)
+		parent := post.Category.ParentId
+
+		if parent != nil {
+
+			for {
+				parentCategory, err := r.Store.Categories.GetParent(*parent)
+				if err != nil {
+					break
+				}
+				catSlugs = append(catSlugs, parentCategory.Slug)
+				parent = &parentCategory.Id
+			}
+		}
+	}
+
+	for i := len(catSlugs) - 1; i >= 0; i-- {
+		checkUrl += "/" + catSlugs[i]
+	}
+
+	checkUrl += "/" + last
+
+	if full == checkUrl {
+		return true
+	}
+
+	return false
 }
