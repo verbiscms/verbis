@@ -16,7 +16,7 @@ import (
 
 // CategoryRepository defines methods for Categories to interact with the database
 type CategoryRepository interface {
-	Get(meta params.Params) (domain.Categories, int, error)
+	Get(meta params.Params, resource string) (domain.Categories, int, error)
 	GetByID(id int) (domain.Category, error)
 	GetByPost(pageID int) (*domain.Category, error)
 	GetBySlug(slug string) (domain.Category, error)
@@ -48,7 +48,7 @@ func newCategories(cfg *StoreCfgOld) *CategoryStore {
 // Get all categories
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
-func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) {
+func (s *CategoryStore) Get(meta params.Params, resource string) (domain.Categories, int, error) {
 	const op = "CategoryRepository.Get"
 
 	var c domain.Categories
@@ -62,6 +62,19 @@ func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) 
 	}
 	q += filter
 	countQ += filter
+
+	// Get Status
+	if resource != "" {
+		if len(meta.Filters) > 0 {
+			q += " AND"
+			countQ += " AND"
+		} else {
+			q += " WHERE"
+			countQ += " WHERE"
+		}
+		q += fmt.Sprintf(" posts.status = '%s'", resource)
+		countQ += fmt.Sprintf(" posts.status = '%s'", resource)
+	}
 
 	// Apply order
 	q += fmt.Sprintf(" ORDER BY categories.%s %s", meta.OrderBy, meta.OrderDirection)
