@@ -23,8 +23,8 @@ type (
 		Title             string        `db:"title" json:"title" binding:"required,max=500"`
 		Status            string        `db:"status" json:"status,omitempty"`
 		Resource          *string       `db:"resource" json:"resource"`
-		PageTemplate      string        `db:"page_template" json:"page_template,omitempty" binding:"max=150"`
-		PageLayout        string        `db:"layout" json:"layout,omitempty" binding:"max=150"`
+		PageTemplate      string        `db:"page_template" json:"page_template,omitempty" binding:"required,max=150"`
+		PageLayout        string        `db:"layout" json:"layout,omitempty" binding:"required,max=150"`
 		CodeInjectionHead *string       `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 		CodeInjectionFoot *string       `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
 		UserId            int           `db:"user_id" json:"-"` //nolint

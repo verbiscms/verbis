@@ -190,7 +190,9 @@ export default {
 					return;
 				}
 				val.flexible.value =  this.layoutStr.join(",");
-				this.updateChildIndex();
+				this.$nextTick(() => {
+					this.updateChildIndex();
+				}, 20);
 			},
 		},
 	},
@@ -287,12 +289,8 @@ export default {
 		 * getSubFields()
 		 */
 		getSubFields(index) {
-			console.log(this.layoutStr);
-			console.log(this.layoutStr[index]);
-
 			const layout = this.getLayouts[this.layoutStr[index]];
 			if (layout) {
-
 				if ('sub_fields' in layout) {
 					return layout['sub_fields'];
 				}
@@ -314,6 +312,7 @@ export default {
 							fields[key].key = this.getKey(index, fields[key].name)
 						}
 						if ("repeater" in fields[key]) {
+							console.log(fields[key])
 							fields[key]['repeater'].key = this.getKey(index, fields[key]['repeater'].name)
 							return
 						}

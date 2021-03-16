@@ -29,7 +29,7 @@
 											<i class="btn-popover-click feather feather-chevron-down"></i>
 										</template>
 										<template slot="items">
-											<a v-if="!newItem" :href="getSiteUrl + data.slug" class="popover-item popover-item-icon" target="_blank">
+											<a v-if="!newItem" :href="isHomepage ? getSiteUrl : getSiteUrl + computedSlug" class="popover-item popover-item-icon" target="_blank">
 												<i class="feather feather-eye"></i>
 												<span>Preview</span>
 											</a>
@@ -166,8 +166,7 @@
 					<FormGroup label="Page template">
 						<div class="form-select-cont form-input">
 							<select class="form-select" id="properties-template" v-model="data['page_template']" @change="getFieldLayout">
-								<option value="" disabled v-if="templates.length > 1">Select template</option>
-								<option v-for="template in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
+								<option v-for="(template) in templates" :value="template.key" :key="template.key">{{ template.name }}</option>
 							</select>
 						</div>
 					</FormGroup><!-- /Page Template -->
@@ -226,13 +225,12 @@ export default {
 		loadingLayouts: true,
 		activeTab: 0,
 		users: [],
-		isCustomSlug: false,
+		//isCustomSlug: false,
 		editSlug: "",
 		slugBtn: false,
 		fieldLayout: [],
 		templates: [],
 		layouts: [],
-	//	resource: {},
 		categories: [],
 		newItem: false,
 		categoryArchive: false,
@@ -265,17 +263,6 @@ export default {
 	mounted() {
 		this.init();
 	},
-	watch: {
-		getCategory: function () {
-			// TODO: This needs cleaning up, without the timeout its not working!
-			if (!this.doingAxios) {
-				setTimeout(() => {
-					const end = this.data.slug.substring(this.data.slug.lastIndexOf('/') + 1);
-					this.computedSlug = this.getBaseSlug + end;
-				}, 50);
-			}
-		}
-	},
 	methods: {
 		/*
 		 * init()
@@ -288,9 +275,15 @@ export default {
 					.then(() => {
 						this.doingAxios = false;
 						this.loadingLayouts = false;
-						if (this.layouts.length >= 2) {
-							this.$set(this.data, 'layout', this.layouts[1].key);
+
+						if (this.layouts.length > 0) {
+							this.$set(this.data, 'layout', this.layouts[0].key);
 						}
+
+						if (this.templates.length > 0) {
+							this.$set(this.data, 'page_template', this.templates[0].key);
+						}
+
 						this.getFieldLayout();
 					})
 			} else {
@@ -365,9 +358,6 @@ export default {
 					if (!this.data) {
 						this.$router.push({ name : 'not-found' })
 					}
-
-					// Compare slugs & set
-					if (this.data.slug !== this.getBaseSlug + this.slugify(this.data['title'])) this.isCustomSlug = true;
 
 					// Set author
 					this.data.author = res.data.data.author.id;
@@ -557,7 +547,7 @@ export default {
 			this.errorTrigger = true;
 			this.$nextTick().then(() => {
 				if (document.querySelectorAll(".field-cont-error").length === 0) {
-					this.$set(this.data, 'slug', this.computedSlug);
+					this.$set(this.data, 'slug', this.lastSlug);
 
 					if (this.getResource.name !== "pages") {
 						this.$set(this.data, 'resource', this.getResource.name)
@@ -699,11 +689,11 @@ export default {
 				this.closeSlug();
 				return;
 			}
+
 			const newSlug = this.getBaseSlug + this.slugify(this.editSlug);
 			this.computedSlug = newSlug;
 			this.slugBtn = false;
-			this.isCustomSlug = true;
-			this.editSlug = "";
+			//this.editSlug = "";
 		},
 		/*
 		 * closeSlug()
@@ -711,12 +701,14 @@ export default {
 		 * restore default values.
 		 */
 		closeSlug() {
-			this.isCustomSlug = false;
 			this.editSlug = "";
 			this.slugBtn = false;
-		},
+		}
 	},
 	computed: {
+		/*
+		 * isPublic()
+		 */
 		isPublic() {
 			if ('hidden' in this.getResource) {
 				return !this.getResource.hidden;
@@ -757,6 +749,14 @@ export default {
 			} : resource
 		},
 		/*
+		 * lastSlug()
+		 * Retrieves the last element of the slug for storing in the
+		 * backend.
+		 */
+		lastSlug() {
+			return this.computedSlug.split("/").filter(e => e !== "").pop();
+		},
+		/*
 		 * computedSlug()
 		 * If the slug is custom, return the slug that is stored in the data.
 		 * Otherwise get the base slug and slugify the title or the slug
@@ -764,12 +764,6 @@ export default {
 		 */
 		computedSlug: {
 			get() {
-				if (this.isCustomSlug) {
-					return this.data.slug;
-				}
-				if (this.editSlug !== "") {
-					return this.getBaseSlug + this.slugify(this.data['title']);
-				}
 				return this.getBaseSlug + this.slugify(this.editSlug ? this.editSlug : this.data['title']);
 			},
 			set(value) {
