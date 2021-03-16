@@ -77,13 +77,13 @@ func (_m *CategoryRepository) Exists(id int) bool {
 	return r0
 }
 
-// Get provides a mock function with given fields: meta
-func (_m *CategoryRepository) Get(meta params.Params) (domain.Categories, int, error) {
-	ret := _m.Called(meta)
+// Get provides a mock function with given fields: meta, resource
+func (_m *CategoryRepository) Get(meta params.Params, resource string) (domain.Categories, int, error) {
+	ret := _m.Called(meta, resource)
 
 	var r0 domain.Categories
-	if rf, ok := ret.Get(0).(func(params.Params) domain.Categories); ok {
-		r0 = rf(meta)
+	if rf, ok := ret.Get(0).(func(params.Params, string) domain.Categories); ok {
+		r0 = rf(meta, resource)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Categories)
@@ -91,15 +91,15 @@ func (_m *CategoryRepository) Get(meta params.Params) (domain.Categories, int, e
 	}
 
 	var r1 int
-	if rf, ok := ret.Get(1).(func(params.Params) int); ok {
-		r1 = rf(meta)
+	if rf, ok := ret.Get(1).(func(params.Params, string) int); ok {
+		r1 = rf(meta, resource)
 	} else {
 		r1 = ret.Get(1).(int)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(params.Params) error); ok {
-		r2 = rf(meta)
+	if rf, ok := ret.Get(2).(func(params.Params, string) error); ok {
+		r2 = rf(meta, resource)
 	} else {
 		r2 = ret.Error(2)
 	}

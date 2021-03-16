@@ -22,7 +22,7 @@ func (c *Categories) List(ctx *gin.Context) {
 
 	p := api.Params(ctx).Get()
 
-	categories, total, err := c.Store.Categories.Get(p)
+	categories, total, err := c.Store.Categories.Get(p, ctx.Query("resource"))
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

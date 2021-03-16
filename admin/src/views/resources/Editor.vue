@@ -422,11 +422,7 @@ export default {
 		async getCategories() {
 
 			console.log(this.getResource['name'])
-			await this.axios.get(`/categories?limit=all&filter={"resource":[{"operator":"=", "value": "${this.getResource['name']}"}]}`, {
-				paramsSerializer: function (params) {
-					return params;
-				}
-			})
+			await this.axios.get(`/categories?limit=all&resource=${this.getResource['name']}`)
 				.then(res => {
 					console.log(res);
 					const categories = res.data.data;
