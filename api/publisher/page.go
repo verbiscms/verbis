@@ -10,6 +10,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
+	"regexp"
+	"strings"
 )
 
 func (r *publish) Page(ctx *gin.Context) ([]byte, error) {
@@ -22,6 +24,13 @@ func (r *publish) Page(ctx *gin.Context) ([]byte, error) {
 
 	url, hasRedirected := r.handleTrailingSlash(ctx)
 	if hasRedirected {
+		return nil, nil
+	}
+
+	if strings.Contains(url, "//") {
+		re, _ := regexp.Compile("/+")
+		url = re.ReplaceAllLiteralString(url, "/")
+		ctx.Redirect(301, url)
 		return nil, nil
 	}
 

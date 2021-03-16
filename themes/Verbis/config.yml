@@ -64,7 +64,7 @@ resources:
         slug: /best-pillows
         icon: feather feather-feather
         hidden: false
-        hide_category_slug: true
+        hide_category_slug: false
         available_templates: [
                 single
         ]

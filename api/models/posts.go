@@ -69,6 +69,7 @@ type PostRaw struct {
 }
 
 func (s PostStore) getQuery(query string) string {
+	// TODO CATEGORIES
 	return fmt.Sprintf(`SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
        users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.last_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
@@ -77,6 +78,7 @@ func (s PostStore) getQuery(query string) string {
        CASE WHEN categories.id IS NULL THEN 0 ELSE categories.id END AS 'category.id',
        CASE WHEN categories.name IS NULL THEN '' ELSE categories.name END AS 'category.name',
        CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource',
+       CASE WHEN categories.slug IS NULL THEN '' ELSE categories.slug END AS 'category.slug',
        CASE WHEN pf.id IS NULL THEN 0 ELSE pf.id END AS 'field.field_id',
        CASE WHEN pf.type IS NULL THEN "" ELSE pf.type END AS 'field.type',
        CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
