@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 	"strconv"
 )
 
@@ -69,6 +70,8 @@ func (s *CategoryStore) Get(meta params.Params) (domain.Categories, int, error) 
 	if !meta.LimitAll {
 		q += fmt.Sprintf(" LIMIT %v OFFSET %v", meta.Limit, (meta.Page-1)*meta.Limit)
 	}
+
+	color.Green.Println(q)
 
 	// Select categories
 	if err := s.DB.Select(&c, q); err != nil {

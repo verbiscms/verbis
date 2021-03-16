@@ -7,6 +7,8 @@
 			<!-- =====================
 				Header
 				===================== -->
+
+			{{ categories }}
 			<div class="row">
 				<div class="col-12">
 					<!-- Header -->
@@ -418,12 +420,15 @@ export default {
 		 * Obtain the categories.
 		 */
 		async getCategories() {
+
+			console.log(this.getResource['name'])
 			await this.axios.get(`/categories?limit=all&filter={"resource":[{"operator":"=", "value": "${this.getResource['name']}"}]}`, {
 				paramsSerializer: function (params) {
 					return params;
 				}
 			})
 				.then(res => {
+					console.log(res);
 					const categories = res.data.data;
 					this.categories = categories;
 					if (!this.newItem && categories.length) {
@@ -658,7 +663,7 @@ export default {
 
 			let categorySlugs = [];
 
-			if (this.data['category']) {
+			if (this.data['category'] && this.categories.length) {
 				let category = this.categories.find(c => c.id === this.data['category']);
 
 				if (category) {
