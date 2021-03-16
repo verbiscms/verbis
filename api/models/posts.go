@@ -236,12 +236,6 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostDatum, error) {
 	p.UserId = s.checkOwner(*p)
 
 	// TODO: Work out why sql defaults arent working!
-	if p.PageLayout == "" {
-		p.PageLayout = "default"
-	}
-	if p.PageTemplate == "" {
-		p.PageTemplate = "default"
-	}
 	if p.Status == "" {
 		p.Status = "draft"
 	}

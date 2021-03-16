@@ -366,15 +366,12 @@ export default {
 				this.$set(this.data, 'resource', parent['resource']);
 			}
 
-			console.log(deleteArchive);
-
 			// Set the computed slug
 			this.$set(this.data, 'slug', this.saveSlug);
 
 			if (this.newItem) {
 				this.axios.post('/categories', this.data)
 					.then(res => {
-						console.log(res);
 						this.errors = {};
 						this.$noty.success("Successfully created category");
 
@@ -423,7 +420,6 @@ export default {
 						}
 					})
 					.catch(err => {
-						console.log(err);
 						this.helpers.checkServer(err);
 						if (err.response.status === 400) {
 							this.validate(err.response.data.data.errors);
@@ -554,11 +550,7 @@ export default {
 		 * getPostById()
 		 */
 		getPostById(id) {
-			return this.posts.find(p => {
-				console.log(id);
-				console.log(p.post.id)
-				return p.post.id === id
-			});
+			return this.posts.find(p => p.post.id === id);
 		},
 		/*
  		 * validate()
@@ -593,7 +585,6 @@ export default {
 			const resources = this.getTheme['resources'],
 				key = this.data.resource;
 			if (key in resources) {
-				console.log(resources[key]);
 				return resources[key]['hide_category_slug'];
 			}
 			return false
