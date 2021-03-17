@@ -5,3 +5,5 @@
 - Posts
 - Options
 - Forms
+
+# Public isnt working for cannonical etc.

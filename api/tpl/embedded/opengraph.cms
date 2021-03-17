@@ -2,11 +2,11 @@
 <meta property="og:type" content="{{ if not .Post.Resource }}website{{ else }}article{{ end }}" />
 <meta property="og:locale" content="{{ .Options.GeneralLocale }}" />
 <meta property="og:url" content="{{ .Site.Url }}{{ .Post.Permalink }}" />
-{{- $meta := .Post.SeoMeta.Meta.Facebook -}}
-{{- if and (ne $meta.Title "") (ne $meta.Description "") }}
+{{- $meta := .Post.SeoMeta.Meta.Facebook }}
+{{ if and (ne $meta.Title "") (ne $meta.Description "") }}
 <meta property="og:title" content="{{ with $meta.Title }}{{ . }}{{ end }}" />
 <meta property="og:description" content="{{ with $meta.Description }}{{ . }}{{ end }}" />
-{{- with .GetImage $meta.ImageId }}
+{{ with .GetImage $meta.ImageId }}
 <meta property="og:image" content="{{ . }}">
 {{- end -}}
 {{- else -}}

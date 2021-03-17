@@ -14,7 +14,7 @@ import (
 // Creates a new meta Namespace
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 	if t.Post.SeoMeta.Seo == nil {
-		t.Post.SeoMeta.Seo = &domain.PostSeo{Public: true, ExcludeSitemap: false, Canonical: ""}
+		t.Post.SeoMeta.Seo = &domain.PostSeo{Private: false, ExcludeSitemap: false, Canonical: ""}
 	}
 	if t.Post.SeoMeta.Meta == nil {
 		t.Post.SeoMeta.Meta = &domain.PostMeta{Title: "", Description: ""}

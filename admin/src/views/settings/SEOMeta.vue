@@ -34,11 +34,11 @@
 						<div class="collapse-border-bottom">
 							<div class="card-header card-header-block">
 								<div>
-									<h4 class="card-title">Public</h4>
-									<p>By disabling public, no social media meta data will be outputted and a <code v-text="'<meta name=\'robots\' content=\'noindex\'>'"></code> will be placed globally.</p>
+									<h4 class="card-title">Private</h4>
+									<p>Enabling private will place a <code>no robots</code> meta tag on the site, so the page is not visible to search engines.</p>
 								</div>
 								<div class="toggle">
-									<input type="checkbox" class="toggle-switch" id="seo-public" v-model="data['seo_public']" :true-value="true" :false-value="false" />
+									<input type="checkbox" class="toggle-switch" id="seo-public" v-model="data['seo_private']" :true-value="true" :false-value="false" />
 									<label for="seo-public"></label>
 								</div>
 							</div><!-- /Card Header -->
