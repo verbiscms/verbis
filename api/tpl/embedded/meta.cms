@@ -1,7 +1,7 @@
-{{- /* Robots */}}
+{{- /* Robots */ -}}
 {{- $seo := .Post.SeoMeta.Seo -}}
 {{- $meta := .Post.SeoMeta.Meta -}}
-{{- if or (not .Options.SeoPublic) (not $seo.Public) -}}
+{{- if or (.Options.SeoPrivate) ($seo.Private) -}}
 <meta name=robots content="noindex">
 {{ end -}}
 {{- /* Cannonical */}}

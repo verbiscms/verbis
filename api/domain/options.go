@@ -62,7 +62,7 @@ type (
 		MetaTwitterDescription  string `json:"meta_twitter_description" binding:"omitempty"`
 		MetaTwitterImageID      int    `json:"meta_twitter_image_id" binding:"omitempty,numeric"`
 		// SEO
-		SeoPublic           bool     `json:"seo_public"`
+		SeoPrivate          bool     `json:"seo_private"`
 		SeoSitemapServe     bool     `json:"seo_sitemap_serve"`
 		SeoSitemapRedirects bool     `json:"seo_sitemap_redirects"`
 		SeoSitemapExcluded  []string `json:"seo_sitemap_excluded"`

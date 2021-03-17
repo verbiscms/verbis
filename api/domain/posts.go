@@ -106,7 +106,7 @@ type (
 	// should appear in the sitemap and any
 	// canonical overrides.
 	PostSeo struct {
-		Public         bool   `json:"public"`
+		Private        bool   `json:"private"`
 		ExcludeSitemap bool   `json:"exclude_sitemap"`
 		Canonical      string `json:"canonical"`
 	}

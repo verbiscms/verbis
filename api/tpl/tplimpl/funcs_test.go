@@ -33,7 +33,7 @@ func (t *TplTestSuite) TestFuncs() {
 				var tpl bytes.Buffer
 				err = file.Execute(&tpl, v)
 				if err != nil {
-					t.Error(err)
+					t.Error(err, fmt.Sprintf("test failed for %s", mm.Name))
 				}
 
 				t.Equal(e[1], html.UnescapeString(tpl.String()))
