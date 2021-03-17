@@ -116,14 +116,14 @@ func setURL() string {
 	fmt.Println("If in development, be sure to append a port (for example: http://127.0.0.1:8080):")
 
 	prompt := promptui.Prompt{
-		Label: "URL",
+		Label: "url",
 		Validate: func(input string) error {
 			if input == "" {
-				return fmt.Errorf("enter URL")
+				return fmt.Errorf("enter url")
 			}
 			_, err := url.ParseRequestURI("http://google.com/")
 			if err != nil {
-				return fmt.Errorf("enter a valid URL")
+				return fmt.Errorf("enter a valid url")
 			}
 			return nil
 		},

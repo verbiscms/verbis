@@ -60,9 +60,9 @@ func (s *Store) FindByName(name string) (domain.Media, error) {
 
 // FindByURL
 //
-// Returns a media by searching with the given URL.
+// Returns a media by searching with the given url.
 // Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the media item was not found by the given URL.
+// Returns errors.NOTFOUND if the media item was not found by the given url.
 //func (s *Store) FindByURL(url string) (domain.Media, error) {
 //	const op = "MediaStore.FindBySlug"
 //
@@ -73,7 +73,7 @@ func (s *Store) FindByName(name string) (domain.Media, error) {
 //	var media domain.Media
 //	err := s.DB().Get(&media, q.Build())
 //	if err == sql.ErrNoRows {
-//		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "No media item exists with the URL: " + url, Operation: op, Err: err}
+//		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "No media item exists with the url: " + url, Operation: op, Err: err}
 //	} else if err != nil {
 //		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 //	}

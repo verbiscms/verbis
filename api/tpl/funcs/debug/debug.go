@@ -47,7 +47,7 @@ const (
 // Returns a pretty print of the interface passed.
 // This function is a shortcut for fmt.Sprintf
 //
-// Example: {{ debug .Post }}
+// Example: {{ debug .post }}
 func (ns *Namespace) Debug(i interface{}) template.HTML {
 	return template.HTML(fmt.Sprintf("%+v\n", i))
 }
@@ -59,7 +59,7 @@ func (ns *Namespace) Debug(i interface{}) template.HTML {
 //
 // Returns errors.TEMPLATE if the marshal failed.
 //
-// Example: {{ dump .Post }}
+// Example: {{ dump .post }}
 func (ns *Namespace) Dump(i interface{}) (template.HTML, error) {
 	dump := litter.Sdump(i)
 	el := fmt.Sprintf(`%s<pre class="sf-dump">%s</pre>`, CSS, dump)

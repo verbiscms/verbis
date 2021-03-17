@@ -7,7 +7,7 @@ package publisher
 //
 //// getPublicMock is a helper to obtain a mock Public
 //// handler for testing.
-//func getPublicMock(r Publisher, gin *gin.Context) *frontend.Public {
+//func getPublicMock(r Publisher, gin *gin.ctx) *frontend.Public {
 //	mockError := mocks.ErrorHandler{}
 //	mockError.On("NotFound", gin).Run(func(args mock.Arguments) {
 //		gin.AbortWithStatus(404)
@@ -24,7 +24,7 @@ package publisher
 //type frontendTest struct {
 //	testing  *testing.T
 //	recorder *httptest.ResponseRecorder
-//	gin      *gin.Context
+//	gin      *gin.ctx
 //	engine   *gin.Engine
 //	apiPath  string
 //}
@@ -93,7 +93,7 @@ package publisher
 //		renderMock := mocks.Publisher{}
 //		renderMock.On("Upload", rr.gin).Return(&mimeType, &file, nil)
 //
-//		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
+//		rr.engine.GET("/uploads/*any", func(g *gin.ctx) {
 //			getPublicMock(&renderMock, rr.gin).GetUploads(rr.gin)
 //		})
 //		rr.engine.ServeHTTP(rr.recorder, req)
@@ -112,7 +112,7 @@ package publisher
 //		renderMock := mocks.Publisher{}
 //		renderMock.On("Upload", rr.gin).Return(nil, nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 //
-//		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
+//		rr.engine.GET("/uploads/*any", func(g *gin.ctx) {
 //			getPublicMock(&renderMock, rr.gin).GetUploads(rr.gin)
 //		})
 //		rr.engine.ServeHTTP(rr.recorder, req)
@@ -140,7 +140,7 @@ package publisher
 //		renderMock := mocks.Publisher{}
 //		renderMock.On("Asset", rr.gin).Return(&mimeType, &file, nil)
 //
-//		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
+//		rr.engine.GET("/uploads/*any", func(g *gin.ctx) {
 //			getPublicMock(&renderMock, rr.gin).GetAssets(rr.gin)
 //		})
 //		rr.engine.ServeHTTP(rr.recorder, req)
@@ -159,7 +159,7 @@ package publisher
 //		renderMock := mocks.Publisher{}
 //		renderMock.On("Asset", rr.gin).Return(nil, nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 //
-//		rr.engine.GET("/uploads/*any", func(g *gin.Context) {
+//		rr.engine.GET("/uploads/*any", func(g *gin.ctx) {
 //			getPublicMock(&renderMock, rr.gin).GetAssets(rr.gin)
 //		})
 //		rr.engine.ServeHTTP(rr.recorder, req)
@@ -187,7 +187,7 @@ package publisher
 //		renderMock := mocks.Publisher{}
 //		renderMock.On("Page", rr.gin).Return(file, nil)
 //
-//		rr.engine.GET("/page", func(g *gin.Context) {
+//		rr.engine.GET("/page", func(g *gin.ctx) {
 //			getPublicMock(&renderMock, rr.gin).Serve(rr.gin)
 //		})
 //		rr.engine.ServeHTTP(rr.recorder, req)
@@ -206,7 +206,7 @@ package publisher
 //		renderMock := mocks.Publisher{}
 //		renderMock.On("Page", rr.gin).Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 //
-//		rr.engine.GET("/page", func(g *gin.Context) {
+//		rr.engine.GET("/page", func(g *gin.ctx) {
 //			getPublicMock(&renderMock, rr.gin).Serve(rr.gin)
 //		})
 //		rr.engine.ServeHTTP(rr.recorder, req)

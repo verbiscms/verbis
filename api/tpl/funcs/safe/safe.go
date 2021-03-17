@@ -92,10 +92,10 @@ func (ns *Namespace) JSStr(i interface{}) (template.JSStr, error) {
 // Example: {{ "https://verbiscms.com" | safeUrl }}
 // Returns: `https://verbiscms.com`
 func (ns *Namespace) URL(i interface{}) (template.URL, error) {
-	const op = "Templates.URL"
+	const op = "Templates.url"
 	s, err := cast.ToStringE(i)
 	if err != nil {
-		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to cast to safe URL to string", Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to cast to safe url to string", Operation: op, Err: err}
 	}
 	return template.URL(s), nil
 }

@@ -21,7 +21,7 @@ package res
 //
 //	if _, ok := theme.Resources[last]; ok {
 //		data.PageType = "archive"
-//		data.Data = t.post.Post.Resource
+//		data.Data = t.post.post.Resource
 //		return data
 //	}
 //

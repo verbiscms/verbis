@@ -42,7 +42,7 @@ func (s *Service) handleLayoutArgs(args []interface{}) domain.FieldGroups {
 
 // getLayoutByPost
 //
-// Returns the layout by Post with the given ID.
+// Returns the layout by post with the given ID.
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining/formatting the post.
 func (s *Service) getLayoutByPost(id interface{}) domain.FieldGroups {
@@ -50,7 +50,7 @@ func (s *Service) getLayoutByPost(id interface{}) domain.FieldGroups {
 
 	i, err := cast.ToIntE(id)
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Unable to cast Post ID to integer", Operation: op, Err: err}).Error()
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Unable to cast post ID to integer", Operation: op, Err: err}).Error()
 		return nil
 	}
 

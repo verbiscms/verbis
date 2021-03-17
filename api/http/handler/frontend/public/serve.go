@@ -7,6 +7,7 @@ package public
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/color"
 	"net/http"
 )
 
@@ -24,6 +25,8 @@ func (p *Public) Serve(ctx *gin.Context) {
 
 	page, err := p.Publisher.Page(ctx)
 	if errors.Code(err) == errors.NOTFOUND {
+		color.Green.Println(err.Error())
+		color.Green.Println(errors.Message(err))
 		p.Publisher.NotFound(ctx)
 		return
 	} else if err != nil {

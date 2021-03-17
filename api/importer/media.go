@@ -16,7 +16,7 @@ import (
 
 // DownloadFile
 //
-// Retrieves a file from a specific URL and copies it to a
+// Retrieves a file from a specific url and copies it to a
 // multipart.FileHeader ready to be uploaded by the
 // media repository.
 //

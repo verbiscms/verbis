@@ -23,7 +23,7 @@ type FuncNamespaces []*FuncsNamespace
 // that rely on either context or domain.PostDatum such as
 // "url", "fields" or "meta".
 type TemplateDeps struct {
-	// The context to be used used for obtaining URL's & query parameters etc...
+	// The context to be used used for obtaining url's & query parameters etc...
 	Context *gin.Context
 	// The post to be used for rendering meta information for the page
 	Post *domain.PostDatum

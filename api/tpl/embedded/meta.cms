@@ -5,12 +5,10 @@
 <meta name=robots content="noindex">
 {{ end -}}
 {{- /* Cannonical */}}
-{{- $slash := "" -}}
-{{- if and (.Options.SeoEnforceSlash) (ne .Post.Slug "/") }}{{ $slash = "/" }}{{ end -}}
 {{- with (ne $seo.Canonical "") -}}
-<link rel=canonical href="{{ $seo.Canonical }}{{ $slash }}">
+<link rel=canonical href="{{ $seo.Canonical }}">
 {{ else -}}
-<link rel=canonical href="{{ .Site.Url }}{{ .Post.Permalink }}{{ $slash }}">
+<link rel=canonical href="{{ .Site.Url }}{{ .Post.Permalink }}">
 {{ end -}}
 {{- /* Description */}}
 {{- $postDescription := $meta.Description -}}

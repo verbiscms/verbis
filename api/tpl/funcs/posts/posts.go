@@ -50,7 +50,7 @@ type Posts struct {
 // List
 //
 // Accepts a dict (map[string]interface{}) and returns an
-// array of domain.Post. It sets defaults if some of the param
+// array of domain.post. It sets defaults if some of the param
 // arguments are missing, and returns an error if the data
 // could not be marshalled.
 

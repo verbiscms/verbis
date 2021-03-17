@@ -86,7 +86,7 @@ func (v *Validation) Process(errors pkgValidate.ValidationErrors) []Error {
 
 		submatchall := reg.FindAllString(field, -1)
 		for _, element := range submatchall {
-			if element == "User" || element == "Post" {
+			if element == "User" || element == "post" {
 				continue
 			}
 			fieldString += strings.ToLower(element) + "_"
