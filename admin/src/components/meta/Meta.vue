@@ -10,7 +10,7 @@
 			<template v-slot:header>
 				<div class="card-header">
 					<div>
-						<h4 class="card-title">Meta deta</h4>
+						<h4 class="card-title">Meta data</h4>
 						<p>Meta information & content for search engines.</p>
 					</div>
 					<div class="card-controls">

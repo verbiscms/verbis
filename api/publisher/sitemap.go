@@ -127,7 +127,7 @@ func (s *Sitemap) Index() ([]byte, error) {
 		}
 
 		viewData.Items = append(viewData.Items, viewItem{
-			Slug:      s.options.SiteUrl + "/sitemaps" + v.Slug + "/sitemap.xml",
+			Slug:      s.options.SiteUrl + "/sitemaps/" + v.Slug + "/sitemap.xml",
 			CreatedAt: time.Now().Format(time.RFC3339),
 		})
 	}
@@ -272,7 +272,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 
 		if !helpers.StringInSlice(resource, s.options.SeoSitemapExcluded) && !exclude {
 			items = append(items, viewItem{
-				Slug:      s.options.SiteUrl + v.Slug,
+				Slug:      s.options.SiteUrl + v.Permalink,
 				CreatedAt: v.CreatedAt.Format(time.RFC3339),
 			})
 		}

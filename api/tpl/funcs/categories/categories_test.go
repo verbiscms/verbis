@@ -202,7 +202,7 @@ func TestNamespace_List(t *testing.T) {
 		"Success": {
 			params.Query{"limit": 15},
 			func(m *mocks.CategoryRepository) {
-				m.On("Get", p).Return(categories, 2, nil)
+				m.On("Get", p, "").Return(categories, 2, nil)
 			},
 			Categories{
 				Categories: categories,
@@ -219,7 +219,7 @@ func TestNamespace_List(t *testing.T) {
 		"Nil": {
 			nil,
 			func(m *mocks.CategoryRepository) {
-				m.On("Get", p).Return(categories, 2, nil)
+				m.On("Get", p, "").Return(categories, 2, nil)
 			},
 			Categories{
 				Categories: categories,
@@ -236,14 +236,14 @@ func TestNamespace_List(t *testing.T) {
 		"Not Found": {
 			params.Query{"limit": 15},
 			func(m *mocks.CategoryRepository) {
-				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
+				m.On("Get", p, "").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no categories found"})
 			},
 			nil,
 		},
 		"Internal Error": {
 			params.Query{"limit": 15},
 			func(m *mocks.CategoryRepository) {
-				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"})
+				m.On("Get", p, "").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"})
 			},
 			"internal error",
 		},

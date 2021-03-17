@@ -23,9 +23,9 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 				Fields:   make(domain.PostFields, 0),
 			}
 
-			if layout {
-				//p.Layout = s.fieldsModel.Layout(p)
-			}
+			//if layout {
+			//p.Layout = s.fieldsModel.Layout(p)
+			//}
 
 			posts = append(posts, p)
 		}

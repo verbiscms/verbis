@@ -10,7 +10,7 @@
 {{- with (ne $seo.Canonical "") -}}
 <link rel=canonical href="{{ $seo.Canonical }}{{ $slash }}">
 {{ else -}}
-<link rel=canonical href="{{ .Site.Url }}{{ .Post.Slug }}{{ $slash }}">
+<link rel=canonical href="{{ .Site.Url }}{{ .Post.Permalink }}{{ $slash }}">
 {{ end -}}
 {{- /* Description */}}
 {{- $postDescription := $meta.Description -}}
