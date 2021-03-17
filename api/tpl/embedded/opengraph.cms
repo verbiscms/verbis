@@ -1,7 +1,7 @@
 <meta property="og:site_name" content="{{ .Options.SiteTitle }}">
 <meta property="og:type" content="{{ if not .Post.Resource }}website{{ else }}article{{ end }}" />
 <meta property="og:locale" content="{{ .Options.GeneralLocale }}" />
-<meta property="og:url" content="{{ .Site.Url }}{{ .Post.Slug }}" />
+<meta property="og:url" content="{{ .Site.Url }}{{ .Post.Permalink }}" />
 {{- $meta := .Post.SeoMeta.Meta.Facebook -}}
 {{- if and (ne $meta.Title "") (ne $meta.Description "") }}
 <meta property="og:title" content="{{ with $meta.Title }}{{ . }}{{ end }}" />

@@ -35,4 +35,3 @@ type (
 func (c *Category) HasParent() bool {
 	return c.ParentId != nil
 }
-

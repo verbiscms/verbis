@@ -57,6 +57,7 @@ func (ns *Namespace) Header() template.HTML {
 		Post:    ns.post,
 		Options: *ns.deps.Options,
 		deps:    ns.deps,
+		Site:    ns.deps.Site.Global(),
 	}
 
 	head := ns.executeTemplates(tm, []string{"meta", "opengraph", "twitter"})
