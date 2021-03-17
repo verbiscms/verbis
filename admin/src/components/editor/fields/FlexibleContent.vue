@@ -241,7 +241,9 @@ export default {
 		 */
 		updateHeight() {
 			this.$nextTick(() => {
-				this.helpers.setHeight(this.$refs.flexible.closest(".collapse-content"));
+				setTimeout(() => {
+					this.helpers.setHeight(this.$refs.flexible.closest(".collapse-content"));
+				}, 20)
 			});
 		},
 		/*

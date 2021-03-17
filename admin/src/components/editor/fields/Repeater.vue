@@ -270,13 +270,7 @@ export default {
 		 * up or down.
 		 */
 		moveItem(from, to) {
-			//this.rendering = true;
-
 			this.repeaterFields['children'].splice(to, 0, this.repeaterFields['children'].splice(from, 1)[0]);
-
-			// this.$nextTick(() => {
-			// 	this.rendering = false;
-			// });
 		},
 		/*
 		 * updateChildIndex()

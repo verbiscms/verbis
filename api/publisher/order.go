@@ -7,6 +7,7 @@ package publisher
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/gookit/color"
 	"strings"
 )
 
@@ -57,8 +58,8 @@ func (r *publish) resolve(url string) (*domain.PostDatum, *TypeOfPage, error) {
 		}, nil
 	}
 
-	//color.Green.Println(post.Permalink)
-	//color.Green.Println(url)
+	color.Green.Println("Permalink: ", post.Permalink)
+	color.Green.Println("Url: ", url)
 
 	isURLValid := post.Permalink == urlTrimmed
 	if !isURLValid {
