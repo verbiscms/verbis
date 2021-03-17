@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 	"strings"
 )
 
@@ -489,7 +490,8 @@ func (s *PostStore) getPermalink(post *domain.PostDatum) string {
 	if post.HasResource() {
 		resource, ok := s.Config.Resources[*postResource]
 		if ok {
-			permaLink += "/" + resource.Slug
+			// TODO: This should be in domain.
+			permaLink += "/" + strings.ReplaceAll(resource.Slug, "/", "")
 			hiddenCategory = resource.HideCategorySlug
 		}
 	}
@@ -501,7 +503,7 @@ func (s *PostStore) getPermalink(post *domain.PostDatum) string {
 		parentID := post.Category.ParentId
 
 		for {
-			if parentID == nil {
+			if !post.Category.HasParent() {
 				break
 			}
 			parentCategory, err := s.categoriesModel.GetByID(*parentID)
@@ -518,6 +520,8 @@ func (s *PostStore) getPermalink(post *domain.PostDatum) string {
 	}
 
 	permaLink += "/" + post.Slug
+
+	color.Red.Println("Perma in Post: ", permaLink)
 
 	return permaLink
 }

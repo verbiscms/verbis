@@ -5,13 +5,13 @@
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }">
 		<!-- Radio Container -->
 		<div class="form-radio-cont radio-cont">
-			<div class="form-radio" v-for="(choice, choiceIndex) in getOptions['choices']" :key="choiceIndex">
+			<div class="form-radio" v-for="(choice, index) in getOptions['choices']" :key="index">
 				<input type="radio"
-					:id="getLayout.uuid + '-' + choiceIndex"
-					:name="getLayout.uuid"
+					:id="getKey(index)"
+					:name="getLayout.uuid + fieldKey"
 					v-model="field"
 					:value="choice">
-				<label :for="getLayout.uuid + '-' + choiceIndex"></label>
+				<label :for="getKey(index)"></label>
 				<div class="form-radio-text">{{ choice }}</div>
 			</div>
 		</div><!-- /Radio Container -->
@@ -53,6 +53,14 @@ export default {
 				this.validateRequired();
 			}
 		},
+		/*
+		 * getKey()
+		 * Returns a unique key for the radio button to
+		 * bind too.
+		 */
+		getKey(index) {
+			return this.layout.uuid + "-" + this.fieldKey + "-" + index;
+		},
 	},
 	computed: {
 		/*
@@ -66,7 +74,7 @@ export default {
 			set(value) {
 				this.setMultipleFormat(value);
 			}
-		}
+		},
 	}
 }
 

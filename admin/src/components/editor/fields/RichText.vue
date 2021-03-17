@@ -243,6 +243,9 @@ export default {
 		code: function (val) {
 			this.field = val;
 		},
+		field: function (val) {
+			this.editor.setContent(val);
+		}
 	},
 	computed: {
 		getEditorConfig() {
@@ -264,7 +267,6 @@ export default {
 				return this.getValue === '<p></p>' ? '' : this.getValue;
 			},
 			set(value) {
-				console.log("hello")
 				this.$emit("update:fields", this.getFieldObject(value));
 			}
 		}
