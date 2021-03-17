@@ -3,7 +3,6 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="flexible">
-		<pre>{{ fields['children'] }}</pre>
 		<draggable @start="drag=true" :list="fields['children']" :group="fields['children']" :sort="true" handle=".flexible-handle">
 			<div class="flexible" v-for="(group, groupIndex) in getFields['children']" :key="groupIndex">
 				<div class="card-header">
