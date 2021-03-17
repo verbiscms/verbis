@@ -88,7 +88,7 @@ func (m *Media) IsOrganiseYearMonth() bool {
 // Extension
 //
 // Returns the extension of the file by stripping from
-// the URL.
+// the url.
 func (m *Media) Extension() string {
 	return filepath.Ext(m.Url)
 }

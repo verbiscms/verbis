@@ -40,7 +40,7 @@ func (t *RecoverTestSuite) TestHandler_New() {
 //t.deps.SetTmpl(handlerMock)
 //engine.Use(New(t.deps).HttpRecovery())
 //
-//engine.GET("/test", func(ctx *gin.Context) {
+//engine.GET("/test", func(ctx *gin.ctx) {
 //	panic(&errors.Error{Message: "test"})
 //})
 //

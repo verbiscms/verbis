@@ -124,7 +124,7 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 				{Title: "test1", Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}}},
 			},
 		},
-		"1 Args (Post)": {
+		"1 Args (post)": {
 			layout: nil,
 			args:   []interface{}{1},
 			mock: func(p *mocks.PostsRepository) {
@@ -139,7 +139,7 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 				{Title: "test1", Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}}},
 			},
 		},
-		"1 Args (Post Error)": {
+		"1 Args (post Error)": {
 			layout: nil,
 			args:   []interface{}{1},
 			mock: func(p *mocks.PostsRepository) {

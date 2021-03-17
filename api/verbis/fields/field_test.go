@@ -35,7 +35,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			want:   "",
 			err:    true,
 		},
-		"Post": {
+		"post": {
 			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
 			},
@@ -92,7 +92,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 			want:   "no field exists with the name: wrongval",
 			err:    true,
 		},
-		"Post": {
+		"post": {
 			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "key1"},
 			},

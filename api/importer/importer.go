@@ -15,7 +15,7 @@ type Importer interface {
 	Import()
 }
 
-// ParseLink converts a link to of type *URL
+// ParseLink converts a link to of type *url
 // Returns errors.INVALID if the post link was unable to be parsed.
 func ParseLink(link string) (string, error) {
 	const op = "Importer.ParseLink"

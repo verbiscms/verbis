@@ -53,7 +53,7 @@ func init() {
 			"typeOf",
 			nil,
 			[][2]string{
-				{`{{ typeOf .Post }}`, `domain.PostDatum`},
+				{`{{ typeOf .post }}`, `domain.PostDatum`},
 			},
 		)
 

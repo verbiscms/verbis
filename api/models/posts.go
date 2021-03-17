@@ -40,6 +40,7 @@ type PostStore struct {
 	userModel       UserRepository
 	categoriesModel CategoryRepository
 	fieldsModel     FieldsRepository
+	options         domain.Options
 }
 
 // newPosts - Construct
@@ -50,6 +51,7 @@ func newPosts(cfg *StoreCfgOld) *PostStore {
 		userModel:       newUser(cfg),
 		categoriesModel: newCategories(cfg),
 		fieldsModel:     newFields(cfg),
+		options:         cfg.Options.GetStruct(),
 	}
 }
 
@@ -199,7 +201,7 @@ func (s *PostStore) GetByID(id int, layout bool) (domain.PostDatum, error) {
 
 	formatted := s.format(p, layout)
 	if len(formatted) == 0 {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "Post not found", Operation: op, Err: fmt.Errorf("no post found")}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "post not found", Operation: op, Err: fmt.Errorf("no post found")}
 	}
 
 	return formatted[0], nil
@@ -220,7 +222,7 @@ func (s *PostStore) GetBySlug(slug string) (domain.PostDatum, error) {
 
 	formatted := s.format(p, false)
 	if len(formatted) == 0 {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "Post not found", Operation: op, Err: fmt.Errorf("no post found")}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "post not found", Operation: op, Err: fmt.Errorf("no post found")}
 	}
 
 	return formatted[0], nil
@@ -453,6 +455,7 @@ func (s *PostStore) format(rawPosts []PostRaw, layout bool) domain.PostData {
 			}
 
 			p.Permalink = s.getPermalink(&p)
+			p.Type = s.postType(&p)
 
 			posts = append(posts, p)
 		}
@@ -520,5 +523,47 @@ func (s *PostStore) getPermalink(post *domain.PostDatum) string {
 
 	permaLink += "/" + post.Slug
 
+	if s.options.SeoEnforceSlash {
+		permaLink += "/"
+	}
+
 	return permaLink
+}
+
+func (s *PostStore) postType(post *domain.PostDatum) domain.PostType {
+	if s.options.Homepage == post.Id {
+		return domain.PostType{
+			PageType: domain.HomeType,
+		}
+	}
+
+	resource, ok := s.Config.Resources[post.Slug]
+	if bool(post.IsArchive) || ok {
+		return domain.PostType{
+			PageType: domain.ArchiveType,
+			Data:     resource,
+		}
+	}
+
+	// Single with resource
+	if post.HasResource() {
+		// TODO this should be the resource
+		return domain.PostType{
+			PageType: domain.SingleType,
+			Data:     *post.Resource,
+		}
+	}
+
+	// Check if the slug is one assigned in categories.
+	cat, err := s.categoriesModel.GetBySlug(post.Slug)
+	if err == nil {
+		return domain.PostType{
+			PageType: domain.CategoryType,
+			Data:     cat,
+		}
+	}
+
+	return domain.PostType{
+		PageType: domain.PageType,
+	}
 }

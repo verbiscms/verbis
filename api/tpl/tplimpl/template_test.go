@@ -122,8 +122,8 @@ func (t *TplTestSuite) TestExecute_Execute() {
 				t.Equal(test.want, normalBuf.String())
 			})
 
-			// Post
-			t.Run("Post", func() {
+			// post
+			t.Run("post", func() {
 				if name == "With Data" {
 					return
 				}

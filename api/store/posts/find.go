@@ -35,7 +35,7 @@ func (s *Store) Find(id int, layout bool) (domain.PostDatum, error) {
 
 	post := s.format(raw, layout)
 	if len(post) == 0 {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "Post not found", Operation: op, Err: fmt.Errorf("no post found")}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "post not found", Operation: op, Err: fmt.Errorf("no post found")}
 	}
 
 	return post[0], nil
@@ -64,7 +64,7 @@ func (s *Store) FindBySlug(slug string) (domain.PostDatum, error) {
 
 	post := s.format(raw, false)
 	if len(post) == 0 {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "Post not found", Operation: op, Err: fmt.Errorf("no post found")}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "post not found", Operation: op, Err: fmt.Errorf("no post found")}
 	}
 
 	return post[0], nil

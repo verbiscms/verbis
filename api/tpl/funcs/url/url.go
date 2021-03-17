@@ -10,7 +10,7 @@ import (
 
 // Base
 //
-// Returns the current base URL.
+// Returns the current base url.
 //
 // Example: {{ baseUrl }}
 // Returns: `http://verbiscms.com` (for example)
@@ -20,7 +20,7 @@ func (ns *Namespace) Base() string {
 
 // Scheme
 //
-// Returns the scheme of the current URL
+// Returns the scheme of the current url
 // `http` or `https`
 //
 // Example: {{ scheme }}
@@ -31,7 +31,7 @@ func (ns *Namespace) Scheme() string {
 
 // Host
 //
-// Returns the host of the current URL
+// Returns the host of the current url
 //
 // Example: {{ host }}
 // Returns: `verbiscms.com` (for example)
@@ -41,7 +41,7 @@ func (ns *Namespace) Host() string {
 
 // Full
 //
-// Returns the current full URL
+// Returns the current full url
 //
 // Example: {{ fullUrl }}
 // Returns: `http://verbiscms.com/page` (for example)
@@ -51,7 +51,7 @@ func (ns *Namespace) Full() string {
 
 // Path
 //
-// Returns the path of the current URL
+// Returns the path of the current url
 //
 // Example: {{ path }}
 // Returns: `/page` (for example)

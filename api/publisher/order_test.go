@@ -16,22 +16,22 @@ var (
 //	},
 //}
 //singlePost = domain.PostDatum{
-//	Post: domain.Post{Slug: "news-item", Title: "News Item", Resource: &newsResource},
+//	post: domain.post{Slug: "news-item", Title: "News Item", Resource: &newsResource},
 //}
 //archivePost = domain.PostDatum{
-//	Post: domain.Post{Slug: "news", Title: "News"},
+//	post: domain.post{Slug: "news", Title: "News"},
 //}
 //pagePost = domain.PostDatum{
-//	Post: domain.Post{Slug: "contact", Title: "Contact"},
+//	post: domain.post{Slug: "contact", Title: "Contact"},
 //}
 //customSlugPost = domain.PostDatum{
-//	Post: domain.Post{Slug: "custom/slug", Title: "Contact"},
+//	post: domain.post{Slug: "custom/slug", Title: "Contact"},
 //}
 //category = domain.Category{
 //	Name: "category",
 //}
 //categoryPost = domain.PostDatum{
-//	Post: domain.Post{Slug: "custom/slug", Title: "Contact"}, Category: &category,
+//	post: domain.post{Slug: "custom/slug", Title: "Contact"}, Category: &category,
 //}
 )
 
