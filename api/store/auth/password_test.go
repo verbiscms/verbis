@@ -16,7 +16,6 @@ import (
 
 var (
 	UpdateQuery = "UPDATE `users` SET `password` = ? WHERE `email` = 'verbis@verbiscms.com'"
-	InsertQuery = "INSERT INTO password_resets (email, token, created_at) VALUES (?, ?, NOW())"
 	VerifyQuery = "SELECT * FROM `password_resets` WHERE `token` = 'token' LIMIT 1"
 	DeleteQuery = "DELETE FROM `password_resets` WHERE `token` = 'token'"
 	CleanQuery  = "DELETE FROM `password_resets` WHERE created_at < (NOW() - INTERVAL 2 HOUR"

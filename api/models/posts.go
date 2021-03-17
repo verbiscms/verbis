@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
 	"strings"
 )
 
@@ -520,8 +519,6 @@ func (s *PostStore) getPermalink(post *domain.PostDatum) string {
 	}
 
 	permaLink += "/" + post.Slug
-
-	color.Red.Println("Perma in Post: ", permaLink)
 
 	return permaLink
 }

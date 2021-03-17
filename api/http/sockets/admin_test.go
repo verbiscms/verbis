@@ -11,6 +11,8 @@ import (
 )
 
 func (t *SocketsTestSuite) Test_AdminSocket() {
+	t.T().Skip("Todo")
+
 	tt := map[string]struct {
 		message string
 		want    interface{}
