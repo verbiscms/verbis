@@ -76,7 +76,7 @@ func validate(h *multipart.FileHeader, opts *domain.Options, cfg *domain.ThemeCo
 func (v *validator) Mime() error {
 	m, err := mimetype.DetectReader(v.File)
 	if err != nil {
-		return err
+		return ErrMimeType
 	}
 
 	valid := mime.IsValidMime(v.Config.Media.AllowedFileTypes, m.String())
@@ -91,7 +91,7 @@ func (v *validator) Mime() error {
 //
 //
 func (v *validator) FileSize() error {
-	fileSize := int(v.Size / 1024) //nolint
+	fileSize := v.Size / 1024 //nolint
 	if fileSize > v.Options.MediaUploadMaxSize && v.Options.MediaUploadMaxSize != 0 {
 		return ErrFileTooBig
 	}
@@ -108,11 +108,11 @@ func (v *validator) Image() error {
 	}
 
 	bounds := img.Bounds().Max
-	if bounds.X > v.Options.MediaUploadMaxWidth && v.Options.MediaUploadMaxWidth != 0 {
+	if int64(bounds.X) > v.Options.MediaUploadMaxWidth && v.Options.MediaUploadMaxWidth != 0 {
 		return errors.New("image exceeds the maximum upload width")
 	}
 
-	if img.Bounds().Max.Y > v.Options.MediaUploadMaxHeight && v.Options.MediaUploadMaxHeight != 0 {
+	if int64(bounds.Y) > v.Options.MediaUploadMaxHeight && v.Options.MediaUploadMaxHeight != 0 {
 		return errors.New("image exceeds the maximum upload height")
 	}
 

@@ -294,7 +294,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The %s mime type, is not in the whitelist for uploading.", mimeType), Operation: op, Err: err}
 	}
 
-	fileSize := int(file.Size / 1024) //nolint
+	fileSize := file.Size / 1024 //nolint
 	if fileSize > s.options.MediaUploadMaxSize && s.options.MediaUploadMaxSize != 0 {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The file exceeds the maximum size restriction of %vkb.", s.options.MediaUploadMaxSize), Operation: op, Err: err}
 	}
@@ -311,11 +311,11 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 
 	defer io.Close()
 
-	if img.Bounds().Max.X > s.options.MediaUploadMaxWidth && s.options.MediaUploadMaxWidth != 0 {
+	if int64(img.Bounds().Max.X) > s.options.MediaUploadMaxWidth && s.options.MediaUploadMaxWidth != 0 {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max width of %vpx.", s.options.MediaUploadMaxWidth), Operation: op, Err: err}
 	}
 
-	if img.Bounds().Max.Y > s.options.MediaUploadMaxHeight && s.options.MediaUploadMaxHeight != 0 {
+	if int64(img.Bounds().Max.Y) > s.options.MediaUploadMaxHeight && s.options.MediaUploadMaxHeight != 0 {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The image exceeds the upload max height of %vpx.", s.options.MediaUploadMaxHeight), Operation: op, Err: err}
 	}
 
