@@ -3,6 +3,7 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="flexible">
+		<pre>{{ fields['children'] }}</pre>
 		<draggable @start="drag=true" :list="fields['children']" :group="fields['children']" :sort="true" handle=".flexible-handle">
 			<div class="flexible" v-for="(group, groupIndex) in getFields['children']" :key="groupIndex">
 				<div class="card-header">
@@ -42,7 +43,7 @@
 							Content
 							===================== -->
 						<!-- Richtext -->
-						<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldRichText>
+						<FieldRichText v-else-if="layout.type === 'richtext'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger" :updating="updatingIndex"></FieldRichText>
 						<!-- Image -->
 						<FieldImage v-else-if="layout.type === 'image'" :layout="layout" :fields.sync="fields['children'][groupIndex][layout.name]" :field-key="getKey(groupIndex, layout.name)" :error-trigger="errorTrigger"></FieldImage>
 						<!-- =====================
@@ -172,6 +173,7 @@ export default {
 		layouts: [],
 		showPopover: false,
 		layoutStr: [],
+		updatingIndex: false,
 	}),
 	mounted() {
 		this.init();
@@ -252,6 +254,7 @@ export default {
 		deleteRow(index) {
 			this.layoutFields['children'].splice(index, 1);
 			this.layoutStr.splice(index, 1);
+			this.updatingIndex = !this.updatingIndex;
 		},
 		/*
 		 * addRow()
@@ -286,6 +289,7 @@ export default {
 		moveItem(from, to) {
 			this.layoutFields['children'].splice(to, 0, this.layoutFields['children'].splice(from, 1)[0]);
 			this.layoutStr.splice(to, 0, this.layoutStr.splice(from, 1)[0]);
+			this.updatingIndex = !this.updatingIndex;
 		},
 		/*
 		 * getSubFields()

@@ -5,15 +5,15 @@
 	<section>
 		<div class="card card-small-box-shadow card-expand">
 			<!-- Public -->
-			<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['public'] }">
+			<Collapse :show="false" class="collapse-border-bottom" :class="{ 'card-expand-error' : errors['private'] }">
 				<template v-slot:header>
 					<div class="card-header">
 						<div>
-							<h4 class="card-title">Public</h4>
-							<p>Disabling public will place a <code>no robots</code> meta tag on the page, so the page is not visible to search engines.</p>
+							<h4 class="card-title">Private</h4>
+							<p>Enabling private will place a <code>no robots</code> meta tag on the page, so the page is not visible to search engines.</p>
 						</div>
 						<div class="toggle">
-							<input type="checkbox" class="toggle-switch" id="public" checked v-model="data['public']" @change="emit" :true-value="true" :false-value="false" />
+							<input type="checkbox" class="toggle-switch" id="public" checked v-model="data['private']" @change="emit" :true-value="true" :false-value="false" />
 							<label for="public"></label>
 						</div>
 					</div><!-- /Card Header -->
@@ -79,7 +79,7 @@ export default {
 			type: Object,
 			default: function () {
 				return {
-					"public": true,
+					"private": false,
 					"exclude_sitemap": false,
 					"canonical": null,
 				}
@@ -88,7 +88,7 @@ export default {
 	},
 	data: () => ({
 		data: {
-			"public": true,
+			"public": false,
 			"exclude_sitemap": false,
 			"canonical": null,
 		},

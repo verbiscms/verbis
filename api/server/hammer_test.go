@@ -26,6 +26,7 @@ func skipCI(t *testing.T) {
 
 func Test_Hammer(t *testing.T) {
 	skipCI(t)
+	t.Skip("Skipping hammer, manual test")
 
 	conn := 2000
 

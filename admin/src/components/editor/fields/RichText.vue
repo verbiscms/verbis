@@ -213,6 +213,12 @@ const Chrome = require('vue-color/src/components/Compact.vue').default;
 export default {
 	name: "FieldRichText",
 	mixins: [fieldMixin],
+	props: {
+		updating: {
+			type: Boolean,
+			default: false,
+		},
+	},
 	components: {
 		Uploader,
 		Modal,
@@ -243,8 +249,10 @@ export default {
 		code: function (val) {
 			this.field = val;
 		},
-		field: function (val) {
-			this.editor.setContent(val);
+		updating: function () {
+			this.$nextTick(() => {
+				this.editor.setContent(this.getValue);
+			});
 		}
 	},
 	computed: {
