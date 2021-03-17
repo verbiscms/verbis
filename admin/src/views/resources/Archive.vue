@@ -109,7 +109,7 @@
 												<td class="archive-table-title">
 													<router-link :to="{ name: 'editor', params: { id: item.post.id }, query: {resource: item.post.resource ? item.post.resource : '' }}">
 														<h4>{{ item.post.title }}</h4>
-														<p>{{ item.post.slug }}</p>
+														<p>{{ item.post.permalink }}</p>
 													</router-link>
 												</td>
 												<!-- Author -->

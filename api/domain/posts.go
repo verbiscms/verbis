@@ -20,6 +20,7 @@ type (
 		Id                int           `db:"id" json:"id" binding:"numeric"` //nolint
 		UUID              uuid.UUID     `db:"uuid" json:"uuid"`
 		Slug              string        `db:"slug" json:"slug" binding:"required,max=150"`
+		Permalink         string        `db:"-" json:"permalink"`
 		Title             string        `db:"title" json:"title" binding:"required,max=500"`
 		Status            string        `db:"status" json:"status,omitempty"`
 		Resource          *string       `db:"resource" json:"resource"`
@@ -125,7 +126,7 @@ func (p *Post) IsPublic() bool {
 	return p.Status == "published"
 }
 
-// HasCategories
+// HasCategory
 //
 // Determines if a post has any resources attached
 // to it.
@@ -133,11 +134,11 @@ func (p *PostDatum) HasResource() bool {
 	return p.Resource != nil
 }
 
-// HasCategories
+// HasCategory
 //
-// Determines if a post has any categories attached
+// Determines if a post has a category attached
 // to it.
-func (p *PostDatum) HasCategories() bool {
+func (p *PostDatum) HasCategory() bool {
 	return p.Category != nil
 }
 

@@ -83,7 +83,7 @@ func TestPostDatum_HasCategories(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			p := PostDatum{Category: test.input}
-			got := p.HasCategories()
+			got := p.HasCategory()
 			assert.Equal(t, test.want, got)
 		})
 	}
