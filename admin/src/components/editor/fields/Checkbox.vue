@@ -5,11 +5,11 @@
 	<div class="field-cont">
 		<div class="form-checkbox checkbox-cont">
 			<input type="checkbox"
-				:id="layout.uuid"
+				:id="getKey"
 				v-model="field"
 				:true-value="true"
 				:false-value="false">
-			<label :for="layout.uuid">
+			<label :for="getKey">
 				<i class="fal fa-check"></i>
 			</label>
 			<div v-if="getMessage" class="form-checkbox-text">{{ getMessage }}</div>
@@ -36,6 +36,14 @@ export default {
 		getMessage() {
 			const msg = this.getOptions['message'];
 			return msg === undefined || msg === "" ? false : msg;
+		},
+		/*
+		 * getKey()
+		 * Returns a unique key for the checkbox to bind
+		 * too.
+		 */
+		getKey() {
+			return this.layout.uuid + this.fieldKey;
 		},
 		/*
 		 * field()
