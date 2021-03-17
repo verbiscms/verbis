@@ -52,7 +52,7 @@ func (s *Seeder) runOptions() error {
 		"meta_twitter_description":  "",
 		"meta_twitter_image_id":     0,
 		// SEO
-		"seo_public":            false,
+		"seo_private":           false,
 		"seo_sitemap_serve":     true,
 		"seo_sitemap_redirects": true,
 		"seo_sitemap_excluded":  []string{},
