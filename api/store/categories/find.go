@@ -40,7 +40,7 @@ func (s *Store) Find(id int) (domain.Category, error) {
 //
 // Returns a category by searching with the given post ID.
 // Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the category was not found by the given Post Id.
+// Returns errors.NOTFOUND if the category was not found by the given post Id.
 func (s *Store) FindByPost(id int) (domain.Category, error) {
 	const op = "CategoryStore.FindByPost"
 

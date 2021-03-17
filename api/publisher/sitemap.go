@@ -85,16 +85,21 @@ func NewSitemap(d *deps.Deps) *Sitemap {
 	const op = "SiteMapper.NewSitemap"
 
 	// TODO: Causing issue! Returning pages to frontend?
-	//resources := theme.Resources
-	//resources["pages"] = domain.Resource{
-	//	Name:         "pages",
-	//	Slug: 			"/pages",
-	//}
+	resources := d.Config.Resources
+	r := map[string]domain.Resource{}
+	for k, v := range resources {
+		r[k] = v
+	}
+
+	r["pages"] = domain.Resource{
+		Name: "pages",
+		Slug: "pages",
+	}
 
 	s := &Sitemap{
 		deps:         d,
 		options:      d.Options,
-		resources:    d.Config.Resources,
+		resources:    r,
 		templatePath: d.Paths.Web + "/sitemaps/",
 		indexXSL:     "main-sitemap.xsl",
 		resourceXSL:  "resource-sitemap.xsl",
@@ -103,7 +108,9 @@ func NewSitemap(d *deps.Deps) *Sitemap {
 	return s
 }
 
-// GetIndex first checks to see if the sitemap serving is enabled in the
+// Index
+//
+// Index first checks to see if the sitemap serving is enabled in the
 // options, then goes on to retrieve the pages. Template data is then
 // constructed and executed.
 //
@@ -120,6 +127,7 @@ func (s *Sitemap) Index() ([]byte, error) {
 	}
 
 	viewData := index{}
+
 	for _, v := range s.resources {
 		posts, err := s.retrievePages(v.Name)
 		if err != nil || len(posts) == 0 {
@@ -202,7 +210,12 @@ func (s *Sitemap) Pages(resource string) ([]byte, error) {
 	if resource == "redirects" {
 		viewData.Items = s.getRedirects()
 	} else {
-		posts, err := s.retrievePages(resource)
+		r, err := s.findResourceBySlug(resource)
+		if err != nil {
+			return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No resource items available with the name: %s", resource), Operation: op, Err: fmt.Errorf("no resource items found")}
+		}
+
+		posts, err := s.retrievePages(r.Name)
 		if err != nil {
 			return nil, err
 		}
@@ -225,6 +238,15 @@ func (s *Sitemap) Pages(resource string) ([]byte, error) {
 	}
 
 	return xmlData, nil
+}
+
+func (s *Sitemap) findResourceBySlug(slug string) (domain.Resource, error) {
+	for _, v := range s.resources {
+		if v.Slug == slug {
+			return v, nil
+		}
+	}
+	return domain.Resource{}, fmt.Errorf("not found")
 }
 
 // ClearCache - Clears all of the cached data from the index.xml file
@@ -258,8 +280,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 
 	var items []viewItem
 	for _, v := range posts {
-		resource := ""
-		if v.Resource == nil {
+		if !v.HasResource() {
 			resource = "pages"
 		} else {
 			resource = *v.Resource
@@ -328,7 +349,7 @@ func (s *Sitemap) canServeResource(resource string) error {
 
 	found := false
 	for _, v := range s.resources {
-		if v.Name == resource {
+		if v.Slug == resource {
 			found = true
 		}
 	}

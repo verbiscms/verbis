@@ -155,7 +155,7 @@ func (s *MediaStore) GetByName(name string) (domain.Media, error) {
 	return m, nil
 }
 
-// GetByURL Obtains a media file by the URL from the database
+// GetByURL Obtains a media file by the url from the database
 // Returns errors.NOTFOUND if the media item was not found by the given url.
 func (s *MediaStore) GetByURL(url string) (string, string, error) {
 	const op = "MediaRepository.GetByURL"

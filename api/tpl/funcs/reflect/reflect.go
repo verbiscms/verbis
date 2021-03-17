@@ -33,7 +33,7 @@ func (ns *Namespace) KindOf(src interface{}) string {
 //
 // Returns the underlying type of the given value.
 //
-// Example: {{ typeOf .Post }}
+// Example: {{ typeOf .post }}
 // Returns: `domain.Post`
 func (ns *Namespace) TypeOf(src interface{}) string {
 	return fmt.Sprintf("%T", src)
@@ -43,7 +43,7 @@ func (ns *Namespace) TypeOf(src interface{}) string {
 //
 // Similar to `kindIs` but its used for types, instead of primitives.
 //
-// Example: {{ typeOf "domain.Post" .Post }}
+// Example: {{ typeOf "domain.Post" .post }}
 // Returns: `true`
 func (ns *Namespace) TypeIs(target string, src interface{}) bool {
 	return target == ns.TypeOf(src)
@@ -53,7 +53,7 @@ func (ns *Namespace) TypeIs(target string, src interface{}) bool {
 //
 // Similar to `kindIs` but its used for types, instead of primitives.
 //
-// Example: {{ typeOf "domain.Post" .Post }}
+// Example: {{ typeOf "domain.Post" .post }}
 // Returns: true
 func (ns *Namespace) TypeIsLike(target string, src interface{}) bool {
 	s := ns.TypeOf(src)

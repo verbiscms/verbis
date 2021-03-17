@@ -45,6 +45,7 @@ type (
 		Category *Category    `json:"category"`
 		Layout   []FieldGroup `json:"layout,omitempty"`
 		Fields   PostFields   `json:"fields,omitempty"`
+		Type     PostType     `json:"type"`
 	}
 	// PostData represents the slice of PostDatum's.
 	PostData []PostDatum
@@ -109,6 +110,13 @@ type (
 		ExcludeSitemap bool   `json:"exclude_sitemap"`
 		Canonical      string `json:"canonical"`
 	}
+	// PostType defines the type of page that has been served,
+	// It can be an archive, single, home, page or any
+	// type defined by the constants below.
+	PostType struct {
+		PageType string
+		Data     interface{}
+	}
 	// PostTemplate defines the Post data for templates when they
 	// are used in the front end.
 	PostTemplate struct {
@@ -117,6 +125,15 @@ type (
 		Category *Category
 		Fields   []PostField
 	}
+)
+
+// Use for PostType
+const (
+	HomeType     = "home"
+	PageType     = "page"
+	SingleType   = "single"
+	ArchiveType  = "archive"
+	CategoryType = "category"
 )
 
 // IsPublic

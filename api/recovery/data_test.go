@@ -23,7 +23,7 @@ var (
 //			Err:       "operation: error",
 //		},
 //		Request: Request{
-//			URL:        "http://localhost:8080/test",
+//			url:        "http://localhost:8080/test",
 //			Method:     "GET",
 //			Headers:    map[string][]string{"Header": {"test"}},
 //			Query:      map[string][]string{"page": {"test"}},
@@ -33,7 +33,7 @@ var (
 //			DataLength: 0,
 //			Referer:    "",
 //		},
-//		Post:  nil,
+//		post:  nil,
 //		Debug: true,
 //	}
 //
@@ -47,14 +47,14 @@ var (
 //		tracer: trace.New(),
 //	}
 //
-//	t.RequestSetup(bytes.NewBuffer([]byte("test")), nil, func(ctx *gin.Context) {
-//		r.config.Context = ctx
+//	t.RequestSetup(bytes.NewBuffer([]byte("test")), nil, func(ctx *gin.ctx) {
+//		r.config.ctx = ctx
 //	})
 //
 //	got := r.getData()
 //	t.Equal(want.Error, got.Error)
 //	t.Equal(want.Request, got.Request)
-//	t.Equal(want.Post, got.Post)
+//	t.Equal(want.post, got.post)
 //	t.Equal(want.Debug, got.Debug)
 //}
 //
@@ -130,7 +130,7 @@ var (
 //
 //func (t *RecoverTestSuite) TestRecover_GetRequestData() {
 //	want := Request{
-//		URL:        "http://localhost:8080/test",
+//		url:        "http://localhost:8080/test",
 //		Method:     "GET",
 //		Headers:    map[string][]string{"Header": {"test"}, "Cookie": {"test="}},
 //		Query:      map[string][]string{"page": {"test"}},
@@ -141,8 +141,8 @@ var (
 //		Referer:    "",
 //	}
 //
-//	t.RequestSetup(bytes.NewBuffer([]byte("test")), &cookie, func(ctx *gin.Context) {
-//		r := Recover{config: Theme{Context: ctx}}
+//	t.RequestSetup(bytes.NewBuffer([]byte("test")), &cookie, func(ctx *gin.ctx) {
+//		r := Recover{config: Theme{ctx: ctx}}
 //		got := r.getRequestData()
 //		t.Equal(want, got)
 //	})
@@ -156,7 +156,7 @@ var (
 //
 //func (t *RecoverTestSuite) TestRecover_GetRequestData_NilBody() {
 //	want := Request{
-//		URL:        "http://localhost:8080/test",
+//		url:        "http://localhost:8080/test",
 //		Method:     "GET",
 //		Headers:    map[string][]string{"Header": {"test"}, "Cookie": {"test="}},
 //		Query:      map[string][]string{"page": {"test"}},
@@ -167,8 +167,8 @@ var (
 //		Referer:    "",
 //	}
 //
-//	t.RequestSetup(errReader(0), &cookie, func(ctx *gin.Context) {
-//		r := Recover{config: Theme{Context: ctx}}
+//	t.RequestSetup(errReader(0), &cookie, func(ctx *gin.ctx) {
+//		r := Recover{config: Theme{ctx: ctx}}
 //		got := r.getRequestData()
 //		t.Equal(want, got)
 //	})

@@ -35,14 +35,14 @@ type TemplateMeta struct {
 // GetImage
 //
 // Is a helper function for the embedded meta templates.
-// Returns an media item URL or an empty string if
+// Returns an media item url or an empty string if
 // the media item did not exist.
 func (tm *TemplateMeta) GetImage(id int) string {
 	img, err := tm.deps.Store.Media.GetByID(id)
 	if err != nil {
 		return ""
 	}
-	// TODO: This should be dynamic, not dependant on Site URL.
+	// TODO: This should be dynamic, not dependant on Site url.
 	return tm.deps.Site.Global().Url + img.Url
 }
 

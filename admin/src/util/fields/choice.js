@@ -75,14 +75,13 @@ export const choiceMixin = {
 			// Key format
 			if (this.getFormat === "key") {
 				value = this.getKey(value);
-				// Map format
+			// Map format
 			} else if (this.getFormat === "map") {
 				value = JSON.stringify({
 					key: this.getKey(value),
 					value: value,
 				});
 			}
-
 			// Set the key for the API.
 			let obj = this.getFieldObject(value);
 			obj.key = this.getFormat;

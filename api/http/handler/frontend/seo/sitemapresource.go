@@ -12,7 +12,7 @@ import (
 // SiteMapResource
 //
 // Obtains the sitemap pages from the sitemap model by
-// using the resource in the URL. Obtains the
+// using the resource in the url. Obtains the
 // []bytes to send back as data when
 // /:resource/sitemap.xml is visited.
 //

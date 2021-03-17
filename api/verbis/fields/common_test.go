@@ -22,14 +22,14 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 			args:   nil,
 			want:   domain.PostFields{{Name: "test"}},
 		},
-		"1 Args (Post Fields)": {
+		"1 Args (post Fields)": {
 			args: []interface{}{domain.PostDatum{
 				Post:   domain.Post{Id: 1, Title: "post"},
 				Fields: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 			}},
 			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 		},
-		"1 Args (Post)": {
+		"1 Args (post)": {
 			fields: nil,
 			args:   []interface{}{1},
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
@@ -39,7 +39,7 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 			},
 			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 		},
-		"1 Args (Post Template)": {
+		"1 Args (post Template)": {
 			fields: nil,
 			args: []interface{}{domain.PostTemplate{
 				Post:   domain.Post{Id: 1, Title: "post"},
@@ -54,7 +54,7 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 			mock:   nil,
 			want:   domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
 		},
-		"1 Args (Post Error)": {
+		"1 Args (post Error)": {
 			fields: domain.PostFields{{Name: "test"}},
 			args:   []interface{}{1},
 			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {

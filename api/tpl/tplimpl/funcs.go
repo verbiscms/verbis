@@ -5,7 +5,7 @@
 package tplimpl
 
 import (
-	// Context/Post specific functions
+	// ctx/post specific functions
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/attributes"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/fields"

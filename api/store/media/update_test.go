@@ -32,7 +32,7 @@ func (t *MediaTestSuite) TestStore_Update() {
 			},
 		},
 		"No Rows": {
-			"Error updating media item with the URL",
+			"Error updating media item with the url",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(test.DBAnyString{}).

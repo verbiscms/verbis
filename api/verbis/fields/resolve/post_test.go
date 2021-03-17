@@ -16,7 +16,7 @@ func (t *ResolverTestSuite) TestValue_Post() {
 		mock  func(p *mocks.PostsRepository)
 		want  interface{}
 	}{
-		"Post": {
+		"post": {
 			value: domain.FieldValue("1"),
 			mock: func(p *mocks.PostsRepository) {
 				p.On("GetByID", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post"}}, nil)
@@ -25,7 +25,7 @@ func (t *ResolverTestSuite) TestValue_Post() {
 				Post: domain.Post{Title: "post"},
 			},
 		},
-		"Post Error": {
+		"post Error": {
 			value: domain.FieldValue("1"),
 			mock: func(p *mocks.PostsRepository) {
 				p.On("GetByID", 1, false).Return(domain.PostDatum{}, fmt.Errorf("not found"))
@@ -64,7 +64,7 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 		mock  func(p *mocks.PostsRepository)
 		want  domain.PostField
 	}{
-		"Post": {
+		"post": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "post"},
 			mock: func(p *mocks.PostsRepository) {
 				p.On("GetByID", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)

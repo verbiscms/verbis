@@ -114,7 +114,7 @@ func (s *CategoryStore) GetByID(id int) (domain.Category, error) {
 }
 
 // Get the category by post
-// Returns errors.NOTFOUND if the category was not found by the given Post Id.
+// Returns errors.NOTFOUND if the category was not found by the given post Id.
 func (s *CategoryStore) GetByPost(postID int) (*domain.Category, error) {
 	const op = "CategoryRepository.GetByPost"
 	var c domain.Category

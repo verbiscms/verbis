@@ -7,11 +7,11 @@
 		<div class="form-radio-cont radio-cont">
 			<div class="form-radio" v-for="(choice, index) in getOptions['choices']" :key="index">
 				<input type="radio"
-					:id="getKey(index)"
+					:id="getUnique(index)"
 					:name="getLayout.uuid + fieldKey"
 					v-model="field"
 					:value="choice">
-				<label :for="getKey(index)"></label>
+				<label :for="getUnique(index)"></label>
 				<div class="form-radio-text">{{ choice }}</div>
 			</div>
 		</div><!-- /Radio Container -->
@@ -54,11 +54,11 @@ export default {
 			}
 		},
 		/*
-		 * getKey()
+		 * getUnique()
 		 * Returns a unique key for the radio button to
 		 * bind too.
 		 */
-		getKey(index) {
+		getUnique(index) {
 			return this.layout.uuid + "-" + this.fieldKey + "-" + index;
 		},
 	},

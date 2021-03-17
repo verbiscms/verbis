@@ -17,7 +17,7 @@ import (
 // handleArgs
 //
 // The array of interfaces are presumed to be the following:
-// [0] for Post ID, fields are obtained by the post given.
+// [0] for post ID, fields are obtained by the post given.
 //
 // Returns the fields to be modified & processed.
 func (s *Service) handleArgs(args []interface{}) domain.PostFields {
@@ -47,7 +47,7 @@ func (s *Service) handleArgs(args []interface{}) domain.PostFields {
 
 // getFieldsByPost
 //
-// Returns the fields by Post with the given ID.
+// Returns the fields by post with the given ID.
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining the post.
 func (s *Service) getFieldsByPost(id int) domain.PostFields {
