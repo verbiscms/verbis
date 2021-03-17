@@ -263,6 +263,9 @@ export default {
 	mounted() {
 		this.init();
 	},
+	watch: {
+
+	},
 	methods: {
 		/*
 		 * init()
@@ -418,11 +421,8 @@ export default {
 		 * Obtain the categories.
 		 */
 		async getCategories() {
-
-			console.log(this.getResource['name'])
 			await this.axios.get(`/categories?limit=all&resource=${this.getResource['name']}`)
 				.then(res => {
-					console.log(res);
 					const categories = res.data.data;
 					this.categories = categories;
 					if (!this.newItem && categories.length) {
@@ -722,7 +722,7 @@ export default {
 			if (this.getResource.name === "pages") {
 				return "/" + this.resolveCategorySlug();
 			}
-			return this.getResource.slug + "/" + this.resolveCategorySlug();
+			return "/" + this.getResource.slug + "/" + this.resolveCategorySlug();
 		},
 		/*
 		 * getCategory()
@@ -1020,8 +1020,7 @@ export default {
 			}
 		}
 
-
-			// Tablet
+		// Tablet
 		// =========================================================================
 
 		@include media-tab {
