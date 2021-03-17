@@ -69,16 +69,19 @@ type PostRaw struct {
 }
 
 func (s PostStore) getQuery(query string) string {
-	// TODO CATEGORIES
+	// TODO CATEGORIES TIMESTAMPS
 	return fmt.Sprintf(`SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
        users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.last_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
        roles.id 'author.roles.id', roles.name 'author.roles.name', roles.description 'author.roles.description',
        pf.uuid 'field.uuid',
        CASE WHEN categories.id IS NULL THEN 0 ELSE categories.id END AS 'category.id',
-       CASE WHEN categories.name IS NULL THEN '' ELSE categories.name END AS 'category.name',
-       CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource',
+       CASE WHEN categories.uuid IS NULL THEN '' ELSE categories.uuid END AS 'category.uuid',
        CASE WHEN categories.slug IS NULL THEN '' ELSE categories.slug END AS 'category.slug',
+       CASE WHEN categories.name IS NULL THEN '' ELSE categories.name END AS 'category.name',
+       CASE WHEN categories.description IS NULL THEN '' ELSE categories.description END AS 'category.description',
+       CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource',
+       CASE WHEN categories.parent_id IS NULL THEN 0 ELSE categories.parent_id END AS 'category.parent_id',
        CASE WHEN pf.id IS NULL THEN 0 ELSE pf.id END AS 'field.field_id',
        CASE WHEN pf.type IS NULL THEN "" ELSE pf.type END AS 'field.type',
        CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
@@ -449,6 +452,8 @@ func (s *PostStore) format(rawPosts []PostRaw, layout bool) domain.PostData {
 				p.Layout = s.fieldsModel.GetLayout(p)
 			}
 
+			p.Permalink = s.getPermalink(&p)
+
 			posts = append(posts, p)
 		}
 
@@ -473,4 +478,46 @@ func (s *PostStore) format(rawPosts []PostRaw, layout bool) domain.PostData {
 	}
 
 	return posts
+}
+
+func (s *PostStore) getPermalink(post *domain.PostDatum) string {
+	permaLink := ""
+
+	postResource := post.Resource
+	hiddenCategory := true
+
+	if post.HasResource() {
+		resource, ok := s.Config.Resources[*postResource]
+		if ok {
+			permaLink += "/" + resource.Slug
+			hiddenCategory = resource.HideCategorySlug
+		}
+	}
+
+	var catSlugs []string
+
+	if post.HasCategory() && !hiddenCategory {
+		catSlugs = append(catSlugs, post.Category.Slug)
+		parentID := post.Category.ParentId
+
+		for {
+			if parentID == nil {
+				break
+			}
+			parentCategory, err := s.categoriesModel.GetByID(*parentID)
+			if err != nil {
+				break
+			}
+			catSlugs = append(catSlugs, parentCategory.Slug)
+			parentID = parentCategory.ParentId
+		}
+	}
+
+	for i := len(catSlugs) - 1; i >= 0; i-- {
+		permaLink += "/" + catSlugs[i]
+	}
+
+	permaLink += "/" + post.Slug
+
+	return permaLink
 }
