@@ -11,8 +11,6 @@ import (
 )
 
 func (t *MediaTestSuite) TestClient_Upload() {
-	e := func(fileName string) bool { return false }
-
 	size := domain.MediaSize{
 		SizeName: "Test Size",
 		Width:    100,
@@ -36,7 +34,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 				},
 			},
 			domain.Options{},
-			e,
+			exists,
 			domain.Media{
 				Url:      "/uploads/gopher.svg",
 				FilePath: "",
@@ -55,7 +53,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 				},
 			},
 			domain.Options{},
-			e,
+			exists,
 			domain.Media{
 				Url:      "/uploads/gopher.png",
 				FilePath: "",
@@ -74,7 +72,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 				},
 			},
 			domain.Options{},
-			e,
+			exists,
 			domain.Media{
 				Url:      "/uploads/gopher.jpg",
 				FilePath: "",
@@ -97,7 +95,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 					"test": size,
 				},
 			},
-			e,
+			exists,
 			domain.Media{
 				Url:      "/uploads/gopher.png",
 				FilePath: "",
@@ -129,7 +127,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 					"test": size,
 				},
 			},
-			e,
+			exists,
 			domain.Media{
 				Url:      "/uploads/gopher.jpg",
 				FilePath: "",
@@ -153,7 +151,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 			"",
 			domain.ThemeConfig{},
 			domain.Options{},
-			e,
+			exists,
 			domain.Media{},
 			"Error opening file with the name",
 		},
@@ -197,4 +195,17 @@ func (t *MediaTestSuite) TestClient_Upload() {
 			}
 		})
 	}
+}
+
+func (t *MediaTestSuite) TestClient_Upload_DirError() {
+	c := t.Setup(domain.ThemeConfig{}, domain.Options{})
+	c.Exists = exists
+	mt := t.File(t.mediaPath + "/gopher.svg")
+
+	c.paths.Uploads = "wrongpath"
+
+	_, err := c.Upload(mt)
+
+	want := "Error creating file"
+	t.Contains(errors.Message(err), want)
 }
