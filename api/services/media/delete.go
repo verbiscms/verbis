@@ -14,7 +14,8 @@ import (
 // deleteItem
 //
 // Removes possible file combinations from the file
-// system.
+// system including webP's. If the file does
+// not exist it will be skipped.
 func deleteItem(item domain.Media, uploadPath string) {
 	const op = "client.Delete"
 
@@ -31,5 +32,7 @@ func deleteItem(item domain.Media, uploadPath string) {
 		if err != nil {
 			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + v, Operation: op, Err: err})
 		}
+
+		logger.Debug("Deleted file with the path: " + path)
 	}
 }

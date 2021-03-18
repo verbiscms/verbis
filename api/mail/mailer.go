@@ -12,7 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/verbis/forms"
+	"github.com/ainsleyclark/verbis/api/services/forms"
 	"html/template"
 )
 

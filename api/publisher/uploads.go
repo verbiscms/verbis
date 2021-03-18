@@ -6,11 +6,12 @@ package publisher
 
 import (
 	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/gin-gonic/gin"
 )
 
-func (r *publish) Upload(g *gin.Context) (string, *[]byte, error) {
+func (r *publish) Upload(g *gin.Context) (domain.Mime, *[]byte, error) {
 	const op = "publish.Upload"
 
 	api.UploadChan <- 1

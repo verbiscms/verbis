@@ -7,7 +7,7 @@ package fields
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/verbis/fields/resolve"
+	"github.com/ainsleyclark/verbis/api/services/fields/resolve"
 )
 
 // GetField

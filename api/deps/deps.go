@@ -10,8 +10,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/ainsleyclark/verbis/api/verbis/site"
-	"github.com/ainsleyclark/verbis/api/verbis/theme"
+	"github.com/ainsleyclark/verbis/api/services/site"
+	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/watchers"
 	"os"
 )

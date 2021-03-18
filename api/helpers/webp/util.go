@@ -44,6 +44,6 @@ func Convert(path string, compression int) {
 		Run()
 
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not convert the image to webp", Operation: op, Err: err}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error convert the image to webp", Operation: op, Err: err}).Error()
 	}
 }

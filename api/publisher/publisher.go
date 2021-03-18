@@ -6,6 +6,7 @@ package publisher
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/minify"
 	"github.com/gin-gonic/gin"
 )
@@ -13,7 +14,7 @@ import (
 // Publisher
 type Publisher interface {
 	Asset(g *gin.Context) (string, *[]byte, error)
-	Upload(g *gin.Context) (string, *[]byte, error)
+	Upload(g *gin.Context) (domain.Mime, *[]byte, error)
 	Page(g *gin.Context) ([]byte, error)
 	NotFound(g *gin.Context)
 	SiteMap() SiteMapper
