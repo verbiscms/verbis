@@ -37,6 +37,11 @@ func TestAuth(t *testing.T) {
 // The default test path.
 const TestPath = "/test/testdata/media"
 
+var (
+	// The exists function used for testing.
+	exists = func(fileName string) bool { return false }
+)
+
 // Setup
 //
 // A helper to obtain a mock media Service for
@@ -83,7 +88,7 @@ func (t *MediaTestSuite) DummyFile(path string) func() {
 
 // File
 //
-// Converts a path into a *multipart.FileHeader
+// Converts a path into a *multipart.FileHeader.
 func (t *MediaTestSuite) File(path string) *multipart.FileHeader {
 	file, err := os.Open(path)
 	t.NoError(err)

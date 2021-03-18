@@ -34,7 +34,7 @@ func newFields(cfg *StoreCfgOld) *FieldsStore {
 	return &FieldsStore{
 		StoreCfgOld: cfg,
 		options:     cfg.Options.GetStruct(),
-		finder: location.NewLocation(cfg.Paths.Storage),
+		finder:      location.NewLocation(cfg.Paths.Storage),
 	}
 }
 
