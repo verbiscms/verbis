@@ -17,7 +17,7 @@ import (
 // system including webP's. If the file does
 // not exist it will be skipped.
 func deleteItem(item domain.Media, uploadPath string) {
-	const op = "client.Delete"
+	const op = "Service.Delete"
 
 	items := item.PossibleFiles()
 	for _, v := range items {

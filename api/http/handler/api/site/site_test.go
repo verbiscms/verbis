@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/site"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/site"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"

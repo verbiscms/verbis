@@ -7,6 +7,7 @@ package media
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"mime/multipart"
 )
 
 func (t *MediaTestSuite) TestClient_Validate() {
@@ -16,7 +17,31 @@ func (t *MediaTestSuite) TestClient_Validate() {
 		opts  domain.Options
 		want  interface{}
 	}{
-		"Success": {
+		"Nil File": {
+			"",
+			domain.ThemeConfig{
+				Media: domain.MediaConfig{
+					AllowedFileTypes: []string{"text/plain; charset=utf-8"},
+				},
+			},
+			domain.Options{
+				MediaUploadMaxHeight: 1,
+			},
+			"Error opening file with the name",
+		},
+		"Text File": {
+			t.mediaPath + "/test.txt",
+			domain.ThemeConfig{
+				Media: domain.MediaConfig{
+					AllowedFileTypes: []string{"text/plain; charset=utf-8"},
+				},
+			},
+			domain.Options{
+				MediaUploadMaxHeight: 1,
+			},
+			nil,
+		},
+		"Image": {
 			t.mediaPath + "/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
@@ -26,13 +51,13 @@ func (t *MediaTestSuite) TestClient_Validate() {
 			domain.Options{},
 			nil,
 		},
-		"Bad Mime": {
+		"Mime": {
 			t.mediaPath + "/gopher.png",
 			domain.ThemeConfig{},
 			domain.Options{},
 			"The file is not permitted to be uploaded",
 		},
-		"Bad File Size": {
+		"File Size": {
 			t.mediaPath + "/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
@@ -40,22 +65,51 @@ func (t *MediaTestSuite) TestClient_Validate() {
 				},
 			},
 			domain.Options{
-				MediaUploadMaxSize: 120,
+				MediaUploadMaxSize: 1,
 			},
 			"The file exceeds the maximum size restriction",
+		},
+		"Image Width": {
+			t.mediaPath + "/gopher.png",
+			domain.ThemeConfig{
+				Media: domain.MediaConfig{
+					AllowedFileTypes: []string{"image/png"},
+				},
+			},
+			domain.Options{
+				MediaUploadMaxWidth: 1,
+			},
+			"The image exceeds the width/height restrictions",
+		},
+		"Image Height": {
+			t.mediaPath + "/gopher.png",
+			domain.ThemeConfig{
+				Media: domain.MediaConfig{
+					AllowedFileTypes: []string{"image/png"},
+				},
+			},
+			domain.Options{
+				MediaUploadMaxHeight: 1,
+			},
+			"The image exceeds the width/height restrictions",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			c := t.Setup(test.cfg, test.opts)
-			mt := t.File(test.input)
+
+			var mt = &multipart.FileHeader{}
+			if test.input != "" {
+				mt = t.File(test.input)
+			}
+
 			got := c.Validate(mt)
 			if got != nil {
 				t.Contains(errors.Message(got), test.want)
 				return
 			}
-			t.Nil(got)
+			t.Equal(test.want, got)
 		})
 	}
 }

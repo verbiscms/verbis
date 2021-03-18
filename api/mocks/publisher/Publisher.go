@@ -3,7 +3,9 @@
 package mocks
 
 import (
+	domain "github.com/ainsleyclark/verbis/api/domain"
 	gin "github.com/gin-gonic/gin"
+
 	mock "github.com/stretchr/testify/mock"
 
 	publisher "github.com/ainsleyclark/verbis/api/publisher"
@@ -89,14 +91,14 @@ func (_m *Publisher) SiteMap() publisher.SiteMapper {
 }
 
 // Upload provides a mock function with given fields: g
-func (_m *Publisher) Upload(g *gin.Context) (string, *[]byte, error) {
+func (_m *Publisher) Upload(g *gin.Context) (domain.Mime, *[]byte, error) {
 	ret := _m.Called(g)
 
-	var r0 string
-	if rf, ok := ret.Get(0).(func(*gin.Context) string); ok {
+	var r0 domain.Mime
+	if rf, ok := ret.Get(0).(func(*gin.Context) domain.Mime); ok {
 		r0 = rf(g)
 	} else {
-		r0 = ret.Get(0).(string)
+		r0 = ret.Get(0).(domain.Mime)
 	}
 
 	var r1 *[]byte

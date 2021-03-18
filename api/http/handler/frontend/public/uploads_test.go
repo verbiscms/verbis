@@ -6,6 +6,7 @@ package public
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
@@ -24,7 +25,7 @@ func (t *PublicTestSuite) TestPublic_Uploads() {
 			http.StatusOK,
 			"image/png",
 			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx).Return("image/png", t.bytes, nil)
+				m.On("Upload", ctx).Return(domain.Mime("image/png"), t.bytes, nil)
 			},
 		},
 		"Fail": {
@@ -32,7 +33,7 @@ func (t *PublicTestSuite) TestPublic_Uploads() {
 			http.StatusNotFound,
 			"text/html",
 			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx).Return("", nil, fmt.Errorf("error"))
+				m.On("Upload", ctx).Return(domain.Mime(""), nil, fmt.Errorf("error"))
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(http.StatusNotFound, "text/html", []byte(testString))
 				})

@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
 	mockStore "github.com/ainsleyclark/verbis/api/mocks/models"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/theme"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/theme"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"

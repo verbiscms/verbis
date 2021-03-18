@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
 	mockStore "github.com/ainsleyclark/verbis/api/mocks/models"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/theme"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/theme"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )

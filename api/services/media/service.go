@@ -20,7 +20,11 @@ type Library interface {
 	Delete(item domain.Media)
 }
 
-type client struct {
+// Service
+//
+// Defines the service for uploading, validating, deleting
+// and serving rich media from the Verbis media library.
+type Service struct {
 	Options *domain.Options
 	Config  *domain.ThemeConfig
 	paths   paths.Paths
@@ -33,9 +37,9 @@ type ExistsFunc func(fileName string) bool
 
 // New
 //
-// Creates a new client.
-func (c client) New(opts *domain.Options, fn ExistsFunc) Library {
-	return &client{
+// Creates a new Service.
+func (c Service) New(opts *domain.Options, fn ExistsFunc) Library {
+	return &Service{
 		Options: opts,
 		Config:  config.Get(),
 		paths:   paths.Get(),
@@ -46,9 +50,15 @@ func (c client) New(opts *domain.Options, fn ExistsFunc) Library {
 // Upload
 //
 // Satisfies the Library to upload a media item to the
-// library.
-// TODO: Carry on!
-func (c *client) Upload(file *multipart.FileHeader) (domain.Media, error) {
+// library. Media items will be opened and saved to
+// the local file system. Images are resized and
+// saved in correspondence to the options.
+// This function expects that validate
+// has been called before it is run.
+//
+// Returns errors.INTERNAL on any eventuality the file could not be opened.
+// Returns errors.INVALID if the mimetype could not be found.
+func (c *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 	return upload(file, c.paths.Uploads, c.Options, c.Config, c.Exists)
 }
 
@@ -60,7 +70,7 @@ func (c *client) Upload(file *multipart.FileHeader) (domain.Media, error) {
 // skipped.
 //
 // Logs errors.INTERNAL if the file could not be deleted.
-func (c *client) Delete(item domain.Media) {
+func (c *Service) Delete(item domain.Media) {
 	deleteItem(item, c.paths.Uploads)
 }
 
@@ -73,6 +83,6 @@ func (c *client) Delete(item domain.Media) {
 // checks the image boundaries.
 //
 // Returns errors.INVALID any of the conditions fail.
-func (c *client) Validate(file *multipart.FileHeader) error {
+func (c *Service) Validate(file *multipart.FileHeader) error {
 	return validate(file, c.Options, c.Config)
 }

@@ -13,6 +13,7 @@ import (
 	"testing"
 )
 
+//nolint
 var wg sync.WaitGroup
 var errCountPhoto int
 var errCountPage int
