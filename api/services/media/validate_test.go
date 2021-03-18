@@ -4,7 +4,10 @@
 
 package media
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import (
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+)
 
 func (t *MediaTestSuite) TestClient_Validate() {
 	tt := map[string]struct {
@@ -14,7 +17,7 @@ func (t *MediaTestSuite) TestClient_Validate() {
 		want  interface{}
 	}{
 		"Success": {
-			"/gopher.png",
+			t.mediaPath + "/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},
@@ -24,13 +27,13 @@ func (t *MediaTestSuite) TestClient_Validate() {
 			nil,
 		},
 		"Bad Mime": {
-			"/gopher.png",
+			t.mediaPath + "/gopher.png",
 			domain.ThemeConfig{},
 			domain.Options{},
-			ErrMimeType.Error(),
+			"The file is not permitted to be uploaded",
 		},
 		"Bad File Size": {
-			"/gopher.png",
+			t.mediaPath + "/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},
@@ -39,7 +42,7 @@ func (t *MediaTestSuite) TestClient_Validate() {
 			domain.Options{
 				MediaUploadMaxSize: 120,
 			},
-			"mimetype is not permitted",
+			"The file exceeds the maximum size restriction",
 		},
 	}
 
@@ -49,7 +52,8 @@ func (t *MediaTestSuite) TestClient_Validate() {
 			mt := t.File(test.input)
 			got := c.Validate(mt)
 			if got != nil {
-				t.Contains(got.Error(), test.want)
+				t.Contains(errors.Message(got), test.want)
+				return
 			}
 			t.Nil(got)
 		})

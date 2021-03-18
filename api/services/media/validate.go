@@ -31,7 +31,7 @@ type validator struct {
 //
 //
 func validate(h *multipart.FileHeader, opts *domain.Options, cfg *domain.ThemeConfig) error {
-	const op = "client.Validate"
+	const op = "Media.Validate"
 
 	file, err := h.Open()
 	defer func() {
