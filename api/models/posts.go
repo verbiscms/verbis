@@ -521,10 +521,14 @@ func (s *PostStore) getPermalink(post *domain.PostDatum) string {
 		permaLink += "/" + catSlugs[i]
 	}
 
-	permaLink += "/" + post.Slug
+	isHome := post.IsHomepage(s.options.Homepage)
+	if !isHome {
+		permaLink += "/" + post.Slug
+	}
 
-	if s.options.SeoEnforceSlash {
+	if s.options.SeoEnforceSlash && !isHome {
 		permaLink += "/"
+		// Fixed home canonical
 	}
 
 	return permaLink
