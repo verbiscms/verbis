@@ -39,7 +39,7 @@ type uploader struct {
 //
 //
 func upload(h *multipart.FileHeader, path string, opts *domain.Options, cfg *domain.ThemeConfig, exists ExistsFunc) (domain.Media, error) {
-	const op = "Uploader.Upload"
+	const op = "Media.Uploader.Upload"
 
 	file, err := h.Open()
 	defer func() {
@@ -86,7 +86,7 @@ func upload(h *multipart.FileHeader, path string, opts *domain.Options, cfg *dom
 // called concurrently to convert images
 // to .webp.
 func (u *uploader) Save() (domain.Media, error) {
-	const op = "Uploader.Save"
+	const op = "Media.Uploader.Save"
 
 	// Obtain the file path.
 	filePath, err := u.Dir()
@@ -138,7 +138,7 @@ func (u *uploader) Save() (domain.Media, error) {
 // not exist, for example '2020/01', otherwise
 // it returns an empty string.
 func (u *uploader) Dir() (string, error) {
-	const op = "Uploader.Dir"
+	const op = "Media.Uploader.Dir"
 
 	if !u.Options.MediaOrganiseDate {
 		return "", nil
@@ -199,7 +199,7 @@ func (u *uploader) CleanFileName() string {
 // Returns errors.INTERNAL if the file could not be copied
 // or created.
 func (u *uploader) SaveOriginal(path string) (uuid.UUID, error) {
-	const op = "Uploader.Save"
+	const op = "Media.Uploader.Save"
 
 	key := uuid.New()
 	dest := path + key.String() + u.Extension
