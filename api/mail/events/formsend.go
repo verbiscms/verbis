@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/mail"
-	"github.com/ainsleyclark/verbis/api/verbis/forms"
+	"github.com/ainsleyclark/verbis/api/services/forms"
 )
 
 // FormSend defines the event instance for emailing forms

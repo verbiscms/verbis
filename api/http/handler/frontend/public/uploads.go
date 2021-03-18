@@ -18,11 +18,11 @@ import (
 func (p *Public) Uploads(ctx *gin.Context) {
 	const op = "FrontendHandler.GetUploads"
 
-	mimeType, file, err := p.Publisher.Upload(ctx)
+	mime, file, err := p.Publisher.Upload(ctx)
 	if err != nil {
 		p.Publisher.NotFound(ctx)
 		return
 	}
 
-	ctx.Data(http.StatusOK, mimeType, *file)
+	ctx.Data(http.StatusOK, mime.String(), *file)
 }

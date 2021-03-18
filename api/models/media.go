@@ -36,8 +36,8 @@ type MediaRepository interface {
 	Get(meta params.Params) (domain.MediaItems, int, error)
 	GetByID(id int) (domain.Media, error)
 	GetByName(name string) (domain.Media, error)
-	GetByURL(url string) (string, string, error)
-	Serve(uploadPath string, acceptWeb bool) ([]byte, string, error)
+	GetByURL(url string) (string, domain.Mime, error)
+	Serve(uploadPath string, acceptWeb bool) ([]byte, domain.Mime, error)
 	Upload(file *multipart.FileHeader, token string) (domain.Media, error)
 	Validate(file *multipart.FileHeader) error
 	Update(m *domain.Media) error
@@ -157,7 +157,7 @@ func (s *MediaStore) GetByName(name string) (domain.Media, error) {
 
 // GetByURL Obtains a media file by the url from the database
 // Returns errors.NOTFOUND if the media item was not found by the given url.
-func (s *MediaStore) GetByURL(url string) (string, string, error) {
+func (s *MediaStore) GetByURL(url string) (string, domain.Mime, error) {
 	const op = "MediaRepository.GetByURL"
 	var m domain.Media
 
@@ -189,7 +189,7 @@ func (s *MediaStore) GetByURL(url string) (string, string, error) {
 
 // Serve is responsible for serving the correct data to the front end
 // Returns errors.NOTFOUND if the media item was not found.
-func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, string, error) {
+func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, domain.Mime, error) {
 	const op = "MediaRepository.Serve"
 
 	// NOTE: Not concurrent safe
@@ -337,7 +337,7 @@ func (s *MediaStore) insert(uniq uuid.UUID, name, filePath string, fileSize int6
 		FileSize:    fileSize,
 		FileName:    name,
 		Sizes:       sizes,
-		Type:        mimeType,
+		Type:        domain.Mime(mimeType),
 		UserId:      userID,
 	}
 
@@ -461,7 +461,7 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name, path, m
 					Url:      s.getURL() + "/" + fileName,
 					Name:     fileName,
 					SizeName: size.Name,
-					FileSize: files.GetFileSize(path + "/" + mediaUUID.String() + extension),
+					FileSize: int64(files.GetFileSize(path + "/" + mediaUUID.String() + extension)),
 					Width:    size.Width,
 					Height:   size.Height,
 					Crop:     size.Crop,

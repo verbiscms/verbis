@@ -28,7 +28,7 @@ type (
 		FileSize    int64      `db:"file_size" json:"file_size"`
 		FileName    string     `db:"file_name" json:"file_name"`
 		Sizes       MediaSizes `db:"sizes" json:"sizes"`
-		Type        string     `db:"type" json:"type"`
+		Type        Mime       `db:"type" json:"type"`
 		UserId      int        `db:"user_id" json:"user_id"` //nolint
 		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
@@ -45,7 +45,7 @@ type (
 		Url      string    `db:"url" json:"url"` //nolint
 		Name     string    `db:"name" json:"name"`
 		SizeName string    `db:"size_name" json:"size_name"`
-		FileSize int       `db:"file_size" json:"file_size"`
+		FileSize int64     `db:"file_size" json:"file_size"`
 		Width    int       `db:"width" json:"width"`
 		Height   int       `db:"height" json:"height"`
 		Crop     bool      `db:"crop" json:"crop"`
@@ -108,6 +108,38 @@ func (m *Media) PossibleFiles() []string {
 		files = append(files, path, path+WebPExtension)
 	}
 	return files
+}
+
+// Mime TODO
+type Mime string
+
+// CanResize
+//
+// Returns true if the mime type is of JPG or PNG,
+// determining if the image can be resized.
+func (m Mime) CanResize() bool {
+	return m.IsJPG() || m.IsPNG()
+}
+
+// IsJPG
+//
+// Returns true if the mime type is of JPG.
+func (m Mime) IsJPG() bool {
+	return m == "image/jpeg" || m == "image/jp2"
+}
+
+// IsPNG
+//
+// Returns true if the mime type is of PNG.
+func (m Mime) IsPNG() bool {
+	return m == "image/png"
+}
+
+// String
+//
+// Stringer on Mime type.
+func (m Mime) String() string {
+	return string(m)
 }
 
 // Scan

@@ -361,6 +361,10 @@ func (s *PostStore) Delete(id int) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete post with the ID: %v", id), Operation: op, Err: err}
 	}
 
+	if _, err := s.DB.Exec("DELETE FROM post_fields WHERE post_id = ?", id); err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not delete post fields with the ID: %v", id), Operation: op, Err: err}
+	}
+
 	return nil
 }
 
@@ -528,7 +532,6 @@ func (s *PostStore) getPermalink(post *domain.PostDatum) string {
 
 	if s.options.SeoEnforceSlash && !isHome {
 		permaLink += "/"
-		// Fixed home canonical
 	}
 
 	return permaLink
