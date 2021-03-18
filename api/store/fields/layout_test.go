@@ -6,7 +6,7 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/verbis/fields/converter"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/fields/converter"
 )
 
 func (t *FieldsTestSuite) TestStore_Layout() {

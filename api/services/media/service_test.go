@@ -39,10 +39,10 @@ const TestPath = "/test/testdata/media"
 
 // Setup
 //
-// A helper to obtain a mock media client for
+// A helper to obtain a mock media Service for
 // testing.
-func (t *MediaTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Options) *client {
-	return &client{
+func (t *MediaTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Options) *Service {
+	return &Service{
 		Options: &opts,
 		Config:  &cfg,
 		paths: paths.Paths{

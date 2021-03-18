@@ -49,7 +49,7 @@ func upload(h *multipart.FileHeader, path string, opts *domain.Options, cfg *dom
 		}
 	}()
 	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file with the name: " + h.Filename, Operation: op, Err: err}
+		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Error opening file with the name: " + h.Filename, Operation: op, Err: err}
 	}
 
 	m, err := mimetype.DetectReader(file)
@@ -325,6 +325,6 @@ func (u *uploader) ToWeb(media domain.Media) {
 		}
 
 		logger.Debug("Attempting to convert image to webp with the path: " + path)
-		webp.Convert(path, 100-u.Options.MediaCompression)
+		webp.Convert(path, 100-u.Options.MediaCompression) //nolint
 	}
 }
