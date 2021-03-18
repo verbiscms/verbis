@@ -4,9 +4,7 @@
 
 package media
 
-import (
-	"github.com/ainsleyclark/verbis/api/domain"
-)
+import "github.com/ainsleyclark/verbis/api/domain"
 
 func (t *MediaTestSuite) TestClient_Validate() {
 	tt := map[string]struct {
@@ -16,7 +14,7 @@ func (t *MediaTestSuite) TestClient_Validate() {
 		want  interface{}
 	}{
 		"Success": {
-			"/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/media/gopher.png",
+			"/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},
@@ -26,13 +24,13 @@ func (t *MediaTestSuite) TestClient_Validate() {
 			nil,
 		},
 		"Bad Mime": {
-			"/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/media/gopher.png",
+			"/gopher.png",
 			domain.ThemeConfig{},
 			domain.Options{},
 			ErrMimeType.Error(),
 		},
 		"Bad File Size": {
-			"/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/media/gopher.png",
+			"/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},

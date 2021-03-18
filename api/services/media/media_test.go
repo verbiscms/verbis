@@ -8,9 +8,11 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"io"
+	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -21,6 +23,8 @@ import (
 // library testing.
 type MediaTestSuite struct {
 	test.HandlerSuite
+	apiPath   string
+	mediaPath string
 }
 
 // TestAuth
@@ -30,6 +34,9 @@ func TestAuth(t *testing.T) {
 	suite.Run(t, &MediaTestSuite{})
 }
 
+// The default test path.
+const TestPath = "/test/testdata/media"
+
 // Setup
 //
 // A helper to obtain a mock media client for
@@ -38,8 +45,39 @@ func (t *MediaTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Options) *cli
 	return &client{
 		Options: &opts,
 		Config:  &cfg,
-		paths:   paths.Get(),
-		Exists:  nil,
+		paths: paths.Paths{
+			API:     t.apiPath,
+			Uploads: t.apiPath + TestPath,
+		},
+		Exists: nil,
+	}
+}
+
+// SetupSuite
+//
+// Reassign API path for testing.
+func (t *MediaTestSuite) SetupSuite() {
+	logger.SetOutput(ioutil.Discard)
+	wd, err := os.Getwd()
+	t.NoError(err)
+	t.apiPath = filepath.Join(filepath.Dir(wd), "../")
+	t.mediaPath = t.apiPath + TestPath
+}
+
+// DummyFile
+//
+// Creates a dummy file for testing with the
+// given path.
+func (t *MediaTestSuite) DummyFile(path string) func() {
+	file, err := os.Create(path)
+	if err != nil {
+		t.Fail("Error creating file with the path: "+path, err)
+	}
+	return func() {
+		err := file.Close()
+		if err != nil {
+			t.Fail("Error closing file", err)
+		}
 	}
 }
 

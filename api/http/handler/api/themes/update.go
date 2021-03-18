@@ -8,7 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	"github.com/ainsleyclark/verbis/api/verbis/theme"
+	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"os"

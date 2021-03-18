@@ -7,7 +7,7 @@ package fields
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store"
-	location "github.com/ainsleyclark/verbis/api/verbis/fields/converter"
+	location "github.com/ainsleyclark/verbis/api/services/fields/converter"
 )
 
 // Repository defines methods for fields

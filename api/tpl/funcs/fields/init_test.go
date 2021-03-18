@@ -8,7 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
-	"github.com/ainsleyclark/verbis/api/verbis/fields"
+	"github.com/ainsleyclark/verbis/api/services/fields"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )

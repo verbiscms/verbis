@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	location "github.com/ainsleyclark/verbis/api/verbis/fields/converter"
+	location "github.com/ainsleyclark/verbis/api/services/fields/converter"
 	"github.com/google/uuid"
 )
 
