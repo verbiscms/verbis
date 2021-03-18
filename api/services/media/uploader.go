@@ -22,6 +22,9 @@ import (
 	"time"
 )
 
+// uploader
+//
+// Defines the helper for uploading media items.
 type uploader struct {
 	File       multipart.File
 	Options    *domain.Options
@@ -37,7 +40,7 @@ type uploader struct {
 
 // upload
 //
-//
+// Uploads a multipart file to the filesystem.
 func upload(h *multipart.FileHeader, path string, opts *domain.Options, cfg *domain.ThemeConfig, exists ExistsFunc) (domain.Media, error) {
 	const op = "Media.Uploader.Upload"
 
