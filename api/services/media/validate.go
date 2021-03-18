@@ -15,11 +15,17 @@ import (
 )
 
 var (
-	ErrMimeType   = errors.New("mimetype is not permitted")
+	// ErrMimeType is returned by validate when a mimetype is
+	// not permitted.
+	ErrMimeType = errors.New("mimetype is not permitted")
+	// ErrFileTooBig is returned by validate when a file is to
+	// big to be uploaded.
 	ErrFileTooBig = errors.New("file size to big to be uploaded")
 )
 
+// validator
 //
+// Defines the helper for validating media items.
 type validator struct {
 	Config  *domain.ThemeConfig
 	Options *domain.Options
@@ -27,9 +33,10 @@ type validator struct {
 	File    multipart.File
 }
 
-// Validate
+// validate
 //
-//
+// Checks for valid mime types, file sizes and image sizes
+// Returns errors.INVALID if any condition is not met.
 func validate(h *multipart.FileHeader, opts *domain.Options, cfg *domain.ThemeConfig) error {
 	const op = "Media.Validate"
 
@@ -72,7 +79,9 @@ func validate(h *multipart.FileHeader, opts *domain.Options, cfg *domain.ThemeCo
 
 // Mime
 //
-//
+// Checks if a mimetype is valid by comparing the mime
+// with the allowed file types in the configuration.
+// Returns ErrMimeType on failure.
 func (v *validator) Mime() error {
 	m, err := mimetype.DetectReader(v.File)
 	if err != nil {
@@ -89,9 +98,11 @@ func (v *validator) Mime() error {
 
 // FileSize
 //
-//
+// Checks if the file size is under the upload maximum
+// size set in the options.
+// Returns ErrFileTooBig on failure.
 func (v *validator) FileSize() error {
-	fileSize := v.Size / 1024 //nolint
+	fileSize := v.Size / 1024
 	if fileSize > v.Options.MediaUploadMaxSize && v.Options.MediaUploadMaxSize != 0 {
 		return ErrFileTooBig
 	}
@@ -100,8 +111,15 @@ func (v *validator) FileSize() error {
 
 // Image
 //
-//
+// Checks if an image is over the maximum width and height
+// set in the options. Returns nil if the file is not
+// an image.
 func (v *validator) Image() error {
+	_, err := v.File.Seek(0, 0)
+	if err != nil {
+		return err
+	}
+
 	img, _, err := image.Decode(v.File)
 	if err != nil {
 		return nil // Is not an image

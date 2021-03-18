@@ -294,7 +294,7 @@ func (s *MediaStore) Validate(file *multipart.FileHeader) error {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The %s mime type, is not in the whitelist for uploading.", mimeType), Operation: op, Err: err}
 	}
 
-	fileSize := file.Size / 1024 //nolint
+	fileSize := file.Size / 1024
 	if fileSize > s.options.MediaUploadMaxSize && s.options.MediaUploadMaxSize != 0 {
 		return &errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("The file exceeds the maximum size restriction of %vkb.", s.options.MediaUploadMaxSize), Operation: op, Err: err}
 	}

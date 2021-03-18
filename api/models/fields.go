@@ -131,7 +131,7 @@ func (s *FieldsStore) Delete(postID int, f domain.PostField) error {
 }
 
 // Exists Checks if a post field exists by the given UUID and key
-func (s *FieldsStore) Exists(postID int, uniq uuid.UUID, key string, name string) bool {
+func (s *FieldsStore) Exists(postID int, uniq uuid.UUID, key, name string) bool {
 	var normalAmount int
 	err := s.DB.QueryRow("SELECT COUNT(*) FROM `post_fields` WHERE `uuid` = ? AND `post_id` = ? AND `field_key` = ? AND `name` = ?", uniq.String(), postID, key, name).Scan(&normalAmount)
 	if err != nil {

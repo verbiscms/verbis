@@ -301,7 +301,7 @@ func (p *page) HandleRedirect() bool {
 		return false
 	}
 
-	re, err := regexp.Compile("/+")
+	re, err := regexp.Compile("/+") //nolint
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error compiling regex", Operation: op, Err: err})
 	}

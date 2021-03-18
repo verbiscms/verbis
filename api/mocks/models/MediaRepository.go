@@ -117,7 +117,7 @@ func (_m *MediaRepository) GetByName(name string) (domain.Media, error) {
 }
 
 // GetByURL provides a mock function with given fields: url
-func (_m *MediaRepository) GetByURL(url string) (string, string, error) {
+func (_m *MediaRepository) GetByURL(url string) (string, domain.Mime, error) {
 	ret := _m.Called(url)
 
 	var r0 string
@@ -127,11 +127,11 @@ func (_m *MediaRepository) GetByURL(url string) (string, string, error) {
 		r0 = ret.Get(0).(string)
 	}
 
-	var r1 string
-	if rf, ok := ret.Get(1).(func(string) string); ok {
+	var r1 domain.Mime
+	if rf, ok := ret.Get(1).(func(string) domain.Mime); ok {
 		r1 = rf(url)
 	} else {
-		r1 = ret.Get(1).(string)
+		r1 = ret.Get(1).(domain.Mime)
 	}
 
 	var r2 error
@@ -145,7 +145,7 @@ func (_m *MediaRepository) GetByURL(url string) (string, string, error) {
 }
 
 // Serve provides a mock function with given fields: uploadPath, acceptWeb
-func (_m *MediaRepository) Serve(uploadPath string, acceptWeb bool) ([]byte, string, error) {
+func (_m *MediaRepository) Serve(uploadPath string, acceptWeb bool) ([]byte, domain.Mime, error) {
 	ret := _m.Called(uploadPath, acceptWeb)
 
 	var r0 []byte
@@ -157,11 +157,11 @@ func (_m *MediaRepository) Serve(uploadPath string, acceptWeb bool) ([]byte, str
 		}
 	}
 
-	var r1 string
-	if rf, ok := ret.Get(1).(func(string, bool) string); ok {
+	var r1 domain.Mime
+	if rf, ok := ret.Get(1).(func(string, bool) domain.Mime); ok {
 		r1 = rf(uploadPath, acceptWeb)
 	} else {
-		r1 = ret.Get(1).(string)
+		r1 = ret.Get(1).(domain.Mime)
 	}
 
 	var r2 error

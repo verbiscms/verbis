@@ -84,6 +84,7 @@ var (
 		Post: domain.Post{
 			Id:           123,
 			Title:        "post",
+			Slug:         "/post",
 			PageTemplate: "tpl",
 			PageLayout:   "layout",
 		},
