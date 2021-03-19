@@ -6,21 +6,23 @@ package posts
 
 import "github.com/ainsleyclark/verbis/api/domain"
 
+// format
+//
+//
 func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 	var posts = make(domain.PostData, 0)
 
 	for _, v := range raw {
 		if !s.find(posts, v.Id) {
-			var category domain.Category
-			if v.Category.Id != 0 {
-				category = v.Category
-			}
 
 			p := domain.PostDatum{
 				Post:     v.Post,
 				Author:   v.Author.HideCredentials(),
-				Category: &category,
 				Fields:   make(domain.PostFields, 0),
+			}
+
+			if v.Category.Id != 0 {
+				p.Category = &v.Category
 			}
 
 			//if layout {
@@ -53,6 +55,9 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 	return posts
 }
 
+// find
+//
+//
 func (s *Store) find(posts domain.PostData, id int) bool {
 	for _, v := range posts {
 		if v.Id == id {

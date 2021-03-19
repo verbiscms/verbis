@@ -5,7 +5,6 @@
 package posts
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -26,16 +25,14 @@ func (s *Store) Find(id int, layout bool) (domain.PostDatum, error) {
 		Limit(1)
 
 	var raw []postsRaw
-	err := s.DB().Get(&raw, q.Build())
-	if err == sql.ErrNoRows {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
-	} else if err != nil {
+	err := s.DB().Select(&raw, selectStmt(q.Build()))
+	if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	post := s.format(raw, layout)
 	if len(post) == 0 {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "post not found", Operation: op, Err: fmt.Errorf("no post found")}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No post exists with the ID: %d", id), Operation: op, Err: fmt.Errorf("no post found")}
 	}
 
 	return post[0], nil
@@ -47,7 +44,7 @@ func (s *Store) Find(id int, layout bool) (domain.PostDatum, error) {
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the post was not found by the given slug.
 func (s *Store) FindBySlug(slug string) (domain.PostDatum, error) {
-	const op = "CategoryStore.FindBySlug"
+	const op = "PostStore.FindBySlug"
 
 	q := s.Builder().
 		From(s.Schema()+TableName).
@@ -55,16 +52,14 @@ func (s *Store) FindBySlug(slug string) (domain.PostDatum, error) {
 		Limit(1)
 
 	var raw []postsRaw
-	err := s.DB().Get(&raw, q.Build())
-	if err == sql.ErrNoRows {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "No category exists with the slug: " + slug, Operation: op, Err: err}
-	} else if err != nil {
+	err := s.DB().Select(&raw, selectStmt(q.Build()))
+	if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
 	post := s.format(raw, false)
 	if len(post) == 0 {
-		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "post not found", Operation: op, Err: fmt.Errorf("no post found")}
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "No post exists with the slug: " + slug, Operation: op, Err: fmt.Errorf("no post found")}
 	}
 
 	return post[0], nil

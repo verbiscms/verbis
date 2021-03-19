@@ -2,34 +2,33 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package postmeta
+package postcategories
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store"
 )
 
-// Repository defines methods for meta options
+// Repository defines methods for post categories
 // to interact with the database.
 type Repository interface {
-	Insert(id int, p domain.PostOptions) error
+	Create(postID int, catID int) error
+	Update(postID int, catID int) error
 	Delete(postID int) error
-	Exists(id int) bool
 }
 
-// Store defines the data layer for meta.
+// Store defines the data layer for post fields.
 type Store struct {
 	*store.Config
 }
 
 const (
-	// The database table name for meta options.
-	TableName = "post_options"
+	// The database table name for post categories.
+	TableName = "post_categories"
 )
 
 // New
 //
-// Creates a new meta store.
+// Creates a new post fields store.
 func New(cfg *store.Config) *Store {
 	return &Store{
 		Config: cfg,

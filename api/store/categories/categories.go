@@ -23,6 +23,7 @@ type Repository interface {
 	Create(c domain.Category) (domain.Category, error)
 	Update(c domain.Category) (domain.Category, error)
 	Delete(id int) error
+	DeleteFromPivot(postID int) error
 	Exists(id int) bool
 	ExistsByName(name string) bool
 	ExistsBySlug(slug string) bool

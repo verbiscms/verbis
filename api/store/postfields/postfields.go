@@ -16,6 +16,7 @@ type Repository interface {
 	Find(postID int) (domain.PostFields, error)
 	FindByPostAndKey(postID int, key string) (domain.PostFields, error)
 	Insert(postID int, fields domain.PostFields) error
+	Delete(postID int) error
 	Exists(field domain.PostField) bool
 }
 

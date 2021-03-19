@@ -12,6 +12,20 @@ type Repository struct {
 	mock.Mock
 }
 
+// Delete provides a mock function with given fields: postID
+func (_m *Repository) Delete(postID int) error {
+	ret := _m.Called(postID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int) error); ok {
+		r0 = rf(postID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Exists provides a mock function with given fields: field
 func (_m *Repository) Exists(field domain.PostField) bool {
 	ret := _m.Called(field)

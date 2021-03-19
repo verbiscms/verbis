@@ -49,6 +49,20 @@ func (_m *Repository) Delete(id int) error {
 	return r0
 }
 
+// DeleteFromPivot provides a mock function with given fields: postID
+func (_m *Repository) DeleteFromPivot(postID int) error {
+	ret := _m.Called(postID)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int) error); ok {
+		r0 = rf(postID)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Exists provides a mock function with given fields: id
 func (_m *Repository) Exists(id int) bool {
 	ret := _m.Called(id)
