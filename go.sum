@@ -20,6 +20,8 @@ github.com/GeertJohan/go.incremental v1.0.0/go.mod h1:6fAjUhbVuX1KcMD3c8TEgVUqmo
 github.com/GeertJohan/go.rice v1.0.0/go.mod h1:eH6gbSOAUv07dQuZVnBmoDP8mgsM1rtixis4Tib9if0=
 github.com/JamesStewy/go-mysqldump v0.2.2 h1:tMtZDnIi2hz6H3Nna0TPhvWfBZlXe4i7vkjc5Vd8Gdo=
 github.com/JamesStewy/go-mysqldump v0.2.2/go.mod h1:JuJhv4dTbe2OQpABlwqj0B+6E9VLjGLG1t4NJRTcB3w=
+github.com/KirksFletcher/Go-SQL-Query-Builder-Golang v0.0.2 h1:Rdctglk8udBK8r2/oFfv2NJ1s4XUrFz3M0bnBe9aGDA=
+github.com/KirksFletcher/Go-SQL-Query-Builder-Golang v0.0.2/go.mod h1:URueCBoopex5DrBowDeOWDIu4QFvh2dm8wLVRoSNFbQ=
 github.com/OneOfOne/xxhash v1.2.2/go.mod h1:HSdplMjZKSmBqAxg5vPj2TmRDmfkzw+cTzAElWljhcU=
 github.com/PuerkitoBio/goquery v1.5.1/go.mod h1:GsLWisAFVj4WgDibEWF4pvYnkVQBpKBKeU+7zCJoLcc=
 github.com/SparkPost/gosparkpost v0.2.0 h1:yzhHQT7cE+rqzd5tANNC74j+2x3lrPznqPJrxC1yR8s=

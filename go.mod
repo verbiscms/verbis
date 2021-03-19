@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/JamesStewy/go-mysqldump v0.2.2
+	github.com/KirksFletcher/Go-SQL-Query-Builder-Golang v0.0.2 // indirect
 	github.com/SparkPost/gosparkpost v0.2.0
 	github.com/briandowns/spinner v1.11.1
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
