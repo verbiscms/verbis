@@ -119,7 +119,7 @@ var (
 //					Theme: &domain.ThemeConfig{
 //						Resources: testResources,
 //					},
-//					Options: &domain.Options{},
+//					options: &domain.options{},
 //				},
 //			}
 //

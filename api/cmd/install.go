@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/database/seeds"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/helpers/webp"
+	//"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/kyokomi/emoji"
 	"github.com/manifoldco/promptui"
@@ -100,8 +100,9 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Get webp executables
-	bin := webp.CreateBinWrapper()
-	bin.ExecPath("cwebp")
+	//bin := webp.CreateBinWrapper()
+	//bin.ExecPath("cwebp")
+
 	//if err := bin.Run(); err != nil {
 	// TODO: Log here, dont print error. doesnt work on GCP
 	//}

@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
-	"github.com/ainsleyclark/verbis/api/helpers/webp"
+	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"path/filepath"

@@ -11,7 +11,7 @@ import (
 
 // Robots
 //
-// Obtains the Seo Robots field from the Options struct
+// Obtains the Seo Robots field from the options struct
 // which is set in the settings, and returns the
 // robots.txt file.
 //

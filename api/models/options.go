@@ -14,7 +14,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-// OptionsRepository defines methods for Options to interact with the database
+// OptionsRepository defines methods for options to interact with the database
 type OptionsRepository interface {
 	Get() (domain.OptionsDBMap, error)
 	GetByName(name string) (interface{}, error)

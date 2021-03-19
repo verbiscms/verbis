@@ -89,7 +89,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// Fields
 		operator.GET("/fields", h.Fields.List)
 
-		// Options
+		// options
 		operator.GET("/options", h.Options.List)
 		operator.GET("/options/:name", h.Options.Find)
 		operator.POST("/options", h.Options.UpdateCreate)

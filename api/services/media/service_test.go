@@ -9,7 +9,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/webp"
 	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"io"
 	"io/ioutil"
@@ -47,14 +49,18 @@ var (
 // A helper to obtain a mock media Service for
 // testing.
 func (t *MediaTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Options) *Service {
+	m := &mocks.Execer{}
+	m.On("Convert", mock.Anything, mock.Anything).Once()
+	m.On("Convert", mock.Anything, mock.Anything).Once()
 	return &Service{
-		Options: &opts,
-		Config:  &cfg,
+		options: &opts,
+		config:  &cfg,
 		paths: paths.Paths{
 			API:     t.apiPath,
 			Uploads: t.apiPath + TestPath,
 		},
-		Exists: nil,
+		exists: nil,
+		webp: m,
 	}
 }
 

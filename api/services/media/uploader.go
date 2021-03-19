@@ -8,14 +8,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
-	"github.com/ainsleyclark/verbis/api/helpers/webp"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/gabriel-vasile/mimetype"
+	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/google/uuid"
 	"io"
 	"mime/multipart"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -36,49 +34,7 @@ type uploader struct {
 	Size       int64
 	Mime       domain.Mime
 	Resizer    Resizer
-}
-
-// upload
-//
-// Uploads a multipart file to the filesystem.
-func upload(h *multipart.FileHeader, path string, opts *domain.Options, cfg *domain.ThemeConfig, exists ExistsFunc) (domain.Media, error) {
-	const op = "Media.Uploader.Upload"
-
-	file, err := h.Open()
-	defer func() {
-		err := file.Close()
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing file with the name: " + h.Filename, Operation: op, Err: err})
-		}
-	}()
-	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Error opening file with the name: " + h.Filename, Operation: op, Err: err}
-	}
-
-	m, err := mimetype.DetectReader(file)
-	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Mime type not found", Operation: op, Err: err}
-	}
-
-	_, err = file.Seek(0, 0)
-	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking file", Operation: op, Err: err}
-	}
-
-	u := uploader{
-		File:       file,
-		Options:    opts,
-		Config:     cfg,
-		Exists:     exists,
-		UploadPath: path,
-		FileName:   h.Filename,
-		Extension:  filepath.Ext(h.Filename),
-		Size:       h.Size,
-		Mime:       domain.Mime(m.String()),
-		Resizer:    &Resize{},
-	}
-
-	return u.Save()
+	WebP       webp.Execer
 }
 
 // Save
@@ -328,6 +284,6 @@ func (u *uploader) ToWeb(media domain.Media) {
 		}
 
 		logger.Debug("Attempting to convert image to webp with the path: " + path)
-		webp.Convert(path, 100-u.Options.MediaCompression) //nolint
+		u.WebP.Convert(path, u.Options.MediaCompression)
 	}
 }
