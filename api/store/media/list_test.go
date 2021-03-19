@@ -18,7 +18,7 @@ import (
 
 var (
 	ListQuery  = "SELECT * FROM `media` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `media` ORDER BY \"created_at\" desc ) AS rowdata"
+	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `media` ORDER BY \"created_at\" desc) AS rowdata"
 )
 
 func (t *MediaTestSuite) TestStore_List() {

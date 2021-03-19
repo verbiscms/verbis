@@ -10,9 +10,9 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
-	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/postfields"
-	meta "github.com/ainsleyclark/verbis/api/mocks/store/postmeta"
+	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/posts/fields"
+	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
 	"regexp"
 )
 
@@ -33,7 +33,7 @@ func (t *PostsTestSuite) TestStore_Delete() {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("DeleteFromPivot", post.Id).Return(nil)
+				c.On("Delete", post.Id).Return(nil)
 				f.On("Delete", post.Id).Return(nil)
 				m.On("Delete", post.Id).Return(nil)
 			},
@@ -61,7 +61,7 @@ func (t *PostsTestSuite) TestStore_Delete() {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("DeleteFromPivot", post.Id).Return(&errors.Error{Message: database.ErrQueryMessage})
+				c.On("Delete", post.Id).Return(&errors.Error{Message: database.ErrQueryMessage})
 				f.On("Delete", post.Id).Return(nil)
 				m.On("Delete", post.Id).Return(nil)
 			},
@@ -73,7 +73,7 @@ func (t *PostsTestSuite) TestStore_Delete() {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("DeleteFromPivot", post.Id).Return(nil)
+				c.On("Delete", post.Id).Return(nil)
 				f.On("Delete", post.Id).Return(&errors.Error{Message: database.ErrQueryMessage})
 				m.On("Delete", post.Id).Return(nil)
 			},
@@ -85,7 +85,7 @@ func (t *PostsTestSuite) TestStore_Delete() {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("DeleteFromPivot", post.Id).Return(nil)
+				c.On("Delete", post.Id).Return(nil)
 				f.On("Delete", post.Id).Return(nil)
 				m.On("Delete", post.Id).Return(&errors.Error{Message: database.ErrQueryMessage})
 			},

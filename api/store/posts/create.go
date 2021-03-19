@@ -14,7 +14,7 @@ import (
 
 // Create
 //
-// Returns a new category upon creation.
+// Returns a new post upon creation.
 // Returns errors.CONFLICT if the the category (name) already exists.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
 func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
@@ -47,7 +47,7 @@ func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 
 	result, err := s.DB().Exec(q.Build(), uuid.New().String())
 	if err == sql.ErrNoRows {
-		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
+		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating post with the title: " + p.Title, Operation: op, Err: err}
 	} else if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
@@ -58,18 +58,26 @@ func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 	}
 	p.Id = int(id)
 
-	// Update, create or delete the post meta.
+	// Create the post meta.
 	err = s.meta.Insert(int(id), p.SeoMeta)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
 
-	// Update, create or delete the post fields.
+	// Create the post fields.
 	err = s.fields.Insert(int(id), p.Fields)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
 
+	// Create the post categories
+	if p.Category != nil {
+		err = s.categories.Create(int(id), *p.Category)
+		if err != nil {
+			return domain.PostDatum{}, err
+		}
+	}
 
+	// TODO!
 	return domain.PostDatum{}, nil
 }

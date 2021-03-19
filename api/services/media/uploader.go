@@ -268,7 +268,7 @@ func (u *uploader) FileSize(path string) int64 {
 // Checks to see if the media is a PNG or JPG and then
 // ranges over the possible files of the media item
 // and converts the images to webp. If the file
-// exists, and an error occured, it will be
+// exists, and an error occurred, it will be
 // logged.
 func (u *uploader) ToWeb(media domain.Media) {
 	if !media.Mime.CanResize() {

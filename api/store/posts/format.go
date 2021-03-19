@@ -14,11 +14,10 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 	for _, v := range raw {
 		if !s.find(posts, v.Id) {
-
 			p := domain.PostDatum{
-				Post:     v.Post,
-				Author:   v.Author.HideCredentials(),
-				Fields:   make(domain.PostFields, 0),
+				Post:   v.Post,
+				Author: v.Author.HideCredentials(),
+				Fields: make(domain.PostFields, 0),
 			}
 
 			if v.Category.Id != 0 {

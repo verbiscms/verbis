@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package meta
 
 import (
 	"database/sql"
@@ -14,11 +14,10 @@ import (
 )
 
 var (
-	DeleteQuery              = "DELETE FROM `categories` WHERE `id` = '" + categoryID + "'"
-	DeletePivotCategoryQuery = "DELETE FROM `post_categories` WHERE `category_id` = '" + categoryID + "'"
+	DeleteQuery = "DELETE FROM `post_options` WHERE `post_id` = '" + postID + "'"
 )
 
-func (t *CategoriesTestSuite) TestStore_Delete() {
+func (t *MetaTestSuite) TestStore_Delete() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -28,23 +27,12 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnResult(sqlmock.NewResult(0, 1))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotCategoryQuery)).
-					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 		"No Rows": {
-			"No category exists with the ID",
+			"No post exists with the ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WillReturnError(sql.ErrNoRows)
-			},
-		},
-		"No Rows Pivot": {
-			"No category exists with the ID",
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WillReturnResult(sqlmock.NewResult(0, 1))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotCategoryQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -55,21 +43,12 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
-		"Internal Error Pivot": {
-			"Error executing sql query",
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WillReturnResult(sqlmock.NewResult(0, 0))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotCategoryQuery)).
-					WillReturnError(fmt.Errorf("error"))
-			},
-		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Delete(category.Id)
+			err := s.Delete(meta.PostId)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
