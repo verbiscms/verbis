@@ -23,7 +23,7 @@ func (s *Store) Insert(postID int, fields domain.PostFields) error {
 	// Find fields that should be deleted (not in the array)
 	for _, v := range fields {
 		if s.shouldDelete(v, f) {
-			err := s.delete(postID, v)
+			err := s.deleteField(postID, v)
 			if err != nil {
 				return err
 			}

@@ -7,6 +7,9 @@ package posts
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/domain"
+	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/postfields"
+	meta "github.com/ainsleyclark/verbis/api/mocks/store/postmeta"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
@@ -22,7 +25,7 @@ type PostsTestSuite struct {
 // TestPosts
 //
 // Assert testing has begun.
-func TestCategories(t *testing.T) {
+func TestPosts(t *testing.T) {
 	suite.Run(t, &PostsTestSuite{
 		DBSuite: test.NewDBSuite(t),
 	})
@@ -40,6 +43,20 @@ func (t *PostsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	return New(&store.Config{
 		Driver: t.Driver,
 	})
+}
+
+func (t *PostsTestSuite) SetupMock(mf func(m sqlmock.Sqlmock), mfm func(c *categories.Repository, f *fields.Repository, m *meta.Repository)) *Store {
+	s := t.Setup(mf)
+	c := &categories.Repository{}
+	f := &fields.Repository{}
+	m := &meta.Repository{}
+	if mfm != nil {
+		mfm(c, f, m)
+	}
+	s.categories = c
+	s.fields = f
+	s.meta = m
+	return s
 }
 
 const (
@@ -62,35 +79,47 @@ var (
 			Slug:  "/post",
 		},
 	}
-	postData = domain.PostDatum{
+	postDatum = domain.PostDatum{
 		Post: domain.Post{
 			Id:    1,
 			Slug:  "/post",
 			Title: "post",
 		},
-	}
-	// The default post with wrong validation used for testing.
-	postBadValidation = domain.PostCreate{
-		Post: domain.Post{
-			Id:    1,
-			Title: "post",
-		},
+		Fields: make(domain.PostFields, 0),
 	}
 	// The default posts used for testing.
 	posts = domain.PostData{
 		{
 			Post: domain.Post{
-				Id:    123,
+				Id:    1,
 				Slug:  "/post",
 				Title: "post",
 			},
 		},
 		{
 			Post: domain.Post{
-				Id:    124,
+				Id:    2,
 				Slug:  "/post1",
 				Title: "post1",
 			},
+		},
+	}
+	postData = domain.PostData{
+		{
+			Post: domain.Post{
+				Id:    1,
+				Slug:  "/post",
+				Title: "post",
+			},
+			Fields: make(domain.PostFields, 0),
+		},
+		{
+			Post: domain.Post{
+				Id:    2,
+				Slug:  "/post1",
+				Title: "post1",
+			},
+			Fields: make(domain.PostFields, 0),
 		},
 	}
 )

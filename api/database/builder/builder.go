@@ -303,7 +303,7 @@ func (s *Sqlbuilder) Build() string {
 	space := regexp.MustCompile(`\s+`)
 	s.string = space.ReplaceAllString(s.string, " ")
 
-	returnString := s.string
+	returnString := strings.TrimSuffix(s.string, " ")
 
 	return returnString
 }

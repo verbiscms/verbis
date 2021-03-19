@@ -5,6 +5,7 @@
 package test
 
 import (
+	"bytes"
 	"database/sql/driver"
 	sqlMock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/cache"
@@ -15,7 +16,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"io/ioutil"
 	"testing"
 )
 
@@ -25,6 +25,7 @@ type DBSuite struct {
 	DB         *sqlx.DB
 	Driver     database.Driver
 	Mock       sqlMock.Sqlmock
+	Logger     *bytes.Buffer
 	mockDriver *mocks.Driver
 }
 
@@ -44,7 +45,9 @@ func (a DBAnyString) Match(v driver.Value) bool {
 // controllers, initialises gin & sets gin mode.
 func NewDBSuite(t *testing.T) DBSuite {
 	cache.Init()
-	logger.SetOutput(ioutil.Discard)
+
+	buf := &bytes.Buffer{}
+	logger.SetOutput(buf)
 
 	db, m, err := sqlMock.New()
 	assert.NoError(t, err)
@@ -67,6 +70,7 @@ func NewDBSuite(t *testing.T) DBSuite {
 		DB:         sqlxDB,
 		Driver:     mockDriver,
 		Mock:       m,
+		Logger:     buf,
 		mockDriver: mockDriver,
 	}
 }
@@ -80,6 +84,7 @@ func (t *DBSuite) Reset() {
 	t.Driver = db.Driver
 	t.DB = db.DB
 	t.Mock = db.Mock
+	t.Logger = db.Logger
 	t.mockDriver = db.mockDriver
 }
 
