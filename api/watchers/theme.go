@@ -63,7 +63,6 @@ var (
 )
 
 func New(themePath string) *Batch {
-
 	kk, _ := fsnotify.NewWatcher()
 
 	return &Batch{

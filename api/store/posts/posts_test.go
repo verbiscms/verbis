@@ -7,9 +7,9 @@ package posts
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/domain"
-	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/postfields"
-	meta "github.com/ainsleyclark/verbis/api/mocks/store/postmeta"
+	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/posts/fields"
+	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"

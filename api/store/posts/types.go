@@ -34,13 +34,13 @@ func (s *Store) postType(post *domain.PostDatum) domain.PostType {
 	}
 
 	// Check if the slug is one assigned in categories.
-	cat, err := s.categories.FindBySlug(post.Slug)
-	if err == nil {
-		return domain.PostType{
-			PageType: domain.CategoryType,
-			Data:     cat,
-		}
-	}
+	//cat, err := s.categories.FindBySlug(post.Slug)
+	//if err == nil {
+	//	return domain.PostType{
+	//		PageType: domain.CategoryType,
+	//		Data:     cat,
+	//	}
+	//}
 
 	return domain.PostType{
 		PageType: domain.PageType,

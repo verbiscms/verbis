@@ -10,9 +10,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/store/categories"
-	"github.com/ainsleyclark/verbis/api/store/postfields"
-	"github.com/ainsleyclark/verbis/api/store/postmeta"
+	"github.com/ainsleyclark/verbis/api/store/posts/categories"
+	"github.com/ainsleyclark/verbis/api/store/posts/fields"
+	"github.com/ainsleyclark/verbis/api/store/posts/meta"
 	"github.com/ainsleyclark/verbis/api/store/users"
 	"github.com/google/uuid"
 )
@@ -20,27 +20,27 @@ import (
 // Repository defines methods for posts
 // to interact with the database.
 type Repository interface {
-	List(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error)
-	Find(id int, layout bool) (domain.PostDatum, error) // done
-	FindBySlug(slug string) (domain.PostDatum, error)   // done
-	Create(p domain.PostCreate) (domain.PostDatum, error)
-	Update(p domain.PostCreate) (domain.PostDatum, error)
-	Delete(id int) error           // done
-	Exists(id int) bool            // done
-	ExistsBySlug(slug string) bool //done
+	List(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error) // done
+	Find(id int, layout bool) (domain.PostDatum, error)                                                 // done
+	FindBySlug(slug string) (domain.PostDatum, error)                                                   // done
+	Create(p domain.PostCreate) (domain.PostDatum, error)                                               // TODO
+	Update(p domain.PostCreate) (domain.PostDatum, error)                                               // TODO
+	Delete(id int) error                                                                                // done
+	Exists(id int) bool                                                                                 // done
+	ExistsBySlug(slug string) bool                                                                      //done
 }
 
-// Store defines the data layer for categories.
+// Store defines the data layer for posts.
 type Store struct {
 	*store.Config
 	categories categories.Repository
-	fields     postfields.Repository
-	meta       postmeta.Repository
+	fields     fields.Repository
+	meta       meta.Repository
 	users      users.Repository
 }
 
 const (
-	// The database table name for categories.
+	// The database table name for posts.
 	TableName = "posts"
 )
 
@@ -57,8 +57,8 @@ func New(cfg *store.Config) *Store {
 	return &Store{
 		Config:     cfg,
 		categories: categories.New(cfg),
-		fields:     postfields.New(cfg),
-		meta:       postmeta.New(cfg),
+		fields:     fields.New(cfg),
+		meta:       meta.New(cfg),
 		users:      users.New(cfg),
 	}
 }
