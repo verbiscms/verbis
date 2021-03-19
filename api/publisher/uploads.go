@@ -7,7 +7,7 @@ package publisher
 import (
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/webp"
+	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/gin-gonic/gin"
 )
 

@@ -107,17 +107,17 @@ type (
 	}
 )
 
-//func (o OptionsDB) ToOptions() (Options, error) {
+//func (o OptionsDB) ToOptions() (options, error) {
 //	unOpts := make(OptionsDBMap)
 //	for _, v := range o {
 //		unValue, err := v.Value.UnmarshalJSON
 //		if err != nil {
 //			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Unable to get options", Operation: op, Err: err}).Fatal()
-//			return domain.Options{}
+//			return domain.options{}
 //		}
 //		unOpts[v.Name] = unValue
 //	}
-//	return Options{}, nil
+//	return options{}, nil
 //}
 
 // Unmarshal

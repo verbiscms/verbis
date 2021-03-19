@@ -160,7 +160,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			c := t.Setup(test.cfg, test.opts)
-			c.Exists = test.exists
+			c.exists = test.exists
 
 			var mt = &multipart.FileHeader{}
 			if test.input != "" {
@@ -199,7 +199,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 
 func (t *MediaTestSuite) TestClient_Upload_DirError() {
 	c := t.Setup(domain.ThemeConfig{}, domain.Options{})
-	c.Exists = exists
+	c.exists = exists
 	mt := t.File(t.mediaPath + "/gopher.svg")
 
 	c.paths.Uploads = "wrongpath"

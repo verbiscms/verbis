@@ -41,7 +41,7 @@ var (
 //	mock.On("Get").Return(nil, nil)
 //
 //	r := Recover{
-//		deps:   &deps.Deps{Store: &models.Store{Options: nil}},
+//		deps:   &deps.Deps{Store: &models.Store{options: nil}},
 //		err:    &errors.Error{Code: errors.TEMPLATE, Message: "message", Operation: "operation", Err: fmt.Errorf("error")},
 //		config: Theme{},
 //		tracer: trace.New(),

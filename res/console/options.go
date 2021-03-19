@@ -17,7 +17,7 @@ func Welcome() {
 // Display options/help
 func Options() {
 
-	color.Yellow.Println("- Options")
+	color.Yellow.Println("- options")
 
 	// Help
 	color.Green.Print("    help")
