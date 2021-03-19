@@ -7,8 +7,6 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	multipart "mime/multipart"
-
 	params "github.com/ainsleyclark/verbis/api/helpers/params"
 )
 
@@ -138,81 +136,23 @@ func (_m *Repository) List(meta params.Params) (domain.MediaItems, int, error) {
 	return r0, r1, r2
 }
 
-// Serve provides a mock function with given fields: uploadPath, acceptWeb
-func (_m *Repository) Serve(uploadPath string, acceptWeb bool) ([]byte, string, error) {
-	ret := _m.Called(uploadPath, acceptWeb)
-
-	var r0 []byte
-	if rf, ok := ret.Get(0).(func(string, bool) []byte); ok {
-		r0 = rf(uploadPath, acceptWeb)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]byte)
-		}
-	}
-
-	var r1 string
-	if rf, ok := ret.Get(1).(func(string, bool) string); ok {
-		r1 = rf(uploadPath, acceptWeb)
-	} else {
-		r1 = ret.Get(1).(string)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(string, bool) error); ok {
-		r2 = rf(uploadPath, acceptWeb)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
 // Update provides a mock function with given fields: m
-func (_m *Repository) Update(m *domain.Media) error {
+func (_m *Repository) Update(m domain.Media) (domain.Media, error) {
 	ret := _m.Called(m)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*domain.Media) error); ok {
-		r0 = rf(m)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// Upload provides a mock function with given fields: file, token
-func (_m *Repository) Upload(file *multipart.FileHeader, token string) (domain.Media, error) {
-	ret := _m.Called(file, token)
-
 	var r0 domain.Media
-	if rf, ok := ret.Get(0).(func(*multipart.FileHeader, string) domain.Media); ok {
-		r0 = rf(file, token)
+	if rf, ok := ret.Get(0).(func(domain.Media) domain.Media); ok {
+		r0 = rf(m)
 	} else {
 		r0 = ret.Get(0).(domain.Media)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*multipart.FileHeader, string) error); ok {
-		r1 = rf(file, token)
+	if rf, ok := ret.Get(1).(func(domain.Media) error); ok {
+		r1 = rf(m)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
-}
-
-// Validate provides a mock function with given fields: file
-func (_m *Repository) Validate(file *multipart.FileHeader) error {
-	ret := _m.Called(file)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(*multipart.FileHeader) error); ok {
-		r0 = rf(file)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
 }

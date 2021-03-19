@@ -10,6 +10,10 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/categories"
+	"github.com/ainsleyclark/verbis/api/store/postfields"
+	"github.com/ainsleyclark/verbis/api/store/postmeta"
+	"github.com/ainsleyclark/verbis/api/store/users"
 	"github.com/google/uuid"
 )
 
@@ -17,11 +21,11 @@ import (
 // to interact with the database.
 type Repository interface {
 	List(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error)
-	Find(id int, layout bool) (domain.PostDatum, error)
-	FindBySlug(slug string) (domain.PostDatum, error)
+	Find(id int, layout bool) (domain.PostDatum, error) // done
+	FindBySlug(slug string) (domain.PostDatum, error)   // done
 	Create(p domain.PostCreate) (domain.PostDatum, error)
 	Update(p domain.PostCreate) (domain.PostDatum, error)
-	Delete(id int) error
+	Delete(id int) error           // done
 	Exists(id int) bool            // done
 	ExistsBySlug(slug string) bool //done
 }
@@ -29,6 +33,10 @@ type Repository interface {
 // Store defines the data layer for categories.
 type Store struct {
 	*store.Config
+	categories categories.Repository
+	fields     postfields.Repository
+	meta       postmeta.Repository
+	users      users.Repository
 }
 
 const (
@@ -47,10 +55,17 @@ var (
 // Creates a new posts store.
 func New(cfg *store.Config) *Store {
 	return &Store{
-		Config: cfg,
+		Config:     cfg,
+		categories: categories.New(cfg),
+		fields:     postfields.New(cfg),
+		meta:       postmeta.New(cfg),
+		users:      users.New(cfg),
 	}
 }
 
+// postsRaw
+//
+//
 type postsRaw struct {
 	domain.Post
 	Author   domain.User     `db:"author"`
@@ -66,7 +81,10 @@ type postsRaw struct {
 	} `db:"field"`
 }
 
-func (s *Store) selectStmt(query string) string {
+// selectStmt
+//
+//
+func selectStmt(query string) string {
 	return fmt.Sprintf(`SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
        users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.last_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',

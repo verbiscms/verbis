@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	DeleteQuery      = "DELETE FROM `categories` WHERE `id` = '" + categoryID + "'"
-	DeletePivotQuery = "DELETE FROM `post_categories` WHERE `id` = '" + categoryID + "'"
+	DeleteQuery              = "DELETE FROM `categories` WHERE `id` = '" + categoryID + "'"
+	DeletePivotCategoryQuery = "DELETE FROM `post_categories` WHERE `category_id` = '" + categoryID + "'"
 )
 
 func (t *CategoriesTestSuite) TestStore_Delete() {
@@ -27,10 +27,8 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(category.Id).
 					WillReturnResult(sqlmock.NewResult(0, 1))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
-					WithArgs(category.Id).
+				m.ExpectExec(regexp.QuoteMeta(DeletePivotCategoryQuery)).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
@@ -38,7 +36,6 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 			"No category exists with the ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(category.Id).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -46,10 +43,8 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 			"No category exists with the ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(category.Id).
 					WillReturnResult(sqlmock.NewResult(0, 1))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
-					WithArgs(category.Id).
+				m.ExpectExec(regexp.QuoteMeta(DeletePivotCategoryQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -64,8 +59,8 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 			"Error executing sql query",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(category.Id).WillReturnResult(sqlmock.NewResult(0, 0))
-				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 0))
+				m.ExpectExec(regexp.QuoteMeta(DeletePivotCategoryQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -83,3 +78,27 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 		})
 	}
 }
+
+
+// deletePivotByCategoryID
+//
+// Returns nil if the category was successfully deleted.
+// Returns errors.INTERNAL if the SQL query was invalid.
+// Returns errors.NOTFOUND if the category was not found.
+func (s *Store) deletePivotCategory(id int) error {
+	const op = "CategoryStore.deletePivotCategory"
+
+	q := s.Builder().
+		DeleteFrom(s.Schema()+PivotTableName).
+		Where("category_id", "=", id)
+
+	_, err := s.DB().Exec(q.Build(), id)
+	if err == sql.ErrNoRows {
+		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
+	} else if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	}
+
+	return nil
+}
+

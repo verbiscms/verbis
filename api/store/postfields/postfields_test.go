@@ -43,8 +43,8 @@ func (t *PostFieldsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 }
 
 const (
-	// The default category ID used for testing.
-	categoryID = "1"
+	// The default post ID used for testing.
+	postID = "1"
 )
 
 var (

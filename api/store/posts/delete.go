@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package posts
 
 import (
 	"database/sql"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
 )
 
 // Delete
@@ -23,38 +24,29 @@ func (s *Store) Delete(id int) error {
 		DeleteFrom(s.Schema()+TableName).
 		Where("id", "=", id)
 
-	_, err := s.DB().Exec(q.Build())
-	if err == sql.ErrNoRows {
-		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
-	} else if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
-	}
-
-	err = s.deletePivotCategory(id)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// deletePivotByCategoryID
-//
-// Returns nil if the category was successfully deleted.
-// Returns errors.INTERNAL if the SQL query was invalid.
-// Returns errors.NOTFOUND if the category was not found.
-func (s *Store) deletePivotCategory(id int) error {
-	const op = "CategoryStore.deletePivotCategory"
-
-	q := s.Builder().
-		DeleteFrom(s.Schema()+PivotTableName).
-		Where("category_id", "=", id)
-
 	_, err := s.DB().Exec(q.Build(), id)
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	}
+
+	// Delete from post meta.
+	err = s.meta.Delete(id)
+	if err != nil {
+		logger.WithError(err).Error()
+	}
+
+	// Delete from post fields.
+	err = s.fields.Delete(id)
+	if err != nil {
+		logger.WithError(err).Error()
+	}
+
+	// Delete from post categories.
+	err = s.categories.DeleteFromPivot(id)
+	if err != nil {
+		logger.WithError(err).Error()
 	}
 
 	return nil

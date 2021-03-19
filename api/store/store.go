@@ -15,5 +15,6 @@ type Config struct {
 	Theme   *domain.ThemeConfig
 	Options *domain.Options
 	Paths   paths.Paths
+	Owner   *domain.User
 	Running bool
 }

@@ -11,13 +11,21 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 )
 
+// ListConfig defines the configuration for obtaining
+// posts for Selects. Posts can be filtered by
+// resource and status.
+type ListConfig struct {
+	Resource string
+	Status   string
+}
+
 // List
 //
 // Returns a slice of posts with the total amount.
 // Returns errors.INTERNAL if the SQL query was invalid.
-// Returns errors.NOTFOUND if there are no categories available.
-func (s *Store) List(meta params.Params, layout bool, resource, status string) (domain.PostData, int, error) {
-	const op = "CategoryStore.List"
+// Returns errors.NOTFOUND if there are no posts available.
+func (s *Store) List(meta params.Params, layout bool, cfg ListConfig) (domain.PostData, int, error) {
+	const op = "PostStore.List"
 
 	q := s.Builder().
 		From(s.Schema() + TableName)
@@ -29,17 +37,17 @@ func (s *Store) List(meta params.Params, layout bool, resource, status string) (
 	}
 
 	// Get by resource.
-	if resource != "all" && resource != "" {
-		if resource == "pages" {
-			q.Where(s.Schema()+TableName, "=", "NULL")
+	if cfg.Resource != "all" && cfg.Resource != "" {
+		if cfg.Resource == "pages" {
+			q.Where(s.Schema()+TableName+".resource", "=", "NULL")
 		} else {
-			q.Where(s.Schema()+TableName, "=", resource)
+			q.Where(s.Schema()+TableName+".resource", "=", cfg.Resource)
 		}
 	}
 
 	// Get status.
-	if status != "" {
-		q.Where("status", "=", status)
+	if cfg.Status != "" {
+		q.Where(s.Schema()+TableName+".status", "=", cfg.Status)
 	}
 
 	// Apply order.
@@ -51,18 +59,18 @@ func (s *Store) List(meta params.Params, layout bool, resource, status string) (
 		q.Limit(meta.Limit).Offset((meta.Page - 1) * meta.Limit)
 	}
 
-	// Select categories.
+	// Select posts raw.
 	var raw []postsRaw
-	err = s.DB().Select(&raw, q.Build())
+	err = s.DB().Select(&raw, selectStmt(q.Build()))
 	if err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// Count the total number of categories.
+	// Count the total number of posts.
 	var total int
 	err = s.DB().QueryRow(countQ).Scan(&total)
 	if err != nil {
-		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of categories", Operation: op, Err: err}
+		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of posts", Operation: op, Err: err}
 	}
 
 	// Return not found error if no posts are available
@@ -71,5 +79,5 @@ func (s *Store) List(meta params.Params, layout bool, resource, status string) (
 		return nil, -1, &errors.Error{Code: errors.NOTFOUND, Message: "No posts available", Operation: op}
 	}
 
-	return posts, total, nil
+	return posts, len(posts), nil
 }

@@ -25,7 +25,8 @@ func (s *Store) Create(c domain.Category) (domain.Category, error) {
 		return domain.Category{}, err
 	}
 
-	q := s.Builder().Insert(s.Schema()+TableName).
+	q := s.Builder().
+		Insert(s.Schema()+TableName).
 		Column("uuid", "?").
 		Column("slug", c.Slug).
 		Column("name", c.Name).

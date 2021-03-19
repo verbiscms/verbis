@@ -14,7 +14,8 @@ import (
 )
 
 var (
-	DeleteQuery = "DELETE FROM `post_fields` WHERE `uuid` = '00000000-0000-0000-0000-000000000000' AND `post_id` = '1' AND `field_key` = 'key' AND `name` = 'name'"
+	DeleteQuery      = "DELETE FROM `post_fields` WHERE `post_id` = '" + postID + "'"
+	DeleteFieldQuery = "DELETE FROM `post_fields` WHERE `uuid` = '00000000-0000-0000-0000-000000000000' AND `post_id` = '1' AND `field_key` = 'key' AND `name` = 'name'"
 )
 
 func (t *PostFieldsTestSuite) TestStore_Delete() {
@@ -30,7 +31,7 @@ func (t *PostFieldsTestSuite) TestStore_Delete() {
 			},
 		},
 		"No Rows": {
-			"No field exists",
+			"No post exists with the ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(sql.ErrNoRows)
@@ -48,7 +49,48 @@ func (t *PostFieldsTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.delete(field.PostId, field)
+			err := s.Delete(field.PostId)
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.RunT(nil, err)
+		})
+	}
+}
+
+func (t *PostFieldsTestSuite) TestStore_DeleteField() {
+	tt := map[string]struct {
+		want interface{}
+		mock func(m sqlmock.Sqlmock)
+	}{
+		"Success": {
+			nil,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(DeleteFieldQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+			},
+		},
+		"No Rows": {
+			"No field exists",
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(DeleteFieldQuery)).
+					WillReturnError(sql.ErrNoRows)
+			},
+		},
+		"Internal Error": {
+			database.ErrQueryMessage,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(DeleteFieldQuery)).
+					WillReturnError(fmt.Errorf("error"))
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(test.mock)
+			err := s.deleteField(field.PostId, field)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
