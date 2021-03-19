@@ -64,7 +64,7 @@ func TestNamespace_Partial(t *testing.T) {
 		//	false,
 		//	template.HTML("unable to execute partial file"),
 		//},
-		"File Type": {
+		"File Mime": {
 			`images/gopher.png`,
 			nil,
 			false,

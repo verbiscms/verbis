@@ -94,7 +94,7 @@ func (t *HandlerSuite) Status() int {
 //
 // Returns the recorder's content type.
 func (t *HandlerSuite) ContentType() string {
-	return t.Recorder.Header().Get("Content-Type")
+	return t.Recorder.Header().Get("Content-Mime")
 }
 
 // NewRequest

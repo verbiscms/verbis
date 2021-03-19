@@ -151,23 +151,23 @@ func (t *FieldTestSuite) TestService_FindFieldByName() {
 //			resolver: resolve{
 //				Key:   "",
 //				Index: 0,
-//				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
+//				Field: domain.PostField{Mime: "repeater", Name: "repeater", OriginalValue: "1"},
 //				Fields: domain.PostFields{
-//					{Type: "text", Name: "text", OriginalValue: "text1", Key: ""},
+//					{Mime: "text", Name: "text", OriginalValue: "text1", Key: ""},
 //				},
 //			},
-//			want: domain.PostField{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: ""},
+//			want: domain.PostField{Mime: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: ""},
 //		},
 //		"Success": {
 //			resolver: resolve{
 //				Key:   "",
 //				Index: 0,
-//				Field: domain.PostField{Type: "repeater", Name: "repeater", OriginalValue: "1"},
+//				Field: domain.PostField{Mime: "repeater", Name: "repeater", OriginalValue: "1"},
 //				Fields: domain.PostFields{
-//					{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
+//					{Mime: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
 //				},
 //			},
-//			want: domain.PostField{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"},
+//			want: domain.PostField{Mime: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"},
 //		},
 //	}
 //

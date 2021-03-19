@@ -80,7 +80,7 @@ func (u *uploader) Save() (domain.Media, error) {
 		FileSize: u.Size,
 		FileName: name + u.Extension,
 		Sizes:    sizes,
-		Type:     u.Mime,
+		Mime:     u.Mime,
 	}
 
 	// Convert images to WebP.
@@ -271,7 +271,7 @@ func (u *uploader) FileSize(path string) int64 {
 // exists, and an error occured, it will be
 // logged.
 func (u *uploader) ToWeb(media domain.Media) {
-	if !media.Type.CanResize() {
+	if !media.Mime.CanResize() {
 		return
 	}
 

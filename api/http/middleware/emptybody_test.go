@@ -70,7 +70,7 @@ func (t *MiddlewareTestSuite) TestEmptyBody() {
 			t.Engine.DELETE("/test", t.DefaultHandler)
 
 			t.NewRequest(test.method, "/test", bytes.NewBuffer([]byte(test.input)))
-			t.Context.Request.Header.Set("Content-Type", test.header)
+			t.Context.Request.Header.Set("Content-Mime", test.header)
 			t.ServeHTTP()
 
 			t.Equal(test.status, t.Recorder.Code)

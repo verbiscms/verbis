@@ -14,8 +14,11 @@ import (
 )
 
 var (
-	FindQuery       = SelectStatement + " WHERE `id` = '" + mediaID + "' LIMIT 1"
-	FindByNameQuery = SelectStatement + " WHERE `name` = 'name' LIMIT 1"
+	FindQuery           = "SELECT * FROM `media` WHERE `id` = '" + mediaID + "' LIMIT 1"
+	FindByNameQuery     = "SELECT * FROM `media` WHERE `file_name` = '" + mediaItem.FileName + "' LIMIT 1"
+	FindByURLQuery      = "SELECT * FROM `media` WHERE `url` = '" + mediaItemURL.Url + "' LIMIT 1"
+	FindByURLSizeQuery  = "SELECT * FROM `media` WHERE `url` = '" + mediaItemSizes.Sizes["test"].Url + "' LIMIT 1"
+	FindByURLSizesQuery = "SELECT * FROM `media` WHERE WHERE sizes LIKE '%" + mediaItemSizes.Sizes["test"].Url + "%' LIMIT 1"
 )
 
 func (t *MediaTestSuite) TestStore_Find() {
@@ -26,8 +29,8 @@ func (t *MediaTestSuite) TestStore_Find() {
 		"Success": {
 			mediaItem,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "url", "title"}).
-					AddRow(mediaItem.Id, mediaItem.Url, mediaItem.Title)
+				rows := sqlmock.NewRows([]string{"id", "url", "title", "file_name"}).
+					AddRow(mediaItem.Id, mediaItem.Url, mediaItem.Title, mediaItem.FileName)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
@@ -66,8 +69,8 @@ func (t *MediaTestSuite) TestStore_FindByName() {
 		"Success": {
 			mediaItem,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "url", "title"}).
-					AddRow(mediaItem.Id, mediaItem.Url, mediaItem.Title)
+				rows := sqlmock.NewRows([]string{"id", "url", "title", "file_name"}).
+					AddRow(mediaItem.Id, mediaItem.Url, mediaItem.Title, mediaItem.FileName)
 				m.ExpectQuery(regexp.QuoteMeta(FindByNameQuery)).WithArgs().WillReturnRows(rows)
 			},
 		},
@@ -88,8 +91,74 @@ func (t *MediaTestSuite) TestStore_FindByName() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.FindByName("name")
+			got, err := s.FindByName(mediaItem.FileName)
 			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.RunT(test.want, got)
+		})
+	}
+}
+
+func (t *MediaTestSuite) TestStore_FindByURL() {
+	tt := map[string]struct {
+		url  string
+		want interface{}
+		mock func(m sqlmock.Sqlmock)
+	}{
+		"Normal": {
+			mediaItemURL.Url,
+			mediaItemURL,
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "url"}).
+					AddRow(mediaItemURL.Id, mediaItemURL.Url)
+				m.ExpectQuery(regexp.QuoteMeta(FindByURLQuery)).WithArgs().WillReturnRows(rows)
+			},
+		},
+		"Sizes": {
+			mediaItemSizes.Sizes["test"].Url,
+			mediaItemSizes,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectQuery(regexp.QuoteMeta(FindByURLSizeQuery)).
+					WillReturnError(fmt.Errorf("error"))
+
+				rows := sqlmock.NewRows([]string{"id", "url", "sizes"}).
+					AddRow(mediaItemSizes.Id, mediaItemSizes.Url, mediaItemSizes.Sizes)
+				m.ExpectQuery(regexp.QuoteMeta(FindByURLSizesQuery)).WithArgs().WillReturnRows(rows)
+			},
+		},
+		"Internal Error": {
+			mediaItemURL.Url,
+			database.ErrQueryMessage,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectQuery(regexp.QuoteMeta(FindByURLQuery)).
+					WillReturnError(fmt.Errorf("error"))
+
+				m.ExpectQuery(regexp.QuoteMeta(FindByURLSizesQuery)).
+					WillReturnError(fmt.Errorf("error"))
+			},
+		},
+		"Not Found": {
+			mediaItemSizes.Sizes["test"].Url,
+			"Error getting media item with the url",
+			func(m sqlmock.Sqlmock) {
+				m.ExpectQuery(regexp.QuoteMeta(FindByURLSizeQuery)).
+					WillReturnError(fmt.Errorf("error"))
+
+				rows := sqlmock.NewRows([]string{"id", "url"}).
+					AddRow(mediaItemSizes.Id, mediaItemSizes.Url)
+				m.ExpectQuery(regexp.QuoteMeta(FindByURLSizesQuery)).WithArgs().WillReturnRows(rows)
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(test.mock)
+			got, err := s.FindByURL(test.url)
+			if err != nil {
+
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
