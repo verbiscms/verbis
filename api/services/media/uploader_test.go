@@ -41,7 +41,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 				FileSize: 7623,
 				FileName: "gopher.svg",
 				Sizes:    domain.MediaSizes{},
-				Type:     "image/svg+xml",
+				Mime:     "image/svg+xml",
 			},
 			"",
 		},
@@ -60,7 +60,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 				FileSize: 163677,
 				FileName: "gopher.png",
 				Sizes:    domain.MediaSizes{},
-				Type:     "image/png",
+				Mime:     "image/png",
 			},
 			"",
 		},
@@ -79,7 +79,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 				FileSize: 162023,
 				FileName: "gopher.jpg",
 				Sizes:    domain.MediaSizes{},
-				Type:     "image/jpeg",
+				Mime:     "image/jpeg",
 			},
 			"",
 		},
@@ -111,7 +111,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 						Crop:     true,
 					},
 				},
-				Type: "image/png",
+				Mime: "image/png",
 			},
 			"",
 		},
@@ -143,7 +143,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 						Crop:     true,
 					},
 				},
-				Type: "image/jpeg",
+				Mime: "image/jpeg",
 			},
 			"",
 		},
@@ -181,7 +181,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 			t.Equal(test.want.FilePath, got.FilePath)
 			t.Equal(test.want.FileSize, got.FileSize)
 			t.Equal(test.want.FileName, got.FileName)
-			t.Equal(test.want.Type, got.Type)
+			t.Equal(test.want.Mime, got.Mime)
 
 			if test.want.Sizes != nil {
 				for k, v := range test.want.Sizes {

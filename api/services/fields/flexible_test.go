@@ -49,7 +49,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 			want:   "",
 			err:    true,
 		},
-		"Wrong Field Type": {
+		"Wrong Field Mime": {
 			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "test", OriginalValue: "text", Key: ""},
 			},

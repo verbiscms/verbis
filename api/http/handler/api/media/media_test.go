@@ -150,7 +150,7 @@ func (t *MediaTestSuite) UploadRequest(filesAmount int, uri, path string) (*goht
 
 	req, err := gohttp.NewRequest("POST", uri, bytes.NewBuffer(reqBody.Bytes()))
 	t.NoError(err)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
+	req.Header.Set("Content-Mime", writer.FormDataContentType())
 
 	return req, multi
 }

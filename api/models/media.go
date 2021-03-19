@@ -169,7 +169,7 @@ func (s *MediaStore) GetByURL(url string) (string, domain.Mime, error) {
 
 	// Test normal size
 	if err := s.DB.Get(&m, q+"WHERE url = ? LIMIT 1", url); err == nil {
-		return m.FilePath + "/" + m.UUID.String(), m.Type, nil
+		return m.FilePath + "/" + m.UUID.String(), m.Mime, nil
 	}
 
 	// Test Sizes
@@ -180,7 +180,7 @@ func (s *MediaStore) GetByURL(url string) (string, domain.Mime, error) {
 
 	for _, v := range m.Sizes {
 		if v.Url == url {
-			return m.FilePath + "/" + v.UUID.String(), m.Type, nil
+			return m.FilePath + "/" + v.UUID.String(), m.Mime, nil
 		}
 	}
 
@@ -337,12 +337,12 @@ func (s *MediaStore) insert(uniq uuid.UUID, name, filePath string, fileSize int6
 		FileSize:    fileSize,
 		FileName:    name,
 		Sizes:       sizes,
-		Type:        domain.Mime(mimeType),
+		Mime:        domain.Mime(mimeType),
 		UserId:      userID,
 	}
 
 	q := "INSERT INTO media (uuid, url, title, alt, description, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())"
-	c, err := s.DB.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Type, m.UserId)
+	c, err := s.DB.Exec(q, m.UUID, m.Url, m.Title, m.Alt, m.Description, m.FilePath, m.FileSize, m.FileName, m.Sizes, m.Mime, m.UserId)
 
 	if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not create the new media item with the name: %v", name), Operation: op, Err: err}
@@ -480,7 +480,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath, mime
 
 	s.getOptionsStruct()
 
-	// PNG Type
+	// PNG Mime
 	if mimeType == "image/png" {
 		filePath = filePath + ".png"
 
@@ -501,7 +501,7 @@ func (s *MediaStore) processImageSize(file *multipart.FileHeader, filePath, mime
 		}
 	}
 
-	// Jpg Type
+	// Jpg Mime
 	if mimeType == "image/jpeg" || mimeType == "image/jp2" {
 		filePath = filePath + ".jpg"
 

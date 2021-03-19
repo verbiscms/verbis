@@ -45,14 +45,30 @@ func (t *MediaTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 const (
 	// The default media item ID used for testing.
 	mediaID = "1"
-	// The select statement.
-	SelectStatement = "SELECT id, uuid, url, file_path, file_size, file_name, sizes, type, user_id, updated_at, created_at, CASE WHEN title IS NULL THEN '' ELSE title END AS 'title', CASE WHEN alt IS NULL THEN '' ELSE alt END AS 'alt', CASE WHEN description IS NULL THEN '' ELSE description END AS 'description' FROM `media`"
 )
 
 var (
 	// The default media item used for testing.
 	mediaItem = domain.Media{
-		Id: 1,
+		Id:       1,
+		FileName: "gopher.png",
+	}
+	// The default media item with URL used
+	// for testing.
+	mediaItemURL = domain.Media{
+		Id:  1,
+		Url: "/2020/01/gopher.png",
+	}
+	// The default media item with sizes used
+	// for testing.
+	mediaItemSizes = domain.Media{
+		Id:  1,
+		Url: "/2020/01/gopher.png",
+		Sizes: domain.MediaSizes{
+			"test": domain.MediaSize{
+				Url: "/2020/01/gopher-100x100.png",
+			},
+		},
 	}
 	// The default media items used for testing.
 	mediaItems = domain.MediaItems{

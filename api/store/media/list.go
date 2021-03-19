@@ -20,7 +20,8 @@ import (
 func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 	const op = "MediaStore.List"
 
-	q := s.selectStmt()
+	q := s.Builder().
+		From(s.Schema() + TableName)
 
 	// Apply filters.
 	err := database.FilterRows(s.Driver, meta.Filters, TableName)
