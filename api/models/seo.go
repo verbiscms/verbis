@@ -15,7 +15,7 @@ type SeoMetaRepository interface {
 	UpdateCreate(id int, p domain.PostOptions) error
 }
 
-// SeoMetaStore defines the data layer for Seo & Meta Options
+// SeoMetaStore defines the data layer for Seo & Meta options
 type SeoMetaStore struct {
 	*StoreCfgOld
 }

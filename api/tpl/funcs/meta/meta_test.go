@@ -63,7 +63,7 @@ func TestNamespace_MetaTitle(t *testing.T) {
 			options: domain.Options{},
 			want:    "post-title-verbis",
 		},
-		"With Options": {
+		"With options": {
 			meta:    domain.PostOptions{Meta: &domain.PostMeta{Title: ""}},
 			options: domain.Options{MetaTitle: "post-title-verbis"},
 			want:    "post-title-verbis",

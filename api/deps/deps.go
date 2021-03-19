@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/services/site"
 	"github.com/ainsleyclark/verbis/api/services/theme"
+	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/watchers"
 	"os"
@@ -40,6 +41,9 @@ type Deps struct {
 
 	// Paths
 	Paths paths.Paths
+
+	// Webp
+	WebP webp.Execer
 
 	// Template
 	tmpl tpl.TemplateHandler
@@ -100,15 +104,18 @@ func New(cfg Config) *Deps {
 
 	opts := cfg.Store.Options.GetStruct()
 
+	p := paths.Get()
+
 	d := &Deps{
 		Store:   cfg.Store,
 		Config:  cfg.Config,
 		Options: &opts,
-		Paths:   paths.Get(),
+		Paths:   p,
 		tmpl:    nil,
 		Running: cfg.Running,
 		Site:    site.New(&opts),
 		Theme:   theme.New(),
+		WebP:    webp.New(p.Bin + webp.Path),
 	}
 
 	d.Watcher = watchers.New(d.ThemePath())

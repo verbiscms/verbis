@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-gonic/gin"
+	bin "github.com/nickalie/go-webpbin"
 	"io/ioutil"
 	"strings"
 )
@@ -15,7 +16,7 @@ import (
 // Accepts checks to see if the browser accepts WebP images
 func Accepts(g *gin.Context) bool {
 	acceptHeader := g.Request.Header.Get("Accept")
-	return strings.Contains(acceptHeader, "image/webp")
+	return strings.Contains(acceptHeader, "image/WebP")
 }
 
 // GetData first checks to see if the browser accepts WebP images
@@ -23,7 +24,7 @@ func Accepts(g *gin.Context) bool {
 // Returns a data was found, nil if it hasn't.
 func GetData(g *gin.Context, path string, mime string) []byte {
 	if Accepts(g) && mime == "image/jpeg" || mime == "image/png" {
-		data, found := ioutil.ReadFile(path + ".webp")
+		data, found := ioutil.ReadFile(path + ".WebP")
 		if found != nil {
 			return nil
 		}
@@ -32,18 +33,18 @@ func GetData(g *gin.Context, path string, mime string) []byte {
 	return nil
 }
 
-// Converts an image to webp based on compression and decoded image.
+// Converts an image to WebP based on compression and decoded image.
 // Compression level is also set.
 func Convert(path string, compression int) {
 	const op = "Webp.Convert"
 
-	err := NewCWebP().
+	err := bin.NewCWebP().
 		Quality(uint(compression)).
 		InputFile(path).
-		OutputFile(path + ".webp").
+		OutputFile(path + ".WebP").
 		Run()
 
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error convert the image to webp", Operation: op, Err: err}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error convert the image to WebP", Operation: op, Err: err}).Error()
 	}
 }

@@ -7,8 +7,13 @@ package media
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/services/webp"
+	"github.com/gabriel-vasile/mimetype"
 	"mime/multipart"
+	"path/filepath"
 )
 
 // Library defines methods for media items to
@@ -25,10 +30,11 @@ type Library interface {
 // Defines the service for uploading, validating, deleting
 // and serving rich media from the Verbis media library.
 type Service struct {
-	Options *domain.Options
-	Config  *domain.ThemeConfig
+	options *domain.Options
+	config  *domain.ThemeConfig
 	paths   paths.Paths
-	Exists  func(fileName string) bool
+	exists  func(fileName string) bool
+	webp    webp.Execer
 }
 
 // ExistsFunc is used by the uploader to determine if a
@@ -38,12 +44,14 @@ type ExistsFunc func(fileName string) bool
 // New
 //
 // Creates a new Service.
-func (c Service) New(opts *domain.Options, fn ExistsFunc) Library {
+func New(opts *domain.Options, fn ExistsFunc) *Service {
+	p := paths.Get()
 	return &Service{
-		Options: opts,
-		Config:  config.Get(),
-		paths:   paths.Get(),
-		Exists:  fn,
+		options: opts,
+		config:  config.Get(),
+		paths:   p,
+		exists:  fn,
+		webp:    webp.New(p.Bin + webp.Path),
 	}
 }
 
@@ -59,7 +67,44 @@ func (c Service) New(opts *domain.Options, fn ExistsFunc) Library {
 // Returns errors.INTERNAL on any eventuality the file could not be opened.
 // Returns errors.INVALID if the mimetype could not be found.
 func (c *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
-	return upload(file, c.paths.Uploads, c.Options, c.Config, c.Exists)
+	const op = "Media.Uploader.Upload"
+
+	h, err := file.Open()
+	defer func() {
+		err := h.Close()
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing file with the name: " + file.Filename, Operation: op, Err: err})
+		}
+	}()
+	if err != nil {
+		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Error opening file with the name: " + file.Filename, Operation: op, Err: err}
+	}
+
+	m, err := mimetype.DetectReader(h)
+	if err != nil {
+		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Mime type not found", Operation: op, Err: err}
+	}
+
+	_, err = h.Seek(0, 0)
+	if err != nil {
+		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking file", Operation: op, Err: err}
+	}
+
+	u := uploader{
+		File:       h,
+		Options:    c.options,
+		Config:     c.config,
+		Exists:     c.exists,
+		UploadPath: c.paths.Uploads,
+		FileName:   file.Filename,
+		Extension:  filepath.Ext(file.Filename),
+		Size:       file.Size,
+		Mime:       domain.Mime(m.String()),
+		Resizer:    &Resize{},
+		WebP:       c.webp,
+	}
+
+	return u.Save()
 }
 
 // Delete
@@ -84,5 +129,5 @@ func (c *Service) Delete(item domain.Media) {
 //
 // Returns errors.INVALID any of the conditions fail.
 func (c *Service) Validate(file *multipart.FileHeader) error {
-	return validate(file, c.Options, c.Config)
+	return validate(file, c.options, c.config)
 }

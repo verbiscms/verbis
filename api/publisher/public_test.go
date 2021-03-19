@@ -53,13 +53,13 @@ package publisher
 //func Test_NewFrontend(t *testing.T) {
 //
 //	optsMock := storeMocks.OptionsRepository{}
-//	optsMock.On("GetStruct").Return(domain.Options{})
+//	optsMock.On("GetStruct").Return(domain.options{})
 //
 //	siteMock := storeMocks.SiteRepository{}
 //	siteMock.On("GetThemeConfig").Return(domain.ThemeConfig{}, nil)
 //
 //	store := models.Store{
-//		Options: &optsMock,
+//		options: &optsMock,
 //		Site:    &siteMock,
 //	}
 //	config := config.Configuration{}

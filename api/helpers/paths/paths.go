@@ -23,6 +23,7 @@ type Paths struct {
 	Themes    string
 	Web       string
 	Forms     string
+	Bin       string
 }
 
 const (
@@ -32,6 +33,7 @@ const (
 	Themes  = "/themes"
 	Web     = API + "/web"
 	Uploads = Storage + "/uploads"
+	Bin     = "/bin"
 )
 
 func Get() Paths {
@@ -45,6 +47,7 @@ func Get() Paths {
 		Storage:   base + Storage,
 		Themes:    base + Themes,
 		Web:       base + Web,
+		Bin:       base + Bin,
 	}
 }
 
