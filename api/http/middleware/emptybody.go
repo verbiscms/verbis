@@ -20,7 +20,7 @@ import (
 // JSON or empty, abort JSON will be called.
 func EmptyBody() gin.HandlerFunc {
 	return func(g *gin.Context) {
-		contentType := g.Request.Header.Get("Content-Type")
+		contentType := g.Request.Header.Get("Content-Mime")
 		if contentType != "application/json" && contentType != "application/json; charset=utf-8" {
 			g.Next()
 			return

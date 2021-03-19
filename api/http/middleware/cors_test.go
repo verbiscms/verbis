@@ -23,7 +23,7 @@ func (t *MiddlewareTestSuite) TestCORS() {
 		},
 		"Allow Headers": {
 			"Access-Control-Allow-Headers",
-			"access-control-allow-origin, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Origin, Cache-Control, X-Requested-With, token",
+			"access-control-allow-origin, Content-Mime, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Origin, Cache-Control, X-Requested-With, token",
 		},
 		"Allow Methods": {
 			"Access-Control-Allow-Methods",

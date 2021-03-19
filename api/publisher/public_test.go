@@ -99,7 +99,7 @@ package publisher
 //		rr.engine.ServeHTTP(rr.recorder, req)
 //
 //		assert.Equal(t, file, rr.recorder.Body.Bytes())
-//		assert.Equal(t, "image/svg+xml", rr.recorder.Header().Get("Content-Type"))
+//		assert.Equal(t, "image/svg+xml", rr.recorder.Header().Get("Content-Mime"))
 //		assert.Equal(t, 200, rr.recorder.Code)
 //	})
 //
@@ -146,7 +146,7 @@ package publisher
 //		rr.engine.ServeHTTP(rr.recorder, req)
 //
 //		assert.Equal(t, file, rr.recorder.Body.Bytes())
-//		assert.Equal(t, "image/svg+xml", rr.recorder.Header().Get("Content-Type"))
+//		assert.Equal(t, "image/svg+xml", rr.recorder.Header().Get("Content-Mime"))
 //		assert.Equal(t, 200, rr.recorder.Code)
 //	})
 //
@@ -193,7 +193,7 @@ package publisher
 //		rr.engine.ServeHTTP(rr.recorder, req)
 //
 //		assert.Equal(t, file, rr.recorder.Body.Bytes())
-//		assert.Equal(t, mimeType, rr.recorder.Header().Get("Content-Type"))
+//		assert.Equal(t, mimeType, rr.recorder.Header().Get("Content-Mime"))
 //		assert.Equal(t, 200, rr.recorder.Code)
 //	})
 //

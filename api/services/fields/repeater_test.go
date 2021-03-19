@@ -39,7 +39,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 			want:   "",
 			err:    true,
 		},
-		"Wrong Field Type": {
+		"Wrong Field Mime": {
 			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "test", OriginalValue: "text", Key: ""},
 			},
