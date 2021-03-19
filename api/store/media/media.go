@@ -13,13 +13,13 @@ import (
 // Repository defines methods for media items
 // to interact with the database.
 type Repository interface {
-	List(meta params.Params) (domain.MediaItems, int, error) // done
+	List(meta params.Params) (domain.MediaItems, int, error)
 	Find(id int) (domain.Media, error)
 	FindByName(name string) (domain.Media, error)
-	FindByURL(url string) (string, domain.Mime, error)
+	FindByURL(url string) (domain.Media, error)
 	Update(m domain.Media) (domain.Media, error)
 	Delete(id int) error
-	Exists(fileName string) bool // done
+	Exists(fileName string) bool
 }
 
 // Store defines the data layer for media.

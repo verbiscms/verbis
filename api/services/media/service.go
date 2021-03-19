@@ -21,6 +21,7 @@ import (
 // local file system.
 type Library interface {
 	Upload(file *multipart.FileHeader) (domain.Media, error)
+	Serve(media domain.Media, acceptWebP bool) ([]byte, domain.Mime, error)
 	Validate(file *multipart.FileHeader) error
 	Delete(item domain.Media)
 }
@@ -66,7 +67,7 @@ func New(opts *domain.Options, fn ExistsFunc) *Service {
 //
 // Returns errors.INTERNAL on any eventuality the file could not be opened.
 // Returns errors.INVALID if the mimetype could not be found.
-func (c *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
+func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 	const op = "Media.Uploader.Upload"
 
 	h, err := file.Open()
@@ -92,31 +93,19 @@ func (c *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 
 	u := uploader{
 		File:       h,
-		Options:    c.options,
-		Config:     c.config,
-		Exists:     c.exists,
-		UploadPath: c.paths.Uploads,
+		Options:    s.options,
+		Config:     s.config,
+		Exists:     s.exists,
+		UploadPath: s.paths.Uploads,
 		FileName:   file.Filename,
 		Extension:  filepath.Ext(file.Filename),
 		Size:       file.Size,
 		Mime:       domain.Mime(m.String()),
 		Resizer:    &Resize{},
-		WebP:       c.webp,
+		WebP:       s.webp,
 	}
 
 	return u.Save()
-}
-
-// Delete
-//
-// Satisfies the Library to remove possible media item
-// combinations from the file system, if the file
-// does not exist (user moved) it will be
-// skipped.
-//
-// Logs errors.INTERNAL if the file could not be deleted.
-func (c *Service) Delete(item domain.Media) {
-	deleteItem(item, c.paths.Uploads)
 }
 
 // Validate
@@ -128,6 +117,18 @@ func (c *Service) Delete(item domain.Media) {
 // checks the image boundaries.
 //
 // Returns errors.INVALID any of the conditions fail.
-func (c *Service) Validate(file *multipart.FileHeader) error {
-	return validate(file, c.options, c.config)
+func (s *Service) Validate(file *multipart.FileHeader) error {
+	return validate(file, s.options, s.config)
+}
+
+// Delete
+//
+// Satisfies the Library to remove possible media item
+// combinations from the file system, if the file
+// does not exist (user moved) it will be
+// skipped.
+//
+// Logs errors.INTERNAL if the file could not be deleted.
+func (s *Service) Delete(item domain.Media) {
+	deleteItem(item, s.paths.Uploads)
 }
