@@ -67,8 +67,7 @@ func (w *WebP) Install() error {
 	// Set color for each pixel.
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			switch {
-			case x < width && y < height:
+			if x < width && y < height {
 				img.Set(x, y, color.RGBA{R: 100, G: 200, B: 200, A: 0xff})
 			}
 		}

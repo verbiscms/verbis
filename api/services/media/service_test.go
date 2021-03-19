@@ -60,7 +60,7 @@ func (t *MediaTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Options) *Ser
 			Uploads: t.apiPath + TestPath,
 		},
 		exists: nil,
-		webp: m,
+		webp:   m,
 	}
 }
 

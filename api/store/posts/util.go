@@ -22,4 +22,3 @@ func (s *Store) checkOwner(id int) int {
 func (s *Store) validate(p domain.PostCreate) error {
 	return nil
 }
-

@@ -158,7 +158,6 @@ func (t *MediaTestSuite) TestStore_FindByURL() {
 			s := t.Setup(test.mock)
 			got, err := s.FindByURL(test.url)
 			if err != nil {
-
 				t.Contains(errors.Message(err), test.want)
 				return
 			}

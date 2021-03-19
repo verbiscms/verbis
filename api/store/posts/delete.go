@@ -44,7 +44,7 @@ func (s *Store) Delete(id int) error {
 	}
 
 	// Delete from post categories.
-	err = s.categories.DeleteFromPivot(id)
+	err = s.categories.Delete(id)
 	if err != nil {
 		logger.WithError(err).Error()
 	}
