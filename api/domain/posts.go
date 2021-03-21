@@ -31,8 +31,8 @@ type (
 		UserId            int           `db:"user_id" json:"-"` //nolint
 		IsArchive         types.BitBool `db:"archive" json:"archive"`
 		PublishedAt       *time.Time    `db:"published_at" json:"published_at"`
-		CreatedAt         *time.Time    `db:"created_at" json:"created_at"`
-		UpdatedAt         *time.Time    `db:"updated_at" json:"updated_at"`
+		CreatedAt         time.Time     `db:"created_at" json:"created_at"`
+		UpdatedAt         time.Time     `db:"updated_at" json:"updated_at"`
 		SeoMeta           PostOptions   `db:"options" json:"options"`
 	}
 	// Posts represents the slice of Post's.
@@ -164,6 +164,9 @@ func (p *PostDatum) HasCategory() bool {
 // Determines if the post is the homepage by comparing
 // the domain options.
 func (p *PostDatum) IsHomepage(id int) bool {
+	if id == 0 {
+		return false
+	}
 	return id == p.Post.Id
 }
 

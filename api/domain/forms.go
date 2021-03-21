@@ -25,8 +25,8 @@ type (
 		Recipients   string        `db:"recipients" json:"recipients"`
 		StoreDB      types.BitBool `db:"store_db" json:"store_db"`
 		Body         interface{}   `db:"-" json:"-"`
-		CreatedAt    *time.Time    `db:"created_at" json:"created_at"`
-		UpdatedAt    *time.Time    `db:"updated_at" json:"updated_at"`
+		CreatedAt    time.Time     `db:"created_at" json:"created_at"`
+		UpdatedAt    time.Time     `db:"updated_at" json:"updated_at"`
 	}
 	// Forms represents the slice of Form's.
 	Forms []Form

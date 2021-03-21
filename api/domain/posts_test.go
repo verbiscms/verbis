@@ -105,6 +105,11 @@ func TestPostDatum_IsHomepage(t *testing.T) {
 			2,
 			false,
 		},
+		"Zero ID": {
+			0,
+			2,
+			false,
+		},
 	}
 
 	for name, test := range tt {
