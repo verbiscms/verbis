@@ -10,9 +10,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/store/posts/categories"
-	"github.com/ainsleyclark/verbis/api/store/posts/fields"
-	"github.com/ainsleyclark/verbis/api/store/posts/meta"
+	"github.com/ainsleyclark/verbis/api/store/posts/internal/categories"
+	"github.com/ainsleyclark/verbis/api/store/posts/internal/fields"
+	"github.com/ainsleyclark/verbis/api/store/posts/internal/meta"
 	"github.com/ainsleyclark/verbis/api/store/users"
 	"github.com/google/uuid"
 )

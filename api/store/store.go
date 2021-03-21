@@ -8,15 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/store/auth"
-	"github.com/ainsleyclark/verbis/api/store/categories"
-	"github.com/ainsleyclark/verbis/api/store/forms"
-	"github.com/ainsleyclark/verbis/api/store/media"
-	"github.com/ainsleyclark/verbis/api/store/options"
-	"github.com/ainsleyclark/verbis/api/store/posts"
-	"github.com/ainsleyclark/verbis/api/store/redirects"
-	"github.com/ainsleyclark/verbis/api/store/roles"
-	"github.com/ainsleyclark/verbis/api/store/users"
 )
 
 type Config struct {
@@ -28,14 +19,14 @@ type Config struct {
 	Running bool
 }
 
-type Store struct {
-	Auth       auth.Repository
-	Categories categories.Repository
-	Forms      forms.Repository
-	Media      media.Repository
-	Options    options.Repository
-	Posts      posts.Repository
-	Redirects  redirects.Repository
-	Roles      roles.Repository
-	User       users.Repository
-}
+//type Store struct {
+//	Auth       auth.Repository
+//	Categories categories.Repository
+//	Forms      forms.Repository
+//	Media      media.Repository
+//	Options    options.Repository
+//	Posts      posts.Repository
+//	Redirects  redirects.Repository
+//	Roles      roles.Repository
+//	User       users.Repository
+//}

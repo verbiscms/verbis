@@ -20,10 +20,10 @@ import (
 func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostsStore.Create"
 
-	err := s.validate(p)
-	if err != nil {
-		return domain.PostDatum{}, err
-	}
+	//err := s.validate(p)
+	//if err != nil {
+	//	return domain.PostDatum{}, err
+	//}
 
 	if p.Status == "" {
 		p.Status = "draft"
