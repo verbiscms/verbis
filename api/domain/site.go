@@ -4,6 +4,10 @@
 
 package domain
 
+import (
+	"strings"
+)
+
 type (
 	// Site defines the global Verbis object that is used in
 	// the public facing API (without credentials). The
@@ -19,15 +23,15 @@ type (
 	// ThemeConfig defines the data used for unmarshalling the
 	// config.yml file found in the theme's directory.
 	ThemeConfig struct {
-		Theme         Theme               `yaml:"theme" json:"theme"`
-		Resources     map[string]Resource `yaml:"resources" json:"resources"`
-		AssetsPath    string              `yaml:"assets_path" json:"assets_path"`
-		FileExtension string              `yaml:"file_extension" json:"file_extension"`
-		TemplateDir   string              `yaml:"template_dir" json:"template_dir"`
-		LayoutDir     string              `yaml:"layout_dir" json:"layout_dir"`
-		Admin         AdminConfig         `yaml:"admin" json:"admin"`
-		Media         MediaConfig         `yaml:"media" json:"media"`
-		Editor        Editor              `yaml:"editor" json:"editor"`
+		Theme         Theme       `yaml:"theme" json:"theme"`
+		Resources     Resources   `yaml:"resources" json:"resources"`
+		AssetsPath    string      `yaml:"assets_path" json:"assets_path"`
+		FileExtension string      `yaml:"file_extension" json:"file_extension"`
+		TemplateDir   string      `yaml:"template_dir" json:"template_dir"`
+		LayoutDir     string      `yaml:"layout_dir" json:"layout_dir"`
+		Admin         AdminConfig `yaml:"admin" json:"admin"`
+		Media         MediaConfig `yaml:"media" json:"media"`
+		Editor        Editor      `yaml:"editor" json:"editor"`
 	}
 
 	// TODO
@@ -57,11 +61,9 @@ type (
 		Name        string `yaml:"-" json:"name"`
 		Active      bool   `yaml:"-" json:"active"`
 	}
-	// Resources defines the slice of resources declared in
+	// Resources defines the map of resources declared in
 	// the theme config.
-	Resources struct {
-		Resource []Resource `json:"resources"`
-	}
+	Resources map[string]Resource
 	// Resource defines an individual resource or custom post
 	// type declared in the theme config.
 	Resource struct {
@@ -96,3 +98,23 @@ type (
 		Options map[string]interface{} `yaml:"options" json:"options"`
 	}
 )
+
+// Clean
+//
+// Removes any forward slashes from the resource and
+// cleans/
+func (r Resources) Clean() Resources {
+	for k, v := range r {
+		r[k] = Resource{
+			Name:               v.Name,
+			FriendlyName:       v.FriendlyName,
+			SingularName:       v.SingularName,
+			Slug:               strings.ReplaceAll(v.Slug, "/", ""),
+			Icon:               v.Icon,
+			Hidden:             v.Hidden,
+			HideCategorySlug:   v.HideCategorySlug,
+			AvailableTemplates: v.AvailableTemplates,
+		}
+	}
+	return r
+}
