@@ -19,6 +19,20 @@ func (s *Store) checkOwner(id int) int {
 	return id
 }
 
-func (s *Store) validate(p domain.PostCreate) error {
+func (s *Store) validate(p domain.PostCreate, slug string) error {
+
+	q := s.Builder().
+		Where("slug", "=", slug)
+
+	// Needs some work
+	if p.Category != nil {
+		q.LeftJoin(s.Schema()+"categories", "c", s.Schema()+"post_categories.post_id = c.id").
+			Where("cat", "=", p.Category)
+	}
+
+	if p.Resource != nil {
+		q.Where("resource", "=", p.Resource)
+	}
+
 	return nil
 }
