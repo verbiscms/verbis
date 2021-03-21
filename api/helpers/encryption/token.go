@@ -45,6 +45,6 @@ func GenerateSessionToken(email string) string {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Could not generate the session token.", Operation: op, Err: err}).Error()
 	}
 	hasher := md5.New()
-	hasher.Write(hash) //nolint
+	hasher.Write(hash)
 	return hex.EncodeToString(hasher.Sum(nil))
 }
