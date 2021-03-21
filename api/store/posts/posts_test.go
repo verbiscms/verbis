@@ -79,6 +79,7 @@ var (
 			Slug:  "/post",
 		},
 	}
+
 	postDatum = domain.PostDatum{
 		Post: domain.Post{
 			Id:    1,
