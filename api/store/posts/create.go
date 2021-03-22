@@ -79,5 +79,5 @@ func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 	}
 
 	// TODO!
-	return domain.PostDatum{}, nil
+	return s.Find(p.Id, true)
 }

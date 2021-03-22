@@ -5,7 +5,10 @@
 package posts
 
 import (
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
 )
 
 // checkOwner
@@ -19,20 +22,30 @@ func (s *Store) checkOwner(id int) int {
 	return id
 }
 
-func (s *Store) validate(p domain.PostCreate, slug string) error {
+func (s *Store) validate(p domain.PostCreate) error {
+	const op = "PostStore.Validate"
 
 	q := s.Builder().
-		Where("slug", "=", slug)
+		From(s.Schema()+TableName).
+		Where(s.Schema()+TableName+".slug", "=", p.Slug)
 
-	// Needs some work
 	if p.Category != nil {
-		q.LeftJoin(s.Schema()+"categories", "c", s.Schema()+"post_categories.post_id = c.id").
-			Where("cat", "=", p.Category)
+		q.LeftJoin(s.Schema()+"post_categories", "pc", s.Schema()+"posts.id = "+s.Schema()+"pc.post_id").
+			LeftJoin(s.Schema()+"categories", "c", "pc.category_id = c.id").
+			Where(s.Schema()+"c.id", "=", p.Category)
 	}
 
-	if p.Resource != nil {
-		q.Where("resource", "=", p.Resource)
+	if p.Resource == nil {
+		q.WhereRaw(s.Schema() + TableName + ".resource IS NULL")
+	} else {
+		q.Where(s.Schema()+TableName+".resource", "=", p.Resource)
 	}
 
-	return nil
+	var exists bool
+	err := s.DB().QueryRow(q.Exists()).Scan(&exists)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}).Error()
+	}
+
+	return exists
 }
