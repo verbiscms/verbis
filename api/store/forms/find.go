@@ -52,18 +52,18 @@ func (s *Store) Find(id int) (domain.Form, error) {
 // Returns a form by searching with the given UUID.
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the form was not found by the given slug.
-func (s *Store) FindByUUID(uuid uuid.UUID) (domain.Form, error) {
+func (s *Store) FindByUUID(uniq uuid.UUID) (domain.Form, error) {
 	const op = "FormStore.FindByUUID"
 
 	q := s.Builder().
 		From(s.Schema()+TableName).
-		Where("uuid", "=", uuid.String()).
+		Where("uuid", "=", uniq.String()).
 		Limit(1)
 
 	var form domain.Form
 	err := s.DB().Get(&form, q.Build())
 	if err == sql.ErrNoRows {
-		return domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "No form exists with the UUID: " + uuid.String(), Operation: op, Err: err}
+		return domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "No form exists with the UUID: " + uniq.String(), Operation: op, Err: err}
 	} else if err != nil {
 		return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
