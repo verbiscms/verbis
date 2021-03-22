@@ -54,13 +54,16 @@ func (s *Store) List(meta params.Params) (domain.Forms, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of forms", Operation: op, Err: err}
 	}
 
-	// Assign form fields.
+	// Assign form fields & submissions.
 	for k, v := range forms {
-		fields, err := s.Fields(v.Id)
-		if err != nil {
-			continue
+		fields, err := s.fields.Find(v.Id)
+		if err == nil {
+			forms[k].Fields = fields
 		}
-		forms[k].Fields = fields
+		submission, err := s.submissions.Find(v.Id)
+		if err == nil {
+			forms[k].Submissions = submission
+		}
 	}
 
 	return forms, total, nil

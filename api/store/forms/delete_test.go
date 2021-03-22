@@ -10,6 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
+	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
 	"regexp"
 )
 
@@ -19,11 +21,16 @@ var (
 
 func (t *FormsTestSuite) TestStore_Delete() {
 	tt := map[string]struct {
-		want interface{}
-		mock func(m sqlmock.Sqlmock)
+		want      interface{}
+		mockForms func(f *fields.Repository, s *submissions.Repository)
+		mock      func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
 			nil,
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Delete", form.Id).Return(nil)
+				s.On("Delete", form.Id).Return(nil)
+			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -31,6 +38,7 @@ func (t *FormsTestSuite) TestStore_Delete() {
 		},
 		"No Rows": {
 			"No form exists with the ID",
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(sql.ErrNoRows)
@@ -38,16 +46,39 @@ func (t *FormsTestSuite) TestStore_Delete() {
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(fmt.Errorf("error"))
+			},
+		},
+		"Fields Error": {
+			"error",
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Delete", form.Id).Return(&errors.Error{Message: "error"})
+				s.On("Delete", form.Id).Return(nil)
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+			},
+		},
+		"Submission Error": {
+			"error",
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Delete", form.Id).Return(nil)
+				s.On("Delete", form.Id).Return(&errors.Error{Message: "error"})
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
+			s := t.Setup(test.mock, test.mockForms)
 			err := s.Delete(form.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)

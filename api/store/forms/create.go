@@ -44,7 +44,17 @@ func (s *Store) Create(f domain.Form) (domain.Form, error) {
 	}
 	f.Id = int(id)
 
-	// TODO, Insert/Update into Form Fields
+	for _, v := range f.Fields {
+		err := s.fields.Insert(f.Id, v)
+		if err != nil {
+			return domain.Form{}, err
+		}
+	}
+
+	submissions, err := s.submissions.Find(f.Id)
+	if err == nil {
+		f.Submissions = submissions
+	}
 
 	return f, nil
 }

@@ -59,4 +59,12 @@ var (
 		IPAddress: "127.0.0.1",
 		UserAgent: "chrome",
 	}
+	// The default formSubmission used for testing.
+	formSubmissions = domain.FormSubmissions{
+		{
+			FormId:    1,
+			IPAddress: "127.0.0.1",
+			UserAgent: "chrome",
+		},
+	}
 )

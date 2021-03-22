@@ -5,12 +5,20 @@
 package options
 
 import (
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store"
 )
 
 // Repository defines methods for options
 // to interact with the database.
 type Repository interface {
+	Map() (domain.OptionsDBMap, error)
+	Struct() domain.Options
+	Find(name string) (interface{}, error)
+	Insert(options domain.OptionsDBMap) error
+	GetTheme() (string, error)
+	SetTheme(theme string) error
+	Exists(name string) bool
 }
 
 // Store defines the data layer for options.

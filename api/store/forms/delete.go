@@ -14,8 +14,8 @@ import (
 // Delete
 //
 // Returns nil if the fork was successfully deleted.
+// Returns errors.NOTFOUND if the form was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
-// Returns errors.NOTFOUND if the category was not found.
 func (s *Store) Delete(id int) error {
 	const op = "FormStore.Delete"
 
@@ -30,7 +30,15 @@ func (s *Store) Delete(id int) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// TODO, Delete from fields, perhaps submissions?
+	err = s.fields.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	err = s.submissions.Delete(id)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

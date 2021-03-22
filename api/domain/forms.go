@@ -15,18 +15,19 @@ type (
 	// Form defines the data for sending data to the API
 	// from the client side.
 	Form struct {
-		Id           int           `db:"id" json:"id" binding:"numeric"` //nolint
-		UUID         uuid.UUID     `db:"uuid" json:"uuid"`
-		Name         string        `db:"name" json:"name" binding:"required,max=500"`
-		Fields       []FormField   `db:"fields" json:"fields"`
-		EmailSend    types.BitBool `db:"email_send" json:"email_send"`
-		EmailMessage string        `db:"email_message" json:"email_message"`
-		EmailSubject string        `db:"email_subject" json:"email_subject"`
-		Recipients   string        `db:"recipients" json:"recipients"`
-		StoreDB      types.BitBool `db:"store_db" json:"store_db"`
-		Body         interface{}   `db:"-" json:"-"`
-		CreatedAt    time.Time     `db:"created_at" json:"created_at"`
-		UpdatedAt    time.Time     `db:"updated_at" json:"updated_at"`
+		Id           int             `db:"id" json:"id" binding:"numeric"` //nolint
+		UUID         uuid.UUID       `db:"uuid" json:"uuid"`
+		Name         string          `db:"name" json:"name" binding:"required,max=500"`
+		Fields       FormFields      `db:"fields" json:"fields"`
+		Submissions  FormSubmissions `db:"-" json:"submissions"`
+		EmailSend    types.BitBool   `db:"email_send" json:"email_send"`
+		EmailMessage string          `db:"email_message" json:"email_message"`
+		EmailSubject string          `db:"email_subject" json:"email_subject"`
+		Recipients   string          `db:"recipients" json:"recipients"`
+		StoreDB      types.BitBool   `db:"store_db" json:"store_db"`
+		Body         interface{}     `db:"-" json:"-"`
+		CreatedAt    time.Time       `db:"created_at" json:"created_at"`
+		UpdatedAt    time.Time       `db:"updated_at" json:"updated_at"`
 	}
 	// Forms represents the slice of Form's.
 	Forms []Form
@@ -55,6 +56,8 @@ type (
 		UserAgent string     `db:"user_agent" json:"user_agent"`
 		SentAt    *time.Time `db:"sent_at" json:"sent_at"`
 	}
+	// FormFields represents the slice of FormSubmission's.
+	FormSubmissions []FormSubmission
 	// FormLabel defines the label/name for form fields.
 	FormLabel string
 )

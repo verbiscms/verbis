@@ -34,9 +34,14 @@ func (s *Store) Find(id int) (domain.Form, error) {
 		return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	fields, err := s.Fields(form.Id)
+	fields, err := s.fields.Find(form.Id)
 	if err == nil {
 		form.Fields = fields
+	}
+
+	submission, err := s.submissions.Find(form.Id)
+	if err == nil {
+		form.Submissions = submission
 	}
 
 	return form, nil
@@ -63,9 +68,14 @@ func (s *Store) FindByUUID(uuid uuid.UUID) (domain.Form, error) {
 		return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	fields, err := s.Fields(form.Id)
+	fields, err := s.fields.Find(form.Id)
 	if err == nil {
 		form.Fields = fields
+	}
+
+	submission, err := s.submissions.Find(form.Id)
+	if err == nil {
+		form.Submissions = submission
 	}
 
 	return form, nil

@@ -4,67 +4,65 @@
 
 package options
 
-//
-//var (
-//	CreateQuery = "INSERT INTO `categories` (`uuid`, `slug`, `name`, `description`, `parent_id`, `resource`, `archive_id`, `updated_at`, `created_at`) VALUES (?, '/cat', 'Category', NULL, NULL, '', NULL, NOW(), NOW())"
-//)
-//
-//func (t *OptionsTestSuite) TestStore_Create() {
-//	tt := map[string]struct {
-//		want interface{}
-//		mock func(m sqlmock.Sqlmock)
-//	}{
-//		"Success": {
-//			category,
-//			func(m sqlmock.Sqlmock) {
-//				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-//					WithArgs(test.DBAnyString{}).
-//					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
-//			},
-//		},
-//		"Validation Failed": {
-//			"Validation failed, the category name already exists",
-//			func(m sqlmock.Sqlmock) {
-//				rows := sqlmock.NewRows([]string{"id"}).
-//					AddRow(true)
-//				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnRows(rows)
-//			},
-//		},
-//		"No Rows": {
-//			"Error creating category with the name",
-//			func(m sqlmock.Sqlmock) {
-//				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-//					WithArgs(test.DBAnyString{}).
-//					WillReturnError(sql.ErrNoRows)
-//			},
-//		},
-//		"Internal Error": {
-//			database.ErrQueryMessage,
-//			func(m sqlmock.Sqlmock) {
-//				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-//					WithArgs(test.DBAnyString{}).
-//					WillReturnError(fmt.Errorf("error"))
-//			},
-//		},
-//		"Last Insert ID Error": {
-//			"Error getting the newly created category ID",
-//			func(m sqlmock.Sqlmock) {
-//				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-//					WithArgs(test.DBAnyString{}).
-//					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
-//			},
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			s := t.Setup(test.mock)
-//			cat, err := s.Create(category)
-//			if err != nil {
-//				t.Contains(errors.Message(err), test.want)
-//				return
-//			}
-//			t.RunT(cat, test.want, 2)
-//		})
-//	}
-//}
+import (
+	"database/sql"
+	"fmt"
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"regexp"
+)
+
+var (
+	CreateQuery = "INSERT INTO `options` (`option_name`, `option_value`) VALUES ('" + optionName + "', [34 116 101 115 116 34])"
+)
+
+func (t *OptionsTestSuite) TestStore_Create() {
+	tt := map[string]struct {
+		input interface{}
+		want  interface{}
+		mock  func(m sqlmock.Sqlmock)
+	}{
+		"Success": {
+			optionValue,
+			nil,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WillReturnResult(sqlmock.NewResult(int64(1), 1))
+			},
+		},
+		"No Rows": {
+			optionValue,
+			"Error creating option with the name",
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WillReturnError(sql.ErrNoRows)
+			},
+		},
+		"Internal Error": {
+			optionValue,
+			database.ErrQueryMessage,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WillReturnError(fmt.Errorf("error"))
+			},
+		},
+		"Failed Marshal": {
+			make(chan int, 1),
+			"Error marshalling the option",
+			nil,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(test.mock)
+			err := s.create(optionName, test.input)
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.RunT(test.want, err)
+		})
+	}
+}
