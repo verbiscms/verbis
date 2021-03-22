@@ -7,6 +7,8 @@ package forms
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/domain"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
+	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
@@ -32,14 +34,24 @@ func TestForms(t *testing.T) {
 //
 // A helper to obtain a mock forms database
 // for testing.
-func (t *FormsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
+func (t *FormsTestSuite) Setup(mf func(m sqlmock.Sqlmock), mfm func(f *fields.Repository, s *submissions.Repository)) *Store {
 	t.Reset()
 	if mf != nil {
 		mf(t.Mock)
 	}
-	return New(&store.Config{
+
+	f := &fields.Repository{}
+	su := &submissions.Repository{}
+	if mfm != nil {
+		mfm(f, su)
+	}
+
+	s := New(&store.Config{
 		Driver: t.Driver,
 	})
+	s.fields = f
+	s.submissions = su
+	return s
 }
 
 const (
@@ -52,28 +64,58 @@ var (
 	form = domain.Form{
 		Id:   1,
 		Name: "Form",
+		Fields: domain.FormFields{
+			domain.FormField{
+				Key:   "key",
+				Label: "label",
+				Type:  "type",
+			},
+		},
+		Submissions: domain.FormSubmissions{
+			domain.FormSubmission{
+				FormId:    1,
+				IPAddress: "127.0.0.1",
+				UserAgent: "chrome",
+			},
+		},
 	}
 	// The default forms used for testing.
-	formsTest = domain.Forms{
+	forms = domain.Forms{
 		{
 			Id:   1,
 			Name: "Form",
+			Fields: domain.FormFields{
+				domain.FormField{
+					Key:   "key",
+					Label: "label",
+					Type:  "type",
+				},
+			},
+			Submissions: domain.FormSubmissions{
+				domain.FormSubmission{
+					FormId:    1,
+					IPAddress: "127.0.0.1",
+					UserAgent: "chrome",
+				},
+			},
 		},
 		{
 			Id:   2,
 			Name: "Form1",
-		},
-	}
-	// The default forms used for testing.
-	formsTestFields = domain.Forms{
-		{
-			Id:     1,
-			Name:   "Form",
-			Fields: formFields,
-		},
-		{
-			Id:   2,
-			Name: "Form1",
+			Fields: domain.FormFields{
+				domain.FormField{
+					Key:   "key",
+					Label: "label",
+					Type:  "type",
+				},
+			},
+			Submissions: domain.FormSubmissions{
+				domain.FormSubmission{
+					FormId:    1,
+					IPAddress: "127.0.0.1",
+					UserAgent: "chrome",
+				},
+			},
 		},
 	}
 	// The default form fields used for testing.

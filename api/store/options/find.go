@@ -4,6 +4,13 @@
 
 package options
 
+import (
+	"database/sql"
+	//"encoding/json"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/errors"
+)
+
 // Find
 //
 // Returns a option by searching with the given name.
@@ -12,18 +19,19 @@ package options
 func (s *Store) Find(name string) (interface{}, error) {
 	const op = "OptionStore.Find"
 
-	//q := s.Builder().
-	//	From(s.Schema()+TableName).
-	//	Where("id", "=", id).
-	//	Limit(1)
-	//
-	//var category domain.Category
-	//err := s.DB().Get(&category, q.Build())
-	//if err == sql.ErrNoRows {
-	//	return domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
-	//} else if err != nil {
-	//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
-	//}
+	q := s.Builder().
+		Select("option_value").
+		From(s.Schema()+TableName).
+		Where("option_name", "=", name).
+		Limit(1)
 
-	return nil, nil
+	var value interface{}
+	err := s.DB().Get(&value, q.Build())
+	if err == sql.ErrNoRows {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "No option exists with the name: " + name, Operation: op, Err: err}
+	} else if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	}
+
+	return value, nil
 }

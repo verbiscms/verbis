@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package submissions
+package options
 
 import (
 	"database/sql"
@@ -10,54 +10,59 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/gookit/color"
 	"regexp"
 )
 
 var (
-	FindQuery = "SELECT * FROM `form_submissions` WHERE `form_id` = '" + formID + "'"
+	UpdateQuery = "UPDATE `options` SET `option_value` = [34 116 101 115 116 34] WHERE `option_name` = '" + optionName + "'"
 )
 
-func (t *SubmissionTestSuite) TestStore_Find() {
+func (t *OptionsTestSuite) TestStore_Update() {
 	tt := map[string]struct {
-		want interface{}
-		mock func(m sqlmock.Sqlmock)
+		input interface{}
+		want  interface{}
+		mock  func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			formSubmission,
+			optionValue,
+			nil,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"form_id", "ip_address", "user_agent"}).
-					AddRow(formSubmission.FormId, formSubmission.IPAddress, formSubmission.UserAgent)
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
-					WillReturnRows(rows)
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
 		"No Rows": {
-			"No form submission exists with the form ID",
+			optionValue,
+			"Error updating option with the name",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
+			optionValue,
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
+		},
+		"Failed Marshal": {
+			make(chan int, 1),
+			"Error marshalling the option",
+			nil,
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(form.Id)
+			err := s.update(optionName, test.input)
 			if err != nil {
-				color.Red.Println(err)
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(test.want, got)
+			t.RunT(test.want, err)
 		})
 	}
 }

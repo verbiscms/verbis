@@ -6,60 +6,48 @@ package options
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
 
 var (
-	FindQuery = "SELECT `option_value` FROM `options` WHERE `option_name` = '" + optionName + "' LIMIT 1"
+	MapQuery = "SELECT * FROM `options`"
 )
 
-func (t *OptionsTestSuite) TestStore_Find() {
+func (t *OptionsTestSuite) TestStore_Map() {
+	raw := json.RawMessage("\"test\"")
+
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
-		"String": {
-			"test",
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"option_value"}).
-					AddRow("test")
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
-					WillReturnRows(rows)
+		"Success": {
+			domain.OptionsDBMap{
+				"name": &raw,
 			},
-		},
-		"Integer": {
-			int64(1),
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"option_value"}).
-					AddRow(1)
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
-					WillReturnRows(rows)
-			},
-		},
-		"Bool": {
-			true,
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"option_value"}).
-					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
+				rows := sqlmock.NewRows([]string{"option_name", "option_value"}).
+					AddRow("name", raw)
+				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
 					WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"No option exists with the name",
+			"No options available",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
+				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
-		"Internal Error": {
+		"Internal": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
+				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -68,7 +56,7 @@ func (t *OptionsTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(optionName)
+			got, err := s.Map()
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

@@ -10,37 +10,52 @@ import (
 	"regexp"
 )
 
-var (
-	ExistsQuery = "SELECT EXISTS (SELECT `option_name` FROM `options` WHERE `option_name` = 'name')"
-)
-
-func (t *OptionsTestSuite) TestStore_Exists() {
+func (t *OptionsTestSuite) TestStore_Insert() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
-		"Exists": {
-			true,
+		"Update": {
+			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name"}).
 					AddRow(true)
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
 					WillReturnRows(rows)
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
-		"Not Found": {
-			false,
+		"Update Error": {
+			"error",
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"option_name"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WillReturnError(fmt.Errorf("error"))
+			},
+		},
+		"Create": {
+			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name"}).
 					AddRow(false)
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
 					WillReturnRows(rows)
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
-		"Internal": {
-			false,
+		"Create Error": {
+			"error",
 			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"option_name"}).
+					AddRow(false)
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -49,8 +64,12 @@ func (t *OptionsTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists("name")
-			t.RunT(test.want, got)
+			err := s.Insert(options)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.RunT(nil, err)
 		})
 	}
 }

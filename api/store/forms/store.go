@@ -9,6 +9,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/forms/fields"
+	"github.com/ainsleyclark/verbis/api/store/forms/submissions"
 	"github.com/google/uuid"
 )
 
@@ -27,6 +29,8 @@ type Repository interface {
 // Store defines the data layer for forms.
 type Store struct {
 	*store.Config
+	fields      fields.Repository
+	submissions submissions.Repository
 }
 
 const (
@@ -47,6 +51,8 @@ var (
 // Creates a new form store.
 func New(cfg *store.Config) *Store {
 	return &Store{
-		Config: cfg,
+		Config:      cfg,
+		fields:      fields.New(cfg),
+		submissions: submissions.New(cfg),
 	}
 }

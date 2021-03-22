@@ -12,10 +12,9 @@ import (
 // Repository defines methods for form submissions
 // to interact with the database.
 type Repository interface {
-	Find(formID int) (domain.FormFields, error)
-	Insert(formID int, f domain.FormField) error
+	Find(formID int) (domain.FormSubmissions, error)
+	Create(formID int, f domain.FormSubmission) error
 	Delete(formID int) error
-	Exists(formID int, f domain.FormField) bool
 }
 
 // Store defines the data layer for form

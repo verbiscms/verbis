@@ -42,6 +42,13 @@ func (t *OptionsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	})
 }
 
+const (
+	// The default option name used for testing.
+	optionName = "name"
+	// The default option value used for testing.
+	optionValue = "test"
+)
+
 var (
 	// The default option struct used for testing.
 	optionsStruct = domain.Options{
@@ -53,24 +60,8 @@ var (
 		GeneralLocale:    "test",
 		MediaCompression: 10,
 	}
-	// The default options with wrong validation used for testing.
-	optionsBadValidation = domain.Options{
-		SiteTitle:        "test",
-		SiteDescription:  "test",
-		SiteLogo:         "test",
-		GeneralLocale:    "test",
-		ActiveTheme:      "test",
-		MediaCompression: 10,
-	}
 	// The default options used for testing.
 	options = domain.OptionsDBMap{
-		"test1": domain.OptionDB{
-			ID:   123,
-			Name: "test",
-		},
-		"test2": domain.OptionDB{
-			ID:   124,
-			Name: "test1",
-		},
+		"name": "test",
 	}
 )
