@@ -53,6 +53,13 @@ var (
 		Id:   1,
 		Name: "Form",
 	}
+	// The default form field used for testing.
+	formField = domain.FormField{
+		Id:    1,
+		Key:   "key",
+		Label: "label",
+		Type:  "type",
+	}
 	// The default form fields used for testing.
 	formFields = domain.FormFields{
 		domain.FormField{

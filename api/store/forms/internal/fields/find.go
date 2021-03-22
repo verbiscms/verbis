@@ -18,7 +18,7 @@ import (
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no form fields available.
 func (s *Store) Find(formID int) (domain.FormFields, error) {
-	const op = "FormStore.List"
+	const op = "FieldStore.Find"
 
 	q := s.Builder().
 		From(s.Schema()+TableName).

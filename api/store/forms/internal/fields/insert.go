@@ -6,44 +6,52 @@ package fields
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/google/uuid"
 )
 
 // Insert
 //
-// Checks to see if the post options record exists
+// Checks to see if the form field record exists
 // before updating or creating the new record.
-func (s *Store) Insert(id int, p domain.PostOptions) error {
-	//if s.Exists(id) {
-	//	err := s.update(id, p)
-	//	if err != nil {
-	//		return err
-	//	}
-	//} else {
-	//	err := s.create(id, p)
-	//	if err != nil {
-	//		return err
-	//	}
-	//}
+func (s *Store) Insert(formID int, f domain.FormField) error {
+	if s.Exists(formID, f) {
+		err := s.update(formID, f)
+		if err != nil {
+			return err
+		}
+	} else {
+		err := s.create(formID, f)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
 // create
 //
-// Returns nil if the meta was successfully created.
+// Returns nil if the field was successfully created.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *Store) create(id int, p domain.PostOptions) error {
-	const op = "MetaStore.Create"
+func (s *Store) create(formID int, f domain.FormField) error {
+	const op = "FieldStore.Create"
 
-	// No support for marshalling json for builder currently.
-	q := "INSERT INTO " + s.Schema() + "post_options (post_id, seo, meta) VALUES (?, ?, ?)"
+	q := s.Builder().
+		Insert(s.Schema()+TableName).
+		Column("uuid", "?").
+		Column("form_id", formID).
+		Column("key", f.Key).
+		Column("label", f.Label).
+		Column("type", f.Type).
+		Column("validation", f.Validation).
+		Column("required", f.Required).
+		Column("options", "?")
 
-	_, err := s.DB().Exec(q, id, p.Seo, p.Meta)
+	_, err := s.DB().Exec(q.Build(), uuid.New().String(), f.Options)
 	if err == sql.ErrNoRows {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error creating meta with the post ID: %d", id), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error creating form field with the key:" + f.Key, Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
@@ -53,17 +61,24 @@ func (s *Store) create(id int, p domain.PostOptions) error {
 
 // update
 //
-// Returns nil if the meta was successfully updated.
+// Returns nil if the field was successfully updated.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *Store) update(id int, p domain.PostOptions) error {
-	const op = "MetaStore.Update"
+func (s *Store) update(formID int, f domain.FormField) error {
+	const op = "FieldStore.Update"
 
-	// No support for marshalling json for builder currently.
-	q := "UPDATE " + s.Schema() + "post_options SET seo = ?, meta = ? WHERE post_id = ?"
+	q := s.Builder().
+		Update(s.Schema()+TableName).
+		Column("form_id", formID).
+		Column("key", f.Key).
+		Column("label", f.Label).
+		Column("type", f.Type).
+		Column("validation", f.Validation).
+		Column("required", f.Required).
+		Column("options", "?")
 
-	_, err := s.DB().Exec(q, p.Seo, p.Meta, id)
+	_, err := s.DB().Exec(q.Build(), f.Options)
 	if err == sql.ErrNoRows {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error updating meta with the post ID: %d", id), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating form field with the key:" + f.Key, Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
