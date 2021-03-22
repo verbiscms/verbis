@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package submissions
 
 import (
 	"database/sql"
@@ -10,45 +10,39 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/gookit/color"
 	"regexp"
 )
 
 var (
-	UpdateQuery = "UPDATE `categories` SET `slug` = '/cat', `name` = 'Category', `description` = NULL, `parent_id` = NULL, `resource` = '', `archive_id` = NULL, `updated_at` = NOW() WHERE `id` = '1'"
+	FindQuery = "SELECT * FROM `form_submissions` WHERE `form_id` = '" + formID + "'"
 )
 
-func (t *CategoriesTestSuite) TestStore_Update() {
+func (t *SubmissionTestSuite) TestStore_Find() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			category,
+			formSubmission,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
-			},
-		},
-		"Validation Failed": {
-			"Validation failed, the category name already exists",
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id"}).
-					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).
+				rows := sqlmock.NewRows([]string{"form_id", "ip_address", "user_agent"}).
+					AddRow(formSubmission.FormId, formSubmission.IPAddress, formSubmission.UserAgent)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"Error updating category with the name",
+			"No form submission exists with the form ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -57,12 +51,13 @@ func (t *CategoriesTestSuite) TestStore_Update() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			cat, err := s.Update(category)
+			got, err := s.Find(form.Id)
 			if err != nil {
+				color.Red.Println(err)
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(cat, test.want, 2)
+			t.RunT(test.want, got)
 		})
 	}
 }

@@ -10,12 +10,11 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	UpdateQuery = "UPDATE `users` SET `uuid` = ?, `first_name` = 'Verbis', `last_name` = 'CMS', `email` = 'verbis@verbiscms.com', `password` = ?, `website` = NULL, `facebook` = 'Verbis', `twitter` = NULL, `linked_in` = NULL, `instagram` = NULL, `biography` = NULL, `profile_picture_id` = NULL, `token` = ?, `updated_at` = NOW() WHERE `id` = '1'"
+	UpdateQuery = "UPDATE `users` SET `first_name` = 'Verbis', `last_name` = 'CMS', `email` = 'verbis@verbiscms.com', `password` = ?, `website` = NULL, `facebook` = 'Verbis', `twitter` = NULL, `linked_in` = NULL, `instagram` = NULL, `biography` = NULL, `profile_picture_id` = NULL, `token` = ?, `updated_at` = NOW() WHERE `id` = '1'"
 )
 
 func (t *UsersTestSuite) TestStore_Update() {
@@ -27,7 +26,6 @@ func (t *UsersTestSuite) TestStore_Update() {
 			user,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
 
 				m.ExpectExec(regexp.QuoteMeta(UpdatePivotQuery)).
@@ -46,7 +44,6 @@ func (t *UsersTestSuite) TestStore_Update() {
 			"Error updating user with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -54,7 +51,6 @@ func (t *UsersTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -62,7 +58,6 @@ func (t *UsersTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
 
 				m.ExpectExec(regexp.QuoteMeta(UpdatePivotQuery)).

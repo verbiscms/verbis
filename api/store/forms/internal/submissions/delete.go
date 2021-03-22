@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package fields
+package submissions
 
 import (
 	"database/sql"
@@ -13,11 +13,11 @@ import (
 
 // Delete
 //
-// Returns nil if the form fields were successfully deleted.
+// Returns nil if the form submissions were successfully deleted.
 // Returns errors.INTERNAL if the SQL query was invalid.
-// Returns errors.NOTFOUND if the form field was not found.
+// Returns errors.NOTFOUND if the form submission was not found.
 func (s *Store) Delete(formID int) error {
-	const op = "FieldStore.Delete"
+	const op = "SubmissionsStore.Delete"
 
 	q := s.Builder().
 		DeleteFrom(s.Schema()+TableName).

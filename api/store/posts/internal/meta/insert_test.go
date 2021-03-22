@@ -28,7 +28,8 @@ func (t *MetaTestSuite) TestStore_Insert() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(meta.Seo, meta.Meta, meta.PostId).
 					WillReturnResult(sqlmock.NewResult(int64(meta.Id), 1))
@@ -39,7 +40,8 @@ func (t *MetaTestSuite) TestStore_Insert() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(meta.Seo, meta.Meta, meta.PostId).
 					WillReturnError(fmt.Errorf("error"))
@@ -50,7 +52,8 @@ func (t *MetaTestSuite) TestStore_Insert() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(false)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(meta.PostId, meta.Seo, meta.Meta).
 					WillReturnResult(sqlmock.NewResult(int64(meta.Id), 1))
@@ -61,7 +64,8 @@ func (t *MetaTestSuite) TestStore_Insert() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(false)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(meta.PostId, meta.Seo, meta.Meta).
 					WillReturnError(fmt.Errorf("error"))

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package submissions
 
 import (
 	"database/sql"
@@ -14,41 +14,32 @@ import (
 )
 
 var (
-	UpdateQuery = "UPDATE `categories` SET `slug` = '/cat', `name` = 'Category', `description` = NULL, `parent_id` = NULL, `resource` = '', `archive_id` = NULL, `updated_at` = NOW() WHERE `id` = '1'"
+	DeleteQuery = "DELETE FROM `form_submissions` WHERE `form_id` = '" + formID + "'"
 )
 
-func (t *CategoriesTestSuite) TestStore_Update() {
+func (t *SubmissionTestSuite) TestStore_Delete() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			category,
+			nil,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
-			},
-		},
-		"Validation Failed": {
-			"Validation failed, the category name already exists",
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id"}).
-					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).
-					WillReturnRows(rows)
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 		"No Rows": {
-			"Error updating category with the name",
+			"No form exists with the ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -57,12 +48,12 @@ func (t *CategoriesTestSuite) TestStore_Update() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			cat, err := s.Update(category)
+			err := s.Delete(form.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(cat, test.want, 2)
+			t.RunT(nil, err)
 		})
 	}
 }

@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 )
 
 // Update
@@ -27,7 +26,6 @@ func (s *Store) Update(c domain.Category) (domain.Category, error) {
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).
-		Column("uuid", "?").
 		Column("slug", c.Slug).
 		Column("name", c.Name).
 		Column("description", c.Description).
@@ -37,7 +35,7 @@ func (s *Store) Update(c domain.Category) (domain.Category, error) {
 		Column("updated_at", "NOW()").
 		Where("id", "=", c.Id)
 
-	_, err = s.DB().Exec(q.Build(), uuid.New().String())
+	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating category with the name: " + c.Name, Operation: op, Err: err}
 	} else if err != nil {
