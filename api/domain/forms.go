@@ -39,7 +39,7 @@ type (
 		Key        string        `db:"key" json:"key" binding:"required"`
 		Label      FormLabel     `db:"label" json:"label" binding:"required"`
 		Type       string        `db:"type" json:"type" binding:"required"`
-		Validation *string       `db:"validation" json:"validation"`
+		Validation string        `db:"validation" json:"validation"`
 		Required   types.BitBool `db:"required" json:"required"`
 		Options    DBMap         `db:"options" json:"options"`
 	}

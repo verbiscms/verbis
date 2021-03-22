@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package fields
+package submissions
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store"
 )
 
-// Repository defines methods for form fields
+// Repository defines methods for form submissions
 // to interact with the database.
 type Repository interface {
 	Find(formID int) (domain.FormFields, error)
-	Insert(f domain.FormFields) error
+	Insert(formID int, f domain.FormField) error
 	Delete(formID int) error
-	Exists(id int) bool
+	Exists(formID int, f domain.FormField) bool
 }
 
 // Store defines the data layer for form
-// fields.
+// submissions.
 type Store struct {
 	*store.Config
 }
 
 const (
-	// The database table name for form fields.
-	TableName = "form_fields"
+	// The database table name for form submissions.
+	TableName = "form_submissions"
 )
 
 // New

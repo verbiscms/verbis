@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	FieldsQuery = "SELECT * FROM `form_fields` WHERE `form_id` = '" + formID + "'"
+	FindQuery = "SELECT * FROM `form_fields` WHERE `form_id` = '" + formID + "'"
 )
 
 func (t *FieldsTestSuite) TestStore_Find() {
@@ -27,21 +27,21 @@ func (t *FieldsTestSuite) TestStore_Find() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"key", "label", "type"}).
 					AddRow(formFields[0].Key, formFields[0].Label, formFields[0].Type)
-				m.ExpectQuery(regexp.QuoteMeta(FieldsQuery)).
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
 			"No form fields exists with the form ID",
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(FieldsQuery)).
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(FieldsQuery)).
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},

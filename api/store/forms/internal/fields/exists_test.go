@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package meta
+package fields
 
 import (
 	"fmt"
@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `post_options` WHERE `id` =  '" + postID + "')"
+	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `form_fields` WHERE `key` = 'key' AND `form_id` =  '" + formID + "')"
 )
 
-func (t *MetaTestSuite) TestStore_Exists() {
+func (t *FieldsTestSuite) TestStore_Exists() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -49,7 +49,7 @@ func (t *MetaTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists(meta.PostId)
+			got := s.Exists(formField.Id, formField)
 			t.RunT(test.want, got)
 		})
 	}
