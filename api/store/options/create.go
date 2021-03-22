@@ -5,46 +5,34 @@
 package options
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
+	"database/sql"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// Create
+// create
 //
-// Returns a new category upon creation.
-// Returns errors.CONFLICT if the the category (name) already exists.
+// Returns a nil upon creation.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
-func (s *Store) Create(c domain.Category) error {
+func (s *Store) create(name string, value interface{}) error {
 	const op = "OptionStore.Create"
 
-	//err := s.validate(c)
-	//if err != nil {
-	//	return domain.Category{}, err
-	//}
-	//
-	//q := s.Builder().Insert(s.Schema()+TableName).
-	//	Column("uuid", "?").
-	//	Column("slug", c.Slug).
-	//	Column("name", c.Name).
-	//	Column("description", c.Description).
-	//	Column("parent_id", c.ParentId).
-	//	Column("resource", c.Resource).
-	//	Column("archive_id", c.ArchiveId).
-	//	Column("updated_at", "NOW()").
-	//	Column("created_at", "NOW()")
-	//
-	//result, err := s.DB().Exec(q.Build(), uuid.New().String())
-	//if err == sql.ErrNoRows {
-	//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating category with the name: " + c.Name, Operation: op, Err: err}
-	//} else if err != nil {
-	//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
-	//}
-	//
-	//id, err := result.LastInsertId()
-	//if err != nil {
-	//	return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
-	//}
-	//c.Id = int(id)
+	v, err := s.marshal(value)
+	if err != nil {
+		return err
+	}
 
-	//return c, nil
+	q := s.Builder().
+		Insert(s.Schema()+TableName).
+		Column("option_name", name).
+		Column("option_value", v)
+
+	_, err = s.DB().Exec(q.Build())
+	if err == sql.ErrNoRows {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error creating option with the name: " + name, Operation: op, Err: err}
+	} else if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	}
+
 	return nil
 }

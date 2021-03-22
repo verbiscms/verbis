@@ -18,7 +18,7 @@ import (
 // Returns errors.CONFLICT if the validation failed.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not obtain the newly created ID.
 func (s *Store) Update(f domain.Form) (domain.Form, error) {
-	const op = "CategoryStore.Create"
+	const op = "FormStore.Create"
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).
@@ -38,7 +38,17 @@ func (s *Store) Update(f domain.Form) (domain.Form, error) {
 		return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// TODO, Insert/Update into Form Fields
+	for _, v := range f.Fields {
+		err := s.fields.Insert(f.Id, v)
+		if err != nil {
+			return domain.Form{}, err
+		}
+	}
+
+	submissions, err := s.submissions.Find(f.Id)
+	if err == nil {
+		f.Submissions = submissions
+	}
 
 	return f, nil
 }

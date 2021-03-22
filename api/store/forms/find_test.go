@@ -10,6 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
+	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
 	"regexp"
 )
 
@@ -20,11 +22,16 @@ var (
 
 func (t *FormsTestSuite) TestStore_Find() {
 	tt := map[string]struct {
-		want interface{}
-		mock func(m sqlmock.Sqlmock)
+		want      interface{}
+		mockForms func(f *fields.Repository, s *submissions.Repository)
+		mock      func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
 			form,
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Find", form.Id).Return(form.Fields, nil)
+				s.On("Find", form.Id).Return(form.Submissions, nil)
+			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name"}).
 					AddRow(form.Id, form.Name)
@@ -34,6 +41,7 @@ func (t *FormsTestSuite) TestStore_Find() {
 		},
 		"No Rows": {
 			"No form exists with the ID",
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnError(sql.ErrNoRows)
@@ -41,30 +49,17 @@ func (t *FormsTestSuite) TestStore_Find() {
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnError(fmt.Errorf("error"))
-			},
-		},
-		"Fields": {
-			formsTestFields[0],
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "name"}).
-					AddRow(form.Id, form.Name)
-				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
-					WillReturnRows(rows)
-
-				fieldRows := sqlmock.NewRows([]string{"key", "label", "type"}).
-					AddRow(formFields[0].Key, formFields[0].Label, formFields[0].Type)
-				m.ExpectQuery(regexp.QuoteMeta(FieldsQuery)).
-					WillReturnRows(fieldRows)
 			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
+			s := t.Setup(test.mock, test.mockForms)
 			got, err := s.Find(form.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
@@ -77,11 +72,16 @@ func (t *FormsTestSuite) TestStore_Find() {
 
 func (t *FormsTestSuite) TestStore_FindByUUID() {
 	tt := map[string]struct {
-		want interface{}
-		mock func(m sqlmock.Sqlmock)
+		want      interface{}
+		mockForms func(f *fields.Repository, s *submissions.Repository)
+		mock      func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
 			form,
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Find", form.Id).Return(form.Fields, nil)
+				s.On("Find", form.Id).Return(form.Submissions, nil)
+			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name"}).
 					AddRow(form.Id, form.Name)
@@ -91,6 +91,7 @@ func (t *FormsTestSuite) TestStore_FindByUUID() {
 		},
 		"No Rows": {
 			"No form exists with the UUID",
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindByUUIDQuery)).
 					WillReturnError(sql.ErrNoRows)
@@ -98,30 +99,17 @@ func (t *FormsTestSuite) TestStore_FindByUUID() {
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindByUUIDQuery)).
 					WillReturnError(fmt.Errorf("error"))
-			},
-		},
-		"Fields": {
-			formsTestFields[0],
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "name"}).
-					AddRow(form.Id, form.Name)
-				m.ExpectQuery(regexp.QuoteMeta(FindByUUIDQuery)).
-					WillReturnRows(rows)
-
-				fieldRows := sqlmock.NewRows([]string{"key", "label", "type"}).
-					AddRow(formFields[0].Key, formFields[0].Label, formFields[0].Type)
-				m.ExpectQuery(regexp.QuoteMeta(FieldsQuery)).
-					WillReturnRows(fieldRows)
 			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
+			s := t.Setup(test.mock, test.mockForms)
 			got, err := s.FindByUUID(form.UUID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)

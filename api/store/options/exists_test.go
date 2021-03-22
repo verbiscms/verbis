@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ExistsQuery = "SELECT EXISTS (SELECT `option_name` FROM `options` WHERE `option_name` =  'test')"
+	ExistsQuery = "SELECT EXISTS (SELECT `option_name` FROM `options` WHERE `option_name` = 'name')"
 )
 
 func (t *OptionsTestSuite) TestStore_Exists() {
@@ -24,7 +24,8 @@ func (t *OptionsTestSuite) TestStore_Exists() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name"}).
 					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Not Found": {
@@ -32,13 +33,15 @@ func (t *OptionsTestSuite) TestStore_Exists() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name"}).
 					AddRow(false)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Internal": {
 			false,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
@@ -46,7 +49,7 @@ func (t *OptionsTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists("test")
+			got := s.Exists("name")
 			t.RunT(test.want, got)
 		})
 	}

@@ -10,6 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
+	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
 	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
@@ -20,11 +22,16 @@ var (
 
 func (t *FormsTestSuite) TestStore_Update() {
 	tt := map[string]struct {
-		want interface{}
-		mock func(m sqlmock.Sqlmock)
+		want      interface{}
+		mockForms func(f *fields.Repository, s *submissions.Repository)
+		mock      func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
 			form,
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Insert", form.Id, form.Fields[0]).Return(nil)
+				s.On("Find", form.Id).Return(form.Submissions, nil)
+			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(test.DBAnyString{}).
@@ -33,6 +40,7 @@ func (t *FormsTestSuite) TestStore_Update() {
 		},
 		"No Rows": {
 			"Error updating form with the name",
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(test.DBAnyString{}).
@@ -41,23 +49,35 @@ func (t *FormsTestSuite) TestStore_Update() {
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
+		"Error Fields": {
+			"error",
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Insert", form.Id, formFields[0]).Return(&errors.Error{Message: "error"})
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.DBAnyString{}).
+					WillReturnResult(sqlmock.NewResult(int64(form.Id), 1))
+			},
+		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
-			cat, err := s.Update(form)
+			s := t.Setup(test.mock, test.mockForms)
+			got, err := s.Update(form)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(cat, test.want)
+			t.RunT(got, test.want)
 		})
 	}
 }

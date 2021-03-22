@@ -12,6 +12,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
+	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
 	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"regexp"
 )
@@ -23,23 +25,30 @@ var (
 
 func (t *FormsTestSuite) TestStore_List() {
 	tt := map[string]struct {
-		meta  params.Params
-		mock  func(m sqlmock.Sqlmock)
-		total int
-		want  interface{}
+		meta      params.Params
+		mockForms func(f *fields.Repository, s *submissions.Repository)
+		mock      func(m sqlmock.Sqlmock)
+		total     int
+		want      interface{}
 	}{
 		"Success": {
 			dummy.DefaultParams,
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Find", forms[0].Id).Return(forms[0].Fields, nil)
+				f.On("Find", forms[1].Id).Return(forms[1].Fields, nil)
+				s.On("Find", forms[0].Id).Return(forms[0].Submissions, nil)
+				s.On("Find", forms[1].Id).Return(forms[1].Submissions, nil)
+			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name"}).
-					AddRow(formsTest[0].Id, formsTest[0].Name).
-					AddRow(formsTest[1].Id, formsTest[1].Name)
+					AddRow(forms[0].Id, forms[0].Name).
+					AddRow(forms[1].Id, forms[1].Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
 			},
 			2,
-			formsTest,
+			forms,
 		},
 		"Filter Error": {
 			params.Params{
@@ -49,11 +58,13 @@ func (t *FormsTestSuite) TestStore_List() {
 				OrderDirection: api.DefaultParams.OrderDirection,
 				Filters:        params.Filters{"wrong_column": {{Operator: "=", Value: "verbis"}}}},
 			nil,
+			nil,
 			-1,
 			"The wrong_column search query does not exist",
 		},
 		"No Rows": {
 			dummy.DefaultParams,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(sql.ErrNoRows)
 			},
@@ -62,6 +73,7 @@ func (t *FormsTestSuite) TestStore_List() {
 		},
 		"Internal": {
 			dummy.DefaultParams,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -70,40 +82,22 @@ func (t *FormsTestSuite) TestStore_List() {
 		},
 		"Count Error": {
 			dummy.DefaultParams,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name"}).
-					AddRow(formsTest[0].Id, formsTest[0].Name).
-					AddRow(formsTest[1].Id, formsTest[1].Name)
+					AddRow(forms[0].Id, forms[0].Name).
+					AddRow(forms[1].Id, forms[1].Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 			-1,
 			"Error getting the total number of forms",
 		},
-		"Fields": {
-			dummy.DefaultParams,
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "name"}).
-					AddRow(formsTest[0].Id, formsTest[0].Name).
-					AddRow(formsTest[1].Id, formsTest[1].Name)
-				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
-
-				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
-				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
-
-				fieldRows := sqlmock.NewRows([]string{"key", "label", "type"}).
-					AddRow(formFields[0].Key, formFields[0].Label, formFields[0].Type)
-				m.ExpectQuery(regexp.QuoteMeta(FieldsQuery)).
-					WillReturnRows(fieldRows)
-			},
-			2,
-			formsTestFields,
-		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
+			s := t.Setup(test.mock, test.mockForms)
 			got, total, err := s.List(test.meta)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
