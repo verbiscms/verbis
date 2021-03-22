@@ -22,7 +22,7 @@ func Accepts(g *gin.Context) bool {
 // GetData first checks to see if the browser accepts WebP images
 // and if the mime type is jpg or a png.
 // Returns a data was found, nil if it hasn't.
-func GetData(g *gin.Context, path string, mime string) []byte {
+func GetData(g *gin.Context, path, mime string) []byte {
 	if Accepts(g) && mime == "image/jpeg" || mime == "image/png" {
 		data, found := ioutil.ReadFile(path + ".WebP")
 		if found != nil {

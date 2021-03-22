@@ -253,7 +253,7 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 	err = os.Chmod(t.Path+testPath+"open-error/location.json", 000)
 	t.NoError(err)
 	defer func() {
-		err = os.Chmod(t.Path+testPath+"open-error/location.json", 777)
+		err = os.Chmod(t.Path+testPath+"open-error/location.json", os.ModePerm)
 		t.NoError(err)
 	}()
 

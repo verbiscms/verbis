@@ -6,7 +6,6 @@ package options
 
 import (
 	"database/sql"
-	//"encoding/json"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 )

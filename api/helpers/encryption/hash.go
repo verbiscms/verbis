@@ -23,7 +23,7 @@ func GenerateRandomHash() (string, error) {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Could not generate a random hash", Operation: op, Err: err}
 	}
 	hasher := md5.New()
-	hasher.Write(hash) //nolint
+	hasher.Write(hash)
 	return hex.EncodeToString(hasher.Sum(nil)), nil
 }
 
