@@ -580,6 +580,10 @@ export default {
 		changeSelectedMedia(item) {
 			this.selectedMedia = {};
 			const user = this.findUserById(item['user_id']);
+			if (!user) {
+				console.warn("No user attached to media item");
+				return;
+			}
 			user['full_name'] = `${user['first_name']} ${user['last_name']}`;
 			item['uploaded_by'] = user;
 			this.selectedMedia = item;
