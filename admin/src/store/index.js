@@ -129,7 +129,7 @@ export default new Vuex.Store({
 		getUsers() {
 			return new Promise((resolve, reject) => {
 				if (!this.state.users.length) {
-					axios.get(`/users`)
+					axios.get(`/users?limit=all`)
 						.then(res => {
 							const users = res.data.data;
 							this.commit("setUsers", users);
