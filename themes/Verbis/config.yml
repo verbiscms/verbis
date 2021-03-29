@@ -33,63 +33,16 @@ resources:
         hidden: false
         hide_category_slug: true
         available_templates: [
-                about-single
+            about-single
         ]
-    guides:
-        name: guides
-        friendly_name: Guides
-        singular_name: Guide
-        slug: guides
-        icon: feather feather-inbox
-        hidden: false
-        hide_category_slug: true
-        available_templates: [
-                guide
-        ]
-    best-mattresses:
-        name: best-mattresses
-        friendly_name: Best Mattresses
-        singular_name: Best Mattress
-        slug: best-mattresses
-        icon: feather feather-cloud
-        hidden: false
-        hide_category_slug: false
-        available_templates: [
-                single
-        ]
-    best-pillows:
-        name: best-pillows
-        friendly_name: Best Pillows
-        singular_name: Best Pillow
-        slug: best-pillows
-        icon: feather feather-feather
-        hidden: false
-        hide_category_slug: false
-        available_templates: [
-                single
-        ]
-    mattress-reviews:
-        name: mattress-reviews
-        friendly_name: Mattress Reviews
-        singular_name: Mattress Review
-        slug: mattress-reviews
-        icon: feather feather-pie-chart
-        hidden: false
-        hide_category_slug: true
-        available_templates: [
-                single
-        ]
-    product-reviews:
-        name: product-reviews
-        friendly_name: Product Reviews
-        singular_name: Product Review
-        slug: product-reviews
+    news:
+        name: news
+        friendly_name: News
+        singular_name: News Item
+        slug: news
         icon: feather feather-clipboard
         hidden: false
         hide_category_slug: true
-        available_templates: [
-                single
-        ]
 
 # |
 # |--------------------------------------------------------------------------
