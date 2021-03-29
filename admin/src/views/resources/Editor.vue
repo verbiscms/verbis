@@ -225,7 +225,7 @@ export default {
 		loadingLayouts: true,
 		activeTab: 0,
 		users: [],
-		//isCustomSlug: false,
+		isCustomSlug: false,
 		editSlug: "",
 		slugBtn: false,
 		fieldLayout: [],
@@ -360,6 +360,11 @@ export default {
 					// Return 404 if there is no ID
 					if (!this.data) {
 						this.$router.push({ name : 'not-found' })
+					}
+
+					// Compare slugs & set
+					if (this.data.slug !== this.slugify(this.data['title'])) {
+						this.isCustomSlug = true;
 					}
 
 					// Set author
@@ -763,10 +768,14 @@ export default {
 		 */
 		computedSlug: {
 			get() {
+				if (this.isCustomSlug) {
+					return this.getBaseSlug + this.data['slug'];
+				}
 				return this.getBaseSlug + this.slugify(this.editSlug ? this.editSlug : this.data['title']);
 			},
 			set(value) {
-				this.$set(this.data, 'slug', value)
+				this.slug = value;
+				//this.$set(this.data, 'slug', value)
 			}
 		}
 	}
