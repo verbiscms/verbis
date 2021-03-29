@@ -205,6 +205,7 @@ func (s *MediaStore) Serve(uploadPath string, acceptWebP bool) ([]byte, domain.M
 
 	var data []byte
 	var found error
+
 	if acceptWebP && s.options.MediaServeWebP {
 		data, found = ioutil.ReadFile(absPath + extension + ".webp")
 		if found != nil {

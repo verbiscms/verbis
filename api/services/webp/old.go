@@ -16,7 +16,7 @@ import (
 // Accepts checks to see if the browser accepts WebP images
 func Accepts(g *gin.Context) bool {
 	acceptHeader := g.Request.Header.Get("Accept")
-	return strings.Contains(acceptHeader, "image/WebP")
+	return strings.Contains(acceptHeader, Header)
 }
 
 // GetData first checks to see if the browser accepts WebP images

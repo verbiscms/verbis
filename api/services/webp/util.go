@@ -85,13 +85,18 @@ func (w *WebP) Install() error {
 	return nil
 }
 
+const (
+	// The WebP header to look for.
+	Header = "image/webp"
+)
+
 // Accepts
 //
 // Determines if the browser can serve webp images by
 // looking up the 'image/WebP' header.
 func (w *WebP) Accepts(ctx *gin.Context) bool {
 	acceptHeader := ctx.Request.Header.Get("Accept")
-	return strings.Contains(acceptHeader, "image/WebP")
+	return strings.Contains(acceptHeader, "image/webp")
 }
 
 // File
