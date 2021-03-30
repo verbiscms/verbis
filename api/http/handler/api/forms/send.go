@@ -31,7 +31,7 @@ func (f *Forms) Send(ctx *gin.Context) {
 
 	err = ctx.ShouldBind(form.Body)
 	if err != nil {
-		// If file has an empty value, no validation data is returned
+		// If file has an empty value, no validation data is returned.
 		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}

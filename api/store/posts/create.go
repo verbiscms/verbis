@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
+	"strings"
 )
 
 // Create
@@ -20,14 +21,18 @@ import (
 func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostsStore.Create"
 
-	//err := s.validate(p)
-	//if err != nil {
-	//	return domain.PostDatum{}, err
-	//}
+	err := s.validate(&p)
+	if err != nil {
+		return domain.PostDatum{}, err
+	}
 
+	// TODO: Work out why sql defaults arent working!
 	if p.Status == "" {
 		p.Status = "draft"
 	}
+
+	// Remove any trailing slashes from slug.
+	p.Slug = strings.TrimRight(p.Slug, "/")
 
 	q := s.Builder().
 		Insert(s.Schema()+TableName).
@@ -78,6 +83,5 @@ func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 		}
 	}
 
-	// TODO!
 	return s.Find(p.Id, true)
 }

@@ -5,13 +5,9 @@
 package cmd
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/nickalie/go-webpbin"
 	"github.com/spf13/cobra"
-	"image"
-	"image/color"
 	"os"
 )
 
@@ -20,32 +16,20 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-
 			p := paths.Get()
-			webpbin.Dest(p.Bin + string(os.PathSeparator) + "webp")
-
-			width := 200
-			height := 100
-
-			img := image.NewRGBA(image.Rectangle{
-				Min: image.Point{},
-				Max: image.Point{X: width, Y: height},
-			})
-
-			// Set color for each pixel.
-			for x := 0; x < width; x++ {
-				for y := 0; y < height; y++ {
-					switch {
-					case x < width && y < height:
-						img.Set(x, y, color.RGBA{R: 100, G: 200, B: 200, A: 0xff})
-					}
-				}
-			}
-
-			b := &bytes.Buffer{}
-			err := webpbin.Encode(b, img)
-
+			err := os.Rename(p.Base+"/verbis", p.Base+"/verbis.bak")
 			fmt.Println(err)
+
+			// download new version
+			// unpack exec
+			// platform check
+			// download the zip file from git
+
+			// https://github.com/ainsleyclark/TryVerbis/archive/refs/tags/0.0.1.zip
+
+			// get list of available tags
+
+			// curl https://api.github.com/repos/ainsleyclark/TryVerbis/releases
 		},
 	}
 )
