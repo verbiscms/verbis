@@ -17,7 +17,7 @@ import (
 // Returns a new post field upon creation.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
 func (s *Store) create(f domain.PostField) (domain.PostField, error) {
-	const op = "CategoryStore.Create"
+	const op = "FieldStore.Create"
 
 	q := s.Builder().
 		Insert(s.Schema()+TableName).

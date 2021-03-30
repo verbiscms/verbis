@@ -137,11 +137,10 @@ func (p *page) IsHomepage() bool {
 func (p *page) IsResourcePublic() error {
 	const op = "Page.IsResourcePublic"
 
-	resource := p.post.Resource
-	if resource != nil {
+	if p.post.HasResource() {
 		for _, v := range p.Config.Resources {
-			if v.Hidden && v.Name == *resource {
-				return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("The post resource is not public: %v", resource), Operation: op, Err: fmt.Errorf("resource not public")}
+			if v.Hidden && v.Name == p.post.Resource {
+				return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("The post resource is not public: %v", p.post.Resource), Operation: op, Err: fmt.Errorf("resource not public")}
 			}
 		}
 	}

@@ -87,7 +87,6 @@ func (t *LocationTestSuite) TestLocation_GetLayout() {
 }
 
 func (t *LocationTestSuite) TestLocation_GroupResolver() {
-	r := "resource"
 	uu := uuid.New()
 
 	tt := map[string]struct {
@@ -155,19 +154,19 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: domain.FieldGroups{{Title: "post"}},
 		},
 		"Resource": {
-			post: domain.PostDatum{Post: domain.Post{Resource: &r}},
+			post: domain.PostDatum{Post: domain.Post{Resource: "resource"}},
 			groups: domain.FieldGroups{
 				{
 					Title: "post",
 					Locations: [][]domain.FieldLocation{
-						{{Param: "resource", Operator: "==", Value: r}},
+						{{Param: "resource", Operator: "==", Value: "resource"}},
 					},
 				},
 			},
 			want: domain.FieldGroups{{Title: "post"}},
 		},
 		"Nil Resource": {
-			post: domain.PostDatum{Post: domain.Post{Resource: nil}},
+			post: domain.PostDatum{Post: domain.Post{Resource: ""}},
 			groups: domain.FieldGroups{
 				{
 					Title: "post",

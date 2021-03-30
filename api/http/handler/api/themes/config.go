@@ -7,7 +7,6 @@ package themes
 import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
-	"github.com/gookit/color"
 	"net/http"
 )
 
@@ -15,6 +14,5 @@ import (
 //
 // Returns http.StatusOK if theme config was obtained successfully.
 func (t *Themes) Config(ctx *gin.Context) {
-	color.Red.Println(t.Deps.Config)
 	api.Respond(ctx, http.StatusOK, "Successfully obtained theme config", t.Deps.Config)
 }

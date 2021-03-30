@@ -21,7 +21,7 @@ import (
 func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostsStore.Create"
 
-	err := s.validate(&p)
+	err := s.validate(&p, true)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}

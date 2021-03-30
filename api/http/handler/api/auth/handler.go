@@ -22,3 +22,12 @@ type Handler interface {
 type Auth struct {
 	*deps.Deps
 }
+
+// New
+//
+// Creates a new auth handler.
+func New(d *deps.Deps) *Auth {
+	return &Auth{
+		Deps: d,
+	}
+}

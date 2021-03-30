@@ -20,7 +20,7 @@ func (s *Store) Exists(id int) bool {
 	q := s.Builder().
 		Select("id").
 		From(s.Schema()+TableName).
-		Where("id", "=", id).
+		Where("post_id", "=", id).
 		Exists()
 
 	var exists bool

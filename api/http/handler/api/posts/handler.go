@@ -2,30 +2,32 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package options
+package posts
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gin-gonic/gin"
 )
 
-// Handler defines methods for categories to interact with the server.
+// Handler defines methods for posts to interact with the server.
 type Handler interface {
 	List(ctx *gin.Context)
 	Find(ctx *gin.Context)
-	UpdateCreate(ctx *gin.Context)
+	Create(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
 }
 
-// Options defines the handler for all options routes.
-type Options struct {
+// Posts defines the handler for all posts routes.
+type Posts struct {
 	*deps.Deps
 }
 
 // New
 //
-// Creates a new options handler.
-func New(d *deps.Deps) *Options {
-	return &Options{
+// Creates a new posts handler.
+func New(d *deps.Deps) *Posts {
+	return &Posts{
 		Deps: d,
 	}
 }

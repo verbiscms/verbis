@@ -20,3 +20,13 @@ type Fields struct {
 	*deps.Deps
 	finder location.Finder
 }
+
+// New
+//
+// Creates a new fields handler.
+func New(d *deps.Deps) *Fields {
+	return &Fields{
+		Deps:   d,
+		finder: location.NewLocation(d.Paths.Storage),
+	}
+}

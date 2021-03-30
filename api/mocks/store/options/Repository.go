@@ -12,6 +12,20 @@ type Repository struct {
 	mock.Mock
 }
 
+// Create provides a mock function with given fields: name, value
+func (_m *Repository) Create(name string, value interface{}) error {
+	ret := _m.Called(name, value)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, interface{}) error); ok {
+		r0 = rf(name, value)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // Exists provides a mock function with given fields: name
 func (_m *Repository) Exists(name string) bool {
 	ret := _m.Called(name)
@@ -130,6 +144,20 @@ func (_m *Repository) Struct() domain.Options {
 		r0 = rf()
 	} else {
 		r0 = ret.Get(0).(domain.Options)
+	}
+
+	return r0
+}
+
+// Update provides a mock function with given fields: name, value
+func (_m *Repository) Update(name string, value interface{}) error {
+	ret := _m.Called(name, value)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(string, interface{}) error); ok {
+		r0 = rf(name, value)
+	} else {
+		r0 = ret.Error(0)
 	}
 
 	return r0

@@ -21,6 +21,15 @@ type Site struct {
 	*deps.Deps
 }
 
+// New
+//
+// Creates a new site handler.
+func New(d *deps.Deps) *Site {
+	return &Site{
+		Deps: d,
+	}
+}
+
 // Global
 //
 // Returns http.StatusOK if site config was obtained successfully.

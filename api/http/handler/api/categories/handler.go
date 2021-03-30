@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package users
+package categories
 
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
@@ -13,33 +13,41 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Handler defines methods for users to interact with the server
+// Handler defines methods for categories to interact with the server.
 type Handler interface {
 	List(ctx *gin.Context)
 	Find(ctx *gin.Context)
 	Create(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
-	ResetPassword(ctx *gin.Context)
 }
 
-// Users defines the handler for all user routes.
-type Users struct {
+// Categories defines the handler for all category routes.
+type Categories struct {
 	*deps.Deps
+}
+
+// New
+//
+// Creates a new categories handler.
+func New(d *deps.Deps) *Categories {
+	return &Categories{
+		Deps: d,
+	}
 }
 
 // clearCache
 //
 // TODO: This needs to be in a model, or the cache store.
 //
-// Clear the post cache that have the given user ID
+// Clear the post cache that have the given category ID
 // attached to it.
-func (u *Users) clearCache(id int) {
+func (c *Categories) clearCache(id int) {
 	go func() {
-		posts, _, err := u.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
+		p, _, err := c.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
 		if err != nil {
 			logger.WithError(err).Error()
 		}
-		cache.ClearUserCache(id, posts)
+		cache.ClearCategoryCache(id, p)
 	}()
 }
