@@ -17,19 +17,13 @@ import (
 // Returns errors.CONFLICT if the validation failed.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not obtain the newly created ID.
 func (s *Store) Update(u domain.User) (domain.User, error) {
-	const op = "CategoryStore.Create"
-
-	err := s.validate(u)
-	if err != nil {
-		return domain.User{}, err
-	}
+	const op = "UserStore.Create"
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).
 		Column("first_name", u.FirstName).
 		Column("last_name", u.LastName).
 		Column("email", u.Email).
-		Column("password", "?").
 		Column("website", u.Website).
 		Column("facebook", u.FirstName).
 		Column("twitter", u.Twitter).
@@ -37,11 +31,10 @@ func (s *Store) Update(u domain.User) (domain.User, error) {
 		Column("instagram", u.Instagram).
 		Column("biography", u.Biography).
 		Column("profile_picture_id", u.ProfilePictureID).
-		Column("token", "?").
 		Column("updated_at", "NOW()").
 		Where("id", "=", u.Id)
 
-	_, err = s.DB().Exec(q.Build())
+	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating user with the name: " + u.FirstName, Operation: op, Err: err}
 	} else if err != nil {

@@ -11,6 +11,7 @@ import (
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
+	store "github.com/ainsleyclark/verbis/api/store/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -53,7 +54,17 @@ func (t *AuthTestSuite) TestAuth_Login() {
 		"Not Authorised": {
 			nil,
 			http.StatusUnauthorized,
-			"unauthorised",
+			store.ErrLoginMsg,
+			login,
+			false,
+			func(m *mocks.Repository) {
+				m.On("Login", login.Email, login.Password).Return(domain.User{}, &errors.Error{Code: errors.INVALID, Message: store.ErrLoginMsg})
+			},
+		},
+		"Internal": {
+			nil,
+			http.StatusInternalServerError,
+			"Error logging in",
 			login,
 			false,
 			func(m *mocks.Repository) {

@@ -29,7 +29,6 @@ func (t *UsersTestSuite) TestStore_Delete() {
 			user,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(user.Id).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 
 				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).
@@ -46,7 +45,6 @@ func (t *UsersTestSuite) TestStore_Delete() {
 			"No user exists with the ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(user.Id).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -63,7 +61,6 @@ func (t *UsersTestSuite) TestStore_Delete() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(user.Id).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 
 				m.ExpectExec(regexp.QuoteMeta(DeletePivotQuery)).

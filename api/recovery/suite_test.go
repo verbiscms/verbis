@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
 	mockOptions "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/res/go/models"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"

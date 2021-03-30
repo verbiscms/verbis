@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 )
 
 // Update
@@ -33,7 +32,7 @@ func (s *Store) Update(r domain.Redirect) (domain.Redirect, error) {
 		Column("updated_at", "NOW()").
 		Where("id", "=", r.Id)
 
-	_, err = s.DB().Exec(q.Build(), uuid.New().String())
+	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating redirect with the from path: " + r.From, Operation: op, Err: err}
 	} else if err != nil {
