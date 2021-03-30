@@ -2,24 +2,33 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package themes
+package forms
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gin-gonic/gin"
 )
 
-// Handler defines methods for the themes to interact with the server.
+// Handler defines methods for forms to interact with the server.
 type Handler interface {
 	List(ctx *gin.Context)
 	Find(ctx *gin.Context)
-	Config(ctx *gin.Context)
-	Templates(ctx *gin.Context)
-	Layouts(ctx *gin.Context)
+	Create(ctx *gin.Context)
 	Update(ctx *gin.Context)
+	Delete(ctx *gin.Context)
+	Send(ctx *gin.Context)
 }
 
-// Themes defines the handler for all site routes.
-type Themes struct {
+// Forms defines the handler for all form routes.
+type Forms struct {
 	*deps.Deps
+}
+
+// New
+//
+// Creates a new forms handler.
+func New(d *deps.Deps) *Forms {
+	return &Forms{
+		Deps: d,
+	}
 }

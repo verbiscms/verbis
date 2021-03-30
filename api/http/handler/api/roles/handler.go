@@ -18,3 +18,12 @@ type Handler interface {
 type Roles struct {
 	*deps.Deps
 }
+
+// New
+//
+// Creates a new roles handler.
+func New(d *deps.Deps) *Roles {
+	return &Roles{
+		Deps: d,
+	}
+}

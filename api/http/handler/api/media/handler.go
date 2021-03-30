@@ -24,3 +24,12 @@ type Media struct {
 	*deps.Deps
 	Service media.Service
 }
+
+// New
+//
+// Creates a new media handler.
+func New(d *deps.Deps) *Media {
+	return &Media{
+		Deps: d,
+	}
+}

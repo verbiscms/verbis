@@ -22,3 +22,12 @@ type Handler interface {
 type Redirects struct {
 	*deps.Deps
 }
+
+// New
+//
+// Creates a new redirects handler.
+func New(d *deps.Deps) *Redirects {
+	return &Redirects{
+		Deps: d,
+	}
+}

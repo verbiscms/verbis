@@ -43,7 +43,7 @@ func Install(cmd *cobra.Command, args []string) {
 	//	figure.Print()
 
 	// Run doctor
-	_, db, err := doctor(false)
+	cfg, db, err := doctor(false)
 	if err != nil {
 		printError(err.Error())
 	}
@@ -69,7 +69,7 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Set up stores & pass the database.
-	store, err := store.New(db)
+	store, err := store.New(db, cfg.Config)
 	if err != nil {
 		printError(err.Error())
 	}

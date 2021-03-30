@@ -106,11 +106,7 @@ func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups { // 
 						case "page_layout":
 							locationSet = append(locationSet, checkLocation(post.PageLayout, rule))
 						case "resource":
-							if post.Resource != nil {
-								locationSet = append(locationSet, checkLocation(*post.Resource, rule))
-							} else {
-								locationSet = append(locationSet, checkLocation("", rule))
-							}
+							locationSet = append(locationSet, checkLocation(post.Resource, rule))
 						case "category":
 							if post.Category != nil {
 								locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Category.Id), rule))

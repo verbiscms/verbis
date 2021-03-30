@@ -39,7 +39,7 @@ func (s *Store) List(meta params.Params, layout bool, cfg ListConfig) (domain.Po
 	// Get by resource.
 	if cfg.Resource != "all" && cfg.Resource != "" {
 		if cfg.Resource == "pages" {
-			q.Where(s.Schema()+TableName+".resource", "=", "NULL")
+			q.Where(s.Schema()+TableName+".resource", "=", "")
 		} else {
 			q.Where(s.Schema()+TableName+".resource", "=", cfg.Resource)
 		}

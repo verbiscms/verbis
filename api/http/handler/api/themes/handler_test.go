@@ -9,10 +9,10 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
-	mockStore "github.com/ainsleyclark/verbis/api/mocks/models"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/services/theme"
+	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/ainsleyclark/verbis/res/go/models"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"testing"
@@ -67,17 +67,17 @@ func (t *ThemesTestSuite) Setup(mf func(m *mocks.Repository)) *Themes {
 //
 // A helper to obtain a mock themes handler
 // with options for testing.
-func (t *ThemesTestSuite) SetupOptions(mf func(m *mocks.Repository, mo *mockStore.OptionsRepository)) *Themes {
+func (t *ThemesTestSuite) SetupOptions(mf func(m *mocks.Repository, mo *options.Repository)) *Themes {
 	s := t.Setup(nil)
 
 	m := &mocks.Repository{}
-	mo := &mockStore.OptionsRepository{}
+	mo := &options.Repository{}
 
 	if mf != nil {
 		mf(m, mo)
 	}
 
-	s.Store = &models.Store{
+	s.Store = &store.Repository{
 		Options: mo,
 	}
 	s.Theme = m

@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 )
 
 // Update
@@ -20,14 +19,23 @@ import (
 func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostStore.Create"
 
-	err := s.validate(&p)
+	oldPost, err := s.Find(p.Id, false)
+	if err != nil {
+		return domain.PostDatum{}, err
+	}
+
+	var checkSlug bool
+	if oldPost.Slug != p.Slug {
+		checkSlug = true
+	}
+
+	err = s.validate(&p, checkSlug)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).
-		Column("uuid", "?").
 		Column("slug", p.Slug).
 		Column("title", p.Title).
 		Column("status", p.Status).
@@ -38,9 +46,10 @@ func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 		Column("codeinjection_foot", p.CodeInjectionFoot).
 		Column("user_id", s.checkOwner(p.UserId)).
 		Column("published_at", p.PublishedAt).
-		Column("updated_at", "NOW()")
+		Column("updated_at", "NOW()").
+		Where("id", "=", p.Id)
 
-	_, err = s.DB().Exec(q.Build(), uuid.New().String())
+	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating post with the title: " + p.Title, Operation: op, Err: err}
 	} else if err != nil {

@@ -35,16 +35,14 @@ func (c *Fields) List(ctx *gin.Context) {
 
 	post := domain.PostDatum{
 		Post: domain.Post{
-			Id:                0,
-			Slug:              "",
-			Title:             "",
-			Status:            "",
-			Resource:          &resource,
-			PageTemplate:      ctx.Query("page_template"),
-			PageLayout:        ctx.Query("layout"),
-			CodeInjectionHead: nil,
-			CodeInjectionFoot: nil,
-			UserId:            userID,
+			Id:           0,
+			Slug:         "",
+			Title:        "",
+			Status:       "",
+			Resource:     resource,
+			PageTemplate: ctx.Query("page_template"),
+			PageLayout:   ctx.Query("layout"),
+			UserId:       userID,
 		},
 	}
 

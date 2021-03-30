@@ -289,7 +289,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 		if !v.HasResource() {
 			resource = "pages"
 		} else {
-			resource = *v.Resource
+			resource = v.Resource
 		}
 
 		exclude := false
