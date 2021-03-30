@@ -28,14 +28,14 @@ func (c *Categories) Update(ctx *gin.Context) {
 		return
 	}
 
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 32)
+	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	category.Id = int(id)
+	category.Id = id
 
-	updatedCategory, err := c.Store.Categories.Update(&category)
+	updatedCategory, err := c.Store.Categories.Update(category)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

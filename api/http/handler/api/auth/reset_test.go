@@ -6,7 +6,7 @@ package auth
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -24,14 +24,14 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.AuthRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"A fresh verification link has been sent to your email",
 			srp,
-			func(m *mocks.AuthRepository) {
+			func(m *mocks.Repository) {
 				m.On("SendResetPassword", srp.Email).Return(nil)
 			},
 		},
@@ -40,7 +40,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 			http.StatusBadRequest,
 			"Validation failed",
 			srpBadValidation,
-			func(m *mocks.AuthRepository) {
+			func(m *mocks.Repository) {
 				m.On("SendResetPassword", srpBadValidation.Email).Return(nil)
 			},
 		},
@@ -49,17 +49,17 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 			http.StatusBadRequest,
 			"not found",
 			srp,
-			func(m *mocks.AuthRepository) {
+			func(m *mocks.Repository) {
 				m.On("SendResetPassword", srp.Email).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			srp,
-			func(m *mocks.AuthRepository) {
-				m.On("SendResetPassword", srp.Email).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("SendResetPassword", srp.Email).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

@@ -7,7 +7,7 @@ package media
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,7 +18,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.MediaRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -26,7 +26,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			http.StatusOK,
 			"Successfully updated media item with ID: 123",
 			mediaItem,
-			func(m *mocks.MediaRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", &mediaItem).Return(nil)
 			},
 			"/media/123",
@@ -36,7 +36,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			http.StatusBadRequest,
 			"Validation failed",
 			`{"id": "wrongid"}`,
-			func(m *mocks.MediaRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", mediaBadValidation).Return(fmt.Errorf("error"))
 			},
 			"/media/123",
@@ -46,7 +46,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			http.StatusBadRequest,
 			"A valid ID is required to update the media item",
 			mediaItem,
-			func(m *mocks.MediaRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", mediaItem).Return(fmt.Errorf("error"))
 			},
 			"/media/wrongid",
@@ -56,7 +56,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			http.StatusBadRequest,
 			"not found",
 			&mediaItem,
-			func(m *mocks.MediaRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", &mediaItem).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/media/123",
@@ -64,10 +64,10 @@ func (t *MediaTestSuite) TestMedia_Update() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			mediaItem,
-			func(m *mocks.MediaRepository) {
-				m.On("Update", &mediaItem).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Update", &mediaItem).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/media/123",
 		},

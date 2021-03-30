@@ -7,7 +7,7 @@ package posts
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -17,15 +17,15 @@ func (t *PostsTestSuite) TestPosts_Find() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.PostsRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			postData,
 			http.StatusOK,
 			"Successfully obtained post with ID: 123",
-			func(m *mocks.PostsRepository) {
-				m.On("GetByID", 123, true).Return(postData, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123, true).Return(postData, nil)
 			},
 			"/posts/123",
 		},
@@ -33,7 +33,7 @@ func (t *PostsTestSuite) TestPosts_Find() {
 			nil,
 			http.StatusBadRequest,
 			"Pass a valid number to obtain the post by ID",
-			func(m *mocks.PostsRepository) {
+			func(m *mocks.Repository) {
 			},
 			"/posts/wrongid",
 		},
@@ -41,8 +41,8 @@ func (t *PostsTestSuite) TestPosts_Find() {
 			nil,
 			http.StatusOK,
 			"no posts found",
-			func(m *mocks.PostsRepository) {
-				m.On("GetByID", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+			func(m *mocks.Repository) {
+				m.On("Find", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 				m.On("Format", post).Return(post, nil)
 			},
 			"/posts/123",
@@ -50,9 +50,9 @@ func (t *PostsTestSuite) TestPosts_Find() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.PostsRepository) {
-				m.On("GetByID", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Find", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/posts/123",
 		},

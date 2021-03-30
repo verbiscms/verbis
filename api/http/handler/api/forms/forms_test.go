@@ -9,8 +9,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -35,14 +35,14 @@ func TestForms(t *testing.T) {
 //
 // A helper to obtain a mock form handler
 // for testing.
-func (t *FormsTestSuite) Setup(mf func(m *mocks.FormRepository)) *Forms {
-	m := &mocks.FormRepository{}
+func (t *FormsTestSuite) Setup(mf func(m *mocks.Repository)) *Forms {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
 	return &Forms{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Forms: m,
 			},
 		},

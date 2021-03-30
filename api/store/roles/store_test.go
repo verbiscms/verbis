@@ -3,7 +3,7 @@ package roles
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -33,7 +33,7 @@ func (t *RolesTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	if mf != nil {
 		mf(t.Mock)
 	}
-	return New(&store.Config{
+	return New(&config.Config{
 		Driver: t.Driver,
 	})
 }

@@ -6,7 +6,7 @@ package media
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,46 +16,46 @@ func (t *MediaTestSuite) TestMedia_List() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(u *mocks.MediaRepository)
+		mock    func(u *mocks.Repository)
 	}{
 		"Success": {
 			mediaItems,
 			http.StatusOK,
 			"Successfully obtained media",
-			func(m *mocks.MediaRepository) {
-				m.On("Get", defaultParams).Return(mediaItems, 1, nil)
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams).Return(mediaItems, 1, nil)
 			},
 		},
 		"Not Found": {
 			nil,
 			http.StatusOK,
 			"no media found",
-			func(m *mocks.MediaRepository) {
-				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no media found"})
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no media found"})
 			},
 		},
 		"Conflict": {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.MediaRepository) {
-				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
 			nil,
 			http.StatusBadRequest,
 			"invalid",
-			func(m *mocks.MediaRepository) {
-				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.MediaRepository) {
-				m.On("Get", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

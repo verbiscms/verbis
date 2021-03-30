@@ -28,7 +28,9 @@ func (c *Posts) Create(ctx *gin.Context) {
 		return
 	}
 
-	newPost, err := c.Store.Posts.Create(&post)
+	//fmt.Println("got here")
+
+	newPost, err := c.Store.Posts.Create(post)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

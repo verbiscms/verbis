@@ -9,19 +9,24 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"net/http"
 )
 
 func (t *FormsTestSuite) TestForms_Send() {
+	uniq := "9fc52ef0-914d-11eb-a8b3-0242ac130003"
+	uniqParsed, err := uuid.Parse(uniq)
+	t.NoError(err)
+
 	tt := map[string]struct {
 		want    interface{}
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.FormRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -29,52 +34,52 @@ func (t *FormsTestSuite) TestForms_Send() {
 			http.StatusOK,
 			"Successfully sent form with ID: 123",
 			formBody,
-			func(m *mocks.FormRepository) {
-				m.On("GetByUUID", "test").Return(form, nil)
+			func(m *mocks.Repository) {
+				m.On("FindByUUID", uniqParsed).Return(form, nil)
 				m.On("Send", &form, mock.Anything, mock.Anything).Return(nil)
 			},
-			"/forms/test",
+			"/forms/" + uniq,
 		},
 		"Validation Failed": {
 			api.ErrorJSON{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
 			formBadValidation,
-			func(m *mocks.FormRepository) {
-				m.On("GetByUUID", "test").Return(formBadValidation, nil)
+			func(m *mocks.Repository) {
+				m.On("FindByUUID", uniqParsed).Return(formBadValidation, nil)
 			},
-			"/forms/test",
+			"/forms/" + uniq,
 		},
 		"Not Found": {
 			nil,
 			http.StatusBadRequest,
 			"not found",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("GetByUUID", "test").Return(domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("FindByUUID", uniqParsed).Return(domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
-			"/forms/test",
+			"/forms/" + uniq,
 		},
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("GetByUUID", "test").Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("FindByUUID", uniqParsed).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
-			"/forms/test",
+			"/forms/" + uniq,
 		},
 		"Send Error": {
 			nil,
 			http.StatusInternalServerError,
 			"error",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("GetByUUID", "test").Return(form, nil)
+			func(m *mocks.Repository) {
+				m.On("FindByUUID", uniqParsed).Return(form, nil)
 				m.On("Send", &form, mock.Anything, mock.Anything).Return(&errors.Error{Code: errors.INTERNAL, Message: "error"})
 			},
-			"/forms/test",
+			"/forms/" + uniq,
 		},
 	}
 

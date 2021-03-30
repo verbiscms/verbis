@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,15 +18,15 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.RedirectRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			redirect,
 			http.StatusOK,
 			"Successfully obtained redirect with ID: 123",
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByID", 123).Return(redirect, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(redirect, nil)
 			},
 			"/redirects/123",
 		},
@@ -34,8 +34,8 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 			nil,
 			http.StatusBadRequest,
 			"Pass a valid number to obtain the redirect by ID",
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByID", 123).Return(domain.Redirect{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Redirect{}, fmt.Errorf("error"))
 			},
 			"/redirects/wrongid",
 		},
@@ -43,17 +43,17 @@ func (t *RedirectsTestSuite) TestRedirects_Find() {
 			nil,
 			http.StatusOK,
 			"no redirects found",
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByID", 123).Return(domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
 			},
 			"/redirects/123",
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByID", 123).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/redirects/123",
 		},

@@ -10,8 +10,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	posts "github.com/ainsleyclark/verbis/api/mocks/store/posts"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin/binding"
 	pkgValidate "github.com/go-playground/validator/v10"
@@ -20,7 +21,7 @@ import (
 	"testing"
 )
 
-// UsersTestSuite defines the helper used for category
+// UsersTestSuite defines the helper used for user
 // testing.
 type UsersTestSuite struct {
 	test.HandlerSuite
@@ -38,14 +39,15 @@ func TestUsers(t *testing.T) {
 
 // Setup
 //
-// A helper to obtain a mock categories handler
+// A helper to obtain a mock user handler
 // for testing.
-func (t *UsersTestSuite) Setup(mf func(m *mocks.UserRepository)) *Users {
-	m := &mocks.UserRepository{}
+func (t *UsersTestSuite) Setup(mf func(m *mocks.Repository)) *Users {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
-	pm := &mocks.PostsRepository{}
+
+	pm := &posts.Repository{}
 	pm.On("Get", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(domain.PostData{}, 2, nil)
 
 	if v, ok := binding.Validator.Engine().(*pkgValidate.Validate); ok {
@@ -57,7 +59,7 @@ func (t *UsersTestSuite) Setup(mf func(m *mocks.UserRepository)) *Users {
 
 	return &Users{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Posts: pm,
 				User:  m,
 			},
@@ -124,19 +126,6 @@ var (
 			UserPart: domain.UserPart{
 				Id: 123, FirstName: "Verbis", LastName: "CMS",
 			},
-		},
-	}
-	// The default roles used for testing.
-	roles = []domain.Role{
-		{
-			Id:          1,
-			Name:        "Banned",
-			Description: "Banned Role",
-		},
-		{
-			Id:          2,
-			Name:        "Administrator",
-			Description: "Administrator Role",
 		},
 	}
 	// The default reset password used for testing.

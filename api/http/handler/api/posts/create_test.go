@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,24 +21,24 @@ func (t *PostsTestSuite) TestPosts_Create() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.PostsRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			postData,
 			http.StatusOK,
 			"Successfully created post with ID: 123",
 			post,
-			func(m *mocks.PostsRepository) {
-				m.On("Create", &postCreate).Return(postData, nil)
+			func(m *mocks.Repository) {
+				m.On("Create", postCreate).Return(postData, nil)
 			},
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "slug", Message: "post Slug is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "post_title", Message: "Post Title is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
-			postBadValidation,
-			func(m *mocks.PostsRepository) {
-				m.On("Create", &postBadValidation).Return(domain.PostDatum{}, fmt.Errorf("error"))
+			&postBadValidation,
+			func(m *mocks.Repository) {
+				m.On("Create", postBadValidation).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 		},
 		"Invalid": {
@@ -46,8 +46,8 @@ func (t *PostsTestSuite) TestPosts_Create() {
 			http.StatusBadRequest,
 			"invalid",
 			post,
-			func(m *mocks.PostsRepository) {
-				m.On("Create", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			func(m *mocks.Repository) {
+				m.On("Create", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
@@ -55,17 +55,17 @@ func (t *PostsTestSuite) TestPosts_Create() {
 			http.StatusBadRequest,
 			"conflict",
 			post,
-			func(m *mocks.PostsRepository) {
-				m.On("Create", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			func(m *mocks.Repository) {
+				m.On("Create", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			post,
-			func(m *mocks.PostsRepository) {
-				m.On("Create", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Create", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

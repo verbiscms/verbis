@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/categories"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,15 +21,15 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.CategoryRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			&category,
 			http.StatusOK,
 			"Successfully created category with ID: 123",
 			category,
-			func(m *mocks.CategoryRepository) {
-				m.On("Create", &category).Return(category, nil)
+			func(m *mocks.Repository) {
+				m.On("Create", category).Return(category, nil)
 			},
 		},
 		"Validation Failed": {
@@ -37,8 +37,8 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 			http.StatusBadRequest,
 			"Validation failed",
 			categoryBadValidation,
-			func(m *mocks.CategoryRepository) {
-				m.On("Create", &categoryBadValidation).Return(domain.Category{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Create", categoryBadValidation).Return(domain.Category{}, fmt.Errorf("error"))
 			},
 		},
 		"Invalid": {
@@ -46,8 +46,8 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 			http.StatusBadRequest,
 			"invalid",
 			category,
-			func(m *mocks.CategoryRepository) {
-				m.On("Create", &category).Return(domain.Category{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			func(m *mocks.Repository) {
+				m.On("Create", category).Return(domain.Category{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
@@ -55,17 +55,17 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 			http.StatusBadRequest,
 			"conflict",
 			category,
-			func(m *mocks.CategoryRepository) {
-				m.On("Create", &category).Return(domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			func(m *mocks.Repository) {
+				m.On("Create", category).Return(domain.Category{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			category,
-			func(m *mocks.CategoryRepository) {
-				m.On("Create", &category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Create", category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

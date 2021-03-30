@@ -28,7 +28,7 @@ func (f *Forms) Create(ctx *gin.Context) {
 		return
 	}
 
-	newForm, err := f.Store.Forms.Create(&form)
+	newForm, err := f.Store.Forms.Create(form)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

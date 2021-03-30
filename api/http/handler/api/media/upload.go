@@ -42,13 +42,19 @@ func (m *Media) Upload(ctx *gin.Context) {
 		return
 	}
 
-	err = m.Store.Media.Validate(files[0])
+	err = m.Service.Validate(files[0])
 	if err != nil {
 		api.Respond(ctx, http.StatusUnsupportedMediaType, errors.Message(err), err)
 		return
 	}
 
-	media, err := m.Store.Media.Upload(files[0], ctx.Request.Header.Get("token"))
+	item, err := m.Service.Upload(files[0])
+	if err != nil {
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+		return
+	}
+
+	media, err := m.Store.Media.Create(item)
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return

@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,7 +21,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.PostsRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -29,17 +29,17 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			http.StatusOK,
 			"Successfully updated post with ID: 123",
 			post,
-			func(m *mocks.PostsRepository) {
-				m.On("Update", &postCreate).Return(postData, nil)
+			func(m *mocks.Repository) {
+				m.On("Update", postCreate).Return(postData, nil)
 			},
 			"/posts/123",
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "slug", Message: "post Slug is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "post_title", Message: "Post Title is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
 			postBadValidation,
-			func(m *mocks.PostsRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", postBadValidation).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			"/posts/123",
@@ -49,8 +49,8 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			http.StatusBadRequest,
 			"A valid ID is required to update the post",
 			post,
-			func(m *mocks.PostsRepository) {
-				m.On("Update", &postCreate).Return(domain.PostDatum{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Update", postCreate).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			"/posts/wrongid",
 		},
@@ -59,18 +59,18 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			http.StatusBadRequest,
 			"not found",
 			post,
-			func(m *mocks.PostsRepository) {
-				m.On("Update", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("Update", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/posts/123",
 		},
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			post,
-			func(m *mocks.PostsRepository) {
-				m.On("Update", &postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Update", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/posts/123",
 		},

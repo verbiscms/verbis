@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/store/posts"
 	"github.com/gin-gonic/gin"
 )
 
@@ -34,10 +35,10 @@ type Categories struct {
 // attached to it.
 func (c *Categories) clearCache(id int) {
 	go func() {
-		posts, _, err := c.Store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
+		p, _, err := c.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
 		if err != nil {
 			logger.WithError(err).Error()
 		}
-		cache.ClearCategoryCache(id, posts)
+		cache.ClearCategoryCache(id, p)
 	}()
 }

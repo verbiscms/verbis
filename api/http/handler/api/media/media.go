@@ -6,6 +6,7 @@ package media
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/services/media"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,4 +22,5 @@ type Handler interface {
 // Media defines the handler for all media item routes.
 type Media struct {
 	*deps.Deps
+	Service media.Service
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,15 +21,15 @@ func (t *FormsTestSuite) TestForms_Create() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.FormRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			form,
 			http.StatusOK,
 			"Successfully created form with ID: 123",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("Create", &form).Return(form, nil)
+			func(m *mocks.Repository) {
+				m.On("Create", form).Return(form, nil)
 			},
 		},
 		"Validation Failed": {
@@ -37,8 +37,8 @@ func (t *FormsTestSuite) TestForms_Create() {
 			http.StatusBadRequest,
 			"Validation failed",
 			formBadValidation,
-			func(m *mocks.FormRepository) {
-				m.On("Create", &formBadValidation).Return(domain.Form{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Create", formBadValidation).Return(domain.Form{}, fmt.Errorf("error"))
 			},
 		},
 		"Invalid": {
@@ -46,8 +46,8 @@ func (t *FormsTestSuite) TestForms_Create() {
 			http.StatusBadRequest,
 			"invalid",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("Create", &form).Return(domain.Form{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			func(m *mocks.Repository) {
+				m.On("Create", form).Return(domain.Form{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
@@ -55,17 +55,17 @@ func (t *FormsTestSuite) TestForms_Create() {
 			http.StatusBadRequest,
 			"conflict",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("Create", &form).Return(domain.Form{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			func(m *mocks.Repository) {
+				m.On("Create", form).Return(domain.Form{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("Create", &form).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Create", form).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

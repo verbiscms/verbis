@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/categories"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,7 +21,7 @@ func (t *CategoriesTestSuite) TestCategories_Update() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.CategoryRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -29,8 +29,8 @@ func (t *CategoriesTestSuite) TestCategories_Update() {
 			http.StatusOK,
 			"Successfully updated category with ID: 123",
 			category,
-			func(m *mocks.CategoryRepository) {
-				m.On("Update", &category).Return(category, nil)
+			func(m *mocks.Repository) {
+				m.On("Update", category).Return(category, nil)
 			},
 			"/categories/123",
 		},
@@ -39,7 +39,7 @@ func (t *CategoriesTestSuite) TestCategories_Update() {
 			http.StatusBadRequest,
 			"Validation failed",
 			categoryBadValidation,
-			func(m *mocks.CategoryRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", categoryBadValidation).Return(domain.Category{}, fmt.Errorf("error"))
 			},
 			"/categories/123",
@@ -49,7 +49,7 @@ func (t *CategoriesTestSuite) TestCategories_Update() {
 			http.StatusBadRequest,
 			"A valid ID is required to update the category",
 			category,
-			func(m *mocks.CategoryRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", categoryBadValidation).Return(domain.Category{}, fmt.Errorf("error"))
 			},
 			"/categories/wrongid",
@@ -59,18 +59,18 @@ func (t *CategoriesTestSuite) TestCategories_Update() {
 			http.StatusBadRequest,
 			"not found",
 			category,
-			func(m *mocks.CategoryRepository) {
-				m.On("Update", &category).Return(domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("Update", category).Return(domain.Category{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/categories/123",
 		},
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			category,
-			func(m *mocks.CategoryRepository) {
-				m.On("Update", &category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Update", category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/categories/123",
 		},
