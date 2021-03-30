@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/posts/fields"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
 	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"

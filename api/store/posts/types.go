@@ -29,7 +29,7 @@ func (s *Store) postType(post *domain.PostDatum) domain.PostType {
 		// TODO this should be the resource
 		return domain.PostType{
 			PageType: domain.SingleType,
-			Data:     *post.Resource,
+			Data:     post.Resource,
 		}
 	}
 

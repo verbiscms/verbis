@@ -18,7 +18,7 @@ import (
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the category was not found by the given ID.
 func (s *Store) Find(postID int) (domain.PostFields, error) {
-	const op = "PostFieldStore.Find"
+	const op = "FieldStore.Find"
 
 	q := s.Builder().
 		From(s.Schema()+TableName).
@@ -42,7 +42,7 @@ func (s *Store) Find(postID int) (domain.PostFields, error) {
 // Returns errors.INTERNAL if there was an error executing the query.
 // Returns errors.NOTFOUND if the post field was not found by the given ID.
 func (s *Store) FindByPostAndKey(postID int, key string) (domain.PostFields, error) {
-	const op = "PostFieldStore.Find"
+	const op = "FieldStore.Find"
 
 	q := s.Builder().
 		From(s.Schema()+TableName).

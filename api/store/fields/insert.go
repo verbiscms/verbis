@@ -15,14 +15,14 @@ import (
 // new record depending on if the field
 // exists in the store.
 func (s *Store) Insert(postID int, fields domain.PostFields) error {
-	f, err := s.Find(postID)
+	_, err := s.Find(postID)
 	if err != nil {
 		return err
 	}
 
 	// Find fields that should be deleted (not in the array)
 	for _, v := range fields {
-		if s.shouldDelete(v, f) {
+		if s.shouldDelete(v, fields) {
 			err := s.deleteField(postID, v)
 			if err != nil {
 				return err
@@ -31,7 +31,7 @@ func (s *Store) Insert(postID int, fields domain.PostFields) error {
 	}
 
 	// Update or create the existing fields passed.
-	for _, v := range f {
+	for _, v := range fields {
 		v.PostId = postID
 		if s.Exists(v) {
 			_, err := s.update(v)

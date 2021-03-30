@@ -48,19 +48,19 @@ type APIHandler struct {
 // Returns a new API handler.
 func NewAPI(d *deps.Deps) *APIHandler {
 	return &APIHandler{
-		Auth:       &auth.Auth{Deps: d},
-		Cache:      &cache.Cache{Deps: d},
-		Categories: &categories.Categories{Deps: d},
-		Fields:     &fields.Fields{Deps: d},
-		Forms:      &forms.Forms{Deps: d},
-		Media:      &media.Media{Deps: d},
-		Options:    &options.Options{Deps: d},
-		Posts:      &posts.Posts{Deps: d},
-		Redirects:  &redirects.Redirects{Deps: d},
-		Roles:      &roles.Roles{Deps: d},
-		Site:       &site.Site{Deps: d},
-		Themes:     &themes.Themes{Deps: d},
-		Users:      &users.Users{Deps: d},
+		Auth:       auth.New(d),
+		Cache:      cache.New(d),
+		Categories: categories.New(d),
+		Fields:     fields.New(d),
+		Forms:      forms.New(d),
+		Media:      media.New(d),
+		Options:    options.New(d),
+		Posts:      posts.New(d),
+		Redirects:  redirects.New(d),
+		Roles:      roles.New(d),
+		Site:       site.New(d),
+		Themes:     themes.New(d),
+		Users:      users.New(d),
 	}
 }
 

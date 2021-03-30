@@ -21,13 +21,13 @@ import (
 // Returns: `page page-id-4 page-title page-template-news-archive page-layout-main logged-in` (for example)
 func (ns *Namespace) Body() string {
 	body := new(bytes.Buffer)
-	p := ns.tpld.Post.Post
+	p := ns.tpld.Post
 
 	// Resource, writes page if no resource (e.g. page)
-	if p.Resource == nil {
+	if !p.HasResource() {
 		body.WriteString("page ")
 	} else {
-		body.WriteString(fmt.Sprintf("%s ", *p.Resource))
+		body.WriteString(fmt.Sprintf("%s ", p.Resource))
 	}
 
 	// Page ID (e.g. page-id-2)

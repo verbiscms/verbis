@@ -7,6 +7,7 @@ package store
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/store/auth"
@@ -41,11 +42,11 @@ type Repository struct {
 // TODO Change!
 // Create a new database instance, connect
 // to database.
-func New(db database.Driver) (*Repository, error) {
+func New(db database.Driver, th *domain.ThemeConfig) (*Repository, error) {
 
 	cfg := &storeConfig.Config{
 		Driver:       db,
-		Theme:        config.Get(),
+		Theme:        th,
 		Options:      nil,
 		Paths:        paths.Get(),
 		Owner:        nil,

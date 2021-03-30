@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/gookit/color"
 )
 
 // Exists
@@ -16,14 +17,15 @@ import (
 // Returns a bool indicating if the field exists.
 // Logs errors.INTERNAL if there was an error executing the query.
 func (s *Store) Exists(field domain.PostField) bool {
-	const op = "PostFieldStore.Exists"
+	const op = "FieldStore.Exists"
 
 	q := s.Builder().
 		Select("id").
 		From(s.Schema()+TableName).
-		Where("post_id", "=", field.Id).
+		Where("post_id", "=", field.PostId).
 		Where("uuid", "=", field.UUID).
-		Where("key", "=", field.Key).
+		Where("type", "=", field.Type).
+		Where("field_key", "=", field.Key).
 		Where("name", "=", field.Name).
 		Exists()
 
@@ -32,6 +34,8 @@ func (s *Store) Exists(field domain.PostField) bool {
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}).Error()
 	}
+
+	color.Red.Println(exists, field.Name)
 
 	return exists
 }

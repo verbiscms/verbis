@@ -20,3 +20,12 @@ type Handler interface {
 type Options struct {
 	*deps.Deps
 }
+
+// New
+//
+// Creates a new options handler.
+func New(d *deps.Deps) *Options {
+	return &Options{
+		Deps: d,
+	}
+}

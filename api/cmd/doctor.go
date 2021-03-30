@@ -15,6 +15,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/spf13/cobra"
+	"os"
 	"strings"
 )
 
@@ -86,21 +87,11 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 
 	p := paths.Get()
 
+	theme := config.Init(p.Themes + string(os.PathSeparator) + "Verbis")
+
 	// Init Theme
 	// TODO: We need pass the default theme (Verbis 2021)
-
-	//if err != nil {
-	//	printError(errors.Message(err))
-	//}
-
-	// Set up stores & pass the database.
-	//store := models.New(&models.StoreCfgOld{
-	//	DB:      db.Sqlx,
-	//	Paths:   p,
-	//	Running: running,
-	//})
-
-	store, err := store.New(db)
+	store, err := store.New(db, theme)
 	if err != nil {
 		printError(err.Error())
 	}
@@ -110,7 +101,7 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	return &deps.Config{
 		Store:  store,
 		Env:    env,
-		Config: config.Get(),
+		Config: theme,
 		Paths:  p,
 	}, db, nil
 }

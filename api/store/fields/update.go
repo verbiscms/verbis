@@ -16,7 +16,7 @@ import (
 // Returns an updated post field.
 // Returns errors.INTERNAL if the SQL query was invalid or no rows were effected.
 func (s *Store) update(f domain.PostField) (domain.PostField, error) {
-	const op = "PostFieldStore.Create"
+	const op = "FieldStore.Update"
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).
@@ -27,7 +27,7 @@ func (s *Store) update(f domain.PostField) (domain.PostField, error) {
 		Where("uuid", "=", f.UUID).
 		Where("post_id", "=", f.PostId).
 		Where("field_key", "=", f.Key).
-		Where("name", "", f.Name)
+		Where("name", "=", f.Name)
 
 	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
