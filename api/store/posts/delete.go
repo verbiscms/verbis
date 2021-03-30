@@ -24,7 +24,7 @@ func (s *Store) Delete(id int) error {
 		DeleteFrom(s.Schema()+TableName).
 		Where("id", "=", id)
 
-	_, err := s.DB().Exec(q.Build(), id)
+	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No category exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
