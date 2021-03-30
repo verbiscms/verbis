@@ -48,6 +48,14 @@ var (
 	// ErrPostsExists is returned by validate when
 	// a post already exists.
 	ErrPostsExists = errors.New("post already exists")
+	// ErrNoPageTemplate is returned by validate when
+	// no page template has been matched with the
+	// one passed.
+	ErrNoPageTemplate = errors.New("no page template matched")
+	// ErrNoPageLayout is returned by validate when
+	// no page layout has been matched with the
+	// one passed.
+	ErrNoPageLayout = errors.New("no page layout matched")
 )
 
 // New

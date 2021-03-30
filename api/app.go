@@ -33,6 +33,9 @@ const (
 
 	DefaultTheme = ""
 
+	// this needs to be dynamic
+	Platform = "mac"
+
 	AssetsChannel = 10
 	UploadChannel = 10
 	ServerChannel = 50

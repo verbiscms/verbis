@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/mail/events"
 	"github.com/ainsleyclark/verbis/api/services/forms"
 	"github.com/google/uuid"
@@ -117,9 +118,10 @@ func (s *FormsStore) GetByUUID(uniq string) (domain.Form, error) {
 	}
 
 	fields, err := s.GetFields(f.Id)
-	if err == nil {
-		f.Fields = fields
+	if err != nil && errors.Code(err) == errors.INTERNAL {
+		logger.Error(&errors.Error{Code: errors.INTERNAL, Message: "Error getting form fields", Operation: op, Err: err})
 	}
+	f.Fields = fields
 
 	f.Body = forms.ToStruct(f)
 
@@ -133,7 +135,7 @@ func (s *FormsStore) GetFields(id int) (domain.FormFields, error) {
 	const op = "FormsRepository.GetFields"
 	var f domain.FormFields
 	if err := s.DB.Select(&f, "SELECT * FROM form_fields WHERE form_id = ?", id); err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("Could not get the form fields with the form ID: %v", id), Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not get the form fields with the form ID: %v", id), Operation: op, Err: err}
 	}
 	if len(f) == 0 {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No form fields attached to the form with the ID: %v", id), Operation: op, Err: fmt.Errorf("no fields are attached to the form")}
