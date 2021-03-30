@@ -6,14 +6,15 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 )
 
 func (t *FieldTestSuite) TestService_GetField() {
 	tt := map[string]struct {
 		fields domain.PostFields
 		key    string
-		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		mock   func(f *fields.Repository, c *categories.Repository)
 		args   []interface{}
 		want   interface{}
 		err    bool
@@ -23,25 +24,25 @@ func (t *FieldTestSuite) TestService_GetField() {
 				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key:  "key1",
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
+			mock: nil,
 			args: nil,
 			want: "test",
 		},
 		"No Field": {
 			fields: nil,
 			key:    "wrongval",
-			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
+			mock:   nil,
 			args:   nil,
 			want:   "",
 			err:    true,
 		},
-		"post": {
+		"Post": {
 			fields: domain.PostFields{
 				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key: "key2",
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 2).Return(domain.PostFields{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
+			mock: func(f *fields.Repository, c *categories.Repository) {
+				f.On("Find", 2).Return(domain.PostFields{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},
 			want: "test",
@@ -69,7 +70,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 	tt := map[string]struct {
 		fields domain.PostFields
 		key    string
-		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		mock   func(f *fields.Repository, c *categories.Repository)
 		args   []interface{}
 		want   interface{}
 		err    bool
@@ -79,7 +80,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key:  "key1",
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
+			mock: nil,
 			args: nil,
 			want: domain.PostField{Id: 1, Type: "text", Name: "key1", OriginalValue: "test", Value: "test"},
 			err:  false,
@@ -87,7 +88,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 		"No Field": {
 			fields: nil,
 			key:    "wrongval",
-			mock:   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {},
+			mock:   nil,
 			args:   nil,
 			want:   "no field exists with the name: wrongval",
 			err:    true,
@@ -97,8 +98,8 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 				{Id: 1, Type: "text", Name: "key1"},
 			},
 			key: "key2",
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 2).Return(domain.PostFields{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
+			mock: func(f *fields.Repository, c *categories.Repository) {
+				f.On("Find", 2).Return(domain.PostFields{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},
 			want: domain.PostField{Id: 2, Type: "text", Name: "key2", OriginalValue: "test", Value: "test"},

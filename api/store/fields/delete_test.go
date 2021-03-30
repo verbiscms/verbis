@@ -18,7 +18,7 @@ var (
 	DeleteFieldQuery = "DELETE FROM `post_fields` WHERE `uuid` = '00000000-0000-0000-0000-000000000000' AND `post_id` = '1' AND `field_key` = 'key' AND `name` = 'name'"
 )
 
-func (t *PostFieldsTestSuite) TestStore_Delete() {
+func (t *FieldsTestSuite) TestStore_Delete() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -59,7 +59,7 @@ func (t *PostFieldsTestSuite) TestStore_Delete() {
 	}
 }
 
-func (t *PostFieldsTestSuite) TestStore_DeleteField() {
+func (t *FieldsTestSuite) TestStore_DeleteField() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)

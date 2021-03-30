@@ -17,7 +17,7 @@ var (
 	UpdateQuery = "UPDATE `post_fields` SET `type` = 'text', `name` = 'name', `value` = 'val', `field_key` = 'key' WHERE `uuid` = '00000000-0000-0000-0000-000000000000' AND `post_id` = '1' AND `field_key` = 'key' AND `name` 'name'"
 )
 
-func (t *PostFieldsTestSuite) TestStore_Update() {
+func (t *FieldsTestSuite) TestStore_Update() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)

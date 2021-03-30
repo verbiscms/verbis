@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -17,7 +17,7 @@ import (
 	"testing"
 )
 
-func Setup(cookie string) (*Namespace, *mocks.UserRepository) {
+func Setup(cookie string) (*Namespace, *mocks.Repository) {
 	gin.SetMode(gin.TestMode)
 
 	rr := httptest.NewRecorder()
@@ -25,10 +25,10 @@ func Setup(cookie string) (*Namespace, *mocks.UserRepository) {
 	g.Request, _ = http.NewRequest("GET", "/get", nil)
 	g.Request.Header.Set("Cookie", cookie)
 
-	mock := &mocks.UserRepository{}
+	mock := &mocks.Repository{}
 	return &Namespace{
 		deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				User: mock,
 			},
 		},
@@ -40,27 +40,27 @@ func Test_Auth(t *testing.T) {
 	tt := map[string]struct {
 		want   interface{}
 		cookie string
-		mock   func(m *mocks.UserRepository)
+		mock   func(m *mocks.Repository)
 	}{
 		"Logged In": {
 			want:   true,
 			cookie: "verbis-session=token",
-			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{}, nil)
+			mock: func(m *mocks.Repository) {
+				m.On("FindByToken", "token").Return(domain.User{}, nil)
 			},
 		},
 		"No Cookie": {
 			want:   false,
 			cookie: "",
-			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{}, nil)
+			mock: func(m *mocks.Repository) {
+				m.On("FindByToken", "token").Return(domain.User{}, nil)
 			},
 		},
 		"No User": {
 			want:   false,
 			cookie: "verbis-session=token",
-			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
+			mock: func(m *mocks.Repository) {
+				m.On("FindByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
 			},
 		},
 	}
@@ -79,13 +79,13 @@ func Test_Admin(t *testing.T) {
 	tt := map[string]struct {
 		want   interface{}
 		cookie string
-		mock   func(m *mocks.UserRepository)
+		mock   func(m *mocks.Repository)
 	}{
 		"Is Admin": {
 			want:   true,
 			cookie: "verbis-session=token",
-			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{
+			mock: func(m *mocks.Repository) {
+				m.On("FindByToken", "token").Return(domain.User{
 					UserPart: domain.UserPart{Id: 0, Role: domain.Role{Id: 6}},
 				}, nil)
 			},
@@ -93,8 +93,8 @@ func Test_Admin(t *testing.T) {
 		"Not Admin": {
 			want:   false,
 			cookie: "verbis-session=token",
-			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{
+			mock: func(m *mocks.Repository) {
+				m.On("FindByToken", "token").Return(domain.User{
 					UserPart: domain.UserPart{Id: 0, Role: domain.Role{Id: 1}},
 				}, nil)
 			},
@@ -102,15 +102,15 @@ func Test_Admin(t *testing.T) {
 		"No Cookie": {
 			want:   false,
 			cookie: "",
-			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{}, nil)
+			mock: func(m *mocks.Repository) {
+				m.On("FindByToken", "token").Return(domain.User{}, nil)
 			},
 		},
 		"No User": {
 			want:   false,
 			cookie: "verbis-session=token",
-			mock: func(m *mocks.UserRepository) {
-				m.On("GetByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
+			mock: func(m *mocks.Repository) {
+				m.On("FindByToken", "token").Return(domain.User{}, fmt.Errorf("error"))
 			},
 		},
 	}

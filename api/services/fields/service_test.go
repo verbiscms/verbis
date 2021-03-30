@@ -7,11 +7,11 @@ package fields
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/store"
 )
 
 func (t *FieldTestSuite) TestNewService() {
-	m := &models.Store{}
+	s := &store.Repository{}
 
 	var l = make(domain.FieldGroups, 0)
 	var f = make(domain.PostFields, 0)
@@ -25,7 +25,7 @@ func (t *FieldTestSuite) TestNewService() {
 	}
 
 	d := &deps.Deps{
-		Store:  m,
+		Store:  s,
 		Config: &domain.ThemeConfig{},
 	}
 

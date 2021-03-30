@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/minify"
+	"github.com/ainsleyclark/verbis/api/services/media"
 	"github.com/gin-gonic/gin"
 )
 
@@ -26,6 +27,7 @@ type publish struct {
 	minify  minify.Minifier
 	cacher  headerWriter
 	sitemap *Sitemap
+	media   media.Library
 }
 
 func (r *publish) SiteMap() SiteMapper {
@@ -47,5 +49,6 @@ func NewRender(d *deps.Deps) Publisher {
 		}),
 		newHeaders(options),
 		NewSitemap(d),
+		media.New(d.Options, d.Store.Media.Exists),
 	}
 }

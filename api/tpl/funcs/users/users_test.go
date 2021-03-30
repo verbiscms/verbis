@@ -9,22 +9,22 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/pagination"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"github.com/ainsleyclark/verbis/api/tpl/params"
 	"github.com/stretchr/testify/assert"
 	"testing"
 
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
 )
 
 type noStringer struct{}
 
-func Setup() (*Namespace, *mocks.UserRepository) {
-	mock := &mocks.UserRepository{}
+func Setup() (*Namespace, *mocks.Repository) {
+	mock := &mocks.Repository{}
 	return &Namespace{deps: &deps.Deps{
-		Store: &models.Store{
+		Store: &store.Repository{
 			User: mock,
 		},
 	}}, mock
@@ -37,34 +37,34 @@ func TestNamespace_Find(t *testing.T) {
 
 	tt := map[string]struct {
 		input interface{}
-		mock  func(m *mocks.UserRepository)
+		mock  func(m *mocks.Repository)
 		want  interface{}
 	}{
 		"Success": {
 			1,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 1).Return(user, nil).Once()
+			func(m *mocks.Repository) {
+				m.On("Find", 1).Return(user, nil).Once()
 			},
 			user.HideCredentials(),
 		},
 		"Not Found": {
 			1,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 1).Return(domain.User{}, fmt.Errorf("error")).Once()
+			func(m *mocks.Repository) {
+				m.On("Find", 1).Return(domain.User{}, fmt.Errorf("error")).Once()
 			},
 			nil,
 		},
 		"No Stringer": {
 			noStringer{},
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 1).Return(user, nil).Once()
+			func(m *mocks.Repository) {
+				m.On("Find", 1).Return(user, nil).Once()
 			},
 			nil,
 		},
 		"Nil": {
 			nil,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 1).Return(user, nil).Once()
+			func(m *mocks.Repository) {
+				m.On("Find", 1).Return(user, nil).Once()
 			},
 			nil,
 		},
@@ -86,23 +86,15 @@ func TestNamespace_List(t *testing.T) {
 		domain.User{UserPart: domain.UserPart{Id: 1, FirstName: "cms"}},
 	}
 
-	p := params2.Params{
-		Page:           1,
-		Limit:          15,
-		LimitAll:       false,
-		OrderBy:        OrderBy,
-		OrderDirection: OrderDirection,
-	}
-
 	tt := map[string]struct {
 		input params.Query
-		mock  func(m *mocks.UserRepository)
+		mock  func(m *mocks.Repository)
 		want  interface{}
 	}{
 		"Success": {
 			params.Query{"limit": 15},
-			func(m *mocks.UserRepository) {
-				m.On("Get", p).Return(users, 2, nil).Once()
+			func(m *mocks.Repository) {
+				m.On("List", dummy.DefaultParams, "").Return(users, 2, nil).Once()
 			},
 			Users{
 				Users: users.HideCredentials(),
@@ -118,8 +110,8 @@ func TestNamespace_List(t *testing.T) {
 		},
 		"Nil": {
 			nil,
-			func(m *mocks.UserRepository) {
-				m.On("Get", p).Return(users, 2, nil).Once()
+			func(m *mocks.Repository) {
+				m.On("List", dummy.DefaultParams, "").Return(users, 2, nil).Once()
 			},
 			Users{
 				Users: users.HideCredentials(),
@@ -135,15 +127,15 @@ func TestNamespace_List(t *testing.T) {
 		},
 		"Not Found": {
 			params.Query{"limit": 15},
-			func(m *mocks.UserRepository) {
-				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"}).Once()
+			func(m *mocks.Repository) {
+				m.On("List", dummy.DefaultParams, "").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"}).Once()
 			},
 			nil,
 		},
 		"Internal Error": {
 			params.Query{"limit": 15},
-			func(m *mocks.UserRepository) {
-				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config error"}).Once()
+			func(m *mocks.Repository) {
+				m.On("List", dummy.DefaultParams, "").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config error"}).Once()
 			},
 			"config error",
 		},

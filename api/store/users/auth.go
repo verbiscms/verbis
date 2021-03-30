@@ -21,7 +21,7 @@ import (
 // Returns errors.CONFLICT if the user session expired.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) CheckSession(token string) error {
-	const op = "userStore.CheckSession"
+	const op = "UserStore.CheckSession"
 
 	u, err := s.FindByToken(token)
 	if err != nil {

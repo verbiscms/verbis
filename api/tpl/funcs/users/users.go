@@ -14,7 +14,7 @@ import (
 
 const (
 	// The default order by field for the list function.
-	OrderBy = "updated_at"
+	OrderBy = "created_at"
 	// The default order direction field for the list function.
 	OrderDirection = "desc"
 )
@@ -31,7 +31,7 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 		return nil
 	}
 
-	user, err := ns.deps.Store.User.GetByID(i)
+	user, err := ns.deps.Store.User.Find(i)
 	if err != nil {
 		return nil
 	}
@@ -68,7 +68,9 @@ type Users struct {
 func (ns *Namespace) List(query params.Query) (interface{}, error) {
 	p := query.Get(OrderBy, OrderDirection)
 
-	users, total, err := ns.deps.Store.User.Get(p)
+	role := query.Default("role", "")
+
+	users, total, err := ns.deps.Store.User.List(p, role.(string))
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
 	} else if err != nil {
