@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -30,15 +30,15 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.OptionsRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully created/updated options",
 			optionsStruct,
-			func(m *mocks.OptionsRepository) {
-				m.On("UpdateCreate", &dbOptions).Return(nil)
+			func(m *mocks.Repository) {
+				m.On("Insert", dbOptions).Return(nil)
 			},
 		},
 		"Validation Failed": {
@@ -46,8 +46,8 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 			http.StatusBadRequest,
 			"Validation failed",
 			optionsBadValidation,
-			func(m *mocks.OptionsRepository) {
-				m.On("UpdateCreate", &dbOptions).Return(nil)
+			func(m *mocks.Repository) {
+				m.On("Insert", dbOptions).Return(nil)
 			},
 		},
 		"Validation Failed DB": {
@@ -55,8 +55,8 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 			http.StatusBadRequest,
 			"Validation failed",
 			"test",
-			func(m *mocks.OptionsRepository) {
-				m.On("UpdateCreate", &dbOptions).Return(nil)
+			func(m *mocks.Repository) {
+				m.On("Insert", dbOptions).Return(nil)
 			},
 		},
 		"Internal Error": {
@@ -64,8 +64,8 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 			http.StatusInternalServerError,
 			"config",
 			optionsStruct,
-			func(m *mocks.OptionsRepository) {
-				m.On("UpdateCreate", &dbOptions).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
+			func(m *mocks.Repository) {
+				m.On("Insert", dbOptions).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

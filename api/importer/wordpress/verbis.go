@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/importer"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/gookit/color"
 	"github.com/kyokomi/emoji"
 	"mime/multipart"
@@ -35,7 +35,7 @@ var (
 type Convert struct {
 	XML       WpXML
 	failed    Failures
-	store     *models.Store
+	store     *store.Repository
 	authors   domain.Users
 	owner     domain.User
 	sendEmail bool
@@ -49,14 +49,9 @@ type Result struct {
 }
 
 // New - Construct
-func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
+func New(xmlPath string, s *store.Repository, sendEmail bool) (*Convert, error) {
 	wp := NewWordpressXML()
 	err := wp.ReadFile(xmlPath)
-	if err != nil {
-		return nil, err
-	}
-
-	owner, err := s.User.GetOwner()
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +60,7 @@ func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
 		XML:       wp,
 		failed:    Failures{},
 		store:     s,
-		owner:     owner,
+		owner:     s.User.Owner(),
 		sendEmail: sendEmail,
 	}, nil
 }
@@ -209,7 +204,7 @@ func (c *Convert) addItem(item Item) {
 		p.Category = &cid
 	}
 
-	post, err := c.store.Posts.Create(&p)
+	post, err := c.store.Posts.Create(p)
 	if err != nil {
 		c.failPost(item, nil, err)
 		return

@@ -7,8 +7,8 @@ package options
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/options"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -33,14 +33,14 @@ func TestOptions(t *testing.T) {
 //
 // A helper to obtain a mock options handler
 // for testing.
-func (t *OptionsTestSuite) Setup(mf func(m *mocks.OptionsRepository)) *Options {
-	m := &mocks.OptionsRepository{}
+func (t *OptionsTestSuite) Setup(mf func(m *mocks.Repository)) *Options {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
 	return &Options{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Options: m,
 			},
 		},

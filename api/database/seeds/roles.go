@@ -46,7 +46,7 @@ func (s *Seeder) runRoles() error {
 
 	for _, v := range r {
 		if exists := s.models.Roles.Exists(v.Name); !exists {
-			if _, err := s.models.Roles.Create(&v); err != nil {
+			if _, err := s.models.Roles.Create(v); err != nil {
 				return err
 			}
 		}

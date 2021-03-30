@@ -6,6 +6,7 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/services/fields/location"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,4 +18,5 @@ type Handler interface {
 // Fields defines the handler for all field routes.
 type Fields struct {
 	*deps.Deps
+	finder location.Finder
 }
