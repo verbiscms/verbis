@@ -13,11 +13,11 @@ import (
 //
 // Unmarshal's the option value.
 // Returns errors.INTERNAL if the unmarshalling failed
-func (s *Store) unmarshal(value *json.RawMessage) (interface{}, error) {
+func (s *Store) unmarshal(value json.RawMessage) (interface{}, error) {
 	const op = "OptionStore.unmarshal"
 
 	var v interface{}
-	err := json.Unmarshal(*value, &v)
+	err := json.Unmarshal(value, &v)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling the option value", Operation: op, Err: err}
 	}

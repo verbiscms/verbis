@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
+	"github.com/gookit/color"
 	"time"
 )
 
@@ -100,8 +101,9 @@ func (s *Store) UpdateToken(token string) error {
 		Column("token_last_used", "NOW()").
 		Where("token", "=", token)
 
-	_, err := s.DB().Exec(q.Build(), token)
+	_, err := s.DB().Exec(q.Build())
 	if err != nil {
+		color.Red.Println(err)
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating the user last token used column.", Operation: op, Err: err}
 	}
 

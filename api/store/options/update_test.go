@@ -10,11 +10,12 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	UpdateQuery = "UPDATE `options` SET `option_value` = [34 116 101 115 116 34] WHERE `option_name` = '" + optionName + "'"
+	UpdateQuery = "UPDATE `options` SET `option_value` = ? WHERE `option_name` = '" + optionName + "'"
 )
 
 func (t *OptionsTestSuite) TestStore_Update() {
@@ -28,6 +29,7 @@ func (t *OptionsTestSuite) TestStore_Update() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.DBAnyJsonMessage{}).
 					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
@@ -36,6 +38,7 @@ func (t *OptionsTestSuite) TestStore_Update() {
 			"Error updating option with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.DBAnyJsonMessage{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -44,6 +47,7 @@ func (t *OptionsTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(test.DBAnyJsonMessage{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},

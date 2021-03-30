@@ -25,9 +25,9 @@ func (s *Store) Create(name string, value interface{}) error {
 	q := s.Builder().
 		Insert(s.Schema()+TableName).
 		Column("option_name", name).
-		Column("option_value", v)
+		Column("option_value", "?")
 
-	_, err = s.DB().Exec(q.Build())
+	_, err = s.DB().Exec(q.Build(), v)
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error creating option with the name: " + name, Operation: op, Err: err}
 	} else if err != nil {

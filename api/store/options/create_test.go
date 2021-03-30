@@ -10,11 +10,12 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	CreateQuery = "INSERT INTO `options` (`option_name`, `option_value`) VALUES ('" + optionName + "', [34 116 101 115 116 34])"
+	CreateQuery = "INSERT INTO `options` (`option_name`, `option_value`) VALUES ('" + optionName + "', ?)"
 )
 
 func (t *OptionsTestSuite) TestStore_Create() {
@@ -28,6 +29,7 @@ func (t *OptionsTestSuite) TestStore_Create() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WithArgs(test.DBAnyJsonMessage{}).
 					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
@@ -36,6 +38,7 @@ func (t *OptionsTestSuite) TestStore_Create() {
 			"Error creating option with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WithArgs(test.DBAnyJsonMessage{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -44,6 +47,7 @@ func (t *OptionsTestSuite) TestStore_Create() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WithArgs(test.DBAnyJsonMessage{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
