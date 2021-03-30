@@ -29,6 +29,8 @@ func (s *Store) Exists(field domain.PostField) bool {
 		Where("name", "=", field.Name).
 		Exists()
 
+	color.Blue.Println(q)
+
 	var exists bool
 	err := s.DB().QueryRow(q).Scan(&exists)
 	if err != nil {
