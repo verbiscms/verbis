@@ -14,7 +14,7 @@ var (
 	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `post_fields` WHERE `post_id` = '1' AND `uuid` = '00000000-0000-0000-0000-000000000000' AND `key` = 'key' AND `name` = 'name')"
 )
 
-func (t *PostFieldsTestSuite) TestStore_Exists() {
+func (t *FieldsTestSuite) TestStore_Exists() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)

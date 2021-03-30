@@ -27,7 +27,7 @@ func Redirects(d *deps.Deps) gin.HandlerFunc {
 			return
 		}
 
-		redirect, err := d.Store.Redirects.GetByFrom(path)
+		redirect, err := d.Store.Redirects.FindByFrom(path)
 		if err != nil {
 			g.Next()
 			return

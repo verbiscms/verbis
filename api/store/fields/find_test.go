@@ -18,7 +18,7 @@ var (
 	FindByPostAndKeyQuery = "SELECT * FROM `post_fields` WHERE `post_id` = '1' AND `key` = '" + field.Key + "' LIMIT 1"
 )
 
-func (t *PostFieldsTestSuite) TestStore_Find() {
+func (t *FieldsTestSuite) TestStore_Find() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -59,7 +59,7 @@ func (t *PostFieldsTestSuite) TestStore_Find() {
 	}
 }
 
-func (t *PostFieldsTestSuite) TestStore_FindByPostAndKey() {
+func (t *FieldsTestSuite) TestStore_FindByPostAndKey() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)

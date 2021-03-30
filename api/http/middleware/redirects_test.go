@@ -9,8 +9,8 @@ import (
 	app "github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
+	"github.com/ainsleyclark/verbis/api/store"
 	"net/http"
 )
 
@@ -24,7 +24,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 		status      int
 		url         string
 		redirectURL string
-		mock        func(m *mocks.RedirectRepository)
+		mock        func(m *mocks.Repository)
 	}{
 		"Admin Path": {
 			http.StatusOK,
@@ -42,16 +42,16 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			http.StatusOK,
 			RedirectPath,
 			"",
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByFrom", RedirectPath).Return(domain.Redirect{}, fmt.Errorf("err"))
+			func(m *mocks.Repository) {
+				m.On("FindByFrom", RedirectPath).Return(domain.Redirect{}, fmt.Errorf("err"))
 			},
 		},
 		"300": {
 			http.StatusMultipleChoices,
 			"/page/test",
 			RedirectPath,
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+			func(m *mocks.Repository) {
+				m.On("FindByFrom", "/page/test").Return(domain.Redirect{
 					To: RedirectPath, From: "/page/test", Code: 300,
 				}, nil)
 			},
@@ -60,8 +60,8 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			http.StatusMovedPermanently,
 			"/page/test",
 			RedirectPath,
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+			func(m *mocks.Repository) {
+				m.On("FindByFrom", "/page/test").Return(domain.Redirect{
 					To: RedirectPath, From: "/page/test", Code: 301,
 				}, nil)
 			},
@@ -70,8 +70,8 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			http.StatusFound,
 			"/page/test",
 			RedirectPath,
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+			func(m *mocks.Repository) {
+				m.On("FindByFrom", "/page/test").Return(domain.Redirect{
 					To: RedirectPath, From: "/page/test", Code: 302,
 				}, nil)
 			},
@@ -80,8 +80,8 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			http.StatusSeeOther,
 			"/page/test",
 			RedirectPath,
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+			func(m *mocks.Repository) {
+				m.On("FindByFrom", "/page/test").Return(domain.Redirect{
 					To: RedirectPath, From: "/page/test", Code: 303,
 				}, nil)
 			},
@@ -90,8 +90,8 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			http.StatusNotModified,
 			"/page/test",
 			RedirectPath,
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+			func(m *mocks.Repository) {
+				m.On("FindByFrom", "/page/test").Return(domain.Redirect{
 					To: RedirectPath, From: "/page/test", Code: 304,
 				}, nil)
 			},
@@ -100,8 +100,8 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			http.StatusTemporaryRedirect,
 			"/page/test",
 			RedirectPath,
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+			func(m *mocks.Repository) {
+				m.On("FindByFrom", "/page/test").Return(domain.Redirect{
 					To: RedirectPath, From: "/page/test", Code: 307,
 				}, nil)
 			},
@@ -110,8 +110,8 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 			http.StatusPermanentRedirect,
 			"/page/test",
 			RedirectPath,
-			func(m *mocks.RedirectRepository) {
-				m.On("GetByFrom", "/page/test").Return(domain.Redirect{
+			func(m *mocks.Repository) {
+				m.On("FindByFrom", "/page/test").Return(domain.Redirect{
 					To: RedirectPath, From: "/page/test", Code: 308,
 				}, nil)
 			},
@@ -120,13 +120,13 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := &mocks.RedirectRepository{}
+			mock := &mocks.Repository{}
 			if test.mock != nil {
 				test.mock(mock)
 			}
 
 			t.Engine.Use(Redirects(&deps.Deps{
-				Store: &models.Store{Redirects: mock},
+				Store: &store.Repository{Redirects: mock},
 				Config: &domain.ThemeConfig{
 					Admin: domain.AdminConfig{
 						Path: "admin",

@@ -21,7 +21,7 @@ import (
 //
 // Returns the fields to be modified & processed.
 func (s *Service) handleArgs(args []interface{}) domain.PostFields {
-	const op = "FieldsService.handleArgs"
+	const op = "FieldsService.HandleArgs"
 
 	if len(args) == 0 {
 		return s.fields
@@ -51,7 +51,7 @@ func (s *Service) handleArgs(args []interface{}) domain.PostFields {
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining the post.
 func (s *Service) getFieldsByPost(id int) domain.PostFields {
-	fields, err := s.deps.Store.Fields.GetByPost(id)
+	fields, err := s.deps.Store.Fields.Find(id)
 	if err != nil {
 		logger.WithError(err).Error()
 		return nil

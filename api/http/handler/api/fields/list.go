@@ -26,11 +26,7 @@ func (c *Fields) List(ctx *gin.Context) {
 
 	userID, err := strconv.Atoi(ctx.Query("user_id"))
 	if err != nil || userID == 0 {
-		owner, err := c.Store.User.GetOwner()
-		if err != nil {
-			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
-		}
-		userID = owner.Id
+		userID = c.Store.User.Owner().Id
 	}
 
 	categoryID, err := strconv.Atoi(ctx.Query("category_id"))
@@ -54,13 +50,13 @@ func (c *Fields) List(ctx *gin.Context) {
 	}
 
 	// Get the author associated with the post
-	author, err := c.Store.User.GetByID(post.UserId)
+	author, err := c.Store.User.Find(post.UserId)
 	if err != nil {
 		post.Author = author.HideCredentials()
 	}
 
 	// Get the categories associated with the post
-	category, err := c.Store.Categories.GetByID(categoryID)
+	category, err := c.Store.Categories.Find(categoryID)
 	if err != nil {
 		post.Category = &category
 	}

@@ -7,8 +7,8 @@ package middleware
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
+	"github.com/ainsleyclark/verbis/api/store"
 	"net/http"
 )
 
@@ -23,7 +23,7 @@ func (t *MiddlewareTestSuite) Test_SessionCheck() {
 		status  int
 		message string
 		cookie  *http.Cookie
-		mock    func(m *mocks.UserRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Expired": {
 			`{"errors":{"session":"expired"}}`,
@@ -39,7 +39,7 @@ func (t *MiddlewareTestSuite) Test_SessionCheck() {
 				Secure:   false,
 				HttpOnly: true,
 			},
-			func(m *mocks.UserRepository) {
+			func(m *mocks.Repository) {
 				m.On("CheckSession", Token).Return(fmt.Errorf("error"))
 			},
 		},
@@ -48,7 +48,7 @@ func (t *MiddlewareTestSuite) Test_SessionCheck() {
 			http.StatusOK,
 			"",
 			nil,
-			func(m *mocks.UserRepository) {
+			func(m *mocks.Repository) {
 				m.On("CheckSession", Token).Return(nil)
 			},
 		},
@@ -56,13 +56,13 @@ func (t *MiddlewareTestSuite) Test_SessionCheck() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := &mocks.UserRepository{}
+			mock := &mocks.Repository{}
 			if test.mock != nil {
 				test.mock(mock)
 			}
 
 			t.Engine.Use(SessionCheck(&deps.Deps{
-				Store: &models.Store{User: mock},
+				Store: &store.Repository{User: mock},
 			}))
 
 			t.NewRequest(http.MethodGet, "/test", nil)
