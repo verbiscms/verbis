@@ -15,12 +15,12 @@ import (
 func (s *Store) Insert(options domain.OptionsDBMap) error {
 	for name, value := range options {
 		if s.Exists(name) {
-			err := s.update(name, value)
+			err := s.Update(name, value)
 			if err != nil {
 				return err
 			}
 		} else {
-			err := s.create(name, value)
+			err := s.Create(name, value)
 			if err != nil {
 				return err
 			}

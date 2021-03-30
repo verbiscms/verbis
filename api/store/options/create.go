@@ -10,11 +10,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// create
+// Create
 //
 // Returns a nil upon creation.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
-func (s *Store) create(name string, value interface{}) error {
+func (s *Store) Create(name string, value interface{}) error {
 	const op = "OptionStore.Create"
 
 	v, err := s.marshal(value)

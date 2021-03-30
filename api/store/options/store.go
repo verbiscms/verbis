@@ -16,6 +16,8 @@ type Repository interface {
 	Struct() domain.Options
 	Find(name string) (interface{}, error)
 	Insert(options domain.OptionsDBMap) error
+	Create(name string, value interface{}) error
+	Update(name string, value interface{}) error
 	GetTheme() (string, error)
 	SetTheme(theme string) error
 	Exists(name string) bool

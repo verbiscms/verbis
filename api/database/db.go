@@ -8,13 +8,10 @@ package database
 import (
 	_ "embed"
 	"github.com/ainsleyclark/verbis/api/database/builder"
+	"github.com/ainsleyclark/verbis/api/database/mysql"
+	"github.com/ainsleyclark/verbis/api/environment"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-)
-
-const (
-	MaxIdleConns = 5
-	MaxOpenConns = 100
 )
 
 type Driver interface {
@@ -26,4 +23,17 @@ type Driver interface {
 	Drop() error
 }
 
+// TODO
 // establish what drier it is and do a switch
+func New(env *environment.Env) (Driver, error) {
+	db, err := mysql.Setup(env)
+	if err != nil {
+		return nil, err
+	}
+
+	//if err := db.Ping(); err != nil {
+	//	return nil, err
+	//}
+
+	return db, nil
+}

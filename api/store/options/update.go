@@ -10,11 +10,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// update
+// Update
 //
 // Returns a nil upon successful update.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *Store) update(name string, value interface{}) error {
+func (s *Store) Update(name string, value interface{}) error {
 	const op = "OptionStore.Create"
 
 	v, err := s.marshal(value)

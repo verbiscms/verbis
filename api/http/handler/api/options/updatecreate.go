@@ -38,7 +38,7 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 		return
 	}
 
-	err = o.Store.Options.UpdateCreate(&options)
+	err = o.Store.Options.Insert(options)
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return

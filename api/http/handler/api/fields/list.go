@@ -6,7 +6,6 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -61,7 +60,7 @@ func (c *Fields) List(ctx *gin.Context) {
 		post.Category = &category
 	}
 
-	fields := c.Store.Fields.GetLayout(post)
+	fields := c.finder.Layout(post, c.Options.CacheServerFields)
 
 	api.Respond(ctx, http.StatusOK, "Successfully obtained fields", fields)
 }
