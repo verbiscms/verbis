@@ -18,13 +18,12 @@ import (
 func (s *Store) update(f domain.PostField) (domain.PostField, error) {
 	const op = "FieldStore.Update"
 
+	// NOTE! Finding By UUID does not work, Vue passing wrong Data (UUID).
+
 	q := s.Builder().
 		Update(s.Schema()+TableName).
-		Column("type", f.Type).
-		Column("name", f.Name).
 		Column("value", f.OriginalValue).
 		Column("field_key", f.Key).
-		Where("uuid", "=", f.UUID).
 		Where("post_id", "=", f.PostId).
 		Where("field_key", "=", f.Key).
 		Where("name", "=", f.Name)
