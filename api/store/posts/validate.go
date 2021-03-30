@@ -14,6 +14,10 @@ import (
 // validate
 //
 //
+// Checks to see if the slug already exists, the post has
+// a valid page template attached to it, and a valid
+// page layout.
+// Returns nil if all checks are passed.
 func (s *Store) validate(p *domain.PostCreate) error {
 	err := s.validateSlug(p)
 	if err != nil {
@@ -35,11 +39,16 @@ func (s *Store) validate(p *domain.PostCreate) error {
 
 // validateSlug
 //
-//
+// Compares the slug passed to see if the slug has already
+// been taken, by looking up the post category and
+// resource.
+// Returns ErrPostsExists if there is an existing slug.
+// Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) validateSlug(p *domain.PostCreate) error {
 	const op = "PostStore.ValidateSlug"
 
 	q := s.Builder().
+		Select(s.Schema()+TableName+".id").
 		From(s.Schema()+TableName).
 		Where(s.Schema()+TableName+".slug", "=", p.Slug)
 
@@ -70,7 +79,10 @@ func (s *Store) validateSlug(p *domain.PostCreate) error {
 
 // validatePageTemplate
 //
-//
+// Checks to see if a page template is found in the
+// current theme.
+// Returns nil if it was found.
+// Returns ErrNoPageTemplate if the page template was not found.
 func (s *Store) validatePageTemplate(p *domain.PostCreate) error {
 	const op = "PostStore.ValidatePageTemplate"
 
@@ -95,7 +107,10 @@ func (s *Store) validatePageTemplate(p *domain.PostCreate) error {
 
 // validatePageLayout
 //
-//
+// Checks to see if a page layout is found in the
+// current theme.
+// Returns nil if it was found.
+// Returns ErrNoPageLayout if the page layout was not found.
 func (s *Store) validatePageLayout(p *domain.PostCreate) error {
 	const op = "PostStore.ValidatePageLayout"
 

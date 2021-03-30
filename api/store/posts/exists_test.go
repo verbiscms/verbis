@@ -25,7 +25,8 @@ func (t *PostsTestSuite) TestStore_Exists() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Not Found": {
@@ -33,13 +34,15 @@ func (t *PostsTestSuite) TestStore_Exists() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(false)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Internal": {
 			false,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
@@ -63,7 +66,8 @@ func (t *PostsTestSuite) TestStore_ExistsBySlug() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Not Found": {
@@ -71,13 +75,15 @@ func (t *PostsTestSuite) TestStore_ExistsBySlug() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(false)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Internal": {
 			false,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(ExistsBySlugQuery)).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
