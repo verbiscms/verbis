@@ -59,7 +59,7 @@ func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 
 	id, err := result.LastInsertId()
 	if err != nil {
-		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
+		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created post ID", Operation: op, Err: err}
 	}
 	p.Id = int(id)
 

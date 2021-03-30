@@ -23,7 +23,7 @@ func (t *PostsTestSuite) TestStore_Find() {
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			postDatum,
+			postDatumLayout,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
 					AddRow(post.Id, post.Slug, post.Title)
@@ -64,7 +64,7 @@ func (t *PostsTestSuite) TestStore_FindBySlug() {
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			postDatum,
+			postDatumLayout,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
 					AddRow(post.Id, post.Slug, post.Title)

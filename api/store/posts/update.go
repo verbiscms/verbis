@@ -18,12 +18,12 @@ import (
 // Returns errors.CONFLICT if the validation failed.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not obtain the newly created ID.
 func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
-	const op = "CategoryStore.Create"
+	const op = "PostStore.Create"
 
-	//err := s.validate(c)
-	//if err != nil {
-	//	return domain.Category{}, err
-	//}
+	err := s.validate(&p)
+	if err != nil {
+		return domain.PostDatum{}, err
+	}
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).
@@ -40,13 +40,32 @@ func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 		Column("published_at", p.PublishedAt).
 		Column("updated_at", "NOW()")
 
-	_, err := s.DB().Exec(q.Build(), uuid.New().String())
+	_, err = s.DB().Exec(q.Build(), uuid.New().String())
 	if err == sql.ErrNoRows {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating post with the title: " + p.Title, Operation: op, Err: err}
 	} else if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// TODO!
-	return domain.PostDatum{}, nil
+	// Update the post meta.
+	err = s.meta.Insert(p.Id, p.SeoMeta)
+	if err != nil {
+		return domain.PostDatum{}, err
+	}
+
+	// Update the post fields.
+	err = s.fields.Insert(p.Id, p.Fields)
+	if err != nil {
+		return domain.PostDatum{}, err
+	}
+
+	// Update the post categories
+	if p.Category != nil {
+		err = s.categories.Create(p.Id, *p.Category)
+		if err != nil {
+			return domain.PostDatum{}, err
+		}
+	}
+
+	return s.Find(p.Id, true)
 }
