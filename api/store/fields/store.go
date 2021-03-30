@@ -6,7 +6,7 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	location "github.com/ainsleyclark/verbis/api/services/fields/converter"
+	location "github.com/ainsleyclark/verbis/api/services/fields/location"
 	"github.com/ainsleyclark/verbis/api/store"
 )
 
