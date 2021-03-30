@@ -27,7 +27,7 @@ func (s *Store) List(meta params.Params, role string) (domain.Users, int, error)
 	}
 
 	// Apply filters.
-	err := database.FilterRows(s.Driver, meta.Filters, TableName)
+	err := database.FilterRows(s.Driver, q, meta.Filters, TableName)
 	if err != nil {
 		return nil, -1, err
 	}
