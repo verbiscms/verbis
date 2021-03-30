@@ -27,7 +27,7 @@ func (r *Redirects) Find(ctx *gin.Context) {
 		return
 	}
 
-	redirect, err := r.Store.Redirects.GetByID(id)
+	redirect, err := r.Store.Redirects.Find(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

@@ -23,7 +23,7 @@ func (ns *Namespace) Find(i interface{}) interface{} {
 		return nil
 	}
 
-	m, err := ns.deps.Store.Media.GetByID(id)
+	m, err := ns.deps.Store.Media.Find(id)
 	if err != nil {
 		return nil
 	}

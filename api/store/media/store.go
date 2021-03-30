@@ -7,7 +7,7 @@ package media
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 )
 
 // Repository defines methods for media items
@@ -17,6 +17,7 @@ type Repository interface {
 	Find(id int) (domain.Media, error)
 	FindByName(name string) (domain.Media, error)
 	FindByURL(url string) (domain.Media, error)
+	Create(m domain.Media) (domain.Media, error)
 	Update(m domain.Media) (domain.Media, error)
 	Delete(id int) error
 	Exists(fileName string) bool
@@ -24,7 +25,7 @@ type Repository interface {
 
 // Store defines the data layer for media.
 type Store struct {
-	*store.Config
+	*config.Config
 }
 
 const (
@@ -35,7 +36,7 @@ const (
 // New
 //
 // Creates a new media store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config: cfg,
 	}

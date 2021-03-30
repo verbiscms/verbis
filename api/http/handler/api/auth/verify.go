@@ -20,7 +20,7 @@ import (
 func (a *Auth) VerifyPasswordToken(ctx *gin.Context) {
 	const op = "AuthHandler.VerifyPasswordToken"
 
-	err := a.Store.Auth.VerifyPasswordToken(ctx.Param("token"))
+	_, err := a.Store.Auth.VerifyPasswordToken(ctx.Param("token"))
 	if err != nil {
 		api.Respond(ctx, http.StatusNotFound, errors.Message(err), err)
 		return

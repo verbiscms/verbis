@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/services/fields/location"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/posts/categories"
 	"github.com/ainsleyclark/verbis/api/store/posts/fields"
 	"github.com/ainsleyclark/verbis/api/store/posts/meta"
@@ -21,19 +21,19 @@ import (
 // Repository defines methods for posts
 // to interact with the database.
 type Repository interface {
-	List(meta params.Params, layout bool, resource string, status string) (domain.PostData, int, error) // done
-	Find(id int, layout bool) (domain.PostDatum, error)                                                 // done
-	FindBySlug(slug string) (domain.PostDatum, error)                                                   // done
-	Create(p domain.PostCreate) (domain.PostDatum, error)                                               // TODO
-	Update(p domain.PostCreate) (domain.PostDatum, error)                                               // TODO
-	Delete(id int) error                                                                                // done
-	Exists(id int) bool                                                                                 // done
-	ExistsBySlug(slug string) bool                                                                      //done
+	List(meta params.Params, layout bool, cfg ListConfig) (domain.PostData, int, error)
+	Find(id int, layout bool) (domain.PostDatum, error)
+	FindBySlug(slug string) (domain.PostDatum, error)
+	Create(p domain.PostCreate) (domain.PostDatum, error)
+	Update(p domain.PostCreate) (domain.PostDatum, error)
+	Delete(id int) error
+	Exists(id int) bool
+	ExistsBySlug(slug string) bool
 }
 
 // Store defines the data layer for posts.
 type Store struct {
-	*store.Config
+	*config.Config
 	categories categories.Repository
 	fields     fields.Repository
 	meta       meta.Repository
@@ -63,7 +63,7 @@ var (
 // New
 //
 // Creates a new posts store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config:     cfg,
 		categories: categories.New(cfg),

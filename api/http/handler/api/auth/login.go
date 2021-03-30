@@ -33,7 +33,7 @@ func (a *Auth) Login(ctx *gin.Context) {
 		return
 	}
 
-	user, err := a.Store.Auth.Authenticate(l.Email, l.Password)
+	user, err := a.Store.Auth.Login(l.Email, l.Password)
 	if err != nil {
 		api.Respond(ctx, http.StatusUnauthorized, errors.Message(err), err)
 		return

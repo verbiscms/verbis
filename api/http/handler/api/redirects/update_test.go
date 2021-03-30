@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,7 +21,7 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.RedirectRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -29,8 +29,8 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 			http.StatusOK,
 			"Successfully updated redirect with ID: 123",
 			redirect,
-			func(m *mocks.RedirectRepository) {
-				m.On("Update", &redirect).Return(redirect, nil)
+			func(m *mocks.Repository) {
+				m.On("Update", redirect).Return(redirect, nil)
 			},
 			"/redirects/123",
 		},
@@ -39,7 +39,7 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 			http.StatusBadRequest,
 			"Validation failed",
 			redirectBadValidation,
-			func(m *mocks.RedirectRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", redirectBadValidation).Return(domain.Redirect{}, fmt.Errorf("error"))
 			},
 			"/redirects/123",
@@ -49,7 +49,7 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 			http.StatusBadRequest,
 			"A valid ID is required to update the redirect",
 			redirect,
-			func(m *mocks.RedirectRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", redirectBadValidation).Return(domain.Redirect{}, fmt.Errorf("error"))
 			},
 			"/redirects/wrongid",
@@ -59,18 +59,18 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 			http.StatusBadRequest,
 			"not found",
 			redirect,
-			func(m *mocks.RedirectRepository) {
-				m.On("Update", &redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("Update", redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/redirects/123",
 		},
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			redirect,
-			func(m *mocks.RedirectRepository) {
-				m.On("Update", &redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Update", redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/redirects/123",
 		},

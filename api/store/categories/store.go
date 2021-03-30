@@ -8,13 +8,13 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 )
 
 // Repository defines methods for categories
 // to interact with the database.
 type Repository interface {
-	List(meta params.Params) (domain.Categories, int, error)
+	List(meta params.Params, cfg ListConfig) (domain.Categories, int, error)
 	Find(id int) (domain.Category, error)
 	FindByPost(id int) (domain.Category, error)
 	FindBySlug(slug string) (domain.Category, error)
@@ -30,7 +30,7 @@ type Repository interface {
 
 // Store defines the data layer for categories.
 type Store struct {
-	*store.Config
+	*config.Config
 }
 
 const (
@@ -49,7 +49,7 @@ var (
 // New
 //
 // Creates a new categories store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config: cfg,
 	}

@@ -9,8 +9,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/categories"
+	posts "github.com/ainsleyclark/verbis/api/mocks/store/posts"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -36,16 +37,18 @@ func TestCategories(t *testing.T) {
 //
 // A helper to obtain a mock categories handler
 // for testing.
-func (t *CategoriesTestSuite) Setup(mf func(m *mocks.CategoryRepository)) *Categories {
-	m := &mocks.CategoryRepository{}
+func (t *CategoriesTestSuite) Setup(mf func(m *mocks.Repository)) *Categories {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
-	pm := &mocks.PostsRepository{}
-	pm.On("Get", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(domain.PostData{}, 0, nil)
+
+	pm := &posts.Repository{}
+	pm.On("List", mock.Anything, mock.Anything, mock.Anything).Return(domain.PostData{}, 0, nil)
+
 	return &Categories{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Categories: m,
 				Posts:      pm,
 			},

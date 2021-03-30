@@ -7,7 +7,7 @@ package auth
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/users"
 )
 
@@ -24,7 +24,7 @@ type Repository interface {
 
 // Store defines the data layer for auth.
 type Store struct {
-	*store.Config
+	*config.Config
 
 	// Common util functions from the user repo.
 	userStore users.Repository
@@ -47,7 +47,7 @@ const (
 // New
 //
 // Creates a new auth store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config:           cfg,
 		userStore:        users.New(cfg),

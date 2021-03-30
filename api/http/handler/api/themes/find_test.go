@@ -41,9 +41,9 @@ func (t *ThemesTestSuite) TestThemes_Find() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			func(m *mocks.Repository) {
-				m.On("Find", TestActiveTheme).Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Find", TestActiveTheme).Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/themes/verbis",
 		},

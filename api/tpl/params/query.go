@@ -19,7 +19,7 @@ var (
 	Defaults = params.Defaults{
 		Page:           params.DefaultPage,
 		Limit:          params.DefaultLimit,
-		OrderBy:        "created_at",
+		OrderBy:        "updated_at",
 		OrderDirection: "desc",
 	}
 )

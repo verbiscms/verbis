@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package users
+package roles
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -11,18 +11,18 @@ import (
 	"net/http"
 )
 
-// Roles
+// List
 //
-// Returns http.StatusOK if the user roles were obtained.
-// Returns http.StatusInternalServerError if there as an error obtaining the user roles.
-func (u *Users) Roles(ctx *gin.Context) {
-	const op = "UserHandler.Roles"
+// Returns http.StatusOK if the roles were obtained successfully.
+// Returns http.StatusInternalServerError if there was an error getting the roles.
+func (u *Roles) List(ctx *gin.Context) {
+	const op = "RoleHandler.List"
 
-	roles, err := u.Store.User.GetRoles()
+	roles, err := u.Store.Roles.List()
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully obtained user roles", roles)
+	api.Respond(ctx, http.StatusOK, "Successfully obtained roles", roles)
 }

@@ -9,8 +9,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -35,14 +35,14 @@ func TestRedirects(t *testing.T) {
 //
 // A helper to obtain a mock redirects handler
 // for testing.
-func (t *RedirectsTestSuite) Setup(mf func(m *mocks.RedirectRepository)) *Redirects {
-	m := &mocks.RedirectRepository{}
+func (t *RedirectsTestSuite) Setup(mf func(m *mocks.Repository)) *Redirects {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
 	return &Redirects{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Redirects: m,
 			},
 		},

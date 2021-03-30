@@ -11,7 +11,7 @@ import (
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
 	fields "github.com/ainsleyclark/verbis/api/mocks/store/posts/fields"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -51,7 +51,7 @@ func (t *PostsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 		domain.Layout{Key: "layout", Name: "Layout"},
 	}, nil)
 
-	return New(&store.Config{
+	return New(&config.Config{
 		Driver:       t.Driver,
 		ThemeService: th,
 		Theme:        &domain.ThemeConfig{},

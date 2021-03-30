@@ -10,8 +10,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"io"
@@ -41,14 +41,14 @@ func TestMedia(t *testing.T) {
 //
 // A helper to obtain a mock categories handler
 // for testing.
-func (t *MediaTestSuite) Setup(mf func(m *mocks.MediaRepository)) *Media {
-	m := &mocks.MediaRepository{}
+func (t *MediaTestSuite) Setup(mf func(m *mocks.Repository)) *Media {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
 	return &Media{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Media: m,
 			},
 		},
@@ -59,14 +59,14 @@ func (t *MediaTestSuite) Setup(mf func(m *mocks.MediaRepository)) *Media {
 //
 // A helper to obtain a mock categories handler
 // and uploads for testing.
-func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(m *mocks.MediaRepository, mfh []multipart.FileHeader)) *Media {
-	m := &mocks.MediaRepository{}
+func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(m *mocks.Repository, mfh []multipart.FileHeader)) *Media {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m, files)
 	}
 	return &Media{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Media: m,
 			},
 		},

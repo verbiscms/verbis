@@ -7,7 +7,7 @@ package fields
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	location "github.com/ainsleyclark/verbis/api/services/fields/location"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 )
 
 // Repository defines methods for fields
@@ -19,14 +19,14 @@ type Repository interface {
 
 // Store defines the data layer for fields.
 type Store struct {
-	*store.Config
+	*config.Config
 	finder location.Finder
 }
 
 // New
 //
 // Creates a new categories store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config: cfg,
 		finder: location.NewLocation(cfg.Paths.Storage),

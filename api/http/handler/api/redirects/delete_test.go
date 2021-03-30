@@ -6,7 +6,7 @@ package redirects
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,14 +16,14 @@ func (t *RedirectsTestSuite) TestRedirects_Delete() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.RedirectRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully deleted redirect with ID: 123",
-			func(m *mocks.RedirectRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/redirects/123",
@@ -32,7 +32,7 @@ func (t *RedirectsTestSuite) TestRedirects_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"A valid ID is required to delete a redirect",
-			func(m *mocks.RedirectRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/redirects/wrongid",
@@ -41,7 +41,7 @@ func (t *RedirectsTestSuite) TestRedirects_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"not found",
-			func(m *mocks.RedirectRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/redirects/123",
@@ -50,7 +50,7 @@ func (t *RedirectsTestSuite) TestRedirects_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.RedirectRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/redirects/123",
@@ -58,9 +58,9 @@ func (t *RedirectsTestSuite) TestRedirects_Delete() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.RedirectRepository) {
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/redirects/123",
 		},

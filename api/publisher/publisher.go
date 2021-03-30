@@ -34,7 +34,7 @@ func (r *publish) SiteMap() SiteMapper {
 
 // NewRender - Construct
 func NewRender(d *deps.Deps) Publisher {
-	options := d.Store.Options.GetStruct()
+	options := d.Store.Options.Struct()
 	return &publish{
 		d,
 		minify.New(minify.Config{

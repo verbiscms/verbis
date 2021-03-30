@@ -6,7 +6,7 @@ package users
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,14 +16,14 @@ func (t *UsersTestSuite) TestUser_Delete() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.UserRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully deleted user with ID: 123",
-			func(m *mocks.UserRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/users/123",
@@ -32,7 +32,7 @@ func (t *UsersTestSuite) TestUser_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"A valid ID is required to delete a user",
-			func(m *mocks.UserRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/users/wrongid",
@@ -41,7 +41,7 @@ func (t *UsersTestSuite) TestUser_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"not found",
-			func(m *mocks.UserRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/users/123",
@@ -50,7 +50,7 @@ func (t *UsersTestSuite) TestUser_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.UserRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/users/123",
@@ -58,9 +58,9 @@ func (t *UsersTestSuite) TestUser_Delete() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.UserRepository) {
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/users/123",
 		},

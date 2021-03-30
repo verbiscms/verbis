@@ -7,7 +7,8 @@ package media
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	service "github.com/ainsleyclark/verbis/api/mocks/services/media"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"net/http"
@@ -19,7 +20,8 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 		status  int
 		message string
 		files   int
-		mock    func(u *mocks.MediaRepository, multi []multipart.FileHeader)
+		service func(s service.Library)
+		mock    func(u *mocks.Repository, multi []multipart.FileHeader)
 		url     string
 	}{
 		"Success": {
@@ -27,7 +29,10 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 			http.StatusOK,
 			"Successfully uploaded media item",
 			1,
-			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+			func(s interface{}) {
+
+			},
+			func(m *mocks.Repository, multi []multipart.FileHeader) {
 				m.On("Upload", &multi[0], "").Return(mediaItem, nil)
 				m.On("Validate", &multi[0]).Return(nil)
 			},
@@ -38,7 +43,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 			http.StatusBadRequest,
 			"No files attached to the upload",
 			0,
-			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+			func(m *mocks.Repository, multi []multipart.FileHeader) {
 				m.On("Upload", multipart.FileHeader{}, "").Return(domain.Media{}, nil)
 				m.On("Validate", multipart.FileHeader{}).Return(nil)
 			},
@@ -49,7 +54,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 			http.StatusBadRequest,
 			"Attach a file to the request to be uploaded",
 			0,
-			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+			func(m *mocks.Repository, multi []multipart.FileHeader) {
 				m.On("Upload", multipart.FileHeader{}, "").Return(domain.Media{}, nil)
 				m.On("Validate", multipart.FileHeader{}).Return(nil)
 			},
@@ -60,7 +65,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 			http.StatusBadRequest,
 			"Files are only permitted to be uploaded one at a time",
 			5,
-			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+			func(m *mocks.Repository, multi []multipart.FileHeader) {
 				m.On("Upload", &multi[0], "").Return(domain.Media{}, nil)
 				m.On("Validate", &multi[0]).Return(nil)
 			},
@@ -71,7 +76,7 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 			http.StatusUnsupportedMediaType,
 			"invalid",
 			1,
-			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
+			func(m *mocks.Repository, multi []multipart.FileHeader) {
 				m.On("Upload", &multi[0], "").Return(domain.Media{}, nil)
 				m.On("Validate", &multi[0]).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
@@ -80,10 +85,10 @@ func (t *MediaTestSuite) TestMedia_Upload() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			1,
-			func(m *mocks.MediaRepository, multi []multipart.FileHeader) {
-				m.On("Upload", &multi[0], "").Return(domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository, multi []multipart.FileHeader) {
+				m.On("Upload", &multi[0], "").Return(domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 				m.On("Validate", &multi[0]).Return(nil)
 			},
 			"/media",

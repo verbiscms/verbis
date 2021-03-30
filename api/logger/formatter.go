@@ -72,7 +72,7 @@ func (f *Formatter) Time() {
 // StatusCode
 //
 // Prints the status code of the request, if there is none
-// set the log is internal and "VRB" will be printed.
+// set the log is config and "VRB" will be printed.
 func (f *Formatter) StatusCode() {
 	f.buf.WriteString(" | ")
 

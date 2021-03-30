@@ -40,9 +40,9 @@ func (t *OptionsTestSuite) TestOptions_Find() {
 		"Internal Error": {
 			`{}`,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			func(m *mocks.OptionsRepository) {
-				m.On("GetByName", "test").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("GetByName", "test").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/options/test",
 		},
