@@ -20,7 +20,7 @@ func (o *Options) Find(ctx *gin.Context) {
 	const op = "OptionsHandler.Find"
 
 	name := ctx.Param("name")
-	option, err := o.Store.Options.GetByName(name)
+	option, err := o.Store.Options.Find(name)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

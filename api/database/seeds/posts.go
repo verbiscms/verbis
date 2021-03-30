@@ -26,7 +26,7 @@ func (s *Seeder) runPosts() error {
 		Category: nil,
 	}
 
-	_, err := s.models.Posts.Create(&p)
+	_, err := s.models.Posts.Create(p)
 	if err != nil {
 		return err
 	}

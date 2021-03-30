@@ -8,11 +8,15 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/JamesStewy/go-mysqldump"
-	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
+)
+
+const (
+	MaxIdleConns = 5
+	MaxOpenConns = 100
 )
 
 // mysql defines the implementation of the
@@ -33,7 +37,7 @@ var (
 // New - Creates a new mySQL instance and returns
 // a new database driver.
 // Returns errors.INVALID if there was an error establishing a connection or pinging.
-func Setup(env *environment.Env) (database.Driver, error) {
+func Setup(env *environment.Env) (*mySQL, error) {
 	const op = "Database.Setup"
 
 	m := mySQL{
@@ -50,8 +54,8 @@ func Setup(env *environment.Env) (database.Driver, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error pinging database", Operation: op, Err: err}
 	}
 
-	driver.SetMaxIdleConns(database.MaxIdleConns)
-	driver.SetMaxOpenConns(database.MaxOpenConns)
+	driver.SetMaxIdleConns(MaxIdleConns)
+	driver.SetMaxOpenConns(MaxOpenConns)
 
 	m.driver = driver
 

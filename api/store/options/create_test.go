@@ -57,7 +57,7 @@ func (t *OptionsTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.create(optionName, test.input)
+			err := s.Create(optionName, test.input)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

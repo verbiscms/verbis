@@ -95,7 +95,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator.POST("/options", h.Options.UpdateCreate)
 
 		// Roles
-		operator.GET("/roles", h.Users.Roles)
+		operator.GET("/roles", h.Roles.List)
 
 		// Redirects
 		operator.GET("/redirects", h.Redirects.List)

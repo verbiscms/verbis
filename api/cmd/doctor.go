@@ -13,7 +13,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/spf13/cobra"
 	"strings"
 )
@@ -36,7 +36,7 @@ environment.`,
 // doctor checks if the environment is validated and checks
 // to see if there is a valid database connection and the
 // database exists before proceeding.
-func doctor(running bool) (*deps.Config, *database.MySQLOld, error) {
+func doctor(running bool) (*deps.Config, database.Driver, error) {
 	printSpinner("Running doctor...")
 
 	// Check paths are correct
@@ -67,15 +67,19 @@ func doctor(running bool) (*deps.Config, *database.MySQLOld, error) {
 	// Get the database and ping
 	db, err := database.New(env)
 	if err != nil {
-		printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
-		return nil, nil, fmt.Errorf("error establishing database connection")
+		return nil, nil, err
 	}
-
-	// Check if the database exists
-	if err := db.CheckExists(); err != nil {
-		printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
-		return nil, nil, fmt.Errorf("error establishing database connection")
-	}
+	//db, err := database.New(env)
+	//if err != nil {
+	//	printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
+	//	return nil, nil, fmt.Errorf("error establishing database connection")
+	//}
+	//
+	//// Check if the database exists
+	//if err := db.CheckExists(); err != nil {
+	//	printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
+	//	return nil, nil, fmt.Errorf("error establishing database connection")
+	//}
 
 	// Init Cache
 	cache.Init()
@@ -90,11 +94,16 @@ func doctor(running bool) (*deps.Config, *database.MySQLOld, error) {
 	//}
 
 	// Set up stores & pass the database.
-	store := models.New(&models.StoreCfgOld{
-		DB:      db.Sqlx,
-		Paths:   p,
-		Running: running,
-	})
+	//store := models.New(&models.StoreCfgOld{
+	//	DB:      db.Sqlx,
+	//	Paths:   p,
+	//	Running: running,
+	//})
+
+	store, err := store.New(db)
+	if err != nil {
+		printError(err.Error())
+	}
 
 	printSuccess("All checks passed.")
 

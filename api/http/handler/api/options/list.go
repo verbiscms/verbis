@@ -18,7 +18,7 @@ import (
 func (o *Options) List(ctx *gin.Context) {
 	const op = "OptionsHandler.List"
 
-	options, err := o.Store.Options.Get()
+	options, err := o.Store.Options.Map()
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

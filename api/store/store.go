@@ -6,6 +6,9 @@ package store
 
 import (
 	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/store/auth"
 	"github.com/ainsleyclark/verbis/api/store/categories"
 	storeConfig "github.com/ainsleyclark/verbis/api/store/config"
@@ -38,7 +41,17 @@ type Repository struct {
 // TODO Change!
 // Create a new database instance, connect
 // to database.
-func New(cfg *storeConfig.Config) (*Repository, error) {
+func New(db database.Driver) (*Repository, error) {
+
+	cfg := &storeConfig.Config{
+		Driver:       db,
+		Theme:        nil,
+		Options:      nil,
+		Paths:        paths.Get(),
+		Owner:        nil,
+		ThemeService: theme.New(),
+		Running:      false,
+	}
 
 	optsStore := options.New(cfg)
 
@@ -54,6 +67,12 @@ func New(cfg *storeConfig.Config) (*Repository, error) {
 		cfg.Theme = config.Init(cfg.Paths.Themes + string(os.PathSeparator) + activeTheme)
 	}
 
+	cfg.ThemeService = theme.New()
+
+	user := users.New(cfg)
+	owner := user.Owner()
+	cfg.Owner = &owner
+
 	return &Repository{
 		Auth:       auth.New(cfg),
 		Categories: categories.New(cfg),
@@ -64,6 +83,6 @@ func New(cfg *storeConfig.Config) (*Repository, error) {
 		Posts:      posts.New(cfg),
 		Redirects:  redirects.New(cfg),
 		Roles:      roles.New(cfg),
-		User:       users.New(cfg),
+		User:       user,
 	}, nil
 }

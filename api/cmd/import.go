@@ -6,7 +6,6 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/importer/wordpress"
 	"github.com/kyokomi/emoji"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -21,23 +20,23 @@ and convert the data into Verbis content. `,
 		Run: func(cmd *cobra.Command, args []string) {
 
 			// Run doctor
-			cfg, _, err := doctor(false)
-			if err != nil {
-				printError(err.Error())
-			}
-
-			fmt.Println()
-
-			file := getXMLFile()
-
-			wp, err := wordpress.New(file, cfg.Store, true)
-			if err != nil {
-				printError(err.Error())
-			}
-
-			//"/Users/ainsley/Desktop/Reddico/websites/reddico-website/theme/res/import-xml/test.xml"
-
-			wp.Import()
+			//cfg, _, err := doctor(false)
+			//if err != nil {
+			//	printError(err.Error())
+			//}
+			//
+			//fmt.Println()
+			//
+			//file := getXMLFile()
+			//
+			//wp, err := wordpress.New(file, cfg.Store, true)
+			//if err != nil {
+			//	printError(err.Error())
+			//}
+			//
+			////"/Users/ainsley/Desktop/Reddico/websites/reddico-website/theme/res/import-xml/test.xml"
+			//
+			//wp.Import()
 		},
 	}
 )

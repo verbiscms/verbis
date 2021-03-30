@@ -28,6 +28,7 @@ database to file`,
 
 			time := time.Now().Format(time.RFC3339)
 			fileName := fmt.Sprintf("%s-dump-%v", cfg.Env.DbDatabase, time)
+
 			if err := db.Dump(cfg.Paths.Storage+"/dumps", fileName); err != nil {
 				printError("Could not dump the database, is your database connection valid?")
 			}
