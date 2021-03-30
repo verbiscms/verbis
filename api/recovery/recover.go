@@ -136,11 +136,11 @@ func (h *Handler) HTTPRecovery() gin.HandlerFunc {
 // recoverWrapper
 //
 // Obtains the template executor from the resolver, this could
-// be a user defined error page, or an internal Verbis page
+// be a user defined error page, or an config Verbis page
 // dependant on the pages defined in the theme. The
 // error page is executed and returned as bytes.
 //
-// Logs errors.INTERNAL if the internal Verbis error page
+// Logs errors.INTERNAL if the config Verbis error page
 // failed to execute.
 // Sets the config error errors.TEMPLATE if the user defined
 // error page failed to execute.
@@ -152,7 +152,7 @@ func (r *Recover) recoverWrapper(useTheme bool, fn func(b []byte, err *errors.Er
 	var b bytes.Buffer
 	_, err := exec.Execute(&b, path, r.data())
 
-	// Theme error template failed, use the internal error pages
+	// Theme error template failed, use the config error pages
 	if err != nil && custom {
 		r.config.TplFile = path
 		r.config.TplExec = exec

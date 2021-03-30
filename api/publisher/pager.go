@@ -232,14 +232,14 @@ func (p *page) resolve() (*domain.PostDatum, error) {
 	homepage := p.Deps.Options.Homepage
 
 	if last == "" {
-		post, err := p.Store.Posts.GetByID(homepage, false)
+		post, err := p.Store.Posts.Find(homepage, false)
 		if err != nil {
 			return nil, notFoundErr
 		}
 		return &post, nil
 	}
 
-	post, err := p.Store.Posts.GetBySlug(last)
+	post, err := p.Store.Posts.FindBySlug(last)
 	if err != nil {
 		return nil, notFoundErr
 	}

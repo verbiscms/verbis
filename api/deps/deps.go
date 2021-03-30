@@ -8,10 +8,10 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/models"
 	"github.com/ainsleyclark/verbis/api/services/site"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/services/webp"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/watchers"
 	"os"
@@ -23,7 +23,7 @@ import (
 type Deps struct {
 
 	// The database layer
-	Store *models.Store
+	Store *store.Repository
 
 	// Configuration file of the site
 	Config *domain.ThemeConfig
@@ -80,7 +80,7 @@ func (d *Deps) SetTheme(name string) error {
 type Config struct {
 
 	// The database layer
-	Store *models.Store
+	Store *store.Repository
 
 	// Env
 	Env *environment.Env
@@ -102,7 +102,7 @@ func New(cfg Config) *Deps {
 		panic("Must have a configuration")
 	}
 
-	opts := cfg.Store.Options.GetStruct()
+	opts := cfg.Store.Options.Struct()
 
 	p := paths.Get()
 

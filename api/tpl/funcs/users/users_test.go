@@ -143,9 +143,9 @@ func TestNamespace_List(t *testing.T) {
 		"Internal Error": {
 			params.Query{"limit": 15},
 			func(m *mocks.UserRepository) {
-				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"}).Once()
+				m.On("Get", p).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config error"}).Once()
 			},
-			"internal error",
+			"config error",
 		},
 	}
 

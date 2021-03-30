@@ -6,7 +6,7 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -33,7 +33,7 @@ func TestFields(t *testing.T) {
 // for testing.
 func (t *FieldsTestSuite) Setup() *Store {
 	t.Reset()
-	return New(&store.Config{
+	return New(&config.Config{
 		Driver: t.Driver,
 		Options: &domain.Options{
 			CacheServerFields: false,

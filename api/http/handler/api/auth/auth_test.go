@@ -7,8 +7,8 @@ package auth
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -33,14 +33,14 @@ func TestAuth(t *testing.T) {
 //
 // A helper to obtain a mock categories handler
 // for testing.
-func (t *AuthTestSuite) Setup(mf func(m *mocks.AuthRepository)) *Auth {
-	m := &mocks.AuthRepository{}
+func (t *AuthTestSuite) Setup(mf func(m *mocks.Repository)) *Auth {
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
 	return &Auth{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Auth: m,
 			},
 		},

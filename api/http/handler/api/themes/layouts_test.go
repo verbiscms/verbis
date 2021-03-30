@@ -38,9 +38,9 @@ func (t *ThemesTestSuite) TestThemes_Layouts() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			func(m *mocks.Repository) {
-				m.On("Layouts", TestActiveTheme).Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Layouts", TestActiveTheme).Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

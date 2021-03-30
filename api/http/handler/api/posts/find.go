@@ -27,7 +27,7 @@ func (c *Posts) Find(ctx *gin.Context) {
 		return
 	}
 
-	post, err := c.Store.Posts.GetByID(id, true)
+	post, err := c.Store.Posts.Find(id, true)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

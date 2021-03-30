@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/store/posts"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,7 +20,6 @@ type Handler interface {
 	Create(ctx *gin.Context)
 	Update(ctx *gin.Context)
 	Delete(ctx *gin.Context)
-	Roles(ctx *gin.Context)
 	ResetPassword(ctx *gin.Context)
 }
 
@@ -36,7 +36,7 @@ type Users struct {
 // attached to it.
 func (u *Users) clearCache(id int) {
 	go func() {
-		posts, _, err := u.Store.Posts.Get(params.Params{LimitAll: true}, false, "", "")
+		posts, _, err := u.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
 		if err != nil {
 			logger.WithError(err).Error()
 		}

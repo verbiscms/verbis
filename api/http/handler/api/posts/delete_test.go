@@ -6,7 +6,7 @@ package posts
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,14 +16,14 @@ func (t *PostsTestSuite) TestPosts_Delete() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.PostsRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully deleted post with ID: 123",
-			func(m *mocks.PostsRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/posts/123",
@@ -32,7 +32,7 @@ func (t *PostsTestSuite) TestPosts_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"A valid ID is required to delete a post",
-			func(m *mocks.PostsRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 0).Return(nil)
 			},
 			"/posts/wrongid",
@@ -41,7 +41,7 @@ func (t *PostsTestSuite) TestPosts_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"not found",
-			func(m *mocks.PostsRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/posts/123",
@@ -50,7 +50,7 @@ func (t *PostsTestSuite) TestPosts_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.PostsRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/posts/123",
@@ -58,9 +58,9 @@ func (t *PostsTestSuite) TestPosts_Delete() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.PostsRepository) {
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/posts/123",
 		},

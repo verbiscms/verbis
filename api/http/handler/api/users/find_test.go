@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,15 +18,15 @@ func (t *UsersTestSuite) TestUser_Find() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.UserRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			user,
 			http.StatusOK,
 			"Successfully obtained user with ID: 123",
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(user, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(user, nil)
 			},
 			"/users/123",
 		},
@@ -34,8 +34,8 @@ func (t *UsersTestSuite) TestUser_Find() {
 			nil,
 			http.StatusBadRequest,
 			"Pass a valid number to obtain the user by ID",
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, fmt.Errorf("error"))
 			},
 			"/users/wrongid",
 		},
@@ -43,17 +43,17 @@ func (t *UsersTestSuite) TestUser_Find() {
 			nil,
 			http.StatusOK,
 			"no users found",
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "no users found"})
 			},
 			"/users/123",
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/users/123",
 		},

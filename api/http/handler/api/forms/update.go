@@ -34,7 +34,7 @@ func (f *Forms) Update(ctx *gin.Context) {
 	}
 	form.Id = id
 
-	updatedForm, err := f.Store.Forms.Update(&form)
+	updatedForm, err := f.Store.Forms.Update(form)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

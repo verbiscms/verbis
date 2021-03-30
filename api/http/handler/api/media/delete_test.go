@@ -6,7 +6,7 @@ package media
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,14 +16,14 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(u *mocks.MediaRepository)
+		mock    func(u *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully deleted media item with ID: 123",
-			func(u *mocks.MediaRepository) {
+			func(u *mocks.Repository) {
 				u.On("Delete", 123).Return(nil)
 			},
 			"/media/123",
@@ -32,7 +32,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"A valid ID is required to delete a media item",
-			func(m *mocks.MediaRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/media/wrongid",
@@ -41,7 +41,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"not found",
-			func(m *mocks.MediaRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/media/123",
@@ -50,7 +50,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.MediaRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/media/123",
@@ -58,9 +58,9 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.MediaRepository) {
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/media/123",
 		},

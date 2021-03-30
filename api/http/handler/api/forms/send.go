@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 	"strconv"
 )
@@ -20,7 +21,13 @@ import (
 func (f *Forms) Send(ctx *gin.Context) {
 	const op = "FormHandler.Send"
 
-	form, err := f.Store.Forms.GetByUUID(ctx.Param("uuid"))
+	uniq, err := uuid.Parse(ctx.Param("uuid"))
+	if err != nil {
+		api.Respond(ctx, http.StatusBadRequest, "Error parsing UUID", err)
+		return
+	}
+
+	form, err := f.Store.Forms.FindByUUID(uniq)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
@@ -36,11 +43,11 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
-	err = f.Store.Forms.Send(&form, ctx.ClientIP(), ctx.Request.UserAgent())
-	if err != nil {
-		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
-		return
-	}
+	//err = f.Store.Forms.Send(&form, ctx.ClientIP(), ctx.Request.UserAgent())
+	//if err != nil {
+	//	api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+	//	return
+	//}
 
 	api.Respond(ctx, http.StatusOK, "Successfully sent form with ID: "+strconv.Itoa(form.Id), nil)
 }

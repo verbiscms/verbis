@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,15 +18,15 @@ func (t *MediaTestSuite) TestMedia_Find() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.MediaRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			mediaItem,
 			http.StatusOK,
 			"Successfully obtained media item with ID: 123",
-			func(m *mocks.MediaRepository) {
-				m.On("GetByID", 123).Return(mediaItem, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(mediaItem, nil)
 			},
 			"/media/123",
 		},
@@ -34,8 +34,8 @@ func (t *MediaTestSuite) TestMedia_Find() {
 			nil,
 			http.StatusBadRequest,
 			"Pass a valid number to obtain the media item by ID",
-			func(m *mocks.MediaRepository) {
-				m.On("GetByID", 123).Return(domain.Media{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Media{}, fmt.Errorf("error"))
 			},
 			"/media/wrongid",
 		},
@@ -43,17 +43,17 @@ func (t *MediaTestSuite) TestMedia_Find() {
 			nil,
 			http.StatusOK,
 			"no media items found",
-			func(m *mocks.MediaRepository) {
-				m.On("GetByID", 123).Return(domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "no media items found"})
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "no media items found"})
 			},
 			"/media/123",
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.MediaRepository) {
-				m.On("GetByID", 123).Return(domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/media/123",
 		},

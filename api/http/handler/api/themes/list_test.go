@@ -37,9 +37,9 @@ func (t *ThemesTestSuite) TestThemes_List() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			func(m *mocks.Repository) {
-				m.On("List", TestActiveTheme).Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("List", TestActiveTheme).Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

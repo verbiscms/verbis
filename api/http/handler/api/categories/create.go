@@ -28,7 +28,7 @@ func (c *Categories) Create(ctx *gin.Context) {
 		return
 	}
 
-	newCategory, err := c.Store.Categories.Create(&category)
+	newCategory, err := c.Store.Categories.Create(category)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

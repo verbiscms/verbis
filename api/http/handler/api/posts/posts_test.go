@@ -10,8 +10,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -36,15 +36,15 @@ func TestPosts(t *testing.T) {
 //
 // A helper to obtain a mock posts handler
 // for testing.
-func (t *PostsTestSuite) Setup(mf func(m *mocks.PostsRepository)) *Posts {
+func (t *PostsTestSuite) Setup(mf func(m *mocks.Repository)) *Posts {
 	cache.Init()
-	m := &mocks.PostsRepository{}
+	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
 	return &Posts{
 		Deps: &deps.Deps{
-			Store: &models.Store{
+			Store: &store.Repository{
 				Posts: m,
 			},
 		},
@@ -82,8 +82,8 @@ var (
 	// The default post with wrong validation used for testing.
 	postBadValidation = domain.PostCreate{
 		Post: domain.Post{
-			Id:           123,
-			Title:        "post",
+			Id: 123,
+			//	Title:        "post",
 			Slug:         "/post",
 			PageTemplate: "tpl",
 			PageLayout:   "layout",

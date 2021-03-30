@@ -13,14 +13,14 @@ import (
 // Application error codes.
 const (
 	CONFLICT = "conflict"  // Action cannot be performed
-	INTERNAL = "internal"  // Internal error
+	INTERNAL = "config"    // Internal error
 	INVALID  = "invalid"   // Validation failed
 	NOTFOUND = "not_found" // Entity does not exist
 	TEMPLATE = "template"  // Templating error
 )
 
 // Global Error message when no message has been found.
-const GlobalError = "An internal error has occurred."
+const GlobalError = "An error has occurred."
 
 // Error defines a standard application error.
 type Error struct {
@@ -83,6 +83,7 @@ func Message(err error) string {
 	} else if ok && e.Err != nil {
 		return Message(e.Err)
 	}
+	fmt.Println(err.Error())
 	return GlobalError
 }
 

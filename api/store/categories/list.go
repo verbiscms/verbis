@@ -12,12 +12,19 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 )
 
+// ListConfig defines the configuration for obtaining
+// categories for Selects. Categories can be
+// filtered by resources
+type ListConfig struct {
+	Resource string
+}
+
 // List
 //
 // Returns a slice of categories with the total amount.
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
-func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
+func (s *Store) List(meta params.Params, cfg ListConfig) (domain.Categories, int, error) {
 	const op = "CategoryStore.List"
 
 	q := s.Builder().
@@ -27,6 +34,11 @@ func (s *Store) List(meta params.Params) (domain.Categories, int, error) {
 	err := database.FilterRows(s.Driver, meta.Filters, TableName)
 	if err != nil {
 		return nil, -1, err
+	}
+
+	// Get by resource
+	if cfg.Resource != "" {
+		q.Where(s.Schema()+TableName+".resource", "=", cfg.Resource)
 	}
 
 	// Apply order.

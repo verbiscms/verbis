@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -28,7 +28,7 @@ func (t *AuthTestSuite) TestAuth_Login() {
 		message string
 		input   interface{}
 		cookie  bool
-		mock    func(m *mocks.AuthRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			user,
@@ -36,8 +36,8 @@ func (t *AuthTestSuite) TestAuth_Login() {
 			"Successfully logged in & session started",
 			login,
 			true,
-			func(m *mocks.AuthRepository) {
-				m.On("Authenticate", login.Email, login.Password).Return(user, nil)
+			func(m *mocks.Repository) {
+				m.On("Login", login.Email, login.Password).Return(user, nil)
 			},
 		},
 		"Validation Failed": {
@@ -46,8 +46,8 @@ func (t *AuthTestSuite) TestAuth_Login() {
 			"Validation failed",
 			loginBadValidation,
 			false,
-			func(m *mocks.AuthRepository) {
-				m.On("Authenticate", loginBadValidation.Email, loginBadValidation.Email).Return(domain.User{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Login", loginBadValidation.Email, loginBadValidation.Email).Return(domain.User{}, fmt.Errorf("error"))
 			},
 		},
 		"Not Authorised": {
@@ -56,8 +56,8 @@ func (t *AuthTestSuite) TestAuth_Login() {
 			"unauthorised",
 			login,
 			false,
-			func(m *mocks.AuthRepository) {
-				m.On("Authenticate", login.Email, login.Password).Return(domain.User{}, &errors.Error{Code: errors.INVALID, Message: "unauthorised"})
+			func(m *mocks.Repository) {
+				m.On("Login", login.Email, login.Password).Return(domain.User{}, &errors.Error{Code: errors.INVALID, Message: "unauthorised"})
 			},
 		},
 	}
