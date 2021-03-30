@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/services/fields/location"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/store/posts/categories"
 	"github.com/ainsleyclark/verbis/api/store/posts/fields"
@@ -37,6 +38,7 @@ type Store struct {
 	fields     fields.Repository
 	meta       meta.Repository
 	users      users.Repository
+	finder     location.Finder
 }
 
 const (
@@ -68,6 +70,7 @@ func New(cfg *store.Config) *Store {
 		fields:     fields.New(cfg),
 		meta:       meta.New(cfg),
 		users:      users.New(cfg),
+		finder:     location.NewLocation(cfg.Paths.Storage),
 	}
 }
 

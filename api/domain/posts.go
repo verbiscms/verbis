@@ -66,9 +66,9 @@ type (
 	// PostCreate defines the data when a post is created.
 	PostCreate struct {
 		Post
-		Author   int         `json:"author,omitempty" binding:"numeric"`
-		Category *int        `json:"category,omitempty" binding:"omitempty,numeric"`
-		Fields   []PostField `json:"fields,omitempty"`
+		Author   int        `json:"author,omitempty" binding:"numeric"`
+		Category *int       `json:"category,omitempty" binding:"omitempty,numeric"`
+		Fields   PostFields `json:"fields,omitempty"`
 	}
 	// PostOptions defines the global post options that
 	// includes post meta and post seo information.

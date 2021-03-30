@@ -24,9 +24,10 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 				p.Category = &v.Category
 			}
 
-			//if layout {
-			//p.Layout = s.fieldsModel.Layout(p)
-			//}
+			if layout {
+				// TODO, Cacheable is always false.
+				p.Layout = s.finder.Layout(p, false)
+			}
 
 			posts = append(posts, p)
 		}
