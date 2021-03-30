@@ -14,6 +14,9 @@ import (
 )
 
 func (t *PostsTestSuite) TestStore_Validate() {
+	resource := "resource"
+	category := 1
+
 	tt := map[string]struct {
 		input domain.PostCreate
 		mock  func(m sqlmock.Sqlmock)
@@ -25,12 +28,15 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				Post: domain.Post{
 					PageTemplate: "template",
 					PageLayout:   "layout",
+					Slug:         "slug",
 				},
 			},
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindBySlugQuery))).WillReturnRows(rows)
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = 'slug' AND posts.resource IS NULL)"
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(false)
+				m.ExpectQuery(regexp.QuoteMeta(q)).
+					WillReturnRows(rows)
 			},
 			func(m *mocks.Repository) {
 				m.On("Templates", mock.Anything).Return(domain.Templates{
@@ -42,7 +48,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			},
 			nil,
 		},
-		"Slug": {
+		"Null Resource": {
 			domain.PostCreate{
 				Post: domain.Post{
 					PageTemplate: "template",
@@ -51,7 +57,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				},
 			},
 			func(m sqlmock.Sqlmock) {
-				q := "SELECT EXISTS (SELECT * FROM `posts` WHERE `posts`.`slug` = 'slug' AND posts.resource IS NULL)"
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = 'slug' AND posts.resource IS NULL)"
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
 				m.ExpectQuery(regexp.QuoteMeta(q)).
@@ -65,7 +71,59 @@ func (t *PostsTestSuite) TestStore_Validate() {
 					domain.Layout{Key: "layout", Name: "Layout"},
 				}, nil)
 			},
-			nil,
+			ErrPostsExists.Error(),
+		},
+		"With Resource": {
+			domain.PostCreate{
+				Post: domain.Post{
+					PageTemplate: "template",
+					PageLayout:   "layout",
+					Slug:         "slug",
+					Resource:     &resource,
+				},
+			},
+			func(m sqlmock.Sqlmock) {
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = 'slug' AND `posts`.`resource` = 'resource')"
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(q)).
+					WillReturnRows(rows)
+			},
+			func(m *mocks.Repository) {
+				m.On("Templates", mock.Anything).Return(domain.Templates{
+					domain.Template{Key: "template", Name: "Template"},
+				}, nil)
+				m.On("Layouts", mock.Anything).Return(domain.Layouts{
+					domain.Layout{Key: "layout", Name: "Layout"},
+				}, nil)
+			},
+			ErrPostsExists.Error(),
+		},
+		"With Category": {
+			domain.PostCreate{
+				Post: domain.Post{
+					PageTemplate: "template",
+					PageLayout:   "layout",
+					Slug:         "slug",
+				},
+				Category: &category,
+			},
+			func(m sqlmock.Sqlmock) {
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` LEFT JOIN `post_categories` AS `pc` ON `posts`.`id` = `pc`.`post_id` LEFT JOIN `categories` AS `c` ON `pc`.`category_id` = `c`.`id` WHERE `posts`.`slug` = 'slug' AND `c`.`id` = '1' AND posts.resource IS NULL)"
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(q)).
+					WillReturnRows(rows)
+			},
+			func(m *mocks.Repository) {
+				m.On("Templates", mock.Anything).Return(domain.Templates{
+					domain.Template{Key: "template", Name: "Template"},
+				}, nil)
+				m.On("Layouts", mock.Anything).Return(domain.Layouts{
+					domain.Layout{Key: "layout", Name: "Layout"},
+				}, nil)
+			},
+			ErrPostsExists.Error(),
 		},
 		"No Page Templates": {
 			domain.PostCreate{
@@ -126,7 +184,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(nil)
+			s := t.Setup(test.mock)
 			s.Theme = &domain.ThemeConfig{}
 
 			theme := &mocks.Repository{}
@@ -140,61 +198,6 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				t.Contains(err.Error(), test.want)
 				return
 			}
-
-			fmt.Println(t.Logger)
-
-			t.RunT(test.want, err)
-		})
-	}
-}
-
-func (t *PostsTestSuite) TestStore_ValidateDB() {
-	tt := map[string]struct {
-		input domain.PostCreate
-		mock  func(m sqlmock.Sqlmock)
-		want  interface{}
-	}{
-		"Slug": {
-			domain.PostCreate{
-				Post: domain.Post{
-					PageTemplate: "template",
-					PageLayout:   "layout",
-					Slug:         "slug",
-				},
-			},
-			func(m sqlmock.Sqlmock) {
-				q := "SELECT EXISTS (SELECT * FROM `posts` WHERE `posts`.`slug` = 'slug' AND posts.resource IS NULL)"
-				rows := sqlmock.NewRows([]string{"id"}).
-					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(q)).
-					WillReturnRows(rows)
-			},
-			nil,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func() {
-			s := t.Setup(nil)
-			s.Theme = &domain.ThemeConfig{}
-
-			theme := &mocks.Repository{}
-			theme.On("Templates", mock.Anything).Return(domain.Templates{
-				domain.Template{Key: "template", Name: "Template"},
-			}, nil)
-			theme.On("Layouts", mock.Anything).Return(domain.Layouts{
-				domain.Layout{Key: "layout", Name: "Layout"},
-			}, nil)
-
-			s.ThemeService = theme
-
-			err := s.validate(&test.input)
-			if err != nil {
-				t.Contains(err.Error(), test.want)
-				return
-			}
-
-			fmt.Println(t.Logger)
 
 			t.RunT(test.want, err)
 		})
