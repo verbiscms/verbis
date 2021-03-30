@@ -33,6 +33,8 @@ up the server on the port specified in the .env file.`,
 			cfg.Running = true
 			d := deps.New(*cfg)
 
+			fmt.Println(d.Config)
+
 			// Set dependencies
 			d.SetTmpl(tplimpl.New(d))
 
