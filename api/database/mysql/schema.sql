@@ -70,7 +70,7 @@ CREATE TABLE `form_fields` (
     `key` varchar(150) NOT NULL,
     `label` varchar(150) NOT NULL,
     `type` varchar(150) NOT NULL,
-    `validation` varchar(500) NULL,
+    `validation` varchar(500) NOT NULL,
     `required` bit DEFAULT 0 NOT NULL,
     `options` json,
     PRIMARY KEY (`id`),
