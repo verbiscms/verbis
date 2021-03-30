@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	UpdateQuery = "UPDATE `users` SET `first_name` = 'Verbis', `last_name` = 'CMS', `email` = 'verbis@verbiscms.com', `password` = ?, `website` = NULL, `facebook` = 'Verbis', `twitter` = NULL, `linked_in` = NULL, `instagram` = NULL, `biography` = NULL, `profile_picture_id` = NULL, `token` = ?, `updated_at` = NOW() WHERE `id` = '1'"
+	UpdateQuery = "UPDATE `users` SET `first_name` = 'Verbis', `last_name` = 'CMS', `email` = 'verbis@verbiscms.com', `website` = NULL, `facebook` = 'Verbis', `twitter` = NULL, `linked_in` = NULL, `instagram` = NULL, `biography` = NULL, `profile_picture_id` = NULL, `updated_at` = NOW() WHERE `id` = '1'"
 )
 
 func (t *UsersTestSuite) TestStore_Update() {
@@ -30,14 +30,6 @@ func (t *UsersTestSuite) TestStore_Update() {
 
 				m.ExpectExec(regexp.QuoteMeta(UpdatePivotQuery)).
 					WillReturnResult(sqlmock.NewResult(0, 1))
-			},
-		},
-		"Validation Failed": {
-			"Validation failed, choose another email address",
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id"}).
-					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsByEmailQuery)).WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
@@ -74,7 +66,7 @@ func (t *UsersTestSuite) TestStore_Update() {
 				t.Contains(errors.Message(err), test.want, err)
 				return
 			}
-			t.RunT(cat, test.want, 3)
+			t.RunT(cat, test.want, 2)
 		})
 	}
 }

@@ -45,7 +45,7 @@ func New(db database.Driver) (*Repository, error) {
 
 	cfg := &storeConfig.Config{
 		Driver:       db,
-		Theme:        nil,
+		Theme:        config.Get(),
 		Options:      nil,
 		Paths:        paths.Get(),
 		Owner:        nil,

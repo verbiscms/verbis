@@ -27,7 +27,7 @@ func (t *OptionsTestSuite) TestStore_Unmarshal() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(nil)
-			_, err := s.unmarshal(&test.input)
+			_, err := s.unmarshal(test.input)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

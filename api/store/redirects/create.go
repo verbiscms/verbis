@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 )
 
 // Create
@@ -33,7 +32,7 @@ func (s *Store) Create(r domain.Redirect) (domain.Redirect, error) {
 		Column("updated_at", "NOW()").
 		Column("created_at", "NOW()")
 
-	result, err := s.DB().Exec(q.Build(), uuid.New().String())
+	result, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating redirect with the from path: " + r.From, Operation: op, Err: err}
 	} else if err != nil {

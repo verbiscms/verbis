@@ -39,6 +39,16 @@ func (a DBAnyString) Match(v driver.Value) bool {
 	return ok
 }
 
+// Any string for mock string args.
+type DBAnyJsonMessage struct{}
+
+// Match satisfies sqlmock.Argument interface
+// for any json raw messages.
+func (a DBAnyJsonMessage) Match(v driver.Value) bool {
+	_, ok := v.([]byte)
+	return ok
+}
+
 // NewDBSuite
 //
 // New recorder for testing

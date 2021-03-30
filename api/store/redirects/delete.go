@@ -24,7 +24,7 @@ func (s *Store) Delete(id int) error {
 		DeleteFrom(s.Schema()+TableName).
 		Where("id", "=", id)
 
-	_, err := s.DB().Exec(q.Build(), id)
+	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the ID: %v", id), Operation: op, Err: err}
 	} else if err != nil {
