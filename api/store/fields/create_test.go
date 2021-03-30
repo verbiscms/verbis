@@ -18,7 +18,7 @@ var (
 	CreateQuery = "INSERT INTO `post_fields` (`uuid`, `post_id`, `type`, `name`, `value`, `field_key`) VALUES (?, 1, 'text', 'name', 'val', 'key')"
 )
 
-func (t *PostFieldsTestSuite) TestStore_Create() {
+func (t *FieldsTestSuite) TestStore_Create() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)

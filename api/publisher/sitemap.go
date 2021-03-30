@@ -15,6 +15,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/store/posts"
 	"io/ioutil"
 	"time"
 )
@@ -266,13 +267,18 @@ func (s *Sitemap) ClearCache() {
 func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 	const op = "SiteMapper.retrievePages"
 
-	posts, _, err := s.deps.Store.Posts.Get(params.Params{
+	cfg := posts.ListConfig{
+		Resource: resource,
+		Status:   "published",
+	}
+
+	posts, _, err := s.deps.Store.Posts.List(params.Params{
 		Page:           1,
 		Limit:          0,
 		LimitAll:       true,
 		OrderDirection: "desc",
 		OrderBy:        "created_at",
-	}, false, resource, "published")
+	}, false, cfg)
 
 	if err != nil {
 		return nil, err
@@ -315,7 +321,7 @@ func (s *Sitemap) getRedirects() []viewItem {
 	}
 
 	var data []viewItem
-	redirects, _, err := s.deps.Store.Redirects.Get(params.Params{LimitAll: true, OrderBy: "created_at", OrderDirection: "desc"})
+	redirects, _, err := s.deps.Store.Redirects.List(params.Params{LimitAll: true, OrderBy: "created_at", OrderDirection: "desc"})
 
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining site redirects", Operation: op, Err: err}).Error()
@@ -370,7 +376,7 @@ func (s *Sitemap) canServeResource(resource string) error {
 //
 //nolint
 func (s *Sitemap) getHomeCreatedAt() string {
-	home, err := s.deps.Store.Posts.GetBySlug("/")
+	home, err := s.deps.Store.Posts.FindBySlug("/")
 	createdAt := time.Now().Format(time.RFC3339)
 	if err == nil {
 		createdAt = home.CreatedAt.Format(time.RFC3339)

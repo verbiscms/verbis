@@ -9,8 +9,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
+	media "github.com/ainsleyclark/verbis/api/mocks/store/media"
+	posts "github.com/ainsleyclark/verbis/api/mocks/store/posts"
+	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -51,17 +55,17 @@ func (t *FieldTestSuite) Reset() {
 // GetMockService
 //
 // Mock service for testing.
-func (t *FieldTestSuite) GetMockService(fields domain.PostFields, fnc func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)) *Service {
-	fieldsMock := &mocks.FieldsRepository{}
-	categoryMock := &mocks.CategoryRepository{}
+func (t *FieldTestSuite) GetMockService(f domain.PostFields, fnc func(f *fields.Repository, c *categories.Repository)) *Service {
+	fieldsMock := &fields.Repository{}
+	categoryMock := &categories.Repository{}
 
 	if fnc != nil {
 		fnc(fieldsMock, categoryMock)
 	}
 
-	s := t.GetService(fields)
+	s := t.GetService(f)
 	s.deps = &deps.Deps{
-		Store: &models.Store{
+		Store: &store.Repository{
 			Categories: categoryMock,
 			Fields:     fieldsMock,
 		},
@@ -73,8 +77,8 @@ func (t *FieldTestSuite) GetMockService(fields domain.PostFields, fnc func(f *mo
 // GetPostsMockService
 //
 // Mock posts service for testing.
-func (t *FieldTestSuite) GetPostsMockService(fields domain.PostFields, fnc func(p *mocks.PostsRepository)) *Service {
-	postsMocks := &mocks.PostsRepository{}
+func (t *FieldTestSuite) GetPostsMockService(fields domain.PostFields, fnc func(p *posts.Repository)) *Service {
+	postsMocks := &posts.Repository{}
 
 	if fnc != nil {
 		fnc(postsMocks)
@@ -82,7 +86,7 @@ func (t *FieldTestSuite) GetPostsMockService(fields domain.PostFields, fnc func(
 
 	s := t.GetService(fields)
 	s.deps = &deps.Deps{
-		Store: &models.Store{
+		Store: &store.Repository{
 			Posts: postsMocks,
 		},
 	}
@@ -93,11 +97,11 @@ func (t *FieldTestSuite) GetPostsMockService(fields domain.PostFields, fnc func(
 // GetTypeMockService
 //
 // Mock store service for testing.
-func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository, m *mocks.MediaRepository, p *mocks.PostsRepository, u *mocks.UserRepository)) *Service {
-	categoryMock := &mocks.CategoryRepository{}
-	mediaMock := &mocks.MediaRepository{}
-	postsMock := &mocks.PostsRepository{}
-	userMock := &mocks.UserRepository{}
+func (t *FieldTestSuite) GetTypeMockService(fnc func(c *categories.Repository, m *media.Repository, p *posts.Repository, u *users.Repository)) *Service {
+	categoryMock := &categories.Repository{}
+	mediaMock := &media.Repository{}
+	postsMock := &posts.Repository{}
+	userMock := &users.Repository{}
 
 	if fnc != nil {
 		fnc(categoryMock, mediaMock, postsMock, userMock)
@@ -105,7 +109,7 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *mocks.CategoryRepository
 
 	s := t.GetService(nil)
 	s.deps = &deps.Deps{
-		Store: &models.Store{
+		Store: &store.Repository{
 			Categories: categoryMock,
 			Media:      mediaMock,
 			Posts:      postsMock,

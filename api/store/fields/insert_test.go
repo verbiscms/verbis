@@ -14,7 +14,7 @@ import (
 	"regexp"
 )
 
-func (t *PostFieldsTestSuite) TestStore_Insert() {
+func (t *FieldsTestSuite) TestStore_Insert() {
 	tt := map[string]struct {
 		want   interface{}
 		fields domain.PostFields

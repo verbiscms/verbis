@@ -24,8 +24,13 @@ func (r *publish) Upload(g *gin.Context) (domain.Mime, *[]byte, error) {
 	// Set cache headers
 	r.cacher.Cache(g)
 
+	media, err := r.Store.Media.FindByURL(url)
+	if err != nil {
+		return "", nil, err
+	}
+
 	// Get the data & mime type from the media store
-	file, mimeType, err := r.Store.Media.Serve(url, webp.Accepts(g))
+	file, mimeType, err := r.media.Serve(media, webp.Accepts(g))
 	if err != nil {
 		return "", nil, err
 	}

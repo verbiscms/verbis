@@ -17,7 +17,7 @@ func (ns *Namespace) Auth() bool {
 	if err != nil {
 		return false
 	}
-	_, err = ns.deps.Store.User.GetByToken(cookie)
+	_, err = ns.deps.Store.User.FindByToken(cookie)
 	return err == nil
 }
 
@@ -34,7 +34,7 @@ func (ns *Namespace) Admin() bool {
 		return false
 	}
 
-	user, err := ns.deps.Store.User.GetByToken(cookie)
+	user, err := ns.deps.Store.User.FindByToken(cookie)
 	if err != nil {
 		return false
 	}

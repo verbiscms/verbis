@@ -22,7 +22,7 @@ func (v *Value) post(value domain.FieldValue) (interface{}, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Unable to cast post ID to an integer", Operation: op, Err: err}
 	}
 
-	post, err := v.deps.Store.Posts.GetByID(id, false)
+	post, err := v.deps.Store.Posts.Find(id, false)
 	if err != nil {
 		return nil, err
 	}
