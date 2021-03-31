@@ -89,6 +89,7 @@ func (p *page) Execute() ([]byte, error) {
 	failed, err := exec.ExecutePost(&buf, template, p.ctx, p.post)
 
 	if err != nil {
+		logger.WithError(err).Error()
 		rec := recovery.New(p.Deps).Recover(recovery.Config{
 			Code:    http.StatusInternalServerError,
 			Context: p.ctx,

@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	UpdateQuery = "UPDATE `post_fields` SET `type` = 'text', `name` = 'name', `value` = 'val', `field_key` = 'key' WHERE `uuid` = '00000000-0000-0000-0000-000000000000' AND `post_id` = '1' AND `field_key` = 'key' AND `name` 'name'"
+	UpdateQuery = "UPDATE `post_fields` SET `value` = 'val', `field_key` = 'key' WHERE `post_id` = '1' AND `field_key` = 'key' AND `name` = 'name'"
 )
 
 func (t *FieldsTestSuite) TestStore_Update() {

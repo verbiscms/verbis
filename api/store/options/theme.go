@@ -5,7 +5,6 @@
 package options
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
 )
@@ -26,7 +25,6 @@ func (s *Store) GetTheme() (string, error) {
 
 	theme, err := cast.ToStringE(opt)
 	if err != nil {
-		fmt.Println(err)
 		return "", &errors.Error{Code: errors.INVALID, Message: "Error casting option value to string", Operation: op, Err: err}
 	}
 

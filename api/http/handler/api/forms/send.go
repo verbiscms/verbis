@@ -39,6 +39,8 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
+	form.Body = service.ToStruct(form)
+
 	err = ctx.ShouldBind(form.Body)
 	if err != nil {
 		// If file has an empty value, no validation data is returned.
