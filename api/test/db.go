@@ -13,11 +13,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/mocks/database"
-	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"reflect"
 	"testing"
 )
 
@@ -56,7 +54,6 @@ type DBAnyJSONMessage struct{}
 // Match satisfies sqlmock.Argument interface
 // for any json raw messages.
 func (a DBAnyJSONMessage) Match(v driver.Value) bool {
-	color.Green.Println(reflect.TypeOf(v))
 	_, ok := v.([]byte)
 	return ok
 }

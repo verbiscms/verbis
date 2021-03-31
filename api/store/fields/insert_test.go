@@ -30,7 +30,7 @@ func (t *FieldsTestSuite) TestStore_Insert() {
 		},
 		"Delete Error": {
 			database.ErrQueryMessage,
-			fields,
+			fieldsSingular,
 			func(m sqlmock.Sqlmock) {
 				// Find
 				rows := sqlmock.NewRows([]string{"id", "name", "field_key"}).
@@ -44,7 +44,7 @@ func (t *FieldsTestSuite) TestStore_Insert() {
 		},
 		"Update": {
 			nil,
-			fields,
+			fieldsSingular,
 			func(m sqlmock.Sqlmock) {
 				// Find
 				rows := sqlmock.NewRows([]string{"id", "post_id", "type", "name", "field_key", "value"}).
@@ -63,7 +63,7 @@ func (t *FieldsTestSuite) TestStore_Insert() {
 		},
 		"Update Error": {
 			database.ErrQueryMessage,
-			fields,
+			fieldsSingular,
 			func(m sqlmock.Sqlmock) {
 				// Find
 				rows := sqlmock.NewRows([]string{"id", "post_id", "type", "name", "field_key", "value"}).
@@ -82,7 +82,7 @@ func (t *FieldsTestSuite) TestStore_Insert() {
 		},
 		"Insert": {
 			nil,
-			fields,
+			fieldsSingular,
 			func(m sqlmock.Sqlmock) {
 				// Find
 				rows := sqlmock.NewRows([]string{"id", "post_id", "type", "name", "field_key", "value"}).
@@ -102,7 +102,7 @@ func (t *FieldsTestSuite) TestStore_Insert() {
 		},
 		"Insert Error": {
 			database.ErrQueryMessage,
-			fields,
+			fieldsSingular,
 			func(m sqlmock.Sqlmock) {
 				// Find
 				rows := sqlmock.NewRows([]string{"id", "post_id", "type", "name", "field_key", "value"}).
