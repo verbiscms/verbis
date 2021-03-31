@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/gookit/color"
 )
 
 // ListConfig defines the configuration for obtaining
@@ -62,8 +61,6 @@ func (s *Store) List(meta params.Params, layout bool, cfg ListConfig) (domain.Po
 
 	// Select posts raw.
 	var raw []postsRaw
-
-	color.Yellow.Println(selectStmt(q.Build()))
 
 	err = s.DB().Select(&raw, selectStmt(q.Build()))
 	if err != nil {

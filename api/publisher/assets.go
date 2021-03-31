@@ -7,9 +7,9 @@ package publisher
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
-	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"path/filepath"
@@ -49,9 +49,9 @@ func (r *publish) Asset(g *gin.Context) (string, *[]byte, error) {
 
 	// Check if the serving of webp's is allowed & get the
 	// webp images and assign if not nil
-	if r.Options.MediaServeWebP && webp.Accepts(g) {
-		webpFile := webp.GetData(g, assetsPath+fileName, mimeType)
-		if webpFile != nil {
+	if r.Options.MediaServeWebP && r.WebP.Accepts(g) {
+		webpFile, err := r.WebP.File(g, assetsPath+fileName, domain.Mime(mimeType))
+		if err == nil {
 			return "image/webp", &webpFile, nil
 		}
 	}
