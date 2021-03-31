@@ -43,7 +43,6 @@ type Repository struct {
 // Create a new database instance, connect
 // to database.
 func New(db database.Driver, th *domain.ThemeConfig) (*Repository, error) {
-
 	cfg := &storeConfig.Config{
 		Driver:       db,
 		Theme:        th,

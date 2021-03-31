@@ -76,22 +76,14 @@ var (
 			OriginalValue: "val",
 		},
 	}
-	// The post fields copy used for testing.
-	fieldsCopy = domain.PostFields{
+	// The post fields used for testing.
+	fieldsSingular = domain.PostFields{
 		{
 			Id:            1,
 			PostId:        1,
 			Type:          "text",
-			Name:          "test1",
-			Key:           "key1",
-			OriginalValue: "val",
-		},
-		{
-			Id:            2,
-			PostId:        1,
-			Type:          "text",
-			Name:          "test2",
-			Key:           "key2",
+			Name:          "name",
+			Key:           "key",
 			OriginalValue: "val",
 		},
 	}

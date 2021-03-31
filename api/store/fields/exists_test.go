@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `post_fields` WHERE `post_id` = '1' AND `uuid` = '00000000-0000-0000-0000-000000000000' AND `key` = 'key' AND `name` = 'name')"
+	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `post_fields` WHERE `post_id` = '1' AND `type` = 'text' AND `field_key` = 'key' AND `name` = 'name')"
 )
 
 func (t *FieldsTestSuite) TestStore_Exists() {
@@ -24,7 +24,8 @@ func (t *FieldsTestSuite) TestStore_Exists() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Not Found": {
@@ -32,13 +33,15 @@ func (t *FieldsTestSuite) TestStore_Exists() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(false)
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Internal": {
 			false,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
