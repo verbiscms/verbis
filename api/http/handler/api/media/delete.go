@@ -28,7 +28,7 @@ func (m *Media) Delete(ctx *gin.Context) {
 
 	media, err := m.Store.Media.Find(id)
 	if err != nil {
-		api.Respond(ctx, http.StatusBadRequest, "No media item found with the ID + "+strconv.Itoa(id), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		api.Respond(ctx, http.StatusBadRequest, "No media item found with the ID: "+strconv.Itoa(id), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 

@@ -27,7 +27,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			"Successfully updated media item with ID: 123",
 			mediaItem,
 			func(m *mocks.Repository) {
-				m.On("Update", &mediaItem).Return(nil)
+				m.On("Update", mediaItem).Return(mediaItem, nil)
 			},
 			"/media/123",
 		},
@@ -37,7 +37,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			"Validation failed",
 			`{"id": "wrongid"}`,
 			func(m *mocks.Repository) {
-				m.On("Update", mediaBadValidation).Return(fmt.Errorf("error"))
+				m.On("Update", mediaBadValidation).Return(mediaItem, fmt.Errorf("error"))
 			},
 			"/media/123",
 		},
@@ -47,7 +47,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			"A valid ID is required to update the media item",
 			mediaItem,
 			func(m *mocks.Repository) {
-				m.On("Update", mediaItem).Return(fmt.Errorf("error"))
+				m.On("Update", mediaItem).Return(mediaItem, fmt.Errorf("error"))
 			},
 			"/media/wrongid",
 		},
@@ -57,7 +57,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			"not found",
 			&mediaItem,
 			func(m *mocks.Repository) {
-				m.On("Update", &mediaItem).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Update", mediaItem).Return(mediaItem, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/media/123",
 		},
@@ -67,7 +67,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			"config",
 			mediaItem,
 			func(m *mocks.Repository) {
-				m.On("Update", &mediaItem).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Update", mediaItem).Return(mediaItem, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/media/123",
 		},

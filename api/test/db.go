@@ -13,9 +13,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/mocks/database"
+	"github.com/gookit/color"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"reflect"
 	"testing"
 )
 
@@ -27,6 +29,15 @@ type DBSuite struct {
 	Mock       sqlMock.Sqlmock
 	Logger     *bytes.Buffer
 	mockDriver *mocks.Driver
+}
+
+// Any for mock args.
+type DBAny struct{}
+
+// Match satisfies sqlmock.Argument interface
+// for any arg.
+func (a DBAny) Match(v driver.Value) bool {
+	return true
 }
 
 // Any string for mock string args.
@@ -45,6 +56,7 @@ type DBAnyJsonMessage struct{}
 // Match satisfies sqlmock.Argument interface
 // for any json raw messages.
 func (a DBAnyJsonMessage) Match(v driver.Value) bool {
+	color.Green.Println(reflect.TypeOf(v))
 	_, ok := v.([]byte)
 	return ok
 }
