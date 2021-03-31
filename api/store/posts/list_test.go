@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/test/dummy"
+	"github.com/gookit/color"
 	"regexp"
 )
 
@@ -162,6 +163,7 @@ func (t *PostsTestSuite) TestStore_List() {
 			s := t.Setup(test.mock)
 			got, total, err := s.List(test.meta, false, test.cfg)
 			if err != nil {
+				color.Red.Println(err)
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
