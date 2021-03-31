@@ -14,12 +14,12 @@ import (
 	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
-	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/gookit/color"
 	"regexp"
 )
 
 var (
-	UpdateQuery = "UPDATE `posts` SET `uuid` = ?, `slug` = '/post', `title` = 'post', `status` = '', `resource` = NULL, `page_template` = 'template', `layout` = 'layout', `codeinjection_head` = NULL, `codeinjection_foot` = NULL, `user_id` = 1, `published_at` = NULL, `updated_at` = NOW()"
+	UpdateQuery = "UPDATE `posts` SET `slug` = 'slug', `title` = 'post', `status` = '', `resource` = '', `page_template` = 'template', `layout` = 'layout', `codeinjection_head` = '', `codeinjection_foot` = '', `user_id` = 1, `published_at` = NULL, `updated_at` = NOW() WHERE `id` = '1'"
 )
 
 func (t *PostsTestSuite) TestStore_Update() {
@@ -39,36 +39,24 @@ func (t *PostsTestSuite) TestStore_Update() {
 			postCreate,
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
-
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
 					AddRow(post.Id, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
+
+				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
+
+				rowsL := sqlmock.NewRows([]string{"id", "slug", "title"}).
+					AddRow(post.Id, post.Slug, post.Title)
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rowsL)
 			},
 			postDatum,
-		},
-		"Validation Failed": {
-			domain.PostCreate{},
-			repoSuccess,
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
-
-				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
-			},
-			"Validation failed, no page template exists",
 		},
 		"No Rows": {
 			postCreate,
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 			"Error updating post with the title: post",
@@ -78,7 +66,6 @@ func (t *PostsTestSuite) TestStore_Update() {
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 			database.ErrQueryMessage,
@@ -91,7 +78,6 @@ func (t *PostsTestSuite) TestStore_Update() {
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
 
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
@@ -108,7 +94,6 @@ func (t *PostsTestSuite) TestStore_Update() {
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
 
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
@@ -136,7 +121,6 @@ func (t *PostsTestSuite) TestStore_Update() {
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
 
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
@@ -152,10 +136,11 @@ func (t *PostsTestSuite) TestStore_Update() {
 			s := t.SetupMock(test.mock, test.repo)
 			post, err := s.Update(test.input)
 			if err != nil {
+				color.Red.Println(err)
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(post, test.want, 6)
+			t.RunT(post, test.want, 3)
 		})
 	}
 }
