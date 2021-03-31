@@ -16,7 +16,7 @@ type Repository interface {
 	List(meta params.Params) (domain.MediaItems, int, error)
 	Find(id int) (domain.Media, error)
 	FindByName(name string) (domain.Media, error)
-	FindByURL(url string) (domain.Media, error)
+	FindByURL(url string) (domain.Media, string, error)
 	Create(m domain.Media) (domain.Media, error)
 	Update(m domain.Media) (domain.Media, error)
 	Delete(id int) error

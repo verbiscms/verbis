@@ -26,6 +26,12 @@ func (m *Media) Delete(ctx *gin.Context) {
 		return
 	}
 
+	media, err := m.Store.Media.Find(id)
+	if err != nil {
+		api.Respond(ctx, http.StatusBadRequest, "No media item found with the ID + "+strconv.Itoa(id), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
+	}
+
 	err = m.Store.Media.Delete(id)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
@@ -34,6 +40,8 @@ func (m *Media) Delete(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
+
+	go m.service.Delete(media)
 
 	api.Respond(ctx, http.StatusOK, "Successfully deleted media item with ID: "+strconv.Itoa(id), nil)
 }

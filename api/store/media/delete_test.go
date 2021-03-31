@@ -26,7 +26,6 @@ func (t *MediaTestSuite) TestStore_Delete() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(mediaItem.Id).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
@@ -34,7 +33,6 @@ func (t *MediaTestSuite) TestStore_Delete() {
 			"No media item exists with the ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
-					WithArgs(mediaItem.Id).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},

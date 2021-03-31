@@ -22,7 +22,7 @@ type Handler interface {
 // Media defines the handler for all media item routes.
 type Media struct {
 	*deps.Deps
-	Service media.Service
+	service media.Library
 }
 
 // New
@@ -30,6 +30,7 @@ type Media struct {
 // Creates a new media handler.
 func New(d *deps.Deps) *Media {
 	return &Media{
-		Deps: d,
+		Deps:    d,
+		service: media.New(d.Options, d.Store.Media.Exists),
 	}
 }

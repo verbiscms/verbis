@@ -174,7 +174,7 @@
 						:class="{ 'media-item-active' : selectedMedia && selectedMedia['uuid'] === item['uuid'],
 						'media-item-plain' : item.loading,
 						'media-item-bulk' : checked.includes(item.id),
-						'media-item-icon' : getMediaType(item.type) !== 'image' && getMediaType(item.type) !== 'video' || (item['unsupported']),
+						'media-item-icon' : getMediaType(item.mime) !== 'image' && getMediaType(item.mime) !== 'video' || (item['unsupported']),
 						'media-item-error' : item.loading && item['unsupported'],
 						'media-item-no-options' : !options }">
 						<!-- Checkbox -->
@@ -196,17 +196,17 @@
 							<i class="media-close feather feather-x" @click="removeErrorItem(item, itemIndex)"></i>
 						</div>
 						<!-- Image -->
-						<div v-else-if="getMediaType(item.type) === 'image'" class="media-item-image media-item-trans" ref="images">
-							<img v-onload="getSiteUrl + item.url" :alt="item.alt" @loaded="loadImages($event)">
+						<div v-else-if="getMediaType(item.mime) === 'image'" class="media-item-image media-item-trans" ref="images">
+							<img v-onload="getSiteUrl + item.url + '?webp=false'" :alt="item.alt" @loaded="loadImages($event)">
 						</div>
 						<!-- Video -->
-						<div v-else-if="getMediaType(item.type) === 'video'" class="media-item-video media-item-trans">
+						<div v-else-if="getMediaType(item.mime) === 'video'" class="media-item-video media-item-trans">
 							<video controls preload="none" disablepictureinpicture controlslist="nodownload">
 								<source :src="getSiteUrl + item.url">
 							</video>
 						</div>
 						<!-- File -->
-						<div v-else-if="getMediaType(item.type) === 'file'" class="media-item-icon-cont media-item-trans">
+						<div v-else-if="getMediaType(item.mime) === 'file'" class="media-item-icon-cont media-item-trans">
 							<i class="feather feather-file"></i>
 							<p>{{ item['file_name'] }}</p>
 						</div>
