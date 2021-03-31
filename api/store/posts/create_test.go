@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
 	"github.com/ainsleyclark/verbis/api/test"
