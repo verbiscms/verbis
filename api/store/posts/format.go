@@ -4,7 +4,9 @@
 
 package posts
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import (
+	"github.com/ainsleyclark/verbis/api/domain"
+)
 
 // format
 //
@@ -50,6 +52,10 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 				}
 			}
 		}
+	}
+
+	for i, v := range posts {
+		posts[i].Permalink = s.permalink(&v)
 	}
 
 	return posts
