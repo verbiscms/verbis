@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -24,7 +25,7 @@ import (
 // It then sets cache headers using the cacher interface & checks if a webp
 // image is available with the path of .jpg.webp. The minify is the used
 // to see if the file can be minfied.
-func (r *publish) Asset(g *gin.Context) (string, *[]byte, error) {
+func (r *publish) Asset(g *gin.Context) (*[]byte, domain.Mime, error) {
 	const op = "publish.GetAsset"
 
 	api.AssetsChan <- 1
@@ -35,13 +36,13 @@ func (r *publish) Asset(g *gin.Context) (string, *[]byte, error) {
 	url := g.Request.URL.Path
 
 	// Get the relevant paths
-	assetsPath := r.ThemePath() + r.Config.AssetsPath
+	assetsPath := r.ThemePath() + string(os.PathSeparator) + r.Config.AssetsPath
 	fileName := strings.Replace(url, "/assets", "", 1)
 	mimeType := mime.TypeByExtension(strings.Replace(filepath.Ext(fileName), ".", "", 1))
 
 	file, err := ioutil.ReadFile(assetsPath + fileName)
 	if err != nil {
-		return "", nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the file with the path: %s", assetsPath+fileName), Operation: op, Err: err}
+		return nil, "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the file with the path: %s", assetsPath+fileName), Operation: op, Err: err}
 	}
 
 	// Set cache headers
@@ -52,7 +53,7 @@ func (r *publish) Asset(g *gin.Context) (string, *[]byte, error) {
 	if r.Options.MediaServeWebP && r.WebP.Accepts(g) {
 		webpFile, err := r.WebP.File(g, assetsPath+fileName, domain.Mime(mimeType))
 		if err == nil {
-			return "image/webp", &webpFile, nil
+			return &webpFile, "image/webp", nil
 		}
 	}
 
@@ -62,5 +63,5 @@ func (r *publish) Asset(g *gin.Context) (string, *[]byte, error) {
 	//	return mimeType, &file, nil
 	//}
 
-	return mimeType, &file, nil
+	return &file, domain.Mime(mimeType), nil
 }

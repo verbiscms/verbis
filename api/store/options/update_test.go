@@ -29,7 +29,7 @@ func (t *OptionsTestSuite) TestStore_Update() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyJsonMessage{}).
+					WithArgs(test.DBAnyJSONMessage{}).
 					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
@@ -38,7 +38,7 @@ func (t *OptionsTestSuite) TestStore_Update() {
 			"Error updating option with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyJsonMessage{}).
+					WithArgs(test.DBAnyJSONMessage{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -47,7 +47,7 @@ func (t *OptionsTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyJsonMessage{}).
+					WithArgs(test.DBAnyJSONMessage{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},

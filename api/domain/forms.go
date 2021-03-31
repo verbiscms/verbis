@@ -5,6 +5,10 @@
 package domain
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
 	"strings"
@@ -51,7 +55,7 @@ type (
 		Id        int        `db:"id" json:"id" binding:"numeric"` //nolint
 		UUID      uuid.UUID  `db:"uuid" json:"uuid"`
 		FormId    int        `db:"form_id" json:"form_id"` //nolint
-		Fields    DBMap      `db:"fields" json:"fields"`
+		Fields    FormValues `db:"fields" json:"fields"`
 		IPAddress string     `db:"ip_address" json:"ip_address"`
 		UserAgent string     `db:"user_agent" json:"user_agent"`
 		SentAt    *time.Time `db:"sent_at" json:"sent_at"`
@@ -85,4 +89,58 @@ func (f FormLabel) Name() string {
 // Stringer on the FormLabel type
 func (f FormLabel) String() string {
 	return string(f)
+}
+
+//
+//
+//
+type FormValues map[string]interface{}
+
+//
+//
+//
+func (f FormValues) JSON() ([]byte, error) {
+	const op = "FormValues.JSON"
+	v, err := json.Marshal(f)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not process the form fields for storing", Operation: op, Err: err}
+	}
+	return v, nil
+}
+
+// Scan
+//
+// Scanner for FormValues. unmarshal the FormValues
+// when the entity is pulled from the database.
+func (f FormValues) Scan(value interface{}) error {
+	const op = "Domain.DBMap.Scan"
+	if value == nil {
+		return nil
+	}
+	bytes, ok := value.([]byte)
+	if !ok || bytes == nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Scan unsupported for DBMap", Operation: op, Err: fmt.Errorf("scan not supported")}
+	}
+	err := json.Unmarshal(bytes, &f)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling into DBMap", Operation: op, Err: err}
+	}
+	return nil
+}
+
+// Value
+//
+// Valuer for FormValues. marshal the FormValues
+// when the entity is inserted to the
+// database.
+func (f FormValues) Value() (driver.Value, error) {
+	const op = "Domain.MediaSizes.DBMap"
+	if len(f) == 0 {
+		return nil, nil
+	}
+	j, err := json.Marshal(f)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling DBMap", Operation: op, Err: err}
+	}
+	return driver.Value(j), nil
 }

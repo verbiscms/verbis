@@ -18,11 +18,11 @@ import (
 func (p *Public) Assets(ctx *gin.Context) {
 	const op = "FrontendHandler.GetAssets"
 
-	mimeType, file, err := p.Publisher.Asset(ctx)
+	file, mimeType, err := p.publisher.Asset(ctx)
 	if err != nil {
-		p.Publisher.NotFound(ctx)
+		p.publisher.NotFound(ctx)
 		return
 	}
 
-	ctx.Data(http.StatusOK, mimeType, *file)
+	ctx.Data(http.StatusOK, mimeType.String(), *file)
 }

@@ -77,14 +77,14 @@ func (t *FieldTestSuite) GetMockService(f domain.PostFields, fnc func(f *fields.
 // GetPostsMockService
 //
 // Mock posts service for testing.
-func (t *FieldTestSuite) GetPostsMockService(fields domain.PostFields, fnc func(p *posts.Repository)) *Service {
+func (t *FieldTestSuite) GetPostsMockService(f domain.PostFields, fnc func(p *posts.Repository)) *Service {
 	postsMocks := &posts.Repository{}
 
 	if fnc != nil {
 		fnc(postsMocks)
 	}
 
-	s := t.GetService(fields)
+	s := t.GetService(f)
 	s.deps = &deps.Deps{
 		Store: &store.Repository{
 			Posts: postsMocks,
@@ -123,9 +123,9 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *categories.Repository, m
 // GetService
 //
 // Mock service for testing.
-func (t *FieldTestSuite) GetService(fields domain.PostFields) *Service {
+func (t *FieldTestSuite) GetService(f domain.PostFields) *Service {
 	return &Service{
-		fields: fields,
+		fields: f,
 		deps:   &deps.Deps{},
 	}
 }

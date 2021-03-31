@@ -20,7 +20,6 @@ import (
 
 func TestNamespace_Body(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	resource := "resource"
 
 	tt := map[string]struct {
 		post   domain.Post
@@ -31,7 +30,7 @@ func TestNamespace_Body(t *testing.T) {
 			domain.Post{
 				Id:           123,
 				Title:        "title",
-				Resource:     nil,
+				Resource:     "",
 				PageTemplate: "template",
 				PageLayout:   "layout",
 			},
@@ -42,7 +41,7 @@ func TestNamespace_Body(t *testing.T) {
 			domain.Post{
 				Id:           1,
 				Title:        "title",
-				Resource:     &resource,
+				Resource:     "resource",
 				PageTemplate: "template",
 				PageLayout:   "layout",
 			},
@@ -53,7 +52,7 @@ func TestNamespace_Body(t *testing.T) {
 			domain.Post{
 				Id:           1,
 				Title:        "title",
-				Resource:     &resource,
+				Resource:     "resource",
 				PageTemplate: "%$££@template*&",
 				PageLayout:   "layout",
 			},
@@ -64,7 +63,7 @@ func TestNamespace_Body(t *testing.T) {
 			domain.Post{
 				Id:           1,
 				Title:        "title",
-				Resource:     nil,
+				Resource:     "",
 				PageTemplate: "template",
 				PageLayout:   "layout",
 			},

@@ -91,7 +91,7 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 
 	// Init Theme
 	// TODO: We need pass the default theme (Verbis 2021)
-	store, err := store.New(db, theme)
+	s, err := store.New(db, theme)
 	if err != nil {
 		printError(err.Error())
 	}
@@ -99,7 +99,7 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	printSuccess("All checks passed.")
 
 	return &deps.Config{
-		Store:  store,
+		Store:  s,
 		Env:    env,
 		Config: theme,
 		Paths:  p,

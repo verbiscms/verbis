@@ -40,13 +40,12 @@ func (t *FormsTestSuite) Setup(mf func(m *mocks.Repository)) *Forms {
 	if mf != nil {
 		mf(m)
 	}
-	return &Forms{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Forms: m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Forms: m,
 		},
 	}
+	return New(d)
 }
 
 // The dynamic struct to be validated.

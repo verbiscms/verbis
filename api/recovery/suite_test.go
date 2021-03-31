@@ -9,8 +9,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
-	mockOptions "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/res/go/models"
+	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/gin-contrib/location"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -50,11 +50,11 @@ func (t *RecoverTestSuite) SetPath() {
 }
 
 func (t *RecoverTestSuite) SetDeps() {
-	mock := &mockOptions.OptionsRepository{}
+	mock := &options.Repository{}
 	mock.On("Get").Return(nil, nil)
 
 	t.deps = &deps.Deps{
-		Store: &models.Store{
+		Store: &store.Repository{
 			Options: mock,
 		},
 		Config: &domain.ThemeConfig{

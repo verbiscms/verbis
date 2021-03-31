@@ -51,14 +51,14 @@ func (t *MediaTestSuite) Setup(mf func(m *mocks.Repository)) *Media {
 	if mf != nil {
 		mf(m)
 	}
-	return &Media{
-		service: ms,
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Media: m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Media: m,
 		},
 	}
+	media := New(d)
+	media.service = ms
+	return media
 }
 
 // SetupUpload

@@ -46,14 +46,14 @@ func (t *CategoriesTestSuite) Setup(mf func(m *mocks.Repository)) *Categories {
 	pm := &posts.Repository{}
 	pm.On("List", mock.Anything, mock.Anything, mock.Anything).Return(domain.PostData{}, 0, nil)
 
-	return &Categories{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Categories: m,
-				Posts:      pm,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Categories: m,
+			Posts:      pm,
 		},
 	}
+
+	return New(d)
 }
 
 var (

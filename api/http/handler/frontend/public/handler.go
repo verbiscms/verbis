@@ -22,5 +22,15 @@ type Handler interface {
 // Public defines the handler for all public routes.
 type Public struct {
 	*deps.Deps
-	Publisher publisher.Publisher
+	publisher publisher.Publisher
+}
+
+// New
+//
+// Creates a new public handler.
+func New(d *deps.Deps) *Public {
+	return &Public{
+		Deps:      d,
+		publisher: publisher.NewRender(d),
+	}
 }

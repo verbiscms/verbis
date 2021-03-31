@@ -23,7 +23,7 @@ var (
 // filterRows takes in the filters from the params set in http.Params
 // If there is no filters set, an empty string will be returned.
 // Returns errors.INVALID if the operator or column name was not found.
-func FilterRows(driver Driver, builder *builder.Sqlbuilder, filters map[string][]params.Filter, table string) error {
+func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]params.Filter, table string) error {
 	const op = "Model.filterRows"
 
 	operators := []string{"=", ">", ">=", "<", "<=", "<>", "LIKE", "IN", "NOT LIKE", "like", "in", "not like"}
@@ -69,7 +69,7 @@ func FilterRows(driver Driver, builder *builder.Sqlbuilder, filters map[string][
 						Err:       fmt.Errorf("the %s operator does not exists when searching for the %s", operator, fTable)}
 				}
 
-				builder.WhereRaw(fmt.Sprintf("(%s%s %s '%s')", fTable, column, operator, value))
+				query.WhereRaw(fmt.Sprintf("(%s%s %s '%s')", fTable, column, operator, value))
 			}
 			counter++
 		}

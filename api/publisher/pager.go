@@ -194,7 +194,7 @@ func (p *page) HasQuery() bool {
 //
 // Returns errors.NOTFOUND if the page is not public.
 func (p *page) CheckSession() error {
-	const op = "Publisher.Page.CheckSession"
+	const op = "publisher.Page.CheckSession"
 
 	_, err := p.ctx.Cookie("verbis-session")
 	if err != nil && !p.post.IsPublic() {
@@ -239,8 +239,10 @@ func (p *page) resolve() (*domain.PostDatum, error) {
 	}
 
 	post, err := p.Store.Posts.FindBySlug(last)
-	if err != nil {
+	if errors.Code(err) == errors.NOTFOUND {
 		return nil, notFoundErr
+	} else if err != nil {
+		logger.WithError(err).Error()
 	}
 
 	if strings.TrimSuffix(post.Permalink, "/") != urlTrimmed {

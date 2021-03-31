@@ -5,7 +5,9 @@
 package public
 
 import (
-	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
+	"github.com/ainsleyclark/verbis/api/deps"
+	publisher "github.com/ainsleyclark/verbis/api/mocks/publisher"
+	theme "github.com/ainsleyclark/verbis/api/mocks/services/theme"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
@@ -33,13 +35,31 @@ func TestPublic(t *testing.T) {
 // Setup
 //
 // A helper to obtain a public handler for testing.
-func (t *PublicTestSuite) Setup(mf func(m *mocks.Publisher, ctx *gin.Context), ctx *gin.Context) *Public {
-	m := &mocks.Publisher{}
+func (t *PublicTestSuite) Setup(mf func(m *publisher.Publisher, ctx *gin.Context), ctx *gin.Context) *Public {
+	m := &publisher.Publisher{}
 	if mf != nil {
 		mf(m, ctx)
 	}
 	return &Public{
-		Publisher: m,
+		Deps:      &deps.Deps{},
+		publisher: m,
+	}
+}
+
+// SetupTheme
+//
+// A helper to obtain a public handler for testing.
+func (t *PublicTestSuite) SetupTheme(mf func(m *publisher.Publisher, t *theme.Repository, ctx *gin.Context), ctx *gin.Context) *Public {
+	m := &publisher.Publisher{}
+	mt := &theme.Repository{}
+	if mf != nil {
+		mf(m, mt, ctx)
+	}
+	return &Public{
+		Deps: &deps.Deps{
+			Theme: mt,
+		},
+		publisher: m,
 	}
 }
 
