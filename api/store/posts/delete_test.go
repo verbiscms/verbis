@@ -10,8 +10,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/posts/fields"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
 	"regexp"
 )
