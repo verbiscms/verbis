@@ -18,9 +18,9 @@ import (
 func (s *SEO) SiteMapIndex(ctx *gin.Context) {
 	const op = "FrontendHandler.SiteMapIndex"
 
-	sitemap, err := s.Publisher.SiteMap().Index()
+	sitemap, err := s.publisher.SiteMap().Index()
 	if err != nil {
-		s.Publisher.NotFound(ctx)
+		s.publisher.NotFound(ctx)
 		return
 	}
 

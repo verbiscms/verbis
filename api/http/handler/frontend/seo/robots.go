@@ -21,7 +21,7 @@ func (s *SEO) Robots(ctx *gin.Context) {
 	const op = "FrontendHandler.Robots"
 
 	if !s.Deps.Options.SeoRobotsServe {
-		s.Publisher.NotFound(ctx)
+		s.publisher.NotFound(ctx)
 		return
 	}
 

@@ -19,7 +19,7 @@ type Repository interface {
 	Exists(theme string) bool
 	Templates(theme string) (domain.Templates, error)
 	Layouts(theme string) (domain.Layouts, error)
-	Screenshot(theme string, file string) ([]byte, string, error)
+	Screenshot(theme string, file string) ([]byte, domain.Mime, error)
 }
 
 // Site defines the data layer for Posts

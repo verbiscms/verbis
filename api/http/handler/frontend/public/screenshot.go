@@ -19,23 +19,11 @@ import (
 func (p *Public) Screenshot(ctx *gin.Context) {
 	const op = "FrontendHandler.Screenshot"
 
-	theme := ctx.Param("theme")
-	if theme == "" {
-		p.Publisher.NotFound(ctx)
-		return
-	}
-
-	file := ctx.Param("file")
-	if file == "" {
-		p.Publisher.NotFound(ctx)
-		return
-	}
-
-	screenshot, mime, err := p.Theme.Screenshot(theme, file)
+	screenshot, mime, err := p.Theme.Screenshot(ctx.Param("theme"), ctx.Param("file"))
 	if errors.Code(err) == errors.NOTFOUND {
-		p.Publisher.NotFound(ctx)
+		p.publisher.NotFound(ctx)
 		return
 	}
 
-	ctx.Data(http.StatusOK, mime, screenshot)
+	ctx.Data(http.StatusOK, mime.String(), screenshot)
 }

@@ -38,13 +38,12 @@ func (t *AuthTestSuite) Setup(mf func(m *mocks.Repository)) *Auth {
 	if mf != nil {
 		mf(m)
 	}
-	return &Auth{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Auth: m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Auth: m,
 		},
 	}
+	return New(d)
 }
 
 var (

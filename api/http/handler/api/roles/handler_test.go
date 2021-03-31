@@ -38,13 +38,12 @@ func (t *RolesTestSuite) Setup(mf func(m *mocks.Repository)) *Roles {
 	if mf != nil {
 		mf(m)
 	}
-	return &Roles{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Roles: m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Roles: m,
 		},
 	}
+	return New(d)
 }
 
 var (

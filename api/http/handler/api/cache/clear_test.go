@@ -5,6 +5,7 @@
 package cache
 
 import (
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -24,7 +25,7 @@ func (t *CacheTestSuite) TestCache_Clear() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := &Cache{}
+			mock := New(&deps.Deps{})
 			t.RequestAndServe("POST", "/reset", "/reset", nil, func(ctx *gin.Context) {
 				mock.Clear(ctx)
 			})

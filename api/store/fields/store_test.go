@@ -48,28 +48,6 @@ const (
 )
 
 var (
-	// The default field groups used for testing.
-	groups = domain.FieldGroups{
-		domain.FieldGroup{
-			Title: "groups",
-			Fields: domain.Fields{
-				domain.Field{
-					Label: "label",
-					Name:  "name",
-					Type:  "text",
-				},
-			},
-			Locations: [][]domain.FieldLocation{
-				{
-					domain.FieldLocation{
-						Param:    "resource",
-						Operator: "=",
-						Value:    "news",
-					},
-				},
-			},
-		},
-	}
 	// The post field used for testing.
 	field = domain.PostField{
 		Id:            1,

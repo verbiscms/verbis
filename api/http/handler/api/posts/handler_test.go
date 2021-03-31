@@ -42,13 +42,12 @@ func (t *PostsTestSuite) Setup(mf func(m *mocks.Repository)) *Posts {
 	if mf != nil {
 		mf(m)
 	}
-	return &Posts{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Posts: m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Posts: m,
 		},
 	}
+	return New(d)
 }
 
 var (

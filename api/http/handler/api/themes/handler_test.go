@@ -52,15 +52,15 @@ func (t *ThemesTestSuite) Setup(mf func(m *mocks.Repository)) *Themes {
 		mf(m)
 	}
 
-	return &Themes{
-		Deps: &deps.Deps{
-			Config: &config.DefaultTheme,
-			Options: &domain.Options{
-				ActiveTheme: TestActiveTheme,
-			},
-			Theme: m,
+	d := &deps.Deps{
+		Config: &config.DefaultTheme,
+		Options: &domain.Options{
+			ActiveTheme: TestActiveTheme,
 		},
+		Theme: m,
 	}
+
+	return New(d)
 }
 
 // SetupOptions

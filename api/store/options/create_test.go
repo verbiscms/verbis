@@ -29,7 +29,7 @@ func (t *OptionsTestSuite) TestStore_Create() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyJsonMessage{}).
+					WithArgs(test.DBAnyJSONMessage{}).
 					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
@@ -38,7 +38,7 @@ func (t *OptionsTestSuite) TestStore_Create() {
 			"Error creating option with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyJsonMessage{}).
+					WithArgs(test.DBAnyJSONMessage{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -47,7 +47,7 @@ func (t *OptionsTestSuite) TestStore_Create() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyJsonMessage{}).
+					WithArgs(test.DBAnyJSONMessage{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},

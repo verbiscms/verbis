@@ -14,7 +14,7 @@ import (
 
 // Publisher
 type Publisher interface {
-	Asset(g *gin.Context) (string, *[]byte, error)
+	Asset(g *gin.Context) (*[]byte, domain.Mime, error)
 	Upload(g *gin.Context, webp bool) (domain.Mime, *[]byte, error)
 	Page(g *gin.Context) ([]byte, error)
 	NotFound(g *gin.Context)

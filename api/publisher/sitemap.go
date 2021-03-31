@@ -130,8 +130,8 @@ func (s *Sitemap) Index() ([]byte, error) {
 	viewData := index{}
 
 	for _, v := range s.resources {
-		posts, err := s.retrievePages(v.Name)
-		if err != nil || len(posts) == 0 {
+		p, err := s.retrievePages(v.Name)
+		if err != nil || len(p) == 0 {
 			continue
 		}
 
@@ -216,16 +216,16 @@ func (s *Sitemap) Pages(resource string) ([]byte, error) {
 			return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No resource items available with the name: %s", resource), Operation: op, Err: fmt.Errorf("no resource items found")}
 		}
 
-		posts, err := s.retrievePages(r.Name)
+		p, err := s.retrievePages(r.Name)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(posts) == 0 {
+		if len(p) == 0 {
 			return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No resource items available with the name: %s", resource), Operation: op, Err: fmt.Errorf("no resource items found")}
 		}
 
-		for _, v := range posts {
+		for _, v := range p {
 			viewData.Items = append(viewData.Items, viewItem{
 				Slug:      v.Slug,
 				CreatedAt: time.Now().Format(time.RFC3339),

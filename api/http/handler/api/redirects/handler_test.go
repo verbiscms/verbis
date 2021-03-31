@@ -40,13 +40,12 @@ func (t *RedirectsTestSuite) Setup(mf func(m *mocks.Repository)) *Redirects {
 	if mf != nil {
 		mf(m)
 	}
-	return &Redirects{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Redirects: m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Redirects: m,
 		},
 	}
+	return New(d)
 }
 
 var (
