@@ -23,6 +23,7 @@ type Repository interface {
 	Create(f domain.Form) (domain.Form, error)
 	Update(f domain.Form) (domain.Form, error)
 	Delete(id int) error
+	Submit(f domain.FormSubmission) error
 }
 
 // Store defines the data layer for forms.

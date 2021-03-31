@@ -23,9 +23,9 @@ func (p *Public) Uploads(ctx *gin.Context) {
 		webp = false
 	}
 
-	mime, file, err := p.Publisher.Upload(ctx, webp)
+	mime, file, err := p.publisher.Upload(ctx, webp)
 	if err != nil {
-		p.Publisher.NotFound(ctx)
+		p.publisher.NotFound(ctx)
 		return
 	}
 

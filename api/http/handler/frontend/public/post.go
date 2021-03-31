@@ -22,9 +22,10 @@ import (
 func (p *Public) Serve(ctx *gin.Context) {
 	const op = "FrontendHandler.Serve"
 
-	page, err := p.Publisher.Page(ctx)
+	page, err := p.publisher.Page(ctx)
+
 	if errors.Code(err) == errors.NOTFOUND {
-		p.Publisher.NotFound(ctx)
+		p.publisher.NotFound(ctx)
 		return
 	} else if err != nil {
 		ctx.Data(http.StatusInternalServerError, "text/html", page)

@@ -18,7 +18,7 @@ type FormSend struct {
 type FormSendData struct {
 	Site   domain.Site
 	Form   *domain.Form
-	Values forms.FormValues
+	Values domain.FormValues
 }
 
 // NewVerifyEmail creates a new verify email event
@@ -39,7 +39,7 @@ func NewFormSend() (*FormSend, error) {
 func (e *FormSend) Send(f *FormSendData, attachments forms.Attachments) error {
 	const op = "events.VerifyEmail.Send"
 
-	fv := make(forms.FormValues)
+	fv := make(domain.FormValues)
 	for _, v := range f.Form.Fields {
 		val, ok := f.Values[v.Key]
 		if !ok {

@@ -43,18 +43,17 @@ func (t *SiteTestSuite) Setup(mf func(m *mocks.Repository)) *Site {
 	if mf != nil {
 		mf(m)
 	}
-	return &Site{
-		Deps: &deps.Deps{
-			Site:   m,
-			Config: &config.DefaultTheme,
-			Paths: paths.Paths{
-				Base: "",
-			},
-			Options: &domain.Options{
-				ActiveTheme: "",
-			},
+	d := &deps.Deps{
+		Site:   m,
+		Config: &config.DefaultTheme,
+		Paths: paths.Paths{
+			Base: "",
+		},
+		Options: &domain.Options{
+			ActiveTheme: "",
 		},
 	}
+	return New(d)
 }
 
 var (

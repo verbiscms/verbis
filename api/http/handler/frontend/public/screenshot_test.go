@@ -5,58 +5,50 @@
 package public
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
+	"github.com/ainsleyclark/verbis/api/errors"
+	publisher "github.com/ainsleyclark/verbis/api/mocks/publisher"
+	theme "github.com/ainsleyclark/verbis/api/mocks/services/theme"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	"net/http"
 )
 
-func (t *PublicTestSuite) TestPublic_Uploads() {
+func (t *PublicTestSuite) TestPublic_Screenshot() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
 		content string
-		mock    func(m *mocks.Publisher, ctx *gin.Context)
+		mock    func(m *publisher.Publisher, mt *theme.Repository, ctx *gin.Context)
 		url     string
 	}{
 		"Success": {
 			testString,
 			http.StatusOK,
 			"image/png",
-			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx, true).Return(domain.Mime("image/png"), t.bytes, nil)
+			func(m *publisher.Publisher, mt *theme.Repository, ctx *gin.Context) {
+				mt.On("Screenshot", "theme", "screenshot.jpg").Return(*t.bytes, domain.Mime("image/png"), nil)
 			},
-			"/uploads/test.jpg",
+			"/theme/screenshot.jpg",
 		},
-		"Fail": {
+		"Error": {
 			testString,
 			http.StatusNotFound,
 			"text/html",
-			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx, true).Return(domain.Mime(""), nil, fmt.Errorf("error"))
+			func(m *publisher.Publisher, mt *theme.Repository, ctx *gin.Context) {
+				mt.On("Screenshot", "theme", "screenshot.jpg").Return(*t.bytes, domain.Mime("image/png"), &errors.Error{Code: errors.NOTFOUND})
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(http.StatusNotFound, "text/html", []byte(testString))
 				})
 			},
-			"/uploads/test.jpg",
-		},
-		"No WebP": {
-			testString,
-			http.StatusOK,
-			"image/png",
-			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx, false).Return(domain.Mime("image/png"), t.bytes, nil)
-			},
-			"/uploads/test.jpg?webp=false",
+			"/theme/screenshot.jpg",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe(http.MethodPost, test.url, "/uploads/:file", nil, func(ctx *gin.Context) {
-				t.Setup(test.mock, ctx).Uploads(ctx)
+			t.RequestAndServe(http.MethodPost, test.url, "/:theme/:file", nil, func(ctx *gin.Context) {
+				t.SetupTheme(test.mock, ctx).Screenshot(ctx)
 			})
 			t.Equal(test.status, t.Status())
 			t.Equal(test.content, t.ContentType())

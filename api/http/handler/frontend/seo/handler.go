@@ -23,5 +23,15 @@ type Handler interface {
 // such as sitemaps and robots.txt
 type SEO struct {
 	*deps.Deps
-	Publisher publisher.Publisher
+	publisher publisher.Publisher
+}
+
+// New
+//
+// Creates a new seo handler.
+func New(d *deps.Deps) *SEO {
+	return &SEO{
+		Deps:      d,
+		publisher: publisher.NewRender(d),
+	}
 }

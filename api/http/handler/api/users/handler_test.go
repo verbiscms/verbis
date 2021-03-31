@@ -57,14 +57,14 @@ func (t *UsersTestSuite) Setup(mf func(m *mocks.Repository)) *Users {
 		t.NoError(err)
 	}
 
-	return &Users{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Posts: pm,
-				User:  m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Posts: pm,
+			User:  m,
 		},
 	}
+
+	return New(d)
 }
 
 var (

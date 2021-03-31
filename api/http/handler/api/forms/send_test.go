@@ -17,6 +17,8 @@ import (
 )
 
 func (t *FormsTestSuite) TestForms_Send() {
+	t.T().Skip("Skipping, not implemented Service yet")
+
 	uniq := "9fc52ef0-914d-11eb-a8b3-0242ac130003"
 	uniqParsed, err := uuid.Parse(uniq)
 	t.NoError(err)

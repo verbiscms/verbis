@@ -41,7 +41,7 @@ func (t *SEOTestSuite) Setup(mf func(ms *mocks.Publisher, ctx *gin.Context), ctx
 	}
 	return &SEO{
 		Deps:      &deps.Deps{},
-		Publisher: m,
+		publisher: m,
 	}
 }
 
@@ -58,7 +58,7 @@ func (t *SEOTestSuite) SetupSitemap(mf func(m *mocks.Publisher, ms *mocks.SiteMa
 	}
 	return &SEO{
 		Deps:      &deps.Deps{},
-		Publisher: m,
+		publisher: m,
 	}
 }
 

@@ -37,19 +37,18 @@ func TestPostDatum_IsPublic(t *testing.T) {
 		})
 	}
 }
-func TestPostDatum_HasResource(t *testing.T) {
-	r := "news"
 
+func TestPostDatum_HasResource(t *testing.T) {
 	tt := map[string]struct {
-		input *string
+		input string
 		want  bool
 	}{
 		"Resource": {
-			&r,
+			"resource",
 			true,
 		},
 		"No Resource": {
-			nil,
+			"",
 			false,
 		},
 	}

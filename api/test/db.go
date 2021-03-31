@@ -51,11 +51,11 @@ func (a DBAnyString) Match(v driver.Value) bool {
 }
 
 // Any string for mock string args.
-type DBAnyJsonMessage struct{}
+type DBAnyJSONMessage struct{}
 
 // Match satisfies sqlmock.Argument interface
 // for any json raw messages.
-func (a DBAnyJsonMessage) Match(v driver.Value) bool {
+func (a DBAnyJSONMessage) Match(v driver.Value) bool {
 	color.Green.Println(reflect.TypeOf(v))
 	_, ok := v.([]byte)
 	return ok

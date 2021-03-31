@@ -38,13 +38,12 @@ func (t *OptionsTestSuite) Setup(mf func(m *mocks.Repository)) *Options {
 	if mf != nil {
 		mf(m)
 	}
-	return &Options{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Options: m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Options: m,
 		},
 	}
+	return New(d)
 }
 
 var (

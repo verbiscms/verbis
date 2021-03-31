@@ -5,8 +5,11 @@
 package forms
 
 import (
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/ainsleyclark/verbis/api/mail/events"
+	service "github.com/ainsleyclark/verbis/api/services/forms"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"net/http"
@@ -43,11 +46,47 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
-	//err = f.Store.Forms.Send(&form, ctx.ClientIP(), ctx.Request.UserAgent())
-	//if err != nil {
-	//	api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
-	//	return
-	//}
+	values, attachments, err := service.NewReader(&form, f.Paths.Storage).Values()
+	if err != nil {
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+		return
+	}
+
+	sub := domain.FormSubmission{
+		FormId:    form.Id,
+		Fields:    values,
+		IPAddress: ctx.ClientIP(),
+		UserAgent: ctx.Request.UserAgent(),
+	}
+
+	if form.StoreDB {
+		err = f.Store.Forms.Submit(sub)
+		if err != nil {
+			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+			return
+		}
+	}
+
+	if form.EmailSend {
+		fs, err := events.NewFormSend()
+		if err != nil {
+			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+			return
+		}
+
+		data := &events.FormSendData{
+			//Site:   s.siteModel.GetGlobalConfig(),
+			Form:   &form,
+			Values: values,
+		}
+
+		err = fs.Send(data, attachments)
+
+		if err != nil {
+			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+			return
+		}
+	}
 
 	api.Respond(ctx, http.StatusOK, "Successfully sent form with ID: "+strconv.Itoa(form.Id), nil)
 }

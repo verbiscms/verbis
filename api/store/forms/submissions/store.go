@@ -13,7 +13,7 @@ import (
 // to interact with the database.
 type Repository interface {
 	Find(formID int) (domain.FormSubmissions, error)
-	Create(formID int, f domain.FormSubmission) error
+	Create(f domain.FormSubmission) error
 	Delete(formID int) error
 }
 

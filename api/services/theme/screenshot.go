@@ -5,6 +5,7 @@
 package theme
 
 import (
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"io/ioutil"
@@ -19,7 +20,7 @@ import (
 // (e.g. screenshot.png).
 //
 // Returns errors.NOTFOUND if there was not screenshot found.
-func (t *theme) Screenshot(theme, file string) ([]byte, string, error) {
+func (t *theme) Screenshot(theme, file string) ([]byte, domain.Mime, error) {
 	const op = "SiteRepository.Screenshot"
 
 	filePath := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + file
@@ -28,5 +29,5 @@ func (t *theme) Screenshot(theme, file string) ([]byte, string, error) {
 		return nil, "", &errors.Error{Code: errors.NOTFOUND, Message: "Error finding screenshot with the path " + file, Operation: op, Err: err}
 	}
 
-	return b, mime.TypeByExtension(filepath.Ext(file)), nil
+	return b, domain.Mime(mime.TypeByExtension(filepath.Ext(file))), nil
 }

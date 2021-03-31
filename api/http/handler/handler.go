@@ -22,7 +22,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend/public"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend/seo"
 	"github.com/ainsleyclark/verbis/api/http/handler/spa"
-	"github.com/ainsleyclark/verbis/api/publisher"
 )
 
 // APIHandler defines all handler functions for API
@@ -75,10 +74,9 @@ type FrontendHandler struct {
 //
 // Returns a new frontend handler.
 func NewFrontend(d *deps.Deps) *FrontendHandler {
-	p := publisher.NewRender(d)
 	return &FrontendHandler{
-		Public: &public.Public{Deps: d, Publisher: p},
-		SEO:    &seo.SEO{Deps: d, Publisher: p},
+		Public: public.New(d),
+		SEO:    seo.New(d),
 	}
 }
 
@@ -93,6 +91,6 @@ type SPAHandler struct {
 // Returns a new SPA handler.
 func NewSPA(d *deps.Deps) *SPAHandler {
 	return &SPAHandler{
-		&spa.SPA{Deps: d},
+		spa.New(d),
 	}
 }
