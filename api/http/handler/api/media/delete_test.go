@@ -5,6 +5,7 @@
 package media
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/gin-gonic/gin"
@@ -23,8 +24,9 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			nil,
 			http.StatusOK,
 			"Successfully deleted media item with ID: 123",
-			func(u *mocks.Repository) {
-				u.On("Delete", 123).Return(nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(mediaItem, nil)
+				m.On("Delete", 123).Return(nil)
 			},
 			"/media/123",
 		},
@@ -42,7 +44,17 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			http.StatusBadRequest,
 			"not found",
 			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(mediaItem, nil)
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			},
+			"/media/123",
+		},
+		"Find Error": {
+			nil,
+			http.StatusBadRequest,
+			"No media item found with the ID: 123",
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(mediaItem, fmt.Errorf("error"))
 			},
 			"/media/123",
 		},
@@ -51,6 +63,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			http.StatusBadRequest,
 			"conflict",
 			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(mediaItem, nil)
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/media/123",
@@ -60,6 +73,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			http.StatusInternalServerError,
 			"config",
 			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(mediaItem, nil)
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/media/123",

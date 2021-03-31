@@ -44,7 +44,7 @@ func (m *Media) Upload(ctx *gin.Context) {
 
 	user, err := m.Store.User.FindByToken(ctx.Request.Header.Get("token"))
 	if err != nil {
-		api.Respond(ctx, http.StatusBadRequest, "You must be logged in to uploaded media items", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		api.Respond(ctx, http.StatusUnauthorized, "You must be logged in to uploaded media items", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 

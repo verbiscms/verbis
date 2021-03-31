@@ -10,9 +10,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	service "github.com/ainsleyclark/verbis/api/mocks/services/media"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
+	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"io"
 	"mime/multipart"
@@ -39,14 +42,17 @@ func TestMedia(t *testing.T) {
 
 // Setup
 //
-// A helper to obtain a mock categories handler
+// A helper to obtain a mock media handler
 // for testing.
 func (t *MediaTestSuite) Setup(mf func(m *mocks.Repository)) *Media {
 	m := &mocks.Repository{}
+	ms := &service.Library{}
+	ms.On("Delete", mock.Anything)
 	if mf != nil {
 		mf(m)
 	}
 	return &Media{
+		service: ms,
 		Deps: &deps.Deps{
 			Store: &store.Repository{
 				Media: m,
@@ -57,17 +63,21 @@ func (t *MediaTestSuite) Setup(mf func(m *mocks.Repository)) *Media {
 
 // SetupUpload
 //
-// A helper to obtain a mock categories handler
+// A helper to obtain a mock media handler
 // and uploads for testing.
-func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(m *mocks.Repository, mfh []multipart.FileHeader)) *Media {
+func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(m *mocks.Repository, s *service.Library, u *users.Repository, mfh []multipart.FileHeader)) *Media {
 	m := &mocks.Repository{}
+	ms := &service.Library{}
+	mu := &users.Repository{}
 	if mf != nil {
-		mf(m, files)
+		mf(m, ms, mu, files)
 	}
 	return &Media{
+		service: ms,
 		Deps: &deps.Deps{
 			Store: &store.Repository{
 				Media: m,
+				User:  mu,
 			},
 		},
 	}
@@ -150,7 +160,7 @@ func (t *MediaTestSuite) UploadRequest(filesAmount int, uri, path string) (*goht
 
 	req, err := gohttp.NewRequest("POST", uri, bytes.NewBuffer(reqBody.Bytes()))
 	t.NoError(err)
-	req.Header.Set("Content-Mime", writer.FormDataContentType())
+	req.Header.Set("Content-Type", writer.FormDataContentType())
 
 	return req, multi
 }

@@ -18,7 +18,7 @@ var (
 	FindByNameQuery     = "SELECT * FROM `media` WHERE `file_name` = '" + mediaItem.FileName + "' LIMIT 1"
 	FindByURLQuery      = "SELECT * FROM `media` WHERE `url` = '" + mediaItemURL.Url + "' LIMIT 1"
 	FindByURLSizeQuery  = "SELECT * FROM `media` WHERE `url` = '" + mediaItemSizes.Sizes["test"].Url + "' LIMIT 1"
-	FindByURLSizesQuery = "SELECT * FROM `media` WHERE WHERE sizes LIKE '%" + mediaItemSizes.Sizes["test"].Url + "%' LIMIT 1"
+	FindByURLSizesQuery = "SELECT * FROM `media` WHERE sizes LIKE '%" + mediaItemSizes.Sizes["test"].Url + "%' LIMIT 1"
 )
 
 func (t *MediaTestSuite) TestStore_Find() {
@@ -156,7 +156,7 @@ func (t *MediaTestSuite) TestStore_FindByURL() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.FindByURL(test.url)
+			got, _, err := s.FindByURL(test.url)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
