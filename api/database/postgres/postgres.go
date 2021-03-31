@@ -52,8 +52,8 @@ func Setup(env *environment.Env) (database.Driver, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error pinging database", Operation: op, Err: err}
 	}
 
-	driver.SetMaxIdleConns(database.MaxIdleConns)
-	driver.SetMaxOpenConns(database.MaxOpenConns)
+	//driver.SetMaxIdleConns(database.MaxIdleConns)
+	//driver.SetMaxOpenConns(database.MaxOpenConns)
 
 	m.driver = driver
 

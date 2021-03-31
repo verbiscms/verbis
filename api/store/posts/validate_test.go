@@ -14,7 +14,6 @@ import (
 )
 
 func (t *PostsTestSuite) TestStore_Validate() {
-	resource := "resource"
 	category := 1
 
 	tt := map[string]struct {
@@ -79,7 +78,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 					PageTemplate: "template",
 					PageLayout:   "layout",
 					Slug:         "slug",
-					Resource:     &resource,
+					Resource:     "resource",
 				},
 			},
 			func(m sqlmock.Sqlmock) {
@@ -193,7 +192,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			}
 			s.ThemeService = theme
 
-			err := s.validate(&test.input)
+			err := s.validate(&test.input, true)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return
