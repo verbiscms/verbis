@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `post_options` WHERE `id` =  '" + postID + "')"
+	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `post_options` WHERE `post_id` =  '" + postID + "')"
 )
 
 func (t *MetaTestSuite) TestStore_Exists() {
