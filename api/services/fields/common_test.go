@@ -174,7 +174,7 @@ func (t *FieldTestSuite) TestService_FindFieldByName() {
 //
 //	for name, test := range tt {
 //		t.Run(name, func() {
-//			test.resolver.Service = t.GetService(nil)
+//			test.resolver.service = t.GetService(nil)
 //			test.resolver.Walker(func(field domain.PostField) {
 //				t.Equal(test.want, field)
 //			})

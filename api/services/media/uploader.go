@@ -65,7 +65,7 @@ func (u *uploader) Save() (domain.Media, error) {
 		return domain.Media{}, err
 	}
 
-	logger.Debug("Saved resized image with the name: " + name)
+	logger.Debug("Saved file the name: " + name + u.Extension)
 
 	// Resize and save the image sizes
 	sizes, err := u.Resize(name, path)
@@ -84,7 +84,7 @@ func (u *uploader) Save() (domain.Media, error) {
 	}
 
 	// Convert images to WebP.
-	go u.ToWeb(m)
+	go u.ToWebP(m)
 
 	return m, nil
 }
@@ -115,7 +115,7 @@ func (u *uploader) Dir() (string, error) {
 		}
 	}
 
-	return string(os.PathSeparator) + datePath, nil
+	return datePath, nil
 }
 
 // CleanFileName
@@ -161,7 +161,7 @@ func (u *uploader) SaveOriginal(path string) (uuid.UUID, error) {
 	const op = "Media.Uploader.Save"
 
 	key := uuid.New()
-	dest := path + key.String() + u.Extension
+	dest := path + string(os.PathSeparator) + key.String() + u.Extension
 
 	out, err := os.Create(dest)
 	if err != nil {
@@ -263,27 +263,26 @@ func (u *uploader) FileSize(path string) int64 {
 	return fi.Size()
 }
 
-// ToWeb
+// ToWebP
 //
 // Checks to see if the media is a PNG or JPG and then
 // ranges over the possible files of the media item
 // and converts the images to webp. If the file
 // exists, and an error occurred, it will be
 // logged.
-func (u *uploader) ToWeb(media domain.Media) {
+func (u *uploader) ToWebP(media domain.Media) {
 	if !media.Mime.CanResize() {
 		return
 	}
 
-	for _, v := range media.PossibleFiles() {
-		path := u.UploadPath + string(os.PathSeparator) + v
+	comp := u.Options.MediaCompression
 
-		_, err := os.Stat(path)
-		if os.IsNotExist(err) {
-			continue
-		}
+	logger.Debug("Attempting to convert original image to WebP: " + media.FileName)
+	u.WebP.Convert(u.UploadPath+string(os.PathSeparator)+media.UploadPath(), comp)
 
-		logger.Debug("Attempting to convert image to webp with the path: " + path)
-		u.WebP.Convert(path, u.Options.MediaCompression)
+	for _, v := range media.Sizes {
+		logger.Debug("Attempting to convert media size image to WebP: " + v.Name)
+		path := u.UploadPath + string(os.PathSeparator) + media.FilePath + string(os.PathSeparator) + v.UUID.String() + media.Extension()
+		u.WebP.Convert(path, comp)
 	}
 }

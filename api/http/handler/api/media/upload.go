@@ -42,17 +42,25 @@ func (m *Media) Upload(ctx *gin.Context) {
 		return
 	}
 
-	err = m.Service.Validate(files[0])
+	user, err := m.Store.User.FindByToken(ctx.Request.Header.Get("token"))
+	if err != nil {
+		api.Respond(ctx, http.StatusBadRequest, "You must be logged in to uploaded media items", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		return
+	}
+
+	err = m.service.Validate(files[0])
 	if err != nil {
 		api.Respond(ctx, http.StatusUnsupportedMediaType, errors.Message(err), err)
 		return
 	}
 
-	item, err := m.Service.Upload(files[0])
+	item, err := m.service.Upload(files[0])
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
+
+	item.UserId = user.Id
 
 	media, err := m.Store.Media.Create(item)
 	if err != nil {
