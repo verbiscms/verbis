@@ -27,12 +27,12 @@ type (
 		FirstName        string     `db:"first_name" json:"first_name" binding:"required,max=150,alpha"`
 		LastName         string     `db:"last_name" json:"last_name" binding:"required,max=150,alpha"`
 		Email            string     `db:"email" json:"email" binding:"required,email,max=255"`
-		Website          *string    `db:"website" json:"website,omitempty" binding:"omitempty,url"`
-		Facebook         *string    `db:"facebook" json:"facebook"`
-		Twitter          *string    `db:"twitter" json:"twitter"`
-		Linkedin         *string    `db:"linked_in" json:"linked_in"`
-		Instagram        *string    `db:"instagram" json:"instagram"`
-		Biography        *string    `db:"biography" json:"biography"`
+		Website          string     `db:"website" json:"website,omitempty" binding:"omitempty,url"`
+		Facebook         string     `db:"facebook" json:"facebook"`
+		Twitter          string     `db:"twitter" json:"twitter"`
+		Linkedin         string     `db:"linked_in" json:"linked_in"`
+		Instagram        string     `db:"instagram" json:"instagram"`
+		Biography        string     `db:"biography" json:"biography"`
 		Role             Role       `db:"roles" json:"role"`
 		ProfilePictureID *int       `db:"profile_picture_id" json:"profile_picture_id"`
 		EmailVerifiedAt  *time.Time `db:"email_verified_at" json:"email_verified_at"`

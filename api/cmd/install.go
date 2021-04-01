@@ -5,11 +5,10 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/seeds"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/kyokomi/emoji"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -33,20 +32,16 @@ database.`,
 	}
 )
 
-// Add child commands/init
-func init() {
-
-}
-
 func Install(cmd *cobra.Command, args []string) {
 	//figure := figure.NewColorFigure("Verbis", "cybermedium", "reset", true)
 	//	figure.Print()
 
 	// Run doctor
-	_, db, err := doctor(false)
+	cfg, db, err := doctor(false)
 	if err != nil {
 		printError(err.Error())
 	}
+	d := deps.New(*cfg)
 
 	// Check if the database exists.
 	// TODO NOT WORKING
@@ -64,41 +59,34 @@ func Install(cmd *cobra.Command, args []string) {
 	printSpinner("Installing Verbis...")
 
 	// Install the database
-	if err := db.Install(); err != nil {
+	err = db.Install()
+	if err != nil {
 		printError(fmt.Sprintf("Error installing the Verbis database: %v", err))
 	}
 
-	// Set up stores & pass the database.
-	s, _, err := store.New(db)
-	if err != nil {
-		printError(err.Error())
-	}
-
 	// Run the seeds
-	seeder := seeds.New(db, s)
+	seeder := seeds.New(db, cfg.Store)
 	if err := seeder.Seed(); err != nil {
 		printError(err.Error())
 	}
 
 	// Create the owner user
-	if _, err := s.User.Create(*user); err != nil {
+	_, err = d.Store.User.Create(*user)
+	if err != nil {
 		printError(fmt.Sprintf("Error creating the owner: %s", err.Error()))
 	}
 
 	// Insert the site uri
 	fmt.Println()
-	mURL, _ := json.Marshal(uri)
-	if err := s.Options.Update("site_url", mURL); err != nil {
+	err = d.Store.Options.Update("site_url", uri)
+	if err != nil {
 		printError(fmt.Sprintf("Error not inserting the site uri: %s", err.Error()))
 	}
 
-	// Get webp executables
-	//bin := webp.CreateBinWrapper()
-	//bin.ExecPath("cwebp")
-
-	//if err := bin.Run(); err != nil {
-	// TODO: Log here, dont print error. doesnt work on GCP
-	//}
+	err = d.WebP.Install()
+	if err != nil {
+		printError(fmt.Sprintf("Error downloading WebP executables: %s", err.Error()))
+	}
 
 	// Print success
 	printSuccess("Successfully installed verbis")
@@ -110,7 +98,7 @@ func setURL() string {
 	fmt.Println("If in development, be sure to append a port (for example: http://127.0.0.1:8080):")
 
 	prompt := promptui.Prompt{
-		Label: "url",
+		Label: "Url",
 		Validate: func(input string) error {
 			if input == "" {
 				return fmt.Errorf("enter url")

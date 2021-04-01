@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func Test_InSlice(t *testing.T) {
+func TestInSlice(t *testing.T) {
 	tt := map[string]struct {
 		input string
 		list  []string
@@ -35,7 +35,7 @@ func Test_InSlice(t *testing.T) {
 	}
 }
 
-func Test_Between(t *testing.T) {
+func TestBetween(t *testing.T) {
 	tt := map[string]struct {
 		input string
 		a     string
@@ -76,8 +76,35 @@ func Test_Between(t *testing.T) {
 	}
 }
 
-func Test_AddSpace(t *testing.T) {
+func TestAddSpace(t *testing.T) {
 	got := AddSpace("HelloWorld")
 	want := "Hello World"
 	assert.Equal(t, want, got)
+}
+
+func TestRandom(t *testing.T) {
+	tt := map[string]struct {
+		len  int64
+		want int
+	}{
+		"Valid": {
+			5,
+			5,
+		},
+		"Valid 2": {
+			10,
+			10,
+		},
+		"Valid 3": {
+			100,
+			100,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := Random(test.len, false)
+			assert.Equal(t, test.len, int64(len(got)))
+		})
+	}
 }

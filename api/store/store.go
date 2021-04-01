@@ -42,7 +42,7 @@ type Repository struct {
 // TODO Change!
 // Create a new database instance, connect
 // to database.
-func New(db database.Driver) (*Repository, *domain.ThemeConfig, error) {
+func New(db database.Driver, running bool) (*Repository, *domain.ThemeConfig, error) {
 	cfg := &storeConfig.Config{
 		Driver:       db,
 		Options:      nil,
@@ -52,24 +52,28 @@ func New(db database.Driver) (*Repository, *domain.ThemeConfig, error) {
 		Running:      false,
 	}
 
-	optsStore := options.New(cfg)
-
-	opts := optsStore.Struct()
-	cfg.Options = &opts
-
-	activeTheme, err := optsStore.GetTheme()
-	if err != nil {
-		return nil, nil, err
-	}
-
-	themeConfig := config.Init(cfg.Paths.Themes + string(os.PathSeparator) + activeTheme)
-	cfg.Theme = themeConfig
-
-	cfg.ThemeService = theme.New()
-
 	user := users.New(cfg)
-	owner := user.Owner()
-	cfg.Owner = &owner
+	var themeConfig *domain.ThemeConfig
+
+	if running {
+		optsStore := options.New(cfg)
+
+		opts := optsStore.Struct()
+		cfg.Options = &opts
+
+		activeTheme, err := optsStore.GetTheme()
+		if err != nil {
+			return nil, nil, err
+		}
+
+		themeConfig = config.Init(cfg.Paths.Themes + string(os.PathSeparator) + activeTheme)
+		cfg.Theme = themeConfig
+
+		cfg.ThemeService = theme.New()
+
+		owner := user.Owner()
+		cfg.Owner = &owner
+	}
 
 	return &Repository{
 		Auth:       auth.New(cfg),

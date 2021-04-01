@@ -94,15 +94,18 @@ type Config struct {
 }
 
 func New(cfg Config) *Deps {
-	if cfg.Store == nil {
+	if cfg.Store == nil && cfg.Running {
 		panic("Must have a store")
 	}
 
-	if cfg.Config == nil {
+	if cfg.Config == nil && cfg.Running {
 		panic("Must have a configuration")
 	}
 
-	opts := cfg.Store.Options.Struct()
+	var opts domain.Options
+	if cfg.Running {
+		opts = cfg.Store.Options.Struct()
+	}
 
 	p := paths.Get()
 
