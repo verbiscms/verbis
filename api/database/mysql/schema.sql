@@ -29,8 +29,8 @@ CREATE TABLE `categories` (
     `resource` varchar(150) NOT NULL,
     `parent_id` int DEFAULT NULL,
     `archive_id` int DEFAULT NULL,
-    `updated_at` timestamp NULL DEFAULT NULL,
-    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NOT NULL,
+    `created_at` timestamp NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `slug` (`slug`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -51,8 +51,8 @@ CREATE TABLE `forms` (
     `email_subject` varchar(78) NOT NULL,
     `recipients` varchar(1000) NOT NULL,
     `store_db` bit DEFAULT 0 NOT NULL,
-    `updated_at` timestamp NULL DEFAULT NULL,
-    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NOT NULL,
+    `created_at` timestamp NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -107,17 +107,17 @@ CREATE TABLE `media` (
     `id` int NOT NULL AUTO_INCREMENT,
     `uuid` varchar(36) NOT NULL,
     `url` varchar(255) DEFAULT NOT NULL,
-    `title` varchar(150) DEFAULT NOT NULL,
-    `alt` varchar(150) DEFAULT NOT NULL,
-    `description` text,
+    `title` varchar(150) NOT NULL,
+    `alt` varchar(150) NOT NULL,
+    `description` text NOT NULL,
     `file_path` varchar(255) NOT NULL,
     `file_size` int NOT NULL,
     `file_name` varchar(255) NOT NULL,
     `sizes` json DEFAULT NULL,
     `mime` varchar(150) NOT NULL,
-    `user_id` int DEFAULT NULL,
-    `updated_at` timestamp NULL DEFAULT NULL,
-    `created_at` timestamp NULL DEFAULT NULL,
+    `user_id` int NOT NULL,
+    `updated_at` timestamp NOT NULL,
+    `created_at` timestamp NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -145,8 +145,8 @@ CREATE TABLE `options` (
 CREATE TABLE `password_resets` (
     `id` int NOT NULL AUTO_INCREMENT,
     `email` varchar(255) NOT NULL,
-    `token` varchar(255) DEFAULT NULL,
-    `created_at` timestamp NULL DEFAULT NULL,
+    `token` varchar(255) NOT NULL,
+    `created_at` timestamp NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -179,7 +179,7 @@ CREATE TABLE `post_fields` (
     `field_key` varchar(500) NOT NULL,
     `value` longtext NULL,
     PRIMARY KEY (`id`),
-    KEY `post_id_index` (`post_id`)
+    KEY `post_id_index` (`post_id`),
     CONSTRAINT post_fields_unique
         UNIQUE (uuid, field_key, post_id, name)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -240,8 +240,8 @@ CREATE TABLE `redirects` (
     `from_path` varchar(255) NOT NULL,
     `to_path` varchar(255) NOT NULL,
     `code` int NOT NULL,
-    `updated_at` timestamp NULL DEFAULT NULL,
-    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NOT NULL,
+    `created_at` timestamp NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `redirect_from_path` (`from_path`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
@@ -256,7 +256,7 @@ CREATE TABLE `redirects` (
 CREATE TABLE `roles` (
     `id` int NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
-    `description` text,
+    `description` text NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -287,18 +287,18 @@ CREATE TABLE `users` (
     `last_name` varchar(150) NOT NULL,
     `email` varchar(255) NOT NULL,
     `password` varchar(60) NOT NULL,
-    `website` text,
-    `facebook` text,
-    `twitter` text,
-    `linked_in` text,
-    `instagram` text,
-    `biography` longtext,
+    `website` text NOT NULL,
+    `facebook` text NOT NULL,
+    `twitter` text NOT NULL,
+    `linked_in` text NOT NULL,
+    `instagram` text NOT NULL,
+    `biography` longtext NOT NULL,
     `profile_picture_id` INT NULL,
     `token` varchar(38) NOT NULL,
     `token_last_used` timestamp NULL DEFAULT NULL,
     `email_verified_at` timestamp NULL DEFAULT NULL,
-    `updated_at` timestamp NULL DEFAULT NULL,
-    `created_at` timestamp NULL DEFAULT NULL,
+    `updated_at` timestamp NOT NULL,
+    `created_at` timestamp NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;

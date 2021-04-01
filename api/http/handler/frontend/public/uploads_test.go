@@ -26,7 +26,7 @@ func (t *PublicTestSuite) TestPublic_Uploads() {
 			http.StatusOK,
 			"image/png",
 			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx, true).Return(domain.Mime("image/png"), t.bytes, nil)
+				m.On("Upload", ctx, true).Return(t.bytes, domain.Mime("image/png"), nil)
 			},
 			"/uploads/test.jpg",
 		},
@@ -35,7 +35,7 @@ func (t *PublicTestSuite) TestPublic_Uploads() {
 			http.StatusNotFound,
 			"text/html",
 			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx, true).Return(domain.Mime(""), nil, fmt.Errorf("error"))
+				m.On("Upload", ctx, true).Return(nil, domain.Mime(""), fmt.Errorf("error"))
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(http.StatusNotFound, "text/html", []byte(testString))
 				})
@@ -47,7 +47,7 @@ func (t *PublicTestSuite) TestPublic_Uploads() {
 			http.StatusOK,
 			"image/png",
 			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx, false).Return(domain.Mime("image/png"), t.bytes, nil)
+				m.On("Upload", ctx, false).Return(t.bytes, domain.Mime("image/png"), nil)
 			},
 			"/uploads/test.jpg?webp=false",
 		},

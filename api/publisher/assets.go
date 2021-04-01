@@ -25,7 +25,7 @@ import (
 // It then sets cache headers using the cacher interface & checks if a webp
 // image is available with the path of .jpg.webp. The minify is the used
 // to see if the file can be minfied.
-func (r *publish) Asset(g *gin.Context) (*[]byte, domain.Mime, error) {
+func (r *publish) Asset(g *gin.Context, webp bool) (*[]byte, domain.Mime, error) {
 	const op = "publish.GetAsset"
 
 	api.AssetsChan <- 1
@@ -50,7 +50,7 @@ func (r *publish) Asset(g *gin.Context) (*[]byte, domain.Mime, error) {
 
 	// Check if the serving of webp's is allowed & get the
 	// webp images and assign if not nil
-	if r.Options.MediaServeWebP && r.WebP.Accepts(g) {
+	if r.Options.MediaServeWebP && r.WebP.Accepts(g) && webp {
 		webpFile, err := r.WebP.File(g, assetsPath+fileName, domain.Mime(mimeType))
 		if err == nil {
 			return &webpFile, "image/webp", nil

@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	ListQuery = "SELECT * FROM `roles` ORDER BY \"id\" desc"
+	ListQuery = "SELECT * FROM `roles` ORDER BY id desc"
 )
 
 func (t *RolesTestSuite) TestStore_List() {

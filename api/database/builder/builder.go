@@ -215,7 +215,11 @@ func (s *Sqlbuilder) Offset(offset int) *Sqlbuilder {
 
 func (s *Sqlbuilder) OrderBy(column string, diretion string) *Sqlbuilder {
 
-	s.orderbyStmt = `ORDER BY "` + column + `" ` + diretion
+	if s.Dialect == "postgres" {
+		s.orderbyStmt = `ORDER BY "` + column + `" ` + diretion
+	} else {
+		s.orderbyStmt = `ORDER BY ` + column + ` ` + diretion
+	}
 
 	return s
 }

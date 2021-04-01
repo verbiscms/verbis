@@ -18,7 +18,12 @@ import (
 func (p *Public) Assets(ctx *gin.Context) {
 	const op = "FrontendHandler.GetAssets"
 
-	file, mimeType, err := p.publisher.Asset(ctx)
+	webp := true
+	if ctx.Query("webp") == "false" {
+		webp = false
+	}
+
+	file, mimeType, err := p.publisher.Asset(ctx, webp)
 	if err != nil {
 		p.publisher.NotFound(ctx)
 		return

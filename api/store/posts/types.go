@@ -9,7 +9,7 @@ import "github.com/ainsleyclark/verbis/api/domain"
 // postType
 //
 //
-func (s *Store) postType(post *domain.PostDatum) domain.PostType {
+func (s *Store) postType(post *domain.PostDatum) domain.PostType { //nolint
 	if s.Options.Homepage == post.Id {
 		return domain.PostType{
 			PageType: domain.HomeType,

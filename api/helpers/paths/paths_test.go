@@ -6,24 +6,25 @@ package paths
 
 import (
 	"github.com/stretchr/testify/assert"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
 func TestPaths_Get(t *testing.T) {
-	tt := map[string]struct {
-		def  string
-		want string
-	}{
-		"No Defaults": {
-			"",
-			"",
-		},
+	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	assert.NoError(t, err)
+	got := Get()
+	want := Paths{
+		Base:    path,
+		Admin:   path + Admin,
+		API:     path + API,
+		Uploads: path + Uploads,
+		Storage: path + Storage,
+		Themes:  path + Themes,
+		Web:     path + Web,
+		Forms:   path + Forms,
+		Bin:     path + Bin,
 	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			got := ""
-			assert.Equal(t, test.want, got)
-		})
-	}
+	assert.Equal(t, want, got)
 }

@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	ListQuery          = "SELECT * FROM `categories` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountQuery         = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `categories` ORDER BY \"created_at\" desc"
-	ListResourceQuery  = "SELECT * FROM `categories` WHERE `categories`.`resource` = 'news' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountResourceQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `categories` WHERE `categories`.`resource` = 'news' ORDER BY \"created_at\" desc) AS rowdata"
+	ListQuery          = "SELECT * FROM `categories` ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	CountQuery         = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `categories` ORDER BY created_at desc"
+	ListResourceQuery  = "SELECT * FROM `categories` WHERE `categories`.`resource` = 'news' ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	CountResourceQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `categories` WHERE `categories`.`resource` = 'news' ORDER BY created_at desc) AS rowdata"
 )
 
 func (t *CategoriesTestSuite) TestStore_List() {

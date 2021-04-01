@@ -17,10 +17,10 @@ import (
 )
 
 var (
-	ListQuery      = SelectStatement + "ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	ListRoleQuery  = SelectStatement + " WHERE `roles`.`name` = 'owner' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountQuery     = "SELECT COUNT(*) AS rowcount FROM (" + SelectStatement + " ORDER BY \"created_at\" desc"
-	CountRoleQuery = "SELECT COUNT(*) AS rowcount FROM (" + SelectStatement + " WHERE `roles`.`name` = 'owner' ORDER BY \"created_at\" desc"
+	ListQuery      = SelectStatement + "ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	ListRoleQuery  = SelectStatement + " WHERE `roles`.`name` = 'owner' ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	CountQuery     = "SELECT COUNT(*) AS rowcount FROM (" + SelectStatement + " ORDER BY created_at desc"
+	CountRoleQuery = "SELECT COUNT(*) AS rowcount FROM (" + SelectStatement + " WHERE `roles`.`name` = 'owner' ORDER BY created_at desc"
 )
 
 func (t *UsersTestSuite) TestStore_List() {

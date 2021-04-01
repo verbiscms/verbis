@@ -19,8 +19,8 @@ import (
 )
 
 var (
-	ListQuery  = "SELECT * FROM `forms` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `forms` ORDER BY \"created_at\" desc"
+	ListQuery  = "SELECT * FROM `forms` ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `forms` ORDER BY created_at desc"
 )
 
 func (t *FormsTestSuite) TestStore_List() {

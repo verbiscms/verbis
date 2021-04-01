@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (r *publish) Upload(g *gin.Context, webp bool) (domain.Mime, *[]byte, error) {
+func (r *publish) Upload(g *gin.Context, webp bool) (*[]byte, domain.Mime, error) {
 	const op = "publish.Upload"
 
 	api.UploadChan <- 1
@@ -25,7 +25,7 @@ func (r *publish) Upload(g *gin.Context, webp bool) (domain.Mime, *[]byte, error
 
 	media, path, err := r.Store.Media.FindByURL(url)
 	if err != nil {
-		return "", nil, err
+		return nil, "", err
 	}
 
 	acceptsWebP := r.WebP.Accepts(g)
@@ -36,7 +36,7 @@ func (r *publish) Upload(g *gin.Context, webp bool) (domain.Mime, *[]byte, error
 	// Get the data & mime type from the media store
 	file, mimeType, err := r.media.Serve(media, path, acceptsWebP)
 	if err != nil {
-		return "", nil, err
+		return nil, "", err
 	}
 
 	// If the minified file is nil or the err is not empty, serve the original data
@@ -45,5 +45,5 @@ func (r *publish) Upload(g *gin.Context, webp bool) (domain.Mime, *[]byte, error
 	//	return mimeType, &file, nil
 	//}
 
-	return mimeType, &file, nil
+	return &file, mimeType, nil
 }

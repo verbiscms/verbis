@@ -12,17 +12,18 @@ import (
 	"path/filepath"
 )
 
+// Paths represent the struct of paths for use with the
+/// application.
 type Paths struct {
-	Base      string
-	Admin     string
-	API       string
-	Uploads   string
-	Migration string
-	Storage   string
-	Themes    string
-	Web       string
-	Forms     string
-	Bin       string
+	Base    string
+	Admin   string
+	API     string
+	Uploads string
+	Storage string
+	Themes  string
+	Web     string
+	Forms   string
+	Bin     string
 }
 
 const (
@@ -32,9 +33,13 @@ const (
 	Themes  = "/themes"
 	Web     = API + "/web"
 	Uploads = Storage + "/uploads"
+	Forms   = Storage + "/forms"
 	Bin     = "/bin"
 )
 
+// Get
+//
+// Retrieves relevant paths for the application.
 func Get() Paths {
 	base := base()
 	return Paths{
@@ -45,11 +50,14 @@ func Get() Paths {
 		Storage: base + Storage,
 		Themes:  base + Themes,
 		Web:     base + Web,
+		Forms:   base + Forms,
 		Bin:     base + Bin,
 	}
 }
 
-// Base path of project
+// base
+//
+// Base path of project.
 func base() string {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
@@ -60,7 +68,9 @@ func base() string {
 
 // BaseCheck
 //
-// BaseCheck environment is passable to run Terminal
+// Check the environment to see if it is passable by
+// seeing if the .env file, the admin folder, and
+// the storage folder exists.
 func BaseCheck() error {
 	const op = "paths.BaseCheck"
 
@@ -72,10 +82,6 @@ func BaseCheck() error {
 
 	if !files.DirectoryExists(basePath + "/admin") {
 		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis admin folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath+"/admin")}
-	}
-
-	if !files.DirectoryExists(basePath + "/storage") {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis storage folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath+"/storage")}
 	}
 
 	if !files.DirectoryExists(basePath + "/storage") {

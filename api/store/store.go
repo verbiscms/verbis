@@ -42,10 +42,9 @@ type Repository struct {
 // TODO Change!
 // Create a new database instance, connect
 // to database.
-func New(db database.Driver, th *domain.ThemeConfig) (*Repository, error) {
+func New(db database.Driver) (*Repository, *domain.ThemeConfig, error) {
 	cfg := &storeConfig.Config{
 		Driver:       db,
-		Theme:        th,
 		Options:      nil,
 		Paths:        paths.Get(),
 		Owner:        nil,
@@ -60,12 +59,11 @@ func New(db database.Driver, th *domain.ThemeConfig) (*Repository, error) {
 
 	activeTheme, err := optsStore.GetTheme()
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	if cfg.Running {
-		cfg.Theme = config.Init(cfg.Paths.Themes + string(os.PathSeparator) + activeTheme)
-	}
+	themeConfig := config.Init(cfg.Paths.Themes + string(os.PathSeparator) + activeTheme)
+	cfg.Theme = themeConfig
 
 	cfg.ThemeService = theme.New()
 
@@ -84,5 +82,5 @@ func New(db database.Driver, th *domain.ThemeConfig) (*Repository, error) {
 		Redirects:  redirects.New(cfg),
 		Roles:      roles.New(cfg),
 		User:       user,
-	}, nil
+	}, themeConfig, nil
 }

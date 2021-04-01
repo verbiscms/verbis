@@ -41,7 +41,7 @@ and convert the data into Verbis content. `,
 	}
 )
 
-func getXMLFile() string {
+func getXMLFile() string { // nolint
 	emoji.Println(":backhand_index_pointing_right: Enter the absolute path of the XML file to be imported")
 	fmt.Println()
 

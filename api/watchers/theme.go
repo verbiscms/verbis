@@ -51,15 +51,15 @@ type Event struct {
 }
 
 var (
-	excludedDir = []string{
-		"node_modules",
-		"bower_components",
-		".git",
-	}
-	excludedFiles = []string{
-		".DS_STORE",
-		"robots.txt",
-	}
+//excludedDir = []string{
+//	"node_modules",
+//	"bower_components",
+//	".git",
+//}
+//excludedFiles = []string{
+//	".DS_STORE",
+//	"robots.txt",
+//}
 )
 
 func New(themePath string) *Batch {
@@ -111,7 +111,7 @@ func (b *Batch) Close() {
 
 func (b *Batch) run() {
 	interval := time.Millisecond * 100
-	tick := time.Tick(interval)
+	tick := time.Tick(interval) //nolint
 	evs := make([]fsnotify.Event, 0)
 OuterLoop:
 	for {
@@ -188,23 +188,23 @@ OuterLoop:
 // isExcludedDir
 //
 //
-func isExcludedDir(name string) bool {
-	for _, v := range excludedDir {
-		if v == name {
-			return true
-		}
-	}
-	return false
-}
-
-// isExcludedFile
+//func isExcludedDir(name string) bool {
+//	for _, v := range excludedDir {
+//		if v == name {
+//			return true
+//		}
+//	}
+//	return false
+//}
 //
-//
-func isExcludedFile(name string) bool {
-	for _, v := range excludedFiles {
-		if v == name {
-			return true
-		}
-	}
-	return false
-}
+//// isExcludedFile
+////
+////
+//func isExcludedFile(name string) bool {
+//	for _, v := range excludedFiles {
+//		if v == name {
+//			return true
+//		}
+//	}
+//	return false
+//}

@@ -272,7 +272,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 		Status:   "published",
 	}
 
-	posts, _, err := s.deps.Store.Posts.List(params.Params{
+	p, _, err := s.deps.Store.Posts.List(params.Params{
 		Page:           1,
 		Limit:          0,
 		LimitAll:       true,
@@ -285,7 +285,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 	}
 
 	var items []viewItem
-	for _, v := range posts {
+	for _, v := range p {
 		if !v.HasResource() {
 			resource = "pages"
 		} else {
