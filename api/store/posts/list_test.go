@@ -12,18 +12,17 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/test/dummy"
-	"github.com/gookit/color"
 	"regexp"
 )
 
 var (
 	ListQuery          = "SELECT * FROM `posts` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
 	ListResourceQuery  = "SELECT * FROM `posts` WHERE `posts`.`resource` = 'news' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	ListPagesQuery     = "SELECT * FROM `posts` WHERE `posts`.`resource` = 'NULL' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
+	ListPagesQuery     = "SELECT * FROM `posts` WHERE `posts`.`resource` = '' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
 	ListStatusQuery    = "SELECT * FROM `posts` WHERE `posts`.`status` = 'published' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
 	CountQuery         = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` ORDER BY \"created_at\" desc"
 	CountResourceQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`resource` = 'news' ORDER BY \"created_at\" desc"
-	CountPagesQuery    = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`resource` = 'NULL' ORDER BY \"created_at\" desc"
+	CountPagesQuery    = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`resource` = '' ORDER BY \"created_at\" desc"
 	CountStatusQuery   = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`status` = 'published' ORDER BY \"created_at\" desc"
 )
 
@@ -43,6 +42,7 @@ func (t *PostsTestSuite) TestStore_List() {
 					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListQuery))).
 					WillReturnRows(rows)
+
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).
 					WillReturnRows(countRows)
@@ -69,6 +69,7 @@ func (t *PostsTestSuite) TestStore_List() {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"})
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListQuery))).
 					WillReturnRows(rows)
+
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).
 					WillReturnRows(countRows)
@@ -95,6 +96,7 @@ func (t *PostsTestSuite) TestStore_List() {
 					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListQuery))).
 					WillReturnRows(rows)
+
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
@@ -110,6 +112,7 @@ func (t *PostsTestSuite) TestStore_List() {
 					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListPagesQuery))).
 					WillReturnRows(rows)
+
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountPagesQuery)).
 					WillReturnRows(countRows)
@@ -128,6 +131,7 @@ func (t *PostsTestSuite) TestStore_List() {
 					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListResourceQuery))).
 					WillReturnRows(rows)
+
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountResourceQuery)).
 					WillReturnRows(countRows)
@@ -146,6 +150,7 @@ func (t *PostsTestSuite) TestStore_List() {
 					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListStatusQuery))).
 					WillReturnRows(rows)
+
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountStatusQuery)).
 					WillReturnRows(countRows)
@@ -163,7 +168,6 @@ func (t *PostsTestSuite) TestStore_List() {
 			s := t.Setup(test.mock)
 			got, total, err := s.List(test.meta, false, test.cfg)
 			if err != nil {
-				color.Red.Println(err)
 				t.Contains(errors.Message(err), test.want)
 				return
 			}

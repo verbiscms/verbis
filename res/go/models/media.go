@@ -462,7 +462,7 @@ func (s *MediaStore) saveResizedImages(file *multipart.FileHeader, name, path, m
 					Url:      s.getURL() + "/" + fileName,
 					Name:     fileName,
 					SizeName: size.Name,
-					FileSize: int64(files.GetFileSize(path + "/" + mediaUUID.String() + extension)),
+					FileSize: int64(files.FileSize(path + "/" + mediaUUID.String() + extension)),
 					Width:    size.Width,
 					Height:   size.Height,
 					Crop:     size.Crop,

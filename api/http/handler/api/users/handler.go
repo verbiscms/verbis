@@ -45,10 +45,10 @@ func New(d *deps.Deps) *Users {
 // attached to it.
 func (u *Users) clearCache(id int) {
 	go func() {
-		posts, _, err := u.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
+		p, _, err := u.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
 		if err != nil {
 			logger.WithError(err).Error()
 		}
-		cache.ClearUserCache(id, posts)
+		cache.ClearUserCache(id, p)
 	}()
 }

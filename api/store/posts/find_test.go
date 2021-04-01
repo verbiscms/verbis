@@ -27,20 +27,23 @@ func (t *PostsTestSuite) TestStore_Find() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
 					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+					WillReturnRows(rows)
 			},
 		},
 		"Not Found": {
 			"No post exists with the ID",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"})
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+					WillReturnRows(rows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
@@ -68,20 +71,23 @@ func (t *PostsTestSuite) TestStore_FindBySlug() {
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
 					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindBySlugQuery))).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindBySlugQuery))).
+					WillReturnRows(rows)
 			},
 		},
 		"Not Found": {
 			"No post exists with the slug",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"})
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindBySlugQuery))).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindBySlugQuery))).
+					WillReturnRows(rows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindBySlugQuery))).WillReturnError(fmt.Errorf("error"))
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindBySlugQuery))).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 	}
