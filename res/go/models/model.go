@@ -9,9 +9,10 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	strings2 "github.com/ainsleyclark/verbis/api/helpers/strings"
+
 	// Import SQL Driver with side effects
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
@@ -111,7 +112,7 @@ func filterRows(db *sqlx.DB, filters map[string][]params.Filter, table string) (
 				}
 
 				// Check if the operator exists before continuing
-				if opExists := helpers.StringInSlice(operator, operators); !opExists {
+				if opExists := strings2.InSlice(operator, operators); !opExists {
 					return "", &errors.Error{
 						Code:      errors.INVALID,
 						Message:   fmt.Sprintf("The %s operator does not exist", operator),

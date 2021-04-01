@@ -26,7 +26,7 @@ lint:
 	golangci-lint run ./api/...
 
 test:
-	go clean -testcache && go test $$(go list ./... | grep -v /res/ | grep -v /api/mocks/)
+	go clean -testcache && go test $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ )
 
 test-v:
 	go clean -testcache && go test $$(go list ./... | grep -v /res/ | grep -v /api/mocks/) -v

@@ -8,8 +8,8 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	strings2 "github.com/ainsleyclark/verbis/api/helpers/strings"
 	"regexp"
 	"strings"
 )
@@ -61,7 +61,7 @@ func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]p
 				}
 
 				// Check if the operator exists before continuing
-				if opExists := helpers.StringInSlice(operator, operators); !opExists {
+				if opExists := strings2.InSlice(operator, operators); !opExists {
 					return &errors.Error{
 						Code:      errors.INVALID,
 						Message:   fmt.Sprintf("The %s operator does not exist", operator),

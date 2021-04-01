@@ -12,8 +12,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store/posts"
 	"io/ioutil"
@@ -297,7 +297,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 			exclude = v.SeoMeta.Seo.ExcludeSitemap
 		}
 
-		if !helpers.StringInSlice(resource, s.options.SeoSitemapExcluded) && !exclude {
+		if !strings.InSlice(resource, s.options.SeoSitemapExcluded) && !exclude {
 			items = append(items, viewItem{
 				Slug:      s.options.SiteUrl + v.Permalink,
 				CreatedAt: v.CreatedAt.Format(time.RFC3339),

@@ -11,10 +11,9 @@ import (
 	"testing"
 )
 
-type mockStringer struct {
-	def map[string]interface{}
-}
-
+// Setup
+//
+// Setup param testing with defaults.
 func Setup(t *testing.T, def Defaults) Stringer {
 	data, err := json.Marshal(def) // Convert to a json string
 	assert.NoError(t, err)
@@ -27,6 +26,9 @@ func Setup(t *testing.T, def Defaults) Stringer {
 	return &ms
 }
 
+// Param
+//
+// Stringer for mock.
 func (m *mockStringer) Param(param string) string {
 	val, ok := m.def[param]
 	if !ok {
@@ -37,6 +39,11 @@ func (m *mockStringer) Param(param string) string {
 		return ""
 	}
 	return s
+}
+
+// mockStringer for params testing.
+type mockStringer struct {
+	def map[string]interface{}
 }
 
 func TestParams_Get(t *testing.T) {
