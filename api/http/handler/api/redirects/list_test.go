@@ -7,6 +7,7 @@ package redirects
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
+	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -23,7 +24,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			http.StatusOK,
 			"Successfully obtained redirects",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams).Return(redirects, 1, nil)
+				m.On("List", dummy.DefaultParams).Return(redirects, 1, nil)
 			},
 		},
 		"Not Found": {
@@ -31,7 +32,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			http.StatusOK,
 			"no redirects found",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
+				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no redirects found"})
 			},
 		},
 		"Conflict": {
@@ -39,7 +40,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			http.StatusBadRequest,
 			"conflict",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
@@ -47,7 +48,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			http.StatusBadRequest,
 			"invalid",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -55,7 +56,7 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 			http.StatusInternalServerError,
 			"config",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

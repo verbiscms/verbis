@@ -5,19 +5,19 @@
 package postgres
 
 import (
-	_ "embed"
+	_ "embed" // Embed Migration
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // Postgres Driver
 )
 
-// postgres defines the implementation of the
+// Postgres defines the implementation of the
 // database.Driver if Postgres is selected
 // as the main driver.
-type postgres struct {
+type Postgres struct {
 	driver *sqlx.DB
 	env    *environment.Env
 	schema string
@@ -33,15 +33,15 @@ var (
 // New - Creates a new mySql instance and returns
 // a new database driver.
 // Returns errors.INVALID if there was an error establishing a connection or pinging.
-func Setup(env *environment.Env) (*postgres, error) {
+func Setup(env *environment.Env) (*Postgres, error) {
 	const op = "Database.Setup"
 
-	m := postgres{
+	m := Postgres{
 		env:    env,
 		schema: env.DbSchema,
 	}
 
-	driver, err := sqlx.Connect("postgres", m.connectString())
+	driver, err := sqlx.Connect("Postgres", m.connectString())
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error establishing a database connection", Operation: op, Err: err}
 	}
@@ -62,29 +62,29 @@ func Setup(env *environment.Env) (*postgres, error) {
 // DB
 //
 // Returns the sqlx driver.
-func (p *postgres) DB() *sqlx.DB {
+func (p *Postgres) DB() *sqlx.DB {
 	return p.driver
 }
 
 // Schema
 //
 // Returns the schema (blank for MySQL),
-func (p *postgres) Schema() string {
+func (p *Postgres) Schema() string {
 	return p.schema
 }
 
 // Close
 //
 // Closes the MySQL connection.
-func (p *postgres) Close() error {
+func (p *Postgres) Close() error {
 	return p.driver.Close()
 }
 
 // Builder
 //
 // Returns a new query builder instance.
-func (p *postgres) Builder() *builder.Sqlbuilder {
-	return builder.New("postgres")
+func (p *Postgres) Builder() *builder.Sqlbuilder {
+	return builder.New("Postgres")
 }
 
 // Install
@@ -92,7 +92,7 @@ func (p *postgres) Builder() *builder.Sqlbuilder {
 // Migrate the db by executing the Postgres migration file.
 // Returns errors.INVALID if the sql file could not be located.
 // Returns errors.INTERNAL if the exec command could not be ran.
-func (p *postgres) Install() error {
+func (p *Postgres) Install() error {
 	const op = "Database.Install"
 	_, err := p.driver.Exec(migration)
 	if err != nil {
@@ -105,7 +105,7 @@ func (p *postgres) Install() error {
 //
 // CheckExists check's if the database exists.
 // Returns errors.INVALID if the database was not found.
-func (p *postgres) Exists() error {
+func (p *Postgres) Exists() error {
 	const op = "Database.CheckExists"
 	_, err := p.driver.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", p.env.DbDatabase)
 	if err != nil {
@@ -119,7 +119,7 @@ func (p *postgres) Exists() error {
 // Dump the database to file with the given path and
 // file name.
 // Returns errors.INTERNAL if the connection, dump failed.
-func (p *postgres) Dump(path, filename string) error {
+func (p *Postgres) Dump(path, filename string) error {
 	const op = "Database.Dump"
 	// TODO: Implement!
 	return &errors.Error{Code: errors.INTERNAL, Message: "Not yet implemented", Operation: op, Err: fmt.Errorf("function not available")}
@@ -129,7 +129,7 @@ func (p *postgres) Dump(path, filename string) error {
 //
 // Drop deletes the database with the environments database name.
 // Returns errors.INTERNAL if the exec command could not be ran.
-func (p *postgres) Drop() error {
+func (p *Postgres) Drop() error {
 	const op = "Database.Drop"
 	_, err := p.driver.Exec("DROP DATABASE [IF EXISTS] " + p.env.DbDatabase + ";")
 	if err != nil {
@@ -141,6 +141,6 @@ func (p *postgres) Drop() error {
 // connectString
 //
 // Returns the Postgres database connection string.
-func (p *postgres) connectString() string {
+func (p *Postgres) connectString() string {
 	return "postgresql://" + p.env.DbHost + ":" + p.env.DbPort + "/" + p.env.DbDatabase + "?user=" + p.env.DbUser + "&password=" + p.env.DbPassword + "&statement_cache_mode=describe"
 }

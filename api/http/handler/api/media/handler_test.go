@@ -8,8 +8,6 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	service "github.com/ainsleyclark/verbis/api/mocks/services/media"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
@@ -112,14 +110,6 @@ var (
 			Url:   "/uploads/1",
 			Title: "title",
 		},
-	}
-	// The default params used for testing.
-	defaultParams = params.Params{
-		Page:           api.DefaultParams.Page,
-		Limit:          15,
-		OrderBy:        api.DefaultParams.OrderBy,
-		OrderDirection: api.DefaultParams.OrderDirection,
-		Filters:        nil,
 	}
 )
 

@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
 	store "github.com/ainsleyclark/verbis/api/store/posts"
+	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -24,7 +25,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			http.StatusOK,
 			"Successfully obtained posts",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams, true, store.ListConfig{}).Return(posts, 2, nil)
+				m.On("List", dummy.DefaultParams, true, store.ListConfig{}).Return(posts, 2, nil)
 			},
 		},
 		"Not Found": {
@@ -32,7 +33,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			http.StatusOK,
 			"no posts found",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+				m.On("List", dummy.DefaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 			},
 		},
 		"Conflict": {
@@ -40,7 +41,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			http.StatusBadRequest,
 			"conflict",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("List", dummy.DefaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
@@ -48,7 +49,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			http.StatusBadRequest,
 			"invalid",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("List", dummy.DefaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -56,7 +57,7 @@ func (t *PostsTestSuite) TestPosts_List() {
 			http.StatusInternalServerError,
 			"config",
 			func(m *mocks.Repository) {
-				m.On("List", defaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("List", dummy.DefaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

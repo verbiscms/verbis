@@ -14,10 +14,12 @@ import (
 )
 
 //nolint
-var wg sync.WaitGroup
-var errCountPhoto int
-var errCountPage int
-var photoErr error
+var (
+	wg            sync.WaitGroup
+	errCountPhoto int
+	errCountPage  int
+	photoErr      error
+)
 
 func skipCI(t *testing.T) {
 	if os.Getenv("CI") != "" {

@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	ListQuery  = "SELECT * FROM `redirects` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `redirects` ORDER BY \"created_at\" desc"
+	ListQuery  = "SELECT * FROM `redirects` ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `redirects` ORDER BY created_at desc"
 )
 
 func (t *RedirectsTestSuite) TestStore_List() {

@@ -43,7 +43,7 @@ func Install(cmd *cobra.Command, args []string) {
 	//	figure.Print()
 
 	// Run doctor
-	cfg, db, err := doctor(false)
+	_, db, err := doctor(false)
 	if err != nil {
 		printError(err.Error())
 	}
@@ -69,26 +69,26 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Set up stores & pass the database.
-	store, err := store.New(db, cfg.Config)
+	s, _, err := store.New(db)
 	if err != nil {
 		printError(err.Error())
 	}
 
 	// Run the seeds
-	seeder := seeds.New(db, store)
+	seeder := seeds.New(db, s)
 	if err := seeder.Seed(); err != nil {
 		printError(err.Error())
 	}
 
 	// Create the owner user
-	if _, err := store.User.Create(*user); err != nil {
+	if _, err := s.User.Create(*user); err != nil {
 		printError(fmt.Sprintf("Error creating the owner: %s", err.Error()))
 	}
 
 	// Insert the site uri
 	fmt.Println()
 	mURL, _ := json.Marshal(uri)
-	if err := store.Options.Update("site_url", mURL); err != nil {
+	if err := s.Options.Update("site_url", mURL); err != nil {
 		printError(fmt.Sprintf("Error not inserting the site uri: %s", err.Error()))
 	}
 

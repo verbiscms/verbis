@@ -16,14 +16,14 @@ import (
 )
 
 var (
-	ListQuery          = "SELECT * FROM `posts` ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	ListResourceQuery  = "SELECT * FROM `posts` WHERE `posts`.`resource` = 'news' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	ListPagesQuery     = "SELECT * FROM `posts` WHERE `posts`.`resource` = '' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	ListStatusQuery    = "SELECT * FROM `posts` WHERE `posts`.`status` = 'published' ORDER BY \"created_at\" desc LIMIT 15 OFFSET 0"
-	CountQuery         = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` ORDER BY \"created_at\" desc"
-	CountResourceQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`resource` = 'news' ORDER BY \"created_at\" desc"
-	CountPagesQuery    = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`resource` = '' ORDER BY \"created_at\" desc"
-	CountStatusQuery   = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`status` = 'published' ORDER BY \"created_at\" desc"
+	ListQuery          = "SELECT * FROM `posts` ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	ListResourceQuery  = "SELECT * FROM `posts` WHERE `posts`.`resource` = 'news' ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	ListPagesQuery     = "SELECT * FROM `posts` WHERE `posts`.`resource` = '' ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	ListStatusQuery    = "SELECT * FROM `posts` WHERE `posts`.`status` = 'published' ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	CountQuery         = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` ORDER BY created_at desc"
+	CountResourceQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`resource` = 'news' ORDER BY created_at desc"
+	CountPagesQuery    = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`resource` = '' ORDER BY created_at desc"
+	CountStatusQuery   = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `posts` WHERE `posts`.`status` = 'published' ORDER BY created_at desc"
 )
 
 func (t *PostsTestSuite) TestStore_List() {

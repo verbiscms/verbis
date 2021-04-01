@@ -26,6 +26,11 @@ func Setup(t *testing.T, def Defaults) Stringer {
 	return &ms
 }
 
+// mockStringer for params testing.
+type mockStringer struct {
+	def map[string]interface{}
+}
+
 // Param
 //
 // Stringer for mock.
@@ -39,11 +44,6 @@ func (m *mockStringer) Param(param string) string {
 		return ""
 	}
 	return s
-}
-
-// mockStringer for params testing.
-type mockStringer struct {
-	def map[string]interface{}
 }
 
 func TestParams_Get(t *testing.T) {

@@ -7,6 +7,7 @@ package options
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
+	"strings"
 )
 
 // GetTheme
@@ -28,7 +29,7 @@ func (s *Store) GetTheme() (string, error) {
 		return "", &errors.Error{Code: errors.INVALID, Message: "Error casting option value to string", Operation: op, Err: err}
 	}
 
-	return theme, nil
+	return strings.ReplaceAll(theme, "\"", ""), nil
 }
 
 // SetTheme

@@ -16,13 +16,13 @@ type Publisher struct {
 	mock.Mock
 }
 
-// Asset provides a mock function with given fields: g
-func (_m *Publisher) Asset(g *gin.Context) (*[]byte, domain.Mime, error) {
-	ret := _m.Called(g)
+// Asset provides a mock function with given fields: g, webp
+func (_m *Publisher) Asset(g *gin.Context, webp bool) (*[]byte, domain.Mime, error) {
+	ret := _m.Called(g, webp)
 
 	var r0 *[]byte
-	if rf, ok := ret.Get(0).(func(*gin.Context) *[]byte); ok {
-		r0 = rf(g)
+	if rf, ok := ret.Get(0).(func(*gin.Context, bool) *[]byte); ok {
+		r0 = rf(g, webp)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*[]byte)
@@ -30,15 +30,15 @@ func (_m *Publisher) Asset(g *gin.Context) (*[]byte, domain.Mime, error) {
 	}
 
 	var r1 domain.Mime
-	if rf, ok := ret.Get(1).(func(*gin.Context) domain.Mime); ok {
-		r1 = rf(g)
+	if rf, ok := ret.Get(1).(func(*gin.Context, bool) domain.Mime); ok {
+		r1 = rf(g, webp)
 	} else {
 		r1 = ret.Get(1).(domain.Mime)
 	}
 
 	var r2 error
-	if rf, ok := ret.Get(2).(func(*gin.Context) error); ok {
-		r2 = rf(g)
+	if rf, ok := ret.Get(2).(func(*gin.Context, bool) error); ok {
+		r2 = rf(g, webp)
 	} else {
 		r2 = ret.Error(2)
 	}
@@ -91,23 +91,23 @@ func (_m *Publisher) SiteMap() publisher.SiteMapper {
 }
 
 // Upload provides a mock function with given fields: g, webp
-func (_m *Publisher) Upload(g *gin.Context, webp bool) (domain.Mime, *[]byte, error) {
+func (_m *Publisher) Upload(g *gin.Context, webp bool) (*[]byte, domain.Mime, error) {
 	ret := _m.Called(g, webp)
 
-	var r0 domain.Mime
-	if rf, ok := ret.Get(0).(func(*gin.Context, bool) domain.Mime); ok {
+	var r0 *[]byte
+	if rf, ok := ret.Get(0).(func(*gin.Context, bool) *[]byte); ok {
 		r0 = rf(g, webp)
 	} else {
-		r0 = ret.Get(0).(domain.Mime)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*[]byte)
+		}
 	}
 
-	var r1 *[]byte
-	if rf, ok := ret.Get(1).(func(*gin.Context, bool) *[]byte); ok {
+	var r1 domain.Mime
+	if rf, ok := ret.Get(1).(func(*gin.Context, bool) domain.Mime); ok {
 		r1 = rf(g, webp)
 	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).(*[]byte)
-		}
+		r1 = ret.Get(1).(domain.Mime)
 	}
 
 	var r2 error

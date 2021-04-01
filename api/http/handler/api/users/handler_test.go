@@ -8,8 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	posts "github.com/ainsleyclark/verbis/api/mocks/store/posts"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/ainsleyclark/verbis/api/store"
@@ -140,13 +138,5 @@ var (
 		CurrentPassword: "password",
 		NewPassword:     "verbiscms",
 		ConfirmPassword: "verbiscmss",
-	}
-	// The default params used for testing.
-	defaultParams = params.Params{
-		Page:           api.DefaultParams.Page,
-		Limit:          15,
-		OrderBy:        api.DefaultParams.OrderBy,
-		OrderDirection: api.DefaultParams.OrderDirection,
-		Filters:        nil,
 	}
 )
