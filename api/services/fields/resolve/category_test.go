@@ -7,32 +7,32 @@ package resolve
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/categories"
 )
 
 func (t *ResolverTestSuite) TestValue_Category() {
 	tt := map[string]struct {
 		value domain.FieldValue
-		mock  func(c *mocks.CategoryRepository)
+		mock  func(c *mocks.Repository)
 		want  interface{}
 	}{
 		"Category": {
 			value: domain.FieldValue("1"),
-			mock: func(c *mocks.CategoryRepository) {
-				c.On("GetByID", 1).Return(domain.Category{Name: "cat"}, nil)
+			mock: func(c *mocks.Repository) {
+				c.On("Find", 1).Return(domain.Category{Name: "cat"}, nil)
 			},
 			want: domain.Category{Name: "cat"},
 		},
 		"Category Error": {
 			value: domain.FieldValue("1"),
-			mock: func(c *mocks.CategoryRepository) {
-				c.On("GetByID", 1).Return(domain.Category{}, fmt.Errorf("not found"))
+			mock: func(c *mocks.Repository) {
+				c.On("Find", 1).Return(domain.Category{}, fmt.Errorf("not found"))
 			},
 			want: "not found",
 		},
 		"Cast Error": {
 			value: domain.FieldValue("wrongval"),
-			mock:  func(c *mocks.CategoryRepository) {},
+			mock:  func(c *mocks.Repository) {},
 			want:  `strconv.Atoi: parsing "wrongval": invalid syntax`,
 		},
 	}
@@ -40,7 +40,7 @@ func (t *ResolverTestSuite) TestValue_Category() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			v := t.GetValue()
-			categoryMock := &mocks.CategoryRepository{}
+			categoryMock := &mocks.Repository{}
 
 			test.mock(categoryMock)
 			v.deps.Store.Categories = categoryMock
@@ -59,15 +59,15 @@ func (t *ResolverTestSuite) TestValue_Category() {
 func (t *ResolverTestSuite) TestValue_CategoryResolve() {
 	tt := map[string]struct {
 		field domain.PostField
-		mock  func(c *mocks.CategoryRepository)
+		mock  func(c *mocks.Repository)
 		want  domain.PostField
 	}{
 		"Success": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "category"},
-			mock: func(c *mocks.CategoryRepository) {
-				c.On("GetByID", 1).Return(domain.Category{Name: "cat1"}, nil)
-				c.On("GetByID", 2).Return(domain.Category{Name: "cat2"}, nil)
-				c.On("GetByID", 3).Return(domain.Category{Name: "cat3"}, nil)
+			mock: func(c *mocks.Repository) {
+				c.On("Find", 1).Return(domain.Category{Name: "cat1"}, nil)
+				c.On("Find", 2).Return(domain.Category{Name: "cat2"}, nil)
+				c.On("Find", 3).Return(domain.Category{Name: "cat3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3", Type: "category", Value: []interface{}{
 				domain.Category{Name: "cat1"},
@@ -77,10 +77,10 @@ func (t *ResolverTestSuite) TestValue_CategoryResolve() {
 		},
 		"Trailing Comma": {
 			field: domain.PostField{OriginalValue: "1,2,3,", Type: "category"},
-			mock: func(c *mocks.CategoryRepository) {
-				c.On("GetByID", 1).Return(domain.Category{Name: "cat1"}, nil)
-				c.On("GetByID", 2).Return(domain.Category{Name: "cat2"}, nil)
-				c.On("GetByID", 3).Return(domain.Category{Name: "cat3"}, nil)
+			mock: func(c *mocks.Repository) {
+				c.On("Find", 1).Return(domain.Category{Name: "cat1"}, nil)
+				c.On("Find", 2).Return(domain.Category{Name: "cat2"}, nil)
+				c.On("Find", 3).Return(domain.Category{Name: "cat3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3,", Type: "category", Value: []interface{}{
 				domain.Category{Name: "cat1"},
@@ -90,10 +90,10 @@ func (t *ResolverTestSuite) TestValue_CategoryResolve() {
 		},
 		"Leading Comma": {
 			field: domain.PostField{OriginalValue: ",1,2,3", Type: "category"},
-			mock: func(c *mocks.CategoryRepository) {
-				c.On("GetByID", 1).Return(domain.Category{Name: "cat1"}, nil)
-				c.On("GetByID", 2).Return(domain.Category{Name: "cat2"}, nil)
-				c.On("GetByID", 3).Return(domain.Category{Name: "cat3"}, nil)
+			mock: func(c *mocks.Repository) {
+				c.On("Find", 1).Return(domain.Category{Name: "cat1"}, nil)
+				c.On("Find", 2).Return(domain.Category{Name: "cat2"}, nil)
+				c.On("Find", 3).Return(domain.Category{Name: "cat3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: ",1,2,3", Type: "category", Value: []interface{}{
 				domain.Category{Name: "cat1"},
@@ -106,7 +106,7 @@ func (t *ResolverTestSuite) TestValue_CategoryResolve() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			v := t.GetValue()
-			categoryMock := &mocks.CategoryRepository{}
+			categoryMock := &mocks.Repository{}
 
 			test.mock(categoryMock)
 			v.deps.Store.Categories = categoryMock

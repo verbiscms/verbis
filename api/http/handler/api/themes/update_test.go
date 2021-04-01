@@ -7,8 +7,8 @@ package themes
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/config"
-	mockStore "github.com/ainsleyclark/verbis/api/mocks/models"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/services/theme"
+	store "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -19,7 +19,7 @@ func (t *ThemesTestSuite) TestThemes_Update() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.Repository, mo *mockStore.OptionsRepository)
+		mock    func(m *mocks.Repository, mo *store.Repository)
 		url     string
 	}{
 		"Success": {
@@ -29,7 +29,7 @@ func (t *ThemesTestSuite) TestThemes_Update() {
 			UpdateTheme{
 				Theme: TestActiveTheme,
 			},
-			func(m *mocks.Repository, mo *mockStore.OptionsRepository) {
+			func(m *mocks.Repository, mo *store.Repository) {
 				m.On("Exists", TestActiveTheme).Return(true)
 				m.On("Templates", TestActiveTheme).Return(templates, nil)
 				mo.On("SetTheme", TestActiveTheme).Return(nil)
@@ -51,7 +51,7 @@ func (t *ThemesTestSuite) TestThemes_Update() {
 			UpdateTheme{
 				Theme: TestActiveTheme,
 			},
-			func(m *mocks.Repository, mo *mockStore.OptionsRepository) {
+			func(m *mocks.Repository, mo *store.Repository) {
 				m.On("Exists", TestActiveTheme).Return(false)
 			},
 			"/themes",
@@ -63,7 +63,7 @@ func (t *ThemesTestSuite) TestThemes_Update() {
 			UpdateTheme{
 				Theme: TestActiveTheme,
 			},
-			func(m *mocks.Repository, mo *mockStore.OptionsRepository) {
+			func(m *mocks.Repository, mo *store.Repository) {
 				m.On("Exists", TestActiveTheme).Return(true)
 				m.On("Templates", TestActiveTheme).Return(templates, nil)
 				mo.On("SetTheme", TestActiveTheme).Return(fmt.Errorf("error"))

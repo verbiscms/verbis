@@ -8,7 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"io/ioutil"
-	"os"
 )
 
 // Serve
@@ -16,16 +15,15 @@ import (
 // Serve is responsible for serving the correct data to
 // the front end.
 // Returns errors.NOTFOUND if the media item was not found.
-func (s *Service) Serve(media domain.Media, acceptWebP bool) ([]byte, domain.Mime, error) {
+func (s *Service) Serve(media domain.Media, path string, acceptWebP bool) ([]byte, domain.Mime, error) {
 	const op = "Media.Serve"
 
 	var (
-		path = s.paths.Uploads + string(os.PathSeparator) + media.UploadPath()
 		mime = media.Mime
+		data []byte
+		err  error
 	)
 
-	var data []byte
-	var err error
 	if acceptWebP && s.options.MediaServeWebP {
 		data, err = ioutil.ReadFile(path + domain.WebPExtension)
 		if err != nil {

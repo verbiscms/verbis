@@ -13,7 +13,7 @@ import (
 
 var (
 	GetThemeQuery    = "SELECT `option_value` FROM `options` WHERE `option_name` = 'active_theme' LIMIT 1"
-	UpdateThemeQuery = "UPDATE `options` SET `option_value` = [34 116 104 101 109 101 34] WHERE `option_name` = 'active_theme'"
+	UpdateThemeQuery = "UPDATE `options` SET `option_value` = ? WHERE `option_name` = 'active_theme'"
 )
 
 func (t *OptionsTestSuite) TestStore_GetTheme() {
@@ -35,15 +35,6 @@ func (t *OptionsTestSuite) TestStore_GetTheme() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnError(sql.ErrNoRows)
-			},
-		},
-		"Bad Cast": {
-			"Error casting option value to string",
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"option_value"}).
-					AddRow(false)
-				m.ExpectQuery(regexp.QuoteMeta(GetThemeQuery)).
-					WillReturnRows(rows)
 			},
 		},
 	}

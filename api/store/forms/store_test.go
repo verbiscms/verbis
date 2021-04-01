@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
 	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -46,7 +46,7 @@ func (t *FormsTestSuite) Setup(mf func(m sqlmock.Sqlmock), mfm func(f *fields.Re
 		mfm(f, su)
 	}
 
-	s := New(&store.Config{
+	s := New(&config.Config{
 		Driver: t.Driver,
 	})
 	s.fields = f

@@ -6,7 +6,7 @@ package auth
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
 	"net/http"
 	"time"
 )
@@ -20,7 +20,7 @@ func (t *AuthTestSuite) TestAuth_Logout() {
 		message string
 		input   string
 		cookie  bool
-		mock    func(m *mocks.AuthRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			nil,
@@ -28,7 +28,7 @@ func (t *AuthTestSuite) TestAuth_Logout() {
 			"Successfully logged out",
 			"test",
 			true,
-			func(m *mocks.AuthRepository) {
+			func(m *mocks.Repository) {
 				m.On("Logout", token).Return(-1, nil)
 			},
 		},
@@ -38,18 +38,18 @@ func (t *AuthTestSuite) TestAuth_Logout() {
 			"not found",
 			token,
 			false,
-			func(m *mocks.AuthRepository) {
+			func(m *mocks.Repository) {
 				m.On("Logout", token).Return(-1, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			token,
 			false,
-			func(m *mocks.AuthRepository) {
-				m.On("Logout", token).Return(-1, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Logout", token).Return(-1, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

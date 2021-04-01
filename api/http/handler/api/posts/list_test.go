@@ -6,7 +6,8 @@ package posts
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
+	store "github.com/ainsleyclark/verbis/api/store/posts"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,46 +17,46 @@ func (t *PostsTestSuite) TestPosts_List() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.PostsRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			posts,
 			http.StatusOK,
 			"Successfully obtained posts",
-			func(m *mocks.PostsRepository) {
-				m.On("Get", defaultParams, true, "", "").Return(posts, 2, nil)
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams, true, store.ListConfig{}).Return(posts, 2, nil)
 			},
 		},
 		"Not Found": {
 			nil,
 			http.StatusOK,
 			"no posts found",
-			func(m *mocks.PostsRepository) {
-				m.On("Get", defaultParams, true, "", "").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 			},
 		},
 		"Conflict": {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.PostsRepository) {
-				m.On("Get", defaultParams, true, "", "").Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Invalid": {
 			nil,
 			http.StatusBadRequest,
 			"invalid",
-			func(m *mocks.PostsRepository) {
-				m.On("Get", defaultParams, true, "", "").Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.PostsRepository) {
-				m.On("Get", defaultParams, true, "", "").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("List", defaultParams, true, store.ListConfig{}).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

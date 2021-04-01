@@ -8,6 +8,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
+	"os"
+	"path/filepath"
 )
 
 func (t *MediaTestSuite) TestClient_Serve() {
@@ -82,7 +84,8 @@ func (t *MediaTestSuite) TestClient_Serve() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(domain.ThemeConfig{}, test.options)
-			_, mime, err := s.Serve(test.input, test.webp)
+			path := t.mediaPath + string(os.PathSeparator) + test.input.UUID.String() + filepath.Ext(test.input.FileName)
+			_, mime, err := s.Serve(test.input, path, test.webp)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				t.Equal(domain.Mime(""), mime)

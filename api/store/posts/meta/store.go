@@ -6,7 +6,7 @@ package meta
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 )
 
 // Repository defines methods for meta options
@@ -19,7 +19,7 @@ type Repository interface {
 
 // Store defines the data layer for meta.
 type Store struct {
-	*store.Config
+	*config.Config
 }
 
 const (
@@ -30,7 +30,7 @@ const (
 // New
 //
 // Creates a new meta store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config: cfg,
 	}

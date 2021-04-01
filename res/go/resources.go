@@ -11,18 +11,18 @@ import (
 )
 
 type Resources struct {
-	db *sqlx.DB
+	db     *sqlx.DB
 	config *Config
 }
 
 type Resource struct {
-	ID				int			`db:"id" json:"id"`
-	Name			string 		`db:"name" json:"name"`
-	FriendlyName	string 		`db:"friendly_name" json:"friendly_name"`
-	Slug			string 		`db:"slug" json:"slug"`
-	Icon			string 		`db:"icon" json:"icon"`
-	CreatedAt		time.Time	`db:"created_at" json:"created_at"`
-	UpdatedAt		time.Time	`db:"updated_at" json:"updated_at"`
+	ID           int       `db:"id" json:"id"`
+	Name         string    `db:"name" json:"name"`
+	FriendlyName string    `db:"friendly_name" json:"friendly_name"`
+	Slug         string    `db:"slug" json:"slug"`
+	Icon         string    `db:"icon" json:"icon"`
+	CreatedAt    time.Time `db:"created_at" json:"created_at"`
+	UpdatedAt    time.Time `db:"updated_at" json:"updated_at"`
 }
 
 type Config struct {
@@ -31,13 +31,13 @@ type Config struct {
 }
 
 type theme struct {
-	Name	string	`json:"name"`
-	Author	string	`json:"author"`
-	Version	string	`json:"version"`
+	Name    string `json:"name"`
+	Author  string `json:"author"`
+	Version string `json:"version"`
 }
 
 type resources struct {
-	Resource	map[string]resource `json:"resources"`
+	Resource map[string]resource `json:"resources"`
 }
 
 type resource struct {
@@ -58,15 +58,13 @@ func NewResources(db *database.DB) (*Resources, error) {
 	}
 
 	// Load config
-	c, err:= r.Load()
+	c, err := r.Load()
 	if err != nil {
 		return &Resources{}, err
 	}
 	r.config = c
 
-
 	//Purge to database
-
 
 	return r, nil
 }
@@ -162,10 +160,10 @@ func (s *Resources) insertToDB() error {
 		}
 
 		r := Resource{
-			Name: k,
+			Name:         k,
 			FriendlyName: v.Name,
-			Slug: v.Options.Slug,
-			Icon: v.Options.Icon,
+			Slug:         v.Options.Slug,
+			Icon:         v.Options.Icon,
 		}
 
 		err = s.Create(&r)
@@ -176,6 +174,5 @@ func (s *Resources) insertToDB() error {
 
 	return nil
 }
-
 
 // Dump json file

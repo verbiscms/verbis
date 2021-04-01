@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,15 +18,15 @@ func (t *FormsTestSuite) TestForms_Find() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.FormRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			form,
 			http.StatusOK,
 			"Successfully obtained form with ID: 123",
-			func(m *mocks.FormRepository) {
-				m.On("GetByID", 123).Return(form, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(form, nil)
 			},
 			"/forms/123",
 		},
@@ -34,8 +34,8 @@ func (t *FormsTestSuite) TestForms_Find() {
 			nil,
 			http.StatusBadRequest,
 			"Pass a valid number to obtain the form by ID",
-			func(m *mocks.FormRepository) {
-				m.On("GetByID", 123).Return(domain.Form{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Form{}, fmt.Errorf("error"))
 			},
 			"/forms/wrongid",
 		},
@@ -43,17 +43,17 @@ func (t *FormsTestSuite) TestForms_Find() {
 			nil,
 			http.StatusOK,
 			"no forms found",
-			func(m *mocks.FormRepository) {
-				m.On("GetByID", 123).Return(domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "no forms found"})
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "no forms found"})
 			},
 			"/forms/123",
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.FormRepository) {
-				m.On("GetByID", 123).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/forms/123",
 		},

@@ -5,8 +5,9 @@
 package auth
 
 import (
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -19,7 +20,7 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 		status  int
 		message string
 		input   string
-		mock    func(m *mocks.AuthRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -27,8 +28,8 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 			http.StatusOK,
 			"Successfully verified token",
 			token,
-			func(m *mocks.AuthRepository) {
-				m.On("VerifyPasswordToken", token).Return(nil)
+			func(m *mocks.Repository) {
+				m.On("VerifyPasswordToken", token).Return(domain.PasswordReset{}, nil)
 			},
 			"/verify/" + token,
 		},
@@ -37,8 +38,8 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 			http.StatusNotFound,
 			"not found",
 			token,
-			func(m *mocks.AuthRepository) {
-				m.On("VerifyPasswordToken", token).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("VerifyPasswordToken", token).Return(domain.PasswordReset{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/verify/" + token,
 		},

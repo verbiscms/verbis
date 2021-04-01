@@ -6,7 +6,7 @@ package options
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 )
 
 // Repository defines methods for options
@@ -16,6 +16,8 @@ type Repository interface {
 	Struct() domain.Options
 	Find(name string) (interface{}, error)
 	Insert(options domain.OptionsDBMap) error
+	Create(name string, value interface{}) error
+	Update(name string, value interface{}) error
 	GetTheme() (string, error)
 	SetTheme(theme string) error
 	Exists(name string) bool
@@ -23,7 +25,7 @@ type Repository interface {
 
 // Store defines the data layer for options.
 type Store struct {
-	*store.Config
+	*config.Config
 }
 
 const (
@@ -34,7 +36,7 @@ const (
 // New
 //
 // Creates a new options store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config: cfg,
 	}

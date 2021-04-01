@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,7 +21,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.FormRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -29,8 +29,8 @@ func (t *FormsTestSuite) TestForms_Update() {
 			http.StatusOK,
 			"Successfully updated form with ID: 123",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("Update", &form).Return(form, nil)
+			func(m *mocks.Repository) {
+				m.On("Update", form).Return(form, nil)
 			},
 			"/forms/123",
 		},
@@ -39,7 +39,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 			http.StatusBadRequest,
 			"Validation failed",
 			formBadValidation,
-			func(m *mocks.FormRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", formBadValidation).Return(domain.Form{}, fmt.Errorf("error"))
 			},
 			"/forms/123",
@@ -49,7 +49,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 			http.StatusBadRequest,
 			"A valid ID is required to update the form",
 			form,
-			func(m *mocks.FormRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", form).Return(domain.Form{}, fmt.Errorf("error"))
 			},
 			"/forms/wrongid",
@@ -59,18 +59,18 @@ func (t *FormsTestSuite) TestForms_Update() {
 			http.StatusBadRequest,
 			"not found",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("Update", &form).Return(domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("Update", form).Return(domain.Form{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/forms/123",
 		},
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			form,
-			func(m *mocks.FormRepository) {
-				m.On("Update", &form).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Update", form).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/forms/123",
 		},

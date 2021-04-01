@@ -33,8 +33,6 @@ var (
 )
 
 func (t *PostsTestSuite) TestStore_Permalink() {
-	resource := "news"
-
 	tt := map[string]struct {
 		input domain.PostDatum
 		opts  domain.Options
@@ -64,7 +62,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 		},
 		"Resource": {
 			domain.PostDatum{
-				Post: domain.Post{Slug: "article", Resource: &resource},
+				Post: domain.Post{Slug: "article", Resource: "news"},
 			},
 			domain.Options{},
 			domain.ThemeConfig{
@@ -80,7 +78,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 		},
 		"Resource With Slash": {
 			domain.PostDatum{
-				Post: domain.Post{Slug: "article", Resource: &resource},
+				Post: domain.Post{Slug: "article", Resource: "news"},
 			},
 			domain.Options{
 				SeoEnforceSlash: true,
@@ -98,7 +96,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 		},
 		"Category": {
 			domain.PostDatum{
-				Post:     domain.Post{Slug: "article", Resource: &resource},
+				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &category,
 			},
 			domain.Options{},
@@ -116,7 +114,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 		},
 		"Category With Slash": {
 			domain.PostDatum{
-				Post:     domain.Post{Slug: "article", Resource: &resource},
+				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &category,
 			},
 			domain.Options{
@@ -136,7 +134,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 		},
 		"Category Parent": {
 			domain.PostDatum{
-				Post:     domain.Post{Slug: "article", Resource: &resource},
+				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
 			domain.Options{},
@@ -158,7 +156,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 		},
 		"Category Parent Error": {
 			domain.PostDatum{
-				Post:     domain.Post{Slug: "article", Resource: &resource},
+				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
 			domain.Options{},
@@ -179,7 +177,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 		},
 		"Category Parent With Slash": {
 			domain.PostDatum{
-				Post:     domain.Post{Slug: "article", Resource: &resource},
+				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
 			domain.Options{

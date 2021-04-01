@@ -8,13 +8,14 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/pagination"
+	store "github.com/ainsleyclark/verbis/api/store/categories"
 	"github.com/ainsleyclark/verbis/api/tpl/params"
 	"github.com/spf13/cast"
 )
 
 const (
 	// The default order by field for the list function.
-	OrderBy = "updated_at"
+	OrderBy = "created_at"
 	// The default order direction field for the list function.
 	OrderDirection = "desc"
 )
@@ -31,7 +32,7 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 		return nil
 	}
 
-	category, err := ns.deps.Store.Categories.GetByID(i)
+	category, err := ns.deps.Store.Categories.Find(i)
 	if err != nil {
 		return nil
 	}
@@ -51,7 +52,7 @@ func (ns *Namespace) ByName(name interface{}) interface{} {
 		return nil
 	}
 
-	category, err := ns.deps.Store.Categories.GetByName(n)
+	category, err := ns.deps.Store.Categories.FindByName(n)
 	if err != nil {
 		return nil
 	}
@@ -71,7 +72,7 @@ func (ns *Namespace) Parent(id interface{}) interface{} {
 		return nil
 	}
 
-	category, err := ns.deps.Store.Categories.GetParent(i)
+	category, err := ns.deps.Store.Categories.FindParent(i)
 	if err != nil {
 		return nil
 	}
@@ -108,7 +109,13 @@ type Categories struct {
 func (ns *Namespace) List(query params.Query) (interface{}, error) {
 	p := query.Get(OrderBy, OrderDirection)
 
-	categories, total, err := ns.deps.Store.Categories.Get(p, "")
+	resource := query.Default("resource", "")
+
+	cfg := store.ListConfig{
+		Resource: resource.(string),
+	}
+
+	categories, total, err := ns.deps.Store.Categories.List(p, cfg)
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
 	} else if err != nil {

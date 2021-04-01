@@ -13,7 +13,7 @@ import (
 	"html/template"
 )
 
-// Test all internal template function mappings
+// Test all config template function mappings
 func (t *TplTestSuite) TestFuncs() {
 	tm, ctx, post := t.Setup()
 

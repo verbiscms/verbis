@@ -52,7 +52,7 @@ func (t *SubmissionTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Create(form.Id, formSubmission)
+			err := s.Create(formSubmission)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

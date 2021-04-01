@@ -29,6 +29,15 @@ type DBSuite struct {
 	mockDriver *mocks.Driver
 }
 
+// Any for mock args.
+type DBAny struct{}
+
+// Match satisfies sqlmock.Argument interface
+// for any arg.
+func (a DBAny) Match(v driver.Value) bool {
+	return true
+}
+
 // Any string for mock string args.
 type DBAnyString struct{}
 
@@ -36,6 +45,16 @@ type DBAnyString struct{}
 // for any strings.
 func (a DBAnyString) Match(v driver.Value) bool {
 	_, ok := v.(string)
+	return ok
+}
+
+// Any string for mock string args.
+type DBAnyJSONMessage struct{}
+
+// Match satisfies sqlmock.Argument interface
+// for any json raw messages.
+func (a DBAnyJSONMessage) Match(v driver.Value) bool {
+	_, ok := v.([]byte)
 	return ok
 }
 

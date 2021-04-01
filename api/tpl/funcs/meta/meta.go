@@ -38,7 +38,7 @@ type TemplateMeta struct {
 // Returns an media item url or an empty string if
 // the media item did not exist.
 func (tm *TemplateMeta) GetImage(id int) string {
-	img, err := tm.deps.Store.Media.GetByID(id)
+	img, err := tm.deps.Store.Media.Find(id)
 	if err != nil {
 		return ""
 	}

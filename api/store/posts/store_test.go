@@ -8,10 +8,10 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/domain"
 	theme "github.com/ainsleyclark/verbis/api/mocks/services/theme"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/posts/fields"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -51,7 +51,7 @@ func (t *PostsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 		domain.Layout{Key: "layout", Name: "Layout"},
 	}, nil)
 
-	return New(&store.Config{
+	return New(&config.Config{
 		Driver:       t.Driver,
 		ThemeService: th,
 		Theme:        &domain.ThemeConfig{},
@@ -59,6 +59,9 @@ func (t *PostsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 			UserPart: domain.UserPart{
 				Id: 1,
 			},
+		},
+		Options: &domain.Options{
+			Homepage: 999,
 		},
 	})
 }
@@ -88,7 +91,7 @@ var (
 	// The default post used for testing.
 	post = domain.Post{
 		Id:    1,
-		Slug:  "/post",
+		Slug:  "slug",
 		Title: "post",
 	}
 	// The default post create used for testing.
@@ -96,7 +99,7 @@ var (
 		Post: domain.Post{
 			Id:           1,
 			Title:        "post",
-			Slug:         "/post",
+			Slug:         "slug",
 			PageTemplate: "template",
 			PageLayout:   "layout",
 		},
@@ -105,9 +108,10 @@ var (
 	// The default post datum used for testing.
 	postDatum = domain.PostDatum{
 		Post: domain.Post{
-			Id:    1,
-			Slug:  "/post",
-			Title: "post",
+			Id:        1,
+			Slug:      "slug",
+			Title:     "post",
+			Permalink: "/slug",
 		},
 		Fields: make(domain.PostFields, 0),
 		Layout: make(domain.FieldGroups, 0),
@@ -116,9 +120,10 @@ var (
 	// for testing.
 	postDatumLayout = domain.PostDatum{
 		Post: domain.Post{
-			Id:    1,
-			Slug:  "/post",
-			Title: "post",
+			Id:        1,
+			Slug:      "slug",
+			Title:     "post",
+			Permalink: "/slug",
 		},
 		Fields: make(domain.PostFields, 0),
 		Layout: layout,
@@ -127,33 +132,37 @@ var (
 	posts = domain.PostData{
 		{
 			Post: domain.Post{
-				Id:    1,
-				Slug:  "/post",
-				Title: "post",
+				Id:        1,
+				Slug:      "slug",
+				Title:     "post",
+				Permalink: "/slug",
 			},
 		},
 		{
 			Post: domain.Post{
-				Id:    2,
-				Slug:  "/post1",
-				Title: "post1",
+				Id:        2,
+				Slug:      "slug1",
+				Title:     "post1",
+				Permalink: "/slug",
 			},
 		},
 	}
 	postData = domain.PostData{
 		{
 			Post: domain.Post{
-				Id:    1,
-				Slug:  "/post",
-				Title: "post",
+				Id:        1,
+				Slug:      "slug",
+				Title:     "post",
+				Permalink: "/slug",
 			},
 			Fields: make(domain.PostFields, 0),
 		},
 		{
 			Post: domain.Post{
-				Id:    2,
-				Slug:  "/post1",
-				Title: "post1",
+				Id:        2,
+				Slug:      "slug1",
+				Title:     "post1",
+				Permalink: "/slug1",
 			},
 			Fields: make(domain.PostFields, 0),
 		},

@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 )
 
 // Update
@@ -28,7 +27,7 @@ func (s *Store) Update(m domain.Media) (domain.Media, error) {
 		Column("updated_at", "NOW()").
 		Where("id", "=", m.Id)
 
-	_, err := s.DB().Exec(q.Build(), uuid.New().String())
+	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating media item with the url: " + m.Url, Operation: op, Err: err}
 	} else if err != nil {

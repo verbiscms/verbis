@@ -21,7 +21,7 @@ import (
 // local file system.
 type Library interface {
 	Upload(file *multipart.FileHeader) (domain.Media, error)
-	Serve(media domain.Media, acceptWebP bool) ([]byte, domain.Mime, error)
+	Serve(media domain.Media, path string, acceptWebP bool) ([]byte, domain.Mime, error)
 	Validate(file *multipart.FileHeader) error
 	Delete(item domain.Media)
 }

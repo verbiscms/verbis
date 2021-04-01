@@ -24,7 +24,17 @@ type Handler interface {
 // Public defines the handler for all SPA routes.
 type SPA struct {
 	*deps.Deps
-	Publisher publisher.Publisher
+	publisher publisher.Publisher
+}
+
+// New
+//
+// Creates a new spa handler.
+func New(d *deps.Deps) *SPA {
+	return &SPA{
+		Deps:      d,
+		publisher: publisher.NewRender(d),
+	}
 }
 
 // Serve
@@ -63,7 +73,7 @@ func (s *SPA) file(path string, ctx *gin.Context) {
 			Operation: op,
 			Err:       err,
 		}).Error()
-		s.Publisher.NotFound(ctx)
+		s.publisher.NotFound(ctx)
 		return
 	}
 
@@ -87,7 +97,7 @@ func (s *SPA) page(ctx *gin.Context) {
 			Operation: op,
 			Err:       err,
 		}).Error()
-		s.Publisher.NotFound(ctx)
+		s.publisher.NotFound(ctx)
 		return
 	}
 

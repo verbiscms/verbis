@@ -21,7 +21,7 @@ import (
 // Returns errors.CONFLICT if the user session expired.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) CheckSession(token string) error {
-	const op = "userStore.CheckSession"
+	const op = "UserStore.CheckSession"
 
 	u, err := s.FindByToken(token)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *Store) UpdateToken(token string) error {
 		Column("token_last_used", "NOW()").
 		Where("token", "=", token)
 
-	_, err := s.DB().Exec(q.Build(), token)
+	_, err := s.DB().Exec(q.Build())
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating the user last token used column.", Operation: op, Err: err}
 	}

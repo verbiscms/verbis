@@ -8,13 +8,14 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/pagination"
+	store "github.com/ainsleyclark/verbis/api/store/posts"
 	"github.com/ainsleyclark/verbis/api/tpl/params"
 	"github.com/spf13/cast"
 )
 
 const (
 	// The default order by field for the list function.
-	OrderBy = "updated_at"
+	OrderBy = "created_at"
 	// The default order direction field for the list function.
 	OrderDirection = "desc"
 )
@@ -31,7 +32,7 @@ func (ns *Namespace) Find(id interface{}) interface{} {
 		return nil
 	}
 
-	post, err := ns.deps.Store.Posts.GetByID(i, false)
+	post, err := ns.deps.Store.Posts.Find(i, false)
 	if err != nil {
 		return nil
 	}
@@ -72,7 +73,12 @@ func (ns *Namespace) List(query params.Query) (interface{}, error) {
 	resource := query.Default("resource", "")
 	status := query.Default("status", "published")
 
-	posts, total, err := ns.deps.Store.Posts.Get(p, false, resource.(string), status.(string))
+	cfg := store.ListConfig{
+		Resource: resource.(string),
+		Status:   status.(string),
+	}
+
+	posts, total, err := ns.deps.Store.Posts.List(p, false, cfg)
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, nil
 	} else if err != nil {

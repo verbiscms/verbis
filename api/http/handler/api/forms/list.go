@@ -22,7 +22,7 @@ func (f *Forms) List(ctx *gin.Context) {
 
 	p := api.Params(ctx).Get()
 
-	forms, total, err := f.Store.Forms.Get(p)
+	forms, total, err := f.Store.Forms.List(p)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

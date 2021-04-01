@@ -39,7 +39,7 @@ func (c *Posts) Update(ctx *gin.Context) {
 	}
 	post.Id = id
 
-	updatedPost, err := c.Store.Posts.Update(&post)
+	updatedPost, err := c.Store.Posts.Update(post)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

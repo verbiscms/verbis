@@ -5,9 +5,13 @@
 package forms
 
 import (
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/ainsleyclark/verbis/api/mail/events"
+	service "github.com/ainsleyclark/verbis/api/services/forms"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/http"
 	"strconv"
 )
@@ -20,7 +24,13 @@ import (
 func (f *Forms) Send(ctx *gin.Context) {
 	const op = "FormHandler.Send"
 
-	form, err := f.Store.Forms.GetByUUID(ctx.Param("uuid"))
+	uniq, err := uuid.Parse(ctx.Param("uuid"))
+	if err != nil {
+		api.Respond(ctx, http.StatusBadRequest, "Error parsing UUID", err)
+		return
+	}
+
+	form, err := f.Store.Forms.FindByUUID(uniq)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
@@ -29,6 +39,8 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
+	form.Body = service.ToStruct(form)
+
 	err = ctx.ShouldBind(form.Body)
 	if err != nil {
 		// If file has an empty value, no validation data is returned.
@@ -36,10 +48,46 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
-	err = f.Store.Forms.Send(&form, ctx.ClientIP(), ctx.Request.UserAgent())
+	values, attachments, err := service.NewReader(&form, f.Paths.Storage).Values()
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
+	}
+
+	sub := domain.FormSubmission{
+		FormId:    form.Id,
+		Fields:    values,
+		IPAddress: ctx.ClientIP(),
+		UserAgent: ctx.Request.UserAgent(),
+	}
+
+	if form.StoreDB {
+		err = f.Store.Forms.Submit(sub)
+		if err != nil {
+			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+			return
+		}
+	}
+
+	if form.EmailSend {
+		fs, err := events.NewFormSend()
+		if err != nil {
+			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+			return
+		}
+
+		data := &events.FormSendData{
+			//Site:   s.siteModel.GetGlobalConfig(),
+			Form:   &form,
+			Values: values,
+		}
+
+		err = fs.Send(data, attachments)
+
+		if err != nil {
+			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+			return
+		}
 	}
 
 	api.Respond(ctx, http.StatusOK, "Successfully sent form with ID: "+strconv.Itoa(form.Id), nil)

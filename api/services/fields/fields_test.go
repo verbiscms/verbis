@@ -6,13 +6,11 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 )
 
 func (t *FieldTestSuite) TestService_GetFields() {
 	tt := map[string]struct {
 		fields domain.PostFields
-		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
 		args   []interface{}
 		want   interface{}
 	}{
@@ -37,7 +35,7 @@ func (t *FieldTestSuite) TestService_GetFields() {
 	}
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.Equal(test.want, t.GetMockService(test.fields, test.mock).GetFields(test.args...))
+			t.Equal(test.want, t.GetMockService(test.fields, nil).GetFields(test.args...))
 		})
 	}
 }

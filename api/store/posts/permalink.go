@@ -22,7 +22,7 @@ func (s *Store) permalink(post *domain.PostDatum) string {
 	hiddenCategory := true
 
 	if post.HasResource() {
-		resource, ok := s.Theme.Resources[*postResource]
+		resource, ok := s.Theme.Resources[postResource]
 		if ok {
 			permaLink += "/" + resource.Slug
 			hiddenCategory = resource.HideCategorySlug

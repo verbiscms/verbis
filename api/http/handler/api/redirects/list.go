@@ -22,7 +22,7 @@ func (r *Redirects) List(ctx *gin.Context) {
 
 	p := api.Params(ctx).Get()
 
-	redirects, total, err := r.Store.Redirects.Get(p)
+	redirects, total, err := r.Store.Redirects.List(p)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

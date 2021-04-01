@@ -7,19 +7,19 @@ package resolve
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
 )
 
 func (t *ResolverTestSuite) TestValue_Post() {
 	tt := map[string]struct {
 		value domain.FieldValue
-		mock  func(p *mocks.PostsRepository)
+		mock  func(p *mocks.Repository)
 		want  interface{}
 	}{
 		"post": {
 			value: domain.FieldValue("1"),
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetByID", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post"}}, nil)
+			mock: func(p *mocks.Repository) {
+				p.On("Find", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post"}}, nil)
 			},
 			want: domain.PostDatum{
 				Post: domain.Post{Title: "post"},
@@ -27,14 +27,14 @@ func (t *ResolverTestSuite) TestValue_Post() {
 		},
 		"post Error": {
 			value: domain.FieldValue("1"),
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetByID", 1, false).Return(domain.PostDatum{}, fmt.Errorf("not found"))
+			mock: func(p *mocks.Repository) {
+				p.On("Find", 1, false).Return(domain.PostDatum{}, fmt.Errorf("not found"))
 			},
 			want: "not found",
 		},
 		"Cast Error": {
 			value: domain.FieldValue("wrongval"),
-			mock:  func(p *mocks.PostsRepository) {},
+			mock:  func(p *mocks.Repository) {},
 			want:  `strconv.Atoi: parsing "wrongval": invalid syntax`,
 		},
 	}
@@ -42,7 +42,7 @@ func (t *ResolverTestSuite) TestValue_Post() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			v := t.GetValue()
-			postMock := &mocks.PostsRepository{}
+			postMock := &mocks.Repository{}
 
 			test.mock(postMock)
 			v.deps.Store.Posts = postMock
@@ -61,15 +61,15 @@ func (t *ResolverTestSuite) TestValue_Post() {
 func (t *ResolverTestSuite) TestValue_PostResolve() {
 	tt := map[string]struct {
 		field domain.PostField
-		mock  func(p *mocks.PostsRepository)
+		mock  func(p *mocks.Repository)
 		want  domain.PostField
 	}{
 		"post": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "post"},
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetByID", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("GetByID", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("GetByID", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
+			mock: func(p *mocks.Repository) {
+				p.On("Find", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("Find", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("Find", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3", Type: "post", Value: []interface{}{
 				domain.PostDatum{Post: domain.Post{Title: "post1"}},
@@ -79,10 +79,10 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 		},
 		"Trailing Comma": {
 			field: domain.PostField{OriginalValue: "1,2,3,", Type: "post"},
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetByID", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("GetByID", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("GetByID", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
+			mock: func(p *mocks.Repository) {
+				p.On("Find", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("Find", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("Find", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3,", Type: "post", Value: []interface{}{
 				domain.PostDatum{Post: domain.Post{Title: "post1"}},
@@ -92,10 +92,10 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 		},
 		"Leading Comma": {
 			field: domain.PostField{OriginalValue: ",1,2,3", Type: "post"},
-			mock: func(p *mocks.PostsRepository) {
-				p.On("GetByID", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
-				p.On("GetByID", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
-				p.On("GetByID", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
+			mock: func(p *mocks.Repository) {
+				p.On("Find", 1, false).Return(domain.PostDatum{Post: domain.Post{Title: "post1"}}, nil)
+				p.On("Find", 2, false).Return(domain.PostDatum{Post: domain.Post{Title: "post2"}}, nil)
+				p.On("Find", 3, false).Return(domain.PostDatum{Post: domain.Post{Title: "post3"}}, nil)
 			},
 			want: domain.PostField{OriginalValue: ",1,2,3", Type: "post", Value: []interface{}{
 				domain.PostDatum{Post: domain.Post{Title: "post1"}},
@@ -108,7 +108,7 @@ func (t *ResolverTestSuite) TestValue_PostResolve() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			v := t.GetValue()
-			postMock := &mocks.PostsRepository{}
+			postMock := &mocks.Repository{}
 
 			test.mock(postMock)
 			v.deps.Store.Posts = postMock

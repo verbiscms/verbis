@@ -15,6 +15,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/store/posts"
 	"io/ioutil"
 	"time"
 )
@@ -129,8 +130,8 @@ func (s *Sitemap) Index() ([]byte, error) {
 	viewData := index{}
 
 	for _, v := range s.resources {
-		posts, err := s.retrievePages(v.Name)
-		if err != nil || len(posts) == 0 {
+		p, err := s.retrievePages(v.Name)
+		if err != nil || len(p) == 0 {
 			continue
 		}
 
@@ -215,16 +216,16 @@ func (s *Sitemap) Pages(resource string) ([]byte, error) {
 			return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No resource items available with the name: %s", resource), Operation: op, Err: fmt.Errorf("no resource items found")}
 		}
 
-		posts, err := s.retrievePages(r.Name)
+		p, err := s.retrievePages(r.Name)
 		if err != nil {
 			return nil, err
 		}
 
-		if len(posts) == 0 {
+		if len(p) == 0 {
 			return nil, &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No resource items available with the name: %s", resource), Operation: op, Err: fmt.Errorf("no resource items found")}
 		}
 
-		for _, v := range posts {
+		for _, v := range p {
 			viewData.Items = append(viewData.Items, viewItem{
 				Slug:      v.Slug,
 				CreatedAt: time.Now().Format(time.RFC3339),
@@ -266,13 +267,18 @@ func (s *Sitemap) ClearCache() {
 func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 	const op = "SiteMapper.retrievePages"
 
-	posts, _, err := s.deps.Store.Posts.Get(params.Params{
+	cfg := posts.ListConfig{
+		Resource: resource,
+		Status:   "published",
+	}
+
+	posts, _, err := s.deps.Store.Posts.List(params.Params{
 		Page:           1,
 		Limit:          0,
 		LimitAll:       true,
 		OrderDirection: "desc",
 		OrderBy:        "created_at",
-	}, false, resource, "published")
+	}, false, cfg)
 
 	if err != nil {
 		return nil, err
@@ -283,7 +289,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 		if !v.HasResource() {
 			resource = "pages"
 		} else {
-			resource = *v.Resource
+			resource = v.Resource
 		}
 
 		exclude := false
@@ -315,7 +321,7 @@ func (s *Sitemap) getRedirects() []viewItem {
 	}
 
 	var data []viewItem
-	redirects, _, err := s.deps.Store.Redirects.Get(params.Params{LimitAll: true, OrderBy: "created_at", OrderDirection: "desc"})
+	redirects, _, err := s.deps.Store.Redirects.List(params.Params{LimitAll: true, OrderBy: "created_at", OrderDirection: "desc"})
 
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining site redirects", Operation: op, Err: err}).Error()
@@ -370,7 +376,7 @@ func (s *Sitemap) canServeResource(resource string) error {
 //
 //nolint
 func (s *Sitemap) getHomeCreatedAt() string {
-	home, err := s.deps.Store.Posts.GetBySlug("/")
+	home, err := s.deps.Store.Posts.FindBySlug("/")
 	createdAt := time.Now().Format(time.RFC3339)
 	if err == nil {
 		createdAt = home.CreatedAt.Format(time.RFC3339)

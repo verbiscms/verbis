@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/importer"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/gookit/color"
 	"github.com/kyokomi/emoji"
 	"mime/multipart"
@@ -35,7 +35,7 @@ var (
 type Convert struct {
 	XML       WpXML
 	failed    Failures
-	store     *models.Store
+	store     *store.Repository
 	authors   domain.Users
 	owner     domain.User
 	sendEmail bool
@@ -49,14 +49,9 @@ type Result struct {
 }
 
 // New - Construct
-func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
+func New(xmlPath string, s *store.Repository, sendEmail bool) (*Convert, error) {
 	wp := NewWordpressXML()
 	err := wp.ReadFile(xmlPath)
-	if err != nil {
-		return nil, err
-	}
-
-	owner, err := s.User.GetOwner()
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +60,7 @@ func New(xmlPath string, s *models.Store, sendEmail bool) (*Convert, error) {
 		XML:       wp,
 		failed:    Failures{},
 		store:     s,
-		owner:     owner,
+		owner:     s.User.Owner(),
 		sendEmail: sendEmail,
 	}, nil
 }
@@ -179,7 +174,7 @@ func (c *Convert) addItem(item Item) {
 			Slug:         fmt.Sprintf("/%v/%v", resource, strings.ReplaceAll(link, "/", "")),
 			Title:        item.Title,
 			Status:       getStatus(item.Status),
-			Resource:     &resource,
+			Resource:     resource,
 			PageTemplate: template,
 			PageLayout:   layout,
 			PublishedAt:  &item.PubDatetime,
@@ -209,7 +204,7 @@ func (c *Convert) addItem(item Item) {
 		p.Category = &cid
 	}
 
-	post, err := c.store.Posts.Create(&p)
+	post, err := c.store.Posts.Create(p)
 	if err != nil {
 		c.failPost(item, nil, err)
 		return
@@ -236,13 +231,14 @@ func (c *Convert) parseContent(content string) (string, []FailedMedia, error) {
 			return ""
 		}
 
-		media, err := c.store.Media.Upload(file, c.owner.Token)
-		if err != nil {
-			failed = append(failed, FailedMedia{URL: url, Error: err})
-			return ""
-		}
-
-		return media.Url
+		//media, err := c.store.Media.Upload(file, c.owner.Token)
+		//if err != nil {
+		//	failed = append(failed, FailedMedia{URL: url, Error: err})
+		//	return ""
+		//}
+		//
+		//return media.Url
+		return ""
 	})
 
 	if err != nil {
@@ -268,7 +264,7 @@ func (c *Convert) getCategory(categories []Category) (domain.Category, error) {
 
 	wp := categories[0]
 
-	return c.store.Categories.Create(&domain.Category{
+	return c.store.Categories.Create(domain.Category{
 		Slug:     wp.URLSlug,
 		Name:     wp.DisplayName,
 		Resource: resource,
@@ -360,7 +356,7 @@ func (c *Convert) populateAuthors() domain.UsersParts {
 			continue
 		}
 
-		user, err := c.store.User.GetByEmail(v.AuthorEmail)
+		user, err := c.store.User.FindByEmail(v.AuthorEmail)
 		if err != nil {
 			c.failAuthor(v.AuthorFirstName, v.AuthorLastName, v.AuthorEmail, err)
 			continue
@@ -383,7 +379,7 @@ func (c *Convert) populateAuthors() domain.UsersParts {
 func (c *Convert) createUser(a Author) (domain.User, string, error) {
 	password := encryption.CreatePassword()
 
-	user := &domain.UserCreate{
+	user := domain.UserCreate{
 		User: domain.User{
 			UserPart: domain.UserPart{
 				FirstName: a.AuthorFirstName,

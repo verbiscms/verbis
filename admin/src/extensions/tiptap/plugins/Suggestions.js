@@ -165,7 +165,7 @@ export default function SuggestionsPlugin({
 
     state: {
 
-      // Initialize the plugin's internal state.
+      // Initialize the plugin's config state.
       init() {
         return {
           active: false,

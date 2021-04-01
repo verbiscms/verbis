@@ -35,7 +35,7 @@ func (u *Users) Update(ctx *gin.Context) {
 	}
 	user.Id = id
 
-	updatedUser, err := u.Store.User.Update(&user)
+	updatedUser, err := u.Store.User.Update(user)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

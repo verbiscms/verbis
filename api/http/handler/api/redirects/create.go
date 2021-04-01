@@ -28,7 +28,7 @@ func (r *Redirects) Create(ctx *gin.Context) {
 		return
 	}
 
-	newRedirect, err := r.Store.Redirects.Create(&redirect)
+	newRedirect, err := r.Store.Redirects.Create(redirect)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

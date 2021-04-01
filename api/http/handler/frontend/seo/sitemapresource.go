@@ -21,9 +21,9 @@ import (
 func (s *SEO) SiteMapResource(ctx *gin.Context) {
 	const op = "FrontendHandler.SiteMap"
 
-	sitemap, err := s.Publisher.SiteMap().Pages(ctx.Param("resource"))
+	sitemap, err := s.publisher.SiteMap().Pages(ctx.Param("resource"))
 	if err != nil {
-		s.Publisher.NotFound(ctx)
+		s.publisher.NotFound(ctx)
 		return
 	}
 

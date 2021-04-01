@@ -89,6 +89,7 @@ func (p *page) Execute() ([]byte, error) {
 	failed, err := exec.ExecutePost(&buf, template, p.ctx, p.post)
 
 	if err != nil {
+		logger.WithError(err).Error()
 		rec := recovery.New(p.Deps).Recover(recovery.Config{
 			Code:    http.StatusInternalServerError,
 			Context: p.ctx,
@@ -137,11 +138,10 @@ func (p *page) IsHomepage() bool {
 func (p *page) IsResourcePublic() error {
 	const op = "Page.IsResourcePublic"
 
-	resource := p.post.Resource
-	if resource != nil {
+	if p.post.HasResource() {
 		for _, v := range p.Config.Resources {
-			if v.Hidden && v.Name == *resource {
-				return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("The post resource is not public: %v", resource), Operation: op, Err: fmt.Errorf("resource not public")}
+			if v.Hidden && v.Name == p.post.Resource {
+				return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("The post resource is not public: %v", p.post.Resource), Operation: op, Err: fmt.Errorf("resource not public")}
 			}
 		}
 	}
@@ -195,7 +195,7 @@ func (p *page) HasQuery() bool {
 //
 // Returns errors.NOTFOUND if the page is not public.
 func (p *page) CheckSession() error {
-	const op = "Publisher.Page.CheckSession"
+	const op = "publisher.Page.CheckSession"
 
 	_, err := p.ctx.Cookie("verbis-session")
 	if err != nil && !p.post.IsPublic() {
@@ -232,16 +232,18 @@ func (p *page) resolve() (*domain.PostDatum, error) {
 	homepage := p.Deps.Options.Homepage
 
 	if last == "" {
-		post, err := p.Store.Posts.GetByID(homepage, false)
+		post, err := p.Store.Posts.Find(homepage, false)
 		if err != nil {
 			return nil, notFoundErr
 		}
 		return &post, nil
 	}
 
-	post, err := p.Store.Posts.GetBySlug(last)
-	if err != nil {
+	post, err := p.Store.Posts.FindBySlug(last)
+	if errors.Code(err) == errors.NOTFOUND {
 		return nil, notFoundErr
+	} else if err != nil {
+		logger.WithError(err).Error()
 	}
 
 	if strings.TrimSuffix(post.Permalink, "/") != urlTrimmed {

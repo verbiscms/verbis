@@ -7,6 +7,7 @@ package auth
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	store "github.com/ainsleyclark/verbis/api/store/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -33,11 +34,15 @@ func (a *Auth) Login(ctx *gin.Context) {
 		return
 	}
 
-	user, err := a.Store.Auth.Authenticate(l.Email, l.Password)
-	if err != nil {
+	user, err := a.Store.Auth.Login(l.Email, l.Password)
+	if errors.Message(err) == store.ErrLoginMsg {
 		api.Respond(ctx, http.StatusUnauthorized, errors.Message(err), err)
 		return
+	} else if err != nil {
+		api.Respond(ctx, http.StatusInternalServerError, "Error logging in", err)
+		return
 	}
+
 	user.HidePassword()
 
 	ctx.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true)

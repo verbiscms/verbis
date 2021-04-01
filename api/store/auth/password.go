@@ -144,7 +144,7 @@ func (s *Store) CleanPasswordResets() error {
 
 	q := s.Builder().
 		DeleteFrom(s.Schema() + PasswordTableName).
-		WhereRaw("created_at < (NOW() - INTERVAL 2 HOUR")
+		WhereRaw("created_at < (NOW() - INTERVAL 2 HOUR)")
 
 	_, err := s.DB().Exec(q.Build())
 	if err != nil {

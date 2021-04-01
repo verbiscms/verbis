@@ -7,14 +7,15 @@ package fields
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 )
 
 func (t *FieldTestSuite) TestService_HandleArgs() {
 	tt := map[string]struct {
 		fields domain.PostFields
 		args   []interface{}
-		mock   func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		mock   func(f *fields.Repository, c *categories.Repository)
 		want   domain.PostFields
 	}{
 		"Default": {
@@ -32,8 +33,8 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 		"1 Args (post)": {
 			fields: nil,
 			args:   []interface{}{1},
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 1).Return(domain.PostFields{
+			mock: func(f *fields.Repository, c *categories.Repository) {
+				f.On("Find", 1).Return(domain.PostFields{
 					{Id: 1, Type: "text", Name: "post"},
 				}, nil)
 			},
@@ -57,8 +58,8 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 		"1 Args (post Error)": {
 			fields: domain.PostFields{{Name: "test"}},
 			args:   []interface{}{1},
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
+			mock: func(f *fields.Repository, c *categories.Repository) {
+				f.On("Find", 1).Return(nil, fmt.Errorf("error"))
 			},
 			want: nil,
 		},
@@ -80,13 +81,13 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 	tt := map[string]struct {
 		id   int
-		mock func(f *mocks.FieldsRepository, c *mocks.CategoryRepository)
+		mock func(f *fields.Repository, c *categories.Repository)
 		want domain.PostFields
 	}{
 		"Success": {
 			id: 1,
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 1).Return(domain.PostFields{
+			mock: func(f *fields.Repository, c *categories.Repository) {
+				f.On("Find", 1).Return(domain.PostFields{
 					{Id: 1, Type: "text", Name: "post"},
 				}, nil)
 			},
@@ -94,8 +95,8 @@ func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 		},
 		"Get Error": {
 			id: 1,
-			mock: func(f *mocks.FieldsRepository, c *mocks.CategoryRepository) {
-				f.On("GetByPost", 1).Return(nil, fmt.Errorf("error"))
+			mock: func(f *fields.Repository, c *categories.Repository) {
+				f.On("Find", 1).Return(nil, fmt.Errorf("error"))
 			},
 			want: nil,
 		},
@@ -173,7 +174,7 @@ func (t *FieldTestSuite) TestService_FindFieldByName() {
 //
 //	for name, test := range tt {
 //		t.Run(name, func() {
-//			test.resolver.Service = t.GetService(nil)
+//			test.resolver.service = t.GetService(nil)
 //			test.resolver.Walker(func(field domain.PostField) {
 //				t.Equal(test.want, field)
 //			})

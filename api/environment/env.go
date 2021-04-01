@@ -75,6 +75,12 @@ const (
 	// The default port Verbis should sit on when none
 	// is defined.
 	DefaultPort = 5000
+	// MySQLDriver driver is represented under DB_DRIVER
+	// for MySQL.
+	MySQLDriver = "mysql"
+	// PostgresDriver driver is represented under
+	// DB_DRIVER for postgres.
+	PostgresDriver = "postgres"
 )
 
 // Load

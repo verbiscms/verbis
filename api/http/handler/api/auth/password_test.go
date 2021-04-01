@@ -8,7 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -31,14 +31,14 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.AuthRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully reset password",
 			rp,
-			func(m *mocks.AuthRepository) {
+			func(m *mocks.Repository) {
 				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(nil)
 			},
 		},
@@ -47,7 +47,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			http.StatusBadRequest,
 			"Validation failed",
 			rpdBadValidation,
-			func(m *mocks.AuthRepository) {
+			func(m *mocks.Repository) {
 				m.On("ResetPassword", rpdBadValidation.Token, rpdBadValidation.NewPassword).Return(nil)
 			},
 		},
@@ -56,17 +56,17 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			http.StatusBadRequest,
 			"not found",
 			rp,
-			func(m *mocks.AuthRepository) {
+			func(m *mocks.Repository) {
 				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			rp,
-			func(m *mocks.AuthRepository) {
-				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

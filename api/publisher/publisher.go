@@ -8,13 +8,14 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/minify"
+	"github.com/ainsleyclark/verbis/api/services/media"
 	"github.com/gin-gonic/gin"
 )
 
 // Publisher
 type Publisher interface {
-	Asset(g *gin.Context) (string, *[]byte, error)
-	Upload(g *gin.Context) (domain.Mime, *[]byte, error)
+	Asset(g *gin.Context) (*[]byte, domain.Mime, error)
+	Upload(g *gin.Context, webp bool) (domain.Mime, *[]byte, error)
 	Page(g *gin.Context) ([]byte, error)
 	NotFound(g *gin.Context)
 	SiteMap() SiteMapper
@@ -26,6 +27,7 @@ type publish struct {
 	minify  minify.Minifier
 	cacher  headerWriter
 	sitemap *Sitemap
+	media   media.Library
 }
 
 func (r *publish) SiteMap() SiteMapper {
@@ -34,7 +36,7 @@ func (r *publish) SiteMap() SiteMapper {
 
 // NewRender - Construct
 func NewRender(d *deps.Deps) Publisher {
-	options := d.Store.Options.GetStruct()
+	options := d.Store.Options.Struct()
 	return &publish{
 		d,
 		minify.New(minify.Config{
@@ -47,5 +49,6 @@ func NewRender(d *deps.Deps) Publisher {
 		}),
 		newHeaders(options),
 		NewSitemap(d),
+		media.New(d.Options, d.Store.Media.Exists),
 	}
 }

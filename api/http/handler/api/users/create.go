@@ -28,7 +28,7 @@ func (u *Users) Create(ctx *gin.Context) {
 		return
 	}
 
-	user, err := u.Store.User.Create(&userCreate)
+	user, err := u.Store.User.Create(userCreate)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

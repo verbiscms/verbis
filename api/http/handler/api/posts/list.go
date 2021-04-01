@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/ainsleyclark/verbis/api/http/pagination"
+	store "github.com/ainsleyclark/verbis/api/store/posts"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -25,7 +26,12 @@ func (c *Posts) List(ctx *gin.Context) {
 
 	p := api.Params(ctx).Get()
 
-	posts, total, err := c.Store.Posts.Get(p, true, ctx.Query("resource"), ctx.Query("status"))
+	cfg := store.ListConfig{
+		Resource: ctx.Query("resource"),
+		Status:   ctx.Query("status"),
+	}
+
+	posts, total, err := c.Store.Posts.List(p, true, cfg)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return
