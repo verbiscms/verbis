@@ -16,20 +16,24 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 	for _, v := range raw {
 		if !s.find(posts, v.Id) {
-			p := domain.PostDatum{
-				Post:   v.Post,
-				Author: v.Author.HideCredentials(),
-				Fields: make(domain.PostFields, 0),
+			var category domain.Category
+			if v.Category.Id != 0 {
+				category = v.Category
 			}
 
-			if v.Category.Id != 0 {
-				p.Category = &v.Category
+			p := domain.PostDatum{
+				Post:     v.Post,
+				Author:   v.Author.HideCredentials(),
+				Fields:   make(domain.PostFields, 0),
+				Category: &category,
 			}
 
 			if layout {
 				// TODO, Cacheable is always false.
 				p.Layout = s.finder.Layout(p, false)
 			}
+
+			p.Permalink = s.permalink(&p)
 
 			posts = append(posts, p)
 		}
@@ -52,10 +56,6 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 				}
 			}
 		}
-	}
-
-	for i, v := range posts {
-		posts[i].Permalink = s.permalink(&v)
 	}
 
 	return posts
