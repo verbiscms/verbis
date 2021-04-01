@@ -5,7 +5,6 @@
 package forms
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -20,20 +19,9 @@ type Reader struct {
 	StoragePath string
 }
 
-type FormValues map[string]interface{}
-
-func (f FormValues) JSON() ([]byte, error) {
-	const op = "FormValues.JSON"
-	v, err := json.Marshal(f)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not process the form fields for storing", Operation: op, Err: err}
-	}
-	return v, nil
-}
-
 type Sender struct {
 	Attachments []Attachment
-	Fields      FormValues
+	Fields      domain.FormValues
 }
 
 func NewReader(form *domain.Form, path string) *Reader {
@@ -44,10 +32,10 @@ func NewReader(form *domain.Form, path string) *Reader {
 	}
 }
 
-func (r *Reader) Values() (FormValues, Attachments, error) {
+func (r *Reader) Values() (domain.FormValues, Attachments, error) {
 	const op = "FormReader.Values"
 
-	m := make(FormValues)
+	m := make(domain.FormValues)
 	var attachments Attachments
 
 	var totalSize int64 = 0

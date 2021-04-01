@@ -18,7 +18,7 @@ var (
 	UpdateQuery = "UPDATE `users` SET `password` = ? WHERE `email` = 'verbis@verbiscms.com'"
 	VerifyQuery = "SELECT * FROM `password_resets` WHERE `token` = 'token' LIMIT 1"
 	DeleteQuery = "DELETE FROM `password_resets` WHERE `token` = 'token'"
-	CleanQuery  = "DELETE FROM `password_resets` WHERE created_at < (NOW() - INTERVAL 2 HOUR"
+	CleanQuery  = "DELETE FROM `password_resets` WHERE created_at < (NOW() - INTERVAL 2 HOUR)"
 )
 
 func (t *AuthTestSuite) TestStore_ResetPassword() {

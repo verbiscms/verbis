@@ -31,7 +31,8 @@ func (s *Store) Struct() domain.Options {
 	}
 
 	var options domain.Options
-	if err := json.Unmarshal(mOpts, &options); err != nil {
+	err = json.Unmarshal(mOpts, &options)
+	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
 		return domain.Options{}
 	}

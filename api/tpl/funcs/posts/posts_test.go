@@ -9,10 +9,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	params2 "github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/pagination"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
+	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/posts"
+	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"github.com/ainsleyclark/verbis/api/tpl/params"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -45,10 +46,10 @@ var (
 
 type noStringer struct{}
 
-func Setup() (*Namespace, *mocks.PostsRepository) {
-	mock := &mocks.PostsRepository{}
+func Setup() (*Namespace, *mocks.Repository) {
+	mock := &mocks.Repository{}
 	return &Namespace{deps: &deps.Deps{
-		Store: &models.Store{
+		Store: &store.Repository{
 			Posts: mock,
 		},
 	}}, mock
@@ -57,34 +58,34 @@ func Setup() (*Namespace, *mocks.PostsRepository) {
 func TestNamespace_Find(t *testing.T) {
 	tt := map[string]struct {
 		input interface{}
-		mock  func(m *mocks.PostsRepository)
+		mock  func(m *mocks.Repository)
 		want  interface{}
 	}{
 		"Success": {
 			1,
-			func(m *mocks.PostsRepository) {
-				m.On("GetByID", 1, false).Return(postData, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 1, false).Return(postData, nil)
 			},
 			tplPost,
 		},
 		"Not Found": {
 			1,
-			func(m *mocks.PostsRepository) {
-				m.On("GetByID", 1, false).Return(domain.PostDatum{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Find", 1, false).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			nil,
 		},
 		"No Stringer": {
 			noStringer{},
-			func(m *mocks.PostsRepository) {
-				m.On("GetByID", 1, false).Return(postData, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 1, false).Return(postData, nil)
 			},
 			nil,
 		},
 		"Nil": {
 			nil,
-			func(m *mocks.PostsRepository) {
-				m.On("GetByID", 1, false).Return(postData, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 1, false).Return(postData, nil)
 			},
 			nil,
 		},
@@ -101,23 +102,20 @@ func TestNamespace_Find(t *testing.T) {
 }
 
 func TestNamespace_List(t *testing.T) {
-	p := params2.Params{
-		Page:           1,
-		Limit:          15,
-		LimitAll:       false,
-		OrderBy:        OrderBy,
-		OrderDirection: OrderDirection,
+	cfg := posts.ListConfig{
+		Resource: "",
+		Status:   "published",
 	}
 
 	tt := map[string]struct {
 		input params.Query
-		mock  func(m *mocks.PostsRepository)
+		mock  func(m *mocks.Repository)
 		want  interface{}
 	}{
 		"Success": {
 			params.Query{"limit": 15},
-			func(m *mocks.PostsRepository) {
-				m.On("Get", p, false, "", "published").Return(postDataSlice, 5, nil)
+			func(m *mocks.Repository) {
+				m.On("List", dummy.DefaultParams, false, cfg).Return(postDataSlice, 5, nil)
 			},
 			Posts{
 				Posts: tplPostSlice,
@@ -133,8 +131,8 @@ func TestNamespace_List(t *testing.T) {
 		},
 		"Nil": {
 			nil,
-			func(m *mocks.PostsRepository) {
-				m.On("Get", p, false, "", "published").Return(postDataSlice, 5, nil)
+			func(m *mocks.Repository) {
+				m.On("List", dummy.DefaultParams, false, cfg).Return(postDataSlice, 5, nil)
 			},
 			Posts{
 				Posts: tplPostSlice,
@@ -150,17 +148,17 @@ func TestNamespace_List(t *testing.T) {
 		},
 		"Not Found": {
 			params.Query{"limit": 15},
-			func(m *mocks.PostsRepository) {
-				m.On("Get", p, false, "", "published").Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
+			func(m *mocks.Repository) {
+				m.On("List", dummy.DefaultParams, false, cfg).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no posts found"})
 			},
 			nil,
 		},
 		"Internal Error": {
 			params.Query{"limit": 15},
-			func(m *mocks.PostsRepository) {
-				m.On("Get", p, false, "", "published").Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal error"})
+			func(m *mocks.Repository) {
+				m.On("List", dummy.DefaultParams, false, cfg).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config error"})
 			},
-			"internal error",
+			"config error",
 		},
 	}
 

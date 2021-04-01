@@ -23,11 +23,11 @@ type (
 		Permalink         string        `db:"-" json:"permalink"`
 		Title             string        `db:"title" json:"title" binding:"required,max=500"`
 		Status            string        `db:"status" json:"status,omitempty"`
-		Resource          *string       `db:"resource" json:"resource"`
+		Resource          string        `db:"resource" json:"resource"`
 		PageTemplate      string        `db:"page_template" json:"page_template,omitempty" binding:"required,max=150"`
 		PageLayout        string        `db:"layout" json:"layout,omitempty" binding:"required,max=150"`
-		CodeInjectionHead *string       `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
-		CodeInjectionFoot *string       `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
+		CodeInjectionHead string        `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
+		CodeInjectionFoot string        `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
 		UserId            int           `db:"user_id" json:"-"` //nolint
 		IsArchive         types.BitBool `db:"archive" json:"archive"`
 		PublishedAt       *time.Time    `db:"published_at" json:"published_at"`
@@ -148,7 +148,7 @@ func (p *Post) IsPublic() bool {
 // Determines if a post has any resources attached
 // to it.
 func (p *PostDatum) HasResource() bool {
-	return p.Resource != nil
+	return p.Resource != ""
 }
 
 // HasCategory

@@ -26,7 +26,7 @@ func (f *Forms) Find(ctx *gin.Context) {
 		return
 	}
 
-	form, err := f.Store.Forms.GetByID(id)
+	form, err := f.Store.Forms.Find(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

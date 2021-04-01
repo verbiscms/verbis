@@ -9,9 +9,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/seeds"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	//"github.com/ainsleyclark/verbis/api/services/webp"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/kyokomi/emoji"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
@@ -52,10 +50,10 @@ func Install(cmd *cobra.Command, args []string) {
 
 	// Check if the database exists.
 	// TODO NOT WORKING
-	err = db.CheckExists()
-	if err != nil {
-		printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DbDatabase))
-	}
+	//err = db.CheckExists()
+	//if err != nil {
+	//	printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DbDatabase))
+	//}
 
 	// Get the user & site variables
 	user := createOwner()
@@ -71,24 +69,19 @@ func Install(cmd *cobra.Command, args []string) {
 	}
 
 	// Set up stores & pass the database.
-	store := models.New(&models.StoreCfgOld{
-		DB:      db.Sqlx,
-		Config:  cfg.Config,
-		Paths:   paths.Get(),
-		Options: nil,
-	})
+	store, err := store.New(db, cfg.Config)
 	if err != nil {
 		printError(err.Error())
 	}
 
 	// Run the seeds
-	seeder := seeds.New(db.Sqlx, store)
+	seeder := seeds.New(db, store)
 	if err := seeder.Seed(); err != nil {
 		printError(err.Error())
 	}
 
 	// Create the owner user
-	if _, err := store.User.Create(user); err != nil {
+	if _, err := store.User.Create(*user); err != nil {
 		printError(fmt.Sprintf("Error creating the owner: %s", err.Error()))
 	}
 

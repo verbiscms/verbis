@@ -10,11 +10,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// update
+// Update
 //
 // Returns a nil upon successful update.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *Store) update(name string, value interface{}) error {
+func (s *Store) Update(name string, value interface{}) error {
 	const op = "OptionStore.Create"
 
 	v, err := s.marshal(value)
@@ -24,10 +24,10 @@ func (s *Store) update(name string, value interface{}) error {
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).
-		Column("option_value", v).
+		Column("option_value", "?").
 		Where("option_name", "=", name)
 
-	_, err = s.DB().Exec(q.Build())
+	_, err = s.DB().Exec(q.Build(), v)
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating option with the name: " + name, Operation: op, Err: err}
 	} else if err != nil {

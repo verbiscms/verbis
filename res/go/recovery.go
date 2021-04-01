@@ -16,6 +16,7 @@ import (
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"html"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 	"regexp"
@@ -185,18 +186,17 @@ func (r *Recovery) getStack() []Stack {
 func (r *Recovery) setFileContents() (string, error) {
 	const op = "Recovery.getFileContents"
 
-	var fileContents string
-	if ok := files.Exists(r.Path); ok {
-		var err error
-		if fileContents, err = files.GetFileContents(r.Path); err != nil {
-			fmt.Println(err)
-			return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert get file contents with path %s", r.Path), Operation: op, Err: err}
-		} else {
-			return fileContents, nil
-		}
+	exists := files.Exists(r.Path)
+	if !exists {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert get file contents with path %s", r.Path), Operation: op, Err: err}
 	}
 
-	return fileContents, nil
+	contents, err := ioutil.ReadFile(r.Path)
+	if err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not convert get file contents with path %s", r.Path), Operation: op, Err: err}
+	}
+
+	return string(contents), nil
 }
 
 // getTemplate obtains the file path for the template and the line number

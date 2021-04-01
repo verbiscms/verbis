@@ -38,7 +38,7 @@ func (i *Resize) Resize(imager Imager, dest string, media domain.MediaSize, comp
 		return err
 	}
 
-	resized := &image.NRGBA{}
+	var resized *image.NRGBA
 	if media.Crop {
 		resized = imaging.Fill(img, media.Width, media.Height, imaging.Center, imaging.Lanczos)
 	} else {

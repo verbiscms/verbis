@@ -6,29 +6,41 @@ package fields
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	location "github.com/ainsleyclark/verbis/api/services/fields/location"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/store/config"
 )
 
-// Repository defines methods for fields
-// to interact with the local FS.
+// Repository defines methods for post fields
+// to interact with the database.
 type Repository interface {
-	Layout(post domain.PostDatum) domain.FieldGroups
-	// TODO: Create, Update & save to storage
+	Find(postID int) (domain.PostFields, error)
+	FindByPostAndKey(postID int, key string) (domain.PostFields, error)
+	Insert(postID int, fields domain.PostFields) error
+	Delete(postID int) error
+	Exists(field domain.PostField) bool
 }
 
 // Store defines the data layer for fields.
 type Store struct {
-	*store.Config
-	finder location.Finder
+	*config.Config
 }
+
+const (
+	// The database table name for post fields.
+	TableName = "post_fields"
+)
+
+var (
+	// ErrFieldExists is returned by validate when
+	// a post field already exists.
+	ErrFieldExists = errors.New("post field already exists")
+)
 
 // New
 //
-// Creates a new categories store.
-func New(cfg *store.Config) *Store {
+// Creates a new post fields store.
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config: cfg,
-		finder: location.NewLocation(cfg.Paths.Storage),
 	}
 }

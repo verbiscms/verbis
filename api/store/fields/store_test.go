@@ -5,8 +5,9 @@
 package fields
 
 import (
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -31,37 +32,59 @@ func TestFields(t *testing.T) {
 //
 // A helper to obtain a mock fields database
 // for testing.
-func (t *FieldsTestSuite) Setup() *Store {
+func (t *FieldsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	t.Reset()
-	return New(&store.Config{
+	if mf != nil {
+		mf(t.Mock)
+	}
+	return New(&config.Config{
 		Driver: t.Driver,
-		Options: &domain.Options{
-			CacheServerFields: false,
-		},
 	})
 }
 
+const (
+	// The default post ID used for testing.
+	postID = "1"
+)
+
 var (
-	// The default field groups used for testing.
-	groups = domain.FieldGroups{
-		domain.FieldGroup{
-			Title: "groups",
-			Fields: domain.Fields{
-				domain.Field{
-					Label: "label",
-					Name:  "name",
-					Type:  "text",
-				},
-			},
-			Locations: [][]domain.FieldLocation{
-				{
-					domain.FieldLocation{
-						Param:    "resource",
-						Operator: "=",
-						Value:    "news",
-					},
-				},
-			},
+	// The post field used for testing.
+	field = domain.PostField{
+		Id:            1,
+		PostId:        1,
+		Type:          "text",
+		Name:          "name",
+		Key:           "key",
+		OriginalValue: "val",
+	}
+	// The post fields used for testing.
+	fields = domain.PostFields{
+		{
+			Id:            1,
+			PostId:        1,
+			Type:          "text",
+			Name:          "name",
+			Key:           "key",
+			OriginalValue: "val",
+		},
+		{
+			Id:            2,
+			PostId:        1,
+			Type:          "text",
+			Name:          "name",
+			Key:           "key",
+			OriginalValue: "val",
+		},
+	}
+	// The post fields used for testing.
+	fieldsSingular = domain.PostFields{
+		{
+			Id:            1,
+			PostId:        1,
+			Type:          "text",
+			Name:          "name",
+			Key:           "key",
+			OriginalValue: "val",
 		},
 	}
 )

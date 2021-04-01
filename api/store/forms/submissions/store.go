@@ -6,21 +6,21 @@ package submissions
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 )
 
 // Repository defines methods for form submissions
 // to interact with the database.
 type Repository interface {
 	Find(formID int) (domain.FormSubmissions, error)
-	Create(formID int, f domain.FormSubmission) error
+	Create(f domain.FormSubmission) error
 	Delete(formID int) error
 }
 
 // Store defines the data layer for form
 // submissions.
 type Store struct {
-	*store.Config
+	*config.Config
 }
 
 const (
@@ -31,7 +31,7 @@ const (
 // New
 //
 // Creates a new meta store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config: cfg,
 	}

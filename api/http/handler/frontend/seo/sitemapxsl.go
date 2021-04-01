@@ -18,9 +18,9 @@ import (
 func (s *SEO) SiteMapXSL(ctx *gin.Context, index bool) {
 	const op = "FrontendHandler.SiteMapIndexXSL"
 
-	sitemap, err := s.Publisher.SiteMap().XSL(index)
+	sitemap, err := s.publisher.SiteMap().XSL(index)
 	if err != nil {
-		s.Publisher.NotFound(ctx)
+		s.publisher.NotFound(ctx)
 		return
 	}
 

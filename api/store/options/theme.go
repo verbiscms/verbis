@@ -5,8 +5,8 @@
 package options
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/spf13/cast"
 )
 
 // GetTheme
@@ -23,9 +23,9 @@ func (s *Store) GetTheme() (string, error) {
 		return "", &errors.Error{Code: errors.NOTFOUND, Message: "No theme exists in the option table: `active_theme`", Operation: op, Err: err}
 	}
 
-	theme, ok := opt.(string)
-	if !ok {
-		return "", &errors.Error{Code: errors.INVALID, Message: "Error casting option value to string", Operation: op, Err: fmt.Errorf("could not cast theme to string")}
+	theme, err := cast.ToStringE(opt)
+	if err != nil {
+		return "", &errors.Error{Code: errors.INVALID, Message: "Error casting option value to string", Operation: op, Err: err}
 	}
 
 	return theme, nil
@@ -35,5 +35,5 @@ func (s *Store) GetTheme() (string, error) {
 //
 // Returns nil if the theme has been updated successfully.
 func (s *Store) SetTheme(theme string) error {
-	return s.update("active_theme", theme)
+	return s.Update("active_theme", theme)
 }

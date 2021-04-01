@@ -32,7 +32,7 @@ func (s *Store) Map() (domain.OptionsDBMap, error) {
 
 	opts := make(domain.OptionsDBMap)
 	for _, v := range o {
-		unValue, err := s.unmarshal(&v.Value)
+		unValue, err := s.unmarshal(v.Value)
 		if err != nil {
 			return nil, err
 		}

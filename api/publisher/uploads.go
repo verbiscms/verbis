@@ -7,11 +7,10 @@ package publisher
 import (
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/gin-gonic/gin"
 )
 
-func (r *publish) Upload(g *gin.Context) (domain.Mime, *[]byte, error) {
+func (r *publish) Upload(g *gin.Context, webp bool) (domain.Mime, *[]byte, error) {
 	const op = "publish.Upload"
 
 	api.UploadChan <- 1
@@ -24,8 +23,18 @@ func (r *publish) Upload(g *gin.Context) (domain.Mime, *[]byte, error) {
 	// Set cache headers
 	r.cacher.Cache(g)
 
+	media, path, err := r.Store.Media.FindByURL(url)
+	if err != nil {
+		return "", nil, err
+	}
+
+	acceptsWebP := r.WebP.Accepts(g)
+	if !webp {
+		acceptsWebP = false
+	}
+
 	// Get the data & mime type from the media store
-	file, mimeType, err := r.Store.Media.Serve(url, webp.Accepts(g))
+	file, mimeType, err := r.media.Serve(media, path, acceptsWebP)
 	if err != nil {
 		return "", nil, err
 	}

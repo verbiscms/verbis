@@ -8,7 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/forms/fields"
 	"github.com/ainsleyclark/verbis/api/store/forms/submissions"
 	"github.com/google/uuid"
@@ -19,16 +19,16 @@ import (
 type Repository interface {
 	List(meta params.Params) (domain.Forms, int, error)
 	Find(id int) (domain.Form, error)
-	FindByUUID(uuid uuid.UUID) (domain.Form, error)
+	FindByUUID(uniq uuid.UUID) (domain.Form, error)
 	Create(f domain.Form) (domain.Form, error)
 	Update(f domain.Form) (domain.Form, error)
 	Delete(id int) error
-	Fields(id int) (domain.FormFields, error)
+	Submit(f domain.FormSubmission) error
 }
 
 // Store defines the data layer for forms.
 type Store struct {
-	*store.Config
+	*config.Config
 	fields      fields.Repository
 	submissions submissions.Repository
 }
@@ -49,7 +49,7 @@ var (
 // New
 //
 // Creates a new form store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config:      cfg,
 		fields:      fields.New(cfg),

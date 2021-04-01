@@ -7,8 +7,8 @@ package attributes
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
-	"github.com/ainsleyclark/verbis/api/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/gin-gonic/gin"
@@ -20,7 +20,6 @@ import (
 
 func TestNamespace_Body(t *testing.T) {
 	gin.SetMode(gin.TestMode)
-	resource := "resource"
 
 	tt := map[string]struct {
 		post   domain.Post
@@ -31,7 +30,7 @@ func TestNamespace_Body(t *testing.T) {
 			domain.Post{
 				Id:           123,
 				Title:        "title",
-				Resource:     nil,
+				Resource:     "",
 				PageTemplate: "template",
 				PageLayout:   "layout",
 			},
@@ -42,7 +41,7 @@ func TestNamespace_Body(t *testing.T) {
 			domain.Post{
 				Id:           1,
 				Title:        "title",
-				Resource:     &resource,
+				Resource:     "resource",
 				PageTemplate: "template",
 				PageLayout:   "layout",
 			},
@@ -53,7 +52,7 @@ func TestNamespace_Body(t *testing.T) {
 			domain.Post{
 				Id:           1,
 				Title:        "title",
-				Resource:     &resource,
+				Resource:     "resource",
 				PageTemplate: "%$££@template*&",
 				PageLayout:   "layout",
 			},
@@ -64,7 +63,7 @@ func TestNamespace_Body(t *testing.T) {
 			domain.Post{
 				Id:           1,
 				Title:        "title",
-				Resource:     nil,
+				Resource:     "",
 				PageTemplate: "template",
 				PageLayout:   "layout",
 			},
@@ -82,14 +81,14 @@ func TestNamespace_Body(t *testing.T) {
 				tpld: &internal.TemplateDeps{Post: post},
 			}
 
-			mock := &mocks.UserRepository{}
-			mock.On("GetByToken", "token").Return(domain.User{}, nil)
+			mock := &mocks.Repository{}
+			mock.On("FindByToken", "token").Return(domain.User{}, nil)
 
 			rr := httptest.NewRecorder()
 			g, _ := gin.CreateTestContext(rr)
 			g.Request, _ = http.NewRequest("GET", "/get", nil)
 			ns.auth = auth.New(
-				&deps.Deps{Store: &models.Store{User: mock}},
+				&deps.Deps{Store: &store.Repository{User: mock}},
 				&internal.TemplateDeps{Context: g, Post: post},
 			)
 

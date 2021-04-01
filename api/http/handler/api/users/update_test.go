@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,7 +21,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.UserRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -29,8 +29,8 @@ func (t *UsersTestSuite) TestUser_Update() {
 			http.StatusOK,
 			"Successfully updated user with ID: 123",
 			user,
-			func(m *mocks.UserRepository) {
-				m.On("Update", &user).Return(user, nil)
+			func(m *mocks.Repository) {
+				m.On("Update", user).Return(user, nil)
 			},
 			"/users/123",
 		},
@@ -39,7 +39,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 			http.StatusBadRequest,
 			"Validation failed",
 			userBadValidation,
-			func(m *mocks.UserRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", userBadValidation).Return(domain.User{}, fmt.Errorf("error"))
 			},
 			"/users/123",
@@ -49,7 +49,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 			http.StatusBadRequest,
 			"A valid ID is required to update the user",
 			user,
-			func(m *mocks.UserRepository) {
+			func(m *mocks.Repository) {
 				m.On("Update", userBadValidation).Return(domain.User{}, fmt.Errorf("error"))
 			},
 			"/users/wrongid",
@@ -59,18 +59,18 @@ func (t *UsersTestSuite) TestUser_Update() {
 			http.StatusBadRequest,
 			"not found",
 			user,
-			func(m *mocks.UserRepository) {
-				m.On("Update", &user).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("Update", user).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/users/123",
 		},
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			user,
-			func(m *mocks.UserRepository) {
-				m.On("Update", &user).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Update", user).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/users/123",
 		},

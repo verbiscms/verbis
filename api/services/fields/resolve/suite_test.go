@@ -6,9 +6,8 @@ package resolve
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"testing"
@@ -31,7 +30,6 @@ func TestResolver(t *testing.T) {
 //
 // Discard the logger on setup.
 func (t *ResolverTestSuite) SetupSuite() {
-	logger.Init(&environment.Env{})
 	logger.SetOutput(ioutil.Discard)
 }
 
@@ -41,7 +39,7 @@ func (t *ResolverTestSuite) SetupSuite() {
 func (t *ResolverTestSuite) GetValue() *Value {
 	return &Value{
 		&deps.Deps{
-			Store: &models.Store{},
+			Store: &store.Repository{},
 		},
 	}
 }

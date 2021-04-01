@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -21,15 +21,15 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.RedirectRepository)
+		mock    func(m *mocks.Repository)
 	}{
 		"Success": {
 			&redirect,
 			http.StatusOK,
 			"Successfully created redirect with ID: 123",
 			redirect,
-			func(m *mocks.RedirectRepository) {
-				m.On("Create", &redirect).Return(redirect, nil)
+			func(m *mocks.Repository) {
+				m.On("Create", redirect).Return(redirect, nil)
 			},
 		},
 		"Validation Failed": {
@@ -37,8 +37,8 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 			http.StatusBadRequest,
 			"Validation failed",
 			redirectBadValidation,
-			func(m *mocks.RedirectRepository) {
-				m.On("Create", &redirectBadValidation).Return(domain.Redirect{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Create", redirectBadValidation).Return(domain.Redirect{}, fmt.Errorf("error"))
 			},
 		},
 		"Invalid": {
@@ -46,8 +46,8 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 			http.StatusBadRequest,
 			"invalid",
 			redirect,
-			func(m *mocks.RedirectRepository) {
-				m.On("Create", &redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+			func(m *mocks.Repository) {
+				m.On("Create", redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
@@ -55,17 +55,17 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 			http.StatusBadRequest,
 			"conflict",
 			redirect,
-			func(m *mocks.RedirectRepository) {
-				m.On("Create", &redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			func(m *mocks.Repository) {
+				m.On("Create", redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			redirect,
-			func(m *mocks.RedirectRepository) {
-				m.On("Create", &redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Create", redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 		},
 	}

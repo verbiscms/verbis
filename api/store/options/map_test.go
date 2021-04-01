@@ -28,7 +28,7 @@ func (t *OptionsTestSuite) TestStore_Map() {
 	}{
 		"Success": {
 			domain.OptionsDBMap{
-				"name": &raw,
+				"name": raw,
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name", "option_value"}).

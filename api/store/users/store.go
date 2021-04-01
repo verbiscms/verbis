@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/store/config"
 )
 
 // Repository defines methods for users
@@ -33,7 +33,7 @@ type Repository interface {
 
 // Store defines the data layer for users.
 type Store struct {
-	*store.Config
+	*config.Config
 	// The function used for hashing passwords.
 	hashPasswordFunc func(password string) (string, error)
 }
@@ -61,7 +61,7 @@ var (
 // New
 //
 // Creates a new users store.
-func New(cfg *store.Config) *Store {
+func New(cfg *config.Config) *Store {
 	return &Store{
 		Config:           cfg,
 		hashPasswordFunc: encryption.HashPassword,

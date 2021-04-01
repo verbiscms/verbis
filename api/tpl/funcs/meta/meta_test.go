@@ -10,10 +10,10 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
 	siteMocks "github.com/ainsleyclark/verbis/api/mocks/services/site"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	tplMocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
-	"github.com/ainsleyclark/verbis/api/models"
+	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/safe"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -23,13 +23,13 @@ import (
 	"testing"
 )
 
-func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace, *mocks.MediaRepository) {
+func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace, *mocks.Repository) {
 	mockSite := &siteMocks.Repository{}
 	mockSite.On("Global").Return(domain.Site{})
 
-	m := &mocks.MediaRepository{}
+	m := &mocks.Repository{}
 	d := &deps.Deps{
-		Store:   &models.Store{Media: m},
+		Store:   &store.Repository{Media: m},
 		Site:    mockSite,
 		Options: &opts,
 	}
@@ -157,18 +157,18 @@ func TestTemplateMeta_GetImage(t *testing.T) {
 	media := domain.Media{Id: 1, Url: "testurl"}
 
 	tt := map[string]struct {
-		mock func(m *mocks.MediaRepository)
+		mock func(m *mocks.Repository)
 		want interface{}
 	}{
 		"Success": {
-			func(m *mocks.MediaRepository) {
-				m.On("GetByID", 1).Return(media, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 1).Return(media, nil)
 			},
 			media.Url,
 		},
 		"Error": {
-			func(m *mocks.MediaRepository) {
-				m.On("GetByID", 1).Return(domain.Media{}, fmt.Errorf("error"))
+			func(m *mocks.Repository) {
+				m.On("Find", 1).Return(domain.Media{}, fmt.Errorf("error"))
 			},
 			"",
 		},

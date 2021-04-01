@@ -7,7 +7,7 @@ package users
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,7 +18,7 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(u *mocks.UserRepository)
+		mock    func(u *mocks.Repository)
 		url     string
 	}{
 		"Success": {
@@ -26,8 +26,8 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			http.StatusOK,
 			"Successfully updated password for the user with ID: 123",
 			reset,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(nil)
 			},
 			"/users/reset/123",
@@ -37,8 +37,8 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			http.StatusBadRequest,
 			"A valid ID is required to update a user's password",
 			reset,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(nil)
 			},
 			"/users/reset/wrongid",
@@ -48,8 +48,8 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			http.StatusBadRequest,
 			"No user has been found with the ID: 123",
 			reset,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 				m.On("ResetPassword", 123, reset).Return(nil)
 			},
 			"/users/reset/123",
@@ -59,8 +59,8 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			http.StatusBadRequest,
 			"Validation failed",
 			resetBadValidation,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(nil)
 			},
 			"/users/reset/123",
@@ -70,8 +70,8 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 			http.StatusBadRequest,
 			"invalid",
 			reset,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, nil)
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, nil)
 				m.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 			"/users/reset/123",
@@ -79,11 +79,11 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"config",
 			reset,
-			func(m *mocks.UserRepository) {
-				m.On("GetByID", 123).Return(domain.User{}, nil)
-				m.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository) {
+				m.On("Find", 123).Return(domain.User{}, nil)
+				m.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/users/reset/123",
 		},

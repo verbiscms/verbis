@@ -18,13 +18,15 @@ import (
 // a valid page template attached to it, and a valid
 // page layout.
 // Returns nil if all checks are passed.
-func (s *Store) validate(p *domain.PostCreate) error {
-	err := s.validateSlug(p)
-	if err != nil {
-		return err
+func (s *Store) validate(p *domain.PostCreate, checkSlug bool) error {
+	if checkSlug {
+		err := s.validateSlug(p)
+		if err != nil {
+			return err
+		}
 	}
 
-	err = s.validatePageTemplate(p)
+	err := s.validatePageTemplate(p)
 	if err != nil {
 		return err
 	}
@@ -58,10 +60,10 @@ func (s *Store) validateSlug(p *domain.PostCreate) error {
 			Where(s.Schema()+"c.id", "=", p.Category)
 	}
 
-	if p.Resource == nil {
-		q.WhereRaw(s.Schema() + TableName + ".resource IS NULL")
-	} else {
+	if p.Resource != "" {
 		q.Where(s.Schema()+TableName+".resource", "=", p.Resource)
+	} else {
+		q.Where(s.Schema()+TableName+".resource", "=", "")
 	}
 
 	var exists bool

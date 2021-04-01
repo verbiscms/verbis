@@ -10,7 +10,6 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
@@ -27,7 +26,6 @@ func (t *RedirectsTestSuite) TestStore_Create() {
 			redirect,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(redirect.Id), 1))
 			},
 		},
@@ -43,7 +41,6 @@ func (t *RedirectsTestSuite) TestStore_Create() {
 			"Error creating redirect with the from path",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -51,7 +48,6 @@ func (t *RedirectsTestSuite) TestStore_Create() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -59,7 +55,6 @@ func (t *RedirectsTestSuite) TestStore_Create() {
 			"Error getting the newly created redirect ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
 			},
 		},

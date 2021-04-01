@@ -11,19 +11,20 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/posts/fields"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
 	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	CreateQuery = "INSERT INTO `posts` (`uuid`, `slug`, `title`, `status`, `resource`, `page_template`, `layout`, `codeinjection_head`, `codeinjection_foot`, `user_id`, `published_at`, `updated_at`, `created_at`) VALUES (?, '/post', 'post', 'draft', NULL, 'template', 'layout', NULL, NULL, 1, NULL, NOW(), NOW())"
+	CreateQuery = "INSERT INTO `posts` (`uuid`, `slug`, `title`, `status`, `resource`, `page_template`, `layout`, `codeinjection_head`, `codeinjection_foot`, `user_id`, `published_at`, `updated_at`, `created_at`) VALUES (?, 'slug', 'post', 'draft', '', 'template', 'layout', '', '', 1, NULL, NOW(), NOW())"
 )
 
 func (t *PostsTestSuite) TestStore_Create() {
 	category := 1
+
 	repoSuccess := func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
 		f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
 		m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
@@ -135,7 +136,7 @@ func (t *PostsTestSuite) TestStore_Create() {
 				Post: domain.Post{
 					Id:           1,
 					Title:        "post",
-					Slug:         "/post",
+					Slug:         "slug",
 					PageTemplate: "template",
 					PageLayout:   "layout",
 				},

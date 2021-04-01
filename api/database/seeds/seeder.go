@@ -5,17 +5,17 @@
 package seeds
 
 import (
-	"github.com/ainsleyclark/verbis/api/models"
-	"github.com/jmoiron/sqlx"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/store"
 )
 
 type Seeder struct {
-	db     *sqlx.DB
-	models *models.Store
+	db     database.Driver
+	models *store.Repository
 }
 
 // Construct
-func New(db *sqlx.DB, s *models.Store) *Seeder {
+func New(db database.Driver, s *store.Repository) *Seeder {
 	return &Seeder{
 		db:     db,
 		models: s,

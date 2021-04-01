@@ -11,15 +11,14 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/posts/fields"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
-	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	UpdateQuery = "UPDATE `posts` SET `uuid` = ?, `slug` = '/post', `title` = 'post', `status` = '', `resource` = NULL, `page_template` = 'template', `layout` = 'layout', `codeinjection_head` = NULL, `codeinjection_foot` = NULL, `user_id` = 1, `published_at` = NULL, `updated_at` = NOW()"
+	UpdateQuery = "UPDATE `posts` SET `slug` = 'slug', `title` = 'post', `status` = '', `resource` = '', `page_template` = 'template', `layout` = 'layout', `codeinjection_head` = '', `codeinjection_foot` = '', `user_id` = 1, `published_at` = NULL, `updated_at` = NOW() WHERE `id` = '1'"
 )
 
 func (t *PostsTestSuite) TestStore_Update() {
@@ -27,6 +26,20 @@ func (t *PostsTestSuite) TestStore_Update() {
 	repoSuccess := func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
 		f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
 		m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
+	}
+	storeSuccess := func(m sqlmock.Sqlmock) {
+		rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
+			AddRow(post.Id, post.Slug, post.Title)
+		m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+			WillReturnRows(rows)
+
+		m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+			WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
+
+		rowsL := sqlmock.NewRows([]string{"id", "slug", "title"}).
+			AddRow(post.Id, post.Slug, post.Title)
+		m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+			WillReturnRows(rowsL)
 	}
 
 	tt := map[string]struct {
@@ -38,37 +51,43 @@ func (t *PostsTestSuite) TestStore_Update() {
 		"Success": {
 			postCreate,
 			repoSuccess,
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
-
-				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
-			},
+			storeSuccess,
 			postDatum,
 		},
-		"Validation Failed": {
-			domain.PostCreate{},
+		"Find Error": {
+			postCreate,
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
-
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+					WillReturnError(fmt.Errorf("error"))
+			},
+			database.ErrQueryMessage,
+		},
+		"Validation Failed": {
+			domain.PostCreate{
+				Post: domain.Post{
+					Id: 1,
+				},
+			},
+			repoSuccess,
+			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
 					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+					WillReturnRows(rows)
 			},
-			"Validation failed, no page template exists",
+			"no page template exists",
 		},
 		"No Rows": {
 			postCreate,
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
+					AddRow(post.Id, post.Slug, post.Title)
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+					WillReturnRows(rows)
+
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 			"Error updating post with the title: post",
@@ -77,8 +96,12 @@ func (t *PostsTestSuite) TestStore_Update() {
 			postCreate,
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
+					AddRow(post.Id, post.Slug, post.Title)
+				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+					WillReturnRows(rows)
+
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 			database.ErrQueryMessage,
@@ -89,15 +112,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 				f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
 				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(fmt.Errorf("error"))
 			},
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
-
-				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
-			},
+			storeSuccess,
 			"error",
 		},
 		"Fields Error": {
@@ -106,15 +121,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 				f.On("Insert", postCreate.Id, postCreate.Fields).Return(fmt.Errorf("error"))
 				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
 			},
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
-
-				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
-			},
+			storeSuccess,
 			"error",
 		},
 		"Category Error": {
@@ -122,7 +129,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 				Post: domain.Post{
 					Id:           1,
 					Title:        "post",
-					Slug:         "/post",
+					Slug:         "slug",
 					PageTemplate: "template",
 					PageLayout:   "layout",
 				},
@@ -134,15 +141,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 				f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
 				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
 			},
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
-
-				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
-			},
+			storeSuccess,
 			"error",
 		},
 	}
@@ -155,7 +154,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(post, test.want, 6)
+			t.RunT(post, test.want, 3)
 		})
 	}
 }

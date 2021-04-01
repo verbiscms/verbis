@@ -22,7 +22,7 @@ func (u *Users) List(ctx *gin.Context) {
 
 	p := api.Params(ctx).Get()
 
-	users, total, err := u.Store.User.Get(p)
+	users, total, err := u.Store.User.List(p, "")
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

@@ -6,7 +6,7 @@ package options
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,15 +16,15 @@ func (t *OptionsTestSuite) TestOptions_Find() {
 		want    string
 		status  int
 		message string
-		mock    func(m *mocks.OptionsRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			`"testing"`,
 			http.StatusOK,
 			"Successfully obtained option with name: test",
-			func(m *mocks.OptionsRepository) {
-				m.On("GetByName", "test").Return("testing", nil)
+			func(m *mocks.Repository) {
+				m.On("Find", "test").Return("testing", nil)
 			},
 			"/options/test",
 		},
@@ -32,17 +32,17 @@ func (t *OptionsTestSuite) TestOptions_Find() {
 			`{}`,
 			http.StatusOK,
 			"no option found",
-			func(m *mocks.OptionsRepository) {
-				m.On("GetByName", "test").Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "no option found"})
+			func(m *mocks.Repository) {
+				m.On("Find", "test").Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "no option found"})
 			},
 			"/options/test",
 		},
 		"Internal Error": {
 			`{}`,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.OptionsRepository) {
-				m.On("GetByName", "test").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Find", "test").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/options/test",
 		},

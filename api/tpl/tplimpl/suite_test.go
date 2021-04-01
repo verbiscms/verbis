@@ -72,7 +72,6 @@ func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostDatu
 			Slug:         "/page",
 			Title:        "My Verbis Page",
 			Status:       "published",
-			Resource:     nil,
 			PageTemplate: "single",
 			PageLayout:   "main",
 			UserId:       1,

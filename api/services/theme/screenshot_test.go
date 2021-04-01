@@ -5,6 +5,7 @@
 package theme
 
 import (
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
@@ -17,12 +18,12 @@ func (t *ThemeTestSuite) TestSite_Screenshot() {
 		"SVG": {
 			"verbis",
 			"screenshot.svg",
-			"image/svg+xml",
+			domain.Mime("image/svg+xml"),
 		},
 		"PNG": {
 			"verbis2",
 			"screenshot.png",
-			"image/png",
+			domain.Mime("image/png"),
 		},
 		"Not Found": {
 			"wrong",

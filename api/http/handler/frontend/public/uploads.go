@@ -18,9 +18,14 @@ import (
 func (p *Public) Uploads(ctx *gin.Context) {
 	const op = "FrontendHandler.GetUploads"
 
-	mime, file, err := p.Publisher.Upload(ctx)
+	webp := true
+	if ctx.Query("webp") == "false" {
+		webp = false
+	}
+
+	mime, file, err := p.publisher.Upload(ctx, webp)
 	if err != nil {
-		p.Publisher.NotFound(ctx)
+		p.publisher.NotFound(ctx)
 		return
 	}
 

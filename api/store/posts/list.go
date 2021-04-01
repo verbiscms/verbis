@@ -31,7 +31,7 @@ func (s *Store) List(meta params.Params, layout bool, cfg ListConfig) (domain.Po
 		From(s.Schema() + TableName)
 
 	// Apply filters.
-	err := database.FilterRows(s.Driver, meta.Filters, TableName)
+	err := database.FilterRows(s.Driver, q, meta.Filters, TableName)
 	if err != nil {
 		return nil, -1, err
 	}
@@ -39,7 +39,7 @@ func (s *Store) List(meta params.Params, layout bool, cfg ListConfig) (domain.Po
 	// Get by resource.
 	if cfg.Resource != "all" && cfg.Resource != "" {
 		if cfg.Resource == "pages" {
-			q.Where(s.Schema()+TableName+".resource", "=", "NULL")
+			q.Where(s.Schema()+TableName+".resource", "=", "")
 		} else {
 			q.Where(s.Schema()+TableName+".resource", "=", cfg.Resource)
 		}
@@ -61,6 +61,7 @@ func (s *Store) List(meta params.Params, layout bool, cfg ListConfig) (domain.Po
 
 	// Select posts raw.
 	var raw []postsRaw
+
 	err = s.DB().Select(&raw, selectStmt(q.Build()))
 	if err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}

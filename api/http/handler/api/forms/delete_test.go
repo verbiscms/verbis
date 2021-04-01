@@ -6,7 +6,7 @@ package forms
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/models"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -16,14 +16,14 @@ func (t *FormsTestSuite) TestForms_Delete() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.FormRepository)
+		mock    func(m *mocks.Repository)
 		url     string
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully deleted form with ID: 123",
-			func(m *mocks.FormRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/forms/123",
@@ -32,7 +32,7 @@ func (t *FormsTestSuite) TestForms_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"A valid ID is required to delete a form",
-			func(m *mocks.FormRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/forms/wrongid",
@@ -41,7 +41,7 @@ func (t *FormsTestSuite) TestForms_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"not found",
-			func(m *mocks.FormRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/forms/123",
@@ -50,7 +50,7 @@ func (t *FormsTestSuite) TestForms_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.FormRepository) {
+			func(m *mocks.Repository) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/forms/123",
@@ -58,9 +58,9 @@ func (t *FormsTestSuite) TestForms_Delete() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.FormRepository) {
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			"config",
+			func(m *mocks.Repository) {
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
 			},
 			"/forms/123",
 		},

@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `media` (`uuid`, `url`, `file_path`, `file_size`, `file_name`, `sizes`, `mime`, `user_id`, `updated_at`, `created_at`) VALUES (?, '', '', 0, 'gopher.png', NULL, '', 0, NOW(), NOW())"
+	CreateQuery = "INSERT INTO `media` (`uuid`, `url`, `title`, `alt`, `description`, `file_path`, `file_size`, `file_name`, `sizes`, `mime`, `user_id`, `updated_at`, `created_at`) VALUES ('00000000-0000-0000-0000-000000000000', '', '', '', '', '', 0, 'gopher.png', ?, '', 0, NOW(), NOW())"
 )
 
 func (t *MediaTestSuite) TestStore_Create() {
@@ -27,7 +27,7 @@ func (t *MediaTestSuite) TestStore_Create() {
 			mediaItem,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
+					WithArgs(test.DBAny{}).
 					WillReturnResult(sqlmock.NewResult(int64(mediaItem.Id), 1))
 			},
 		},
@@ -35,7 +35,7 @@ func (t *MediaTestSuite) TestStore_Create() {
 			"Error creating category with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
+					WithArgs(test.DBAny{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -43,7 +43,7 @@ func (t *MediaTestSuite) TestStore_Create() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
+					WithArgs(test.DBAny{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -51,7 +51,7 @@ func (t *MediaTestSuite) TestStore_Create() {
 			"Error getting the newly created category ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
+					WithArgs(test.DBAny{}).
 					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
 			},
 		},

@@ -7,6 +7,7 @@ package spa
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
@@ -43,6 +44,8 @@ func TestSPA(t *testing.T) {
 //
 // A helper to obtain a SPA handler for testing.
 func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, ctx *gin.Context), admin string, ctx *gin.Context) *SPA {
+	logger.SetOutput(ioutil.Discard)
+
 	wd, err := os.Getwd()
 	t.NoError(err)
 	apiPath := filepath.Join(filepath.Dir(wd), "../..")
@@ -59,7 +62,7 @@ func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, ctx *gin.Context), admi
 				Admin: apiPath + admin,
 			},
 		},
-		Publisher: m,
+		publisher: m,
 	}
 }
 

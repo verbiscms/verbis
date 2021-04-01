@@ -15,13 +15,13 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api/options"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/posts"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/redirects"
+	"github.com/ainsleyclark/verbis/api/http/handler/api/roles"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/site"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/themes"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/users"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend/public"
 	"github.com/ainsleyclark/verbis/api/http/handler/frontend/seo"
 	"github.com/ainsleyclark/verbis/api/http/handler/spa"
-	"github.com/ainsleyclark/verbis/api/publisher"
 )
 
 // APIHandler defines all handler functions for API
@@ -36,6 +36,7 @@ type APIHandler struct {
 	Options    options.Handler
 	Posts      posts.Handler
 	Redirects  redirects.Handler
+	Roles      roles.Handler
 	Site       site.Handler
 	Themes     themes.Handler
 	Users      users.Handler
@@ -46,18 +47,19 @@ type APIHandler struct {
 // Returns a new API handler.
 func NewAPI(d *deps.Deps) *APIHandler {
 	return &APIHandler{
-		Auth:       &auth.Auth{Deps: d},
-		Cache:      &cache.Cache{Deps: d},
-		Categories: &categories.Categories{Deps: d},
-		Fields:     &fields.Fields{Deps: d},
-		Forms:      &forms.Forms{Deps: d},
-		Media:      &media.Media{Deps: d},
-		Options:    &options.Options{Deps: d},
-		Posts:      &posts.Posts{Deps: d},
-		Redirects:  &redirects.Redirects{Deps: d},
-		Site:       &site.Site{Deps: d},
-		Themes:     &themes.Themes{Deps: d},
-		Users:      &users.Users{Deps: d},
+		Auth:       auth.New(d),
+		Cache:      cache.New(d),
+		Categories: categories.New(d),
+		Fields:     fields.New(d),
+		Forms:      forms.New(d),
+		Media:      media.New(d),
+		Options:    options.New(d),
+		Posts:      posts.New(d),
+		Redirects:  redirects.New(d),
+		Roles:      roles.New(d),
+		Site:       site.New(d),
+		Themes:     themes.New(d),
+		Users:      users.New(d),
 	}
 }
 
@@ -72,10 +74,9 @@ type FrontendHandler struct {
 //
 // Returns a new frontend handler.
 func NewFrontend(d *deps.Deps) *FrontendHandler {
-	p := publisher.NewRender(d)
 	return &FrontendHandler{
-		Public: &public.Public{Deps: d, Publisher: p},
-		SEO:    &seo.SEO{Deps: d, Publisher: p},
+		Public: public.New(d),
+		SEO:    seo.New(d),
 	}
 }
 
@@ -90,6 +91,6 @@ type SPAHandler struct {
 // Returns a new SPA handler.
 func NewSPA(d *deps.Deps) *SPAHandler {
 	return &SPAHandler{
-		&spa.SPA{Deps: d},
+		spa.New(d),
 	}
 }

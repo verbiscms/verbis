@@ -19,31 +19,43 @@ func (t *PublicTestSuite) TestPublic_Uploads() {
 		status  int
 		content string
 		mock    func(m *mocks.Publisher, ctx *gin.Context)
+		url     string
 	}{
 		"Success": {
 			testString,
 			http.StatusOK,
 			"image/png",
 			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx).Return(domain.Mime("image/png"), t.bytes, nil)
+				m.On("Upload", ctx, true).Return(domain.Mime("image/png"), t.bytes, nil)
 			},
+			"/uploads/test.jpg",
 		},
 		"Fail": {
 			testString,
 			http.StatusNotFound,
 			"text/html",
 			func(m *mocks.Publisher, ctx *gin.Context) {
-				m.On("Upload", ctx).Return(domain.Mime(""), nil, fmt.Errorf("error"))
+				m.On("Upload", ctx, true).Return(domain.Mime(""), nil, fmt.Errorf("error"))
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(http.StatusNotFound, "text/html", []byte(testString))
 				})
 			},
+			"/uploads/test.jpg",
+		},
+		"No WebP": {
+			testString,
+			http.StatusOK,
+			"image/png",
+			func(m *mocks.Publisher, ctx *gin.Context) {
+				m.On("Upload", ctx, false).Return(domain.Mime("image/png"), t.bytes, nil)
+			},
+			"/uploads/test.jpg?webp=false",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe(http.MethodPost, "/uploads/test.jpg", "/uploads/:file", nil, func(ctx *gin.Context) {
+			t.RequestAndServe(http.MethodPost, test.url, "/uploads/:file", nil, func(ctx *gin.Context) {
 				t.Setup(test.mock, ctx).Uploads(ctx)
 			})
 			t.Equal(test.status, t.Status())

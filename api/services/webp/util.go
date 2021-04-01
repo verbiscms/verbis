@@ -132,12 +132,14 @@ func (w *WebP) Convert(path string, compression int) {
 	webpbin.Dest(w.binPath)
 
 	err := webpbin.NewCWebP().
-		Quality(uint(100 - compression)). //nolint
+		Quality(uint(compression)).
 		InputFile(path).
-		OutputFile(path + ".WebP").
+		OutputFile(path + ".webp").
 		Run()
 
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error convert the image to WebP", Operation: op, Err: err}).Error()
 	}
+
+	logger.Debug("Saved WebP file with the path: " + path)
 }
