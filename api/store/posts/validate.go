@@ -62,6 +62,8 @@ func (s *Store) validateSlug(p *domain.PostCreate) error {
 
 	if p.Resource != "" {
 		q.Where(s.Schema()+TableName+".resource", "=", p.Resource)
+	} else {
+		q.Where(s.Schema()+TableName+".resource", "=", "")
 	}
 
 	var exists bool

@@ -31,7 +31,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				},
 			},
 			func(m sqlmock.Sqlmock) {
-				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = 'slug' AND posts.resource IS NULL)"
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = 'slug' AND `posts`.`resource` = '')"
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(false)
 				m.ExpectQuery(regexp.QuoteMeta(q)).
@@ -47,7 +47,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			},
 			nil,
 		},
-		"Null Resource": {
+		"No Resource": {
 			domain.PostCreate{
 				Post: domain.Post{
 					PageTemplate: "template",
@@ -56,7 +56,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				},
 			},
 			func(m sqlmock.Sqlmock) {
-				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = 'slug' AND posts.resource IS NULL)"
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = 'slug' AND `posts`.`resource` = '')"
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
 				m.ExpectQuery(regexp.QuoteMeta(q)).
@@ -108,7 +108,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				Category: &category,
 			},
 			func(m sqlmock.Sqlmock) {
-				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` LEFT JOIN `post_categories` AS `pc` ON `posts`.`id` = `pc`.`post_id` LEFT JOIN `categories` AS `c` ON `pc`.`category_id` = `c`.`id` WHERE `posts`.`slug` = 'slug' AND `c`.`id` = '1' AND posts.resource IS NULL)"
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` LEFT JOIN `post_categories` AS `pc` ON `posts`.`id` = `pc`.`post_id` LEFT JOIN `categories` AS `c` ON `pc`.`category_id` = `c`.`id` WHERE `posts`.`slug` = 'slug' AND `c`.`id` = '1' AND `posts`.`resource` = '')"
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
 				m.ExpectQuery(regexp.QuoteMeta(q)).

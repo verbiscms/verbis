@@ -23,7 +23,8 @@ run:
     # on Windows.
     skip-dirs:
         - api/database/builder/*
-        - api/helpers/webp/*
+        - api/server/hammer_test.go
+        - api/http/sockets/*
 
 # output configuration options
 output:
