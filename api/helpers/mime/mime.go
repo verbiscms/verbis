@@ -5,16 +5,30 @@
 package mime
 
 import (
+	"github.com/gabriel-vasile/mimetype"
 	"strings"
 )
 
-// TypeByExtension returns the content type based on the extension of the file
-func TypeByExtension(extension string) string {
-	trimmed := strings.ReplaceAll(extension, ".", "")
-	return mimeTypes[strings.ToLower(trimmed)]
+// IsValidMime
+//
+// Checks a whitelist of MIME types and returns true if
+// the file is in the whitelist.
+func IsValidMime(allowed []string, mime string) bool {
+	return mimetype.EqualsAny(mime, allowed...)
 }
 
-var mimeTypes = map[string]string{
+// TypeByExtension
+//
+// Returns the content type based on the extension of the
+// file.
+func TypeByExtension(extension string) string {
+	trimmed := strings.ReplaceAll(extension, ".", "")
+	return Types[strings.ToLower(trimmed)]
+}
+
+// Types defines a map of possible mime types to be
+// compared.
+var Types = map[string]string{
 	"123":                      "application/vnd.lotus-1-2-3",
 	"3dml":                     "text/vnd.in3d.3dml",
 	"3ds":                      "image/x-3ds",

@@ -170,7 +170,7 @@ func (t *PostsTestSuite) TestStore_Create() {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(post, test.want, 5)
+			t.RunT(post, test.want, 6)
 		})
 	}
 }

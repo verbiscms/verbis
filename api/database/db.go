@@ -7,13 +7,17 @@ package database
 //nolint
 import (
 	_ "embed"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/database/mysql"
+	"github.com/ainsleyclark/verbis/api/database/postgres"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/errors"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
+// Driver
 type Driver interface {
 	DB() *sqlx.DB
 	Schema() string
@@ -24,16 +28,28 @@ type Driver interface {
 }
 
 // TODO
+//
 // establish what drier it is and do a switch
 func New(env *environment.Env) (Driver, error) {
-	db, err := mysql.Setup(env)
+	const op = "Database.New"
+
+	var (
+		db  Driver
+		err error
+	)
+
+	switch env.DbDriver {
+	case environment.MySQLDriver:
+		db, err = mysql.Setup(env)
+	case environment.PostgresDriver:
+		db, err = postgres.Setup(env)
+	default:
+		return nil, &errors.Error{Code: errors.INVALID, Message: "DB Driver invalid in environment must be 'mysql' or 'postgres", Operation: op, Err: fmt.Errorf("invalid database driver")}
+	}
+
 	if err != nil {
 		return nil, err
 	}
-
-	//if err := db.Ping(); err != nil {
-	//	return nil, err
-	//}
 
 	return db, nil
 }

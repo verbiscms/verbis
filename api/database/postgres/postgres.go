@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package mysql
+package postgres
 
 import (
 	_ "embed"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -34,7 +33,7 @@ var (
 // New - Creates a new mySql instance and returns
 // a new database driver.
 // Returns errors.INVALID if there was an error establishing a connection or pinging.
-func Setup(env *environment.Env) (database.Driver, error) {
+func Setup(env *environment.Env) (*postgres, error) {
 	const op = "Database.Setup"
 
 	m := postgres{
