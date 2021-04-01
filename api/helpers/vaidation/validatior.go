@@ -7,7 +7,7 @@ package validation
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers"
+	strings2 "github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/gin-gonic/gin/binding"
 	pkgValidate "github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"
@@ -125,8 +125,8 @@ func (v *Validation) CmdCheck(key string, data interface{}) error {
 func (v *Validation) message(kind, field, param string) string {
 	var errorMsg string
 
-	field = helpers.StringsAddSpace(field)
-	param = helpers.StringsAddSpace(param)
+	field = strings2.AddSpace(field)
+	param = strings2.AddSpace(param)
 
 	switch kind {
 	case "required":

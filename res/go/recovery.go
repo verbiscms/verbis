@@ -9,9 +9,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	strings2 "github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/foolin/goview"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
@@ -211,7 +211,7 @@ func (r *Recovery) handleTemplate(err error) error {
 		line int
 	)
 
-	tmpl := helpers.StringsBetween(err.Error(), "name:", ",")
+	tmpl := strings2.Between(err.Error(), "name:", ",")
 	lineStr := regexp.MustCompile("[0-9]+").FindAllString(err.Error(), -1)
 	if len(lineStr) > 0 {
 		l, err := strconv.Atoi(lineStr[0])

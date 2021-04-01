@@ -7,7 +7,7 @@ package publisher
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers"
+	"github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/gin-gonic/gin"
 	"path/filepath"
 	"strconv"
@@ -52,7 +52,7 @@ func (c *headers) Cache(g *gin.Context) {
 	// Get the request type
 	request := c.options.CacheFrontendRequest
 	allowedRequest := []string{"max-age", "max-stale", "min-fresh", "no-cache", "no-store", "no-transform", "only-if-cached"}
-	if request == "" || !helpers.StringInSlice(request, allowedRequest) {
+	if request == "" || !strings.InSlice(request, allowedRequest) {
 		request = "max-age"
 	}
 

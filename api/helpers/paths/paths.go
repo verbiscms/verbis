@@ -6,7 +6,6 @@ package paths
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"os"
@@ -39,15 +38,14 @@ const (
 func Get() Paths {
 	base := base()
 	return Paths{
-		Base:      base,
-		Admin:     base + Admin,
-		API:       base + API,
-		Migration: base + API + migration(),
-		Uploads:   base + Uploads,
-		Storage:   base + Storage,
-		Themes:    base + Themes,
-		Web:       base + Web,
-		Bin:       base + Bin,
+		Base:    base,
+		Admin:   base + Admin,
+		API:     base + API,
+		Uploads: base + Uploads,
+		Storage: base + Storage,
+		Themes:  base + Themes,
+		Web:     base + Web,
+		Bin:     base + Bin,
 	}
 }
 
@@ -60,9 +58,12 @@ func base() string {
 	return dir
 }
 
+// BaseCheck
+//
 // BaseCheck environment is passable to run Terminal
 func BaseCheck() error {
 	const op = "paths.BaseCheck"
+
 	basePath := base()
 
 	if !files.Exists(basePath + "/.env") {
@@ -82,13 +83,4 @@ func BaseCheck() error {
 	}
 
 	return nil
-}
-
-// Migration is the Database migration path
-func migration() string {
-	if api.SuperAdmin {
-		return "/database/migrations"
-	} else {
-		return "/database"
-	}
 }
