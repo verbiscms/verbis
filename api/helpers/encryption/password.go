@@ -11,11 +11,13 @@ import (
 	"math/rand"
 )
 
-// HashPassword gets the password in byte format and generates
-// a hashed password with the default cost of 10.
+// HashPassword
 //
-// Returns errors.INTERNAL if the bcrypt failed to generate
-// from password.
+// Gets the password in byte format and generates a
+// hashed password with the default cost of 10.
+//
+// Returns errors.INTERNAL if the bcrypt failed to
+// generate from password.
 func HashPassword(password string) (string, error) {
 	const op = "encryption.HashPassword"
 	bytePassword := []byte(password)
@@ -26,11 +28,19 @@ func HashPassword(password string) (string, error) {
 	return string(hashedPassword), err
 }
 
-// CreatePassword creates a random password with a character
-// length of 24.
+const (
+	// The amount of characters generated for random
+	// passwords.
+	RandomPasswordLength = 24
+)
+
+// CreatePassword
+//
+// Creates a random password with a character length of
+// 24.
 func CreatePassword() string {
 	var characterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@:\\/@£$%=^&&*()_+?><")
-	b := make([]rune, 24)
+	b := make([]rune, RandomPasswordLength)
 	for i := range b {
 		b[i] = characterRunes[rand.Intn(len(characterRunes))]
 	}

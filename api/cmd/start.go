@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cron"
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/ainsleyclark/verbis/api/server/routes"
 	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
@@ -51,6 +53,13 @@ up the server on the port specified in the .env file.`,
 			// Load cron jobs
 			scheduler := cron.New(d)
 			go scheduler.Run()
+
+			logger.WithError(&errors.Error{
+				Code:      "fjjj",
+				Message:   "jj",
+				Operation: "jjj",
+				Err:       fmt.Errorf("error"),
+			}).Error("test")
 
 			// Listen & serve.
 			err = serve.ListenAndServe(cfg.Env.Port())

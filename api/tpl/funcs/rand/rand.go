@@ -5,7 +5,7 @@
 package rand
 
 import (
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
+	"github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/spf13/cast"
 	"math/rand"
 	"time"
@@ -57,7 +57,7 @@ func (ns *Namespace) Float(a, b interface{}) float64 {
 //
 // Example: {{ randAlpha 20 }}
 func (ns *Namespace) Alpha(length int64) string {
-	return encryption.RandomString(length, false)
+	return strings.Random(length, false)
 }
 
 // AlphaNum
@@ -66,5 +66,5 @@ func (ns *Namespace) Alpha(length int64) string {
 //
 // Example: {{ randAlphaNum 20 }}
 func (ns *Namespace) AlphaNum(length int64) string {
-	return encryption.RandomString(length, true)
+	return strings.Random(length, true)
 }

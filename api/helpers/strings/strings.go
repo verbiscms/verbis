@@ -6,6 +6,7 @@ package strings
 
 import (
 	"bytes"
+	"math/rand"
 	"strings"
 	"unicode"
 )
@@ -57,4 +58,20 @@ func AddSpace(s string) string {
 		buf.WriteRune(rune)
 	}
 	return buf.String()
+}
+
+// Random
+//
+// Generates a random string of n length. Contains numeric
+// characters if set to true.
+func Random(n int64, numeric bool) string {
+	var characterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
+	if !numeric {
+		characterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	}
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = characterRunes[rand.Intn(len(characterRunes))]
+	}
+	return string(b)
 }

@@ -5,10 +5,9 @@
 package cmd
 
 import (
-	"fmt"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var (
@@ -16,9 +15,18 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			p := paths.Get()
-			err := os.Rename(p.Base+"/verbis", p.Base+"/verbis.bak")
-			fmt.Println(err)
+			// Run doctor
+			cfg, _, err := doctor(false)
+			if err != nil {
+				printError(err.Error())
+			}
+			d := deps.New(*cfg)
+
+			color.Green.Println(d.WebP.Install())
+
+			//p := paths.Get()
+			//err := os.Rename(p.Base+"/verbis", p.Base+"/verbis.bak")
+			//fmt.Println(err)
 
 			// download new version
 			// unpack exec

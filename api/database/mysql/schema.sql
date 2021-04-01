@@ -106,7 +106,7 @@ CREATE TABLE `form_submissions` (
 CREATE TABLE `media` (
     `id` int NOT NULL AUTO_INCREMENT,
     `uuid` varchar(36) NOT NULL,
-    `url` varchar(255) DEFAULT NOT NULL,
+    `url` varchar(255) NOT NULL,
     `title` varchar(150) NOT NULL,
     `alt` varchar(150) NOT NULL,
     `description` text NOT NULL,
@@ -204,8 +204,8 @@ CREATE TABLE `posts` (
     `codeinjection_foot` longtext NOT NULL,
     `user_id` int NOT NULL,
     `published_at` timestamp NULL DEFAULT NULL,
-    `updated_at` timestamp NULL DEFAULT NOT NULL,
-    `created_at` timestamp NULL DEFAULT NOT NULL,
+    `updated_at` timestamp NOT NULL,
+    `created_at` timestamp NOT NULL,
     PRIMARY KEY (`id`),
     UNIQUE KEY `slug` (`slug`),
     KEY `user_id_index` (`user_id`)

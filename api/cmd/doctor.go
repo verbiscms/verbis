@@ -87,7 +87,7 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 
 	// Init Theme
 	// TODO: We need pass the default theme (Verbis 2021)
-	s, c, err := store.New(db)
+	s, c, err := store.New(db, running)
 	if err != nil {
 		printError(err.Error())
 	}
