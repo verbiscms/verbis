@@ -88,10 +88,6 @@ func (s *Store) validateSlug(p *domain.PostCreate) error {
 func (s *Store) validatePageTemplate(p *domain.PostCreate) error {
 	const op = "PostStore.ValidatePageTemplate"
 
-	if p.PageTemplate == "" {
-		return nil
-	}
-
 	tpl, err := s.ThemeService.Templates(s.Theme.Theme.Name)
 	if err != nil {
 		return err
@@ -119,10 +115,6 @@ func (s *Store) validatePageTemplate(p *domain.PostCreate) error {
 // Returns ErrNoPageLayout if the page layout was not found.
 func (s *Store) validatePageLayout(p *domain.PostCreate) error {
 	const op = "PostStore.ValidatePageLayout"
-
-	if p.PageLayout == "" {
-		return nil
-	}
 
 	tpl, err := s.ThemeService.Layouts(s.Theme.Theme.Name)
 	if err != nil {

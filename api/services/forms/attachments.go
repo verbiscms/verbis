@@ -157,7 +157,8 @@ func validateFile(file *multipart.File, size int64) (string, error) { //nolint
 		return "", &errors.Error{Code: errors.INVALID, Message: "Mime type not permitted", Operation: op, Err: fmt.Errorf("mime for the uploaded file is not permitted")}
 	}
 
-	fileSize := int(1024 / size) //nolint
+	fileSize := int((size / 1024) / 1024) //nolint
+
 	if fileSize > UploadLimit {
 		return "", &errors.Error{Code: errors.INVALID, Message: "File is too large to upload", Operation: op, Err: fmt.Errorf("the file exceeds the upload limit for uploading")}
 	}
