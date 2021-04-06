@@ -16,16 +16,18 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 	for _, v := range raw {
 		if !s.find(posts, v.Id) {
-			var category domain.Category
+			var category *domain.Category
 			if v.Category.Id != 0 {
-				category = v.Category
+				category = &v.Category
+			} else {
+				category = nil
 			}
 
 			p := domain.PostDatum{
 				Post:     v.Post,
 				Author:   v.Author.HideCredentials(),
 				Fields:   make(domain.PostFields, 0),
-				Category: &category,
+				Category: category,
 			}
 
 			if layout {
