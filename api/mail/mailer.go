@@ -16,7 +16,7 @@ import (
 	"html/template"
 )
 
-type Mailer struct {
+type Mail struct {
 	client       sp.Client
 	Transmission Sender
 	FromAddress  string
@@ -32,25 +32,53 @@ type Sender struct {
 	Attachments forms.Attachments
 }
 
+type Mailer interface {
+	Send(t Transmission) (Response, error)
+}
+
+type Config struct {
+	URL         string
+	ApiKey      string
+	Domain      string
+	FromAddress string
+	FromName    string
+}
+
+type Transmission struct {
+	To          []string
+	Subject     string
+	HTML        string
+	PlainText   string
+	Attachments forms.Attachments
+}
+
+type Response struct {
+	StatusCode int                 // e.g. 200
+	Body       string              // e.g. {"result: success"}
+	Headers    map[string][]string // e.g. map[X-Ratelimit-Limit:[600]]
+	Id         string
+	Message    string
+}
+
 type Data map[string]interface{}
 
 // New, Create a new mailable instance using environment variables.
-func New() (*Mailer, error) {
+func New() (*Mail, error) {
 	const op = "mail.New"
 	env, _ := environment.Load()
-	m := &Mailer{
+	m := &Mail{
 		Env:   env,
 		Paths: paths.Get(),
 	}
 	if err := m.load(); err != nil {
-		return &Mailer{}, err
+		return &Mail{}, err
 	}
 	return m, nil
 }
 
 // Load the mailer and connect to sparkpost
 // Returns errors.INTERNAL if the new mailer instance could not be created
-func (m *Mailer) load() error {
+func (m *Mail) load() error {
 	const op = "mail.Load"
 
 	// TODO this is temporary
@@ -77,7 +105,7 @@ func (m *Mailer) load() error {
 // Create a Transmission using an inline Recipient List
 // and inline email Content.
 // Returns errors.INVALID if the mail failed to send via sparkpost.
-func (m *Mailer) Send(t *Sender) {
+func (m *Mail) Send(t *Sender) {
 	const op = "mail.Send"
 
 	content := sp.Content{
@@ -115,7 +143,7 @@ func (m *Mailer) Send(t *Sender) {
 
 // Execute the mail HTML files
 // Returns errors.INTERNAL if the render failed
-func (m *Mailer) ExecuteHTML(file string, data interface{}) (string, error) {
+func (m *Mail) ExecuteHTML(file string, data interface{}) (string, error) {
 	const op = "mail.ExecuteHTML"
 	path := m.Paths.Web + "/mail/" + file
 	tmpl, err := RenderTemplate("main", data, m.Paths.Web+"/mail/main-layout.html", path)
