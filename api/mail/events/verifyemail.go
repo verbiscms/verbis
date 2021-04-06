@@ -13,7 +13,7 @@ import (
 
 // VerifyEmail defines the event instance for verifying emails
 type VerifyEmail struct {
-	mailer *mail.Mailer
+	mailer *mail.Mail
 }
 
 // NewVerifyEmail creates a new verify email event.

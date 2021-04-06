@@ -12,7 +12,7 @@ import (
 
 // FormSend defines the event instance for emailing forms
 type FormSend struct {
-	mailer *mail.Mailer
+	mailer *mail.Mail
 }
 
 type FormSendData struct {

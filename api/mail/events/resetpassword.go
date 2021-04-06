@@ -12,7 +12,7 @@ import (
 
 // ResetPassword defines the event instance for resetting passwords
 type ResetPassword struct {
-	mailer *mail.Mailer
+	mailer *mail.Mail
 }
 
 // NewResetPassword creates a new reset password event.

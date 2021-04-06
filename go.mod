@@ -21,6 +21,7 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-playground/validator/v10 v10.4.1
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/gobuffalo/envy v1.9.0 // indirect
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/uuid v1.1.2
@@ -34,6 +35,8 @@ require (
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.8.0
+	github.com/mailgun/mailgun-go v2.0.0+incompatible // indirect
+	github.com/mailgun/mailgun-go/v4 v4.4.1 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mattn/go-sqlite3 v1.14.0 // indirect
@@ -47,6 +50,9 @@ require (
 	github.com/pierrec/lz4 v2.6.0+incompatible // indirect
 	github.com/radovskyb/watcher v1.0.7
 	github.com/sanity-io/litter v1.5.0
+	github.com/sendgrid/rest v2.6.3+incompatible // indirect
+	github.com/sendgrid/sendgrid-go v3.8.0+incompatible // indirect
+	github.com/sendinblue/APIv3-go-library v2.0.0+incompatible // indirect
 	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/cast v1.3.1
 	github.com/spf13/cobra v1.1.1
