@@ -2,24 +2,20 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package meta
-
-import (
-	"github.com/ainsleyclark/verbis/api/domain"
-)
+package categories
 
 // Insert
 //
-// Checks to see if the post options record exists
+// Checks to see if the post category record exists
 // before updating or creating the new record.
-func (s *Store) Insert(id int, p domain.PostOptions) error {
-	if s.Exists(id) {
-		err := s.update(id, p)
+func (s *Store) Insert(postID, catID int) error {
+	if s.Exists(postID) {
+		err := s.update(postID, catID)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := s.create(id, p)
+		err := s.create(postID, catID)
 		if err != nil {
 			return err
 		}

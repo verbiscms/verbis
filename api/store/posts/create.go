@@ -77,7 +77,7 @@ func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 
 	// Create the post categories
 	if p.Category != nil {
-		err = s.categories.Create(int(id), *p.Category)
+		err = s.categories.Insert(int(id), *p.Category)
 		if err != nil {
 			return domain.PostDatum{}, err
 		}
