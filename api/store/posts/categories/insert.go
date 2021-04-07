@@ -8,17 +8,30 @@ package categories
 //
 // Checks to see if the post category record exists
 // before updating or creating the new record.
-func (s *Store) Insert(postID, catID int) error {
+func (s *Store) Insert(postID int, catID *int) error {
 	if s.Exists(postID) {
-		err := s.update(postID, catID)
+		if catID == nil {
+			err := s.Delete(postID)
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+
+		err := s.update(postID, *catID)
 		if err != nil {
 			return err
 		}
 	} else {
-		err := s.create(postID, catID)
+		if catID == nil {
+			return nil
+		}
+
+		err := s.create(postID, *catID)
 		if err != nil {
 			return err
 		}
 	}
+
 	return nil
 }
