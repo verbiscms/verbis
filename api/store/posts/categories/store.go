@@ -11,7 +11,7 @@ import (
 // Repository defines methods for post categories
 // to interact with the database.
 type Repository interface {
-	Insert(postID, catID int) error
+	Insert(postID int, catID *int) error
 	Delete(postID int) error
 	Exists(postID int) bool
 }
