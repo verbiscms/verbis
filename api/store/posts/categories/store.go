@@ -11,9 +11,9 @@ import (
 // Repository defines methods for post categories
 // to interact with the database.
 type Repository interface {
-	Create(postID, catID int) error
-	Update(postID, catID int) error
+	Insert(postID, catID int) error
 	Delete(postID int) error
+	Exists(postID int) bool
 }
 
 // Store defines the data layer for post fields.

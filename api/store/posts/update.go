@@ -70,7 +70,7 @@ func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 
 	// Update the post categories
 	if p.Category != nil {
-		err = s.categories.Create(p.Id, *p.Category)
+		err = s.categories.Insert(p.Id, *p.Category)
 		if err != nil {
 			return domain.PostDatum{}, err
 		}

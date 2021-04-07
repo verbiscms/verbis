@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package categories
+package meta
 
 import (
 	"database/sql"
@@ -14,10 +14,10 @@ import (
 )
 
 var (
-	UpdateQuery = "UPDATE `post_categories` SET `category_id` = " + categoryID + " WHERE `post_id` = '" + postID + ""
+	UpdateQuery = "UPDATE post_options SET seo = ?, meta = ? WHERE post_id = ?"
 )
 
-func (t *PostCategoriesTestSuite) TestStore_Update() {
+func (t *MetaTestSuite) TestStore_Update() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -26,13 +26,15 @@ func (t *PostCategoriesTestSuite) TestStore_Update() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(1), 1))
+					WithArgs(meta.Seo, meta.Meta, meta.PostId).
+					WillReturnResult(sqlmock.NewResult(int64(meta.Id), 1))
 			},
 		},
 		"No Rows": {
-			"Error updating post category with the post ID",
+			"Error updating meta with the post ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(meta.Seo, meta.Meta, meta.PostId).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -40,6 +42,7 @@ func (t *PostCategoriesTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
+					WithArgs(meta.Seo, meta.Meta, meta.PostId).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -48,12 +51,12 @@ func (t *PostCategoriesTestSuite) TestStore_Update() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.update(post.Id, post.Category.Id)
+			err := s.update(meta.PostId, meta)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(test.want, err)
+			t.RunT(nil, err)
 		})
 	}
 }

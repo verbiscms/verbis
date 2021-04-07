@@ -11,11 +11,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// Update
+// update
 //
 // Returns nil if there was no error updating.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not obtain the newly created ID.
-func (s *Store) Update(postID, catID int) error {
+func (s *Store) update(postID, catID int) error {
 	const op = "PostCategoriesStore.Create"
 
 	q := s.Builder().
