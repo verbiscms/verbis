@@ -24,6 +24,8 @@ var (
 func (t *PostsTestSuite) TestStore_Update() {
 	category := 1
 	repoSuccess := func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
+		var cat *int
+		c.On("Insert", postCreate.Id, cat).Return(nil)
 		f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
 		m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
 	}
@@ -137,7 +139,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 				Fields:   domain.PostFields{},
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("Create", postCreate.Id, category).Return(fmt.Errorf("error"))
+				c.On("Insert", postCreate.Id, &category).Return(fmt.Errorf("error"))
 				f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
 				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
 			},
