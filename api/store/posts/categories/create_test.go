@@ -48,7 +48,7 @@ func (t *PostCategoriesTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Create(post.Id, post.Category.Id)
+			err := s.create(post.Id, post.Category.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
