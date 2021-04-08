@@ -11,12 +11,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// Create
+// create
 //
 // Returns nil if there was no error updating.
 // Returns errors.CONFLICT if the the category (name) already exists.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
-func (s *Store) Create(postID, catID int) error {
+func (s *Store) create(postID, catID int) error {
 	const op = "PostCategoriesStore.Create"
 
 	q := s.Builder().

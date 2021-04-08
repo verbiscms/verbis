@@ -26,6 +26,13 @@ func (s *Store) validate(p *domain.PostCreate, checkSlug bool) error {
 		}
 	}
 
+	resource, ok := s.Theme.Resources[p.Resource]
+	if ok {
+		if resource.Hidden {
+			return nil
+		}
+	}
+
 	err := s.validatePageTemplate(p)
 	if err != nil {
 		return err

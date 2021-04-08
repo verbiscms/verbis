@@ -43,6 +43,14 @@ resources:
         icon: feather feather-clipboard
         hidden: false
         hide_category_slug: true
+    test:
+        name: test
+        friendly_name: News
+        singular_name: News Item
+        slug: news
+        icon: feather feather-clipboard
+        hidden: true
+        hide_category_slug: true
 
 # |
 # |--------------------------------------------------------------------------
