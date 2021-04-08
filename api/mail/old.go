@@ -32,18 +32,6 @@ type Sender struct {
 	Attachments forms.Attachments
 }
 
-type Mailer interface {
-	Send(t Transmission) (Response, error)
-}
-
-type Config struct {
-	URL         string
-	ApiKey      string
-	Domain      string
-	FromAddress string
-	FromName    string
-}
-
 type Transmission struct {
 	To          []string
 	Subject     string
