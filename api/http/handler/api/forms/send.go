@@ -8,7 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	"github.com/ainsleyclark/verbis/api/mail/events"
+	"github.com/ainsleyclark/verbis/api/mailer/events"
 	service "github.com/ainsleyclark/verbis/api/services/forms"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"

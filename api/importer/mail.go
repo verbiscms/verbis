@@ -6,7 +6,7 @@ package importer
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/mail/events"
+	"github.com/ainsleyclark/verbis/api/mailer/events"
 )
 
 func SendNewPassword(user domain.UserPart, password string, site domain.Site) error {

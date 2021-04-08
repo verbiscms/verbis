@@ -6,7 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/JamesStewy/go-mysqldump v0.2.2
 	github.com/SparkPost/gosparkpost v0.2.0
-	github.com/ainsleyclark/go-mail v0.0.0-20210408150627-7667f80a3b8d // indirect
+	github.com/ainsleyclark/go-mail v0.0.0-20210408150627-7667f80a3b8d
 	github.com/briandowns/spinner v1.11.1
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
 	github.com/disintegration/imaging v1.6.2

@@ -11,7 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/mail/events"
+	"github.com/ainsleyclark/verbis/api/mailer/events"
 	"github.com/ainsleyclark/verbis/api/store/users"
 )
 
