@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package mail
+package mailer
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ import (
 	"html/template"
 )
 
-type Mail struct {
+type MailOld struct {
 	client       sp.Client
 	Transmission Sender
 	FromAddress  string
@@ -50,23 +50,23 @@ type Response struct {
 
 type Data map[string]interface{}
 
-// New, Create a new mailable instance using environment variables.
-func New() (*Mail, error) {
-	const op = "mail.New"
+// NewOld, Create a new mailable instance using environment variables.
+func NewOld() (*MailOld, error) {
+	const op = "mail.NewOld"
 	env, _ := environment.Load()
-	m := &Mail{
+	m := &MailOld{
 		Env:   env,
 		Paths: paths.Get(),
 	}
 	if err := m.load(); err != nil {
-		return &Mail{}, err
+		return &MailOld{}, err
 	}
 	return m, nil
 }
 
 // Load the mailer and connect to sparkpost
 // Returns errors.INTERNAL if the new mailer instance could not be created
-func (m *Mail) load() error {
+func (m *MailOld) load() error {
 	const op = "mail.Load"
 
 	// TODO this is temporary
@@ -93,7 +93,7 @@ func (m *Mail) load() error {
 // Create a Transmission using an inline Recipient List
 // and inline email Content.
 // Returns errors.INVALID if the mail failed to send via sparkpost.
-func (m *Mail) Send(t *Sender) {
+func (m *MailOld) Send(t *Sender) {
 	const op = "mail.Send"
 
 	content := sp.Content{
@@ -121,7 +121,7 @@ func (m *Mail) Send(t *Sender) {
 
 	id, _, err := m.client.Send(tx)
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("Mail sending failed: %s", id), Operation: op, Err: err}).Error()
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: fmt.Sprintf("MailOld sending failed: %s", id), Operation: op, Err: err}).Error()
 		return
 	}
 
@@ -131,7 +131,7 @@ func (m *Mail) Send(t *Sender) {
 
 // Execute the mail HTML files
 // Returns errors.INTERNAL if the render failed
-func (m *Mail) ExecuteHTML(file string, data interface{}) (string, error) {
+func (m *MailOld) ExecuteHTML(file string, data interface{}) (string, error) {
 	const op = "mail.ExecuteHTML"
 	path := m.Paths.Web + "/mail/" + file
 	tmpl, err := RenderTemplate("main", data, m.Paths.Web+"/mail/main-layout.html", path)

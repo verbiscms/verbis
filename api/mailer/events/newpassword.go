@@ -7,19 +7,19 @@ package events
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/mail"
+	"github.com/ainsleyclark/verbis/api/mailer"
 )
 
 // ChangedPassword defines the event instance for new passwords reset by the system
 type ChangedPassword struct {
-	mailer *mail.Mail
+	mailer *mailer.MailOld
 }
 
 // NewPassword creates a new reset password event
 func NewChangedPassword() (*ChangedPassword, error) {
 	const op = "events.NewResetPassword"
 
-	m, err := mail.New()
+	m, err := mailer.NewOld()
 	if err != nil {
 		return &ChangedPassword{}, err
 	}
@@ -33,7 +33,7 @@ func NewChangedPassword() (*ChangedPassword, error) {
 func (e *ChangedPassword) Send(u domain.UserPart, password string, site domain.Site) error {
 	const op = "events.ResetPassword.Send"
 
-	data := mail.Data{
+	data := mailer.Data{
 		"AppUrl":    site.Url,
 		"AppTitle":  site.Title,
 		"AdminPath": "/admin",
@@ -47,9 +47,9 @@ func (e *ChangedPassword) Send(u domain.UserPart, password string, site domain.S
 		return err
 	}
 
-	tm := mail.Sender{
+	tm := mailer.Sender{
 		To:      []string{u.Email},
-		Subject: fmt.Sprintf("New Login Details for %s", site.Title),
+		Subject: fmt.Sprintf("NewOld Login Details for %s", site.Title),
 		HTML:    html,
 	}
 

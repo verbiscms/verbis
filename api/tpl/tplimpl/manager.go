@@ -28,7 +28,7 @@ type TemplateManager struct {
 	deps *deps.Deps
 }
 
-// Creates a new TemplateManager
+// Creates a new TemplateManager.
 func New(d *deps.Deps) *TemplateManager {
 	return &TemplateManager{
 		deps: d,
@@ -36,7 +36,7 @@ func New(d *deps.Deps) *TemplateManager {
 }
 
 // Execute defines the data for rendering a template
-// contains
+// contains.
 type Execute struct {
 	*TemplateManager
 	config      tpl.TemplateConfig

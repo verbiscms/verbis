@@ -50,17 +50,32 @@ type Env struct {
 	// The database port.
 	DbSchema string `json:"DB_SCHEMA"`
 
-	// The key for Sparkpost (mailer).
-	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
-
-	// The url for Sparkpost (could be EU).
-	SparkpostURL string `json:"SPARKPOST_URL"`
+	// The database port.
+	MailDriver string `json:"MAIL_DRIVER"`
 
 	// The mailing from address.
 	MailFromAddress string `json:"MAIL_FROM_ADDRESS"`
 
 	// The mailing from name.
 	MailFromName string `json:"MAIL_FROM_NAME"`
+
+	// The API key for Sparkpost.
+	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
+
+	// The url for Sparkpost (could be EU).
+	SparkpostURL string `json:"SPARKPOST_URL"`
+
+	// The API key for MailGun.
+	MailGunAPIKey string `json:"MAILGUN_API_KEY"`
+
+	// The url for MailGun.
+	MailGunURL string `json:"MAILGUN_URL"`
+
+	// The domain for MailGun.
+	MailGunDomain string `json:"MAILGUN_DOMAIN"`
+
+	// The API key for SendGrid.
+	SendGridAPIKey string `json:"SENDGRID_API_KEY"`
 }
 
 var (
