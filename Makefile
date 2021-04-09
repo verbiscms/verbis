@@ -33,3 +33,8 @@ test-v:
 
 install:
 	go install verbis
+
+all:
+	$(MAKE) format
+	$(MAKE) lint
+	$(MAKE) test
