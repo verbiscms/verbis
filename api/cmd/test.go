@@ -5,8 +5,10 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/gookit/color"
+	"github.com/ainsleyclark/verbis/api/events"
+	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
 	"github.com/spf13/cobra"
 )
 
@@ -21,8 +23,24 @@ var (
 				printError(err.Error())
 			}
 			d := deps.New(*cfg)
+			d.SetTmpl(tplimpl.New(d))
 
-			color.Green.Println(d.WebP.Install())
+			event := events.NewResetPassword(&events.Event{
+				Deps: d,
+				Data: events.Data{
+					"Token": "hello",
+					"User":  "hello",
+				},
+				Recipients: []string{"ainsley@reddico.co.uk"},
+			})
+
+			terr := event.Dispatch()
+			if err != nil {
+				fmt.Println(terr)
+				return
+			}
+
+			fmt.Println("sent :)")
 
 			//p := paths.Get()
 			//err := os.Rename(p.Base+"/verbis", p.Base+"/verbis.bak")
