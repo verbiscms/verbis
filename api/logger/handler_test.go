@@ -24,10 +24,10 @@ func (t *LoggerTestSuite) TestHandler() {
 			"200 | [INFO]  | 192.0.2.1 |   GET    \"/test\"\n",
 		},
 		"Error": {
-			&errors.Error{Code: errors.INTERNAL, Message: "message", Operation: "Logger.Log", Err: fmt.Errorf("err")},
+			&errors.Error{Code: errors.INTERNAL, Message: "message", Operation: "logger.Log", Err: fmt.Errorf("err")},
 			nil,
 			200,
-			"200 | [INFO]  | 192.0.2.1 |   GET    \"/test\" | [code] config [msg] message [op] Logger.Log [error] err\n",
+			"200 | [INFO]  | 192.0.2.1 |   GET    \"/test\" | [code] config [msg] message [op] logger.Log [error] err\n",
 		},
 		"Message": {
 			nil,

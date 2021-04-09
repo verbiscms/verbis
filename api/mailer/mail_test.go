@@ -114,6 +114,7 @@ func TestMail_Send_Success(t *testing.T) {
 	logger.Init(&environment.Env{
 		AppDebug: "true",
 	})
+
 	buf := &bytes.Buffer{}
 	logger.SetOutput(buf)
 
@@ -122,8 +123,6 @@ func TestMail_Send_Success(t *testing.T) {
 	}
 
 	m.Send(&mail.Transmission{})
-
-	fmt.Println(buf.String())
 
 	assert.Contains(t, buf.String(), "Successfully sent email with the subject")
 }

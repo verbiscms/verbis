@@ -44,7 +44,7 @@ func (t *LoggerTestSuite) TestWriterHook_Fire() {
 			&logrus.Entry{
 				Logger: &logrus.Logger{Formatter: &mockFormatErr{}},
 			},
-			&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining the entry string", Operation: "Logger.Hook.Fire", Err: fmt.Errorf("err")},
+			&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining the entry string", Operation: "logger.Hook.Fire", Err: fmt.Errorf("err")},
 			"",
 		},
 		"Error Writer": {
@@ -52,7 +52,7 @@ func (t *LoggerTestSuite) TestWriterHook_Fire() {
 			&logrus.Entry{
 				Logger: &logrus.Logger{Formatter: &mockFormat{}},
 			},
-			&errors.Error{Code: errors.INTERNAL, Message: "Error writing entry to io.Writer", Operation: "Logger.Hook.Fire", Err: fmt.Errorf("err")},
+			&errors.Error{Code: errors.INTERNAL, Message: "Error writing entry to io.Writer", Operation: "logger.Hook.Fire", Err: fmt.Errorf("err")},
 			"",
 		},
 		"Success": {

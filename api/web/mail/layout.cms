@@ -1,4 +1,3 @@
-{{ define "main" }}
 <!DOCTYPE html>
 <html>
 <head>
@@ -396,4 +395,3 @@
 </table>
 </body>
 </html>
-{{ end }}

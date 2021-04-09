@@ -26,7 +26,7 @@ type WriterHook struct {
 // entry to string and write it to
 // appropriate writer
 func (hook *WriterHook) Fire(entry *logrus.Entry) error {
-	const op = "Logger.Hook.Fire"
+	const op = "logger.Hook.Fire"
 
 	line, err := entry.String()
 	if err != nil {

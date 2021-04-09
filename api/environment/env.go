@@ -107,7 +107,7 @@ const (
 func Load() (*Env, error) {
 	const op = "environment.Load"
 
-	err := godotenv.Overload(basePath + "/" + envExt)
+	err := godotenv.Load(basePath + "/" + envExt)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not load the .env file", Operation: op, Err: err}
 	}
@@ -123,10 +123,15 @@ func Load() (*Env, error) {
 		DbUser:          os.Getenv("DB_USERNAME"),
 		DbPassword:      os.Getenv("DB_PASSWORD"),
 		DbSchema:        os.Getenv("DB_SCHEMA"),
-		SparkpostAPIKey: os.Getenv("SPARKPOST_API_KEY"),
-		SparkpostURL:    os.Getenv("SPARKPOST_URL"),
+		MailDriver:      os.Getenv("MAIL_DRIVER"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
 		MailFromName:    os.Getenv("MAIL_FROM_NAME"),
+		SparkpostAPIKey: os.Getenv("SPARKPOST_API_KEY"),
+		SparkpostURL:    os.Getenv("SPARKPOST_URL"),
+		MailGunAPIKey:   os.Getenv("MAILGUN_API_KEY"),
+		MailGunURL:      os.Getenv("MAILGUN_URL"),
+		MailGunDomain:   os.Getenv("MAILGUN_DOMAIN"),
+		SendGridAPIKey:  os.Getenv("SENDGRID_API_KEY"),
 	}, nil
 }
 

@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"os"
 )
 
 //
@@ -28,12 +27,6 @@ type Mail struct {
 	Env         *environment.Env
 	Paths       paths.Paths
 }
-
-const (
-	// LayoutPath defines where the main layout tpl file
-	// resides.
-	LayoutPath = "mail" + string(os.PathSeparator) + "main-layout.html"
-)
 
 // New
 //
@@ -90,6 +83,16 @@ func New(env *environment.Env) (*Mail, error) {
 //
 func (m *Mail) Send(t *mail.Transmission) {
 	const op = "Mail.Send"
+
+	if m == nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Mailer is nil", Operation: op, Err: fmt.Errorf("nil mail")}).Error()
+		return
+	}
+
+	if m.client == nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Mail client is nil", Operation: op, Err: fmt.Errorf("nil mail client")}).Error()
+		return
+	}
 
 	_, err := m.client.Send(t)
 	if err != nil {
