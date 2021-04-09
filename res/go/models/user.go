@@ -107,8 +107,8 @@ func (s *UserStore) Get(meta params.Params) (domain.Users, int, error) {
 	return u, total, nil
 }
 
-// GetByID returns a user by Id
-// Returns errors.NOTFOUND if the user was not found by the given Id.
+// GetByID returns a user by ID
+// Returns errors.NOTFOUND if the user was not found by the given ID.
 func (s *UserStore) GetByID(id int) (domain.User, error) {
 	const op = "UserRepository.GetByID"
 	var u domain.User
@@ -118,7 +118,7 @@ func (s *UserStore) GetByID(id int) (domain.User, error) {
 	return u, nil
 }
 
-// GetOwner gets the owner of the site with the Id of 6
+// GetOwner gets the owner of the site with the ID of 6
 // Returns errors.NOTFOUND if the owner was not found.
 func (s *UserStore) GetOwner() (domain.User, error) {
 	const op = "UserRepository.GetOwner"
@@ -204,7 +204,7 @@ func (s *UserStore) Create(u *domain.UserCreate) (domain.User, error) {
 
 	// TODO: Determine of email verified is turned on.
 	// If the user is not the owner, send the verification email
-	// if u.Role.Id != 6 {
+	// if u.Role.ID != 6 {
 	//	ve, err := events.NewVerifyEmail()
 	//	if err != nil {
 	//		return domain.User{}, err

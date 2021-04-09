@@ -8,7 +8,7 @@ var (
 	postsCmd = &cobra.Command{
 		Use:   "posts",
 		Short: "Access the posts",
-		Long: ``,
+		Long:  ``,
 	}
 )
 
@@ -34,7 +34,7 @@ var listPostsCmd = &cobra.Command{
 		//
 		//for _, v := range posts {
 		//	t.AppendRows([]table.Row{
-		//		{v.Id, v.Slug, v.Title, v.Resource, v.PageTemplate, v.Layout, v.Fields, v.Status, v.UserId, v.CreatedAt, v.UpdatedAt},
+		//		{v.ID, v.Slug, v.Title, v.Resource, v.PageTemplate, v.Layout, v.Fields, v.Status, v.UserId, v.CreatedAt, v.UpdatedAt},
 		//	})
 		//}
 		//

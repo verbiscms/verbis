@@ -9,19 +9,18 @@ import (
 	"github.com/ainsleyclark/go-mail"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/gookit/color"
 	"os"
 )
 
 type Event struct {
-	Deps       *deps.Deps
-	Data       Data
-	Recipients []string
+	Deps      *deps.Deps
+	template  string
+	subject   string
+	plaintext string
 }
 
 type Dispatcher interface {
-	Dispatch() error
-	Validate() error
+	Dispatch(d Data, recipients []string, a mail.Attachments) error
 }
 
 const (
@@ -39,22 +38,19 @@ func (d Data) Exists(key string) bool {
 // Send
 //
 //
-func (e *Event) send(file, subject, plainText string, a mail.Attachments) error {
-	html, err := e.executeHTML(file, e.Data)
+func (e *Event) send(d Data, r []string, a mail.Attachments) error {
+	html, err := e.executeHTML(e.template, d)
 	if err != nil {
-		color.Red.Println(err)
 		return err
 	}
 
-	color.Green.Println("Content:", html)
-
-	//e.Deps.Mail.Send(&mail.Transmission{
-	//	Recipients:  e.Recipients,
-	//	Subject:     subject,
-	//	HTML:        html,
-	//	PlainText:   plainText,
-	//	Attachments: a,
-	//})
+	e.Deps.Mail.Send(&mail.Transmission{
+		Recipients:  r,
+		Subject:     e.subject,
+		HTML:        html,
+		PlainText:   e.plaintext,
+		Attachments: a,
+	})
 
 	return nil
 }

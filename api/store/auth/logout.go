@@ -7,7 +7,7 @@ package auth
 // Logout
 //
 // Logout checks to see if see if the the token is valid & then
-// proceeds to create a new token and returns the user Id.
+// proceeds to create a new token and returns the user ID.
 // Returns errors.NOTFOUND if the user was not found by the given token.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) Logout(token string) (int, error) {

@@ -130,7 +130,7 @@ func (s *RedirectStore) Update(r *domain.Redirect) (domain.Redirect, error) {
 	const op = "RedirectStore.Update"
 
 	if !s.Exists(r.Id) {
-		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the Id: %d", r.Id), Operation: op, Err: fmt.Errorf("no redirect exists")}
+		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the ID: %d", r.Id), Operation: op, Err: fmt.Errorf("no redirect exists")}
 	}
 
 	q := "UPDATE redirects SET from_path = ?, to_path = ?, code = ?, updated_at = NOW() WHERE id = ?"
@@ -149,7 +149,7 @@ func (s *RedirectStore) Delete(id int) error {
 	const op = "RedirectStore.Delete"
 
 	if !s.Exists(id) {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the Id: %d", id), Operation: op, Err: fmt.Errorf("no redirect exists with the id: %d", id)}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No redirect exists with the ID: %d", id), Operation: op, Err: fmt.Errorf("no redirect exists with the id: %d", id)}
 	}
 
 	if _, err := s.DB.Exec("DELETE FROM redirects WHERE id = ?", id); err != nil {
@@ -159,7 +159,7 @@ func (s *RedirectStore) Delete(id int) error {
 	return nil
 }
 
-// Exists Checks if a redirect exists by the given Id
+// Exists Checks if a redirect exists by the given ID
 func (s *RedirectStore) Exists(id int) bool {
 	var exists bool
 	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM redirects WHERE id = ?)", id).Scan(&exists)

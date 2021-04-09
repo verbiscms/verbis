@@ -16,7 +16,7 @@ import (
 //
 // Returns a user by searching with the given ID.
 // Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the category was not found by the given Id.
+// Returns errors.NOTFOUND if the category was not found by the given ID.
 func (s *Store) Find(id int) (domain.User, error) {
 	const op = "userStore.Find"
 
@@ -39,7 +39,7 @@ func (s *Store) Find(id int) (domain.User, error) {
 //
 // Returns a user by searching with the given token.
 // Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the category was not found by the given Id.
+// Returns errors.NOTFOUND if the category was not found by the given ID.
 func (s *Store) FindByToken(token string) (domain.User, error) {
 	const op = "userStore.FindByToken"
 
@@ -62,7 +62,7 @@ func (s *Store) FindByToken(token string) (domain.User, error) {
 //
 // Returns a user by searching with the given email.
 // Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the category was not found by the given Id.
+// Returns errors.NOTFOUND if the category was not found by the given ID.
 func (s *Store) FindByEmail(email string) (domain.User, error) {
 	const op = "userStore.FindByEmail"
 

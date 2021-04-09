@@ -15,7 +15,7 @@ import (
 //
 // Returns a post by searching with the given ID.
 // Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the post was not found by the given Id.
+// Returns errors.NOTFOUND if the post was not found by the given ID.
 func (s *Store) Find(id int, layout bool) (domain.PostDatum, error) {
 	const op = "PostStore.Find"
 

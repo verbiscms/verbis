@@ -16,7 +16,7 @@ import (
 //
 // Returns a the owner of the installation.
 // Logs errors.INTERNAL if there was an error executing the query.
-// Logs errors.NOTFOUND if the category was not found by the given Id.
+// Logs errors.NOTFOUND if the category was not found by the given ID.
 func (s *Store) Owner() domain.User {
 	const op = "userStore.Owner"
 

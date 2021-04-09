@@ -9,7 +9,7 @@ import (
 )
 
 // runRoles will insert all default values for the user roles
-// including the Id.
+// including the ID.
 func (s *Seeder) runRoles() error {
 	r := []domain.Role{
 		{

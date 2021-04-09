@@ -102,8 +102,8 @@ func (s *CategoryStore) Get(meta params.Params, resource string) (domain.Categor
 	return c, total, nil
 }
 
-// Get the category by Id
-// Returns errors.NOTFOUND if the category was not found by the given Id.
+// Get the category by ID
+// Returns errors.NOTFOUND if the category was not found by the given ID.
 func (s *CategoryStore) GetByID(id int) (domain.Category, error) {
 	const op = "CategoryRepository.GetByID"
 	var c domain.Category
@@ -114,7 +114,7 @@ func (s *CategoryStore) GetByID(id int) (domain.Category, error) {
 }
 
 // Get the category by post
-// Returns errors.NOTFOUND if the category was not found by the given post Id.
+// Returns errors.NOTFOUND if the category was not found by the given post ID.
 func (s *CategoryStore) GetByPost(postID int) (*domain.Category, error) {
 	const op = "CategoryRepository.GetByPost"
 	var c domain.Category
@@ -257,7 +257,7 @@ func (s *CategoryStore) Delete(id int) error {
 	return nil
 }
 
-// Exists Checks if a category exists by the given Id
+// Exists Checks if a category exists by the given ID
 func (s *CategoryStore) Exists(id int) bool {
 	var exists bool
 	_ = s.DB.QueryRow("SELECT EXISTS (SELECT id FROM categories WHERE id = ?)", id).Scan(&exists)

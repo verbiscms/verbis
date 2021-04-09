@@ -121,8 +121,8 @@ func (s *MediaStore) Get(meta params.Params) (domain.MediaItems, int, error) {
 	return m, total, nil
 }
 
-// GetByID returns a media item by Id
-// Returns errors.NOTFOUND if the media item was not found by the given Id.
+// GetByID returns a media item by ID
+// Returns errors.NOTFOUND if the media item was not found by the given ID.
 func (s *MediaStore) GetByID(id int) (domain.Media, error) {
 	const op = "MediaRepository.GetByID"
 	var m domain.Media

@@ -42,7 +42,7 @@ func (s *SeoMetaStore) UpdateCreate(id int, p domain.PostOptions) error {
 	return nil
 }
 
-// Exists Checks if a seo meta record exists by Id
+// Exists Checks if a seo meta record exists by ID
 func (s *SeoMetaStore) exists(id int) bool {
 	var exists bool
 	_ = s.DB.QueryRow("SELECT EXISTS (SELECT post_id FROM post_options WHERE post_id = ?)", id).Scan(&exists)
@@ -60,7 +60,7 @@ func (s *SeoMetaStore) create(id int, p domain.PostOptions) error {
 	return nil
 }
 
-// update a seo meta record by page Id
+// update a seo meta record by page ID
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *SeoMetaStore) update(id int, p domain.PostOptions) error {
 	const op = "SeoMetaRepository.update"
