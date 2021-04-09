@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"os"
+	"strings"
 )
 
 // Layouts
@@ -23,6 +24,8 @@ func (t *theme) Layouts(theme string) (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
 	layoutDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + t.config.LayoutDir
+	layoutDir = strings.ReplaceAll(layoutDir, "//", "/")
+
 	files, err := t.walkMatch(layoutDir, "*"+t.config.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting layouts with the path: %s", layoutDir), Operation: op, Err: ErrNoLayouts}

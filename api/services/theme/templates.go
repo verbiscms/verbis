@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"os"
+	"strings"
 )
 
 // Templates
@@ -23,6 +24,8 @@ func (t *theme) Templates(theme string) (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 
 	tplDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + t.config.TemplateDir
+	tplDir = strings.ReplaceAll(tplDir, "//", "/")
+
 	files, err := t.walkMatch(tplDir, "*"+t.config.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting templates with the path: %s", tplDir), Operation: op, Err: ErrNoTemplates}
