@@ -6,12 +6,13 @@ package mysql
 
 import (
 	_ "embed" // Embed Migration
-	"fmt"
-	"github.com/JamesStewy/go-mysqldump"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
+	"io/ioutil"
+	"os"
+	"os/exec"
 )
 
 const (
@@ -20,7 +21,7 @@ const (
 )
 
 // mysql defines the implementation of the
-// database.Driver if MySQL is selected
+// MySQL.Driver if MySQL is selected
 // as the main driver.
 type MySQL struct {
 	driver *sqlx.DB
@@ -38,7 +39,7 @@ var (
 // a new database driver.
 // Returns errors.INVALID if there was an error establishing a connection or pinging.
 func Setup(env *environment.Env) (*MySQL, error) {
-	const op = "Database.Setup"
+	const op = "MySQL.Setup"
 
 	m := MySQL{
 		env: env,
@@ -87,7 +88,14 @@ func (m *MySQL) Builder() *builder.Sqlbuilder {
 //
 // Closes the MySQL connection.
 func (m *MySQL) Close() error {
-	return m.driver.Close()
+	const op = "MySQL.Close"
+
+	err := m.driver.Close()
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error closing database", Operation: op, Err: err}
+	}
+
+	return nil
 }
 
 // Install
@@ -96,11 +104,13 @@ func (m *MySQL) Close() error {
 // Returns errors.INVALID if the sql file could not be located.
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (m *MySQL) Install() error {
-	const op = "Database.Install"
+	const op = "MySQL.Install"
+
 	_, err := m.driver.Exec(migration)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing migration file", Operation: op, Err: err}
 	}
+
 	return nil
 }
 
@@ -109,13 +119,20 @@ func (m *MySQL) Install() error {
 // CheckExists check's if the database exists.
 // Returns errors.INVALID if the database was not found.
 func (m *MySQL) Exists() error {
-	const op = "Database.CheckExists"
-	_, err := m.driver.Exec("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?", m.env.DbDatabase)
+	const op = "MySQL.Exists"
+
+	q := "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?"
+
+	_, err := m.driver.Exec(q, m.env.DbDatabase)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "No database found with the name: " + m.env.DbDatabase, Operation: op, Err: err}
 	}
+
 	return nil
 }
+
+// execCommand func for mysqldump
+var execCommand = exec.Command
 
 // Dump
 //
@@ -123,20 +140,29 @@ func (m *MySQL) Exists() error {
 // file name.
 // Returns errors.INTERNAL if the connection, dump failed.
 func (m *MySQL) Dump(path, filename string) error {
-	const op = "Database.Dump"
+	const op = "MySQL.Dump"
 
-	dumper, err := mysqldump.Register(m.driver.DB, path, filename)
+	cmd := execCommand("mysqldump", "-P"+m.env.DbPort, "-h"+m.env.DbHost, "-u"+m.env.DbUser, "-p"+m.env.DbPassword, m.env.DbDatabase)
+	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Unable to register with mysqldump", Operation: op, Err: err}
+		return err
 	}
 
-	_, err = dumper.Dump()
+	err = cmd.Start()
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not dump the database with the path and filename: %s", path+filename), Operation: op, Err: err}
+		return err
 	}
 
-	if err := dumper.Close(); err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Could not close the database connection", Operation: op, Err: err}
+	p := path + string(os.PathSeparator) + filename + ".sql"
+
+	bytes, err := ioutil.ReadAll(stdout)
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error writing SQL to file with the path: " + p, Operation: op, Err: err}
+	}
+
+	err = ioutil.WriteFile(p, bytes, 0644)
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "No file or directory with the path: " + p, Operation: op, Err: err}
 	}
 
 	return nil
@@ -147,10 +173,11 @@ func (m *MySQL) Dump(path, filename string) error {
 // Drop deletes the database with the environments database name.
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (m *MySQL) Drop() error {
-	const op = "Database.Drop"
+	const op = "MySQL.Drop"
+
 	_, err := m.driver.Exec("DROP DATABASE " + m.env.DbDatabase + ";")
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error dropping the database with the name: " + m.env.DbDatabase}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error dropping the database with the name: " + m.env.DbDatabase, Operation: op, Err: err}
 	}
 	return nil
 }

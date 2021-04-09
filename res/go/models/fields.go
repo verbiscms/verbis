@@ -97,7 +97,7 @@ func (s *FieldsStore) GetByPostAndKey(key string, postID int) (domain.PostField,
 	return f, nil
 }
 
-// Update a post field by Id
+// Update a post field by ID
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *FieldsStore) Create(f domain.PostField) (domain.PostField, error) {
 	const op = "FieldsRepository.Create"
@@ -109,7 +109,7 @@ func (s *FieldsStore) Create(f domain.PostField) (domain.PostField, error) {
 	return f, nil
 }
 
-// Update a post field by Id
+// Update a post field by ID
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
 	const op = "FieldsRepository.Update"
@@ -120,7 +120,7 @@ func (s *FieldsStore) Update(f domain.PostField) (domain.PostField, error) {
 	return f, nil
 }
 
-// Update a post field by Id
+// Update a post field by ID
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *FieldsStore) Delete(postID int, f domain.PostField) error {
 	const op = "FieldsRepository.Delete"

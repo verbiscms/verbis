@@ -87,7 +87,7 @@ func (s *FormsStore) Get(meta params.Params) (domain.Forms, int, error) {
 	return f, total, nil
 }
 
-// GetByID - Get the form by Id
+// GetByID - Get the form by ID
 //
 // Returns errors.NOTFOUND if the form was not found by the given ID.
 func (s *FormsStore) GetByID(id int) (domain.Form, error) {

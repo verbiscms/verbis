@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	v validation.Validator
+	v        validation.Validator
 	usersCmd = &cobra.Command{
 		Use:   "users",
 		Short: "Access & modify the CMS users.",
@@ -46,7 +46,7 @@ var listUsersCmd = &cobra.Command{
 		//
 		//for _, v := range users {
 		//	t.AppendRows([]table.Row{
-		//		{v.Id, v.FirstName, v.LastName, v.Email, v.EmailVerifiedAt, v.CreatedAt, v.UpdatedAt},
+		//		{v.ID, v.FirstName, v.LastName, v.Email, v.EmailVerifiedAt, v.CreatedAt, v.UpdatedAt},
 		//	})
 		//}
 		//
@@ -70,7 +70,7 @@ var createUserCmd = &cobra.Command{
 			firstName, _ = reader.ReadString('\n')
 			user.FirstName = strings.TrimSuffix(firstName, "\n")
 			err := v.CmdCheck("firstname", user)
-			if  err != nil {
+			if err != nil {
 				fmt.Println(err)
 			} else {
 				break
@@ -84,7 +84,7 @@ var createUserCmd = &cobra.Command{
 			lastName, _ = reader.ReadString('\n')
 			user.LastName = strings.TrimSuffix(lastName, "\n")
 			err := v.CmdCheck("lastname", user)
-			if  err != nil {
+			if err != nil {
 				fmt.Println(err)
 			} else {
 				break
@@ -98,7 +98,7 @@ var createUserCmd = &cobra.Command{
 			email, _ = reader.ReadString('\n')
 			user.Email = strings.TrimSuffix(email, "\n")
 			err := v.CmdCheck("email", user)
-			if  err != nil {
+			if err != nil {
 				fmt.Println(err)
 			} else {
 				break
@@ -112,7 +112,7 @@ var createUserCmd = &cobra.Command{
 			password, _ = reader.ReadString('\n')
 			user.Password = strings.TrimSuffix(password, "\n")
 			err := v.CmdCheck("password", user)
-			if  err != nil {
+			if err != nil {
 				fmt.Println(err)
 			} else {
 				break
@@ -134,9 +134,9 @@ var createUserCmd = &cobra.Command{
 				return err
 			}
 
-			//user.Role.Id = l
+			//user.Role.ID = l
 			err = v.CmdCheck("accesslevel", user)
-			if  err != nil {
+			if err != nil {
 				fmt.Println(err)
 			} else {
 				break

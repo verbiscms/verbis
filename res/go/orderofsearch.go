@@ -32,7 +32,7 @@ package res
 //			return data
 //		}
 //
-//		parentCat, err := t.store.Categories.GetByID(cat.Id)
+//		parentCat, err := t.store.Categories.GetByID(cat.ID)
 //		if err != nil {
 //			data.PageType = "category_child_archive"
 //			data.Data = cat

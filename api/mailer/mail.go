@@ -37,7 +37,7 @@ func New(env *environment.Env) (*Mail, error) {
 	cfg := mail.Config{}
 
 	if env == nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Environment can't be nil", Operation: op, Err: fmt.Errorf("nil enviroment")}
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Environment can't be nil", Operation: op, Err: fmt.Errorf("nil environment")}
 	}
 
 	switch env.MailDriver {

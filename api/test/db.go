@@ -9,7 +9,6 @@ import (
 	"database/sql/driver"
 	sqlMock "github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/mocks/database"
@@ -23,7 +22,7 @@ import (
 type DBSuite struct {
 	suite.Suite
 	DB         *sqlx.DB
-	Driver     database.Driver
+	Driver     *mocks.Driver
 	Mock       sqlMock.Sqlmock
 	Logger     *bytes.Buffer
 	mockDriver *mocks.Driver
@@ -121,5 +120,6 @@ func (t *DBSuite) RunT(want, actual interface{}, times ...int) {
 	if err != nil {
 		t.Fail("expectations were not met for mock call: ", err)
 	}
+
 	t.Equal(want, actual)
 }

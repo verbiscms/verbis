@@ -23,6 +23,7 @@ import (
 // There will be normally only one instance of deps in play
 // at a given time, i.e. one per Site built.
 type Deps struct {
+	Env *environment.Env
 
 	// The database layer
 	Store *store.Repository
@@ -120,6 +121,7 @@ func New(cfg Config) *Deps {
 	}
 
 	d := &Deps{
+		Env:     cfg.Env,
 		Store:   cfg.Store,
 		Config:  cfg.Config,
 		Options: &opts,

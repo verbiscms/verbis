@@ -68,13 +68,13 @@ func (t *PostsTestSuite) TestStore_Update() {
 		//"Validation Failed": {
 		//	domain.PostCreate{
 		//		Post: domain.Post{
-		//			Id: 1,
+		//			ID: 1,
 		//		},
 		//	},
 		//	repoSuccess,
 		//	func(m sqlmock.Sqlmock) {
 		//		rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-		//			AddRow(post.Id, post.Slug, post.Title)
+		//			AddRow(post.ID, post.Slug, post.Title)
 		//		m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 		//			WillReturnRows(rows)
 		//	},

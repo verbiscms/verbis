@@ -50,7 +50,7 @@ func (s *RoleStore) Get() ([]domain.Role, error) {
 }
 
 // Get the role by ID
-// Returns errors.NOTFOUND if the post was not found by the given Id.
+// Returns errors.NOTFOUND if the post was not found by the given ID.
 func (s *RoleStore) GetByID(id int) (domain.Role, error) {
 	const op = "RoleRepository.GetByID"
 	var r domain.Role

@@ -11,7 +11,7 @@ package auth
 //const op = "AuthRepository.VerifyEmail"
 //
 //var userVerified = struct {
-//	Id   int    `db:"id"` //nolint
+//	ID   int    `db:"id"` //nolint
 //	Hash string `db:"hash"`
 //}{}
 //
@@ -20,9 +20,9 @@ package auth
 //}
 //
 //q := "UPDATE users SET email_verified_at = NOW() WHERE ID = ?"
-//_, err := s.DB.Exec(q, userVerified.Id)
+//_, err := s.DB.Exec(q, userVerified.ID)
 //if err != nil {
-//	return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could update the user with the Id: %d", userVerified.Id), Operation: op, Err: err}
+//	return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could update the user with the ID: %d", userVerified.ID), Operation: op, Err: err}
 //}
 //
 //return nil

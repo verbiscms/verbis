@@ -186,9 +186,9 @@ func (s *PostStore) Get(meta params.Params, layout bool, resource, status string
 	return formattedPosts, total, nil
 }
 
-// GetByID returns a post by Id
+// GetByID returns a post by ID
 //
-// Returns errors.NOTFOUND if the post was not found by the given Id.
+// Returns errors.NOTFOUND if the post was not found by the given ID.
 func (s *PostStore) GetByID(id int, layout bool) (domain.PostDatum, error) {
 	const op = "PostsRepository.GetByID"
 
@@ -287,7 +287,7 @@ func (s *PostStore) Create(p *domain.PostCreate) (domain.PostDatum, error) {
 	return post, nil
 }
 
-// Update a post by Id
+// Update a post by ID
 // Returns errors.NOTFOUND if the post was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *PostStore) Update(p *domain.PostCreate) (domain.PostDatum, error) {

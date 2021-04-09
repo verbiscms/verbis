@@ -93,9 +93,6 @@ function build() {
 	mkdir $path/storage/logs && touch $path/storage/logs/.keep
 	mkdir $path/storage/forms && touch $path/storage/forms/.keep
 
-	# Tpl
-	mkdir $path/api/tpl && rsync -av --quiet api/tpl/embedded build/$os/api/tpl
-
 	# Mail
 	#mkdir $path/mail
 	#rsync -av --quiet api/mail/ $path/mail --exclude mailer.go
