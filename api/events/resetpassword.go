@@ -5,65 +5,52 @@
 package events
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/go-mail"
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// ResetPassword defines the event instance for resetting passwords
+// ResetPassword defines the event instance for config
+// resetting passwords, Token and User are required
+// for dispatch.
 type ResetPassword struct {
-	ev *Event
+	event *event
+	Token string
+	User  domain.UserPart
+	*TplData
 }
 
 // Reset Password
 //
-//
-func NewResetPassword(e *Event) *ResetPassword {
-	e.subject = "Verbis - Reset Password"
-	e.template = "reset-password"
-	e.plaintext = ""
+// Creates a new ResetPassword.
+func NewResetPassword(d *deps.Deps) *ResetPassword {
+	e := &event{
+		Deps:      d,
+		Subject:   SubjectPrefix + "Reset Password",
+		Template:  "reset-password",
+		PlainText: "",
+	}
 	return &ResetPassword{
-		ev: e,
+		event:   e,
+		TplData: e.commonTplData(),
 	}
 }
 
 // Dispatch
 //
-//
-func (r *ResetPassword) Dispatch(d Data, recipients []string, attachments mail.Attachments) error {
-	err := r.Validate(d)
-	if err != nil {
-		return err
-	}
+// Dispatches the ResetPassword Event.
+func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachments mail.Attachments) error {
+	const op = "Events.ResetPassword.Dispatch"
 
-	site := r.ev.Deps.Site.Global()
-	d["Url"] = site.Url + "/password/reset/" + d["Token"].(string)
-
-	err = r.ev.send(d, recipients, attachments)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// Validate
-//
-//
-func (r *ResetPassword) Validate(d Data) error {
-	const op = "Events.ResetPassword.Validate"
-
-	if !d.Exists("Token") {
-		return &errors.Error{Code: errors.INVALID, Message: "Token cannot be empty to send reset password event.", Operation: op, Err: fmt.Errorf("token must not be empty")}
-	}
-
-	if !d.Exists("User") {
-		return &errors.Error{Code: errors.INVALID, Message: "User cannot be empty to send reset password event.", Operation: op, Err: fmt.Errorf("user must not be empty")}
-	}
-
-	_, ok := d["Token"].(string)
+	rp, ok := data.(ResetPassword)
 	if !ok {
-		return &errors.Error{Code: errors.INVALID, Message: "Token must be a string", Operation: op, Err: fmt.Errorf("token must be a string")}
+		return &errors.Error{Code: errors.INTERNAL, Message: "ResetPassword should be passed to dispatch", Operation: op, Err: WrongTypeErr}
+	}
+
+	err := r.event.send(rp, recipients, attachments)
+	if err != nil {
+		return err
 	}
 
 	return nil

@@ -8,7 +8,10 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
+	"github.com/ainsleyclark/verbis/api/domain"
+	mailer "github.com/ainsleyclark/verbis/api/mocks/mailer"
+	site "github.com/ainsleyclark/verbis/api/mocks/services/site"
+	tpl "github.com/ainsleyclark/verbis/api/mocks/tpl"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -29,13 +32,43 @@ func TestEvent(t *testing.T) {
 	suite.Run(t, &EventTestSuite{})
 }
 
+func (t *EventTestSuite) Setup(error bool) *deps.Deps {
+	mt := &tpl.TemplateHandler{}
+	m := &tpl.TemplateExecutor{}
+	mt.On("Prepare", mock.Anything).Return(m)
+
+	if error {
+		m.On("Execute", &bytes.Buffer{}, mock.Anything, mock.Anything).
+			Return(mock.Anything, fmt.Errorf("error"))
+	} else {
+		m.On("Execute", &bytes.Buffer{}, mock.Anything, mock.Anything).
+			Return(mock.Anything, nil)
+	}
+
+	mm := &mailer.Mailer{}
+	mm.On("Send", mock.Anything).Return()
+
+	ms := &site.Repository{}
+	ms.On("Global").Return(domain.Site{})
+
+	d := &deps.Deps{
+		Mail:    mm,
+		Site:    ms,
+		Options: &domain.Options{},
+	}
+
+	d.SetTmpl(mt)
+
+	return d
+}
+
 func (t *EventTestSuite) Test_EventExecuteHTML() {
 	tt := map[string]struct {
-		mock func(m *mocks.TemplateExecutor, buf *bytes.Buffer)
+		mock func(m *tpl.TemplateExecutor, buf *bytes.Buffer)
 		want interface{}
 	}{
 		"Success": {
-			func(m *mocks.TemplateExecutor, buf *bytes.Buffer) {
+			func(m *tpl.TemplateExecutor, buf *bytes.Buffer) {
 				m.On("Execute", buf, mock.Anything, nil).Run(func(args mock.Arguments) {
 					arg := args.Get(0).(io.Writer)
 					_, err := arg.Write([]byte("tpl"))
@@ -45,7 +78,7 @@ func (t *EventTestSuite) Test_EventExecuteHTML() {
 			"tpl",
 		},
 		"Error": {
-			func(m *mocks.TemplateExecutor, buf *bytes.Buffer) {
+			func(m *tpl.TemplateExecutor, buf *bytes.Buffer) {
 				m.On("Execute", buf, mock.Anything, nil).Run(func(args mock.Arguments) {
 					arg := args.Get(0).(io.Writer)
 					_, err := arg.Write([]byte("tpl"))
@@ -58,8 +91,8 @@ func (t *EventTestSuite) Test_EventExecuteHTML() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mt := &mocks.TemplateHandler{}
-			m := &mocks.TemplateExecutor{}
+			mt := &tpl.TemplateHandler{}
+			m := &tpl.TemplateExecutor{}
 			mt.On("Prepare", mock.Anything).Return(m)
 
 			var buf = &bytes.Buffer{}
@@ -67,7 +100,7 @@ func (t *EventTestSuite) Test_EventExecuteHTML() {
 
 			d := &deps.Deps{}
 			d.SetTmpl(mt)
-			e := Event{
+			e := event{
 				Deps: d,
 			}
 
