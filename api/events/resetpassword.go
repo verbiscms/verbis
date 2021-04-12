@@ -21,7 +21,7 @@ type ResetPassword struct {
 	*TplData
 }
 
-// Reset Password
+// NewResetPassword
 //
 // Creates a new ResetPassword.
 func NewResetPassword(d *deps.Deps) *ResetPassword {

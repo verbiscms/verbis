@@ -9,57 +9,39 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-func (t *EventTestSuite) Test_FormSendDispatch() {
+func (t *EventTestSuite) Test_VerifyEmailDispatch() {
 	tt := map[string]struct {
 		data  interface{}
 		error bool
 		want  interface{}
 	}{
 		"Success": {
-			FormSend{
-				Form:   &domain.Form{Id: 1},
-				Values: domain.FormValues{},
+			VerifyEmail{
+				Token: "token",
+				User:  domain.UserPart{},
 			},
 			false,
 			nil,
 		},
 		"Send Error": {
-			FormSend{
-				Form:   &domain.Form{Id: 1},
-				Values: domain.FormValues{},
+			VerifyEmail{
+				Token: "token",
+				User:  domain.UserPart{},
 			},
 			true,
 			errors.GlobalError,
 		},
-		"Nil Form": {
-			FormSend{
-				Form:   nil,
-				Values: domain.FormValues{},
-			},
-			true,
-			"Form cannot be nil",
-		},
-		//"With Values": {
-		//	FormSend{
-		//		Form:   &domain.Form{Id: 1},
-		//		Values: domain.FormValues{
-		//			"test": "test"
-		//		},
-		//	},
-		//	false,
-		//	nil,
-		//},
 		"Validation failed": {
 			event{},
 			true,
-			"FormSend should be passed to dispatch",
+			"VerifyEmail should be passed to dispatch",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			deps := t.Setup(test.error)
-			dispatcher := NewFormSend(deps)
+			dispatcher := NewVerifyEmail(deps)
 			err := dispatcher.Dispatch(test.data, []string{"hello@verbiscms.com"}, nil)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
