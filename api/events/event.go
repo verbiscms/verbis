@@ -8,58 +8,70 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/go-mail"
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"os"
 )
 
-type Event struct {
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+type event struct {
 	Deps      *deps.Deps
-	template  string
-	subject   string
-	plaintext string
+	Template  string
+	Subject   string
+	PlainText string
 }
 
+type TplData struct {
+	Options *domain.Options
+	Site    domain.Site
+}
+
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 type Dispatcher interface {
-	Dispatch(d Data, recipients []string, a mail.Attachments) error
+	Dispatch(data interface{}, recipients []string, a mail.Attachments) error
 }
 
-const (
-	MailTplExtension = ".cms"
-	MasterTplLayout  = "layout"
+var (
+	WrongTypeErr = errors.New("wrong type passed to dispatch")
 )
 
-type Data map[string]interface{}
-
-func (d Data) Exists(key string) bool {
-	_, ok := d[key]
-	return ok
-}
+const (
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	MailTplExtension = ".cms"
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	MasterTplLayout = "layout"
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	SubjectPrefix = "Verbis - "
+)
 
 // Send
 //
 //
-func (e *Event) send(d Data, r []string, a mail.Attachments) error {
-	html, err := e.executeHTML(e.template, d)
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+func (e *event) send(data interface{}, r []string, a mail.Attachments) error {
+	html, err := e.executeHTML(e.Template, data)
 	if err != nil {
 		return err
 	}
 
-	e.Deps.Mail.Send(&mail.Transmission{
+	go e.Deps.Mail.Send(&mail.Transmission{
 		Recipients:  r,
-		Subject:     e.subject,
+		Subject:     e.Subject,
 		HTML:        html,
-		PlainText:   e.plaintext,
+		PlainText:   e.PlainText,
 		Attachments: a,
 	})
 
 	return nil
 }
 
-// ExecuteHTML
+// executeHTML
 //
-// Execute the mail HTML files
-// Returns errors.INTERNAL if the render failed
-func (e *Event) executeHTML(file string, data interface{}) (string, error) {
+// Executes the events HTML file by preparing the
+// template and executing the data.
+// Returns errors.INTERNAL if the render failed.
+func (e *event) executeHTML(file string, data interface{}) (string, error) {
 	root := e.Deps.Paths.Web + string(os.PathSeparator) + "mail"
 
 	exec := e.Deps.Tmpl().Prepare(&tpl.Config{
@@ -75,4 +87,14 @@ func (e *Event) executeHTML(file string, data interface{}) (string, error) {
 	}
 
 	return buf.String(), nil
+}
+
+// commonTplData
+//
+//
+func (e *event) commonTplData() *TplData {
+	return &TplData{
+		Options: e.Deps.Options,
+		Site:    e.Deps.Site.Global(),
+	}
 }
