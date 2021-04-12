@@ -44,16 +44,28 @@ func NewFormSend(d *deps.Deps) *FormSend {
 func (r *FormSend) Dispatch(data interface{}, recipients []string, attachments mail.Attachments) error {
 	const op = "Events.ChangedPassword.Dispatch"
 
-	cp, ok := data.(FormSend)
+	fs, ok := data.(FormSend)
 	if !ok {
 		return &errors.Error{Code: errors.INTERNAL, Message: "FormSend should be passed to dispatch", Operation: op, Err: WrongTypeErr}
 	}
 
-	if cp.Form == nil {
+	if fs.Form == nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Form cannot be nil", Operation: op, Err: fmt.Errorf("form is nil")}
 	}
 
-	err := r.event.send(cp, recipients, attachments)
+	fv := make(domain.FormValues)
+	for _, v := range fs.Form.Fields {
+		val, ok := fs.Values[v.Key]
+		if !ok {
+			continue
+		}
+		if v.Type != "file" {
+			fv[v.Label.String()] = val
+		}
+	}
+	fs.Values = fv
+
+	err := r.event.send(fs, recipients, attachments)
 	if err != nil {
 		return err
 	}
