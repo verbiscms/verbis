@@ -48,7 +48,7 @@ type Deps struct {
 	// Webp
 	WebP webp.Execer
 
-	// Template
+	// template
 	tmpl tpl.TemplateHandler
 
 	// Mailer
@@ -115,11 +115,6 @@ func New(cfg Config) *Deps {
 
 	p := paths.Get()
 
-	mail, err := mailer.New(cfg.Env)
-	if err != nil {
-		logger.WithError(err).Error()
-	}
-
 	d := &Deps{
 		Env:     cfg.Env,
 		Store:   cfg.Store,
@@ -131,8 +126,13 @@ func New(cfg Config) *Deps {
 		Site:    site.New(&opts),
 		Theme:   theme.New(),
 		WebP:    webp.New(p.Bin + webp.Path),
-		Mail:    mail,
 	}
+
+	mail, err := mailer.New(cfg.Env, d.tmpl)
+	if err != nil {
+		logger.WithError(err).Error()
+	}
+	d.Mail = mail
 
 	d.Watcher = watchers.New(d.ThemePath())
 	d.Watcher.Start()

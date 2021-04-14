@@ -6,34 +6,29 @@ package events
 
 import (
 	"github.com/ainsleyclark/go-mail"
-	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// ChangedPassword defines the event instance for config
+// ChangedPassword defines the Event instance for config
 // resetting passwords, Password and User are required
 // for dispatch.
 type ChangedPassword struct {
-	event    *event
+	event    *Event
 	Password string
 	User     domain.UserPart
-	*TplData
 }
 
 // ChangedPassword
 //
 // Creates a new ChangedPassword.
-func NewChangedPassword(d *deps.Deps) *ChangedPassword {
-	e := &event{
-		Deps:      d,
-		Subject:   SubjectPrefix + "Reset Password",
-		Template:  "reset-password",
-		PlainText: "",
-	}
+func NewChangedPassword(mail mail.Mailer) *ChangedPassword {
 	return &ChangedPassword{
-		event:   e,
-		TplData: e.commonTplData(),
+		event: &Event{
+			subject:   SubjectPrefix + "Reset Password",
+			template:  "reset-password",
+			plaintext: "",
+		},
 	}
 }
 

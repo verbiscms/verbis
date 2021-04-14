@@ -6,37 +6,32 @@ package events
 
 import (
 	"github.com/ainsleyclark/go-mail"
-	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"strconv"
 )
 
-// VerifyEmail defines the event instance for config
+// VerifyEmail defines the Event instance for config
 // verifying email addresses when a user signs
 // up. Token and User are required for
 // dispatch.
 type VerifyEmail struct {
-	event *event
+	event *Event
 	Token string
 	User  domain.UserPart
-	*TplData
 }
 
 // NewVerifyEmail
 //
 // Creates a new VerifyEmail.
-func NewVerifyEmail(d *deps.Deps) *VerifyEmail {
-	e := &event{
-		Deps:      d,
-		Subject:   SubjectPrefix + "Verify Email",
-		Template:  "verify-email",
-		PlainText: "Thanks for signing up! Please verify your email address with a Verbis site.",
-	}
+func NewVerifyEmail() *VerifyEmail {
 	return &VerifyEmail{
-		event:   e,
-		TplData: e.commonTplData(),
+		event: &Event{
+			subject:   SubjectPrefix + "Verify Email",
+			template:  "verify-email",
+			plaintext: "Thanks for signing up! Please verify your email address with a Verbis site.",
+		},
 	}
 }
 

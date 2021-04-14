@@ -9,9 +9,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/mailer/events"
 	"github.com/ainsleyclark/verbis/api/store/users"
 )
 
@@ -96,14 +96,11 @@ func (s *Store) SendResetPassword(email string) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error inserting into password resets", Operation: op, Err: err}
 	}
 
-	// TODO: Mailer! This should be an interface with sending
-	// 	methods. To test.
-	rp, err := events.NewResetPassword()
-	if err != nil {
-		return err
-	}
+	err = s.resetPassword.Dispatch(&events.ResetPassword{
+		Token: token,
+		User:  user.UserPart,
+	}, []string{user.Email}, nil)
 
-	err = rp.Send(&user, s.Options.SiteUrl, token, s.Options.SiteTitle)
 	if err != nil {
 		return err
 	}

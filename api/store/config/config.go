@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/mailer"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 )
 
@@ -19,4 +20,5 @@ type Config struct {
 	Owner        *domain.User
 	ThemeService theme.Repository
 	Running      bool
+	Mail         mailer.Mailer
 }

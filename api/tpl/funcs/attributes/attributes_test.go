@@ -48,7 +48,7 @@ func TestNamespace_Body(t *testing.T) {
 			false,
 			"resource page-id-1 page-title-title page-template-template page-layout-layout",
 		},
-		"Template": {
+		"template": {
 			domain.Post{
 				Id:           1,
 				Title:        "title",

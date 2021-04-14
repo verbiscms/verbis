@@ -6,13 +6,12 @@ package events
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/mailer"
 	"github.com/ainsleyclark/verbis/api/services/forms"
 )
 
 // FormSend defines the event instance for emailing forms
 type FormSend struct {
-	mailer *mailer.MailOld
+	mailer *MailOld
 }
 
 type FormSendData struct {
@@ -25,7 +24,7 @@ type FormSendData struct {
 func NewFormSend() (*FormSend, error) {
 	const op = "events.NewFormSend"
 
-	m, err := mailer.NewOld()
+	m, err := NewOld()
 	if err != nil {
 		return &FormSend{}, err
 	}
@@ -56,7 +55,7 @@ func (e *FormSend) Send(f *FormSendData, attachments forms.Attachments) error {
 		return err
 	}
 
-	tm := mailer.Sender{
+	tm := Sender{
 		To:          f.Form.GetRecipients(),
 		Subject:     f.Form.EmailSubject,
 		HTML:        html,

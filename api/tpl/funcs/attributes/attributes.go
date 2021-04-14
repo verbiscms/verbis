@@ -68,7 +68,7 @@ func (ns *Namespace) Lang() string {
 // with dashes for a valid CSS class.
 //
 // Example:
-// `My Page !Template` would return `my-page-template`.
+// `My Page !template` would return `my-page-template`.
 func cssValidString(str string) string {
 	r := regexp.MustCompile("[^A-Za-z0-9\\s-/]") //nolint
 

@@ -19,7 +19,7 @@ import (
 	"testing"
 )
 
-// EventTestSuite defines the helper used for event
+// EventTestSuite defines the helper used for Event
 // testing.
 type EventTestSuite struct {
 	test.HandlerSuite
@@ -100,7 +100,7 @@ func (t *EventTestSuite) Test_EventExecuteHTML() {
 
 			d := &deps.Deps{}
 			d.SetTmpl(mt)
-			e := event{
+			e := Event{
 				Deps: d,
 			}
 

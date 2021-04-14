@@ -23,7 +23,7 @@ func (t *TplTestSuite) TestTemplateManager_ExecuteTpl() {
 			data: nil,
 			want: "test",
 		},
-		"Bad Template": {
+		"Bad template": {
 			text: "{{ {{.wrong}} }}",
 			data: nil,
 			want: "Error parsing template",

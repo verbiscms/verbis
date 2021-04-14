@@ -112,7 +112,7 @@ func NewSitemap(d *deps.Deps) *Sitemap {
 // Index
 //
 // Index first checks to see if the sitemap serving is enabled in the
-// options, then goes on to retrieve the pages. Template data is then
+// options, then goes on to retrieve the pages. template data is then
 // constructed and executed.
 //
 // Returns errors.CONFLICT if the sitemap serve options was not enabled.
@@ -186,7 +186,7 @@ func (s *Sitemap) XSL(index bool) ([]byte, error) {
 }
 
 // GetPages first checks to see if the sitemap serving is enabled in the
-// options, then goes on to retrieve the pages. Template data is then
+// options, then goes on to retrieve the pages. template data is then
 // constructed and executed.
 //
 // Returns errors.CONFLICT if the sitemap serve options was not enabled.

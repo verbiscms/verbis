@@ -7,19 +7,18 @@ package events
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/mailer"
 )
 
 // ResetPassword defines the event instance for resetting passwords
 type ResetPassword struct {
-	mailer *mailer.MailOld
+	mailer *MailOld
 }
 
 // NewResetPassword creates a new reset password event.
 func NewResetPassword() (*ResetPassword, error) {
 	const op = "events.NewResetPassword"
 
-	m, err := mailer.NewOld()
+	m, err := NewOld()
 	if err != nil {
 		return &ResetPassword{}, err
 	}
@@ -33,7 +32,7 @@ func NewResetPassword() (*ResetPassword, error) {
 func (e *ResetPassword) Send(u *domain.User, url, token, title string) error {
 	const op = "events.ResetPassword.Send"
 
-	data := mailer.Data{
+	data := Data{
 		"AppUrl":    url,
 		"AppTitle":  title,
 		"AdminPath": "/admin",
@@ -47,7 +46,7 @@ func (e *ResetPassword) Send(u *domain.User, url, token, title string) error {
 		return err
 	}
 
-	tm := mailer.Sender{
+	tm := Sender{
 		To:      []string{u.Email},
 		Subject: "Reset password",
 		HTML:    html,

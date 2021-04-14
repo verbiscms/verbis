@@ -124,7 +124,7 @@ func (e *Execute) executeTemplate(out io.Writer, name string, data interface{}, 
 	// Display the content to the screen
 	err = tpl.Funcs(e.funcMap).ExecuteTemplate(out, exeName, data)
 	if err != nil {
-		return name, &errors.Error{Code: errors.TEMPLATE, Message: "Template engine execute template error", Operation: op, Err: err}
+		return name, &errors.Error{Code: errors.TEMPLATE, Message: "template engine execute template error", Operation: op, Err: err}
 	}
 
 	return name, nil
