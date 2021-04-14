@@ -6,34 +6,30 @@ package events
 
 import (
 	"github.com/ainsleyclark/go-mail"
-	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/mailer"
 )
 
-// ResetPassword defines the event instance for config
+// ResetPassword defines the Event instance for config
 // resetting passwords, Token and User are required
 // for dispatch.
 type ResetPassword struct {
-	event *event
+	event *Event
 	Token string
 	User  domain.UserPart
-	*TplData
 }
 
 // NewResetPassword
 //
 // Creates a new ResetPassword.
-func NewResetPassword(d *deps.Deps) *ResetPassword {
-	e := &event{
-		Deps:      d,
-		Subject:   SubjectPrefix + "Reset Password",
-		Template:  "reset-password",
-		PlainText: "",
-	}
+func NewResetPassword(mail mailer.Mailer) *ResetPassword {
 	return &ResetPassword{
-		event:   e,
-		TplData: e.commonTplData(),
+		event: &Event{
+			subject:   SubjectPrefix + "Reset Password",
+			template:  "reset-password",
+			plaintext: "",
+		},
 	}
 }
 

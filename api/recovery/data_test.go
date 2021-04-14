@@ -82,7 +82,7 @@ var (
 //				return s
 //			},
 //		},
-//		"With Template": {
+//		"With template": {
 //			Theme{
 //				TplFile: "test",
 //				TplExec: m,

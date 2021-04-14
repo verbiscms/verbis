@@ -30,7 +30,7 @@ var listPostsCmd = &cobra.Command{
 		//
 		//t := table.NewWriter()
 		//t.SetOutputMirror(os.Stdout)
-		//t.AppendHeader(table.Row{"#", "Slug", "Title", "Resource", "Page Template", "Layout", "Fields", "Status", "Page Views", "User ID", "Created At", "Updated At"})
+		//t.AppendHeader(table.Row{"#", "Slug", "Title", "Resource", "Page template", "Layout", "Fields", "Status", "Page Views", "User ID", "Created At", "Updated At"})
 		//
 		//for _, v := range posts {
 		//	t.AppendRows([]table.Row{

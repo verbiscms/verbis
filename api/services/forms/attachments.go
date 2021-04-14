@@ -5,8 +5,8 @@
 package forms
 
 import (
-	"encoding/base64"
 	"fmt"
+	"github.com/ainsleyclark/go-mail"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
@@ -52,8 +52,19 @@ type Attachment struct {
 	MIMEType string
 	Filename string
 	MD5name  string
-	B64Data  *string
+	Data     []byte
 	Size     int64
+}
+
+func (a Attachments) ToMail() mail.Attachments {
+	var m mail.Attachments
+	for _, v := range a {
+		m = append(m, mail.Attachment{
+			Filename: v.Filename,
+			Bytes:    v.Data,
+		})
+	}
+	return m
 }
 
 // SizeMB
@@ -95,13 +106,11 @@ func getAttachment(i interface{}, uploadsPath string) (*Attachment, error) {
 		return nil, err
 	}
 
-	data := b64(bytes)
-
 	return &Attachment{
 		MIMEType: mt,
 		Filename: m.Filename,
 		MD5name:  md5Name,
-		B64Data:  &data,
+		Data:     bytes,
 		Size:     m.Size,
 	}, nil
 }
@@ -164,14 +173,6 @@ func validateFile(file *multipart.File, size int64) (string, error) { //nolint
 	}
 
 	return typ.String(), nil
-}
-
-// b64
-//
-// Base64 encodes the attachment to be sent via the
-// mailer.
-func b64(data []byte) string {
-	return base64.StdEncoding.EncodeToString(data)
 }
 
 // dumpFile

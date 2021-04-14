@@ -17,9 +17,9 @@ func (t *ThemeTestSuite) TestSite_Templates() {
 		"Success": {
 			"verbis",
 			domain.Templates{
-				{Key: "nested/template-nested", Name: "Nested/Template Nested"},
-				{Key: "template-hyphen", Name: "Template Hyphen"},
-				{Key: "template", Name: "Template"},
+				{Key: "nested/template-nested", Name: "Nested/template Nested"},
+				{Key: "template-hyphen", Name: "template Hyphen"},
+				{Key: "template", Name: "template"},
 			},
 		},
 		"Wrong Path": {

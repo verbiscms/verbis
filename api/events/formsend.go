@@ -7,34 +7,31 @@ package events
 import (
 	"fmt"
 	"github.com/ainsleyclark/go-mail"
-	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/mailer"
 )
 
-// FormSend defines the event instance for config sending
+// FormSend defines the Event instance for config sending
 // form data, Form and FormValues are required for
 //dispatch.
 type FormSend struct {
-	event  *event
+	event  *Event
 	Form   *domain.Form
 	Values domain.FormValues
-	*TplData
 }
 
 // FormSend
 //
 // Creates a new FormSend.
-func NewFormSend(d *deps.Deps) *FormSend {
-	e := &event{
-		Deps:      d,
-		Subject:   SubjectPrefix + "Reset Password",
-		Template:  "form-send",
-		PlainText: "New form submission",
-	}
+func NewFormSend(mail mailer.Mailer) *FormSend {
 	return &FormSend{
-		event:   e,
-		TplData: e.commonTplData(),
+		event: &Event{
+			mailer:    mail,
+			subject:   SubjectPrefix + "Reset Password",
+			template:  "form-send",
+			plaintext: "New form submission",
+		},
 	}
 }
 
@@ -75,7 +72,7 @@ func (r *FormSend) Dispatch(data interface{}, recipients []string, attachments m
 
 // OLD
 //
-//// Send the verify email event.
+//// Send the verify email Event.
 //func (e *FormSend) Send(f *FormSendData, attachments forms.Attachments) error {
 //	const op = "events.VerifyEmail.Send"
 //
@@ -98,7 +95,7 @@ func (r *FormSend) Dispatch(data interface{}, recipients []string, attachments m
 //
 //	tm := mailer.Sender{
 //		To:          f.Form.GetRecipients(),
-//		Subject:     f.Form.EmailSubject,
+//		subject:     f.Form.EmailSubject,
 //		HTML:        html,
 //		Attachments: attachments,
 //	}

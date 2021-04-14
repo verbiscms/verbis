@@ -6,6 +6,7 @@ package forms
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,6 +23,7 @@ type Handler interface {
 // Forms defines the handler for all form routes.
 type Forms struct {
 	*deps.Deps
+	formSend events.Dispatcher
 }
 
 // New
@@ -29,6 +31,7 @@ type Forms struct {
 // Creates a new forms handler.
 func New(d *deps.Deps) *Forms {
 	return &Forms{
-		Deps: d,
+		Deps:     d,
+		formSend: events.NewFormSend(d.Mail),
 	}
 }

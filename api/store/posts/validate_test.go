@@ -39,7 +39,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			},
 			func(m *mocks.Repository) {
 				m.On("Templates", mock.Anything).Return(domain.Templates{
-					domain.Template{Key: "template", Name: "Template"},
+					domain.Template{Key: "template", Name: "template"},
 				}, nil)
 				m.On("Layouts", mock.Anything).Return(domain.Layouts{
 					domain.Layout{Key: "layout", Name: "Layout"},
@@ -64,7 +64,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			},
 			func(m *mocks.Repository) {
 				m.On("Templates", mock.Anything).Return(domain.Templates{
-					domain.Template{Key: "template", Name: "Template"},
+					domain.Template{Key: "template", Name: "template"},
 				}, nil)
 				m.On("Layouts", mock.Anything).Return(domain.Layouts{
 					domain.Layout{Key: "layout", Name: "Layout"},
@@ -90,7 +90,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			},
 			func(m *mocks.Repository) {
 				m.On("Templates", mock.Anything).Return(domain.Templates{
-					domain.Template{Key: "template", Name: "Template"},
+					domain.Template{Key: "template", Name: "template"},
 				}, nil)
 				m.On("Layouts", mock.Anything).Return(domain.Layouts{
 					domain.Layout{Key: "layout", Name: "Layout"},
@@ -116,7 +116,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			},
 			func(m *mocks.Repository) {
 				m.On("Templates", mock.Anything).Return(domain.Templates{
-					domain.Template{Key: "template", Name: "Template"},
+					domain.Template{Key: "template", Name: "template"},
 				}, nil)
 				m.On("Layouts", mock.Anything).Return(domain.Layouts{
 					domain.Layout{Key: "layout", Name: "Layout"},
@@ -140,7 +140,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			},
 			ErrNoPageTemplate.Error(),
 		},
-		"Template Error": {
+		"template Error": {
 			domain.PostCreate{},
 			nil,
 			func(m *mocks.Repository) {
@@ -157,7 +157,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			nil,
 			func(m *mocks.Repository) {
 				m.On("Templates", mock.Anything).Return(domain.Templates{
-					domain.Template{Key: "template", Name: "Template"},
+					domain.Template{Key: "template", Name: "template"},
 				}, nil)
 				m.On("Layouts", mock.Anything).Return(domain.Layouts{}, nil)
 			},
@@ -173,7 +173,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 			nil,
 			func(m *mocks.Repository) {
 				m.On("Templates", mock.Anything).Return(domain.Templates{
-					domain.Template{Key: "template", Name: "Template"},
+					domain.Template{Key: "template", Name: "template"},
 				}, nil)
 				m.On("Layouts", mock.Anything).Return(domain.Layouts{}, fmt.Errorf("error"))
 			},

@@ -5,17 +5,21 @@
 package mailer
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/go-mail"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/tpl"
+	"os"
 )
 
 //
 type Mailer interface {
 	Send(t *mail.Transmission)
+	ExecuteHTML(file string, data interface{}) (string, error)
 }
 
 //
@@ -25,13 +29,21 @@ type Mail struct {
 	FromName    string
 	Driver      string
 	Env         *environment.Env
+	Tpl         tpl.TemplateHandler
 	Paths       paths.Paths
 }
+
+const (
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	MailTplExtension = ".cms"
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	MasterTplLayout = "layout"
+)
 
 // New
 //
 //
-func New(env *environment.Env) (*Mail, error) {
+func New(env *environment.Env, tpl tpl.TemplateHandler) (*Mail, error) {
 	const op = "Mail.New"
 
 	cfg := mail.Config{}
@@ -101,4 +113,27 @@ func (m *Mail) Send(t *mail.Transmission) {
 	}
 
 	logger.Debug("Successfully sent email with the subject: " + t.Subject)
+}
+
+// executeHTML
+//
+// Executes the events HTML file by preparing the
+// template and executing the data.
+// Returns errors.INTERNAL if the render failed.
+func (m *Mail) ExecuteHTML(file string, data interface{}) (string, error) {
+	root := m.Paths.Web + string(os.PathSeparator) + "mail"
+
+	exec := m.Tpl.Prepare(&tpl.Config{
+		Root:      root,
+		Extension: MailTplExtension,
+		Master:    MasterTplLayout,
+	})
+
+	var buf bytes.Buffer
+	_, err := exec.Execute(&buf, file, data)
+	if err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
 }

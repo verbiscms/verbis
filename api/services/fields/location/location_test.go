@@ -129,7 +129,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			},
 			want: domain.FieldGroups{{Title: "post"}},
 		},
-		"Page Template": {
+		"Page template": {
 			post: domain.PostDatum{Post: domain.Post{PageTemplate: "template"}},
 			groups: domain.FieldGroups{
 				{

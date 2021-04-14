@@ -7,20 +7,19 @@ package events
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
-	"github.com/ainsleyclark/verbis/api/mailer"
 	"strconv"
 )
 
 // VerifyEmail defines the event instance for verifying emails
 type VerifyEmail struct {
-	mailer *mailer.MailOld
+	mailer *MailOld
 }
 
 // NewVerifyEmail creates a new verify email event.
 func NewVerifyEmail() (*VerifyEmail, error) {
 	const op = "events.NewResetPassword"
 
-	m, err := mailer.NewOld()
+	m, err := NewOld()
 	if err != nil {
 		return &VerifyEmail{}, err
 	}
@@ -36,7 +35,7 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 
 	md5String := encryption.MD5Hash(strconv.Itoa(u.Id) + u.Email)
 
-	data := mailer.Data{
+	data := Data{
 		"AppUrl":    "Verbis",
 		"AppTitle":  title,
 		"AdminPath": "/admin",
@@ -49,7 +48,7 @@ func (e *VerifyEmail) Send(u *domain.User, title string) error {
 		return err
 	}
 
-	tm := mailer.Sender{
+	tm := Sender{
 		To:      []string{u.Email},
 		Subject: "Thanks for signing up " + u.FirstName,
 		HTML:    html,
