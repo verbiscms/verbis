@@ -28,7 +28,7 @@ package events
 //			errors.GlobalError,
 //		},
 //		"Validation failed": {
-//			Event{},
+//			event{},
 //			true,
 //			"ChangedPassword should be passed to dispatch",
 //		},

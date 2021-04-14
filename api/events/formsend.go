@@ -4,75 +4,67 @@
 
 package events
 
-import (
-	"fmt"
-	"github.com/ainsleyclark/go-mail"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/mailer"
-)
-
-// FormSend defines the Event instance for config sending
-// form data, Form and FormValues are required for
-//dispatch.
-type FormSend struct {
-	event  *Event
-	Form   *domain.Form
-	Values domain.FormValues
-}
-
-// FormSend
+//// FormSend defines the event instance for config sending
+//// form data, Form and FormValues are required for
+////dispatch.
+//type FormSend struct {
+//	event  *event
+//	Form   *domain.Form
+//	Values domain.FormValues
+//}
 //
-// Creates a new FormSend.
-func NewFormSend(mail mailer.Mailer) *FormSend {
-	return &FormSend{
-		event: &Event{
-			mailer:    mail,
-			subject:   SubjectPrefix + "Reset Password",
-			template:  "form-send",
-			plaintext: "New form submission",
-		},
-	}
-}
-
-// Dispatch
+//// FormSend
+////
+//// Creates a new FormSend.
+//func NewFormSend(d *deps.Deps) *FormSend {
+//	return &FormSend{
+//		event: &event{
+//			deps:      d,
+//			subject:   SubjectPrefix + "Reset Password",
+//			template:  "form-send",
+//			plaintext: "newMailer form submission",
+//		},
+//	}
+//}
 //
-// Dispatches the FormSend Event.
-func (r *FormSend) Dispatch(data interface{}, recipients []string, attachments mail.Attachments) error {
-	const op = "Events.ChangedPassword.Dispatch"
-
-	fs, ok := data.(FormSend)
-	if !ok {
-		return &errors.Error{Code: errors.INTERNAL, Message: "FormSend should be passed to dispatch", Operation: op, Err: WrongTypeErr}
-	}
-
-	if fs.Form == nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Form cannot be nil", Operation: op, Err: fmt.Errorf("form is nil")}
-	}
-
-	fv := make(domain.FormValues)
-	for _, v := range fs.Form.Fields {
-		val, ok := fs.Values[v.Key]
-		if !ok {
-			continue
-		}
-		if v.Type != "file" {
-			fv[v.Label.String()] = val
-		}
-	}
-	fs.Values = fv
-
-	err := r.event.send(fs, recipients, attachments)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
+//// Dispatch
+////
+//// Dispatches the FormSend event.
+//func (r *FormSend) Dispatch(data interface{}, recipients []string, attachments mail.Attachments) error {
+//	const op = "Events.ChangedPassword.Dispatch"
+//
+//	fs, ok := data.(FormSend)
+//	if !ok {
+//		return &errors.Error{Code: errors.INTERNAL, Message: "FormSend should be passed to dispatch", Operation: op, Err: WrongTypeErr}
+//	}
+//
+//	if fs.Form == nil {
+//		return &errors.Error{Code: errors.INTERNAL, Message: "Form cannot be nil", Operation: op, Err: fmt.Errorf("form is nil")}
+//	}
+//
+//	fv := make(domain.FormValues)
+//	for _, v := range fs.Form.Fields {
+//		val, ok := fs.Values[v.Key]
+//		if !ok {
+//			continue
+//		}
+//		if v.Type != "file" {
+//			fv[v.Label.String()] = val
+//		}
+//	}
+//	fs.Values = fv
+//
+//	err := r.event.send(fs, recipients, attachments)
+//	if err != nil {
+//		return err
+//	}
+//
+//	return nil
+//}
 
 // OLD
 //
-//// Send the verify email Event.
+//// Send the verify email event.
 //func (e *FormSend) Send(f *FormSendData, attachments forms.Attachments) error {
 //	const op = "events.VerifyEmail.Send"
 //

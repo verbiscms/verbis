@@ -6,7 +6,6 @@ package auth
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/users"
@@ -18,7 +17,7 @@ type Repository interface {
 	Login(email, password string) (domain.User, error)
 	Logout(token string) (int, error)
 	ResetPassword(token, password string) error
-	SendResetPassword(email string) error
+	SendResetPassword(email string) (domain.UserPart, string, error)
 	VerifyPasswordToken(token string) (domain.PasswordReset, error)
 	CleanPasswordResets() error
 }
@@ -32,8 +31,6 @@ type Store struct {
 	hashPasswordFunc func(password string) (string, error)
 	// The function used for generating tokens.
 	generateTokeFunc func(name, email string) string
-	// Reset password event
-	resetPassword events.Dispatcher
 }
 
 const (
@@ -53,6 +50,5 @@ func New(cfg *config.Config) *Store {
 		userStore:        users.New(cfg),
 		hashPasswordFunc: encryption.HashPassword,
 		generateTokeFunc: encryption.GenerateUserToken,
-		resetPassword:    events.NewResetPassword(cfg.Mail),
 	}
 }

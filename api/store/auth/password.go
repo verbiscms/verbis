@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store/users"
@@ -72,17 +71,17 @@ func (s *Store) ResetPassword(token, password string) error {
 // passwords event.
 // Returns errors.NOTFOUND if the user was not found by the given email.
 // Returns errors.INTERNAL if the SQL query was invalid.
-func (s *Store) SendResetPassword(email string) error {
+func (s *Store) SendResetPassword(email string) (domain.UserPart, string, error) {
 	const op = "AuthRepository.SendResetPassword"
 
 	user, err := s.userStore.FindByEmail(email)
 	if err != nil {
-		return err
+		return domain.UserPart{}, "", err
 	}
 
 	token, err := encryption.GenerateEmailToken(email)
 	if err != nil {
-		return err
+		return domain.UserPart{}, "", err
 	}
 
 	q := s.Builder().
@@ -93,19 +92,10 @@ func (s *Store) SendResetPassword(email string) error {
 
 	_, err = s.DB().Exec(q.Build())
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error inserting into password resets", Operation: op, Err: err}
+		return domain.UserPart{}, "", &errors.Error{Code: errors.INTERNAL, Message: "Error inserting into password resets", Operation: op, Err: err}
 	}
 
-	err = s.resetPassword.Dispatch(&events.ResetPassword{
-		Token: token,
-		User:  user.UserPart,
-	}, []string{user.Email}, nil)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return user.UserPart, token, nil
 }
 
 // VerifyPasswordToken

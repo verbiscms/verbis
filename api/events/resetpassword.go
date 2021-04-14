@@ -5,38 +5,46 @@
 package events
 
 import (
-	"github.com/ainsleyclark/go-mail"
+	client "github.com/ainsleyclark/go-mail"
+	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/mailer"
+	"github.com/ainsleyclark/verbis/api/logger"
 )
 
-// ResetPassword defines the Event instance for config
+// ResetPassword defines the event instance for config
 // resetting passwords, Token and User are required
 // for dispatch.
 type ResetPassword struct {
-	event *Event
-	Token string
-	User  domain.UserPart
+	mail *mail
+	User domain.UserPart
+	Url  string
 }
 
 // NewResetPassword
 //
 // Creates a new ResetPassword.
-func NewResetPassword(mail mailer.Mailer) *ResetPassword {
+func NewResetPassword(d *deps.Deps) *ResetPassword {
+	e := event{
+		Subject:   SubjectPrefix + "Reset Password",
+		Template:  "reset-password",
+		Plaintext: "",
+	}
+
+	mailer, err := newMailer(d, e)
+	if err != nil {
+		logger.WithError(err).Error()
+	}
+
 	return &ResetPassword{
-		event: &Event{
-			subject:   SubjectPrefix + "Reset Password",
-			template:  "reset-password",
-			plaintext: "",
-		},
+		mail: mailer,
 	}
 }
 
 // Dispatch
 //
-// Dispatches the ResetPassword Event.
-func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachments mail.Attachments) error {
+// Dispatches the ResetPassword event.
+func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachments client.Attachments) error {
 	const op = "Events.ResetPassword.Dispatch"
 
 	rp, ok := data.(ResetPassword)
@@ -44,10 +52,7 @@ func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachme
 		return &errors.Error{Code: errors.INTERNAL, Message: "ResetPassword should be passed to dispatch", Operation: op, Err: WrongTypeErr}
 	}
 
-	err := r.event.send(rp, recipients, attachments)
-	if err != nil {
-		return err
-	}
+	go r.mail.Send(rp, recipients, attachments)
 
 	return nil
 }

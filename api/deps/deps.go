@@ -8,8 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/mailer"
 	"github.com/ainsleyclark/verbis/api/services/site"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/services/webp"
@@ -50,9 +48,6 @@ type Deps struct {
 
 	// template
 	tmpl tpl.TemplateHandler
-
-	// Mailer
-	Mail mailer.Mailer
 
 	Running bool
 }
@@ -127,12 +122,6 @@ func New(cfg Config) *Deps {
 		Theme:   theme.New(),
 		WebP:    webp.New(p.Bin + webp.Path),
 	}
-
-	mail, err := mailer.New(cfg.Env, d.tmpl)
-	if err != nil {
-		logger.WithError(err).Error()
-	}
-	d.Mail = mail
 
 	d.Watcher = watchers.New(d.ThemePath())
 	d.Watcher.Start()
