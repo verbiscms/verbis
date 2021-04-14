@@ -27,7 +27,7 @@ package events
 //			errors.GlobalError,
 //		},
 //		"Validation failed": {
-//			Event{},
+//			event{},
 //			true,
 //			"VerifyEmail should be passed to dispatch",
 //		},

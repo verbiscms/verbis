@@ -6,6 +6,7 @@ package auth
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -33,11 +34,21 @@ func (a *Auth) SendResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	err = a.Store.Auth.SendResetPassword(srp.Email)
+	user, token, err := a.Store.Auth.SendResetPassword(srp.Email)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
 	} else if err != nil {
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+		return
+	}
+
+	err = a.resetPassword.Dispatch(events.ResetPassword{
+		User: user,
+		Url:  a.Deps.Options.SiteUrl + "/admin/password/reset/" + token,
+	}, []string{user.Email}, nil)
+
+	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}

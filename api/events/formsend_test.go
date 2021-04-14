@@ -50,7 +50,7 @@ func (t *EventTestSuite) Test_FormSendDispatch() {
 		//	nil,
 		//},
 		"Validation failed": {
-			Event{},
+			event{},
 			true,
 			"FormSend should be passed to dispatch",
 		},

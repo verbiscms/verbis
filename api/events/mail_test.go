@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package mailer
+package events
 
 import (
 	"bytes"
@@ -60,7 +60,7 @@ func TestNew(t *testing.T) {
 			},
 			"No mail driver exists",
 		},
-		"New Client Error": {
+		"newMailer Client Error": {
 			&environment.Env{
 				MailDriver: mail.SparkPost,
 			},
@@ -70,7 +70,7 @@ func TestNew(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			got, err := New(test.input)
+			got, err := newMailer(test.input)
 			if err != nil {
 				assert.Contains(t, errors.Message(err), test.want)
 				return
@@ -95,13 +95,13 @@ func TestMail_Send_Error(t *testing.T) {
 	buf := &bytes.Buffer{}
 	logger.SetOutput(buf)
 
-	m := Mail{
+	m := mail{
 		client: &mockMailError{},
 	}
 
 	m.Send(&mail.Transmission{})
 
-	assert.Contains(t, buf.String(), "Mail.Send: error")
+	assert.Contains(t, buf.String(), "mail.Send: error")
 }
 
 type mockMailSuccess struct{}
@@ -118,7 +118,7 @@ func TestMail_Send_Success(t *testing.T) {
 	buf := &bytes.Buffer{}
 	logger.SetOutput(buf)
 
-	m := Mail{
+	m := mail{
 		client: &mockMailSuccess{},
 	}
 

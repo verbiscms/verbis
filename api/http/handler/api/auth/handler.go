@@ -6,6 +6,7 @@ package auth
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +22,8 @@ type Handler interface {
 // Auth defines the handler for Authentication methods
 type Auth struct {
 	*deps.Deps
+	// Reset password event.
+	resetPassword events.Dispatcher
 }
 
 // New
@@ -28,6 +31,7 @@ type Auth struct {
 // Creates a new auth handler.
 func New(d *deps.Deps) *Auth {
 	return &Auth{
-		Deps: d,
+		Deps:          d,
+		resetPassword: events.NewResetPassword(d),
 	}
 }
