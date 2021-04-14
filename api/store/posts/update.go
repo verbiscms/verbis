@@ -44,7 +44,7 @@ func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 		Column("layout", p.PageLayout).
 		Column("codeinjection_head", p.CodeInjectionHead).
 		Column("codeinjection_foot", p.CodeInjectionFoot).
-		Column("user_id", s.checkOwner(p.UserId)).
+		Column("user_id", s.checkOwner(p.Author)).
 		Column("published_at", p.PublishedAt).
 		Column("updated_at", "NOW()").
 		Where("id", "=", p.Id)
