@@ -339,7 +339,7 @@
 </head>
 <body class="">
 <!-- =====================
-	Preheader
+	PreHeader
 	===================== -->
 {{ with .PreHeader -}}
     <span class="preheader">{{ . }}</span>
@@ -358,7 +358,7 @@
                         </tr>
                         <tr>
                             <td align="center">
-                                <img width="60" style="display: block; border: none; outline: none; text-decoration: none" src={{ .Site.Url }}{{ .Site.Logo }}">
+                                <img width="60" style="display: block; border: none; outline: none; text-decoration: none" src="{{ .Site.Url }}{{ .Site.Logo }}">
                             </td>
                         </tr>
                         <tr>

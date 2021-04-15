@@ -18,12 +18,15 @@ import (
 	"text/template"
 )
 
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// Dispatcher describes the event for sending email. Data
+// and recipients are required, but attachments are
+// optional.
 type Dispatcher interface {
 	Dispatch(data interface{}, recipients []string, a client.Attachments) error
 }
 
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// mail describes the properties for sending emails
+// through verbis.
 type mail struct {
 	FromAddress string
 	FromName    string
@@ -34,11 +37,16 @@ type mail struct {
 	event
 }
 
+// event describes common properties of an event when a
+// transmission is fired.
 type event struct {
-	Template  string
-	Subject   string
-	PlainText string
-	PreHeader string
+	Template          string // e.g. reset-password
+	Subject           string // e.g. Reset Password
+	PlainTextTemplate string // e.g. reset-password
+	// PreHeader is the short summary text that follows the
+	// subject line when viewing emails from the inbox.
+	// Some clients do not support it.
+	PreHeader string // e.g. "Reset your password within a Verbis installation."
 }
 
 // tplData defines the data for executing templates,
@@ -51,25 +59,37 @@ type tplData struct {
 }
 
 var (
-	//
+	// WrongTypeErr is returned by an event when the wrong
+	// type is passed to Dispatch
 	WrongTypeErr = errors.New("wrong type passed to dispatch")
 )
 
 const (
+	// MailDir defines the directory where mail text and HTML
+	// templates are stored.
 	MailDir = "mail"
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	MailTplExtension = ".cms"
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	MasterTplLayout = "layout"
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// MailHtmlExtension defines the extension for executing
+	// HTML templates.
+	MailHtmlExtension = ".cms"
+	// MailTextExtension defines the extension for executing
+	// text templates.
 	MailTextExtension = ".txt"
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// SubjectPrefix defines prefix attached to all emails
+	// from Verbis.
 	SubjectPrefix = "Verbis - "
+	// MasterTplLayout defines the master layout for executing
+	// HTML templates.
+	MasterTplLayout = "layout"
 )
 
 // HealthCheck
 //
-//
+// HealthCheck performs a check on the environment and
+// mail client to see if mail can be sent with the
+// current configuration.
+// Returns errors.INVALID if the environment is nil, the
+// mail driver does not exist or if there was an
+// error creating a new client.
 func HealthCheck(env *environment.Env) error {
 	_, err := newMailer(&deps.Deps{Env: env}, event{})
 	if err != nil {
@@ -78,9 +98,8 @@ func HealthCheck(env *environment.Env) error {
 	return nil
 }
 
-// newMailer
-//
-//
+// newMailer creates a new mailer instance by comparing
+// the mail driver within the environment.
 func newMailer(d *deps.Deps, ev event) (*mail, error) {
 	const op = "Mail.NewMailer"
 
@@ -113,13 +132,13 @@ func newMailer(d *deps.Deps, ev event) (*mail, error) {
 	cfg.FromName = d.Env.MailFromName
 	cfg.FromAddress = d.Env.MailFromAddress
 
-	client, err := client.NewClient(d.Env.MailDriver, cfg)
+	m, err := client.NewClient(d.Env.MailDriver, cfg)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error validating mail configuration", Operation: op, Err: err}
 	}
 
 	return &mail{
-		Client:      client,
+		Client:      m,
 		Deps:        d,
 		event:       ev,
 		TplRoot:     d.Paths.Web + string(os.PathSeparator) + MailDir,
@@ -129,33 +148,45 @@ func newMailer(d *deps.Deps, ev event) (*mail, error) {
 	}, nil
 }
 
-// Send
-//
-//
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// Validates the mail struct by checking if the client and
+// client is nil.
+// Returns errors.INTERNAL in both cases.
+func (m *mail) Validate() error {
+	const op = "Mail.Validate"
+
+	if m == nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Mailer is nil", Operation: op, Err: fmt.Errorf("nil mail")}
+	}
+
+	if m.Client == nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Mail client is nil", Operation: op, Err: fmt.Errorf("nil mail client")}
+	}
+
+	return nil
+}
+
+// Sends the transmission from the email client. The mail
+// instance is first validated, and HTML and PlainText
+// is executed.
+// Logs errors.INTERNAL in any instance of an error.
 func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 	const op = "mail.Send"
 
-	html, err := m.executeHTML(m.event.Template, data)
+	err := m.Validate()
 	if err != nil {
 		logger.WithError(err).Error()
 		return
 	}
 
-	plainText, err := m.executeText("reset-password.txt", data)
-	if err == nil {
-		fmt.Println(err)
-	}
-	fmt.Println("plain text here: ", plainText)
-	return
-
-	if m == nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Mailer is nil", Operation: op, Err: fmt.Errorf("nil mail")}).Error()
+	html, err := m.ExecuteHTML(m.event.Template, data)
+	if err != nil {
+		logger.WithError(err).Error()
 		return
 	}
 
-	if m.Client == nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "mail client is nil", Operation: op, Err: fmt.Errorf("nil mail client")}).Error()
+	plainText, err := m.ExecuteText(m.PlainTextTemplate, data)
+	if err == nil {
+		logger.WithError(err).Error()
 		return
 	}
 
@@ -163,7 +194,7 @@ func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 		Recipients:  r,
 		Subject:     m.Subject,
 		HTML:        html,
-		PlainText:   m.PlainText,
+		PlainText:   plainText,
 		Attachments: a,
 	}
 
@@ -173,30 +204,22 @@ func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 		return
 	}
 
-	logger.Debug("Successfully sent email with the subject: " + m.event.Subject)
+	logger.Info("Successfully sent email with the subject: " + m.event.Subject)
 }
 
-// executeHTML
-//
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-// Executes the events HTML file by preparing the template
-// and executing the data.
-func (m *mail) executeHTML(file string, data interface{}) (string, error) {
-	tplD := tplData{
-		PreHeader: m.PreHeader,
-		Options:   m.Deps.Options,
-		Site:      m.Deps.Site.Global(),
-		Data:      data,
-	}
-
+// ExecuteHTML Executes the events HTML file by preparing
+// the template and executing the data.
+// Returns errors.TEMPLATE if the file could not be
+// rendered.
+func (m *mail) ExecuteHTML(file string, data interface{}) (string, error) {
 	exec := m.Deps.Tmpl().Prepare(&tpl.Config{
 		Root:      m.TplRoot,
-		Extension: MailTplExtension,
+		Extension: MailHtmlExtension,
 		Master:    MasterTplLayout,
 	})
 
 	var buf bytes.Buffer
-	_, err := exec.Execute(&buf, file, tplD)
+	_, err := exec.Execute(&buf, file, m.GetTplData(data))
 	if err != nil {
 		return "", err
 	}
@@ -204,27 +227,33 @@ func (m *mail) executeHTML(file string, data interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-func (m *mail) executeText(file string, data interface{}) (string, error) {
+// ExecuteText executes the plain text for the email.
+// Returns errors.INTERNAL if the template could not be
+// parsed or executed.
+func (m *mail) ExecuteText(file string, data interface{}) (string, error) {
 	const op = "Mail.ExecuteText"
 
-	tpl, err := template.New("").ParseFiles(m.TplRoot + string(os.PathSeparator) + file)
+	tmpl, err := template.New(file).ParseFiles(m.TplRoot + string(os.PathSeparator) + file + MailTextExtension)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error parsing text template: " + file, Operation: op, Err: err}
 	}
 
-	tplD := tplData{
-		PreHeader: m.PreHeader,
-		Options:   m.Deps.Options,
-		Site:      m.Deps.Site.Global(),
-		Data:      data,
-	}
-
 	var buf bytes.Buffer
-	err = tpl.ExecuteTemplate(&buf, "", tplD)
+	err = tmpl.ExecuteTemplate(&buf, file, m.GetTplData(data))
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error executing text template: " + file, Operation: op, Err: err}
 	}
 
 	return buf.String(), nil
+}
+
+// GetTplData returns the common template data for
+// emails.
+func (m *mail) GetTplData(data interface{}) tplData {
+	return tplData{
+		PreHeader: m.PreHeader,
+		Options:   m.Deps.Options,
+		Site:      m.Deps.Site.Global(),
+		Data:      data,
+	}
 }
