@@ -5,6 +5,11 @@
 package cmd
 
 import (
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/events"
+	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
 
@@ -13,21 +18,34 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
+			// Run doctor
+			cfg, _, err := doctor(true)
+			if err != nil {
+				printError(err.Error())
+			}
 
-			//p := paths.Get()
-			//err := os.Rename(p.Base+"/verbis", p.Base+"/verbis.bak")
-			//fmt.Println(err)
+			d := deps.New(*cfg)
 
-			// download new version
-			// unpack exec
-			// platform check
-			// download the zip file from git
+			// Set dependencies
+			d.SetTmpl(tplimpl.New(d))
 
-			// https://github.com/ainsleyclark/TryVerbis/archive/refs/tags/0.0.1.zip
+			dispatch := events.NewResetPassword(d)
 
-			// get list of available tags
+			err = dispatch.Dispatch(events.ResetPassword{
+				User: domain.UserPart{
+					FirstName: "Ainsley",
+					LastName:  "Clark",
+					Email:     "ainsley@reddico.co.uk",
+				},
+				Url: "http://127.0.0.1",
+			}, nil, nil)
 
-			// curl https://api.github.com/repos/ainsleyclark/TryVerbis/releases
+			if err != nil {
+				color.Red.Println(err)
+				return
+			}
+
+			color.Green.Println("Sent :)")
 		},
 	}
 )

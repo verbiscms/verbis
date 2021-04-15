@@ -338,7 +338,12 @@
     </style>
 </head>
 <body class="">
-<span class="preheader">This is preheader text. Some clients will show this text as a preview.</span>
+<!-- =====================
+	Preheader
+	===================== -->
+{{ with .PreHeader -}}
+    <span class="preheader">{{ . }}</span>
+{{- end }}
 <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
     <tr>
         <td class="container">
@@ -346,19 +351,21 @@
                 <!-- =====================
                     Logo
                     ===================== -->
-                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
-                    <tr>
-                        <td bgcolor="#F7F7F7" height="20" style="font-size:1px;line-height:1px">&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td align="center">
-                            <img width="60" style="display: block; border: none; outline: none; text-decoration: none" src="http://127.0.0.1:8080/verbis/images/verbis-logo.png">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td bgcolor="#F7F7F7" height="40" style="font-size:1px;line-height:1px">&nbsp;</td>
-                    </tr>
-                </table><!-- /Logo -->
+                {{ if and .Site.Logo .Site.Url -}}
+                    <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td bgcolor="#F7F7F7" height="20" style="font-size:1px;line-height:1px">&nbsp;</td>
+                        </tr>
+                        <tr>
+                            <td align="center">
+                                <img width="60" style="display: block; border: none; outline: none; text-decoration: none" src={{ .Site.Url }}{{ .Site.Logo }}">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td bgcolor="#F7F7F7" height="40" style="font-size:1px;line-height:1px">&nbsp;</td>
+                        </tr>
+                    </table><!-- /Logo -->
+                {{- end }}
                 <!-- =====================
                     White Area
                     ===================== -->
@@ -377,13 +384,14 @@
                 </table><!-- /White area -->
                 <!-- =====================
                     Footer
+                    TODO: This needs to be dyanmic depending on options
                     ===================== -->
                 <div class="footer">
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                         <tr>
                             <td class="content-block">
                                 <span class="apple-link">Reddico, Moat Farm Oast, Five Oak Green, Tonbridge TN12 6RR</span>
-                                <br>  Powered by Verbis.
+                                <br>Powered by Verbis.
                             </td>
                         </tr>
                     </table>

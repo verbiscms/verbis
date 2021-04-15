@@ -28,7 +28,7 @@ func NewResetPassword(d *deps.Deps) *ResetPassword {
 	e := event{
 		Subject:   SubjectPrefix + "Reset Password",
 		Template:  "reset-password",
-		Plaintext: "",
+		PlainText: "",
 	}
 
 	mailer, err := newMailer(d, e)
