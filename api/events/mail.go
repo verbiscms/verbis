@@ -9,11 +9,13 @@ import (
 	"fmt"
 	client "github.com/ainsleyclark/go-mail"
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"os"
+	"text/template"
 )
 
 // |||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -28,24 +30,39 @@ type mail struct {
 	Driver      string
 	Deps        *deps.Deps
 	Client      client.Mailer
+	TplRoot     string
 	event
 }
 
 type event struct {
 	Template  string
 	Subject   string
-	Plaintext string
+	PlainText string
+	PreHeader string
+}
+
+// tplData defines the data for executing templates,
+// including the unique data for each event.
+type tplData struct {
+	PreHeader string
+	Options   *domain.Options
+	Site      domain.Site
+	Data      interface{}
 }
 
 var (
+	//
 	WrongTypeErr = errors.New("wrong type passed to dispatch")
 )
 
 const (
+	MailDir = "mail"
 	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	MailTplExtension = ".cms"
 	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	MasterTplLayout = "layout"
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	MailTextExtension = ".txt"
 	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	SubjectPrefix = "Verbis - "
 )
@@ -105,6 +122,7 @@ func newMailer(d *deps.Deps, ev event) (*mail, error) {
 		Client:      client,
 		Deps:        d,
 		event:       ev,
+		TplRoot:     d.Paths.Web + string(os.PathSeparator) + MailDir,
 		FromAddress: d.Env.MailFromAddress,
 		FromName:    d.Env.MailFromName,
 		Driver:      d.Env.MailDriver,
@@ -124,6 +142,13 @@ func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 		return
 	}
 
+	plainText, err := m.executeText("reset-password.txt", data)
+	if err == nil {
+		fmt.Println(err)
+	}
+	fmt.Println("plain text here: ", plainText)
+	return
+
 	if m == nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Mailer is nil", Operation: op, Err: fmt.Errorf("nil mail")}).Error()
 		return
@@ -138,7 +163,7 @@ func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 		Recipients:  r,
 		Subject:     m.Subject,
 		HTML:        html,
-		PlainText:   m.Plaintext,
+		PlainText:   m.PlainText,
 		Attachments: a,
 	}
 
@@ -153,22 +178,52 @@ func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 
 // executeHTML
 //
-// Executes the events HTML file by preparing the
-// template and executing the data.
-// Returns errors.INTERNAL if the render failed.
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// Executes the events HTML file by preparing the template
+// and executing the data.
 func (m *mail) executeHTML(file string, data interface{}) (string, error) {
-	root := m.Deps.Paths.Web + string(os.PathSeparator) + "mail"
+	tplD := tplData{
+		PreHeader: m.PreHeader,
+		Options:   m.Deps.Options,
+		Site:      m.Deps.Site.Global(),
+		Data:      data,
+	}
 
 	exec := m.Deps.Tmpl().Prepare(&tpl.Config{
-		Root:      root,
+		Root:      m.TplRoot,
 		Extension: MailTplExtension,
 		Master:    MasterTplLayout,
 	})
 
 	var buf bytes.Buffer
-	_, err := exec.Execute(&buf, file, data)
+	_, err := exec.Execute(&buf, file, tplD)
 	if err != nil {
 		return "", err
+	}
+
+	return buf.String(), nil
+}
+
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+func (m *mail) executeText(file string, data interface{}) (string, error) {
+	const op = "Mail.ExecuteText"
+
+	tpl, err := template.New("").ParseFiles(m.TplRoot + string(os.PathSeparator) + file)
+	if err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error parsing text template: " + file, Operation: op, Err: err}
+	}
+
+	tplD := tplData{
+		PreHeader: m.PreHeader,
+		Options:   m.Deps.Options,
+		Site:      m.Deps.Site.Global(),
+		Data:      data,
+	}
+
+	var buf bytes.Buffer
+	err = tpl.ExecuteTemplate(&buf, "", tplD)
+	if err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error executing text template: " + file, Operation: op, Err: err}
 	}
 
 	return buf.String(), nil
