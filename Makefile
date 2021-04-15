@@ -26,10 +26,10 @@ lint:
 	golangci-lint run ./api/...
 
 test:
-	go clean -testcache && go test $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test )
+	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test )
 
 test-v:
-	go clean -testcache && go test $$(go list ./... | grep -v /res/ | grep -v /api/mocks/) -v
+	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/) -v
 
 install:
 	go install verbis

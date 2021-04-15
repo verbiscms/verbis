@@ -162,7 +162,6 @@ func createTempFile(m *multipart.FileHeader) (string, *multipart.File, func(), e
 func validateFile(file *multipart.File, size int64) (string, error) { //nolint
 	const op = "Forms.validateFile"
 
-
 	typ, err := mimetype.DetectReader(*file)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INVALID, Message: "Unable to detect filetype", Operation: op, Err: err}

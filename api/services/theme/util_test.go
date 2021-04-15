@@ -10,7 +10,7 @@ import (
 	"runtime"
 )
 
-func (t *ThemeTestSuite) TestSite_Util() {
+func (t *ThemeTestSuite) TestTheme_Util() {
 	if runtime.GOOS == "windows" {
 		t.T().Skip("Skipping for pattern matches on windows.")
 	}
