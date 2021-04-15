@@ -82,8 +82,6 @@ const (
 	MasterTplLayout = "layout"
 )
 
-// HealthCheck
-//
 // HealthCheck performs a check on the environment and
 // mail client to see if mail can be sent with the
 // current configuration.
