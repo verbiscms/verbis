@@ -69,9 +69,10 @@ func (s *Store) FindByUUID(uniq uuid.UUID) (domain.Form, error) {
 	}
 
 	fields, err := s.fields.Find(form.Id)
-	if err == nil {
-		form.Fields = fields
+	if err != nil {
+		return domain.Form{}, err
 	}
+	form.Fields = fields
 
 	submission, err := s.submissions.Find(form.Id)
 	if err == nil {
