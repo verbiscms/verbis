@@ -40,12 +40,16 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
+	// From here
 	if len(form.Fields) == 0 {
 		api.Respond(ctx, http.StatusBadRequest, "No fields attached to form", err)
 		return
 	}
 
 	form.Body = service.ToStruct(form)
+
+	// to here should be in the service ^
+
 	err = ctx.ShouldBind(form.Body)
 	if err != nil {
 		// If file has an empty value, no validation data is returned.
@@ -53,6 +57,7 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
+	// service should be atatched to handler
 	values, attachments, err := service.NewReader(&form, f.Paths.Storage).Values()
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)

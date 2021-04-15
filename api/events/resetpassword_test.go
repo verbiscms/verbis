@@ -18,7 +18,7 @@ func (t *EventTestSuite) Test_ResetPasswordDispatch() {
 		"Success": {
 			ResetPassword{
 				User: domain.UserPart{},
-				Url:  "token",
+				URL:  "token",
 			},
 			false,
 			nil,

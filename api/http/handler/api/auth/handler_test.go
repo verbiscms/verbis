@@ -7,6 +7,7 @@ package auth
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	events "github.com/ainsleyclark/verbis/api/mocks/events"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
@@ -38,12 +39,18 @@ func (t *AuthTestSuite) Setup(mf func(m *mocks.Repository)) *Auth {
 	if mf != nil {
 		mf(m)
 	}
-	d := &deps.Deps{
-		Store: &store.Repository{
-			Auth: m,
+
+	mr := events.Dispatcher{}
+	mr.On("")
+
+	return &Auth{
+		Deps: &deps.Deps{
+			Store: &store.Repository{
+				Auth: m,
+			},
 		},
+		resetPassword: nil,
 	}
-	return New(d)
 }
 
 var (

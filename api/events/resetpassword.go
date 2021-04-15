@@ -18,7 +18,7 @@ import (
 type ResetPassword struct {
 	mail *mail
 	User domain.UserPart
-	Url  string
+	URL  string
 }
 
 // Creates a new ResetPassword.
@@ -46,7 +46,7 @@ func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachme
 
 	rp, ok := data.(ResetPassword)
 	if !ok {
-		return &errors.Error{Code: errors.INTERNAL, Message: "ResetPassword should be passed to dispatch", Operation: op, Err: WrongTypeErr}
+		return &errors.Error{Code: errors.INTERNAL, Message: "ResetPassword should be passed to dispatch", Operation: op, Err: ErrWrongType}
 	}
 
 	go r.mail.Send(rp, recipients, attachments)

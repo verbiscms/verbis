@@ -46,7 +46,7 @@ func (r *ChangedPassword) Dispatch(data interface{}, recipients []string, attach
 
 	cp, ok := data.(ChangedPassword)
 	if !ok {
-		return &errors.Error{Code: errors.INTERNAL, Message: "ChangedPassword should be passed to dispatch", Operation: op, Err: WrongTypeErr}
+		return &errors.Error{Code: errors.INTERNAL, Message: "ChangedPassword should be passed to dispatch", Operation: op, Err: ErrWrongType}
 	}
 
 	go r.mail.Send(cp, recipients, attachments)

@@ -237,7 +237,7 @@ func (c *Convert) parseContent(content string) (string, []FailedMedia, error) {
 		//	return ""
 		//}
 		//
-		//return media.Url
+		//return media.URL
 		return ""
 	})
 
