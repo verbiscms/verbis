@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-func (t *ThemeTestSuite) TestSite_Templates() {
+func (t *ThemeTestSuite) TestTheme_Templates() {
 	tt := map[string]struct {
 		theme string
 		want  interface{}
@@ -17,9 +17,9 @@ func (t *ThemeTestSuite) TestSite_Templates() {
 		"Success": {
 			"verbis",
 			domain.Templates{
-				{Key: "nested/template-nested", Name: "Nested/template Nested"},
-				{Key: "template-hyphen", Name: "template Hyphen"},
-				{Key: "template", Name: "template"},
+				{Key: "nested/template-nested", Name: "Nested/Template Nested"},
+				{Key: "template-hyphen", Name: "Template Hyphen"},
+				{Key: "template", Name: "Template"},
 			},
 		},
 		"Wrong Path": {

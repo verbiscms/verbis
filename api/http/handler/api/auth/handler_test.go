@@ -7,11 +7,14 @@ package auth
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/logger"
 	events "github.com/ainsleyclark/verbis/api/mocks/events"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"io/ioutil"
 	"testing"
 )
 
@@ -35,22 +38,33 @@ func TestAuth(t *testing.T) {
 // A helper to obtain a mock categories handler
 // for testing.
 func (t *AuthTestSuite) Setup(mf func(m *mocks.Repository)) *Auth {
+	logger.SetOutput(ioutil.Discard)
 	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)
 	}
-
-	mr := events.Dispatcher{}
-	mr.On("")
-
-	return &Auth{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Auth: m,
-			},
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Auth: m,
 		},
-		resetPassword: nil,
+		Env:     &environment.Env{},
+		Options: &domain.Options{},
 	}
+	return New(d)
+}
+
+// Setup
+//
+// A helper to obtain a mock categories handler
+// for testing.
+func (t *AuthTestSuite) SetupDispatcher(mf func(m *mocks.Repository), ms func(m *events.Dispatcher)) *Auth {
+	a := t.Setup(mf)
+	mr := &events.Dispatcher{}
+	if ms != nil {
+		ms(mr)
+	}
+	a.resetPassword = mr
+	return a
 }
 
 var (

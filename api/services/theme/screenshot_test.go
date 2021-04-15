@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-func (t *ThemeTestSuite) TestSite_Screenshot() {
+func (t *ThemeTestSuite) TestTheme_Screenshot() {
 	tt := map[string]struct {
 		theme string
 		file  string
