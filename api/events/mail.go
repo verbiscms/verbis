@@ -185,7 +185,7 @@ func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 	}
 
 	plainText, err := m.ExecuteText(m.PlainTextTemplate, data)
-	if err == nil {
+	if err != nil {
 		logger.WithError(err).Error()
 		return
 	}
@@ -233,13 +233,13 @@ func (m *mail) ExecuteHTML(file string, data interface{}) (string, error) {
 func (m *mail) ExecuteText(file string, data interface{}) (string, error) {
 	const op = "Mail.ExecuteText"
 
-	tmpl, err := template.New(file).ParseFiles(m.TplRoot + string(os.PathSeparator) + file + MailTextExtension)
+	tmpl, err := template.New(file + MailTextExtension).ParseFiles(m.TplRoot + string(os.PathSeparator) + file + MailTextExtension)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error parsing text template: " + file, Operation: op, Err: err}
 	}
 
 	var buf bytes.Buffer
-	err = tmpl.ExecuteTemplate(&buf, file, m.GetTplData(data))
+	err = tmpl.ExecuteTemplate(&buf, file+MailTextExtension, m.GetTplData(data))
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error executing text template: " + file, Operation: op, Err: err}
 	}
