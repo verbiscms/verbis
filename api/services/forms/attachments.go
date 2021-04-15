@@ -142,6 +142,11 @@ func createTempFile(m *multipart.FileHeader) (string, *multipart.File, func(), e
 		return "", nil, t, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
 	}
 
+	_, err = file.Seek(0, 0)
+	if err != nil {
+		return "", nil, nil, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking file", Operation: op, Err: err}
+	}
+
 	return path, &file, t, nil
 }
 
@@ -156,6 +161,7 @@ func createTempFile(m *multipart.FileHeader) (string, *multipart.File, func(), e
 // TODO: ptrToRefParam: consider `file' to be of non-pointer type
 func validateFile(file *multipart.File, size int64) (string, error) { //nolint
 	const op = "Forms.validateFile"
+
 
 	typ, err := mimetype.DetectReader(*file)
 	if err != nil {
