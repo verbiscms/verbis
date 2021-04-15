@@ -49,7 +49,7 @@ func (r *FormSend) Dispatch(data interface{}, recipients []string, attachments c
 
 	fs, ok := data.(FormSend)
 	if !ok {
-		return &errors.Error{Code: errors.INTERNAL, Message: "FormSend should be passed to dispatch", Operation: op, Err: WrongTypeErr}
+		return &errors.Error{Code: errors.INTERNAL, Message: "FormSend should be passed to dispatch", Operation: op, Err: ErrWrongType}
 	}
 
 	if fs.Form == nil {

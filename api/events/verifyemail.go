@@ -36,7 +36,7 @@ package events
 //
 //	rp, ok := data.(VerifyEmail)
 //	if !ok {
-//		return &errors.Error{Code: errors.INTERNAL, Message: "VerifyEmail should be passed to dispatch", Operation: op, Err: WrongTypeErr}
+//		return &errors.Error{Code: errors.INTERNAL, Message: "VerifyEmail should be passed to dispatch", Operation: op, Err: ErrWrongType}
 //	}
 //
 //	rp.Token = encryption.MD5Hash(strconv.Itoa(rp.User.Id) + rp.User.Email)

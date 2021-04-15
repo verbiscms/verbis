@@ -23,6 +23,7 @@ type Handler interface {
 // Forms defines the handler for all form routes.
 type Forms struct {
 	*deps.Deps
+	// Form send email event.
 	formSend events.Dispatcher
 }
 

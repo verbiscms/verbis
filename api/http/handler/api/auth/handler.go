@@ -22,7 +22,7 @@ type Handler interface {
 // Auth defines the handler for Authentication methods
 type Auth struct {
 	*deps.Deps
-	// Reset password event.
+	// Reset password email event.
 	resetPassword events.Dispatcher
 }
 

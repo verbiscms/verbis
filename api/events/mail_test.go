@@ -47,6 +47,37 @@ func (t *EventTestSuite) SetupSuite() {
 	t.testPath = t.apiPath + TestPath
 }
 
+func (t *EventTestSuite) Setup(withErr bool) *deps.Deps {
+	buf := &bytes.Buffer{}
+	logger.SetOutput(buf)
+	t.logger = buf
+
+	mt := &tpl.TemplateHandler{}
+	m := &tpl.TemplateExecutor{}
+
+	mt.On("Prepare", mock.Anything).Return(m)
+
+	if withErr {
+		m.On("Execute", &bytes.Buffer{}, mock.Anything, mock.Anything).
+			Return(mock.Anything, fmt.Errorf("withErr"))
+	} else {
+		m.On("Execute", &bytes.Buffer{}, mock.Anything, mock.Anything).
+			Return(mock.Anything, nil)
+	}
+
+	ms := &site.Repository{}
+	ms.On("Global").Return(domain.Site{})
+
+	d := &deps.Deps{
+		Site:    ms,
+		Options: &domain.Options{},
+	}
+
+	d.SetTmpl(mt)
+
+	return d
+}
+
 type mockMailError struct{}
 
 func (m *mockMailError) Send(t *client.Transmission) (client.Response, error) {
@@ -196,37 +227,6 @@ func (t *EventTestSuite) TestNew() {
 			t.Equal(e, got.event)
 		})
 	}
-}
-
-func (t *EventTestSuite) Setup(error bool) *deps.Deps {
-	buf := &bytes.Buffer{}
-	logger.SetOutput(buf)
-	t.logger = buf
-
-	mt := &tpl.TemplateHandler{}
-	m := &tpl.TemplateExecutor{}
-
-	mt.On("Prepare", mock.Anything).Return(m)
-
-	if error {
-		m.On("Execute", &bytes.Buffer{}, mock.Anything, mock.Anything).
-			Return(mock.Anything, fmt.Errorf("error"))
-	} else {
-		m.On("Execute", &bytes.Buffer{}, mock.Anything, mock.Anything).
-			Return(mock.Anything, nil)
-	}
-
-	ms := &site.Repository{}
-	ms.On("Global").Return(domain.Site{})
-
-	d := &deps.Deps{
-		Site:    ms,
-		Options: &domain.Options{},
-	}
-
-	d.SetTmpl(mt)
-
-	return d
 }
 
 func (t *EventTestSuite) Test_MailSend() {

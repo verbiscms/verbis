@@ -59,18 +59,18 @@ type tplData struct {
 }
 
 var (
-	// WrongTypeErr is returned by an event when the wrong
+	// ErrWrongType is returned by an event when the wrong
 	// type is passed to Dispatch
-	WrongTypeErr = errors.New("wrong type passed to dispatch")
+	ErrWrongType = errors.New("wrong type passed to dispatch")
 )
 
 const (
 	// MailDir defines the directory where mail text and HTML
 	// templates are stored.
 	MailDir = "mail"
-	// MailHtmlExtension defines the extension for executing
+	// MailHTMLExtension defines the extension for executing
 	// HTML templates.
-	MailHtmlExtension = ".cms"
+	MailHTMLExtension = ".cms"
 	// MailTextExtension defines the extension for executing
 	// text templates.
 	MailTextExtension = ".txt"
@@ -212,7 +212,7 @@ func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 func (m *mail) ExecuteHTML(file string, data interface{}) (string, error) {
 	exec := m.Deps.Tmpl().Prepare(&tpl.Config{
 		Root:      m.TplRoot,
-		Extension: MailHtmlExtension,
+		Extension: MailHTMLExtension,
 		Master:    MasterTplLayout,
 	})
 

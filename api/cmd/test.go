@@ -37,7 +37,7 @@ var (
 					LastName:  "Clark",
 					Email:     "ainsley@reddico.co.uk",
 				},
-				Url: "http://127.0.0.1",
+				URL: "http://127.0.0.1",
 			}, []string{"ainsley@reddico.co.uk"}, nil)
 
 			if err != nil {

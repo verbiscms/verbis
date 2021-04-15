@@ -45,7 +45,7 @@ func (a *Auth) SendResetPassword(ctx *gin.Context) {
 
 	err = a.resetPassword.Dispatch(events.ResetPassword{
 		User: user,
-		Url:  a.Deps.Options.SiteUrl + "/admin/password/reset/" + token,
+		URL:  a.Deps.Options.SiteUrl + "/admin/password/reset/" + token,
 	}, []string{user.Email}, nil)
 
 	if err != nil {
