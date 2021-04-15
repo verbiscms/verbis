@@ -26,9 +26,10 @@ type ResetPassword struct {
 // Creates a new ResetPassword.
 func NewResetPassword(d *deps.Deps) *ResetPassword {
 	e := event{
-		Subject:   SubjectPrefix + "Reset Password",
-		Template:  "reset-password",
-		PlainText: "",
+		Subject:           SubjectPrefix + "Reset Password",
+		Template:          "reset-password",
+		PlainTextTemplate: "reset-password",
+		PreHeader:         SubjectPrefix + "Reset your password within a Verbis installation.",
 	}
 
 	mailer, err := newMailer(d, e)
@@ -52,7 +53,7 @@ func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachme
 		return &errors.Error{Code: errors.INTERNAL, Message: "ResetPassword should be passed to dispatch", Operation: op, Err: WrongTypeErr}
 	}
 
-	go r.mail.Send(rp, recipients, attachments)
+	r.mail.Send(rp, recipients, attachments)
 
 	return nil
 }

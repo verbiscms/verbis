@@ -38,14 +38,12 @@ var (
 					Email:     "ainsley@reddico.co.uk",
 				},
 				Url: "http://127.0.0.1",
-			}, nil, nil)
+			}, []string{"ainsley@reddico.co.uk"}, nil)
 
 			if err != nil {
 				color.Red.Println(err)
 				return
 			}
-
-			color.Green.Println("Sent :)")
 		},
 	}
 )
