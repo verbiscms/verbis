@@ -31,7 +31,7 @@ type Forms struct {
 // Creates a new forms handler.
 func New(d *deps.Deps) *Forms {
 	return &Forms{
-		Deps: d,
-		//	formSend: events.NewFormSend(d),
+		Deps:     d,
+		formSend: events.NewFormSend(d),
 	}
 }

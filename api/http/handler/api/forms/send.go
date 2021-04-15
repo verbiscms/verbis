@@ -7,6 +7,7 @@ package forms
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/events"
 	//"github.com/ainsleyclark/verbis/api/events"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	service "github.com/ainsleyclark/verbis/api/services/forms"
@@ -39,8 +40,12 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
-	form.Body = service.ToStruct(form)
+	if len(form.Fields) == 0 {
+		api.Respond(ctx, http.StatusBadRequest, "No fields attached to form", err)
+		return
+	}
 
+	form.Body = service.ToStruct(form)
 	err = ctx.ShouldBind(form.Body)
 	if err != nil {
 		// If file has an empty value, no validation data is returned.
@@ -48,7 +53,7 @@ func (f *Forms) Send(ctx *gin.Context) {
 		return
 	}
 
-	values, _, err := service.NewReader(&form, f.Paths.Storage).Values()
+	values, attachments, err := service.NewReader(&form, f.Paths.Storage).Values()
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
@@ -70,14 +75,14 @@ func (f *Forms) Send(ctx *gin.Context) {
 	}
 
 	if form.EmailSend {
-		//err := f.formSend.Dispatch(events.FormSend{
-		//	Form:   &form,
-		//	Values: values,
-		//}, nil, attachments.ToMail())
-		//if err != nil {
-		//	api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
-		//	return
-		//}
+		err := f.formSend.Dispatch(events.FormSend{
+			Form:   &form,
+			Values: values,
+		}, form.GetRecipients(), attachments.ToMail())
+		if err != nil {
+			api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+			return
+		}
 	}
 
 	api.Respond(ctx, http.StatusOK, "Successfully sent form with ID: "+strconv.Itoa(form.Id), nil)
