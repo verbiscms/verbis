@@ -21,8 +21,6 @@ type ResetPassword struct {
 	Url  string
 }
 
-// NewResetPassword
-//
 // Creates a new ResetPassword.
 func NewResetPassword(d *deps.Deps) *ResetPassword {
 	e := event{
@@ -42,8 +40,6 @@ func NewResetPassword(d *deps.Deps) *ResetPassword {
 	}
 }
 
-// Dispatch
-//
 // Dispatches the ResetPassword event.
 func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachments client.Attachments) error {
 	const op = "Events.ResetPassword.Dispatch"
@@ -53,7 +49,7 @@ func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachme
 		return &errors.Error{Code: errors.INTERNAL, Message: "ResetPassword should be passed to dispatch", Operation: op, Err: WrongTypeErr}
 	}
 
-	r.mail.Send(rp, recipients, attachments)
+	go r.mail.Send(rp, recipients, attachments)
 
 	return nil
 }
