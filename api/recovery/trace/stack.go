@@ -5,9 +5,6 @@
 package trace
 
 import (
-	"github.com/ainsleyclark/verbis/api/recovery/internal"
-	"path/filepath"
-	"runtime"
 	"strings"
 )
 
@@ -68,43 +65,27 @@ func (s *Stack) Find(fn string) *File {
 func (t *trace) Trace(depth, skip int) Stack {
 	var stack Stack
 
-	for c := skip; c < depth; c++ {
-		t, file, line, ok := runtime.Caller(c)
-
-		if !ok {
-			continue
-		}
-
-		b := strings.Replace(file, "/Users/ainsley/Desktop/Reddico/apis", "", -1)
-		contents := internal.Get(b)
-
-		stack.Append(&File{
-			File:     file,
-			Line:     line,
-			Function: runtime.FuncForPC(t).Name(),
-			Contents: string(contents),
-			Language: Language(file),
-		})
-	}
+	//for c := skip; c < depth; c++ {
+	//	t, file, line, ok := runtime.Caller(c)
+	//
+	//	if !ok {
+	//		continue
+	//	}
+	//
+	//	b := strings.Replace(file, "/Users/ainsley/Desktop/Reddico/apis", "", -1)
+	//	//contents := recovery.Get(b)
+	//
+	//	stack.Append(&File{
+	//		File:     file,
+	//		Line:     line,
+	//		Function: runtime.FuncForPC(t).Name(),
+	//		Contents: string(contents),
+	//	})
+	//}
 
 	return stack
 }
 
-// language
-//
-// Returns the language used in the file for syntax
-// highlighting.
-func Language(path string) string {
-	ext := filepath.Ext(path)
-	switch ext {
-	case ".go":
-		return "go"
-	case ".s":
-		return "assembly"
-	default:
-		return "handlebars"
-	}
-}
 
 // FileStack defines the stack used for the error page
 type File struct {
