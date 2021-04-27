@@ -79,8 +79,8 @@ func New(cfg *config.Config) *Store {
 //
 type postsRaw struct {
 	domain.Post
-	Author   domain.User     `db:"author"`
-	Category domain.Category `db:"category"`
+	Author   domain.User      `db:"author"`
+	Category *domain.Category `db:"category"`
 	Field    struct {
 		Id            int        `db:"field_id"` //nolint
 		PostId        int        `db:"post_id"`  //nolint
@@ -101,9 +101,6 @@ func selectStmt(query string) string {
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
        roles.id 'author.roles.id', roles.name 'author.roles.name', roles.description 'author.roles.description',
        pf.uuid 'field.uuid',
-       CASE WHEN categories.id IS NULL THEN 0 ELSE categories.id END AS 'category.id',
-       CASE WHEN categories.name IS NULL THEN '' ELSE categories.name END AS 'category.name',
-       CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource',
        CASE WHEN pf.id IS NULL THEN 0 ELSE pf.id END AS 'field.field_id',
        CASE WHEN pf.type IS NULL THEN "" ELSE pf.type END AS 'field.type',
        CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
