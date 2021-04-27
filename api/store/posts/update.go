@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/gookit/color"
 )
 
 // Update
@@ -48,6 +49,8 @@ func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 		Column("published_at", p.PublishedAt).
 		Column("updated_at", "NOW()").
 		Where("id", "=", p.Id)
+
+	color.Green.Println(q.Build())
 
 	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
