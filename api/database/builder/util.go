@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 /**
@@ -143,6 +144,12 @@ func printInterface(value reflect.Value) (string, bool) {
 				return "", false
 			}
 			return val, true
+		}
+	case reflect.Struct:
+		i := value.Interface()
+		switch t := i.(type) {
+		case time.Time:
+			v = "'" + sanitiseString(t.Format("2006-01-02 15:04:05")) + "'"
 		}
 	case reflect.Bool:
 		if value.Bool() {
