@@ -111,13 +111,20 @@
 											<span>Media</span>
 										</router-link>
 									</li><!-- /Media -->
+									<!-- Forms -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'forms' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'forms' }">
+											<i class="feather feather-inbox"></i>
+											<span>Forms</span>
+										</router-link>
+									</li><!-- /Forms -->
 									<!-- Fields -->
 									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'fields' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'fields' }">
 											<i class="feather feather-layout"></i>
 											<span>Fields</span>
 										</router-link>
-									</li><!-- /Users -->
+									</li><!-- /Fields -->
 									<!-- Users -->
 									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'users' || activePage === 'edit-user' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'users' }">

@@ -53,7 +53,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator.GET("/themes", h.Themes.List)
 		operator.GET("/themes/:name", h.Themes.Find)
 
-		// Theme Theme
+		// Themes
 		operator.GET("/layouts", h.Themes.Layouts)
 		operator.GET("/templates", h.Themes.Templates)
 		operator.GET("/config", h.Themes.Config)
@@ -106,6 +106,10 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 
 		// Cache
 		operator.POST("/cache", h.Cache.Clear)
+
+		// Forms
+		operator.GET("/forms", h.Forms.List)
+		operator.GET("/forms/:id", h.Forms.Find)
 
 		// Administrator
 		admin := api.Group("")
