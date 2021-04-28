@@ -108,6 +108,18 @@ const routes = [
 		meta: { transitionName : 'fade' },
 	},
 	{
+		path: '/forms',
+		name: 'forms',
+		component: () => import('../views/content/Forms.vue'),
+		meta: { transitionName : 'fade' },
+	},
+	{
+		path: '/forms/:id',
+		name: 'forms-single',
+		component: () => import('../views/content/FormsSingle.vue'),
+		meta: { transitionName : 'fade' },
+	},
+	{
 		path: '/users',
 		name: 'users',
 		component: () => import('../views/content/Users.vue'),
