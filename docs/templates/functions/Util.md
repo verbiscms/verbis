@@ -93,3 +93,30 @@ Returns `[1 2 3]`
 {{ slice 1 2 3 | explode "," }}
 ```
 ___
+
+## seq
+
+Creates a sequence of integers, useful for using an integer to loop over as there is no
+built-in extension for a traditional `for` loop in GoLang templates.
+
+### Accepts:
+
+`size interface{}` The size of the array
+
+### Returns:
+
+`[]int64, error` A slice of integers to range over, or an error if the size paramater
+could not be cast or is less than or equal to zero.
+
+### Examples:
+
+**Create a loop of 5**
+
+Returns `[1 2 3 4 5]`
+
+```gotemplate
+{{ range $val := seq 5 }}
+    {{ $val }}
+{{ end }}
+```
+___
