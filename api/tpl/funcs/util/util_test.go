@@ -178,3 +178,38 @@ func TestNamespace_Implode(t *testing.T) {
 		})
 	}
 }
+
+func TestNamespace_Seq(t *testing.T) {
+	tt := map[string]struct {
+		input interface{}
+		want  interface{}
+	}{
+		"Positive": {
+			5,
+			[]int64{0, 1, 2, 3, 4},
+		},
+		"Negative": {
+			-5,
+			"sequence must be > 0",
+		},
+		"Zero": {
+			0,
+			"sequence must be > 0",
+		},
+		"Cast Error": {
+			make(chan int64),
+			"unable to cast",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got, err := ns.Seq(test.input)
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
+		})
+	}
+}

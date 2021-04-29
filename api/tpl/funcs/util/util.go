@@ -5,6 +5,8 @@
 package util
 
 import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
 	"reflect"
 	"strings"
@@ -90,4 +92,30 @@ func (ns *Namespace) Implode(glue, slice interface{}) string {
 	default:
 		return ""
 	}
+}
+
+// Seq
+//
+// Creates a sequence of integers.
+//
+// Example: {{ seq 5 }}
+// Returns: `[1 2 3 4 5]`
+func (ns *Namespace) Seq(size interface{}) ([]int64, error) {
+	const op = "Templates.Seq"
+
+	s, err := cast.ToInt64E(size)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.TEMPLATE, Message: "Error casting interface to integer", Operation: op, Err: err}
+	}
+
+	if s <= 0 {
+		return nil, &errors.Error{Code: errors.TEMPLATE, Message: "Sequence cannot be negative", Operation: op, Err: fmt.Errorf("sequence must be > 0")}
+	}
+
+	seq := make([]int64, 0)
+	for i := int64(0); i < s; i++ {
+		seq = append(seq, i)
+	}
+
+	return seq, nil
 }
