@@ -86,7 +86,6 @@ func (t *trace) Trace(depth, skip int) Stack {
 	return stack
 }
 
-
 // FileStack defines the stack used for the error page
 type File struct {
 	File     string
