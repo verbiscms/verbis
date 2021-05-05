@@ -58,6 +58,12 @@ func init() {
 			},
 		)
 
+		ns.AddMethodMapping(ctx.Seq,
+			"seq",
+			nil,
+			nil,
+		)
+
 		return ns
 	}
 
