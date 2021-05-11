@@ -13,9 +13,10 @@
 commitmsg=$1
 
 # Remove and create the build directory
-rm -rf ./build/mac
-rm -rf ./build/linux
-rm -rf ./build/windows
+cd ./build || exit
+git rm -rf .
+git clean -fxd
+cd ..
 
 function build() {
 
@@ -26,46 +27,22 @@ function build() {
 	fi
 
 	# Get the build path
-	os=$1
-	path=./build/$1
-	mkdir $path
+	path=./build
 
-	# Mac
-    if [[ $1 == "mac" ]]
-		then
-			echo "Building for mac..."
-			CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "./build/mac/verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-			CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "./build/mac/verbis-linux" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-			CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o "./build/mac/verbis-windows.exe" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-
-			CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o verbis -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-    fi
-
-	# Linux
-    if [[ $1 == "linux" ]]
-		then
-			echo "Building for linux..."
-		  	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "./build/linux/verbis" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-		  	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "./build/linux/verbis-mac" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-		  	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o "./build/linux/verbis-windows.exe" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-    fi
-
-	# Windows
-    if [[ $1 == "windows" ]]
-		then
-			echo "Building for windows..."
-		  	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o "./build/windows/verbis.exe" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-		  	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "./build/windows/verbis-mac" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-		  	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "./build/windows/verbis-linux" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
-    fi
+	# Exec
+  echo "Building executable..."
+  CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "./build/verbis-mac" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
+  CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "./build/verbis-linux" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
+  CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o "./build/verbis-windows.exe" -ldflags="-X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false'"
 
 	# Build Vue
-	cd admin
+	cd admin || exit
 	npm run --silent --no-progress build
 	cd ../
 
 	# Build Web
-	cd api/web
+
+	cd api/web || exit
 	npm run --silent --no-progress prod
 	cd ../../
 
@@ -83,7 +60,7 @@ function build() {
 
 	# Admin
 	mkdir $path/admin
-	rsync -av --quiet admin/dist/ build/$os/admin/
+	rsync -av --quiet admin/dist/ build/admin/
 
 	# Storage
 	mkdir $path/storage && touch $path/storage/.keep
@@ -106,14 +83,12 @@ function build() {
 }
 
 # Build for
-build mac
-build linux
-build windows
+build
 
 # Commit
 echo "Commiting & pushing build to GitHub..."
 pwd
-cd ./build
+cd ./build || exit
 pwd
 git add .
 git commit -m "$commitmsg"

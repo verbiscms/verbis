@@ -1,5 +1,0 @@
-{{ define "content" }}
-
-    <h1>Yey</h1>
-
-{{ end }}
