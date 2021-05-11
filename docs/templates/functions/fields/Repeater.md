@@ -65,7 +65,9 @@ to output its contents.
 This example demonstrates how to loop over nested repeater fields. This can be confusing stuff, however Verbis aims
 to simplify the process of using repeaters recursively. 
 
-Similar to the first example,t
+Similar to the first example, a range loop is used to loop over the parent Repeater, however to obtain the nested repeater,
+we just need to use the `repeater` function along with the row's `SubField` method. This will convert all the nested data
+to data that you are able to loop over.. 
 
 
 ```gotemplate
