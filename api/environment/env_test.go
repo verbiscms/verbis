@@ -5,6 +5,7 @@
 package environment
 
 import (
+	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
@@ -18,7 +19,9 @@ import (
 // testing.
 type EnvTestSuite struct {
 	suite.Suite
-	apiPath string
+	apiPath     string
+	envPath     string
+	originalEnv []byte
 }
 
 // TestEnv
@@ -36,6 +39,7 @@ func (t *EnvTestSuite) SetupSuite() {
 	wd, err := os.Getwd()
 	t.NoError(err)
 	t.apiPath = filepath.Join(filepath.Dir(wd), "")
+	t.envPath = t.apiPath + "/test/testdata/env" + string(os.PathSeparator) + ".env"
 }
 
 // ChangePath
@@ -50,6 +54,31 @@ func (t *EnvTestSuite) ChangePath(path string) func() {
 	}
 	basePath = t.apiPath + path
 	return fn
+}
+
+// Original
+//
+// Saves the original .env test file in bytes.
+func (t *EnvTestSuite) Original() {
+	file, err := ioutil.ReadFile(t.envPath)
+	if err != nil {
+		t.Fail("Error reading test env path")
+	}
+	t.originalEnv = file
+}
+
+// Overwrite
+//
+// Overwrites the original .env test file.
+func (t *EnvTestSuite) Overwrite() {
+	file, error := os.Create(t.envPath)
+	if error != nil {
+		t.Fail("Error removing original test env")
+	}
+	_, err := file.WriteString(string(t.originalEnv))
+	if err != nil {
+		t.Fail("Error creating original test env")
+	}
 }
 
 func (t *EnvTestSuite) TestLoad() {
@@ -133,6 +162,53 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 		t.Run(name, func() {
 			got := test.input.Validate()
 			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *EnvTestSuite) TestEnv_Write() {
+	tt := map[string]struct {
+		key   string
+		value interface{}
+		path  string
+		want  interface{}
+	}{
+		"Success": {
+			"key",
+			"value",
+			"/test/testdata/env",
+			nil,
+		},
+		"Bad Value": {
+			"",
+			make(chan int),
+			"/test/testdata/env",
+			"Error casting value to string",
+		},
+		"Error": {
+			"",
+			"",
+			"wrongpath",
+			"Error reading env file with the path",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			teardown := t.ChangePath(test.path)
+			defer teardown()
+
+			t.Original()
+			defer t.Overwrite()
+
+			env := &Env{}
+			err := env.Write(test.key, test.value)
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+
+			t.Nil(err)
 		})
 	}
 }

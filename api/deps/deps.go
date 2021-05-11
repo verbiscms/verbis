@@ -49,6 +49,8 @@ type Deps struct {
 	// template
 	tmpl tpl.TemplateHandler
 
+	Installed bool
+
 	Running bool
 }
 
@@ -90,6 +92,8 @@ type Config struct {
 	Config *domain.ThemeConfig
 
 	Paths paths.Paths
+
+	Installed bool
 
 	Running bool
 }

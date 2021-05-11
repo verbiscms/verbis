@@ -5,11 +5,9 @@
 package cmd
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/events"
-	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
-	"github.com/gookit/color"
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/spf13/cobra"
 )
 
@@ -18,32 +16,19 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			// Run doctor
-			cfg, _, err := doctor(true)
+			env, err := environment.Load()
 			if err != nil {
-				printError(err.Error())
+				fmt.Println(err)
 			}
 
-			d := deps.New(*cfg)
-
-			// Set dependencies
-			d.SetTmpl(tplimpl.New(d))
-
-			dispatch := events.NewResetPassword(d)
-
-			err = dispatch.Dispatch(events.ResetPassword{
-				User: domain.UserPart{
-					FirstName: "Ainsley",
-					LastName:  "Clark",
-					Email:     "ainsley@reddico.co.uk",
-				},
-				URL: "http://127.0.0.1",
-			}, []string{"ainsley@reddico.co.uk"}, nil)
-
+			// Get the database and ping
+			db, err := database.New(env)
 			if err != nil {
-				color.Red.Println(err)
-				return
+				fmt.Println(err)
 			}
+
+			fmt.Println(db.Tables())
+
 		},
 	}
 )
