@@ -11,18 +11,23 @@ You are able to access any of the properties below to output your desired conten
 
 ```go
 type Post struct {
- 	Id		        int							
- 	UUID                    uuid.UUID				
- 	Slug			string 						
- 	Title			string 				
- 	Status			string						
- 	Resource		*string 					
- 	PageTemplate            string				
- 	Layout			string						
- 	UserId 			int 						
- 	PublishedAt		*time.Time					
- 	CreatedAt		*time.Time					
- 	UpdatedAt		*time.Time					
+      Id                int           
+      UUID              uuid.UUID  
+      Slug              string        
+      Permalink         string   
+      Title             string     
+      Status            string        
+      Resource          string        
+      PageTemplate      string        
+      PageLayout        string      
+      CodeInjectionHead string        
+      CodeInjectionFoot string      
+      UserId            int         
+      IsArchive         bool
+      PublishedAt       *time.Time    
+      CreatedAt         time.Time     
+      UpdatedAt         time.Time    
+      SeoMeta           PostOptions  
  }
 ```
 
