@@ -1,7 +1,6 @@
 .DS_Store
 node_modules
 /dist
-/build
 
 .idea
 .idea/
@@ -27,5 +26,6 @@ pnpm-debug.log*
 *.sw?
 .DS_Store
 
-
-/storage/uploads
+# Verbis specific
+/build
+/storage/uploadsdist/
