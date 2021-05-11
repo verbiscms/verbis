@@ -28,4 +28,5 @@ pnpm-debug.log*
 
 # Verbis specific
 /build
-/storage/uploadsdist/
+/storage/uploads
+dist/
