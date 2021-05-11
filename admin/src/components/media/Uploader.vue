@@ -58,7 +58,7 @@
 										<input id="media-title" type="text" class="form-input form-input-white" v-model="selectedMedia.title" @keyup="save">
 									</div><!-- /Title -->
 									<!-- Alt Text -->
-									<div class="form-group" v-if="getMediaType(selectedMedia.type) !== 'file'">
+									<div class="form-group" v-if="getMediaType(selectedMedia.mime) !== 'file'">
 										<label for="media-alt" class="form-label">Alternative text</label>
 										<input id="media-alt" type="text" class="form-input form-input-white" v-model="selectedMedia.alt" @keyup="save">
 									</div><!-- /Alt Text -->
@@ -97,10 +97,10 @@
 										<h6>Uploaded by:</h6>
 										<p>{{ selectedMedia['uploaded_by']['full_name'] }}</p>
 									</div>
-									<!-- Type -->
+									<!-- Mime -->
 									<div class="text-cont">
-										<h6>Type:</h6>
-										<p>{{ selectedMedia.type }}</p>
+										<h6>Mime:</h6>
+										<p>{{ selectedMedia.mime }}</p>
 									</div>
 									<!-- Uploaded at -->
 									<div class="text-cont text-cont-no-margin">
