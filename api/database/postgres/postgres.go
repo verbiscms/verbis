@@ -101,6 +101,10 @@ func (p *Postgres) Install() error {
 	return nil
 }
 
+func (p *Postgres) Tables() ([]string, error) {
+	panic("Implement me")
+}
+
 // Exists
 //
 // CheckExists check's if the database exists.

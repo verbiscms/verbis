@@ -23,6 +23,7 @@ type Driver interface {
 	Schema() string
 	Builder() *builder.Sqlbuilder
 	Install() error
+	Tables() ([]string, error)
 	Dump(path, filename string) error
 	Drop() error
 }

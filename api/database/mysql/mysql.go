@@ -6,7 +6,9 @@ package mysql
 
 import (
 	_ "embed" // Embed Migration
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/builder"
+	"github.com/ainsleyclark/verbis/api/database/internal"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/jmoiron/sqlx"
@@ -47,7 +49,7 @@ func Setup(env *environment.Env) (*MySQL, error) {
 
 	driver, err := sqlx.Connect("mysql", m.connectString())
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Error establishing a database connection", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INVALID, Message: internal.ErrDBConnectionMessage, Operation: op, Err: err}
 	}
 
 	err = driver.Ping()
@@ -112,6 +114,42 @@ func (m *MySQL) Install() error {
 	}
 
 	return nil
+}
+
+// Tables
+//
+// Runs checks on the Verbis DB installation to see if all
+// the tables exist. If some are missing, a slice of
+// strings will be returned containing the table
+// name.
+// Returns internal.ErrTableNotFound if a table wasn't found.
+func (m *MySQL) Tables() ([]string, error) {
+	const op = "MySQL.Tables"
+
+	var failedTables []string
+	for _, table := range internal.Tables {
+
+		q := m.Builder().
+			From("information_schema.tables").
+			Where("table_schema", "=", m.env.DbDatabase).
+			Where("table_name", "=", table).
+			Limit(1).
+			Exists()
+
+		fmt.Println(q)
+
+		var exists bool
+		err := m.driver.QueryRow(q).Scan(&exists)
+		if err != nil {
+			failedTables = append(failedTables, table)
+		}
+	}
+
+	if len(failedTables) > 0 {
+		return failedTables, &errors.Error{Code: errors.INVALID, Message: internal.ErrTableNotFoundMessage, Operation: op, Err: internal.ErrTableNotFound}
+	}
+
+	return nil, nil
 }
 
 // Exists

@@ -9,6 +9,7 @@ import (
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	pkgValidate "github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cast"
 	"strconv"
 
 	"github.com/joho/godotenv"
@@ -87,8 +88,8 @@ var (
 )
 
 const (
-	// The default port Verbis should sit on when none
-	// is defined.
+	// DefaultPort is the default port Verbis should sit
+	// on when none is defined.
 	DefaultPort = 5000
 )
 
@@ -141,6 +142,34 @@ func (e *Env) Validate() validation.Errors {
 		validationErrors := err.(pkgValidate.ValidationErrors)
 		return v.Process(validationErrors)
 	}
+	return nil
+}
+
+// Write
+//
+// Accepts a key, value pair and writes to the .env
+// file when installing.
+func (e *Env) Write(key string, value interface{}) error {
+	const op = "Env.Write"
+
+	val, err := cast.ToStringE(value)
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error casting value to string", Operation: op, Err: err}
+	}
+
+	path := basePath + "/" + envExt
+	env, err := godotenv.Read(path)
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error reading env file with the path " + path, Operation: op, Err: err}
+	}
+
+	env[key] = val
+
+	err = godotenv.Write(env, path)
+	if err != nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error writing env file with the path " + path, Operation: op, Err: err}
+	}
+
 	return nil
 }
 
