@@ -101,6 +101,13 @@ func (r Repeater) HasRows() bool {
 	return len(r) != 0
 }
 
+// Length
+//
+// Returns the amount of rows within the repeater.
+func (r Repeater) Length() int {
+	return len(r)
+}
+
 // SubField
 //
 // Returns a sub field by key or nil if it wasn't found.

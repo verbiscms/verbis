@@ -221,6 +221,39 @@ func (t *FieldTestSuite) TestRepeater_HasRows() {
 	}
 }
 
+func (t *FieldTestSuite) TestRepeater_Length() {
+	tt := map[string]struct {
+		repeater Repeater
+		want     interface{}
+	}{
+		"Zero": {
+			repeater: Repeater{},
+			want:     0,
+		},
+		"Two": {
+			repeater: Repeater{
+				Row{{Id: 1}},
+				Row{{Id: 1}},
+			},
+			want: 2,
+		},
+		"Three": {
+			repeater: Repeater{
+				Row{{Id: 1}},
+				Row{{Id: 1}},
+				Row{{Id: 1}},
+			},
+			want: 3,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.Equal(test.want, test.repeater.Length())
+		})
+	}
+}
+
 func (t *FieldTestSuite) TestRow_SubField() {
 	row := Row{
 		{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},

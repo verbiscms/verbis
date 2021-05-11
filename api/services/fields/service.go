@@ -21,8 +21,8 @@ type FieldService interface {
 }
 
 const (
-	// The separator that defines the split between field
-	// keys for repeaters and flexible content.
+	// SEPARATOR is the separator that defines the split between
+	// field keys for repeaters and flexible content.
 	SEPARATOR = "|"
 )
 
