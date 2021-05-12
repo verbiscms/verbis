@@ -68,9 +68,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
-	fmt.Println(err)
-
 	//db, err := database.New(env)
 	//if err != nil {
 	//	printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))

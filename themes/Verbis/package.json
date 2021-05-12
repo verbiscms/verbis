@@ -1,0 +1,41 @@
+{
+    "name": "html-boilerplate",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "node node_modules/cross-env/src/bin/cross-env.js NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "watch": "node node_modules/cross-env/src/bin/cross-env.js NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "watch-poll": "node node_modules/cross-env/src/bin/cross-env.js NODE_ENV=development node_modules/webpack/bin/webpack.js --watch --watch-poll --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "hot": "node node_modules/cross-env/src/bin/cross-env.js NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "production": "node node_modules/cross-env/src/bin/cross-env.js NODE_ENV=production node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+        "prod": "npm run production",
+        "clean": "prettier --config ./config/.prettierrc --write ./**/*.{css,scss,json,js} --ignore-path ./config/.prettierignore && npx eslint -c ./config/.eslintrc ./src/js/app.js --fix",
+        "lint": "npm run scss-lint && npm run js-lint",
+        "scss-lint": "sass-lint --config ./config/.sass-lint.yml '**/*.scss' --verbose --no-exit",
+        "js-lint": "npx eslint -c ./config/.eslintrc ./src/js/app.js"
+    },
+    "author": "Ainsley Clark",
+    "license": "MIT",
+    "dependencies": {
+        "imagemin-mozjpeg": "^8.0.0",
+        "smoothscroll-polyfill": "^0.4.4",
+        "vanilla-lazyload": "^12.5.1"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.2.5",
+        "browser-sync": "^2.26.7",
+        "browser-sync-webpack-plugin": "^2.2.2",
+        "copy-webpack-plugin": "^5.1.1",
+        "cross-env": "^6.0.3",
+        "eslint": "^6.8.0",
+        "imagemin-webpack-plugin": "^2.4.2",
+        "laravel-mix": "^5.0.9",
+        "laravel-mix-imagemin": "^1.0.3",
+        "node-sass": "^4.14.1",
+        "resolve-url-loader": "^2.3.2",
+        "sass-lint": "^1.13.1",
+        "sass-loader": "^8.0.2",
+        "vue-template-compiler": "^2.6.11"
+    }
+}
