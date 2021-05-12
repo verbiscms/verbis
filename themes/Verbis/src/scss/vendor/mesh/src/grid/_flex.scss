@@ -1,0 +1,111 @@
+//_flex.scss
+//
+//Responsive flex utility classes for each breakpoint.
+// ==========================================================================
+
+@each $modifier, $breakpoint in $grid-properties {
+	@include create-mediaquery($breakpoint) {
+		//Flex Direction
+		.flex#{$modifier}-row {
+			flex-direction: row !important;
+		}
+		.flex#{$modifier}-row-reverse {
+			flex-direction: row-reverse !important;
+		}
+		.flex#{$modifier}-column {
+			flex-direction: column !important;
+		}
+		.flex#{$modifier}-column-reverse {
+			flex-direction: column-reverse !important;
+		}
+
+		//Justify Content
+		.justify-content#{$modifier}-start {
+			justify-content: flex-start !important;
+		}
+		.justify-content#{$modifier}-end {
+			justify-content: flex-end !important;
+		}
+		.justify-content#{$modifier}-center {
+			justify-content: center !important;
+		}
+		.justify-content#{$modifier}-between {
+			justify-content: space-between !important;
+		}
+		.justify-content#{$modifier}-around {
+			justify-content: space-around !important;
+		}
+		.justify-content#{$modifier}-evenly {
+			justify-content: space-evenly !important;
+		}
+
+		//Align Self & Align Items
+		@each $property in ("self", "items") {
+			.align-#{$property}#{$modifier}-start {
+				align-#{$property}: flex-start !important;
+			}
+			.align-#{$property}#{$modifier}-end {
+				align-#{$property}: flex-end !important;
+			}
+			.align-#{$property}#{$modifier}-center {
+				align-#{$property}: center !important;
+			}
+			.align-#{$property}#{$modifier}-baseline {
+				align-#{$property}: baseline !important;
+			}
+			.align-#{$property}#{$modifier}-stretch {
+				align-#{$property}: stretch !important;
+			}
+		}
+
+		//Align Content
+		.align-content#{$modifier}-start {
+			align-content: flex-start !important;
+		}
+		.align-content#{$modifier}-end {
+			align-content: flex-end !important;
+		}
+		.align-content#{$modifier}-center {
+			align-content: center !important;
+		}
+		.align-content#{$modifier}-stretch {
+			align-content: stretch !important;
+		}
+		.align-content#{$modifier}-between {
+			align-content: space-between !important;
+		}
+		.align-content#{$modifier}-around {
+			align-content: space-around !important;
+		}
+
+		//Wrap
+		.flex#{$modifier}-wrap {
+			flex-wrap: wrap !important;
+		}
+		.flex#{$modifier}-nowrap {
+			flex-wrap: nowrap !important;
+		}
+		.flex#{$modifier}-wrap-reverse {
+			flex-wrap: wrap-reverse !important;
+		}
+
+		//Fill
+		.flex#{$modifier}-fill {
+			flex: 1 1 auto !important;
+		}
+
+		//Grow & Shrink
+		.flex#{$modifier}-grow-0 {
+			flex-grow: 0 !important;
+		}
+		.flex#{$modifier}-grow-1 {
+			flex-grow: 1 !important;
+		}
+		.flex#{$modifier}-shrink-0 {
+			flex-shrink: 0 !important;
+		}
+		.flex#{$modifier}-shrink-1 {
+			flex-shrink: 1 !important;
+		}
+	}
+}

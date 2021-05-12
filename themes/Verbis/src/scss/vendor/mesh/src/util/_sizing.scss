@@ -1,0 +1,26 @@
+//_sizing.scss
+//
+//Add responsive sizing classes for width & height incremenets of 10 (default)
+// ==========================================================================
+
+@each $property, $abbrev in (width: w, height: h) {
+	@each $modifier, $breakpoint in $grid-properties {
+		@include create-mediaquery($breakpoint) {
+			@each $value in $sizing-properties {
+				//Rid of % in $value
+				$class-value: str-replace(#{$value}, "%", "");
+				.#{$abbrev}#{$modifier}-#{$class-value} {
+					#{$property}: #{$value} !important;
+				}
+			}
+		}
+	}
+}
+
+.full-width {
+	width: 100vw !important;
+}
+
+.full-height {
+	height: 100vh !important;
+}
