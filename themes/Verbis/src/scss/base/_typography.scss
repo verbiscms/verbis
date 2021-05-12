@@ -1,0 +1,105 @@
+// -----------------------------------------------------------------------------
+// _typography.scss
+// This file contains all type declerations (h1, h2, p etc) for whole site.
+// -----------------------------------------------------------------------------
+
+// Global
+// =========================================================================
+
+html,
+body {
+	color: $copy-text;
+	font-family: $font;
+	font-size: 90%;
+	font-kerning: normal;
+	font-variant-ligatures: common-ligatures;
+
+	@include media-tab {
+		font-size: 95%;
+	}
+
+	@include media-desk {
+		font-size: 100%;
+	}
+
+	@include media-hd {
+		font-size: 102.5;
+	}
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+	margin: 0;
+}
+
+// Headings
+// =========================================================================
+
+//@include fluid-type(320px, 1408px, 34px, 98px);
+
+h1 {
+}
+
+h2 {
+}
+
+h3 {
+}
+
+h4 {
+}
+
+h5 {
+}
+
+h6 {
+}
+
+// Paragraph
+// =========================================================================
+
+p {
+	color: $copy;
+	margin-bottom: 1rem;
+}
+
+// Links
+// =========================================================================
+
+a {
+	color: $primary;
+	text-decoration: none;
+
+	@include on-event {
+		color: $primary;
+		text-decoration: underline;
+	}
+}
+
+// Text Containers
+// =========================================================================
+
+.text-cont {
+	margin-bottom: $text-cont-margin;
+
+	p:last-of-type {
+		margin-bottom: 0;
+	}
+
+	&-no-margin {
+		margin-bottom: 0 !important;
+	}
+
+	@include media-tab {
+		margin-bottom: $text-cont-margin-tab;
+	}
+
+	@include media-desk {
+		margin-bottom: $text-cont-margin;
+	}
+}

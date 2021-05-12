@@ -1,0 +1,91 @@
+// -----------------------------------------------------------------------------
+// _variables.scss
+// This file contains all variables for use with scss files.
+// -----------------------------------------------------------------------------
+
+// Grid
+// ==========================================================================
+
+// Columns
+$grid-columns: 12;
+$gap-width: 15px;
+
+// Breakpoints
+$grid-breakpoint-mob: 568;
+$grid-breakpoint-tab: 768;
+$grid-breakpoint-desk: 1024;
+$grid-breakpoint-hd: 1408;
+
+// Fonts
+// ==========================================================================
+
+$font: "CHANGE FONT FAMILY";
+$font-path: '/fonts/';
+
+// Color
+// ==========================================================================
+
+$white: #fff;
+$black: #000;
+$primary: #ff2451;
+$secondary: #ff2451;
+$copy: #000000;
+
+// Color palette
+$palette: (
+	white: $white,
+	black: $black,
+	primary: $primary,
+	secondary: $secondary,
+	copy: $copy
+);
+
+// Color attributes
+$color-attr: (
+	c: "color",
+	bg: "background-color"
+);
+
+// Sections
+// =========================================================================
+
+$section-padding: (
+	mob: 40px,
+	tab: 70px,
+	desk: 100px,
+	hd: 120px
+);
+$section-padding-divider: 3;
+
+// Header
+// =========================================================================
+
+$header-height: 72px;
+$header-container-width: true;
+$header-bg-color: $primary;
+$header-scrolled-bg-color: $primary;
+
+// Nav
+// =========================================================================
+
+$nav-mob-bg-color: $primary;
+$nav-mob-item-color: $black;
+$nav-desk-item-color: $black;
+$nav-transition-time: 700ms;
+
+// Hamburger
+// =========================================================================
+
+$hamburger-width: 26px;
+$hamburger-height: 2.4px;
+$hamburger-margin: 7px;
+$hamburger-border-radius: 4px;
+$hamburger-color: $black;
+$hamburger-active-color: $white;
+
+// Text
+// ==========================================================================
+
+$text-cont-margin-mob: 1rem;
+$text-cont-margin-tab: 1.2rem;
+$text-cont-margin: 1.4rem;

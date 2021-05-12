@@ -1,0 +1,81 @@
+// -----------------------------------------------------------------------------
+// _section.scss
+// This file contains styles that are specific to the global sections.
+// -----------------------------------------------------------------------------
+
+.section {
+	$self: &;
+
+	// Padding Modifiers
+	// =========================================================================
+
+	@each $responsive, $pixels in $section-padding {
+		@if ($responsive == tab) {
+			@include media-tab {
+				&-padding {
+					padding: $pixels 0;
+				}
+				&-padding-small {
+					padding: $pixels / $section-padding-divider 0;
+				}
+				&-padding-large {
+					padding: $pixels * $section-padding-divider 0;
+				}
+			}
+		} @else if ($responsive == desk) {
+			@include media-desk {
+				&-padding {
+					padding: $pixels 0;
+				}
+				&-padding-small {
+					padding: $pixels / $section-padding-divider 0;
+				}
+				&-padding-large {
+					padding: $pixels * $section-padding-divider 0;
+				}
+			}
+		} @else if ($responsive == hd) {
+			@include media-hd {
+				&-padding {
+					padding: $pixels 0;
+				}
+				&-padding-small {
+					padding: $pixels / $section-padding-divider 0;
+				}
+				&-padding-large {
+					padding: $pixels * $section-padding-divider 0;
+				}
+			}
+		} @else if ($responsive == mob) {
+			&-padding {
+				padding: $pixels 0;
+			}
+			&-padding-small {
+				padding: $pixels / $section-padding-divider 0;
+			}
+			&-padding-large {
+				padding: $pixels * $section-padding-divider 0;
+			}
+		}
+	}
+
+	&-padding-bottom {
+		padding-top: 0 !important;
+	}
+
+	&-padding-top {
+		padding-bottom: 0 !important;
+	}
+
+	// Tablet
+	// =========================================================================
+
+	@include media-tab {
+	}
+
+	// Desktop
+	// =========================================================================
+
+	@include media-desk {
+	}
+}

@@ -1,0 +1,56 @@
+// -----------------------------------------------------------------------------
+// _base.scss
+// This file contains very basic styles to reset document.
+// -----------------------------------------------------------------------------
+
+// Global
+// =========================================================================
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+section {
+	position: relative;
+}
+
+*,
+*::before,
+*::after {
+	box-sizing: inherit;
+}
+
+.trans {
+	transition: all 0.4s;
+
+	&.slow {
+		transition: all 3s;
+	}
+}
+
+// Resets
+// =========================================================================
+
+figure {
+	margin: 0;
+}
+
+ul {
+	list-style-type: none;
+}
+
+// Selection Color
+// =========================================================================
+
+::selection {
+	background: color("primary"); /* WebKit/Blink Browsers */
+	color: #000; //!SET
+}
+::-moz-selection {
+	background: color("primary"); /* Gecko Browsers */ // sass-lint:disable-line no-vendor-prefixes
+	color: #000; //!SET
+}
