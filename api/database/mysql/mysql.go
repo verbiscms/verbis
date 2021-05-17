@@ -128,7 +128,6 @@ func (m *MySQL) Tables() ([]string, error) {
 
 	var failedTables []string
 	for _, table := range internal.Tables {
-
 		q := m.Builder().
 			From("information_schema.tables").
 			Where("table_schema", "=", m.env.DbDatabase).
