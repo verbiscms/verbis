@@ -30,3 +30,4 @@ pnpm-debug.log*
 /build
 /storage/uploads
 dist/
+./verbis

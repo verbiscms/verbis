@@ -18,5 +18,6 @@ type Config struct {
 	Paths        paths.Paths
 	Owner        *domain.User
 	ThemeService theme.Repository
+	ThemePath    string
 	Running      bool
 }

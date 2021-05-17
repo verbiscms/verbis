@@ -71,11 +71,11 @@ func (t *EnvTestSuite) Original() {
 //
 // Overwrites the original .env test file.
 func (t *EnvTestSuite) Overwrite() {
-	file, error := os.Create(t.envPath)
-	if error != nil {
+	file, err := os.Create(t.envPath)
+	if err != nil {
 		t.Fail("Error removing original test env")
 	}
-	_, err := file.WriteString(string(t.originalEnv))
+	_, err = file.WriteString(string(t.originalEnv))
 	if err != nil {
 		t.Fail("Error creating original test env")
 	}

@@ -66,8 +66,12 @@ func New(db database.Driver, running bool) (*Repository, *domain.ThemeConfig, er
 			return nil, nil, err
 		}
 
-		themeConfig = config.Init(cfg.Paths.Themes + string(os.PathSeparator) + activeTheme)
+		// TODO, some sanity check here
+		themePath := cfg.Paths.Themes + string(os.PathSeparator) + activeTheme
+
+		themeConfig = config.Init(themePath)
 		cfg.Theme = themeConfig
+		cfg.ThemePath = themePath
 
 		cfg.ThemeService = theme.New()
 

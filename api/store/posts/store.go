@@ -42,7 +42,7 @@ type Store struct {
 }
 
 const (
-	// The database table name for posts.
+	// TableName is the database table name for posts.
 	TableName = "posts"
 )
 
@@ -70,7 +70,7 @@ func New(cfg *config.Config) *Store {
 		fields:     fields.New(cfg),
 		meta:       meta.New(cfg),
 		users:      users.New(cfg),
-		finder:     location.NewLocation(cfg.Paths.Storage),
+		finder:     location.NewLocation(cfg.ThemePath),
 	}
 }
 
