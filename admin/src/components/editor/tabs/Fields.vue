@@ -174,8 +174,8 @@ export default {
 		errors: {},
 	}),
 	methods: {
-		getLayoutByName(groupIndex, name) {
-			return this.getLayout[groupIndex]['fields'].find(f => f.name === name)
+		getLayoutByUUID(index, uuid) {
+			return this.getLayout[index]['fields'].find(f => f.uuid === uuid);
 		},
 		moveGroupUp(index) {
 			this.moveItem(index, index - 1)
@@ -193,6 +193,13 @@ export default {
 				this.$set(this.computedHeights, uuid, "0px")
 			}
 		},
+		findFieldByUUID(index, uuid) {
+			const layout = this.getLayoutByUUID(index, uuid);
+			if (!layout) {
+				return;
+			}
+			return this.fields[layout.name];
+		},
 		parseLogic(layout, groupIndex) {
 			const logic = layout['conditional_logic']
 			let passed = true
@@ -200,42 +207,50 @@ export default {
 			if (logic) {
 				logic.forEach(block => {
 					block.forEach(location => {
-						const field = this.getLayoutByName(groupIndex, location.field),
-							operator = location.operator,
-							fieldEval = location.value;
+						const layout = this.getLayoutByUUID(groupIndex, location.field);
 
-						let value = this.fields[location.field],
-							prepend = field.options['prepend'],
-							append = field.options['append']
+						if (layout) {
 
-						value = value === undefined ? "" : value
-						value = value.replace(prepend, "").replace(append, "")
+							const field = this.fields[layout.name],
+								operator = location.operator,
+								fieldEval = location.value;
 
-						switch (operator) {
-							case '>':
-								passed = fieldEval > value;
-								break;
-							case '<':
-								passed = fieldEval < value;
-								break;
-							case '>=':
-								passed = fieldEval >= value;
-								break;
-							case '<=':
-								passed = fieldEval <= value;
-								break;
-							case '==':
-								passed = fieldEval == value;
-								break;
-							case '!=':
-								passed = fieldEval != value;
-								break;
-							case '===':
-								passed = fieldEval === value;
-								break;
-							case '!==':
-								passed = fieldEval !== value;
-								break;
+							let value = "";
+
+							if (field) {
+								value = field.value;
+								let prepend = layout.options['prepend'],
+									append = layout.options['append']
+								value = value === undefined ? "" : value
+								value = value.replace(prepend, "").replace(append, "")
+							}
+
+							switch (operator) {
+								case '>':
+									passed = fieldEval > value;
+									break;
+								case '<':
+									passed = fieldEval < value;
+									break;
+								case '>=':
+									passed = fieldEval >= value;
+									break;
+								case '<=':
+									passed = fieldEval <= value;
+									break;
+								case '==':
+									passed = fieldEval == value;
+									break;
+								case '!=':
+									passed = fieldEval != value;
+									break;
+								case '===':
+									passed = fieldEval === value;
+									break;
+								case '!==':
+									passed = fieldEval !== value;
+									break;
+							}
 						}
 					})
 				});
