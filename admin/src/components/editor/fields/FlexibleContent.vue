@@ -373,6 +373,43 @@ export default {
 	}
 }
 
+// const test =
+//     `{
+//        "content_blocks":{
+//           "flexible":{
+//              "uuid":"97fbba4a-2d08-4ba3-8e0a-9f384ff40395",
+//              "type":"flexible",
+//              "name":"content_blocks",
+//              "key":"",
+//              "value":"Products,TextBlocks,TextBlocks"
+//           },
+//           "children":[
+//              {
+//                 "text_blocks": {
+//                    "flexible":{
+//                      "uuid":"84dcb4c3-1e3d-4f36-9a73-5d274f74e69e",
+//                      "type":"flexible",
+//                      "name":"text_blocks",
+//                      "key":"content_blocks|1|text_blocks",
+//                      "value":"RichText"
+//                    },
+//                    "children":[
+//                       {
+//                          "text":{
+//                             "uuid":"a8cbdee7-4699-411e-8ec2-6cce41a54cdd",
+//                             "type":"richtext",
+//                             "name":"text",
+//                             "key":"content_blocks|1|text_blocks|0|text",
+//                             "value":"<p>kjhghgjgk</p>"
+//                          }
+//                       }
+//                    ]
+//                 }
+//              }
+//           ]
+//        }
+//     }`;
+
 </script>
 
 <!-- =====================
