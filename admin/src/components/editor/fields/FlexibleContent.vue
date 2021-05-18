@@ -6,7 +6,7 @@
 		<draggable @start="drag=true" :list="fields['children']" :group="fields['children']" :sort="true" handle=".flexible-handle">
 			<div class="flexible" v-for="(group, groupIndex) in getFields['children']" :key="groupIndex">
 				<div class="card-header">
-					<h4>{{ group.type }}</h4>
+					<h4>{{ getParentLabel(groupIndex) }}</h4>
 					<div class="card-controls">
 						<i class="feather feather-trash-2" @click="deleteRow(groupIndex)"></i>
 						<i class="feather feather-arrow-up" @click="moveUp(groupIndex)"></i>
@@ -79,7 +79,7 @@
 		<div class="field-btn">
 			<Popover :triangle="true" :classes="'popover-hover'">
 				<template slot="items">
-					<div class="popover-item" v-for="(group, index) in getLayouts" :key="index" @click="addRow(group.name)">{{ group.name }}</div>
+					<div class="popover-item" v-for="(group, index) in getLayouts" :key="index" @click="addRow(group.name)">{{ group.label }}</div>
 				</template>
 				<template slot="button">
 					<button class="btn btn-blue"><i class="fal fa-plus-circle"></i>Add Row</button>
@@ -260,11 +260,21 @@ export default {
 		 * Add a flexible field to the children and update
 		 * the height.
 		 */
-		addRow(key) {
-			this.layouts.push(this.getLayouts[key])
-			this.layoutFields['children'].push({})
-			this.layoutStr.push(key)
-			this.updateHeight();
+		addRow(name) {
+			const layouts = this.getLayouts;
+			for (const key in layouts) {
+				// eslint-disable-next-line no-prototype-builtins
+				if (!layouts.hasOwnProperty(key)) {
+					return;
+				}
+				const layout = layouts[key];
+				if (name === layout.name) {
+					this.layouts.push(layouts[key]);
+					this.layoutFields['children'].push({});
+					this.layoutStr.push(key);
+					this.updateHeight();
+				}
+			}
 		},
 		/*
 		 * moveUp()
@@ -301,6 +311,16 @@ export default {
 				}
 			}
 			return [];
+		},
+		/*
+		 * getParentLabel()
+		 */
+		getParentLabel(index) {
+			const layout = this.getLayouts[this.layoutStr[index]]
+			if (layout) {
+				return layout.label;
+			}
+			return "";
 		},
 		/*
 		 * updateChildIndex()
@@ -372,43 +392,6 @@ export default {
 		}
 	}
 }
-
-// const test =
-//     `{
-//        "content_blocks":{
-//           "flexible":{
-//              "uuid":"97fbba4a-2d08-4ba3-8e0a-9f384ff40395",
-//              "type":"flexible",
-//              "name":"content_blocks",
-//              "key":"",
-//              "value":"Products,TextBlocks,TextBlocks"
-//           },
-//           "children":[
-//              {
-//                 "text_blocks": {
-//                    "flexible":{
-//                      "uuid":"84dcb4c3-1e3d-4f36-9a73-5d274f74e69e",
-//                      "type":"flexible",
-//                      "name":"text_blocks",
-//                      "key":"content_blocks|1|text_blocks",
-//                      "value":"RichText"
-//                    },
-//                    "children":[
-//                       {
-//                          "text":{
-//                             "uuid":"a8cbdee7-4699-411e-8ec2-6cce41a54cdd",
-//                             "type":"richtext",
-//                             "name":"text",
-//                             "key":"content_blocks|1|text_blocks|0|text",
-//                             "value":"<p>kjhghgjgk</p>"
-//                          }
-//                       }
-//                    ]
-//                 }
-//              }
-//           ]
-//        }
-//     }`;
 
 </script>
 

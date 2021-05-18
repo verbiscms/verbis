@@ -5,6 +5,7 @@
 package fields
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 )
 
@@ -55,6 +56,7 @@ func (s *Store) Insert(postID int, fields domain.PostFields) error {
 // be deleted.
 func (s *Store) shouldDelete(f domain.PostField, fields domain.PostFields) bool {
 	for _, v := range fields {
+		fmt.Println(v)
 		if (f.Key == v.Key) && (f.UUID == v.UUID) && (f.Name == v.Name) {
 			return false
 		}

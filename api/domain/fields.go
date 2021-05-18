@@ -43,7 +43,7 @@ type (
 		UUID      uuid.UUID `json:"uuid"`
 		Name      string    `json:"name"`
 		Label     string    `json:"label"`
-		Display   string    `json:"didpslay"`
+		Display   string    `json:"display"`
 		SubFields []Field   `json:"sub_fields,omitempty"`
 	}
 	// FieldLocation defines where the FieldGroup will appear.
