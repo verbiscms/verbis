@@ -63,22 +63,22 @@ export default class FieldParser {
                 // TODO: Flexible Repeaters?
 
                 if (f && field.type === "flexible") {
-                    keyArr.splice(index + 2, 0, "flexible")
+                    keyArr.splice(index + 3, 0, "flexible")
                 }
 
                 if (f && f.type === "repeater" && field.type !== "repeater") {
                     keyArr.splice(index + 1, 0, "children")
                 }
 
-                if (f && f.type === "flexible" && field.type !== "flexible") {
+                if (f && f.type === "flexible") {
                     keyArr.splice(index + 1, 0, "children")
                 }
             });
 
             this._set(this.parsed, keyArr.join("|"), field);
         });
-        //
-        //console.log(JSON.stringify(this.parsed, undefined, 2));
+
+       // console.log(JSON.stringify(this.parsed, undefined, 2));
 
         return this.parsed;
     }
