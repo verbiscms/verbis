@@ -82,7 +82,7 @@
 					<div class="popover-item" v-for="(group, index) in getLayouts" :key="index" @click="addRow(group.name)">{{ group.label }}</div>
 				</template>
 				<template slot="button">
-					<button class="btn btn-blue"><i class="fal fa-plus-circle"></i>Add Row</button>
+					<button class="btn btn-blue"><i class="fal fa-plus-circle"></i>{{ getButtonLabel }}</button>
 				</template>
 			</Popover>
 		</div>
@@ -93,6 +93,9 @@
 	Scripts
 	===================== -->
 <script>
+
+import {fieldMixin} from "@/util/fields/fields"
+import {layoutMixin} from "@/util/fields/layout"
 
 // Basic
 import FieldText from "@/components/editor/fields/Text";
@@ -123,6 +126,7 @@ import draggable from 'vuedraggable'
 
 export default {
 	name: "FieldFlexible",
+	mixins: [fieldMixin, layoutMixin],
 	props: {
 		layout: Object,
 		fields: {
@@ -261,6 +265,13 @@ export default {
 		 * the height.
 		 */
 		addRow(name) {
+			const max = this.getLayout['options']['max'];
+
+			if (max && this.layoutFields['children'].length === max) {
+				this.$noty.error(`Only ${max} items allowed in this block.`)
+				return;
+			}
+
 			const layouts = this.getLayouts;
 			for (const key in layouts) {
 				// eslint-disable-next-line no-prototype-builtins

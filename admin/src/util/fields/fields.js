@@ -59,6 +59,18 @@ export const fieldMixin = {
 		getValue() {
 			return this.fields.value ? this.fields.value : "";
 		},
+		/*
+		 * getButtonLabel()
+		 * Retrieves the button label for the layout, if there
+		 * is none set, 'Add Row' will be returned.
+		 */
+		getButtonLabel() {
+			const label = this.getLayout['options']['button_label'];
+			if (!label) {
+				return "Add Row";
+			}
+			return label;
+		},
 	},
 	methods: {
 		/*

@@ -415,6 +415,9 @@ export default {
 		setTags() {
 			if (this.data['homepage'] !== "") {
 				const post = this.posts.find(p => p.id === this.data['homepage']);
+				if (!post) {
+					return;
+				}
 				this.selectedTags = [{text: post.text, id: post.id}];
 			}
 		},
