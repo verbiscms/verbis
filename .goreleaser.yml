@@ -1,40 +1,30 @@
-# This is an example .goreleaser.yml file with some sane defaults.
-# Make sure to check the documentation at http://goreleaser.com
+project_name: verbis
 before:
   hooks:
-    # You may remove this if you don't use go modules.
+    #- make all
     - go mod tidy
-    # you may remove this if you don't need go generate
     - go generate ./...
 builds:
-  - env:
+  - id: "mac"
+    env:
       - CGO_ENABLED=0
     goos:
-      - linux
-      - windows
       - darwin
 archives:
   -
-    # ID of this archive.
-    # Defaults to `default`.
     id: mac
+    builds:
+      - mac
     format: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    wrap_in_directory: true
+    wrap_in_directory: "verbis"
     files:
       - README.md
-      - build/**/*
-
-#  - replacements:
-#      darwin: Darwin
-#      linux: Linux
-#      windows: Windows
-#      386: i386
-#      amd64: x86_64
+      - build/admin
 checksum:
   name_template: 'checksums.txt'
 snapshot:
-  name_template: "{{ .Tag }}-next"
+  name_template: "{{ .Tag }}"
 changelog:
   sort: asc
   filters:
