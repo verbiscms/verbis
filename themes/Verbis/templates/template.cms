@@ -16,6 +16,4 @@
         </div><!-- /Container -->
     </section>
 
-        {{ wrong }}
-
 {{ end }}
