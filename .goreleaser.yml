@@ -22,7 +22,7 @@ archives:
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: true
     files:
-      - README_{{.Os}}.md
+      - README.md
       - build/**/*
 
 #  - replacements:
