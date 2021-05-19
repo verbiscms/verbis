@@ -19,9 +19,9 @@
 				<!-- Field Layout -->
 				<template v-slot:body>
 					<div class="field-body">
-						<div class="field" v-for="(layout) in group.fields" :key="layout.uuid" :style="{ width: layout.wrapper['width'] + '%' }">
+						<div v-for="(layout) in group.fields" :key="layout.uuid" :style="{ width: layout.wrapper['width'] + '%' }">
 							<transition name="trans-fade">
-								<div v-if="parseLogic(layout, groupIndex)">
+								<div class="field" v-if="parseLogic(layout, groupIndex)">
 									<!-- Field Title -->
 									<div class="field-title" :class="{ 'field-title-margin-bottom' : layout.type === 'flexible' || layout.type === 'repeater' }">
 										<h4>{{ layout.label }}</h4>
@@ -174,18 +174,30 @@ export default {
 		errors: {},
 	}),
 	methods: {
-		getLayoutByUUID(index, uuid) {
-			return this.getLayout[index]['fields'].find(f => f.uuid === uuid);
-		},
+		/*
+		 * moveGroupUp()
+		 */
 		moveGroupUp(index) {
 			this.moveItem(index, index - 1)
 		},
+		/*
+		 * moveGroupDown()
+		 */
 		moveGroupDown(index) {
 			this.moveItem(index, index + 1)
 		},
+		/*
+		 * moveItem()
+		 * Moves a field group up and down by splicing
+		 * the layout.
+		 */
 		moveItem(from, to) {
 			this.layout.splice(to, 0, this.layout.splice(from, 1)[0]);
 		},
+		/*
+		 * collapseGroup()
+		 * Collapses (min height) a field group.
+		 */
 		collapseGroup(uuid) {
 			if (this.computedHeights[uuid] === "0px") {
 				this.$set(this.computedHeights, uuid, this.heights[uuid])
@@ -193,6 +205,16 @@ export default {
 				this.$set(this.computedHeights, uuid, "0px")
 			}
 		},
+		/*
+		 * getLayoutByUUID()
+		 * getLayoutByUUID()
+		 */
+		getLayoutByUUID(index, uuid) {
+			return this.getLayout[index]['fields'].find(f => f.uuid === uuid);
+		},
+		/*
+		 * findFieldByUUID()
+		 */
 		findFieldByUUID(index, uuid) {
 			const layout = this.getLayoutByUUID(index, uuid);
 			if (!layout) {
@@ -200,69 +222,104 @@ export default {
 			}
 			return this.fields[layout.name];
 		},
+		/*
+		 * parseLogic()
+		 * Parses the conditional logic in the field
+		 * group. If the field is allowed to be
+		 * displayed, it will return true.
+		 */
 		parseLogic(layout, groupIndex) {
-			const logic = layout['conditional_logic']
-			let passed = true
+			const logic = layout['conditional_logic'];
+			let checked = [],
+				passed = false;
 
 			if (logic) {
 				logic.forEach(block => {
+					let andArr = [];
 					block.forEach(location => {
 						const layout = this.getLayoutByUUID(groupIndex, location.field);
-
 						if (layout) {
-
-							const field = this.fields[layout.name],
-								operator = location.operator,
-								fieldEval = location.value;
-
-							let value = "";
-
-							if (field) {
-								value = field.value;
-								let prepend = layout.options['prepend'],
-									append = layout.options['append']
-								value = value === undefined ? "" : value
-								value = value.replace(prepend, "").replace(append, "")
-							}
-
-							switch (operator) {
-								case '>':
-									passed = fieldEval > value;
-									break;
-								case '<':
-									passed = fieldEval < value;
-									break;
-								case '>=':
-									passed = fieldEval >= value;
-									break;
-								case '<=':
-									passed = fieldEval <= value;
-									break;
-								case '==':
-									passed = fieldEval == value;
-									break;
-								case '!=':
-									passed = fieldEval != value;
-									break;
-								case '===':
-									passed = fieldEval === value;
-									break;
-								case '!==':
-									passed = fieldEval !== value;
-									break;
-							}
+							andArr.push(this.compareConditional(layout, location));
 						}
-					})
+					});
+					checked.push(andArr.every(Boolean))
 				});
 			}
 
+			if (!checked.length) {
+				passed = true;
+			}
+
+			checked.forEach(p => {
+				if (p) {
+					passed = true;
+				}
+			})
+
 			return passed;
 		},
+		/*
+		 * compareConditional()
+		 * Compares the layout and location to see if the
+		 * conditional passed checks.
+		 */
+		compareConditional(layout, location) {
+			const field = this.fields[layout.name],
+				operator = location.operator,
+				fieldEval = location.value;
+
+			let value = "",
+				passed = true;
+
+			if (field) {
+				value = field.value;
+				let prepend = layout.options['prepend'],
+					append = layout.options['append']
+				value = value === undefined ? "" : value
+				value = value.replace(prepend, "").replace(append, "")
+			}
+
+			switch (operator) {
+				case '>':
+					passed = fieldEval > value;
+					break;
+				case '<':
+					passed = fieldEval < value;
+					break;
+				case '>=':
+					passed = fieldEval >= value;
+					break;
+				case '<=':
+					passed = fieldEval <= value;
+					break;
+				case '==':
+					passed = fieldEval == value;
+					break;
+				case '!=':
+					passed = fieldEval != value;
+					break;
+				case '===':
+					passed = fieldEval === value;
+					break;
+				case '!==':
+					passed = fieldEval !== value;
+					break;
+			}
+
+			return passed;
+		}
+
 	},
 	computed: {
+		/*
+		 * getLayout()
+		 */
 		getLayout() {
 			return this.layout
 		},
+		/*
+		 * getLayout()
+		 */
 		getFields() {
 			return this.fields
 		}
