@@ -66,7 +66,7 @@ func init() {
 		)
 
 		ns.AddMethodMapping(cast.ToDuration,
-			"toTime",
+			"toDuration",
 			nil,
 			[][2]string{},
 		)
