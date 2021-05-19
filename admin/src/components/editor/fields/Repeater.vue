@@ -77,7 +77,7 @@
 				</div><!-- /Card -->
 		</draggable>
 		<div class="field-btn">
-			<button class="btn btn-blue" @click="addRow"><i class="fal fa-plus-circle"></i>Add Row</button>
+			<button class="btn btn-blue" @click="addRow"><i class="fal fa-plus-circle"></i>{{ getButtonLabel }}</button>
 		</div>
 		<!-- Message -->
 		<transition name="trans-fade-height">
@@ -215,6 +215,14 @@ export default {
 			}
 		},
 		/*
+		 * validate()
+		 * Fires when the publish button is clicked.
+		 */
+		validate() {
+			this.errors = [];
+			//TODO
+		},
+		/*
 		 * getKey()
 		 * Get the key of repeater item to send to the child
 		 * component. For nested repeaters, the layout's
@@ -232,6 +240,13 @@ export default {
 		 * the height.
 		 */
 		addRow() {
+			const max = this.getLayout['options']['max'];
+
+			if (max && this.repeaterFields['children'].length === max) {
+				this.$noty.error(`Only ${max} items allowed in this block.`)
+				return;
+			}
+
 			this.repeaterFields['children'].push({})
 			this.updateHeight();
 		},
@@ -294,7 +309,7 @@ export default {
 					}
 				}
 			});
-		}
+		},
 	},
 	computed: {
 
@@ -315,6 +330,18 @@ export default {
 		 */
 		getLayout() {
 			return this.layout;
+		},
+		/*
+		 * getButtonLabel()
+		 * Retrieves the button label for the layout, if there
+		 * is none set, 'Add Row' will be returned.
+		 */
+		getButtonLabel() {
+			const label = this.getLayout['options']['button_label'];
+			if (!label) {
+				return "Add Row";
+			}
+			return label;
 		},
 		/*
 		 * getSubFields()
