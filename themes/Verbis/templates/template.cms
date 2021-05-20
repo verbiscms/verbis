@@ -16,4 +16,6 @@
         </div><!-- /Container -->
     </section>
 
+       {{ dump breadcrumbs }}
+
 {{ end }}

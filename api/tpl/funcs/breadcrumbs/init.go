@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package posts
+package breadcrumbs
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
@@ -27,25 +27,20 @@ type Namespace struct {
 
 const name = "breadcrumbs"
 
-// Adds the namespace methods to the internal.FuncsNamespace
-// on initialisation.
-func init() {
-	f := func(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
-		ctx := New(d, t)
+//  Creates a new Namespace and returns a new internal.FuncsNamespace
+func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
+	ctx := New(d, t)
 
-		ns := &internal.FuncsNamespace{
-			Name:    name,
-			Context: func(args ...interface{}) interface{} { return ctx },
-		}
-
-		ns.AddMethodMapping(ctx.Get(),
-			"breadcrumbs",
-			nil,
-			nil,
-		)
-
-		return ns
+	ns := &internal.FuncsNamespace{
+		Name:    name,
+		Context: func(args ...interface{}) interface{} { return ctx },
 	}
 
-	internal.AddFuncsNamespace(f)
+	ns.AddMethodMapping(ctx.Get,
+		"breadcrumbs",
+		[]string{"crumbs"},
+		nil,
+	)
+
+	return ns
 }

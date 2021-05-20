@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package posts
+package breadcrumbs
 
 import (
 	"github.com/ainsleyclark/verbis/api/verbis"
 )
 
-// Find
+// Get
 //
-// Obtains the post by ID and returns a domain.PostDatum type
-// or nil if not found.
+// Obtains the breadcrumbs for the post.
 //
-// Example: {{ post 123 }}
+// Example: {{ $crumbs := breadcrumbs }}
 func (ns *Namespace) Get() verbis.Breadcrumbs {
-	return ns.deps
+	return ns.crumbs
 }

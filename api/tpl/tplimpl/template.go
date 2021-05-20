@@ -102,7 +102,7 @@ func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostDatum, cfg 
 		Context:     ctx,
 		Post:        post,
 		Cfg:         cfg,
-		Breadcrumbs: verbis.GetBreadcrumbs(post.Permalink, t.deps),
+		Breadcrumbs: verbis.GetBreadcrumbs(post, t.deps),
 	}
 	funcs := t.getFuncs(t.getNamespaces(td))
 	return funcs

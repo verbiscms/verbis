@@ -2,21 +2,27 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package breadcrumbs
+package date
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
-	"github.com/ainsleyclark/verbis/api/verbis"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestNamespace_Init(t *testing.T) {
-	d := &deps.Deps{}
-	td := &internal.TemplateDeps{Breadcrumbs: verbis.Breadcrumbs{}}
+	var found bool
+	var ns *internal.FuncsNamespace
 
-	ns := Init(d, td)
-	assert.Equal(t, ns.Name, name)
-	assert.Equal(t, &Namespace{deps: d, crumbs: verbis.Breadcrumbs{}}, ns.Context())
+	for _, nsf := range internal.GenericNamespaceRegistry {
+		ns = nsf(&deps.Deps{})
+		if ns.Name == name {
+			found = true
+			break
+		}
+	}
+
+	assert.True(t, found)
+	assert.Equal(t, &Namespace{&deps.Deps{}}, ns.Context())
 }

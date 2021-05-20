@@ -8,6 +8,7 @@ import (
 	// ctx/post specific functions
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/attributes"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
+	"github.com/ainsleyclark/verbis/api/tpl/funcs/breadcrumbs"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/fields"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/meta"
 	"github.com/ainsleyclark/verbis/api/tpl/funcs/url"
@@ -93,6 +94,7 @@ func (t *TemplateManager) getFrontendNamespaces(td *internal.TemplateDeps) inter
 	return internal.FuncNamespaces{
 		attributes.Init(t.deps, td),
 		auth.Init(t.deps, td),
+		breadcrumbs.Init(t.deps, td),
 		fields.Init(t.deps, td),
 		meta.Init(t.deps, td),
 		url.Init(t.deps, td),
