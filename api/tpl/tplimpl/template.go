@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/ainsleyclark/verbis/api/tpl/variables"
+	"github.com/ainsleyclark/verbis/api/verbis"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"io"
@@ -98,9 +99,10 @@ func (t *TemplateManager) Data(ctx *gin.Context, post *domain.PostDatum) interfa
 // `Meta` and `url`. Generic functions are also included.
 func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostDatum, cfg tpl.TemplateConfig) template.FuncMap {
 	td := &internal.TemplateDeps{
-		Context: ctx,
-		Post:    post,
-		Cfg:     cfg,
+		Context:     ctx,
+		Post:        post,
+		Cfg:         cfg,
+		Breadcrumbs: verbis.GetBreadcrumbs(post.Permalink, t.deps),
 	}
 	funcs := t.getFuncs(t.getNamespaces(td))
 	return funcs

@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/ainsleyclark/verbis/api/verbis"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,6 +28,8 @@ type TemplateDeps struct {
 	Context *gin.Context
 	// The post to be used for rendering meta information for the page
 	Post *domain.PostDatum
+	// The breadcrumbs of the page, if they are not enabled, nil will be represented.
+	Breadcrumbs verbis.Breadcrumbs
 	// The config of the executor used in partials to obtain the root path.
 	Cfg tpl.TemplateConfig
 }

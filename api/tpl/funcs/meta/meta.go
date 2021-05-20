@@ -17,7 +17,8 @@ import (
 )
 
 const (
-	// The extension of the embedded files.
+	// EmbeddedExtension is extension of the embedded
+	// template files.
 	EmbeddedExtension = ".cms"
 )
 
