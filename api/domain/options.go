@@ -67,6 +67,12 @@ type (
 		SeoEnforceSlash     bool     `json:"seo_enforce_slash"`
 		SeoRobotsServe      bool     `json:"seo_robots_serve"`
 		SeoRobots           string   `json:"seo_robots"`
+		// Breadcrumbs
+		BreadcrumbsEnable       bool   `json:"breadcrumbs_enable"`
+		BreadcrumbsTitle        string `json:"breadcrumbs_title"`
+		BreadcrumbsSeparator    string `json:"breadcrumbs_separator"`
+		BreadcrumbsHomepageText bool   `json:"breadcrumbs_homepage_text"`
+		BreadcrumbsHideHomePage bool   `json:"breadcrumbs_hide_homepage"`
 		// Media
 		MediaCompression     int        `json:"media_compression" binding:"required"`
 		MediaConvertWebP     bool       `json:"media_convert_webp"`

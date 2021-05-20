@@ -1,0 +1,18 @@
+{{ if .Enabled }}
+<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "BreadcrumbList",
+		"itemListElement": [
+		{{ range $index, $crumb := .Crumbs -}}
+			{
+				"@type": "ListItem",
+				"position": {{ $crumb.Position }},
+				"name": "{{ $crumb.Name }}",
+				"item": "{{ $crumb.Link }}"
+			}{{ if ne Crumbs.Length $index }},{{ end }}
+		{{- end }}
+		]
+	}
+</script>
+{{ end }}

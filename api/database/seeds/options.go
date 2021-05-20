@@ -59,6 +59,12 @@ func (s *Seeder) runOptions() error {
 		"seo_enforce_slash":     false,
 		"seo_robots_serve":      true,
 		"seo_robots":            "User-agent: *\nAllow: /",
+		// Breadcrumbs
+		"breadcrumbs_enable":        true,
+		"breadcrumbs_title":         "",
+		"breadcrumbs_separator":     "|",
+		"breadcrumbs_homepage_text": "Home",
+		"breadcrumbs_hide_homepage": true,
 		// Media
 		"media_compression":         80,
 		"media_convert_webp":        true,
