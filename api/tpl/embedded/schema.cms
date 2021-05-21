@@ -1,0 +1,19 @@
+{{- if and .Breadcrumbs.Enabled (gt (len .Breadcrumbs.Items) 0) -}}
+{{ "<!-- Verbis - Breadcrumb Schema -->" | safeHTML }}
+<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "BreadcrumbList",
+		"itemListElement": [
+		{{ range $index, $crumb := .Breadcrumbs.Items -}}
+			{
+				"@type": "ListItem",
+				"position": {{ $crumb.Position }},
+				"name": "{{ $crumb.Text }}",
+				"item": "{{ $crumb.Link }}"
+			}{{ if ne (subtract $.Breadcrumbs.Items.Length 1) $index }},{{ end }}
+		{{- end }}
+		]
+	}
+</script>
+{{- end }}
