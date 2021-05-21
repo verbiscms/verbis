@@ -1,5 +1,5 @@
-build:
-	go build -o verbis
+bld:
+	go build -o verbisexec
 
 run:
 	go run ./main.go

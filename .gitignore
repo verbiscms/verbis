@@ -44,7 +44,7 @@ pnpm-debug.log*
 /build
 /storage/uploads
 dist/
-verbis
+verbisexec
 
 git filter-branch --tree-filter "rm -rf storage/uploads" --prune-empty HEAD
 git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d
