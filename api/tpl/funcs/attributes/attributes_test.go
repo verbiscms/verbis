@@ -102,6 +102,34 @@ func TestNamespace_Body(t *testing.T) {
 	}
 }
 
+func TestNamespace_Homepage(t *testing.T) {
+	tt := map[string]struct {
+		input int
+		want  bool
+	}{
+		"Is Homepage": {
+			1,
+			true,
+		},
+		"Not Homepage": {
+			2,
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			post := &domain.PostDatum{Post: domain.Post{Id: test.input}}
+			ns := Namespace{
+				deps: &deps.Deps{Options: &domain.Options{Homepage: 1}},
+				tpld: &internal.TemplateDeps{Post: post},
+			}
+			got := ns.Homepage()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
 func TestNamespace_CSSValidString(t *testing.T) {
 	tt := map[string]struct {
 		input string

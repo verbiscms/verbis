@@ -84,13 +84,27 @@ func TestGetBreadcrumbs(t *testing.T) {
 			opts,
 			nil,
 			Breadcrumbs{
-				Enabled:        true,
-				Title:          "Title",
-				Separator:      "|",
-				HideOnHomepage: false,
+				Enabled:   true,
+				Title:     "Title",
+				Separator: "|",
 				Items: Items{
-					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true},
+					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true, Active: true},
 				},
+			},
+		},
+		"Hide Home": {
+			domain.PostDatum{
+				Post: domain.Post{Id: 1},
+			},
+			domain.Options{
+				BreadcrumbsEnable:       true,
+				BreadcrumbsHideHomePage: true,
+				Homepage:                1,
+				SiteUrl:                 "http://verbiscms.com",
+			},
+			nil,
+			Breadcrumbs{
+				Enabled: true,
 			},
 		},
 		"Depth of One": {
@@ -104,13 +118,12 @@ func TestGetBreadcrumbs(t *testing.T) {
 					Once()
 			},
 			Breadcrumbs{
-				Enabled:        true,
-				Title:          "Title",
-				Separator:      "|",
-				HideOnHomepage: false,
+				Enabled:   true,
+				Title:     "Title",
+				Separator: "|",
 				Items: Items{
-					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true},
-					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true},
+					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true, Active: true},
 				},
 			},
 		},
@@ -128,14 +141,13 @@ func TestGetBreadcrumbs(t *testing.T) {
 					Once()
 			},
 			Breadcrumbs{
-				Enabled:        true,
-				Title:          "Title",
-				Separator:      "|",
-				HideOnHomepage: false,
+				Enabled:   true,
+				Title:     "Title",
+				Separator: "|",
 				Items: Items{
-					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true},
-					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true},
-					{Link: "http://verbiscms.com/news/technology", Text: "Technology", Position: 3, Found: true},
+					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news/technology", Text: "Technology", Position: 3, Found: true, Active: true},
 				},
 			},
 		},
@@ -156,15 +168,14 @@ func TestGetBreadcrumbs(t *testing.T) {
 					Once()
 			},
 			Breadcrumbs{
-				Enabled:        true,
-				Title:          "Title",
-				Separator:      "|",
-				HideOnHomepage: false,
+				Enabled:   true,
+				Title:     "Title",
+				Separator: "|",
 				Items: Items{
-					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true},
-					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true},
-					{Link: "http://verbiscms.com/news/technology", Text: "Technology", Position: 3, Found: true},
-					{Link: "http://verbiscms.com/news/technology/websites", Text: "Websites", Position: 4, Found: true},
+					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news/technology", Text: "Technology", Position: 3, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news/technology/websites", Text: "Websites", Position: 4, Found: true, Active: true},
 				},
 			},
 		},
@@ -190,14 +201,36 @@ func TestGetBreadcrumbs(t *testing.T) {
 			},
 			func(m *mocks.Repository) {
 				m.On("FindBySlug", "news").
-					Return(domain.PostDatum{Post: domain.Post{Permalink: "/news", Title: "News"}}, nil).
+					Return(domain.PostDatum{Post: domain.Post{Permalink: "/news/", Title: "News"}}, nil).
 					Once()
 			},
 			Breadcrumbs{
 				Enabled: true,
 				Items: Items{
-					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true},
-					{Link: "http://verbiscms.com/news/", Text: "News", Position: 2, Found: true},
+					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news/", Text: "News", Position: 2, Found: true, Active: true},
+				},
+			},
+		},
+		"Enforce Slash Error": {
+			domain.PostDatum{
+				Post: domain.Post{Permalink: "/news"},
+			},
+			domain.Options{
+				BreadcrumbsEnable:       true,
+				BreadcrumbsHomepageText: "Home",
+				SeoEnforceSlash:         true,
+				SiteUrl:                 "http://verbiscms.com",
+			},
+			func(m *mocks.Repository) {
+				m.On("FindBySlug", "news").
+					Return(domain.PostDatum{Post: domain.Post{}}, fmt.Errorf("error"))
+			},
+			Breadcrumbs{
+				Enabled: true,
+				Items: Items{
+					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news/", Text: "News", Position: 2, Found: false, Active: true},
 				},
 			},
 		},
@@ -215,14 +248,13 @@ func TestGetBreadcrumbs(t *testing.T) {
 					Once()
 			},
 			Breadcrumbs{
-				Enabled:        true,
-				Title:          "Title",
-				Separator:      "|",
-				HideOnHomepage: false,
+				Enabled:   true,
+				Title:     "Title",
+				Separator: "|",
 				Items: Items{
-					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true},
-					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true},
-					{Link: "http://verbiscms.com/news/technology", Text: "Technology", Position: 3, Found: false},
+					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news/technology", Text: "Technology", Position: 3, Found: false, Active: true},
 				},
 			},
 		},
@@ -237,13 +269,12 @@ func TestGetBreadcrumbs(t *testing.T) {
 					Once()
 			},
 			Breadcrumbs{
-				Enabled:        true,
-				Title:          "Title",
-				Separator:      "|",
-				HideOnHomepage: false,
+				Enabled:   true,
+				Title:     "Title",
+				Separator: "|",
 				Items: Items{
-					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true},
-					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true},
+					{Link: "http://verbiscms.com", Text: "Home", Position: 1, Found: true, Active: false},
+					{Link: "http://verbiscms.com/news", Text: "News", Position: 2, Found: true, Active: true},
 				},
 			},
 		},

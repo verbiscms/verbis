@@ -104,8 +104,7 @@ func (t *TemplateManager) FuncMap(ctx *gin.Context, post *domain.PostDatum, cfg 
 		Cfg:         cfg,
 		Breadcrumbs: verbis.GetBreadcrumbs(post, t.deps),
 	}
-	funcs := t.getFuncs(t.getNamespaces(td))
-	return funcs
+	return t.getFuncs(t.getNamespaces(td))
 }
 
 // GenericFuncMap

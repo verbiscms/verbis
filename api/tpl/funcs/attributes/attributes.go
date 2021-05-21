@@ -50,7 +50,7 @@ func (ns *Namespace) Body() string {
 	return body.String()
 }
 
-// lang
+// Lang
 //
 // Returns language attributes set in the options for
 // use with the `<html lang="">` attribute.
@@ -59,6 +59,16 @@ func (ns *Namespace) Body() string {
 // Returns: 'en-gb` (for example)
 func (ns *Namespace) Lang() string {
 	return ns.deps.Options.GeneralLocale
+}
+
+// Homepage
+//
+// Returns true if the post is the homepage.
+//
+// Example: `{{ if homepage }} <h2>Hello</h2> {{ end }}`
+// Returns: '<h2>Hello</h2>` (for example)
+func (ns *Namespace) Homepage() bool {
+	return ns.tpld.Post.IsHomepage(ns.deps.Options.Homepage)
 }
 
 // cssValidString

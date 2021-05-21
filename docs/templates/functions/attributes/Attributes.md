@@ -62,3 +62,23 @@ This can be useful for setting the `lang` attribute on the HTML tag as shown bel
 <!-- Content -->
 </html>
 ```
+
+___
+
+## homepage
+
+The homepage function returns true if the current post is the homepage.
+
+### Returns:
+
+`bool` If the post is the homepage.
+
+### Examples:
+
+**Output content for the homepage only**
+
+```gotemplate
+{{ if homepage }} 
+    <h2>Hello</h2> 
+{{ end }}
+```

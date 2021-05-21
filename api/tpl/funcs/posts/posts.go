@@ -54,7 +54,7 @@ type Posts struct {
 // array of domain.post. It sets defaults if some of the param
 // arguments are missing, and returns an error if the data
 // could not be marshalled.
-
+//
 // Returns errors.TEMPLATE if the template post params failed to parse.
 //
 // Example:
