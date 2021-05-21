@@ -54,7 +54,7 @@ func (tm *TemplateMeta) GetImage(id int) string {
 // embedded dir to execute.
 var templates = []string{
 	"meta",
-	"breadcrumbs",
+	"schema",
 	"opengraph",
 	"twitter",
 }

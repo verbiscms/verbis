@@ -1,19 +1,22 @@
-{{ "<!-- Verbis - Breadcrumb Schema -->" | safeHTML }}
-{{ if .Breadcrumbs.Enabled -}}
-<script type="application/ld+json">
-	{
-		"@context": "https://schema.org",
-		"@type": "BreadcrumbList",
-		"itemListElement": [
-		{{ range $index, $crumb := .Breadcrumbs.Items -}}
-			{
-				"@type": "ListItem",
-				"position": {{ $crumb.Position }},
-				"name": "{{ $crumb.Text }}",
-				"item": "{{ $crumb.Link }}"
-			}{{ if ne (subtract $.Breadcrumbs.Items.Length 1) $index }},{{ end }}
-		{{- end }}
-		]
-	}
-</script>
+{{ $crumbs := .breadcrumbs -}}
+{{ "<!-- Verbis - Breadcrumbs -->" | safeHTML }}
+{{ with $crumbs.Title -}}
+	<h4>{{ . }}</h4>
 {{- end }}
+<nav aria-label="breadcrumb">
+	<ol class="breadcrumb">
+{{- range $crumb := $crumbs.Items }}
+	{{ if not $crumb.Found -}}
+		<li class="breadcrumb-item">
+		{{ $crumb.Text }}
+		<span class="breadcrumb-separator">{{ with $crumbs.Separator }}{{ . }}{{ end }}</span>
+	</li>
+	{{- else -}}
+		<li class="breadcrumb-item {{- if $crumb.Active }} active {{- end }}" {{ if $crumb.Active -}} aria-current="page" {{- end }}>
+		<a href="{{ $crumb.Link }}">{{ $crumb.Text }}</a>
+		<span class="breadcrumb-separator">{{ with $crumbs.Separator }}{{ . }}{{- end }}</span>
+	</li>
+	{{- end -}}
+{{- end }}
+	</ol>
+</nav>
