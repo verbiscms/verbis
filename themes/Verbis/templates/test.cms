@@ -1,0 +1,19 @@
+{{ define "content" }}
+
+    <!-- =====================
+		Home
+		===================== -->
+    <section class="section section-coloured">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h1>Welcome to Verbis!</h1>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse ut sagittis lacus. Sed aliquet justo sed mauris dictum convallis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.</p>
+                    <p>Integer scelerisque vehicula enim eget vulputate. Donec et lobortis ligula. Fusce scelerisque blandit magna, ac molestie eros aliquam nec. Sed sed est eu quam elementum mollis. Morbi nulla quam, tempus et ipsum vitae, lobortis iaculis lorem.</p>
+                    <p>Vestibulum convallis, tellus id blandit pretium, arcu velit dignissim turpis, id convallis mauris erat ut elit.</p>
+                </div><!-- /Col -->
+            </div><!-- /Row -->
+        </div><!-- /Container -->
+    </section>
+
+{{ end }}
