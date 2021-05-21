@@ -1,4 +1,5 @@
-{{- $meta := .Post.SeoMeta.Meta.Twitter -}}
+{{ "<!-- Verbis - Twitter -->" | safeHTML }}
+{{ $meta := .Post.SeoMeta.Meta.Twitter -}}
 {{- if and (ne $meta.Title "") (ne $meta.Description "") -}}
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="{{ with $meta.Title }}{{ . }}{{ end }}" />

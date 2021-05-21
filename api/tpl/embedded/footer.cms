@@ -1,4 +1,4 @@
-{{- /* Footer - Code Injection */ -}}
+{{- "<!-- Verbis - Footer -->" | safeHTML }}
 {{- with .Post.CodeInjectionFoot -}}
 {{ . | safeHTML }}
 {{ end -}}

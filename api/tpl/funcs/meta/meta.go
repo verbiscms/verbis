@@ -12,7 +12,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/tpl/embedded"
+	"github.com/ainsleyclark/verbis/api/verbis"
 	"html/template"
+	"regexp"
 	"strings"
 )
 
@@ -28,6 +30,7 @@ type TemplateMeta struct {
 	Site          domain.Site
 	Post          *domain.PostDatum
 	Options       domain.Options
+	Breadcrumbs   verbis.Breadcrumbs
 	FacebookImage string
 	TwitterImage  string
 	deps          *deps.Deps
@@ -47,6 +50,15 @@ func (tm *TemplateMeta) GetImage(id int) string {
 	return tm.deps.Site.Global().Url + img.Url
 }
 
+// templates defines the slice of template files in the
+// embedded dir to execute.
+var templates = []string{
+	"meta",
+	"breadcrumbs",
+	"opengraph",
+	"twitter",
+}
+
 // Header
 //
 // Header obtains all of the site and post wide Code Injection
@@ -55,13 +67,14 @@ func (tm *TemplateMeta) GetImage(id int) string {
 // Example: {{ verbisHead }}
 func (ns *Namespace) Header() template.HTML {
 	tm := &TemplateMeta{
-		Post:    ns.post,
-		Options: *ns.deps.Options,
-		deps:    ns.deps,
-		Site:    ns.deps.Site.Global(),
+		Post:        ns.post,
+		Options:     *ns.deps.Options,
+		Breadcrumbs: ns.crumbs,
+		deps:        ns.deps,
+		Site:        ns.deps.Site.Global(),
 	}
 
-	head := ns.executeTemplates(tm, []string{"meta", "opengraph", "twitter"})
+	head := ns.executeTemplates(tm, templates)
 
 	return template.HTML(head)
 }
@@ -109,6 +122,10 @@ func (ns *Namespace) Footer() template.HTML {
 	return template.HTML(foot)
 }
 
+// newLineRegex is the regex used to clean the meta
+// of line breaks.
+var newLineRegex = "\n\n"
+
 // executeTemplates
 //
 // Ranges over the templates passed and executes the embedded
@@ -135,5 +152,13 @@ func (ns *Namespace) executeTemplates(tm *TemplateMeta, templates []string) stri
 		meta += fmt.Sprintf("%s\n", b.String())
 	}
 
-	return strings.TrimRight(meta, "\n")
+	meta = strings.TrimRight(meta, "\n")
+
+	regex, err := regexp.Compile(newLineRegex)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error compiling regex", Operation: op, Err: err}).Error()
+		return meta
+	}
+
+	return regex.ReplaceAllString(meta, "\n")
 }

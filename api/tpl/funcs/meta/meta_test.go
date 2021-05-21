@@ -23,7 +23,7 @@ import (
 	"testing"
 )
 
-func Setup(opts domain.Options, site domain.Site, post domain.Post) (*Namespace, *mocks.Repository) {
+func Setup(opts domain.Options, post domain.Post) (*Namespace, *mocks.Repository) {
 	mockSite := &siteMocks.Repository{}
 	mockSite.On("Global").Return(domain.Site{})
 
@@ -80,7 +80,7 @@ func TestNamespace_MetaTitle(t *testing.T) {
 			post := domain.Post{
 				SeoMeta: test.meta,
 			}
-			ns, _ := Setup(test.options, domain.Site{}, post)
+			ns, _ := Setup(test.options, post)
 			got := ns.MetaTitle()
 			assert.Equal(t, test.want, got)
 		})
@@ -104,7 +104,7 @@ func TestNamespace(t *testing.T) {
 			func(ns *Namespace) interface{} {
 				return ns.Header()
 			},
-			template.HTML("test\ntest\ntest"),
+			template.HTML("test\ntest\ntest\ntest"),
 		},
 		"Header Error": {
 			func(th *tplMocks.TemplateHandler) {
@@ -137,12 +137,42 @@ func TestNamespace(t *testing.T) {
 			},
 			template.HTML(""),
 		},
+		"Execute Error": {
+			func(th *tplMocks.TemplateHandler) {
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
+			},
+			func(ns *Namespace) interface{} {
+				return ns.executeTemplates(&TemplateMeta{}, []string{"wrong"})
+			},
+			"",
+		},
+		"Regex Error": {
+			func(th *tplMocks.TemplateHandler) {
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
+					arg := args.Get(0).(io.Writer)
+					_, err := arg.Write([]byte("\n\n\n\n\n"))
+					assert.NoError(t, err)
+				}).Return(nil)
+			},
+			func(ns *Namespace) interface{} {
+				return ns.Header()
+			},
+			template.HTML(""),
+		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
+			if name == "Regex Error" {
+				orig := newLineRegex
+				defer func() {
+					newLineRegex = orig
+				}()
+				newLineRegex = "[)"
+			}
+
 			tplMock := &tplMocks.TemplateHandler{}
-			ns, _ := Setup(domain.Options{}, domain.Site{}, domain.Post{})
+			ns, _ := Setup(domain.Options{}, domain.Post{})
 			ns.deps.SetTmpl(tplMock)
 
 			test.mock(tplMock)
@@ -176,7 +206,7 @@ func TestTemplateMeta_GetImage(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			ns, m := Setup(domain.Options{}, domain.Site{}, domain.Post{})
+			ns, m := Setup(domain.Options{}, domain.Post{})
 			test.mock(m)
 			tm := TemplateMeta{deps: ns.deps}
 			got := tm.GetImage(1)

@@ -1,3 +1,4 @@
+{{ "<!-- Verbis - Opengraph -->" | safeHTML }}
 <meta property="og:site_name" content="{{ .Options.SiteTitle }}">
 <meta property="og:type" content="{{ if not .Post.Resource }}website{{ else }}article{{ end }}" />
 <meta property="og:locale" content="{{ .Options.GeneralLocale }}" />
