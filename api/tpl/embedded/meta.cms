@@ -1,13 +1,13 @@
-{{- /* Robots */ -}}
+{{ "<!-- Verbis - Header -->" | safeHTML }}
 {{- $seo := .Post.SeoMeta.Seo -}}
 {{- $meta := .Post.SeoMeta.Meta -}}
 {{- if or (.Options.SeoPrivate) ($seo.Private) -}}
 <meta name=robots content="noindex">
-{{ end -}}
+{{- end -}}
 {{- /* Cannonical */}}
 {{- with (ne $seo.Canonical "") -}}
 <link rel=canonical href="{{ $seo.Canonical }}">
-{{ else -}}
+{{ else }}
 <link rel=canonical href="{{ .Site.Url }}{{ .Post.Permalink }}">
 {{ end -}}
 {{- /* Description */}}

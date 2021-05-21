@@ -1,6 +1,9 @@
 bld:
 	go build -o verbisexec
 
+buildrun:
+	$(MAKE) bld && ./verbisexec start
+
 run:
 	go run ./main.go
 

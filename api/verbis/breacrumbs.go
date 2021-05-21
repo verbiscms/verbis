@@ -127,7 +127,7 @@ func traverseChild(post *domain.PostDatum, d *deps.Deps, bc Breadcrumbs) Breadcr
 		}
 
 		bc.Items = append(bc.Items, Item{
-			Link:     d.Options.SiteUrl + pt.Permalink + slash,
+			Link:     d.Options.SiteUrl + pt.Permalink,
 			Text:     pt.Title,
 			Position: pos,
 			Found:    true,
