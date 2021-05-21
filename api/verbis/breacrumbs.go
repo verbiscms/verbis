@@ -18,11 +18,10 @@ import (
 // are included within the type as well as the
 // trail of crumbs (a slice of Items).
 type Breadcrumbs struct {
-	Enabled        bool   `json:"enabled"`
-	Title          string `json:"title"`
-	Separator      string `json:"separator"`
-	HideOnHomepage bool   `json:"hide_homepage"`
-	Items          Items  `json:"crumbs"`
+	Enabled   bool   `json:"enabled"`
+	Title     string `json:"title"`
+	Separator string `json:"separator"`
+	Items     Items  `json:"crumbs"`
 }
 
 // Item represents a singular crumb. It includes the link,
@@ -35,6 +34,7 @@ type Item struct {
 	Text     string `json:"text"`
 	Position int    `json:"position"`
 	Found    bool   `json:"found"`
+	Active   bool   `json:"active"`
 }
 
 // Items defines the slice of crumbs within the breadcrumbs
@@ -67,28 +67,33 @@ func (i Items) Reverse() Items {
 // split and matches are looked up
 // from the database.
 func GetBreadcrumbs(post *domain.PostDatum, d *deps.Deps) Breadcrumbs {
-	if !d.Options.BreadcrumbsEnable {
-		return Breadcrumbs{
-			Enabled: false,
-		}
+	bc := Breadcrumbs{
+		Enabled:   d.Options.BreadcrumbsEnable,
+		Title:     d.Options.BreadcrumbsTitle,
+		Separator: d.Options.BreadcrumbsSeparator,
 	}
 
-	bc := Breadcrumbs{
-		Enabled:        d.Options.BreadcrumbsEnable,
-		Title:          d.Options.BreadcrumbsTitle,
-		Separator:      d.Options.BreadcrumbsSeparator,
-		HideOnHomepage: false,
-		Items: Items{
-			{
-				Link:     d.Options.SiteUrl,
-				Text:     d.Options.BreadcrumbsHomepageText,
-				Position: 1,
-				Found:    true,
-			},
+	if !d.Options.BreadcrumbsEnable {
+		bc.Enabled = false
+		return bc
+	}
+
+	isHome := post.IsHomepage(d.Options.Homepage)
+	if d.Options.BreadcrumbsHideHomePage && isHome {
+		return bc
+	}
+
+	bc.Items = Items{
+		{
+			Link:     d.Options.SiteUrl,
+			Text:     d.Options.BreadcrumbsHomepageText,
+			Position: 1,
+			Found:    true,
 		},
 	}
 
-	if post.IsHomepage(d.Options.Homepage) {
+	if isHome {
+		bc.Items[0].Active = true
 		return bc
 	}
 
@@ -100,17 +105,19 @@ func GetBreadcrumbs(post *domain.PostDatum, d *deps.Deps) Breadcrumbs {
 // traverseChild ranges over the split permalink and
 // builds out the breadcrumb trail.
 func traverseChild(post *domain.PostDatum, d *deps.Deps, bc Breadcrumbs) Breadcrumbs {
-	b := strings.Split(post.Permalink, "/")
+	b := urlSlice(post.Permalink)
+
 	link := ""
-
 	for i := 0; i < len(b); i++ {
-		if b[i] == "" {
-			continue
-		}
-
-		pos := i + 1
+		pos := i + 2
 		link += "/" + b[i]
 		slash := ""
+		active := false
+
+		if len(b)-1 == i {
+			active = true
+		}
+
 		if d.Options.SeoEnforceSlash {
 			slash = "/"
 		}
@@ -122,6 +129,7 @@ func traverseChild(post *domain.PostDatum, d *deps.Deps, bc Breadcrumbs) Breadcr
 				Text:     cleanTitle(b[i]),
 				Position: pos,
 				Found:    false,
+				Active:   active,
 			})
 			continue
 		}
@@ -131,10 +139,24 @@ func traverseChild(post *domain.PostDatum, d *deps.Deps, bc Breadcrumbs) Breadcr
 			Text:     pt.Title,
 			Position: pos,
 			Found:    true,
+			Active:   active,
 		})
 	}
 
 	return bc
+}
+
+// urlSlice splits the permalink by a forward slash and
+// cleans any values that are empty.
+func urlSlice(permalink string) []string {
+	var p = strings.Split(permalink, "/")
+	var r []string
+	for _, str := range p {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+	return r
 }
 
 // titleRegex is the regex used to clean the post title

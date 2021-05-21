@@ -54,5 +54,11 @@ func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 		},
 	)
 
+	ns.AddMethodMapping(ctx.Homepage,
+		"homepage",
+		nil,
+		nil,
+	)
+
 	return ns
 }

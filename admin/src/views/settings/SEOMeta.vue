@@ -188,6 +188,74 @@
 					</div><!-- /Card -->
 				</div><!-- /Col -->
 				<!-- =====================
+					Breadcrumbs
+					===================== -->
+				<div class="col-12">
+					<h6 class="margin">Breadcrumbs</h6>
+					<div class="card card-small-box-shadow card-expand">
+						<!-- Enable -->
+						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header card-header-block">
+									<div>
+										<h4 class="card-title">Enable?</h4>
+										<p>By enabling this option, breadcrumbs will be enabled on the website as well as schema.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="breadcrumbs_enable" v-model="data['breadcrumbs_enable']" :true-value="true" :false-value="false" />
+										<label for="breadcrumbs_enable"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Enable -->
+						<!-- Hide Homepage -->
+						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header card-header-block">
+									<div>
+										<h4 class="card-title">Hide from homepage?</h4>
+										<p>By enabling this option, the the homepage crumb will be hidden.</p>
+									</div>
+									<div class="toggle">
+										<input type="checkbox" class="toggle-switch" id="breadcrumbs_hide_homepage" v-model="data['breadcrumbs_hide_homepage']" :true-value="true" :false-value="false" />
+										<label for="breadcrumbs_hide_homepage"></label>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+						</Collapse><!-- /Hide Homepage -->
+						<!-- Homepage Options -->
+						<Collapse :show="false" class="collapse-border-bottom">
+							<template v-slot:header>
+								<div class="card-header">
+									<div>
+										<h4 class="card-title">Options</h4>
+										<p>Select options for displaying breadcrumbs on the website.</p>
+									</div>
+									<div class="card-controls">
+										<i class="feather feather-chevron-down"></i>
+									</div>
+								</div><!-- /Card Header -->
+							</template>
+							<template v-slot:body>
+								<div class="card-body">
+									<!-- Title -->
+									<FormGroup label="Title" :error="errors['breadcrumbs_title']">
+										<input class="form-input form-input-white" type="text" v-model="data['breadcrumbs_title']">
+									</FormGroup>
+									<!-- Separator -->
+									<FormGroup label="Separator" :error="errors['breadcrumbs_separator']">
+										<input class="form-input form-input-white" type="text" v-model="data['breadcrumbs_separator']">
+									</FormGroup>
+									<!-- Homepage Text -->
+									<FormGroup v-if="!data['breadcrumbs_hide_homepage']" label="Homepage text" :error="errors['breadcrumbs_homepage_text']">
+										<input class="form-input form-input-white" type="text" v-model="data['breadcrumbs_homepage_text']">
+									</FormGroup>
+								</div><!-- /Card Body -->
+							</template>
+						</Collapse><!-- /Homepage Options -->
+					</div><!-- /Card -->
+				</div><!-- /Col -->
+				<!-- =====================
 					Misc
 					===================== -->
 				<div class="col-12">

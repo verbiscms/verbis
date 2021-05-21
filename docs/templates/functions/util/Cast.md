@@ -17,7 +17,7 @@ Casts an `interface` to a `bool` type.
 
 ### Returns:
 
-`bool` THe cast value or `false` if an error occurred.
+`bool` The cast value or `false` if an error occurred.
 
 ### Examples:
 
