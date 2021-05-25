@@ -214,3 +214,32 @@ func TestTemplateMeta_GetImage(t *testing.T) {
 		})
 	}
 }
+
+func TestTemplateMeta_IsHomepage(t *testing.T) {
+	tt := map[string]struct {
+		input domain.Post
+		want  bool
+	}{
+		"Success": {
+			domain.Post{Id: 1},
+			true,
+		},
+		"Error": {
+			domain.Post{Id: 2},
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			tm := TemplateMeta{
+				deps: &deps.Deps{
+					Options: &domain.Options{Homepage: 1},
+				},
+				Post: &domain.PostDatum{Post: test.input},
+			}
+			got := tm.IsHomepage()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}

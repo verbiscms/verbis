@@ -50,6 +50,13 @@ func (tm *TemplateMeta) GetImage(id int) string {
 	return tm.deps.Site.Global().Url + img.Url
 }
 
+// IsHomepage
+//
+// Determines if the current post is the homepage.
+func (tm *TemplateMeta) IsHomepage() bool {
+	return tm.Post.IsHomepage(tm.deps.Options.Homepage)
+}
+
 // templates defines the slice of template files in the
 // embedded dir to execute.
 var templates = []string{
@@ -113,8 +120,11 @@ func (ns *Namespace) MetaTitle() string {
 // Example: {{ verbisFoot }}
 func (ns *Namespace) Footer() template.HTML {
 	tm := &TemplateMeta{
-		Post:    ns.post,
-		Options: *ns.deps.Options,
+		Post:        ns.post,
+		Options:     *ns.deps.Options,
+		Breadcrumbs: ns.crumbs,
+		deps:        ns.deps,
+		Site:        ns.deps.Site.Global(),
 	}
 
 	foot := ns.executeTemplates(tm, []string{"footer"})

@@ -8,7 +8,11 @@
 {{- with (ne $seo.Canonical "") -}}
 <link rel=canonical href="{{ $seo.Canonical }}">
 {{ else }}
+{{ if .IsHomepage -}}
+<link rel=canonical href="{{ .Site.Url }}">
+{{ else -}}
 <link rel=canonical href="{{ .Site.Url }}{{ .Post.Permalink }}">
+{{ end -}}
 {{ end -}}
 {{- /* Description */}}
 {{- $postDescription := $meta.Description -}}

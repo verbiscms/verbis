@@ -42,5 +42,10 @@ func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 		nil,
 	)
 
+	ns.AddMethodMapping(ctx.HTML,
+		"breadcrumbsHTML",
+		[]string{"crumbsHTML"},
+		nil,
+	)
 	return ns
 }

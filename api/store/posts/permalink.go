@@ -21,6 +21,10 @@ func (s *Store) permalink(post *domain.PostDatum) string {
 	postResource := post.Resource
 	hiddenCategory := true
 
+	if post.IsHomepage(s.Options.Homepage) {
+		return "/"
+	}
+
 	if post.HasResource() {
 		resource, ok := s.Theme.Resources[postResource]
 		if ok {

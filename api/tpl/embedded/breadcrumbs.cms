@@ -5,18 +5,18 @@
 {{- end }}
 <nav aria-label="breadcrumb">
 	<ol class="breadcrumb">
-{{- range $crumb := $crumbs.Items }}
-	{{ if not $crumb.Found -}}
-		<li class="breadcrumb-item">
-		{{ $crumb.Text }}
-		<span class="breadcrumb-separator">{{ with $crumbs.Separator }}{{ . }}{{ end }}</span>
-	</li>
-	{{- else -}}
-		<li class="breadcrumb-item {{- if $crumb.Active }} active {{- end }}" {{ if $crumb.Active -}} aria-current="page" {{- end }}>
-		<a href="{{ $crumb.Link }}">{{ $crumb.Text }}</a>
-		<span class="breadcrumb-separator">{{ with $crumbs.Separator }}{{ . }}{{- end }}</span>
-	</li>
-	{{- end -}}
-{{- end }}
+	{{- range $crumb := $crumbs.Items }}
+		{{ if not $crumb.Found -}}
+			<li class="breadcrumb-item">
+			{{ $crumb.Text }}
+			<span class="breadcrumb-separator">{{ with $crumbs.Separator }}{{ . }}{{ end }}</span>
+		</li>
+		{{- else -}}
+			<li class="breadcrumb-item {{- if $crumb.Active }} active {{- end }}" {{ if $crumb.Active -}} aria-current="page" {{- end }}>
+			<a href="{{ $crumb.Link }}">{{ $crumb.Text }}</a>
+			<span class="breadcrumb-separator">{{ with $crumbs.Separator }}{{ . }}{{- end }}</span>
+		</li>
+		{{- end -}}
+	{{- end }}
 	</ol>
 </nav>

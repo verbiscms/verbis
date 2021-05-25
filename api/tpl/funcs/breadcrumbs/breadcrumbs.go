@@ -9,10 +9,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/tpl/embedded"
+	"github.com/ainsleyclark/verbis/api/verbis"
 	"html/template"
 )
 
-const (
+var (
 	// TemplateName is the name of the file containing
 	// the markup of breadcrumbs
 	TemplateName = "breadcrumbs"
@@ -23,36 +24,39 @@ const (
 
 // Get
 //
-// Obtains the breadcrumbs for the post.
+// Obtains the breadcrumbs for the post in a struct
+// verbis.Breadcrumbs
 //
 // Example: {{ $crumbs := breadcrumbs }}
-func (ns *Namespace) Get(args ...interface{}) interface{} {
+func (ns *Namespace) Get() verbis.Breadcrumbs {
+	return ns.crumbs
+}
+
+// HTML
+//
+// Returns the breadcrumbs already constructed as
+// HTML data.
+//
+// Example: {{ $crumbs := breadcrumbsHTML }}
+func (ns *Namespace) HTML() template.HTML {
 	const op = "Templates.Breadcrumbs"
 
-	if len(args) == 0 {
-		return ns.crumbs
+	path := TemplateName + EmbeddedExtension
+
+	file, err := embedded.Static.ReadFile(path)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading static file: " + path, Operation: op, Err: err}).Error()
+		return ""
 	}
 
-	if args[0] == true {
-		path := TemplateName + EmbeddedExtension
+	var b bytes.Buffer
+	err = ns.deps.Tmpl().ExecuteTpl(&b, string(file), map[string]interface{}{
+		"breadcrumbs": ns.crumbs,
+	})
 
-		file, err := embedded.Static.ReadFile(path)
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading static file: " + path, Operation: op, Err: err}).Error()
-			return ""
-		}
-
-		var b bytes.Buffer
-		err = ns.deps.Tmpl().ExecuteTpl(&b, string(file), map[string]interface{}{
-			"breadcrumbs": ns.crumbs,
-		})
-
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error parsing template", Operation: op, Err: err}).Error()
-		}
-
-		return template.HTML(b.String())
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error parsing template", Operation: op, Err: err}).Error()
 	}
 
-	return ns.crumbs
+	return template.HTML(b.String())
 }
