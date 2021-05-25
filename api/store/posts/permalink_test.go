@@ -47,7 +47,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.Options{Homepage: 1},
 			domain.ThemeConfig{},
 			nil,
-			"",
+			"/",
 		},
 		"Page": {
 			domain.PostDatum{
