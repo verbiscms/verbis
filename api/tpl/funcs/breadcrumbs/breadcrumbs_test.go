@@ -5,20 +5,97 @@
 package breadcrumbs
 
 import (
+	"bytes"
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/logger"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
 	"github.com/ainsleyclark/verbis/api/verbis"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"html/template"
+	"io"
+	"io/ioutil"
 	"testing"
 )
 
-func TestNamespace_Get(t *testing.T) {
-	c := verbis.Breadcrumbs{
+var (
+	crumbs = verbis.Breadcrumbs{
 		Enabled: true,
 		Title:   "Items",
 	}
+)
+
+func TestNamespace_Get(t *testing.T) {
 	ns := Namespace{
 		deps:   nil,
-		crumbs: c,
+		crumbs: crumbs,
 	}
 	got := ns.Get()
-	assert.Equal(t, c, got)
+	assert.Equal(t, crumbs, got)
+}
+
+func TestNamespace_HTML(t *testing.T) {
+	tt := map[string]struct {
+		mock func(th *mocks.TemplateHandler)
+		fn   func(ns *Namespace) interface{}
+		want interface{}
+	}{
+		"Success": {
+			func(th *mocks.TemplateHandler) {
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
+					arg := args.Get(0).(io.Writer)
+					_, err := arg.Write([]byte("test"))
+					assert.NoError(t, err)
+				}).Return(nil)
+			},
+			func(ns *Namespace) interface{} {
+				return ns.HTML()
+			},
+			template.HTML("test"),
+		},
+		"Execute Error": {
+			func(th *mocks.TemplateHandler) {
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
+			},
+			func(ns *Namespace) interface{} {
+				return ns.HTML()
+			},
+			template.HTML(""),
+		},
+		"Wrong File": {
+			nil,
+			func(ns *Namespace) interface{} {
+				orig := TemplateName
+				defer func() {
+					TemplateName = orig
+				}()
+				TemplateName = "wrong"
+
+				return ns.HTML()
+			},
+			template.HTML(""),
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			logger.SetOutput(ioutil.Discard)
+
+			tplMock := &mocks.TemplateHandler{}
+			ns := &Namespace{
+				deps:   &deps.Deps{},
+				crumbs: crumbs,
+			}
+			ns.deps.SetTmpl(tplMock)
+
+			if test.mock != nil {
+				test.mock(tplMock)
+			}
+
+			got := test.fn(ns)
+
+			assert.Equal(t, test.want, got)
+		})
+	}
 }

@@ -40,6 +40,15 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 		mock  func(m sqlmock.Sqlmock)
 		want  string
 	}{
+		"Homepage": {
+			domain.PostDatum{
+				Post: domain.Post{Id: 1},
+			},
+			domain.Options{Homepage: 1},
+			domain.ThemeConfig{},
+			nil,
+			"",
+		},
 		"Page": {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "page"},

@@ -17,7 +17,7 @@
     </section>
 
 
-    {{ $crumbs := breadcrumbs true }}
+    {{ $crumbs := breadcrumbsHTML }}
 {{ $crumbs }}
 {{/*    <!-- Title -->*/}}
 {{/*    {{ with $crumbs.Title -}}*/}}
