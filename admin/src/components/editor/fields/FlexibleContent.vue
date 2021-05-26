@@ -265,7 +265,11 @@ export default {
 		 * the height.
 		 */
 		addRow(name) {
-			const max = this.getLayout['options']['max'];
+			let max = -1;
+			// eslint-disable-next-line no-prototype-builtins
+			if (this.getOptions && this.getOptions.hasOwnProperty("max")) {
+				max = this.getOptions['max'];
+			}
 
 			if (max && this.layoutFields['children'].length === max) {
 				this.$noty.error(`Only ${max} items allowed in this block.`)
@@ -348,7 +352,6 @@ export default {
 							fields[key].key = this.getKey(index, fields[key].name)
 						}
 						if ("repeater" in fields[key]) {
-							console.log(fields[key])
 							fields[key]['repeater'].key = this.getKey(index, fields[key]['repeater'].name)
 							return
 						}

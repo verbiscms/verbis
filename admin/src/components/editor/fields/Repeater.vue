@@ -225,7 +225,7 @@ export default {
 		validate() {
 			this.errors = [];
 			//TODO
-			alert("VALIDATE REPEATER")
+			//alert("VALIDATE REPEATER")
 		},
 		/*
 		 * getKey()

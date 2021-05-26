@@ -1,0 +1,27 @@
+//{
+//	"uuid": "39ca0ea0-c911-4eaa-b6e0-67dfd99e5725",
+//	"label": "Text",
+//	"name": "text",
+//	"type": "text",
+//	"instructions": "Instructions",
+//	"required": false,
+//	"conditional_logic": [
+//		[
+//			{
+//				"field": "b2fd1c5e-b7f3-11eb-8529-0242ac130003",
+//				"operator": "==",
+//				"value": "Hello"
+//			}
+//		]
+//	],
+//	"wrapper": {
+//		"width": 50
+//	},
+//	"options": {
+//		"maxlength": 10,
+//		"default_value": "",
+//		"placeholder": "Placeholder",
+//		"prepend": "",
+//		"append": ""
+//	}
+//}
