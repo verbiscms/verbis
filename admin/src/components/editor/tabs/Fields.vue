@@ -279,6 +279,9 @@ export default {
 				value = value.replace(prepend, "").replace(append, "")
 			}
 
+			console.log(value);
+			console.log(fieldEval)
+
 			switch (operator) {
 				case '>':
 					passed = fieldEval > value;
