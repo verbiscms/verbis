@@ -19,10 +19,22 @@ export const layoutMixin = {
 		 * is none set, 'Add Row' will be returned.
 		 */
 		getButtonLabel() {
-			const label = this.getLayout['options']['button_label'];
-			if (!label) {
-				return "Add Row";
+			const def = "Add Row",
+				layout = this.getLayout;
+
+			// eslint-disable-next-line no-prototype-builtins
+			if (!layout.hasOwnProperty("options")) {
+				return def;
 			}
+			// eslint-disable-next-line no-prototype-builtins
+			if (!layout.hasOwnProperty("button_label")) {
+				return def;
+			}
+			const label = layout['options']['button_label'];
+			if (!label) {
+				return def;
+			}
+
 			return label;
 		},
 	}
