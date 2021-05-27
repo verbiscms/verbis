@@ -28,18 +28,18 @@ func (s *Store) create(f domain.PostField) (domain.PostField, error) {
 		Column("value", f.OriginalValue).
 		Column("field_key", f.Key)
 
-	result, err := s.DB().Exec(q.Build(), uuid.New().String())
+	_, err := s.DB().Exec(q.Build(), uuid.New().String())
 	if err == sql.ErrNoRows {
 		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating field with the name: " + f.Name, Operation: op, Err: err}
 	} else if err != nil {
 		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	id, err := result.LastInsertId()
-	if err != nil {
-		return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created field ID", Operation: op, Err: err}
-	}
-	f.Id = int(id)
+	//id, err := result.LastInsertId()
+	//if err != nil {
+	//	return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created field ID", Operation: op, Err: err}
+	//}
+	//f.Id = int(id)
 
 	return f, nil
 }

@@ -16,14 +16,14 @@
 			"layouts": {
 				"Banner": {
 					"key": "95b622d8-b7c3-11eb-8529-0242ac130003",
-					"name": "banner_test",
+					"name": "banner",
 					"label": "Banner",
 					"display": "block",
 					"sub_fields": [
 						{
 							"uuid": "95b62508-b7c3-11eb-8529-0242ac130003",
 							"label": "Post",
-							"name": "banner_post",
+							"name": "text",
 							"type": "text",
 							"instructions": "Add a post for the section.",
 							"required": false,
