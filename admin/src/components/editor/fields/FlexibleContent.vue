@@ -3,6 +3,7 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="flexible">
+		{{ layoutStr }}
 		<draggable @start="drag=true" :list="fields['children']" :group="fields['children']" :sort="true" handle=".flexible-handle">
 			<div class="flexible" v-for="(group, groupIndex) in getFields['children']" :key="groupIndex">
 				<div class="card-header">
@@ -16,6 +17,7 @@
 				</div><!-- /Card Header -->
 				<div class="flexible-body">
 					<div class="card-body card-body-border-bottom" v-for="(layout, layoutKey) in getSubFields(groupIndex)" :key="layoutKey" :style="{ width: layout.wrapper['width'] + '%' }">
+						<h1>Hello</h1>
 						<!-- Field Title -->
 						<div class="field-title">
 							<h4>{{ layout.label }}</h4>
@@ -286,7 +288,7 @@ export default {
 				if (name === layout.name) {
 					this.layouts.push(layouts[key]);
 					this.layoutFields['children'].push({});
-					this.layoutStr.push(key);
+					this.layoutStr.push(layout.name);
 					this.updateHeight();
 				}
 			}
@@ -319,7 +321,18 @@ export default {
 		 * getSubFields()
 		 */
 		getSubFields(index) {
-			const layout = this.getLayouts[this.layoutStr[index]];
+			let name = this.layoutStr[index],
+				layouts = this.getLayouts,
+				layout = false;
+
+			for (const key in layouts) {
+				let l = layouts[key];
+				if (l.name === name) {
+					layout = l;
+				}
+			}
+			// OLD Amendment:
+			//const layout = this.getLayouts[this.layoutStr[index]];
 			if (layout) {
 				if ('sub_fields' in layout) {
 					return layout['sub_fields'];
