@@ -171,14 +171,14 @@ CREATE TABLE `post_categories` (
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `post_fields` (
-    `id` int NOT NULL AUTO_INCREMENT,
+    /* `id` int NOT NULL AUTO_INCREMENT, */
     `post_id` int NOT NULL,
     `uuid` varchar(36) NOT NULL,
     `type` varchar(250) NOT NULL,
     `name` varchar(250) NOT NULL,
     `field_key` varchar(500) NOT NULL,
     `value` longtext NULL,
-    PRIMARY KEY (`id`),
+    /*PRIMARY KEY (`id`), */
     KEY `post_id_index` (`post_id`),
     CONSTRAINT post_fields_unique
         UNIQUE (uuid, field_key, post_id, name)

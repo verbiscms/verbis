@@ -35,7 +35,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 		if v.Field.UUID != nil {
 			field := domain.PostField{
-				Id:            v.Field.Id,
+				//Id:            v.Field.Id,
 				PostId:        v.Field.PostId,
 				UUID:          *v.Field.UUID,
 				Type:          v.Field.Type,

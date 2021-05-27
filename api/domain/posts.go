@@ -52,7 +52,7 @@ type (
 	// PostField defines the individual field that is attached
 	// to a post.
 	PostField struct {
-		Id            int         `db:"id" json:"-"`      //nolint
+		//Id            int         `db:"id" json:"-"`      //nolint
 		PostId        int         `db:"post_id" json:"-"` //nolint
 		UUID          uuid.UUID   `db:"uuid" json:"uuid" binding:"required"`
 		Type          string      `db:"type" json:"type"`
