@@ -17,6 +17,7 @@
     </section>
 
 
+        {{ flexible "content_blocks" }}
     {{ $crumbs := breadcrumbsHTML }}
 {{ $crumbs }}
 {{/*    <!-- Title -->*/}}
