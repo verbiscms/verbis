@@ -89,6 +89,9 @@ func (s *Service) resolveFlexible(key string, field domain.PostField, fields dom
 			subFields = append(subFields, f)
 		})
 
+		fmt.Println(layouts[index])
+		fmt.Println(subFields)
+
 		flexible[index] = Layout{
 			Name:      layouts[index],
 			SubFields: subFields,

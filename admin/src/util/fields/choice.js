@@ -84,7 +84,8 @@ export const choiceMixin = {
 			}
 			// Set the key for the API.
 			let obj = this.getFieldObject(value);
-			obj.key = this.getFormat;
+			// FIX Here!
+			//obj.key = this.getFormat;
 			this.$emit("update:fields", obj);
 		}
 	},
