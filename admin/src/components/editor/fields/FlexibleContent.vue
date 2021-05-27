@@ -3,7 +3,6 @@
 	===================== -->
 <template>
 	<div class="field-cont" :class="{ 'field-cont-error' : errors.length }" ref="flexible">
-		{{ layoutStr }}
 		<draggable @start="drag=true" :list="fields['children']" :group="fields['children']" :sort="true" handle=".flexible-handle">
 			<div class="flexible" v-for="(group, groupIndex) in getFields['children']" :key="groupIndex">
 				<div class="card-header">
@@ -17,7 +16,6 @@
 				</div><!-- /Card Header -->
 				<div class="flexible-body">
 					<div class="card-body card-body-border-bottom" v-for="(layout, layoutKey) in getSubFields(groupIndex)" :key="layoutKey" :style="{ width: layout.wrapper['width'] + '%' }">
-						<h1>Hello</h1>
 						<!-- Field Title -->
 						<div class="field-title">
 							<h4>{{ layout.label }}</h4>
