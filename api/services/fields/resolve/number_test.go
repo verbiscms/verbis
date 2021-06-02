@@ -19,8 +19,16 @@ func (t *ResolverTestSuite) TestValue_Number() {
 			value: "99999999999999999",
 			want:  int64(99999999999999999),
 		},
+		"Float": {
+			value: "99.99",
+			want:  float64(99.99),
+		},
 		"Bad Cast": {
 			value: "wrongval",
+			want:  "unable to cast",
+		},
+		"Bad Cast Float": {
+			value: "wrongval.",
 			want:  "unable to cast",
 		},
 	}

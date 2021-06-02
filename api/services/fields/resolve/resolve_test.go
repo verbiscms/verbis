@@ -11,11 +11,11 @@ import (
 
 func (t *ResolverTestSuite) Test_Field() {
 	d := &deps.Deps{}
-	field := domain.PostField{Id: 1, Type: "text", OriginalValue: "test"}
+	field := domain.PostField{Type: "text", OriginalValue: "test"}
 
 	got := Field(field, d)
 
-	t.Equal(domain.PostField{Id: 1, Type: "text", OriginalValue: "test", Value: "test"}, got)
+	t.Equal(domain.PostField{Type: "text", OriginalValue: "test", Value: "test"}, got)
 }
 
 func (t *ResolverTestSuite) TestValue_Resolve() {
