@@ -50,7 +50,6 @@ const (
 var (
 	// The post field used for testing.
 	field = domain.PostField{
-		Id:            1,
 		PostId:        1,
 		Type:          "text",
 		Name:          "name",
@@ -60,7 +59,6 @@ var (
 	// The post fields used for testing.
 	fields = domain.PostFields{
 		{
-			Id:            1,
 			PostId:        1,
 			Type:          "text",
 			Name:          "name",
@@ -68,7 +66,6 @@ var (
 			OriginalValue: "val",
 		},
 		{
-			Id:            2,
 			PostId:        1,
 			Type:          "text",
 			Name:          "name",
@@ -79,7 +76,6 @@ var (
 	// The post fields used for testing.
 	fieldsSingular = domain.PostFields{
 		{
-			Id:            1,
 			PostId:        1,
 			Type:          "text",
 			Name:          "name",

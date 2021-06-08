@@ -162,6 +162,33 @@ func TestPostField_TypeIsInSlice(t *testing.T) {
 	}
 }
 
+func TestPostField_IsValueJSON(t *testing.T) {
+	tt := map[string]struct {
+		field *PostField
+		want  bool
+	}{
+		"No Keywords": {
+			&PostField{OriginalValue: `none`},
+			false,
+		},
+		"Invalid JSON": {
+			&PostField{OriginalValue: `{"key": "key1", "value": }`},
+			false,
+		},
+		"Not Found": {
+			&PostField{OriginalValue: `{"key": "key1", "value": "value1"}`},
+			true,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.field.IsValueJSON()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
 func TestPostMeta_Scan(t *testing.T) {
 	tt := map[string]struct {
 		input interface{}

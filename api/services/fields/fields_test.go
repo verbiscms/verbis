@@ -21,9 +21,9 @@ func (t *FieldTestSuite) TestService_GetFields() {
 		},
 		"Simple": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "text", Name: "key1", OriginalValue: "1"},
-				{Id: 2, Type: "text", Name: "key2", OriginalValue: "2"},
-				{Id: 3, Type: "text", Name: "key3", OriginalValue: "3"},
+				{Type: "text", Name: "key1", OriginalValue: "1"},
+				{Type: "text", Name: "key2", OriginalValue: "2"},
+				{Type: "text", Name: "key3", OriginalValue: "3"},
 			},
 			args: nil,
 			want: Fields{
@@ -46,12 +46,12 @@ func (t *FieldTestSuite) TestService_Mapper() {
 		want   interface{}
 	}{
 		"Simple": {
-			fields: domain.PostFields{{Id: 1, Type: "text", Name: "key1", Value: "1"}},
-			want:   domain.PostField{Id: 1, Type: "text", Name: "key1", Value: "1"},
+			fields: domain.PostFields{{Type: "text", Name: "key1", Value: "1"}},
+			want:   domain.PostField{Type: "text", Name: "key1", Value: "1"},
 		},
 		"No Separator": {
-			fields: domain.PostFields{{Id: 1, Type: "text", Name: "key1", Key: "map", Value: 1}},
-			want:   domain.PostField{Id: 1, Type: "text", Name: "key1", Key: "map", Value: 1},
+			fields: domain.PostFields{{Type: "text", Name: "key1", Key: "map", Value: 1}},
+			want:   domain.PostField{Type: "text", Name: "key1", Key: "map", Value: 1},
 		},
 		"Repeater": {
 			fields: domain.PostFields{
@@ -68,11 +68,11 @@ func (t *FieldTestSuite) TestService_Mapper() {
 		},
 		"Flexible": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1"},
+				{Type: "flexible", Name: "flex", OriginalValue: "layout1"},
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|text2"},
 			},
-			want: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1", Value: Flexible{
+			want: domain.PostField{Type: "flexible", Name: "flex", OriginalValue: "layout1", Value: Flexible{
 				{
 					Name: "layout1",
 					SubFields: SubFields{

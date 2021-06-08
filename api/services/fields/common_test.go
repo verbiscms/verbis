@@ -25,35 +25,35 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 		},
 		"1 Args (post Fields)": {
 			args: []interface{}{domain.PostDatum{
-				Post:   domain.Post{Id: 1, Title: "post"},
-				Fields: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
+				Post:   domain.Post{Title: "post"},
+				Fields: domain.PostFields{{Type: "text", Name: "post"}},
 			}},
-			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
+			want: domain.PostFields{{Type: "text", Name: "post"}},
 		},
 		"1 Args (post)": {
 			fields: nil,
 			args:   []interface{}{1},
 			mock: func(f *fields.Repository, c *categories.Repository) {
 				f.On("Find", 1).Return(domain.PostFields{
-					{Id: 1, Type: "text", Name: "post"},
+					{Type: "text", Name: "post"},
 				}, nil)
 			},
-			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
+			want: domain.PostFields{{Type: "text", Name: "post"}},
 		},
 		"1 Args (post template)": {
 			fields: nil,
 			args: []interface{}{domain.PostTemplate{
 				Post:   domain.Post{Id: 1, Title: "post"},
-				Fields: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
+				Fields: domain.PostFields{{Type: "text", Name: "post"}},
 			}},
 			mock: nil,
-			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
+			want: domain.PostFields{{Type: "text", Name: "post"}},
 		},
 		"1 Args (Fields)": {
 			fields: nil,
-			args:   []interface{}{domain.PostFields{{Id: 1, Type: "text", Name: "post"}}},
+			args:   []interface{}{domain.PostFields{{Type: "text", Name: "post"}}},
 			mock:   nil,
-			want:   domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
+			want:   domain.PostFields{{Type: "text", Name: "post"}},
 		},
 		"1 Args (post Error)": {
 			fields: domain.PostFields{{Name: "test"}},
@@ -88,10 +88,10 @@ func (t *FieldTestSuite) TestService_GetFieldsByPost() {
 			id: 1,
 			mock: func(f *fields.Repository, c *categories.Repository) {
 				f.On("Find", 1).Return(domain.PostFields{
-					{Id: 1, Type: "text", Name: "post"},
+					{Type: "text", Name: "post"},
 				}, nil)
 			},
-			want: domain.PostFields{{Id: 1, Type: "text", Name: "post"}},
+			want: domain.PostFields{{Type: "text", Name: "post"}},
 		},
 		"Get Error": {
 			id: 1,
@@ -117,8 +117,8 @@ func (t *FieldTestSuite) TestService_FindFieldByName() {
 	}{
 		"Success": {
 			name:   "test",
-			fields: domain.PostFields{{Id: 1, Type: "text", Name: "test"}},
-			want:   domain.PostField{Id: 1, Type: "text", Name: "test"},
+			fields: domain.PostFields{{Type: "text", Name: "test"}},
+			want:   domain.PostField{Type: "text", Name: "test"},
 		},
 		"Fail": {
 			name:   "test",

@@ -28,7 +28,7 @@ func (t *FieldsTestSuite) TestStore_Create() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(field.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
 		"No Rows": {
@@ -45,14 +45,6 @@ func (t *FieldsTestSuite) TestStore_Create() {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
-			},
-		},
-		"Last Insert ID Error": {
-			"Error getting the newly created field ID",
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
 			},
 		},
 	}

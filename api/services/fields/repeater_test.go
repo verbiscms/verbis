@@ -18,12 +18,12 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 		"Cast to Repeater": {
 			fields: nil,
 			input: Repeater{
-				Row{{Id: 1, Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
-				Row{{Id: 2, Type: "text", Name: "text", OriginalValue: "text2", Value: "text2", Key: "repeater|1|text"}},
+				Row{{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
+				Row{{Type: "text", Name: "text", OriginalValue: "text2", Value: "text2", Key: "repeater|1|text"}},
 			},
 			want: Repeater{
-				Row{{Id: 1, Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
-				Row{{Id: 2, Type: "text", Name: "text", OriginalValue: "text2", Value: "text2", Key: "repeater|1|text"}},
+				Row{{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
+				Row{{Type: "text", Name: "text", OriginalValue: "text2", Value: "text2", Key: "repeater|1|text"}},
 			},
 			err: false,
 		},
@@ -41,7 +41,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 		},
 		"Wrong Field Mime": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "text", Name: "test", OriginalValue: "text", Key: ""},
+				{Type: "text", Name: "test", OriginalValue: "text", Key: ""},
 			},
 			input: "test",
 			want:  "field with the name: test, is not a repeater",
@@ -73,8 +73,8 @@ func (t *FieldTestSuite) TestService_ResolveRepeater() {
 	}{
 		"Bad Cast to Int": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "repeater", Name: "repeater", OriginalValue: "@£$$%^&%$^&"},
-				{Id: 2, Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
+				{Type: "repeater", Name: "repeater", OriginalValue: "@£$$%^&%$^&"},
+				{Type: "text", Name: "text", OriginalValue: "text1", Key: "repeater|0|text"},
 			},
 			key:  "repeater",
 			want: Repeater{},
@@ -203,7 +203,7 @@ func (t *FieldTestSuite) TestRepeater_HasRows() {
 		"With Rows": {
 			repeater: Repeater{
 				Row{
-					{Id: 1}, {Id: 2}, {Id: 3},
+					{Name: "1"}, {Name: "2"}, {Name: "3"},
 				},
 			},
 			want: true,
@@ -232,16 +232,16 @@ func (t *FieldTestSuite) TestRepeater_Length() {
 		},
 		"Two": {
 			repeater: Repeater{
-				Row{{Id: 1}},
-				Row{{Id: 1}},
+				Row{{Name: "1"}},
+				Row{{Name: "1"}},
 			},
 			want: 2,
 		},
 		"Three": {
 			repeater: Repeater{
-				Row{{Id: 1}},
-				Row{{Id: 1}},
-				Row{{Id: 1}},
+				Row{{Name: "1"}},
+				Row{{Name: "1"}},
+				Row{{Name: "1"}},
 			},
 			want: 3,
 		},
@@ -256,9 +256,9 @@ func (t *FieldTestSuite) TestRepeater_Length() {
 
 func (t *FieldTestSuite) TestRow_SubField() {
 	row := Row{
-		{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
-		{Id: 2, Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
-		{Id: 3, Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
+		{Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
+		{Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
+		{Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
 	}
 
 	tt := map[string]struct {
@@ -292,9 +292,9 @@ func (t *FieldTestSuite) TestRow_SubField() {
 
 func (t *FieldTestSuite) TestRow_HasField() {
 	row := Row{
-		{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
-		{Id: 2, Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
-		{Id: 3, Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
+		{Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
+		{Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
+		{Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
 	}
 
 	tt := map[string]struct {
@@ -325,11 +325,11 @@ func (t *FieldTestSuite) TestRow_First() {
 	}{
 		"Found": {
 			row: Row{
-				{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
-				{Id: 2, Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
-				{Id: 3, Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
+				{Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
+				{Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
+				{Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
 			},
-			want: domain.PostField{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
+			want: domain.PostField{Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
 		},
 		"Not Found": {
 			row:  Row{},
@@ -351,11 +351,11 @@ func (t *FieldTestSuite) TestRow_Last() {
 	}{
 		"Found": {
 			row: Row{
-				{Id: 1, Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
-				{Id: 2, Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
-				{Id: 3, Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
+				{Name: "test1", Type: "text", OriginalValue: "1", Value: "1"},
+				{Name: "test2", Type: "text", OriginalValue: "2", Value: "2"},
+				{Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
 			},
-			want: domain.PostField{Id: 3, Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
+			want: domain.PostField{Name: "test3", Type: "text", OriginalValue: "3", Value: "3"},
 		},
 		"Not Found": {
 			row:  Row{},

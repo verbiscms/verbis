@@ -87,7 +87,7 @@ func (v *Value) resolve(field domain.PostField) domain.PostField {
 		return field
 	}
 
-	if field.TypeIsInSlice(Choice) && field.Key != "map" {
+	if field.TypeIsInSlice(Choice) && !field.IsValueJSON() {
 		field.Value = field.OriginalValue.String()
 		return field
 	}

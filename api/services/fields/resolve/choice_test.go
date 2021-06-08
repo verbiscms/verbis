@@ -49,46 +49,46 @@ func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
 		want  domain.PostField
 	}{
 		"Button Group Value": {
-			field: domain.PostField{OriginalValue: "test", Key: "value", Type: "button_group"},
-			want:  domain.PostField{OriginalValue: "test", Key: "value", Type: "button_group", Value: "test"},
+			field: domain.PostField{OriginalValue: "test", Key: "", Type: "button_group"},
+			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "button_group", Value: "test"},
 		},
 		"Button Group Key": {
-			field: domain.PostField{OriginalValue: "test", Key: "key", Type: "button_group"},
-			want:  domain.PostField{OriginalValue: "test", Key: "key", Type: "button_group", Value: "test"},
+			field: domain.PostField{OriginalValue: "test", Key: "", Type: "button_group"},
+			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "button_group", Value: "test"},
 		},
 		"Button Group Map": {
-			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "button_group"},
-			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "button_group", Value: choice{
+			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "", Type: "button_group"},
+			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "", Type: "button_group", Value: choice{
 				Key:   "key1",
 				Value: "value1",
 			}},
 		},
 		"Radio Value": {
-			field: domain.PostField{OriginalValue: "test", Key: "value", Type: "radio"},
-			want:  domain.PostField{OriginalValue: "test", Key: "value", Type: "radio", Value: "test"},
+			field: domain.PostField{OriginalValue: "test", Key: "", Type: "radio"},
+			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "radio", Value: "test"},
 		},
 		"Radio Key": {
-			field: domain.PostField{OriginalValue: "test", Key: "key", Type: "radio"},
-			want:  domain.PostField{OriginalValue: "test", Key: "key", Type: "radio", Value: "test"},
+			field: domain.PostField{OriginalValue: "test", Key: "", Type: "radio"},
+			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "radio", Value: "test"},
 		},
 		"Radio Map": {
-			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "radio"},
-			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "radio", Value: choice{
+			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "", Type: "radio"},
+			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "", Type: "radio", Value: choice{
 				Key:   "key1",
 				Value: "value1",
 			}},
 		},
 		"Select Value": {
-			field: domain.PostField{OriginalValue: "test", Key: "value", Type: "select"},
-			want:  domain.PostField{OriginalValue: "test", Key: "value", Type: "select", Value: "test"},
+			field: domain.PostField{OriginalValue: "test", Key: "", Type: "select"},
+			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "select", Value: "test"},
 		},
 		"Select Key": {
-			field: domain.PostField{OriginalValue: "test", Key: "key", Type: "select"},
-			want:  domain.PostField{OriginalValue: "test", Key: "key", Type: "select", Value: "test"},
+			field: domain.PostField{OriginalValue: "test", Key: "", Type: "select"},
+			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "select", Value: "test"},
 		},
 		"Select Map": {
-			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "select"},
-			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "map", Type: "select", Value: choice{
+			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "", Type: "select"},
+			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "", Type: "select", Value: choice{
 				Key:   "key1",
 				Value: "value1",
 			}},
