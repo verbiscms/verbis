@@ -50,7 +50,7 @@ func TestNamespace_Partial(t *testing.T) {
 			`html/wrongpath.cms`,
 			nil,
 			false,
-			"Templates.Partial: no file exists with the path: html/wrongpath.cms",
+			"no such file or directory",
 		},
 		"Bad Data": {
 			`html/partial-baddata.cms`,

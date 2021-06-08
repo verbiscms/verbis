@@ -6,7 +6,6 @@ package partial
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"html/template"
@@ -44,13 +43,13 @@ func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) Func {
 
 		file, err := template.New(pathArr[len(pathArr)-1]).Funcs(tplFuncs).ParseFiles(path)
 		if err != nil {
-			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Partial file does not exist", Operation: op, Err: fmt.Errorf("no file exists with the path: %s", name)}
+			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Error parsing partial", Operation: op, Err: err}
 		}
 
 		var b bytes.Buffer
 		err = file.Execute(&b, context)
 		if err != nil {
-			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Unable to execute partial file", Operation: op, Err: err}
+			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Error executing partial", Operation: op, Err: err}
 		}
 
 		return template.HTML(b.String()), nil
