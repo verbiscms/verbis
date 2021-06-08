@@ -26,7 +26,7 @@ func (t *FieldsTestSuite) TestStore_Update() {
 			field,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(field.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(1), 1))
 			},
 		},
 		"No Rows": {

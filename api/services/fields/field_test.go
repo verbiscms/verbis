@@ -21,7 +21,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 	}{
 		"Success": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
+				{Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key:  "key1",
 			mock: nil,
@@ -38,11 +38,11 @@ func (t *FieldTestSuite) TestService_GetField() {
 		},
 		"Post": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
+				{Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key: "key2",
 			mock: func(f *fields.Repository, c *categories.Repository) {
-				f.On("Find", 2).Return(domain.PostFields{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
+				f.On("Find", 2).Return(domain.PostFields{{Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},
 			want: "test",
@@ -77,12 +77,12 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 	}{
 		"Success": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "text", Name: "key1", OriginalValue: "test"},
+				{Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key:  "key1",
 			mock: nil,
 			args: nil,
-			want: domain.PostField{Id: 1, Type: "text", Name: "key1", OriginalValue: "test", Value: "test"},
+			want: domain.PostField{Type: "text", Name: "key1", OriginalValue: "test", Value: "test"},
 			err:  false,
 		},
 		"No Field": {
@@ -95,14 +95,14 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 		},
 		"post": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "text", Name: "key1"},
+				{Type: "text", Name: "key1"},
 			},
 			key: "key2",
 			mock: func(f *fields.Repository, c *categories.Repository) {
-				f.On("Find", 2).Return(domain.PostFields{{Id: 2, Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
+				f.On("Find", 2).Return(domain.PostFields{{Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},
-			want: domain.PostField{Id: 2, Type: "text", Name: "key2", OriginalValue: "test", Value: "test"},
+			want: domain.PostField{Type: "text", Name: "key2", OriginalValue: "test", Value: "test"},
 			err:  false,
 		},
 	}

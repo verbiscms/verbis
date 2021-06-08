@@ -18,7 +18,7 @@ import (
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if the category was not found.
 func (s *Store) Delete(postID int) error {
-	const op = "CategoryStore.Delete"
+	const op = "FieldStore.Delete"
 
 	q := s.Builder().
 		DeleteFrom(s.Schema()+TableName).
@@ -40,7 +40,7 @@ func (s *Store) Delete(postID int) error {
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if the category was not found.
 func (s *Store) deleteField(postID int, f domain.PostField) error {
-	const op = "CategoryStore.Delete"
+	const op = "FieldStore.Delete"
 
 	q := s.Builder().
 		DeleteFrom(s.Schema()+TableName).

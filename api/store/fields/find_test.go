@@ -26,9 +26,9 @@ func (t *FieldsTestSuite) TestStore_Find() {
 		"Success": {
 			fields,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "post_id", "type", "name", "field_key", "value"}).
-					AddRow(fields[0].Id, fields[0].PostId, fields[0].Type, fields[0].Name, fields[0].Key, fields[0].OriginalValue).
-					AddRow(fields[1].Id, fields[1].PostId, fields[1].Type, fields[1].Name, fields[1].Key, fields[1].OriginalValue)
+				rows := sqlmock.NewRows([]string{"post_id", "type", "name", "field_key", "value"}).
+					AddRow(fields[0].PostId, fields[0].Type, fields[0].Name, fields[0].Key, fields[0].OriginalValue).
+					AddRow(fields[1].PostId, fields[1].Type, fields[1].Name, fields[1].Key, fields[1].OriginalValue)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
@@ -67,9 +67,9 @@ func (t *FieldsTestSuite) TestStore_FindByPostAndKey() {
 		"Success": {
 			fields,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "post_id", "type", "name", "field_key", "value"}).
-					AddRow(fields[0].Id, fields[0].PostId, fields[0].Type, fields[0].Name, fields[0].Key, fields[0].OriginalValue).
-					AddRow(fields[1].Id, fields[1].PostId, fields[1].Type, fields[1].Name, fields[1].Key, fields[1].OriginalValue)
+				rows := sqlmock.NewRows([]string{"post_id", "type", "name", "field_key", "value"}).
+					AddRow(fields[0].PostId, fields[0].Type, fields[0].Name, fields[0].Key, fields[0].OriginalValue).
+					AddRow(fields[1].PostId, fields[1].Type, fields[1].Name, fields[1].Key, fields[1].OriginalValue)
 				m.ExpectQuery(regexp.QuoteMeta(FindByPostAndKeyQuery)).WillReturnRows(rows)
 			},
 		},

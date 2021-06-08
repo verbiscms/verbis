@@ -51,7 +51,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 		},
 		"Wrong Field Mime": {
 			fields: domain.PostFields{
-				{Id: 1, Type: "text", Name: "test", OriginalValue: "text", Key: ""},
+				{Type: "text", Name: "test", OriginalValue: "text", Key: ""},
 			},
 			input: "test",
 			want:  "field with the name: test, is not flexible content",
@@ -83,9 +83,9 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 		want     interface{}
 	}{
 		"One Layout": {
-			flexible: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1"},
+			flexible: domain.PostField{Type: "flexible", Name: "flex", OriginalValue: "layout1"},
 			fields: domain.PostFields{
-				{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
+				{Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|text2"},
 			},
@@ -101,9 +101,9 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 			},
 		},
 		"Simple": {
-			flexible: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
+			flexible: domain.PostField{Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
 			fields: domain.PostFields{
-				{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
+				{Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2,layout3"},
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|text2"},
 				{Type: "text", Name: "text3", OriginalValue: "text3", Key: "flex|1|text3"},
@@ -137,7 +137,7 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 			},
 		},
 		"Nested": {
-			flexible: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1"},
+			flexible: domain.PostField{Type: "flexible", Name: "flex", OriginalValue: "layout1"},
 			fields: domain.PostFields{
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "flexible", Name: "nested", OriginalValue: "nestedlayout", Key: "flex|0|nested"},
@@ -162,9 +162,9 @@ func (t *FieldTestSuite) TestService_ResolveFlexible() {
 			},
 		},
 		"Repeater": {
-			flexible: domain.PostField{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout1"},
+			flexible: domain.PostField{Type: "flexible", Name: "flex", OriginalValue: "layout1,layout1"},
 			fields: domain.PostFields{
-				{Id: 1, Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2"},
+				{Type: "flexible", Name: "flex", OriginalValue: "layout1,layout2"},
 				{Type: "text", Name: "text1", OriginalValue: "text1", Key: "flex|0|text1"},
 				{Type: "text", Name: "text2", OriginalValue: "text2", Key: "flex|0|text2"},
 				{Type: "text", Name: "text3", OriginalValue: "text3", Key: "flex|1|text3"},
@@ -224,7 +224,7 @@ func (t *FieldTestSuite) TestFlexible_HasRows() {
 	}{
 		"With Rows": {
 			flexible: Flexible{
-				{Name: "layout", SubFields: SubFields{domain.PostField{Id: 1, Name: "test"}}},
+				{Name: "layout", SubFields: SubFields{domain.PostField{Name: "test"}}},
 			},
 			want: true,
 		},
@@ -243,9 +243,9 @@ func (t *FieldTestSuite) TestFlexible_HasRows() {
 
 func (t *FieldTestSuite) TestSubFields_SubField() {
 	subfield := SubFields{
-		{Id: 1, Name: "test1", Value: 1},
-		{Id: 2, Name: "test2", Value: 2},
-		{Id: 3, Name: "test3", Value: 3},
+		{Name: "test1", Value: 1},
+		{Name: "test2", Value: 2},
+		{Name: "test3", Value: 3},
 	}
 
 	tt := map[string]struct {
@@ -276,11 +276,11 @@ func (t *FieldTestSuite) TestSubFields_First() {
 	}{
 		"Found": {
 			subfields: SubFields{
-				{Id: 1, Name: "test1", Value: 1},
-				{Id: 2, Name: "test2", Value: 2},
-				{Id: 3, Name: "test3", Value: 3},
+				{Name: "test1", Value: 1},
+				{Name: "test2", Value: 2},
+				{Name: "test3", Value: 3},
 			},
-			want: domain.PostField{Id: 1, Name: "test1", Value: 1},
+			want: domain.PostField{Name: "test1", Value: 1},
 		},
 		"Not Found": {
 			subfields: SubFields{},
@@ -302,11 +302,11 @@ func (t *FieldTestSuite) TestSubFields_Last() {
 	}{
 		"Found": {
 			subfields: SubFields{
-				{Id: 1, Name: "test1", Value: 1},
-				{Id: 2, Name: "test2", Value: 2},
-				{Id: 3, Name: "test3", Value: 3},
+				{Name: "test1", Value: 1},
+				{Name: "test2", Value: 2},
+				{Name: "test3", Value: 3},
 			},
-			want: domain.PostField{Id: 3, Name: "test3", Value: 3},
+			want: domain.PostField{Name: "test3", Value: 3},
 		},
 		"Not Found": {
 			subfields: SubFields{},

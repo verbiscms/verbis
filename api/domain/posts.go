@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
+	"strings"
 	"time"
 )
 
@@ -194,6 +195,18 @@ func (f *PostField) TypeIsInSlice(arr []string) bool {
 		}
 	}
 	return false
+}
+
+// IsValueJSON
+//
+// Determines if the value is valid JSON and has the key
+// words - key and value.
+func (f *PostField) IsValueJSON() bool {
+	if !strings.Contains(string(f.OriginalValue), "key") || !strings.Contains(string(f.OriginalValue), "value") {
+		return false
+	}
+	var js map[string]interface{}
+	return json.Unmarshal([]byte(f.OriginalValue), &js) == nil
 }
 
 // Scan
