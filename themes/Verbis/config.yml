@@ -109,7 +109,8 @@ admin:
     # | them being ejected from the system.
     # |
     # |
-    inactive_session_time: 480
+    #inactive_session_time: 480
+    inactive_session_time: 1
 
 # |
 # |--------------------------------------------------------------------------

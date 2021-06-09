@@ -170,6 +170,10 @@ func printInterface(value reflect.Value) (string, bool) {
 		v = "NOW()"
 	}
 
+	if v == "'UTC_TIMESTAMP()'" {
+		v = "UTC_TIMESTAMP()"
+	}
+
 	return v, true
 }
 

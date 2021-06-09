@@ -17,6 +17,7 @@ type Handler interface {
 	ResetPassword(ctx *gin.Context)
 	VerifyPasswordToken(ctx *gin.Context)
 	SendResetPassword(ctx *gin.Context)
+	CheckSession(ctx *gin.Context)
 }
 
 // Auth defines the handler for Authentication methods
