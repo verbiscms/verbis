@@ -16,6 +16,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import store from '../store/index'
 import Meta from 'vue-meta'
+import axios from 'axios'
 
 /*
  * Main Routes
@@ -209,12 +210,6 @@ const routes = [
 		meta: { transitionName : 'fade' },
 	},
 	{
-		path: '/error',
-		name: 'error',
-		component: () => import('../views/errors/ServerDown.vue'),
-		meta: { transitionName : 'fade' },
-	},
-	{
 		path: '*',
 		redirect: '/404',
 		meta: { transitionName : 'fade' },
@@ -235,20 +230,35 @@ const router = new VueRouter({
 });
 
 /**
+ * Check Session
+ * Small request to check if the session is
+ * still valid on every request.
+ *
+ */
+const checkSession = () => {
+	axios.get("/session")
+		.then(() => {})
+		.catch(err => {
+			Vue.prototype.helpers.handleResponse(err)
+		})
+}
+
+/**
  * Protect Routes
  * Return redirect if not logged in.
  *
  */
 router.beforeEach((to, from, next) => {
+	checkSession();
 	if (store.state.auth) {
 		if (to.name === "login") {
 			// Redirect to the page
 			next({
 				path: from.path
 			});
-		} else {
-			next();
+			return;
 		}
+		next();
 	} else {
 		if (to.name === "login" || to.name === "password-reset" || to.name === "send-password-reset" || to.name === "error") {
 			next();
@@ -259,5 +269,7 @@ router.beforeEach((to, from, next) => {
 		}
 	}
 });
+
+
 
 export default router;

@@ -47,7 +47,8 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator := api.Group("")
 		// Middleware
 		operator.Use(middleware.OperatorTokenCheck(d))
-		operator.Use(middleware.SessionCheck(d))
+
+		operator.GET("/session", h.Auth.CheckSession)
 
 		// Themes
 		operator.GET("/themes", h.Themes.List)
@@ -114,7 +115,6 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// Administrator
 		admin := api.Group("")
 		admin.Use(middleware.AdminTokenCheck(d))
-		operator.Use(middleware.SessionCheck(d))
 
 		// Users
 		admin.POST("/users", h.Users.Create)

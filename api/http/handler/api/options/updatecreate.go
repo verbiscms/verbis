@@ -47,10 +47,4 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 	o.SetOptions(&vOptions)
 
 	api.Respond(ctx, http.StatusOK, "Successfully created/updated options", nil)
-
-	//go func() {
-	// Set the deps options, TODO, were restarting the server here.
-	//time.Sleep(time.Second * 2) //nolint
-	//reload.Exec()
-	//}()
 }

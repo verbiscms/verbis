@@ -52,8 +52,6 @@ class helpers {
 
 	// Handle response data
 	handleResponse(data) {
-		console.log(data);
-		this.checkServer(data);
 		if (store.state.auth) {
 			if (data) {
 				if (data.response.status === 401 || data.response.status === 429) {
@@ -77,14 +75,6 @@ class helpers {
 		} else {
 			return Promise.reject(data)
 		}
-	}
-
-	// Check if the server is down
-	checkServer(data) {
-		console.log(data.response);
-		// if (!data.status && !data.response) {
-		// 	router.push({ "name" : "error" })
-		// }
 	}
 
 	// Calculate & set height & children of element

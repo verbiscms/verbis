@@ -35,6 +35,7 @@ func (s *Store) CheckSession(token string) error {
 
 	// Destroy the token and create a new one if session expired.
 	inactiveFor := time.Since(*u.TokenLastUsed).Minutes()
+
 	if int(inactiveFor) > s.Config.Theme.Admin.InactiveSessionTime {
 		newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
@@ -97,7 +98,7 @@ func (s *Store) UpdateToken(token string) error {
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).
-		Column("token_last_used", "NOW()").
+		Column("token_last_used", "UTC_TIMESTAMP()").
 		Where("token", "=", token)
 
 	_, err := s.DB().Exec(q.Build())

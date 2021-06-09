@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/ainsleyclark/verbis/api/store/users"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -76,6 +77,17 @@ func checkUserToken(d *deps.Deps, g *gin.Context) (*domain.User, error) {
 	}
 
 	err = d.Store.User.CheckSession(token)
+
+	if err == users.ErrSessionExpired {
+		g.SetCookie("verbis-session", "", -1, "/", "", false, true)
+		api.AbortJSON(g, http.StatusUnauthorized, "Session expired, please login again", gin.H{
+			"errors": gin.H{
+				"session": "expired",
+			},
+		})
+		return &domain.User{}, err
+	}
+
 	if err != nil {
 		api.AbortJSON(g, http.StatusUnauthorized, "Invalid token in the request header", nil)
 		return &domain.User{}, err
