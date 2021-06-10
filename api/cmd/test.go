@@ -5,9 +5,8 @@
 package cmd
 
 import (
-	"fmt"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/update"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
 
@@ -16,19 +15,10 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			env, err := environment.Load()
+			_, err := update.Init()
 			if err != nil {
-				fmt.Println(err)
+				color.Red.Println(err)
 			}
-
-			// Get the database and ping
-			db, err := database.New(env)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			fmt.Println(db.Tables())
-
 		},
 	}
 )

@@ -14,7 +14,6 @@ import (
 	hashver "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
 	"github.com/mouuff/go-rocket-update/pkg/updater"
-	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"runtime"
@@ -90,38 +89,55 @@ type Updater struct {
 var ErrHashMismatch = errors.New("new file hash mismatch after patch")
 
 func Init() (bool, error) {
-	r, err := GithubVersion()
-	if err != nil {
-		return false, err
-	}
+	//r, err := GithubVersion()
+	//if err != nil {
+	//	return false, err
+	//}
+	//
+	//gitv, err := hashver.NewSemver(r.Name)
+	//if err != nil {
+	//	fmt.Println(err)
+	//	return false, err
+	//}
+	//
+	//needsUpdate := gitv.GreaterThan(version.SemVer)
+	//if needsUpdate {
+	//
+	//}
 
-	gitv, err := hashver.NewSemver(r.Name)
-	if err != nil {
-		return false, err
-	}
 
-	needsUpdate := gitv.GreaterThan(version.SemVer)
-	if needsUpdate {
-
-	}
-
+	//verbis_0.0.1_darwin_amd64.zip
+	zip := fmt.Sprintf("verbis_%s_%s_%s.zip", version.Version, runtime.GOOS, runtime.GOARCH)
+	fmt.Println(zip)
 	u := &updater.Updater{
 		Provider: &provider.Github{
 			RepositoryURL: "github.com/ainsleyclark/verbis",
-			ArchiveName:   fmt.Sprintf("binaries_%s.zip", runtime.GOOS),
+			ArchiveName:   zip,
 		},
-		ExecutableName: fmt.Sprintf("go-rocket-update-example_%s_%s", runtime.GOOS, runtime.GOARCH),
-		Version:        "v0.0.1",
+		Version:       	"v0.0.0",
 	}
 
-	fmt.Println(u.CanUpdate())
-	fmt.Println(u.GetExecutable())
-	fmt.Println(u.GetLatestVersion())
+	u.Provider.Open()
 
-	err := u.Update()
+	err := u.Provider.Walk(func(info *provider.FileInfo) error {
+		fmt.Println(info.Path)
+		return nil
+	})
 	if err != nil {
-		log.Error(err)
+		fmt.Println(err)
 	}
+
+
+
+	status, err := u.Update()
+	if err != nil {
+		return false, err
+	}
+
+	fmt.Println()
+
+
+	fmt.Println(status)
 
 	return false, nil
 }
