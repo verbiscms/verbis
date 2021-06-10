@@ -13,6 +13,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/update"
 	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/spf13/cobra"
 	"runtime"
@@ -59,6 +60,8 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	logger.Info(fmt.Sprintf("Verbis Version: %s, %s", version.Version, version.Prerelease))
 	logger.Info(fmt.Sprintf("Go runtime version: %s", runtime.Version()))
 
+	update.Init()
+
 	// Check if the environment values are valid
 	vErrors := env.Validate()
 	if vErrors != nil {
@@ -73,17 +76,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-	//db, err := database.New(env)
-	//if err != nil {
-	//	printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
-	//	return nil, nil, fmt.Errorf("error establishing database connection")
-	//}
-	//
-	//// Check if the database exists
-	//if err := db.CheckExists(); err != nil {
-	//	printError(fmt.Sprintf("Establishing database connection, are the credentials in the .env file correct? %s", err.Error()))
-	//	return nil, nil, fmt.Errorf("error establishing database connection")
-	//}
 
 	// Init Cache
 	cache.Init()
