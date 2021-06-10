@@ -1,28 +1,43 @@
 project_name: verbis
 before:
   hooks:
-    #- make all
+    - make all
     - go mod tidy
     - go generate ./...
+    - ./bin/build/build.sh
 builds:
-  - id: "mac"
+  - id: "verbis"
     env:
       - CGO_ENABLED=0
     goos:
       - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    binary: "build/verbis"
+    ignore:
+      - goos: linux
+        goarch: arm64
+      - goos: windows
+        goarch: arm64
+    ldflags:
+      - -X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false' -X 'github.com/ainsleyclark/verbis/api/version.Version={{.Version}}'
 archives:
   -
-    id: mac
     builds:
-      - mac
+      - verbis
     format: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: "verbis"
     files:
       - README.md
-      - build/admin
+      - LICENSE
+      - build
 checksum:
   name_template: 'checksums.txt'
+  algorithm: sha256
 snapshot:
   name_template: "{{ .Tag }}"
 changelog:

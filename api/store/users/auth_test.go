@@ -18,7 +18,7 @@ import (
 
 var (
 	UpdateTokenQuery     = "UPDATE `users` SET `token` = ?, `updated_at` = NOW() WHERE `token` = 'token'"
-	UpdateTokenUsedQuery = "UPDATE `users` SET `token_last_used` = NOW() WHERE `token` = 'token'"
+	UpdateTokenUsedQuery = "UPDATE `users` SET `token_last_used` = UTC_TIMESTAMP() WHERE `token` = 'token'"
 	RestPasswordQuery    = "UPDATE `users` SET `password` = ? WHERE `id` = '1'"
 )
 
