@@ -105,7 +105,6 @@ func Init() (bool, error) {
 	//
 	//}
 
-
 	//verbis_0.0.1_darwin_amd64.zip
 	zip := fmt.Sprintf("verbis_%s_%s_%s.zip", version.Version, runtime.GOOS, runtime.GOARCH)
 	fmt.Println(zip)
@@ -114,30 +113,43 @@ func Init() (bool, error) {
 			RepositoryURL: "github.com/ainsleyclark/verbis",
 			ArchiveName:   zip,
 		},
-		Version:       	"v0.0.0",
+		Version: "v0.0.0",
 	}
 
 	u.Provider.Open()
 
 	err := u.Provider.Walk(func(info *provider.FileInfo) error {
 		fmt.Println(info.Path)
+		fmt.Println(info.Mode)
+
+		//os.OpenFile(name, os.O_RDONLY|os.O_CREATE, 0666)
+		//
+		//fmt.Println("/Users/ainsley/Desktop/test/" + info.Path)
+		//f, err := os.Create("/Users/ainsley/Desktop/test/" + info.Path)
+		//if err != nil {
+		//	fmt.Println(err, "eher")
+		//	return err
+		//}
+		//defer f.Close()
+
+		// If info is dir create, only need admin folder and docs
+
+		err := u.Provider.Retrieve(info.Path, "/Users/ainsley/Desktop/test/"+info.Path)
+		if err != nil {
+			return err
+		}
+
 		return nil
 	})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-
-
-	status, err := u.Update()
 	if err != nil {
 		return false, err
 	}
 
-	fmt.Println()
+	//status, err := u.Update()
 
+	//fmt.Println()
 
-	fmt.Println(status)
+	//fmt.Println(status)
 
 	return false, nil
 }
