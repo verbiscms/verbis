@@ -6,10 +6,12 @@
 
 package api
 
-// SuperAdminString defines if the app (Verbis) is being developed
-// or is being packaged out for distribution.
-var SuperAdminString = "true"
-var SuperAdmin = true
+var (
+	// SuperAdminString defines if the app (Verbis) is being developed
+	// or is being packaged out for distribution.
+	SuperAdminString = "true"
+	SuperAdmin       = true
+)
 
 // App defines default values before the the user has defined
 // any custom properties by updating the database.
@@ -29,13 +31,7 @@ var App = struct {
 
 const (
 	// The web route of the API.
-	APIRoute = "/api/v1"
-
-	DefaultTheme = ""
-
-	// this needs to be dynamic
-	Platform = "mac"
-
+	APIRoute      = "/api/v1"
 	AssetsChannel = 10
 	UploadChannel = 10
 	ServerChannel = 50

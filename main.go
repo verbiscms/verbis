@@ -10,7 +10,8 @@ import (
 )
 
 func main() {
-	// Execute Verbis
+	// Set NumCPU
 	runtime.GOMAXPROCS(runtime.NumCPU())
+	// Execute Verbis
 	cmd.Execute()
 }

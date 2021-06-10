@@ -13,7 +13,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/spf13/cobra"
+	"runtime"
 	"strings"
 )
 
@@ -53,6 +55,9 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 
 	// Init logging
 	logger.Init(env)
+
+	logger.Info(fmt.Sprintf("Verbis Version: %s, %s", version.Version, version.Prerelease))
+	logger.Info(fmt.Sprintf("Go runtime version: %s", runtime.Version()))
 
 	// Check if the environment values are valid
 	vErrors := env.Validate()
