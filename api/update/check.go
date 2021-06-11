@@ -45,8 +45,8 @@ var (
 type UpdateStatus int
 
 const (
-	// Internal update status (something went wrong)
-	Internal UpdateStatus = iota
+	// Unknown update status (something went wrong)
+	Unknown UpdateStatus = iota
 	// UpToDate means the Verbis is already up to date
 	UpToDate = 1
 	// Validation failed means V
@@ -77,22 +77,6 @@ func New(paths paths.Paths) *Update {
 func (u *Update) Update() (UpdateStatus, int64, error) {
 	const op = "Update.Update"
 
-	code, files, err := u.test()
-
-	switch code {
-	case Internal:
-		err := u.RollBack()
-		if err != nil {
-			return Internal, 0, err
-		}
-	}
-
-	return code, files, err
-}
-
-func (u *Update) test() (UpdateStatus, int64, error) {
-	const op = "Update.Update"
-
 	err := u.Validate()
 	if err == ErrLatestVersion {
 		return UpToDate, 0, err
@@ -102,20 +86,25 @@ func (u *Update) test() (UpdateStatus, int64, error) {
 
 	_, err = u.pkg.Update()
 	if err != nil {
-		return Internal, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error updating executable", Operation: op, Err: err}
+		return Unknown, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error updating executable", Operation: op, Err: err}
 	}
 
 	err = u.backup()
 	if err != nil {
-		return Internal, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error backing up Verbis", Operation: op, Err: err}
+		return Unknown, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error backing up Verbis", Operation: op, Err: err}
 	}
 
 	fileCount, err := u.walk()
 	if err != nil {
-		return Internal, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error copying folders", Operation: op, Err: err}
+		return Unknown, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error copying folders", Operation: op, Err: err}
 	}
 
-	return Updated, fileCount, nil
+	err = u.cleanup()
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return Updated, fileCount, err
 }
 
 // Validate determines if Verbis can be updated by
@@ -204,6 +193,11 @@ func (u *Update) walk() (int64, error) {
 
 	var filesCount int64 = 0
 	err = u.pkg.Provider.Walk(func(info *provider.FileInfo) error {
+
+		if strings.Contains(info.Path, "verbisexec") {
+			fmt.Println(info.Path)
+		}
+
 		cleaned := strings.Replace(info.Path, ZipDir, "", 1)
 		parts := strings.Split(cleaned, "/")
 
