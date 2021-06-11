@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"os"
 	"path/filepath"
 )
@@ -16,6 +17,7 @@ import (
 /// application.
 type Paths struct {
 	Base    string
+	Exec    string
 	Admin   string
 	API     string
 	Uploads string
@@ -42,8 +44,11 @@ const (
 // Retrieves relevant paths for the application.
 func Get() Paths {
 	base := base()
+	exec := executable()
+
 	return Paths{
 		Base:    base,
+		Exec:    exec,
 		Admin:   base + Admin,
 		API:     base + API,
 		Uploads: base + Uploads,
@@ -64,6 +69,18 @@ func base() string {
 		return ""
 	}
 	return dir
+}
+
+// executable
+//
+// Retrieves the name of the currently running file.
+func executable() string {
+	const op = "Paths.Executable"
+	exec, err := os.Executable()
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting executable path", Operation: op, Err: err})
+	}
+	return exec
 }
 
 // BaseCheck
