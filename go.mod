@@ -57,6 +57,7 @@ require (
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/tdewolff/minify/v2 v2.9.10
+	github.com/teamwork/reload v1.3.2
 	github.com/ugorji/go v1.2.4 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect

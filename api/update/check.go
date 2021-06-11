@@ -5,180 +5,262 @@
 package update
 
 import (
-	"bytes"
-	"crypto/sha256"
-	"encoding/json"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/version"
-	hashver "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
 	"github.com/mouuff/go-rocket-update/pkg/updater"
-	"io/ioutil"
-	"net/http"
+	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
-	"time"
+	"strings"
 )
 
-type Release struct {
-	URL             string    `json:"url"`
-	AssetsURL       string    `json:"assets_url"`
-	UploadURL       string    `json:"upload_url"`
-	HTMLURL         string    `json:"html_url"`
-	ID              int       `json:"id"`
-	NodeID          string    `json:"node_id"`
-	TagName         string    `json:"tag_name"`
-	TargetCommitish string    `json:"target_commitish"`
-	Name            string    `json:"name"`
-	Draft           bool      `json:"draft"`
-	Prerelease      bool      `json:"prerelease"`
-	CreatedAt       time.Time `json:"created_at"`
-	PublishedAt     time.Time `json:"published_at"`
-	Assets          []Asset   `json:"assets"`
-	TarballURL      string    `json:"tarball_url"`
-	ZipballURL      string    `json:"zipball_url"`
-	Body            string    `json:"body"`
+type Updater interface {
+	Update() (int64, error)
+	HasUpdate() bool
+	Validate() error
+	RollBack() error
 }
 
-type Asset struct {
-	URL      string `json:"url"`
-	ID       int    `json:"id"`
-	NodeID   string `json:"node_id"`
-	Name     string `json:"name"`
-	Label    string `json:"label"`
-	Uploader struct {
-		Login             string `json:"login"`
-		ID                int    `json:"id"`
-		NodeID            string `json:"node_id"`
-		AvatarURL         string `json:"avatar_url"`
-		GravatarID        string `json:"gravatar_id"`
-		URL               string `json:"url"`
-		HTMLURL           string `json:"html_url"`
-		FollowersURL      string `json:"followers_url"`
-		FollowingURL      string `json:"following_url"`
-		GistsURL          string `json:"gists_url"`
-		StarredURL        string `json:"starred_url"`
-		SubscriptionsURL  string `json:"subscriptions_url"`
-		OrganizationsURL  string `json:"organizations_url"`
-		ReposURL          string `json:"repos_url"`
-		EventsURL         string `json:"events_url"`
-		ReceivedEventsURL string `json:"received_events_url"`
-		Type              string `json:"type"`
-		SiteAdmin         bool   `json:"site_admin"`
-	} `json:"uploader"`
-	ContentType        string    `json:"content_type"`
-	State              string    `json:"state"`
-	Size               int       `json:"size"`
-	DownloadCount      int       `json:"download_count"`
-	CreatedAt          time.Time `json:"created_at"`
-	UpdatedAt          time.Time `json:"updated_at"`
-	BrowserDownloadURL string    `json:"browser_download_url"`
+type Update struct {
+	Paths paths.Paths
+	pkg   *updater.Updater
 }
 
-// Tag represents a tag object.
-// http get to github
-// check version number and compare using version.version
-// make backup
+var (
+	ErrLatestVersion = errors.New("at latest version")
+	ZipDir           = "verbis/build/"
+	Folders          = []string{
+		paths.Admin,
+		paths.API,
+	}
+)
 
-type Updater struct {
-	CurrentVersion *hashver.Version
-	GithubVersion  *hashver.Version
-	Release        *Release
-}
+// UpdateStatus represents the status after Update{}.Update() was called
+type UpdateStatus int
 
-var ErrHashMismatch = errors.New("new file hash mismatch after patch")
+const (
+	// Internal update status (something went wrong)
+	Internal UpdateStatus = iota
+	// UpToDate means the Verbis is already up to date
+	UpToDate = 1
+	// Validation failed means V
+	ValidationFailed = 2
+	// Updated means the software have been updated
+	Updated = 3
+)
 
-func Init() (bool, error) {
-	//r, err := GithubVersion()
-	//if err != nil {
-	//	return false, err
-	//}
-	//
-	//gitv, err := hashver.NewSemver(r.Name)
-	//if err != nil {
-	//	fmt.Println(err)
-	//	return false, err
-	//}
-	//
-	//needsUpdate := gitv.GreaterThan(version.SemVer)
-	//if needsUpdate {
-	//
-	//}
+func New(paths paths.Paths) *Update {
+	u := &Update{
+		Paths: paths,
+	}
 
-	//verbis_0.0.1_darwin_amd64.zip
-	zip := fmt.Sprintf("verbis_%s_%s_%s.zip", version.Version, runtime.GOOS, runtime.GOARCH)
-	fmt.Println(zip)
-	u := &updater.Updater{
+	u.pkg = &updater.Updater{
 		Provider: &provider.Github{
-			RepositoryURL: "github.com/ainsleyclark/verbis",
-			ArchiveName:   zip,
+			RepositoryURL: api.Repo,
+			ArchiveName:   u.zipFile(),
 		},
 		Version: "v0.0.0",
 	}
 
-	u.Provider.Open()
+	return u
+}
 
-	err := u.Provider.Walk(func(info *provider.FileInfo) error {
-		fmt.Println(info.Path)
-		fmt.Println(info.Mode)
+// Update - TODO
+//
+//
+func (u *Update) Update() (UpdateStatus, int64, error) {
+	const op = "Update.Update"
 
-		//os.OpenFile(name, os.O_RDONLY|os.O_CREATE, 0666)
-		//
-		//fmt.Println("/Users/ainsley/Desktop/test/" + info.Path)
-		//f, err := os.Create("/Users/ainsley/Desktop/test/" + info.Path)
-		//if err != nil {
-		//	fmt.Println(err, "eher")
-		//	return err
-		//}
-		//defer f.Close()
+	code, files, err := u.test()
 
-		// If info is dir create, only need admin folder and docs
-
-		err := u.Provider.Retrieve(info.Path, "/Users/ainsley/Desktop/test/"+info.Path)
+	switch code {
+	case Internal:
+		err := u.RollBack()
 		if err != nil {
-			return err
+			return Internal, 0, err
+		}
+	}
+
+	return code, files, err
+}
+
+func (u *Update) test() (UpdateStatus, int64, error) {
+	const op = "Update.Update"
+
+	err := u.Validate()
+	if err == ErrLatestVersion {
+		return UpToDate, 0, err
+	} else if err != nil {
+		return ValidationFailed, 0, err
+	}
+
+	_, err = u.pkg.Update()
+	if err != nil {
+		return Internal, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error updating executable", Operation: op, Err: err}
+	}
+
+	err = u.backup()
+	if err != nil {
+		return Internal, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error backing up Verbis", Operation: op, Err: err}
+	}
+
+	fileCount, err := u.walk()
+	if err != nil {
+		return Internal, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error copying folders", Operation: op, Err: err}
+	}
+
+	return Updated, fileCount, nil
+}
+
+// Validate determines if Verbis can be updated by
+// performing health checks. If the current user
+// is a super admin or Verbis does not require
+// and update, errors.INVALID will be
+// returned.
+func (u *Update) Validate() error {
+	const op = "Update.Validate"
+
+	// Check if the user is not a super admin
+	if api.SuperAdmin {
+		return &errors.Error{Code: errors.INVALID, Message: "Error updating Verbis", Operation: op, Err: fmt.Errorf("only built verbis installations can be updated")}
+	}
+
+	// Check if the current version is up to date
+	if !u.HasUpdate() {
+		return &errors.Error{Code: errors.INVALID, Message: "Version number: " + version.Version + " not required to be updated", Operation: op, Err: ErrLatestVersion}
+	}
+
+	return nil
+}
+
+// HasUpdate determines if Verbis has an update to be run.
+// This is done by comparing the version number on
+// the latest GitHub release.
+// Logs errors.INVALID if there was an error obtaining
+// the version number.
+func (u *Update) HasUpdate() bool {
+	const op = "Update.HasUpdate"
+
+	update, err := u.pkg.CanUpdate()
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error obtaining version number", Operation: op, Err: err})
+		return false
+	}
+
+	return update
+}
+
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// Rollback
+func (u *Update) RollBack() error {
+	const op = "Update.RollBack"
+
+	return nil
+
+	//_ = u.deleteFolders()
+	//
+	//for _, v := range Folders {
+	//	err := files.CopyDir(u.backupPath+v, u.Paths.Base)
+	//	if err != nil {
+	//		return u.backupPath, &errors.Error{Code: errors.INTERNAL, Message: "Error copying folder: " + v, Operation: op, Err: err}
+	//	}
+	//}
+	//
+	//err := u.pkg.Rollback()
+	//if err != nil {
+	//	return u.backupPath, &errors.Error{Code: errors.INTERNAL, Message: "Error copying executable", Operation: op, Err: err}
+	//}
+	//
+	//return u.backupPath, nil
+}
+
+// zipFile retrieves the release zip from GitHub by using
+// the runtime GOOS and GOARCH.
+// Example zip: verbis_0.0.1_darwin_amd64.zip
+func (u *Update) zipFile() string {
+	return fmt.Sprintf("verbis_%s_%s_%s.zip", version.Version, runtime.GOOS, runtime.GOARCH)
+}
+
+//
+func (u *Update) walk() (int64, error) {
+	const op = "Provider.Walk"
+	err := u.pkg.Provider.Open()
+	if err != nil {
+		return 0, &errors.Error{Code: errors.INTERNAL, Message: "Error opening Github Provider", Operation: op, Err: err}
+	}
+
+	defer func(Provider provider.Provider) {
+		err := Provider.Close()
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing update provider", Operation: op, Err: err})
+		}
+	}(u.pkg.Provider)
+
+	var filesCount int64 = 0
+	err = u.pkg.Provider.Walk(func(info *provider.FileInfo) error {
+		cleaned := strings.Replace(info.Path, ZipDir, "", 1)
+		parts := strings.Split(cleaned, "/")
+
+		if len(parts) == 0 {
+			return nil
 		}
 
+		for _, v := range Folders {
+			if parts[0] != strings.ReplaceAll(v, string(os.PathSeparator), "") {
+				continue
+			}
+			destPath := u.Paths.Base + string(os.PathSeparator) + cleaned
+			err := os.MkdirAll(filepath.Dir(destPath), os.ModePerm)
+			if err != nil {
+				return err
+			}
+			err = u.pkg.Provider.Retrieve(info.Path, destPath)
+			if err != nil {
+				return err
+			}
+			filesCount += 1
+		}
 		return nil
 	})
-	if err != nil {
-		return false, err
-	}
 
-	//status, err := u.Update()
-
-	//fmt.Println()
-
-	//fmt.Println(status)
-
-	return false, nil
+	return filesCount, nil
 }
 
-const (
-	ReleasesURL = "https://api.github.com/repos/ainsleyclark/verbis/releases/latest"
-)
-
-func GithubVersion() (*Release, error) {
-	resp, err := http.Get(ReleasesURL)
+// verifyUpdate verifies if the executable is installed
+// correctly we are going to run the newly installed
+// program by running it with -version.
+func (u *Update) verifyUpdate() error {
+	latestVersion, err := u.pkg.GetLatestVersion()
 	if err != nil {
-		return nil, err
-	}
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return nil, err
+		return err
 	}
 
-	var release Release
-	err = json.Unmarshal(body, &release)
+	executable, err := u.pkg.GetExecutable()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return &release, nil
-}
+	cmd := exec.Cmd{
+		Path: executable,
+		Args: []string{executable, "-version"},
+	}
 
-func verifySha(bin []byte, sha []byte) bool {
-	h := sha256.New()
-	h.Write(bin)
-	return bytes.Equal(h.Sum(nil), sha)
+	// Should be replaced with Output() as soon as test project is updated
+	output, err := cmd.Output()
+	if err != nil {
+		return err
+	}
+
+	strOutput := string(output)
+	if !strings.Contains(strOutput, latestVersion) {
+		return errors.New("Version not found in program output")
+	}
+
+	return nil
 }
