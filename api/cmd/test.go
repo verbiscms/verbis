@@ -6,10 +6,11 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/update"
-	"github.com/gookit/color"
+	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/update/github"
+	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/spf13/cobra"
+	"runtime"
 )
 
 var (
@@ -17,13 +18,34 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			u := update.New(paths.Get())
-			files, err := u.Update()
-			if err != nil {
-				color.Red.Println(err)
-				u.RollBack()
+
+			git := github.Github{
+				RepoURL:     api.Repo,
+				ArchiveName: fmt.Sprintf("verbis_%s_%s_%s.zip", version.Version, runtime.GOOS, runtime.GOARCH),
 			}
-			fmt.Printf("Updated %d files.\n", files)
+
+			err := git.Open()
+			if err != nil {
+				fmt.Println(err)
+			}
+
+			//git.Walk(func(info *github.FileInfo) error {
+			//	if info.Mode.IsRegular() {
+			//		if !strings.Contains(info.Path, "node_modules") {
+			//			fmt.Println(info.Path)
+			//		}
+			//	}
+			//
+			//	return nil
+			//})
+
+			//u := update.New(paths.Get())
+			//_, files, err := u.Update()
+			//if err != nil {
+			//	color.Red.Println(err)
+			//	u.RollBack()
+			//}
+			//fmt.Printf("Updated %d files.\n", files)
 			//go func() {
 			//	time.Sleep(time.Second * 2)
 			//	logger.Info("Restarting Verbis...")
