@@ -62,7 +62,7 @@ func New(paths paths.Paths) *Update {
 
 	u.pkg = &updater.Updater{
 		Provider: &provider.Github{
-			RepositoryURL: api.Repo,
+			RepositoryURL: "github.com/" + api.Repo,
 			ArchiveName:   u.zipFile(),
 		},
 		Version: "v0.0.0",
@@ -86,6 +86,10 @@ func (u *Update) Update() (UpdateStatus, int64, error) {
 
 	_, err = u.pkg.Update()
 	if err != nil {
+		err := u.RollBack()
+		if err != nil {
+			return 0, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error updating executable", Operation: op, Err: err}
+		}
 		return Unknown, 0, &errors.Error{Code: errors.INTERNAL, Message: "Error updating executable", Operation: op, Err: err}
 	}
 
@@ -181,7 +185,7 @@ func (u *Update) walk() (int64, error) {
 	const op = "Provider.Walk"
 	err := u.pkg.Provider.Open()
 	if err != nil {
-		return 0, &errors.Error{Code: errors.INTERNAL, Message: "Error opening Github Provider", Operation: op, Err: err}
+		return 0, &errors.Error{Code: errors.INTERNAL, Message: "Error opening github Provider", Operation: op, Err: err}
 	}
 
 	defer func(Provider provider.Provider) {
