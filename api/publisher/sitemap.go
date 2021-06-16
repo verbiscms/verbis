@@ -16,7 +16,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store/posts"
-	"io/ioutil"
+	"path/filepath"
 	"time"
 )
 
@@ -38,13 +38,16 @@ type SiteMapper interface {
 // Sitemap represents the generation of sitemap.xml files for use
 // with the sitemap controller.
 type Sitemap struct {
-	deps         *deps.Deps
-	options      *domain.Options
-	resources    map[string]domain.Resource
-	templatePath string
-	indexXSL     string
-	resourceXSL  string
+	deps        *deps.Deps
+	options     *domain.Options
+	resources   map[string]domain.Resource
+	indexXSL    string
+	resourceXSL string
 }
+
+const (
+	SiteMapsDir = "sitemaps"
+)
 
 // index defines the the XML data for rendering a the main (index) sitemap.
 type index struct {
@@ -98,12 +101,11 @@ func NewSitemap(d *deps.Deps) *Sitemap {
 	}
 
 	s := &Sitemap{
-		deps:         d,
-		options:      d.Options,
-		resources:    r,
-		templatePath: d.Paths.Web + "/sitemaps/",
-		indexXSL:     "main-sitemap.xsl",
-		resourceXSL:  "resource-sitemap.xsl",
+		deps:        d,
+		options:     d.Options,
+		resources:   r,
+		indexXSL:    "main-sitemap.xsl",
+		resourceXSL: "resource-sitemap.xsl",
 	}
 
 	return s
@@ -158,7 +160,7 @@ func (s *Sitemap) Index() ([]byte, error) {
 	return xmlData, nil
 }
 
-// GetXSL reads the main index XSL file from the sitemaps template
+// XSL reads the main index XSL file from the sitemaps template
 // path for use with the sitemap-xml file.
 //
 // Returns errors.INTERNAL if the ioutil function failed to read the path.
@@ -174,8 +176,8 @@ func (s *Sitemap) XSL(index bool) ([]byte, error) {
 		return cached, nil
 	}
 
-	path := s.templatePath + fileName
-	data, err := ioutil.ReadFile(path)
+	path := filepath.Join(SiteMapsDir, fileName)
+	data, err := s.deps.FS.Web.ReadFile(path)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the xsl file with the path: %s", path), Operation: op, Err: err}
 	}
@@ -185,7 +187,7 @@ func (s *Sitemap) XSL(index bool) ([]byte, error) {
 	return data, nil
 }
 
-// GetPages first checks to see if the sitemap serving is enabled in the
+// Pages first checks to see if the sitemap serving is enabled in the
 // options, then goes on to retrieve the pages. template data is then
 // constructed and executed.
 //

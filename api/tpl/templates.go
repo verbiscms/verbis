@@ -6,6 +6,7 @@ package tpl
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/verbisfs"
 	"github.com/gin-gonic/gin"
 	"html/template"
 	"io"
@@ -22,7 +23,7 @@ type TemplateHandler interface {
 	ExecuteTpl(w io.Writer, text string, data interface{}) error
 }
 
-// TemplateExecute represents the functions for executing
+// TemplateExecutor represents the functions for executing
 // template.
 type TemplateExecutor interface {
 	Exists(template string) bool
@@ -53,6 +54,7 @@ type TemplateConfig interface {
 	GetRoot() string
 	GetExtension() string
 	GetMaster() string
+	GetFS() verbisfs.FS
 }
 
 // Config represents the options for passing.
@@ -60,6 +62,7 @@ type Config struct {
 	Root      string
 	Extension string
 	Master    string
+	FS        verbisfs.FS
 }
 
 // GetRoot
@@ -81,4 +84,11 @@ func (c Config) GetExtension() string {
 // Returns the template master layout.
 func (c Config) GetMaster() string {
 	return c.Master
+}
+
+// GetFS
+//
+// Returns the the file system if there is one.
+func (c Config) GetFS() verbisfs.FS {
+	return c.FS
 }

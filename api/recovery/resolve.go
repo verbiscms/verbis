@@ -64,8 +64,8 @@ func (r *Recover) resolveErrorPage(custom bool) (string, tpl.TemplateExecutor, b
 // error templates have been found.
 func (r *Recover) verbisErrorResolver() (string, tpl.TemplateExecutor) {
 	return "templates/error", r.deps.Tmpl().Prepare(tpl.Config{
-		Root:      r.deps.Paths.Web,
 		Extension: VerbisErrorExtension,
 		Master:    VerbisErrorLayout,
+		FS:        r.deps.FS.Web,
 	})
 }

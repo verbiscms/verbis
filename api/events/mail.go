@@ -14,7 +14,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	"os"
+	"github.com/gookit/color"
+	"path/filepath"
 	"text/template"
 )
 
@@ -33,7 +34,6 @@ type mail struct {
 	Driver      string
 	Deps        *deps.Deps
 	Client      client.Mailer
-	TplRoot     string
 	event
 }
 
@@ -139,15 +139,14 @@ func newMailer(d *deps.Deps, ev event) (*mail, error) {
 		Client:      m,
 		Deps:        d,
 		event:       ev,
-		TplRoot:     d.Paths.Web + string(os.PathSeparator) + MailDir,
 		FromAddress: d.Env.MailFromAddress,
 		FromName:    d.Env.MailFromName,
 		Driver:      d.Env.MailDriver,
 	}, nil
 }
 
-// Validates the mail struct by checking if the client and
-// client is nil.
+// Validate checks the mail struct by checking if the
+// client and client is nil.
 // Returns errors.INTERNAL in both cases.
 func (m *mail) Validate() error {
 	const op = "Mail.Validate"
@@ -163,9 +162,9 @@ func (m *mail) Validate() error {
 	return nil
 }
 
-// Sends the transmission from the email client. The mail
-// instance is first validated, and HTML and PlainText
-// is executed.
+// Send the transmission from the email client. The
+// mail instance is first validated, and HTML and
+// PlainText is executed.
 // Logs errors.INTERNAL in any instance of an error.
 func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 	const op = "mail.Send"
@@ -211,9 +210,10 @@ func (m *mail) Send(data interface{}, r []string, a client.Attachments) {
 // rendered.
 func (m *mail) ExecuteHTML(file string, data interface{}) (string, error) {
 	exec := m.Deps.Tmpl().Prepare(&tpl.Config{
-		Root:      m.TplRoot,
+		Root:      MailDir,
 		Extension: MailHTMLExtension,
 		Master:    MasterTplLayout,
+		FS:        m.Deps.FS.Web,
 	})
 
 	var buf bytes.Buffer
@@ -231,13 +231,14 @@ func (m *mail) ExecuteHTML(file string, data interface{}) (string, error) {
 func (m *mail) ExecuteText(file string, data interface{}) (string, error) {
 	const op = "Mail.ExecuteText"
 
-	tmpl, err := template.New(file + MailTextExtension).ParseFiles(m.TplRoot + string(os.PathSeparator) + file + MailTextExtension)
+	tmpl, err := template.ParseFS(m.Deps.FS.Web, filepath.Join(MailDir, file+MailTextExtension))
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error parsing text template: " + file, Operation: op, Err: err}
 	}
 
 	var buf bytes.Buffer
-	err = tmpl.ExecuteTemplate(&buf, file+MailTextExtension, m.GetTplData(data))
+	err = tmpl.Execute(&buf, m.GetTplData(data))
+	color.Red.Println(err)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error executing text template: " + file, Operation: op, Err: err}
 	}

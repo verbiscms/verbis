@@ -31,13 +31,24 @@ func DefaultFileHandler() fileHandler { //nolint
 	const op = "TemplateEngine.defaultFileHandler"
 
 	return func(config tpl.TemplateConfig, template string) (content string, err error) {
+		path := config.GetRoot() + string(os.PathSeparator) + template + config.GetExtension()
+
+		fs := config.GetFS()
+		if fs != nil {
+			data, err := fs.ReadFile(strings.TrimPrefix(path, string(os.PathSeparator)))
+			if err != nil {
+				return "", err
+			}
+			return string(data), nil
+		}
+
 		// Get the absolute path of the root template
-		path, err := filepath.Abs(config.GetRoot() + string(os.PathSeparator) + template + config.GetExtension())
+		abs, err := filepath.Abs(config.GetRoot() + string(os.PathSeparator) + template + config.GetExtension())
 		if err != nil {
 			return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Error obtaining absolute file of template:%v", path), Operation: op, Err: err}
 		}
 
-		data, err := ioutil.ReadFile(path)
+		data, err := ioutil.ReadFile(abs)
 		if err != nil {
 			return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Render read name:%v, path:%v", template, path), Operation: op, Err: err}
 		}

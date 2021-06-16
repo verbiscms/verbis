@@ -12,6 +12,11 @@ type Handler struct {
 	mock.Mock
 }
 
+// CheckSession provides a mock function with given fields: ctx
+func (_m *Handler) CheckSession(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
 // Login provides a mock function with given fields: ctx
 func (_m *Handler) Login(ctx *gin.Context) {
 	_m.Called(ctx)
