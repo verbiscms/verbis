@@ -6,11 +6,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/update/github"
-	"github.com/ainsleyclark/verbis/api/version"
+	"github.com/ainsleyclark/verbis/admin"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
-	"runtime"
+	"io/fs"
 )
 
 var (
@@ -19,15 +18,17 @@ var (
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
 
-			git := github.Github{
-				RepoURL:     api.Repo,
-				ArchiveName: fmt.Sprintf("verbis_%s_%s_%s.zip", version.Version, runtime.GOOS, runtime.GOARCH),
+			fmt.Println(admin.SPA.Open("index.html"))
+
+			admin.SPA.ReadFile()
+
+			index, err := admin.SPA.ReadFile("dist/index.html")
+			if err != nil {
+				color.Red.Println(err)
 			}
 
-			err := git.Open()
-			if err != nil {
-				fmt.Println(err)
-			}
+			fs.FS()
+			fmt.Println(string(index))
 
 			//git.Walk(func(info *github.FileInfo) error {
 			//	if info.Mode.IsRegular() {

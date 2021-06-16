@@ -16,9 +16,6 @@
 node_modules
 /dist
 
-.idea
-.idea/
-
 # Local environment files
 /.env
 /.env.local
@@ -32,21 +29,16 @@ pnpm-debug.log*
 
 # Editor directories and files
 .idea
+.idea/
 .vscode
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
-.DS_Store
 
 # Verbis specific
 /build
 /storage/uploads
 dist/
 verbisexec
-
-git filter-branch --tree-filter "rm -rf storage/uploads" --prune-empty HEAD
-git for-each-ref --format="%(refname)" refs/original/ | xargs -n 1 git update-ref -d
-git gc
-git push origin master --force
