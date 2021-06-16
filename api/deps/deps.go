@@ -13,6 +13,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/ainsleyclark/verbis/api/verbisfs"
 	"github.com/ainsleyclark/verbis/api/watchers"
 	"os"
 )
@@ -42,6 +43,9 @@ type Deps struct {
 
 	// Paths
 	Paths paths.Paths
+
+	// File System (Web and SPA)
+	FS *verbisfs.FileSystem
 
 	// Webp
 	WebP webp.Execer
@@ -124,6 +128,7 @@ func New(cfg Config) *Deps {
 		Running: cfg.Running,
 		Site:    site.New(&opts),
 		Theme:   theme.New(),
+		FS:      verbisfs.New(),
 		WebP:    webp.New(p.Bin + webp.Path),
 	}
 

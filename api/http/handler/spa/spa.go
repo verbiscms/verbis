@@ -5,13 +5,15 @@
 package spa
 
 import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
+	"github.com/gookit/color"
 	"net/http"
 	"strings"
 )
@@ -37,11 +39,19 @@ func New(d *deps.Deps) *SPA {
 	}
 }
 
+const op = "SPA.Serve"
+
 // Serve
 //
 // Serve all of the administrator & operator assets and serve the
 // file extension based on the content type.
 func (s *SPA) Serve(ctx *gin.Context) {
+	if api.SuperAdmin {
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error, using SPA route for development, use `npm run serve`", Operation: op, Err: fmt.Errorf("use spa serve")}).Error()
+		s.publisher.NotFound(ctx)
+		return
+	}
+
 	path := ctx.Request.URL.Path
 
 	// If the path is a file
@@ -58,14 +68,11 @@ func (s *SPA) Serve(ctx *gin.Context) {
 //
 // Returns any files for the SPA.
 func (s *SPA) file(path string, ctx *gin.Context) {
-	const op = "SPA.Serve"
-
 	file := strings.ReplaceAll(path, "/admin", "")
 	extensionArr := strings.Split(file, ".")
 	extension := extensionArr[len(extensionArr)-1]
-	path = s.Paths.Admin + file
 
-	data, err := ioutil.ReadFile(path)
+	data, err := s.FS.SPA.ReadFile(file)
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err}).Error()
 		s.publisher.NotFound(ctx)
@@ -80,13 +87,14 @@ func (s *SPA) file(path string, ctx *gin.Context) {
 //
 // Returns the index.html in bytes
 func (s *SPA) page(ctx *gin.Context) {
-	const op = "SPA.Serve"
+	//path := s.Paths.Admin + "/index.html"
+	data, err := s.FS.SPA.ReadFile("/index.html")
+	//data, err := ioutil.ReadFile(path)
 
-	path := s.Paths.Admin + "/index.html"
-	data, err := ioutil.ReadFile(path)
+	color.Green.Println("err", err)
 
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + "index.html", Operation: op, Err: err}).Error()
 		s.publisher.NotFound(ctx)
 		return
 	}

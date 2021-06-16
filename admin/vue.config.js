@@ -11,7 +11,6 @@ module.exports = {
 					`@import "~@/assets/scss/vendor/mesh/src/abstracts/mixins.scss";
                     @import "~@/assets/scss/abstracts/mixins.scss";
                     @import "~@/assets/scss/abstracts/variables.scss";`
-
 			}
 		}
 	},

@@ -32,7 +32,7 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 	s.GET("/assets/*any", h.Public.Assets)
 
 	// Serve Verbis Assets
-	s.Static("/verbis", d.Paths.API+"/web/public")
+	s.GET("/verbis/*any", d.FS.Web.HTTP("/verbis", "public"))
 
 	// Serve uploads
 	s.GET("/"+uploadPath+"/*any", h.Public.Uploads)

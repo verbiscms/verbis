@@ -15,7 +15,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/logger"
 	site "github.com/ainsleyclark/verbis/api/mocks/services/site"
 	tpl "github.com/ainsleyclark/verbis/api/mocks/tpl"
+	fs "github.com/ainsleyclark/verbis/api/mocks/verbisfs"
 	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/ainsleyclark/verbis/api/verbisfs"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"os"
@@ -233,6 +235,7 @@ func (t *EventTestSuite) Test_MailSend() {
 	tt := map[string]struct {
 		input mail
 		error bool
+		mock  func(mock *fs.FS)
 		want  interface{}
 	}{
 		"Success": {
@@ -241,23 +244,29 @@ func (t *EventTestSuite) Test_MailSend() {
 				event: event{
 					PlainTextTemplate: "test",
 				},
-				TplRoot: t.testPath,
 			},
 			false,
+			func(m *fs.FS) {
+				file, err := os.Open(t.T().TempDir())
+				t.NoError(err)
+				m.On("Open", "mail/test.txt").Return(file, nil)
+				m.On("ReadFile", "mail/test.txt").Return([]byte("hello"), nil)
+			},
 			"Successfully sent email with the subject",
 		},
 		"Validation Failed": {
 			mail{},
 			false,
+			func(m *fs.FS) {},
 			"nil mail client",
 		},
 		"HTML Error": {
 			mail{
-				Client:  &mockMailSuccess{},
-				event:   event{},
-				TplRoot: t.testPath,
+				Client: &mockMailSuccess{},
+				event:  event{},
 			},
 			true,
+			func(m *fs.FS) {},
 			"error",
 		},
 		"Text Error": {
@@ -266,21 +275,12 @@ func (t *EventTestSuite) Test_MailSend() {
 				event: event{
 					PlainTextTemplate: MailDir,
 				},
-				TplRoot: "wrong",
 			},
 			false,
+			func(m *fs.FS) {
+				m.On("Open", "mail/mail.txt").Return(nil, fmt.Errorf("error"))
+			},
 			"error",
-		},
-		"Text Parse Error": {
-			mail{
-				Client: &mockMailError{},
-				event: event{
-					PlainTextTemplate: "test-error",
-				},
-				TplRoot: t.testPath,
-			},
-			false,
-			"evaluate field Wrong",
 		},
 		"Send Error": {
 			mail{
@@ -288,9 +288,14 @@ func (t *EventTestSuite) Test_MailSend() {
 				event: event{
 					PlainTextTemplate: "test",
 				},
-				TplRoot: t.testPath,
 			},
 			false,
+			func(m *fs.FS) {
+				file, err := os.Open(t.T().TempDir())
+				t.NoError(err)
+				m.On("Open", "mail/test.txt").Return(file, nil)
+				m.On("ReadFile", "mail/test.txt").Return([]byte("hello"), nil)
+			},
 			"error",
 		},
 	}
@@ -298,6 +303,9 @@ func (t *EventTestSuite) Test_MailSend() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			test.input.Deps = t.Setup(test.error)
+			mockFs := &fs.FS{}
+			test.mock(mockFs)
+			test.input.Deps.FS = &verbisfs.FileSystem{Web: mockFs}
 			test.input.Send("data", []string{"hello@verbiscms.com"}, nil)
 			t.Contains(t.logger.String(), test.want)
 		})

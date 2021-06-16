@@ -6,9 +6,7 @@ package paths
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"os"
 	"path/filepath"
 )
@@ -17,7 +15,6 @@ import (
 /// application.
 type Paths struct {
 	Base    string
-	Exec    string
 	Admin   string
 	API     string
 	Uploads string
@@ -29,14 +26,14 @@ type Paths struct {
 }
 
 const (
-	Admin   = "/admin"
-	API     = "/api"
-	Storage = "/storage"
-	Themes  = "/themes"
-	Web     = API + "/web"
-	Uploads = Storage + "/uploads"
-	Forms   = Storage + "/forms"
-	Bin     = "/bin"
+	Admin   = string(os.PathSeparator) + "admin"
+	API     = string(os.PathSeparator) + "api"
+	Storage = string(os.PathSeparator) + "storage"
+	Themes  = string(os.PathSeparator) + "themes"
+	Web     = API + string(os.PathSeparator) + "www"
+	Uploads = Storage + string(os.PathSeparator) + "uploads"
+	Forms   = Storage + string(os.PathSeparator) + "forms"
+	Bin     = string(os.PathSeparator) + "bin"
 )
 
 // Get
@@ -44,11 +41,9 @@ const (
 // Retrieves relevant paths for the application.
 func Get() Paths {
 	base := base()
-	exec := executable()
 
 	return Paths{
 		Base:    base,
-		Exec:    exec,
 		Admin:   base + Admin,
 		API:     base + API,
 		Uploads: base + Uploads,
@@ -71,18 +66,6 @@ func base() string {
 	return dir
 }
 
-// executable
-//
-// Retrieves the name of the currently running file.
-func executable() string {
-	const op = "Paths.Executable"
-	exec, err := os.Executable()
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting executable path", Operation: op, Err: err})
-	}
-	return exec
-}
-
 // BaseCheck
 //
 // Check the environment to see if it is passable by
@@ -97,12 +80,12 @@ func BaseCheck() error {
 		return fmt.Errorf("could not locate the .env file in the current directory")
 	}
 
-	if !files.DirectoryExists(basePath + "/admin") {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis admin folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath+"/admin")}
-	}
-
-	if !files.DirectoryExists(basePath + "/storage") {
-		return &errors.Error{Code: errors.INVALID, Message: "Could not locate the Verbis storage folder in the current directory", Operation: op, Err: fmt.Errorf("%s does not exist", basePath+"/storage")}
+	storage := basePath + Storage
+	if !files.DirectoryExists(storage) {
+		err := os.Mkdir(storage, os.ModePerm)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil

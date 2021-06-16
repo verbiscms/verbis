@@ -14,9 +14,9 @@ import (
 )
 
 const (
-	// Delimiter left for the template
+	// DelimitersLeft left for the template.
 	DelimitersLeft = "{{"
-	// Delimiter right for the template
+	// DelimitersRight right for the template.
 	DelimitersRight = "}}"
 )
 
@@ -28,7 +28,7 @@ type TemplateManager struct {
 	deps *deps.Deps
 }
 
-// Creates a new TemplateManager.
+// New creates a new TemplateManager.
 func New(d *deps.Deps) *TemplateManager {
 	return &TemplateManager{
 		deps: d,
