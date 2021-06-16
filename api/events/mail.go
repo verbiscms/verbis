@@ -238,7 +238,6 @@ func (m *mail) ExecuteText(file string, data interface{}) (string, error) {
 
 	var buf bytes.Buffer
 	err = tmpl.Execute(&buf, m.GetTplData(data))
-	color.Red.Println(err)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error executing text template: " + file, Operation: op, Err: err}
 	}
