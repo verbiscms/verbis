@@ -21,7 +21,7 @@ type Handler interface {
 	Serve(ctx *gin.Context)
 }
 
-// Public defines the handler for all SPA routes.
+// SPA defines the handler for all SPA routes.
 type SPA struct {
 	*deps.Deps
 	publisher publisher.Publisher
@@ -67,12 +67,7 @@ func (s *SPA) file(path string, ctx *gin.Context) {
 
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
-		logger.WithError(&errors.Error{
-			Code:      errors.INTERNAL,
-			Message:   "Error reading admin admin file with the path: " + path,
-			Operation: op,
-			Err:       err,
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err}).Error()
 		s.publisher.NotFound(ctx)
 		return
 	}
@@ -91,12 +86,7 @@ func (s *SPA) page(ctx *gin.Context) {
 	data, err := ioutil.ReadFile(path)
 
 	if err != nil {
-		logger.WithError(&errors.Error{
-			Code:      errors.INTERNAL,
-			Message:   "Error reading admin admin file with the path: " + path,
-			Operation: op,
-			Err:       err,
-		}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err}).Error()
 		s.publisher.NotFound(ctx)
 		return
 	}
