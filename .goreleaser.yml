@@ -44,6 +44,7 @@ archives:
       - themes
       - .env.example
       - .gitignore
+      - docs
 checksum:
   name_template: 'checksums.txt'
   algorithm: sha256
