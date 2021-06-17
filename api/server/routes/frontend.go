@@ -7,10 +7,14 @@ package routes
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
+	"io/fs"
+	"net/http"
 )
 
 // frontendRoutes
@@ -32,7 +36,13 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 	s.GET("/assets/*any", h.Public.Assets)
 
 	// Serve Verbis Assets
-	s.GET("/verbis/*any", d.FS.Web.HTTP("/verbis", "public"))
+	//s.GET("/verbis/*any", d.FS.Web.HTTP("/verbis", "public"))
+	fsys, err := fs.Sub(d.FS.Web, "public")
+	if err != nil {
+		logger.Fatal(&errors.Error{Code: errors.INTERNAL, Message: "Error creating sub FS", Operation: "Router.Frontend", Err: err})
+	}
+
+	s.StaticFS("/verbis", http.FS(fsys))
 
 	// Serve uploads
 	s.GET("/"+uploadPath+"/*any", h.Public.Uploads)

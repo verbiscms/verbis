@@ -7,10 +7,12 @@
 package api
 
 var (
-	// SuperAdminString defines if the app (Verbis) is being developed
+	// ProductionString defines if the app (Verbis) is being developed
 	// or is being packaged out for distribution.
-	SuperAdminString = "true"
-	SuperAdmin       = true
+	ProductionString = "false"
+	// Production is the shortcut for determining if Verbis is in
+	// dev/production.
+	Production = false
 )
 
 // App defines default values before the the user has defined
