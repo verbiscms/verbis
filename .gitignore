@@ -15,6 +15,7 @@
 .DS_Store
 node_modules
 /dist
+dist
 
 # Local environment files
 /.env
