@@ -195,7 +195,12 @@ func dumpFile(b []byte, name, path string) (string, error) {
 	file := encryption.MD5Hash(name+time.Now().String()) + ext
 	dst := path + "/forms/" + file
 
-	err := ioutil.WriteFile(dst, b, os.ModePerm)
+	err := os.MkdirAll(dst, os.ModePerm)
+	if err != nil {
+		return "", err
+	}
+
+	err = ioutil.WriteFile(dst, b, os.ModePerm)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to create file to save mail attachment to the system.", Operation: op, Err: err}
 	}

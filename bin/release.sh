@@ -29,3 +29,6 @@ git push origin $version
 # Run goreleaser
 goreleaser check
 goreleaser --rm-dist
+
+
+

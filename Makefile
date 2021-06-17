@@ -1,20 +1,14 @@
 build:
-	rm -rf verbisexec && go build -o verbisexec -tags dev
+	rm -rf verbisexec && go build -o verbisexec
 
-build-run:
-	$(MAKE) bld && ./verbisexec start
+serve:
+	$(MAKE) build && ./verbisexec start
 
 build-prod:
 	rm -rf verbisexec && go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=true'" -tags prod
 
 run:
 	go run ./main.go
-
-serve:
-	go run ./main.go serve
-
-install-serve:
-	go install cms && cms serve
 
 live-serve:
 	HOST="localhost" gin -i --port=8080 --laddr=127.0.0.1 --all run serve
@@ -37,8 +31,16 @@ test:
 test-v:
 	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/) -v
 
-install:
-	go install verbis
+# Show to-do items per file.
+todo:
+	@grep \
+		--exclude-dir=vendor \
+		--exclude-dir=node_modules \
+		--exclude=Makefile \
+		--text \
+		--color \
+		-nRo -E ' TODO:.*|SkipNow' .
+.PHONY: todo
 
 all:
 	$(MAKE) format
