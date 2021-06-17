@@ -4,7 +4,12 @@ before:
     - make all
     - go mod tidy
     - go generate ./...
-    - ./bin/build/build.sh
+    - cmd: mv .gitignore .gitignore.bak
+    - cmd: cp .gitignore.build .gitignore
+after:
+  hooks:
+    - cmd: rm .gitignore
+    - cmd: mv .gitignore.bak .gitignore
 builds:
   - id: "verbis"
     env:
@@ -21,6 +26,8 @@ builds:
         goarch: arm64
       - goos: windows
         goarch: arm64
+    tags:
+      - prod
     ldflags:
       - -X 'github.com/ainsleyclark/verbis/api.ProductionString=true' -X 'github.com/ainsleyclark/verbis/api/version.Version={{.Version}}'
 archives:
@@ -35,6 +42,7 @@ archives:
       - LICENSE
       - themes
       - .env.example
+      - .gitignore
 checksum:
   name_template: 'checksums.txt'
   algorithm: sha256
