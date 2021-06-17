@@ -1,8 +1,11 @@
-bld:
-	go build -o verbisexec
+build:
+	rm -rf verbisexec && go build -o verbisexec -tags dev
 
-buildrun:
+build-run:
 	$(MAKE) bld && ./verbisexec start
+
+build-prod:
+	rm -rf verbisexec && go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=true'" -tags prod
 
 run:
 	go run ./main.go

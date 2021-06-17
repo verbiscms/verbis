@@ -14,7 +14,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/gookit/color"
 	"path/filepath"
 	"text/template"
 )

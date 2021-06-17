@@ -5,18 +5,18 @@
 package spa
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
+	mockFS "github.com/ainsleyclark/verbis/api/mocks/verbisfs"
 	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/ainsleyclark/verbis/api/verbisfs"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"net/http"
-	"os"
-	"path/filepath"
 	"testing"
 )
 
@@ -43,23 +43,19 @@ func TestSPA(t *testing.T) {
 // Setup
 //
 // A helper to obtain a SPA handler for testing.
-func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, ctx *gin.Context), admin string, ctx *gin.Context) *SPA {
+func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gin.Context), ctx *gin.Context) *SPA {
 	logger.SetOutput(ioutil.Discard)
 
-	wd, err := os.Getwd()
-	t.NoError(err)
-	apiPath := filepath.Join(filepath.Dir(wd), "../..")
-
 	m := &mocks.Publisher{}
+	mfs := &mockFS.FS{}
 	if mf != nil {
-		mf(m, ctx)
+		mf(m, mfs, ctx)
 	}
 
 	return &SPA{
 		Deps: &deps.Deps{
-			Paths: paths.Paths{
-				API:   apiPath,
-				Admin: apiPath + admin,
+			FS: &verbisfs.FileSystem{
+				SPA: mfs,
 			},
 		},
 		publisher: m,
@@ -68,48 +64,44 @@ func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, ctx *gin.Context), admi
 
 func (t *SPATestSuite) TestSPA() {
 	tt := map[string]struct {
-		want      string
-		status    int
-		content   string
-		url       string
-		adminPath string
-		mock      func(m *mocks.Publisher, ctx *gin.Context)
+		want   string
+		status int
+		url    string
+		mock   func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gin.Context)
 	}{
 		"Success File": {
-			"/images/gopher.svg",
+			"test",
 			http.StatusOK,
-			"image/svg+xml",
 			"/images/gopher.svg",
-			TestPath,
-			nil,
+			func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gin.Context) {
+				mfs.On("ReadFile", "/images/gopher.svg").Return([]byte("test"), nil)
+			},
 		},
 		"Not Found File": {
 			"test",
 			http.StatusNotFound,
-			"text/html",
 			"/images/wrongpath.svg",
-			TestPath,
-			func(m *mocks.Publisher, ctx *gin.Context) {
+			func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gin.Context) {
+				mfs.On("ReadFile", "/images/wrongpath.svg").Return(nil, fmt.Errorf("error"))
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(http.StatusNotFound, "text/html", []byte("test"))
 				})
 			},
 		},
 		"Success Page": {
-			"/index.html",
+			"test",
 			http.StatusOK,
-			"text/html; charset=utf-8",
 			"/",
-			TestPath,
-			nil,
+			func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gin.Context) {
+				mfs.On("ReadFile", "/index.html").Return([]byte("test"), nil)
+			},
 		},
 		"Not Found Page": {
 			"test",
 			http.StatusNotFound,
-			"text/html",
 			"/",
-			"wrong",
-			func(m *mocks.Publisher, ctx *gin.Context) {
+			func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gin.Context) {
+				mfs.On("ReadFile", "/index.html").Return(nil, fmt.Errorf("error"))
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(http.StatusNotFound, "text/html", []byte("test"))
 				})
@@ -120,17 +112,10 @@ func (t *SPATestSuite) TestSPA() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.RequestAndServe(http.MethodGet, "/admin"+test.url, "*any", nil, func(ctx *gin.Context) {
-				spa := t.Setup(test.mock, test.adminPath, ctx)
+				spa := t.Setup(test.mock, ctx)
 				spa.Serve(ctx)
-
-				data, err := ioutil.ReadFile(spa.Paths.API + test.adminPath + test.want)
-				if err == nil {
-					test.want = string(data)
-				}
 			})
-
 			t.Equal(test.status, t.Status())
-			t.Equal(test.content, t.ContentType())
 			t.Equal(test.want, t.Recorder.Body.String())
 			t.Reset()
 		})

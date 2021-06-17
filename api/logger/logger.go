@@ -15,9 +15,7 @@ import (
 // logger is an alias for the the standard logger.
 var logger = logrus.New()
 
-// Init
-//
-// Init will determine if SuperAdmin and set logging levels
+// Init will set up the logger and set logging levels
 // dependant on environment variables.
 func Init(env *environment.Env) {
 	isDebug := env.IsDebug()

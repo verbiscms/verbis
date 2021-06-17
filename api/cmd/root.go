@@ -36,8 +36,8 @@ var (
 // This is called by main.main(). It only needs to happen once to the Root.
 func Execute() {
 	// Pass the super admin to bool (ldflags)
-	admin, _ := strconv.ParseBool(api.SuperAdminString)
-	api.SuperAdmin = admin
+	admin, _ := strconv.ParseBool(api.ProductionString)
+	api.Production = admin
 
 	// Execute the main command
 	if err := rootCmd.Execute(); err != nil {

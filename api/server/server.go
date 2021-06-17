@@ -6,17 +6,18 @@ package server
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/middleware"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-contrib/location"
+	"io/ioutil"
 	"net/http"
 	"net/http/pprof"
 
 	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
-	"io/ioutil"
 	"strconv"
 )
 
@@ -29,7 +30,9 @@ func New(d *deps.Deps) *Server {
 	gin.ForceConsoleColor()
 
 	// Set mode depending on
-	gin.SetMode(gin.ReleaseMode)
+	if api.Production {
+		gin.SetMode(gin.ReleaseMode)
+	}
 
 	// Remove default gin write
 	gin.DefaultWriter = ioutil.Discard
@@ -44,19 +47,21 @@ func New(d *deps.Deps) *Server {
 	r.Use(location.Default())
 	r.Use(middleware.Redirects(d))
 
-	debug := r.Group("/debug/pprof")
-	debug.GET("/", pprofHandler(pprof.Index))
-	debug.GET("/cmdline", pprofHandler(pprof.Cmdline))
-	debug.GET("/profile", pprofHandler(pprof.Profile))
-	debug.POST("/symbol", pprofHandler(pprof.Symbol))
-	debug.GET("/symbol", pprofHandler(pprof.Symbol))
-	debug.GET("/trace", pprofHandler(pprof.Trace))
-	debug.GET("/allocs", pprofHandler(pprof.Handler("allocs").ServeHTTP))
-	debug.GET("/block", pprofHandler(pprof.Handler("block").ServeHTTP))
-	debug.GET("/goroutine", pprofHandler(pprof.Handler("goroutine").ServeHTTP))
-	debug.GET("/heap", pprofHandler(pprof.Handler("heap").ServeHTTP))
-	debug.GET("/mutex", pprofHandler(pprof.Handler("mutex").ServeHTTP))
-	debug.GET("/threadcreate", pprofHandler(pprof.Handler("threadcreate").ServeHTTP))
+	if !api.Production {
+		debug := r.Group("/debug/pprof")
+		debug.GET("/", pprofHandler(pprof.Index))
+		debug.GET("/cmdline", pprofHandler(pprof.Cmdline))
+		debug.GET("/profile", pprofHandler(pprof.Profile))
+		debug.POST("/symbol", pprofHandler(pprof.Symbol))
+		debug.GET("/symbol", pprofHandler(pprof.Symbol))
+		debug.GET("/trace", pprofHandler(pprof.Trace))
+		debug.GET("/allocs", pprofHandler(pprof.Handler("allocs").ServeHTTP))
+		debug.GET("/block", pprofHandler(pprof.Handler("block").ServeHTTP))
+		debug.GET("/goroutine", pprofHandler(pprof.Handler("goroutine").ServeHTTP))
+		debug.GET("/heap", pprofHandler(pprof.Handler("heap").ServeHTTP))
+		debug.GET("/mutex", pprofHandler(pprof.Handler("mutex").ServeHTTP))
+		debug.GET("/threadcreate", pprofHandler(pprof.Handler("threadcreate").ServeHTTP))
+	}
 
 	r.Use(gin.Recovery())
 

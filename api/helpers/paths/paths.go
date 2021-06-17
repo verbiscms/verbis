@@ -68,24 +68,15 @@ func base() string {
 
 // BaseCheck
 //
+// TODO: Needs to be removed.
 // Check the environment to see if it is passable by
 // seeing if the .env file, the admin folder, and
 // the storage folder exists.
 func BaseCheck() error {
 	const op = "paths.BaseCheck"
 
-	basePath := base()
-
-	if !files.Exists(basePath + "/.env") {
+	if !files.Exists(base() + "/.env") {
 		return fmt.Errorf("could not locate the .env file in the current directory")
-	}
-
-	storage := basePath + Storage
-	if !files.DirectoryExists(storage) {
-		err := os.Mkdir(storage, os.ModePerm)
-		if err != nil {
-			return err
-		}
 	}
 
 	return nil

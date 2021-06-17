@@ -23,7 +23,7 @@ builds:
       - goos: windows
         goarch: arm64
     ldflags:
-      - -X 'github.com/ainsleyclark/verbis/api.SuperAdminString=false' -X 'github.com/ainsleyclark/verbis/api/version.Version={{.Version}}'
+      - -X 'github.com/ainsleyclark/verbis/api.ProductionString=true' -X 'github.com/ainsleyclark/verbis/api/version.Version={{.Version}}'
 archives:
   -
     builds:

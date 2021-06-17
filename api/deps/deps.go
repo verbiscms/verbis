@@ -5,6 +5,7 @@
 package deps
 
 import (
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -128,7 +129,7 @@ func New(cfg Config) *Deps {
 		Running: cfg.Running,
 		Site:    site.New(&opts),
 		Theme:   theme.New(),
-		FS:      verbisfs.New(),
+		FS:      verbisfs.New(api.Production),
 		WebP:    webp.New(p.Bin + webp.Path),
 	}
 
