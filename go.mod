@@ -6,6 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/SparkPost/gosparkpost v0.2.0
 	github.com/ainsleyclark/go-mail v1.0.3
+	github.com/ainsleyclark/updater v0.0.0-20210617153514-fc3f00cae92b
 	github.com/briandowns/spinner v1.11.1
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
 	github.com/disintegration/imaging v1.6.2
@@ -23,7 +24,7 @@ require (
 	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
 	github.com/google/uuid v1.1.2
-	github.com/gookit/color v1.3.1
+	github.com/gookit/color v1.4.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/hashicorp/go-version v1.3.0
 	github.com/jasonlvhit/gocron v0.0.1
@@ -46,7 +47,7 @@ require (
 	github.com/ompluscator/dynamic-struct v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.6.0+incompatible // indirect
-	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pkg/errors v0.9.1
 	github.com/radovskyb/watcher v1.0.7
 	github.com/sanity-io/litter v1.5.0
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect

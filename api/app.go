@@ -36,7 +36,7 @@ const (
 	AssetsChannel = 10
 	UploadChannel = 10
 	ServerChannel = 50
-	Repo          = "ainsleyclark/verbis"
+	Repo          = "https://github.com/ainsleyclark/verbis"
 )
 
 var AssetsChan = make(chan int, AssetsChannel)

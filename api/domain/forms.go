@@ -81,7 +81,7 @@ func (f FormLabel) Name() string {
 	return strings.Title(s)
 }
 
-// String is thge stringer on the FormLabel type
+// String is thg stringer on the FormLabel type
 func (f FormLabel) String() string {
 	return string(f)
 }
