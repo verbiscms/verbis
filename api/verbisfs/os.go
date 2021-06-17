@@ -5,39 +5,50 @@
 package verbisfs
 
 import (
-	"github.com/gookit/color"
+	"github.com/pkg/errors"
 	"io/fs"
 	"os"
 	"path/filepath"
 )
 
+// osFS defines the file system for the OS. The path is
+// joined on each resulting call.
 type osFS struct {
 	path string
 }
 
-// Open opens the named file for reading. If successful,
-// methods on the returned file can be used for
-// reading; the associated file descriptor has
-// mode O_RDONLY.
-// Returns *PathError if there was one.
+// Open Uses the stdlib Open() function for retrieving a
+// fs.File
+// Returns ErrFileNotFound if the lookup failed.
 func (s *osFS) Open(name string) (fs.File, error) {
-	color.Red.Println(name)
-	return os.Open(filepath.Join(s.path, name))
+	path := filepath.Join(s.path, name)
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, errors.Wrap(ErrFileNotFound, path)
+	}
+	return file, nil
 }
 
-// ReadFile reads the named file and returns the contents.
-// A successful call returns err == nil, not err == EOF.
-// Because ReadFile reads the whole file, it does not
-// treat an EOF from Read as an error to be reported.
+// ReadFile Uses the stdlib ReadFile() function for
+// retrieving byte content of a file.
+// Returns ErrFileNotFound if the lookup failed.
 func (s *osFS) ReadFile(name string) ([]byte, error) {
-	return os.ReadFile(filepath.Join(s.path, name))
+	path := filepath.Join(s.path, name)
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		return nil, errors.Wrap(ErrFileNotFound, path)
+	}
+	return bytes, nil
 }
 
-// ReadDir reads the named directory, returning all its
-// directory entries sorted by filename. If an error
-// occurs reading the directory, ReadDir returns
-// the entries it was able to read before the
-// error, along with the error.
+// ReadDir Uses the stdlib ReadDir() function for
+// retrieving DirEntries.
+// Returns ErrFileNotFound if the lookup failed.
 func (s *osFS) ReadDir(name string) ([]fs.DirEntry, error) {
-	return os.ReadDir(filepath.Join(s.path, name))
+	path := filepath.Join(s.path, name)
+	entries, err := os.ReadDir(path)
+	if err != nil {
+		return nil, errors.Wrap(ErrDirNotFound, path)
+	}
+	return entries, nil
 }

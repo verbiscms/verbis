@@ -37,7 +37,7 @@ const (
 // Setup
 //
 // Sets defaults and returns a new Theme repo.
-func (t *ThemeTestSuite) Setup() *theme { //nolint
+func (t *ThemeTestSuite) Setup() *theme {
 	return &theme{
 		config: &domain.ThemeConfig{
 			FileExtension: ".cms",

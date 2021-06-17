@@ -46,6 +46,7 @@ require (
 	github.com/ompluscator/dynamic-struct v1.2.0
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pierrec/lz4 v2.6.0+incompatible // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	github.com/radovskyb/watcher v1.0.7
 	github.com/sanity-io/litter v1.5.0
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect

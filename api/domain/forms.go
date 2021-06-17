@@ -60,33 +60,28 @@ type (
 		UserAgent string     `db:"user_agent" json:"user_agent"`
 		SentAt    *time.Time `db:"sent_at" json:"sent_at"`
 	}
-	// FormFields represents the slice of FormSubmission's.
+	// FormSubmissions represents the slice of FormSubmission's.
 	FormSubmissions []FormSubmission
 	// FormLabel defines the label/name for form fields.
 	FormLabel string
 )
 
-// GetRecipients
-//
-// Splits the recipients string and returns a slice of
-// email addresses.
+// GetRecipients Splits the recipients string and returns
+// a slice of email addresses.
 func (f *Form) GetRecipients() []string {
 	return strings.FieldsFunc(f.Recipients, func(c rune) bool {
 		return c == ','
 	})
 }
 
-// Name
-//
-// Converts the label to a dynamic-struct friendly name.
+// Name converts the label to a dynamic-struct friendly
+// name.
 func (f FormLabel) Name() string {
 	s := strings.ReplaceAll(string(f), " ", "")
 	return strings.Title(s)
 }
 
-// String
-//
-// Stringer on the FormLabel type
+// String is thge stringer on the FormLabel type
 func (f FormLabel) String() string {
 	return string(f)
 }

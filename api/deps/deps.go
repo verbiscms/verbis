@@ -129,7 +129,7 @@ func New(cfg Config) *Deps {
 		Running: cfg.Running,
 		Site:    site.New(&opts),
 		Theme:   theme.New(),
-		FS:      verbisfs.New(api.Production),
+		FS:      verbisfs.New(api.Production, p),
 		WebP:    webp.New(p.Bin + webp.Path),
 	}
 

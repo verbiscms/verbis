@@ -66,7 +66,8 @@ linters:
         - gocritic
         - gocyclo
         - gofmt
-        - golint
+        # TODO: Check comments!
+        #- revive
         - gomnd
         - goprintffuncname
         - gosimple
@@ -118,7 +119,7 @@ linters-settings:
             - commentFormatting
     gocyclo:
         min-complexity: 15
-    golint:
+    revive:
         min-confidence: 0
     gomnd:
         settings:

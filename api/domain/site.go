@@ -82,7 +82,7 @@ type (
 		Key  string `json:"key"`
 		Name string `json:"name"`
 	}
-	// Layouts represents the slice of Layout's.
+	// Templates represents the slice of Template.
 	Templates []Template
 	// Layout defines a page layout that are available
 	// from the theme's layouts directory.
@@ -99,10 +99,7 @@ type (
 	}
 )
 
-// Clean
-//
-// Removes any forward slashes from the resource and
-// cleans/
+// Clean removes any forward slashes from the resource.
 func (r Resources) Clean() Resources {
 	for k, v := range r {
 		r[k] = Resource{
