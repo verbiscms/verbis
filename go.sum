@@ -21,8 +21,8 @@ github.com/SparkPost/gosparkpost v0.2.0 h1:yzhHQT7cE+rqzd5tANNC74j+2x3lrPznqPJrx
 github.com/SparkPost/gosparkpost v0.2.0/go.mod h1:S9WKcGeou7cbPpx0kTIgo8Q69WZvUmVeVzbD+djalJ4=
 github.com/ainsleyclark/go-mail v1.0.3 h1:ASkHtT/TJunG6Cdp1gC7amGKFfG9jLZYYiMKcMmyv5s=
 github.com/ainsleyclark/go-mail v1.0.3/go.mod h1:wOJDCAUZNyRFcrSgX+cNxdx3vJvTPDv2uGfbUm7oC5Y=
-github.com/ainsleyclark/updater v0.0.0-20210617153514-fc3f00cae92b h1:Kwi/bjW4FI0von+WEPfODUTtC+CRxmNiQ42ZB+jwGsY=
-github.com/ainsleyclark/updater v0.0.0-20210617153514-fc3f00cae92b/go.mod h1:mNcw433pyJp6g9Rl9QwVUp0ASWnsrZsy65mk1HPdGaQ=
+github.com/ainsleyclark/updater v0.0.0-20210617185530-0bb42108e5b9 h1:cCulst4aTux+m/6poS7x2JMCl3W6cEcdXnQy4C/rq4o=
+github.com/ainsleyclark/updater v0.0.0-20210617185530-0bb42108e5b9/go.mod h1:mNcw433pyJp6g9Rl9QwVUp0ASWnsrZsy65mk1HPdGaQ=
 github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc/go.mod h1:LOuyumcjzFXgccqObfd/Ljyb9UuFJ6TxHnclSeseNhc=
 github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/andybalholm/cascadia v1.1.0/go.mod h1:GsXiBklL0woXo1j/WYWtSYYC4ouU9PqHO0sqidkEA4Y=

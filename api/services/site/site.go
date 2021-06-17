@@ -24,12 +24,16 @@ type Site struct {
 // Returns the domain.Site struct from the options and
 // retrieves the latest Verbis version.
 func (s *Site) Global() domain.Site {
+
+	// TODO: Need to pass in thhe updater.
+
 	return domain.Site{
 		Title:       s.options.SiteTitle,
 		Description: s.options.SiteDescription,
 		Logo:        s.options.SiteLogo,
 		Url:         s.options.SiteUrl,
 		Version:     version.Version,
+		//	RemoteVersion:
 	}
 }
 

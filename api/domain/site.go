@@ -14,11 +14,13 @@ type (
 	// version is the version of Verbis the application
 	// is currently running.
 	Site struct {
-		Title       string `json:"title"`
-		Description string `json:"description"`
-		Logo        string `json:"logo"`
-		Url         string `json:"url"` //nolint
-		Version     string `json:"version"`
+		Title         string `json:"title"`
+		Description   string `json:"description"`
+		Logo          string `json:"logo"`
+		Url           string `json:"url"` //nolint
+		Version       string `json:"version"`
+		HasUpdate     bool   `json:"has_update"`
+		RemoteVersion string `json:"remote_version"`
 	}
 	// ThemeConfig defines the data used for unmarshalling the
 	// config.yml file found in the theme's directory.

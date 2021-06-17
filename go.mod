@@ -6,7 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/SparkPost/gosparkpost v0.2.0
 	github.com/ainsleyclark/go-mail v1.0.3
-	github.com/ainsleyclark/updater v0.0.0-20210617153514-fc3f00cae92b
+	github.com/ainsleyclark/updater v0.0.0-20210617185530-0bb42108e5b9
 	github.com/briandowns/spinner v1.11.1
 	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
 	github.com/disintegration/imaging v1.6.2
