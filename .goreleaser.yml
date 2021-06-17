@@ -1,4 +1,4 @@
-project_name: verbis
+project_name: Verbis
 before:
   hooks:
     - make all
@@ -11,7 +11,7 @@ after:
     - cmd: rm .gitignore
     - cmd: mv .gitignore.bak .gitignore
 builds:
-  - id: "verbis"
+  - id: "main"
     env:
       - CGO_ENABLED=0
     goos:
@@ -33,7 +33,7 @@ builds:
 archives:
   -
     builds:
-      - verbis
+      - main
     format: zip
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: "verbis"
@@ -54,3 +54,9 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+release:
+  github:
+    owner: ainsleyclark
+    name: verbis
+  name_template: "{{.ProjectName}} v{{.Version}}"
+  draft: true

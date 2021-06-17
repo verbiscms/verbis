@@ -7,6 +7,9 @@
 version=$1
 message=$2
 
+# Check goreleaser passed
+goreleaser check
+
 # Check version is not empty
 if [[ $version == "" ]]
   then
@@ -27,7 +30,6 @@ git tag -a $version -m $message
 git push origin $version
 
 # Run goreleaser
-goreleaser check
 goreleaser --rm-dist
 
 

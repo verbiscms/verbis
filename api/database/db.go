@@ -4,7 +4,6 @@
 
 package database
 
-//nolint
 import (
 	_ "embed"
 	"fmt"

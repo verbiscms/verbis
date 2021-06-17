@@ -10,11 +10,8 @@ build-prod:
 run:
 	go run ./main.go
 
-live-serve:
-	HOST="localhost" gin -i --port=8080 --laddr=127.0.0.1 --all run serve
-
-live-test:
-	HOST="localhost" gin -i --port=8080 --laddr=127.0.0.1 --all run test
+release:
+	./bin/release.sh
 
 format:
 	go fmt ./api/...

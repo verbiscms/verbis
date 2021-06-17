@@ -7,7 +7,6 @@ package www
 import "embed"
 
 var (
-	// nolint
 	//go:embed layouts/* mail/* public/* sitemaps/* templates/* test/*
 	Web embed.FS
 )
