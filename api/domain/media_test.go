@@ -205,3 +205,77 @@ func TestMediaSizes_Value(t *testing.T) {
 		})
 	}
 }
+
+func TestMime_CanResize(t *testing.T) {
+	tt := map[string]struct {
+		input string
+		want  bool
+	}{
+		"Jpeg": {
+			"image/jpeg",
+			true,
+		},
+		"SVG": {
+			"image/svg+xml",
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := Mime(test.input).CanResize()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestMime_IsJPG(t *testing.T) {
+	tt := map[string]struct {
+		input string
+		want  bool
+	}{
+		"Is Jpeg": {
+			"image/jpeg",
+			true,
+		},
+		"Isn't Jpeg": {
+			"image/svg+xml",
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := Mime(test.input).IsJPG()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestMime_IsPNG(t *testing.T) {
+	tt := map[string]struct {
+		input string
+		want  bool
+	}{
+		"Is PNG": {
+			"image/png",
+			true,
+		},
+		"Isn't PNG": {
+			"image/svg+xml",
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := Mime(test.input).IsPNG()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestMime_String(t *testing.T) {
+	got := Mime("image/png").String()
+	assert.IsType(t, string("test"), got)
+}

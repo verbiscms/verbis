@@ -86,14 +86,10 @@ func (f FormLabel) String() string {
 	return string(f)
 }
 
-//
-//
-//
+// FormValues - TODO
 type FormValues map[string]interface{}
 
-//
-//
-//
+// JSON - TODO
 func (f FormValues) JSON() ([]byte, error) {
 	const op = "FormValues.JSON"
 	v, err := json.Marshal(f)
@@ -108,17 +104,17 @@ func (f FormValues) JSON() ([]byte, error) {
 // Scanner for FormValues. unmarshal the FormValues
 // when the entity is pulled from the database.
 func (f FormValues) Scan(value interface{}) error {
-	const op = "Domain.DBMap.Scan"
+	const op = "Domain.FormValues.Scan"
 	if value == nil {
 		return nil
 	}
 	bytes, ok := value.([]byte)
 	if !ok || bytes == nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Scan unsupported for DBMap", Operation: op, Err: fmt.Errorf("scan not supported")}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Scan unsupported for FormValues", Operation: op, Err: fmt.Errorf("scan not supported")}
 	}
 	err := json.Unmarshal(bytes, &f)
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling into DBMap", Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling into FormValues", Operation: op, Err: err}
 	}
 	return nil
 }
@@ -129,13 +125,13 @@ func (f FormValues) Scan(value interface{}) error {
 // when the entity is inserted to the
 // database.
 func (f FormValues) Value() (driver.Value, error) {
-	const op = "Domain.MediaSizes.DBMap"
+	const op = "Domain.FormValues.DBMap"
 	if len(f) == 0 {
 		return nil, nil
 	}
 	j, err := json.Marshal(f)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling DBMap", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling FormValues", Operation: op, Err: err}
 	}
 	return driver.Value(j), nil
 }
