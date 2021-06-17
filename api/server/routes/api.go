@@ -30,6 +30,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 
 		// Site
 		api.GET("/site", h.Site.Global)
+		api.GET("/site/update", h.Site.Update)
 
 		// Auth
 		api.POST("/login", h.Auth.Login)

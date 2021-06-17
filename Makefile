@@ -7,9 +7,6 @@ serve:
 build-prod:
 	rm -rf verbisexec && go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=true'" -tags prod
 
-run:
-	go run ./main.go
-
 release:
 	./bin/release.sh
 
@@ -34,6 +31,7 @@ todo:
 		--exclude-dir=vendor \
 		--exclude-dir=node_modules \
 		--exclude=Makefile \
+		--exclude="*.map" \
 		--text \
 		--color \
 		-nRo -E ' TODO:.*|SkipNow' .
