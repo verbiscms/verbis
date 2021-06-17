@@ -6,6 +6,7 @@ package verbisfs
 
 import (
 	"bytes"
+	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"reflect"
@@ -29,7 +30,7 @@ func TestNew(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			got := New(test.input)
+			got := New(test.input, paths.Paths{})
 			assert.Equal(t, reflect.TypeOf(test.want).String(), reflect.TypeOf(got.SPA).String())
 			assert.Equal(t, reflect.TypeOf(test.want).String(), reflect.TypeOf(got.Web).String())
 		})
@@ -55,7 +56,7 @@ func Open(fs FS, t *testing.T) {
 		},
 		"Error": {
 			"wrong",
-			"no such file or directory",
+			ErrFileNotFound.Error(),
 		},
 	}
 
@@ -93,7 +94,7 @@ func ReadFile(fs FS, t *testing.T) {
 		},
 		"Error": {
 			"wrong",
-			"no such file or directory",
+			ErrFileNotFound.Error(),
 		},
 	}
 
@@ -124,7 +125,7 @@ func ReadDir(fs FS, t *testing.T) {
 		},
 		"Error": {
 			"wrong",
-			"no such file or directory",
+			ErrDirNotFound.Error(),
 		},
 	}
 

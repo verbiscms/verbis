@@ -5,21 +5,13 @@
 package verbisfs
 
 import (
-	"fmt"
+	"github.com/ainsleyclark/verbis/api/www"
 	"testing"
 )
 
-func SetupEmbed() {
-	fs := New(false)
-
-	fmt.Println(fs.SPA.ReadDir("css"))
-}
-
 func TestEmbedFS(t *testing.T) {
-	SetupEmbed()
-
-	/*fs := New(false)
-	Open(fs.SPA, t)*/
-	//ReadFile(fs, t)
-	//ReadDir(fs, t)
+	fs := &embedFS{fs: www.Web, prefix: "test"}
+	Open(fs, t)
+	ReadFile(fs, t)
+	ReadDir(fs, t)
 }

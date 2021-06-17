@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	// How many lines before and after the calling function
-	// to retrieve.
+	// LineLimit defines how many lines before and after
+	// the calling function to retrieve.
 	LineLimit = 60
 )
 
@@ -23,7 +23,7 @@ type Tracer interface {
 // Trace implements the trace method to obtain the stack
 type trace struct{}
 
-// Return a new tracer
+// New returns a new tracer
 func New() Tracer {
 	return &trace{}
 }

@@ -6,6 +6,7 @@ package verbisfs
 
 import (
 	"github.com/ainsleyclark/verbis/admin"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/www"
 	"io/fs"
@@ -15,10 +16,37 @@ import (
 // FS defines the set of methods used for interacting with
 // the Verbis file system.
 type FS interface {
+	// Open opens the named file for reading. If successful,
+	// methods on the returned file can be used for
+	// reading; the associated file descriptor has
+	// mode O_RDONLY.
+	// Returns ErrFileNotFound on failed lookup
 	Open(name string) (fs.File, error)
+
+	// ReadFile reads the named file and returns the contents.
+	// A successful call returns err == nil, not err == EOF.
+	// Because ReadFile reads the whole file, it does not
+	// treat an EOF from Read as an error to be reported.
+	// Returns ErrFileNotFound on failed lookup.
 	ReadFile(name string) ([]byte, error)
+
+	// ReadDir reads the named directory, returning all its
+	// directory entries sorted by filename. If an error
+	// occurs reading the directory, ReadDir returns
+	// the entries it was able to read before the
+	// error, along with the error.
+	// Returns ErrDirNotFound on failed lookup
 	ReadDir(name string) ([]fs.DirEntry, error)
 }
+
+var (
+	// ErrFileNotFound is returned by the Open and ReadFile
+	// functions when a file could not be found.
+	ErrFileNotFound = errors.New("file does not exist")
+	// ErrDirNotFound is returned by the ReadDir function when
+	// a directory could not be found.
+	ErrDirNotFound = errors.New("directory does not exist")
+)
 
 // FileSystem defines the necessary directory structure
 // for Verbis. SPA includes all Vue directories and
@@ -39,8 +67,7 @@ const (
 // development status. If it is in prod, an OS FS
 // will be returned, if production the embedFS
 // will be returned.
-func New(production bool) *FileSystem {
-	p := paths.Get()
+func New(production bool, p paths.Paths) *FileSystem {
 	if !production {
 		return &FileSystem{
 			SPA: &osFS{path: filepath.Join(p.Admin, SpaDistFolder)},
