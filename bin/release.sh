@@ -30,7 +30,7 @@ git tag -a $version -m $message
 git push origin $version
 
 # Run goreleaser
-goreleaser --rm-dist
+goreleaser release --rm-dist
 
 
 
