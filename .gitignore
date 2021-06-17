@@ -5,6 +5,9 @@
 *.so
 *.dylib
 
+## Large blobs
+*.zip
+
 # Test binary, built with `go test -c`
 *.test
 

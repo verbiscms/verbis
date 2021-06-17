@@ -5,11 +5,11 @@
 package site
 
 import (
-	app "github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/version"
 )
 
-// SiteRepository defines methods for the site.
+// Repository defines methods for the site.
 type Repository interface {
 	Global() domain.Site
 }
@@ -29,7 +29,7 @@ func (s *Site) Global() domain.Site {
 		Description: s.options.SiteDescription,
 		Logo:        s.options.SiteLogo,
 		Url:         s.options.SiteUrl,
-		Version:     app.App.Version,
+		Version:     version.Version,
 	}
 }
 

@@ -10,12 +10,16 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// UploadChan is the channel for serving uploads for the
+// frontend.
+var UploadChan = make(chan int, api.UploadChannel)
+
 func (r *publish) Upload(g *gin.Context, webp bool) (*[]byte, domain.Mime, error) {
 	const op = "publish.Upload"
 
-	api.UploadChan <- 1
+	UploadChan <- 1
 	defer func() {
-		<-api.UploadChan
+		<-UploadChan
 	}()
 
 	url := g.Request.URL.Path

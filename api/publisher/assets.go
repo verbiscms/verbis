@@ -17,6 +17,10 @@ import (
 	"strings"
 )
 
+// AssetsChan is the channel for serving assets for the
+// frontend.
+var AssetsChan = make(chan int, api.AssetsChannel)
+
 // Asset
 //
 // It then obtains the assets path from the site model, and then checks
@@ -28,9 +32,9 @@ import (
 func (r *publish) Asset(g *gin.Context, webp bool) (*[]byte, domain.Mime, error) {
 	const op = "publish.GetAsset"
 
-	api.AssetsChan <- 1
+	AssetsChan <- 1
 	defer func() {
-		<-api.AssetsChan
+		<-AssetsChan
 	}()
 
 	url := g.Request.URL.Path

@@ -5,8 +5,8 @@
 package site
 
 import (
-	app "github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -23,7 +23,7 @@ func TestSite_Config(t *testing.T) {
 		Description: opts.SiteDescription,
 		Logo:        opts.SiteLogo,
 		Url:         opts.SiteUrl,
-		Version:     app.App.Version,
+		Version:     version.Version,
 	}
 	s := New(opts)
 	assert.Equal(t, want, s.Global())
