@@ -21,6 +21,7 @@ builds:
     goarch:
       - amd64
       - arm64
+    binary: verbis
     ignore:
       - goos: linux
         goarch: arm64
@@ -35,7 +36,7 @@ archives:
     builds:
       - main
     format: zip
-    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "{{ tolower .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: "verbis"
     files:
       - README.md
@@ -49,11 +50,7 @@ checksum:
 snapshot:
   name_template: "{{ .Tag }}"
 changelog:
-  sort: asc
-  filters:
-    exclude:
-      - '^docs:'
-      - '^test:'
+  skip: true
 release:
   github:
     owner: ainsleyclark
