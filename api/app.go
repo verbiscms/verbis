@@ -28,17 +28,26 @@ var App = struct {
 	Description: "A Verbis website. Publish online, build a business, work from home",
 	URL:         "http://127.0.0.1:8080",
 	Logo:        "/verbis/images/verbis-logo.svg",
-	Version:     "0.0.1",
 }
 
 const (
-	APIRoute      = "/api/v1"
-	AssetsChannel = 10
-	UploadChannel = 10
-	ServerChannel = 50
-	Repo          = "https://github.com/ainsleyclark/verbis"
-)
+	// APIRoute is the URL route for incoming and outgoing
+	// requests.
+	APIRoute = "/api/v1"
 
-var AssetsChan = make(chan int, AssetsChannel)
-var UploadChan = make(chan int, UploadChannel)
-var ServeChan = make(chan int, ServerChannel)
+	// Repo is the URL for the hosted github Verbis
+	// repository.
+	Repo = "https://github.com/ainsleyclark/verbis"
+
+	// AssetsChannel is the maximum amount of concurrent
+	// requests for serving assets on the frontend.
+	AssetsChannel = 10
+
+	// UploadChannel is the maximum amount of concurrent
+	// requests for serving uploads on the frontend.
+	UploadChannel = 10
+
+	// ServerChannel is the maximum amount of concurrent
+	// requests for serving posts on the frontend.
+	ServerChannel = 50
+)

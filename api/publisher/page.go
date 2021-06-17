@@ -9,10 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ServeChan is the channel for serving pages for the
+// frontend.
+var ServeChan = make(chan int, api.ServerChannel)
+
 func (r *publish) Page(ctx *gin.Context) ([]byte, error) {
-	api.ServeChan <- 1
+	ServeChan <- 1
 	defer func() {
-		<-api.ServeChan
+		<-ServeChan
 	}()
 
 	pager, redirected, err := newPage(r.Deps, ctx)
