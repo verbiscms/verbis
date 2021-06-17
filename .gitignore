@@ -14,8 +14,6 @@
 # OS Folders
 .DS_Store
 node_modules
-/dist
-dist
 
 # Local environment files
 /.env
@@ -39,7 +37,7 @@ pnpm-debug.log*
 *.sw?
 
 # Verbis specific
-/build
 /storage/uploads
 dist/
+dist
 verbisexec
