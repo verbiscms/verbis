@@ -5,6 +5,9 @@
 package cmd
 
 import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/version/updates"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 )
 
@@ -14,6 +17,11 @@ var (
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
 
+			color.Green.Println(updates.UpdateRegistry)
+
+			for _, v := range updates.UpdateRegistry {
+				updates.
+			}
 		},
 	}
 )
