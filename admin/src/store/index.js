@@ -85,20 +85,16 @@ export default new Vuex.Store({
 		 */
 		getSiteConfig(context) {
 			return new Promise((resolve, reject) => {
-				if (!this.state.site) {
-					axios.get("/site")
-						.then(res => {
-							const site = res.data.data
-							context.state.site = site;
-							this.commit('setSite', res.data.data);
-							resolve(site)
-						})
-						.catch(err => {
-							reject(err);
-						});
-				} else {
-					resolve(this.state.site);
-				}
+				axios.get("/site")
+					.then(res => {
+						const site = res.data.data
+						context.state.site = site;
+						this.commit('setSite', res.data.data);
+						resolve(site)
+					})
+					.catch(err => {
+						reject(err);
+					});
 			})
 		},
 		/*

@@ -188,33 +188,6 @@ func (e *Env) Port() int {
 	return port
 }
 
-// ConnectString
-//
-// Returns the MySQL database connection string.
-func (e *Env) ConnectString() string {
-	return e.DbUser + ":" + e.DbPassword + "@tcp(" + e.DbHost + ":" + e.DbPort + ")/" + e.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
-}
-
-// Mail defines the configuration for sending emails.
-type Mail struct {
-	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
-	SparkpostURL    string `json:"SPARKPOST_URL"`
-	FromAddress     string `json:"MAIL_FROM_ADDRESS"`
-	FromName        string `json:"MAIL_FROM_NAME"`
-}
-
-// MailConfig
-//
-// Returns the configuration for the mailer.
-func (e *Env) MailConfig() Mail {
-	return Mail{
-		FromAddress:     e.MailFromAddress,
-		FromName:        e.MailFromName,
-		SparkpostAPIKey: e.SparkpostAPIKey,
-		SparkpostURL:    e.SparkpostURL,
-	}
-}
-
 // IsProduction
 //
 // If the application is set to production.

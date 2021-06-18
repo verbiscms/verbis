@@ -19,8 +19,8 @@ type (
 		Logo          string `json:"logo"`
 		Url           string `json:"url"` //nolint
 		Version       string `json:"version"`
-		HasUpdate     bool   `json:"has_update"`
 		RemoteVersion string `json:"remote_version"`
+		HasUpdate     bool   `json:"has_update"`
 	}
 	// ThemeConfig defines the data used for unmarshalling the
 	// config.yml file found in the theme's directory.

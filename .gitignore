@@ -44,3 +44,4 @@ pnpm-debug.log*
 dist/
 dist
 verbisexec
+verbisexec.old

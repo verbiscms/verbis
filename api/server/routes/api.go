@@ -30,7 +30,6 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 
 		// Site
 		api.GET("/site", h.Site.Global)
-		api.GET("/site/update", h.Site.Update)
 
 		// Auth
 		api.POST("/login", h.Auth.Login)
@@ -48,6 +47,9 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator := api.Group("")
 		// Middleware
 		operator.Use(middleware.OperatorTokenCheck(d))
+
+		// Update
+		operator.POST("/update", h.System.Update)
 
 		operator.GET("/session", h.Auth.CheckSession)
 

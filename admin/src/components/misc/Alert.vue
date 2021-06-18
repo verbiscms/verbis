@@ -15,7 +15,7 @@
 				<slot></slot>
 			</div><!-- /Text -->
 			<!-- Close -->
-			<button type="button" class="alert-close" aria-label="Close" @click="show = false">
+			<button v-if="cross" type="button" class="alert-close" aria-label="Close" @click="show = false">
 				<i class="feather feather-x"></i>
 			</button><!-- /Close -->
 		</div>
@@ -37,6 +37,10 @@ export default {
 		type: {
 			type: String,
 			default: "error",
+		},
+		cross: {
+			type: Boolean,
+			default: true,
 		}
 	},
 	data: () => ({
@@ -77,8 +81,6 @@ export default {
 	&-close {
 		padding-right: 2.8rem;
 	}
-
-
 	// Icon
 	// ==========================================================================
 
@@ -96,6 +98,7 @@ export default {
 	// ==========================================================================
 
 	&-text {
+		flex-grow: 2;
 
 		p {
 			margin-bottom: 0;
