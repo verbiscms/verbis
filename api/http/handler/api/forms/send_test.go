@@ -65,10 +65,10 @@ func (t *FormsTestSuite) TestForms_Send() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			form,
 			func(m *mocks.Repository) {
-				m.On("FindByUUID", uniqParsed).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("FindByUUID", uniqParsed).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/forms/" + uniq,
 		},

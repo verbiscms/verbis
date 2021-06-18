@@ -66,11 +66,11 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			srp,
 			dispatchSuccess,
 			func(m *mocks.Repository) {
-				m.On("SendResetPassword", srp.Email).Return(domain.UserPart{}, "", &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("SendResetPassword", srp.Email).Return(domain.UserPart{}, "", &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 		"Dispatch Error": {

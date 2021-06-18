@@ -35,7 +35,7 @@ const Header = "Verbis-Version"
 // String returns the complete version string, including
 // prerelease,
 func String() string {
-	if Prerelease != "" { //nolint
+	if Prerelease != "" {
 		return fmt.Sprintf("%s-%s", Version, Prerelease)
 	}
 	return Version

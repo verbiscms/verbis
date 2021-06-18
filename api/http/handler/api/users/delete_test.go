@@ -58,9 +58,9 @@ func (t *UsersTestSuite) TestUser_Delete() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			func(m *mocks.Repository) {
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/users/123",
 		},

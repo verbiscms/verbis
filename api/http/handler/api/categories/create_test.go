@@ -62,10 +62,10 @@ func (t *CategoriesTestSuite) TestCategories_Create() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			category,
 			func(m *mocks.Repository) {
-				m.On("Create", category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Create", category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

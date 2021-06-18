@@ -45,11 +45,11 @@ func (t *AuthTestSuite) TestAuth_Logout() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			token,
 			false,
 			func(m *mocks.Repository) {
-				m.On("Logout", token).Return(-1, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Logout", token).Return(-1, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

@@ -67,10 +67,10 @@ func (t *UsersTestSuite) TestUser_Update() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			user,
 			func(m *mocks.Repository) {
-				m.On("Update", user).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Update", user).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/users/123",
 		},

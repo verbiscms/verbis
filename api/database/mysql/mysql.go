@@ -22,7 +22,7 @@ const (
 	MaxOpenConns = 100
 )
 
-// mysql defines the implementation of the
+// MySQL defines the implementation of the
 // MySQL.Driver if MySQL is selected
 // as the main driver.
 type MySQL struct {

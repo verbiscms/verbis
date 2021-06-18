@@ -54,9 +54,9 @@ func (t *RedirectsTestSuite) TestRedirects_List() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			func(m *mocks.Repository) {
-				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

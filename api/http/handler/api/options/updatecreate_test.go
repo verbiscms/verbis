@@ -62,10 +62,10 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			optionsStruct,
 			func(m *mocks.Repository) {
-				m.On("Insert", dbOptions).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Insert", dbOptions).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

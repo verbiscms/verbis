@@ -62,10 +62,10 @@ func (t *UsersTestSuite) TestUser_Create() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			userCreate,
 			func(m *mocks.Repository) {
-				m.On("Create", userCreate).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Create", userCreate).Return(domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}
