@@ -45,3 +45,4 @@ dist/
 dist
 verbisexec
 verbisexec.old
+*blob.go
