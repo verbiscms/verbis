@@ -12,12 +12,12 @@ import (
 
 // Version is  The main version number that is being run
 // at the moment.
-var Version = "0.0.2"
+var Version = "v0.0.1"
 
 // Prerelease A pre-release marker for the version. If this is ""
 // (empty string) then it means that it is a final release.
 // Otherwise, this is a pre-release such as "dev".
-var Prerelease = "dev"
+var Prerelease = ""
 
 // SemVer is an instance of version.Version.
 var SemVer *version.Version
@@ -35,7 +35,7 @@ const Header = "Verbis-Version"
 // String returns the complete version string, including
 // prerelease,
 func String() string {
-	if Prerelease != "" {
+	if Prerelease != "" { //nolint
 		return fmt.Sprintf("%s-%s", Version, Prerelease)
 	}
 	return Version

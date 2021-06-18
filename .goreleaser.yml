@@ -36,7 +36,7 @@ archives:
     builds:
       - main
     format: zip
-    name_template: "{{ tolower .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    name_template: "{{ tolower .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     wrap_in_directory: "verbis"
     files:
       - README.md

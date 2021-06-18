@@ -5,8 +5,9 @@
 package site
 
 import (
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/version"
+	"github.com/ainsleyclark/verbis/api/sys"
 )
 
 // Repository defines methods for the site.
@@ -17,6 +18,7 @@ type Repository interface {
 // Site defines the data layer for Posts
 type Site struct {
 	options *domain.Options
+	sys     sys.System
 }
 
 // Global
@@ -24,24 +26,23 @@ type Site struct {
 // Returns the domain.Site struct from the options and
 // retrieves the latest Verbis version.
 func (s *Site) Global() domain.Site {
-
-	// TODO: Need to pass in thhe updater.
-
 	return domain.Site{
-		Title:       s.options.SiteTitle,
-		Description: s.options.SiteDescription,
-		Logo:        s.options.SiteLogo,
-		Url:         s.options.SiteUrl,
-		Version:     version.Version,
-		//	RemoteVersion:
+		Title:         s.options.SiteTitle,
+		Description:   s.options.SiteDescription,
+		Logo:          s.options.SiteLogo,
+		Url:           s.options.SiteUrl,
+		Version:       api.App.Version,
+		RemoteVersion: s.sys.LatestVersion(),
+		HasUpdate:     s.sys.HasUpdate(),
 	}
 }
 
 // New
 //
 // Creates a new SiteRepository.
-func New(opts *domain.Options) Repository {
+func New(opts *domain.Options, s sys.System) Repository {
 	return &Site{
 		options: opts,
+		sys:     s,
 	}
 }

@@ -236,34 +236,6 @@ func (t *EnvTestSuite) TestEnv_Port() {
 	}
 }
 
-func (t *EnvTestSuite) TestEnv_ConnectString() {
-	e := Env{
-		DbHost:     "127.0.0.1",
-		DbPort:     "3000",
-		DbDatabase: "verbis",
-		DbUser:     "verbis",
-		DbPassword: "password",
-	}
-	want := "verbis:password@tcp(127.0.0.1:3000)/verbis?tls=false&parseTime=true&multiStatements=true"
-	t.Equal(want, e.ConnectString())
-}
-
-func (t *EnvTestSuite) TestEnv_MailConfig() {
-	e := Env{
-		SparkpostAPIKey: "key",
-		SparkpostURL:    "sparkpost",
-		MailFromAddress: "hello@verbiscms.com",
-		MailFromName:    "verbis",
-	}
-	want := Mail{
-		SparkpostAPIKey: "key",
-		SparkpostURL:    "sparkpost",
-		FromAddress:     "hello@verbiscms.com",
-		FromName:        "verbis",
-	}
-	t.Equal(want, e.MailConfig())
-}
-
 func (t *EnvTestSuite) TestEnv_IsProduction() {
 	tt := map[string]struct {
 		env  string

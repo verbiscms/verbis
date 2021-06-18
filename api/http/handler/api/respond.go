@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/pagination"
+	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"net/http"
@@ -55,6 +56,8 @@ func Respond(ctx *gin.Context, status int, message string, data interface{}, p .
 		hasError = true
 	}
 
+	ctx.Header(version.Header, version.Version)
+
 	ctx.JSON(status, RespondJSON{
 		Status:  status,
 		Message: message,
@@ -68,18 +71,20 @@ func Respond(ctx *gin.Context, status int, message string, data interface{}, p .
 //
 // Returns RespondJSON and aborts the request with given
 // status, message and data.
-func AbortJSON(g *gin.Context, status int, message string, data interface{}) {
+func AbortJSON(ctx *gin.Context, status int, message string, data interface{}) {
 	hasError := false
 	if status != http.StatusOK {
 		hasError = true
 	}
 
-	g.AbortWithStatusJSON(status, RespondJSON{
+	ctx.Header(version.Header, version.Version)
+
+	ctx.AbortWithStatusJSON(status, RespondJSON{
 		Status:  status,
 		Error:   hasError,
 		Message: message,
-		Meta:    GetMeta(g, nil),
-		Data:    checkResponseData(g, data),
+		Meta:    GetMeta(ctx, nil),
+		Data:    checkResponseData(ctx, data),
 	})
 }
 

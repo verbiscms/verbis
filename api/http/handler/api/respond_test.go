@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/pagination"
+	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	gohttp "net/http"
@@ -181,6 +182,7 @@ func (t *APITestSuite) TestRespond() {
 			t.Equal(test.want.Error, respond.Error)
 			t.Equal(test.want.Message, respond.Message)
 			t.Equal(test.want.Data, respond.Data)
+			t.Equal(t.Recorder.Header().Get(version.Header), version.Version)
 
 			t.Reset()
 		})

@@ -47,11 +47,16 @@ func Execute() {
 
 // Add child commands and bootstrap
 func init() {
+	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(startCmd)
 	rootCmd.AddCommand(doctorCmd)
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(uninstallCmd)
 	rootCmd.AddCommand(dumpCmd)
-	rootCmd.AddCommand(testCmd)
 	rootCmd.AddCommand(importCmd)
+
+	// Test routes
+	if !api.Production {
+		rootCmd.AddCommand(testCmd)
+	}
 }

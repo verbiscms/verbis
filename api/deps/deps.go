@@ -5,24 +5,19 @@
 package deps
 
 import (
-	"fmt"
-	"github.com/ainsleyclark/updater"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/services/site"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/sys"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/verbisfs"
-	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/ainsleyclark/verbis/api/watchers"
-	log "github.com/sirupsen/logrus"
 	"os"
-	"runtime"
 )
 
 // Deps holds dependencies used by many.
@@ -60,7 +55,7 @@ type Deps struct {
 	// template
 	tmpl tpl.TemplateHandler
 
-	Updater updater.Patcher
+	System sys.System
 
 	Installed bool
 
@@ -126,6 +121,7 @@ func New(cfg Config) *Deps {
 	}
 
 	p := paths.Get()
+	system := sys.New()
 
 	d := &Deps{
 		Env:     cfg.Env,
@@ -135,29 +131,15 @@ func New(cfg Config) *Deps {
 		Paths:   p,
 		tmpl:    nil,
 		Running: cfg.Running,
-		Site:    site.New(&opts),
+		Site:    site.New(&opts, system),
 		Theme:   theme.New(),
 		FS:      verbisfs.New(api.Production, p),
 		WebP:    webp.New(p.Bin + webp.Path),
-		Updater: getUpdater(),
+		System:  system,
 	}
 
 	d.Watcher = watchers.New(d.ThemePath())
 	d.Watcher.Start()
 
 	return d
-}
-
-func getUpdater() updater.Patcher {
-	const op = "Deps.GetUpdater"
-	opts := &updater.Options{
-		RepositoryURL: api.Repo,
-		ArchiveName:   fmt.Sprintf("verbis_%s_%s_%s.zip", "0.0.1", runtime.GOOS, runtime.GOARCH),
-		Version:       version.Version,
-	}
-	u, err := updater.New(opts)
-	if err != nil {
-		log.Fatal(&errors.Error{Code: errors.INTERNAL, Message: "Error creating new Verbis updater", Operation: op, Err: err})
-	}
-	return u
 }

@@ -10,9 +10,11 @@ import (
 )
 
 const (
-	// The default page number when none is passed.
+	// DefaultPage is the default page number when none is
+	// passed.
 	DefaultPage = 1
-	// The default limit when none is passed.
+	// DefaultLimit is the default limit when none is
+	// passed.
 	DefaultLimit = 15
 )
 
