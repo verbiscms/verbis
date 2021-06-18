@@ -12,6 +12,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/version"
 )
 
+// System represents cor functions for interacting with
+// Verbis.
 type System interface {
 	Restart() error
 	Update() (string, error)
@@ -19,7 +21,10 @@ type System interface {
 	HasUpdate() bool
 }
 
+// Sys defines the base and core functionality for Verbis,
+// such as restarting and updating the system.
 type Sys struct {
+	// The path of the current executable.
 	ExecutablePath string
 	updater        updater.Patcher
 }
