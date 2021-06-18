@@ -51,9 +51,9 @@ func (t *CategoriesTestSuite) TestCategories_Find() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			func(m *mocks.Repository) {
-				m.On("Find", 123).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Find", 123).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/categories/123",
 		},

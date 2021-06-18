@@ -79,11 +79,11 @@ func (t *UsersTestSuite) TestUser_ResetPassword() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			reset,
 			func(m *mocks.Repository) {
 				m.On("Find", 123).Return(domain.User{}, nil)
-				m.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("ResetPassword", 123, reset).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/users/reset/123",
 		},

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package main
+// +build ignore
 
-//+build ignore
+package main
 
 import (
 	"bytes"
@@ -57,7 +57,7 @@ func main() {
 	// Create map for filenames
 	stack := make(map[string]string)
 
-	const folder = "./../internal"
+	const folder = "./../updates"
 
 	dir, err := os.ReadDir(folder)
 	if err != nil {
@@ -71,9 +71,9 @@ func main() {
 		err := filepath.Walk(filepath.Join(folder, v.Name()), func(path string, info os.FileInfo, err error) error {
 			base := filepath.Base(path)
 
-			//if base == "callback.go" {
-			//
-			//}
+			if base == "callback.go" {
+				fmt.Println(path)
+			}
 
 			if base == "migration.sql" {
 				file, err := ioutil.ReadFile(path)

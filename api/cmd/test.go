@@ -20,7 +20,8 @@ var (
 			color.Green.Println(updates.UpdateRegistry)
 
 			for _, v := range updates.UpdateRegistry {
-				updates.
+				fmt.Println(v.Version)
+				fmt.Println(v.Migration)
 			}
 		},
 	}

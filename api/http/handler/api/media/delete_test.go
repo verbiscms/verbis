@@ -71,10 +71,10 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			func(m *mocks.Repository) {
 				m.On("Find", 123).Return(mediaItem, nil)
-				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/media/123",
 		},

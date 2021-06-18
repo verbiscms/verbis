@@ -50,9 +50,9 @@ func (t *PostsTestSuite) TestPosts_Find() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			func(m *mocks.Repository) {
-				m.On("Find", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Find", 123, true).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/posts/123",
 		},

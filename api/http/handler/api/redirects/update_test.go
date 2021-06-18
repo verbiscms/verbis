@@ -67,10 +67,10 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			redirect,
 			func(m *mocks.Repository) {
-				m.On("Update", redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Update", redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/redirects/123",
 		},

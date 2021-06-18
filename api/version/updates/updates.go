@@ -7,6 +7,7 @@
 package updates
 
 import (
+	_ "github.com/ainsleyclark/verbis/api/version/updates/v0.0.1"
 	sm "github.com/hashicorp/go-version"
 )
 
@@ -18,7 +19,16 @@ type Update struct {
 	Version   string
 	Migration string
 	Callback  UpdateCallBackFn
+	Stage     Stage
 }
+
+type Stage string
+
+const (
+	Major = "major"
+	Minor = "minor"
+	Patch = "patch"
+)
 
 var UpdateRegistry = make(registry, 0)
 
@@ -35,23 +45,27 @@ func (r *registry) Get(version string) *Update {
 	return nil
 }
 
+func (r *registry) AddCallback(fn UpdateCallBackFn) {
+
+}
+
 func (u Update) ToSemVer() (*sm.Version, error) {
 	return sm.NewVersion(u.Version)
 }
 
-func test() {
-
-	//for _, update := range u {
-	//	ver, err := update.ToSemVer()
-	//	if err != nil {
-	//		fmt.Println(err)
-	//	}
-	//
-	//	needsUpdate := ver.LessThan(version.SemVer)
-	//	if !needsUpdate {
-	//		return
-	//	}
-	//
-	//	fmt.Println("hello")
-	//}
-}
+//func test() {
+//
+//for _, update := range u {
+//	ver, err := update.ToSemVer()
+//	if err != nil {
+//		fmt.Println(err)
+//	}
+//
+//	needsUpdate := ver.LessThan(version.SemVer)
+//	if !needsUpdate {
+//		return
+//	}
+//
+//	fmt.Println("hello")
+//}
+//}

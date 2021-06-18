@@ -53,9 +53,9 @@ func (t *OptionsTestSuite) TestOptions_List() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			func(m *mocks.Repository) {
-				m.On("Map").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Map").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

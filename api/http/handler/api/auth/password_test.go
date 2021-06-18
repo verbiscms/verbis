@@ -63,10 +63,10 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			rp,
 			func(m *mocks.Repository) {
-				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(&errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

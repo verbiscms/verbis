@@ -5,9 +5,9 @@
 package site
 
 import (
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/sys"
+	"github.com/ainsleyclark/verbis/api/version"
 )
 
 // Repository defines methods for the site.
@@ -31,7 +31,7 @@ func (s *Site) Global() domain.Site {
 		Description:   s.options.SiteDescription,
 		Logo:          s.options.SiteLogo,
 		Url:           s.options.SiteUrl,
-		Version:       api.App.Version,
+		Version:       version.Version,
 		RemoteVersion: s.sys.LatestVersion(),
 		HasUpdate:     s.sys.HasUpdate(),
 	}

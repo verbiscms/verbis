@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package updates
+package v0_0_1 //nolint
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
-func CallBack() error {
-	fmt.Println("called back :)")
-	return nil
+func init() {
+	fmt.Println("im in init")
+	fmt.Println(os.Executable())
 }

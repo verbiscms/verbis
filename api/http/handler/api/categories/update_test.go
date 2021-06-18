@@ -67,10 +67,10 @@ func (t *CategoriesTestSuite) TestCategories_Update() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			category,
 			func(m *mocks.Repository) {
-				m.On("Update", category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Update", category).Return(domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/categories/123",
 		},

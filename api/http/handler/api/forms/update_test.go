@@ -67,10 +67,10 @@ func (t *FormsTestSuite) TestForms_Update() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			form,
 			func(m *mocks.Repository) {
-				m.On("Update", form).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Update", form).Return(domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/forms/123",
 		},

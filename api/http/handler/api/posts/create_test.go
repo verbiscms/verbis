@@ -62,10 +62,10 @@ func (t *PostsTestSuite) TestPosts_Create() {
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			post,
 			func(m *mocks.Repository) {
-				m.On("Create", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Create", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

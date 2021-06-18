@@ -64,10 +64,10 @@ func (t *MediaTestSuite) TestMedia_Update() {
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,
-			"config",
+			"internal",
 			mediaItem,
 			func(m *mocks.Repository) {
-				m.On("Update", mediaItem).Return(mediaItem, &errors.Error{Code: errors.INTERNAL, Message: "config"})
+				m.On("Update", mediaItem).Return(mediaItem, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/media/123",
 		},

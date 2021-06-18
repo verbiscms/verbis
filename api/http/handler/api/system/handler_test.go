@@ -6,9 +6,7 @@ package system
 
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/roles"
-	"github.com/ainsleyclark/verbis/api/store"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/sys"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -33,15 +31,13 @@ func TestSystem(t *testing.T) {
 //
 // A helper to obtain a mock system and
 // updater handler for testing.
-func (t *SystemTestSuite) Setup(mf func(m *mocks.Repository)) *System {
-	//m := &mocks.Repository{}
-	//if mf != nil {
-	//	mf(m)
-	//}
-	//d := &deps.Deps{
-	//	Store: &store.Repository{
-	//		Roles: m,
-	//	},
-	//}
-	//return New(d)
+func (t *SystemTestSuite) Setup(mf func(m *mocks.System)) *System {
+	m := &mocks.System{}
+	if mf != nil {
+		mf(m)
+	}
+	d := &deps.Deps{
+		System: m,
+	}
+	return New(d)
 }
