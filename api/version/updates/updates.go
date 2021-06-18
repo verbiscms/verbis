@@ -2,70 +2,21 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-//go:generate go run ../generator/main.go
-
 package updates
 
 import (
-	_ "github.com/ainsleyclark/verbis/api/version/updates/v0.0.1"
-	sm "github.com/hashicorp/go-version"
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/version/internal"
+	_ "github.com/ainsleyclark/verbis/api/version/updates/v1"
+	"github.com/gookit/color"
 )
 
-type UpdateCallBackFn func() error
-
-type registry []*Update
-
-type Update struct {
-	Version   string
-	Migration string
-	Callback  UpdateCallBackFn
-	Stage     Stage
-}
-
-type Stage string
-
-const (
-	Major = "major"
-	Minor = "minor"
-	Patch = "patch"
-)
-
-var UpdateRegistry = make(registry, 0)
-
-func (r *registry) Add(update Update) {
-	*r = append(*r, &update)
-}
-
-func (r *registry) Get(version string) *Update {
-	for _, v := range *r {
-		if v.Version == version {
-			return v
+func Test() {
+	for _, v := range internal.Registry {
+		migration, err := Migrations.ReadFile(v.MigrationPath)
+		if err != nil {
+			color.Red.Println(err)
 		}
+		fmt.Println(string(migration))
 	}
-	return nil
 }
-
-func (r *registry) AddCallback(fn UpdateCallBackFn) {
-
-}
-
-func (u Update) ToSemVer() (*sm.Version, error) {
-	return sm.NewVersion(u.Version)
-}
-
-//func test() {
-//
-//for _, update := range u {
-//	ver, err := update.ToSemVer()
-//	if err != nil {
-//		fmt.Println(err)
-//	}
-//
-//	needsUpdate := ver.LessThan(version.SemVer)
-//	if !needsUpdate {
-//		return
-//	}
-//
-//	fmt.Println("hello")
-//}
-//}

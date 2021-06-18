@@ -120,7 +120,6 @@ func New(cfg Config) *Deps {
 		opts = cfg.Store.Options.Struct()
 	}
 
-	p := paths.Get()
 	system := sys.New()
 
 	d := &Deps{
@@ -128,13 +127,13 @@ func New(cfg Config) *Deps {
 		Store:   cfg.Store,
 		Config:  cfg.Config,
 		Options: &opts,
-		Paths:   p,
+		Paths:   cfg.Paths,
 		tmpl:    nil,
 		Running: cfg.Running,
 		Site:    site.New(&opts, system),
 		Theme:   theme.New(),
-		FS:      verbisfs.New(api.Production, p),
-		WebP:    webp.New(p.Bin + webp.Path),
+		FS:      verbisfs.New(api.Production, cfg.Paths),
+		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
 		System:  system,
 	}
 
