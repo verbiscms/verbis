@@ -17,6 +17,8 @@ var (
 	exec = os.Executable
 	// bin defines the original os arguments.
 	bin = os.Args[0]
+	// sysex represents stdlib syscall.Exec func.
+	sysex = syscall.Exec
 )
 
 // Restart stops the currently running process and
@@ -24,7 +26,7 @@ var (
 // arguments.
 func (s *Sys) Restart() error {
 	const op = "System.Restart"
-	err := syscall.Exec(s.ExecutablePath, append([]string{s.ExecutablePath}, os.Args[1:]...), os.Environ())
+	err := sysex(s.ExecutablePath, append([]string{s.ExecutablePath}, os.Args[1:]...), os.Environ())
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error restating system", Operation: op, Err: err}
 	}

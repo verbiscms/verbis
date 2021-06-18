@@ -12,6 +12,9 @@ import (
 	"runtime"
 )
 
+// LatestVersion obtains the latest remote version from
+// Github. The function panics if it encountered
+// and error obtaining the version.
 func (s *Sys) LatestVersion() string {
 	const op = "System.LatestVersion"
 	hasUpdate, err := s.updater.LatestVersion()
@@ -21,6 +24,9 @@ func (s *Sys) LatestVersion() string {
 	return hasUpdate
 }
 
+// HasUpdate determines if there is an update available
+// from GitHub. The function panics if it encountered
+// and error obtaining the version.
 func (s *Sys) HasUpdate() bool {
 	const op = "System.HasUpdate"
 	update, err := s.updater.HasUpdate()
@@ -30,12 +36,18 @@ func (s *Sys) HasUpdate() bool {
 	return update
 }
 
+// Update updates the Verbis executable and runs any DB
+// migrations. It calls Restart() upon a successful
+// update.
+//
+// Returns errors.INVALID if Verbis is already up to date.
+// Returns errors,INTERNAL if it could not be updated.
 func (s *Sys) Update() (string, error) {
 	const op = "System.Update"
 
 	ver := s.LatestVersion()
 
-	logger.Info("Attempting to update Verbis..")
+	logger.Info("Attempting to update Verbis to version: " + ver)
 
 	zip := fmt.Sprintf("verbis_%s_%s_%s.zip", s.LatestVersion(), runtime.GOOS, runtime.GOARCH)
 	code, err := s.updater.Update(zip)
@@ -54,8 +66,7 @@ func (s *Sys) Update() (string, error) {
 		err := s.Restart()
 		if err != nil {
 			// TODO: Send callback to webhook.
-			logger.Panic(err)
-			return
+			logger.WithError(err)
 		}
 	}()
 

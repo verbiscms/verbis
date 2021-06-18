@@ -6,93 +6,51 @@ package sys
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
-	"os"
 	"testing"
 )
 
-func TestNew(t *testing.T) {
-	logger.SetOutput(ioutil.Discard)
-
+func TestSys_Restart(t *testing.T) {
 	tt := map[string]struct {
-		exec  func() (string, error)
-		bin   string
-		panic bool
-		want  interface{}
+		sys  func(argv0 string, argv []string, envv []string) (err error)
+		want interface{}
 	}{
 		"Success": {
-			func() (s string, err error) {
-				return "exec", nil
+			func(argv0 string, argv []string, envv []string) (err error) {
+				return nil
 			},
-			"test",
-			false,
-			"exec",
+			nil,
 		},
 		"Error": {
-			func() (s string, err error) {
-				return "", fmt.Errorf("error")
+			func(argv0 string, argv []string, envv []string) (err error) {
+				return fmt.Errorf("error")
 			},
-			"test",
-			true,
-			"cannot get path to binary",
-		},
-		"Absolute": {
-			func() (s string, err error) {
-				return "exec", nil
-			},
-			"/test",
-			false,
-			"/test",
+			"error",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			if test.exec == nil {
-				t.Fatal("exec function cannot be nil")
+			if test.sys == nil {
+				t.Fatal("sys function cannot be nil")
 				return
 			}
 
-			origExec := exec
-			origBin := bin
-
+			origSys := sysex
 			defer func() {
-				bin = origBin
-				exec = origExec
+				sysex = origSys
 			}()
+			sysex = test.sys
 
-			exec = test.exec
-			bin = test.bin
-
-			if test.panic {
-				assert.Panics(t, func() {
-					New()
-				})
+			s := Sys{ExecutablePath: "exec"}
+			err := s.Restart()
+			if err != nil {
+				assert.Contains(t, err.Error(), test.want)
 				return
 			}
-
-			got := New()
-			assert.Equal(t, test.want, got.ExecutablePath)
+			assert.Equal(t, test.want, err)
 		})
 	}
-}
-
-func TestRestart(t *testing.T) {
-	exec, err := os.Executable()
-	assert.NoError(t, err)
-	ran := false
-
-	s := &Sys{ExecutablePath: exec}
-
-	var rErr error
-	if ran {
-		rErr = s.Restart()
-	}
-	ran = true
-
-	assert.Nil(t, rErr)
 }
 
 func TestSys_Restart_Error(t *testing.T) {
