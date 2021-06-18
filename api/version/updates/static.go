@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package v0_0_1 //nolint
+package updates
 
-import (
-	"fmt"
-	"os"
+import "embed"
+
+var (
+	//go:embed v1/*.sql
+	Migrations embed.FS
 )
-
-func init() {
-	fmt.Println("im in init")
-	fmt.Println(os.Executable())
-}

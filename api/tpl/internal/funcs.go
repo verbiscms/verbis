@@ -7,6 +7,7 @@ package internal
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/tpl"
 	"github.com/ainsleyclark/verbis/api/verbis"
 	"github.com/gin-gonic/gin"
@@ -72,13 +73,13 @@ func (t *FuncsNamespace) AddMethodMapping(m interface{}, name string, aliases []
 
 	for _, e := range examples {
 		if e[0] == "" {
-			panic(t.Name + ": Empty example for " + name)
+			logger.Panic(t.Name + ": Empty example for " + name)
 		}
 	}
 
 	for _, a := range aliases {
 		if a == "" {
-			panic(t.Name + ": Empty alias for " + name)
+			logger.Panic(t.Name + ": Empty alias for " + name)
 		}
 	}
 
