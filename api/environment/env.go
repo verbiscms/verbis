@@ -145,12 +145,12 @@ func (e *Env) Validate() validation.Errors {
 	return nil
 }
 
-// Write
+// Set
 //
 // Accepts a key, value pair and writes to the .env
 // file when installing.
-func (e *Env) Write(key string, value interface{}) error {
-	const op = "Env.Write"
+func (e *Env) Set(key string, value interface{}) error {
+	const op = "Env.Set"
 
 	val, err := cast.ToStringE(value)
 	if err != nil {

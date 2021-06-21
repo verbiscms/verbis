@@ -41,7 +41,7 @@ func (s *Sys) HasUpdate() bool {
 // update.
 //
 // Returns errors.INVALID if Verbis is already up to date.
-// Returns errors,INTERNAL if it could not be updated.
+// Returns errors.INTERNAL if it could not be updated.
 func (s *Sys) Update() (string, error) {
 	const op = "System.Update"
 

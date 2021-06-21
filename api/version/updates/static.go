@@ -7,6 +7,6 @@ package updates
 import "embed"
 
 var (
-	//go:embed v1/*.sql
+	//go:embed v0/*.sql
 	Migrations embed.FS
 )

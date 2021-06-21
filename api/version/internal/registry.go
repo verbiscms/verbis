@@ -5,21 +5,25 @@
 package internal
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/logger"
 	sm "github.com/hashicorp/go-version"
+	"os"
 	"sort"
 )
 
 type CallBackFn func() error
 
-type registry []*Update
+type UpdateRegistry []*Update
 
-var Registry = make(registry, 0)
+var Updates = make(UpdateRegistry, 0)
 
 type Update struct {
 	Version       string
+	MajorVersion  int
 	MigrationPath string
-	Callback      CallBackFn
+	CallBackUp    CallBackFn
+	CallBackDown  CallBackFn
 	Stage         Stage
 }
 
@@ -39,35 +43,46 @@ func (u Update) ToSemVer() *sm.Version {
 	return smver
 }
 
-func (r registry) Sort() {
+// Sort UpdateRegistry is a type that implements the sort.Interface
+// interface so that versions can be sorted.
+func (r UpdateRegistry) Sort() {
 	sort.Sort(r)
 }
 
-// registry is a type that implements the sort.Interface interface
-// so that versions can be sorted.
-func (r registry) Len() int {
+func (r UpdateRegistry) Len() int {
 	return len(r)
 }
 
-func (r registry) Less(i, j int) bool {
+func (r UpdateRegistry) Less(i, j int) bool {
 	return r[i].ToSemVer().LessThan(r[j].ToSemVer())
 }
 
-func (r registry) Swap(i, j int) {
+func (r UpdateRegistry) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
 
-func (r *registry) AddUpdate(u *Update) {
+func (u *Update) HasCallBack() bool {
+	return u.CallBackUp != nil
+}
+
+func (r *UpdateRegistry) AddUpdate(u *Update) {
 	if u.Version == "" {
 		logger.Panic("No version provided for update")
 	}
 
-	// Check for panics
-	_ = u.ToSemVer()
-
 	if u.Stage == "" {
 		logger.Panic("No stage set")
 	}
+
+	semVer := u.ToSemVer()
+	seg := semVer.Segments()
+
+	if len(seg) != 3 {
+		logger.Panic("Invalid version: " + semVer.Original())
+	}
+
+	u.MajorVersion = seg[0]
+	u.MigrationPath = fmt.Sprintf("v%d%v%v", u.MajorVersion, string(os.PathSeparator), u.MigrationPath)
 
 	*r = append(*r, u)
 }
