@@ -77,7 +77,7 @@ func writer(conn *websocket.Conn, w *watchers.Batch, path string) {
 			return
 		}
 
-		// Write the file back to the socket.
+		// Set the file back to the socket.
 		err = conn.WriteMessage(websocket.TextMessage, b)
 		if err != nil {
 			logger.WithError(&errors.Error{Code: op, Message: "Error sending socket message", Operation: op, Err: err}).Error()

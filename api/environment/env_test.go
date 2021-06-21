@@ -202,7 +202,7 @@ func (t *EnvTestSuite) TestEnv_Write() {
 			defer t.Overwrite()
 
 			env := &Env{}
-			err := env.Write(test.key, test.value)
+			err := env.Set(test.key, test.value)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

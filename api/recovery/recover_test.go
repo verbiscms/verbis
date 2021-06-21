@@ -33,7 +33,7 @@ func (t *RecoverTestSuite) TestHandler_New() {
 //templateMock.On("Exists", "error-500").Return(true)
 //templateMock.On("Execute", &bytes.Buffer{}, "error-500", mock.Anything).Run(func(args mock.Arguments) {
 //	arg := args.Get(0).(io.Writer)
-//	_, err := arg.Write([]byte("test"))
+//	_, err := arg.Set([]byte("test"))
 //	t.NoError(err)
 //}).Return(nil)
 //
@@ -105,7 +105,7 @@ func (t *RecoverTestSuite) TestRecover_RecoverWrapper() {
 	//			m := mocks.TemplateExecutor{}
 	//			m.On("Execute", &bytes.Buffer{}, "root", mock.Anything).Run(func(args mock.Arguments) {
 	//				arg := args.Get(0).(io.Writer)
-	//				_, err := arg.Write([]byte("test"))
+	//				_, err := arg.Set([]byte("test"))
 	//				t.NoError(err)
 	//			}).Return(nil)
 	//			return "root", &m, true
@@ -119,7 +119,7 @@ func (t *RecoverTestSuite) TestRecover_RecoverWrapper() {
 	//	//		m.On("Execute", &bytes.Buffer{}, "root", data()).Return(fmt.Errorf("error")).Once()
 	//	//		m.On("Execute", &bytes.Buffer{}, "root", data()).Run(func(args mock.Arguments) {
 	//	//			arg := args.Get(0).(io.Writer)
-	//	//			_, err := arg.Write([]byte("test"))
+	//	//			_, err := arg.Set([]byte("test"))
 	//	//			t.NoError(err)
 	//	//		}).Return(fmt.Errorf("error")).Once()
 	//	//		return "root", &m, true
