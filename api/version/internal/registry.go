@@ -36,11 +36,12 @@ const (
 )
 
 func (u Update) ToSemVer() *sm.Version {
-	smver, err := sm.NewVersion(u.Version)
+	semver, err := sm.NewVersion(u.Version)
 	if err != nil {
 		logger.Panic(err.Error())
+		return nil
 	}
-	return smver
+	return semver
 }
 
 // Sort UpdateRegistry is a type that implements the sort.Interface
@@ -62,9 +63,11 @@ func (r UpdateRegistry) Swap(i, j int) {
 }
 
 func (u *Update) HasCallBack() bool {
-	return u.CallBackUp != nil
+	return u.CallBackUp != nil && u.CallBackDown != nil
 }
 
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// AddUpdate add's an update to the registry. the
 func (r *UpdateRegistry) AddUpdate(u *Update) {
 	if u.Version == "" {
 		logger.Panic("No version provided for update")
@@ -72,6 +75,18 @@ func (r *UpdateRegistry) AddUpdate(u *Update) {
 
 	if u.Stage == "" {
 		logger.Panic("No stage set")
+	}
+
+	if u.MigrationPath == "" {
+		logger.Panic("No migration path set")
+	}
+
+	if u.CallBackUp != nil && u.CallBackDown == nil {
+		logger.Panic("CallbackDown function must be declared if CallBackUp is set")
+	}
+
+	if u.CallBackUp == nil && u.CallBackDown != nil {
+		logger.Panic("CallbackUp function must be declared if CallBackDown is set")
 	}
 
 	semVer := u.ToSemVer()
