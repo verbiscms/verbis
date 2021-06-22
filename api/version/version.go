@@ -13,7 +13,7 @@ import (
 
 // Version is  The main version number that is being run
 // at the moment.
-var Version = ""
+var Version = "0.0.0"
 
 // Prerelease A pre-release marker for the version. If this is ""
 // (empty string) then it means that it is a final release.

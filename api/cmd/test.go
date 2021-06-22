@@ -7,9 +7,7 @@ package cmd
 import (
 	"fmt"
 	v02 "github.com/ainsleyclark/verbis/api/database/updates/v0"
-	"github.com/gookit/color"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 var (
@@ -22,8 +20,3 @@ var (
 		},
 	}
 )
-
-func must(err error) {
-	color.Red.Println(err)
-	os.Exit(1)
-}

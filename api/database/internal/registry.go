@@ -28,10 +28,12 @@ type Migration struct {
 	// Stage defines the release stage of the migration such as
 	// Major, Minor or Patch,
 	Stage version.Stage
-	// PostgresPath
+	// The path of the MySQL file.
+	SQLPath string
+	// The path of the Postgres SQL file.
 	PostgresPath string
-	SQLPath      string
-	SemVer       *sm.Version
+	// Parsed SemVer of the Version
+	SemVer *sm.Version
 }
 
 // CallBackFn is the function type when migrations are
@@ -79,6 +81,10 @@ func AddMigration(m *Migration) error {
 
 	if m.CallBackUp == nil && m.CallBackDown != nil {
 		return ErrCallBackMismatch
+	}
+
+	if m.SemVer == nil {
+		return errors.New("missing sem ver")
 	}
 
 	migrations = append(migrations, m)

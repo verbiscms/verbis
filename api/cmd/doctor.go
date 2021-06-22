@@ -76,14 +76,14 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	cache.Init()
 
 	p := paths.Get()
-	sys := sys.New(db)
+	system := sys.New(db)
 
 	logger.Info(fmt.Sprintf("Verbis Version: %s, %s", version.Version, version.Prerelease))
 	logger.Info(fmt.Sprintf("Go runtime version: %s", runtime.Version()))
 
 	// TODO: Check if the database is installed && db.IsInstalled
-	if sys.HasUpdate() {
-		logger.Warn(fmt.Sprintf("Verbis outdated, please visit the dashboard to update to version: %s", sys.LatestVersion()))
+	if system.HasUpdate() {
+		logger.Warn(fmt.Sprintf("Verbis outdated, please visit the dashboard to update to version: %s", system.LatestVersion()))
 	}
 
 	// Init Theme
@@ -101,6 +101,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 		Config:  c,
 		Paths:   p,
 		Running: running,
-		System:  sys,
+		System:  system,
 	}, db, nil
 }
