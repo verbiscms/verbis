@@ -8,11 +8,12 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/hashicorp/go-version"
+	log "github.com/sirupsen/logrus"
 )
 
 // Version is  The main version number that is being run
 // at the moment.
-var Version = "v0.0.1"
+var Version = ""
 
 // Prerelease A pre-release marker for the version. If this is ""
 // (empty string) then it means that it is a final release.
@@ -23,7 +24,11 @@ var Prerelease = ""
 var SemVer *version.Version
 
 func init() {
-	SemVer = version.Must(version.NewVersion(Version))
+	v, err := version.NewVersion(Version)
+	if err != nil {
+		log.Fatal(err)
+	}
+	SemVer = v
 	api.App.Version = String()
 }
 
