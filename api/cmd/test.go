@@ -6,7 +6,7 @@ package cmd
 
 import (
 	"fmt"
-	v0 "github.com/ainsleyclark/verbis/api/database/mysql/migrations/v0"
+	v02 "github.com/ainsleyclark/verbis/api/database/updates/v0"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 	"os"
@@ -17,7 +17,7 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(v0.Version)
+			fmt.Println(v02.Version)
 
 		},
 	}

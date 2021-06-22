@@ -7,11 +7,11 @@ package sys
 import (
 	"fmt"
 	"github.com/ainsleyclark/updater"
+	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
-	sm "github.com/hashicorp/go-version"
-
 	"github.com/ainsleyclark/verbis/api/version"
+	"github.com/mouuff/go-rocket-update/pkg/provider"
 	"runtime"
 	"strconv"
 )
@@ -21,20 +21,10 @@ import (
 // and error obtaining the version.
 func (s *Sys) LatestVersion() string {
 	const op = "System.LatestVersion"
-	remote, err := s.updater.LatestVersion()
+	remote, err := s.updater.GetLatestVersion()
 	if err != nil {
 		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining remote version", Operation: op, Err: err})
 	}
-
-	newVersion, err := sm.NewVersion(remote)
-	if err != nil {
-		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining remote version", Operation: op, Err: err})
-	}
-
-	if version.SemVer.GreaterThan(newVersion) {
-
-	}
-
 	return remote
 }
 
@@ -42,12 +32,11 @@ func (s *Sys) LatestVersion() string {
 // from GitHub. The function panics if it encountered
 // and error obtaining the version.
 func (s *Sys) HasUpdate() bool {
-	const op = "System.HasUpdate"
-	update, err := s.updater.HasUpdate()
-	if err != nil {
-		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining remote version", Operation: op, Err: err})
+	remote := version.Must(s.LatestVersion())
+	if version.SemVer.LessThan(remote) {
+		return true
 	}
-	return update
+	return false
 }
 
 // Update updates the Verbis executable and runs any DB
@@ -63,8 +52,12 @@ func (s *Sys) Update() (string, error) {
 
 	logger.Info("Attempting to update Verbis to version: " + ver)
 
-	zip := fmt.Sprintf("verbis_%s_%s_%s.zip", s.LatestVersion(), runtime.GOOS, runtime.GOARCH)
-	code, err := s.updater.Update(zip)
+	s.updater.Provider = &provider.Github{
+		RepositoryURL: api.Repo,
+		ArchiveName:   fmt.Sprintf("verbis_%s_%s_%s.zip", s.LatestVersion(), runtime.GOOS, runtime.GOARCH),
+	}
+
+	code, err := s.updater.Update()
 	if err != nil {
 		switch code {
 		case updater.UpToDate:
@@ -72,6 +65,15 @@ func (s *Sys) Update() (string, error) {
 		default:
 			return "", &errors.Error{Code: errors.INTERNAL, Message: "Error updating Verbis with status code: " + strconv.Itoa(int(code)), Operation: op, Err: err}
 		}
+	}
+
+	err = s.Driver.Migrate(version.SemVer)
+	if err != nil {
+		rollBackErr := s.updater.Rollback()
+		if rollBackErr != nil {
+			logger.Panic(err)
+		}
+		return "", err
 	}
 
 	logger.Info("Successfully updated Verbis, restarting system...")

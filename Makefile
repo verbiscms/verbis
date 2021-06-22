@@ -1,7 +1,7 @@
 VER=`cat VERSION`
 
 build:
-	go build -o verbisexec
+	go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=false' -X 'github.com/ainsleyclark/verbis/api/version.Version=$(VER)'"
 .PHONY: build
 
 serve:

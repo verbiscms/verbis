@@ -8,11 +8,13 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/builder"
+	"github.com/ainsleyclark/verbis/api/database/internal"
 	"github.com/ainsleyclark/verbis/api/database/mysql"
 	"github.com/ainsleyclark/verbis/api/database/postgres"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -25,20 +27,11 @@ type Driver interface {
 	Tables() ([]string, error)
 	Dump(path, filename string) error
 	Drop() error
+	Migrate(version *version.Version) error
 }
 
-const (
-	// MySQLDriver driver is represented under DB_DRIVER
-	// for MySQL.
-	MySQLDriver = "mysql"
-	// PostgresDriver driver is represented under
-	// DB_DRIVER for postgres.
-	PostgresDriver = "postgres"
-)
-
-// TODO
-//
-// establish what drier it is and do a switch
+// New creates a new database driver dependant on the
+// environment.
 func New(env *environment.Env) (Driver, error) {
 	const op = "Database.New"
 
@@ -48,9 +41,9 @@ func New(env *environment.Env) (Driver, error) {
 	)
 
 	switch env.DbDriver {
-	case MySQLDriver:
+	case internal.MySQLDriver:
 		db, err = mysql.Setup(env)
-	case PostgresDriver:
+	case internal.PostgresDriver:
 		db, err = postgres.Setup(env)
 	default:
 		return nil, &errors.Error{Code: errors.INVALID, Message: "DB Driver invalid in environment must be 'mysql' or 'postgres", Operation: op, Err: fmt.Errorf("invalid database driver")}

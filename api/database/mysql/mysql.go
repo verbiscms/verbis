@@ -5,23 +5,20 @@
 package mysql
 
 import (
-	"github.com/ainsleyclark/updater"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/database/internal"
-	_ "github.com/ainsleyclark/verbis/api/database/mysql/migrations/v0"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/version"
 	sm "github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 const (
+	//
 	MaxIdleConns = 5
 	MaxOpenConns = 100
 )
@@ -30,8 +27,9 @@ const (
 // MySQL.Driver if MySQL is selected
 // as the main driver.
 type MySQL struct {
-	driver *sqlx.DB
-	env    *environment.Env
+	driver   *sqlx.DB
+	env      *environment.Env
+	migrator internal.Tester
 }
 
 // Setup
@@ -59,7 +57,13 @@ func Setup(env *environment.Env) (*MySQL, error) {
 	driver.SetMaxIdleConns(MaxIdleConns)
 	driver.SetMaxOpenConns(MaxOpenConns)
 
+	migrator, err := internal.NewMigrator(internal.MySQLDriver, driver)
+	if err != nil {
+		return nil, err
+	}
+
 	m.driver = driver
+	m.migrator = migrator
 
 	return &m, nil
 }
@@ -106,35 +110,10 @@ func (m *MySQL) Close() error {
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (m *MySQL) Install() error {
 	const op = "MySQL.Install"
-
-	migrations := updater.AllMigrations()
-	migrations.Sort()
-
-	tx, err := m.DB().Begin()
+	err := m.migrator.Migrate(version.SemVer)
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error beginning transaction", Operation: op, Err: err}
+		return err
 	}
-
-	for _, v := range migrations {
-		if version.SemVer.LessThanOrEqual(sm.Must(sm.NewVersion(v.Version))) {
-			buf := new(strings.Builder)
-			_, err := io.Copy(buf, v.SQL)
-			if err != nil {
-				return &errors.Error{Code: errors.INTERNAL, Message: "Error copying buffer", Operation: op, Err: err}
-			}
-
-			_, err = tx.Exec(buf.String())
-			if err != nil {
-				return &errors.Error{Code: errors.INTERNAL, Message: "Error executing migration", Operation: op, Err: err}
-			}
-		}
-	}
-
-	err = tx.Commit()
-	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error committing transaction", Operation: op, Err: err}
-	}
-
 	return nil
 }
 
@@ -235,6 +214,14 @@ func (m *MySQL) Drop() error {
 	_, err := m.driver.Exec("DROP DATABASE " + m.env.DbDatabase + ";")
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error dropping the database with the name: " + m.env.DbDatabase, Operation: op, Err: err}
+	}
+	return nil
+}
+
+func (m *MySQL) Migrate(version *sm.Version) error {
+	err := m.migrator.Migrate(version)
+	if err != nil {
+		return err
 	}
 	return nil
 }

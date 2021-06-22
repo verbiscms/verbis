@@ -8,8 +8,10 @@ import (
 	_ "embed" // Embed Migration
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/builder"
+	"github.com/ainsleyclark/verbis/api/database/internal"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
+	sm "github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // Postgres Driver
 )
@@ -18,15 +20,11 @@ import (
 // database.Driver if Postgres is selected
 // as the main driver.
 type Postgres struct {
-	driver *sqlx.DB
-	env    *environment.Env
-	schema string
+	driver   *sqlx.DB
+	env      *environment.Env
+	schema   string
+	migrator internal.Tester
 }
-
-var (
-	//go:embed schema.sql
-	migration string
-)
 
 // Setup
 //
@@ -54,7 +52,13 @@ func Setup(env *environment.Env) (*Postgres, error) {
 	//driver.SetMaxIdleConns(database.MaxIdleConns)
 	//driver.SetMaxOpenConns(database.MaxOpenConns)
 
+	migrator, err := internal.NewMigrator(internal.PostgresDriver, driver)
+	if err != nil {
+		return nil, err
+	}
+
 	m.driver = driver
+	m.migrator = migrator
 
 	return &m, nil
 }
@@ -93,11 +97,11 @@ func (p *Postgres) Builder() *builder.Sqlbuilder {
 // Returns errors.INVALID if the sql file could not be located.
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (p *Postgres) Install() error {
-	const op = "Database.Install"
-	_, err := p.driver.Exec(migration)
-	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing migration file", Operation: op, Err: err}
-	}
+	//const op = "Database.Install"
+	//_, err := p.driver.Exec(migration)
+	//if err != nil {
+	//	return &errors.Error{Code: errors.INTERNAL, Message: "Error executing migration file", Operation: op, Err: err}
+	//}
 	return nil
 }
 
@@ -138,6 +142,14 @@ func (p *Postgres) Drop() error {
 	_, err := p.driver.Exec("DROP DATABASE [IF EXISTS] " + p.env.DbDatabase + ";")
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error dropping the database with the name: " + p.env.DbDatabase, Operation: op, Err: err}
+	}
+	return nil
+}
+
+func (p *Postgres) Migrate(version *sm.Version) error {
+	err := p.migrator.Migrate(version)
+	if err != nil {
+		return err
 	}
 	return nil
 }

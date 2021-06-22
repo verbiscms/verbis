@@ -31,6 +31,13 @@ var (
 )
 
 const (
+	// MySQLDriver driver is represented under DB_DRIVER
+	// for MySQL.
+	MySQLDriver = "mysql"
+	// PostgresDriver driver is represented under
+	// DB_DRIVER for postgres.
+	PostgresDriver = "postgres"
+
 	ErrDBConnectionMessage  = "Error establishing database connection"
 	ErrTableNotFoundMessage = "Verbis database tables missing"
 )
