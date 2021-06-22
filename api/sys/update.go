@@ -9,6 +9,9 @@ import (
 	"github.com/ainsleyclark/updater"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
+	sm "github.com/hashicorp/go-version"
+
+	"github.com/ainsleyclark/verbis/api/version"
 	"runtime"
 	"strconv"
 )
@@ -18,11 +21,21 @@ import (
 // and error obtaining the version.
 func (s *Sys) LatestVersion() string {
 	const op = "System.LatestVersion"
-	hasUpdate, err := s.updater.LatestVersion()
+	remote, err := s.updater.LatestVersion()
 	if err != nil {
 		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining remote version", Operation: op, Err: err})
 	}
-	return hasUpdate
+
+	newVersion, err := sm.NewVersion(remote)
+	if err != nil {
+		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining remote version", Operation: op, Err: err})
+	}
+
+	if version.SemVer.GreaterThan(newVersion) {
+
+	}
+
+	return remote
 }
 
 // HasUpdate determines if there is an update available
