@@ -81,6 +81,7 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	logger.Info(fmt.Sprintf("Verbis Version: %s, %s", version.Version, version.Prerelease))
 	logger.Info(fmt.Sprintf("Go runtime version: %s", runtime.Version()))
 
+	// TODO: Check if the database is installed && db.IsInstalled
 	if sys.HasUpdate() {
 		logger.Warn(fmt.Sprintf("Verbis outdated, please visit the dashboard to update to version: %s", sys.LatestVersion()))
 	}

@@ -45,3 +45,7 @@ func String() string {
 	}
 	return Version
 }
+
+func Must(v string) *version.Version {
+	return version.Must(version.NewVersion(v))
+}
