@@ -29,7 +29,7 @@ const (
 type MySQL struct {
 	driver   *sqlx.DB
 	env      *environment.Env
-	migrator internal.Tester
+	migrator internal.Migrator
 }
 
 // Setup

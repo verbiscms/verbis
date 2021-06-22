@@ -13,28 +13,28 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-type Tester interface {
+type Migrator interface {
 	Migrate(version *sm.Version) error
 }
 
-type Migrator struct {
+type migrate struct {
 	down   []CallBackFn
 	Driver string
 	DB     *sqlx.DB
 }
 
-func NewMigrator(driver string, db *sqlx.DB) (Tester, error) {
+func NewMigrator(driver string, db *sqlx.DB) (Migrator, error) {
 	if driver != MySQLDriver && driver != PostgresDriver {
 		return nil, fmt.Errorf("wrong driver")
 	}
-	return &Migrator{
+	return &migrate{
 		down:   make([]CallBackFn, 0),
 		Driver: driver,
 		DB:     db,
 	}, nil
 }
 
-func (r *Migrator) Migrate(version *sm.Version) (err error) {
+func (r *migrate) Migrate(version *sm.Version) (err error) {
 	tx, err := r.DB.Begin()
 	if err != nil {
 		return err
@@ -42,7 +42,10 @@ func (r *Migrator) Migrate(version *sm.Version) (err error) {
 
 	defer func() {
 		if err != nil {
-			tx.Rollback()
+			err := tx.Rollback()
+			if err != nil {
+				logger.Panic(err)
+			}
 			for _, fn := range r.down {
 				err := fn()
 				if err != nil {
@@ -76,7 +79,7 @@ func (r *Migrator) Migrate(version *sm.Version) (err error) {
 // process reads the migration and executes the migration
 // if there is one. Calls the callback function if there
 // is one set.
-func (r *Migrator) process(m *Migration, tx *sql.Tx) error {
+func (r *migrate) process(m *Migration, tx *sql.Tx) error {
 	path := m.SQLPath
 	if r.Driver == PostgresDriver {
 		path = m.PostgresPath

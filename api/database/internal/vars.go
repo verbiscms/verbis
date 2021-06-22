@@ -7,6 +7,8 @@ package internal
 import "github.com/ainsleyclark/verbis/api/errors"
 
 var (
+	// Tables define the current database tables within
+	// Verbis.
 	Tables = []string{
 		"categories",
 		"form_fields",
@@ -27,6 +29,8 @@ var (
 )
 
 var (
+	// ErrTableNotFound is returned by the driver if there are
+	// tables missing from the installation.
 	ErrTableNotFound = errors.New("database tables missing from verbis installation")
 )
 
@@ -37,7 +41,10 @@ const (
 	// PostgresDriver driver is represented under
 	// DB_DRIVER for postgres.
 	PostgresDriver = "postgres"
-
-	ErrDBConnectionMessage  = "Error establishing database connection"
+	// ErrDBConnectionMessage is used as an error message when
+	// no database connection could be established.
+	ErrDBConnectionMessage = "Error establishing database connection"
+	// ErrTableNotFoundMessage is used as an error message
+	// when a table is missing from the installation.
 	ErrTableNotFoundMessage = "Verbis database tables missing"
 )

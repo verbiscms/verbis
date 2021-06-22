@@ -23,7 +23,7 @@ type Postgres struct {
 	driver   *sqlx.DB
 	env      *environment.Env
 	schema   string
-	migrator internal.Tester
+	migrator internal.Migrator
 }
 
 // Setup
