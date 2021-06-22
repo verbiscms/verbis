@@ -104,7 +104,6 @@ func selectStmt(query string) string {
        CASE WHEN categories.id IS NULL THEN 0 ELSE categories.id END AS 'category.id',
        CASE WHEN categories.name IS NULL THEN '' ELSE categories.name END AS 'category.name',
        CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource',
-       CASE WHEN pf.id IS NULL THEN 0 ELSE pf.id END AS 'field.field_id',
        CASE WHEN pf.type IS NULL THEN "" ELSE pf.type END AS 'field.type',
        CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
        CASE WHEN pf.name IS NULL THEN "" ELSE pf.name END AS 'field.name',

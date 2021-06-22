@@ -5,9 +5,8 @@
 package cmd
 
 import (
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/version/updates"
+	"fmt"
+	v0 "github.com/ainsleyclark/verbis/api/database/mysql/migrations/v0"
 	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 	"os"
@@ -18,27 +17,8 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			env, err := environment.Load()
-			if err != nil {
-				must(err)
-			}
+			fmt.Println(v0.Version)
 
-			db, err := database.New(env)
-			if err != nil {
-				must(err)
-			}
-
-			u, err := updates.New(db)
-			if err != nil {
-				must(err)
-			}
-
-			err = u.Run()
-			if err != nil {
-				must(err)
-			}
-
-			color.Green.Println("Updated successfully")
 		},
 	}
 )

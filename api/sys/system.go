@@ -6,7 +6,7 @@ package sys
 
 import (
 	"github.com/ainsleyclark/updater"
-	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/version"
@@ -31,7 +31,7 @@ type Sys struct {
 
 // New creates a new system type, used for restarting
 // and manipulating the system.
-func New() *Sys {
+func New(db database.Driver) *Sys {
 	const op = "System.New"
 
 	exec, err := execPath()
@@ -39,10 +39,13 @@ func New() *Sys {
 		logger.Panic(err)
 	}
 
-	u, err := updater.New(&updater.Options{
-		RepositoryURL: api.Repo,
-		Version:       version.Version,
+	u, err := updater.New(updater.Options{
+		GithubURL: "https://github.com/ainsleyclark/verbis", // The URL of the Git Repos
+		Version:   version.Version,                          // The currently running version
+		Verify:    false,                                    // Updates will be verified by checking the new exec with -version
+		DB:        db.DB().DB,                               // Pass in an sql.DB for a migration
 	})
+
 	if err != nil {
 		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error creating new Verbis updater", Operation: op, Err: err})
 	}

@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"runtime"
+	"strconv"
 )
 
 // LatestVersion obtains the latest remote version from
@@ -56,7 +57,7 @@ func (s *Sys) Update() (string, error) {
 		case updater.UpToDate:
 			return "", &errors.Error{Code: errors.INVALID, Message: "Verbis is up to date", Operation: op, Err: err}
 		default:
-			return "", &errors.Error{Code: errors.INTERNAL, Message: "Error updating Verbis", Operation: op, Err: err}
+			return "", &errors.Error{Code: errors.INTERNAL, Message: "Error updating Verbis with status code: " + strconv.Itoa(int(code)), Operation: op, Err: err}
 		}
 	}
 

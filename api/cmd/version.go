@@ -17,7 +17,7 @@ var (
 		Long: `This command will obtain the current version of verbis that is 
 installed on the operating system`,
 		Run: func(cmd *cobra.Command, args []string) {
-			printSuccess(fmt.Sprintf("Verbis version: %s", version.Version))
+			fmt.Println(version.Version)
 		},
 	}
 )

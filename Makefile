@@ -1,11 +1,11 @@
 build:
-	rm -rf verbisexec && go build -o verbisexec
+	go build -o verbisexec
 
 serve:
 	$(MAKE) build && ./verbisexec start
 
 build-prod:
-	rm -rf verbisexec && go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=true'" -tags prod
+	go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=true' -X 'github.com/ainsleyclark/api/version.Version=v0.0.3'" -tags prod
 
 release:
 	./bin/release.sh
