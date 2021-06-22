@@ -13,6 +13,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/ainsleyclark/verbis/api/sys"
 	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/spf13/cobra"
 	"runtime"
@@ -56,9 +57,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	// Init logging
 	logger.Init(env)
 
-	logger.Info(fmt.Sprintf("Verbis Version: %s, %s", version.Version, version.Prerelease))
-	logger.Info(fmt.Sprintf("Go runtime version: %s", runtime.Version()))
-
 	// Check if the environment values are valid
 	vErrors := env.Validate()
 	if vErrors != nil {
@@ -78,6 +76,14 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	cache.Init()
 
 	p := paths.Get()
+	sys := sys.New(db)
+
+	logger.Info(fmt.Sprintf("Verbis Version: %s, %s", version.Version, version.Prerelease))
+	logger.Info(fmt.Sprintf("Go runtime version: %s", runtime.Version()))
+
+	if sys.HasUpdate() {
+		logger.Warn(fmt.Sprintf("Verbis outdated, please visit the dashboard to update to version: %s", sys.LatestVersion()))
+	}
 
 	// Init Theme
 	// TODO: We need pass the default theme (Verbis 2021)
@@ -94,5 +100,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 		Config:  c,
 		Paths:   p,
 		Running: running,
+		System:  sys,
 	}, db, nil
 }

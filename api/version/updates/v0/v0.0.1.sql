@@ -1,1 +1,0 @@
-UPDATE posts SET title = 'HELLO UPDATER' WHERE id = 4

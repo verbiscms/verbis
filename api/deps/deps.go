@@ -103,6 +103,8 @@ type Config struct {
 
 	Installed bool
 
+	System sys.System
+
 	Running bool
 }
 
@@ -120,8 +122,6 @@ func New(cfg Config) *Deps {
 		opts = cfg.Store.Options.Struct()
 	}
 
-	system := sys.New()
-
 	d := &Deps{
 		Env:     cfg.Env,
 		Store:   cfg.Store,
@@ -130,11 +130,11 @@ func New(cfg Config) *Deps {
 		Paths:   cfg.Paths,
 		tmpl:    nil,
 		Running: cfg.Running,
-		Site:    site.New(&opts, system),
+		Site:    site.New(&opts, cfg.System),
 		Theme:   theme.New(),
 		FS:      verbisfs.New(api.Production, cfg.Paths),
 		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
-		System:  system,
+		System:  cfg.System,
 	}
 
 	d.Watcher = watchers.New(d.ThemePath())

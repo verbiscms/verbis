@@ -5,16 +5,20 @@
 package mysql
 
 import (
-	_ "embed" // Embed Migration
-	"fmt"
+	"github.com/ainsleyclark/updater"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/database/internal"
+	_ "github.com/ainsleyclark/verbis/api/database/mysql/migrations/v0"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/version"
+	sm "github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 const (
@@ -29,11 +33,6 @@ type MySQL struct {
 	driver *sqlx.DB
 	env    *environment.Env
 }
-
-var (
-	//go:embed schema.sql
-	migration string
-)
 
 // Setup
 //
@@ -108,9 +107,32 @@ func (m *MySQL) Close() error {
 func (m *MySQL) Install() error {
 	const op = "MySQL.Install"
 
-	_, err := m.driver.Exec(migration)
+	migrations := updater.AllMigrations()
+	migrations.Sort()
+
+	tx, err := m.DB().Begin()
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing migration file", Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error beginning transaction", Operation: op, Err: err}
+	}
+
+	for _, v := range migrations {
+		if version.SemVer.LessThanOrEqual(sm.Must(sm.NewVersion(v.Version))) {
+			buf := new(strings.Builder)
+			_, err := io.Copy(buf, v.SQL)
+			if err != nil {
+				return &errors.Error{Code: errors.INTERNAL, Message: "Error copying buffer", Operation: op, Err: err}
+			}
+
+			_, err = tx.Exec(buf.String())
+			if err != nil {
+				return &errors.Error{Code: errors.INTERNAL, Message: "Error executing migration", Operation: op, Err: err}
+			}
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error committing transaction", Operation: op, Err: err}
 	}
 
 	return nil
@@ -134,8 +156,6 @@ func (m *MySQL) Tables() ([]string, error) {
 			Where("table_name", "=", table).
 			Limit(1).
 			Exists()
-
-		fmt.Println(q)
 
 		var exists bool
 		err := m.driver.QueryRow(q).Scan(&exists)

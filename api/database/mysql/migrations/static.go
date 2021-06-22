@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package updates
+package migrations
 
-import "embed"
+import (
+	"embed"
+)
 
 var (
 	//go:embed v0/*.sql
