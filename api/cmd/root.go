@@ -7,7 +7,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
-	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 	"strconv"
 )
@@ -27,8 +26,6 @@ var (
 func Execute() {
 	// Pass the super admin to bool (ldflags)
 	admin, _ := strconv.ParseBool(api.ProductionString)
-	color.Green.Println(api.ProductionString)
-
 	api.Production = admin
 
 	// Execute the main command
