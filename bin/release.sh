@@ -30,6 +30,8 @@ then
       exit
   fi
 
+  echo "Releasing version: " $version
+
   git tag -a $version -m $message
   git push origin $version
 
