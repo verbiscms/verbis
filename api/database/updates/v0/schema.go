@@ -29,21 +29,17 @@ func init() {
 	if err != nil {
 		logger.Panic(err)
 	}
-}
-
-// init adds the migration to the updater.
-func init() {
-	err := internal.AddMigration(&internal.Migration{
+	err = internal.AddMigration(&internal.Migration{
 		Version: "v0.0.2",
 		CallBackUp: func() error {
-			fmt.Println("in up")
+			fmt.Println("hey")
 			return nil
 		},
 		CallBackDown: func() error {
-			fmt.Println("in dowmn")
+			fmt.Println("dpw")
 			return nil
 		},
-		Stage: version.Major,
+		Stage: version.Patch,
 	})
 	if err != nil {
 		logger.Panic(err)
