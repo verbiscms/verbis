@@ -15,6 +15,11 @@ var (
 	Store *cache.Cache
 )
 
+// MemoryStore
+// Memory
+// Redis
+// Memcached
+
 type Cacher interface {
 	Get(k string) (interface{}, bool)
 	Set(k string, x interface{}, d time.Duration)
