@@ -23,7 +23,8 @@ const (
 	DefaultOrderDirection = "DESC"
 )
 
-// Params represents the http params for interacting with the DB
+// Params represents the http params for interacting with
+// the DB.
 type Params struct {
 	Page           int      `json:"page"`
 	Limit          int      `json:"limit"`

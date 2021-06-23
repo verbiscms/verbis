@@ -66,8 +66,7 @@ linters:
         - gocritic
         - gocyclo
         - gofmt
-        # TODO: Check comments!
-        #- revive
+        - revive
         - gomnd
         - goprintffuncname
         - gosimple

@@ -21,7 +21,7 @@ type ChangedPassword struct {
 	User     domain.UserPart
 }
 
-// Creates a new ChangedPassword.
+// NewChangedPassword creates a new ChangedPassword event.
 func NewChangedPassword(d *deps.Deps) *ChangedPassword {
 	e := event{
 		Subject:           SubjectPrefix + "Password Change",
@@ -40,7 +40,7 @@ func NewChangedPassword(d *deps.Deps) *ChangedPassword {
 	}
 }
 
-// Dispatches the ResetPassword event.
+// Dispatch the ResetPassword event.
 func (r *ChangedPassword) Dispatch(data interface{}, recipients []string, attachments client.Attachments) error {
 	const op = "Events.ChangedPassword.Dispatch"
 

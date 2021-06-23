@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	// The default configuration file name within the theme.
+	// FileName is the default configuration file name within
+	// the theme.
 	FileName = "config.yml"
 )
 
@@ -35,9 +36,7 @@ var (
 	ErrNoThemes = errors.New("no page templates found")
 )
 
-// Init
-//
-// Fetches and returns the theme configuration once.
+// Init fetches and returns the theme configuration once.
 func Init(path string) *domain.ThemeConfig {
 	once.Do(func() {
 		Fetch(path)
@@ -45,18 +44,14 @@ func Init(path string) *domain.ThemeConfig {
 	return cfg
 }
 
-// Get
-//
-// Returns the pointer to the theme configuration.
+// Get returns the pointer to the theme configuration.
 func Get() *domain.ThemeConfig {
 	mutex.Lock()
 	defer mutex.Unlock()
 	return cfg
 }
 
-// Set
-//
-// Sets the cfg variable to a new theme configuration when
+// Set the cfg variable to a new theme configuration when
 // a theme has been set by the user.
 func Set(config domain.ThemeConfig) {
 	mutex.Lock()
@@ -64,10 +59,8 @@ func Set(config domain.ThemeConfig) {
 	cfg = &config
 }
 
-// Fetch
-//
-// Get"s the themes configuration from the themes path
-//
+// Fetch gets the themes configuration from the themes
+// path.
 // Logs errors.INTERNAL if the unmarshalling was
 // unsuccessful and returns the DefaultTheme
 // variable.
@@ -82,11 +75,8 @@ func Fetch(path string) *domain.ThemeConfig {
 	return theme
 }
 
-// Find
-//
-// Looks up for theme configuration file by the given path
-// and default file name.
-//
+// Find looks up for theme configuration file by the given
+// path and default file name.
 // Returns errors.INTERNAL if the unmarshalling was
 // unsuccessful and returns the DefaultTheme
 // variable.
@@ -100,12 +90,9 @@ func Find(path string) (*domain.ThemeConfig, error) {
 	return theme, nil
 }
 
-// All
-//
-// Returns a slice of domain.ThemeConfig's by reading the
-// path. If the file is a directory, it will be skipped
-// until a config file has been found.
-//
+// All Returns a slice of domain.ThemeConfig's by reading
+// the path. If the file is a directory, it will be
+// skipped until a config file has been found.
 // Returns errors.NOTFOUND if no themes were found.
 // Returns errors.INTERNAL if the theme path is invalid.
 func All(path, activeTheme string) ([]*domain.ThemeConfig, error) {
@@ -139,11 +126,9 @@ func All(path, activeTheme string) ([]*domain.ThemeConfig, error) {
 	return themes, nil
 }
 
-// getThemeConfig
-//
-// Is a wrapper for Fetch taking in a path and filename
-// and unmarshalling the yaml file into the theme
-// configuration.
+// getThemeConfig is a wrapper for Fetch taking in a path
+// and filename and unmarshalling the yaml file into the
+// theme configuration.
 func getThemeConfig(path, filename string) (*domain.ThemeConfig, error) {
 	const op = "Theme.Fetch"
 

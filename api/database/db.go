@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database/postgres"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
 )

@@ -31,16 +31,12 @@ type ConfigTestSuite struct {
 	config  domain.ThemeConfig
 }
 
-// TestConfig
-//
-// Assert testing has begun.
+// TestConfig asserts testing has begun.
 func TestConfig(t *testing.T) {
 	suite.Run(t, new(ConfigTestSuite))
 }
 
-// SetupSuite
-//
-// Reassign API path for testing.
+// SetupSuite reassigns API path for testing.
 func (t *ConfigTestSuite) SetupSuite() {
 	buf := &bytes.Buffer{}
 	logger.SetOutput(buf)

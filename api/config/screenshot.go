@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	// The default screenshot name within the theme's
-	// directory.
+	// ScreenshotName is the default screenshot name within
+	// the theme's directory.
 	ScreenshotName = "screenshot"
-	// The url of the screenshot.
+	// ScreenshotURL is the url of the screenshot.
 	ScreenshotURL = "/themes/"
 )
 
@@ -30,12 +30,10 @@ var (
 	}
 )
 
-// FindScreenshot
-//
-// Ranges over the allowed screenshot extensions and
-// checks for a match, if the screenshot has been
-// found, a url will be returned.
-//
+// FindScreenshot ranges over the allowed screenshot
+// extensions and checks for a match, if the
+// screenshot has been found, a url will
+// be returned.
 // Returns errors.NOTFOUND if no screenshot was found.
 func FindScreenshot(path string) (string, error) {
 	const op = "Theme.FindScreenshot"

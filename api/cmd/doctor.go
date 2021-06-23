@@ -41,12 +41,6 @@ environment.`,
 func doctor(running bool) (*deps.Config, database.Driver, error) {
 	printSpinner("Running doctor...")
 
-	// Check paths are correct
-	if err := paths.BaseCheck(); err != nil {
-		printError(err.Error())
-		return nil, nil, err
-	}
-
 	// Load the environment (.env file)
 	env, err := environment.Load()
 	if err != nil {

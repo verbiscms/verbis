@@ -5,8 +5,6 @@
 package paths
 
 import (
-	"fmt"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"os"
 	"path/filepath"
 )
@@ -41,7 +39,6 @@ const (
 // Retrieves relevant paths for the application.
 func Get() Paths {
 	base := base()
-
 	return Paths{
 		Base:    base,
 		Admin:   base + Admin,
@@ -64,20 +61,4 @@ func base() string {
 		return ""
 	}
 	return dir
-}
-
-// BaseCheck
-//
-// TODO: Needs to be removed.
-// Check the environment to see if it is passable by
-// seeing if the .env file, the admin folder, and
-// the storage folder exists.
-func BaseCheck() error {
-	const op = "paths.BaseCheck"
-
-	if !files.Exists(base() + "/.env") {
-		return fmt.Errorf("could not locate the .env file in the current directory")
-	}
-
-	return nil
 }
