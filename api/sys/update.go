@@ -14,6 +14,7 @@ import (
 	"github.com/mouuff/go-rocket-update/pkg/provider"
 	"runtime"
 	"strconv"
+	"time"
 )
 
 // LatestVersion obtains the latest remote version from
@@ -81,6 +82,7 @@ func (s *Sys) Update() (string, error) {
 	logger.Info("Successfully updated Verbis, restarting system...")
 
 	go func() {
+		time.Sleep(1 * time.Second)
 		err := s.Restart()
 		if err != nil {
 			// TODO: Send callback to webhook.

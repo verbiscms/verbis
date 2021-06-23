@@ -12,6 +12,10 @@ build-prod:
 	go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=true' -X 'github.com/ainsleyclark/verbis/api/version.Version=$(VER)'"
 .PHONY: build-prod
 
+dist:
+	goreleaser release --skip-publish --rm-dist
+.PHONY: dist
+
 version:
 	echo $(VER)
 .PHONY: version
