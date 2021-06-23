@@ -5,9 +5,6 @@
 package domain
 
 import (
-	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/spf13/cast"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -190,127 +187,17 @@ func TestPostField_IsValueJSON(t *testing.T) {
 }
 
 func TestPostMeta_Scan(t *testing.T) {
-	tt := map[string]struct {
-		input interface{}
-		want  interface{}
-	}{
-		"Success": {
-			[]byte(`{"title": "test"}`),
-			nil,
-		},
-		"Bad Unmarshal": {
-			[]byte(`{"title": wrong}`),
-			"Error unmarshalling into PostMeta",
-		},
-		"Nil": {
-			nil,
-			PostMeta{},
-		},
-		"Unsupported Scan": {
-			"wrong",
-			"Scan unsupported for PostMeta",
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			m := PostMeta{}
-			err := m.Scan(test.input)
-			if err != nil {
-				assert.Contains(t, errors.Message(err), test.want)
-				return
-			}
-			assert.Nil(t, err)
-		})
-	}
+	UtilTestScanner(&PostMeta{Title: "title"}, t)
 }
 
 func TestPostMeta_Value(t *testing.T) {
-	tt := map[string]struct {
-		input PostMeta
-		want  interface{}
-	}{
-		"Success": {
-			PostMeta{Title: "title"},
-			PostMeta{Title: "title"},
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			value, err := test.input.Value()
-			assert.NoError(t, err)
-
-			got, err := cast.ToStringE(value)
-			assert.NoError(t, err)
-
-			want, err := json.Marshal(test.input)
-			assert.NoError(t, err)
-
-			assert.Equal(t, string(want), got)
-		})
-	}
+	UtilTestValue(&PostMeta{Title: "title"}, t)
 }
 
 func TestPostSeo_Scan(t *testing.T) {
-	tt := map[string]struct {
-		input interface{}
-		want  interface{}
-	}{
-		"Success": {
-			[]byte(`{"canonical": "test"}`),
-			nil,
-		},
-		"Bad Unmarshal": {
-			[]byte(`{"canonical": wrong}`),
-			"Error unmarshalling into PostSeo",
-		},
-		"Nil": {
-			nil,
-			PostSeo{},
-		},
-		"Unsupported Scan": {
-			"wrong",
-			"Scan unsupported for PostSeo",
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			m := PostSeo{}
-			err := m.Scan(test.input)
-			if err != nil {
-				assert.Contains(t, errors.Message(err), test.want)
-				return
-			}
-			assert.Nil(t, err)
-		})
-	}
+	UtilTestScanner(&PostSeo{Canonical: "test"}, t)
 }
 
 func TestPostSeo_Value(t *testing.T) {
-	tt := map[string]struct {
-		input PostSeo
-		want  interface{}
-	}{
-		"Success": {
-			PostSeo{Canonical: "test"},
-			PostSeo{Canonical: "test"},
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			value, err := test.input.Value()
-			assert.NoError(t, err)
-
-			got, err := cast.ToStringE(value)
-			assert.NoError(t, err)
-
-			want, err := json.Marshal(test.input)
-			assert.NoError(t, err)
-
-			assert.Equal(t, string(want), got)
-		})
-	}
+	UtilTestValue(&PostSeo{Canonical: "test"}, t)
 }

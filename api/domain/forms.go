@@ -86,23 +86,22 @@ func (f FormLabel) String() string {
 	return string(f)
 }
 
-// FormValues - TODO
+// FormValues represents the map of values.
 type FormValues map[string]interface{}
 
-// JSON - TODO
+// JSON Marshals the Form Values to bytes.
 func (f FormValues) JSON() ([]byte, error) {
 	const op = "FormValues.JSON"
 	v, err := json.Marshal(f)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Could not process the form fields for storing", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error processing the form fields for storing", Operation: op, Err: err}
 	}
 	return v, nil
 }
 
-// Scan
-//
-// Scanner for FormValues. unmarshal the FormValues
-// when the entity is pulled from the database.
+// Scan implements the scanner for FormValues. unmarshal
+// the FormValues when the entity is pulled from the
+// database.
 func (f FormValues) Scan(value interface{}) error {
 	const op = "Domain.FormValues.Scan"
 	if value == nil {
@@ -119,17 +118,15 @@ func (f FormValues) Scan(value interface{}) error {
 	return nil
 }
 
-// Value
-//
-// Valuer for FormValues. marshal the FormValues
-// when the entity is inserted to the
+// Value implements the valuer for FormValues. marshal the
+// FormValues when the entity is inserted to the
 // database.
 func (f FormValues) Value() (driver.Value, error) {
-	const op = "Domain.FormValues.DBMap"
+	const op = "Domain.FormValues,Value"
 	if len(f) == 0 {
 		return nil, nil
 	}
-	j, err := json.Marshal(f)
+	j, err := marshaller(f)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling FormValues", Operation: op, Err: err}
 	}

@@ -65,10 +65,8 @@ const (
 	WebPExtension = ".webp"
 )
 
-// UploadPath
-//
-// Returns the upload path of the media item without the
-// storage uploads path, for example:
+// UploadPath returns the upload path of the media item
+// without the storage uploads path, for example:
 // 2020/01/photo.jpg
 func (m *Media) UploadPath() string {
 	if !m.IsOrganiseYearMonth() {
@@ -77,27 +75,21 @@ func (m *Media) UploadPath() string {
 	return m.FilePath + string(os.PathSeparator) + m.UUID.String() + m.Extension()
 }
 
-// IsOrganiseYearMonth
-//
-// Returns a bool indicating if the file has been saved
-// a year month path, i.e 2020/01.
+// IsOrganiseYearMonth returns a bool indicating if the
+// file has been saved a year month path, i.e 2020/01.
 func (m *Media) IsOrganiseYearMonth() bool {
 	return m.FilePath != ""
 }
 
-// Extension
-//
-// Returns the extension of the file by stripping from
-// the url.
+// Extension returns the extension of the file by stripping
+// from the url.
 func (m *Media) Extension() string {
 	return filepath.Ext(m.Url)
 }
 
-// PossibleFiles
-//
-// Returns a the possible files saved to the system after
-// the files have been uploaded. Note: This does not
-// include the upload path.
+// PossibleFiles Returns a the possible files saved to the
+// system after the files have been uploaded. Note: This
+// does not include the upload path.
 func (m *Media) PossibleFiles() []string {
 	files := []string{
 		m.UploadPath(),
@@ -110,42 +102,33 @@ func (m *Media) PossibleFiles() []string {
 	return files
 }
 
-// Mime TODO
+// Mime is a string representation of a MIME type.
 type Mime string
 
-// CanResize
-//
-// Returns true if the mime type is of JPG or PNG,
-// determining if the image can be resized.
+// CanResize Returns true if the mime type is of JPG or
+// PNG, determining if the image can be resized.
 func (m Mime) CanResize() bool {
 	return m.IsJPG() || m.IsPNG()
 }
 
-// IsJPG
-//
-// Returns true if the mime type is of JPG.
+// IsJPG returns true if the mime type is of JPG.
 func (m Mime) IsJPG() bool {
 	return m == "image/jpeg" || m == "image/jp2"
 }
 
-// IsPNG
-//
-// Returns true if the mime type is of PNG.
+// IsPNG returns true if the mime type is of PNG.
 func (m Mime) IsPNG() bool {
 	return m == "image/png"
 }
 
-// String
-//
-// Stringer on Mime type.
+// String is the stringer on Mime type.
 func (m Mime) String() string {
 	return string(m)
 }
 
-// Scan
-//
-// Scanner for MediaSize. unmarshal the MediaSize when
-// the entity is pulled from the database.
+// Scan implements the scanner for MediaSizes. unmarshal
+// the MediaSizes when the entity is pulled from the
+// database.
 func (m MediaSizes) Scan(value interface{}) error {
 	const op = "Domain.MediaSizes.Scan"
 	if value == nil {
@@ -162,16 +145,15 @@ func (m MediaSizes) Scan(value interface{}) error {
 	return nil
 }
 
-// Value
-//
-// Valuer for MediaSize. marshal the MediaSize when
-// the entity is inserted to the database.
+// Value implements the valuer for MediaSizes. marshal the
+// MediaSizes when the entity is inserted to the
+// database.
 func (m MediaSizes) Value() (driver.Value, error) {
 	const op = "Domain.MediaSizes.Value"
 	if len(m) == 0 {
 		return nil, nil
 	}
-	j, err := json.Marshal(m)
+	j, err := marshaller(m)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling MediaSizes", Operation: op, Err: err}
 	}

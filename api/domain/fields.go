@@ -69,33 +69,24 @@ type (
 	FieldValue string
 )
 
-// Slice
-//
-// Returns a slice of split field values by comma.
+// Slice Returns a slice of split field values by comma.
 func (f FieldValue) Slice() []string {
 	return strings.FieldsFunc(f.String(), func(c rune) bool {
 		return c == ','
 	})
 }
 
-// IsEmpty
-//
-// Determines if the field is an empty string.
+// IsEmpty determines if the field is an empty string.
 func (f FieldValue) IsEmpty() bool {
 	return string(f) == ""
 }
 
-// String
-//
-// Stringer on the FieldValue type.
+// String is the stringer on the FieldValue type.
 func (f FieldValue) String() string {
 	return string(f)
 }
 
-// Int
-//
-// Converts the field value to a string.
-//
+// Int casts the field value to a string.
 // Returns errors.INVALID if the string convert failed.
 func (f FieldValue) Int() (int, error) {
 	const op = "FieldValue.Int"
