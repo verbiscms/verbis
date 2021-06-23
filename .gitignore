@@ -43,6 +43,7 @@ pnpm-debug.log*
 /storage/uploads
 dist/
 dist
+dist/**
 verbisexec
 verbisexec.old
 *blob.go
