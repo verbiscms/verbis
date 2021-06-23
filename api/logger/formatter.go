@@ -24,8 +24,6 @@ type Formatter struct {
 	buf             *bytes.Buffer
 }
 
-// Format
-//
 // Format building log message.
 func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	if !f.Colours {
@@ -57,10 +55,8 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	return []byte(str), nil
 }
 
-// Time
-//
-// Prints the timestamp for the log, if no format is set
-// on the formatter, time.StampMilli will be used.
+// Time prints the timestamp for the log, if no format is
+// set on the formatter, time.StampMilli will be used.
 func (f *Formatter) Time() {
 	timestampFormat := f.TimestampFormat
 	if timestampFormat == "" {
@@ -69,10 +65,9 @@ func (f *Formatter) Time() {
 	f.buf.WriteString(f.entry.Time.Format(timestampFormat))
 }
 
-// StatusCode
-//
-// Prints the status code of the request, if there is none
-// set the log is config and "VRB" will be printed.
+// StatusCode Prints the status code of the request, if
+// there is none set the log is config and "VRB" will
+// be printed.
 func (f *Formatter) StatusCode() {
 	f.buf.WriteString(" | ")
 
@@ -97,9 +92,8 @@ func (f *Formatter) StatusCode() {
 	f.buf.WriteString(" | ")
 }
 
-// Level
-//
-// Prints the entry level of the log entry in uppercase.
+// Level Prints the entry level of the log entry in
+// uppercase.
 func (f *Formatter) Level() {
 	cc := color.Style{} //nolint
 	switch f.entry.Level {
@@ -122,9 +116,7 @@ func (f *Formatter) Level() {
 	f.buf.WriteString(cc.Sprintf("[%s]", level))
 }
 
-// IP
-//
-// Prints the IP address if there is any.
+// IP prints the IP address if there is any.
 func (f *Formatter) IP() {
 	ip, ok := f.entry.Data["client_ip"].(string)
 	if ok {
@@ -134,9 +126,8 @@ func (f *Formatter) IP() {
 	f.buf.WriteString(" ")
 }
 
-// Method
-//
-// Prints the entry request method if there is one set.
+// Method prints the entry request method if there is one
+// set.
 func (f *Formatter) Method() {
 	method, ok := f.entry.Data["request_method"].(string)
 	if !ok {
@@ -146,9 +137,7 @@ func (f *Formatter) Method() {
 	f.buf.WriteString(rc.Sprintf("  %s   ", method))
 }
 
-// URL
-//
-// Prints the entry request url if there is one set.
+// URL Prints the entry request url if there is one set.
 func (f *Formatter) URL() {
 	url, ok := f.entry.Data["request_url"].(string)
 	if ok {
@@ -156,9 +145,7 @@ func (f *Formatter) URL() {
 	}
 }
 
-// Message
-//
-// Prints the entry message if there is obe set.
+// Message prints the entry message if there is one set.
 func (f *Formatter) Message() {
 	_, method := f.entry.Data["request_method"].(string)
 	_, ok := f.HasError()
@@ -176,9 +163,7 @@ func (f *Formatter) Message() {
 	}
 }
 
-// Fields
-//
-// Prints the entry fields
+// Fields prints the entry fields.
 func (f *Formatter) Fields() {
 	fields, ok := f.entry.Data["fields"].(logrus.Fields)
 	if !ok {
@@ -190,9 +175,7 @@ func (f *Formatter) Fields() {
 	}
 }
 
-// HasError
-//
-// Determines if a verbis error has been logged.
+// HasError determines if a verbis error has been logged.
 func (f *Formatter) HasError() (interface{}, bool) {
 	e := f.entry.Data["error"]
 	if e == nil {
@@ -201,10 +184,8 @@ func (f *Formatter) HasError() (interface{}, bool) {
 	return e, true
 }
 
-// Error
-//
-// Prints out the error if there is one set. If the error
-// is nil, nothing will be printed.
+// Error prints out the error if there is one set. If the
+// error is nil, nothing will be printed.
 func (f *Formatter) Error() {
 	e, ok := f.HasError()
 	if !ok {

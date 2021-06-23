@@ -23,25 +23,20 @@ type LoggerTestSuite struct {
 	suite.Suite
 }
 
-// TestLogger
-//
-// Assert testing has begun.
+// TestLogger - Assert testing has begun.
 func TestLogger(t *testing.T) {
 	suite.Run(t, new(LoggerTestSuite))
 }
 
-// TearDownTestSuite
-//
-// Teardown logging after testing.
+// TearDownTestSuite - Teardown logging after testing.
 func (t *LoggerTestSuite) TearDownTestSuite() {
 	Init(&environment.Env{
 		AppDebug: "true",
 	})
 }
 
-// Setup
-//
-// Helper function for setting up the logger suite.
+// Setup is a helper function for setting up the logger
+// suite.
 func (t *LoggerTestSuite) Setup() *bytes.Buffer {
 	buf := &bytes.Buffer{}
 	logger.SetLevel(logrus.TraceLevel)
@@ -53,10 +48,8 @@ func (t *LoggerTestSuite) Setup() *bytes.Buffer {
 	return buf
 }
 
-// SetupHandler
-//
-// Helper function for setting up the handler
-// testing.
+// SetupHandler is a helper function for setting up the
+// http handler.
 func (t *LoggerTestSuite) SetupHandler(fn func(ctx *gin.Context)) *bytes.Buffer {
 	buf := t.Setup()
 
@@ -78,10 +71,8 @@ func (t *LoggerTestSuite) SetupHandler(fn func(ctx *gin.Context)) *bytes.Buffer 
 	return buf
 }
 
-// SetupHooks
-//
-// Helper function for setting up the hooks
-// testing.
+// SetupHooks is a helper function function for setting up
+// the hooks for testing.
 func (t *LoggerTestSuite) SetupHooks(writer io.Writer) WriterHook {
 	return WriterHook{
 		Writer: writer,

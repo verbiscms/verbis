@@ -57,82 +57,62 @@ func Init(env *environment.Env) {
 	})
 }
 
-// Trace
-//
-// Log a trace message with args.
+// Trace - Log a trace message with args.
 func Trace(args ...interface{}) {
 	logger.Trace(args...)
 }
 
-// Debug
-//
-// Log a debug message with args.
+// Debug - Log a debug message with args.
 func Debug(args ...interface{}) {
 	logger.Debug(args...)
 }
 
-// Info
-//
-// Log a info message with args.
+// Info - Log a info message with args.
 func Info(args ...interface{}) {
 	logger.Info(args...)
 }
 
-// Warn
-//
-// Log a warn message with args.
+// Warn - Log a warn message with args.
 func Warn(args ...interface{}) {
 	logger.Warn(args...)
 }
 
-// Error
-//
-// Log a error message with args.
+// Error - Log a error message with args.
 func Error(args ...interface{}) {
 	logger.Error(args...)
 }
 
-// Fatal
-//
-// Log a fatal message with args.
+// Fatal - Log a fatal message with args.
 func Fatal(args ...interface{}) {
 	logger.Fatal(args...)
 }
 
-// Panic
-//
-// Log a panic message with args.
+// Panic - Log a panic message with args.
 func Panic(args ...interface{}) {
 	logger.Panic(args...)
 }
 
-// WithField
-//
-// Logs with field, sets a new map containing "fields"
+// WithField - Logs with field, sets a new map containing
+// "fields".
 func WithField(key string, value interface{}) *logrus.Entry {
 	return logger.WithFields(logrus.Fields{"fields": logrus.Fields{
 		key: value,
 	}})
 }
 
-// WithFields
-//
-// Logs with fields, sets a new map containing "fields"
+// WithFields -Logs with fields, sets a new map containing
+// "fields".
 func WithFields(fields logrus.Fields) *logrus.Entry {
 	return logger.WithFields(logrus.Fields{"fields": fields})
 }
 
-// WithError
-//
-// Logs with a Verbis error.
+// WithError - Logs with a Verbis error.
 func WithError(err interface{}) *logrus.Entry {
 	return logger.WithField("error", err)
 }
 
-// SetOutput
-//
-// Set the output of the logger to an io.Writer, useful
-// for testing.
+// SetOutput sets the output of the logger to an io.Writer,
+// useful for testing.
 func SetOutput(writer io.Writer) {
 	logger.SetOutput(writer)
 }
