@@ -5,7 +5,6 @@
 package v0
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/internal"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/version"
@@ -25,21 +24,6 @@ func init() {
 		Stage:        version.Major,
 		SQLPath:      filepath.Join(Version, "mysql_schema.sql"),
 		PostgresPath: filepath.Join(Version, "postgres_schema.sql"),
-	})
-	if err != nil {
-		logger.Panic(err)
-	}
-	err = internal.AddMigration(&internal.Migration{
-		Version: "v0.0.2",
-		CallBackUp: func() error {
-			fmt.Println("hey")
-			return nil
-		},
-		CallBackDown: func() error {
-			fmt.Println("dpw")
-			return nil
-		},
-		Stage: version.Patch,
 	})
 	if err != nil {
 		logger.Panic(err)

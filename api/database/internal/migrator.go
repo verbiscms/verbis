@@ -66,7 +66,6 @@ func (r *migrate) Migrate(version *sm.Version) (err error) {
 			if rollBackErr != nil {
 				logger.Panic(rollBackErr)
 			}
-			fmt.Println(r.Down)
 			for _, fn := range r.Down {
 				downErr := fn()
 				if downErr != nil {
@@ -87,7 +86,6 @@ func (r *migrate) Migrate(version *sm.Version) (err error) {
 		if err != nil {
 			return
 		}
-
 		if !canMigrate {
 			continue
 		}
@@ -114,7 +112,7 @@ func (r *migrate) Migrate(version *sm.Version) (err error) {
 // the migration is not inside a major version
 // e.g (v1 - v2) the function will return false.
 func (r *migrate) canMigrate(base, migrate *sm.Version) (bool, error) {
-	if base.LessThanOrEqual(migrate) {
+	if base.GreaterThan(migrate) {
 		return false, nil
 	}
 

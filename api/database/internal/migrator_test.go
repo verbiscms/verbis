@@ -54,9 +54,9 @@ func (t *InternalTestSuite) TestMigrator_Migrate() {
 		want    interface{}
 	}{
 		"Simple": {
-			sm.Must(sm.NewVersion("v0.0.1")),
+			sm.Must(sm.NewVersion("v0.0.0")),
 			MigrationRegistry{
-				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
+				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectBegin()
@@ -68,9 +68,9 @@ func (t *InternalTestSuite) TestMigrator_Migrate() {
 			nil,
 		},
 		"Major Versions Mismatch": {
-			sm.Must(sm.NewVersion("v0.0.1")),
+			sm.Must(sm.NewVersion("v0.0.0")),
 			MigrationRegistry{
-				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
+				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
 				&Migration{Version: "v1.0.0", Stage: version.Major, SemVer: version.Must("v1.0.0"), SQLPath: filepath.Join("v1", "v1.0.0.sql")},
 			},
 			func(m sqlmock.Sqlmock) {
@@ -95,9 +95,9 @@ func (t *InternalTestSuite) TestMigrator_Migrate() {
 			nil,
 		},
 		"CallBack": {
-			sm.Must(sm.NewVersion("v0.0.1")),
+			sm.Must(sm.NewVersion("v0.0.0")),
 			MigrationRegistry{
-				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
+				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
 					return nil
 				}, CallBackDown: func() error {
 					return nil
@@ -138,9 +138,9 @@ func (t *InternalTestSuite) TestMigrator_Migrate() {
 			nil,
 		},
 		"Commit Error": {
-			sm.Must(sm.NewVersion("v0.0.1")),
+			sm.Must(sm.NewVersion("v0.0.0")),
 			MigrationRegistry{
-				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
+				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectBegin()
@@ -153,9 +153,9 @@ func (t *InternalTestSuite) TestMigrator_Migrate() {
 			nil,
 		},
 		"CallBackUp Error": {
-			sm.Must(sm.NewVersion("v0.0.1")),
+			sm.Must(sm.NewVersion("v0.0.0")),
 			MigrationRegistry{
-				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
+				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
 					return fmt.Errorf("error")
 				}, CallBackDown: func() error {
 					return nil
@@ -171,14 +171,14 @@ func (t *InternalTestSuite) TestMigrator_Migrate() {
 			fmt.Errorf("error"),
 		},
 		"CallBackDown Error": {
-			sm.Must(sm.NewVersion("v0.0.2")),
+			sm.Must(sm.NewVersion("v0.0.0")),
 			MigrationRegistry{
-				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
+				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
 					return nil
 				}, CallBackDown: func() error {
 					return fmt.Errorf("error")
 				}},
-				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "v0.0.1.sql"), CallBackUp: func() error {
+				&Migration{Version: "v0.0.2", Stage: version.Major, SemVer: version.Must("v0.0.2"), SQLPath: filepath.Join("v0", "v0.0.1.sql"), CallBackUp: func() error {
 					return fmt.Errorf("error")
 				}, CallBackDown: func() error {
 					return nil
@@ -226,13 +226,13 @@ func (t *InternalTestSuite) TestMigrator_CanMigrate() {
 		want    interface{}
 	}{
 		"Can Migrate": {
-			sm.Must(sm.NewVersion("v0.0.5")),
 			sm.Must(sm.NewVersion("v0.0.2")),
+			sm.Must(sm.NewVersion("v0.0.5")),
 			true,
 		},
 		"Can Migrate Major": {
-			sm.Must(sm.NewVersion("v1.0.1")),
 			sm.Must(sm.NewVersion("v1.0.0")),
+			sm.Must(sm.NewVersion("v1.0.1")),
 			true,
 		},
 		"Major Version": {
@@ -248,7 +248,7 @@ func (t *InternalTestSuite) TestMigrator_CanMigrate() {
 		"Equal": {
 			sm.Must(sm.NewVersion("v0.0.9")),
 			sm.Must(sm.NewVersion("v0.0.9")),
-			false,
+			true,
 		},
 	}
 
