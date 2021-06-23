@@ -5,13 +5,12 @@
 
 # Set variables
 version=$( cat VERSION )
-message=$2
+message=$1
 
-echo $version
-exit
-
+# Check if updater has been updated
 read -p "Have you updated VERSION file?" -n 1 -r
 echo    # (optional) move to a new line
+
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
    # Check goreleaser passed

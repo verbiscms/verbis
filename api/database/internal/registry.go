@@ -85,6 +85,12 @@ func AddMigration(m *Migration) error {
 		m.SemVer = ver
 	}
 
+	for _, migration := range migrations {
+		if migration.SemVer.Equal(m.SemVer) {
+			return errors.New("duplicate version")
+		}
+	}
+
 	migrations = append(migrations, m)
 
 	return nil

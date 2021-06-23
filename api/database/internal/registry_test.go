@@ -11,39 +11,52 @@ import (
 func (t *InternalTestSuite) TestAddMigration() {
 	tt := map[string]struct {
 		input Migration
+		twice bool
 		want  interface{}
 	}{
 		"Success": {
 			Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1")},
+			false,
 			nil,
 		},
 		"No version": {
 			Migration{Version: ""},
+			false,
 			"no version provided for update",
 		},
 		"Nil SemVer": {
 			Migration{Version: "v0.0.1", Stage: version.Major, SemVer: nil},
+			false,
 			nil,
 		},
 		"Bad Version": {
 			Migration{Version: "wrong", Stage: version.Major, SemVer: nil},
+			false,
 			"malformed version",
 		},
 		"No Stage": {
 			Migration{Version: "v0.0.1"},
+			false,
 			"no stage set",
 		},
 		"No CallBackUp": {
 			Migration{Version: "v0.0.1", Stage: version.Major, CallBackDown: func() error {
 				return nil
 			}},
+			false,
 			ErrCallBackMismatch.Error(),
 		},
 		"No CallBackDown": {
 			Migration{Version: "v0.0.1", Stage: version.Major, CallBackUp: func() error {
 				return nil
 			}},
+			false,
 			ErrCallBackMismatch.Error(),
+		},
+		"Duplicate": {
+			Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1")},
+			true,
+			"duplicate version",
 		},
 	}
 
@@ -53,6 +66,9 @@ func (t *InternalTestSuite) TestAddMigration() {
 				migrations = make(MigrationRegistry, 0)
 			}()
 			err := AddMigration(&test.input)
+			if test.twice {
+				err = AddMigration(&test.input)
+			}
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return

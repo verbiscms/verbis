@@ -57,6 +57,7 @@ func (s *Sys) Update() (string, error) {
 
 	code, err := s.updater.Update()
 	if err != nil {
+		logger.Error("Executable updated failed, rolling back")
 		switch code {
 		case updater.UpToDate:
 			return "", &errors.Error{Code: errors.INVALID, Message: "Verbis is up to date", Operation: op, Err: err}
@@ -69,6 +70,7 @@ func (s *Sys) Update() (string, error) {
 
 	err = s.Driver.Migrate(version.SemVer)
 	if err != nil {
+		logger.Error("Database updated failed, rolling back")
 		rollBackErr := s.updater.Rollback()
 		if rollBackErr != nil {
 			logger.Panic(err)
