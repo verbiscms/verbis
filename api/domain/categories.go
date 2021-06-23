@@ -28,9 +28,7 @@ type (
 	Categories []Category
 )
 
-// HasParent
-//
-// Determines if  a category has a parent
+// HasParent determines if a category has a parent
 // ID attached to it.
 func (c *Category) HasParent() bool {
 	return c.ParentId != nil

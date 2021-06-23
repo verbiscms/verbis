@@ -41,7 +41,7 @@ type (
 	}
 	// UsersParts represents the slice of UserPart's.
 	UsersParts []UserPart
-	// PostCreate defines the data when a user is created.
+	// UserCreate defines the data when a user is created.
 	UserCreate struct {
 		User
 		Password        string `db:"password" json:"password,omitempty" binding:"required,min=8,max=60"`
@@ -67,32 +67,29 @@ type (
 )
 
 const (
-	// The default banned role ID.
+	// BannedRoleID is the default banned role ID.
 	BannedRoleID = 1
-	// The default contributor role ID.
+	// ContributorRoleID is the default contributor role ID.
 	ContributorRoleID = 2
-	// The default author role ID.
+	// AuthorRoleID is the default author role ID.
 	AuthorRoleID = 3
-	// The default editor role ID.
+	// EditorRoleID is the default editor role ID.
 	EditorRoleID = 4
-	// The default admin role ID.
+	// AdminRoleID is the default admin role ID.
 	AdminRoleID = 5
-	// The default owner role ID.
+	// OwnerRoleID is the default owner role ID.
 	OwnerRoleID = 6
 )
 
-// HidePassword
-//
-// Sets the users password to an empty string.
+// HidePassword Sets the users password to an empty
+//string.
 func (u *User) HidePassword() {
 	u.Password = ""
 }
 
-// HideCredentials
-//
-// Returns a slice of UserParts from the given input,
-// hiding any sensitive information such as
-// passwords and tokens.
+// HideCredentials Returns a slice of UserParts from the
+// given input, hiding any sensitive information such
+// as passwords and tokens.
 func (u Users) HideCredentials() UsersParts {
 	var p UsersParts
 	for _, v := range u {
@@ -101,10 +98,9 @@ func (u Users) HideCredentials() UsersParts {
 	return p
 }
 
-// HideCredentials
-//
-// Returns a new UserPart, hiding any sensitive
-// information such as passwords and tokens.
+// HideCredentials returns a new UserPart, hiding any
+// sensitive information such as passwords and
+// tokens.
 func (u *User) HideCredentials() UserPart {
 	return UserPart{
 		Id:               u.Id,

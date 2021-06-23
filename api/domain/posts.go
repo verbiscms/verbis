@@ -102,7 +102,7 @@ type (
 		ImageId     int    `json:"image_id,omitempty" binding:"numeric"` //nolint
 	}
 	// PostSeo defines the options for Seo on the post,
-	// including if the post is indexable, if it
+	// including if the post is index-able, if it
 	// should appear in the sitemap and any
 	// canonical overrides.
 	PostSeo struct {
@@ -127,42 +127,43 @@ type (
 	}
 )
 
-// Use for PostType
 const (
-	HomeType     = "home"
-	PageType     = "page"
-	SingleType   = "single"
-	ArchiveType  = "archive"
+	// HomeType is the type of post when the post is the
+	// homepage.
+	HomeType = "home"
+	// PageType is the type of post when a post is a page with
+	// no resources.
+	PageType = "page"
+	// SingleType is the type of post when a page is a
+	// singular and attached to a resource.
+	SingleType = "single"
+	// ArchiveType is the type of post when a page is a
+	// an archive and attached to a resource.
+	ArchiveType = "archive"
+	// CategoryType is the type of post when a page is a
+	// an category archive and attached to a resource.
 	CategoryType = "category"
 )
 
-// IsPublic
-//
-// Determines if the post is published.
+// IsPublic determines if the post is published.
 func (p *Post) IsPublic() bool {
 	return p.Status == "published"
 }
 
-// HasResource
-//
-// Determines if a post has any resources attached
-// to it.
+// HasResource determines if a post has any resources
+// attached to it.
 func (p *PostDatum) HasResource() bool {
 	return p.Resource != ""
 }
 
-// HasCategory
-//
-// Determines if a post has a category attached
-// to it.
+// HasCategory determines if a post has a category
+// attached to it.
 func (p *PostDatum) HasCategory() bool {
 	return p.Category != nil
 }
 
-// IsHomepage
-//
-// Determines if the post is the homepage by comparing
-// the domain options.
+// IsHomepage Determines if the post is the homepage by
+// comparing the domain options.
 func (p *PostDatum) IsHomepage(id int) bool {
 	if id == 0 {
 		return false
@@ -170,9 +171,7 @@ func (p *PostDatum) IsHomepage(id int) bool {
 	return id == p.Post.Id
 }
 
-// Tpl
-//
-// Converts a PostDatum to a PostTemplate and hides
+// Tpl Converts a PostDatum to a PostTemplate and hides
 // layouts.
 func (p *PostDatum) Tpl() PostTemplate {
 	return PostTemplate{
@@ -183,10 +182,8 @@ func (p *PostDatum) Tpl() PostTemplate {
 	}
 }
 
-// TypeIsInSlice
-//
-// Determines if the given field values is in the slice
-// passed.
+// TypeIsInSlice Determines if the given field values is in
+// the slice passed.
 func (f *PostField) TypeIsInSlice(arr []string) bool {
 	for _, v := range arr {
 		if v == f.Type {
@@ -196,10 +193,8 @@ func (f *PostField) TypeIsInSlice(arr []string) bool {
 	return false
 }
 
-// IsValueJSON
-//
-// Determines if the value is valid JSON and has the key
-// words - key and value.
+// IsValueJSON Determines if the value is valid JSON and
+// has the key words - key and value.
 func (f *PostField) IsValueJSON() bool {
 	if !strings.Contains(string(f.OriginalValue), "key") || !strings.Contains(string(f.OriginalValue), "value") {
 		return false
@@ -208,10 +203,9 @@ func (f *PostField) IsValueJSON() bool {
 	return json.Unmarshal([]byte(f.OriginalValue), &js) == nil
 }
 
-// Scan
-//
-// Scanner for PostMeta. unmarshal the PostMeta when
-// the entity is pulled from the database.
+// Scan implements the scanner for PostMeta. unmarshal
+// the PostMeta when the entity is pulled from the
+// database.
 func (m *PostMeta) Scan(value interface{}) error {
 	const op = "Domain.PostMeta.Scan"
 	if value == nil {
@@ -228,23 +222,21 @@ func (m *PostMeta) Scan(value interface{}) error {
 	return nil
 }
 
-// Value
-//
-// Valuer for PostMeta. marshal the PostMeta when
-// the entity is inserted to the database.
+// Value implements the valuer for PostMeta. marshal the
+// PostMeta when the entity is inserted to the
+// database.
 func (m *PostMeta) Value() (driver.Value, error) {
 	const op = "Domain.PostMeta.Value"
-	j, err := json.Marshal(m)
+	j, err := marshaller(m)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling PostMeta", Operation: op, Err: err}
 	}
 	return driver.Value(j), nil
 }
 
-// Scan
-//
-// Scanner for PostSeo. unmarshal the PostSeo when
-// the entity is pulled from the database.
+// Scan implements the scanner for PostSeo. unmarshal
+// the PostSeo when the entity is pulled from the
+// database.
 func (m *PostSeo) Scan(value interface{}) error {
 	const op = "Domain.PostSeo.Scan"
 	if value == nil {
@@ -261,13 +253,12 @@ func (m *PostSeo) Scan(value interface{}) error {
 	return nil
 }
 
-// Value
-//
-// Valuer for PostSeo. marshal the PostSeo when
-// the entity is inserted to the database.
+// Value implements the valuer for PostSeo. marshal the
+// PostSeo when the entity is inserted to the
+// database.
 func (m *PostSeo) Value() (driver.Value, error) {
 	const op = "Domain.PostSeo.Value"
-	j, err := json.Marshal(m)
+	j, err := marshaller(m)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling PostSeo", Operation: op, Err: err}
 	}

@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type (
-	// Redirects defines the data used for redirecting http
+	// Redirect defines the data used for redirecting http
 	// requests.
 	Redirect struct {
 		Id        int       `db:"id" json:"id"` //nolint
@@ -13,6 +13,6 @@ type (
 		CreatedAt time.Time `db:"created_at" json:"created_at"`
 		UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 	}
-	// Redirects represents the slice of Redirect's.
+	// Redirects represents the slice of Redirects.
 	Redirects []Redirect
 )

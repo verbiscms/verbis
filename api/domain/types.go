@@ -17,10 +17,9 @@ type (
 	DBMap map[string]interface{}
 )
 
-// Scan
-//
-// Scanner for DBMap. unmarshal the DBMap when
-// the entity is pulled from the database.
+// Scan implements the scanner for DBMap. unmarshal
+// the DBMap when the entity is pulled from the
+// database.
 func (m DBMap) Scan(value interface{}) error {
 	const op = "Domain.DBMap.Scan"
 	if value == nil {
@@ -37,12 +36,11 @@ func (m DBMap) Scan(value interface{}) error {
 	return nil
 }
 
-// Value
-//
-// Valuer for DBMap. marshal the DBMap when
-// the entity is inserted to the database.
+// Value implements the valuer for DBMap. marshal the
+// DBMap when the entity is inserted to the
+// database.
 func (m DBMap) Value() (driver.Value, error) {
-	const op = "Domain.MediaSizes.DBMap"
+	const op = "Domain.DBMap.Value"
 	if len(m) == 0 {
 		return nil, nil
 	}

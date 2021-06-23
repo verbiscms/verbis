@@ -35,24 +35,18 @@ type (
 		Media         MediaConfig `yaml:"media" json:"media"`
 		Editor        Editor      `yaml:"editor" json:"editor"`
 	}
-
-	// TODO
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
+	// AdminConfig defines the configuration for the SPA.
 	AdminConfig struct {
 		Path                string `yaml:"admin_path,omitempty" json:"admin_path,omitempty"`
 		InactiveSessionTime int    `yaml:"inactive_session_time,omitempty" json:"inactive_session_time,omitempty"`
 	}
-
+	// MediaConfig defines the configuration for any media.
 	MediaConfig struct {
 		UploadPath       string   `yaml:"upload_path" json:"upload_path"`
 		AllowedFileTypes []string `yaml:"allowed_file_types" json:"allowed_file_types"`
 	}
-
+	// Themes represents the slice of Theme structs.
 	Themes []Theme
-
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
 	// Theme defines the information for the currently active
 	// theme.
 	Theme struct {
