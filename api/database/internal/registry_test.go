@@ -6,11 +6,9 @@ package internal
 
 import (
 	"github.com/ainsleyclark/verbis/api/version"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func TestAddMigration(t *testing.T) {
+func (t *InternalTestSuite) TestAddMigration() {
 	tt := map[string]struct {
 		input Migration
 		want  interface{}
@@ -25,7 +23,11 @@ func TestAddMigration(t *testing.T) {
 		},
 		"Nil SemVer": {
 			Migration{Version: "v0.0.1", Stage: version.Major, SemVer: nil},
-			"missing sem ver",
+			nil,
+		},
+		"Bad Version": {
+			Migration{Version: "wrong", Stage: version.Major, SemVer: nil},
+			"malformed version",
 		},
 		"No Stage": {
 			Migration{Version: "v0.0.1"},
@@ -46,21 +48,48 @@ func TestAddMigration(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			defer func() {
 				migrations = make(MigrationRegistry, 0)
 			}()
 			err := AddMigration(&test.input)
 			if err != nil {
-				assert.Contains(t, err.Error(), test.want)
+				t.Contains(err.Error(), test.want)
 				return
 			}
-			assert.Equal(t, test.input, *migrations[0])
+			t.Equal(test.input, *migrations[0])
 		})
 	}
 }
 
-func TestMigrationRegistry_Sort(t *testing.T) {
+func (t *InternalTestSuite) TestMigration_HasCallBack() {
+	tt := map[string]struct {
+		input Migration
+		want  bool
+	}{
+		"Has CallBack": {
+			Migration{CallBackUp: func() error {
+				return nil
+			}, CallBackDown: func() error {
+				return nil
+			}},
+			true,
+		},
+		"No Callback": {
+			Migration{},
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			got := test.input.hasCallBack()
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *InternalTestSuite) TestMigrationRegistry_Sort() {
 	var (
 		v1 = version.Must("v1.0.0")
 		v2 = version.Must("v2.0.0")
@@ -98,10 +127,10 @@ func TestMigrationRegistry_Sort(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			test.input.Sort()
 			for i, v := range test.input {
-				assert.Equal(t, test.want[i].Version, v.Version)
+				t.Equal(test.want[i].Version, v.Version)
 			}
 		})
 	}

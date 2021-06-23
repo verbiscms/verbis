@@ -33,10 +33,7 @@ func (s *Sys) LatestVersion() string {
 // and error obtaining the version.
 func (s *Sys) HasUpdate() bool {
 	remote := version.Must(s.LatestVersion())
-	if version.SemVer.LessThan(remote) {
-		return true
-	}
-	return false
+	return s.version.LessThan(remote)
 }
 
 // Update updates the Verbis executable and runs any DB
@@ -51,6 +48,7 @@ func (s *Sys) Update() (string, error) {
 	ver := s.LatestVersion()
 
 	logger.Info("Attempting to update Verbis to version: " + ver)
+	logger.Info("Updating executable")
 
 	s.updater.Provider = &provider.Github{
 		RepositoryURL: api.Repo,
@@ -66,6 +64,8 @@ func (s *Sys) Update() (string, error) {
 			return "", &errors.Error{Code: errors.INTERNAL, Message: "Error updating Verbis with status code: " + strconv.Itoa(int(code)), Operation: op, Err: err}
 		}
 	}
+
+	logger.Info("Updating database")
 
 	err = s.Driver.Migrate(version.SemVer)
 	if err != nil {

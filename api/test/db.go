@@ -106,9 +106,8 @@ func (t *DBSuite) Reset() {
 	t.mockDriver = db.mockDriver
 }
 
-// RunT
-//
-// Run the DB test.
+// RunT runs the the DB test for the store with Schema
+// being tested.
 func (t *DBSuite) RunT(want, actual interface{}, times ...int) {
 	if len(times) == 1 {
 		t.mockDriver.AssertNumberOfCalls(t.T(), "Schema", times[0])
@@ -121,5 +120,15 @@ func (t *DBSuite) RunT(want, actual interface{}, times ...int) {
 		t.Fail("expectations were not met for mock call: ", err)
 	}
 
+	t.Equal(want, actual)
+}
+
+// RunExpectationsT runs the DB test and asserts the
+// expectations were met.
+func (t *DBSuite) RunExpectationsT(want, actual interface{}) {
+	err := t.Mock.ExpectationsWereMet()
+	if err != nil {
+		t.Fail("expectations were not met for mock call: ", err)
+	}
 	t.Equal(want, actual)
 }

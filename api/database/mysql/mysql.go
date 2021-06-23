@@ -18,9 +18,12 @@ import (
 )
 
 const (
-	//
-	MaxIdleConns = 5
-	MaxOpenConns = 100
+	// MaxIdleConnections represents the maximum amount
+	// of idle connections for MySQL.
+	MaxIdleConnections = 5
+	// MaxOpenConnections represents the maximum amount
+	// of open connections for MySQL.
+	MaxOpenConnections = 100
 )
 
 // MySQL defines the implementation of the
@@ -32,9 +35,7 @@ type MySQL struct {
 	migrator internal.Migrator
 }
 
-// Setup
-//
-// New - Creates a new MySQL instance and returns
+// Setup creates a new MySQL instance and returns
 // a new database driver.
 // Returns errors.INVALID if there was an error establishing a connection or pinging.
 func Setup(env *environment.Env) (*MySQL, error) {
@@ -54,8 +55,8 @@ func Setup(env *environment.Env) (*MySQL, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error pinging database", Operation: op, Err: err}
 	}
 
-	driver.SetMaxIdleConns(MaxIdleConns)
-	driver.SetMaxOpenConns(MaxOpenConns)
+	driver.SetMaxIdleConns(MaxIdleConnections)
+	driver.SetMaxOpenConns(MaxOpenConnections)
 
 	migrator, err := internal.NewMigrator(internal.MySQLDriver, driver)
 	if err != nil {
@@ -68,59 +69,59 @@ func Setup(env *environment.Env) (*MySQL, error) {
 	return &m, nil
 }
 
-// DB
-//
-// Returns the sqlx driver.
+// DB returns the sqlx driver.
 func (m *MySQL) DB() *sqlx.DB {
 	return m.driver
 }
 
-// Schema
-//
-// Returns the schema (blank for MySQL),
+// Schema returns the schema (blank for MySQL),
 func (m *MySQL) Schema() string {
 	return ""
 }
 
-// Builder
-//
-// Returns a new query builder instance.
+// Builder returns a new query builder instance.
 func (m *MySQL) Builder() *builder.Sqlbuilder {
 	return builder.New("mysql")
 }
 
-// Close
-//
-// Closes the MySQL connection.
+// Close closes the MySQL connection.
 func (m *MySQL) Close() error {
 	const op = "MySQL.Close"
-
 	err := m.driver.Close()
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error closing database", Operation: op, Err: err}
 	}
-
 	return nil
 }
 
-// Install
-//
-// Migrate the db by executing the MySQL migration file.
-// Returns errors.INVALID if the sql file could not be located.
-// Returns errors.INTERNAL if the exec command could not be ran.
+// Install migrates the the database by executing the MySQL
+// migration file. The migrator is used to traverse the
+// migrations and install the database so it is
+// full up to date.
+// Returns errors.INTERNAL if the migration failed.
 func (m *MySQL) Install() error {
 	const op = "MySQL.Install"
 	err := m.migrator.Migrate(version.SemVer)
 	if err != nil {
-		return err
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error installing Verbis", Operation: op, Err: err}
 	}
 	return nil
 }
 
-// Tables
-//
-// Runs checks on the Verbis DB installation to see if all
-// the tables exist. If some are missing, a slice of
+// Migrate migrates and updates the database and the file
+// system to the most recent version.
+// Returns errors.INTERNAL if the migration failed.
+func (m *MySQL) Migrate(ver *sm.Version) error {
+	const op = "MySQL.Migrate"
+	err := m.migrator.Migrate(ver)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error migrating", Operation: op, Err: err}
+	}
+	return nil
+}
+
+// Tables Runs checks on the Verbis DB installation to see if
+// all the tables exist. If some are missing, a slice of
 // strings will be returned containing the table
 // name.
 // Returns internal.ErrTableNotFound if a table wasn't found.
@@ -150,9 +151,7 @@ func (m *MySQL) Tables() ([]string, error) {
 	return nil, nil
 }
 
-// Exists
-//
-// CheckExists check's if the database exists.
+// Exists check's if the database exists.
 // Returns errors.INVALID if the database was not found.
 func (m *MySQL) Exists() error {
 	const op = "MySQL.Exists"
@@ -170,8 +169,6 @@ func (m *MySQL) Exists() error {
 // execCommand func for mysqldump
 var execCommand = exec.Command
 
-// Dump
-//
 // Dump the database to file with the given path and
 // file name.
 // Returns errors.INTERNAL if the connection, dump failed.
@@ -204,13 +201,10 @@ func (m *MySQL) Dump(path, filename string) error {
 	return nil
 }
 
-// Drop
-//
 // Drop deletes the database with the environments database name.
 // Returns errors.INTERNAL if the exec command could not be ran.
 func (m *MySQL) Drop() error {
 	const op = "MySQL.Drop"
-
 	_, err := m.driver.Exec("DROP DATABASE " + m.env.DbDatabase + ";")
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error dropping the database with the name: " + m.env.DbDatabase, Operation: op, Err: err}
@@ -218,17 +212,8 @@ func (m *MySQL) Drop() error {
 	return nil
 }
 
-func (m *MySQL) Migrate(version *sm.Version) error {
-	err := m.migrator.Migrate(version)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-// connectString
-//
-// Returns the MySQL database connection string.
+// connectString Returns the MySQL database connection
+// string.
 func (m *MySQL) connectString() string {
 	return m.env.DbUser + ":" + m.env.DbPassword + "@tcp(" + m.env.DbHost + ":" + m.env.DbPort + ")/" + m.env.DbDatabase + "?tls=false&parseTime=true&multiStatements=true"
 }

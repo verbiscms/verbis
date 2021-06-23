@@ -5,7 +5,6 @@
 package database
 
 import (
-	_ "embed"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/database/internal"
@@ -18,20 +17,24 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-// Driver
+// Driver represents the functions and methods for
+// interacting with the Database, which could
+// be MySQL (tested) Postgres (experimental).
 type Driver interface {
 	DB() *sqlx.DB
 	Schema() string
 	Builder() *builder.Sqlbuilder
 	Install() error
+	Migrate(version *version.Version) error
 	Tables() ([]string, error)
 	Dump(path, filename string) error
 	Drop() error
-	Migrate(version *version.Version) error
 }
 
 // New creates a new database driver dependant on the
 // environment.
+// Returns errors.INTERNAL if there there was an error setting up the driver.
+// Returns errors.INVALID if the environment us invalid or the DB could not be pinged.
 func New(env *environment.Env) (Driver, error) {
 	const op = "Database.New"
 
