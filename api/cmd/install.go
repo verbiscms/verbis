@@ -15,11 +15,6 @@ import (
 	"net/url"
 )
 
-// Add child commands
-func init() {
-	//v = validation.New()
-}
-
 var (
 	installCmd = &cobra.Command{
 		Use:   "install",
@@ -33,9 +28,6 @@ database.`,
 )
 
 func Install(cmd *cobra.Command, args []string) {
-	//figure := figure.NewColorFigure("Verbis", "cybermedium", "reset", true)
-	//	figure.Print()
-
 	// Run doctor
 	cfg, db, err := doctor(false)
 	if err != nil {
@@ -81,11 +73,6 @@ func Install(cmd *cobra.Command, args []string) {
 	err = d.Store.Options.Update("site_url", uri)
 	if err != nil {
 		printError(fmt.Sprintf("Error not inserting the site uri: %s", err.Error()))
-	}
-
-	err = d.WebP.Install()
-	if err != nil {
-		printError(fmt.Sprintf("Error downloading WebP executables: %s", err.Error()))
 	}
 
 	// Print success

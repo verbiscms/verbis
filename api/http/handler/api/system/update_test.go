@@ -11,7 +11,7 @@ import (
 	"net/http"
 )
 
-func (t *SystemTestSuite) TestRoles_List() {
+func (t *SystemTestSuite) TestSystem_Update() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -23,7 +23,7 @@ func (t *SystemTestSuite) TestRoles_List() {
 			http.StatusOK,
 			"Verbis updated successfully to version v0.0.1, restarting system....",
 			func(m *mocks.System) {
-				m.On("Update").Return("v0.0.1", nil)
+				m.On("Update", true).Return("v0.0.1", nil)
 			},
 		},
 		"Invalid": {
@@ -31,7 +31,7 @@ func (t *SystemTestSuite) TestRoles_List() {
 			http.StatusBadRequest,
 			"invalid",
 			func(m *mocks.System) {
-				m.On("Update").Return("", &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Update", true).Return("", &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -39,7 +39,7 @@ func (t *SystemTestSuite) TestRoles_List() {
 			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.System) {
-				m.On("Update").Return("", &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Update", true).Return("", &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

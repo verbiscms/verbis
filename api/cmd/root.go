@@ -41,9 +41,9 @@ func init() {
 	rootCmd.AddCommand(doctorCmd)
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(uninstallCmd)
+	rootCmd.AddCommand(updateCmd)
 	rootCmd.AddCommand(dumpCmd)
 	rootCmd.AddCommand(importCmd)
-
 	// Test routes
 	if !api.Production {
 		rootCmd.AddCommand(testCmd)

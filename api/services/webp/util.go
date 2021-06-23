@@ -5,14 +5,11 @@
 package webp
 
 import (
-	"bytes"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/nickalie/go-webpbin"
-	"image"
-	"image/color"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -21,7 +18,6 @@ import (
 // Execer defines methods for WebP images to Convert and
 // Obtain files from the file system.
 type Execer interface {
-	Install() error
 	Accepts(ctx *gin.Context) bool
 	File(g *gin.Context, path string, mime domain.Mime) ([]byte, error)
 	Convert(path string, compression int)
@@ -48,45 +44,8 @@ func New(binPath string) *WebP {
 	}
 }
 
-// Install
-//
-// Installs the WebP executables to the path provided New.
-// Returns errors.INTERNAL if an error occurred
-// downloading.
-func (w *WebP) Install() error {
-	const op = "WebP.Install"
-
-	width := 200
-	height := 100
-
-	img := image.NewRGBA(image.Rectangle{
-		Min: image.Point{},
-		Max: image.Point{X: width, Y: height},
-	})
-
-	// Set color for each pixel.
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
-			if x < width && y < height {
-				img.Set(x, y, color.RGBA{R: 100, G: 200, B: 200, A: 0xff})
-			}
-		}
-	}
-
-	webpbin.Dest(w.binPath)
-
-	b := &bytes.Buffer{}
-	err := webpbin.Encode(b, img)
-
-	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error downloading WebP executables", Operation: op, Err: err}
-	}
-
-	return nil
-}
-
 const (
-	// The WebP header to look for.
+	// Header is the WebP web header to look for.
 	Header = "image/webp"
 )
 
