@@ -57,13 +57,11 @@ export default {
 		doUpdate() {
 			this.updating = true;
 			this.axios.post("/update")
-			.then(res => {
-				this.$noty.success("Successfully updated Verbis, restarting system.")
+			.then(() => {
 				setTimeout(() => {
 					this.$store.dispatch("getSiteConfig")
-				}, 1000);
-				console.log(this.$store.state.site)
-				console.log(res);
+					this.$noty.success("Successfully updated Verbis, restarting system.")
+				}, 2000);
 			})
 			.catch(err => {
 				this.helpers.handleResponse(err);
