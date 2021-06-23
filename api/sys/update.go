@@ -43,7 +43,7 @@ func (s *Sys) HasUpdate() bool {
 //
 // Returns errors.INVALID if Verbis is already up to date.
 // Returns errors.INTERNAL if it could not be updated.
-func (s *Sys) Update() (string, error) {
+func (s *Sys) Update(restart bool) (string, error) {
 	const op = "System.Update"
 
 	ver := s.LatestVersion()
@@ -81,14 +81,16 @@ func (s *Sys) Update() (string, error) {
 
 	logger.Info("Successfully updated Verbis, restarting system...")
 
-	go func() {
-		time.Sleep(1 * time.Second)
-		err := s.Restart()
-		if err != nil {
-			// TODO: Send callback to webhook.
-			logger.WithError(err)
-		}
-	}()
+	if restart {
+		go func() {
+			time.Sleep(1 * time.Second)
+			err := s.Restart()
+			if err != nil {
+				// TODO: Send callback to webhook.
+				logger.WithError(err)
+			}
+		}()
+	}
 
 	return ver, nil
 }

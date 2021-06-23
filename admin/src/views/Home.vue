@@ -22,7 +22,7 @@
 					<Alert v-if="getSite['has_update']" colour="orange" type="warning" :cross="false">
 						<slot>
 							<div class="updater">
-								<p><strong>Verbis update available:</strong> Update to verison {{ getSite['remote_version'] }}</p>
+								<p><strong>Verbis update available:</strong> Update to version {{ getSite['remote_version'] }}</p>
 								<button class="btn" @click="doUpdate" :class="{ 'btn-loading' : updating }">Update</button>
 							</div>
 						</slot>

@@ -14,14 +14,13 @@ import (
 
 // Update
 //
-// TODO, update comments
-// Returns http.StatusOK if the user was created.
-// Returns http.StatusInternalServerError if there was an error creating the user.
-// Returns http.StatusBadRequest if the the validation failed or a user already exists.
+// Returns http.StatusOK if the system updated successfully.
+// Returns http.StatusBadRequest if the system is already updated,
+// Returns http.StatusInternalServerError if the system could not be updated.
 func (s *System) Update(ctx *gin.Context) {
 	const op = "SystemHandler.Update"
 
-	ver, err := s.System.Update()
+	ver, err := s.System.Update(true)
 	if err != nil && errors.Code(err) == errors.INVALID {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return

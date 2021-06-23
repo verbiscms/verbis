@@ -18,7 +18,7 @@ import (
 // Verbis.
 type System interface {
 	Restart() error
-	Update() (string, error)
+	Update(restart bool) (string, error)
 	LatestVersion() string
 	HasUpdate() bool
 }
