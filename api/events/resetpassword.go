@@ -21,7 +21,7 @@ type ResetPassword struct {
 	URL  string
 }
 
-// Creates a new ResetPassword.
+// NewResetPassword creates a new ResetPassword event.
 func NewResetPassword(d *deps.Deps) *ResetPassword {
 	e := event{
 		Subject:           SubjectPrefix + "Reset Password",
@@ -40,7 +40,7 @@ func NewResetPassword(d *deps.Deps) *ResetPassword {
 	}
 }
 
-// Dispatches the ResetPassword event.
+// Dispatch the ResetPassword event.
 func (r *ResetPassword) Dispatch(data interface{}, recipients []string, attachments client.Attachments) error {
 	const op = "Events.ResetPassword.Dispatch"
 

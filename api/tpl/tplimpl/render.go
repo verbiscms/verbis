@@ -18,7 +18,7 @@ import (
 )
 
 // FileHandler function describing the process for obtaining template files.
-type fileHandler func(config tpl.TemplateConfig, template string) (content string, err error)
+type FileHandler func(config tpl.TemplateConfig, template string) (content string, err error)
 
 // DefaultFileHandler
 //
@@ -27,7 +27,7 @@ type fileHandler func(config tpl.TemplateConfig, template string) (content strin
 // engine.
 //
 // Returns errors.TEMPLATE if thee file does not exist or filepath.Abs failed.
-func DefaultFileHandler() fileHandler {
+func DefaultFileHandler() FileHandler {
 	const op = "TemplateEngine.defaultFileHandler"
 
 	return func(config tpl.TemplateConfig, template string) (content string, err error) {

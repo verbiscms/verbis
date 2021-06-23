@@ -22,9 +22,7 @@ type FormSend struct {
 	Values domain.FormValues
 }
 
-// FormSend
-//
-// Creates a new FormSend.
+// NewFormSend creates a new FormSend event.
 func NewFormSend(d *deps.Deps) *FormSend {
 	e := event{
 		Subject:           SubjectPrefix + "Form Submission",
@@ -43,7 +41,7 @@ func NewFormSend(d *deps.Deps) *FormSend {
 	}
 }
 
-// Dispatches the FormSend event.
+// Dispatch the FormSend event.
 func (r *FormSend) Dispatch(data interface{}, recipients []string, attachments client.Attachments) error {
 	const op = "Events.FormSend.Dispatch"
 

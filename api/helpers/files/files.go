@@ -9,9 +9,7 @@ import (
 	"path/filepath"
 )
 
-// Exists
-//
-// Checks if a file exists using os.Stat.
+// Exists checks if a file exists using os.Stat.
 func Exists(filename string) bool {
 	info, err := os.Stat(filename)
 	if os.IsNotExist(err) {

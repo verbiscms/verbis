@@ -36,7 +36,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 		config      tpl.Config
 		name        string
 		data        interface{}
-		fileHandler fileHandler
+		fileHandler FileHandler
 		want        interface{}
 		wantName    string
 	}{
@@ -143,7 +143,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 
 func (t *TplTestSuite) TestExecute_Exists() {
 	tt := map[string]struct {
-		handler fileHandler
+		handler FileHandler
 		want    bool
 	}{
 		"Exists": {

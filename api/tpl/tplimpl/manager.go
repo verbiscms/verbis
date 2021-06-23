@@ -42,7 +42,7 @@ type Execute struct {
 	config      tpl.TemplateConfig
 	tplMap      map[string]*template.Template
 	tplMutex    sync.RWMutex
-	fileHandler fileHandler
+	fileHandler FileHandler
 	funcMap     template.FuncMap
 }
 
