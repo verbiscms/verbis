@@ -45,7 +45,7 @@ func (a *Auth) Login(ctx *gin.Context) {
 
 	user.HidePassword()
 
-	ctx.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true)
+	ctx.SetCookie("verbis-session", user.Token, 172800, "/", "", false, true) //nolint
 
 	api.Respond(ctx, http.StatusOK, "Successfully logged in & session started", user)
 }
