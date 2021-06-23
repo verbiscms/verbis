@@ -11,8 +11,6 @@ import (
 	"time"
 )
 
-// Middleware
-//
 // Middleware is the handler function for logging system
 // application messages, if there was an error or
 // message set, it will be retrieved from the

@@ -103,20 +103,18 @@ func (t *LoggerTestSuite) TestLogger() {
 	}
 }
 
-//func (t *LoggerTestSuite) TestLogger_Fatal() {
-//	buf := t.Setup()
-//
-//	defer func() {
-//		logger = logrus.New()
-//	}()
-//	logger.Fatal = func(args ...interface{}) {
-//
-//	}
-//
-//
-//	Fatal("fatal")
-//	t.Contains(buf.String(), "fatal")
-//}
+func (t *LoggerTestSuite) TestLogger_Fatal() {
+	buf := t.Setup()
+
+	defer func() {
+		logger = logrus.New()
+	}()
+
+	logger.ExitFunc = func(i int) {}
+
+	Fatal("fatal")
+	t.Contains(buf.String(), "fatal")
+}
 
 func (t *LoggerTestSuite) TestLogger_Panic() {
 	buf := t.Setup()
