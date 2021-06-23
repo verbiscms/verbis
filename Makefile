@@ -13,7 +13,7 @@ build-prod:
 .PHONY: build-prod
 
 dist:
-	goreleaser release --skip-publish --rm-dist
+	goreleaser release --rm-dist --snapshot
 .PHONY: dist
 
 version:
