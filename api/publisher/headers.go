@@ -66,7 +66,7 @@ func (c *headers) Cache(g *gin.Context) {
 			if extension == "."+v {
 				cache := ""
 				if request == "max-age" || request == "min-fresh" || request == "max-stale" {
-					cache = fmt.Sprintf("%s=%s, %s", request, strconv.FormatInt(expiration, 10), "public")
+					cache = fmt.Sprintf("%s=%s, %s", request, strconv.FormatInt(expiration, 10), "public") //nolint
 				} else {
 					cache = request
 				}

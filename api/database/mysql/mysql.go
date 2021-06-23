@@ -193,7 +193,7 @@ func (m *MySQL) Dump(path, filename string) error {
 		return &errors.Error{Code: errors.INVALID, Message: "Error writing SQL to file with the path: " + p, Operation: op, Err: err}
 	}
 
-	err = ioutil.WriteFile(p, bytes, 0644)
+	err = ioutil.WriteFile(p, bytes, os.ModePerm)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "No file or directory with the path: " + p, Operation: op, Err: err}
 	}

@@ -28,7 +28,7 @@ func (r *Redirects) Update(ctx *gin.Context) {
 		return
 	}
 
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
+	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64) //nolint
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the redirect", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
