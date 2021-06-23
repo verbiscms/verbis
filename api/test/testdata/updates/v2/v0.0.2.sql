@@ -1,0 +1,1 @@
+UPDATE posts SET title = 'v0.0.2' WHERE id = 1;

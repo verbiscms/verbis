@@ -6,57 +6,75 @@ package sys
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/updater"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/version"
+	sm "github.com/hashicorp/go-version"
+	"github.com/mouuff/go-rocket-update/pkg/provider"
+	"github.com/mouuff/go-rocket-update/pkg/updater"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
 )
 
-type mockPatcherSuccess struct{}
+type mockErrProvider struct{}
 
-func (m *mockPatcherSuccess) HasUpdate() (bool, error) {
-	return true, nil
-}
-
-func (m *mockPatcherSuccess) LatestVersion() (string, error) {
-	return "0.0.1", nil
-}
-
-func (m *mockPatcherSuccess) Update(archive string) (updater.Status, error) {
-	return 1, nil
-}
-
-type mockPatcherError struct{}
-
-func (m *mockPatcherError) HasUpdate() (bool, error) {
-	return false, fmt.Errorf("error")
-}
-
-func (m *mockPatcherError) LatestVersion() (string, error) {
+func (m *mockErrProvider) GetLatestVersion() (string, error) {
 	return "", fmt.Errorf("error")
 }
 
-func (m *mockPatcherError) Update(archive string) (updater.Status, error) {
-	return 1, fmt.Errorf("error")
+func (m *mockErrProvider) Walk(walkFn provider.WalkFunc) error {
+	return nil
+}
+
+func (m *mockErrProvider) Retrieve(srcPath, destPath string) error {
+	return nil
+}
+
+func (m *mockErrProvider) Open() error {
+	return nil
+}
+
+func (m *mockErrProvider) Close() error {
+	return nil
+}
+
+type mockProvider struct{}
+
+func (m *mockProvider) GetLatestVersion() (string, error) {
+	return "v0.0.10", nil
+}
+
+func (m *mockProvider) Walk(walkFn provider.WalkFunc) error {
+	return nil
+}
+
+func (m *mockProvider) Retrieve(srcPath, destPath string) error {
+	return nil
+}
+
+func (m *mockProvider) Open() error {
+	return nil
+}
+
+func (m *mockProvider) Close() error {
+	return nil
 }
 
 func TestSys_LatestVersion(t *testing.T) {
 	logger.SetOutput(ioutil.Discard)
 
 	tt := map[string]struct {
-		patcher updater.Patcher
-		panics  bool
-		want    interface{}
+		input  provider.Provider
+		panics bool
+		want   interface{}
 	}{
 		"Success": {
-			&mockPatcherSuccess{},
+			&mockProvider{},
 			false,
-			"0.0.1",
+			"v0.0.10",
 		},
 		"Error": {
-			&mockPatcherError{},
+			&mockErrProvider{},
 			true,
 			"Error obtaining remote version",
 		},
@@ -64,7 +82,7 @@ func TestSys_LatestVersion(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			s := Sys{updater: test.patcher}
+			s := Sys{updater: &updater.Updater{Provider: test.input}}
 			if test.panics {
 				assert.Panics(t, func() {
 					s.LatestVersion()
@@ -80,62 +98,50 @@ func TestSys_HasUpdate(t *testing.T) {
 	logger.SetOutput(ioutil.Discard)
 
 	tt := map[string]struct {
-		patcher updater.Patcher
-		panics  bool
-		want    interface{}
+		input *sm.Version
+		want  interface{}
 	}{
-		"Success": {
-			&mockPatcherSuccess{},
-			false,
+		"True": {
+			version.Must("v0.0.9"),
 			true,
 		},
-		"Error": {
-			&mockPatcherError{},
-			true,
-			"Error obtaining remote version",
+		"False": {
+			version.Must("v0.0.10"),
+			false,
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			s := Sys{updater: test.patcher}
-			if test.panics {
-				assert.Panics(t, func() {
-					s.HasUpdate()
-				})
-				return
+			s := Sys{
+				version: test.input,
+				updater: &updater.Updater{Provider: &mockProvider{}},
 			}
 			assert.Equal(t, test.want, s.HasUpdate())
 		})
 	}
 }
 
-func TestSys_Update(t *testing.T) {
-	logger.SetOutput(ioutil.Discard)
-
-	tt := map[string]struct {
-		patcher func() updater.Patcher
-		want    interface{}
-	}{
-		"Success": {
-			func() updater.Patcher { return &mockPatcherSuccess{} },
-			"0.0.1",
-		},
-		//"Error": {
-		//	func() updater.Patcher {},
-		//	"0.0.1",
-		//},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			s := Sys{updater: test.patcher()}
-			got, err := s.Update()
-			if err != nil {
-				assert.Contains(t, errors.Message(err), err)
-				return
-			}
-			assert.Equal(t, test.want, got)
-		})
-	}
-}
+//func TestSys_Update(t *testing.T) {
+//	logger.SetOutput(ioutil.Discard)
+//
+//	tt := map[string]struct {
+//		want interface{}
+//	}{
+//		"Success": {
+//			"0.0.1",
+//		},
+//	}
+//
+//	for name, test := range tt {
+//		t.Run(name, func(t *testing.T) {
+//			s := Sys{updater: test.patcher()}
+//			got, err := s.Update()
+//			if err != nil {
+//				assert.Contains(t, errors.Message(err), err)
+//				return
+//			}
+//			assert.Equal(t, test.want, got)
+//		})
+//	}
+//}

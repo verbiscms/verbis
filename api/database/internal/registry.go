@@ -21,7 +21,7 @@ type Migration struct {
 	// files and directories for the current version.
 	CallBackUp CallBackFn
 	// CallBackUp is a function called when the migration
-	// is going down, this is only called if an update
+	// is going Down, this is only called if an update
 	// failed. And must be provided if CallBackUp is
 	// defined.
 	CallBackDown CallBackFn
@@ -37,14 +37,8 @@ type Migration struct {
 }
 
 // CallBackFn is the function type when migrations are
-// running up or down.
+// running up or Down.
 type CallBackFn func() error
-
-// hasCallBack returns true if CallBackUp and CallBackDown
-// are both defined.
-func (m *Migration) hasCallBack() bool {
-	return m.CallBackUp != nil && m.CallBackDown != nil
-}
 
 // MigrationRegistry contains a slice of pointers to each
 // migration.
@@ -58,7 +52,7 @@ var (
 	// ErrCallBackMismatch is returned by AddMigration when
 	// there has been a mismatch in the amount of callbacks
 	// passed. Each migration should have two callbacks,
-	// one up and one down, or none at all.
+	// one up and one Down, or none at all.
 	ErrCallBackMismatch = errors.New("both CallBackUp and CallBackDown must be set")
 )
 
@@ -84,12 +78,22 @@ func AddMigration(m *Migration) error {
 	}
 
 	if m.SemVer == nil {
-		return errors.New("missing sem ver")
+		ver, err := sm.NewVersion(m.Version)
+		if err != nil {
+			return errors.New("malformed version: " + m.Version)
+		}
+		m.SemVer = ver
 	}
 
 	migrations = append(migrations, m)
 
 	return nil
+}
+
+// hasCallBack returns true if CallBackUp and CallBackDown
+// are both defined.
+func (m *Migration) hasCallBack() bool {
+	return m.CallBackUp != nil && m.CallBackDown != nil
 }
 
 // Sort MigrationRegistry is a type that implements the

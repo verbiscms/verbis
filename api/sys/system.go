@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/version"
+	sm "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
 	"github.com/mouuff/go-rocket-update/pkg/updater"
 )
@@ -29,6 +30,7 @@ type Sys struct {
 	ExecutablePath string
 	Driver         database.Driver
 	updater        *updater.Updater
+	version        *sm.Version
 }
 
 // New creates a new system type, used for restarting
@@ -41,6 +43,10 @@ func New(db database.Driver) *Sys {
 		logger.Panic(err)
 	}
 
+	if err != nil {
+		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error creating new Verbis updater", Operation: op, Err: err})
+	}
+
 	u := &updater.Updater{
 		Provider: &provider.Github{
 			RepositoryURL: "https://github.com/ainsleyclark/verbis",
@@ -48,13 +54,10 @@ func New(db database.Driver) *Sys {
 		Version: version.String(),
 	}
 
-	if err != nil {
-		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error creating new Verbis updater", Operation: op, Err: err})
-	}
-
 	return &Sys{
 		Driver:         db,
 		ExecutablePath: exec,
 		updater:        u,
+		version:        version.SemVer,
 	}
 }

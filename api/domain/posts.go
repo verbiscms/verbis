@@ -53,13 +53,12 @@ type (
 	// PostField defines the individual field that is attached
 	// to a post.
 	PostField struct {
-		//Id            int         `db:"id" json:"-"`      //nolint
 		PostId        int         `db:"post_id" json:"-"` //nolint
 		UUID          uuid.UUID   `db:"uuid" json:"uuid" binding:"required"`
 		Type          string      `db:"type" json:"type"`
 		Name          string      `db:"name" json:"name"`
 		Key           string      `db:"field_key" json:"key"`
-		Value         interface{} `json:"-"`
+		Value         interface{} `db:"-" json:"-"`
 		OriginalValue FieldValue  `db:"value" json:"value"`
 	}
 	// PostFields represents the slice of PostField's.
@@ -144,7 +143,7 @@ func (p *Post) IsPublic() bool {
 	return p.Status == "published"
 }
 
-// HasCategory
+// HasResource
 //
 // Determines if a post has any resources attached
 // to it.

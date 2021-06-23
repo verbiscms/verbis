@@ -25,7 +25,6 @@ func init() {
 		Stage:        version.Major,
 		SQLPath:      filepath.Join(Version, "mysql_schema.sql"),
 		PostgresPath: filepath.Join(Version, "postgres_schema.sql"),
-		SemVer:       version.Must("v0.0.0"),
 	})
 	if err != nil {
 		logger.Panic(err)
@@ -44,8 +43,7 @@ func init() {
 			fmt.Println("in dowmn")
 			return nil
 		},
-		Stage:  version.Major,
-		SemVer: version.Must("v0.0.2"),
+		Stage: version.Major,
 	})
 	if err != nil {
 		logger.Panic(err)

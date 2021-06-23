@@ -18,9 +18,7 @@ var (
 	ErrQueryMessage = "Error executing sql query"
 )
 
-// FilterRows
-//
-// filterRows takes in the filters from the params set in http.Params
+// FilterRows takes in the filters from the params set in http.Params
 // If there is no filters set, an empty string will be returned.
 // Returns errors.INVALID if the operator or column name was not found.
 func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]params.Filter, table string) error {
@@ -78,8 +76,8 @@ func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]p
 	return nil
 }
 
-// stripAlphaNum - Strip characters and return alpha numeric string for
-// database processing.
+// stripAlphaNum strips characters and returns an
+// alpha numeric string for database processing.
 func stripAlphaNum(text string) string {
 	reg := regexp.MustCompile("[^a-zA-Z0-9 =<>%.@/!+_']+")
 	return reg.ReplaceAllString(text, "")

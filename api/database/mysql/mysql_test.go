@@ -8,9 +8,12 @@ import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database/builder"
+	"github.com/ainsleyclark/verbis/api/database/internal"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/ainsleyclark/verbis/api/version"
+	sm "github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
@@ -123,33 +126,67 @@ func (t *MySQLTestSuite) TestMySQL_Close() {
 	}
 }
 
+type mockMigratorError struct{}
+
+func (m *mockMigratorError) Migrate(ver *sm.Version) error {
+	return fmt.Errorf("error")
+}
+
+type mockMigrator struct{}
+
+func (m *mockMigrator) Migrate(ver *sm.Version) error {
+	return nil
+}
+
 func (t *MySQLTestSuite) TestMySQL_Install() {
 	tt := map[string]struct {
-		mock func(m sqlmock.Sqlmock)
+		mock internal.Migrator
 		want interface{}
 	}{
 		"Success": {
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(migration)).
-					WillReturnResult(sqlmock.NewResult(int64(1), 1))
-			},
+			&mockMigrator{},
 			nil,
 		},
 		"Error": {
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(migration)).
-					WillReturnError(fmt.Errorf("error"))
-			},
-			"Error executing migration file",
+			&mockMigratorError{},
+			"error",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			m := t.Setup(test.mock)
+			m := MySQL{migrator: test.mock}
 			err := m.Install()
 			if err != nil {
-				t.Contains(errors.Message(err), test.want)
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.Equal(err, test.want)
+		})
+	}
+}
+
+func (t *MySQLTestSuite) TestMySQL_Migrate() {
+	tt := map[string]struct {
+		mock internal.Migrator
+		want interface{}
+	}{
+		"Success": {
+			&mockMigrator{},
+			nil,
+		},
+		"Error": {
+			&mockMigratorError{},
+			"error",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			m := MySQL{migrator: test.mock}
+			err := m.Migrate(version.SemVer)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
 				return
 			}
 			t.Equal(err, test.want)

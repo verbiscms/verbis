@@ -7,89 +7,192 @@ package internal
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/ainsleyclark/verbis/api/version"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/suite"
+	sm "github.com/hashicorp/go-version"
+	"github.com/jmoiron/sqlx"
 	"path/filepath"
-	"testing"
 )
 
-func TestMigrator_Migrate(t *testing.T) {
+func (t *InternalTestSuite) TestNewMigrator() {
 	tt := map[string]struct {
-		input Migration
+		input string
 		want  interface{}
 	}{
-		"Success": {
-			Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1")},
+		"MySQL": {
+			MySQLDriver,
 			nil,
+		},
+		"Postgres": {
+			PostgresDriver,
+			nil,
+		},
+		"Wrong Driver": {
+			"wrong",
+			"wrong driver",
 		},
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			defer func() {
-				migrations = make(MigrationRegistry, 0)
-			}()
-			err := AddMigration(&test.input)
+		t.Run(name, func() {
+			db := &sqlx.DB{}
+			_, err := NewMigrator(test.input, db)
 			if err != nil {
-				assert.Contains(t, err.Error(), test.want)
+				t.Contains(err.Error(), test.want)
 				return
 			}
-			assert.Equal(t, test.input, *migrations[0])
+			t.Equal(test.want, err)
 		})
 	}
 }
 
-// CategoriesTestSuite defines the helper used for
-// category testing.
-type CategoriesTestSuite struct {
-	test.DBSuite
-}
-
-// TestCategories
-//
-// Assert testing has begun.
-func TestCategories(t *testing.T) {
-	suite.Run(t, &CategoriesTestSuite{
-		DBSuite: test.NewDBSuite(t),
-	})
-}
-
-// Setup
-//
-// A helper to obtain a mock categories database
-// for testing.
-func (t *CategoriesTestSuite) Setup(mf func(m sqlmock.Sqlmock)) Migrator {
-	t.Reset()
-	if mf != nil {
-		mf(t.Mock)
-	}
-	return &migrate{
-		down:   nil,
-		Driver: MySQLDriver,
-		DB:     t.DB,
-	}
-}
-
-func (t *CategoriesTestSuite) TestMigrator_Migrate() {
+func (t *InternalTestSuite) TestMigrator_Migrate() {
 	tt := map[string]struct {
-		input  MigrationRegistry
-		mock   func(m sqlmock.Sqlmock)
-		panics bool
-		want   interface{}
+		version *sm.Version
+		input   MigrationRegistry
+		mock    func(m sqlmock.Sqlmock)
+		panics  bool
+		want    interface{}
 	}{
 		"Simple": {
+			sm.Must(sm.NewVersion("v0.0.1")),
 			MigrationRegistry{
-				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "mysql_schema.sql")},
+				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectBegin()
-				m.ExpectExec("hello").
+				m.ExpectExec("UPDATE posts SET title = 'v0.0.0' WHERE id = 1;").
 					WillReturnResult(sqlmock.NewResult(1, 1))
 				m.ExpectCommit()
 			},
 			false,
+			nil,
+		},
+		"Major Versions Mismatch": {
+			sm.Must(sm.NewVersion("v0.0.1")),
+			MigrationRegistry{
+				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
+				&Migration{Version: "v1.0.0", Stage: version.Major, SemVer: version.Must("v1.0.0"), SQLPath: filepath.Join("v1", "v1.0.0.sql")},
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectBegin()
+				m.ExpectExec("UPDATE posts SET title = 'v0.0.0' WHERE id = 1;").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				m.ExpectCommit()
+			},
+			false,
+			nil,
+		},
+		"Can't Migrate": {
+			sm.Must(sm.NewVersion("v1.0.0")),
+			MigrationRegistry{
+				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectBegin()
+				m.ExpectCommit()
+			},
+			false,
+			nil,
+		},
+		"CallBack": {
+			sm.Must(sm.NewVersion("v0.0.1")),
+			MigrationRegistry{
+				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
+					return nil
+				}, CallBackDown: func() error {
+					return nil
+				}},
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectBegin()
+				m.ExpectExec("UPDATE posts SET title = 'v0.0.0' WHERE id = 1;").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				m.ExpectCommit()
+			},
+			false,
+			nil,
+		},
+		"Begin Error": {
+			sm.Must(sm.NewVersion("v0.0.2")),
+			MigrationRegistry{},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectBegin().
+					WillReturnError(fmt.Errorf("error"))
+			},
+			false,
+			fmt.Errorf("error"),
+		},
+		"RollBack Error": {
+			sm.Must(sm.NewVersion("v0.0.1")),
+			MigrationRegistry{
+				&Migration{Version: "v0.0.0", Stage: version.Patch, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectBegin()
+				m.ExpectExec("UPDATE posts SET title = 'v0.0.0' WHERE id = 1;").
+					WillReturnError(fmt.Errorf("error"))
+				m.ExpectRollback().
+					WillReturnError(fmt.Errorf("error"))
+			},
+			true,
+			nil,
+		},
+		"Commit Error": {
+			sm.Must(sm.NewVersion("v0.0.1")),
+			MigrationRegistry{
+				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql")},
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectBegin()
+				m.ExpectExec("UPDATE posts SET title = 'v0.0.0' WHERE id = 1;").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				m.ExpectCommit().
+					WillReturnError(fmt.Errorf("error"))
+			},
+			true,
+			nil,
+		},
+		"CallBackUp Error": {
+			sm.Must(sm.NewVersion("v0.0.1")),
+			MigrationRegistry{
+				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
+					return fmt.Errorf("error")
+				}, CallBackDown: func() error {
+					return nil
+				}},
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectBegin()
+				m.ExpectExec("UPDATE posts SET title = 'v0.0.0' WHERE id = 1;").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				m.ExpectRollback()
+			},
+			false,
+			fmt.Errorf("error"),
+		},
+		"CallBackDown Error": {
+			sm.Must(sm.NewVersion("v0.0.2")),
+			MigrationRegistry{
+				&Migration{Version: "v0.0.0", Stage: version.Major, SemVer: version.Must("v0.0.0"), SQLPath: filepath.Join("v0", "v0.0.0.sql"), CallBackUp: func() error {
+					return nil
+				}, CallBackDown: func() error {
+					return fmt.Errorf("error")
+				}},
+				&Migration{Version: "v0.0.1", Stage: version.Major, SemVer: version.Must("v0.0.1"), SQLPath: filepath.Join("v0", "v0.0.1.sql"), CallBackUp: func() error {
+					return fmt.Errorf("error")
+				}, CallBackDown: func() error {
+					return nil
+				}},
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectBegin()
+				m.ExpectExec("UPDATE posts SET title = 'v0.0.0' WHERE id = 1;").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				m.ExpectExec("UPDATE posts SET title = 'v0.0.1' WHERE id = 1;").
+					WillReturnResult(sqlmock.NewResult(1, 1))
+				m.ExpectRollback()
+			},
+			true,
 			nil,
 		},
 	}
@@ -97,16 +200,67 @@ func (t *CategoriesTestSuite) TestMigrator_Migrate() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			m := t.Setup(test.mock)
-			var err error
+
+			migrations = test.input
+			defer func() {
+				migrations = make(MigrationRegistry, 0)
+			}()
+
 			if test.panics {
 				t.Panics(func() {
-					err := m.Migrate(version.Must("v0.0.1"))
-					fmt.Println(err)
-					t.RunT(err, test.want)
+					m.Migrate(test.version) //nolint
 				})
 				return
 			}
-			t.RunT(err, test.want)
+
+			err := m.Migrate(test.version)
+			t.RunExpectationsT(err, test.want)
+		})
+	}
+}
+
+func (t *InternalTestSuite) TestMigrator_CanMigrate() {
+	tt := map[string]struct {
+		base    *sm.Version
+		migrate *sm.Version
+		want    interface{}
+	}{
+		"Can Migrate": {
+			sm.Must(sm.NewVersion("v0.0.5")),
+			sm.Must(sm.NewVersion("v0.0.2")),
+			true,
+		},
+		"Can Migrate Major": {
+			sm.Must(sm.NewVersion("v1.0.1")),
+			sm.Must(sm.NewVersion("v1.0.0")),
+			true,
+		},
+		"Major Version": {
+			sm.Must(sm.NewVersion("v0.0.1")),
+			sm.Must(sm.NewVersion("v1.0.2")),
+			false,
+		},
+		"Major Version Zero": {
+			sm.Must(sm.NewVersion("v0.0.1")),
+			sm.Must(sm.NewVersion("v1.0.0")),
+			false,
+		},
+		"Equal": {
+			sm.Must(sm.NewVersion("v0.0.9")),
+			sm.Must(sm.NewVersion("v0.0.9")),
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			m := migrate{}
+			canMigrate, err := m.canMigrate(test.base, test.migrate)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.Equal(test.want, canMigrate)
 		})
 	}
 }

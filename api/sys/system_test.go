@@ -7,6 +7,7 @@ package sys
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/logger"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/database"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
@@ -67,12 +68,12 @@ func TestNew(t *testing.T) {
 
 			if test.panic {
 				assert.Panics(t, func() {
-					New()
+					New(&mocks.Driver{})
 				})
 				return
 			}
 
-			got := New()
+			got := New(&mocks.Driver{})
 			assert.Equal(t, test.want, got.ExecutablePath)
 		})
 	}
