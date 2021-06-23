@@ -5,6 +5,7 @@
 package environment
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/sirupsen/logrus"
@@ -24,16 +25,12 @@ type EnvTestSuite struct {
 	originalEnv []byte
 }
 
-// TestEnv
-//
-// Assert testing has begun.
+// TestEnv asserts testing has begun.
 func TestEnv(t *testing.T) {
 	suite.Run(t, new(EnvTestSuite))
 }
 
-// SetupSuite
-//
-// Reassign API path for testing.
+// SetupSuite reassigns API path for testing.
 func (t *EnvTestSuite) SetupSuite() {
 	logrus.SetOutput(ioutil.Discard)
 	wd, err := os.Getwd()
@@ -42,11 +39,9 @@ func (t *EnvTestSuite) SetupSuite() {
 	t.envPath = t.apiPath + "/test/testdata/env" + string(os.PathSeparator) + ".env"
 }
 
-// ChangePath
-//
-// Assigns a new path to the test suite and returns a
-// teardown function to set the original back to
-// what is was before testing.
+// ChangePath Assigns a new path to the test suite and
+// returns a teardown function to set the original
+// back to what is was before testing.
 func (t *EnvTestSuite) ChangePath(path string) func() {
 	basePathOrig := basePath
 	fn := func() {
@@ -56,9 +51,7 @@ func (t *EnvTestSuite) ChangePath(path string) func() {
 	return fn
 }
 
-// Original
-//
-// Saves the original .env test file in bytes.
+// Original saves the original .env test file in bytes.
 func (t *EnvTestSuite) Original() {
 	file, err := ioutil.ReadFile(t.envPath)
 	if err != nil {
@@ -67,9 +60,7 @@ func (t *EnvTestSuite) Original() {
 	t.originalEnv = file
 }
 
-// Overwrite
-//
-// Overwrites the original .env test file.
+// Overwrite the original .env test file.
 func (t *EnvTestSuite) Overwrite() {
 	file, err := os.Create(t.envPath)
 	if err != nil {
@@ -166,7 +157,7 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 	}
 }
 
-func (t *EnvTestSuite) TestEnv_Write() {
+func (t *EnvTestSuite) TestEnv_Set() {
 	tt := map[string]struct {
 		key   string
 		value interface{}
@@ -211,6 +202,25 @@ func (t *EnvTestSuite) TestEnv_Write() {
 			t.Nil(err)
 		})
 	}
+}
+
+func (t *EnvTestSuite) TestEnv_SetError() {
+	teardown := t.ChangePath("/test/testdata/env")
+	defer teardown()
+
+	orig := write
+	defer func() { write = orig }()
+	write = func(envMap map[string]string, filename string) error {
+		return fmt.Errorf("error")
+	}
+
+	env := &Env{}
+	err := env.Set("key", "value")
+	if err == nil {
+		t.Fail("error should not be nil")
+		return
+	}
+	t.Contains(errors.Message(err), "Error writing env file with the path")
 }
 
 func (t *EnvTestSuite) TestEnv_Port() {

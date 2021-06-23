@@ -21,7 +21,7 @@ func TestError_Error(t *testing.T) {
 		},
 		"Nil Err": {
 			&Error{Code: INTERNAL, Message: "test", Operation: "", Err: nil},
-			"<config> test",
+			"<internal> test",
 		},
 	}
 
@@ -39,7 +39,7 @@ func TestError_Code(t *testing.T) {
 	}{
 		"Normal": {
 			&Error{Code: INTERNAL, Message: "test", Operation: "op", Err: fmt.Errorf("err")},
-			"config",
+			"internal",
 		},
 		"Nil Input": {
 			nil,
@@ -47,7 +47,7 @@ func TestError_Code(t *testing.T) {
 		},
 		"Nil Code": {
 			&Error{Code: "", Message: "test", Operation: "op", Err: fmt.Errorf("err")},
-			"config",
+			"internal",
 		},
 	}
 

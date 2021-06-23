@@ -70,7 +70,7 @@ func TestFormValues_JSON(t *testing.T) {
 		},
 		"Error": {
 			FormValues{
-				"test": make(chan []byte, 0),
+				"test": make(chan []byte),
 			},
 			"Error processing the form fields for storing",
 		},
