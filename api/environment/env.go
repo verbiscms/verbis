@@ -18,7 +18,6 @@ import (
 )
 
 // Env defines the environment variables set in the .env file.
-//nolint
 type Env struct {
 
 	// Prod, production or dev.
@@ -31,25 +30,25 @@ type Env struct {
 	AppPort string `json:"APP_PORT" binding:"required"`
 
 	// The database port.
-	DbDriver string `json:"DB_DRIVER" binding:"required"`
+	DbDriver string `json:"DB_DRIVER" binding:"required"` //nolint
 
 	// The database host (IP) for the store.
-	DbHost string `json:"DB_HOST" binding:"required"`
+	DbHost string `json:"DB_HOST" binding:"required"` //nolint
 
 	// The database port for the store.
-	DbPort string `json:"DB_PORT" binding:"required"`
+	DbPort string `json:"DB_PORT" binding:"required"` //nolint
 
 	// The database name.
-	DbDatabase string `json:"DB_DATABASE" binding:"required"`
+	DbDatabase string `json:"DB_DATABASE" binding:"required"` //nolint
 
 	// The database user name.
-	DbUser string `json:"DB_USERNAME" binding:"required"`
+	DbUser string `json:"DB_USERNAME" binding:"required"` //nolint
 
 	// The database port.
-	DbPassword string `json:"DB_PASSWORD" binding:"required"`
+	DbPassword string `json:"DB_PASSWORD" binding:"required"` //nolint
 
 	// The database port.
-	DbSchema string `json:"DB_SCHEMA"`
+	DbSchema string `json:"DB_SCHEMA"` //nolint
 
 	// The database port.
 	MailDriver string `json:"MAIL_DRIVER"`
@@ -80,10 +79,10 @@ type Env struct {
 }
 
 var (
-	// The absolute path of the Verbis project, where the
-	// .env is stored.
+	// basePath is the absolute path of the Verbis project,
+	// where the .env is stored.
 	basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-	// The environment file extension.
+	// envExt is the environment file extension.
 	envExt = ".env"
 )
 
@@ -93,20 +92,15 @@ const (
 	DefaultPort = 5000
 )
 
-// Load
-//
 // Load populates environment, loads and validates the
 // environment file.
-//
 // Returns errors.INVALID if the env file failed to load.
 func Load() (*Env, error) {
 	const op = "environment.Load"
-
 	err := godotenv.Load(basePath + "/" + envExt)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not load the .env file", Operation: op, Err: err}
 	}
-
 	return &Env{
 		AppEnv:          os.Getenv("APP_ENV"),
 		AppDebug:        os.Getenv("APP_DEBUG"),
@@ -130,9 +124,7 @@ func Load() (*Env, error) {
 	}, nil
 }
 
-// Validate
-//
-// Validates the environment file for missing keys, if
+// Validate the environment file for missing keys, if
 // there are no validation errors, nil will be
 // returned.
 func (e *Env) Validate() validation.Errors {
@@ -145,9 +137,10 @@ func (e *Env) Validate() validation.Errors {
 	return nil
 }
 
-// Set
-//
-// Accepts a key, value pair and writes to the .env
+// write is the env write function.
+var write = godotenv.Write
+
+// Set accepts a key, value pair and writes to the .env
 // file when installing.
 func (e *Env) Set(key string, value interface{}) error {
 	const op = "Env.Set"
@@ -165,7 +158,7 @@ func (e *Env) Set(key string, value interface{}) error {
 
 	env[key] = val
 
-	err = godotenv.Write(env, path)
+	err = write(env, path)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error writing env file with the path " + path, Operation: op, Err: err}
 	}
@@ -173,9 +166,7 @@ func (e *Env) Set(key string, value interface{}) error {
 	return nil
 }
 
-// Port
-//
-// Returns the env port as an integer, if the strconv
+// Port returns the env port as an integer, if the strconv
 // produced an error, the default port of 5000 will
 // be used,
 func (e *Env) Port() int {
@@ -188,16 +179,14 @@ func (e *Env) Port() int {
 	return port
 }
 
-// IsProduction
-//
-// If the application is set to production.
+// IsProduction returns true if the application is set to
+// production.
 func (e *Env) IsProduction() bool {
 	return e.AppEnv == "production" || e.AppEnv == "prod"
 }
 
-// IsDebug
-//
-// If the application is set to debug.
+// IsDebug returns true if the application is set to
+// debug.
 func (e *Env) IsDebug() bool {
 	return e.AppDebug != "false"
 }

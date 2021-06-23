@@ -12,14 +12,20 @@ import (
 
 // Application error codes.
 const (
-	CONFLICT = "conflict"  // Action cannot be performed
-	INTERNAL = "config"    // Internal error
-	INVALID  = "invalid"   // Validation failed
-	NOTFOUND = "not_found" // Entity does not exist
-	TEMPLATE = "template"  // Templating error
+	// CONFLICT - An action cannot be performed.
+	CONFLICT = "conflict"
+	// INTERNAL - Error within Verbis
+	INTERNAL = "internal" // Internal error
+	// INVALID - Validation failed
+	INVALID = "invalid" // Validation failed
+	// NOTFOUND - Entity does not exist
+	NOTFOUND = "not_found"
+	// TEMPLATE - Templating error
+	TEMPLATE = "template"
 )
 
-// Global Error message when no message has been found.
+// GlobalError is a general message when no error message
+// has been found.
 const GlobalError = "An error has occurred."
 
 // Error defines a standard application error.
@@ -30,9 +36,8 @@ type Error struct {
 	Err       error  `json:"error"`
 }
 
-// Error
-//
-// Returns the string representation of the error message.
+// Error returns the string representation of the error
+// message.
 func (e *Error) Error() string {
 	var buf bytes.Buffer
 
@@ -55,9 +60,7 @@ func (e *Error) Error() string {
 	return buf.String()
 }
 
-// Code
-//
-// Returns the code of the root error, if available.
+// Code returns the code of the root error, if available.
 // Otherwise returns INTERNAL.
 func Code(err error) string {
 	if err == nil {
@@ -70,10 +73,8 @@ func Code(err error) string {
 	return INTERNAL
 }
 
-// Message
-//
-// Returns the human-readable message of the error, if
-// available. Otherwise returns a generic error
+// Message returns the human-readable message of the error,
+// if available. Otherwise returns a generic error
 // message.
 func Message(err error) string {
 	if err == nil {
@@ -83,14 +84,11 @@ func Message(err error) string {
 	} else if ok && e.Err != nil {
 		return Message(e.Err)
 	}
-	fmt.Println(err.Error())
 	return GlobalError
 }
 
-// ToError
-//
-// Returns a Verbis error from input. If The type is
-// not of type Error, nil will be returned.
+// ToError Returns a Verbis error from input. If The type
+// is not of type Error, nil will be returned.
 func ToError(err interface{}) *Error {
 	switch v := err.(type) {
 	case *Error:
@@ -106,9 +104,7 @@ func ToError(err interface{}) *Error {
 	}
 }
 
-// New
-//
-// Is a wrapper for the stdlib new function.
+// New is a wrapper for the stdlib new function.
 func New(text string) error {
 	return errors.New(text)
 }
