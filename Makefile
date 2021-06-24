@@ -47,6 +47,9 @@ cover: test
 
 # Github Actions
 ci:
+	rm -rf admin/dist
+	mkdir admin/dist
+	touch admin/dist/.gitkeep
 	$(MAKE) format
 	$(MAKE) test
 .PHONY: ci
