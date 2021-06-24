@@ -37,7 +37,7 @@ lint:
 .PHONY: lint
 
 test:
-	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test)
+	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer)
 .PHONY: test
 
 test-v:
