@@ -41,9 +41,8 @@ pnpm-debug.log*
 
 # Verbis specific
 /storage/uploads
-dist/
-dist
 dist/**
+!admin/dist/.gitkeep
 verbisexec
 verbisexec.old
 *blob.go
