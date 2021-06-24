@@ -28,6 +28,13 @@ format:
 	go fmt ./api/...
 .PHONY: format
 
+ci:
+	$(MAKE) format
+	$(MAKE) lint
+	go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
+
+.PHONY: ci
+
 mock:
 	cd api && rm -rf mocks && mockery --all --keeptree
 .PHONY: mock
