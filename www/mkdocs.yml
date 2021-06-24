@@ -1,0 +1,5 @@
+site_name: Verbis
+site_url: https://verbiscms.com/
+
+theme:
+    name: material
