@@ -29,8 +29,7 @@ format:
 .PHONY: format
 
 ci:
-	$(MAKE) format
-	$(MAKE) lint
+	go fmt ./api/...
 	go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
 
 .PHONY: ci
