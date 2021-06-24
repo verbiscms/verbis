@@ -27,7 +27,7 @@ func (t *LoggerTestSuite) TestHandler() {
 			&errors.Error{Code: errors.INTERNAL, Message: "message", Operation: "logger.Log", Err: fmt.Errorf("err")},
 			nil,
 			200,
-			"200 | [INFO]  | 192.0.2.1 |   GET    \"/test\" | [code] config [msg] message [op] logger.Log [error] err\n",
+			"200 | [INFO]  | 192.0.2.1 |   GET    \"/test\" | [code] internal [msg] message [op] logger.Log [error] err",
 		},
 		"Message": {
 			nil,
