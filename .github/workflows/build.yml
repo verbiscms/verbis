@@ -7,17 +7,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - 
+    -
       uses: actions/checkout@v2
-    - 
+    -
       name: Set up Go
       uses: actions/setup-go@v2
       with:
         go-version: 1.16
-    - 
-      name: Run coverage
-      run: go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test) -coverprofile=coverage.out -covermode=atomic
-    - 
+    -
+      name: Run Tests
+      run: make ci
+    -
       name: Upload coverage to Codecov
       run: bash <(curl -s https://codecov.io/bash)
     -
