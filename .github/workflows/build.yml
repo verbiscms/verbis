@@ -1,25 +1,19 @@
 name: Build
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 jobs:
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-    -
-      uses: actions/checkout@v2
-    -
-      name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.16
-    -
-      name: Run Tests
-      run: make ci
-    -
-      name: Upload coverage to Codecov
-      run: bash <(curl -s https://codecov.io/bash)
-    -
-      name: Diff
-      run: git diff
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v2
+            -   name: Set up Go
+                uses: actions/setup-go@v2
+                with:
+                    go-version: 1.16
+        -   name: Run Tests
+            run: make ci
+        -   name: Upload coverage to Codecov
+            run: bash <(curl -s https://codecov.io/bash)
+        -   name: Diff
+            run: git diff
