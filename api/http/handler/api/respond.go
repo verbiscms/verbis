@@ -44,10 +44,9 @@ type ErrorJSON struct {
 	Errors validation.Errors `json:"errors"`
 }
 
-// Respond
-//
-// Returns RespondJSON and sends back the main data for
-// use with the API. Returns status, message and data.
+// Respond returns RespondJSON and sends back the main
+// data for use with the API. Returns status, message
+// and data.
 func Respond(ctx *gin.Context, status int, message string, data interface{}, p ...*pagination.Pagination) {
 	ctx.Set("verbis_message", message)
 
@@ -67,10 +66,8 @@ func Respond(ctx *gin.Context, status int, message string, data interface{}, p .
 	})
 }
 
-// AbortJSON
-//
-// Returns RespondJSON and aborts the request with given
-// status, message and data.
+// AbortJSON returns RespondJSON and aborts the request
+// with given status, message and data.
 func AbortJSON(ctx *gin.Context, status int, message string, data interface{}) {
 	hasError := false
 	if status != http.StatusOK {
@@ -88,13 +85,11 @@ func AbortJSON(ctx *gin.Context, status int, message string, data interface{}) {
 	})
 }
 
-// checkResponseData
-//
-// Checks what type of data is passed and processes it
-// accordingly. errors, empty slices & interfaces as
-// well as validation. Returns the original data
-// if the type passed is not of type error or
-// nil
+// checkResponseData Checks what type of data is passed
+// and processes it accordingly. errors, empty slices
+// & interfaces as well as validation. Returns the
+// original data if the type passed is not of
+// type error or nil
 func checkResponseData(ctx *gin.Context, data interface{}) interface{} {
 	switch v := data.(type) {
 	case nil:
