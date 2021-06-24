@@ -1,54 +1,66 @@
 VER=`cat VERSION`
 
+# Build
 build:
 	go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=false' -X 'github.com/ainsleyclark/verbis/api/version.Version=$(VER)'"
 .PHONY: build
 
+# Builds and serves
 serve:
 	$(MAKE) build && ./verbisexec start
 .PHONY: serve
 
+# Builds Verbis for production
 build-prod:
 	go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=true' -X 'github.com/ainsleyclark/verbis/api/version.Version=$(VER)'"
 .PHONY: build-prod
 
+# Creates and build dist folder
 dist:
 	goreleaser release --rm-dist --snapshot
 .PHONY: dist
 
+# Echo the current versnion
 version:
 	echo $(VER)
 .PHONY: version
 
+# Release verbis, expects commit message
 release:
 	./bin/release.sh
 .PHONY: release
 
+# Run gofmt in ./api...
 format:
 	go fmt ./api/...
 .PHONY: format
 
-ci:
-	go fmt ./api/...
-	go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
+# Test uses race and coverage
+test:
+	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
+.PHONY: test
 
+# Run all the tests and opens the coverage report
+cover: test
+	go tool cover -html=coverage.out
+.PHONY: cover
+
+# Github Actions
+ci:
+	$(MAKE) format
+	$(MAKE) test
 .PHONY: ci
 
+
+# Make mocks keeping directory tree
 mock:
 	cd api && rm -rf mocks && mockery --all --keeptree
 .PHONY: mock
 
+# Run linter
 lint:
 	golangci-lint run ./api/...
 .PHONY: lint
-
-test:
-	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer)
-.PHONY: test
-
-test-v:
-	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/) -v
-.PHONY: test-v
 
 # Show to-do items per file.
 todo:
@@ -62,6 +74,7 @@ todo:
 		-nRo -E ' TODO:.*|SkipNow' .
 .PHONY: todo
 
+# Make format, lint and test
 all:
 	$(MAKE) format
 	$(MAKE) lint
