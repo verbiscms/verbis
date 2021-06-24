@@ -14,6 +14,8 @@ jobs:
         -   name: Run Tests
             run: make ci
         -   name: Upload coverage to Codecov
-            run: bash <(curl -s https://codecov.io/bash)
+            uses: codecov/codecov-action@v1
+            with:
+                file: ./coverage.out
         -   name: Diff
             run: git diff
