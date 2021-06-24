@@ -115,6 +115,18 @@ func (t *APITestSuite) TestRespond() {
 				Data:    map[string]interface{}{"errors": interface{}(nil)},
 			},
 		},
+		"Verbis Error - Not Invalid": {
+			gohttp.StatusBadRequest,
+			"message",
+			&errors.Error{Code: errors.CONFLICT, Err: validator.ValidationErrors{}},
+			nil,
+			RespondJSON{
+				Status:  gohttp.StatusBadRequest,
+				Error:   true,
+				Message: "message",
+				Data:    map[string]interface{}{},
+			},
+		},
 		"Verbis Error Nil": {
 			gohttp.StatusBadRequest,
 			"message",
@@ -177,6 +189,66 @@ func (t *APITestSuite) TestRespond() {
 			} else {
 				t.Nil(test.want.Meta.Pagination, respond.Meta.Pagination)
 			}
+
+			t.Equal(test.want.Status, respond.Status)
+			t.Equal(test.want.Error, respond.Error)
+			t.Equal(test.want.Message, respond.Message)
+			t.Equal(test.want.Data, respond.Data)
+			t.Equal(t.Recorder.Header().Get(version.Header), version.Version)
+
+			t.Reset()
+		})
+	}
+}
+
+func (t *APITestSuite) TestAbortJSON() {
+	tt := map[string]struct {
+		status     int
+		message    string
+		data       interface{}
+		want       RespondJSON
+	}{
+		"With Data": {
+			gohttp.StatusOK,
+			"message",
+			map[string]interface{}{"test": "test"},
+			RespondJSON{
+				Status:  gohttp.StatusOK,
+				Error:   false,
+				Message: "message",
+				Data:   map[string]interface{}{"test": "test"},
+			},
+		},
+		"Nil Data": {
+			gohttp.StatusOK,
+			"message",
+			nil,
+			RespondJSON{
+				Status:  gohttp.StatusOK,
+				Error:   false,
+				Message: "message",
+				Data:    map[string]interface{}{},
+			},
+		},
+		"Error": {
+			gohttp.StatusBadRequest,
+			"message",
+			nil,
+			RespondJSON{
+				Status:  gohttp.StatusBadRequest,
+				Error:   true,
+				Message: "message",
+				Data:    map[string]interface{}{},
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.RequestAndServe(gohttp.MethodGet, "/respond", "/respond", nil, func(ctx *gin.Context) {
+				AbortJSON(ctx, test.status, test.message, test.data)
+			})
+			respond, _ := t.RespondData()
 
 			t.Equal(test.want.Status, respond.Status)
 			t.Equal(test.want.Error, respond.Error)
