@@ -7,7 +7,6 @@ package admin
 import "embed"
 
 var (
-	// nolint
 	//go:embed dist/*
 	SPA embed.FS
 )
