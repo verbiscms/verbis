@@ -41,7 +41,7 @@ pnpm-debug.log*
 
 # Verbis specific
 /storage/uploads
-dist/**
+/dist/*
 admin/dist/*
 !admin/dist/.gitkeep
 verbisexec
