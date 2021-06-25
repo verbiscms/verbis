@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/services/media/image"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/google/uuid"
 	"io"
@@ -20,9 +21,8 @@ import (
 	"time"
 )
 
-// uploader
-//
-// Defines the helper for uploading media items.
+// uploader defines the helper for uploading media
+// items.
 type uploader struct {
 	File       multipart.File
 	Options    *domain.Options
@@ -33,20 +33,16 @@ type uploader struct {
 	Extension  string
 	Size       int64
 	Mime       domain.Mime
-	Resizer    Resizer
+	Resizer    image.Resizer
 	WebP       webp.Execer
 }
 
-// Save
-//
-// Obtains the directory of where the file should be saved
-// cleans the file name and saves the original and
+// Save obtains the directory of where the file should be
+// saved cleans the file name and saves the original and
 // resized (images) media item. ToWebp is
-// called concurrently to convert images
-// to .webp.
+// called concurrently to convert
+// images to .webp.
 func (u *uploader) Save() (domain.Media, error) {
-	const op = "Media.Uploader.Save"
-
 	// Obtain the file path.
 	filePath, err := u.Dir()
 	if err != nil {
@@ -89,10 +85,8 @@ func (u *uploader) Save() (domain.Media, error) {
 	return m, nil
 }
 
-// Dir
-//
-// Returns the directory of where the media file should be
-// uploaded. If the options allow for organising media
+// Dir returns the directory of where the media file should
+// be uploaded. If the options allow for organising media
 // by date, a date path will be created if it does
 // not exist, for example '2020/01', otherwise
 // it returns an empty string.
@@ -109,7 +103,7 @@ func (u *uploader) Dir() (string, error) {
 
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) {
-		err := os.MkdirAll(path, os.ModePerm)
+		err = os.MkdirAll(path, os.ModePerm)
 		if err != nil {
 			return "", &errors.Error{Code: errors.INVALID, Message: "Error creating media uploads folder with the path: " + path, Operation: op, Err: err}
 		}
@@ -118,11 +112,9 @@ func (u *uploader) Dir() (string, error) {
 	return datePath, nil
 }
 
-// CleanFileName
-//
-// Returns a cleaned version of the filename by removing
-// any unnecessary characters. If the filename already
-// exists, a version number will be added.
+// CleanFileName returns a cleaned version of the filename
+// by removing any unnecessary characters. If the filename
+// already exists, a version number will be added.
 func (u *uploader) CleanFileName() string {
 	name := files.RemoveFileExtension(u.FileName)
 
@@ -151,10 +143,8 @@ func (u *uploader) CleanFileName() string {
 	return cleanedFile
 }
 
-// SaveOriginal
-//
-// Saves the original file to disk and returns a new UUID
-// when it has been saved successfully.
+// SaveOriginal saves the original file to disk and returns
+// a new UUID when it has been saved successfully.
 // Returns errors.INTERNAL if the file could not be copied
 // or created.
 func (u *uploader) SaveOriginal(path string) (uuid.UUID, error) {
@@ -177,12 +167,10 @@ func (u *uploader) SaveOriginal(path string) (uuid.UUID, error) {
 	return key, err
 }
 
-// Resize
-//
-// Ranges over the media sizes stored in the options and
-// decodes, resizes and saves the media size.
-// Returns nil, (with no error) if the media item can not
-// be resized.
+// Resize ranges over the media sizes stored in the
+// options and decodes, resizes and saves the
+// media size.
+// Returns nil, (with no error) if the media item can not be resized.
 func (u *uploader) Resize(name, path string) (domain.MediaSizes, error) {
 	if !u.Mime.CanResize() {
 		return nil, nil
@@ -202,7 +190,7 @@ func (u *uploader) Resize(name, path string) (domain.MediaSizes, error) {
 
 		// Resize and save if the file is a JPG.
 		if u.Mime.IsJPG() {
-			j := JPG{File: u.File}
+			j := image.JPG{File: u.File}
 			err := u.Resizer.Resize(&j, localPath, size, comp)
 			if err != nil {
 				return nil, err
@@ -211,7 +199,7 @@ func (u *uploader) Resize(name, path string) (domain.MediaSizes, error) {
 
 		// Resize and save if the file is a PNG.
 		if u.Mime.IsPNG() {
-			p := PNG{File: u.File}
+			p := image.PNG{File: u.File}
 			err := u.Resizer.Resize(&p, localPath, size, comp)
 			if err != nil {
 				return nil, err
@@ -235,26 +223,23 @@ func (u *uploader) Resize(name, path string) (domain.MediaSizes, error) {
 	return savedSizes, nil
 }
 
-// URL
-//
-// Get the public url of the file according to date and
-// month if the organise year variable in the config
+// URL gets the public url of the file according to date
+// and month if the organise year variable in the config
 // is set to true. If false the function will
 // return the public uploads folder
 // by default.
 func (u *uploader) URL() string {
+	path := "/" + strings.ReplaceAll(u.Config.Media.UploadPath, "/", "")
 	if !u.Options.MediaOrganiseDate {
-		return u.Config.Media.UploadPath
+		return path
 	} else {
 		t := time.Now()
-		return u.Config.Media.UploadPath + "/" + t.Format("2006") + "/" + t.Format("01")
+		return path + "/" + t.Format("2006") + "/" + t.Format("01")
 	}
 }
 
-// FileSize
-//
-// Obtains the filesize of the path given, if the path
-// does not exist, 0 will be returned.
+// FileSize obtains the filesize of the path given, if the
+// path does not exist, 0 will be returned.
 func (u *uploader) FileSize(path string) int64 {
 	fi, err := os.Stat(path)
 	if err != nil {
@@ -263,10 +248,8 @@ func (u *uploader) FileSize(path string) int64 {
 	return fi.Size()
 }
 
-// ToWebP
-//
-// Checks to see if the media is a PNG or JPG and then
-// ranges over the possible files of the media item
+// ToWebP Checks to see if the media is a PNG or JPG and
+// then ranges over the possible files of the media item
 // and converts the images to webp. If the file
 // exists, and an error occurred, it will be
 // logged.

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
 	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
@@ -81,6 +82,18 @@ func (t *FormsTestSuite) TestStore_FindByUUID() {
 			func(f *fields.Repository, s *submissions.Repository) {
 				f.On("Find", form.Id).Return(form.Fields, nil)
 				s.On("Find", form.Id).Return(form.Submissions, nil)
+			},
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "name"}).
+					AddRow(form.Id, form.Name)
+				m.ExpectQuery(regexp.QuoteMeta(FindByUUIDQuery)).
+					WillReturnRows(rows)
+			},
+		},
+		"Find Error": {
+			"error",
+			func(f *fields.Repository, s *submissions.Repository) {
+				f.On("Find", form.Id).Return(domain.FormFields{}, &errors.Error{Message: "error"})
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name"}).

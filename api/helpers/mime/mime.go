@@ -9,18 +9,14 @@ import (
 	"strings"
 )
 
-// IsValidMime
-//
-// Checks a whitelist of MIME types and returns true if
-// the file is in the whitelist.
+// IsValidMime checks a whitelist of MIME types and
+// returns true if the file is in the whitelist.
 func IsValidMime(allowed []string, mime string) bool {
 	return mimetype.EqualsAny(mime, allowed...)
 }
 
-// TypeByExtension
-//
-// Returns the content type based on the extension of the
-// file.
+// TypeByExtension returns the content type based on the
+// extension of the file.
 func TypeByExtension(extension string) string {
 	trimmed := strings.ReplaceAll(extension, ".", "")
 	return Types[strings.ToLower(trimmed)]

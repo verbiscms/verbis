@@ -54,7 +54,6 @@ ci:
 	$(MAKE) test
 .PHONY: ci
 
-
 # Make mocks keeping directory tree
 mock:
 	cd api && rm -rf mocks && mockery --all --keeptree
