@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"os"
@@ -59,6 +60,11 @@ func (t *ThemeTestSuite) SetupSuite() {
 
 	apiPath := filepath.Join(filepath.Dir(wd), "../")
 	t.apiPath = apiPath
+}
+
+func TestNew(t *testing.T) {
+	got := New()
+	assert.NotNil(t, got)
 }
 
 func (t *ThemeTestSuite) TestTheme_List() {

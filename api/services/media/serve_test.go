@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-func (t *MediaTestSuite) TestClient_Serve() {
+func (t *MediaServiceTestSuite) TestClient_Serve() {
 	tt := map[string]struct {
 		webp    bool
 		input   domain.Media
@@ -84,7 +84,7 @@ func (t *MediaTestSuite) TestClient_Serve() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(domain.ThemeConfig{}, test.options)
-			path := t.mediaPath + string(os.PathSeparator) + test.input.UUID.String() + filepath.Ext(test.input.FileName)
+			path := t.MediaPath + string(os.PathSeparator) + test.input.UUID.String() + filepath.Ext(test.input.FileName)
 			_, mime, err := s.Serve(test.input, path, test.webp)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)

@@ -4,7 +4,7 @@ package mocks
 
 import (
 	domain "github.com/ainsleyclark/verbis/api/domain"
-	media "github.com/ainsleyclark/verbis/api/services/media"
+	"github.com/ainsleyclark/verbis/api/services/media/image"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -15,11 +15,11 @@ type Resizer struct {
 }
 
 // Resize provides a mock function with given fields: imager, dest, _a2, comp
-func (_m *Resizer) Resize(imager media.Imager, dest string, _a2 domain.MediaSize, comp int) error {
+func (_m *Resizer) Resize(imager image.Imager, dest string, _a2 domain.MediaSize, comp int) error {
 	ret := _m.Called(imager, dest, _a2, comp)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(media.Imager, string, domain.MediaSize, int) error); ok {
+	if rf, ok := ret.Get(0).(func(image.Imager, string, domain.MediaSize, int) error); ok {
 		r0 = rf(imager, dest, _a2, comp)
 	} else {
 		r0 = ret.Error(0)

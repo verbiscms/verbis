@@ -5,37 +5,120 @@
 package fields
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	location "github.com/ainsleyclark/verbis/api/mocks/services/fields/location"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/fields"
 	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
-func (t *FieldTestSuite) TestForms_Create() {
+func (t *FieldTestSuite) TestFields_List() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
 		message string
-		input   interface{}
-		mock    func(m *mocks.Repository, u *users.Repository, c *categories.Repository)
+		mock    func(l *location.Finder, u *users.Repository, c *categories.Repository)
+		url     string
 	}{
+		"User": {
+			fieldGroups,
+			http.StatusOK,
+			"Successfully obtained fields",
+			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
+				post := domain.PostDatum{
+					Post:   domain.Post{UserId: 123},
+					Author: user.HideCredentials(),
+				}
+				u.On("Find", 123).Return(user, nil)
+				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
+				l.On("Layout", post, false).Return(fieldGroups, nil)
+			},
+			"/forms?user_id=123",
+		},
 		"No User": {
 			fieldGroups,
 			http.StatusOK,
-			"Successfully created form with ID: 123",
-			fieldGroups,
-			func(m *mocks.Repository, u *users.Repository, c *categories.Repository) {
-				m.On("Create", &domain.PostDatum{}).Return(fieldGroups, nil)
-				u.On()
+			"Successfully obtained fields",
+			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
+				post := domain.PostDatum{
+					Post:   domain.Post{UserId: 123},
+					Author: user.HideCredentials(),
+				}
+				u.On("Owner").Return(user)
+				u.On("Find", 123).Return(user, nil)
+				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
+				l.On("Layout", post, false).Return(fieldGroups, nil)
 			},
+			"/forms",
+		},
+		"Category": {
+			fieldGroups,
+			http.StatusOK,
+			"Successfully obtained fields",
+			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
+				post := domain.PostDatum{
+					Post:     domain.Post{UserId: 123},
+					Category: &category,
+					Author:   user.HideCredentials(),
+				}
+				u.On("Find", 123).Return(user, nil)
+				c.On("Find", 123).Return(category, nil)
+				l.On("Layout", post, false).Return(fieldGroups, nil)
+			},
+			"/forms?category_id=123&user_id=123",
+		},
+		"Page Template": {
+			fieldGroups,
+			http.StatusOK,
+			"Successfully obtained fields",
+			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
+				post := domain.PostDatum{
+					Post:   domain.Post{UserId: 123, PageTemplate: "template"},
+					Author: user.HideCredentials(),
+				}
+				u.On("Find", 123).Return(user, nil)
+				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
+				l.On("Layout", post, false).Return(fieldGroups, nil)
+			},
+			"/forms?page_template=template&user_id=123",
+		},
+		"Page Layout": {
+			fieldGroups,
+			http.StatusOK,
+			"Successfully obtained fields",
+			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
+				post := domain.PostDatum{
+					Post:   domain.Post{UserId: 123, PageLayout: "layout"},
+					Author: user.HideCredentials(),
+				}
+				u.On("Find", 123).Return(user, nil)
+				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
+				l.On("Layout", post, false).Return(fieldGroups, nil)
+			},
+			"/forms?layout=layout&user_id=123",
+		},
+		"Resource": {
+			fieldGroups,
+			http.StatusOK,
+			"Successfully obtained fields",
+			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
+				post := domain.PostDatum{
+					Post:   domain.Post{UserId: 123, Resource: "resource"},
+					Author: user.HideCredentials(),
+				}
+				u.On("Find", 123).Return(user, nil)
+				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
+				l.On("Layout", post, false).Return(fieldGroups, nil)
+			},
+			"/forms?resource=resource&user_id=123",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe(http.MethodPost, "/forms", "/forms", test.input, func(ctx *gin.Context) {
+			t.RequestAndServe(http.MethodGet, test.url, "/forms", nil, func(ctx *gin.Context) {
 				t.Setup(test.mock).List(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
