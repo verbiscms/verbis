@@ -19,8 +19,6 @@ import (
 // Returns http.StatusOK if login was successful.
 // Returns http.StatusInternalServerError if the layouts failed to be obtained.
 func (c *Fields) List(ctx *gin.Context) {
-	const op = "FieldHandler.List"
-
 	resource := ctx.Query("resource")
 
 	userID, err := strconv.Atoi(ctx.Query("user_id"))

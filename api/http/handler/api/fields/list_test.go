@@ -5,43 +5,40 @@
 package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
+	"github.com/ainsleyclark/verbis/api/domain"
+	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/fields"
-	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/stretchr/testify/suite"
-	"testing"
+	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
-// FieldTestSuite defines the helper used for cache
-// testing.
-type FieldTestSuite struct {
-	test.HandlerSuite
-}
-
-// TestFields
-//
-// Assert testing has begun.
-func TestFields(t *testing.T) {
-	suite.Run(t, &FieldTestSuite{
-		HandlerSuite: test.NewHandlerSuite(),
-	})
-}
-
-// Setup
-//
-// A helper to obtain a mock fields handler
-// for testing.
-func (t *FieldTestSuite) Setup(mf func(m *mocks.Repository)) *Fields {
-	m := &mocks.Repository{}
-	if mf != nil {
-		mf(m)
-	}
-	return &Fields{
-		Deps: &deps.Deps{
-			Store: &store.Repository{
-				Fields: m,
+func (t *FieldTestSuite) TestForms_Create() {
+	tt := map[string]struct {
+		want    interface{}
+		status  int
+		message string
+		input   interface{}
+		mock    func(m *mocks.Repository, u *users.Repository, c *categories.Repository)
+	}{
+		"No User": {
+			fieldGroups,
+			http.StatusOK,
+			"Successfully created form with ID: 123",
+			fieldGroups,
+			func(m *mocks.Repository, u *users.Repository, c *categories.Repository) {
+				m.On("Create", &domain.PostDatum{}).Return(fieldGroups, nil)
+				u.On()
 			},
 		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			t.RequestAndServe(http.MethodPost, "/forms", "/forms", test.input, func(ctx *gin.Context) {
+				t.Setup(test.mock).List(ctx)
+			})
+			t.RunT(test.want, test.status, test.message)
+		})
 	}
 }
