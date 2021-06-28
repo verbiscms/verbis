@@ -212,6 +212,47 @@ func (t *MediaServiceTestSuite) TestClient_Upload_DirError() {
 	t.Contains(errors.Message(err), want)
 }
 
+func (t *MediaServiceTestSuite) TestUploader_Dir() {
+	now := time.Now().Format("2006/01")
+
+	tt := map[string]struct {
+		input domain.Options
+		path  string
+		want  interface{}
+	}{
+		"No Organise Year/Month": {
+			domain.Options{MediaOrganiseDate: false},
+			"uploads",
+			"",
+		},
+		"With Organise Year/Month": {
+			domain.Options{MediaOrganiseDate: true},
+			"uploads",
+			now,
+		},
+		"Create Folder": {
+			domain.Options{MediaOrganiseDate: true},
+			t.T().TempDir(),
+			now,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			u := uploader{
+				Options:    &test.input,
+				UploadPath: test.path,
+			}
+			got, err := u.Dir()
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.Equal(test.want, got)
+		})
+	}
+}
+
 func (t *MediaServiceTestSuite) TestUploader_SaveOriginal_Error() {
 	file, _ := os.Open("") // Ignore on purpose
 	u := uploader{File: file}

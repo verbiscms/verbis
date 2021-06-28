@@ -5,6 +5,7 @@
 package media
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
@@ -12,9 +13,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/services/media/image"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 	"io"
 	"mime/multipart"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -98,12 +101,14 @@ func (u *uploader) Dir() (string, error) {
 	}
 
 	t := time.Now()
-	datePath := t.Format("2006") + string(os.PathSeparator) + t.Format("01") // 2020/01
-	path := u.UploadPath + string(os.PathSeparator) + datePath
+	datePath := filepath.Join(t.Format("2006"), t.Format("01")) // 2020/01
+	path := filepath.Join(u.UploadPath, datePath)
 
 	_, err := os.Stat(path)
+	color.Green.Println(err, path)
 	if os.IsNotExist(err) {
 		err = os.MkdirAll(path, os.ModePerm)
+		fmt.Println(path)
 		if err != nil {
 			return "", &errors.Error{Code: errors.INVALID, Message: "Error creating media uploads folder with the path: " + path, Operation: op, Err: err}
 		}

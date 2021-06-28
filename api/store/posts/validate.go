@@ -11,12 +11,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/logger"
 )
 
-// validate
-//
-//
-// Checks to see if the slug already exists, the post has
-// a valid page template attached to it, and a valid
-// page layout.
+// validate checks to see if the slug already exists, the
+// post has a valid page template attached to it, and a
+// valid page layout.
 // Returns nil if all checks are passed.
 func (s *Store) validate(p *domain.PostCreate, checkSlug bool) error {
 	if checkSlug {
@@ -46,11 +43,9 @@ func (s *Store) validate(p *domain.PostCreate, checkSlug bool) error {
 	return nil
 }
 
-// validateSlug
-//
-// Compares the slug passed to see if the slug has already
-// been taken, by looking up the post category and
-// resource.
+// validateSlug compares the slug passed to see if the
+// slug has already been taken, by looking up the
+// post category and resource.
 // Returns ErrPostsExists if there is an existing slug.
 // Returns errors.INTERNAL if the SQL query was invalid.
 func (s *Store) validateSlug(p *domain.PostCreate) error {
@@ -86,10 +81,8 @@ func (s *Store) validateSlug(p *domain.PostCreate) error {
 	return nil
 }
 
-// validatePageTemplate
-//
-// Checks to see if a page template is found in the
-// current theme.
+// validatePageTemplate checks to see if a page template
+// is found in the current theme.
 // Returns nil if it was found.
 // Returns ErrNoPageTemplate if the page template was not found.
 func (s *Store) validatePageTemplate(p *domain.PostCreate) error {
@@ -114,10 +107,8 @@ func (s *Store) validatePageTemplate(p *domain.PostCreate) error {
 	return nil
 }
 
-// validatePageLayout
-//
-// Checks to see if a page layout is found in the
-// current theme.
+// validatePageLayout Checks to see if a page layout is
+// found in the current theme.
 // Returns nil if it was found.
 // Returns ErrNoPageLayout if the page layout was not found.
 func (s *Store) validatePageLayout(p *domain.PostCreate) error {
