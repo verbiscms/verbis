@@ -8,9 +8,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 )
 
-// format
-//
-//
+// format traverses the raw posts and constructs out new
+// domain.PostData from the results.
 func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 	var posts = make(domain.PostData, 0)
 
@@ -35,7 +34,6 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 		if v.Field.UUID != nil {
 			field := domain.PostField{
-				//Id:            v.Field.Id,
 				PostId:        v.Field.PostId,
 				UUID:          *v.Field.UUID,
 				Type:          v.Field.Type,
@@ -56,9 +54,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 	return posts
 }
 
-// find
-//
-//
+// find checks if the post data is already in the slice.
 func (s *Store) find(posts domain.PostData, id int) bool {
 	for _, v := range posts {
 		if v.Id == id {
