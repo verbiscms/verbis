@@ -130,12 +130,13 @@ func (s *Storage) SetBucket(id string) error {
 }
 
 func (s *Storage) ListBuckets() error {
-	containers, s2, err := s.provider.Containers()
-	if err != nil {
-		return err
-	}
+	//containers, s2, err := s.provider.Containers()
+	//if err != nil {
+	//	return err
+	//}
 
-	
+
+	return nil
 }
 
 func (s *Storage) getProvider(provider domain.StorageProvider) (stow.Location, error) {
