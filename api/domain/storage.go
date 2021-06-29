@@ -6,6 +6,13 @@ package domain
 
 type StorageProvider string
 
+type Bucket struct {
+	Id string  `json:"id" binding:"required"` //nolint
+	Name string  `json:"name"` //nolint
+}
+
+type Buckets []Bucket
+
 const (
 	StorageLocal = StorageProvider("local")
 	StorageAWS   = StorageProvider("aws")
