@@ -108,5 +108,8 @@ type (
 		FormFromEmailAddress   string   `json:"form_from_email_addresses"`
 		FormIncludeLogo        bool     `json:"form_email_include_logo"`
 		FormEmailDisclosure    string   `json:"form_email_disclosure"`
+		// Storage
+		StorageProvider StorageProvider `json:"storage_provider"`
+		StorageBucket   string          `json:"storage_bucket"`
 	}
 )

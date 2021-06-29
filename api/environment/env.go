@@ -19,63 +19,52 @@ import (
 
 // Env defines the environment variables set in the .env file.
 type Env struct {
-
 	// Prod, production or dev.
 	AppEnv string `json:"APP_ENV"`
-
 	// If Verbis is in debug mode (true, false).
 	AppDebug string `json:"APP_DEBUG"`
-
 	// The port the server should listen to.
 	AppPort string `json:"APP_PORT" binding:"required"`
-
 	// The database port.
 	DbDriver string `json:"DB_DRIVER" binding:"required"` //nolint
-
 	// The database host (IP) for the store.
 	DbHost string `json:"DB_HOST" binding:"required"` //nolint
-
 	// The database port for the store.
 	DbPort string `json:"DB_PORT" binding:"required"` //nolint
-
 	// The database name.
 	DbDatabase string `json:"DB_DATABASE" binding:"required"` //nolint
-
 	// The database user name.
 	DbUser string `json:"DB_USERNAME" binding:"required"` //nolint
-
 	// The database port.
 	DbPassword string `json:"DB_PASSWORD" binding:"required"` //nolint
-
 	// The database port.
 	DbSchema string `json:"DB_SCHEMA"` //nolint
-
 	// The database port.
 	MailDriver string `json:"MAIL_DRIVER"`
-
 	// The mailing from address.
 	MailFromAddress string `json:"MAIL_FROM_ADDRESS"`
-
 	// The mailing from name.
 	MailFromName string `json:"MAIL_FROM_NAME"`
-
 	// The API key for Sparkpost.
 	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
-
 	// The url for Sparkpost (could be EU).
 	SparkpostURL string `json:"SPARKPOST_URL"`
-
 	// The API key for MailGun.
 	MailGunAPIKey string `json:"MAILGUN_API_KEY"`
-
 	// The url for MailGun.
 	MailGunURL string `json:"MAILGUN_URL"`
-
 	// The domain for MailGun.
 	MailGunDomain string `json:"MAILGUN_DOMAIN"`
-
 	// The API key for SendGrid.
 	SendGridAPIKey string `json:"SENDGRID_API_KEY"`
+	// The access key for AWS storage.
+	AWSAccessKey string `json:"STORAGE_AWS_ACCESS_KEY"`
+	// The access secret for AWS storage.
+	AWSSecret string `json:"STORAGE_AWS_SECRET"`
+	// The JSON file for GCP storage.
+	GCPJson string `json:"STORAGE_GCP_JSON_FILE"`
+	// The Project ID for GCP storage.
+	GCPProjectId string `json:"STORAGE_GCP_PROJECT_ID"`
 }
 
 var (
@@ -121,6 +110,10 @@ func Load() (*Env, error) {
 		MailGunURL:      os.Getenv("MAILGUN_URL"),
 		MailGunDomain:   os.Getenv("MAILGUN_DOMAIN"),
 		SendGridAPIKey:  os.Getenv("SENDGRID_API_KEY"),
+		AWSAccessKey:    os.Getenv("STORAGE_AWS_ACCESS_KEY"),
+		AWSSecret:       os.Getenv("STORAGE_AWS_SECRET"),
+		GCPJson:         os.Getenv("STORAGE_GCP_JSON"),
+		GCPProjectId:    os.Getenv("STORAGE_GCP_PROJECT_ID"),
 	}, nil
 }
 

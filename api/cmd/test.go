@@ -6,8 +6,11 @@ package cmd
 
 import (
 	"fmt"
-	v02 "github.com/ainsleyclark/verbis/api/database/updates/v0"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/spf13/cobra"
+	"strings"
 )
 
 var (
@@ -15,8 +18,28 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(v02.Version)
+			client, err := storage.New(&environment.Env{
+				AWSAccessKey: "AKIAS5242YL6XWTSX5YR",
+				AWSSecret:    "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",
+				GCPJson:      "",
+				GCPProjectId: "",
+			}, &domain.Options{
+				StorageProvider: domain.StorageAWS,
+				StorageBucket:   "reddicotest",
+			})
 
+			if err != nil {
+				printError(err.Error())
+				return
+			}
+
+			upload, err := client.Upload("test.txt", strings.NewReader("this is a test"))
+			if err != nil {
+				fmt.Println("her")
+				printError(err.Error())
+			}
+
+			fmt.Println(upload)
 		},
 	}
 )

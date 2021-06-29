@@ -18,20 +18,21 @@ import (
 type (
 	// Media defines the core media entity for Verbis.
 	Media struct {
-		Id          int        `db:"id" json:"id"` //nolint
-		UUID        uuid.UUID  `db:"uuid" json:"uuid"`
-		Url         string     `db:"url" json:"url"` //nolint
-		Title       string     `db:"title" json:"title"`
-		Alt         string     `db:"alt" json:"alt"`
-		Description string     `db:"description" json:"description"`
-		FilePath    string     `db:"file_path" json:"-"`
-		FileSize    int64      `db:"file_size" json:"file_size"`
-		FileName    string     `db:"file_name" json:"file_name"`
-		Sizes       MediaSizes `db:"sizes" json:"sizes"`
-		Mime        Mime       `db:"mime" json:"mime"`
-		UserId      int        `db:"user_id" json:"user_id"` //nolint
-		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
-		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
+		Id          int             `db:"id" json:"id"` //nolint
+		UUID        uuid.UUID       `db:"uuid" json:"uuid"`
+		Url         string          `db:"url" json:"url"` //nolint
+		Title       string          `db:"title" json:"title"`
+		Alt         string          `db:"alt" json:"alt"`
+		Description string          `db:"description" json:"description"`
+		FilePath    string          `db:"file_path" json:"-"`
+		FileSize    int64           `db:"file_size" json:"file_size"`
+		FileName    string          `db:"file_name" json:"file_name"`
+		Sizes       MediaSizes      `db:"sizes" json:"sizes"`
+		Mime        Mime            `db:"mime" json:"mime"`
+		UserId      int             `db:"user_id" json:"user_id"` //nolint
+		Location    StorageProvider `db:"location" json:"location"`
+		CreatedAt   time.Time       `db:"created_at" json:"created_at"`
+		UpdatedAt   time.Time       `db:"updated_at" json:"updated_at"`
 	}
 	// MediaItems represents the slice of Media.
 	MediaItems []Media
