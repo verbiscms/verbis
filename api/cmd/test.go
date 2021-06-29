@@ -19,8 +19,8 @@ var (
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
 			client, err := storage.New(&environment.Env{
-				AWSAccessKey: "AKIAS5242YL6XWTSX5YR",
-				AWSSecret:    "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",
+				AWSAccessKey: "",
+				AWSSecret:    "",
 				GCPJson:      "",
 				GCPProjectId: "",
 			}, &domain.Options{
