@@ -44,9 +44,7 @@ type APIHandler struct {
 	Users      users.Handler
 }
 
-// NewAPI
-//
-// Returns a new API handler.
+// NewAPI returns a new API handler.
 func NewAPI(d *deps.Deps) *APIHandler {
 	return &APIHandler{
 		Auth:       auth.New(d),
@@ -73,9 +71,7 @@ type FrontendHandler struct {
 	SEO    seo.Handler
 }
 
-// NewFrontend
-//
-// Returns a new frontend handler.
+// NewFrontend returns a new frontend handler.
 func NewFrontend(d *deps.Deps) *FrontendHandler {
 	return &FrontendHandler{
 		Public: public.New(d),
@@ -89,9 +85,7 @@ type SPAHandler struct {
 	spa.Handler
 }
 
-// NewSPA
-//
-// Returns a new SPA handler.
+// NewSPA returns a new SPA handler.
 func NewSPA(d *deps.Deps) *SPAHandler {
 	return &SPAHandler{
 		spa.New(d),

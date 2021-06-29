@@ -29,9 +29,7 @@ var (
 	}
 )
 
-// Params
-//
-// Sets up a new Params struct with context.
+// Params sets up a new Params struct with context.
 func Params(g *gin.Context) *params.Params {
 	return params.New(&apiParams{ctx: g}, DefaultParams)
 }
@@ -41,10 +39,8 @@ type apiParams struct {
 	ctx *gin.Context
 }
 
-// Param
-//
-// Satisfies the Stringer interface by returning a query
-// parameters to pass information to models.
+// Param satisfies the Stringer interface by returning a
+// query parameters to pass information to models.
 func (a *apiParams) Param(q string) string {
 	return a.ctx.Query(q)
 }

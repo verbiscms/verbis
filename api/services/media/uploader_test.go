@@ -8,9 +8,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"mime/multipart"
+	"os"
+	"time"
 )
 
-func (t *MediaTestSuite) TestClient_Upload() {
+func (t *MediaServiceTestSuite) TestClient_Upload() {
 	size := domain.MediaSize{
 		SizeName: "Test Size",
 		Width:    100,
@@ -27,7 +29,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 		err    string
 	}{
 		"SVG": {
-			t.mediaPath + "/gopher.svg",
+			t.MediaPath + "/gopher.svg",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					UploadPath: "/uploads",
@@ -46,7 +48,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 			"",
 		},
 		"PNG": {
-			t.mediaPath + "/gopher.png",
+			t.MediaPath + "/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					UploadPath: "/uploads",
@@ -65,7 +67,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 			"",
 		},
 		"JPG": {
-			t.mediaPath + "/gopher.jpg",
+			t.MediaPath + "/gopher.jpg",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					UploadPath: "/uploads",
@@ -84,7 +86,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 			"",
 		},
 		"PNG Size": {
-			t.mediaPath + "/gopher.png",
+			t.MediaPath + "/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					UploadPath: "/uploads",
@@ -116,7 +118,7 @@ func (t *MediaTestSuite) TestClient_Upload() {
 			"",
 		},
 		"JPG Size": {
-			t.mediaPath + "/gopher.jpg",
+			t.MediaPath + "/gopher.jpg",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					UploadPath: "/uploads",
@@ -197,10 +199,10 @@ func (t *MediaTestSuite) TestClient_Upload() {
 	}
 }
 
-func (t *MediaTestSuite) TestClient_Upload_DirError() {
+func (t *MediaServiceTestSuite) TestClient_Upload_DirError() {
 	c := t.Setup(domain.ThemeConfig{}, domain.Options{})
 	c.exists = exists
-	mt := t.File(t.mediaPath + "/gopher.svg")
+	mt := t.File(t.MediaPath + "/gopher.svg")
 
 	c.paths.Uploads = "wrongpath"
 
@@ -208,4 +210,122 @@ func (t *MediaTestSuite) TestClient_Upload_DirError() {
 
 	want := "Error creating file"
 	t.Contains(errors.Message(err), want)
+}
+
+func (t *MediaServiceTestSuite) TestUploader_Dir() {
+	now := time.Now().Format("2006/01")
+
+	tt := map[string]struct {
+		input domain.Options
+		path  string
+		want  interface{}
+	}{
+		"No Organise Year/Month": {
+			domain.Options{MediaOrganiseDate: false},
+			"uploads",
+			"",
+		},
+		"With Organise Year/Month": {
+			domain.Options{MediaOrganiseDate: true},
+			"uploads",
+			now,
+		},
+		"Create Folder": {
+			domain.Options{MediaOrganiseDate: true},
+			t.T().TempDir(),
+			now,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			u := uploader{
+				Options:    &test.input,
+				UploadPath: test.path,
+			}
+			got, err := u.Dir()
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *MediaServiceTestSuite) TestUploader_SaveOriginal_Error() {
+	file, _ := os.Open("") // Ignore on purpose
+	u := uploader{File: file}
+	_, err := u.SaveOriginal(t.T().TempDir())
+	t.Error(err)
+}
+
+func (t *MediaServiceTestSuite) TestUploader_URL() {
+	now := time.Now().Format("2006/01")
+
+	tt := map[string]struct {
+		input domain.Options
+		cfg   domain.MediaConfig
+		want  string
+	}{
+		"With Date": {
+			domain.Options{MediaOrganiseDate: true},
+			domain.MediaConfig{UploadPath: "uploads"},
+			"/uploads/" + now,
+		},
+		"Without Date": {
+			domain.Options{MediaOrganiseDate: false},
+			domain.MediaConfig{UploadPath: "uploads"},
+			"/uploads",
+		},
+		"Trailing Slash": {
+			domain.Options{MediaOrganiseDate: true},
+			domain.MediaConfig{UploadPath: "uploads/"},
+			"/uploads/" + now,
+		},
+		"Leading Slash": {
+			domain.Options{MediaOrganiseDate: true},
+			domain.MediaConfig{UploadPath: "//uploads"},
+			"/uploads/" + now,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			u := uploader{
+				Options: &test.input,
+				Config:  &domain.ThemeConfig{Media: test.cfg},
+			}
+			got := u.URL()
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *MediaServiceTestSuite) TestUploader_FileSize() {
+	tt := map[string]struct {
+		input string
+		want  int64
+	}{
+		"Exists": {
+			t.MediaPath + "/gopher.svg",
+			100,
+		},
+		"Not Found": {
+			"",
+			0,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			u := uploader{}
+			got := u.FileSize(test.input)
+			if test.want == 0 {
+				t.Equal(test.want, got)
+				return
+			}
+			t.GreaterOrEqual(got, test.want)
+		})
+	}
 }

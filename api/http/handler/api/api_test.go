@@ -8,7 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"net/http"
 	"testing"
@@ -29,13 +28,23 @@ func TestApi(t *testing.T) {
 	})
 }
 
-func Test_Params(t *testing.T) {
+func (t *APITestSuite) TestParams() {
 	ctx := &gin.Context{}
 	want := &params.Params{
 		Stringer: &apiParams{ctx: ctx},
 	}
 	got := Params(ctx)
-	assert.Equal(t, want.Stringer, got.Stringer)
+	t.Equal(want.Stringer, got.Stringer)
+}
+
+func (t *APITestSuite) TestParam() {
+	ctx := &gin.Context{}
+	req, err := http.NewRequest(http.MethodGet, "https://verbiscms.com?query=test", nil)
+	t.NoError(err)
+	ctx.Request = req
+	api := &apiParams{ctx: ctx}
+	got := api.Param("query")
+	t.Equal("test", got)
 }
 
 func (t *APITestSuite) TestApiParams_Param() {

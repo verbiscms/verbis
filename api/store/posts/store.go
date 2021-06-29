@@ -75,26 +75,24 @@ func New(cfg *config.Config) *Store {
 }
 
 // postsRaw
-//
-//
 type postsRaw struct {
 	domain.Post
 	Author   domain.User      `db:"author"`
 	Category *domain.Category `db:"category"`
-	Field    struct {
-		Id            int        `db:"field_id"` //nolint
-		PostId        int        `db:"post_id"`  //nolint
-		UUID          *uuid.UUID `db:"uuid"`
-		Type          string     `db:"type"`
-		Name          string     `db:"name"`
-		Key           string     `db:"field_key"`
-		OriginalValue string     `db:"value" json:"value"`
-	} `db:"field"`
+	Field    postsRawFields   `db:"field"`
+}
+
+// postsRawFields
+type postsRawFields struct {
+	PostId        int        `db:"post_id"` //nolint
+	UUID          *uuid.UUID `db:"uuid"`
+	Type          string     `db:"type"`
+	Name          string     `db:"name"`
+	Key           string     `db:"field_key"`
+	OriginalValue string     `db:"value" json:"value"`
 }
 
 // selectStmt
-//
-//
 func selectStmt(query string) string {
 	return fmt.Sprintf(`SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
        users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.last_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',

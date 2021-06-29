@@ -9,8 +9,6 @@ import (
 	"encoding/hex"
 )
 
-// MD5Hash
-//
 // MD5Hash generates a a random MD5 based on the string given.
 func MD5Hash(text string) string {
 	hash := md5.Sum([]byte(text))

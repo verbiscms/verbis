@@ -17,10 +17,11 @@ func (t *PostsTestSuite) TestStore_Validate() {
 	category := 1
 
 	tt := map[string]struct {
-		input domain.PostCreate
-		mock  func(m sqlmock.Sqlmock)
-		theme func(m *mocks.Repository)
-		want  interface{}
+		input     domain.PostCreate
+		mock      func(m sqlmock.Sqlmock)
+		theme     func(m *mocks.Repository)
+		resources domain.Resources
+		want      interface{}
 	}{
 		"Success": {
 			domain.PostCreate{
@@ -46,6 +47,20 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				}, nil)
 			},
 			nil,
+			nil,
+		},
+		"Hidden": {
+			domain.PostCreate{
+				Post: domain.Post{
+					Resource: "news",
+				},
+			},
+			nil,
+			nil,
+			domain.Resources{"news": domain.Resource{
+				Hidden: true,
+			}},
+			nil,
 		},
 		"No Resource": {
 			domain.PostCreate{
@@ -70,6 +85,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 					domain.Layout{Key: "layout", Name: "Layout"},
 				}, nil)
 			},
+			nil,
 			ErrPostsExists.Error(),
 		},
 		"With Resource": {
@@ -96,6 +112,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 					domain.Layout{Key: "layout", Name: "Layout"},
 				}, nil)
 			},
+			nil,
 			ErrPostsExists.Error(),
 		},
 		"With Category": {
@@ -122,6 +139,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 					domain.Layout{Key: "layout", Name: "Layout"},
 				}, nil)
 			},
+			nil,
 			ErrPostsExists.Error(),
 		},
 		"No Page Templates": {
@@ -138,14 +156,16 @@ func (t *PostsTestSuite) TestStore_Validate() {
 					domain.Layout{Key: "layout", Name: "Layout"},
 				}, nil)
 			},
+			nil,
 			ErrNoPageTemplate.Error(),
 		},
-		"template Error": {
+		"Template Error": {
 			domain.PostCreate{},
 			nil,
 			func(m *mocks.Repository) {
 				m.On("Templates", mock.Anything).Return(domain.Templates{}, fmt.Errorf("error"))
 			},
+			nil,
 			"error",
 		},
 		"No Page Layouts": {
@@ -161,6 +181,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				}, nil)
 				m.On("Layouts", mock.Anything).Return(domain.Layouts{}, nil)
 			},
+			nil,
 			ErrNoPageLayout.Error(),
 		},
 		"Layout Error": {
@@ -177,6 +198,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 				}, nil)
 				m.On("Layouts", mock.Anything).Return(domain.Layouts{}, fmt.Errorf("error"))
 			},
+			nil,
 			"error",
 		},
 	}
@@ -184,7 +206,9 @@ func (t *PostsTestSuite) TestStore_Validate() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			s.Theme = &domain.ThemeConfig{}
+			s.Theme = &domain.ThemeConfig{
+				Resources: test.resources,
+			}
 
 			theme := &mocks.Repository{}
 			if test.theme != nil {

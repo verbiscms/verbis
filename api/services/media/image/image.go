@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package media
+package image
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -66,7 +66,7 @@ func (p *PNG) Decode() (image.Image, error) {
 	const op = "PNG.Decode"
 	_, err := p.File.Seek(0, 0)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error decoding PNG", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking PNG file", Operation: op, Err: err}
 	}
 	file, err := png.Decode(p.File)
 	if err != nil {
@@ -103,7 +103,7 @@ func (j *JPG) Decode() (image.Image, error) {
 	const op = "JPG.Decode"
 	_, err := j.File.Seek(0, 0)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error decoding PNG", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking JPG file", Operation: op, Err: err}
 	}
 	file, err := jpeg.Decode(j.File)
 	if err != nil {
@@ -121,7 +121,7 @@ func (j *JPG) Save(img image.Image, path string, comp int) error {
 	const op = "JPG.Save"
 	err := imaging.Save(img, path, imaging.JPEGQuality(comp))
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error saving the PNG file with the path: " + path, Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error saving the JPG file with the path: " + path, Operation: op, Err: err}
 	}
 	return nil
 }

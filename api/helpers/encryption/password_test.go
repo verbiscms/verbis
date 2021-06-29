@@ -6,12 +6,25 @@ package encryption
 
 import (
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 	"testing"
 )
 
 func TestHashPassword(t *testing.T) {
-	got := MD5Hash("hello")
-	assert.Equal(t, 32, len(got))
+	password, err := HashPassword("password")
+	assert.NoError(t, err)
+	err = bcrypt.CompareHashAndPassword([]byte(password), []byte("password"))
+	assert.NoError(t, err)
+}
+
+func TestHashPasswordError(t *testing.T) {
+	orig := DefaultCost
+	defer func() {
+		DefaultCost = orig
+	}()
+	DefaultCost = 9999999999
+	_, err := HashPassword("hello")
+	assert.Error(t, err)
 }
 
 func TestCreatePassword(t *testing.T) {

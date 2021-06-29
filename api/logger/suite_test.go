@@ -23,7 +23,7 @@ type LoggerTestSuite struct {
 	suite.Suite
 }
 
-// TestLogger - Assert testing has begun.
+// TestLogger asserts testing has begun.
 func TestLogger(t *testing.T) {
 	suite.Run(t, new(LoggerTestSuite))
 }

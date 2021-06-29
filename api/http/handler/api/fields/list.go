@@ -19,8 +19,6 @@ import (
 // Returns http.StatusOK if login was successful.
 // Returns http.StatusInternalServerError if the layouts failed to be obtained.
 func (c *Fields) List(ctx *gin.Context) {
-	const op = "FieldHandler.List"
-
 	resource := ctx.Query("resource")
 
 	userID, err := strconv.Atoi(ctx.Query("user_id"))
@@ -35,10 +33,6 @@ func (c *Fields) List(ctx *gin.Context) {
 
 	post := domain.PostDatum{
 		Post: domain.Post{
-			Id:           0,
-			Slug:         "",
-			Title:        "",
-			Status:       "",
 			Resource:     resource,
 			PageTemplate: ctx.Query("page_template"),
 			PageLayout:   ctx.Query("layout"),
@@ -48,13 +42,13 @@ func (c *Fields) List(ctx *gin.Context) {
 
 	// Get the author associated with the post
 	author, err := c.Store.User.Find(post.UserId)
-	if err != nil {
+	if err == nil {
 		post.Author = author.HideCredentials()
 	}
 
-	// Get the categories associated with the post
+	// Get the category associated with the post
 	category, err := c.Store.Categories.Find(categoryID)
-	if err != nil {
+	if err == nil {
 		post.Category = &category
 	}
 
