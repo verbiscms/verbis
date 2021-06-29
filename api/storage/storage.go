@@ -6,6 +6,7 @@ package storage
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -31,7 +32,7 @@ type Client interface {
 	Upload(path string, contents io.Reader) (stow.Item, error)
 	SetProvider(location domain.StorageProvider) error
 	SetBucket(id string) error
-	ListBuckets() error
+	ListBuckets() (domain.Buckets, error)
 }
 
 type Storage struct {
@@ -39,6 +40,7 @@ type Storage struct {
 	bucket   stow.Container
 	opts     *domain.Options
 	env      *environment.Env
+	local bool
 }
 
 // New parse config
@@ -82,10 +84,17 @@ func (s *Storage) Upload(path string, contents io.Reader) (stow.Item, error) {
 }
 
 func (s *Storage) Find(path string) ([]byte, error) {
+	if !s.local {
+		path = s.bucket.Name() + "/" + path
+	}
+
 	item, err := s.provider.ItemByURL(&url.URL{Path: path})
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO return the url?
+	fmt.Println(item.URL())
 
 	file, err := item.Open()
 	if err != nil {
@@ -93,12 +102,12 @@ func (s *Storage) Find(path string) ([]byte, error) {
 	}
 	defer file.Close()
 
-	bytes, err := ioutil.ReadAll(file)
+	b, err := ioutil.ReadAll(file)
 	if err != nil {
 		return nil, err
 	}
 
-	return bytes, nil
+	return b, nil
 }
 
 func (s *Storage) SetProvider(provider domain.StorageProvider) error {
@@ -129,14 +138,38 @@ func (s *Storage) SetBucket(id string) error {
 	return nil
 }
 
-func (s *Storage) ListBuckets() error {
-	//containers, s2, err := s.provider.Containers()
-	//if err != nil {
-	//	return err
-	//}
+func (s *Storage) CreateBucket(name string) error {
+	const op = "Storage.CreateBucket"
 
+	_, err := s.provider.CreateContainer(name)
+	if err != nil {
+		return  &errors.Error{Code: errors.INVALID, Message: "Error creating bucket: " + name, Operation: op, Err: err}
+	}
 
 	return nil
+}
+
+func (s *Storage) ListBuckets() (domain.Buckets, error) {
+	const op = "Storage.ListBuckets"
+
+	var buckets = make(domain.Buckets, 0)
+	err := stow.WalkContainers(s.provider, stow.NoPrefix, 100, func(c stow.Container, err error) error {
+		fmt.Println(err, c.ID(), c.Name())
+		if err != nil {
+			return err
+		}
+		buckets = append(buckets, domain.Bucket{
+			Id:   c.ID(),
+			Name: c.Name(),
+		})
+		return nil
+	})
+
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Error obtaining buckets", Operation: op, Err: err}
+	}
+
+	return  nil, nil
 }
 
 func (s *Storage) getProvider(provider domain.StorageProvider) (stow.Location, error) {
@@ -145,16 +178,18 @@ func (s *Storage) getProvider(provider domain.StorageProvider) (stow.Location, e
 		err  error
 	)
 
+	s.local = false
+
 	switch provider {
 	case domain.StorageLocal:
 		cont, err = stow.Dial(local.Kind, stow.ConfigMap{
 			local.ConfigKeyPath: paths.Get().Storage,
 		})
+		s.local = true
 	case domain.StorageAWS:
 		cont, err = stow.Dial(s3.Kind, stow.ConfigMap{
 			s3.ConfigAccessKeyID: s.env.AWSAccessKey,
 			s3.ConfigSecretKey:   s.env.AWSSecret,
-			s3.ConfigRegion:      "eu-west-1",
 		})
 	case domain.StorageGCP:
 		json, err := ioutil.ReadFile(s.env.GCPJson)
