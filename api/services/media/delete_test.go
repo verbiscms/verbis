@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-func (t *MediaTestSuite) TestClient_Delete() {
+func (t *MediaServiceTestSuite) TestClient_Delete() {
 	tt := map[string]struct {
 		input     domain.Media
 		extension string
@@ -39,11 +39,11 @@ func (t *MediaTestSuite) TestClient_Delete() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			file := t.mediaPath + string(os.PathSeparator) + test.input.UUID.String() + test.extension
+			file := t.MediaPath + string(os.PathSeparator) + test.input.UUID.String() + test.extension
 			teardown := t.DummyFile(file)
 			defer teardown()
 
-			webp := t.mediaPath + string(os.PathSeparator) + test.input.UUID.String() + test.extension + domain.WebPExtension
+			webp := t.MediaPath + string(os.PathSeparator) + test.input.UUID.String() + test.extension + domain.WebPExtension
 			teardownWebP := t.DummyFile(webp)
 			defer teardownWebP()
 

@@ -11,17 +11,19 @@ import (
 	"math/rand"
 )
 
-// HashPassword
-//
-// Gets the password in byte format and generates a
-// hashed password with the default cost of 10.
-//
-// Returns errors.INTERNAL if the bcrypt failed to
-// generate from password.
+// DefaultCost is the cost that will actually be set if a
+// cost below MinCost is passed into
+// GenerateFromPassword.
+var DefaultCost = bcrypt.DefaultCost
+
+// HashPassword gets the password in byte format and
+// generates a hashed password with the default cost
+// of 10.
+// Returns errors.INTERNAL if the bcrypt failed to generate from password.
 func HashPassword(password string) (string, error) {
-	const op = "encryption.HashPassword"
+	const op = "Encryption.HashPassword"
 	bytePassword := []byte(password)
-	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, bcrypt.DefaultCost)
+	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, DefaultCost)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not hash the password with the string: %s", password), Operation: op, Err: err}
 	}
@@ -29,15 +31,13 @@ func HashPassword(password string) (string, error) {
 }
 
 const (
-	// The amount of characters generated for random
-	// passwords.
+	// RandomPasswordLength The amount of characters generated
+	// for random passwords.
 	RandomPasswordLength = 24
 )
 
-// CreatePassword
-//
-// Creates a random password with a character length of
-// 24.
+// CreatePassword creates a random password with a
+// character length of 24.
 func CreatePassword() string {
 	var characterRunes = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@:\\/@£$%=^&&*()_+?><")
 	b := make([]rune, RandomPasswordLength)

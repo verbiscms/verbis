@@ -24,19 +24,28 @@ type Paths struct {
 }
 
 const (
-	Admin   = string(os.PathSeparator) + "admin"
-	API     = string(os.PathSeparator) + "api"
+	// Admin defines the file path for the Vue SPA.
+	Admin = string(os.PathSeparator) + "admin"
+	// API defines the file path backend code.
+	API = string(os.PathSeparator) + "api"
+	// Storage defines the file path for uploads, forms and
+	// anything that needs to be stored within Verbis.
 	Storage = string(os.PathSeparator) + "storage"
-	Themes  = string(os.PathSeparator) + "themes"
-	Web     = API + string(os.PathSeparator) + "www"
+	// Themes defines the file path for all themes.
+	Themes = string(os.PathSeparator) + "themes"
+	// Web defines the file path for any web files that the API
+	// needs to serve.
+	Web = API + string(os.PathSeparator) + "www"
+	// Uploads defines the file path for media uploads within
+	// Verbis.
 	Uploads = Storage + string(os.PathSeparator) + "uploads"
-	Forms   = Storage + string(os.PathSeparator) + "forms"
-	Bin     = string(os.PathSeparator) + "bin"
+	// Forms defines the file path for form dumps within Verbis.
+	Forms = Storage + string(os.PathSeparator) + "forms"
+	// Bin defines the file path any independent executables.
+	Bin = string(os.PathSeparator) + "bin"
 )
 
-// Get
-//
-// Retrieves relevant paths for the application.
+// Get retrieves relevant paths for the application.
 func Get() Paths {
 	base := base()
 	return Paths{
@@ -52,11 +61,13 @@ func Get() Paths {
 	}
 }
 
-// base
-//
-// Base path of project.
+// filepath.Abs is the stdlib Absolute function for
+// obtaining the base path of the project
+var abs = filepath.Abs
+
+// base returns base path of project.
 func base() string {
-	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	dir, err := abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		return ""
 	}

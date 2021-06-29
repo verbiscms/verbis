@@ -11,9 +11,7 @@ import (
 	"unicode"
 )
 
-// InSlice
-//
-// Check if a string exists in a slice
+// InSlice checks if a string exists in a slice,
 func InSlice(a string, list []string) bool {
 	for _, b := range list {
 		if b == a {
@@ -23,9 +21,7 @@ func InSlice(a string, list []string) bool {
 	return false
 }
 
-// Between
-//
-// Between Gets substring between two strings.
+// Between gets substring between two strings.
 func Between(value, a, b string) string {
 	posFirst := strings.Index(value, a)
 	if posFirst == -1 {
@@ -45,9 +41,7 @@ func Between(value, a, b string) string {
 	return value[posFirstAdjusted:posLast]
 }
 
-// AddSpace
-//
-// Add space between uppercase letters, for example
+// AddSpace between uppercase letters, for example
 // HelloWorld will convert to Hello World.
 func AddSpace(s string) string {
 	buf := &bytes.Buffer{}
@@ -60,10 +54,8 @@ func AddSpace(s string) string {
 	return buf.String()
 }
 
-// Random
-//
-// Generates a random string of n length. Contains numeric
-// characters if set to true.
+// Random generates a random string of n length. Contains
+// numeric characters if set to true.
 func Random(n int64, numeric bool) string {
 	var characterRunes = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789")
 	if !numeric {

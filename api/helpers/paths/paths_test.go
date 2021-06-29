@@ -5,13 +5,14 @@
 package paths
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"path/filepath"
 	"testing"
 )
 
-func TestPaths_Get(t *testing.T) {
+func TestGet(t *testing.T) {
 	path, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	assert.NoError(t, err)
 	got := Get()
@@ -27,4 +28,16 @@ func TestPaths_Get(t *testing.T) {
 		Bin:     path + Bin,
 	}
 	assert.Equal(t, want, got)
+}
+
+func TestGetError(t *testing.T) {
+	orig := abs
+	defer func() {
+		abs = orig
+	}()
+	abs = func(path string) (string, error) {
+		return "", fmt.Errorf("error")
+	}
+	got := base()
+	assert.Equal(t, "", got)
 }

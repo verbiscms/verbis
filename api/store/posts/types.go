@@ -4,11 +4,11 @@
 
 package posts
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import (
+	"github.com/ainsleyclark/verbis/api/domain"
+)
 
 // postType
-//
-//
 func (s *Store) postType(post *domain.PostDatum) domain.PostType { //nolint
 	if s.Options.Homepage == post.Id {
 		return domain.PostType{
@@ -26,10 +26,9 @@ func (s *Store) postType(post *domain.PostDatum) domain.PostType { //nolint
 
 	// Single with resource
 	if post.HasResource() {
-		// TODO this should be the resource
 		return domain.PostType{
 			PageType: domain.SingleType,
-			Data:     post.Resource,
+			Data:     s.Theme.Resources[post.Resource],
 		}
 	}
 

@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/services/media/image"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/gabriel-vasile/mimetype"
 	"mime/multipart"
@@ -72,11 +73,12 @@ func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 
 	h, err := file.Open()
 	defer func() {
-		err := h.Close()
+		err = h.Close()
 		if err != nil {
 			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing file with the name: " + file.Filename, Operation: op, Err: err})
 		}
 	}()
+
 	if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Error opening file with the name: " + file.Filename, Operation: op, Err: err}
 	}
@@ -101,7 +103,7 @@ func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 		Extension:  filepath.Ext(file.Filename),
 		Size:       file.Size,
 		Mime:       domain.Mime(m.String()),
-		Resizer:    &Resize{},
+		Resizer:    &image.Resize{},
 		WebP:       s.webp,
 	}
 

@@ -44,13 +44,15 @@ type Stringer interface {
 // Filters represents the map and slice of filters
 type Filters map[string][]Filter
 
-// Filter represents the searching fields for searching through records.
+// Filter represents the searching fields for searching
+// through records.
 type Filter struct {
 	Operator string `json:"operator"`
 	Value    string `json:"value"`
 }
 
-// Defaults represents the default configuration for obtaining params.
+// Defaults represents the default configuration for
+// obtaining params.
 type Defaults struct {
 	Page           int         `json:"page"`
 	Limit          interface{} `json:"limit"`
@@ -58,7 +60,7 @@ type Defaults struct {
 	OrderDirection string      `json:"order_direction"`
 }
 
-// NewParams - create a new parameter type
+// New create a new parameter type.
 func New(str Stringer, def Defaults) *Params {
 	p := &Params{
 		Stringer: str,
@@ -67,10 +69,8 @@ func New(str Stringer, def Defaults) *Params {
 	return p
 }
 
-// Get
-//
-// Get query Parameters for http API routes and
-// query loops in templates.
+// Get query Parameters for http API routes and query
+// loops in templates.
 func (p *Params) Get() Params {
 	limit, limitAll := p.limit()
 	order := p.order()
@@ -84,11 +84,9 @@ func (p *Params) Get() Params {
 	}
 }
 
-// page
-//
-// Obtain the page parameter and set a default if there
-// was an error converting the page or the page number
-// is set to 0.
+// page obtains the page parameter and set a default if
+// there was an error converting the page or the page
+// number is set to 0.
 func (p *Params) page() int {
 	var page int
 	pageStr := p.Param("page")
@@ -105,11 +103,10 @@ func (p *Params) page() int {
 	return page
 }
 
-// limit
-//
-// Obtain the limit parameter and set a default if there
-// was an error converting the limit or the page number
-// is set to 0. Returns true if limit is set to "all"
+// limit obtains the limit parameter and set a default if
+// there was an error converting the limit or the page
+// number is set to 0. Returns true if limit is set
+// to "all"
 func (p *Params) limit() (int, bool) {
 	limitStr := p.Param("limit")
 	if limitStr == "all" {
@@ -129,10 +126,8 @@ func (p *Params) limit() (int, bool) {
 	return limit, false
 }
 
-// order
-//
-// Obtain the order array (order by and order direction)
-// set defaults if there is none set.
+// order obtains the order array (order by and order
+// direction) set defaults if there is none set.
 func (p *Params) order() []string {
 	order := []string{p.defaults.OrderBy, p.defaults.OrderDirection}
 
@@ -157,9 +152,7 @@ func (p *Params) order() []string {
 	return order
 }
 
-// filter
-//
-// Obtain the map of filters by unmarshalling into a
+// filter obtains the map of filters by unmarshalling into a
 // Filter, if an error occurred, filters will be
 // set to nil.
 func (p *Params) filter() map[string][]Filter {
