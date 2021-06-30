@@ -4,18 +4,76 @@
 
 package domain
 
-type StorageProvider string
+import (
+	"net/url"
+	"strings"
+)
 
-type Bucket struct {
-	Id string  `json:"id" binding:"required"` //nolint
-	Name string  `json:"name"` //nolint
-}
-
-type Buckets []Bucket
+type (
+	// Bucket
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	Bucket struct {
+		Id   string `json:"id" binding:"required"` //nolint
+		Name string `json:"name"`                  //nolint
+	}
+	// Buckets represents the slice of Bucket's.
+	Buckets []Bucket
+	// StorageProvider
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	StorageProvider string
+	// StorageFile
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	StorageFile struct {
+		URI           *url.URL
+		BaseLocalPath string
+		ID            string
+	}
+)
 
 const (
+	// StorageLocal
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	StorageLocal = StorageProvider("local")
-	StorageAWS   = StorageProvider("aws")
-	StorageGCP   = StorageProvider("google")
+	// StorageAWS
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	StorageAWS = StorageProvider("aws")
+	// StorageGCP
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	StorageGCP = StorageProvider("google")
+	// StorageAzure
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	StorageAzure = StorageProvider("azure")
 )
+
+// clean this up, bad name
+func (s StorageFile) ToURL(prefix string) string {
+	if s.Provider() == StorageLocal {
+		return "/" + s.CleanPath()
+	}
+	return s.URI.String()
+}
+
+// Provider
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+func (s *StorageFile) Provider() StorageProvider {
+	switch s.URI.Scheme {
+	case "file":
+		return StorageLocal
+	case "s3":
+		return StorageAWS
+	case "google":
+		return StorageGCP
+	case "azure":
+		return StorageAzure
+	}
+	return ""
+}
+
+// CleanPath
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+func (s *StorageFile) CleanPath() string {
+	if s.Provider() == StorageLocal {
+		return strings.TrimPrefix(strings.ReplaceAll(s.URI.Path, s.BaseLocalPath, ""), "/")
+	}
+	return s.URI.Path
+}

@@ -53,7 +53,7 @@ var (
 		Id:       1,
 		FileName: "gopher.png",
 	}
-	// The default media item with URL used
+	// The default media item with URI used
 	// for testing.
 	mediaItemURL = domain.Media{
 		Id:  1,

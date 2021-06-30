@@ -5,31 +5,24 @@
 package storage
 
 import (
-	"bytes"
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/graymeta/stow"
 	_ "github.com/graymeta/stow/azure"
-	"github.com/graymeta/stow/google"
 	_ "github.com/graymeta/stow/google"
-	"github.com/graymeta/stow/local"
-	"github.com/graymeta/stow/s3"
 	_ "github.com/graymeta/stow/s3"
 	"io"
 	"io/ioutil"
 	"net/url"
-	"strings"
+	"path/filepath"
 )
 
-// change provider
-// channge provider
-
 type Client interface {
-	Find(path string) ([]byte, error)
-	Upload(path string, contents io.Reader) (stow.Item, error)
+	Find(path string) ([]byte, domain.StorageFile, error)
+	Delete(path string) error
+	Upload(path string, size int64, contents io.Reader) (domain.StorageFile, error)
 	SetProvider(location domain.StorageProvider) error
 	SetBucket(id string) error
 	ListBuckets() (domain.Buckets, error)
@@ -40,14 +33,16 @@ type Storage struct {
 	bucket   stow.Container
 	opts     *domain.Options
 	env      *environment.Env
-	local bool
+	paths    paths.Paths
+	local    bool
 }
 
 // New parse config
 func New(env *environment.Env, opts *domain.Options) (Client, error) {
 	s := &Storage{
-		env:  env,
-		opts: opts,
+		env:   env,
+		opts:  opts,
+		paths: paths.Get(),
 	}
 
 	err := s.SetProvider(opts.StorageProvider)
@@ -64,148 +59,68 @@ func New(env *environment.Env, opts *domain.Options) (Client, error) {
 }
 
 // Upload something TODO
-func (s *Storage) Upload(path string, contents io.Reader) (stow.Item, error) {
+func (s *Storage) Upload(path string, size int64, contents io.Reader) (domain.StorageFile, error) {
 	const op = "Storage.Upload"
 
-	r := strings.NewReader("this is a test")
-
-	buf := &bytes.Buffer{}
-	length, err := io.Copy(buf, contents)
+	item, err := s.bucket.Put(path, contents, size, nil)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Error reading file", Operation: op, Err: err}
+		return domain.StorageFile{}, err
 	}
 
-	item, err := s.bucket.Put(path, r, length, nil)
-	if err != nil {
-		return nil, err
+	sp := domain.StorageFile{
+		URI:           item.URL(),
+		BaseLocalPath: s.paths.Storage,
+		ID:            item.ID(),
 	}
 
-	return item, nil
+	return sp, nil
 }
 
-func (s *Storage) Find(path string) ([]byte, error) {
+func (s *Storage) Find(path string) ([]byte, domain.StorageFile, error) {
+	const op = "Storage.Find"
+
 	if !s.local {
 		path = s.bucket.Name() + "/" + path
+	} else {
+		path = filepath.Join(s.paths.Storage, path)
 	}
 
 	item, err := s.provider.ItemByURL(&url.URL{Path: path})
 	if err != nil {
-		return nil, err
+		return nil, domain.StorageFile{}, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the path: " + path, Operation: op, Err: err}
 	}
-
-	// TODO return the url?
-	fmt.Println(item.URL())
 
 	file, err := item.Open()
 	if err != nil {
-		return nil, err
+		return nil, domain.StorageFile{}, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file", Operation: op, Err: err}
 	}
 	defer file.Close()
 
-	b, err := ioutil.ReadAll(file)
+	buf, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, err
+		return nil, domain.StorageFile{}, &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
 	}
 
-	return b, nil
+	sp := domain.StorageFile{
+		URI:           item.URL(),
+		BaseLocalPath: s.paths.Storage,
+		ID:            item.ID(),
+	}
+
+	return buf, sp, nil
 }
 
-func (s *Storage) SetProvider(provider domain.StorageProvider) error {
-	const op = "Storage.SetProvider"
+func (s *Storage) Delete(path string) error {
+	const op = "Storage.Delete"
 
-	p, err := s.getProvider(provider)
-	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Error setting provider", Operation: op, Err: err}
-	}
-	s.provider = p
-
-	return nil
-}
-
-func (s *Storage) SetBucket(id string) error {
-	const op = "Storage.SetBucket"
-
-	if s.opts.StorageProvider == domain.StorageLocal {
-		id = ""
+	if s.local {
+		path = filepath.Join(s.paths.Storage, path)
 	}
 
-	container, err := s.provider.Container(id)
+	err := s.bucket.RemoveItem(path)
 	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Error setting bucket", Operation: op, Err: err}
-	}
-	s.bucket = container
-
-	return nil
-}
-
-func (s *Storage) CreateBucket(name string) error {
-	const op = "Storage.CreateBucket"
-
-	_, err := s.provider.CreateContainer(name)
-	if err != nil {
-		return  &errors.Error{Code: errors.INVALID, Message: "Error creating bucket: " + name, Operation: op, Err: err}
+		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file", Operation: op, Err: err}
 	}
 
 	return nil
-}
-
-func (s *Storage) ListBuckets() (domain.Buckets, error) {
-	const op = "Storage.ListBuckets"
-
-	var buckets = make(domain.Buckets, 0)
-	err := stow.WalkContainers(s.provider, stow.NoPrefix, 100, func(c stow.Container, err error) error {
-		fmt.Println(err, c.ID(), c.Name())
-		if err != nil {
-			return err
-		}
-		buckets = append(buckets, domain.Bucket{
-			Id:   c.ID(),
-			Name: c.Name(),
-		})
-		return nil
-	})
-
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Error obtaining buckets", Operation: op, Err: err}
-	}
-
-	return  nil, nil
-}
-
-func (s *Storage) getProvider(provider domain.StorageProvider) (stow.Location, error) {
-	var (
-		cont stow.Location
-		err  error
-	)
-
-	s.local = false
-
-	switch provider {
-	case domain.StorageLocal:
-		cont, err = stow.Dial(local.Kind, stow.ConfigMap{
-			local.ConfigKeyPath: paths.Get().Storage,
-		})
-		s.local = true
-	case domain.StorageAWS:
-		cont, err = stow.Dial(s3.Kind, stow.ConfigMap{
-			s3.ConfigAccessKeyID: s.env.AWSAccessKey,
-			s3.ConfigSecretKey:   s.env.AWSSecret,
-		})
-	case domain.StorageGCP:
-		json, err := ioutil.ReadFile(s.env.GCPJson)
-		if err != nil {
-			return nil, err
-		}
-		cont, err = stow.Dial(google.Kind, stow.ConfigMap{
-			google.ConfigJSON:      string(json),
-			google.ConfigProjectId: s.env.GCPProjectId,
-		})
-		// TODO, put in ENV
-		//case domain.StorageAzure:
-		//	cont, err = stow.Dial(azure.Kind, stow.ConfigMap{
-		//		azure.ConfigKey:
-		//	})
-	}
-
-	return cont, err
 }

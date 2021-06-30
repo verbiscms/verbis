@@ -21,11 +21,11 @@ type headerWriter interface {
 // Headers represents the the header struct for setting gin headers
 // for frontend caching.
 type headers struct {
-	options domain.Options
+	options *domain.Options
 }
 
 // NewCache - Construct
-func newHeaders(o domain.Options) *headers {
+func newHeaders(o *domain.Options) *headers {
 	return &headers{
 		options: o,
 	}

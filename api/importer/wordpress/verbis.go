@@ -233,11 +233,11 @@ func (c *Convert) parseContent(content string) (string, []FailedMedia, error) {
 
 		//media, err := c.store.Media.Upload(file, c.owner.Token)
 		//if err != nil {
-		//	failed = append(failed, FailedMedia{URL: url, Error: err})
+		//	failed = append(failed, FailedMedia{URI: url, Error: err})
 		//	return ""
 		//}
 		//
-		//return media.URL
+		//return media.URI
 		return ""
 	})
 

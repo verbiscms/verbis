@@ -9,33 +9,40 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"sync"
+)
+
+var (
+	opts *domain.Options
+	once sync.Once
 )
 
 // Struct
 //
 // Returns the options struct for use in the API.
 // Logs errors.INTERNAL and panics if any condition failed.
-func (s *Store) Struct() domain.Options {
-	const op = "OptionStore.GetStruct"
+func (s *Store) Struct() *domain.Options {
+	const op = "OptionStore.Struct"
 
-	m, err := s.Map()
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
-		return domain.Options{}
-	}
+	once.Do(func() {
+		m, err := s.Map()
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
+		}
 
-	mOpts, err := json.Marshal(m)
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
-		return domain.Options{}
-	}
+		mOpts, err := json.Marshal(m)
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
+		}
 
-	var options domain.Options
-	err = json.Unmarshal(mOpts, &options)
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
-		return domain.Options{}
-	}
+		var options *domain.Options
+		err = json.Unmarshal(mOpts, options)
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
+		}
 
-	return options
+		options = opts
+	})
+
+	return opts
 }

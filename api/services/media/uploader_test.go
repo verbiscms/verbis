@@ -7,6 +7,7 @@ package media
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/services/media/uploader"
 	"mime/multipart"
 	"os"
 	"time"
@@ -239,7 +240,7 @@ func (t *MediaServiceTestSuite) TestUploader_Dir() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			u := uploader{
+			u := uploaderold.uploader{
 				Options:    &test.input,
 				UploadPath: test.path,
 			}
@@ -255,7 +256,7 @@ func (t *MediaServiceTestSuite) TestUploader_Dir() {
 
 func (t *MediaServiceTestSuite) TestUploader_SaveOriginal_Error() {
 	file, _ := os.Open("") // Ignore on purpose
-	u := uploader{File: file}
+	u := uploaderold.uploader{File: file}
 	_, err := u.SaveOriginal(t.T().TempDir())
 	t.Error(err)
 }
@@ -292,7 +293,7 @@ func (t *MediaServiceTestSuite) TestUploader_URL() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			u := uploader{
+			u := uploaderold.uploader{
 				Options: &test.input,
 				Config:  &domain.ThemeConfig{Media: test.cfg},
 			}
@@ -319,7 +320,7 @@ func (t *MediaServiceTestSuite) TestUploader_FileSize() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			u := uploader{}
+			u := uploaderold.uploader{}
 			got := u.FileSize(test.input)
 			if test.want == 0 {
 				t.Equal(test.want, got)

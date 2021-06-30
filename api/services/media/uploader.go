@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/services/media/image"
 	"github.com/ainsleyclark/verbis/api/services/webp"
+	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/google/uuid"
 	"github.com/gookit/color"
 	"io"
@@ -24,9 +25,9 @@ import (
 	"time"
 )
 
-// uploader defines the helper for uploading media
+// uploaderold defines the helper for uploading media
 // items.
-type uploader struct {
+type uploaderold struct {
 	File       multipart.File
 	Options    *domain.Options
 	Config     *domain.ThemeConfig
@@ -38,6 +39,7 @@ type uploader struct {
 	Mime       domain.Mime
 	Resizer    image.Resizer
 	WebP       webp.Execer
+	Storage    storage.Client
 }
 
 // Save obtains the directory of where the file should be
@@ -45,7 +47,7 @@ type uploader struct {
 // resized (images) media item. ToWebp is
 // called concurrently to convert
 // images to .webp.
-func (u *uploader) Save() (domain.Media, error) {
+func (u *uploaderold) Save() (domain.Media, error) {
 	// Obtain the file path.
 	filePath, err := u.Dir()
 	if err != nil {
@@ -93,7 +95,7 @@ func (u *uploader) Save() (domain.Media, error) {
 // by date, a date path will be created if it does
 // not exist, for example '2020/01', otherwise
 // it returns an empty string.
-func (u *uploader) Dir() (string, error) {
+func (u *uploaderold) Dir() (string, error) {
 	const op = "Media.Uploader.Dir"
 
 	if !u.Options.MediaOrganiseDate {
@@ -120,7 +122,7 @@ func (u *uploader) Dir() (string, error) {
 // CleanFileName returns a cleaned version of the filename
 // by removing any unnecessary characters. If the filename
 // already exists, a version number will be added.
-func (u *uploader) CleanFileName() string {
+func (u *uploaderold) CleanFileName() string {
 	name := files.RemoveFileExtension(u.FileName)
 
 	cleanedFile := strings.ReplaceAll(name, " ", "-")
@@ -152,11 +154,19 @@ func (u *uploader) CleanFileName() string {
 // a new UUID when it has been saved successfully.
 // Returns errors.INTERNAL if the file could not be copied
 // or created.
-func (u *uploader) SaveOriginal(path string) (uuid.UUID, error) {
+func (u *uploaderold) SaveOriginal(path string) (uuid.UUID, error) {
 	const op = "Media.Uploader.Save"
 
 	key := uuid.New()
 	dest := path + string(os.PathSeparator) + key.String() + u.Extension
+
+	//s := storage.Storage{}
+	//upload, err := s.Upload(dest, u.File)
+	//if err != nil {
+	//	return uuid.UUID{}, err
+	//}
+	//
+	//return key, nil
 
 	out, err := os.Create(dest)
 	if err != nil {
@@ -176,7 +186,7 @@ func (u *uploader) SaveOriginal(path string) (uuid.UUID, error) {
 // options and decodes, resizes and saves the
 // media size.
 // Returns nil, (with no error) if the media item can not be resized.
-func (u *uploader) Resize(name, path string) (domain.MediaSizes, error) {
+func (u *uploaderold) Resize(name, path string) (domain.MediaSizes, error) {
 	if !u.Mime.CanResize() {
 		return nil, nil
 	}
@@ -233,7 +243,7 @@ func (u *uploader) Resize(name, path string) (domain.MediaSizes, error) {
 // is set to true. If false the function will
 // return the public uploads folder
 // by default.
-func (u *uploader) URL() string {
+func (u *uploaderold) URL() string {
 	path := "/" + strings.ReplaceAll(u.Config.Media.UploadPath, "/", "")
 	if !u.Options.MediaOrganiseDate {
 		return path
@@ -245,7 +255,7 @@ func (u *uploader) URL() string {
 
 // FileSize obtains the filesize of the path given, if the
 // path does not exist, 0 will be returned.
-func (u *uploader) FileSize(path string) int64 {
+func (u *uploaderold) FileSize(path string) int64 {
 	fi, err := os.Stat(path)
 	if err != nil {
 		return 0
@@ -258,7 +268,7 @@ func (u *uploader) FileSize(path string) int64 {
 // and converts the images to webp. If the file
 // exists, and an error occurred, it will be
 // logged.
-func (u *uploader) ToWebP(media domain.Media) {
+func (u *uploaderold) ToWebP(media domain.Media) {
 	if !media.Mime.CanResize() {
 		return
 	}

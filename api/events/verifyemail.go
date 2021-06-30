@@ -39,7 +39,7 @@ package events
 //		return &errors.Error{Code: errors.INTERNAL, Message: "VerifyEmail should be passed to dispatch", Operation: op, Err: ErrWrongType}
 //	}
 //
-//	rp.Token = encryption.MD5Hash(strconv.Itoa(rp.User.Id) + rp.User.Email)
+//	rp.Token = encryption.MD5Hash(strconv.Itoa(rp.User.ID) + rp.User.Email)
 //
 //	err := r.event.send(rp, recipients, attachments)
 //	if err != nil {

@@ -31,6 +31,6 @@ type Media struct {
 func New(d *deps.Deps) *Media {
 	return &Media{
 		Deps:    d,
-		service: media.New(d.Options, d.Store.Media.Exists),
+		service: media.New(d.Options, d.Storage, d.Store.Media.Exists),
 	}
 }

@@ -31,11 +31,11 @@ var App = struct {
 }
 
 const (
-	// APIRoute is the URL route for incoming and outgoing
+	// APIRoute is the URI route for incoming and outgoing
 	// requests.
 	APIRoute = "/api/v1"
 
-	// Repo is the URL for the hosted github Verbis
+	// Repo is the URI for the hosted github Verbis
 	// repository.
 	Repo = "https://github.com/ainsleyclark/verbis"
 
