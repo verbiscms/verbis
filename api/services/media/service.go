@@ -78,7 +78,7 @@ func (s *Service) Test(file *multipart.FileHeader) (domain.Media, error) {
 	defer func() {
 		err = u.Close()
 		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing uploaderold" Operation: op, Err: err})
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing uploaderold", Operation: op, Err: err})
 		}
 	}()
 
