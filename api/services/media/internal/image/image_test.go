@@ -46,14 +46,14 @@ func (m *mockFileSeekErr) Close() error {
 	return nil
 }
 
-func UtilTestDecode(fn func(file multipart.File) Imager, t *testing.T) {
+func UtilTestDecode(fn func(file multipart.File) Imager, path string, t *testing.T) {
 	tt := map[string]struct {
 		input func() (multipart.File, func() error)
 		want interface{}
 	}{
 		"Success": {
 			func() (multipart.File, func() error) {
-				m, err := Setup("gopher.png")
+				m, err := Setup(path)
 				assert.NoError(t, err)
 				file, _ := m.Open() // Ignore on purpose
 				return file, file.Close
@@ -83,7 +83,8 @@ func UtilTestDecode(fn func(file multipart.File) Imager, t *testing.T) {
 			defer teardown()
 
 			imager := fn(file)
-			enc, err := imager.Decode(imager, 100)
+			enc, err := imager.Decode()
+			fmt.Println(err)
 			if err != nil {
 				assert.Contains(t, errors.Message(err), test.want)
 				return

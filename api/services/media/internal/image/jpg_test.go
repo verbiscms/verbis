@@ -9,12 +9,14 @@ import (
 	"testing"
 )
 
+const TestJPG = "gopher.jpg"
+
 func TestJPG_Encode(t *testing.T) {
-	UtilTestEncode(func(file multipart.File) Imager {
-		return &JPG{File: file}
-	}, t)
+	UtilTestEncode(&JPG{}, t)
 }
 
 func TestJPG_Decode(t *testing.T) {
-	UtilTestDecode(&JPG{}, t)
+	UtilTestDecode(func(file multipart.File) Imager {
+		return &JPG{File: file}
+	}, TestJPG, t)
 }
