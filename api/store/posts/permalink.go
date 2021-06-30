@@ -11,7 +11,7 @@ import (
 
 // permalink
 //
-// Returns the posts absolute URL with resources and
+// Returns the posts absolute URI with resources and
 // categories. Forward slashes are added to the
 // permalink if they are enabled within the
 // options.

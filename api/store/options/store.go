@@ -13,7 +13,7 @@ import (
 // to interact with the database.
 type Repository interface {
 	Map() (domain.OptionsDBMap, error)
-	Struct() domain.Options
+	Struct() *domain.Options
 	Find(name string) (interface{}, error)
 	Insert(options domain.OptionsDBMap) error
 	Create(name string, value interface{}) error

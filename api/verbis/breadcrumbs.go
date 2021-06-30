@@ -26,7 +26,7 @@ type Breadcrumbs struct {
 
 // Item represents a singular crumb. It includes the link,
 // link text, (the post title or a clean version of the
-// URL segment if no post was found), the position of
+// URI segment if no post was found), the position of
 // the breadcrumb and weather or not the item was
 // successfully retrieved from the database.
 type Item struct {
@@ -63,7 +63,7 @@ func (i Items) Reverse() Items {
 // post. If the breadcrumbs are not enabled from the
 // options, an empty Breadcrumbs type will be
 // returned. The homepage is automatically
-// prepended and subsequent URL's are
+// prepended and subsequent URI's are
 // split and matches are looked up
 // from the database.
 func GetBreadcrumbs(post *domain.PostDatum, d *deps.Deps) Breadcrumbs {

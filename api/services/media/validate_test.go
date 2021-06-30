@@ -52,7 +52,7 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 			domain.Options{},
 			nil,
 		},
-		"Mime": {
+		"mime": {
 			t.MediaPath + "/gopher.png",
 			domain.ThemeConfig{},
 			domain.Options{},
@@ -130,7 +130,7 @@ func (t *MediaServiceTestSuite) TestValidator_Mime() {
 			},
 			nil,
 		},
-		"Bad Mime": {
+		"Bad mime": {
 			t.MediaPath + "/gopher.png",
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{

@@ -9,9 +9,11 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/services/site"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/services/webp"
+	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/sys"
 	"github.com/ainsleyclark/verbis/api/tpl"
@@ -25,41 +27,29 @@ import (
 // at a given time, i.e. one per Site built.
 type Deps struct {
 	Env *environment.Env
-
 	// The database layer
 	Store *store.Repository
-
 	// Configuration file of the site
 	Config *domain.ThemeConfig
-
 	// Site
 	Site site.Repository
-
 	// Theme
-	Theme theme.Repository
-
+	Theme   theme.Repository
 	Watcher *watchers.Batch
-
 	// Options
 	Options *domain.Options
-
 	// Paths
 	Paths paths.Paths
-
 	// File System (Web and SPA)
 	FS *verbisfs.FileSystem
-
 	// Webp
 	WebP webp.Execer
-
 	// template
-	tmpl tpl.TemplateHandler
-
-	System sys.System
-
+	tmpl      tpl.TemplateHandler
+	System    sys.System
+	Storage   storage.Client
 	Installed bool
-
-	Running bool
+	Running   bool
 }
 
 func (d *Deps) ThemePath() string {
@@ -117,23 +107,29 @@ func New(cfg Config) *Deps {
 		panic("Must have a configuration")
 	}
 
-	var opts domain.Options
+	var opts *domain.Options
 	if cfg.Running {
 		opts = cfg.Store.Options.Struct()
+	}
+
+	st, err := storage.New(cfg.Env, opts)
+	if err != nil {
+		logger.Panic(err.Error())
 	}
 
 	d := &Deps{
 		Env:     cfg.Env,
 		Store:   cfg.Store,
 		Config:  cfg.Config,
-		Options: &opts,
+		Options: opts,
 		Paths:   cfg.Paths,
 		tmpl:    nil,
 		Running: cfg.Running,
-		Site:    site.New(&opts, cfg.System),
+		Site:    site.New(opts, cfg.System),
 		Theme:   theme.New(),
 		FS:      verbisfs.New(api.Production, cfg.Paths),
 		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
+		Storage: st,
 		System:  cfg.System,
 	}
 

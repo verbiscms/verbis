@@ -38,9 +38,9 @@ const (
 	Web = API + string(os.PathSeparator) + "www"
 	// Uploads defines the file path for media uploads within
 	// Verbis.
-	Uploads = Storage + string(os.PathSeparator) + "uploads"
+	Uploads = "uploads"
 	// Forms defines the file path for form dumps within Verbis.
-	Forms = Storage + string(os.PathSeparator) + "forms"
+	Forms = "forms"
 	// Bin defines the file path any independent executables.
 	Bin = string(os.PathSeparator) + "bin"
 )

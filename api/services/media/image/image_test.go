@@ -24,10 +24,10 @@ package image
 //		mock  func(m *mocks.Imager)
 //		want  interface{}
 //	}{
-//		"Decode Error": {
+//		"decode Error": {
 //			domain.MediaSize{},
 //			func(m *mocks.Imager) {
-//				m.On("Decode").Return(fmt.Errorf("error"))
+//				m.On("decode").Return(fmt.Errorf("error"))
 //			},
 //			nil,
 //		},
@@ -105,7 +105,7 @@ package image
 //			},
 //			"error",
 //		},
-//		"Decode Error": {
+//		"decode Error": {
 //			func() (multipart.File, func() error) {
 //				m := t.File(filepath.Join(t.MediaPath, "gopher.png"))
 //				file, _ := m.Open() // Ignore on purpose
@@ -121,7 +121,7 @@ package image
 //			defer teardown()
 //
 //			j := &JPG{File: file}
-//			decode, err := j.Decode()
+//			decode, err := j.decode()
 //			if err != nil {
 //				t.Contains(err.Error(), test.want)
 //				return
@@ -155,7 +155,7 @@ package image
 //			},
 //			"error",
 //		},
-//		"Decode Error": {
+//		"decode Error": {
 //			func() (multipart.File, func() error) {
 //				m := t.File(filepath.Join(t.MediaPath, "gopher.jpg"))
 //				file, _ := m.Open() // Ignore on purpose
@@ -171,7 +171,7 @@ package image
 //			defer teardown()
 //
 //			j := &PNG{File: file}
-//			decode, err := j.Decode()
+//			decode, err := j.decode()
 //			if err != nil {
 //				t.Contains(err.Error(), test.want)
 //				return

@@ -11,7 +11,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/services/media/image"
+	"github.com/ainsleyclark/verbis/api/services/media/internal/uploader"
 	"github.com/ainsleyclark/verbis/api/services/webp"
+	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/gabriel-vasile/mimetype"
 	"mime/multipart"
 	"path/filepath"
@@ -25,6 +27,7 @@ type Library interface {
 	Serve(media domain.Media, path string, acceptWebP bool) ([]byte, domain.Mime, error)
 	Validate(file *multipart.FileHeader) error
 	Delete(item domain.Media)
+	Test(file *multipart.FileHeader) (domain.Media, error)
 }
 
 // Service
@@ -37,16 +40,17 @@ type Service struct {
 	paths   paths.Paths
 	exists  func(fileName string) bool
 	webp    webp.Execer
+	storage storage.Client
 }
 
-// ExistsFunc is used by the uploader to determine if a
+// ExistsFunc is used by the uploaderold to determine if a
 // media item exists in the library.
 type ExistsFunc func(fileName string) bool
 
 // New
 //
 // Creates a new Service.
-func New(opts *domain.Options, fn ExistsFunc) *Service {
+func New(opts *domain.Options, store storage.Client, fn ExistsFunc) *Service {
 	p := paths.Get()
 	return &Service{
 		options: opts,
@@ -54,7 +58,35 @@ func New(opts *domain.Options, fn ExistsFunc) *Service {
 		paths:   p,
 		exists:  fn,
 		webp:    webp.New(p.Bin + webp.Path),
+		storage: store,
 	}
+}
+
+func (s *Service) Test(file *multipart.FileHeader) (domain.Media, error) {
+	const op = "Media.Upload"
+
+	u, err := uploader.New(uploader.Config{
+		File:        file,
+		Options:     s.options,
+		Config:      s.config,
+		Exists:      s.exists,
+		WebP:        s.webp,
+		StoragePath: s.paths.Storage,
+		Storage:     s.storage,
+	})
+
+	defer func() {
+		err = u.Close()
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing uploaderold" Operation: op, Err: err})
+		}
+	}()
+
+	if err != nil {
+		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating uploaderold for file", Operation: op, Err: err}
+	}
+
+	return u.Save()
 }
 
 // Upload
@@ -85,7 +117,7 @@ func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 
 	m, err := mimetype.DetectReader(h)
 	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Mime type not found", Operation: op, Err: err}
+		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "mime type not found", Operation: op, Err: err}
 	}
 
 	_, err = h.Seek(0, 0)
@@ -93,7 +125,7 @@ func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking file", Operation: op, Err: err}
 	}
 
-	u := uploader{
+	u := uploaderold{
 		File:       h,
 		Options:    s.options,
 		Config:     s.config,
@@ -105,6 +137,7 @@ func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 		Mime:       domain.Mime(m.String()),
 		Resizer:    &image.Resize{},
 		WebP:       s.webp,
+		Storage:    s.storage,
 	}
 
 	return u.Save()

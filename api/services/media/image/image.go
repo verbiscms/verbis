@@ -7,6 +7,7 @@ package image
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/disintegration/imaging"
 	"image"
 	"image/jpeg"
@@ -28,7 +29,8 @@ type Imager interface {
 }
 
 // Resize implements the Resizer interface.
-type Resize struct{}
+type Resize struct {
+}
 
 // Resize satisfies the Resizer by decoding, cropping and
 // resizing and finally saving the resized image.
@@ -55,7 +57,8 @@ func (i *Resize) Resize(imager Imager, dest string, media domain.MediaSize, comp
 
 // PNG implementation of an Imager.
 type PNG struct {
-	File multipart.File
+	File    multipart.File
+	Storage storage.Client
 }
 
 // Decode
@@ -63,7 +66,7 @@ type PNG struct {
 // Seeks the file and decodes the file into a new PNG type
 // Returns errors.INTERNAL if there was an error decoding.
 func (p *PNG) Decode() (image.Image, error) {
-	const op = "PNG.Decode"
+	const op = "PNG.decode"
 	_, err := p.File.Seek(0, 0)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking PNG file", Operation: op, Err: err}
@@ -92,6 +95,7 @@ func (p *PNG) Save(img image.Image, path string, comp int) error {
 // JPG implementation of an Imager.
 type JPG struct {
 	File        multipart.File
+	Storage     storage.Client
 	Compression int
 }
 
@@ -100,7 +104,7 @@ type JPG struct {
 // Seeks the file and decodes the file into a new PNG type
 // Returns errors.INTERNAL if there was an error decoding.
 func (j *JPG) Decode() (image.Image, error) {
-	const op = "JPG.Decode"
+	const op = "JPG.decode"
 	_, err := j.File.Seek(0, 0)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking JPG file", Operation: op, Err: err}

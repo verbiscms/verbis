@@ -76,6 +76,13 @@ func (m *Media) UploadPath() string {
 	return m.FilePath + string(os.PathSeparator) + m.UUID.String() + m.Extension()
 }
 
+// UploadPath returns the upload path of the media item
+// without the storage uploads path, for example:
+// 2020/01/photo.jpg
+func (m *Media) UploadPathNew(base string) string {
+	return filepath.Join(base, m.FilePath, m.UUID.String()+m.Extension())
+}
+
 // IsOrganiseYearMonth returns a bool indicating if the
 // file has been saved a year month path, i.e 2020/01.
 func (m *Media) IsOrganiseYearMonth() bool {
@@ -94,7 +101,7 @@ func (m *Media) Extension() string {
 func (m *Media) PossibleFiles() []string {
 	files := []string{
 		m.UploadPath(),
-		m.UploadPath() + ".webp",
+		m.UploadPath() + WebPExtension,
 	}
 	for _, v := range m.Sizes {
 		path := m.FilePath + string(os.PathSeparator) + v.UUID.String() + m.Extension()

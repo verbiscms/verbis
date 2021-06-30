@@ -39,7 +39,7 @@ func (s *Store) create(f domain.PostField) (domain.PostField, error) {
 	//if err != nil {
 	//	return domain.PostField{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created field ID", Operation: op, Err: err}
 	//}
-	//f.Id = int(id)
+	//f.ID = int(id)
 
 	return f, nil
 }
