@@ -5,6 +5,7 @@
 package uploader
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
@@ -36,7 +37,7 @@ type Uploader struct {
 	mime domain.Mime
 	// gopher
 	bare    string
-	resizer img.
+	resizer resizer.Resizer
 }
 
 type Config struct {
@@ -71,7 +72,10 @@ func New(cfg Config) (*Uploader, error) {
 		open:      file,
 		extension: filepath.Ext(cfg.File.Filename),
 		mime:      domain.Mime(mimeType.String()),
-		resizer:   &resizer.Resize{},
+		resizer:  &resizer.Resize{
+			Storage:    cfg.Storage,
+			Compression: cfg.Options.MediaCompression,
+		},
 		bare:      files.RemoveFileExtension(cfg.File.Filename),
 	}, nil
 }
@@ -112,6 +116,13 @@ func (u *Uploader) Save() (domain.Media, error) {
 	}
 
 	color.Red.Printf("%+v\n", m)
+
+	_, err = u.resize(name, dir)
+	if err != nil {
+		return domain.Media{}, err
+	}
+
+
 
 	//// Convert images to WebP.
 	u.toWebP(m)
@@ -191,8 +202,6 @@ func (u *Uploader) resize(name, path string) (domain.MediaSizes, error) {
 		return nil, nil
 	}
 
-	comp := u.Options.MediaCompression
-
 	savedSizes := make(domain.MediaSizes)
 	for key, size := range u.Options.MediaSizes {
 		uniq := uuid.New()
@@ -205,30 +214,32 @@ func (u *Uploader) resize(name, path string) (domain.MediaSizes, error) {
 
 		// Resize and save if the file is a JPG.
 		if u.mime.IsJPG() {
-			j := img.JPG{File: u.open}
-			err := u.resizer.Resize(&j, localPath, size, comp)
+			j := image.JPG{File: u.open}
+			upload, err := u.resizer.Resize(&j, localPath, size)
 			if err != nil {
 				return nil, err
 			}
+			fmt.Println(upload)
 		}
 
 		// Resize and save if the file is a PNG.
 		if u.mime.IsPNG() {
-			p := img.PNG{File: u.open}
-			err := u.resizer.Resize(&p, localPath, size, comp)
+			p := image.PNG{File: u.open}
+			upload, err := u.resizer.Resize(&p, localPath, size)
 			if err != nil {
 				return nil, err
 			}
+			fmt.Println(upload)
 		}
 
 		logger.Debug("Saved resized image with the name: " + urlName)
 
 		savedSizes[key] = domain.MediaSize{
 			UUID:     uniq,
-			Url:      item.ToURL(paths.Uploads),
+			//Url:      item.ToURL(paths.Uploads),
 			Name:     urlName,
 			SizeName: size.SizeName,
-			FileSize: u.FileSize(path + string(os.PathSeparator) + uniq.String() + u.Extension),
+			//FileSize: u.FileSize(path + string(os.PathSeparator) + uniq.String() + u.Extension),
 			Width:    size.Width,
 			Height:   size.Height,
 			Crop:     size.Crop,

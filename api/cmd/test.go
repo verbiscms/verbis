@@ -53,7 +53,13 @@ var (
 				MediaUploadMaxWidth:  0,
 				MediaUploadMaxHeight: 0,
 				MediaOrganiseDate:    true,
-				MediaSizes:           nil,
+				MediaSizes:           domain.MediaSizes{
+					"test": domain.MediaSize{
+						Width:    300,
+						Height:   300,
+						Crop:     false,
+					},
+				},
 			}, client, func(fileName string) bool {
 				return false
 			})
