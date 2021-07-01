@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
-	"os"
 	"path/filepath"
 	"time"
 )
@@ -69,17 +68,7 @@ const (
 // UploadPath returns the upload path of the media item
 // without the storage uploads path, for example:
 // 2020/01/photo.jpg
-func (m *Media) UploadPath() string {
-	if !m.IsOrganiseYearMonth() {
-		return m.UUID.String() + m.Extension()
-	}
-	return m.FilePath + string(os.PathSeparator) + m.UUID.String() + m.Extension()
-}
-
-// UploadPath returns the upload path of the media item
-// without the storage uploads path, for example:
-// 2020/01/photo.jpg
-func (m *Media) UploadPathNew(base string) string {
+func (m *Media) UploadPath(base string) string {
 	return filepath.Join(base, m.FilePath, m.UUID.String()+m.Extension())
 }
 
@@ -100,11 +89,11 @@ func (m *Media) Extension() string {
 // does not include the upload path.
 func (m *Media) PossibleFiles() []string {
 	files := []string{
-		m.UploadPath(),
-		m.UploadPath() + WebPExtension,
+		m.UploadPath(""),
+		m.UploadPath("") + WebPExtension,
 	}
 	for _, v := range m.Sizes {
-		path := m.FilePath + string(os.PathSeparator) + v.UUID.String() + m.Extension()
+		path := filepath.Join(m.FilePath, v.UUID.String()+m.Extension())
 		files = append(files, path, path+WebPExtension)
 	}
 	return files

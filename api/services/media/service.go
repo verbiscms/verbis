@@ -118,5 +118,17 @@ func (s *Service) Validate(file *multipart.FileHeader) error {
 //
 // Logs errors.INTERNAL if the file could not be deleted.
 func (s *Service) Delete(item domain.Media) {
-	deleteItem(item, s.paths.Uploads)
+	const op = "Service.Delete"
+
+	items := item.PossibleFiles()
+	for _, path := range items {
+		err := s.storage.Delete(path)
+
+		// Exists func
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + path, Operation: op, Err: err})
+		}
+
+		logger.Debug("Deleted file with the path: " + path)
+	}
 }

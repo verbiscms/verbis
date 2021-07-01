@@ -7,7 +7,6 @@ package media
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"io/ioutil"
 )
 
 // Serve
@@ -25,14 +24,14 @@ func (s *Service) Serve(media domain.Media, path string, acceptWebP bool) ([]byt
 	)
 
 	if acceptWebP && s.options.MediaServeWebP {
-		data, err = ioutil.ReadFile(path + domain.WebPExtension)
+		data, _, err = s.storage.Find(path + domain.WebPExtension)
 		if err != nil {
-			data, err = ioutil.ReadFile(path)
+			data, _, err = s.storage.Find(path)
 		} else {
-			mime = "image/webp"
+			return data, "image/webp", nil
 		}
 	} else {
-		data, err = ioutil.ReadFile(path)
+		data, _, err = s.storage.Find(path)
 	}
 
 	if err != nil {

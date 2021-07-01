@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"os"
+	"path/filepath"
 )
 
 // Find
@@ -79,7 +79,7 @@ func (s *Store) FindByURL(url string) (domain.Media, string, error) {
 
 	err := s.DB().Get(&media, q.Build())
 	if err == nil {
-		return media, s.Paths.Uploads + string(os.PathSeparator) + media.UploadPath(), nil
+		return media, filepath.Join(media.FilePath, media.UUID.String()+media.Extension()), nil
 	}
 
 	// Test sizes.
@@ -94,7 +94,7 @@ func (s *Store) FindByURL(url string) (domain.Media, string, error) {
 
 	for _, v := range media.Sizes {
 		if v.Url == url {
-			return media, s.Paths.Uploads + string(os.PathSeparator) + media.FilePath + string(os.PathSeparator) + v.UUID.String() + media.Extension(), nil
+			return media, filepath.Join(media.FilePath, v.UUID.String()+media.Extension()), nil
 		}
 	}
 
