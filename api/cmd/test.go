@@ -53,11 +53,11 @@ var (
 				MediaUploadMaxWidth:  0,
 				MediaUploadMaxHeight: 0,
 				MediaOrganiseDate:    true,
-				MediaSizes:           domain.MediaSizes{
+				MediaSizes: domain.MediaSizes{
 					"test": domain.MediaSize{
-						Width:    300,
-						Height:   300,
-						Crop:     false,
+						Width:  300,
+						Height: 300,
+						Crop:   false,
 					},
 				},
 			}, client, func(fileName string) bool {
@@ -70,7 +70,7 @@ var (
 				return
 			}
 
-			_, err = media.Test(file)
+			_, err = media.Upload(file)
 			if err != nil {
 				printError(err.Error())
 				return

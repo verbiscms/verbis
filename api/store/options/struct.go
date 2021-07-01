@@ -13,8 +13,12 @@ import (
 )
 
 var (
-	opts *domain.Options
-	once sync.Once
+	// opts is an alias for a singleton for the main Verbis
+	// options.
+	opts = &domain.Options{}
+	// once ensures the options are set only once upon
+	// initialisation.
+	once = &sync.Once{}
 )
 
 // Struct
@@ -35,13 +39,10 @@ func (s *Store) Struct() *domain.Options {
 			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
 		}
 
-		var options *domain.Options
-		err = json.Unmarshal(mOpts, options)
+		err = json.Unmarshal(mOpts, &opts)
 		if err != nil {
 			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
 		}
-
-		options = opts
 	})
 
 	return opts

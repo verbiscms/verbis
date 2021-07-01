@@ -45,7 +45,12 @@ func New(env *environment.Env, opts *domain.Options) (Client, error) {
 		paths: paths.Get(),
 	}
 
-	err := s.SetProvider(opts.StorageProvider)
+	provider := opts.StorageProvider
+	if provider == "" {
+		provider = domain.StorageLocal
+	}
+
+	err := s.SetProvider(provider)
 	if err != nil {
 		return nil, err
 	}
