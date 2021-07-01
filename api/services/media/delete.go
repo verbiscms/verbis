@@ -3,36 +3,3 @@
 // license that can be found in the LICENSE file.
 
 package media
-
-import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"os"
-)
-
-// deleteItem
-//
-// Removes possible file combinations from the file
-// system including webP's. If the file does
-// not exist it will be skipped.
-func deleteItem(item domain.Media, uploadPath string) {
-	const op = "Service.Delete"
-
-	items := item.PossibleFiles()
-	for _, v := range items {
-		path := uploadPath + string(os.PathSeparator) + v
-
-		_, err := os.Stat(path)
-		if os.IsNotExist(err) {
-			continue
-		}
-
-		err = os.Remove(path)
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + v, Operation: op, Err: err})
-		}
-
-		logger.Debug("Deleted file with the path: " + path)
-	}
-}

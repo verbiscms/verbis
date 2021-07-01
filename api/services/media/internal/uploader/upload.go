@@ -16,7 +16,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -72,11 +71,11 @@ func New(cfg Config) (*Uploader, error) {
 		open:      file,
 		extension: filepath.Ext(cfg.File.Filename),
 		mime:      domain.Mime(mimeType.String()),
-		resizer:  &resizer.Resize{
-			Storage:    cfg.Storage,
+		resizer: &resizer.Resize{
+			Storage:     cfg.Storage,
 			Compression: cfg.Options.MediaCompression,
 		},
-		bare:      files.RemoveFileExtension(cfg.File.Filename),
+		bare: files.RemoveFileExtension(cfg.File.Filename),
 	}, nil
 }
 
@@ -105,27 +104,23 @@ func (u *Uploader) Save() (domain.Media, error) {
 
 	logger.Debug("Saved file the name: " + name + u.extension)
 
-	m := domain.Media{
-		UUID:     key,
-		Url:      item.ToURL(paths.Uploads),
-		FilePath: filepath.Dir(item.CleanPath()),
-		FileSize: u.File.Size,
-		FileName: name + u.extension,
-		Sizes:    nil,
-		Mime:     u.mime,
-	}
-
-	color.Red.Printf("%+v\n", m)
-
-	_, err = u.resize(name, dir)
+	sizes, err := u.resize(name, dir)
 	if err != nil {
 		return domain.Media{}, err
 	}
 
+	m := domain.Media{
+		UUID:     key,
+		Url:      "/" + filepath.Join(dir, name+u.extension),
+		FilePath: filepath.Dir(item.CleanPath()),
+		FileSize: u.File.Size,
+		FileName: name + u.extension,
+		Sizes:    sizes,
+		Mime:     u.mime,
+	}
 
-
-	//// Convert images to WebP.
-	u.toWebP(m)
+	// Convert images to WebP.
+	go u.toWebP(m)
 
 	return m, nil
 }
@@ -212,37 +207,40 @@ func (u *Uploader) resize(name, path string) (domain.MediaSizes, error) {
 		// /Users/admin/cms/storage/uploads/2021/1/{uuid}.png
 		localPath := path + string(os.PathSeparator) + uniq.String() + u.extension
 
+		var (
+			upload domain.StorageFile
+			err    error
+		)
+
 		// Resize and save if the file is a JPG.
 		if u.mime.IsJPG() {
 			j := image.JPG{File: u.open}
-			upload, err := u.resizer.Resize(&j, localPath, size)
-			if err != nil {
-				return nil, err
-			}
-			fmt.Println(upload)
+			upload, err = u.resizer.Resize(&j, localPath, size)
 		}
 
 		// Resize and save if the file is a PNG.
 		if u.mime.IsPNG() {
 			p := image.PNG{File: u.open}
-			upload, err := u.resizer.Resize(&p, localPath, size)
-			if err != nil {
-				return nil, err
-			}
-			fmt.Println(upload)
+			upload, err = u.resizer.Resize(&p, localPath, size)
 		}
 
+		if err != nil {
+			return nil, err
+		}
+
+		fmt.Println(upload)
 		logger.Debug("Saved resized image with the name: " + urlName)
 
 		savedSizes[key] = domain.MediaSize{
 			UUID:     uniq,
-			//Url:      item.ToURL(paths.Uploads),
+			Url:      "/" + filepath.Join(path, urlName),
 			Name:     urlName,
 			SizeName: size.SizeName,
+			// TODO
 			//FileSize: u.FileSize(path + string(os.PathSeparator) + uniq.String() + u.Extension),
-			Width:    size.Width,
-			Height:   size.Height,
-			Crop:     size.Crop,
+			Width:  size.Width,
+			Height: size.Height,
+			Crop:   size.Crop,
 		}
 	}
 
@@ -266,7 +264,7 @@ func (u *Uploader) toWebP(media domain.Media) {
 	comp := u.Options.MediaCompression
 
 	logger.Debug("Attempting to convert original image to WebP: " + media.FileName)
-	u.WebP.Convert(media.UploadPathNew(u.StoragePath), comp)
+	u.WebP.Convert(media.UploadPath(u.StoragePath), comp)
 
 	for _, v := range media.Sizes {
 		logger.Debug("Attempting to convert media size image to WebP: " + v.Name)
