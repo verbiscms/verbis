@@ -7,6 +7,7 @@ package domain
 import (
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
+	"io"
 	"path/filepath"
 	"strings"
 )
@@ -28,13 +29,20 @@ type (
 		FileSize   int64           `db:"file_size" json:"file_size"`
 		Private    types.BitBool   `db:"private" json:"private"`
 	}
+	Upload struct {
+		Path       string
+		Size       int64
+		Contents   io.ReadSeeker
+		Private    bool
+		SourceType string
+	}
 	// Files represents the slice of File's.
 	Files []File
 )
 
-// UploadPath retrieves the full path for the upload. If
+// PrivatePath retrieves the full path for the upload. If
 // the file is local, the prefix will be added.
-func (f *File) UploadPath(prefix string) string {
+func (f *File) PrivatePath(prefix string) string {
 	if f.Provider == StorageLocal {
 		return filepath.Join(prefix, f.Path, f.UUID.String()+f.Extension())
 	}
@@ -45,6 +53,20 @@ func (f *File) UploadPath(prefix string) string {
 // from the url.
 func (f *File) Extension() string {
 	return filepath.Ext(f.Name)
+}
+
+// IsLocal determines if the file is stored on the local
+// file system.
+// Returns false if it's from a cloud provider.
+func (f *File) IsLocal() bool {
+	return f.Provider == StorageLocal
+}
+
+func (u *Upload) Validate() error {
+	if u.Path == "" {
+
+	}
+	return nil
 }
 
 // Mime is a string representation of a MIME type.

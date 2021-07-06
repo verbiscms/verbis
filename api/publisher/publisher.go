@@ -48,6 +48,6 @@ func NewRender(d *deps.Deps) Publisher {
 		}),
 		newHeaders(d.Options),
 		NewSitemap(d),
-		media.New(d.Options, d.Storage, d.Store.Media.Exists),
+		media.New(d.Options, d.Storage, d.Store.Media),
 	}
 }

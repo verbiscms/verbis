@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
 )
 
 // Create
@@ -21,7 +20,7 @@ func (s *Store) Create(f domain.File) (domain.File, error) {
 
 	q := s.Builder().
 		Insert(s.Schema()+TableName).
-		Column("uuid", "?").
+		Column("uuid", f.UUID.String()).
 		Column("url", f.URL).
 		Column("name", f.Name).
 		Column("path", f.Path).
@@ -33,7 +32,7 @@ func (s *Store) Create(f domain.File) (domain.File, error) {
 		Column("file_size", f.FileSize).
 		Column("private", f.Private)
 
-	result, err := s.DB().Exec(q.Build(), uuid.New().String())
+	result, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
 		return domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating file with the name: " + f.Name, Operation: op, Err: err}
 	} else if err != nil {

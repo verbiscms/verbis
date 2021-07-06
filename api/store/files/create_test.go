@@ -10,12 +10,11 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/test"
 	"regexp"
 )
 
 var (
-	CreateQuery = "INSERT INTO `files` (`uuid`, `url`, `name`, `path`, `mime`, `source_type`, `provider`, `region`, `bucket`, `file_size`, `private`) VALUES (?, '/uploads/2020/01/file.jpg', 'file.jpg', 'uploads/2020/01', '', '', 'local', '', '', 0, FALSE)"
+	CreateQuery = "INSERT INTO `files` (`uuid`, `url`, `name`, `path`, `mime`, `source_type`, `provider`, `region`, `bucket`, `file_size`, `private`) VALUES ('00000000-0000-0000-0000-000000000000', '/uploads/2020/01/file.jpg', 'file.jpg', 'uploads/2020/01', '', '', 'local', '', '', 0, FALSE)"
 )
 
 func (t *FilesTestSuite) TestStore_Create() {
@@ -27,7 +26,6 @@ func (t *FilesTestSuite) TestStore_Create() {
 			file,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewResult(int64(file.Id), 1))
 			},
 		},
@@ -35,7 +33,6 @@ func (t *FilesTestSuite) TestStore_Create() {
 			"Error creating file with the name",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -43,7 +40,6 @@ func (t *FilesTestSuite) TestStore_Create() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -51,7 +47,6 @@ func (t *FilesTestSuite) TestStore_Create() {
 			"Error getting the newly created file ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
 					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
 			},
 		},

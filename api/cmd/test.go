@@ -6,7 +6,8 @@ package cmd
 
 import (
 	"bytes"
-
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/spf13/cobra"
 	"io"
 	"mime/multipart"
@@ -19,33 +20,55 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			//env, err := environment.Load()
-			//if err != nil {
-			//	printError(err.Error())
-			//	return
-			//}
-			//
-			//logger.Init(env)
-			//
-			//client, err := storage.New(env, &domain.Options{
+			config, _, err := doctor(false)
+			if err != nil {
+				printError(err.Error())
+				return
+			}
+
+			//client, err := storage.New(config.Env, &domain.Options{
 			//	StorageProvider: domain.StorageAWS,
 			//	StorageBucket:   "reddicotest",
+			//}, config.Store.Files)
+
+			client, err := storage.New(config.Env, &domain.Options{
+				StorageProvider: domain.StorageLocal,
+			}, config.Store.Files)
+
+			if err != nil {
+				printError(err.Error())
+				return
+			}
+			//
+			//text, item, err := client.Find("/test2.txt")
+			//if err != nil {
+			//	printError(err.Error())
+			//	return
+			//}
+			//color.Green.Printf(string(text))
+			//color.Red.Printf("%+v\n", item)
+
+			err = client.Delete(18)
+			if err != nil {
+				printError(err.Error())
+				return
+			}
+
+			//contents := "This is a new file stored in the cloud"
+			//r := strings.NewReader(contents)
+			//
+			//upload, err := client.Upload(domain.Upload{
+			//	Path:       "test2.txt",
+			//	Size:       int64(len(contents)),
+			//	Contents:   r,
+			//	Private:    false,
+			//	SourceType: "media",
 			//})
-			//
-			////client, err := storage.New(env, &domain.Options{
-			////	StorageProvider: domain.StorageLocal,
-			////})
-			//
 			//if err != nil {
 			//	printError(err.Error())
-			//	return
 			//}
-			//
-			//_, item, err := client.Find("hllo.txt")
-			//if err != nil {
-			//	printError(err.Error())
-			//	return
-			//}
+
+			//color.Red.Printf("%+v\n", upload)
 
 			//media := media.New(&domain.Options{
 			//	MediaCompression:     0,
@@ -79,12 +102,7 @@ var (
 			//}
 
 			//
-			//upload, err := client.Upload("test.txt", strings.NewReader("this is a test"))
-			//if err != nil {
-			//	fmt.Println("her")
-			//	printError(err.Error())
-			//}
-			//
+
 			//fmt.Println(upload)
 
 		},

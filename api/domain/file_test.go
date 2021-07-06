@@ -44,7 +44,7 @@ func TestFile_UploadPath(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			got := test.input.UploadPath(test.prefix)
+			got := test.input.PrivatePath(test.prefix)
 			assert.Equal(t, test.want, got)
 		})
 	}
