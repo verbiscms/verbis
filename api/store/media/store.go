@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/store/config"
+	"github.com/ainsleyclark/verbis/api/store/files"
 )
 
 // Repository defines methods for media items
@@ -26,11 +27,15 @@ type Repository interface {
 // Store defines the data layer for media.
 type Store struct {
 	*config.Config
+	storage files.Repository
 }
 
 const (
-	// The database table name for media.
+	// TableName is the database table name for media.
 	TableName = "media"
+	// TableSizesName is the database table name for media
+	// sizes.
+	TableSizesName = "media_sizes"
 )
 
 // New
@@ -38,6 +43,7 @@ const (
 // Creates a new media store.
 func New(cfg *config.Config) *Store {
 	return &Store{
-		Config: cfg,
+		Config:  cfg,
+		storage: files.New(cfg),
 	}
 }

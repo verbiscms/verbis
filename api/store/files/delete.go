@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package media
+package files
 
 import (
 	"database/sql"
@@ -13,11 +13,11 @@ import (
 
 // Delete
 //
-// Returns nil if the media item was successfully deleted.
+// Returns nil if the file was successfully deleted.
+// Returns errors.NOTFOUND if the file was not found.
 // Returns errors.INTERNAL if the SQL query was invalid.
-// Returns errors.NOTFOUND if the category was not found.
 func (s *Store) Delete(id int) error {
-	const op = "MediaStore.Delete"
+	const op = "FileStore.Delete"
 
 	q := s.Builder().
 		DeleteFrom(s.Schema()+TableName).
@@ -25,7 +25,7 @@ func (s *Store) Delete(id int) error {
 
 	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
-		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No media item exists with the ID: %d", id), Operation: op, Err: err}
+		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No file exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}

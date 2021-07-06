@@ -73,7 +73,7 @@ func (s *Seeder) runOptions() error {
 		"media_upload_max_width":    0,
 		"media_upload_max_height":   0,
 		"media_organise_year_month": true,
-		"media_images_sizes": map[string]domain.MediaSizeOptions{
+		"media_images_sizes": map[string]domain.MediaSize{
 			"thumbnail": {
 				Name:   "Thumbnail Size",
 				Width:  550,

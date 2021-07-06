@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/graymeta/stow"
@@ -57,7 +56,6 @@ func (s *Storage) ListBuckets() (domain.Buckets, error) {
 
 	var buckets = make(domain.Buckets, 0)
 	err := stow.WalkContainers(s.provider, stow.NoPrefix, 100, func(c stow.Container, err error) error {
-		fmt.Println(err, c.ID(), c.Name())
 		if err != nil {
 			return err
 		}

@@ -25,14 +25,14 @@ type Paths struct {
 
 const (
 	// Admin defines the file path for the Vue SPA.
-	Admin = string(os.PathSeparator) + "admin"
+	Admin = "admin"
 	// API defines the file path backend code.
-	API = string(os.PathSeparator) + "api"
+	API = "api"
 	// Storage defines the file path for uploads, forms and
 	// anything that needs to be stored within Verbis.
-	Storage = string(os.PathSeparator) + "storage"
+	Storage = "storage"
 	// Themes defines the file path for all themes.
-	Themes = string(os.PathSeparator) + "themes"
+	Themes = "themes"
 	// Web defines the file path for any web files that the API
 	// needs to serve.
 	Web = API + string(os.PathSeparator) + "www"
@@ -42,7 +42,7 @@ const (
 	// Forms defines the file path for form dumps within Verbis.
 	Forms = "forms"
 	// Bin defines the file path any independent executables.
-	Bin = string(os.PathSeparator) + "bin"
+	Bin = "bin"
 )
 
 // Get retrieves relevant paths for the application.
@@ -50,14 +50,14 @@ func Get() Paths {
 	base := base()
 	return Paths{
 		Base:    base,
-		Admin:   base + Admin,
-		API:     base + API,
-		Uploads: base + Uploads,
-		Storage: base + Storage,
-		Themes:  base + Themes,
-		Web:     base + Web,
-		Forms:   base + Forms,
-		Bin:     base + Bin,
+		Admin:   filepath.Join(base, Admin),
+		API:     filepath.Join(base, API),
+		Uploads: filepath.Join(base, Uploads),
+		Storage: filepath.Join(base, Storage),
+		Themes:  filepath.Join(base, Themes),
+		Web:     filepath.Join(base, Web),
+		Forms:   filepath.Join(base, Forms),
+		Bin:     filepath.Join(base, Bin),
 	}
 }
 

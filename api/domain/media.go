@@ -9,29 +9,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
-	"path/filepath"
+	"github.com/jmoiron/sqlx/types"
 	"time"
 )
 
 type (
 	// Media defines the core media entity for Verbis.
 	Media struct {
-		Id          int             `db:"id" json:"id"` //nolint
-		UUID        uuid.UUID       `db:"uuid" json:"uuid"`
-		Url         string          `db:"url" json:"url"` //nolint
-		Title       string          `db:"title" json:"title"`
-		Alt         string          `db:"alt" json:"alt"`
-		Description string          `db:"description" json:"description"`
-		FilePath    string          `db:"file_path" json:"-"`
-		FileSize    int64           `db:"file_size" json:"file_size"`
-		FileName    string          `db:"file_name" json:"file_name"`
-		Sizes       MediaSizes      `db:"sizes" json:"sizes"`
-		Mime        Mime            `db:"mime" json:"mime"`
-		UserId      int             `db:"user_id" json:"user_id"` //nolint
-		Location    StorageProvider `db:"location" json:"location"`
-		CreatedAt   time.Time       `db:"created_at" json:"created_at"`
-		UpdatedAt   time.Time       `db:"updated_at" json:"updated_at"`
+		Id          int        `db:"id" json:"id"` //nolint
+		Title       string     `db:"title" json:"title"`
+		Alt         string     `db:"alt" json:"alt"`
+		Description string     `db:"description" json:"description"`
+		Sizes       MediaSizes `db:"sizes" json:"sizes"`
+		UserId      int        `db:"user_id" json:"user_id"` //nolint
+		StorageId   int        `db:"storage_id" json:"-"`    //nolint
+		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
+		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
+		File
 	}
 	// MediaItems represents the slice of Media.
 	MediaItems []Media
@@ -41,86 +35,35 @@ type (
 	// MediaSize defines an individual media size that's
 	// stored in the database.
 	MediaSize struct {
-		UUID     uuid.UUID `db:"uuid" json:"uuid"`
-		Url      string    `db:"url" json:"url"` //nolint
-		Name     string    `db:"name" json:"name"`
-		SizeName string    `db:"size_name" json:"size_name"`
-		FileSize int64     `db:"file_size" json:"file_size"`
-		Width    int       `db:"width" json:"width"`
-		Height   int       `db:"height" json:"height"`
-		Crop     bool      `db:"crop" json:"crop"`
-	}
-	// MediaSizeOptions defines the options for saving different
-	// image sizes when uploaded.
-	MediaSizeOptions struct {
-		Name   string `db:"name" json:"name" binding:"required,numeric"`
-		Width  int    `db:"width" json:"width" binding:"required,numeric"`
-		Height int    `db:"height" json:"height" binding:"required,numeric"`
-		Crop   bool   `db:"crop" json:"crop"`
+		Id     int           `db:"id" json:"id"` //nolint
+		FileId int           `db:"file_id" json:"file_id"`
+		Key    string        `db:"size_key" json:"-" binding:"required,numeric"`
+		Name   string        `db:"size_name" json:"name" binding:"required,numeric"`
+		Width  int           `db:"width" json:"width" binding:"required,numeric"`
+		Height int           `db:"height" json:"height" binding:"required,numeric"`
+		Crop   types.BitBool `db:"crop" json:"crop"`
+		File
 	}
 )
 
 const (
-	// WebPExtension defines the extension used for webp images.
+	// WebPExtension defines the extension used for WebP images.
 	WebPExtension = ".webp"
 )
-
-// UploadPath returns the upload path of the media item
-// without the storage uploads path, for example:
-// 2020/01/photo.jpg
-func (m *Media) UploadPath(base string) string {
-	return filepath.Join(base, m.FilePath, m.UUID.String()+m.Extension())
-}
-
-// IsOrganiseYearMonth returns a bool indicating if the
-// file has been saved a year month path, i.e 2020/01.
-func (m *Media) IsOrganiseYearMonth() bool {
-	return m.FilePath != ""
-}
-
-// Extension returns the extension of the file by stripping
-// from the url.
-func (m *Media) Extension() string {
-	return filepath.Ext(m.Url)
-}
 
 // PossibleFiles Returns a the possible files saved to the
 // system after the files have been uploaded. Note: This
 // does not include the upload path.
-func (m *Media) PossibleFiles() []string {
+func (m *Media) PossibleFiles(prefix string) []string {
 	files := []string{
-		m.UploadPath(""),
-		m.UploadPath("") + WebPExtension,
+		m.UploadPath(prefix),
+		m.UploadPath(prefix) + WebPExtension,
 	}
 	for _, v := range m.Sizes {
-		path := filepath.Join(m.FilePath, v.UUID.String()+m.Extension())
+		path := v.UploadPath(prefix)
 		files = append(files, path, path+WebPExtension)
 	}
 	return files
-}
-
-// Mime is a string representation of a MIME type.
-type Mime string
-
-// CanResize Returns true if the mime type is of JPG or
-// PNG, determining if the image can be resized.
-func (m Mime) CanResize() bool {
-	return m.IsJPG() || m.IsPNG()
-}
-
-// IsJPG returns true if the mime type is of JPG.
-func (m Mime) IsJPG() bool {
-	return m == "image/jpeg" || m == "image/jp2"
-}
-
-// IsPNG returns true if the mime type is of PNG.
-func (m Mime) IsPNG() bool {
-	return m == "image/png"
-}
-
-// String is the stringer on Mime type.
-func (m Mime) String() string {
-	return string(m)
 }
 
 // Scan implements the scanner for MediaSizes. unmarshal
