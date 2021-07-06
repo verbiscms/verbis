@@ -120,7 +120,7 @@ func (s *Service) Validate(file *multipart.FileHeader) error {
 func (s *Service) Delete(item domain.Media) {
 	const op = "Service.Delete"
 
-	items := item.PossibleFiles()
+	items := item.PossibleFiles(s.paths.Uploads)
 	for _, path := range items {
 		err := s.storage.Delete(path)
 

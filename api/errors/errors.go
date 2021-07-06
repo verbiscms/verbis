@@ -108,4 +108,3 @@ func ToError(err interface{}) *Error {
 func New(text string) error {
 	return errors.New(text)
 }
-

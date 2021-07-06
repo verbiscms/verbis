@@ -20,9 +20,10 @@ import (
 )
 
 type Client interface {
-	Find(path string) ([]byte, domain.StorageFile, error)
+	Find(path string) ([]byte, domain.File, error)
 	Delete(path string) error
-	Upload(path string, size int64, contents io.Reader) (domain.StorageFile, error)
+	Upload(path string, size int64, contents io.Reader) (domain.File, error)
+	IsLocal() bool
 	SetProvider(location domain.StorageProvider) error
 	SetBucket(id string) error
 	ListBuckets() (domain.Buckets, error)
@@ -37,17 +38,28 @@ type Storage struct {
 	local    bool
 }
 
+var (
+	ErrNoProvider = errors.New("invalid provider")
+)
+
 // New parse config
 func New(env *environment.Env, opts *domain.Options) (Client, error) {
+	const op = "Storage.New"
+
 	s := &Storage{
 		env:   env,
 		opts:  opts,
 		paths: paths.Get(),
+		local: false,
 	}
 
 	provider := opts.StorageProvider
 	if provider == "" {
 		provider = domain.StorageLocal
+	}
+
+	if !validate(provider) {
+		return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}
 	}
 
 	err := s.SetProvider(provider)
@@ -64,24 +76,26 @@ func New(env *environment.Env, opts *domain.Options) (Client, error) {
 }
 
 // Upload something TODO
-func (s *Storage) Upload(path string, size int64, contents io.Reader) (domain.StorageFile, error) {
+func (s *Storage) Upload(path string, size int64, contents io.Reader) (domain.File, error) {
 	const op = "Storage.Upload"
 
 	item, err := s.bucket.Put(path, contents, size, nil)
 	if err != nil {
-		return domain.StorageFile{}, err
+		return domain.File{}, err
 	}
 
-	sp := domain.StorageFile{
-		URI:           item.URL(),
-		BaseLocalPath: s.paths.Storage,
-		ID:            item.ID(),
+	sp := domain.File{
+		URL:    item.URL().Path,
+		Name:   item.ID(),
+		Bucket: s.bucket.Name(),
 	}
+
+	s.bucket.ID()
 
 	return sp, nil
 }
 
-func (s *Storage) Find(path string) ([]byte, domain.StorageFile, error) {
+func (s *Storage) Find(path string) ([]byte, domain.File, error) {
 	const op = "Storage.Find"
 
 	if !s.local {
@@ -92,27 +106,21 @@ func (s *Storage) Find(path string) ([]byte, domain.StorageFile, error) {
 
 	item, err := s.provider.ItemByURL(&url.URL{Path: path})
 	if err != nil {
-		return nil, domain.StorageFile{}, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the path: " + path, Operation: op, Err: err}
+		return nil, domain.File{}, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the path: " + path, Operation: op, Err: err}
 	}
 
 	file, err := item.Open()
 	if err != nil {
-		return nil, domain.StorageFile{}, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file", Operation: op, Err: err}
+		return nil, domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file", Operation: op, Err: err}
 	}
 	defer file.Close()
 
 	buf, err := ioutil.ReadAll(file)
 	if err != nil {
-		return nil, domain.StorageFile{}, &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
+		return nil, domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
 	}
 
-	sp := domain.StorageFile{
-		URI:           item.URL(),
-		BaseLocalPath: s.paths.Storage,
-		ID:            item.ID(),
-	}
-
-	return buf, sp, nil
+	return buf, toVerbisStorage(item), nil
 }
 
 func (s *Storage) Delete(path string) error {
@@ -128,4 +136,33 @@ func (s *Storage) Delete(path string) error {
 	}
 
 	return nil
+}
+
+func (s *Storage) IsLocal() bool {
+	return s.local
+}
+
+// InSlice checks if a string exists in a slice,
+func validate(p domain.StorageProvider) bool {
+	for _, sp := range domain.StorageProviders {
+		if sp == p {
+			return true
+		}
+	}
+	return false
+}
+
+func toVerbisStorage(item stow.Item) domain.File {
+	return domain.File{
+		URL:        item.URL().Path,
+		Name:       "",
+		Path:       "",
+		Mime:       "",
+		Provider:   "",
+		Region:     "",
+		Bucket:     "",
+		FileSize:   0,
+		SourceType: "",
+		Private:    false,
+	}
 }

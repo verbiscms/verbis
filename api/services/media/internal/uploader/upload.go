@@ -5,19 +5,15 @@
 package uploader
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/services/media/internal/image"
 	"github.com/ainsleyclark/verbis/api/services/media/internal/resizer"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
 	"mime/multipart"
-	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -90,37 +86,44 @@ func (u *Uploader) Close() error {
 // images to .webp.
 func (u *Uploader) Save() (domain.Media, error) {
 	var (
-		// E.G: uploads/2021/1
-		dir = u.dir()
-		// E.G: image.png
-		name = u.cleanFileName()
+	// E.G: uploads/2021/1
+	//dir = u.dir()
+	// E.G: image.png
+	//name = u.cleanFileName()
 	)
 
 	// Save the original file as is.
-	key, item, err := u.saveOriginal(dir)
-	if err != nil {
-		return domain.Media{}, err
-	}
+	//key, item, err := u.saveOriginal(dir)
+	//if err != nil {
+	//	return domain.Media{}, err
+	//}
 
-	logger.Debug("Saved file the name: " + name + u.extension)
+	//logger.Debug("Saved file the name: " + name + u.extension)
 
-	sizes, err := u.resize(name, dir)
-	if err != nil {
-		return domain.Media{}, err
-	}
+	//sizes, err := u.resize(name, dir)
+	//if err != nil {
+	//	return domain.Media{}, err
+	//}
+
+	//p := path.Dir(item.URI.Path)
+
+	// https:/s3-eu-west-2.amazonaws.com/reddicotest/uploads/2021/07
+	// /Users/ainsley/Desktop/Reddico/apis/verbis/storage/uploads/2021/07
 
 	m := domain.Media{
-		UUID:     key,
-		Url:      "/" + filepath.Join(dir, name+u.extension),
-		FilePath: filepath.Dir(item.CleanPath()),
-		FileSize: u.File.Size,
-		FileName: name + u.extension,
-		Sizes:    sizes,
-		Mime:     u.mime,
+		Id:          0,
+		Title:       "",
+		Alt:         "",
+		Description: "",
+		Sizes:       nil,
+		UserId:      0,
+		StorageId:   0,
+		CreatedAt:   time.Time{},
+		UpdatedAt:   time.Time{},
+		File:        domain.File{},
 	}
-
-	// Convert images to WebP.
-	go u.toWebP(m)
+	//// Convert images to WebP.
+	//go u.toWebP(m)
 
 	return m, nil
 }
@@ -176,13 +179,13 @@ func (u *Uploader) cleanFileName() string {
 // a new UUID when it has been saved successfully.
 // Returns errors.INTERNAL if the file could not be copied
 // or created.
-func (u *Uploader) saveOriginal(path string) (uuid.UUID, domain.StorageFile, error) {
+func (u *Uploader) saveOriginal(path string) (uuid.UUID, domain.File, error) {
 	key := uuid.New()
 	path = filepath.Join(path, key.String()+u.extension)
 
 	upload, err := u.Storage.Upload(path, u.File.Size, u.open)
 	if err != nil {
-		return uuid.UUID{}, domain.StorageFile{}, err
+		return uuid.UUID{}, domain.File{}, err
 	}
 
 	return key, upload, nil
@@ -193,58 +196,48 @@ func (u *Uploader) saveOriginal(path string) (uuid.UUID, domain.StorageFile, err
 // media size.
 // Returns nil, (with no error) if the media item can not be resized.
 func (u *Uploader) resize(name, path string) (domain.MediaSizes, error) {
-	if !u.mime.CanResize() {
-		return nil, nil
-	}
-
-	savedSizes := make(domain.MediaSizes)
-	for key, size := range u.Options.MediaSizes {
-		uniq := uuid.New()
-
-		// gopher-100x100.png
-		urlName := name + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + u.extension
-
-		// /Users/admin/cms/storage/uploads/2021/1/{uuid}.png
-		localPath := path + string(os.PathSeparator) + uniq.String() + u.extension
-
-		var (
-			upload domain.StorageFile
-			err    error
-		)
-
-		// Resize and save if the file is a JPG.
-		if u.mime.IsJPG() {
-			j := image.JPG{File: u.open}
-			upload, err = u.resizer.Resize(&j, localPath, size)
-		}
-
-		// Resize and save if the file is a PNG.
-		if u.mime.IsPNG() {
-			p := image.PNG{File: u.open}
-			upload, err = u.resizer.Resize(&p, localPath, size)
-		}
-
-		if err != nil {
-			return nil, err
-		}
-
-		fmt.Println(upload)
-		logger.Debug("Saved resized image with the name: " + urlName)
-
-		savedSizes[key] = domain.MediaSize{
-			UUID:     uniq,
-			Url:      "/" + filepath.Join(path, urlName),
-			Name:     urlName,
-			SizeName: size.SizeName,
-			// TODO
-			//FileSize: u.FileSize(path + string(os.PathSeparator) + uniq.String() + u.Extension),
-			Width:  size.Width,
-			Height: size.Height,
-			Crop:   size.Crop,
-		}
-	}
-
-	return savedSizes, nil
+	//if !u.mime.CanResize() {
+	//	return nil, nil
+	//}
+	//
+	//savedSizes := make(domain.MediaSizes)
+	//for key, size := range u.Options.MediaSizes {
+	//	uniq := uuid.New()
+	//
+	//	// gopher-100x100.png
+	//	urlName := name + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + u.extension
+	//
+	//	// /Users/admin/cms/storage/uploads/2021/1/{uuid}.png
+	//	localPath := path + string(os.PathSeparator) + uniq.String() + u.extension
+	//
+	//	var (
+	//		upload domain.File
+	//		err    error
+	//	)
+	//
+	//	// Resize and save if the file is a JPG.
+	//	if u.mime.IsJPG() {
+	//		j := image.JPG{File: u.open}
+	//		upload, err = u.resizer.Resize(&j, localPath, size)
+	//	}
+	//
+	//	// Resize and save if the file is a PNG.
+	//	if u.mime.IsPNG() {
+	//		p := image.PNG{File: u.open}
+	//		upload, err = u.resizer.Resize(&p, localPath, size)
+	//	}
+	//
+	//	if err != nil {
+	//		return nil, err
+	//	}
+	//
+	//	fmt.Println(upload, "TODO")
+	//
+	//	logger.Debug("Saved resized image with the name: " + urlName)
+	//}
+	//
+	//return savedSizes, nil
+	return nil, nil
 }
 
 // toWebP Checks to see if the media is a PNG or JPG and
@@ -253,22 +246,22 @@ func (u *Uploader) resize(name, path string) (domain.MediaSizes, error) {
 // exists, and an error occurred, it will be
 // logged.
 func (u *Uploader) toWebP(media domain.Media) {
-	if !u.Options.MediaConvertWebP {
-		return
-	}
-
-	if !media.Mime.CanResize() {
-		return
-	}
-
-	comp := u.Options.MediaCompression
-
-	logger.Debug("Attempting to convert original image to WebP: " + media.FileName)
-	u.WebP.Convert(media.UploadPath(u.StoragePath), comp)
-
-	for _, v := range media.Sizes {
-		logger.Debug("Attempting to convert media size image to WebP: " + v.Name)
-		path := filepath.Join(u.StoragePath, media.FilePath, v.UUID.String()+media.Extension())
-		u.WebP.Convert(path, comp)
-	}
+	//if !u.Options.MediaConvertWebP {
+	//	return
+	//}
+	//
+	//if !media.Mime.CanResize() {
+	//	return
+	//}
+	//
+	//comp := u.Options.MediaCompression
+	//
+	//logger.Debug("Attempting to convert original image to WebP: " + media.FileName)
+	//u.WebP.Convert(media.UploadPath(u.StoragePath), comp)
+	//
+	//for _, v := range media.Sizes {
+	//	logger.Debug("Attempting to convert media size image to WebP: " + v.Name)
+	//	path := filepath.Join(u.StoragePath, media.FilePath, v.UUID.String()+media.Extension())
+	//	u.WebP.Convert(path, comp)
+	//}
 }

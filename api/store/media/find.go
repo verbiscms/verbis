@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"path/filepath"
+	"github.com/ainsleyclark/verbis/api/store/files"
 )
 
 // Find
@@ -75,28 +75,29 @@ func (s *Store) FindByURL(url string) (domain.Media, string, error) {
 	q := s.Builder().
 		From(s.Schema()+TableName).
 		Where("url", "=", url).
+		LeftJoin(s.Schema()+files.TableName, "f", s.Schema()+"media.storage_id = "+s.Schema()+"f.id").
 		Limit(1)
 
 	err := s.DB().Get(&media, q.Build())
 	if err == nil {
-		return media, filepath.Join(media.FilePath, media.UUID.String()+media.Extension()), nil
+		return media, "CHANGE ME", nil
 	}
 
 	// Test sizes.
-	sq := s.Builder().
-		From(s.Schema() + TableName).
-		WhereRaw("sizes LIKE '%" + url + "%' LIMIT 1")
-
-	err = s.DB().Get(&media, sq.Build())
-	if err != nil {
-		return domain.Media{}, "", &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
-	}
-
-	for _, v := range media.Sizes {
-		if v.Url == url {
-			return media, filepath.Join(media.FilePath, v.UUID.String()+media.Extension()), nil
-		}
-	}
+	//sq := s.Builder().
+	//	From(s.Schema() + TableName).
+	//	WhereRaw("sizes LIKE '%" + url + "%' LIMIT 1")
+	//
+	//err = s.DB().Get(&media, sq.Build())
+	//if err != nil {
+	//	return domain.Media{}, "", &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	//}
+	//
+	//for _, v := range media.Sizes {
+	//	if v.Url == url {
+	//		return media, filepath.Join(media.FilePath, v.UUID.String()+media.Extension()), nil
+	//	}
+	//}
 
 	return domain.Media{}, "", &errors.Error{Code: errors.NOTFOUND, Message: "Error getting media item with the url: " + url, Operation: op, Err: fmt.Errorf("no media item exists")}
 }

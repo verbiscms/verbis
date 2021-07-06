@@ -15,7 +15,7 @@ import (
 // Resizer describes the method for resizing images for
 // the library.
 type Resizer interface {
-	Resize(imager image.Imager, dest string, media domain.MediaSize) (domain.StorageFile, error)
+	Resize(imager image.Imager, dest string, media domain.MediaSize) (domain.File, error)
 }
 
 // Resize defines the data needed for resizing images.
@@ -26,10 +26,10 @@ type Resize struct {
 
 // Resize satisfies the Resizer by decoding, cropping and
 // resizing and finally saving the resized image.
-func (r *Resize) Resize(imager image.Imager, dest string, media domain.MediaSize) (domain.StorageFile, error) {
+func (r *Resize) Resize(imager image.Imager, dest string, media domain.MediaSize) (domain.File, error) {
 	i, err := imager.Decode()
 	if err != nil {
-		return domain.StorageFile{}, err
+		return domain.File{}, err
 	}
 
 	var resized *stdimage.NRGBA
@@ -41,12 +41,12 @@ func (r *Resize) Resize(imager image.Imager, dest string, media domain.MediaSize
 
 	enc, err := imager.Encode(resized, r.Compression)
 	if err != nil {
-		return domain.StorageFile{}, err
+		return domain.File{}, err
 	}
 
 	upload, err := r.Storage.Upload(dest, int64(enc.Len()), enc)
 	if err != nil {
-		return domain.StorageFile{}, err
+		return domain.File{}, err
 	}
 
 	return upload, nil

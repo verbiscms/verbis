@@ -4,11 +4,6 @@
 
 package domain
 
-import (
-	"net/url"
-	"strings"
-)
-
 type (
 	// Bucket
 	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -21,59 +16,28 @@ type (
 	// StorageProvider
 	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 	StorageProvider string
-	// StorageFile
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	StorageFile struct {
-		URI           *url.URL
-		BaseLocalPath string
-		ID            string
-	}
 )
 
 const (
-	// StorageLocal
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// StorageLocal represents the string for the local
+	// storage disk.
 	StorageLocal = StorageProvider("local")
-	// StorageAWS
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// StorageAWS represents the string for the AWS storage
+	// disk.
 	StorageAWS = StorageProvider("aws")
-	// StorageGCP
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// StorageGCP represents the string for the GCP storage
+	// disk.
 	StorageGCP = StorageProvider("google")
-	// StorageAzure
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// StorageAzure represents the string for the Azure
+	// storage disk.
 	StorageAzure = StorageProvider("azure")
 )
 
-// clean this up, bad name
-func (s StorageFile) ToURL(prefix string) string {
-	if s.Provider() == StorageLocal {
-		return "/" + s.CleanPath()
+var (
+	StorageProviders = []StorageProvider{
+		StorageLocal,
+		StorageAWS,
+		StorageGCP,
+		StorageAzure,
 	}
-	return s.URI.String()
-}
-
-// Provider
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-func (s *StorageFile) Provider() StorageProvider {
-	switch s.URI.Scheme {
-	case "file":
-		return StorageLocal
-	case "s3":
-		return StorageAWS
-	case "google":
-		return StorageGCP
-	case "azure":
-		return StorageAzure
-	}
-	return ""
-}
-
-// CleanPath
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-func (s *StorageFile) CleanPath() string {
-	if s.Provider() == StorageLocal {
-		return strings.TrimPrefix(strings.ReplaceAll(s.URI.Path, s.BaseLocalPath, ""), "/")
-	}
-	return s.URI.Path
-}
+)

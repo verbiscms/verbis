@@ -149,7 +149,6 @@ func (t *MediaSuite) Image() image.Image {
 	return img
 }
 
-
 // Image returns a new image.Image for testing.
 func Image() image.Image {
 	var (

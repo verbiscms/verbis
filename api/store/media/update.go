@@ -29,7 +29,7 @@ func (s *Store) Update(m domain.Media) (domain.Media, error) {
 
 	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
-		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating media item with the url: " + m.Url, Operation: op, Err: err}
+		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error updating media item with the url: " + m.URL, Operation: op, Err: err}
 	} else if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}

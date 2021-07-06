@@ -11,6 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"math"
 	"regexp"
+	"sync"
 )
 
 func (t *OptionsTestSuite) TestStore_Struct() {
@@ -23,7 +24,7 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 	}{
 		"Success": {
 			false,
-			domain.Options{
+			&domain.Options{
 				ActiveTheme: "verbis",
 			},
 			func(m sqlmock.Sqlmock) {
@@ -35,7 +36,9 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 		},
 		"Internal": {
 			true,
-			domain.Options{},
+			&domain.Options{
+				ActiveTheme: "verbis",
+			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
 					WillReturnError(fmt.Errorf("error"))
@@ -55,6 +58,8 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
+			once = &sync.Once{}
+
 			s := t.Setup(test.mock)
 
 			if test.panics {

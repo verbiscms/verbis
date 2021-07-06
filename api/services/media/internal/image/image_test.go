@@ -49,7 +49,7 @@ func (m *mockFileSeekErr) Close() error {
 func UtilTestDecode(fn func(file multipart.File) Imager, path string, t *testing.T) {
 	tt := map[string]struct {
 		input func() (multipart.File, func() error)
-		want interface{}
+		want  interface{}
 	}{
 		"Success": {
 			func() (multipart.File, func() error) {
@@ -109,7 +109,7 @@ func UtilTestEncode(img Imager, t *testing.T) {
 			&image.RGBA{
 				Pix:    nil,
 				Stride: 0,
-				Rect:   image.Rectangle{
+				Rect: image.Rectangle{
 					Min: image.Point{X: 0, Y: 0},
 					Max: image.Point{X: 999999999999999, Y: 999999999999999},
 				},
