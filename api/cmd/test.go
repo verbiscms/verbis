@@ -8,11 +8,13 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/storage"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 var (
@@ -39,36 +41,38 @@ var (
 				printError(err.Error())
 				return
 			}
-			//
-			//text, item, err := client.Find("/test2.txt")
+
+			//text, item, err := client.FindByURL(url.URL{
+			//	Path: "/test2.txt",
+			//})
 			//if err != nil {
 			//	printError(err.Error())
 			//	return
 			//}
 			//color.Green.Printf(string(text))
 			//color.Red.Printf("%+v\n", item)
-
-			err = client.Delete(18)
-			if err != nil {
-				printError(err.Error())
-				return
-			}
-
-			//contents := "This is a new file stored in the cloud"
-			//r := strings.NewReader(contents)
 			//
-			//upload, err := client.Upload(domain.Upload{
-			//	Path:       "test2.txt",
-			//	Size:       int64(len(contents)),
-			//	Contents:   r,
-			//	Private:    false,
-			//	SourceType: "media",
-			//})
+			//err = client.Delete(18)
 			//if err != nil {
 			//	printError(err.Error())
+			//	return
 			//}
 
-			//color.Red.Printf("%+v\n", upload)
+			contents := "This is a new file stored in the cloud"
+			r := strings.NewReader(contents)
+
+			upload, err := client.Upload(domain.Upload{
+				Path:       "/test/test2.txt",
+				Size:       int64(len(contents)),
+				Contents:   r,
+				Private:    false,
+				SourceType: "media",
+			})
+			if err != nil {
+				printError(err.Error())
+			}
+
+			color.Red.Printf("%+v\n", upload)
 
 			//media := media.New(&domain.Options{
 			//	MediaCompression:     0,

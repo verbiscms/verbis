@@ -23,16 +23,16 @@ func (s *Service) Serve(media domain.Media, path string, acceptWebP bool) ([]byt
 		err  error
 	)
 
-	if acceptWebP && s.options.MediaServeWebP {
-		data, _, err = s.storage.Find(path + domain.WebPExtension)
-		if err != nil {
-			data, _, err = s.storage.Find(path)
-		} else {
-			return data, "image/webp", nil
-		}
-	} else {
-		data, _, err = s.storage.Find(path)
-	}
+	//if acceptWebP && s.options.MediaServeWebP {
+	//	data, _, err = s.storage.Find(path + domain.WebPExtension)
+	//	if err != nil {
+	//		data, _, err = s.storage.Find(path)
+	//	} else {
+	//		return data, "image/webp", nil
+	//	}
+	//} else {
+	//	data, _, err = s.storage.Find(path)
+	//}
 
 	if err != nil {
 		return nil, "", &errors.Error{Code: errors.NOTFOUND, Message: "File does not exist with the path: " + path, Operation: op, Err: err}

@@ -106,6 +106,7 @@ func (s *Storage) getProvider(provider domain.StorageProvider) (stow.Location, e
 		cont, err = stow.Dial(local.Kind, stow.ConfigMap{
 			local.ConfigKeyPath: s.paths.Storage,
 		})
+		// TODO we shouldnt be setting this
 		s.Local = true
 	case domain.StorageAWS:
 		cont, err = stow.Dial(s3.Kind, stow.ConfigMap{
