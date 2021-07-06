@@ -85,14 +85,14 @@ func (u *Uploader) Close() error {
 // called concurrently to convert
 // images to .webp.
 func (u *Uploader) Save() (domain.Media, error) {
-	var (
-	// E.G: uploads/2021/1
-	//dir = u.dir()
-	// E.G: image.png
-	//name = u.cleanFileName()
-	)
-
-	// Save the original file as is.
+	//var (
+	//	// E.G: uploads/2021/1
+	//	dir = u.dir()
+	//	// E.G: image.png
+	//	name = u.cleanFileName()
+	//)
+	//
+	//// Save the original file as is.
 	//key, item, err := u.saveOriginal(dir)
 	//if err != nil {
 	//	return domain.Media{}, err
@@ -180,15 +180,17 @@ func (u *Uploader) cleanFileName() string {
 // Returns errors.INTERNAL if the file could not be copied
 // or created.
 func (u *Uploader) saveOriginal(path string) (uuid.UUID, domain.File, error) {
-	key := uuid.New()
-	path = filepath.Join(path, key.String()+u.extension)
+	//key := uuid.New()
+	//path = filepath.Join(path, key.String()+u.extension)
 
-	upload, err := u.Storage.Upload(path, u.File.Size, u.open)
-	if err != nil {
-		return uuid.UUID{}, domain.File{}, err
-	}
+	//upload, err := u.Storage.Upload(path, u.File.Size, u.open)
+	//if err != nil {
+	//	return uuid.UUID{}, domain.File{}, err
+	//}
 
-	return key, upload, nil
+	return [16]byte{}, domain.File{}, nil
+
+	//return key, upload, nil
 }
 
 // Resize ranges over the media sizes stored in the
@@ -257,7 +259,7 @@ func (u *Uploader) toWebP(media domain.Media) {
 	//comp := u.Options.MediaCompression
 	//
 	//logger.Debug("Attempting to convert original image to WebP: " + media.FileName)
-	//u.WebP.Convert(media.UploadPath(u.StoragePath), comp)
+	//u.WebP.Convert(media.PrivatePath(u.StoragePath), comp)
 	//
 	//for _, v := range media.Sizes {
 	//	logger.Debug("Attempting to convert media size image to WebP: " + v.Name)

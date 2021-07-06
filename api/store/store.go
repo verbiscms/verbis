@@ -14,6 +14,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/store/categories"
 	storeConfig "github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/fields"
+	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/ainsleyclark/verbis/api/store/forms"
 	"github.com/ainsleyclark/verbis/api/store/media"
 	"github.com/ainsleyclark/verbis/api/store/options"
@@ -30,6 +31,7 @@ type Repository struct {
 	Auth       auth.Repository
 	Categories categories.Repository
 	Fields     fields.Repository
+	Files      files.Repository
 	Forms      forms.Repository
 	Media      media.Repository
 	Options    options.Repository
@@ -82,6 +84,7 @@ func New(db database.Driver, running bool) (*Repository, *domain.ThemeConfig, er
 		Auth:       auth.New(cfg),
 		Categories: categories.New(cfg),
 		Fields:     fields.New(cfg),
+		Files:      files.New(cfg),
 		Forms:      forms.New(cfg),
 		Media:      media.New(cfg),
 		Options:    options.New(cfg),

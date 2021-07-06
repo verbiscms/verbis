@@ -13,6 +13,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/services/media/internal/uploader"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/storage"
+	"github.com/ainsleyclark/verbis/api/store/media"
 	"mime/multipart"
 )
 
@@ -46,15 +47,14 @@ type ExistsFunc func(fileName string) bool
 // New
 //
 // Creates a new Service.
-func New(opts *domain.Options, store storage.Client, fn ExistsFunc) *Service {
+func New(opts *domain.Options, storage storage.Client, repo media.Repository) *Service {
 	p := paths.Get()
 	return &Service{
 		options: opts,
 		config:  config.Get(),
 		paths:   p,
-		exists:  fn,
 		webp:    webp.New(p.Bin + webp.Path),
-		storage: store,
+		storage: storage,
 	}
 }
 
@@ -120,15 +120,15 @@ func (s *Service) Validate(file *multipart.FileHeader) error {
 func (s *Service) Delete(item domain.Media) {
 	const op = "Service.Delete"
 
-	items := item.PossibleFiles(s.paths.Uploads)
-	for _, path := range items {
-		err := s.storage.Delete(path)
-
-		// Exists func
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + path, Operation: op, Err: err})
-		}
-
-		logger.Debug("Deleted file with the path: " + path)
-	}
+	//items := item.PossibleFiles(s.paths.Uploads)
+	//for _, path := range items {
+	//	err := s.storage.Delete(path)
+	//
+	//	// Exists func
+	//	if err != nil {
+	//		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + path, Operation: op, Err: err})
+	//	}
+	//
+	//	logger.Debug("Deleted file with the path: " + path)
+	//}
 }

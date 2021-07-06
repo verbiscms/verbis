@@ -20,6 +20,7 @@ func (s *Storage) SetProvider(provider domain.StorageProvider) error {
 		return &errors.Error{Code: errors.INVALID, Message: "Error setting provider", Operation: op, Err: err}
 	}
 	s.provider = p
+	s.ProviderName = provider
 
 	return nil
 }
@@ -74,10 +75,24 @@ func (s *Storage) ListBuckets() (domain.Buckets, error) {
 }
 
 func (s *Storage) cleanLocalPath(uri *url.URL) *url.URL {
-	if s.local {
+	if s.Local {
 		uri.Path = strings.ReplaceAll(uri.Path, s.paths.Storage, "")
 	}
 	return uri
+}
+
+func (s *Storage) getBucket(file domain.File) (stow.Container, error) {
+	provider, err := s.getProvider(file.Provider)
+	if err != nil {
+		return nil, err
+	}
+
+	bucket, err := provider.Container(file.Bucket)
+	if err != nil {
+		return nil, err
+	}
+
+	return bucket, nil
 }
 
 func (s *Storage) getProvider(provider domain.StorageProvider) (stow.Location, error) {
@@ -86,14 +101,12 @@ func (s *Storage) getProvider(provider domain.StorageProvider) (stow.Location, e
 		err  error
 	)
 
-	s.local = false
-
 	switch provider {
 	case domain.StorageLocal:
 		cont, err = stow.Dial(local.Kind, stow.ConfigMap{
 			local.ConfigKeyPath: s.paths.Storage,
 		})
-		s.local = true
+		s.Local = true
 	case domain.StorageAWS:
 		cont, err = stow.Dial(s3.Kind, stow.ConfigMap{
 			s3.ConfigAccessKeyID: s.env.AWSAccessKey,

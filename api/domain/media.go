@@ -35,13 +35,14 @@ type (
 	// MediaSize defines an individual media size that's
 	// stored in the database.
 	MediaSize struct {
-		Id     int           `db:"id" json:"id"` //nolint
-		FileId int           `db:"file_id" json:"file_id"`
-		Key    string        `db:"size_key" json:"-" binding:"required,numeric"`
-		Name   string        `db:"size_name" json:"name" binding:"required,numeric"`
-		Width  int           `db:"width" json:"width" binding:"required,numeric"`
-		Height int           `db:"height" json:"height" binding:"required,numeric"`
-		Crop   types.BitBool `db:"crop" json:"crop"`
+		Id      int           `db:"id" json:"id"` //nolint
+		FileId  int           `db:"file_id" json:"-"`
+		MediaId int           `db:"media_id" json:"-"`
+		Key     string        `db:"size_key" json:"-" binding:"required,numeric"`
+		Name    string        `db:"size_name" json:"name" binding:"required,numeric"`
+		Width   int           `db:"width" json:"width" binding:"required,numeric"`
+		Height  int           `db:"height" json:"height" binding:"required,numeric"`
+		Crop    types.BitBool `db:"crop" json:"crop"`
 		File
 	}
 )
@@ -56,11 +57,11 @@ const (
 // does not include the upload path.
 func (m *Media) PossibleFiles(prefix string) []string {
 	files := []string{
-		m.UploadPath(prefix),
-		m.UploadPath(prefix) + WebPExtension,
+		m.PrivatePath(prefix),
+		m.PrivatePath(prefix) + WebPExtension,
 	}
 	for _, v := range m.Sizes {
-		path := v.UploadPath(prefix)
+		path := v.PrivatePath(prefix)
 		files = append(files, path, path+WebPExtension)
 	}
 	return files
