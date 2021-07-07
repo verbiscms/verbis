@@ -23,7 +23,8 @@ func (s *Store) Find(id int) (domain.Media, error) {
 
 	q := s.Builder().
 		From(s.Schema()+TableName).
-		Where("id", "=", id).
+		Where(TableName+".id", "=", id).
+		LeftJoin(s.Schema()+files.TableName, "f", s.Schema()+TableName+".file_id = "+s.Schema()+"f.id").
 		Limit(1)
 
 	var media domain.Media
@@ -34,70 +35,11 @@ func (s *Store) Find(id int) (domain.Media, error) {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	return media, nil
-}
-
-// FindByName
-//
-// Returns a media item by searching with the given name.
-// Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the media was not found by the given name.
-func (s *Store) FindByName(name string) (domain.Media, error) {
-	const op = "MediaStore.FindByPost"
-
-	q := s.Builder().
-		From(s.Schema()+TableName).
-		Where("file_name", "=", name).
-		Limit(1)
-
-	var media domain.Media
-	err := s.DB().Get(&media, q.Build())
-	if err == sql.ErrNoRows {
-		return domain.Media{}, &errors.Error{Code: errors.NOTFOUND, Message: "No media item exists with the name: " + name, Operation: op, Err: err}
-	} else if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	sizes, err := s.sizes.Find(id)
+	if err != nil {
+		return domain.Media{}, err
 	}
+	media.Sizes = sizes
 
 	return media, nil
-}
-
-// FindByURL
-//
-// Returns a media by searching with the given url.
-// Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the media item was not found by the given url.
-func (s *Store) FindByURL(url string) (domain.Media, string, error) {
-	const op = "MediaStore.FindBySlug"
-
-	var media domain.Media
-
-	// Test normal size.
-	q := s.Builder().
-		From(s.Schema()+TableName).
-		Where("url", "=", url).
-		LeftJoin(s.Schema()+files.TableName, "f", s.Schema()+"media.storage_id = "+s.Schema()+"f.id").
-		Limit(1)
-
-	err := s.DB().Get(&media, q.Build())
-	if err == nil {
-		return media, "CHANGE ME", nil
-	}
-
-	// Test sizes.
-	//sq := s.Builder().
-	//	From(s.Schema() + TableName).
-	//	WhereRaw("sizes LIKE '%" + url + "%' LIMIT 1")
-	//
-	//err = s.DB().Get(&media, sq.Build())
-	//if err != nil {
-	//	return domain.Media{}, "", &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
-	//}
-	//
-	//for _, v := range media.Sizes {
-	//	if v.Url == url {
-	//		return media, filepath.Join(media.FilePath, v.UUID.String()+media.Extension()), nil
-	//	}
-	//}
-
-	return domain.Media{}, "", &errors.Error{Code: errors.NOTFOUND, Message: "Error getting media item with the url: " + url, Operation: op, Err: fmt.Errorf("no media item exists")}
 }

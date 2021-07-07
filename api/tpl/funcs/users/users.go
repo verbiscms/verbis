@@ -60,7 +60,7 @@ type Users struct {
 // {{ $result := users (dict "limit" 10) }}
 // {{ with $result.Users }}
 //     {{ range $user := . }}
-//         <h2>{{ $user.Name }}</h2>
+//         <h2>{{ $user.SizeName }}</h2>
 //     {{ end }}
 //     {{ else }}
 //         <h4>No users found</h4>

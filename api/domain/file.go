@@ -40,6 +40,12 @@ type (
 	Files []File
 )
 
+const (
+	MediaSourceType          = "media"
+	MediaSizeSourceType      = "media_sizes"
+	FormAttachmentSourceType = "form_attachment"
+)
+
 // PrivatePath retrieves the full path for the upload. If
 // the file is local, the prefix will be added.
 func (f *File) PrivatePath(prefix string) string {

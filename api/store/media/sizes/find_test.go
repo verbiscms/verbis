@@ -5,19 +5,19 @@
 package sizes
 
 import (
-	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"regexp"
 )
 
 var (
-	CreateQuery = "INSERT INTO `media_sizes` (`file_id`, `media_id`, `size_key`, `width`, `height`, `crop`) VALUES (0, 1, 'hd', 0, 0, FALSE)"
+	FindQuery = "SELECT * FROM `media_sizes` LEFT JOIN `files` AS `f` ON `media_sizes`.`file_id` = `f`.`id` WHERE `media_sizes`.`media_id` = '" + mediaID + "'"
 )
 
-func (t *SizesTestSuite) TestStore_Create() {
+func (t *SizesTestSuite) TestStore_Find() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)
@@ -25,29 +25,25 @@ func (t *SizesTestSuite) TestStore_Create() {
 		"Success": {
 			sizes,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(1), 1))
-			},
-		},
-		"No Rows": {
-			"Error creating media size with the key",
-			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnError(sql.ErrNoRows)
+				rows := sqlmock.NewRows([]string{"id", "size_key", "size_name"}).
+					AddRow(sizes["hd"].Id, sizes["hd"].SizeKey, sizes["hd"].SizeName)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
+					WillReturnRows(rows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
-		"Last Insert ID Error": {
-			"Error getting the newly created media size ID",
+		"Nil": {
+			domain.MediaSizes{},
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("error")))
+				rows := sqlmock.NewRows([]string{"size_key", "size_name"})
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
+					WillReturnRows(rows)
 			},
 		},
 	}
@@ -55,12 +51,12 @@ func (t *SizesTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			media, err := s.Create(1, sizes)
+			got, err := s.Find(1)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.RunT(media, test.want)
+			t.RunT(test.want, got)
 		})
 	}
 }

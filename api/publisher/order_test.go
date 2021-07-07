@@ -8,7 +8,7 @@ var (
 //newsResource  = "news"
 //testResources = map[string]domain.Resource{
 //	"news": {
-//		Name:         newsResource,
+//		SizeName:         newsResource,
 //		FriendlyName: "News",
 //		SingularName: "News Item",
 //		Slug:         "news",
@@ -28,7 +28,7 @@ var (
 //	post: domain.post{Slug: "custom/slug", Title: "Contact"},
 //}
 //category = domain.Category{
-//	Name: "category",
+//	SizeName: "category",
 //}
 //categoryPost = domain.PostDatum{
 //	post: domain.post{Slug: "custom/slug", Title: "Contact"}, Category: &category,

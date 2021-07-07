@@ -52,7 +52,7 @@ func TestMediaSizes_Scan(t *testing.T) {
 
 func TestMediaSizes_Value(t *testing.T) {
 	UtilTestValue(MediaSizes{
-		"test": MediaSize{Name: "name"},
+		"test": MediaSize{SizeName: "name"},
 	}, t)
 	UtilTestValueNil(MediaSizes{}, t)
 }

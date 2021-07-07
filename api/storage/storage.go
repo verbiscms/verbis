@@ -12,7 +12,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
-	"github.com/gookit/color"
 	"github.com/graymeta/stow"
 	_ "github.com/graymeta/stow/azure"
 	_ "github.com/graymeta/stow/google"
@@ -26,11 +25,16 @@ import (
 
 type Client interface {
 	FindByURL(url url.URL) ([]byte, domain.File, error)
-	Delete(id int) error
 	Upload(upload domain.Upload) (domain.File, error)
+	Delete(id int) error
+	Exists(name string) bool
+	Provider
+}
+
+type Provider interface {
+	ListBuckets() (domain.Buckets, error)
 	SetProvider(location domain.StorageProvider) error
 	SetBucket(id string) error
-	ListBuckets() (domain.Buckets, error)
 }
 
 type Storage struct {
@@ -45,8 +49,7 @@ type Storage struct {
 }
 
 var (
-	ErrNoProvider  = errors.New("invalid provider")
-	ErrInvalidMime = errors.New("error obtaining mime type")
+	ErrNoProvider = errors.New("invalid provider")
 )
 
 // New parse config
@@ -93,8 +96,6 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	// E.g. /2021/01/24d4ad32-53e7-4728-a2d5-35e297ac9abe.txt
 	absPath := strings.TrimPrefix(filepath.Join(filepath.Dir(u.Path), key.String()+filepath.Ext(u.Path)), ".")
 
-	color.Green.Println(absPath)
-
 	item, err := s.bucket.Put(absPath, u.Contents, u.Size, nil)
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error uploading file to storage provider", Operation: op, Err: err}
@@ -111,21 +112,28 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	}
 
 	// E.g. /2021/01/
-	dbPath := path.Dir(item.URL().Path)
-	if s.Local {
+	var (
+		id     = s.bucket.ID()
+		dbPath = path.Dir(item.URL().Path)
+		region = ""
+	)
+
+	if s.ProviderName == domain.StorageLocal {
 		dbPath = strings.TrimPrefix(strings.ReplaceAll(dbPath, s.paths.Storage, ""), "/")
+		id = ""
+		region = ""
 	}
 
 	f := domain.File{
 		UUID:       key,
 		URL:        "/" + strings.TrimSuffix(strings.TrimPrefix(u.Path, "/"), "/"),
-		Name:       path.Base(item.ID()),
+		Name:       path.Base(u.Path),
 		Path:       dbPath,
 		Mime:       domain.Mime(m.String()),
 		SourceType: u.SourceType,
 		Provider:   s.ProviderName,
-		Region:     "TODO",
-		Bucket:     s.bucket.ID(),
+		Region:     region,
+		Bucket:     id,
 		FileSize:   u.Size,
 		Private:    false,
 	}
@@ -136,6 +144,10 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	}
 
 	return create, nil
+}
+
+func (s *Storage) Exists(name string) bool {
+	return s.repo.Exists(name)
 }
 
 func (s *Storage) FindByURL(u url.URL) ([]byte, domain.File, error) {
@@ -183,14 +195,12 @@ func (s *Storage) Delete(id int) error {
 
 	bucket, err := s.getBucket(file)
 	if err != nil {
-		// TODO errros this message should be dynamic denepdant on local
-		return &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file from storage bucket", Operation: op, Err: err}
+		return &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file from storage", Operation: op, Err: err}
 	}
 
 	err = bucket.RemoveItem(file.PrivatePath(s.paths.Storage))
 	if err != nil {
-		// TODO errros this message should be dynamic denepdant on local
-		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage bucket", Operation: op, Err: err}
+		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
 	}
 
 	err = s.repo.Delete(file.Id)

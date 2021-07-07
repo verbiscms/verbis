@@ -54,5 +54,14 @@ func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of media items", Operation: op, Err: err}
 	}
 
+	// Obtain the sizes
+	for _, item := range media {
+		sizes, err := s.sizes.Find(item.Id)
+		if err != nil {
+			return nil, 0, err
+		}
+		item.Sizes = sizes
+	}
+
 	return media, total, nil
 }

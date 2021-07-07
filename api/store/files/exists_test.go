@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package media
+package files
 
 import (
 	"fmt"
@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `media` WHERE `file_name` = 'test.jpg')"
+	ExistsQuery = "SELECT EXISTS (SELECT `id` FROM `files` WHERE `name` = 'test.jpg')"
 )
 
-func (t *MediaTestSuite) TestStore_Exists() {
+func (t *FilesTestSuite) TestStore_Exists() {
 	tt := map[string]struct {
 		want interface{}
 		mock func(m sqlmock.Sqlmock)

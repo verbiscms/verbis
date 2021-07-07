@@ -50,20 +50,6 @@ func (_m *Repository) Delete(id int) error {
 	return r0
 }
 
-// Exists provides a mock function with given fields: fileName
-func (_m *Repository) Exists(fileName string) bool {
-	ret := _m.Called(fileName)
-
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(string) bool); ok {
-		r0 = rf(fileName)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	return r0
-}
-
 // Find provides a mock function with given fields: id
 func (_m *Repository) Find(id int) (domain.Media, error) {
 	ret := _m.Called(id)

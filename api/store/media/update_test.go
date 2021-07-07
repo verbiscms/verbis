@@ -47,7 +47,7 @@ func (t *MediaTestSuite) TestStore_Update() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
+			s := t.Setup(test.mock, nil)
 			cat, err := s.Update(mediaItem)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)

@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media/sizes"
 	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"regexp"
 )
@@ -23,17 +24,21 @@ var (
 
 func (t *MediaTestSuite) TestStore_List() {
 	tt := map[string]struct {
-		meta  params.Params
-		mock  func(m sqlmock.Sqlmock)
-		total int
-		want  interface{}
+		meta      params.Params
+		mockSizes func(m *mocks.Repository)
+		mock      func(m sqlmock.Sqlmock)
+		total     int
+		want      interface{}
 	}{
 		"Success": {
 			dummy.DefaultParams,
+			func(m *mocks.Repository) {
+				m.On("Find", mediaItem.Id).Return(mediaItem.Sizes, nil)
+			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "url", "title"}).
-					AddRow(mediaItems[0].Id, mediaItems[0].Url, mediaItems[0].Title).
-					AddRow(mediaItems[1].Id, mediaItems[1].Url, mediaItems[1].Title)
+					AddRow(mediaItems[0].Id, mediaItems[0].URL, mediaItems[0].Title).
+					AddRow(mediaItems[1].Id, mediaItems[1].URL, mediaItems[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
@@ -49,11 +54,13 @@ func (t *MediaTestSuite) TestStore_List() {
 				OrderDirection: api.DefaultParams.OrderDirection,
 				Filters:        params.Filters{"wrong_column": {{Operator: "=", Value: "verbis"}}}},
 			nil,
+			nil,
 			-1,
 			"The wrong_column search query does not exist",
 		},
 		"No Rows": {
 			dummy.DefaultParams,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(sql.ErrNoRows)
 			},
@@ -62,6 +69,7 @@ func (t *MediaTestSuite) TestStore_List() {
 		},
 		"Internal": {
 			dummy.DefaultParams,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -70,21 +78,38 @@ func (t *MediaTestSuite) TestStore_List() {
 		},
 		"Count Error": {
 			dummy.DefaultParams,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "url", "title"}).
-					AddRow(mediaItems[0].Id, mediaItems[0].Url, mediaItems[0].Title).
-					AddRow(mediaItems[1].Id, mediaItems[1].Url, mediaItems[1].Title)
+					AddRow(mediaItems[0].Id, mediaItems[0].URL, mediaItems[0].Title).
+					AddRow(mediaItems[1].Id, mediaItems[1].URL, mediaItems[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},
 			-1,
 			"Error getting the total number of media items",
 		},
+		"Sizes Error": {
+			dummy.DefaultParams,
+			func(m *mocks.Repository) {
+				m.On("Find", mediaItem.Id).Return(nil, fmt.Errorf("error"))
+			},
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "url", "title"}).
+					AddRow(mediaItems[0].Id, mediaItems[0].URL, mediaItems[0].Title).
+					AddRow(mediaItems[1].Id, mediaItems[1].URL, mediaItems[1].Title)
+				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
+				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
+				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
+			},
+			2,
+			"error",
+		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
+			s := t.Setup(test.mock, test.mockSizes)
 			got, total, err := s.List(test.meta)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
