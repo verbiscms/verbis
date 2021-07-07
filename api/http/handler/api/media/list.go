@@ -34,5 +34,5 @@ func (m *Media) List(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully obtained media", media, pagination.Get(p, total))
+	api.Respond(ctx, http.StatusOK, "Successfully obtained media", media.Public(), pagination.Get(p, total))
 }

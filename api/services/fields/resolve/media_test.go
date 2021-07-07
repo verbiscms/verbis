@@ -19,9 +19,9 @@ func (t *ResolverTestSuite) TestValue_Media() {
 		"Media": {
 			value: domain.FieldValue("1"),
 			mock: func(m *mocks.Repository) {
-				m.On("Find", 1).Return(domain.Media{Url: "image"}, nil)
+				m.On("Find", 1).Return(domain.Media{Title: "title"}, nil)
 			},
-			want: domain.Media{Url: "image"},
+			want: domain.MediaPublic{Title: "title"},
 		},
 		"Media Error": {
 			value: domain.FieldValue("1"),
@@ -65,40 +65,40 @@ func (t *ResolverTestSuite) TestValue_MediaResolve() {
 		"Success": {
 			field: domain.PostField{OriginalValue: "1,2,3", Type: "image"},
 			mock: func(m *mocks.Repository) {
-				m.On("Find", 1).Return(domain.Media{Url: "image1"}, nil)
-				m.On("Find", 2).Return(domain.Media{Url: "image2"}, nil)
-				m.On("Find", 3).Return(domain.Media{Url: "image3"}, nil)
+				m.On("Find", 1).Return(domain.Media{Title: "title1"}, nil)
+				m.On("Find", 2).Return(domain.Media{Title: "title2"}, nil)
+				m.On("Find", 3).Return(domain.Media{Title: "title3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3", Type: "image", Value: []interface{}{
-				domain.Media{Url: "image1"},
-				domain.Media{Url: "image2"},
-				domain.Media{Url: "image3"},
+				domain.MediaPublic{Title: "title1"},
+				domain.MediaPublic{Title: "title2"},
+				domain.MediaPublic{Title: "title3"},
 			}},
 		},
 		"Trailing Comma": {
 			field: domain.PostField{OriginalValue: "1,2,3,", Type: "image"},
 			mock: func(m *mocks.Repository) {
-				m.On("Find", 1).Return(domain.Media{Url: "image1"}, nil)
-				m.On("Find", 2).Return(domain.Media{Url: "image2"}, nil)
-				m.On("Find", 3).Return(domain.Media{Url: "image3"}, nil)
+				m.On("Find", 1).Return(domain.Media{Title: "title1"}, nil)
+				m.On("Find", 2).Return(domain.Media{Title: "title2"}, nil)
+				m.On("Find", 3).Return(domain.Media{Title: "title3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: "1,2,3,", Type: "image", Value: []interface{}{
-				domain.Media{Url: "image1"},
-				domain.Media{Url: "image2"},
-				domain.Media{Url: "image3"},
+				domain.MediaPublic{Title: "title1"},
+				domain.MediaPublic{Title: "title2"},
+				domain.MediaPublic{Title: "title3"},
 			}},
 		},
 		"Leading Comma": {
 			field: domain.PostField{OriginalValue: ",1,2,3", Type: "image"},
 			mock: func(m *mocks.Repository) {
-				m.On("Find", 1).Return(domain.Media{Url: "image1"}, nil)
-				m.On("Find", 2).Return(domain.Media{Url: "image2"}, nil)
-				m.On("Find", 3).Return(domain.Media{Url: "image3"}, nil)
+				m.On("Find", 1).Return(domain.Media{Title: "title1"}, nil)
+				m.On("Find", 2).Return(domain.Media{Title: "title2"}, nil)
+				m.On("Find", 3).Return(domain.Media{Title: "title3"}, nil)
 			},
 			want: domain.PostField{OriginalValue: ",1,2,3", Type: "image", Value: []interface{}{
-				domain.Media{Url: "image1"},
-				domain.Media{Url: "image2"},
-				domain.Media{Url: "image3"},
+				domain.MediaPublic{Title: "title1"},
+				domain.MediaPublic{Title: "title2"},
+				domain.MediaPublic{Title: "title3"},
 			}},
 		},
 	}

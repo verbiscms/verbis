@@ -71,55 +71,6 @@ func (_m *Repository) Find(id int) (domain.Media, error) {
 	return r0, r1
 }
 
-// FindByName provides a mock function with given fields: name
-func (_m *Repository) FindByName(name string) (domain.Media, error) {
-	ret := _m.Called(name)
-
-	var r0 domain.Media
-	if rf, ok := ret.Get(0).(func(string) domain.Media); ok {
-		r0 = rf(name)
-	} else {
-		r0 = ret.Get(0).(domain.Media)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(name)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// FindByURL provides a mock function with given fields: url
-func (_m *Repository) FindByURL(url string) (domain.Media, string, error) {
-	ret := _m.Called(url)
-
-	var r0 domain.Media
-	if rf, ok := ret.Get(0).(func(string) domain.Media); ok {
-		r0 = rf(url)
-	} else {
-		r0 = ret.Get(0).(domain.Media)
-	}
-
-	var r1 string
-	if rf, ok := ret.Get(1).(func(string) string); ok {
-		r1 = rf(url)
-	} else {
-		r1 = ret.Get(1).(string)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(string) error); ok {
-		r2 = rf(url)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
 // List provides a mock function with given fields: meta
 func (_m *Repository) List(meta params.Params) (domain.MediaItems, int, error) {
 	ret := _m.Called(meta)

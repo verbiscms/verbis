@@ -15,7 +15,7 @@ import (
 
 var (
 	FindQuery      = "SELECT * FROM `files` WHERE `id` = '" + fileID + "' LIMIT 1"
-	FindByURLQuery = "SELECT * FROM `files` WHERE `url` = '" + file.URL + "' LIMIT 1"
+	FindByURLQuery = "SELECT * FROM `files` WHERE `url` = '" + file.Url + "' LIMIT 1"
 )
 
 func (t *FilesTestSuite) TestStore_Find() {
@@ -27,7 +27,7 @@ func (t *FilesTestSuite) TestStore_Find() {
 			file,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "url", "name", "path", "provider"}).
-					AddRow(file.Id, file.URL, file.Name, file.Path, file.Provider)
+					AddRow(file.Id, file.Url, file.Name, file.Path, file.Provider)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},
@@ -70,13 +70,13 @@ func (t *FilesTestSuite) TestStore_FindByURL() {
 			file,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "url", "name", "path", "provider"}).
-					AddRow(file.Id, file.URL, file.Name, file.Path, file.Provider)
+					AddRow(file.Id, file.Url, file.Name, file.Path, file.Provider)
 				m.ExpectQuery(regexp.QuoteMeta(FindByURLQuery)).
 					WillReturnRows(rows)
 			},
 		},
 		"No Rows": {
-			"No file exists with the URL",
+			"No file exists with the Url",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(FindByURLQuery)).
 					WillReturnError(sql.ErrNoRows)
@@ -94,7 +94,7 @@ func (t *FilesTestSuite) TestStore_FindByURL() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.FindByURL(file.URL)
+			got, err := s.FindByURL(file.Url)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

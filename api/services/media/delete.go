@@ -4,28 +4,75 @@
 
 package media
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import (
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
+)
 
-// Delete
-//
-// Satisfies the Library to remove possible media item
-// combinations from the file system, if the file
+// Delete satisfies the Library to remove possible media
+// item combinations from the file system, if the file
 // does not exist (user moved) it will be
-// skipped.
-//
+// skipped and logged out.
 // Logs errors.INTERNAL if the file could not be deleted.
-func (s *Service) Delete(media domain.Media) {
-	const op = "Service.Delete"
+func (s *Service) Delete(id int) error {
+	// Find the original media item
+	item, err := s.repo.Find(id)
+	if err != nil {
+		return err
+	}
 
-	//items := item.PossibleFiles(s.paths.Uploads)
-	//for _, path := range items {
-	//	err := s.storage.Delete(path)
-	//
-	//	// Exists func
-	//	if err != nil {
-	//		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + path, Operation: op, Err: err})
-	//	}
-	//
-	//	logger.Debug("Deleted file with the path: " + path)
-	//}
+	// Remove from the database
+	err = s.repo.Delete(item.Id)
+	if err != nil {
+		return err
+	}
+
+	go s.deleteFiles(item)
+
+	return nil
+}
+
+func (s *Service) deleteFiles(item domain.Media) {
+	const op = "Service.DeleteFiles"
+
+	// Remove original file
+	err := s.storage.Delete(item.File.Id)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting original media item: " + item.File.Url, Operation: op, Err: err}).Error()
+	}
+	logger.Debug("Deleted original media item: " + item.File.Url)
+
+	// Delete original WebP
+	s.deleteWebP(item.File)
+
+	// Remove media sizes
+	for _, size := range item.Sizes {
+		// Delete original
+		err := s.storage.Delete(size.File.Id)
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting media size: " + size.File.Url, Operation: op, Err: err}).Error()
+		}
+		logger.Debug("Deleted media size: " + size.File.Url)
+
+		// Delete sized WebP
+		s.deleteWebP(size.File)
+	}
+}
+
+func (s *Service) deleteWebP(file domain.File) {
+	const op = "Service.DeleteWebP"
+
+	_, webp, err := s.storage.FindByURL(file.Url + domain.WebPExtension)
+	if err != nil {
+		return
+	}
+
+	err = s.storage.Delete(webp.Id)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting webp image: " + webp.Url, Operation: op, Err: err}).Error()
+		return
+	}
+
+	logger.Debug("Deleted WebP file: " + webp.Url)
 }

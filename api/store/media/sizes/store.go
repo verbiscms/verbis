@@ -5,8 +5,10 @@
 package sizes
 
 import (
+	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store/config"
+	"github.com/ainsleyclark/verbis/api/store/files"
 )
 
 // Repository defines methods for media sizes
@@ -34,4 +36,23 @@ func New(cfg *config.Config) *Store {
 	return &Store{
 		Config: cfg,
 	}
+}
+
+// selectStmt is a helper for SELECT Statements,
+// joining files by file id.
+func (s *Store) selectStmt() *builder.Sqlbuilder {
+	return s.Builder().
+		SelectRaw(s.Schema()+TableName+".*, "+
+			s.Schema()+"file.id `file.id`, "+
+			s.Schema()+"file.url `file.url`, "+
+			s.Schema()+"file.name `file.name`, "+
+			s.Schema()+"file.path `file.mime`, "+
+			s.Schema()+"file.source_type `file.source_type`, "+
+			s.Schema()+"file.provider `file.provider`, "+
+			s.Schema()+"file.region `file.region`, "+
+			s.Schema()+"file.bucket `file.bucket`, "+
+			s.Schema()+"file.file_size `file.file_size`, "+
+			s.Schema()+"file.private `file.private`").
+		From(s.Schema()+TableName).
+		LeftJoin(s.Schema()+files.TableName, "file", s.Schema()+TableName+".file_id = "+s.Schema()+"file.id")
 }

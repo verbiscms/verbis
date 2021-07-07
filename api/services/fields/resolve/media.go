@@ -27,5 +27,5 @@ func (v *Value) media(value domain.FieldValue) (interface{}, error) {
 		return nil, err
 	}
 
-	return media, nil
+	return media.Public(), nil
 }

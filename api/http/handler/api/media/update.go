@@ -44,5 +44,5 @@ func (m *Media) Update(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully updated media item with ID: "+strconv.Itoa(id), updated)
+	api.Respond(ctx, http.StatusOK, "Successfully updated media item with ID: "+strconv.Itoa(id), updated.Public())
 }

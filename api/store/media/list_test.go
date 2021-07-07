@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	ListQuery  = "SELECT * FROM `media` ORDER BY created_at desc LIMIT 15 OFFSET 0"
-	CountQuery = "SELECT COUNT(*) AS rowcount FROM (SELECT * FROM `media` ORDER BY created_at desc) AS rowdata"
+	ListQuery  = SelectStatement + "ORDER BY created_at desc LIMIT 15 OFFSET 0"
+	CountQuery = "SELECT COUNT(*) AS rowcount FROM (" + SelectStatement + " ORDER BY created_at desc) AS rowdata"
 )
 
 func (t *MediaTestSuite) TestStore_List() {
@@ -36,9 +36,9 @@ func (t *MediaTestSuite) TestStore_List() {
 				m.On("Find", mediaItem.Id).Return(mediaItem.Sizes, nil)
 			},
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "url", "title"}).
-					AddRow(mediaItems[0].Id, mediaItems[0].URL, mediaItems[0].Title).
-					AddRow(mediaItems[1].Id, mediaItems[1].URL, mediaItems[1].Title)
+				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
+					AddRow(mediaItems[0].Id, mediaItems[0].File.Name, mediaItems[0].Title).
+					AddRow(mediaItems[1].Id, mediaItems[1].File.Name, mediaItems[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
@@ -80,9 +80,9 @@ func (t *MediaTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			nil,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "url", "title"}).
-					AddRow(mediaItems[0].Id, mediaItems[0].URL, mediaItems[0].Title).
-					AddRow(mediaItems[1].Id, mediaItems[1].URL, mediaItems[1].Title)
+				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
+					AddRow(mediaItems[0].Id, mediaItems[0].File.Name, mediaItems[0].Title).
+					AddRow(mediaItems[1].Id, mediaItems[1].File.Name, mediaItems[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -95,9 +95,9 @@ func (t *MediaTestSuite) TestStore_List() {
 				m.On("Find", mediaItem.Id).Return(nil, fmt.Errorf("error"))
 			},
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "url", "title"}).
-					AddRow(mediaItems[0].Id, mediaItems[0].URL, mediaItems[0].Title).
-					AddRow(mediaItems[1].Id, mediaItems[1].URL, mediaItems[1].Title)
+				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
+					AddRow(mediaItems[0].Id, mediaItems[0].File.Name, mediaItems[0].Title).
+					AddRow(mediaItems[1].Id, mediaItems[1].File.Name, mediaItems[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)

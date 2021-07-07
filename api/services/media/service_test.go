@@ -7,7 +7,9 @@ package media
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/services/webp"
+	webp "github.com/ainsleyclark/verbis/api/mocks/services/webp"
+	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
+	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
@@ -36,10 +38,14 @@ var (
 //
 // A helper to obtain a mock media Service for
 // testing.
-func (t *MediaServiceTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Options) *Service {
-	m := &mocks.Execer{}
+func (t *MediaServiceTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Options, rp *repo.Repository, st storage.Provider) *Service {
+	m := &webp.Execer{}
+	r := &repo.Repository{}
+	s := &storage.Provider{}
+
 	m.On("Convert", mock.Anything, mock.Anything).Once()
 	m.On("Convert", mock.Anything, mock.Anything).Once()
+
 	return &Service{
 		options: &opts,
 		config:  &cfg,
@@ -47,7 +53,9 @@ func (t *MediaServiceTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Option
 			API:     t.ApiPath,
 			Uploads: t.ApiPath + test.MediaTestPath,
 		},
-		exists: nil,
-		webp:   m,
+		exists:  nil,
+		webp:    m,
+		repo:    r,
+		storage: s,
 	}
 }

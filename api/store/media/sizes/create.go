@@ -23,6 +23,7 @@ func (s *Store) Create(mediaId int, sizes domain.MediaSizes) (domain.MediaSizes,
 			Insert(s.Schema()+TableName).
 			Column("file_id", size.FileId).
 			Column("media_id", mediaId).
+			Column("size_name", size.SizeName).
 			Column("size_key", key).
 			Column("width", size.Width).
 			Column("height", size.Height).

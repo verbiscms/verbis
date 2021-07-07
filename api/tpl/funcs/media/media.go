@@ -28,5 +28,5 @@ func (ns *Namespace) Find(i interface{}) interface{} {
 		return nil
 	}
 
-	return m
+	return m.Public()
 }

@@ -21,7 +21,7 @@ func (s *Store) Create(f domain.File) (domain.File, error) {
 	q := s.Builder().
 		Insert(s.Schema()+TableName).
 		Column("uuid", f.UUID.String()).
-		Column("url", f.URL).
+		Column("url", f.Url).
 		Column("name", f.Name).
 		Column("path", f.Path).
 		Column("mime", f.Mime).

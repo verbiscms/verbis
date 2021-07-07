@@ -19,10 +19,10 @@ import (
 // save, validate and delete from the
 // local file system.
 type Library interface {
-	Upload(file *multipart.FileHeader) (domain.Media, error)
+	Upload(file *multipart.FileHeader, userID int) (domain.Media, error)
 	Serve(media domain.Media, path string, acceptWebP bool) ([]byte, domain.Mime, error)
 	Validate(file *multipart.FileHeader) error
-	Delete(item domain.Media)
+	Delete(id int) error
 }
 
 // Service

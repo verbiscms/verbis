@@ -8,7 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/store/files"
 )
 
 // Find
@@ -18,10 +17,8 @@ import (
 func (s *Store) Find(mediaId int) (domain.MediaSizes, error) {
 	const op = "SizesStore.Find"
 
-	q := s.Builder().
-		From(s.Schema()+TableName).
-		Where(TableName+".media_id", "=", mediaId).
-		LeftJoin(s.Schema()+files.TableName, "f", s.Schema()+TableName+".file_id = "+s.Schema()+"f.id")
+	q := s.selectStmt().
+		Where(TableName+".media_id", "=", mediaId)
 
 	var sizes []domain.MediaSize
 	err := s.DB().Select(&sizes, q.Build())

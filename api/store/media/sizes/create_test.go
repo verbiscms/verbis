@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `media_sizes` (`file_id`, `media_id`, `size_key`, `width`, `height`, `crop`) VALUES (0, 1, 'hd', 0, 0, FALSE)"
+	CreateQuery = "INSERT INTO `media_sizes` (`file_id`, `media_id`, `size_name`, `size_key`, `width`, `height`, `crop`) VALUES (0, 1, 'gopher-1920x1080.jpg', 'hd', 0, 0, FALSE)"
 )
 
 func (t *SizesTestSuite) TestStore_Create() {

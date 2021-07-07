@@ -44,7 +44,7 @@ var (
 				return
 			}
 
-			_, err = service.Upload(file)
+			_, err = service.Upload(file, 1)
 			if err != nil {
 				printError(err.Error())
 				return
@@ -97,7 +97,7 @@ func res() {
 	//	StorageBucket:   "reddicotest",
 	//}, config.Store.Files)
 
-	//text, item, err := client.FindByURL(url.URL{
+	//text, item, err := client.FindByURL(url.Url{
 	//	Path: "/test2.txt",
 	//})
 	//if err != nil {

@@ -15,9 +15,18 @@ type Library struct {
 	mock.Mock
 }
 
-// Delete provides a mock function with given fields: item
-func (_m *Library) Delete(item domain.Media) {
-	_m.Called(item)
+// Delete provides a mock function with given fields: id
+func (_m *Library) Delete(id int) error {
+	ret := _m.Called(id)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int) error); ok {
+		r0 = rf(id)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // Serve provides a mock function with given fields: _a0, path, acceptWebP
@@ -50,20 +59,20 @@ func (_m *Library) Serve(_a0 domain.Media, path string, acceptWebP bool) ([]byte
 	return r0, r1, r2
 }
 
-// Upload provides a mock function with given fields: file
-func (_m *Library) Upload(file *multipart.FileHeader) (domain.Media, error) {
-	ret := _m.Called(file)
+// Upload provides a mock function with given fields: file, userID
+func (_m *Library) Upload(file *multipart.FileHeader, userID int) (domain.Media, error) {
+	ret := _m.Called(file, userID)
 
 	var r0 domain.Media
-	if rf, ok := ret.Get(0).(func(*multipart.FileHeader) domain.Media); ok {
-		r0 = rf(file)
+	if rf, ok := ret.Get(0).(func(*multipart.FileHeader, int) domain.Media); ok {
+		r0 = rf(file, userID)
 	} else {
 		r0 = ret.Get(0).(domain.Media)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(*multipart.FileHeader) error); ok {
-		r1 = rf(file)
+	if rf, ok := ret.Get(1).(func(*multipart.FileHeader, int) error); ok {
+		r1 = rf(file, userID)
 	} else {
 		r1 = ret.Error(1)
 	}

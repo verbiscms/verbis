@@ -30,7 +30,7 @@ func (s *Store) Create(m domain.Media) (domain.Media, error) {
 
 	result, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
-		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating media item with the name: " + m.Name, Operation: op, Err: err}
+		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating media item with the name: " + m.File.Name, Operation: op, Err: err}
 	} else if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}

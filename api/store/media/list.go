@@ -20,8 +20,7 @@ import (
 func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 	const op = "MediaStore.List"
 
-	q := s.Builder().
-		From(s.Schema() + TableName)
+	q := s.selectStmt()
 
 	// Apply filters.
 	err := database.FilterRows(s.Driver, q, meta.Filters, TableName)
@@ -55,12 +54,12 @@ func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 	}
 
 	// Obtain the sizes
-	for _, item := range media {
+	for index, item := range media {
 		sizes, err := s.sizes.Find(item.Id)
 		if err != nil {
 			return nil, 0, err
 		}
-		item.Sizes = sizes
+		media[index].Sizes = sizes
 	}
 
 	return media, total, nil
