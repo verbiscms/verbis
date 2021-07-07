@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	FindQuery = "SELECT * FROM `media_sizes` LEFT JOIN `files` AS `f` ON `media_sizes`.`file_id` = `f`.`id` WHERE `media_sizes`.`media_id` = '" + mediaID + "'"
+	FindQuery = SelectStatement + "WHERE `media_sizes`.`media_id` = '" + mediaID + "'"
 )
 
 func (t *SizesTestSuite) TestStore_Find() {

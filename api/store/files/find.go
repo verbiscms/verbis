@@ -38,8 +38,8 @@ func (s *Store) Find(id int) (domain.File, error) {
 
 // FindByURL
 //
-// Returns a file by searching with the given URL.
-// Returns errors.NOTFOUND if the file was not found by the given URL
+// Returns a file by searching with the given Url.
+// Returns errors.NOTFOUND if the file was not found by the given Url
 // Returns errors.INTERNAL if there was an error executing the query.
 func (s *Store) FindByURL(url string) (domain.File, error) {
 	const op = "FileStore.FindByURL"
@@ -52,7 +52,7 @@ func (s *Store) FindByURL(url string) (domain.File, error) {
 	var r domain.File
 	err := s.DB().Get(&r, q.Build())
 	if err == sql.ErrNoRows {
-		return domain.File{}, &errors.Error{Code: errors.NOTFOUND, Message: "No file exists with the URL: " + url, Operation: op, Err: err}
+		return domain.File{}, &errors.Error{Code: errors.NOTFOUND, Message: "No file exists with the Url: " + url, Operation: op, Err: err}
 	} else if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}

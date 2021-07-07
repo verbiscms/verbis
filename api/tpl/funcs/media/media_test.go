@@ -27,6 +27,13 @@ func Setup() (*Namespace, *mocks.Repository) {
 
 func TestNamespace_Find(t *testing.T) {
 	media := domain.Media{
+		Id: 1,
+		File: domain.File{
+			Url: "/uploads/test.jpg",
+		},
+	}
+
+	mediaPub := domain.MediaPublic{
 		Id:  1,
 		Url: "/uploads/test.jpg",
 	}
@@ -45,7 +52,7 @@ func TestNamespace_Find(t *testing.T) {
 			func(m *mocks.Repository) {
 				m.On("Find", 1).Return(media, nil)
 			},
-			media,
+			mediaPub,
 		},
 		"No Item": {
 			1,
@@ -66,42 +73,42 @@ func TestNamespace_Find(t *testing.T) {
 			func(m *mocks.Repository) {
 				m.On("Find", 1).Return(media, nil)
 			},
-			media,
+			mediaPub,
 		},
 		"*int": {
 			&id,
 			func(m *mocks.Repository) {
 				m.On("Find", 1).Return(media, nil)
 			},
-			media,
+			mediaPub,
 		},
 		"float32": {
 			idFloat32,
 			func(m *mocks.Repository) {
 				m.On("Find", 1).Return(media, nil)
 			},
-			media,
+			mediaPub,
 		},
 		"*float32": {
 			&idFloat32,
 			func(m *mocks.Repository) {
 				m.On("Find", 1).Return(media, nil)
 			},
-			media,
+			mediaPub,
 		},
 		"float64": {
 			idFloat64,
 			func(m *mocks.Repository) {
 				m.On("Find", 1).Return(media, nil)
 			},
-			media,
+			mediaPub,
 		},
 		"*float64": {
 			&idFloat64,
 			func(m *mocks.Repository) {
 				m.On("Find", 1).Return(media, nil)
 			},
-			media,
+			mediaPub,
 		},
 		"string": {
 			"wrongval",

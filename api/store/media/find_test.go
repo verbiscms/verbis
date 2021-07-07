@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	FindQuery = "SELECT * FROM `media` LEFT JOIN `files` AS `f` ON `media`.`file_id` = `f`.`id` WHERE `media`.`id` = '" + mediaID + "' LIMIT 1"
+	FindQuery = SelectStatement + "WHERE `media`.`id` = '" + mediaID + "' LIMIT 1"
 )
 
 func (t *MediaTestSuite) TestStore_Find() {
@@ -30,7 +30,7 @@ func (t *MediaTestSuite) TestStore_Find() {
 				m.On("Find", mediaItem.Id).Return(mediaItem.Sizes, nil)
 			},
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "name", "title"}).
+				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
 					AddRow(mediaItem.Id, mediaItem.File.Name, mediaItem.Title)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
@@ -58,7 +58,7 @@ func (t *MediaTestSuite) TestStore_Find() {
 				m.On("Find", mediaItem.Id).Return(nil, fmt.Errorf("error"))
 			},
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "name", "title"}).
+				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
 					AddRow(mediaItem.Id, mediaItem.File.Name, mediaItem.Title)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)

@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/store/files"
 )
 
 // Find
@@ -21,10 +20,8 @@ import (
 func (s *Store) Find(id int) (domain.Media, error) {
 	const op = "MediaStore.Find"
 
-	q := s.Builder().
-		From(s.Schema()+TableName).
+	q := s.selectStmt().
 		Where(TableName+".id", "=", id).
-		LeftJoin(s.Schema()+files.TableName, "f", s.Schema()+TableName+".file_id = "+s.Schema()+"f.id").
 		Limit(1)
 
 	var media domain.Media

@@ -47,7 +47,7 @@ var (
 	// The default file used for testing.
 	file = domain.File{
 		Id:       1,
-		URL:      "/uploads/2020/01/file.jpg",
+		Url:      "/uploads/2020/01/file.jpg",
 		Name:     "file.jpg",
 		Path:     "uploads/2020/01",
 		Provider: domain.StorageLocal,
@@ -56,14 +56,14 @@ var (
 	files = domain.Files{
 		{
 			Id:       1,
-			URL:      "/uploads/2020/01/file.jpg",
+			Url:      "/uploads/2020/01/file.jpg",
 			Name:     "file.jpg",
 			Path:     "uploads/2020/01",
 			Provider: domain.StorageLocal,
 		},
 		{
 			Id:       2,
-			URL:      "/uploads/2020/01/file-2.jpg",
+			Url:      "/uploads/2020/01/file-2.jpg",
 			Name:     "file-2.jpg",
 			Path:     "uploads/2020/01",
 			Provider: domain.StorageLocal,

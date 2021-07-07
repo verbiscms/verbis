@@ -23,9 +23,9 @@ type (
 		Sizes       MediaSizes `db:"-" json:"sizes"`
 		UserId      int        `db:"user_id" json:"user_id"` //nolint
 		FileId      int        `db:"file_id" json:"-"`       //nolint
+		File        File       `db:"file" json:"file"`
 		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
-		File
 	}
 	// MediaItems represents the slice of Media.
 	MediaItems []Media
@@ -43,7 +43,33 @@ type (
 		Width    int           `db:"width" json:"width" binding:"required,numeric"`
 		Height   int           `db:"height" json:"height" binding:"required,numeric"`
 		Crop     types.BitBool `db:"crop" json:"crop"`
-		File
+		File     File          `db:"file" json:"file"`
+	}
+	MediaPublic struct {
+		Id          int              `json:"id"` //nolint
+		Title       string           `json:"title"`
+		Alt         string           `json:"alt"`
+		Description string           `json:"description"`
+		Sizes       MediaSizesPublic `json:"sizes"`
+		UserId      int              `json:"user_id"` //nolint
+		Url         string           `json:"url"`
+		Name        string           `json:"name"`
+		Path        string           `json:"path"`
+		Mime        Mime             `json:"mime"`
+		FileSize    int64            `json:"file_size"`
+		CreatedAt   time.Time        `json:"created_at"`
+		UpdatedAt   time.Time        `json:"updated_at"`
+	}
+	MediaSizesPublic map[string]MediaSizePublic
+	MediaSizePublic  struct {
+		Name     string        `json:"name"`
+		Width    int           `json:"width"`
+		Height   int           `json:"height"`
+		Crop     types.BitBool `json:"crop"`
+		URL      string        `json:"url"`
+		Path     string        `json:"path"`
+		Mime     Mime          `json:"mime"`
+		FileSize int64         `json:"file_size"`
 	}
 )
 
@@ -52,19 +78,51 @@ const (
 	WebPExtension = ".webp"
 )
 
-// PossibleFiles Returns a the possible files saved to the
-// system after the files have been uploaded. Note: This
-// does not include the upload path.
-func (m *Media) PossibleFiles(prefix string) []string {
-	files := []string{
-		m.PrivatePath(prefix),
-		m.PrivatePath(prefix) + WebPExtension,
-	}
+// Public converts a Media type to a public struct.
+func (m *Media) Public() MediaPublic {
+	var ms = make(MediaSizesPublic, len(m.Sizes))
 	for _, v := range m.Sizes {
-		path := v.PrivatePath(prefix)
-		files = append(files, path, path+WebPExtension)
+		ms[v.SizeKey] = MediaSizePublic{
+			Name:     v.SizeName,
+			Width:    v.Width,
+			Height:   v.Height,
+			Crop:     v.Crop,
+			URL:      v.File.Url,
+			Path:     v.File.Path,
+			Mime:     v.File.Mime,
+			FileSize: v.File.FileSize,
+		}
 	}
-	return files
+
+	if len(ms) == 0 {
+		ms = nil
+	}
+
+	return MediaPublic{
+		Id:          m.Id,
+		Title:       m.Title,
+		Alt:         m.Alt,
+		Description: m.Description,
+		Sizes:       ms,
+		UserId:      m.UserId,
+		Url:         m.File.Url,
+		Name:        m.File.Name,
+		Path:        m.File.Path,
+		Mime:        m.File.Mime,
+		FileSize:    m.File.FileSize,
+		UpdatedAt:   m.UpdatedAt,
+		CreatedAt:   m.CreatedAt,
+	}
+}
+
+// Public converts a MediaItems type to a slice of
+// public structs.
+func (m MediaItems) Public() []MediaPublic {
+	var mp = make([]MediaPublic, len(m))
+	for i, v := range m {
+		mp[i] = v.Public()
+	}
+	return mp
 }
 
 // Scan implements the scanner for MediaSizes. unmarshal

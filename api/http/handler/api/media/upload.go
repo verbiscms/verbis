@@ -54,19 +54,11 @@ func (m *Media) Upload(ctx *gin.Context) {
 		return
 	}
 
-	item, err := m.service.Upload(files[0])
+	media, err := m.service.Upload(files[0], user.Id)
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
 
-	item.UserId = user.Id
-
-	media, err := m.Store.Media.Create(item)
-	if err != nil {
-		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
-		return
-	}
-
-	api.Respond(ctx, http.StatusOK, "Successfully uploaded media item", media)
+	api.Respond(ctx, http.StatusOK, "Successfully uploaded media item", media.Public())
 }

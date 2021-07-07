@@ -56,6 +56,8 @@ func (t *MediaTestSuite) Setup(mf func(m sqlmock.Sqlmock), mfm func(m *mocks.Rep
 const (
 	// The default media item ID used for testing.
 	mediaID = "1"
+	// SelectStatement the media select statement.
+	SelectStatement = "SELECT media.*, file.id `file.id`, file.url `file.url`, file.name `file.name`, file.path `file.mime`, file.source_type `file.source_type`, file.provider `file.provider`, file.region `file.region`, file.bucket `file.bucket`, file.file_size `file.file_size`, file.private `file.private` FROM `media` LEFT JOIN `files` AS `file` ON `media`.`file_id` = `file`.`id` "
 )
 
 //
@@ -73,7 +75,7 @@ var (
 	mediaItemURL = domain.Media{
 		Id: 1,
 		File: domain.File{
-			URL: "/2020/01/gopher.png",
+			Url: "/2020/01/gopher.png",
 		},
 	}
 	// The default media sizes used for testing.
@@ -90,12 +92,16 @@ var (
 	// The default media items used for testing.
 	mediaItems = domain.MediaItems{
 		{
-			Id:    1,
-			Title: "title",
+			Id: 1,
+			File: domain.File{
+				Name: "gopher.png",
+			},
 		},
 		{
-			Id:    1,
-			Title: "title",
+			Id: 1,
+			File: domain.File{
+				Name: "gopher-2.png",
+			},
 		},
 	}
 )

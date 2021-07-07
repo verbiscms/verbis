@@ -18,7 +18,7 @@ type (
 	File struct {
 		Id         int             `db:"id" json:"-" binding:"numeric"` //nolint
 		UUID       uuid.UUID       `db:"uuid" json:"uuid"`
-		URL        string          `db:"url" json:"url"`
+		Url        string          `db:"url" json:"url"`
 		Name       string          `db:"name" json:"name"`
 		Path       string          `db:"path" json:"path"`
 		Mime       Mime            `db:"mime" json:"mime"`
@@ -43,6 +43,7 @@ type (
 const (
 	MediaSourceType          = "media"
 	MediaSizeSourceType      = "media_sizes"
+	MediaWebPSourceType      = "media_webp"
 	FormAttachmentSourceType = "form_attachment"
 )
 

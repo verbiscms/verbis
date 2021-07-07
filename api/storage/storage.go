@@ -12,6 +12,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
+	"github.com/gookit/color"
 	"github.com/graymeta/stow"
 	_ "github.com/graymeta/stow/azure"
 	_ "github.com/graymeta/stow/google"
@@ -24,7 +25,7 @@ import (
 )
 
 type Client interface {
-	FindByURL(url url.URL) ([]byte, domain.File, error)
+	FindByURL(path string) ([]byte, domain.File, error)
 	Upload(upload domain.Upload) (domain.File, error)
 	Delete(id int) error
 	Exists(name string) bool
@@ -116,17 +117,23 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		id     = s.bucket.ID()
 		dbPath = path.Dir(item.URL().Path)
 		region = ""
+		url    = ""
 	)
+
+	color.Green.Println()
+
+	//url is /https:/s3-eu-west-2.amazonaws.com/reddicotest/https:/s3-eu-west-2.amazonaws.com/reddicotest/uploads/2021/07/v1-1920x0.png.webp
 
 	if s.ProviderName == domain.StorageLocal {
 		dbPath = strings.TrimPrefix(strings.ReplaceAll(dbPath, s.paths.Storage, ""), "/")
 		id = ""
 		region = ""
+		url = "/" + strings.TrimSuffix(strings.TrimPrefix(u.Path, "/"), "/")
 	}
 
 	f := domain.File{
 		UUID:       key,
-		URL:        "/" + strings.TrimSuffix(strings.TrimPrefix(u.Path, "/"), "/"),
+		Url:        url,
 		Name:       path.Base(u.Path),
 		Path:       dbPath,
 		Mime:       domain.Mime(m.String()),
@@ -150,10 +157,10 @@ func (s *Storage) Exists(name string) bool {
 	return s.repo.Exists(name)
 }
 
-func (s *Storage) FindByURL(u url.URL) ([]byte, domain.File, error) {
+func (s *Storage) FindByURL(path string) ([]byte, domain.File, error) {
 	const op = "Storage.Find"
 
-	file, err := s.repo.FindByURL(u.Path)
+	file, err := s.repo.FindByURL(path)
 	if err != nil {
 		return nil, domain.File{}, err
 	}

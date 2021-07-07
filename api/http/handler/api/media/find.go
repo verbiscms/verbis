@@ -36,5 +36,5 @@ func (m *Media) Find(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully obtained media item with ID: "+paramID, media)
+	api.Respond(ctx, http.StatusOK, "Successfully obtained media item with ID: "+paramID, media.Public())
 }

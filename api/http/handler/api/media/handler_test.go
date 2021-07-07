@@ -13,7 +13,6 @@ import (
 	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"io"
 	"mime/multipart"
@@ -42,19 +41,12 @@ func TestMedia(t *testing.T) {
 //
 // A helper to obtain a mock media handler
 // for testing.
-func (t *MediaTestSuite) Setup(mf func(m *mocks.Repository)) *Media {
-	m := &mocks.Repository{}
+func (t *MediaTestSuite) Setup(mf func(s *service.Library)) *Media {
 	ms := &service.Library{}
-	ms.On("Delete", mock.Anything)
 	if mf != nil {
-		mf(m)
+		mf(ms)
 	}
-	d := &deps.Deps{
-		Store: &store.Repository{
-			Media: m,
-		},
-	}
-	media := New(d)
+	media := New(&deps.Deps{})
 	media.service = ms
 	return media
 }
@@ -96,21 +88,22 @@ var (
 	mediaItem = domain.Media{
 		Id: 123,
 	}
-	// The default media item with wrong validation used for testing.
-	mediaBadValidation = &domain.Media{}
-	// The default media items used for testing.
-	mediaItems = domain.MediaItems{
-		{
-			Id:    1,
-			Url:   "/uploads/1",
-			Title: "title",
-		},
-		{
-			Id:    1,
-			Url:   "/uploads/1",
-			Title: "title",
-		},
-	}
+
+//	// The default media item with wrong validation used for testing.
+//	mediaBadValidation = &domain.Media{}
+//	// The default media items used for testing.
+//	mediaItems = domain.MediaItems{
+//		{
+//			Id:    1,
+//			Url:   "/uploads/1",
+//			Title: "title",
+//		},
+//		{
+//			Id:    1,
+//			Url:   "/uploads/1",
+//			Title: "title",
+//		},
+//	}
 )
 
 // UploadRequest

@@ -6,13 +6,14 @@ package media
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
 	"github.com/google/uuid"
-	"os"
 )
 
 func (t *MediaServiceTestSuite) TestClient_Delete() {
 	tt := map[string]struct {
 		input     domain.Media
+		mock      func(m *mocks.Library)
 		extension string
 	}{
 		"PNG": {
@@ -23,50 +24,16 @@ func (t *MediaServiceTestSuite) TestClient_Delete() {
 				FileName: "test.png",
 				Mime:     "image/png",
 			},
-			".png",
-		},
-		"JPG": {
-			domain.Media{
-				UUID:     uuid.New(),
-				FileSize: 0,
-				Url:      "/test.jpg",
-				FileName: "test.jpg",
-				Mime:     "image/jpeg",
+			func(m *mocks.Library) {
+
 			},
-			".jpg",
+			".png",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			file := t.MediaPath + string(os.PathSeparator) + test.input.UUID.String() + test.extension
-			teardown := t.DummyFile(file)
-			defer teardown()
 
-			webp := t.MediaPath + string(os.PathSeparator) + test.input.UUID.String() + test.extension + domain.WebPExtension
-			teardownWebP := t.DummyFile(webp)
-			defer teardownWebP()
-
-			c := t.Setup(domain.ThemeConfig{}, domain.Options{})
-			c.Delete(test.input)
-
-			_, err := os.Stat(file)
-			if !os.IsNotExist(err) {
-				t.Fail("File wasn't deleted, cleaning up")
-				err := os.Remove(file)
-				if err != nil {
-					t.Fail("Could not delete file! Clean up manually")
-				}
-			}
-
-			_, err = os.Stat(webp)
-			if !os.IsNotExist(err) {
-				t.Fail("File wasn't deleted, cleaning up")
-				err := os.Remove(file)
-				if err != nil {
-					t.Fail("Could not delete file! Clean up manually")
-				}
-			}
 		})
 	}
 }
