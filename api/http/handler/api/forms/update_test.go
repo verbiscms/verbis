@@ -35,7 +35,7 @@ func (t *FormsTestSuite) TestForms_Update() {
 			"/forms/123",
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "name", Message: "SizeName is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
 			formBadValidation,

@@ -5,7 +5,7 @@
 package recovery
 
 var (
-//cookie = http.Cookie{Name: "test"}
+//cookie = http.Cookie{SizeName: "test"}
 )
 
 //

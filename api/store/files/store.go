@@ -18,6 +18,7 @@ type Repository interface {
 	FindByURL(url string) (domain.File, error)
 	Create(f domain.File) (domain.File, error)
 	Delete(id int) error
+	Exists(fileName string) bool
 }
 
 // Store defines the data layer for roles.

@@ -117,7 +117,7 @@ func (u *Uploader) Save() (domain.Media, error) {
 		Description: "",
 		Sizes:       nil,
 		UserId:      0,
-		StorageId:   0,
+		FileId:      0,
 		CreatedAt:   time.Time{},
 		UpdatedAt:   time.Time{},
 		File:        domain.File{},
@@ -262,7 +262,7 @@ func (u *Uploader) toWebP(media domain.Media) {
 	//u.WebP.Convert(media.PrivatePath(u.StoragePath), comp)
 	//
 	//for _, v := range media.Sizes {
-	//	logger.Debug("Attempting to convert media size image to WebP: " + v.Name)
+	//	logger.Debug("Attempting to convert media size image to WebP: " + v.SizeName)
 	//	path := filepath.Join(u.StoragePath, media.FilePath, v.UUID.String()+media.Extension())
 	//	u.WebP.Convert(path, comp)
 	//}

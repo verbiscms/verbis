@@ -7,10 +7,8 @@ package media
 import (
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/services/media/internal/uploader"
+	"github.com/ainsleyclark/verbis/api/services/media/internal/resizer"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/ainsleyclark/verbis/api/store/media"
@@ -38,6 +36,8 @@ type Service struct {
 	exists  func(fileName string) bool
 	webp    webp.Execer
 	storage storage.Client
+	repo    media.Repository
+	resizer resizer.Resizer
 }
 
 // ExistsFunc is used by the uploaderold to determine if a
@@ -55,45 +55,11 @@ func New(opts *domain.Options, storage storage.Client, repo media.Repository) *S
 		paths:   p,
 		webp:    webp.New(p.Bin + webp.Path),
 		storage: storage,
+		repo:    repo,
+		resizer: &resizer.Resize{
+			Compression: opts.MediaCompression,
+		},
 	}
-}
-
-// Upload
-//
-// Satisfies the Library to upload a media item to the
-// library. Media items will be opened and saved to
-// the local file system. Images are resized and
-// saved in correspondence to the options.
-// This function expects that validate
-// has been called before it is run.
-//
-// Returns errors.INTERNAL on any eventuality the file could not be opened.
-// Returns errors.INVALID if the mimetype could not be found.
-func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
-	const op = "Media.Upload"
-
-	u, err := uploader.New(uploader.Config{
-		File:        file,
-		Options:     s.options,
-		Config:      s.config,
-		Exists:      s.exists,
-		WebP:        s.webp,
-		StoragePath: s.paths.Storage,
-		Storage:     s.storage,
-	})
-
-	defer func() {
-		err = u.Close()
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing uploaderold", Operation: op, Err: err})
-		}
-	}()
-
-	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error creating uploaderold for file", Operation: op, Err: err}
-	}
-
-	return u.Save()
 }
 
 // Validate
@@ -107,28 +73,4 @@ func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
 // Returns errors.INVALID any of the conditions fail.
 func (s *Service) Validate(file *multipart.FileHeader) error {
 	return validate(file, s.options, s.config)
-}
-
-// Delete
-//
-// Satisfies the Library to remove possible media item
-// combinations from the file system, if the file
-// does not exist (user moved) it will be
-// skipped.
-//
-// Logs errors.INTERNAL if the file could not be deleted.
-func (s *Service) Delete(item domain.Media) {
-	const op = "Service.Delete"
-
-	//items := item.PossibleFiles(s.paths.Uploads)
-	//for _, path := range items {
-	//	err := s.storage.Delete(path)
-	//
-	//	// Exists func
-	//	if err != nil {
-	//		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting file with the path: " + path, Operation: op, Err: err})
-	//	}
-	//
-	//	logger.Debug("Deleted file with the path: " + path)
-	//}
 }

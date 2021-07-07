@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package media
+package files
 
 import (
 	"github.com/ainsleyclark/verbis/api/database"
@@ -12,15 +12,15 @@ import (
 
 // Exists
 //
-// Returns a bool indicating if the media item exists by name.
+// Returns a bool indicating if the file exists by name.
 // Logs errors.INTERNAL if there was an error executing the query.
 func (s *Store) Exists(fileName string) bool {
-	const op = "MediaStore.Exists"
+	const op = "FileStore.Exists"
 
 	q := s.Builder().
 		Select("id").
 		From(s.Schema()+TableName).
-		Where("file_name", "=", fileName).
+		Where("name", "=", fileName).
 		Exists()
 
 	var exists bool

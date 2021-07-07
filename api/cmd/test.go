@@ -7,14 +7,13 @@ package cmd
 import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/services/media"
 	"github.com/ainsleyclark/verbis/api/storage"
-	"github.com/gookit/color"
 	"github.com/spf13/cobra"
 	"io"
 	"mime/multipart"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 var (
@@ -28,11 +27,6 @@ var (
 				return
 			}
 
-			//client, err := storage.New(config.Env, &domain.Options{
-			//	StorageProvider: domain.StorageAWS,
-			//	StorageBucket:   "reddicotest",
-			//}, config.Store.Files)
-
 			client, err := storage.New(config.Env, &domain.Options{
 				StorageProvider: domain.StorageLocal,
 			}, config.Store.Files)
@@ -42,73 +36,19 @@ var (
 				return
 			}
 
-			//text, item, err := client.FindByURL(url.URL{
-			//	Path: "/test2.txt",
-			//})
-			//if err != nil {
-			//	printError(err.Error())
-			//	return
-			//}
-			//color.Green.Printf(string(text))
-			//color.Red.Printf("%+v\n", item)
-			//
-			//err = client.Delete(18)
-			//if err != nil {
-			//	printError(err.Error())
-			//	return
-			//}
+			service := media.New(config.Store.Options.Struct(), client, config.Store.Media)
 
-			contents := "This is a new file stored in the cloud"
-			r := strings.NewReader(contents)
-
-			upload, err := client.Upload(domain.Upload{
-				Path:       "/test/test2.txt",
-				Size:       int64(len(contents)),
-				Contents:   r,
-				Private:    false,
-				SourceType: "media",
-			})
+			file, err := File("/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/images/gopher.png")
 			if err != nil {
 				printError(err.Error())
+				return
 			}
 
-			color.Red.Printf("%+v\n", upload)
-
-			//media := media.New(&domain.Options{
-			//	MediaCompression:     0,
-			//	MediaConvertWebP:     true,
-			//	MediaServeWebP:       false,
-			//	MediaUploadMaxSize:   0,
-			//	MediaUploadMaxWidth:  0,
-			//	MediaUploadMaxHeight: 0,
-			//	MediaOrganiseDate:    true,
-			//	MediaSizes: domain.MediaSizes{
-			//		"test": domain.MediaSize{
-			//			Width:  300,
-			//			Height: 300,
-			//			Crop:   false,
-			//		},
-			//	},
-			//}, client, func(fileName string) bool {
-			//	return false
-			//})
-			//
-			//file, err := File("/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/images/gopher.png")
-			//if err != nil {
-			//	printError(err.Error())
-			//	return
-			//}
-			//
-			//_, err = media.Upload(file)
-			//if err != nil {
-			//	printError(err.Error())
-			//	return
-			//}
-
-			//
-
-			//fmt.Println(upload)
-
+			_, err = service.Upload(file)
+			if err != nil {
+				printError(err.Error())
+				return
+			}
 		},
 	}
 )
@@ -151,6 +91,79 @@ func File(path string) (*multipart.FileHeader, error) {
 }
 
 func res() {
+
+	//client, err := storage.New(config.Env, &domain.Options{
+	//	StorageProvider: domain.StorageAWS,
+	//	StorageBucket:   "reddicotest",
+	//}, config.Store.Files)
+
+	//text, item, err := client.FindByURL(url.URL{
+	//	Path: "/test2.txt",
+	//})
+	//if err != nil {
+	//	printError(err.Error())
+	//	return
+	//}
+	//color.Green.Printf(string(text))
+	//color.Red.Printf("%+v\n", item)
+	//
+	//err = client.Delete(18)
+	//if err != nil {
+	//	printError(err.Error())
+	//	return
+	//}
+
+	//contents := "This is a new file stored in the cloud"
+	//r := strings.NewReader(contents)
+	//
+	//upload, err := client.Upload(domain.Upload{
+	//	Path:       "/test/test2.txt",
+	//	Size:       int64(len(contents)),
+	//	Contents:   r,
+	//	Private:    false,
+	//	SourceType: "media",
+	//})
+	//if err != nil {
+	//	printError(err.Error())
+	//}
+	//
+	//color.Red.Printf("%+v\n", upload)
+
+	//media := media.New(&domain.Options{
+	//	MediaCompression:     0,
+	//	MediaConvertWebP:     true,
+	//	MediaServeWebP:       false,
+	//	MediaUploadMaxSize:   0,
+	//	MediaUploadMaxWidth:  0,
+	//	MediaUploadMaxHeight: 0,
+	//	MediaOrganiseDate:    true,
+	//	MediaSizes: domain.MediaSizes{
+	//		"test": domain.MediaSize{
+	//			Width:  300,
+	//			Height: 300,
+	//			Crop:   false,
+	//		},
+	//	},
+	//}, client, func(fileName string) bool {
+	//	return false
+	//})
+	//
+	//file, err := File("/Users/ainsley/Desktop/Reddico/apis/verbis/api/test/testdata/images/gopher.png")
+	//if err != nil {
+	//	printError(err.Error())
+	//	return
+	//}
+	//
+	//_, err = media.Upload(file)
+	//if err != nil {
+	//	printError(err.Error())
+	//	return
+	//}
+
+	//
+
+	//fmt.Println(upload)
+
 	//_, _, err = client.Find("test.txt")
 	//if err != nil {
 	//	printError(err.Error())

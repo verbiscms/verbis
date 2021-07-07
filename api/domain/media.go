@@ -20,9 +20,9 @@ type (
 		Title       string     `db:"title" json:"title"`
 		Alt         string     `db:"alt" json:"alt"`
 		Description string     `db:"description" json:"description"`
-		Sizes       MediaSizes `db:"sizes" json:"sizes"`
+		Sizes       MediaSizes `db:"-" json:"sizes"`
 		UserId      int        `db:"user_id" json:"user_id"` //nolint
-		StorageId   int        `db:"storage_id" json:"-"`    //nolint
+		FileId      int        `db:"file_id" json:"-"`       //nolint
 		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
 		File
@@ -35,14 +35,14 @@ type (
 	// MediaSize defines an individual media size that's
 	// stored in the database.
 	MediaSize struct {
-		Id      int           `db:"id" json:"id"` //nolint
-		FileId  int           `db:"file_id" json:"-"`
-		MediaId int           `db:"media_id" json:"-"`
-		Key     string        `db:"size_key" json:"-" binding:"required,numeric"`
-		Name    string        `db:"size_name" json:"name" binding:"required,numeric"`
-		Width   int           `db:"width" json:"width" binding:"required,numeric"`
-		Height  int           `db:"height" json:"height" binding:"required,numeric"`
-		Crop    types.BitBool `db:"crop" json:"crop"`
+		Id       int           `db:"id" json:"id"` //nolint
+		FileId   int           `db:"file_id" json:"-"`
+		MediaId  int           `db:"media_id" json:"-"`
+		SizeKey  string        `db:"size_key" json:"-" binding:"required,numeric"`
+		SizeName string        `db:"size_name" json:"name" binding:"required,numeric"`
+		Width    int           `db:"width" json:"width" binding:"required,numeric"`
+		Height   int           `db:"height" json:"height" binding:"required,numeric"`
+		Crop     types.BitBool `db:"crop" json:"crop"`
 		File
 	}
 )

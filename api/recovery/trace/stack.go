@@ -78,7 +78,7 @@ func (t *trace) Trace(depth, skip int) Stack {
 	//	stack.Append(&File{
 	//		File:     file,
 	//		Line:     line,
-	//		Function: runtime.FuncForPC(t).Name(),
+	//		Function: runtime.FuncForPC(t).SizeName(),
 	//		Contents: string(contents),
 	//	})
 	//}

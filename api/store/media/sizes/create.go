@@ -15,27 +15,34 @@ import (
 //
 // Returns nil if the media sizes were created successfully.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
-func (s *Store) Create(sizes domain.MediaSizes) error {
+func (s *Store) Create(mediaId int, sizes domain.MediaSizes) (domain.MediaSizes, error) {
 	const op = "SizesStore.Create"
 
 	for key, size := range sizes {
 		q := s.Builder().
 			Insert(s.Schema()+TableName).
 			Column("file_id", size.FileId).
-			Column("media_id", size.MediaId).
+			Column("media_id", mediaId).
 			Column("size_key", key).
-			Column("size_name", size.Name).
 			Column("width", size.Width).
 			Column("height", size.Height).
 			Column("crop", size.Crop)
 
-		_, err := s.DB().Exec(q.Build())
+		result, err := s.DB().Exec(q.Build())
 		if err == sql.ErrNoRows {
-			return &errors.Error{Code: errors.INTERNAL, Message: "Error creating media size with the key: " + key, Operation: op, Err: err}
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error creating media size with the key: " + key, Operation: op, Err: err}
 		} else if err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 		}
+
+		id, err := result.LastInsertId()
+		if err != nil {
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created media size ID", Operation: op, Err: err}
+		}
+
+		size.Id = int(id)
+		sizes[key] = size
 	}
 
-	return nil
+	return sizes, nil
 }

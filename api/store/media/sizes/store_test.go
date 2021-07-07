@@ -6,6 +6,7 @@ package sizes
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
@@ -18,19 +19,15 @@ type SizesTestSuite struct {
 	test.DBSuite
 }
 
-// TestSizes
-//
-// Assert testing has begun.
+// TestSizes asserts testing has begun.
 func TestSizes(t *testing.T) {
 	suite.Run(t, &SizesTestSuite{
 		DBSuite: test.NewDBSuite(t),
 	})
 }
 
-// Setup
-//
-// A helper to obtain a mock media sizes database
-// for testing.
+// Setup is a a helper to obtain a mock media sizes
+// database for testing.
 func (t *SizesTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	t.Reset()
 	if mf != nil {
@@ -47,6 +44,12 @@ const (
 )
 
 var (
-// The default meta used for testing.
-
+	// The default media sizes used for testing.
+	sizes = domain.MediaSizes{
+		"hd": domain.MediaSize{
+			Id:       1,
+			SizeKey:  "hd",
+			SizeName: "gopher-1920x1080.jpg",
+		},
+	}
 )
