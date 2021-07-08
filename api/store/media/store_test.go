@@ -57,7 +57,7 @@ const (
 	// The default media item ID used for testing.
 	mediaID = "1"
 	// SelectStatement the media select statement.
-	SelectStatement = "SELECT media.*, file.id `file.id`, file.url `file.url`, file.name `file.name`, file.path `file.mime`, file.source_type `file.source_type`, file.provider `file.provider`, file.region `file.region`, file.bucket `file.bucket`, file.file_size `file.file_size`, file.private `file.private` FROM `media` LEFT JOIN `files` AS `file` ON `media`.`file_id` = `file`.`id` "
+	SelectStatement = "SELECT media.*, file.id `file.id`, file.url `file.url`, file.name `file.name`, file.bucket_id `file.bucket_id`, file.mime `file.mime`, file.source_type `file.source_type`, file.provider `file.provider`, file.region `file.region`, file.bucket `file.bucket`, file.file_size `file.file_size`, file.private `file.private` FROM `media` LEFT JOIN `files` AS `file` ON `media`.`file_id` = `file`.`id` "
 )
 
 //
@@ -69,14 +69,6 @@ var (
 			Name: "gopher.png",
 		},
 		Sizes: mediaItemSizes,
-	}
-	// The default media item with URI used
-	// for testing.
-	mediaItemURL = domain.Media{
-		Id: 1,
-		File: domain.File{
-			Url: "/2020/01/gopher.png",
-		},
 	}
 	// The default media sizes used for testing.
 	mediaItemSizes = domain.MediaSizes{
@@ -96,12 +88,14 @@ var (
 			File: domain.File{
 				Name: "gopher.png",
 			},
+			Sizes: mediaItemSizes,
 		},
 		{
 			Id: 1,
 			File: domain.File{
 				Name: "gopher-2.png",
 			},
+			Sizes: mediaItemSizes,
 		},
 	}
 )

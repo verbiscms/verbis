@@ -16,22 +16,26 @@ import (
 	"strings"
 )
 
+type bucket struct {
+	config
+}
+
 // Find satisfies the Bucket interface by accepting an url
 // and retrieving the file and byte contents of the file.
-func (s *Storage) Find(path string) ([]byte, domain.File, error) {
+func (b *bucket) Find(url string) ([]byte, domain.File, error) {
 	const op = "Storage.Find"
 
-	file, err := s.repo.FindByURL(path)
+	file, err := b.FilesRepo.FindByURL(url)
 	if err != nil {
 		return nil, domain.File{}, err
 	}
 
-	bucket, err := s.getBucket(file)
+	bucket, err := b.GetBucket(file)
 	if err != nil {
 		return nil, domain.File{}, err
 	}
 
-	id := file.ID(s.paths.Storage)
+	id := file.ID(b.Paths.Storage)
 
 	item, err := bucket.Item(id)
 	if err != nil {
@@ -55,7 +59,7 @@ func (s *Storage) Find(path string) ([]byte, domain.File, error) {
 // Upload Satisfies the Bucket interface by accepting a
 // domain.Upload and inserting into the database and
 // uploading to the bucket.
-func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
+func (b *bucket) Upload(u domain.Upload) (domain.File, error) {
 	const op = "Storage.Upload"
 
 	err := u.Validate()
@@ -70,7 +74,7 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		absPath = strings.TrimPrefix(filepath.Join(filepath.Dir(u.Path), key.String()+filepath.Ext(u.Path)), ".")
 	)
 
-	item, err := s.bucket.Put(absPath, u.Contents, u.Size, nil)
+	item, err := b.Bucket.Put(absPath, u.Contents, u.Size, nil)
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage provider", Operation: op, Err: err}
 	}
@@ -89,13 +93,13 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		// E.g. uploads/2021/07/ea5101e3-9730-49cd-855b-a068524c6fd5.jpg
 		id = item.ID()
 		// E.g. bucket-name
-		bucket = s.bucket.ID()
+		bucket = b.Bucket.ID()
 		// TODO E.g eu-west-2
 		region = ""
 	)
 
-	if s.ProviderName == domain.StorageLocal {
-		id = vstrings.TrimSlashes(strings.ReplaceAll(item.URL().Path, s.paths.Storage, ""))
+	if b.ProviderName == domain.StorageLocal {
+		id = vstrings.TrimSlashes(strings.ReplaceAll(item.URL().Path, b.Paths.Storage, ""))
 		bucket = ""
 		region = ""
 	}
@@ -107,14 +111,14 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		BucketId:   id,
 		Mime:       domain.Mime(m.String()),
 		SourceType: u.SourceType,
-		Provider:   s.ProviderName,
+		Provider:   b.ProviderName,
 		Region:     region,
 		Bucket:     bucket,
 		FileSize:   u.Size,
 		Private:    false,
 	}
 
-	create, err := s.repo.Create(f)
+	create, err := b.FilesRepo.Create(f)
 	if err != nil {
 		return domain.File{}, err
 	}
@@ -124,31 +128,31 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 
 // Exists satisfies the Bucket interface by accepting name
 // and determining if a file exists by name.
-func (s *Storage) Exists(name string) bool {
-	return s.repo.Exists(name)
+func (b *bucket) Exists(name string) bool {
+	return b.FilesRepo.Exists(name)
 }
 
 // Delete satisfies the Bucket interface by accepting an ID
 // and deleting a file from the bucket and database.
-func (s *Storage) Delete(id int) error {
+func (b *bucket) Delete(id int) error {
 	const op = "Storage.Delete"
 
-	file, err := s.repo.Find(id)
+	file, err := b.FilesRepo.Find(id)
 	if err != nil {
 		return err
 	}
 
-	bucket, err := s.getBucket(file)
+	bucket, err := b.GetBucket(file)
 	if err != nil {
 		return &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file from storage", Operation: op, Err: err}
 	}
 
-	err = bucket.RemoveItem(file.ID(s.paths.Storage))
+	err = bucket.RemoveItem(file.ID(b.Paths.Storage))
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
 	}
 
-	err = s.repo.Delete(file.Id)
+	err = b.FilesRepo.Delete(file.Id)
 	if err != nil {
 		return err
 	}

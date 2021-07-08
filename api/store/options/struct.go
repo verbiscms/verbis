@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/gookit/color"
 )
 
 var (
@@ -30,6 +31,7 @@ func (s *Store) Struct() *domain.Options {
 
 	m, err := s.Map()
 	if err != nil {
+		color.Red.Println(err)
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
 	}
 

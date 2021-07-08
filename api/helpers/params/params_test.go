@@ -29,7 +29,7 @@ type mockStringer struct {
 	def map[string]interface{}
 }
 
-// Param implements the stringer for paramaters.
+// Param implements the stringer for parameters.
 func (m *mockStringer) Param(param string) string {
 	val, ok := m.def[param]
 	if !ok {
