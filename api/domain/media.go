@@ -88,7 +88,6 @@ func (m *Media) Public() MediaPublic {
 			Height:   v.Height,
 			Crop:     v.Crop,
 			URL:      v.File.Url,
-			Path:     v.File.Path,
 			Mime:     v.File.Mime,
 			FileSize: v.File.FileSize,
 		}
@@ -107,7 +106,6 @@ func (m *Media) Public() MediaPublic {
 		UserId:      m.UserId,
 		Url:         m.File.Url,
 		Name:        m.File.Name,
-		Path:        m.File.Path,
 		Mime:        m.File.Mime,
 		FileSize:    m.File.FileSize,
 		UpdatedAt:   m.UpdatedAt,

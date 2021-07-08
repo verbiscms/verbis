@@ -100,7 +100,7 @@ func (w *WebP) Convert(in io.Reader, compression int) (*bytes.Reader, error) {
 		Run()
 
 	if err != nil {
-		return nil, err
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error converting image to WebP", Operation: op, Err: err}
 	}
 
 	return bytes.NewReader(buf.Bytes()), nil

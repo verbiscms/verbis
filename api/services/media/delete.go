@@ -63,7 +63,7 @@ func (s *Service) deleteFiles(item domain.Media) {
 func (s *Service) deleteWebP(file domain.File) {
 	const op = "Service.DeleteWebP"
 
-	_, webp, err := s.storage.FindByURL(file.Url + domain.WebPExtension)
+	_, webp, err := s.storage.Find(file.Url + domain.WebPExtension)
 	if err != nil {
 		return
 	}

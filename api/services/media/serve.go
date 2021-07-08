@@ -24,14 +24,14 @@ func (s *Service) Serve(media domain.Media, path string, acceptWebP bool) ([]byt
 	)
 
 	if acceptWebP && s.options.MediaServeWebP {
-		data, _, err = s.storage.FindByURL(path + domain.WebPExtension)
+		data, _, err = s.storage.Find(path + domain.WebPExtension)
 		if err != nil {
-			data, _, err = s.storage.FindByURL(path)
+			data, _, err = s.storage.Find(path)
 		} else {
 			return data, "image/webp", nil
 		}
 	} else {
-		data, _, err = s.storage.FindByURL(path)
+		data, _, err = s.storage.Find(path)
 	}
 
 	if err != nil {

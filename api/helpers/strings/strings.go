@@ -67,3 +67,9 @@ func Random(n int64, numeric bool) string {
 	}
 	return string(b)
 }
+
+// TrimSlashes removes the prefix and suffix of a forward
+// slash "/" from the given string.
+func TrimSlashes(s string) string {
+	return strings.TrimSuffix(strings.TrimPrefix(s, "/"), "/")
+}

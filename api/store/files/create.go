@@ -23,7 +23,7 @@ func (s *Store) Create(f domain.File) (domain.File, error) {
 		Column("uuid", f.UUID.String()).
 		Column("url", f.Url).
 		Column("name", f.Name).
-		Column("path", f.Path).
+		Column("bucket_id", f.BucketId).
 		Column("mime", f.Mime).
 		Column("source_type", f.SourceType).
 		Column("provider", f.Provider).

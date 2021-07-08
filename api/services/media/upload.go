@@ -68,13 +68,13 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		return domain.Media{}, err
 	}
 
-	sizes, err := s.resize(upload, out)
-	if err != nil {
-		return domain.Media{}, err
-	}
+	//sizes, err := s.resize(upload, out)
+	//if err != nil {
+	//	return domain.Media{}, err
+	//}
 
 	media, err := s.repo.Create(domain.Media{
-		Sizes:  sizes,
+		//Sizes:  sizes,
 		UserId: userID,
 		FileId: upload.Id,
 		File:   upload,
@@ -84,7 +84,7 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		return domain.Media{}, err
 	}
 
-	go s.toWebP(media)
+	//go s.toWebP(media)
 
 	return media, nil
 }
@@ -161,7 +161,7 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 			// E.g. gopher-100x100.png
 			urlName = extRemoved + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + ext
 			// E.g. uploads/2020/01/gopher-100x100.png
-			path = filepath.Join(file.Path, urlName)
+			path = filepath.Join(filepath.Dir(file.Url), urlName)
 			// For resizing image
 			buf *bytes.Reader
 			// Error resizes
@@ -217,51 +217,52 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 // and converts the images to webp. If the file
 // exists, and an error occurred, it will be
 // logged.
-func (s *Service) toWebP(media domain.Media) {
-	if !s.options.MediaConvertWebP {
-		return
-	}
-
-	if !media.File.Mime.CanResize() {
-		return
-	}
-
-	s.test(media.File)
-
-	for _, v := range media.Sizes {
-		s.test(v.File)
-	}
-}
-
-func (s *Service) test(file domain.File) {
-	path := filepath.Join(file.Path, file.Name) + domain.WebPExtension
-
-	logger.Debug("Attempting to convert image to WebP")
-
-	b, file, err := s.storage.FindByURL(file.Url)
-	if err != nil {
-		logger.WithError(err)
-	}
-
-	comp := s.options.MediaCompression
-
-	read := bytes.NewReader(b)
-	convert, err := s.webp.Convert(read, comp)
-	if err != nil {
-		logger.WithError(err)
-	}
-
-	_, err = s.storage.Upload(domain.Upload{
-		Path:       path,
-		Size:       convert.Size(),
-		Contents:   convert,
-		Private:    false,
-		SourceType: domain.MediaSourceType,
-	})
-
-	if err != nil {
-		logger.WithError(err)
-	}
-
-	logger.Debug("Successfully converted to WebP image with the path: " + path)
-}
+//func (s *Service) toWebP(media domain.Media) {
+//	if !s.options.MediaConvertWebP {
+//		return
+//	}
+//
+//	if !media.File.Mime.CanResize() {
+//		return
+//	}
+//
+//	s.test(media.File)
+//
+//	for _, v := range media.Sizes {
+//		s.test(v.File)
+//	}
+//}
+//
+//func (s *Service) test(file domain.File) {
+//	path := filepath.Join(file.Path, file.Name) + domain.WebPExtension
+//
+//	logger.Debug("Attempting to convert image to WebP")
+//
+//	b, file, err := s.storage.FindByURL(file.Url)
+//	if err != nil {
+//		logger.WithError(err).Error()
+//		return
+//	}
+//
+//	read := bytes.NewReader(b)
+//	convert, err := s.webp.Convert(read, s.options.MediaCompression)
+//	if err != nil {
+//		logger.WithError(err).Error()
+//		return
+//	}
+//
+//	_, err = s.storage.Upload(domain.Upload{
+//		Path:       path,
+//		Size:       convert.Size(),
+//		Contents:   convert,
+//		Private:    false,
+//		SourceType: domain.MediaSourceType,
+//	})
+//
+//	if err != nil {
+//		logger.WithError(err).Error()
+//		return
+//	}
+//
+//	logger.Debug("Successfully converted to WebP image with the path: " + path)
+//}
