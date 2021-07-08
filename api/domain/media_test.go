@@ -5,45 +5,53 @@
 package domain
 
 import (
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestMedia_PossibleFiles(t *testing.T) {
-	uniq := uuid.New()
-	uniq2 := uuid.New()
-
+func TestMedia_Public(t *testing.T) {
 	tt := map[string]struct {
 		input Media
-		want  []string
+		want  interface{}
 	}{
-		"No Sizes": {
-			Media{File: File{UUID: uniq, Path: "2020/01", Name: "file.jpg"}},
-			[]string{
-				"2020/01/" + uniq.String() + ".jpg",
-				"2020/01/" + uniq.String() + ".jpg.webp",
+		"Converted": {
+			Media{
+				Title: "title",
+				Sizes: MediaSizes{"test": MediaSize{Width: 100, SizeKey: "test"}},
+			},
+			MediaPublic{
+				Title: "title",
+				Sizes: MediaSizesPublic{"test": MediaSizePublic{Width: 100}},
 			},
 		},
-		"With Sizes": {
-			Media{File: File{Name: "file.jpg", UUID: uniq, Path: "2020/01"}, Sizes: MediaSizes{
-				"test": MediaSize{File: File{Name: "size.jpg", UUID: uniq2, Path: "2020/01"}},
-			}},
-			[]string{
-				"2020/01/" + uniq.String() + ".jpg",
-				"2020/01/" + uniq.String() + ".jpg.webp",
-				"2020/01/" + uniq2.String() + ".jpg",
-				"2020/01/" + uniq2.String() + ".jpg.webp",
+		"Nil": {
+			Media{
+				Title: "title",
+			},
+			MediaPublic{
+				Title: "title",
+				Sizes: nil,
 			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			got := test.input.PossibleFiles("")
+			got := test.input.Public()
 			assert.Equal(t, test.want, got)
 		})
 	}
+}
+
+func TestMediaItems_Public(t *testing.T) {
+	m := MediaItems{
+		{Title: "title"},
+	}
+	got := m.Public()
+	want := []MediaPublic{
+		{Title: "title"},
+	}
+	assert.Equal(t, want, got)
 }
 
 func TestMediaSizes_Scan(t *testing.T) {

@@ -50,11 +50,13 @@ type Bucket interface {
 	Exists(name string) bool
 }
 
-type Location interface {
-	Set(location domain.StorageProvider) error
-	Get(provider domain.StorageProvider) (stow.Container, error)
-	ListBuckets() (domain.Buckets, error)
+type Container interface {
+	SetProvider(provider domain.StorageProvider) error
 	SetBucket(id string) error
+	List() (domain.Buckets, error)
+	Create(name string) error
+	Delete(name string) error
+	Bucket() Bucket
 }
 
 type Storage struct {

@@ -45,6 +45,8 @@ type (
 		Crop     types.BitBool `db:"crop" json:"crop"`
 		File     File          `db:"file" json:"file"`
 	}
+	// MediaPublic represents a media item sent back to the
+	// frontend or API.
 	MediaPublic struct {
 		Id          int              `json:"id"` //nolint
 		Title       string           `json:"title"`
@@ -60,8 +62,12 @@ type (
 		CreatedAt   time.Time        `json:"created_at"`
 		UpdatedAt   time.Time        `json:"updated_at"`
 	}
+	// MediaSizesPublic represents media sizes sent back to
+	// the frontend or API.
 	MediaSizesPublic map[string]MediaSizePublic
-	MediaSizePublic  struct {
+	// MediaSizePublic represents a media size sent back to
+	// the frontend or API.
+	MediaSizePublic struct {
 		Name     string        `json:"name"`
 		Width    int           `json:"width"`
 		Height   int           `json:"height"`
