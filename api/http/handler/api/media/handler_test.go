@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	service "github.com/ainsleyclark/verbis/api/mocks/services/media"
+	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/ainsleyclark/verbis/api/store"
@@ -46,7 +47,11 @@ func (t *MediaTestSuite) Setup(mf func(s *service.Library)) *Media {
 	if mf != nil {
 		mf(ms)
 	}
-	media := New(&deps.Deps{})
+	media := New(&deps.Deps{
+		Options: &domain.Options{},
+		Storage: &storage.Bucket{},
+		Store:   &store.Repository{},
+	})
 	media.service = ms
 	return media
 }
@@ -55,12 +60,12 @@ func (t *MediaTestSuite) Setup(mf func(s *service.Library)) *Media {
 //
 // A helper to obtain a mock media handler
 // and uploads for testing.
-func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(m *mocks.Repository, s *service.Library, u *users.Repository, mfh []multipart.FileHeader)) *Media {
+func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(s *service.Library, u *users.Repository, mfh []multipart.FileHeader)) *Media {
 	m := &mocks.Repository{}
 	ms := &service.Library{}
 	mu := &users.Repository{}
 	if mf != nil {
-		mf(m, ms, mu, files)
+		mf(ms, mu, files)
 	}
 	return &Media{
 		service: ms,
@@ -86,6 +91,10 @@ func (t *MediaTestSuite) ImagePath() string {
 var (
 	// The default media item used for testing.
 	mediaItem = domain.Media{
+		Id: 123,
+	}
+	// The default media item used for testing.
+	mediaItemPublic = domain.MediaPublic{
 		Id: 123,
 	}
 

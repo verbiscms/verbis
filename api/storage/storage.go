@@ -11,11 +11,20 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/ainsleyclark/verbis/api/store/options"
-	"github.com/graymeta/stow"
-	_ "github.com/graymeta/stow/azure"
-	_ "github.com/graymeta/stow/google"
-	_ "github.com/graymeta/stow/s3"
 )
+
+// Provider - TODO
+type Provider interface {
+	Name() string
+	Set(provider domain.StorageProvider) error
+}
+
+// Container - TODO
+type Container interface {
+	List() (domain.Buckets, error)
+	Create(name string) error
+	Delete(name string) error
+}
 
 // Bucket defines the methods used for interacting with
 // the Verbis storage system. The client can be remote
@@ -50,31 +59,10 @@ type Bucket interface {
 	Exists(name string) bool
 }
 
-type Container interface {
-	SetProvider(provider domain.StorageProvider) error
-	SetBucket(id string) error
-	List() (domain.Buckets, error)
-	Create(name string) error
-	Delete(name string) error
-	Bucket() Bucket
-}
-
 type Storage struct {
-	ProviderName domain.StorageProvider
-	provider     stow.Location
-	bucket       stow.Container
-	optsRepo     options.Repository
-	opts         *domain.Options
-	env          *environment.Env
-	paths        paths.Paths
-	repo         files.Repository
-}
-
-type Config struct {
-	Environment *environment.Env
-	Options     options.Repository
-	Files       files.Repository
-	paths       paths.Paths
+	Provider  Provider
+	Container Container
+	Bucket    Bucket
 }
 
 var (
@@ -87,34 +75,38 @@ var (
 func New(env *environment.Env, opts options.Repository, repo files.Repository) (*Storage, error) {
 	const op = "Storage.New"
 
-	s := &Storage{
-		env:      env,
-		opts:     opts.Struct(),
-		paths:    paths.Get(),
-		repo:     repo,
-		optsRepo: opts,
+	c := config{
+		Environment: env,
+		OptionsRepo: opts,
+		FilesRepo:   repo,
+		Paths:       paths.Get(),
+		Options:     opts.Struct(),
 	}
 
-	provider := s.opts.StorageProvider
-	if provider == "" {
-		provider = domain.StorageLocal
-	}
+	return &Storage{
+		Provider:  &provider{c},
+		Container: &container{c},
+		Bucket:    &bucket{c},
+	}, nil
 
-	if !validate(provider) {
-		return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}
-	}
+	//provider := s.opts.StorageProvider
+	//if provider == "" {
+	//	provider = domain.StorageLocal
+	//}
+	//
+	//if !validate(provider) {
+	//	return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}
+	//}
 
-	err := s.Set(provider)
-	if err != nil {
-		return nil, err
-	}
-
-	err = s.SetBucket(s.opts.StorageBucket)
-	if err != nil {
-		return nil, err
-	}
-
-	return s, nil
+	//err := s.Set(provider)
+	//if err != nil {
+	//	return nil, err
+	//}
+	//
+	//err = s.SetBucket(s.opts.StorageBucket)
+	//if err != nil {
+	//	return nil, err
+	//}
 }
 
 // TODO

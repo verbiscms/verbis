@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO `files` (`uuid`, `url`, `name`, `path`, `bucket_id`, `mime`, `source_type`, `provider`, `region`, `bucket`, `file_size`, `private`) VALUES ('00000000-0000-0000-0000-000000000000', '/uploads/2020/01/file.jpg', 'file.jpg', 'uploads/2020/01', '', '', '', 'local', '', '', 0, FALSE)"
+	CreateQuery = "INSERT INTO `files` (`uuid`, `url`, `name`, `bucket_id`, `mime`, `source_type`, `provider`, `region`, `bucket`, `file_size`, `private`) VALUES ('00000000-0000-0000-0000-000000000000', '/uploads/2020/01/file.jpg', 'file.jpg', 'uploads/2020/01/file.jpg', '', '', 'local', '', '', 0, FALSE)"
 )
 
 func (t *FilesTestSuite) TestStore_Create() {

@@ -26,8 +26,8 @@ func (t *FilesTestSuite) TestStore_Find() {
 		"Success": {
 			file,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "url", "name", "path", "provider"}).
-					AddRow(file.Id, file.Url, file.Name, file.Path, file.Provider)
+				rows := sqlmock.NewRows([]string{"id", "url", "name", "bucket_id", "provider"}).
+					AddRow(file.Id, file.Url, file.Name, file.BucketId, file.Provider)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},
@@ -69,8 +69,8 @@ func (t *FilesTestSuite) TestStore_FindByURL() {
 		"Success": {
 			file,
 			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"id", "url", "name", "path", "provider"}).
-					AddRow(file.Id, file.Url, file.Name, file.Path, file.Provider)
+				rows := sqlmock.NewRows([]string{"id", "url", "name", "bucket_id", "provider"}).
+					AddRow(file.Id, file.Url, file.Name, file.BucketId, file.Provider)
 				m.ExpectQuery(regexp.QuoteMeta(FindByURLQuery)).
 					WillReturnRows(rows)
 			},

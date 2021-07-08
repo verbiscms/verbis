@@ -42,7 +42,7 @@ const (
 	// The default media item ID used for testing.
 	mediaID = "1"
 	// SelectStatement the media select statement.
-	SelectStatement = "SELECT media_sizes.*, file.id `file.id`, file.url `file.url`, file.name `file.name`, file.path `file.mime`, file.source_type `file.source_type`, file.provider `file.provider`, file.region `file.region`, file.bucket `file.bucket`, file.file_size `file.file_size`, file.private `file.private` FROM `media_sizes` LEFT JOIN `files` AS `file` ON `media_sizes`.`file_id` = `file`.`id` "
+	SelectStatement = "SELECT media_sizes.*, file.id `file.id`, file.url `file.url`, file.name `file.name`, file.bucket_id `file.bucket_id`, file.mime `file.mime`, file.source_type `file.source_type`, file.provider `file.provider`, file.region `file.region`, file.bucket `file.bucket`, file.file_size `file.file_size`, file.private `file.private` FROM `media_sizes` LEFT JOIN `files` AS `file` ON `media_sizes`.`file_id` = `file`.`id` "
 )
 
 var (

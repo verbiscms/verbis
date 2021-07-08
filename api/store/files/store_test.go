@@ -49,7 +49,7 @@ var (
 		Id:       1,
 		Url:      "/uploads/2020/01/file.jpg",
 		Name:     "file.jpg",
-		Path:     "uploads/2020/01",
+		BucketId: "uploads/2020/01/file.jpg",
 		Provider: domain.StorageLocal,
 	}
 	// The default categories used for testing.
@@ -58,14 +58,14 @@ var (
 			Id:       1,
 			Url:      "/uploads/2020/01/file.jpg",
 			Name:     "file.jpg",
-			Path:     "uploads/2020/01",
+			BucketId: "uploads/2020/01/file.jpg",
 			Provider: domain.StorageLocal,
 		},
 		{
 			Id:       2,
 			Url:      "/uploads/2020/01/file-2.jpg",
 			Name:     "file-2.jpg",
-			Path:     "uploads/2020/01",
+			BucketId: "uploads/2020/01/file.jpg",
 			Provider: domain.StorageLocal,
 		},
 	}

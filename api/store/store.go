@@ -41,9 +41,9 @@ type Repository struct {
 	User       users.Repository
 }
 
-// TODO Change!
-// Create a new database instance, connect
+// New creates a new database instance, connect
 // to database.
+// TODO Change!
 func New(db database.Driver, running bool) (*Repository, *domain.ThemeConfig, error) {
 	cfg := &storeConfig.Config{
 		Driver:       db,

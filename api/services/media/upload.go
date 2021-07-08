@@ -105,7 +105,7 @@ func (s *Service) dir() string {
 // cleanFileName returns a cleaned version of the filename
 // by removing any unnecessary characters. If the filename
 // already exists, a version number will be added.
-func (s *Service) cleanFileName(name string, ext string) string {
+func (s *Service) cleanFileName(name, ext string) string {
 	var (
 		bare = files.RemoveFileExtension(name)
 	)

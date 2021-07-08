@@ -11,6 +11,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/services/theme"
 )
 
+// Config represents the configuration parsed to the
+// store.
 type Config struct {
 	database.Driver
 	Theme        *domain.ThemeConfig
