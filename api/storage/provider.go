@@ -8,8 +8,6 @@ import (
 	"github.com/graymeta/stow/local"
 	"github.com/graymeta/stow/s3"
 	"io/ioutil"
-	"net/url"
-	"strings"
 )
 
 func (s *Storage) SetProvider(provider domain.StorageProvider) error {
@@ -19,6 +17,12 @@ func (s *Storage) SetProvider(provider domain.StorageProvider) error {
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error setting provider", Operation: op, Err: err}
 	}
+
+	err = s.optsRepo.Update("storage_provider", provider)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating options table with new provider", Operation: op, Err: err}
+	}
+
 	s.provider = p
 	s.ProviderName = provider
 
@@ -37,6 +41,11 @@ func (s *Storage) SetBucket(id string) error {
 		return &errors.Error{Code: errors.INVALID, Message: "Error setting bucket", Operation: op, Err: err}
 	}
 	s.bucket = container
+
+	err = s.optsRepo.Update("storage_bucket", id)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating options table with new bucket", Operation: op, Err: err}
+	}
 
 	return nil
 }
@@ -72,13 +81,6 @@ func (s *Storage) ListBuckets() (domain.Buckets, error) {
 	}
 
 	return nil, nil
-}
-
-func (s *Storage) cleanLocalPath(uri *url.URL) *url.URL {
-	if s.Local {
-		uri.Path = strings.ReplaceAll(uri.Path, s.paths.Storage, "")
-	}
-	return uri
 }
 
 func (s *Storage) getBucket(file domain.File) (stow.Container, error) {

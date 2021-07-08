@@ -5,22 +5,22 @@
 package domain
 
 import (
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
 	"io"
 	"path/filepath"
-	"strings"
 )
 
 type (
 	// File represents a storage file which could be stored
 	// in the cloud, or on the local file system.
 	File struct {
-		Id         int             `db:"id" json:"-" binding:"numeric"` //nolint
+		Id         int             `db:"id" json:"-"` //nolint
 		UUID       uuid.UUID       `db:"uuid" json:"uuid"`
 		Url        string          `db:"url" json:"url"`
 		Name       string          `db:"name" json:"name"`
-		Path       string          `db:"path" json:"path"`
+		BucketId   string          `db:"bucket_id" json:"bucket_id"`
 		Mime       Mime            `db:"mime" json:"mime"`
 		SourceType string          `db:"source_type" json:"source_type"`
 		Provider   StorageProvider `db:"provider" json:"provider"`
@@ -42,18 +42,16 @@ type (
 
 const (
 	MediaSourceType          = "media"
-	MediaSizeSourceType      = "media_sizes"
-	MediaWebPSourceType      = "media_webp"
 	FormAttachmentSourceType = "form_attachment"
 )
 
-// PrivatePath retrieves the full path for the upload. If
-// the file is local, the prefix will be added.
-func (f *File) PrivatePath(prefix string) string {
+// ID retrieves the full path for the upload. If the
+// file is local, the prefix will be added.
+func (f *File) ID(prefix string) string {
 	if f.Provider == StorageLocal {
-		return filepath.Join(prefix, f.Path, f.UUID.String()+f.Extension())
+		return filepath.Join(prefix, f.BucketId)
 	}
-	return strings.TrimSuffix(f.Path, "/") + "/" + f.UUID.String() + f.Extension()
+	return f.BucketId
 }
 
 // Extension returns the extension of the file by stripping
@@ -69,9 +67,20 @@ func (f *File) IsLocal() bool {
 	return f.Provider == StorageLocal
 }
 
+// Validate checks to see if the upload is valid before
+// uploading.
 func (u *Upload) Validate() error {
 	if u.Path == "" {
-
+		return errors.New("no path given")
+	}
+	if u.Size < 1 {
+		return errors.New("no size attached to upload")
+	}
+	if u.Contents == nil {
+		return errors.New("contents is nil")
+	}
+	if u.SourceType == "" {
+		return errors.New("source type is empty")
 	}
 	return nil
 }

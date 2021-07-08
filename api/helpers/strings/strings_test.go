@@ -108,3 +108,30 @@ func TestRandom(t *testing.T) {
 		})
 	}
 }
+
+func TestTrimSlashes(t *testing.T) {
+	tt := map[string]struct {
+		input string
+		want  string
+	}{
+		"Both": {
+			"/test/",
+			"test",
+		},
+		"Prefix": {
+			"/test",
+			"test",
+		},
+		"Suffix": {
+			"test/",
+			"test",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := TrimSlashes(test.input)
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
