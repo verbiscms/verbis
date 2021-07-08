@@ -23,12 +23,7 @@ import (
 // Upload
 //
 // Satisfies the Library to upload a media item to the
-// library. Media items will be opened and saved to
-// the local file system. Images are resized and
-// saved in correspondence to the options.
-// This function expects that validate
-// has been called before it is run.
-//
+// library.
 // Returns errors.INTERNAL on any eventuality the file could not be opened.
 // Returns errors.INVALID if the mimetype could not be found.
 func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, error) {
@@ -68,13 +63,13 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		return domain.Media{}, err
 	}
 
-	//sizes, err := s.resize(upload, out)
-	//if err != nil {
-	//	return domain.Media{}, err
-	//}
+	sizes, err := s.resize(upload, out)
+	if err != nil {
+		return domain.Media{}, err
+	}
 
 	media, err := s.repo.Create(domain.Media{
-		//Sizes:  sizes,
+		Sizes:  sizes,
 		UserId: userID,
 		FileId: upload.Id,
 		File:   upload,

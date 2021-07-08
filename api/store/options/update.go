@@ -34,5 +34,7 @@ func (s *Store) Update(name string, value interface{}) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
+	s.Struct()
+
 	return nil
 }

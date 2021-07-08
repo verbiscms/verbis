@@ -14,7 +14,6 @@ import (
 // item combinations from the file system, if the file
 // does not exist (user moved) it will be
 // skipped and logged out.
-// Logs errors.INTERNAL if the file could not be deleted.
 func (s *Service) Delete(id int) error {
 	// Find the original media item
 	item, err := s.repo.Find(id)
@@ -28,11 +27,13 @@ func (s *Service) Delete(id int) error {
 		return err
 	}
 
+	// Delete the files from storage
 	go s.deleteFiles(item)
 
 	return nil
 }
 
+// delete files removes all files from the storage bucket.
 func (s *Service) deleteFiles(item domain.Media) {
 	const op = "Service.DeleteFiles"
 
@@ -60,6 +61,7 @@ func (s *Service) deleteFiles(item domain.Media) {
 	}
 }
 
+// deleteWebP removes any webp images from the bucket.
 func (s *Service) deleteWebP(file domain.File) {
 	const op = "Service.DeleteWebP"
 

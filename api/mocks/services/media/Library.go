@@ -29,13 +29,13 @@ func (_m *Library) Delete(id int) error {
 	return r0
 }
 
-// Serve provides a mock function with given fields: _a0, path, acceptWebP
-func (_m *Library) Serve(_a0 domain.Media, path string, acceptWebP bool) ([]byte, domain.Mime, error) {
-	ret := _m.Called(_a0, path, acceptWebP)
+// Serve provides a mock function with given fields: _a0, path, webp
+func (_m *Library) Serve(_a0 domain.Media, path string, webp bool) ([]byte, domain.Mime, error) {
+	ret := _m.Called(_a0, path, webp)
 
 	var r0 []byte
 	if rf, ok := ret.Get(0).(func(domain.Media, string, bool) []byte); ok {
-		r0 = rf(_a0, path, acceptWebP)
+		r0 = rf(_a0, path, webp)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).([]byte)
@@ -44,14 +44,14 @@ func (_m *Library) Serve(_a0 domain.Media, path string, acceptWebP bool) ([]byte
 
 	var r1 domain.Mime
 	if rf, ok := ret.Get(1).(func(domain.Media, string, bool) domain.Mime); ok {
-		r1 = rf(_a0, path, acceptWebP)
+		r1 = rf(_a0, path, webp)
 	} else {
 		r1 = ret.Get(1).(domain.Mime)
 	}
 
 	var r2 error
 	if rf, ok := ret.Get(2).(func(domain.Media, string, bool) error); ok {
-		r2 = rf(_a0, path, acceptWebP)
+		r2 = rf(_a0, path, webp)
 	} else {
 		r2 = ret.Error(2)
 	}

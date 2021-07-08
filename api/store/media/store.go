@@ -52,7 +52,7 @@ func (s *Store) selectStmt() *builder.Sqlbuilder {
 			s.Schema()+"file.id `file.id`, "+
 			s.Schema()+"file.url `file.url`, "+
 			s.Schema()+"file.name `file.name`, "+
-			s.Schema()+"file.path `file.path`, "+
+			s.Schema()+"file.bucket_id `file.bucket_id`, "+
 			s.Schema()+"file.mime `file.mime`, "+
 			s.Schema()+"file.source_type `file.source_type`, "+
 			s.Schema()+"file.provider `file.provider`, "+

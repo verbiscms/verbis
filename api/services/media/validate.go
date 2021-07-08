@@ -14,14 +14,13 @@ import (
 	"mime/multipart"
 )
 
-var (
-	// ErrMimeType is returned by validate when a mimetype is
-	// not permitted.
-	ErrMimeType = errors.New("mimetype is not permitted")
-	// ErrFileTooBig is returned by validate when a file is to
-	// big to be uploaded.
-	ErrFileTooBig = errors.New("file size to big to be uploaded")
-)
+// Validate
+//
+// Satisfies the Library to see if the media item passed
+// is valid.
+func (s *Service) Validate(file *multipart.FileHeader) error {
+	return validate(file, s.options, s.config)
+}
 
 // validator defines the helper for validating media items.
 type validator struct {

@@ -47,7 +47,7 @@ type Deps struct {
 	// template
 	tmpl      tpl.TemplateHandler
 	System    sys.System
-	Storage   storage.Client
+	Storage   storage.Bucket
 	Installed bool
 	Running   bool
 }
@@ -64,9 +64,9 @@ func (d *Deps) SetTmpl(tmpl tpl.TemplateHandler) {
 	d.tmpl = tmpl
 }
 
-func (d *Deps) SetOptions(options *domain.Options) {
-	d.Options = options
-}
+//func (d *Deps) SetOptions(options *domain.Options) {
+//	d.Options = options
+//}
 
 func (d *Deps) SetTheme(name string) error {
 	err := d.Store.Options.SetTheme(name)

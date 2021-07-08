@@ -11,7 +11,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"math"
 	"regexp"
-	"sync"
 )
 
 func (t *OptionsTestSuite) TestStore_Struct() {
@@ -20,6 +19,7 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 	tt := map[string]struct {
 		panics bool
 		want   interface{}
+		twice  bool
 		mock   func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
@@ -27,9 +27,25 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 			&domain.Options{
 				ActiveTheme: "verbis",
 			},
+			false,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name", "option_value"}).
 					AddRow("active_theme", raw)
+				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
+					WillReturnRows(rows)
+			},
+		},
+		"Twice": {
+			false,
+			&domain.Options{
+				ActiveTheme: "verbis",
+			},
+			true,
+			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"option_name", "option_value"}).
+					AddRow("active_theme", raw)
+				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
+					WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
 					WillReturnRows(rows)
 			},
@@ -39,6 +55,7 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 			&domain.Options{
 				ActiveTheme: "verbis",
 			},
+			false,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
 					WillReturnError(fmt.Errorf("error"))
@@ -47,6 +64,7 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 		"Marshal Error": {
 			true,
 			domain.Options{},
+			false,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name", "option_value"}).
 					AddRow("active_theme", math.Inf(1))
@@ -58,8 +76,6 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			once = &sync.Once{}
-
 			s := t.Setup(test.mock)
 
 			if test.panics {
@@ -71,6 +87,12 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 			}
 
 			got := s.Struct()
+
+			if test.twice {
+				p := s.Struct()
+				t.Equal(&opts, &p)
+			}
+
 			t.RunT(test.want, got)
 		})
 	}

@@ -9,12 +9,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// Serve
-//
-// Serve is responsible for serving the correct data to
-// the front end.
-// Returns errors.NOTFOUND if the media item was not found.
-func (s *Service) Serve(media domain.Media, path string, acceptWebP bool) ([]byte, domain.Mime, error) {
+// Serve satisfies the Library to serve media items
+// to the front end.
+func (s *Service) Serve(media domain.Media, path string, webp bool) ([]byte, domain.Mime, error) {
 	const op = "Media.Serve"
 
 	var (
@@ -23,7 +20,7 @@ func (s *Service) Serve(media domain.Media, path string, acceptWebP bool) ([]byt
 		err  error
 	)
 
-	if acceptWebP && s.options.MediaServeWebP {
+	if webp && s.options.MediaServeWebP {
 		data, _, err = s.storage.Find(path + domain.WebPExtension)
 		if err != nil {
 			data, _, err = s.storage.Find(path)

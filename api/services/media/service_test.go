@@ -11,7 +11,6 @@ import (
 	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -29,31 +28,40 @@ func TestMediaService(t *testing.T) {
 	})
 }
 
-var (
-	// The exists function used for testing.
-	exists = func(fileName string) bool { return false }
+const (
+	// MediaId is the default ID use for testing.
+	MediaId = 1
 )
 
-// Setup
-//
-// A helper to obtain a mock media Service for
-// testing.
-func (t *MediaServiceTestSuite) Setup(cfg domain.ThemeConfig, opts domain.Options, rp *repo.Repository, st storage.Provider) *Service {
+// Setup is a helper to obtain a mock media Service
+// for testing.
+func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Options, mock func(r *repo.Repository, s *storage.Bucket)) *Service {
 	m := &webp.Execer{}
 	r := &repo.Repository{}
-	s := &storage.Provider{}
+	s := &storage.Bucket{}
 
-	m.On("Convert", mock.Anything, mock.Anything).Once()
-	m.On("Convert", mock.Anything, mock.Anything).Once()
+	if mock != nil {
+		mock(r, s)
+	}
+
+	if cfg == nil {
+		cfg = &domain.ThemeConfig{}
+	}
+
+	if opts == nil {
+		opts = &domain.Options{}
+	}
+
+	//m.On("Convert", mock.Anything, mock.Anything).Once()
+	//m.On("Convert", mock.Anything, mock.Anything).Once()
 
 	return &Service{
-		options: &opts,
-		config:  &cfg,
+		options: opts,
+		config:  cfg,
 		paths: paths.Paths{
 			API:     t.ApiPath,
 			Uploads: t.ApiPath + test.MediaTestPath,
 		},
-		exists:  nil,
 		webp:    m,
 		repo:    r,
 		storage: s,
