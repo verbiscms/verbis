@@ -16,47 +16,6 @@ import (
 	"strings"
 )
 
-type bucket struct {
-	Config
-	Location
-}
-
-// Find satisfies the Bucket interface by accepting an url
-// and retrieving the file and byte contents of the file.
-func (b *bucket) Find(path string) ([]byte, domain.File, error) {
-	const op = "Storage.Find"
-
-	file, err := b.Files.FindByURL(path)
-	if err != nil {
-		return nil, domain.File{}, err
-	}
-
-	bucket, err := b.Location.Get(file.Provider)
-	if err != nil {
-		return nil, domain.File{}, err
-	}
-
-	id := file.ID(b.paths.Storage)
-
-	item, err := bucket.Item(id)
-	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the ID: " + id, Operation: op, Err: err}
-	}
-
-	open, err := item.Open()
-	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file", Operation: op, Err: err}
-	}
-	defer open.Close()
-
-	buf, err := ioutil.ReadAll(open)
-	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
-	}
-
-	return buf, file, nil
-}
-
 // Find satisfies the Bucket interface by accepting an url
 // and retrieving the file and byte contents of the file.
 func (s *Storage) Find(path string) ([]byte, domain.File, error) {

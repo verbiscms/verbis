@@ -29,6 +29,8 @@ type (
 		FileSize   int64           `db:"file_size" json:"file_size"`
 		Private    types.BitBool   `db:"private" json:"private"`
 	}
+	// Upload represents a file to be uploaded to the
+	// Verbis storage system.
 	Upload struct {
 		Path       string
 		Size       int64
@@ -41,7 +43,11 @@ type (
 )
 
 const (
-	MediaSourceType          = "media"
+	// MediaSourceType defines the source type for a media
+	// attachment within the files table.
+	MediaSourceType = "media"
+	// FormAttachmentSourceType defines the source type for
+	// form attachment within the files table.
 	FormAttachmentSourceType = "form_attachment"
 )
 
@@ -71,16 +77,16 @@ func (f *File) IsLocal() bool {
 // uploading.
 func (u *Upload) Validate() error {
 	if u.Path == "" {
-		return errors.New("no path given")
+		return errors.New("no path attached to upload")
 	}
 	if u.Size < 1 {
 		return errors.New("no size attached to upload")
 	}
 	if u.Contents == nil {
-		return errors.New("contents is nil")
+		return errors.New("upload contents is nil")
 	}
 	if u.SourceType == "" {
-		return errors.New("source type is empty")
+		return errors.New("no source type attached to upload")
 	}
 	return nil
 }

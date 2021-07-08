@@ -5,46 +5,32 @@
 package domain
 
 import (
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
-	"path/filepath"
+	"strings"
 	"testing"
 )
 
-func TestFile_UploadPath(t *testing.T) {
-	uniq := uuid.New()
-	prefix := filepath.Join("Users", "verbis")
-
+func TestFile_ID(t *testing.T) {
 	tt := map[string]struct {
-		prefix string
 		input  File
-		want   string
+		prefix string
+		want   interface{}
 	}{
 		"Local": {
-			prefix,
-			File{Name: "file.jpg", Path: "uploads/2020/01", UUID: uniq, Provider: StorageLocal},
-			filepath.Join("Users", "verbis", "uploads", "2020", "01", uniq.String()+".jpg"),
+			File{BucketId: "uploads/2020/01/test.jpg", Provider: StorageLocal},
+			"prefix",
+			"prefix/uploads/2020/01/test.jpg",
 		},
 		"Remote": {
-			prefix,
-			File{Name: "file.jpg", Path: "https:/s3-eu-west-2.amazonaws.com/verbis/uploads/2021/07", UUID: uniq, Provider: StorageAWS},
-			"https:/s3-eu-west-2.amazonaws.com/verbis/uploads/2021/07/" + uniq.String() + ".jpg",
-		},
-		"Local Leading Trailing": {
-			prefix,
-			File{Name: "file.jpg", Path: "/uploads/2020/01/", UUID: uniq, Provider: StorageLocal},
-			filepath.Join("Users", "verbis", "uploads", "2020", "01", uniq.String()+".jpg"),
-		},
-		"Remote Trailing": {
-			prefix,
-			File{Name: "file.jpg", Path: "https:/s3-eu-west-2.amazonaws.com/verbis/uploads/2021/07/", UUID: uniq, Provider: StorageAWS},
-			"https:/s3-eu-west-2.amazonaws.com/verbis/uploads/2021/07/" + uniq.String() + ".jpg",
+			File{BucketId: "uploads/2020/01/test.jpg"},
+			"prefix",
+			"uploads/2020/01/test.jpg",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			got := test.input.PrivatePath(test.prefix)
+			got := test.input.ID(test.prefix)
 			assert.Equal(t, test.want, got)
 		})
 	}
@@ -76,6 +62,68 @@ func TestFile_Extension(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			got := test.input.Extension()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestUpload_Validate(t *testing.T) {
+	tt := map[string]struct {
+		input Upload
+		want  interface{}
+	}{
+		"Success": {
+			Upload{Path: "path", Size: 1, Contents: strings.NewReader("test"), SourceType: MediaSourceType},
+			nil,
+		},
+		"No Path": {
+			Upload{},
+			"no path attached to upload",
+		},
+		"No Size": {
+			Upload{Path: "path"},
+			"no size attached to upload",
+		},
+		"Nil Contents": {
+			Upload{Path: "path", Size: 1, Contents: nil},
+			"upload contents is nil",
+		},
+		"No Source Type": {
+			Upload{Path: "path", Size: 1, Contents: strings.NewReader("test")},
+			"no source type attached to upload",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.Validate()
+			if got != nil {
+				assert.Contains(t, got.Error(), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestFile_IsLocal(t *testing.T) {
+	tt := map[string]struct {
+		input File
+		want  interface{}
+	}{
+		"Local": {
+			File{Provider: StorageLocal},
+			true,
+		},
+		"Remote": {
+			File{Provider: StorageAWS},
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.IsLocal()
 			assert.Equal(t, test.want, got)
 		})
 	}
