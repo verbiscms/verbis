@@ -9,16 +9,16 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"sync"
 )
 
 var (
 	// opts is an alias for a singleton for the main Verbis
 	// options.
 	opts = &domain.Options{}
-	// once ensures the options are set only once upon
-	// initialisation.
-	once = &sync.Once{}
+	//// once ensures the options are set only once upon
+	//// initialisation.
+	//once = &sync.Once{}
+	// TODO check this only returns once!
 )
 
 // Struct
@@ -28,22 +28,20 @@ var (
 func (s *Store) Struct() *domain.Options {
 	const op = "OptionStore.Struct"
 
-	once.Do(func() {
-		m, err := s.Map()
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
-		}
+	m, err := s.Map()
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
+	}
 
-		mOpts, err := json.Marshal(m)
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
-		}
+	mOpts, err := json.Marshal(m)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
+	}
 
-		err = json.Unmarshal(mOpts, &opts)
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
-		}
-	})
+	err = json.Unmarshal(mOpts, opts)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error getting options", Operation: op, Err: err}).Panic()
+	}
 
 	return opts
 }

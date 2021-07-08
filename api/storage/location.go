@@ -10,10 +10,44 @@ import (
 	"io/ioutil"
 )
 
-func (s *Storage) SetProvider(provider domain.StorageProvider) error {
+type Provider struct {
+	Config
+}
+
+func (s *Storage) Get(provider domain.StorageProvider) (stow.Location, error) {
+	var (
+		cont stow.Location
+		err  error
+	)
+
+	switch provider {
+	case domain.StorageLocal:
+		cont, err = stow.Dial(local.Kind, stow.ConfigMap{
+			local.ConfigKeyPath: s.paths.Storage,
+		})
+	case domain.StorageAWS:
+		cont, err = stow.Dial(s3.Kind, stow.ConfigMap{
+			s3.ConfigAccessKeyID: s.env.AWSAccessKey,
+			s3.ConfigSecretKey:   s.env.AWSSecret,
+		})
+	case domain.StorageGCP:
+		json, err := ioutil.ReadFile(s.env.GCPJson)
+		if err != nil {
+			return nil, err
+		}
+		cont, err = stow.Dial(google.Kind, stow.ConfigMap{
+			google.ConfigJSON:      string(json),
+			google.ConfigProjectId: s.env.GCPProjectId,
+		})
+	}
+
+	return cont, err
+}
+
+func (s *Storage) Set(provider domain.StorageProvider) error {
 	const op = "Storage.SetProvider"
 
-	p, err := s.getProvider(provider)
+	p, err := s.Get(provider)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error setting provider", Operation: op, Err: err}
 	}
@@ -84,7 +118,7 @@ func (s *Storage) ListBuckets() (domain.Buckets, error) {
 }
 
 func (s *Storage) getBucket(file domain.File) (stow.Container, error) {
-	provider, err := s.getProvider(file.Provider)
+	provider, err := s.Get(file.Provider)
 	if err != nil {
 		return nil, err
 	}
@@ -95,39 +129,4 @@ func (s *Storage) getBucket(file domain.File) (stow.Container, error) {
 	}
 
 	return bucket, nil
-}
-
-func (s *Storage) getProvider(provider domain.StorageProvider) (stow.Location, error) {
-	var (
-		cont stow.Location
-		err  error
-	)
-
-	switch provider {
-	case domain.StorageLocal:
-		cont, err = stow.Dial(local.Kind, stow.ConfigMap{
-			local.ConfigKeyPath: s.paths.Storage,
-		})
-	case domain.StorageAWS:
-		cont, err = stow.Dial(s3.Kind, stow.ConfigMap{
-			s3.ConfigAccessKeyID: s.env.AWSAccessKey,
-			s3.ConfigSecretKey:   s.env.AWSSecret,
-		})
-	case domain.StorageGCP:
-		json, err := ioutil.ReadFile(s.env.GCPJson)
-		if err != nil {
-			return nil, err
-		}
-		cont, err = stow.Dial(google.Kind, stow.ConfigMap{
-			google.ConfigJSON:      string(json),
-			google.ConfigProjectId: s.env.GCPProjectId,
-		})
-		// TODO, put in ENV
-		//case domain.StorageAzure:
-		//	cont, err = stow.Dial(azure.Kind, stow.ConfigMap{
-		//		azure.ConfigKey:
-		//	})
-	}
-
-	return cont, err
 }

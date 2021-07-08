@@ -5,35 +5,48 @@
 package media
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
-	"github.com/google/uuid"
+	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
+	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 )
 
-func (t *MediaServiceTestSuite) TestClient_Delete() {
+func (t *MediaServiceTestSuite) TestService_Delete() {
 	tt := map[string]struct {
-		input     domain.Media
-		mock      func(m *mocks.Library)
-		extension string
+		mock func(r *repo.Repository, s *storage.Bucket)
+		want interface{}
 	}{
-		"PNG": {
-			domain.Media{
-				UUID:     uuid.New(),
-				FileSize: 0,
-				Url:      "/test.png",
-				FileName: "test.png",
-				Mime:     "image/png",
+		"Success": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("Find", MediaId).Return(domain.Media{Id: MediaId, File: domain.File{Id: 1}}, nil)
+				r.On("Delete", MediaId).Return(nil)
+				s.On("Delete", 1).Return(fmt.Errorf("error"))
 			},
-			func(m *mocks.Library) {
-
+			nil,
+		},
+		"Find Error": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("Find", MediaId).Return(domain.Media{}, fmt.Errorf("error"))
 			},
-			".png",
+			"error",
+		},
+		"Delete Error": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("Find", MediaId).Return(domain.Media{Id: MediaId}, nil)
+				r.On("Delete", MediaId).Return(fmt.Errorf("error"))
+			},
+			"error",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-
+			s := t.Setup(nil, nil, test.mock)
+			err := s.Delete(MediaId)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
 		})
 	}
 }

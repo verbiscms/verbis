@@ -26,5 +26,6 @@ func (s *Store) Insert(options domain.OptionsDBMap) error {
 			}
 		}
 	}
+	s.Struct()
 	return nil
 }
