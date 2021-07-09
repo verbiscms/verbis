@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/storage/internal"
 	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/ainsleyclark/verbis/api/store/options"
 )
@@ -16,14 +17,15 @@ import (
 // Provider - TODO
 type Provider interface {
 	Name() string
-	Set(provider domain.StorageProvider) error
+	SetProvider(provider domain.StorageProvider) error
 }
 
 // Container - TODO
 type Container interface {
-	List() (domain.Buckets, error)
-	Create(name string) error
-	Delete(name string) error
+	SetBucket(id string) error
+	ListBuckets() (domain.Buckets, error)
+	CreateBucket(name string) error
+	DeleteBucket(name string) error
 }
 
 // Bucket defines the methods used for interacting with
@@ -75,7 +77,7 @@ var (
 func New(env *environment.Env, opts options.Repository, repo files.Repository) (*Storage, error) {
 	const op = "Storage.New"
 
-	c := config{
+	c := &internal.Config{
 		Environment: env,
 		OptionsRepo: opts,
 		FilesRepo:   repo,
@@ -110,7 +112,7 @@ func New(env *environment.Env, opts options.Repository, repo files.Repository) (
 }
 
 // TODO
-// validate checks if a string exists in a slice,
+// validate checks to see if a
 func validate(p domain.StorageProvider) bool {
 	for _, sp := range domain.StorageProviders {
 		if sp == p {
