@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -84,26 +85,40 @@ var (
 	ErrLocalBucket = errors.New("local provider cannot be overridden")
 )
 
+type Config struct {
+	Environment *environment.Env
+	Options     options.Repository
+	Files       files.Repository
+}
+
+func (c Config) Validate() error {
+	const op = "Storage.Config.Validate"
+	if c.Environment == nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error, no Environment set", Operation: op, Err: fmt.Errorf("nil environment")}
+	}
+	if c.Options == nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error, no options repository set", Operation: op, Err: fmt.Errorf("nil options store")}
+	}
+	if c.Files == nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error, no files repository set", Operation: op, Err: fmt.Errorf("nil files store")}
+	}
+	return nil
+}
+
 // New parse config
-func New(env *environment.Env, options options.Repository, files files.Repository) (*Storage, error) {
+func New(cfg Config) (*Storage, error) {
 	const op = "Storage.New"
 
-	var (
-		service = internal.NewService(env)
-		opts    = options.Struct()
-	)
+	// Validate configuration
+	err := cfg.Validate()
+	if err != nil {
+		return nil, err
+	}
 
-	//if env == nil {
-	//	logger.Panic(&errors.Error{Code: errors.INVALID, Message: "Error, no Environment set", Operation: op, Err: fmt.Errorf("nil enviroemnet")})
-	//}
-	//
-	//if options == nil {
-	//	logger.Panic(&errors.Error{Code: errors.INVALID, Message: "Error, no Options Repository set", Operation: op, Err: fmt.Errorf("nil options store")})
-	//}
-	//
-	//if files == nil {
-	//	logger.Panic(&errors.Error{Code: errors.INVALID, Message: "Error, no Files Repository set", Operation: op, Err: fmt.Errorf("nil files store")})
-	//}
+	var (
+		service = internal.NewService(cfg.Environment)
+		opts    = cfg.Options.Struct()
+	)
 
 	provider := opts.StorageProvider
 	if provider == "" {
@@ -116,21 +131,22 @@ func New(env *environment.Env, options options.Repository, files files.Repositor
 
 	s := &Storage{
 		ProviderName: provider,
-		env:          env,
-		optionsRepo:  options,
-		filesRepo:    files,
+		env:          cfg.Environment,
+		optionsRepo:  cfg.Options,
+		filesRepo:    cfg.Files,
 		options:      opts,
 		paths:        paths.Get(),
 		service:      service,
 	}
 
 	// Set Provider
-	err := s.SetProvider(provider)
+	err = s.SetProvider(provider)
 	if err != nil {
 		return nil, err
 	}
 
 	// Set Bucket
+	// TODO, do we want to be srtting options on initialisation?
 	err = s.SetBucket(opts.StorageBucket)
 	if err != nil {
 		return nil, err
