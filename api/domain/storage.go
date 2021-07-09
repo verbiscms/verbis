@@ -18,6 +18,11 @@ type (
 	StorageProvider string
 )
 
+// String is the stringer on the StorageProvider.
+func (s StorageProvider) String() string {
+	return string(s)
+}
+
 const (
 	// StorageLocal represents the string for the local
 	// storage disk.

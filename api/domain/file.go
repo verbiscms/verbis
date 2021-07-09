@@ -10,6 +10,7 @@ import (
 	"github.com/jmoiron/sqlx/types"
 	"io"
 	"path/filepath"
+	"strings"
 )
 
 type (
@@ -32,6 +33,7 @@ type (
 	// Upload represents a file to be uploaded to the
 	// Verbis storage system.
 	Upload struct {
+		UUID       uuid.UUID
 		Path       string
 		Size       int64
 		Contents   io.ReadSeeker
@@ -89,6 +91,12 @@ func (u *Upload) Validate() error {
 		return errors.New("no source type attached to upload")
 	}
 	return nil
+}
+
+// AbsPath returns the absolute path of the upload
+// ready for uploading.
+func (u *Upload) AbsPath() string {
+	return strings.TrimPrefix(filepath.Join(filepath.Dir(u.Path), u.UUID.String()+filepath.Ext(u.Path)), ".")
 }
 
 // Mime is a string representation of a MIME type.

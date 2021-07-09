@@ -5,6 +5,7 @@
 package domain
 
 import (
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
@@ -101,6 +102,31 @@ func TestUpload_Validate(t *testing.T) {
 				assert.Contains(t, got.Error(), test.want)
 				return
 			}
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestUpload_AbsPath(t *testing.T) {
+	key := uuid.Must(uuid.Parse("5855fe24-e0c5-11eb-ba80-0242ac130004"))
+
+	tt := map[string]struct {
+		input Upload
+		want  string
+	}{
+		"Absolute": {
+			Upload{UUID: key, Path: "/uploads/2020/01/file.txt"},
+			"/uploads/2020/01/5855fe24-e0c5-11eb-ba80-0242ac130004.txt",
+		},
+		"Relative": {
+			Upload{UUID: key, Path: "/uploads/2020/01/file.txt"},
+			"/uploads/2020/01/5855fe24-e0c5-11eb-ba80-0242ac130004.txt",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.AbsPath()
 			assert.Equal(t, test.want, got)
 		})
 	}

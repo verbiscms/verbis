@@ -3,13 +3,3 @@
 // license that can be found in the LICENSE file.
 
 package storage
-
-import (
-	_ "github.com/graymeta/stow/azure"
-	_ "github.com/graymeta/stow/google"
-	_ "github.com/graymeta/stow/s3"
-)
-
-func (t *StorageTestSuite) TestStorage_GetProvider() {
-
-}
