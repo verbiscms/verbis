@@ -1,4 +1,4 @@
-package storage
+package internal
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -16,7 +16,7 @@ import (
 	"io/ioutil"
 )
 
-type config struct {
+type Config struct {
 	ProviderName domain.StorageProvider
 	Environment  *environment.Env
 	OptionsRepo  options.Repository
@@ -32,7 +32,7 @@ var (
 	gcpJson *string
 )
 
-func (c *config) GetProvider(provider domain.StorageProvider) (stow.Location, error) {
+func (c *Config) GetProvider(provider domain.StorageProvider) (stow.Location, error) {
 	var (
 		cont stow.Location
 		err  error
@@ -62,7 +62,7 @@ func (c *config) GetProvider(provider domain.StorageProvider) (stow.Location, er
 	return cont, err
 }
 
-func (c *config) GetBucket(file domain.File) (stow.Container, error) {
+func (c *Config) GetBucket(file domain.File) (stow.Container, error) {
 	provider, err := c.GetProvider(file.Provider)
 	if err != nil {
 		// TODO varf( err etc
@@ -78,7 +78,7 @@ func (c *config) GetBucket(file domain.File) (stow.Container, error) {
 	return bucket, nil
 }
 
-func (c *config) SetLocation(location stow.Location) {
+func (c *Config) SetProvider(location stow.Location, provider domain.StorageProvider) {
 	c.Provider = location
-	//c.ProviderName = location.
+	c.ProviderName = provider
 }

@@ -5,16 +5,16 @@
 package domain
 
 type (
-	// Bucket
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// Bucket represents a named group of Files, it could
+	// be remote or local.
 	Bucket struct {
 		Id   string `json:"id" binding:"required"` //nolint
 		Name string `json:"name"`                  //nolint
 	}
 	// Buckets represents the slice of Bucket's.
 	Buckets []Bucket
-	// StorageProvider
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	// StorageProvider represents a the string of a provider
+	// for writing storage files.
 	StorageProvider string
 )
 
@@ -34,6 +34,8 @@ const (
 )
 
 var (
+	// StorageProviders represents the slice of providers that
+	// are available within Verbis.
 	StorageProviders = []StorageProvider{
 		StorageLocal,
 		StorageAWS,

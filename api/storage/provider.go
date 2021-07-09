@@ -7,20 +7,25 @@ package storage
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/storage/internal"
 )
 
 type provider struct {
-	config
+	*internal.Config
+}
+
+func (p *provider) Set(provider domain.StorageProvider) error {
+	panic("implement me")
 }
 
 func (p *provider) Name() string {
 	return p.Name()
 }
 
-func (p *provider) Set(provider domain.StorageProvider) error {
+func (p *provider) SetProvider(provider domain.StorageProvider) error {
 	const op = "Storage.SetProvider"
 
-	prov, err := p.GetProvider(provider)
+	p, err := p.GetProvider(provider)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error setting provider", Operation: op, Err: err}
 	}
@@ -30,7 +35,7 @@ func (p *provider) Set(provider domain.StorageProvider) error {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating options table with new provider", Operation: op, Err: err}
 	}
 
-	p.SetLocation(prov)
+	p.SetProvider(p, provider)
 
 	return nil
 }

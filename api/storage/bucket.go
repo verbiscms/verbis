@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	vstrings "github.com/ainsleyclark/verbis/api/helpers/strings"
+	"github.com/ainsleyclark/verbis/api/storage/internal"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
 	"io/ioutil"
@@ -16,8 +17,10 @@ import (
 	"strings"
 )
 
+// bucket defines the struct for obtaining and modifying
+// files on the storage layer.
 type bucket struct {
-	config
+	*internal.Config
 }
 
 // Find satisfies the Bucket interface by accepting an url
