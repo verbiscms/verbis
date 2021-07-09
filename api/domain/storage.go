@@ -23,6 +23,24 @@ func (s StorageProvider) String() string {
 	return string(s)
 }
 
+// IsLocal determines if the current storage provider is
+// local. Returns false if it's remote.
+func (s StorageProvider) IsLocal() bool {
+	return s == StorageLocal
+}
+
+// Validate checks to see if the storage provider is
+// valid. Returns true if it's accepted as a Verbis
+// storage provider.
+func (s StorageProvider) Validate() bool {
+	for _, v := range StorageProviders {
+		if s == v {
+			return true
+		}
+	}
+	return false
+}
+
 const (
 	// StorageLocal represents the string for the local
 	// storage disk.

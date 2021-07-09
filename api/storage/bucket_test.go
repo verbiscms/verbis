@@ -8,11 +8,8 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
+	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
-	_ "github.com/graymeta/stow/azure"
-	_ "github.com/graymeta/stow/google"
-	_ "github.com/graymeta/stow/s3"
 	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"net/url"
@@ -231,6 +228,44 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				return
 			}
 
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *StorageTestSuite) TestBucket_Exists() {
+	tt := map[string]struct {
+		input string
+		mock  func(r *repo.Repository)
+		want  interface{}
+	}{
+		"True": {
+			"test",
+			func(r *repo.Repository) {
+				r.On("Exists", "test").Return(true)
+			},
+			true,
+		},
+		"False": {
+			"test",
+			func(r *repo.Repository) {
+				r.On("Exists", "test").Return(false)
+			},
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			r := &repo.Repository{}
+
+			test.mock(r)
+
+			s := Storage{
+				filesRepo: r,
+			}
+
+			got := s.Exists(test.input)
 			t.Equal(test.want, got)
 		})
 	}

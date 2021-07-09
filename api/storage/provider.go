@@ -4,19 +4,26 @@
 
 package storage
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import (
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+)
 
-func (s *Storage) Name() domain.StorageProvider {
-	return s.ProviderName
-}
-
+// SetProvider satisfies the Provider interface by a
+// domain.StorageProvider and updating the var
+// used by storage
+// an id and updating the stowLocation of storage. The
+// options table is also updated.
 func (s *Storage) SetProvider(provider domain.StorageProvider) error {
+	const op = "Storage.SetProvider"
+
 	location, err := s.service.Provider(provider)
 	if err != nil {
-		return err
+		return &errors.Error{Code: errors.INVALID, Message: "Error setting provider", Operation: op, Err: err}
 	}
 
 	s.stowLocation = location
+	s.ProviderName = provider
 
 	return nil
 }
