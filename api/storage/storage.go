@@ -12,12 +12,15 @@ import (
 	"github.com/ainsleyclark/verbis/api/storage/internal"
 	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/ainsleyclark/verbis/api/store/options"
+	"github.com/graymeta/stow"
 )
 
 // Provider - TODO
 type Provider interface {
-	Name() string
+	Name() domain.StorageProvider
 	SetProvider(provider domain.StorageProvider) error
+	Container
+	Bucket
 }
 
 // Container - TODO
@@ -62,9 +65,15 @@ type Bucket interface {
 }
 
 type Storage struct {
-	Provider  Provider
-	Container Container
-	Bucket    Bucket
+	ProviderName  domain.StorageProvider
+	env           *environment.Env
+	optionsRepo   options.Repository
+	filesRepo     files.Repository
+	options       *domain.Options
+	paths         paths.Paths
+	stowLocation  stow.Location
+	stowContainer stow.Container
+	service       internal.StorageServices
 }
 
 var (
@@ -74,37 +83,37 @@ var (
 )
 
 // New parse config
-func New(env *environment.Env, opts options.Repository, repo files.Repository) (*Storage, error) {
+func New(env *environment.Env, options options.Repository, files files.Repository) (*Storage, error) {
 	const op = "Storage.New"
 
-	c := &internal.Config{
-		Environment: env,
-		OptionsRepo: opts,
-		FilesRepo:   repo,
-		Paths:       paths.Get(),
-		Options:     opts.Struct(),
+	var (
+		service = internal.NewService(env)
+		opts    = options.Struct()
+	)
+
+	provider := opts.StorageProvider
+	if provider == "" {
+		provider = domain.StorageLocal
 	}
 
-	return &Storage{
-		Provider:  &provider{c},
-		Container: &container{c},
-		Bucket:    &bucket{c},
-	}, nil
+	if !validate(provider) {
+		return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}
+	}
 
-	//provider := s.opts.StorageProvider
-	//if provider == "" {
-	//	provider = domain.StorageLocal
-	//}
-	//
-	//if !validate(provider) {
-	//	return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}
-	//}
+	s := &Storage{
+		ProviderName: provider,
+		env:          env,
+		optionsRepo:  options,
+		filesRepo:    files,
+		options:      opts,
+		paths:        paths.Get(),
+		service:      service,
+	}
 
-	//err := s.Set(provider)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
+	// Set provider
+
+	return s, nil
+
 	//err = s.SetBucket(s.opts.StorageBucket)
 	//if err != nil {
 	//	return nil, err
