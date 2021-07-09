@@ -16,22 +16,43 @@ import (
 	"github.com/graymeta/stow"
 )
 
-// Provider - TODO
+// Provider describes the main storage system for Verbis.
+// A provider can be either remote (GCP, AWS or Azure),
+// or it can be local, dependant on what is set on
+// the environment.
 type Provider interface {
+	// SetProvider sets the storage system to the given
+	// provider.
+	// Returns errors.INVALID if there was an error setting the provider.
 	SetProvider(provider domain.StorageProvider) error
 	Container
 	Bucket
 }
 
-// Container - TODO
+// Container the methods for creating storage folders either
+// remotely via GCP, AWS, Azure or Locally. Buckets can
+// be set listed, created and deleted.
 type Container interface {
+	// SetBucket updates the storage system with a new bucket.
+	// The options table will be updated from the database.
+	// Returns errors.INVALID if the bucket could not be set.
+	// Returns errors.INTERNAL if there was an error updating the options DB table.
 	SetBucket(id string) error
+	// ListBuckets retrieves all buckets that are currently in
+	// the provider and returns a slice of domain.Buckets.
+	// Returns errors.INVALID if there was an error obtaining the buckets.
 	ListBuckets() (domain.Buckets, error)
+	// CreateBucket creates a folder or bucket on the provider
+	// by name.
+	// Returns errors.INVALID if there was an error creating the bucket.
 	CreateBucket(name string) error
+	// DeleteBucket removes a folder or bucket from the
+	// provider by name.
+	// Returns errors.INVALID if there was an error deleting the bucket.
 	DeleteBucket(name string) error
 }
 
-// Bucket defines the methods used for interacting with
+// Bucket describes the methods used for interacting with
 // the Verbis storage system. The client can be remote
 // or work with the local file system dependant on
 // what is set in the options table.
@@ -64,6 +85,14 @@ type Bucket interface {
 	Exists(name string) bool
 }
 
+var (
+	// ErrNoProvider is returned by New and SetProvider when
+	// there is no match from the options table.
+	ErrNoProvider = errors.New("invalid provider")
+)
+
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
 type Storage struct {
 	ProviderName  domain.StorageProvider
 	env           *environment.Env
@@ -76,21 +105,16 @@ type Storage struct {
 	service       internal.StorageServices
 }
 
-var (
-	// ErrNoProvider is returned by New and SetProvider when
-	// there is no match from the options table.
-	ErrNoProvider = errors.New("invalid provider")
-	// ErrLocalBucket is returned by SetBucket when a local
-	// bucket has tried to be set.
-	ErrLocalBucket = errors.New("local provider cannot be overridden")
-)
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
+//
 type Config struct {
 	Environment *environment.Env
 	Options     options.Repository
 	Files       files.Repository
 }
 
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 func (c Config) Validate() error {
 	const op = "Storage.Config.Validate"
 	if c.Environment == nil {
@@ -106,6 +130,8 @@ func (c Config) Validate() error {
 }
 
 // New parse config
+// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+
 func New(cfg Config) (*Storage, error) {
 	const op = "Storage.New"
 
