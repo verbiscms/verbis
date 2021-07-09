@@ -35,7 +35,7 @@ func NewService(env *environment.Env) *Service {
 }
 
 func (s *Service) Provider(provider domain.StorageProvider) (stow.Location, error) {
-	const op = "Storage.GetProvider"
+	const op = "Storage.Provider"
 
 	var (
 		cont stow.Location
@@ -71,6 +71,8 @@ func (s *Service) Provider(provider domain.StorageProvider) (stow.Location, erro
 }
 
 func (s *Service) Bucket(file domain.File) (stow.Container, error) {
+	const op = "Storage.Bucket"
+
 	provider, err := s.Provider(file.Provider)
 	if err != nil {
 		// TODO varf( err etc
