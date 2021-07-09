@@ -50,7 +50,7 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 	return buf, file, nil
 }
 
-// Upload Satisfies the Bucket interface by accepting a
+// Upload satisfies the Bucket interface by accepting a
 // domain.Upload and inserting into the database and
 // uploading to the bucket.
 func (s *Storage) Upload(u domain.Upload) (domain.File, error) {

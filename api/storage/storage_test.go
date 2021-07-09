@@ -41,6 +41,10 @@ func (t *StorageTestSuite) BeforeTest(suiteName, testName string) Storage {
 	return s
 }
 
+func (t *StorageTestSuite) TestNew() {
+
+}
+
 var (
 	key = "5855fe24-e0c5-11eb-ba80-0242ac130004"
 

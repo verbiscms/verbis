@@ -34,19 +34,15 @@ const (
 	// APIRoute is the URI route for incoming and outgoing
 	// requests.
 	APIRoute = "/api/v1"
-
 	// Repo is the URI for the hosted github Verbis
 	// repository.
 	Repo = "https://github.com/ainsleyclark/verbis"
-
 	// AssetsChannel is the maximum amount of concurrent
 	// requests for serving assets on the frontend.
 	AssetsChannel = 10
-
 	// UploadChannel is the maximum amount of concurrent
 	// requests for serving uploads on the frontend.
 	UploadChannel = 10
-
 	// ServerChannel is the maximum amount of concurrent
 	// requests for serving posts on the frontend.
 	ServerChannel = 50

@@ -14,3 +14,61 @@ func TestStorageProvider_String(t *testing.T) {
 	want := string(StorageLocal)
 	assert.Equal(t, got, want)
 }
+
+func TestStorageProvider_IsLocal(t *testing.T) {
+	tt := map[string]struct {
+		input StorageProvider
+		want  bool
+	}{
+		"Success": {
+			StorageLocal,
+			true,
+		},
+		"Remote": {
+			StorageAWS,
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.IsLocal()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestStorageProvider_Validate(t *testing.T) {
+	tt := map[string]struct {
+		input StorageProvider
+		want  bool
+	}{
+		"Local": {
+			StorageLocal,
+			true,
+		},
+		"AWS": {
+			StorageAWS,
+			true,
+		},
+		"GCP": {
+			StorageGCP,
+			true,
+		},
+		"Azure": {
+			StorageGCP,
+			true,
+		},
+		"Error": {
+			"wrong",
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.Validate()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}

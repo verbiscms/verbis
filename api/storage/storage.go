@@ -17,7 +17,6 @@ import (
 
 // Provider - TODO
 type Provider interface {
-	Name() domain.StorageProvider
 	SetProvider(provider domain.StorageProvider) error
 	Container
 	Bucket
@@ -80,6 +79,9 @@ var (
 	// ErrNoProvider is returned by New and SetProvider when
 	// there is no match from the options table.
 	ErrNoProvider = errors.New("invalid provider")
+	// ErrLocalBucket is returned by SetBucket when a local
+	// bucket has tried to be set.
+	ErrLocalBucket = errors.New("local provider cannot be overridden")
 )
 
 // New parse config
@@ -91,12 +93,24 @@ func New(env *environment.Env, options options.Repository, files files.Repositor
 		opts    = options.Struct()
 	)
 
+	//if env == nil {
+	//	logger.Panic(&errors.Error{Code: errors.INVALID, Message: "Error, no Environment set", Operation: op, Err: fmt.Errorf("nil enviroemnet")})
+	//}
+	//
+	//if options == nil {
+	//	logger.Panic(&errors.Error{Code: errors.INVALID, Message: "Error, no Options Repository set", Operation: op, Err: fmt.Errorf("nil options store")})
+	//}
+	//
+	//if files == nil {
+	//	logger.Panic(&errors.Error{Code: errors.INVALID, Message: "Error, no Files Repository set", Operation: op, Err: fmt.Errorf("nil files store")})
+	//}
+
 	provider := opts.StorageProvider
 	if provider == "" {
 		provider = domain.StorageLocal
 	}
 
-	if !validate(provider) {
+	if !provider.Validate() {
 		return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}
 	}
 
@@ -110,23 +124,17 @@ func New(env *environment.Env, options options.Repository, files files.Repositor
 		service:      service,
 	}
 
-	// Set provider
+	// Set Provider
+	err := s.SetProvider(provider)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set Bucket
+	err = s.SetBucket(opts.StorageBucket)
+	if err != nil {
+		return nil, err
+	}
 
 	return s, nil
-
-	//err = s.SetBucket(s.opts.StorageBucket)
-	//if err != nil {
-	//	return nil, err
-	//}
-}
-
-// TODO
-// validate checks to see if a
-func validate(p domain.StorageProvider) bool {
-	for _, sp := range domain.StorageProviders {
-		if sp == p {
-			return true
-		}
-	}
-	return false
 }
