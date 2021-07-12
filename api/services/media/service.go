@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	resizer2 "github.com/ainsleyclark/verbis/api/services/media/resizer"
+	"github.com/ainsleyclark/verbis/api/services/media/resizer"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/ainsleyclark/verbis/api/store/media"
@@ -63,7 +63,7 @@ type Service struct {
 	webp    webp.Execer
 	storage storage.Bucket
 	repo    media.Repository
-	resizer resizer2.Resizer
+	resizer resizer.Resizer
 }
 
 // New creates a new testMedia Service.
@@ -76,8 +76,6 @@ func New(opts *domain.Options, storage storage.Bucket, repo media.Repository) *S
 		webp:    webp.New(p.Bin + webp.Path),
 		storage: storage,
 		repo:    repo,
-		resizer: &resizer2.Resize{
-			Compression: opts.MediaCompression,
-		},
+		resizer: &resizer.Resize{},
 	}
 }

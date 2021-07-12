@@ -43,33 +43,8 @@ func (t *MediaSuite) DummyFile(path string) func() {
 	}
 }
 
-// FileToMultiPart converts a file path into a
+// ToMultiPart converts a file path into a
 // *multipart.FileHeader.
-func (t *MediaSuite) FileToMultiPart(path string) *multipart.FileHeader {
-	file, err := os.Open(path)
-	t.NoError(err)
-	defer file.Close()
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-
-	part, err := writer.CreateFormFile("file", filepath.Base(path))
-	t.NoError(err)
-	_, err = io.Copy(part, file)
-	t.NoError(err)
-
-	err = writer.Close()
-	t.NoError(err)
-
-	mr := multipart.NewReader(body, writer.Boundary())
-	mt, err := mr.ReadForm(99999)
-	t.NoError(err)
-	ft := mt.File["file"][0]
-
-	return ft
-}
-
-// File converts a file path into a *multipart.FileHeader.
 func (t *MediaSuite) ToMultiPart(path string) (*multipart.FileHeader, error) {
 	file, err := os.Open(path)
 	if err != nil {

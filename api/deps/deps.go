@@ -47,7 +47,7 @@ type Deps struct {
 	// template
 	tmpl      tpl.TemplateHandler
 	System    sys.System
-	Storage   storage.Bucket
+	Storage   storage.Provider
 	Installed bool
 	Running   bool
 }

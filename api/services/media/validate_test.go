@@ -5,6 +5,7 @@
 package media
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"mime/multipart"
@@ -103,7 +104,11 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 
 			var mt = &multipart.FileHeader{}
 			if test.input != "" {
-				mt = t.FileToMultiPart(test.input)
+				multi, err := t.ToMultiPart(test.input)
+				if err != nil {
+					fmt.Println(err)
+				}
+				mt = multi
 			}
 
 			got := c.Validate(mt)

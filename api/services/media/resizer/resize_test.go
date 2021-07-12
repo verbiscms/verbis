@@ -63,7 +63,7 @@ func TestResize_Resize(t *testing.T) {
 				test.mock(m)
 			}
 
-			got, err := r.Resize(m, test.size)
+			got, err := r.Resize(m, 0, test.size)
 			if err != nil {
 				assert.Contains(t, err.Error(), test.want)
 				return
@@ -82,7 +82,7 @@ func TestResize_Resize(t *testing.T) {
 
 func TestResize_Resize_NilImager(t *testing.T) {
 	r := Resize{}
-	_, err := r.Resize(nil, domain.MediaSize{})
+	_, err := r.Resize(nil, 100, domain.MediaSize{})
 	if err == nil {
 		t.Fatal("expecting ErrNilImager, got nil")
 	}

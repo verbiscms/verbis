@@ -56,7 +56,7 @@ func (s *Storage) ListBuckets() (domain.Buckets, error) {
 	})
 
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Error obtaining buckets", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining buckets", Operation: op, Err: err}
 	}
 
 	return buckets, nil

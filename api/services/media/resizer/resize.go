@@ -17,13 +17,11 @@ import (
 // Resizer describes the method for resizing images for
 // the library.
 type Resizer interface {
-	Resize(imager image.Imager, media domain.MediaSize) (*bytes.Reader, error)
+	Resize(imager image.Imager, compression int, media domain.MediaSize) (*bytes.Reader, error)
 }
 
 // Resize defines the data needed for resizing images.
-type Resize struct {
-	Compression int
-}
+type Resize struct{}
 
 var (
 	// ErrNilImager is returned by Resize when a nil Imager
@@ -33,26 +31,26 @@ var (
 
 // Resize satisfies the Resizer by decoding, cropping and
 // resizing and finally saving the resized image.
-func (r *Resize) Resize(imager image.Imager, media domain.MediaSize) (*bytes.Reader, error) {
+func (r *Resize) Resize(imager image.Imager, compression int, media domain.MediaSize) (*bytes.Reader, error) {
 	const op = "Resizer.Resize"
 
 	if imager == nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error resizing, nil Image", Operation: op, Err: ErrNilImager}
 	}
 
-	i, err := imager.Decode()
+	img, err := imager.Decode()
 	if err != nil {
 		return nil, err
 	}
 
 	var resized *stdimage.NRGBA
 	if media.Crop {
-		resized = imaging.Fill(i, media.Width, media.Height, imaging.Center, imaging.Lanczos)
+		resized = imaging.Fill(img, media.Width, media.Height, imaging.Center, imaging.Lanczos)
 	} else {
-		resized = imaging.Resize(i, media.Width, media.Height, imaging.Lanczos)
+		resized = imaging.Resize(img, media.Width, media.Height, imaging.Lanczos)
 	}
 
-	enc, err := imager.Encode(resized, r.Compression)
+	enc, err := imager.Encode(resized, compression)
 	if err != nil {
 		return nil, err
 	}
