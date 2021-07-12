@@ -112,7 +112,11 @@ func New(cfg Config) *Deps {
 		opts = cfg.Store.Options.Struct()
 	}
 
-	st, err := storage.New(cfg.Env, cfg.Store.Options, cfg.Store.Files)
+	st, err := storage.New(storage.Config{
+		Environment: cfg.Env,
+		Options:     cfg.Store.Options,
+		Files:       cfg.Store.Files,
+	})
 	if err != nil {
 		logger.Panic(err.Error())
 	}

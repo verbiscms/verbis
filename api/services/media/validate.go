@@ -16,13 +16,13 @@ import (
 
 // Validate
 //
-// Satisfies the Library to see if the media item passed
+// Satisfies the Library to see if the testMedia item passed
 // is valid.
 func (s *Service) Validate(file *multipart.FileHeader) error {
 	return validate(file, s.options, s.config)
 }
 
-// validator defines the helper for validating media items.
+// validator defines the helper for validating testMedia items.
 type validator struct {
 	Config  *domain.ThemeConfig
 	Options *domain.Options

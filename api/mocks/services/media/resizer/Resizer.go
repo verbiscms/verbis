@@ -6,7 +6,7 @@ import (
 	bytes "bytes"
 
 	domain "github.com/ainsleyclark/verbis/api/domain"
-	image "github.com/ainsleyclark/verbis/api/services/media/internal/image"
+	image "github.com/ainsleyclark/verbis/api/services/media/image"
 
 	mock "github.com/stretchr/testify/mock"
 )

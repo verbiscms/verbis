@@ -6,6 +6,7 @@ package domain
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
 	"io"
@@ -90,6 +91,9 @@ func (u *Upload) Validate() error {
 	if u.SourceType == "" {
 		return errors.New("no source type attached to upload")
 	}
+	if u.UUID.ID() == 0 {
+		return errors.New("no uuid attached to upload")
+	}
 	return nil
 }
 
@@ -97,6 +101,25 @@ func (u *Upload) Validate() error {
 // ready for uploading.
 func (u *Upload) AbsPath() string {
 	return strings.TrimPrefix(filepath.Join(filepath.Dir(u.Path), u.UUID.String()+filepath.Ext(u.Path)), ".")
+}
+
+// Mime returns the Mime type of the upload.
+// Returns errors.INTERNAL if there was an error seeking
+// bytes or the mime could not be obtained.
+func (u *Upload) Mime() (Mime, error) {
+	const op = "Domain.Upload.Mime"
+
+	_, err := u.Contents.Seek(0, 0)
+	if err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error seeking file", Operation: op, Err: err}
+	}
+
+	mime, err := mimetype.DetectReader(u.Contents)
+	if err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining mime type", Operation: op, Err: err}
+	}
+
+	return Mime(mime.String()), nil
 }
 
 // Mime is a string representation of a MIME type.

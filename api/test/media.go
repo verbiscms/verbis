@@ -6,12 +6,10 @@ package test
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/stretchr/testify/suite"
 	"image"
 	"image/color"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -21,8 +19,6 @@ import (
 // library testing.
 type MediaSuite struct {
 	suite.Suite
-	ApiPath   string
-	MediaPath string
 }
 
 // MediaTestPath is the default media test path.
@@ -30,15 +26,6 @@ const MediaTestPath = "/test/testdata/media"
 
 func NewMediaSuite() MediaSuite {
 	return MediaSuite{}
-}
-
-// SetupSuite reassigns API path for testing.
-func (t *MediaSuite) SetupSuite() {
-	logger.SetOutput(ioutil.Discard)
-	wd, err := os.Getwd()
-	t.NoError(err)
-	t.ApiPath = filepath.Join(filepath.Dir(wd), "../")
-	t.MediaPath = t.ApiPath + MediaTestPath
 }
 
 // DummyFile creates a dummy file for testing with the
@@ -56,8 +43,9 @@ func (t *MediaSuite) DummyFile(path string) func() {
 	}
 }
 
-// File converts a file path into a *multipart.FileHeader.
-func (t *MediaSuite) File(path string) *multipart.FileHeader {
+// FileToMultiPart converts a file path into a
+// *multipart.FileHeader.
+func (t *MediaSuite) FileToMultiPart(path string) *multipart.FileHeader {
 	file, err := os.Open(path)
 	t.NoError(err)
 	defer file.Close()
@@ -82,7 +70,7 @@ func (t *MediaSuite) File(path string) *multipart.FileHeader {
 }
 
 // File converts a file path into a *multipart.FileHeader.
-func ToMultiPart(path string) (*multipart.FileHeader, error) {
+func (t *MediaSuite) ToMultiPart(path string) (*multipart.FileHeader, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err

@@ -5,6 +5,8 @@
 package domain
 
 import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"strings"
@@ -74,7 +76,7 @@ func TestUpload_Validate(t *testing.T) {
 		want  interface{}
 	}{
 		"Success": {
-			Upload{Path: "path", Size: 1, Contents: strings.NewReader("test"), SourceType: MediaSourceType},
+			Upload{UUID: uuid.New(), Path: "path", Size: 1, Contents: strings.NewReader("test"), SourceType: MediaSourceType},
 			nil,
 		},
 		"No Path": {
@@ -92,6 +94,10 @@ func TestUpload_Validate(t *testing.T) {
 		"No Source Type": {
 			Upload{Path: "path", Size: 1, Contents: strings.NewReader("test")},
 			"no source type attached to upload",
+		},
+		"No UUID": {
+			Upload{Path: "path", Size: 1, Contents: strings.NewReader("test"), SourceType: MediaSourceType},
+			"no uuid attached to upload",
 		},
 	}
 
@@ -127,6 +133,57 @@ func TestUpload_AbsPath(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			got := test.input.AbsPath()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+type mockIOSeekerError struct{}
+
+func (m mockIOSeekerError) Read(p []byte) (n int, err error) {
+	return 0, nil
+}
+
+func (m mockIOSeekerError) Seek(offset int64, whence int) (int64, error) {
+	return 0, fmt.Errorf("error")
+}
+
+type mockIOReaderError struct{}
+
+func (m mockIOReaderError) Read(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("error")
+}
+
+func (m mockIOReaderError) Seek(offset int64, whence int) (int64, error) {
+	return 0, nil
+}
+
+func TestUpload_Mime(t *testing.T) {
+	tt := map[string]struct {
+		input Upload
+		want  interface{}
+	}{
+		"Success": {
+			Upload{Contents: strings.NewReader("test")},
+			Mime("text/plain; charset=utf-8"),
+		},
+		"Seek Error": {
+			Upload{Contents: &mockIOSeekerError{}},
+			"Error seeking file",
+		},
+		"Read Error": {
+			Upload{Contents: &mockIOReaderError{}},
+			"Error obtaining mime type",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got, err := test.input.Mime()
+			if err != nil {
+				assert.Contains(t, errors.Message(err), test.want)
+				return
+			}
 			assert.Equal(t, test.want, got)
 		})
 	}

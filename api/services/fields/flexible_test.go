@@ -65,7 +65,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 
 			got := s.GetFlexible(test.input)
 			if test.err {
-				t.Contains(t.logWriter.String(), test.want)
+				t.Contains(t.LogWriter.String(), test.want)
 				t.Reset()
 				return
 			}
