@@ -142,7 +142,7 @@ func New(cfg Config) (*Storage, error) {
 	}
 
 	var (
-		service = internal.NewService(cfg.Environment)
+		service = internal.NewService(cfg.Environment, paths.Get().Storage)
 		opts    = cfg.Options.Struct()
 	)
 

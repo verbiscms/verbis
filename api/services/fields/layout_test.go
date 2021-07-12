@@ -52,7 +52,7 @@ func (t *FieldTestSuite) TestService_GetLayout() {
 
 			got := s.GetLayout(test.name, test.args...)
 			if test.err {
-				t.Contains(t.logWriter.String(), test.want)
+				t.Contains(t.LogWriter.String(), test.want)
 				t.Reset()
 				return
 			}

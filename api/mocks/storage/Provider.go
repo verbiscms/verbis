@@ -121,20 +121,6 @@ func (_m *Provider) ListBuckets() (domain.Buckets, error) {
 	return r0, r1
 }
 
-// Name provides a mock function with given fields:
-func (_m *Provider) Name() string {
-	ret := _m.Called()
-
-	var r0 string
-	if rf, ok := ret.Get(0).(func() string); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Get(0).(string)
-	}
-
-	return r0
-}
-
 // SetBucket provides a mock function with given fields: id
 func (_m *Provider) SetBucket(id string) error {
 	ret := _m.Called(id)

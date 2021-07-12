@@ -23,7 +23,7 @@ import (
 // testing.
 type FieldTestSuite struct {
 	suite.Suite
-	logWriter bytes.Buffer
+	LogWriter bytes.Buffer
 }
 
 // TestFields
@@ -41,15 +41,15 @@ type noStringer struct{}
 // Assign the logger to a buffer.
 func (t *FieldTestSuite) BeforeTest(suiteName, testName string) {
 	b := bytes.Buffer{}
-	t.logWriter = b
-	logger.SetOutput(&t.logWriter)
+	t.LogWriter = b
+	logger.SetOutput(&t.LogWriter)
 }
 
 // Reset
 //
 // Reset the log writer.
 func (t *FieldTestSuite) Reset() {
-	t.logWriter.Reset()
+	t.LogWriter.Reset()
 }
 
 // GetMockService

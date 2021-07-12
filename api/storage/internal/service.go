@@ -4,7 +4,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/graymeta/stow"
 	_ "github.com/graymeta/stow/azure"
 	"github.com/graymeta/stow/google"
@@ -21,16 +20,16 @@ type StorageServices interface {
 }
 
 type Service struct {
-	Env     *environment.Env
-	paths   paths.Paths
-	gcpJson *string
+	Env         *environment.Env
+	storagePath string
+	gcpJson     *string
 }
 
-func NewService(env *environment.Env) *Service {
+func NewService(env *environment.Env, storagePath string) *Service {
 	return &Service{
-		Env:     env,
-		paths:   paths.Get(),
-		gcpJson: nil,
+		Env:         env,
+		storagePath: storagePath,
+		gcpJson:     nil,
 	}
 }
 
@@ -45,7 +44,7 @@ func (s *Service) Provider(provider domain.StorageProvider) (stow.Location, erro
 	switch provider {
 	case domain.StorageLocal:
 		cont, err = stow.Dial(local.Kind, stow.ConfigMap{
-			local.ConfigKeyPath: s.paths.Storage,
+			local.ConfigKeyPath: s.storagePath,
 		})
 	case domain.StorageAWS:
 		cont, err = stow.Dial(s3.Kind, stow.ConfigMap{

@@ -81,7 +81,7 @@ func (t *StorageTestSuite) TestBucket_Find() {
 				s.On("Bucket", domain.File{}).Return(c, nil)
 
 				item := &mocks.StowItem{}
-				item.On("Open").Return(&MockIOReaderError{}, nil)
+				item.On("Open").Return(&mockIOReaderError{}, nil)
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
 			"Error reading file",
@@ -159,25 +159,11 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 			true,
 			"Error uploading file to storage provider",
 		},
-		"Seek Error": {
-			domain.Upload{
-				Path:       "/uploads/2020/01/test.txt",
-				Size:       100,
-				Contents:   &MockIOSeekerError{},
-				Private:    false,
-				SourceType: domain.MediaSourceType,
-			},
-			func(s *mocks.Service, c *mocks.StowContainer, r *repo.Repository) {
-				c.On("Put", mock.Anything, mock.Anything, u.Size, mock.Anything).Return(&mocks.StowItem{}, nil)
-			},
-			true,
-			"Error seeking bytes",
-		},
 		"Mime Error": {
 			domain.Upload{
 				Path:       "/uploads/2020/01/test.txt",
 				Size:       100,
-				Contents:   &MockIOReaderSeekerError{},
+				Contents:   &mockIOReaderError{},
 				Private:    false,
 				SourceType: domain.MediaSourceType,
 			},

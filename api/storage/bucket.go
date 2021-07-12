@@ -8,7 +8,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	vstrings "github.com/ainsleyclark/verbis/api/helpers/strings"
-	"github.com/gabriel-vasile/mimetype"
 	"io/ioutil"
 	"path"
 	"strings"
@@ -66,12 +65,7 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage provider", Operation: op, Err: err}
 	}
 
-	_, err = u.Contents.Seek(0, 0)
-	if err != nil {
-		return domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking bytes", Operation: op, Err: err}
-	}
-
-	m, err := mimetype.DetectReader(u.Contents)
+	mime, err := u.Mime()
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining mime type", Operation: op, Err: err}
 	}
@@ -96,7 +90,7 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		Url:        "/" + vstrings.TrimSlashes(u.Path),
 		Name:       path.Base(u.Path),
 		BucketId:   id,
-		Mime:       domain.Mime(m.String()),
+		Mime:       mime,
 		SourceType: u.SourceType,
 		Provider:   s.ProviderName,
 		Region:     region,

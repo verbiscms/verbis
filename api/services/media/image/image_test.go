@@ -21,7 +21,8 @@ func Setup(path string) (*multipart.FileHeader, error) {
 	if err != nil {
 		return nil, err
 	}
-	part, err := test.ToMultiPart(filepath.Join(base, "testdata", path))
+	m := test.MediaSuite{}
+	part, err := m.ToMultiPart(filepath.Join(filepath.Dir(base), "testdata", path))
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +85,6 @@ func UtilTestDecode(fn func(file multipart.File) Imager, path string, t *testing
 
 			imager := fn(file)
 			enc, err := imager.Decode()
-			fmt.Println(err)
 			if err != nil {
 				assert.Contains(t, errors.Message(err), test.want)
 				return

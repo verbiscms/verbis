@@ -11,7 +11,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/helpers/files"
 	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/services/media/internal/image"
+	image2 "github.com/ainsleyclark/verbis/api/services/media/image"
+	"github.com/google/uuid"
 	"mime/multipart"
 	"path/filepath"
 	"regexp"
@@ -22,7 +23,7 @@ import (
 
 // Upload
 //
-// Satisfies the Library to upload a media item to the
+// Satisfies the Library to upload a testMedia item to the
 // library.
 // Returns errors.INTERNAL on any eventuality the file could not be opened.
 // Returns errors.INVALID if the mimetype could not be found.
@@ -31,7 +32,7 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 
 	out, err := file.Open()
 	if err != nil {
-		return domain.Media{}, err
+		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Error opening file", Operation: op, Err: err}
 	}
 
 	defer func() {
@@ -52,6 +53,7 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 	)
 
 	upload, err := s.storage.Upload(domain.Upload{
+		UUID:       uuid.New(),
 		Path:       path,
 		Size:       file.Size,
 		Contents:   out,
@@ -79,13 +81,13 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		return domain.Media{}, err
 	}
 
-	//go s.toWebP(media)
+	go s.toWebP(media)
 
 	return media, nil
 }
 
-// Dir returns the directory of where the media file should
-// be uploaded. If the options allow for organising media
+// Dir returns the directory of where the testMedia file should
+// be uploaded. If the options allow for organising testMedia
 // by date, a date path will be created if it does
 // not exist, for example '2020/01', otherwise
 // it returns an empty string.
@@ -135,10 +137,10 @@ func (s *Service) cleanFileName(name, ext string) string {
 	return cleanedFile
 }
 
-// Resize ranges over the media sizes stored in the
+// Resize ranges over the testMedia sizes stored in the
 // options and decodes, resizes and saves the
-// media size.
-// Returns nil, (with no error) if the media item can not be resized.
+// testMedia size.
+// Returns nil, (with no error) if the testMedia item can not be resized.
 func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes, error) {
 	if !file.Mime.CanResize() {
 		return nil, nil
@@ -151,7 +153,7 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 
 	for key, size := range s.options.MediaSizes {
 		var (
-			// E.g. gopher-100x100
+			// E.g. gopher
 			extRemoved = files.RemoveFileExtension(file.Name)
 			// E.g. gopher-100x100.png
 			urlName = extRemoved + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + ext
@@ -163,15 +165,17 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 			err error
 		)
 
+		logger.Debug("Attempting to resize image: " + path)
+
 		// Resize and save if the file is a JPG.
 		if file.Mime.IsJPG() {
-			j := image.JPG{File: mp}
+			j := image2.JPG{File: mp}
 			buf, err = s.resizer.Resize(&j, size)
 		}
 
 		// Resize and save if the file is a PNG.
 		if file.Mime.IsPNG() {
-			p := image.PNG{File: mp}
+			p := image2.PNG{File: mp}
 			buf, err = s.resizer.Resize(&p, size)
 		}
 
@@ -180,6 +184,7 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 		}
 
 		upload, err := s.storage.Upload(domain.Upload{
+			UUID:       uuid.New(),
 			Path:       path,
 			Size:       int64(buf.Len()),
 			Contents:   buf,
@@ -201,63 +206,70 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 			File:     upload,
 		}
 
-		logger.Debug("Saved resized image with the name: " + urlName)
+		logger.Info("Saved resized image with the path: " + path)
+	}
+
+	if len(savedSizes) == 0 {
+		savedSizes = nil
 	}
 
 	return savedSizes, nil
 }
 
-// toWebP Checks to see if the media is a PNG or JPG and
-// then ranges over the possible files of the media item
+// toWebP Checks to see if the testMedia is a PNG or JPG and
+// then ranges over the possible files of the testMedia item
 // and converts the images to webp. If the file
 // exists, and an error occurred, it will be
 // logged.
-//func (s *Service) toWebP(media domain.Media) {
-//	if !s.options.MediaConvertWebP {
-//		return
-//	}
-//
-//	if !media.File.Mime.CanResize() {
-//		return
-//	}
-//
-//	s.test(media.File)
-//
-//	for _, v := range media.Sizes {
-//		s.test(v.File)
-//	}
-//}
-//
-//func (s *Service) test(file domain.File) {
-//	path := filepath.Join(file.Path, file.Name) + domain.WebPExtension
-//
-//	logger.Debug("Attempting to convert image to WebP")
-//
-//	b, file, err := s.storage.FindByURL(file.Url)
-//	if err != nil {
-//		logger.WithError(err).Error()
-//		return
-//	}
-//
-//	read := bytes.NewReader(b)
-//	convert, err := s.webp.Convert(read, s.options.MediaCompression)
-//	if err != nil {
-//		logger.WithError(err).Error()
-//		return
-//	}
-//
-//	_, err = s.storage.Upload(domain.Upload{
-//		Path:       path,
-//		Size:       convert.Size(),
-//		Contents:   convert,
-//		Private:    false,
-//		SourceType: domain.MediaSourceType,
-//	})
-//
-//	if err != nil {
-//		logger.WithError(err).Error()
-//		return
-//	}
-//
-//	logger.Debug("Successfully converted to WebP image with the path: " + path)
-//}
+func (s *Service) toWebP(media domain.Media) {
+	if !s.options.MediaConvertWebP {
+		return
+	}
+
+	if !media.File.Mime.CanResize() {
+		return
+	}
+
+	s.fileToWebP(media.File)
+
+	for _, v := range media.Sizes {
+		s.fileToWebP(v.File)
+	}
+}
+
+// fileToWebP converts a domain.File to a WebP image.
+// Logs errors if the item failed to convert.
+func (s *Service) fileToWebP(file domain.File) {
+	path := file.Url + domain.WebPExtension
+
+	logger.Debug("Attempting to convert image to WebP: " + path)
+
+	b, file, err := s.storage.Find(file.Url)
+	if err != nil {
+		logger.WithError(err).Error()
+		return
+	}
+
+	read := bytes.NewReader(b)
+	convert, err := s.webp.Convert(read, s.options.MediaCompression)
+	if err != nil {
+		logger.WithError(err).Error()
+		return
+	}
+
+	_, err = s.storage.Upload(domain.Upload{
+		UUID:       uuid.New(),
+		Path:       path,
+		Size:       convert.Size(),
+		Contents:   convert,
+		Private:    false,
+		SourceType: domain.MediaSourceType,
+	})
+
+	if err != nil {
+		logger.WithError(err).Error()
+		return
+	}
+
+	logger.Info("Successfully converted to WebP image with the path: " + path)
+}
