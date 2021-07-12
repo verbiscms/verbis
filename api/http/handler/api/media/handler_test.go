@@ -49,7 +49,7 @@ func (t *MediaTestSuite) Setup(mf func(s *service.Library)) *Media {
 	}
 	media := New(&deps.Deps{
 		Options: &domain.Options{},
-		Storage: &storage.Bucket{},
+		Storage: &storage.Provider{},
 		Store:   &store.Repository{},
 	})
 	media.service = ms

@@ -170,13 +170,13 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 		// Resize and save if the file is a JPG.
 		if file.Mime.IsJPG() {
 			j := image2.JPG{File: mp}
-			buf, err = s.resizer.Resize(&j, size)
+			buf, err = s.resizer.Resize(&j, s.options.MediaCompression, size)
 		}
 
 		// Resize and save if the file is a PNG.
 		if file.Mime.IsPNG() {
 			p := image2.PNG{File: mp}
-			buf, err = s.resizer.Resize(&p, size)
+			buf, err = s.resizer.Resize(&p, s.options.MediaCompression, size)
 		}
 
 		if err != nil {

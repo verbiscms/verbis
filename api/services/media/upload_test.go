@@ -5,6 +5,7 @@
 package media
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
@@ -79,6 +80,16 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			},
 			"Error opening file",
 		},
+		"jjjj": {
+			filepath.Join(t.TestDataPath, "/gopher.svg"),
+			&domain.Options{},
+			func(r *repo.Repository, s *storage.Bucket) {
+				s.On("Exists", "gopher.svg").Return(false)
+				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(SVGFile, nil)
+				r.On("Create", domain.Media{UserId: 1, File: SVGFile, FileId: 1}).Return(domain.Media{UserId: 1, File: SVGFile}, nil)
+			},
+			domain.Media{UserId: 1, File: SVGFile},
+		},
 		//"PNG Sizes": {
 		//	filepath.Join(t.TestDataPath, "/gopher.png"),
 		//	&domain.Options{
@@ -102,7 +113,11 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 		t.Run(name, func() {
 			var mt = &multipart.FileHeader{}
 			if test.input != "" {
-				mt = t.FileToMultiPart(test.input)
+				multi, err := t.ToMultiPart(test.input)
+				if err != nil {
+					fmt.Println(err)
+				}
+				mt = multi
 			}
 
 			c := t.Setup(&domain.ThemeConfig{}, test.opts, test.mock)
