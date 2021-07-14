@@ -36,10 +36,5 @@ func (s *Store) GetTheme() (string, error) {
 //
 // Returns nil if the theme has been updated successfully.
 func (s *Store) SetTheme(theme string) error {
-	err := s.Update("active_theme", theme)
-	if err != nil {
-		return err
-	}
-	s.Struct()
-	return nil
+	return s.Update("active_theme", theme)
 }
