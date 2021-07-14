@@ -97,12 +97,14 @@ func UtilTestDecode(fn func(file multipart.File) Imager, path string, t *testing
 }
 
 func UtilTestEncode(img Imager, t *testing.T) {
+	suite := test.MediaSuite{}
+
 	tt := map[string]struct {
 		input image.Image
 		error bool
 	}{
 		"Success": {
-			test.Image(),
+			suite.Image(),
 			false,
 		},
 		"Error": {
