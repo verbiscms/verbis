@@ -5,9 +5,9 @@
 package media
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/ainsleyclark/verbis/api/store/media/sizes"

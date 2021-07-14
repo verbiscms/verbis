@@ -5,9 +5,9 @@
 package config
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 )
 

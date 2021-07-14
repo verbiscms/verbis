@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
+	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
 	validator "github.com/go-playground/validator/v10"
 	mock "github.com/stretchr/testify/mock"
 )

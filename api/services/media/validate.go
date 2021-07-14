@@ -5,9 +5,9 @@
 package media
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/mime"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gabriel-vasile/mimetype"
 	"image"

@@ -6,7 +6,7 @@ package verbisfs
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"reflect"

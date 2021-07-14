@@ -6,7 +6,7 @@ import (
 	domain "github.com/ainsleyclark/verbis/api/domain"
 	mock "github.com/stretchr/testify/mock"
 
-	params "github.com/ainsleyclark/verbis/api/helpers/params"
+	params "github.com/ainsleyclark/verbis/api/common/params"
 
 	posts "github.com/ainsleyclark/verbis/api/store/posts"
 )

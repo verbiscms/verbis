@@ -5,10 +5,10 @@
 package media
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/services/media/resizer"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/storage"

@@ -6,9 +6,9 @@ package tplimpl
 
 import (
 	"bytes"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/services/site"
 	"github.com/gin-contrib/location"

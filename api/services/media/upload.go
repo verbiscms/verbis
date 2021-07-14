@@ -6,12 +6,12 @@ package media
 
 import (
 	"bytes"
+	"github.com/ainsleyclark/verbis/api/common/files"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/files"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
-	image2 "github.com/ainsleyclark/verbis/api/services/media/image"
+	"github.com/ainsleyclark/verbis/api/services/media/image"
 	"github.com/google/uuid"
 	"mime/multipart"
 	"path/filepath"
@@ -48,7 +48,9 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 	}
 
 	var (
-		ext  = filepath.Ext(file.Filename)
+		// E.g. .jpg or .png
+		ext = filepath.Ext(file.Filename)
+		// E.g. uploads/2020/01/gopher.png
 		path = filepath.Join(s.dir(), s.cleanFileName(file.Filename, ext)+ext)
 	)
 
@@ -109,12 +111,11 @@ func (s *Service) dir() string {
 // already exists, a version number will be added.
 func (s *Service) cleanFileName(name, ext string) string {
 	var (
-		bare = files.RemoveFileExtension(name)
+		bare          = files.RemoveFileExtension(name)
+		removedDashes = strings.ReplaceAll(bare, " ", "-")
+		reg           = regexp.MustCompile("[^A-Za-z0-9 -]+")
+		cleanedFile   = strings.ToLower(reg.ReplaceAllString(removedDashes, ""))
 	)
-
-	cleanedFile := strings.ReplaceAll(bare, " ", "-")
-	reg := regexp.MustCompile("[^A-Za-z0-9 -]+")
-	cleanedFile = strings.ToLower(reg.ReplaceAllString(cleanedFile, ""))
 
 	// Check if the file exists and add a version number, continue if not.
 	version := 0
@@ -169,13 +170,13 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 
 		// Resize and save if the file is a JPG.
 		if file.Mime.IsJPG() {
-			j := image2.JPG{File: mp}
+			j := image.JPG{File: mp}
 			buf, err = s.resizer.Resize(&j, s.options.MediaCompression, size)
 		}
 
 		// Resize and save if the file is a PNG.
 		if file.Mime.IsPNG() {
-			p := image2.PNG{File: mp}
+			p := image.PNG{File: mp}
 			buf, err = s.resizer.Resize(&p, s.options.MediaCompression, size)
 		}
 

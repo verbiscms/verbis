@@ -43,9 +43,9 @@ func (t *MediaSuite) DummyFile(path string) func() {
 	}
 }
 
-// ToMultiPart converts a file path into a
+// ToMultiPartE converts a file path into a
 // *multipart.FileHeader.
-func (t *MediaSuite) ToMultiPart(path string) (*multipart.FileHeader, error) {
+func (t *MediaSuite) ToMultiPartE(path string) (*multipart.FileHeader, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -81,39 +81,16 @@ func (t *MediaSuite) ToMultiPart(path string) (*multipart.FileHeader, error) {
 	return ft, nil
 }
 
-// Image returns a new image.Image for testing.
-func (t *MediaSuite) Image() image.Image {
-	var (
-		width  = 5
-		height = 5
-	)
-
-	upLeft := image.Point{}
-	lowRight := image.Point{X: width, Y: height}
-
-	img := image.NewRGBA(image.Rectangle{Min: upLeft, Max: lowRight})
-
-	// Colors are defined by Red, Green, Blue, Alpha uint8 values.
-	cyan := color.RGBA{R: 100, G: 200, B: 200, A: 0xff}
-
-	// Set color for each pixel.
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
-			switch {
-			case x < width/2 && y < height/2: // upper left quadrant
-				img.Set(x, y, cyan)
-			case x >= width/2 && y >= height/2: // lower right quadrant
-				img.Set(x, y, color.White)
-			default:
-			}
-		}
-	}
-
-	return img
+// ToMultiPart returns a multipart.FilHeader with
+// test checks.
+func (t *MediaSuite) ToMultiPart(path string) *multipart.FileHeader {
+	header, err := t.ToMultiPartE(path)
+	t.NoError(err)
+	return header
 }
 
 // Image returns a new image.Image for testing.
-func Image() image.Image {
+func (t *MediaSuite) Image() image.Image {
 	var (
 		width  = 5
 		height = 5

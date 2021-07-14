@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
-	webp "github.com/ainsleyclark/verbis/api/mocks/services/webp"
+	resizer "github.com/ainsleyclark/verbis/api/mocks/services/media/resizer"
 	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/ainsleyclark/verbis/api/test"
@@ -37,11 +37,9 @@ func TestMediaService(t *testing.T) {
 const (
 	// MediaId is the default ID use for testing.
 	MediaId = 1
-	// MediaSizeId is the default testMedia size ID used
-	// for testing.
-	MediaSizeId = 1
 )
 
+// BeforeTest setups the LogWriter
 func (t *MediaServiceTestSuite) BeforeTest(suiteName, testName string) {
 	b := &bytes.Buffer{}
 	t.LogWriter = b
@@ -74,6 +72,33 @@ const (
 )
 
 var (
+	SVGFile = domain.File{
+		Id:       1,
+		Url:      "/uploads/gopher.svg",
+		Name:     "gopher.svg",
+		BucketId: "/uploads/gopher.svg",
+		Mime:     "image/svg+xml",
+		Private:  false,
+	}
+	PNGFile = domain.File{
+		Id:       1,
+		Url:      "/uploads/gopher.png",
+		Name:     "gopher.png",
+		BucketId: "/uploads/gopher.png",
+		Mime:     "image/png",
+		Private:  false,
+	}
+	JPGFile = domain.File{
+		Id:       1,
+		Url:      "/uploads/gopher.jpg",
+		Name:     "gopher.jpg",
+		BucketId: "/uploads/gopher.jpg",
+		Mime:     "image/jpeg",
+		Private:  false,
+	}
+	opts = &domain.Options{
+		MediaSizes: domain.MediaSizes{"thumbnail": domain.MediaSize{SizeKey: "thumb", SizeName: "thumb", Width: 300, Height: 300, Crop: false}},
+	}
 	testMedia      = domain.Media{Id: MediaId, File: domain.File{Id: 1, Url: TestFileURL}}
 	testMediaSizes = domain.Media{
 		Id: MediaId,
@@ -91,7 +116,6 @@ var (
 // Setup is a helper to obtain a mock testMedia Service
 // for testing.
 func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Options, mock func(r *repo.Repository, s *storage.Bucket)) *Service {
-	m := &webp.Execer{}
 	r := &repo.Repository{}
 	s := &storage.Bucket{}
 
@@ -107,18 +131,9 @@ func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Opti
 		opts = &domain.Options{}
 	}
 
-	//testMedia.On("Convert", mock.Anything, mock.Anything).Once()
-	//testMedia.On("Convert", mock.Anything, mock.Anything).Once()
+	c := New(opts, s, r)
+	c.resizer = &resizer.Resizer{}
+	c.config = cfg
 
-	return &Service{
-		options: opts,
-		config:  cfg,
-		//paths: paths.Paths{
-		//	API:     t.ApiPath,
-		//	Uploads: t.ApiPath + fileToWebP.MediaTestPath,
-		//},
-		webp:    m,
-		repo:    r,
-		storage: s,
-	}
+	return c
 }

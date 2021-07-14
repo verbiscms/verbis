@@ -5,9 +5,9 @@
 package theme
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/mime"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"io/ioutil"
 	"os"
 	"path/filepath"

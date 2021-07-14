@@ -22,7 +22,7 @@ func Setup(path string) (*multipart.FileHeader, error) {
 		return nil, err
 	}
 	m := test.MediaSuite{}
-	part, err := m.ToMultiPart(filepath.Join(filepath.Dir(base), "testdata", path))
+	part, err := m.ToMultiPartE(filepath.Join(filepath.Dir(base), "testdata", path))
 	if err != nil {
 		return nil, err
 	}

@@ -6,8 +6,8 @@ package environment
 
 import (
 	"fmt"
+	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
 	"github.com/ainsleyclark/verbis/api/errors"
-	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
