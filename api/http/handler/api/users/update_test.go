@@ -35,7 +35,7 @@ func (t *UsersTestSuite) TestUser_Update() {
 			"/users/123",
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "role_id", Message: "Role ID is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "role_id", Message: "Role Id is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
 			userBadValidation,

@@ -40,6 +40,11 @@ test:
 	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
 .PHONY: test
 
+# Test with -v
+test-v:
+	go clean -testcache && go test -race -v $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
+.PHONY: test-v
+
 # Run all the tests and opens the coverage report
 cover: test
 	go tool cover -html=coverage.out

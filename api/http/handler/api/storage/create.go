@@ -4,29 +4,22 @@
 
 package storage
 
-import (
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	"github.com/gin-gonic/gin"
-	"net/http"
-)
-
 // CreateBucket
 //
 // Returns http.StatusBadRequest if the request was invalid.
 // Returns http.StatusOK if there are no buckets items or success.
 // Returns http.StatusInternalServerError if there was an error getting the buckets.
-func (s *Storage) CreateBucket(ctx *gin.Context) {
-	const op = "StorageHandler.CreateBucket"
-
-	err := s.Deps.Storage.CreateBucket(ctx.Param())
-	if err != nil && errors.Code(err) == errors.INVALID {
-		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
-		return
-	} else if err != nil {
-		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
-		return
-	}
-
-	api.Respond(ctx, http.StatusOK, "Successfully created buc buckets", buckets)
-}
+//func (s *Storage) CreateBucket(ctx *gin.Context) {
+//	const op = "StorageHandler.CreateBucket"
+//
+//	err := s.Deps.Storage.CreateBucket(ctx.Param())
+//	if err != nil && errors.Code(err) == errors.INVALID {
+//		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+//		return
+//	} else if err != nil {
+//		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+//		return
+//	}
+//
+//	api.Respond(ctx, http.StatusOK, "Successfully created buc buckets", buckets)
+//}
