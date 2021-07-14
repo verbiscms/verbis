@@ -19,43 +19,23 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 	tt := map[string]struct {
 		panics bool
 		want   interface{}
-		twice  bool
 		mock   func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
 			false,
-			&domain.Options{
+			domain.Options{
 				ActiveTheme: "verbis",
 			},
-			false,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name", "option_value"}).
 					AddRow("active_theme", raw)
-				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
-					WillReturnRows(rows)
-			},
-		},
-		"Twice": {
-			false,
-			&domain.Options{
-				ActiveTheme: "verbis",
-			},
-			true,
-			func(m sqlmock.Sqlmock) {
-				rows := sqlmock.NewRows([]string{"option_name", "option_value"}).
-					AddRow("active_theme", raw)
-				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
-					WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
 					WillReturnRows(rows)
 			},
 		},
 		"Internal": {
 			true,
-			&domain.Options{
-				ActiveTheme: "verbis",
-			},
-			false,
+			domain.Options{},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectQuery(regexp.QuoteMeta(MapQuery)).
 					WillReturnError(fmt.Errorf("error"))
@@ -64,7 +44,6 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 		"Marshal Error": {
 			true,
 			domain.Options{},
-			false,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"option_name", "option_value"}).
 					AddRow("active_theme", math.Inf(1))
@@ -87,12 +66,6 @@ func (t *OptionsTestSuite) TestStore_Struct() {
 			}
 
 			got := s.Struct()
-
-			if test.twice {
-				p := s.Struct()
-				t.Equal(&opts, &p)
-			}
-
 			t.RunT(test.want, got)
 		})
 	}
