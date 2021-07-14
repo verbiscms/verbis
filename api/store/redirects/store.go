@@ -5,9 +5,9 @@
 package redirects
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/store/config"
 )
 

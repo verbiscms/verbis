@@ -6,9 +6,9 @@ package theme
 
 import (
 	"errors"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"os"
 )
 

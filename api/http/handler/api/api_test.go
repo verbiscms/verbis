@@ -5,7 +5,7 @@
 package api
 
 import (
-	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"

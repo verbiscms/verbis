@@ -6,10 +6,10 @@ package database
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/common/params"
+	strings2 "github.com/ainsleyclark/verbis/api/common/strings"
 	"github.com/ainsleyclark/verbis/api/database/builder"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
-	strings2 "github.com/ainsleyclark/verbis/api/helpers/strings"
 	"regexp"
 	"strings"
 )

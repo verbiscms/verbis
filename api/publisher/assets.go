@@ -7,9 +7,9 @@ package publisher
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/common/mime"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"os"

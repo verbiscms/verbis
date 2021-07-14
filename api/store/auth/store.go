@@ -5,8 +5,8 @@
 package auth
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/encryption"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/users"
 )

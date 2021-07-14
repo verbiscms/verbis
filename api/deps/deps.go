@@ -6,9 +6,9 @@ package deps
 
 import (
 	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/services/site"
 	"github.com/ainsleyclark/verbis/api/services/theme"

@@ -104,7 +104,7 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 
 			var mt = &multipart.FileHeader{}
 			if test.input != "" {
-				multi, err := t.ToMultiPart(test.input)
+				multi, err := t.ToMultiPartE(test.input)
 				if err != nil {
 					fmt.Println(err)
 				}

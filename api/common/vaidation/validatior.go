@@ -6,8 +6,8 @@ package validation
 
 import (
 	"fmt"
+	strings2 "github.com/ainsleyclark/verbis/api/common/strings"
 	"github.com/ainsleyclark/verbis/api/domain"
-	strings2 "github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/gin-gonic/gin/binding"
 	pkgValidate "github.com/go-playground/validator/v10"
 	"golang.org/x/crypto/bcrypt"

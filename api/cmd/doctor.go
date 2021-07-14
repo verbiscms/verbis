@@ -7,10 +7,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/sys"

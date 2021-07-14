@@ -5,7 +5,7 @@
 package rand
 
 import (
-	"github.com/ainsleyclark/verbis/api/helpers/strings"
+	"github.com/ainsleyclark/verbis/api/common/strings"
 	"github.com/spf13/cast"
 	"math/rand"
 	"time"

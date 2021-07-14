@@ -6,8 +6,8 @@ package publisher
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/common/strings"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/gin-gonic/gin"
 	"path/filepath"
 	"strconv"

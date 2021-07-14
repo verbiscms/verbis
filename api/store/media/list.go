@@ -6,10 +6,10 @@ package media
 
 import (
 	"database/sql"
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 )
 
 // List

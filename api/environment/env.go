@@ -5,8 +5,8 @@
 package environment
 
 import (
+	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
 	"github.com/ainsleyclark/verbis/api/errors"
-	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	pkgValidate "github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"

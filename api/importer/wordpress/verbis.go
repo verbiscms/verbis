@@ -6,9 +6,9 @@ package wordpress
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/common/encryption"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"github.com/ainsleyclark/verbis/api/importer"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/gookit/color"

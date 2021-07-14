@@ -16,13 +16,13 @@ type Resizer struct {
 	mock.Mock
 }
 
-// Resize provides a mock function with given fields: imager, media
-func (_m *Resizer) Resize(imager image.Imager, media domain.MediaSize) (*bytes.Reader, error) {
-	ret := _m.Called(imager, media)
+// Resize provides a mock function with given fields: imager, compression, media
+func (_m *Resizer) Resize(imager image.Imager, compression int, media domain.MediaSize) (*bytes.Reader, error) {
+	ret := _m.Called(imager, compression, media)
 
 	var r0 *bytes.Reader
-	if rf, ok := ret.Get(0).(func(image.Imager, domain.MediaSize) *bytes.Reader); ok {
-		r0 = rf(imager, media)
+	if rf, ok := ret.Get(0).(func(image.Imager, int, domain.MediaSize) *bytes.Reader); ok {
+		r0 = rf(imager, compression, media)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*bytes.Reader)
@@ -30,8 +30,8 @@ func (_m *Resizer) Resize(imager image.Imager, media domain.MediaSize) (*bytes.R
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(image.Imager, domain.MediaSize) error); ok {
-		r1 = rf(imager, media)
+	if rf, ok := ret.Get(1).(func(image.Imager, int, domain.MediaSize) error); ok {
+		r1 = rf(imager, compression, media)
 	} else {
 		r1 = ret.Error(1)
 	}

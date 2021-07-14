@@ -6,8 +6,8 @@ package verbisfs
 
 import (
 	"github.com/ainsleyclark/verbis/admin"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/www"
 	"io/fs"
 	"path/filepath"
