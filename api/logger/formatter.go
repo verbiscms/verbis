@@ -50,6 +50,7 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	str = strings.TrimSuffix(str, "|")
 	str = strings.TrimSuffix(str, "|")
 	str = strings.TrimSuffix(str, " ")
+	str = strings.ReplaceAll(str, "||", "")
 	str += "\n"
 
 	return []byte(str), nil
