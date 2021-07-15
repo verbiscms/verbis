@@ -90,6 +90,11 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator.PUT("/users/:id", h.Users.Update)
 		operator.POST("/users/:id/reset-password", h.Users.ResetPassword)
 
+		// Storage
+		operator.GET("/storage/config", h.Storage.Config)
+		operator.DELETE("/storage/bucket", h.Storage.DeleteBucket)
+		operator.GET("/storage/bucket", h.Storage.ListBuckets)
+
 		// Fields
 		operator.GET("/fields", h.Fields.List)
 

@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,9 @@ import (
 func (s *Storage) ListBuckets(ctx *gin.Context) {
 	const op = "StorageHandler.ListBuckets"
 
-	buckets, err := s.Deps.Storage.ListBuckets()
+	provider := domain.StorageProvider(ctx.Param("provider"))
+
+	buckets, err := s.Deps.Storage.ListBuckets(provider)
 	if err != nil && errors.Code(err) == errors.INVALID {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return

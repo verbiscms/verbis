@@ -60,7 +60,8 @@ func New(db database.Driver, running bool) (*Repository, *domain.ThemeConfig, er
 	if running {
 		optsStore := options.New(cfg)
 
-		cfg.Options = optsStore.Struct()
+		opts := optsStore.Struct()
+		cfg.Options = &opts
 
 		activeTheme, err := optsStore.GetTheme()
 		if err != nil {

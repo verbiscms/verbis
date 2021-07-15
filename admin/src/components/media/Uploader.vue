@@ -122,7 +122,7 @@
 							</template>
 							<template v-slot:body>
 								<div class="card-body" >
-									<div class="media-size" v-for="size in sortSizes(selectedMedia.sizes)" :key="size.uuid">
+									<div class="media-size" v-for="size in sortSizes(selectedMedia.sizes)" :key="size.id">
 										<div class="media-size-header">
 											<h4>{{ size['size_name'] }}</h4>
 											<div class="badge badge-green">{{ formatBytes(size['file_size']) }}</div>
@@ -170,8 +170,8 @@
 						<p>Drag and drop files here or click the button above.</p>
 					</div>
 					<!-- Media -->
-					<div v-else class="media-item" v-for="(item, itemIndex) in media" :key="item.uuid" @click.prevent.stop="handleMediaClick(item)"
-						:class="{ 'media-item-active' : selectedMedia && selectedMedia['uuid'] === item['uuid'],
+					<div v-else class="media-item" v-for="(item, itemIndex) in media" :key="item.id" @click.prevent.stop="handleMediaClick(item)"
+						:class="{ 'media-item-active' : selectedMedia && selectedMedia['id'] === item['id'],
 						'media-item-plain' : item.loading,
 						'media-item-bulk' : checked.includes(item.id),
 						'media-item-icon' : getMediaType(item.mime) !== 'image' && getMediaType(item.mime) !== 'video' || (item['unsupported']),
@@ -179,13 +179,13 @@
 						'media-item-no-options' : !options }">
 						<!-- Checkbox -->
 						<div class="form-checkbox media-item-checkbox">
-							<input type="checkbox" checked :id="'media-item-' + item.uuid"/>
-							<label :for="'media-item-' + item.uuid">
+							<input type="checkbox" checked :id="'media-item-' + item.id"/>
+							<label :for="'media-item-' + item.id">
 								<i class="fal fa-check"></i>
 							</label>
 						</div>
 						<!-- Uploading -->
-						<div v-if="item.loading && !item['unsupported']" :key="item.uuid + '-loading'" class="media-item-trans">
+						<div v-if="item.loading && !item['unsupported']" :key="item.id + '-loading'" class="media-item-trans">
 							<div class="spinner spinner-grey spinner-large"></div>
 							<h4>{{ item.name }}</h4>
 						</div>

@@ -5,6 +5,7 @@
 package media
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
@@ -20,6 +21,20 @@ import (
 // save, validate and delete from the
 // local file system.
 type Library interface {
+	// List returns a slice of media items with the total amount.
+	// Returns errors.INTERNAL if the SQL query was invalid.
+	// Returns errors.NOTFOUND if there are no media items available.
+	List(meta params.Params) (domain.MediaItems, int, error)
+	// Find returns a media item by searching with the given ID.
+	// Returns errors.INTERNAL if there was an error executing the query.
+	// Returns errors.NOTFOUND if the media item was not found by the given ID.
+	Find(id int) (domain.Media, error)
+	// Update returns an updated media item by updating title, alt,
+	// description and updated_at fields.
+	// Returns errors.CONFLICT if the validation failed.
+	// Returns errors.INTERNAL if the SQL query was invalid or the function
+	// could not obtain the newly created ID.
+	Update(m domain.Media) (domain.Media, error)
 	// Upload uploads a testMedia item to the library. Media items
 	// will be opened and saved to the local file system or
 	// bucket dependant on storage. Images are resized and
@@ -78,4 +93,21 @@ func New(opts *domain.Options, storage storage.Bucket, repo media.Repository) *S
 		repo:    repo,
 		resizer: &resizer.Resize{},
 	}
+}
+
+// List satisfies the Library to list a collection of media
+// items.
+func (s *Service) List(meta params.Params) (domain.MediaItems, int, error) {
+	return s.repo.List(meta)
+}
+
+// Find satisfies the Library to find a media item by
+// searching by ID.
+func (s *Service) Find(id int) (domain.Media, error) {
+	return s.repo.Find(id)
+}
+
+// Update satisfies the Library to update a media item.
+func (s *Service) Update(m domain.Media) (domain.Media, error) {
+	return s.repo.Update(m)
 }

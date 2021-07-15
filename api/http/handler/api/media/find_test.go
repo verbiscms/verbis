@@ -18,11 +18,11 @@ func (t *MediaTestSuite) TestMedia_Find() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(u *mocks.Library)
+		mock    func(m *mocks.Library)
 		url     string
 	}{
 		"Success": {
-			mediaItem,
+			mediaItem.Public(),
 			http.StatusOK,
 			"Successfully obtained media item with ID: 123",
 			func(m *mocks.Library) {

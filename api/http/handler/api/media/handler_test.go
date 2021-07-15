@@ -8,9 +8,8 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	service "github.com/ainsleyclark/verbis/api/mocks/services/media"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
 	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
@@ -42,8 +41,8 @@ func TestMedia(t *testing.T) {
 //
 // A helper to obtain a mock media handler
 // for testing.
-func (t *MediaTestSuite) Setup(mf func(s *service.Library)) *Media {
-	ms := &service.Library{}
+func (t *MediaTestSuite) Setup(mf func(m *mocks.Library)) *Media {
+	ms := &mocks.Library{}
 	if mf != nil {
 		mf(ms)
 	}
@@ -60,19 +59,17 @@ func (t *MediaTestSuite) Setup(mf func(s *service.Library)) *Media {
 //
 // A helper to obtain a mock media handler
 // and uploads for testing.
-func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(s *service.Library, u *users.Repository, mfh []multipart.FileHeader)) *Media {
-	m := &mocks.Repository{}
-	ms := &service.Library{}
+func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(s *mocks.Library, u *users.Repository, mfh []multipart.FileHeader)) *Media {
+	m := &mocks.Library{}
 	mu := &users.Repository{}
 	if mf != nil {
-		mf(ms, mu, files)
+		mf(m, mu, files)
 	}
 	return &Media{
-		service: ms,
+		service: m,
 		Deps: &deps.Deps{
 			Store: &store.Repository{
-				Media: m,
-				User:  mu,
+				User: mu,
 			},
 		},
 	}
@@ -93,26 +90,19 @@ var (
 	mediaItem = domain.Media{
 		Id: 123,
 	}
-	// The default media item used for testing.
-	mediaItemPublic = domain.MediaPublic{
-		Id: 123,
+	// The default media item with wrong validation used for testing.
+	mediaBadValidation = &domain.Media{}
+	// The default media items used for testing.
+	mediaItems = domain.MediaItems{
+		{
+			Id:    1,
+			Title: "title",
+		},
+		{
+			Id:    1,
+			Title: "title",
+		},
 	}
-
-//	// The default media item with wrong validation used for testing.
-//	mediaBadValidation = &domain.Media{}
-//	// The default media items used for testing.
-//	mediaItems = domain.MediaItems{
-//		{
-//			Id:    1,
-//			Url:   "/uploads/1",
-//			Title: "title",
-//		},
-//		{
-//			Id:    1,
-//			Url:   "/uploads/1",
-//			Title: "title",
-//		},
-//	}
 )
 
 // UploadRequest

@@ -131,6 +131,12 @@ const routes = [
 	 *
 	 */
 	{
+		path: '/integrations/storage',
+		name: 'storage',
+		component: () => import('../views/intergrations/Storage.vue'),
+		meta: { transitionName : 'fade' },
+	},
+	{
 		path: '/integrations/console',
 		name: 'console',
 		component: () => import('../views/intergrations/Console.vue'),

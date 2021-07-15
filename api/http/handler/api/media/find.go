@@ -27,7 +27,7 @@ func (m *Media) Find(ctx *gin.Context) {
 		return
 	}
 
-	media, err := m.Store.Media.Find(id)
+	media, err := m.service.Find(id)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

@@ -23,5 +23,5 @@ type StowItem interface {
 
 type Service interface {
 	Provider(provider domain.StorageProvider) (stow.Location, error)
-	Bucket(file domain.File) (stow.Container, error)
+	BucketByFile(file domain.File) (stow.Container, error)
 }

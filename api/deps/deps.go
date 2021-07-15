@@ -64,9 +64,9 @@ func (d *Deps) SetTmpl(tmpl tpl.TemplateHandler) {
 	d.tmpl = tmpl
 }
 
-//func (d *Deps) SetOptions(options *domain.Options) {
-//	d.Options = options
-//}
+func (d *Deps) SetOptions(options *domain.Options) {
+	*d.Options = *options
+}
 
 func (d *Deps) SetTheme(name string) error {
 	err := d.Store.Options.SetTheme(name)
@@ -107,7 +107,7 @@ func New(cfg Config) *Deps {
 		panic("Must have a configuration")
 	}
 
-	var opts *domain.Options
+	var opts domain.Options
 	if cfg.Running {
 		opts = cfg.Store.Options.Struct()
 	}
@@ -125,11 +125,11 @@ func New(cfg Config) *Deps {
 		Env:     cfg.Env,
 		Store:   cfg.Store,
 		Config:  cfg.Config,
-		Options: opts,
+		Options: &opts,
 		Paths:   cfg.Paths,
 		tmpl:    nil,
 		Running: cfg.Running,
-		Site:    site.New(opts, cfg.System),
+		Site:    site.New(&opts, cfg.System),
 		Theme:   theme.New(),
 		FS:      verbisfs.New(api.Production, cfg.Paths),
 		WebP:    webp.New(cfg.Paths.Bin + webp.Path),

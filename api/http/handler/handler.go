@@ -17,6 +17,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/http/handler/api/redirects"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/roles"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/site"
+	"github.com/ainsleyclark/verbis/api/http/handler/api/storage"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/system"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/themes"
 	"github.com/ainsleyclark/verbis/api/http/handler/api/users"
@@ -39,6 +40,7 @@ type APIHandler struct {
 	Redirects  redirects.Handler
 	Roles      roles.Handler
 	Site       site.Handler
+	Storage    storage.Handler
 	System     system.Handler
 	Themes     themes.Handler
 	Users      users.Handler
@@ -58,6 +60,7 @@ func NewAPI(d *deps.Deps) *APIHandler {
 		Redirects:  redirects.New(d),
 		Roles:      roles.New(d),
 		Site:       site.New(d),
+		Storage:    storage.New(d),
 		System:     system.New(d),
 		Themes:     themes.New(d),
 		Users:      users.New(d),
