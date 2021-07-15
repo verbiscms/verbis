@@ -136,16 +136,14 @@ func (_m *Repository) SetTheme(theme string) error {
 }
 
 // Struct provides a mock function with given fields:
-func (_m *Repository) Struct() *domain.Options {
+func (_m *Repository) Struct() domain.Options {
 	ret := _m.Called()
 
-	var r0 *domain.Options
-	if rf, ok := ret.Get(0).(func() *domain.Options); ok {
+	var r0 domain.Options
+	if rf, ok := ret.Get(0).(func() domain.Options); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Options)
-		}
+		r0 = ret.Get(0).(domain.Options)
 	}
 
 	return r0

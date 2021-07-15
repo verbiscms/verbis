@@ -15,30 +15,24 @@ import (
 // testing.
 type FileTestSuite struct {
 	suite.Suite
-	apiPath  string
-	testPath string
+	TestPath string
 }
 
-// TestFiles
-//
-// Assert testing has begun.
+// TestFiles asserts testing has begun.
 func TestFiles(t *testing.T) {
 	suite.Run(t, &FileTestSuite{})
 }
 
-// SetupAllSuite
-//
-// Runs before test, set API path.
+// SetupSuite runs before test, to setup the test
+// data path.
 func (t *FileTestSuite) SetupSuite() {
 	wd, err := os.Getwd()
 	t.NoError(err)
-	api := filepath.Join(filepath.Dir(wd), "../")
-	t.apiPath = api
-	t.testPath = api + TestPath
+	t.TestPath = filepath.Join(wd, "testdata")
 }
 
-// The default test path.
-const TestPath = "/test/testdata/media"
+// TestFile is the default test file.
+const TestFile = "test.txt"
 
 func (t *FileTestSuite) Test_Exists() {
 	tt := map[string]struct {
@@ -46,11 +40,11 @@ func (t *FileTestSuite) Test_Exists() {
 		want  interface{}
 	}{
 		"Exists": {
-			t.testPath + string(os.PathSeparator) + "gopher.jpg",
+			filepath.Join(t.TestPath, TestFile),
 			true,
 		},
 		"Dir": {
-			t.testPath,
+			t.TestPath,
 			false,
 		},
 		"Not Exists": {
@@ -73,11 +67,11 @@ func (t *FileTestSuite) Test_DirectoryExists() {
 		want  interface{}
 	}{
 		"Exists": {
-			t.testPath,
+			t.TestPath,
 			true,
 		},
 		"File": {
-			t.testPath + string(os.PathSeparator) + "gopher.jpg",
+			filepath.Join(t.TestPath, TestFile),
 			true,
 		},
 		"Not Exists": {

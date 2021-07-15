@@ -16,7 +16,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(u *mocks.Library)
+		mock    func(m *mocks.Library)
 		url     string
 	}{
 		"Success": {

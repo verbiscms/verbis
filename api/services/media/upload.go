@@ -21,10 +21,8 @@ import (
 	"time"
 )
 
-// Upload
-//
-// Satisfies the Library to upload a testMedia item to the
-// library.
+// Upload satisfies the Library to upload a media item
+// to the library.
 // Returns errors.INTERNAL on any eventuality the file could not be opened.
 // Returns errors.INVALID if the mimetype could not be found.
 func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, error) {
@@ -83,7 +81,9 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		return domain.Media{}, err
 	}
 
-	go s.toWebP(media)
+	if s.options.MediaConvertWebP {
+		go s.toWebP(media)
+	}
 
 	return media, nil
 }
@@ -223,10 +223,6 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 // exists, and an error occurred, it will be
 // logged.
 func (s *Service) toWebP(media domain.Media) {
-	if !s.options.MediaConvertWebP {
-		return
-	}
-
 	if !media.File.Mime.CanResize() {
 		return
 	}

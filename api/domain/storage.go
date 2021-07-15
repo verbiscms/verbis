@@ -16,6 +16,24 @@ type (
 	// StorageProvider represents a the string of a provider
 	// for writing storage files.
 	StorageProvider string
+
+	StorageInfo struct {
+		Provider StorageProvider `json:"provider" binding:"required"`
+		Bucket   string          `json:"bucket" binding:"required"`
+	}
+
+	StorageConfiguration struct {
+		ActiveProvider StorageProvider  `json:"active_provider"`
+		ActiveBucket   string           `json:"active_bucket"`
+		Providers      StorageProviders `json:"providers"`
+	}
+	// StorageProviders represents the map of providers that
+	// are available within Verbis.
+	StorageProviders    map[StorageProvider]StorageProviderInfo
+	StorageProviderInfo struct {
+		DialMessage string `json:"dial_message"`
+		EnvSet      bool   `json:"env_set"`
+	}
 )
 
 // String is the stringer on the StorageProvider.
@@ -27,18 +45,6 @@ func (s StorageProvider) String() string {
 // local. Returns false if it's remote.
 func (s StorageProvider) IsLocal() bool {
 	return s == StorageLocal
-}
-
-// Validate checks to see if the storage provider is
-// valid. Returns true if it's accepted as a Verbis
-// storage provider.
-func (s StorageProvider) Validate() bool {
-	for _, v := range StorageProviders {
-		if s == v {
-			return true
-		}
-	}
-	return false
 }
 
 const (
@@ -54,15 +60,4 @@ const (
 	// StorageAzure represents the string for the Azure
 	// storage disk.
 	StorageAzure = StorageProvider("azure")
-)
-
-var (
-	// StorageProviders represents the slice of providers that
-	// are available within Verbis.
-	StorageProviders = []StorageProvider{
-		StorageLocal,
-		StorageAWS,
-		StorageGCP,
-		StorageAzure,
-	}
 )

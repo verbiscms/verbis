@@ -1,39 +1,54 @@
+// Copyright 2020 The Verbis Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package internal
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/graymeta/stow"
-	"github.com/graymeta/stow/local"
+	"github.com/graymeta/stow/google"
+	_ "github.com/graymeta/stow/google"
+	"io/ioutil"
 )
 
-type providerFunc func(env *environment.Env, storagePath string) (stow.Location, error)
+type gcp struct {
+	json *string
+}
 
-type providerMap map[domain.StorageProvider]providerFunc
-
-var providers = providerMap{}
-
-func (p providerMap) RegisterProvider(provider domain.StorageProvider, fn providerFunc) {
-	const op = "Storage.RegisterProvider"
-	_, exists := p[provider]
-	if exists {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error, Duplicate provider: " + provider.String(), Operation: op, Err: fmt.Errorf("duplicate storage provider")}).Panic()
-		return
+func (g *gcp) Dial(env *environment.Env) (stow.Location, error) {
+	json, err := g.getGCPJson(env)
+	if err != nil {
+		return nil, err
 	}
-	p[provider] = fn
-}
 
-func (p providerMap) Dial(provider domain.StorageProvider, storagePath string, env *environment.Env) (stow.Location, error) {
-	return p[provider](env, storagePath)
-}
-
-func init() {
-	providers.RegisterProvider(domain.StorageLocal, func(env *environment.Env, storagePath string) (stow.Location, error) {
-		return stow.Dial(local.Kind, stow.ConfigMap{
-			local.ConfigKeyPath: storagePath,
-		})
+	return stow.Dial(google.Kind, stow.ConfigMap{
+		google.ConfigJSON:      json,
+		google.ConfigProjectId: env.GCPProjectId,
 	})
+}
+
+func (g *gcp) ConfigValid(env *environment.Env) bool {
+	if env.GCPJson == "" || env.GCPProjectId == "" {
+		return false
+	}
+	return true
+}
+
+func (g *gcp) getGCPJson(env *environment.Env) (string, error) {
+	if g.json != nil {
+		return *g.json, nil
+	}
+
+	bytes, err := ioutil.ReadFile(env.GCPJson)
+	if err != nil {
+		return "", fmt.Errorf("error reading google json path: " + env.GCPJson)
+	}
+
+	json := string(bytes)
+
+	g.json = &json
+
+	return json, nil
 }

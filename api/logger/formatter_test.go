@@ -24,42 +24,42 @@ func (t *LoggerTestSuite) TestFormatter() {
 				Level:   logrus.DebugLevel,
 				Message: "message",
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [DEBUG] | [msg] message\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [DEBUG] | [msg] message\n", nowStr),
 		},
 		"Info": {
 			&logrus.Entry{
 				Level:   logrus.InfoLevel,
 				Message: "message",
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [INFO]  | [msg] message\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [INFO]  | [msg] message\n", nowStr),
 		},
 		"Warning": {
 			&logrus.Entry{
 				Level:   logrus.WarnLevel,
 				Message: "message",
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [WARNING] | [msg] message\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [WARNING] | [msg] message\n", nowStr),
 		},
 		"Error": {
 			&logrus.Entry{
 				Level:   logrus.ErrorLevel,
 				Message: "message",
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [ERROR] | [msg] message\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [ERROR] | [msg] message\n", nowStr),
 		},
 		"Fatal": {
 			&logrus.Entry{
 				Level:   logrus.FatalLevel,
 				Message: "message",
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [FATAL] | [msg] message\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [FATAL] | [msg] message\n", nowStr),
 		},
 		"Panic": {
 			&logrus.Entry{
 				Level:   logrus.PanicLevel,
 				Message: "message",
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [PANIC] | [msg] message\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [PANIC] | [msg] message\n", nowStr),
 		},
 		"Fields": {
 			&logrus.Entry{
@@ -68,7 +68,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 				},
 				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [INFO]  | key1: test1\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [INFO]  | key1: test1\n", nowStr),
 		},
 		"Print Verbis Error Pointer": {
 			&logrus.Entry{
@@ -77,7 +77,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 				},
 				Level: logrus.ErrorLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [ERROR] | [code] INTERNAL [msg] message [op] operation [error] error\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [ERROR] | [code] INTERNAL [msg] message [op] operation [error] error\n", nowStr),
 		},
 		"Print Verbis Error Non Pointer": {
 			&logrus.Entry{
@@ -86,7 +86,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 				},
 				Level: logrus.ErrorLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [ERROR] | [code] INTERNAL [msg] message [op] operation [error] error\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [ERROR] | [code] INTERNAL [msg] message [op] operation [error] error\n", nowStr),
 		},
 		"Print Error": {
 			&logrus.Entry{
@@ -95,7 +95,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 				},
 				Level: logrus.ErrorLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [ERROR] | [error] error\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [ERROR] | [error] error\n", nowStr),
 		},
 		"Print Error String": {
 			&logrus.Entry{
@@ -104,7 +104,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 				},
 				Level: logrus.ErrorLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [ERROR] | [error] error\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [ERROR] | [error] error\n", nowStr),
 		},
 		"Server Success": {
 			&logrus.Entry{
@@ -117,7 +117,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 				},
 				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | 200 | [INFO]  | 127.0.0.1 |   GET    \"/page\"\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | 200 | [INFO]  | 127.0.0.1 |   GET    \"/page\"\n", nowStr),
 		},
 		"Server Not Found": {
 			&logrus.Entry{
@@ -130,7 +130,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 				},
 				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | 404 | [INFO]  | 127.0.0.1 |   GET    \"/page\"\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | 404 | [INFO]  | 127.0.0.1 |   GET    \"/page\"\n", nowStr),
 		},
 		"Message": {
 			&logrus.Entry{
@@ -139,7 +139,7 @@ func (t *LoggerTestSuite) TestFormatter() {
 				},
 				Level: logrus.InfoLevel,
 			},
-			fmt.Sprintf("[VERBIS] %s | VRB | [INFO]  | [msg] message\n", nowStr),
+			fmt.Sprintf(Prefix+" %s | VRB | [INFO]  | [msg] message\n", nowStr),
 		},
 	}
 

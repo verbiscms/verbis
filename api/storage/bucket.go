@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/params"
 	vstrings "github.com/ainsleyclark/verbis/api/common/strings"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -12,6 +13,12 @@ import (
 	"path"
 	"strings"
 )
+
+// List satisfies the Bucket interface by accepting an url
+// and retrieving the file and byte contents of the file.
+func (s *Storage) List(meta params.Params) (domain.Files, int, error) {
+	return s.filesRepo.List(meta)
+}
 
 // Find satisfies the Bucket interface by accepting an url
 // and retrieving the file and byte contents of the file.
@@ -23,7 +30,7 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 		return nil, domain.File{}, err
 	}
 
-	bucket, err := s.service.Bucket(file)
+	bucket, err := s.service.BucketByFile(file)
 	if err != nil {
 		return nil, domain.File{}, err
 	}
@@ -60,7 +67,12 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Validation failed", Operation: op, Err: err}
 	}
 
-	item, err := s.stowContainer.Put(u.AbsPath(), u.Contents, u.Size, nil)
+	b, err := s.service.Bucket(s.options.StorageProvider, s.options.StorageBucket)
+	if err != nil {
+		return domain.File{}, err
+	}
+
+	item, err := b.Put(u.AbsPath(), u.Contents, u.Size, nil)
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage provider", Operation: op, Err: err}
 	}
@@ -74,7 +86,7 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		// E.g. uploads/2021/07/ea5101e3-9730-49cd-855b-a068524c6fd5.jpg
 		id = item.ID()
 		// E.g. bucket-name
-		bucket = s.stowContainer.ID()
+		bucket = b.ID()
 		// TODO E.g eu-west-2
 		region = ""
 	)
@@ -122,7 +134,7 @@ func (s *Storage) Delete(id int) error {
 		return err
 	}
 
-	bucket, err := s.service.Bucket(file)
+	bucket, err := s.service.BucketByFile(file)
 	if err != nil {
 		return err
 	}

@@ -368,7 +368,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 			&domain.Options{MediaConvertWebP: true},
 			"storage error",
 		},
-		"Options Permitted": {
+		"OptionsBAD Permitted": {
 			domain.Media{},
 			nil,
 			nil,
@@ -412,7 +412,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 //	tt := map[string]struct {
 //		input  string
 //		cfg    domain.ThemeConfig
-//		opts   domain.Options
+//		opts   domain.OptionsBAD
 //		want   domain.Media
 //		err    string
 //	}{
@@ -423,7 +423,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 //					UploadPath: "/uploads",
 //				},
 //			},
-//			domain.Options{},
+//			domain.OptionsBAD{},
 //			domain.Media{
 //				Url:      "/uploads/gopher.svg",
 //				FilePath: "",
@@ -441,7 +441,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 //					UploadPath: "/uploads",
 //				},
 //			},
-//			domain.Options{},
+//			domain.OptionsBAD{},
 //			domain.Media{
 //				Url:      "/uploads/gopher.png",
 //				FilePath: "",
@@ -459,7 +459,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 //					UploadPath: "/uploads",
 //				},
 //			},
-//			domain.Options{},
+//			domain.OptionsBAD{},
 //			domain.Media{
 //				Url:      "/uploads/gopher.jpg",
 //				FilePath: "",
@@ -477,7 +477,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 //					UploadPath: "/uploads",
 //				},
 //			},
-//			domain.Options{
+//			domain.OptionsBAD{
 //				MediaSizes: domain.MediaSizes{
 //					"fileToWebP": size,
 //				},
@@ -508,7 +508,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 //					UploadPath: "/uploads",
 //				},
 //			},
-//			domain.Options{
+//			domain.OptionsBAD{
 //				MediaSizes: domain.MediaSizes{
 //					"fileToWebP": size,
 //				},
@@ -535,7 +535,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 //		"Nil": {
 //			"",
 //			domain.ThemeConfig{},
-//			domain.Options{},
+//			domain.OptionsBAD{},
 //			domain.Media{},
 //			"Error opening file with the name",
 //		},

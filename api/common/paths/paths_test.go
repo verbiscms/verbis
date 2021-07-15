@@ -18,14 +18,14 @@ func TestGet(t *testing.T) {
 	got := Get()
 	want := Paths{
 		Base:    path,
-		Admin:   path + Admin,
-		API:     path + API,
-		Uploads: path + Uploads,
-		Storage: path + Storage,
-		Themes:  path + Themes,
-		Web:     path + Web,
-		Forms:   path + Forms,
-		Bin:     path + Bin,
+		Admin:   filepath.Join(path, Admin),
+		API:     filepath.Join(path, API),
+		Uploads: filepath.Join(path, Uploads),
+		Storage: filepath.Join(path, Storage),
+		Themes:  filepath.Join(path, Themes),
+		Web:     filepath.Join(path, Web),
+		Forms:   filepath.Join(path, Forms),
+		Bin:     filepath.Join(path, Bin),
 	}
 	assert.Equal(t, want, got)
 }

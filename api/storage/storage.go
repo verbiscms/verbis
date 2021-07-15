@@ -13,7 +13,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/storage/internal"
 	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/ainsleyclark/verbis/api/store/options"
-	"github.com/graymeta/stow"
 )
 
 // Provider describes the main storage system for Verbis.
@@ -21,10 +20,8 @@ import (
 // or it can be local, dependant on what is set on
 // the environment.
 type Provider interface {
-	// SetProvider sets the storage system to the given
-	// provider.
-	// Returns errors.INVALID if there was an error setting the provider.
-	SetProvider(provider domain.StorageProvider) error
+	Info() (domain.StorageConfiguration, error)
+	Migrate(from, to domain.StorageProvider) error
 	Container
 	Bucket
 }
@@ -33,23 +30,18 @@ type Provider interface {
 // remotely via GCP, AWS, Azure or Locally. Buckets can
 // be set listed, created and deleted.
 type Container interface {
-	// SetBucket updates the storage system with a new bucket.
-	// The options table will be updated from the database.
-	// Returns errors.INVALID if the bucket could not be set.
-	// Returns errors.INTERNAL if there was an error updating the options DB table.
-	SetBucket(id string) error
 	// ListBuckets retrieves all buckets that are currently in
 	// the provider and returns a slice of domain.Buckets.
 	// Returns errors.INVALID if there was an error obtaining the buckets.
-	ListBuckets() (domain.Buckets, error)
+	ListBuckets(provider domain.StorageProvider) (domain.Buckets, error)
 	// CreateBucket creates a folder or bucket on the provider
 	// by name.
 	// Returns errors.INVALID if there was an error creating the bucket.
-	CreateBucket(name string) error
+	CreateBucket(provider domain.StorageProvider, name string) error
 	// DeleteBucket removes a folder or bucket from the
 	// provider by name.
 	// Returns errors.INVALID if there was an error deleting the bucket.
-	DeleteBucket(name string) error
+	DeleteBucket(provider domain.StorageProvider, name string) error
 }
 
 // Bucket describes the methods used for interacting with
@@ -94,15 +86,13 @@ var (
 // |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
 type Storage struct {
-	ProviderName  domain.StorageProvider
-	env           *environment.Env
-	optionsRepo   options.Repository
-	filesRepo     files.Repository
-	options       *domain.Options
-	paths         paths.Paths
-	stowLocation  stow.Location
-	stowContainer stow.Container
-	service       internal.StorageServices
+	ProviderName domain.StorageProvider
+	env          *environment.Env
+	optionsRepo  options.Repository
+	filesRepo    files.Repository
+	options      *domain.Options
+	paths        paths.Paths
+	service      internal.StorageServices
 }
 
 // |||||||||||||||||||||||||||||||||||||||||||||||||||||||
@@ -135,47 +125,30 @@ func (c Config) Validate() error {
 func New(cfg Config) (*Storage, error) {
 	const op = "Storage.New"
 
-	// Validate configuration
 	err := cfg.Validate()
 	if err != nil {
 		return nil, err
 	}
 
-	var (
-		service = internal.NewService(cfg.Environment, paths.Get().Storage)
-		opts    = cfg.Options.Struct()
-	)
+	service := internal.NewService(cfg.Environment, cfg.Options, paths.Get().Storage)
 
-	provider := opts.StorageProvider
-	if provider == "" {
-		provider = domain.StorageLocal
+	provider, _, err := service.Info()
+	if err != nil {
+		return nil, err
 	}
 
-	if !provider.Validate() {
+	fmt.Println(provider)
+
+	if !internal.Providers.Exists(provider) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}
 	}
 
 	s := &Storage{
-		ProviderName: provider,
-		env:          cfg.Environment,
-		optionsRepo:  cfg.Options,
-		filesRepo:    cfg.Files,
-		options:      opts,
-		paths:        paths.Get(),
-		service:      service,
-	}
-
-	// Set Provider
-	err = s.SetProvider(provider)
-	if err != nil {
-		return nil, err
-	}
-
-	// Set Bucket
-	// TODO, do we want to be srtting options on initialisation?
-	err = s.SetBucket(opts.StorageBucket)
-	if err != nil {
-		return nil, err
+		env:         cfg.Environment,
+		optionsRepo: cfg.Options,
+		filesRepo:   cfg.Files,
+		paths:       paths.Get(),
+		service:     service,
 	}
 
 	return s, nil
