@@ -6,6 +6,7 @@ package internal
 
 import (
 	"github.com/ainsleyclark/verbis/api/common/paths"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
 	stowLocal "github.com/graymeta/stow/local"
@@ -13,12 +14,20 @@ import (
 
 type local struct{}
 
+const LocalName = "Local Storage"
+
 func (l *local) Dial(env *environment.Env) (stow.Location, error) {
 	return stow.Dial(stowLocal.Kind, stow.ConfigMap{
 		stowLocal.ConfigKeyPath: paths.Get().Storage,
 	})
 }
 
-func (l *local) ConfigValid(env *environment.Env) bool {
-	return true
+func (l *local) Info(env *environment.Env) domain.StorageProviderInfo {
+	return domain.StorageProviderInfo{
+		Order:          1,
+		Name:           LocalName,
+		Connected:      true,
+		Error:          false,
+		EnvironmentSet: true,
+	}
 }

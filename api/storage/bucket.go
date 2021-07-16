@@ -67,14 +67,25 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Validation failed", Operation: op, Err: err}
 	}
 
-	b, err := s.service.Bucket(s.options.StorageProvider, s.options.StorageBucket)
+	provider, bucket, err := s.service.Config()
 	if err != nil {
 		return domain.File{}, err
 	}
 
-	item, err := b.Put(u.AbsPath(), u.Contents, u.Size, nil)
+	return s.upload(provider, bucket, u)
+}
+
+func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload) (domain.File, error) {
+	const op = "Storage.Upload"
+
+	cont, err := s.service.Bucket(p, b)
 	if err != nil {
-		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage provider", Operation: op, Err: err}
+		return domain.File{}, err
+	}
+
+	item, err := cont.Put(u.AbsPath(), u.Contents, u.Size, nil)
+	if err != nil {
+		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage p", Operation: op, Err: err}
 	}
 
 	mime, err := u.Mime()
@@ -85,13 +96,13 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	var (
 		// E.g. uploads/2021/07/ea5101e3-9730-49cd-855b-a068524c6fd5.jpg
 		id = item.ID()
-		// E.g. bucket-name
-		bucket = b.ID()
+		// E.g. b-name
+		bucket = cont.ID()
 		// TODO E.g eu-west-2
 		region = ""
 	)
 
-	if s.ProviderName == domain.StorageLocal {
+	if p.IsLocal() {
 		id = vstrings.TrimSlashes(strings.ReplaceAll(item.URL().Path, s.paths.Storage, ""))
 		bucket = ""
 		region = ""
@@ -104,7 +115,7 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		BucketId:   id,
 		Mime:       mime,
 		SourceType: u.SourceType,
-		Provider:   s.ProviderName,
+		Provider:   p,
 		Region:     region,
 		Bucket:     bucket,
 		FileSize:   u.Size,

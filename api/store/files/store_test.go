@@ -52,7 +52,7 @@ var (
 		BucketId: "uploads/2020/01/file.jpg",
 		Provider: domain.StorageLocal,
 	}
-	// The default categories used for testing.
+	// The default files used for testing.
 	files = domain.Files{
 		{
 			Id:       1,
@@ -68,5 +68,10 @@ var (
 			BucketId: "uploads/2020/01/file.jpg",
 			Provider: domain.StorageLocal,
 		},
+	}
+	// The default storage change used for testing.
+	storageChange = domain.StorageChange{
+		Provider: "provider",
+		Bucket:   "bucket",
 	}
 )

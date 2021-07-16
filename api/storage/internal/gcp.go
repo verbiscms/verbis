@@ -6,6 +6,7 @@ package internal
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
 	"github.com/graymeta/stow/google"
@@ -17,23 +18,53 @@ type gcp struct {
 	json *string
 }
 
+const GCPName = "Google Cloud Storage"
+
+var (
+	GCPEnvKeys = []string{
+		"STORAGE_GCP_JSON_FILE",
+		"STORAGE_GCP_PROJECT_ID",
+	}
+)
+
 func (g *gcp) Dial(env *environment.Env) (stow.Location, error) {
 	json, err := g.getGCPJson(env)
 	if err != nil {
 		return nil, err
 	}
-
 	return stow.Dial(google.Kind, stow.ConfigMap{
 		google.ConfigJSON:      json,
 		google.ConfigProjectId: env.GCPProjectId,
 	})
 }
 
-func (g *gcp) ConfigValid(env *environment.Env) bool {
-	if env.GCPJson == "" || env.GCPProjectId == "" {
-		return false
+func (g *gcp) Info(env *environment.Env) domain.StorageProviderInfo {
+	sp := domain.StorageProviderInfo{
+		Name:            GCPName,
+		Order:           2,
+		Connected:       false,
+		Error:           false,
+		EnvironmentSet:  false,
+		EnvironmentKeys: GCPEnvKeys,
 	}
-	return true
+
+	if env.GCPJson == "" && env.GCPProjectId == "" {
+		sp.Error = ErrMessageConfigNotSet + domain.StorageGCP.TitleCase().String()
+		return sp
+	}
+
+	sp.EnvironmentSet = true
+
+	_, err := g.Dial(env)
+	if err != nil {
+		sp.Error = ErrMessageDial + err.Error()
+		return sp
+	}
+
+	sp.Connected = true
+	sp.Error = false
+
+	return sp
 }
 
 func (g *gcp) getGCPJson(env *environment.Env) (string, error) {

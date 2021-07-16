@@ -17,6 +17,7 @@ type Repository interface {
 	Find(id int) (domain.File, error)
 	FindByURL(url string) (domain.File, error)
 	Create(f domain.File) (domain.File, error)
+	Update(id int, f domain.StorageChange) error
 	Delete(id int) error
 	Exists(fileName string) bool
 }

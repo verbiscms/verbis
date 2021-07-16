@@ -8,41 +8,40 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
+	az "github.com/graymeta/stow/azure"
 	"github.com/graymeta/stow/s3"
 )
 
-type amazon struct{}
+type azure struct{}
 
-const (
-	AmazonName = "Amazon S3"
-)
+const AzureName = "Microsoft Azure"
 
 var (
-	AmazonEnvKeys = []string{
-		"STORAGE_AWS_ACCESS_KEY",
-		"STORAGE_AWS_SECRET",
+	AzureEnvKeys = []string{
+		"STORAGE_AZURE_ACCOUNT",
+		"STORAGE_AZURE_KEY",
 	}
 )
 
-func (a *amazon) Dial(env *environment.Env) (stow.Location, error) {
+func (a *azure) Dial(env *environment.Env) (stow.Location, error) {
 	return stow.Dial(s3.Kind, stow.ConfigMap{
-		s3.ConfigAccessKeyID: env.AWSAccessKey,
-		s3.ConfigSecretKey:   env.AWSSecret,
+		az.ConfigAccount: env.AzureAccount,
+		az.ConfigKey:     env.AzureKey,
 	})
 }
 
-func (a *amazon) Info(env *environment.Env) domain.StorageProviderInfo {
+func (a *azure) Info(env *environment.Env) domain.StorageProviderInfo {
 	sp := domain.StorageProviderInfo{
-		Name:            AmazonName,
-		Order:           3,
+		Name:            AzureName,
+		Order:           4,
 		Connected:       false,
 		Error:           false,
 		EnvironmentSet:  false,
-		EnvironmentKeys: AmazonEnvKeys,
+		EnvironmentKeys: AzureEnvKeys,
 	}
 
-	if env.AWSSecret == "" && env.AWSAccessKey == "" {
-		sp.Error = ErrMessageConfigNotSet + domain.StorageAWS.TitleCase().String()
+	if env.AzureAccount == "" && env.AzureKey == "" {
+		sp.Error = ErrMessageConfigNotSet + domain.StorageAzure.TitleCase().String()
 		return sp
 	}
 

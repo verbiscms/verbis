@@ -135,3 +135,17 @@ func (_m *Repository) List(meta params.Params) (domain.Files, int, error) {
 
 	return r0, r1, r2
 }
+
+// Update provides a mock function with given fields: id, f
+func (_m *Repository) Update(id int, f domain.StorageChange) error {
+	ret := _m.Called(id, f)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(int, domain.StorageChange) error); ok {
+		r0 = rf(id, f)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}

@@ -15,8 +15,31 @@ type StorageServices struct {
 	mock.Mock
 }
 
-// Bucket provides a mock function with given fields: file
-func (_m *StorageServices) Bucket(file domain.File) (stow.Container, error) {
+// Bucket provides a mock function with given fields: provider, bucket
+func (_m *StorageServices) Bucket(provider domain.StorageProvider, bucket string) (stow.Container, error) {
+	ret := _m.Called(provider, bucket)
+
+	var r0 stow.Container
+	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) stow.Container); ok {
+		r0 = rf(provider, bucket)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(stow.Container)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(domain.StorageProvider, string) error); ok {
+		r1 = rf(provider, bucket)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// BucketByFile provides a mock function with given fields: file
+func (_m *StorageServices) BucketByFile(file domain.File) (stow.Container, error) {
 	ret := _m.Called(file)
 
 	var r0 stow.Container
@@ -36,6 +59,34 @@ func (_m *StorageServices) Bucket(file domain.File) (stow.Container, error) {
 	}
 
 	return r0, r1
+}
+
+// Config provides a mock function with given fields:
+func (_m *StorageServices) Config() (domain.StorageProvider, string, error) {
+	ret := _m.Called()
+
+	var r0 domain.StorageProvider
+	if rf, ok := ret.Get(0).(func() domain.StorageProvider); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(domain.StorageProvider)
+	}
+
+	var r1 string
+	if rf, ok := ret.Get(1).(func() string); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Get(1).(string)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func() error); ok {
+		r2 = rf()
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // Provider provides a mock function with given fields: provider

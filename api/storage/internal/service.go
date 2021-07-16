@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -17,27 +18,31 @@ type StorageServices interface {
 	Provider(provider domain.StorageProvider) (stow.Location, error)
 	Bucket(provider domain.StorageProvider, bucket string) (stow.Container, error)
 	BucketByFile(file domain.File) (stow.Container, error)
-	Info() (domain.StorageProvider, string, error)
+	Config() (domain.StorageProvider, string, error)
 }
 
 type Service struct {
-	Env         *environment.Env
-	Options     options.Repository
-	storagePath string
-	gcpJson     *string
+	Env     *environment.Env
+	Options options.Repository
 }
 
-func NewService(env *environment.Env, options options.Repository, storagePath string) *Service {
+var (
+	ErrMessageConfigNotSet = "Configuration not set for: "
+	ErrMessageDial         = "Error dialling storage provider: "
+)
+
+func NewService(env *environment.Env, options options.Repository) *Service {
 	return &Service{
-		Env:         env,
-		Options:     options,
-		storagePath: storagePath,
-		gcpJson:     nil,
+		Env:     env,
+		Options: options,
 	}
 }
 
 func (s *Service) Provider(provider domain.StorageProvider) (stow.Location, error) {
 	const op = "Storage.Provider"
+	if !Providers.Exists(provider) {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Error connecting to storage provider: " + provider.String(), Operation: op, Err: fmt.Errorf("nil provider")}
+	}
 	loc, err := Providers[provider].Dial(s.Env)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error connecting to storage provider: " + provider.String(), Operation: op, Err: err}
@@ -77,7 +82,7 @@ func (s *Service) Bucket(provider domain.StorageProvider, bucket string) (stow.C
 	return c, nil
 }
 
-func (s *Service) Info() (domain.StorageProvider, string, error) {
+func (s *Service) Config() (domain.StorageProvider, string, error) {
 	p, err := s.Options.Find("storage_provider")
 	if err != nil {
 		return "", "", err
@@ -95,18 +100,3 @@ func (s *Service) Info() (domain.StorageProvider, string, error) {
 
 	return provider, strings.ReplaceAll(cast.ToString(bucket), "\"", ""), nil
 }
-
-//
-//switch provider {
-//case domain.StorageLocal:
-//cont, err = stow.Dial(local.Kind, stow.ConfigMap{
-//local.ConfigKeyPath: s.storagePath,
-//})
-//case domain.StorageAWS:
-//cont, err = stow.Dial(s3.Kind, stow.ConfigMap{
-//s3.ConfigAccessKeyID: s.Env.AWSAccessKey,
-//s3.ConfigSecretKey:   s.Env.AWSSecret,
-//})
-//case domain.StorageGCP:
-//
-//}

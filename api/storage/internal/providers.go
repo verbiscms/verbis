@@ -9,6 +9,11 @@ import (
 	"github.com/graymeta/stow"
 )
 
+type Provider interface {
+	Dial(env *environment.Env) (stow.Location, error)
+	Info(env *environment.Env) domain.StorageProviderInfo
+}
+
 type providerMap map[domain.StorageProvider]Provider
 
 var Providers = providerMap{}
@@ -28,13 +33,9 @@ func (p providerMap) Exists(name domain.StorageProvider) bool {
 	return exists
 }
 
-type Provider interface {
-	Dial(env *environment.Env) (stow.Location, error)
-	ConfigValid(env *environment.Env) bool
-}
-
 func init() {
 	Providers.RegisterProvider(domain.StorageLocal, &local{})
 	Providers.RegisterProvider(domain.StorageGCP, &gcp{json: nil})
 	Providers.RegisterProvider(domain.StorageAWS, &amazon{})
+	Providers.RegisterProvider(domain.StorageAzure, &azure{})
 }

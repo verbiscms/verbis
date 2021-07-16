@@ -12,13 +12,13 @@ type Container struct {
 	mock.Mock
 }
 
-// CreateBucket provides a mock function with given fields: name
-func (_m *Container) CreateBucket(name string) error {
-	ret := _m.Called(name)
+// CreateBucket provides a mock function with given fields: provider, name
+func (_m *Container) CreateBucket(provider domain.StorageProvider, name string) error {
+	ret := _m.Called(provider, name)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(name)
+	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) error); ok {
+		r0 = rf(provider, name)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -26,13 +26,13 @@ func (_m *Container) CreateBucket(name string) error {
 	return r0
 }
 
-// DeleteBucket provides a mock function with given fields: name
-func (_m *Container) DeleteBucket(name string) error {
-	ret := _m.Called(name)
+// DeleteBucket provides a mock function with given fields: provider, name
+func (_m *Container) DeleteBucket(provider domain.StorageProvider, name string) error {
+	ret := _m.Called(provider, name)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(name)
+	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) error); ok {
+		r0 = rf(provider, name)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -40,13 +40,13 @@ func (_m *Container) DeleteBucket(name string) error {
 	return r0
 }
 
-// ListBuckets provides a mock function with given fields:
-func (_m *Container) ListBuckets() (domain.Buckets, error) {
-	ret := _m.Called()
+// ListBuckets provides a mock function with given fields: provider
+func (_m *Container) ListBuckets(provider domain.StorageProvider) (domain.Buckets, error) {
+	ret := _m.Called(provider)
 
 	var r0 domain.Buckets
-	if rf, ok := ret.Get(0).(func() domain.Buckets); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(domain.StorageProvider) domain.Buckets); ok {
+		r0 = rf(provider)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.Buckets)
@@ -54,25 +54,11 @@ func (_m *Container) ListBuckets() (domain.Buckets, error) {
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(domain.StorageProvider) error); ok {
+		r1 = rf(provider)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
-}
-
-// SetBucket provides a mock function with given fields: id
-func (_m *Container) SetBucket(id string) error {
-	ret := _m.Called(id)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
 }
