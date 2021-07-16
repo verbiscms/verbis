@@ -37,38 +37,3 @@ func TestStorageProvider_IsLocal(t *testing.T) {
 		})
 	}
 }
-
-func TestStorageProvider_Validate(t *testing.T) {
-	tt := map[string]struct {
-		input StorageProvider
-		want  bool
-	}{
-		"Local": {
-			StorageLocal,
-			true,
-		},
-		"AWS": {
-			StorageAWS,
-			true,
-		},
-		"GCP": {
-			StorageGCP,
-			true,
-		},
-		"Azure": {
-			StorageGCP,
-			true,
-		},
-		"Error": {
-			"wrong",
-			false,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
-			got := test.input.Validate()
-			assert.Equal(t, test.want, got)
-		})
-	}
-}
