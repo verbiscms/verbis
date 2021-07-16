@@ -6,24 +6,85 @@ package internal
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
 	"github.com/graymeta/stow"
 	"github.com/stretchr/testify/assert"
+	"io/ioutil"
 	"testing"
 )
 
+func TestProviderMap_RegisterProvider(t *testing.T) {
+	logger.SetOutput(ioutil.Discard)
+
+	tt := map[string]struct {
+		input  ProviderMap
+		name   domain.StorageProvider
+		panics bool
+	}{
+		"Added": {
+			ProviderMap{},
+			domain.StorageAzure,
+			false,
+		},
+		"Panics": {
+			ProviderMap{domain.StorageAWS: &amazon{}},
+			domain.StorageAWS,
+			true,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			if test.panics {
+				assert.Panics(t, func() {
+					test.input.RegisterProvider(test.name, &amazon{})
+				})
+				return
+			}
+			test.input.RegisterProvider(test.name, &amazon{})
+			assert.True(t, test.input.Exists(test.name))
+		})
+	}
+}
+
 func TestProviderMap_Exists(t *testing.T) {
+	tt := map[string]struct {
+		input    ProviderMap
+		provider domain.StorageProvider
+		want     bool
+	}{
+		"True": {
+			ProviderMap{domain.StorageAWS: &amazon{}},
+			domain.StorageAWS,
+			true,
+		},
+		"False": {
+			ProviderMap{},
+			domain.StorageAWS,
+			false,
+		},
+	}
 
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.Exists(test.provider)
+			assert.Equal(t, test.want, got)
+		})
+	}
 }
 
-var dialSuccess = func(kind string, config stow.Config) (stow.Location, error) {
-	return &mocks.StowLocation{}, nil
-}
-
-var dialErr = func(kind string, config stow.Config) (stow.Location, error) {
-	return nil, fmt.Errorf("error")
-}
+var (
+	stowLocation = &mocks.StowLocation{}
+	dialSuccess  = func(kind string, config stow.Config) (stow.Location, error) {
+		return stowLocation, nil
+	}
+	dialErr = func(kind string, config stow.Config) (stow.Location, error) {
+		return nil, fmt.Errorf("error")
+	}
+)
 
 func UtilTestProviderDial(env *environment.Env, p Provider, t *testing.T) {
 	tt := map[string]struct {

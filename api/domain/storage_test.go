@@ -11,9 +11,9 @@ import (
 
 func TestBuckets_IsValid(t *testing.T) {
 	tt := map[string]struct {
-		input string
+		input   string
 		buckets Buckets
-		want  bool
+		want    bool
 	}{
 		"Valid": {
 			"bucket",

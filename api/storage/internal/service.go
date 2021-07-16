@@ -26,9 +26,10 @@ type Service struct {
 	Options options.Repository
 }
 
-var (
-	ErrMessageConfigNotSet = "Configuration not set for: "
-	ErrMessageDial         = "Error dialling storage provider: "
+const (
+	ErrMessageConfigNotSet  = "Configuration not set for: "
+	ErrMessageDial          = "Error dialling storage provider: "
+	ErrMessageInvalidBucket = "Error retrieving bucket"
 )
 
 func NewService(env *environment.Env, options options.Repository) *Service {
@@ -50,22 +51,6 @@ func (s *Service) Provider(provider domain.StorageProvider) (stow.Location, erro
 	return loc, nil
 }
 
-func (s *Service) BucketByFile(file domain.File) (stow.Container, error) {
-	const op = "Storage.BucketByFile"
-
-	p, err := s.Provider(file.Provider)
-	if err != nil {
-		return nil, err
-	}
-
-	c, err := p.Container(file.Bucket)
-	if err != nil {
-		return nil, err
-	}
-
-	return c, nil
-}
-
 func (s *Service) Bucket(provider domain.StorageProvider, bucket string) (stow.Container, error) {
 	const op = "Storage.Bucket"
 
@@ -76,7 +61,23 @@ func (s *Service) Bucket(provider domain.StorageProvider, bucket string) (stow.C
 
 	c, err := p.Container(bucket)
 	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: ErrMessageInvalidBucket, Operation: op, Err: err}
+	}
+
+	return c, nil
+}
+
+func (s *Service) BucketByFile(file domain.File) (stow.Container, error) {
+	const op = "Storage.BucketByFile"
+
+	p, err := s.Provider(file.Provider)
+	if err != nil {
 		return nil, err
+	}
+
+	c, err := p.Container(file.Bucket)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: ErrMessageInvalidBucket, Operation: op, Err: err}
 	}
 
 	return c, nil
