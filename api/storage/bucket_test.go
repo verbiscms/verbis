@@ -17,21 +17,17 @@ import (
 	"strings"
 )
 
-const (
-	TestFileUrl = "/file.txt"
-)
-
 func (t *StorageTestSuite) TestBucket_Find() {
 	tt := map[string]struct {
-		mock func(s *mocks.Service, r *repo.Repository)
+		mock func(m *mocks.Service, r *repo.Repository)
 		want interface{}
 	}{
 		"Success": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
 
 				c := &mocks.StowContainer{}
-				s.On("BucketByFile", domain.File{}).Return(c, nil)
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
 
 				item := &mocks.StowItem{}
 				item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
@@ -40,33 +36,33 @@ func (t *StorageTestSuite) TestBucket_Find() {
 			"test",
 		},
 		"Repo Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("FindByURL", mock.Anything).Return(domain.File{}, &errors.Error{Message: "error"})
 			},
 			"error",
 		},
 		"BucketByFile Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
-				s.On("BucketByFile", mock.Anything).Return(nil, &errors.Error{Message: "error"})
+				m.On("BucketByFile", mock.Anything).Return(nil, &errors.Error{Message: "error"})
 			},
 			"error",
 		},
 		"Item Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
 				c := &mocks.StowContainer{}
-				s.On("BucketByFile", domain.File{}).Return(c, nil)
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
 				c.On("Item", mock.Anything).Return(nil, fmt.Errorf("error"))
 			},
 			"Error obtaining file with the ID",
 		},
 		"Open Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
 
 				c := &mocks.StowContainer{}
-				s.On("BucketByFile", domain.File{}).Return(c, nil)
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
 
 				item := &mocks.StowItem{}
 				item.On("Open").Return(nil, fmt.Errorf("error"))
@@ -75,11 +71,11 @@ func (t *StorageTestSuite) TestBucket_Find() {
 			"Error opening file",
 		},
 		"Read Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
 
 				c := &mocks.StowContainer{}
-				s.On("BucketByFile", domain.File{}).Return(c, nil)
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
 
 				item := &mocks.StowItem{}
 				item.On("Open").Return(&mockIOReaderReadError{}, nil)
@@ -91,22 +87,12 @@ func (t *StorageTestSuite) TestBucket_Find() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			m := &mocks.Service{}
-			r := &repo.Repository{}
-
-			test.mock(m, r)
-
-			s := Storage{
-				filesRepo: r,
-				service:   m,
-			}
-
+			s := t.Setup(test.mock)
 			got, _, err := s.Find(TestFileUrl)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-
 			t.Equal(test.want, string(got))
 		})
 	}
@@ -115,34 +101,61 @@ func (t *StorageTestSuite) TestBucket_Find() {
 func (t *StorageTestSuite) TestBucket_Upload() {
 	tt := map[string]struct {
 		input domain.Upload
-		mock  func(s *mocks.Service, c *mocks.StowContainer, r *repo.Repository)
+		mock  func(m *mocks.Service, r *repo.Repository)
 		local bool
 		want  interface{}
 	}{
 		"Local": {
-			u,
-			func(s *mocks.Service, c *mocks.StowContainer, r *repo.Repository) {
+			upload,
+			func(m *mocks.Service, r *repo.Repository) {
 				item := &mocks.StowItem{}
 				item.On("ID").Return("test.txt")
 				item.On("URL").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
-				c.On("ID").Return("bucket")
-				c.On("Put", "/uploads/2020/01/"+key+".txt", u.Contents, u.Size, mock.Anything).Return(item, nil)
+
+				cont := &mocks.StowContainer{}
+				cont.On("ID").Return("bucket")
+				cont.On("Put", "/uploads/2020/01/"+key+".txt", upload.Contents, upload.Size, mock.Anything).Return(item, nil)
+
+				m.On("Config").Return(domain.StorageLocal, "", nil)
+				m.On("Bucket", domain.StorageLocal, "").Return(cont, nil)
 				r.On("Create", fileLocal).Return(fileLocal, nil)
 			},
 			true,
 			fileLocal,
 		},
 		"Remote": {
-			u,
-			func(s *mocks.Service, c *mocks.StowContainer, r *repo.Repository) {
+			upload,
+			func(m *mocks.Service, r *repo.Repository) {
 				item := &mocks.StowItem{}
 				item.On("ID").Return("uploads/2020/01/test.txt")
-				c.On("ID").Return("bucket")
-				c.On("Put", mock.Anything, u.Contents, u.Size, mock.Anything).Return(item, nil)
+
+				cont := &mocks.StowContainer{}
+				cont.On("ID").Return("bucket")
+				cont.On("Put", mock.Anything, upload.Contents, upload.Size, mock.Anything).Return(item, nil)
+
+				m.On("Config").Return(domain.StorageAWS, "", nil)
+				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
 				r.On("Create", fileRemote).Return(fileRemote, nil)
 			},
 			false,
 			fileRemote,
+		},
+		"Config Error": {
+			upload,
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Config").Return(domain.StorageAWS, "", fmt.Errorf("error"))
+			},
+			false,
+			"error",
+		},
+		"Bucket Error": {
+			upload,
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Config").Return(domain.StorageAWS, "", nil)
+				m.On("Bucket", domain.StorageAWS, "").Return(nil, fmt.Errorf("error"))
+			},
+			false,
+			"error",
 		},
 		"Validate Error": {
 			domain.Upload{
@@ -153,9 +166,12 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 			"Validation failed",
 		},
 		"Put Error": {
-			u,
-			func(s *mocks.Service, c *mocks.StowContainer, r *repo.Repository) {
-				c.On("Put", mock.Anything, u.Contents, u.Size, mock.Anything).Return(&mocks.StowItem{}, fmt.Errorf("error"))
+			upload,
+			func(m *mocks.Service, r *repo.Repository) {
+				cont := &mocks.StowContainer{}
+				cont.On("Put", mock.Anything, upload.Contents, upload.Size, mock.Anything).Return(&mocks.StowItem{}, fmt.Errorf("error"))
+				m.On("Config").Return(domain.StorageAWS, "", nil)
+				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
 			},
 			true,
 			"Error uploading file to storage provider",
@@ -169,20 +185,29 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				Private:    false,
 				SourceType: domain.MediaSourceType,
 			},
-			func(s *mocks.Service, c *mocks.StowContainer, r *repo.Repository) {
-				c.On("Put", mock.Anything, mock.Anything, u.Size, mock.Anything).Return(&mocks.StowItem{}, nil)
+			func(m *mocks.Service, r *repo.Repository) {
+				cont := &mocks.StowContainer{}
+				cont.On("Put", mock.Anything, mock.Anything, upload.Size, mock.Anything).Return(&mocks.StowItem{}, nil)
+				m.On("Config").Return(domain.StorageAWS, "", nil)
+				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
 			},
 			true,
 			"Error obtaining mime type",
 		},
 		"Repo Error": {
-			u,
-			func(s *mocks.Service, c *mocks.StowContainer, r *repo.Repository) {
+			upload,
+			func(m *mocks.Service, r *repo.Repository) {
 				item := &mocks.StowItem{}
-				item.On("ID").Return("uploads/2020/01/test.txt")
-				c.On("ID").Return("bucket")
-				c.On("Put", mock.Anything, u.Contents, u.Size, mock.Anything).Return(item, nil)
-				r.On("Create", fileRemote).Return(domain.File{}, &errors.Error{Message: "error"})
+				item.On("ID").Return("test.txt")
+				item.On("URL").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
+
+				cont := &mocks.StowContainer{}
+				cont.On("ID").Return("bucket")
+				cont.On("Put", "/uploads/2020/01/"+key+".txt", upload.Contents, upload.Size, mock.Anything).Return(item, nil)
+
+				m.On("Config").Return(domain.StorageLocal, "", nil)
+				m.On("Bucket", domain.StorageLocal, "").Return(cont, nil)
+				r.On("Create", fileLocal).Return(domain.File{}, fmt.Errorf("error"))
 			},
 			false,
 			"error",
@@ -191,31 +216,12 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			m := &mocks.Service{}
-			r := &repo.Repository{}
-			c := &mocks.StowContainer{}
-
-			if test.mock != nil {
-				test.mock(m, c, r)
-			}
-
-			s := Storage{
-				filesRepo:     r,
-				service:       m,
-				stowContainer: c,
-				ProviderName:  domain.StorageAWS,
-			}
-
-			if test.local {
-				s.ProviderName = domain.StorageLocal
-			}
-
+			s := t.Setup(test.mock)
 			got, err := s.Upload(test.input)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-
 			t.Equal(test.want, got)
 		})
 	}
@@ -261,46 +267,46 @@ func (t *StorageTestSuite) TestBucket_Exists() {
 
 func (t *StorageTestSuite) TestBucket_Delete() {
 	tt := map[string]struct {
-		mock func(s *mocks.Service, r *repo.Repository)
+		mock func(m *mocks.Service, r *repo.Repository)
 		want interface{}
 	}{
 		"Success": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("Find", mock.Anything).Return(domain.File{}, nil)
 				c := &mocks.StowContainer{}
-				s.On("BucketByFile", domain.File{}).Return(c, nil)
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
 				c.On("RemoveItem", mock.Anything).Return(nil)
 				r.On("Delete", mock.Anything).Return(nil)
 			},
 			nil,
 		},
 		"Find Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("Find", mock.Anything).Return(domain.File{}, &errors.Error{Message: "error"})
 			},
 			"error",
 		},
 		"BucketByFile Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("Find", mock.Anything).Return(domain.File{}, nil)
-				s.On("BucketByFile", mock.Anything).Return(nil, &errors.Error{Message: "error"})
+				m.On("BucketByFile", mock.Anything).Return(nil, &errors.Error{Message: "error"})
 			},
 			"error",
 		},
 		"Storage Remove Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("Find", mock.Anything).Return(domain.File{}, nil)
 				c := &mocks.StowContainer{}
-				s.On("BucketByFile", domain.File{}).Return(c, nil)
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
 				c.On("RemoveItem", mock.Anything).Return(fmt.Errorf("error"))
 			},
 			"Error deleting file from storage",
 		},
 		"Repo Remove Error": {
-			func(s *mocks.Service, r *repo.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				r.On("Find", mock.Anything).Return(domain.File{}, nil)
 				c := &mocks.StowContainer{}
-				s.On("BucketByFile", domain.File{}).Return(c, nil)
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
 				c.On("RemoveItem", mock.Anything).Return(nil)
 				r.On("Delete", mock.Anything).Return(&errors.Error{Message: "error"})
 			},
@@ -310,22 +316,12 @@ func (t *StorageTestSuite) TestBucket_Delete() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			m := &mocks.Service{}
-			r := &repo.Repository{}
-
-			test.mock(m, r)
-
-			s := Storage{
-				filesRepo: r,
-				service:   m,
-			}
-
+			s := t.Setup(test.mock)
 			err := s.Delete(1)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-
 			t.Equal(test.want, err)
 		})
 	}

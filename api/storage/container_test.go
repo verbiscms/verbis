@@ -9,114 +9,47 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
-	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
+	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
 	"github.com/graymeta/stow"
+	"github.com/stretchr/testify/mock"
 )
-
-// bucket is the default bucket for testing.
-const bucket = "verbis-bucket"
-
-func (t *StorageTestSuite) SetupContainer(local bool, mock func(s *mocks.StowLocation, o *options.Repository)) *Storage {
-	m := &mocks.StowLocation{}
-	o := &options.Repository{}
-
-	if mock != nil {
-		mock(m, o)
-	}
-
-	provider := domain.StorageAWS
-	if local {
-		provider = domain.StorageLocal
-	}
-
-	s := &Storage{
-		optionsRepo:  o,
-		stowLocation: m,
-		options: &domain.Options{
-			StorageProvider: provider,
-		},
-	}
-
-	return s
-}
-
-func (t *StorageTestSuite) TestContainer_SetBucket() {
-	tt := map[string]struct {
-		local bool
-		mock  func(s *mocks.StowLocation, o *options.Repository)
-		want  interface{}
-	}{
-		"Local": {
-			true,
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("Container", "").Return(&mocks.StowContainer{}, nil)
-				o.On("Update", "storage_bucket", "").Return(nil)
-			},
-			nil,
-		},
-		"Remote": {
-			false,
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("Container", bucket).Return(&mocks.StowContainer{}, nil)
-				o.On("Update", "storage_bucket", bucket).Return(nil)
-			},
-			nil,
-		},
-		"Stow Error": {
-			false,
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("Container", bucket).Return(&mocks.StowContainer{}, fmt.Errorf("error"))
-			},
-			"Error setting bucket",
-		},
-		"Repo Error": {
-			false,
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("Container", bucket).Return(&mocks.StowContainer{}, nil)
-				o.On("Update", "storage_bucket", bucket).Return(fmt.Errorf("error"))
-			},
-			"Error updating options table with new bucket",
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func() {
-			s := t.SetupContainer(test.local, test.mock)
-			orig := s.stowContainer
-			err := s.SetBucket(bucket)
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
-				return
-			}
-			t.NotEqual(s.stowContainer, orig)
-			t.Equal(test.want, err)
-		})
-	}
-}
 
 func (t *StorageTestSuite) TestContainer_ListBuckets() {
 	tt := map[string]struct {
-		mock func(s *mocks.StowLocation, o *options.Repository)
+		mock func(m *mocks.Service, r *repo.Repository)
 		want interface{}
 	}{
 		"Success": {
-			func(s *mocks.StowLocation, o *options.Repository) {
+			func(m *mocks.Service, r *repo.Repository) {
 				c1 := &mocks.StowContainer{}
 				c1.On("ID").Return("id-1")
 				c1.On("Name").Return("name-1")
+
 				c2 := &mocks.StowContainer{}
 				c2.On("ID").Return("id-2")
 				c2.On("Name").Return("name-2")
-				s.On("Containers", "", "", pageSize).Return([]stow.Container{c1, c2}, "", nil)
+
+				loc := &mocks.StowLocation{}
+				loc.On("Containers", mock.Anything, mock.Anything, pageSize).Return([]stow.Container{c1, c2}, "", nil)
+
+				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
 			domain.Buckets{
 				domain.Bucket{Id: "id-1", Name: "name-1"},
 				domain.Bucket{Id: "id-2", Name: "name-2"},
 			},
 		},
-		"Error": {
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("Containers", "", "", pageSize).Return(nil, "", fmt.Errorf("error"))
+		"Service Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Provider", domain.StorageLocal).Return(nil, &errors.Error{Message: "error"})
+			},
+			"error",
+		},
+		"Container Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				loc := &mocks.StowLocation{}
+				loc.On("Containers", mock.Anything, mock.Anything, pageSize).Return(nil, "", fmt.Errorf("Error"))
+				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
 			"Error obtaining buckets",
 		},
@@ -124,8 +57,8 @@ func (t *StorageTestSuite) TestContainer_ListBuckets() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.SetupContainer(false, test.mock)
-			got, err := s.ListBuckets()
+			s := t.Setup(test.mock)
+			got, err := s.ListBuckets(domain.StorageLocal)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -137,18 +70,28 @@ func (t *StorageTestSuite) TestContainer_ListBuckets() {
 
 func (t *StorageTestSuite) TestContainer_CreateBucket() {
 	tt := map[string]struct {
-		mock func(s *mocks.StowLocation, o *options.Repository)
+		mock func(m *mocks.Service, r *repo.Repository)
 		want interface{}
 	}{
 		"Success": {
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("CreateContainer", bucket).Return(nil, nil)
+			func(m *mocks.Service, r *repo.Repository) {
+				loc := &mocks.StowLocation{}
+				loc.On("CreateContainer", TestBucket).Return(nil, nil)
+				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
 			nil,
 		},
-		"Error": {
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("CreateContainer", bucket).Return(nil, fmt.Errorf("error"))
+		"Service Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Provider", domain.StorageLocal).Return(nil, &errors.Error{Message: "error"})
+			},
+			"error",
+		},
+		"Create Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				loc := &mocks.StowLocation{}
+				loc.On("CreateContainer", TestBucket).Return(nil, fmt.Errorf("error"))
+				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
 			"Error creating bucket",
 		},
@@ -156,8 +99,8 @@ func (t *StorageTestSuite) TestContainer_CreateBucket() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.SetupContainer(false, test.mock)
-			err := s.CreateBucket(bucket)
+			s := t.Setup(test.mock)
+			err := s.CreateBucket(domain.StorageLocal, TestBucket)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -169,18 +112,28 @@ func (t *StorageTestSuite) TestContainer_CreateBucket() {
 
 func (t *StorageTestSuite) TestContainer_Delete() {
 	tt := map[string]struct {
-		mock func(s *mocks.StowLocation, o *options.Repository)
+		mock func(m *mocks.Service, r *repo.Repository)
 		want interface{}
 	}{
 		"Success": {
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("RemoveContainer", bucket).Return(nil)
+			func(m *mocks.Service, r *repo.Repository) {
+				loc := &mocks.StowLocation{}
+				loc.On("RemoveContainer", TestBucket).Return(nil)
+				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
 			nil,
 		},
-		"Error": {
-			func(s *mocks.StowLocation, o *options.Repository) {
-				s.On("RemoveContainer", bucket).Return(fmt.Errorf("error"))
+		"Service Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Provider", domain.StorageLocal).Return(nil, &errors.Error{Message: "error"})
+			},
+			"error",
+		},
+		"Create Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				loc := &mocks.StowLocation{}
+				loc.On("RemoveContainer", TestBucket).Return(fmt.Errorf("error"))
+				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
 			"Error deleting bucket with the name",
 		},
@@ -188,8 +141,8 @@ func (t *StorageTestSuite) TestContainer_Delete() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.SetupContainer(false, test.mock)
-			err := s.DeleteBucket(bucket)
+			s := t.Setup(test.mock)
+			err := s.DeleteBucket(domain.StorageLocal, TestBucket)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
