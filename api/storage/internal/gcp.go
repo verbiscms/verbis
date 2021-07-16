@@ -32,7 +32,7 @@ func (g *gcp) Dial(env *environment.Env) (stow.Location, error) {
 	if err != nil {
 		return nil, err
 	}
-	return stow.Dial(google.Kind, stow.ConfigMap{
+	return dialler(google.Kind, stow.ConfigMap{
 		google.ConfigJSON:      json,
 		google.ConfigProjectId: env.GCPProjectId,
 	})

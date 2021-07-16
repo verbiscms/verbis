@@ -15,6 +15,7 @@ import (
 
 // ListBuckets
 //
+// Returns http.StatusForbidden if the provider is local.
 // Returns http.StatusBadRequest if the request was invalid.
 // Returns http.StatusOK if there are no buckets items or success.
 // Returns http.StatusInternalServerError if there was an error getting the buckets.
@@ -22,7 +23,6 @@ func (s *Storage) ListBuckets(ctx *gin.Context) {
 	const op = "StorageHandler.ListBuckets"
 
 	provider := domain.StorageProvider(ctx.Param("name"))
-
 	if provider.IsLocal() {
 		api.Respond(ctx, http.StatusForbidden, "Local provider buckets are forbidden", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("error bad provider"), Operation: op})
 		return

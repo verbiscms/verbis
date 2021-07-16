@@ -25,7 +25,7 @@ var (
 )
 
 func (a *amazon) Dial(env *environment.Env) (stow.Location, error) {
-	return stow.Dial(s3.Kind, stow.ConfigMap{
+	return dialler(s3.Kind, stow.ConfigMap{
 		s3.ConfigAccessKeyID: env.AWSAccessKey,
 		s3.ConfigSecretKey:   env.AWSSecret,
 	})

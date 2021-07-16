@@ -17,7 +17,7 @@ type local struct{}
 const LocalName = "Local Storage"
 
 func (l *local) Dial(env *environment.Env) (stow.Location, error) {
-	return stow.Dial(stowLocal.Kind, stow.ConfigMap{
+	return dialler(stowLocal.Kind, stow.ConfigMap{
 		stowLocal.ConfigKeyPath: paths.Get().Storage,
 	})
 }

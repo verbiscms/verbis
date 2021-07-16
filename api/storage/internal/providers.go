@@ -14,6 +14,8 @@ type Provider interface {
 	Info(env *environment.Env) domain.StorageProviderInfo
 }
 
+var dialler = stow.Dial
+
 type ProviderMap map[domain.StorageProvider]Provider
 
 var Providers = ProviderMap{}

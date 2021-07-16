@@ -45,4 +45,10 @@ var (
 		domain.Bucket{Id: "1", Name: "verbis"},
 		domain.Bucket{Id: "2", Name: "verbis"},
 	}
+	// The default storageConfiguration used for
+	// testing.
+	storageConfig = domain.StorageConfiguration{
+		ActiveProvider: "test",
+		ActiveBucket:   "test",
+	}
 )
