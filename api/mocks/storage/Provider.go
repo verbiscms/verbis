@@ -12,13 +12,13 @@ type Provider struct {
 	mock.Mock
 }
 
-// CreateBucket provides a mock function with given fields: name
-func (_m *Provider) CreateBucket(name string) error {
-	ret := _m.Called(name)
+// CreateBucket provides a mock function with given fields: provider, name
+func (_m *Provider) CreateBucket(provider domain.StorageProvider, name string) error {
+	ret := _m.Called(provider, name)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(name)
+	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) error); ok {
+		r0 = rf(provider, name)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -40,13 +40,13 @@ func (_m *Provider) Delete(id int) error {
 	return r0
 }
 
-// DeleteBucket provides a mock function with given fields: name
-func (_m *Provider) DeleteBucket(name string) error {
-	ret := _m.Called(name)
+// DeleteBucket provides a mock function with given fields: provider, name
+func (_m *Provider) DeleteBucket(provider domain.StorageProvider, name string) error {
+	ret := _m.Called(provider, name)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(name)
+	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) error); ok {
+		r0 = rf(provider, name)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -98,17 +98,15 @@ func (_m *Provider) Find(url string) ([]byte, domain.File, error) {
 	return r0, r1, r2
 }
 
-// ListBuckets provides a mock function with given fields:
-func (_m *Provider) ListBuckets() (domain.Buckets, error) {
+// Info provides a mock function with given fields:
+func (_m *Provider) Info() (domain.StorageConfiguration, error) {
 	ret := _m.Called()
 
-	var r0 domain.Buckets
-	if rf, ok := ret.Get(0).(func() domain.Buckets); ok {
+	var r0 domain.StorageConfiguration
+	if rf, ok := ret.Get(0).(func() domain.StorageConfiguration); ok {
 		r0 = rf()
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(domain.Buckets)
-		}
+		r0 = ret.Get(0).(domain.StorageConfiguration)
 	}
 
 	var r1 error
@@ -121,32 +119,48 @@ func (_m *Provider) ListBuckets() (domain.Buckets, error) {
 	return r0, r1
 }
 
-// SetBucket provides a mock function with given fields: id
-func (_m *Provider) SetBucket(id string) error {
-	ret := _m.Called(id)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(string) error); ok {
-		r0 = rf(id)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// SetProvider provides a mock function with given fields: provider
-func (_m *Provider) SetProvider(provider domain.StorageProvider) error {
+// ListBuckets provides a mock function with given fields: provider
+func (_m *Provider) ListBuckets(provider domain.StorageProvider) (domain.Buckets, error) {
 	ret := _m.Called(provider)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(domain.StorageProvider) error); ok {
+	var r0 domain.Buckets
+	if rf, ok := ret.Get(0).(func(domain.StorageProvider) domain.Buckets); ok {
 		r0 = rf(provider)
 	} else {
-		r0 = ret.Error(0)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(domain.Buckets)
+		}
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(domain.StorageProvider) error); ok {
+		r1 = rf(provider)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Migrate provides a mock function with given fields: from, to
+func (_m *Provider) Migrate(from domain.StorageChange, to domain.StorageChange) (int, error) {
+	ret := _m.Called(from, to)
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func(domain.StorageChange, domain.StorageChange) int); ok {
+		r0 = rf(from, to)
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(domain.StorageChange, domain.StorageChange) error); ok {
+		r1 = rf(from, to)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // Upload provides a mock function with given fields: upload

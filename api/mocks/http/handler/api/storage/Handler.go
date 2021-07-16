@@ -12,7 +12,27 @@ type Handler struct {
 	mock.Mock
 }
 
-// Update provides a mock function with given fields: ctx
-func (_m *Handler) Update(ctx *gin.Context) {
+// Config provides a mock function with given fields: ctx
+func (_m *Handler) Config(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
+// CreateBucket provides a mock function with given fields: ctx
+func (_m *Handler) CreateBucket(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
+// DeleteBucket provides a mock function with given fields: ctx
+func (_m *Handler) DeleteBucket(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
+// ListBuckets provides a mock function with given fields: ctx
+func (_m *Handler) ListBuckets(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
+// Save provides a mock function with given fields: ctx
+func (_m *Handler) Save(ctx *gin.Context) {
 	_m.Called(ctx)
 }

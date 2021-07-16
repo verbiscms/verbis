@@ -21,7 +21,7 @@ import (
 // the environment.
 type Provider interface {
 	Info() (domain.StorageConfiguration, error)
-	Migrate(from, to domain.StorageProvider) error
+	Migrate(from, to domain.StorageChange) (int, error)
 	Container
 	Bucket
 }
@@ -81,23 +81,23 @@ var (
 	// ErrNoProvider is returned by New and SetProvider when
 	// there is no match from the options table.
 	ErrNoProvider = errors.New("invalid provider")
+
+	ErrAlreadyMigrating = errors.New("migration is already in progress")
 )
 
 // |||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
 type Storage struct {
-	ProviderName domain.StorageProvider
-	env          *environment.Env
-	optionsRepo  options.Repository
-	filesRepo    files.Repository
-	options      *domain.Options
-	paths        paths.Paths
-	service      internal.StorageServices
+	env         *environment.Env
+	optionsRepo options.Repository
+	filesRepo   files.Repository
+	paths       paths.Paths
+	service     internal.StorageServices
+	isMigrating bool
+	migration   MigrationInfo
 }
 
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
-//
+// Conf
 type Config struct {
 	Environment *environment.Env
 	Options     options.Repository
@@ -130,14 +130,12 @@ func New(cfg Config) (*Storage, error) {
 		return nil, err
 	}
 
-	service := internal.NewService(cfg.Environment, cfg.Options, paths.Get().Storage)
+	service := internal.NewService(cfg.Environment, cfg.Options)
 
-	provider, _, err := service.Info()
+	provider, _, err := service.Config()
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(provider)
 
 	if !internal.Providers.Exists(provider) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}

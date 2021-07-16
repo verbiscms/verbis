@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
@@ -20,7 +21,12 @@ import (
 func (s *Storage) ListBuckets(ctx *gin.Context) {
 	const op = "StorageHandler.ListBuckets"
 
-	provider := domain.StorageProvider(ctx.Param("provider"))
+	provider := domain.StorageProvider(ctx.Param("name"))
+
+	if provider.IsLocal() {
+		api.Respond(ctx, http.StatusForbidden, "Local provider buckets are forbidden", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("error bad provider"), Operation: op})
+		return
+	}
 
 	buckets, err := s.Deps.Storage.ListBuckets(provider)
 	if err != nil && errors.Code(err) == errors.INVALID {

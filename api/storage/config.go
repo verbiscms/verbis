@@ -10,30 +10,20 @@ import (
 )
 
 func (s *Storage) Info() (domain.StorageConfiguration, error) {
-	provider, bucket, err := s.service.Info()
+	provider, bucket, err := s.service.Config()
 	if err != nil {
 		return domain.StorageConfiguration{}, err
 	}
 
 	var m = make(domain.StorageProviders, 0)
 	for k, v := range internal.Providers {
-		msg := ""
-		_, err := v.Dial(s.env)
-		if err != nil {
-			msg = "Error dialling storage provider: " + err.Error()
-		} else {
-			msg = "Provider dial successful."
-		}
-		m[k] = domain.StorageProviderInfo{
-			DialMessage: msg,
-			EnvSet:      v.ConfigValid(s.env),
-		}
+		m[k] = v.Info(s.env)
 	}
 
 	c := domain.StorageConfiguration{
 		ActiveProvider: provider,
 		ActiveBucket:   bucket,
-		Providers:      m,
+		Providers:      m.Sort(),
 	}
 
 	return c, nil

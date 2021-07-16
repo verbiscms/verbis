@@ -14,8 +14,8 @@ type Service struct {
 	mock.Mock
 }
 
-// Bucket provides a mock function with given fields: file
-func (_m *Service) Bucket(file domain.File) (stow.Container, error) {
+// BucketByFile provides a mock function with given fields: file
+func (_m *Service) BucketByFile(file domain.File) (stow.Container, error) {
 	ret := _m.Called(file)
 
 	var r0 stow.Container
