@@ -85,7 +85,7 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload) (d
 
 	item, err := cont.Put(u.AbsPath(), u.Contents, u.Size, nil)
 	if err != nil {
-		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage p", Operation: op, Err: err}
+		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage provider", Operation: op, Err: err}
 	}
 
 	mime, err := u.Mime()
