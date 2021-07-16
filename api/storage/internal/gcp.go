@@ -78,7 +78,6 @@ func (g *gcp) getGCPJson(env *environment.Env) (string, error) {
 	}
 
 	json := string(bytes)
-
 	g.json = &json
 
 	return json, nil
