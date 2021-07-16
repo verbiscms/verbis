@@ -13,9 +13,8 @@ import (
 
 // Config
 //
-// Returns http.StatusBadRequest if the request was invalid.
-// Returns http.StatusOK if there are no buckets items or success.
-// Returns http.StatusInternalServerError if there was an error getting the buckets.
+// Returns http.StatusOK if the configuration was successfully retrieved.
+// Returns http.StatusInternalServerError if there was an error obtaining the config.
 func (s *Storage) Config(ctx *gin.Context) {
 	const op = "StorageHandler.Config"
 

@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/storage"
 	"github.com/gin-gonic/gin"
@@ -17,36 +18,47 @@ func (t *StorageTestSuite) TestStorage_ListBuckets() {
 		status  int
 		message string
 		mock    func(m *mocks.Provider)
+		url     string
 	}{
 		"Success": {
 			buckets,
 			http.StatusOK,
 			"Successfully obtained buckets",
 			func(m *mocks.Provider) {
-				m.On("ListBuckets").Return(buckets, nil)
+				m.On("ListBuckets", domain.StorageAWS).Return(buckets, nil)
 			},
+			"/buckets/aws",
+		},
+		"Local": {
+			nil,
+			http.StatusForbidden,
+			"Local provider buckets are forbidden",
+			nil,
+			"/buckets/local",
 		},
 		"Invalid": {
 			nil,
 			http.StatusBadRequest,
 			"invalid",
 			func(m *mocks.Provider) {
-				m.On("ListBuckets").Return(nil, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("ListBuckets", domain.StorageAWS).Return(nil, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
+			"/buckets/aws",
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.Provider) {
-				m.On("ListBuckets").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("ListBuckets", domain.StorageAWS).Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
+			"/buckets/aws",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe("GET", "/buckets", "/buckets", nil, func(ctx *gin.Context) {
+			t.RequestAndServe("GET", test.url, "/buckets/:name", nil, func(ctx *gin.Context) {
 				t.Setup(test.mock).ListBuckets(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)

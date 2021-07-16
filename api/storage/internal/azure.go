@@ -9,7 +9,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
 	az "github.com/graymeta/stow/azure"
-	"github.com/graymeta/stow/s3"
 )
 
 type azure struct{}
@@ -24,7 +23,7 @@ var (
 )
 
 func (a *azure) Dial(env *environment.Env) (stow.Location, error) {
-	return stow.Dial(s3.Kind, stow.ConfigMap{
+	return dialler(az.Kind, stow.ConfigMap{
 		az.ConfigAccount: env.AzureAccount,
 		az.ConfigKey:     env.AzureKey,
 	})

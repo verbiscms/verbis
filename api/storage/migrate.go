@@ -10,11 +10,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
+	"sync"
 )
 
 type MigrationInfo struct {
-	Total     int64
-	Processed int64
+	Total     int
+	Progress  int
 	Failed    int
 	Succeeded int
 	Errors    []FailedMigrationFile
@@ -25,6 +26,11 @@ type FailedMigrationFile struct {
 	File  domain.File
 }
 
+var (
+	migrateTrackChan = make(chan int, 20)
+	migrateWg        = sync.WaitGroup{}
+)
+
 func (m *MigrationInfo) fail(file domain.File, err error) {
 	m.Failed += 1
 	m.Errors = append(m.Errors, FailedMigrationFile{
@@ -34,11 +40,11 @@ func (m *MigrationInfo) fail(file domain.File, err error) {
 }
 
 func (m *MigrationInfo) succeed() {
-	m.Processed = m.Total / int64(m.processed()) * int64(100)
 	m.Succeeded += 1
+	m.Progress = (m.Processed() * 100) / m.Total
 }
 
-func (m *MigrationInfo) processed() int {
+func (m *MigrationInfo) Processed() int {
 	return m.Succeeded + m.Failed
 }
 
@@ -48,57 +54,62 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 		return 0, &errors.Error{Code: errors.INVALID, Message: "Error, migration is already in progress", Operation: op, Err: nil}
 	}
 
-	files, total, err := s.filesRepo.List(params.Params{LimitAll: false})
+	ff, total, err := s.filesRepo.List(params.Params{LimitAll: false})
 	if err != nil {
 		return 0, err
 	}
 
 	s.isMigrating = true
 	s.migration = MigrationInfo{
-		Total: int64(total),
+		Total: total,
 	}
 
-	go s.migrateBackground(files, from, to)
+	for _, file := range ff {
+		migrateTrackChan <- 1
+		go s.migrateBackground(file, from, to)
+	}
 
 	return total, nil
 }
 
-func (s *Storage) migrateBackground(files domain.Files, from, to domain.StorageChange) {
-	for _, f := range files {
-		if from.Provider == f.Provider {
-			continue
-		}
+func (s *Storage) migrateBackground(file domain.File, from, to domain.StorageChange) {
+	migrateWg.Add(1)
+	defer func() {
+		migrateWg.Done()
+		<-migrateTrackChan
+	}()
 
-		buf, _, err := s.Find(f.Url)
-		if err != nil {
-			s.migration.fail(f, err)
-			continue
-		}
-
-		u := domain.Upload{
-			UUID:       uuid.New(),
-			Path:       f.Url,
-			Size:       0,
-			Contents:   bytes.NewReader(buf),
-			Private:    bool(f.Private),
-			SourceType: f.SourceType,
-		}
-
-		_, err = s.upload(from.Provider, from.Bucket, u)
-
-		if err != nil {
-			s.migration.fail(f, err)
-			continue
-		}
-
-		err = s.filesRepo.Update(f.Id, to)
-		if err != nil {
-			s.migration.fail(f, err)
-			continue
-		}
-
-		s.migration.succeed()
+	if from.Provider == file.Provider {
+		return
 	}
 
-	s.migration = MigrationInfo{}
+	buf, _, err := s.Find(file.Url)
+	if err != nil {
+		s.migration.fail(file, err)
+		return
+	}
+
+	u := domain.Upload{
+		UUID:       uuid.New(),
+		Path:       file.Url,
+		Size:       0,
+		Contents:   bytes.NewReader(buf),
+		Private:    bool(file.Private),
+		SourceType: file.SourceType,
+	}
+
+	_, err = s.upload(from.Provider, from.Bucket, u)
+
+	if err != nil {
+		s.migration.fail(file, err)
+		return
+	}
+
+	err = s.filesRepo.Update(file.Id, to)
+	if err != nil {
+		s.migration.fail(file, err)
+		return
+	}
+
+	s.migration.succeed()
 }

@@ -21,7 +21,7 @@ type ()
 // Returns http.StatusOK if there are no buckets items or success.
 // Returns http.StatusInternalServerError if there was an error getting the buckets.
 func (s *Storage) Save(ctx *gin.Context) {
-	const op = "StorageHandler.SetProvider"
+	const op = "StorageHandler.Save"
 
 	var info domain.StorageChange
 	err := ctx.ShouldBindJSON(&info)

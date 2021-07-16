@@ -5,6 +5,8 @@
 package domain
 
 import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"strings"
 )
 
@@ -45,6 +47,14 @@ type (
 		Region   string          `json:"region"`
 	}
 )
+
+func (s StorageChange) Validate() error {
+	const op = "Domain.StorageChange.Validate"
+	if s.Provider.IsLocal() && s.Bucket == "" {
+		return &errors.Error{Code: errors.INVALID, Message: "Error, storage bucket cannot be empty", Operation: op, Err: fmt.Errorf("bucket can't be empty")}
+	}
+	return nil
+}
 
 func (b Buckets) IsValid(bucket string) bool {
 	for _, v := range b {
