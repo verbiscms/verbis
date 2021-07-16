@@ -5,8 +5,6 @@
 package domain
 
 import (
-	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"strings"
 )
 
@@ -22,7 +20,8 @@ type (
 	// StorageProvider represents a the string of a provider
 	// for writing storage files.
 	StorageProvider string
-
+	// StorageConfiguration represents the informatio returned
+	// by the client of the current state of storage.
 	StorageConfiguration struct {
 		ActiveProvider StorageProvider  `json:"active_provider"`
 		ActiveBucket   string           `json:"active_bucket"`
@@ -31,7 +30,9 @@ type (
 	// StorageProviders represents the map of providers that
 	// are available within Verbis.
 	StorageProviders map[StorageProvider]StorageProviderInfo
-
+	// StorageProviderInfo represents the data of a storage
+	// provider, including if the provider is connected,
+	// environment keys and relevant names etc.
 	StorageProviderInfo struct {
 		Name            string      `json:"name"`
 		Order           int         `json:"-"`
@@ -41,6 +42,8 @@ type (
 		EnvironmentKeys []string    `json:"environment_keys"`
 		EnvironmentSet  bool        `json:"environment_set"`
 	}
+	// StorageChange represents the data needed to change or
+	// modify and existing storage provider or bucket.
 	StorageChange struct {
 		Provider StorageProvider `json:"provider" binding:"required"`
 		Bucket   string          `json:"bucket"`
@@ -48,14 +51,9 @@ type (
 	}
 )
 
-func (s StorageChange) Validate() error {
-	const op = "Domain.StorageChange.Validate"
-	if s.Provider.IsLocal() && s.Bucket == "" {
-		return &errors.Error{Code: errors.INVALID, Message: "Error, storage bucket cannot be empty", Operation: op, Err: fmt.Errorf("bucket can't be empty")}
-	}
-	return nil
-}
-
+// IsValid checks to see if a bucket passed is represented
+// in the buckets slice. Returns false if there is no
+// match.
 func (b Buckets) IsValid(bucket string) bool {
 	for _, v := range b {
 		if v.Id == bucket {
