@@ -10,12 +10,45 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
+	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
 	"io/ioutil"
 	"net/url"
 	"strings"
 )
+
+func (t *StorageTestSuite) TestList() {
+	tt := map[string]struct {
+		mock func(m *mocks.Service, r *repo.Repository)
+		want interface{}
+	}{
+		"Success": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("List", dummy.DefaultParams).Return(filesSlice, 2, nil)
+			},
+			filesSlice,
+		},
+		"Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("List", dummy.DefaultParams).Return(nil, 0, fmt.Errorf("error"))
+			},
+			"error",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(test.mock)
+			got, _, err := s.List(dummy.DefaultParams)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.Equal(test.want, got)
+		})
+	}
+}
 
 func (t *StorageTestSuite) TestBucket_Find() {
 	tt := map[string]struct {
