@@ -3,3 +3,11 @@
 // license that can be found in the LICENSE file.
 
 package storage
+
+func (t *StorageTestSuite) TestStorage_Migrate() {
+
+}
+
+//func TestMigrationInfo_Fail() {
+//
+//}

@@ -14,11 +14,11 @@ type Provider interface {
 	Info(env *environment.Env) domain.StorageProviderInfo
 }
 
-type providerMap map[domain.StorageProvider]Provider
+type ProviderMap map[domain.StorageProvider]Provider
 
-var Providers = providerMap{}
+var Providers = ProviderMap{}
 
-func (p providerMap) RegisterProvider(name domain.StorageProvider, provider Provider) {
+func (p ProviderMap) RegisterProvider(name domain.StorageProvider, provider Provider) {
 	const op = "Storage.RegisterProvider"
 	_, exists := p[name]
 	if exists {
@@ -28,7 +28,7 @@ func (p providerMap) RegisterProvider(name domain.StorageProvider, provider Prov
 	p[name] = provider
 }
 
-func (p providerMap) Exists(name domain.StorageProvider) bool {
+func (p ProviderMap) Exists(name domain.StorageProvider) bool {
 	_, exists := p[name]
 	return exists
 }

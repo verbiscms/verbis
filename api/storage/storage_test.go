@@ -7,8 +7,12 @@ package storage
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
+	"github.com/ainsleyclark/verbis/api/store/files"
+	"github.com/ainsleyclark/verbis/api/store/options"
 	"github.com/google/uuid"
 	_ "github.com/graymeta/stow/azure"
 	_ "github.com/graymeta/stow/google"
@@ -134,50 +138,6 @@ func (t *StorageTestSuite) Setup(mock func(s *mocks.Service, r *repo.Repository)
 //		})
 //	}
 //}
-//
-//func (t *StorageTestSuite) TestConfig_Validate() {
-//	tt := map[string]struct {
-//		input Config
-//		want  interface{}
-//	}{
-//		"Valid": {
-//			Config{
-//				Environment: &environment.Env{},
-//				Options:     &options.Store{},
-//				Files:       &files.Store{},
-//			},
-//			nil,
-//		},
-//		"Nil Environment": {
-//			Config{},
-//			"Error, no Environment set",
-//		},
-//		"Nil OptionsBAD": {
-//			Config{
-//				Environment: &environment.Env{},
-//			},
-//			"Error, no options repository set",
-//		},
-//		"Nil Files": {
-//			Config{
-//				Environment: &environment.Env{},
-//				Options:     &options.Store{},
-//			},
-//			"Error, no files repository set",
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			err := test.input.Validate()
-//			if err != nil {
-//				t.Contains(errors.Message(err), test.want)
-//				return
-//			}
-//			t.Equal(test.want, err)
-//		})
-//	}
-//}
 
 const (
 	// TestFileUrl is the default file url used for
@@ -232,7 +192,87 @@ var (
 		FileSize:   100,
 		Private:    false,
 	}
+	// filesSlice are the default files used for
+	// testing.
+	filesSlice = domain.Files{
+		fileLocal, fileRemote,
+	}
 )
+
+func (t *StorageTestSuite) TestNew() {
+	tt := map[string]struct {
+		input Config
+		want  interface{}
+	}{
+		"Success": {
+			Config{
+				Environment: &environment.Env{},
+				Options:     &options.Store{},
+				Files:       &files.Store{},
+			},
+			nil,
+		},
+		"Error": {
+			Config{},
+			"Error, no Environment set",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			got, err := New(test.input)
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.NotNil(got)
+		})
+	}
+}
+
+func (t *StorageTestSuite) TestConfig_Validate() {
+	tt := map[string]struct {
+		input Config
+		want  interface{}
+	}{
+		"Valid": {
+			Config{
+				Environment: &environment.Env{},
+				Options:     &options.Store{},
+				Files:       &files.Store{},
+			},
+			nil,
+		},
+		"Nil Environment": {
+			Config{},
+			"Error, no Environment set",
+		},
+		"Nil Options": {
+			Config{
+				Environment: &environment.Env{},
+			},
+			"Error, no options repository set",
+		},
+		"Nil Files": {
+			Config{
+				Environment: &environment.Env{},
+				Options:     &options.Store{},
+			},
+			"Error, no files repository set",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			err := test.input.Validate()
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.Equal(test.want, err)
+		})
+	}
+}
 
 type mockIOReaderReadError struct{}
 

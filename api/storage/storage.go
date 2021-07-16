@@ -20,7 +20,13 @@ import (
 // or it can be local, dependant on what is set on
 // the environment.
 type Provider interface {
+	// Info returns a domain.StorageConfiguration to provide
+	// information about the state of the storage.
+	// Which includes active provider and bucket,
+	// and environment state for each provider.
+	// Returns errors.INVALID if the options lookup failed.
 	Info() (domain.StorageConfiguration, error)
+	// Migrate migrates all files from one location to another.
 	Migrate(from, to domain.StorageChange) (int, error)
 	Container
 	Bucket
@@ -78,15 +84,11 @@ type Bucket interface {
 }
 
 var (
-	// ErrNoProvider is returned by New and SetProvider when
-	// there is no match from the options table.
-	ErrNoProvider = errors.New("invalid provider")
-
 	ErrAlreadyMigrating = errors.New("migration is already in progress")
 )
 
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
+// Storage represents the implementation of a Verbis
+// storage provider.
 type Storage struct {
 	env         *environment.Env
 	optionsRepo options.Repository
@@ -97,14 +99,16 @@ type Storage struct {
 	migration   MigrationInfo
 }
 
-// Conf
+// Config defines the configuration passed to create a new
+// storage instance.
 type Config struct {
 	Environment *environment.Env
 	Options     options.Repository
 	Files       files.Repository
 }
 
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+// Validate validates the configuration to ensure there are
+// no nil values passed.
 func (c Config) Validate() error {
 	const op = "Storage.Config.Validate"
 	if c.Environment == nil {
@@ -119,35 +123,19 @@ func (c Config) Validate() error {
 	return nil
 }
 
-// New parse config
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
+// New creates a new Storage client. The configuration will
+// be validated and a new storage client returned.
 func New(cfg Config) (*Storage, error) {
-	const op = "Storage.New"
-
 	err := cfg.Validate()
 	if err != nil {
 		return nil, err
 	}
-
-	service := internal.NewService(cfg.Environment, cfg.Options)
-
-	provider, _, err := service.Config()
-	if err != nil {
-		return nil, err
-	}
-
-	if !internal.Providers.Exists(provider) {
-		return nil, &errors.Error{Code: errors.INVALID, Message: string("Error setting up storage with provider: " + provider), Operation: op, Err: ErrNoProvider}
-	}
-
 	s := &Storage{
 		env:         cfg.Environment,
 		optionsRepo: cfg.Options,
 		filesRepo:   cfg.Files,
 		paths:       paths.Get(),
-		service:     service,
+		service:     internal.NewService(cfg.Environment, cfg.Options),
 	}
-
 	return s, nil
 }

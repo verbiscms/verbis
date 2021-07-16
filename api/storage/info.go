@@ -9,6 +9,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/storage/internal"
 )
 
+// Info satisfies the Provider interface by returning a
+// domain.StorageConfiguration.
 func (s *Storage) Info() (domain.StorageConfiguration, error) {
 	provider, bucket, err := s.service.Config()
 	if err != nil {
@@ -23,7 +25,7 @@ func (s *Storage) Info() (domain.StorageConfiguration, error) {
 	c := domain.StorageConfiguration{
 		ActiveProvider: provider,
 		ActiveBucket:   bucket,
-		Providers:      m.Sort(),
+		Providers:      m,
 	}
 
 	return c, nil
