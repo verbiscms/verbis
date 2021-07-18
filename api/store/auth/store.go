@@ -11,7 +11,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/store/users"
 )
 
-// Repository defines methods for auth
+// Repository defines methods for the auth layer
 // to interact with the database.
 type Repository interface {
 	Login(email, password string) (domain.User, error)

@@ -11,19 +11,25 @@ import (
 	"github.com/graymeta/stow/s3"
 )
 
+// amazon satisfies the provider interface by implementing
+// dial and info.
 type amazon struct{}
 
-const (
-	AmazonName = "Amazon S3"
-)
+// AmazonName is the friendly name for the provider
+// passed back from info()
+const AmazonName = "Amazon S3"
 
 var (
+	// AmazonEnvKeys defines the environment keys needed in
+	// order to dial the amazon provider.
 	AmazonEnvKeys = []string{
 		"STORAGE_AWS_ACCESS_KEY",
 		"STORAGE_AWS_SECRET",
 	}
 )
 
+// Dial returns a new stow.Location by calling the
+// dialler.
 func (a *amazon) Dial(env *environment.Env) (stow.Location, error) {
 	return dialler(s3.Kind, stow.ConfigMap{
 		s3.ConfigAccessKeyID: env.AWSAccessKey,
@@ -31,6 +37,8 @@ func (a *amazon) Dial(env *environment.Env) (stow.Location, error) {
 	})
 }
 
+// Info returns information about the amazon s3 storage
+// provider.
 func (a *amazon) Info(env *environment.Env) domain.StorageProviderInfo {
 	sp := domain.StorageProviderInfo{
 		Name:            AmazonName,

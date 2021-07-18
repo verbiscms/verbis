@@ -16,14 +16,6 @@ import (
 	"testing"
 )
 
-func TestNewService(t *testing.T) {
-	env := &environment.Env{}
-	opts := &options.Repository{}
-	got := NewService(env, opts)
-	want := &Service{Env: env, Options: opts}
-	assert.Equal(t, want, got)
-}
-
 func TestService_Provider(t *testing.T) {
 	m := ProviderMap{domain.StorageAWS: &amazon{}}
 

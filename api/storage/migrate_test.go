@@ -6,6 +6,9 @@ package storage
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
+	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
 )
 
 func (t *StorageTestSuite) TestMigrationInfo_Fail() {
@@ -37,6 +40,31 @@ func (t *StorageTestSuite) TestMigrationInfo_Succeed() {
 		"100": {
 			MigrationInfo{Total: 100, Succeeded: 99},
 			MigrationInfo{Total: 100, Succeeded: 100, Progress: 100},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			test.input.succeed()
+			t.Equal(test.want, test.input)
+		})
+	}
+}
+
+func (t *StorageTestSuite) TestStorage_Migrate() {
+	tt := map[string]struct {
+		from domain.StorageChange
+		to domain.StorageChange
+		mock func(m *mocks.Service, r *repo.Repository)
+		want  MigrationInfo
+	}{
+		"Simple": {
+			domain.StorageChange{},
+			domain.StorageChange{},
+			func(m *mocks.Service, r *repo.Repository) {
+
+			},
+			MigrationInfo{},
 		},
 	}
 
