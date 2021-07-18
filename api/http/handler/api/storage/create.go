@@ -14,9 +14,9 @@ import (
 
 // CreateBucket
 //
-// Returns http.StatusBadRequest if the request was invalid.
-// Returns http.StatusOK if there are no buckets items or success.
-// Returns http.StatusInternalServerError if there was an error getting the buckets.
+// Returns http.StatusOK if the bucket was created successfully.
+// Returns http.StatusBadRequest if the request was invalid or validation failed.
+// Returns http.StatusInternalServerError if there was an error creating the bucket.
 func (s *Storage) CreateBucket(ctx *gin.Context) {
 	const op = "StorageHandler.CreateBucket"
 
@@ -27,10 +27,8 @@ func (s *Storage) CreateBucket(ctx *gin.Context) {
 		return
 	}
 
-	// if the provider is connected
-
-	err = s.Deps.Storage.CreateBucket(info.Provider, info.Bucket)
-	if err != nil && errors.Code(err) == errors.INVALID {
+	err = s.Storage.CreateBucket(info.Provider, info.Bucket)
+	if err != nil && errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	} else if err != nil {
@@ -38,5 +36,5 @@ func (s *Storage) CreateBucket(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created bucket: ", info.Bucket)
+	api.Respond(ctx, http.StatusOK, "Successfully created bucket: " + info.Bucket, nil)
 }

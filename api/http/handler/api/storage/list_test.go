@@ -32,7 +32,7 @@ func (t *StorageTestSuite) TestStorage_ListBuckets() {
 		"Local": {
 			nil,
 			http.StatusForbidden,
-			"Local provider buckets are forbidden",
+			"Obtaining local buckets are forbidden",
 			nil,
 			"/buckets/local",
 		},
