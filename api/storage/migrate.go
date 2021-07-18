@@ -14,6 +14,13 @@ import (
 	"sync"
 )
 
+
+// Need to add JSON info here!, Perhaps move it to domain?
+// Makes it easier for storage config instead of the
+// interface{} were using at the moment.
+
+
+
 type MigrationInfo struct {
 	Total          int
 	Progress       int
