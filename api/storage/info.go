@@ -26,6 +26,8 @@ func (s *Storage) Info() (domain.StorageConfiguration, error) {
 		ActiveProvider: provider,
 		ActiveBucket:   bucket,
 		Providers:      m,
+		IsMigrating:    s.isMigrating,
+		MigrationInfo:  s.migration,
 	}
 
 	return c, nil

@@ -13,8 +13,6 @@ import (
 	"net/http"
 )
 
-type ()
-
 // Save
 //
 // Returns http.StatusBadRequest if the request was invalid.

@@ -11,8 +11,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
+	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"github.com/ainsleyclark/verbis/api/store/files"
-	"github.com/ainsleyclark/verbis/api/store/options"
 	"github.com/google/uuid"
 	_ "github.com/graymeta/stow/azure"
 	_ "github.com/graymeta/stow/google"
@@ -33,7 +33,7 @@ func TestStorage(t *testing.T) {
 	suite.Run(t, new(StorageTestSuite))
 }
 
-// Setup the suite with the mock function.
+// Setup the suite with the mock functions.
 func (t *StorageTestSuite) Setup(mock func(s *mocks.Service, r *repo.Repository)) *Storage {
 	m := &mocks.Service{}
 	r := &repo.Repository{}
@@ -43,101 +43,26 @@ func (t *StorageTestSuite) Setup(mock func(s *mocks.Service, r *repo.Repository)
 	return &Storage{
 		filesRepo: r,
 		service:   m,
+		env:       &environment.Env{},
 	}
 }
 
-//
-//func (t *StorageTestSuite) TestNew() {
-//	t.T().Skip("skipping")
-//
-//	tt := map[string]struct {
-//		input  func() (Config, func())
-//		panics bool
-//		want   interface{}
-//	}{
-//		//"Test": {
-//		//	func() (Config, func()) {
-//		//		tmp := t.T().TempDir()
-//		//
-//		//		err := os.MkdirAll(filepath.Join(tmp, "storage"), os.ModePerm)
-//		//		if err != nil {
-//		//			t.Fail(err.Error())
-//		//		}
-//		//
-//		//		o := &optionsMock.Repository{}
-//		//		o.On("Struct").Return(&domain.OptionsBAD{
-//		//			StorageProvider: domain.StorageLocal,
-//		//			StorageBucket:   "bucket",
-//		//		})
-//		//		o.On("Update", "storage_bucket", "").Return(nil)
-//		//
-//		//		return Config{
-//		//				Environment: &environment.Env{},
-//		//				OptionsBAD:     o,
-//		//				Files:       &filesMock.Repository{},
-//		//			}, func() {
-//		//				os.RemoveAll(tmp)
-//		//			}
-//		//	},
-//		//	false,
-//		//	nil,
-//		//},
-//		"Bad Config": {
-//			func() (Config, func()) {
-//				return Config{}, nil
-//			},
-//			false,
-//			"Error",
-//		},
-//		"Bad Provider": {
-//			func() (Config, func()) {
-//				o := &optionsMock.Repository{}
-//				o.On("Struct").Return(&domain.Options{
-//					StorageProvider: "test",
-//					StorageBucket:   "",
-//				})
-//				return Config{
-//					Environment: &environment.Env{},
-//					Options:     o,
-//					Files:       &filesMock.Repository{},
-//				}, nil
-//			},
-//			false,
-//			"Error setting up storage with provider",
-//		},
-//		"Provider Error": {
-//			func() (Config, func()) {
-//				o := &optionsMock.Repository{}
-//				o.On("Struct").Return(&domain.Options{
-//					StorageProvider: domain.StorageLocal,
-//					StorageBucket:   "",
-//				})
-//				return Config{
-//					Environment: &environment.Env{},
-//					Options:     o,
-//					Files:       &filesMock.Repository{},
-//				}, nil
-//			},
-//			false,
-//			"Error setting provider",
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			cfg, teardown := test.input()
-//			if teardown != nil {
-//				defer teardown()
-//			}
-//			got, err := New(cfg)
-//			if err != nil {
-//				t.Contains(errors.Message(err), test.want)
-//				return
-//			}
-//			t.NotNil(got)
-//		})
-//	}
-//}
+// Setup the suite with mock functions including
+// options.
+func (t *StorageTestSuite) SetupOptions(mock func(m *mocks.Service, r *repo.Repository, o *options.Repository)) *Storage {
+	m := &mocks.Service{}
+	r := &repo.Repository{}
+	o := &options.Repository{}
+	if mock != nil {
+		mock(m, r, o)
+	}
+	return &Storage{
+		filesRepo: r,
+		optionsRepo: o,
+		service:   m,
+		env:       &environment.Env{},
+	}
+}
 
 const (
 	// TestFileUrl is the default file url used for
@@ -207,7 +132,7 @@ func (t *StorageTestSuite) TestNew() {
 		"Success": {
 			Config{
 				Environment: &environment.Env{},
-				Options:     &options.Store{},
+				Options:     &options.Repository{},
 				Files:       &files.Store{},
 			},
 			nil,
@@ -238,7 +163,7 @@ func (t *StorageTestSuite) TestConfig_Validate() {
 		"Valid": {
 			Config{
 				Environment: &environment.Env{},
-				Options:     &options.Store{},
+				Options:     &options.Repository{},
 				Files:       &files.Store{},
 			},
 			nil,
@@ -256,7 +181,7 @@ func (t *StorageTestSuite) TestConfig_Validate() {
 		"Nil Files": {
 			Config{
 				Environment: &environment.Env{},
-				Options:     &options.Store{},
+				Options:     &options.Repository{},
 			},
 			"Error, no files repository set",
 		},

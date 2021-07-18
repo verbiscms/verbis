@@ -12,7 +12,7 @@ import (
 
 // pageSize is the number of containers to retrieve in the
 // ListBuckets function.
-const pageSize = 999999
+const pageSize = 100
 
 // ListBuckets satisfies the Container interface by listing
 // all the available buckets in the provider.
@@ -24,20 +24,27 @@ func (s *Storage) ListBuckets(provider domain.StorageProvider) (domain.Buckets, 
 		return nil, err
 	}
 
-	var buckets = make(domain.Buckets, 0)
-	err = stow.WalkContainers(prov, stow.NoPrefix, pageSize, func(c stow.Container, err error) error {
-		if err != nil {
-			return err
-		}
-		buckets = append(buckets, domain.Bucket{
-			Id:   c.ID(),
-			Name: c.Name(),
-		})
-		return nil
-	})
+	var (
+		cursor     = stow.CursorStart
+		buckets    = make(domain.Buckets, 0)
+		containers []stow.Container
+		contErr    error
+	)
 
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining buckets", Operation: op, Err: err}
+	for {
+		containers, cursor, contErr = prov.Containers("", cursor, pageSize)
+		if contErr != nil {
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining buckets", Operation: op, Err: err}
+		}
+		for _, container := range containers {
+			buckets = append(buckets, domain.Bucket{
+				Id:   container.ID(),
+				Name: container.Name(),
+			})
+		}
+		if stow.IsCursorEnd(cursor) {
+			break
+		}
 	}
 
 	return buckets, nil

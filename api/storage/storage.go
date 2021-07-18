@@ -26,8 +26,14 @@ type Provider interface {
 	// and environment state for each provider.
 	// Returns errors.INVALID if the options lookup failed.
 	Info() (domain.StorageConfiguration, error)
-	// Migrate migrates all files from one location to another.
-	Migrate(from, to domain.StorageChange) (int, error)
+	// Save changes the current storage provider and bucket.
+	// It will be validated before the options table is
+	// updated.
+	// Returns errors.INVALID if validation failed.
+	// Returns errors.INTERNAL if there was a problem updating
+	// the options table.
+	Save(info domain.StorageChange) error
+	Migrator
 	Container
 	Bucket
 }
@@ -83,9 +89,13 @@ type Bucket interface {
 	Exists(name string) bool
 }
 
-var (
-	ErrAlreadyMigrating = errors.New("migration is already in progress")
-)
+// TODO
+type Migrator interface {
+	// Migrate migrates all files from one location to another.
+	// TODO
+	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
+	Migrate(from, to domain.StorageChange) (int, error)
+}
 
 // Storage represents the implementation of a Verbis
 // storage provider.
@@ -135,8 +145,8 @@ func New(cfg Config) (*Storage, error) {
 		optionsRepo: cfg.Options,
 		filesRepo:   cfg.Files,
 		paths:       paths.Get(),
-		service:     &internal.Service{
-			Env: cfg.Environment,
+		service: &internal.Service{
+			Env:     cfg.Environment,
 			Options: cfg.Options,
 		},
 	}

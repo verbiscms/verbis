@@ -97,6 +97,7 @@ func (s *Service) BucketByFile(file domain.File) (stow.Container, error) {
 // error if there was a problem obtaining the currently
 // set storage providers from the options table.
 func (s *Service) Config() (domain.StorageProvider, string, error) {
+	// TODO - cache here?
 	p, err := s.Options.Find("storage_provider")
 	if err != nil {
 		return "", "", err

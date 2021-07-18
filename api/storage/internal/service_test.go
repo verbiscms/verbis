@@ -179,10 +179,10 @@ func TestService_Bucket(t *testing.T) {
 
 func TestService_Config(t *testing.T) {
 	tt := map[string]struct {
-		mock  func(m *options.Repository)
-		error  string
+		mock     func(m *options.Repository)
+		error    string
 		provider domain.StorageProvider
-		bucket string
+		bucket   string
 	}{
 		"Success": {
 			func(m *options.Repository) {

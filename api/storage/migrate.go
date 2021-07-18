@@ -6,6 +6,7 @@ package storage
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -14,11 +15,12 @@ import (
 )
 
 type MigrationInfo struct {
-	Total     int
-	Progress  int
-	Failed    int
-	Succeeded int
-	Errors    []FailedMigrationFile
+	Total          int
+	Progress       int
+	Failed         int
+	Succeeded      int
+	FilesProcessed int
+	Errors         []FailedMigrationFile
 }
 
 type FailedMigrationFile struct {
@@ -27,12 +29,14 @@ type FailedMigrationFile struct {
 }
 
 var (
-	migrateTrackChan = make(chan int, 20)
-	migrateWg        = sync.WaitGroup{}
+	ErrAlreadyMigrating = errors.New("migration is already in progress")
+	migrateTrackChan    = make(chan int, 20)
+	migrateWg           = sync.WaitGroup{}
 )
 
 func (m *MigrationInfo) fail(file domain.File, err error) {
 	m.Failed += 1
+	m.FilesProcessed += 1
 	m.Errors = append(m.Errors, FailedMigrationFile{
 		Error: err,
 		File:  file,
@@ -41,17 +45,19 @@ func (m *MigrationInfo) fail(file domain.File, err error) {
 
 func (m *MigrationInfo) succeed() {
 	m.Succeeded += 1
-	m.Progress = (m.Processed() * 100) / m.Total
-}
-
-func (m *MigrationInfo) Processed() int {
-	return m.Succeeded + m.Failed
+	m.FilesProcessed += 1
+	m.Progress = (m.FilesProcessed * 100) / m.Total
 }
 
 func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 	const op = "Storage.Migrate"
+
 	if s.isMigrating {
-		return 0, &errors.Error{Code: errors.INVALID, Message: "Error, migration is already in progress", Operation: op, Err: nil}
+		return 0, &errors.Error{Code: errors.INVALID, Message: "Error migration is already in progress", Operation: op, Err: ErrAlreadyMigrating}
+	}
+
+	if from.Provider == to.Provider {
+		return 0, &errors.Error{Code: errors.INVALID, Message: "Error providers cannot be the same", Operation: op, Err: fmt.Errorf("providers are the same")}
 	}
 
 	ff, total, err := s.filesRepo.List(params.Params{LimitAll: false})
@@ -64,10 +70,12 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 		Total: total,
 	}
 
-	for _, file := range ff {
-		migrateTrackChan <- 1
-		go s.migrateBackground(file, from, to)
-	}
+	go func() {
+		for _, file := range ff {
+			migrateTrackChan <- 1
+			go s.migrateBackground(file, from, to)
+		}
+	}()
 
 	return total, nil
 }
@@ -99,7 +107,6 @@ func (s *Storage) migrateBackground(file domain.File, from, to domain.StorageCha
 	}
 
 	_, err = s.upload(from.Provider, from.Bucket, u)
-
 	if err != nil {
 		s.migration.fail(file, err)
 		return
