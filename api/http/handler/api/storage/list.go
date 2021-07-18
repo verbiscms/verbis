@@ -24,7 +24,7 @@ func (s *Storage) ListBuckets(ctx *gin.Context) {
 
 	provider := domain.StorageProvider(ctx.Param("name"))
 	if provider.IsLocal() {
-		api.Respond(ctx, http.StatusForbidden, "Local provider buckets are forbidden", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("error bad provider"), Operation: op})
+		api.Respond(ctx, http.StatusForbidden, "Obtaining local buckets are forbidden", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("error bad provider"), Operation: op})
 		return
 	}
 

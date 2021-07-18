@@ -51,4 +51,13 @@ var (
 		ActiveProvider: "test",
 		ActiveBucket:   "test",
 	}
+	// The default storageChange used for testing.
+	storageChange = domain.StorageChange{
+		Provider: domain.StorageAWS,
+		Bucket:   "verbis-bucket",
+		Region:   "",
+	}
+	// The default storage change with wrong
+	// validation used for testing.
+	storageChangeBadValidation = domain.StorageChange{}
 )
