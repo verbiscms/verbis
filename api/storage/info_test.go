@@ -39,6 +39,8 @@ func (t *StorageTestSuite) TestStorage_Info() {
 				Providers: domain.StorageProviders{
 					"test": domain.StorageProviderInfo{},
 				},
+				IsMigrating:   false,
+				MigrationInfo: MigrationInfo{},
 			},
 		},
 		"Error": {

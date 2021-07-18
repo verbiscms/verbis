@@ -26,6 +26,8 @@ type (
 		ActiveProvider StorageProvider  `json:"active_provider"`
 		ActiveBucket   string           `json:"active_bucket"`
 		Providers      StorageProviders `json:"providers"`
+		IsMigrating    bool             `json:"is_migrating"`
+		MigrationInfo  interface{}      `json:"migration_info"`
 	}
 	// StorageProviders represents the map of providers that
 	// are available within Verbis.

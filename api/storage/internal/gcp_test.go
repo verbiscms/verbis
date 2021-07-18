@@ -33,14 +33,14 @@ func TestGCP_JSON(t *testing.T) {
 	testFile := filepath.Join(wd, "testdata", "gcp.json")
 
 	tt := map[string]struct {
-		input  gcp
-		env *environment.Env
-		want interface{}
+		input gcp
+		env   *environment.Env
+		want  interface{}
 	}{
 		"Relative": {
 			gcp{json: nil},
 			&environment.Env{
-				GCPJson:        testFile,
+				GCPJson: testFile,
 			},
 			`{"test": "value"}`,
 		},

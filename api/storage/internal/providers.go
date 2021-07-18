@@ -18,7 +18,7 @@ type Provider interface {
 	Dial(env *environment.Env) (stow.Location, error)
 	// Info returns the current state of the provider, if it
 	// is connected, if environment variables are set and
-	 // name and order etc.
+	// name and order etc.
 	Info(env *environment.Env) domain.StorageProviderInfo
 }
 
@@ -30,10 +30,10 @@ const (
 	// ErrMessageConfigNotSet is an error message returned by
 	// the Provider info method when there is no
 	// environment variables set.
-	ErrMessageConfigNotSet  = "Configuration not set for: "
+	ErrMessageConfigNotSet = "Configuration not set for: "
 	// ErrMessageDial is an error message returned by the
 	// Provider when there was a problem dialling.
-	ErrMessageDial          = "Error dialling storage provider: "
+	ErrMessageDial = "Error dialling storage provider: "
 )
 
 var (

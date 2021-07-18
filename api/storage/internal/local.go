@@ -14,7 +14,7 @@ import (
 
 // local satisfies the provider interface by implementing
 // dial and info.
-type local struct{
+type local struct {
 	path string
 }
 
