@@ -11,17 +11,25 @@ import (
 	az "github.com/graymeta/stow/azure"
 )
 
+// azure satisfies the provider interface by implementing
+// dial and info.
 type azure struct{}
 
+// AzureName is the friendly name for the provider
+// passed back from info()
 const AzureName = "Microsoft Azure"
 
 var (
+	// AzureEnvKeys defines the environment keys needed in
+	// order to dial the azure provider.
 	AzureEnvKeys = []string{
 		"STORAGE_AZURE_ACCOUNT",
 		"STORAGE_AZURE_KEY",
 	}
 )
 
+// Dial returns a new stow.Location by calling the
+// dialler.
 func (a *azure) Dial(env *environment.Env) (stow.Location, error) {
 	return dialler(az.Kind, stow.ConfigMap{
 		az.ConfigAccount: env.AzureAccount,
@@ -29,6 +37,8 @@ func (a *azure) Dial(env *environment.Env) (stow.Location, error) {
 	})
 }
 
+// Info returns information about the azure storage
+// provider.
 func (a *azure) Info(env *environment.Env) domain.StorageProviderInfo {
 	sp := domain.StorageProviderInfo{
 		Name:            AzureName,

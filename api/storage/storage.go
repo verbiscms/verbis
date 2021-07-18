@@ -135,7 +135,10 @@ func New(cfg Config) (*Storage, error) {
 		optionsRepo: cfg.Options,
 		filesRepo:   cfg.Files,
 		paths:       paths.Get(),
-		service:     internal.NewService(cfg.Environment, cfg.Options),
+		service:     &internal.Service{
+			Env: cfg.Environment,
+			Options: cfg.Options,
+		},
 	}
 	return s, nil
 }
