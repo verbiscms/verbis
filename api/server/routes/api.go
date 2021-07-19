@@ -118,6 +118,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// Storage
 		operator.POST("/storage", h.Storage.Save)
 		operator.GET("/storage/config", h.Storage.Config)
+		operator.POST("/storage/migrate", h.Storage.Migrate)
 		operator.POST("/storage/bucket", h.Storage.CreateBucket)
 		operator.GET("/storage/bucket/:name", h.Storage.ListBuckets)
 		operator.DELETE("/storage/bucket/:name", h.Storage.DeleteBucket)

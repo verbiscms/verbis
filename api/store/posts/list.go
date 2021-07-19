@@ -52,7 +52,9 @@ func (s *Store) List(meta params.Params, layout bool, cfg ListConfig) (domain.Po
 	}
 
 	// Apply order.
-	q.OrderBy(meta.OrderBy, meta.OrderDirection)
+	if meta.OrderBy != "" {
+		q.OrderBy(meta.OrderBy, meta.OrderDirection)
+	}
 	countQ := q.Count()
 
 	// Apply pagination.

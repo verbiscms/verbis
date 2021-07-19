@@ -13,6 +13,7 @@ import (
 type Handler interface {
 	Config(ctx *gin.Context)
 	Save(ctx *gin.Context)
+	Migrate(ctx *gin.Context)
 	ListBuckets(ctx *gin.Context)
 	CreateBucket(ctx *gin.Context)
 	DeleteBucket(ctx *gin.Context)

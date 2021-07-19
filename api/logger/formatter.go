@@ -26,7 +26,7 @@ type Formatter struct {
 
 // Prefix is the string written to the log before any
 // message.
-const Prefix = "[Verbis]"
+const Prefix = "[VERBIS]"
 
 // Format building log message.
 func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {

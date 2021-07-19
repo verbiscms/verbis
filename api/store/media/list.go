@@ -29,7 +29,9 @@ func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 	}
 
 	// Apply order.
-	q.OrderBy(meta.OrderBy, meta.OrderDirection)
+	if meta.OrderBy != "" {
+		q.OrderBy(meta.OrderBy, meta.OrderDirection)
+	}
 	countQ := q.Count()
 
 	// Apply pagination.
