@@ -9,6 +9,7 @@ import (
 	vstrings "github.com/ainsleyclark/verbis/api/common/strings"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/gookit/color"
 	"io/ioutil"
 	"path"
 	"strings"
@@ -37,7 +38,10 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 
 	id := file.ID(s.paths.Storage)
 
+	color.Green.Println(id)
+
 	item, err := bucket.Item(id)
+	color.Red.Println("Item: ", err)
 	if err != nil {
 		return nil, domain.File{}, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the ID: " + id, Operation: op, Err: err}
 	}

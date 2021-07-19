@@ -8,6 +8,7 @@ import (
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/gin-gonic/gin"
+	"github.com/gookit/color"
 )
 
 // UploadChan is the channel for serving uploads for the
@@ -40,6 +41,7 @@ func (r *publish) Upload(g *gin.Context, webp bool) (*[]byte, domain.Mime, error
 	}
 
 	bytes, file, err = r.Storage.Find(path)
+	color.Blue.Println(file, err)
 	if err != nil {
 		return nil, "", err
 	}
