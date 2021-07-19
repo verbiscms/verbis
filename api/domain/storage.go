@@ -20,15 +20,6 @@ type (
 	// StorageProvider represents a the string of a provider
 	// for writing storage files.
 	StorageProvider string
-	// StorageConfiguration represents the informatio returned
-	// by the client of the current state of storage.
-	StorageConfiguration struct {
-		ActiveProvider StorageProvider  `json:"active_provider"`
-		ActiveBucket   string           `json:"active_bucket"`
-		Providers      StorageProviders `json:"providers"`
-		IsMigrating    bool             `json:"is_migrating"`
-		MigrationInfo  interface{}      `json:"migration_info"`
-	}
 	// StorageProviders represents the map of providers that
 	// are available within Verbis.
 	StorageProviders map[StorageProvider]StorageProviderInfo

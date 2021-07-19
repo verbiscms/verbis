@@ -6,7 +6,6 @@ package storage
 
 import (
 	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/storage"
@@ -14,7 +13,17 @@ import (
 	"net/http"
 )
 
-func (t *StorageTestSuite) TestStorage_DeleteBucket() {
+var migrate = migration{
+	From: storageChange,
+	To:   storageChange,
+}
+
+var migrateBadValidation = migration{
+	From: storageChangeBadValidation,
+	To:   storageChange,
+}
+
+func (t *StorageTestSuite) TestStorage_Migrate() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -25,59 +34,52 @@ func (t *StorageTestSuite) TestStorage_DeleteBucket() {
 		"Success": {
 			nil,
 			http.StatusOK,
-			"Successfully deleted bucket: " + storageChange.Bucket,
-			storageChange,
+			"Successfully started migration, processing 5 files",
+			migrate,
 			func(m *mocks.Provider) {
-				m.On("DeleteBucket", storageChange.Provider, storageChange.Bucket).Return(nil)
+				m.On("Migrate", migrate.From, migrate.To).Return(5, nil)
 			},
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "provider", Message: "Provider is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "from_provider", Message: "From Provider is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
-			storageChangeBadValidation,
-			nil,
-		},
-		"Local": {
-			nil,
-			http.StatusBadRequest,
-			"Local bucket cannot be deleted",
-			domain.StorageChange{Provider: domain.StorageLocal},
+			migrateBadValidation,
 			nil,
 		},
 		"Invalid": {
 			nil,
 			http.StatusBadRequest,
 			"invalid",
-			storageChange,
+			migrate,
 			func(m *mocks.Provider) {
-				m.On("DeleteBucket", storageChange.Provider, storageChange.Bucket).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Migrate", migrate.From, migrate.To).Return(0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			storageChange,
+			migrate,
 			func(m *mocks.Provider) {
-				m.On("DeleteBucket", storageChange.Provider, storageChange.Bucket).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Migrate", migrate.From, migrate.To).Return(0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
 			"internal",
-			storageChange,
+			migrate,
 			func(m *mocks.Provider) {
-				m.On("DeleteBucket", storageChange.Provider, storageChange.Bucket).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Migrate", migrate.From, migrate.To).Return(0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe(http.MethodDelete, "/storage", "/storage", test.input, func(ctx *gin.Context) {
-				t.Setup(test.mock).DeleteBucket(ctx)
+			t.RequestAndServe(http.MethodPost, "/storage/migrate", "/storage/migrate", test.input, func(ctx *gin.Context) {
+				t.Setup(test.mock).Migrate(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

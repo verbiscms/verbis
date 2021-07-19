@@ -33,7 +33,7 @@ func (t *StorageTestSuite) TestStorage_Info() {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
 			},
-			domain.StorageConfiguration{
+			Configuration{
 				ActiveProvider: domain.StorageAWS,
 				ActiveBucket:   TestBucket,
 				Providers: domain.StorageProviders{

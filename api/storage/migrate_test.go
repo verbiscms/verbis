@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
@@ -19,12 +20,9 @@ func (t *StorageTestSuite) TestMigrationInfo_Fail() {
 		Errors: nil,
 	}
 	mi.fail(fileRemote, fmt.Errorf("error"))
-	want := MigrationInfo{
-		FilesProcessed: 1,
-		Failed:         1,
-		Errors:         []FailedMigrationFile{{Error: fmt.Errorf("error"), File: fileRemote}},
-	}
-	t.Equal(want, mi)
+	t.Equal(1, mi.FilesProcessed)
+	t.Equal(1, mi.Failed)
+	t.Equal(mi.Errors[0].File, fileRemote)
 }
 
 func (t *StorageTestSuite) TestMigrationInfo_Succeed() {
@@ -62,15 +60,6 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 		mock      func(m *mocks.Service, r *repo.Repository)
 		want      interface{}
 	}{
-		"Success": {
-			false,
-			domain.StorageChange{Provider: domain.StorageLocal},
-			domain.StorageChange{Provider: domain.StorageAWS},
-			func(m *mocks.Service, r *repo.Repository) {
-				r.On("List", params.Params{LimitAll: false}).Return(nil, 2, nil)
-			},
-			2,
-		},
 		"Already Migrating": {
 			true,
 			domain.StorageChange{},
@@ -85,11 +74,29 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			nil,
 			"Error providers cannot be the same",
 		},
-		"Repo Error": {
+		"Validation Failed": {
 			false,
 			domain.StorageChange{Provider: domain.StorageLocal},
 			domain.StorageChange{Provider: domain.StorageAWS},
+			nil,
+			"Validation failed",
+		},
+		"Repo Error": {
+			false,
+			domain.StorageChange{Provider: domain.StorageAWS},
+			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
 			func(m *mocks.Service, r *repo.Repository) {
+				mockValidateSuccess(m, r)
+				r.On("List", params.Params{LimitAll: false}).Return(nil, 0, &errors.Error{Message: "error"})
+			},
+			"error",
+		},
+		"Test": {
+			false,
+			domain.StorageChange{Provider: domain.StorageAWS},
+			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
+			func(m *mocks.Service, r *repo.Repository) {
+				mockValidateSuccess(m, r)
 				r.On("List", params.Params{LimitAll: false}).Return(nil, 0, &errors.Error{Message: "error"})
 			},
 			"error",
@@ -99,6 +106,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
+			s.env = &environment.Env{AWSAccessKey: "key", AWSSecret: "secret"}
 			if test.migrating {
 				s.isMigrating = true
 			}
@@ -111,3 +119,29 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 		})
 	}
 }
+
+//func (t *StorageTestSuite) TestStorage_MigrateBackground() {
+//	tt := map[string]struct {
+//		file domain.File
+//		from domain.StorageChange
+//		to   domain.StorageChange
+//		mock func(m *mocks.Service, r *repo.Repository)
+//		want MigrationInfo
+//	}{
+//		"Same Provider": {
+//			domain.File{Provider: domain.StorageAWS},
+//			domain.StorageChange{Provider: domain.StorageLocal},
+//			domain.StorageChange{Provider: domain.StorageAWS},
+//			nil,
+//			MigrationInfo{},
+//		},
+//	}
+//
+//	for name, test := range tt {
+//		t.Run(name, func() {
+//			s := t.Setup(test.mock)
+//			s.migrateBackground(test.file, test.from, test.to)
+//			t.Equal(test.want, s.migration)
+//		})
+//	}
+//}

@@ -5,9 +5,9 @@
 package storage
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/storage"
+	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -32,7 +32,7 @@ func (t *StorageTestSuite) TestStorage_Config() {
 			http.StatusInternalServerError,
 			"internal",
 			func(m *mocks.Provider) {
-				m.On("Info").Return(domain.StorageConfiguration{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Info").Return(storage.Configuration{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}
