@@ -25,7 +25,7 @@ type Provider interface {
 	// Which includes active provider and bucket,
 	// and environment state for each provider.
 	// Returns errors.INVALID if the options lookup failed.
-	Info() (domain.StorageConfiguration, error)
+	Info() (Configuration, error)
 	// Save changes the current storage provider and bucket.
 	// It will be validated before the options table is
 	// updated.

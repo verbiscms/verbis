@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
@@ -27,6 +28,11 @@ func (s *Storage) DeleteBucket(ctx *gin.Context) {
 		return
 	}
 
+	if info.Provider.IsLocal() {
+		api.Respond(ctx, http.StatusBadRequest, "Local bucket cannot be deleted", &errors.Error{Code: errors.INVALID, Err: fmt.Errorf("error deleting bucket"), Operation: op})
+		return
+	}
+
 	err = s.Deps.Storage.DeleteBucket(info.Provider, info.Bucket)
 	if err != nil && errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
@@ -36,5 +42,5 @@ func (s *Storage) DeleteBucket(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully deleted bucket: " + info.Bucket, nil)
+	api.Respond(ctx, http.StatusOK, "Successfully deleted bucket: "+info.Bucket, nil)
 }
