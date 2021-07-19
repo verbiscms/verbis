@@ -36,8 +36,8 @@
 						<button class="btn" v-if="config['active_provider'] !== 'local'" @click="showBucketModal = true">Change Bucket</button>
 					</div>
 					<div class="btn-cont">
-						<button class="btn">Migrate to Server</button>
-						<button class="btn">Migrate to Local</button>
+						<button class="btn" @click="doMigrate()">Migrate to Server</button>
+						<button class="btn" @click="doMigrateToLocal()">Migrate to Local</button>
 					</div>
 				</div>
 				<!-- =====================
@@ -212,6 +212,40 @@ export default {
 		},
 		listBuckets(provider) {
 			return this.axios.get("/storage/bucket/" + provider).then(res => res.data.data)
+		},
+		doMigrate() {
+			const migration = {
+				to: {
+					provider: "aws",
+					bucket: "reddicotest",
+				},
+				from: {
+					provider: "local",
+				}
+			}
+
+			this.axios.post("/storage/migrate", migration)
+				.then(res => {
+					console.log(res);
+				})
+
+		},
+		doMigrateToLocal() {
+			const migration = {
+				from: {
+					provider: "aws",
+					bucket: "reddicotest",
+				},
+				to: {
+					provider: "local",
+				}
+			}
+
+			this.axios.post("/storage/migrate", migration)
+				.then(res => {
+					console.log(res);
+				})
+
 		},
 		// deleteBucket(bucket, provider) {
 		// 	this.axios.delete("/storage/bucket")

@@ -45,5 +45,4 @@ func (s *Storage) Migrate(ctx *gin.Context) {
 	}
 
 	api.Respond(ctx, http.StatusOK, fmt.Sprintf("Successfully started migration, processing %d files", total), nil)
-
 }
