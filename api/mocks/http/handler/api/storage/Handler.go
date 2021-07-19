@@ -32,6 +32,11 @@ func (_m *Handler) ListBuckets(ctx *gin.Context) {
 	_m.Called(ctx)
 }
 
+// Migrate provides a mock function with given fields: ctx
+func (_m *Handler) Migrate(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
 // Save provides a mock function with given fields: ctx
 func (_m *Handler) Save(ctx *gin.Context) {
 	_m.Called(ctx)

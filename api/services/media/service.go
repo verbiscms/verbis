@@ -58,6 +58,12 @@ type Library interface {
 	// Returns errors.INTERNAL if the file could not be deleted from the database.
 	// Logs errors.INTERNAL if the file could not be deleted from the storage bucket.
 	Delete(id int) error
+	// ReGenerateWebP generate's WebP deletes any WebP images
+	// associated with media items and their sizes. It
+	// returns a total amount of media items being
+	// processed in the background.
+	// Returns an errors of the media items could not be listed.
+	ReGenerateWebP() (int, error)
 }
 
 var (

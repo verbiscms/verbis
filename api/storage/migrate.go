@@ -55,10 +55,6 @@ var (
 	// ErrNoFilesToMigrate is returned by Migrate() when no
 	// files have been found to process.
 	ErrNoFilesToMigrate = errors.New("no files to migrate")
-	// migrateTrackChan is the channel used for sending and
-	// processing migrations.
-	migrateTrackChan = make(chan migration, migrateConcurrentAllowance)
-	// migrateWg is the wait group for migrations.
 )
 
 // fail appends an error to the migration stack and adds
@@ -132,7 +128,7 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 	}
 
 	if total == 0 {
-		return 0, &errors.Error{Code: errors.INVALID, Message: "Error no files found with provider: " + from.Provider.String(), Operation: op, Err: ErrNoFilesToMigrate}
+		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error no files found with provider: " + from.Provider.String(), Operation: op, Err: ErrNoFilesToMigrate}
 	}
 
 	// TODO, this needs to be stored in the cache, if there are multiple
@@ -156,15 +152,19 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 func (s *Storage) processMigration(files domain.Files, from, to domain.StorageChange) {
 	var wg sync.WaitGroup
 
+	// migrateTrackChan is the channel used for sending and
+	// processing migrations.
+	var c = make(chan migration, migrateConcurrentAllowance)
+
 	for _, file := range files {
 		wg.Add(1)
-		migrateTrackChan <- migration{
+		c <- migration{
 			file: file,
 			from: from,
 			to:   to,
 			wg:   &wg,
 		}
-		go s.migrateBackground()
+		go s.migrateBackground(c)
 	}
 
 	wg.Wait()
@@ -177,8 +177,8 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 // migrateBackground processes the migration by finding the
 // original bytes, uploading to the new destination
 // and deleting the original file.
-func (s *Storage) migrateBackground() {
-	m := <-migrateTrackChan
+func (s *Storage) migrateBackground(channel chan migration) {
+	m := <-channel
 
 	defer m.wg.Done()
 

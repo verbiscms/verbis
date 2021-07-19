@@ -4,9 +4,15 @@
 
 package media
 
-import "github.com/ainsleyclark/verbis/api/common/params"
+import (
+	"fmt"
+	"github.com/ainsleyclark/verbis/api/common/params"
+	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/errors"
+)
 
-func (s *Service) Generate(webp bool, sizes bool) (int, error) {
+func (s *Service) ReGenerateWebP() (int, error) {
+	const op = "Media.ReGenerateWebP"
 
 	mm, total, err := s.repo.List(params.Params{
 		LimitAll: true,
@@ -16,10 +22,23 @@ func (s *Service) Generate(webp bool, sizes bool) (int, error) {
 		return 0, err
 	}
 
-	for _, m := range mm {
-		s.fileToWebP(m.File)
+	if total == 0 {
+		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error regenerating webp images, none found", Operation: op, Err: fmt.Errorf("no webp images to process")}
 	}
 
-	return total, nil
+	go s.regenerateWebp(mm)
 
+	return total, nil
+}
+
+func (s *Service) regenerateWebp(items domain.MediaItems) {
+	for _, m := range items {
+		s.deleteWebP(m.File, false)
+		s.fileToWebP(m.File)
+
+		for _, size := range m.Sizes {
+			s.deleteWebP(size.File, false)
+			s.fileToWebP(size.File)
+		}
+	}
 }

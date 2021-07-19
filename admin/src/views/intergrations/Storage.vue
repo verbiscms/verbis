@@ -36,7 +36,7 @@
 						<button class="btn" v-if="config['active_provider'] !== 'local'" @click="showBucketModal = true">Change Bucket</button>
 					</div>
 					<div class="btn-cont">
-						<button class="btn" @click="doMigrate()">Migrate to Server</button>
+						<button class="btn" @click="doMigrate()">Migrate to Server THIS NEEDS TO BE A MODAL</button>
 						<button class="btn" @click="doMigrateToLocal()">Migrate to Local</button>
 					</div>
 				</div>
