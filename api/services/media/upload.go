@@ -200,7 +200,7 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 		savedSizes[key] = domain.MediaSize{
 			FileId:   upload.Id,
 			SizeKey:  key,
-			SizeName: urlName,
+			SizeName: size.SizeName,
 			Width:    size.Width,
 			Height:   size.Height,
 			Crop:     size.Crop,
