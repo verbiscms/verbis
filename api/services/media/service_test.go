@@ -6,12 +6,14 @@ package media
 
 import (
 	"bytes"
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
 	resizer "github.com/ainsleyclark/verbis/api/mocks/services/media/resizer"
 	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/ainsleyclark/verbis/api/test"
+	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"os"
@@ -33,11 +35,6 @@ func TestMediaService(t *testing.T) {
 		MediaSuite: test.NewMediaSuite(),
 	})
 }
-
-const (
-	// MediaID is the default ID use for testing.
-	MediaID = 1
-)
 
 // BeforeTest setups the LogWriter
 func (t *MediaServiceTestSuite) BeforeTest(suiteName, testName string) {
@@ -67,12 +64,19 @@ func (t *MediaServiceTestSuite) File(path string) []byte {
 }
 
 const (
-	TestFileURL     = "/uploads/2020/01/file.jpg"
+	// MediaID is the default ID use for testing.
+	MediaID = 1
+	// TestFileURL defines the URL for media items for testing.
+	TestFileURL = "/uploads/2020/01/file.jpg"
+	// TestFileURL defines the WebP URL for media items for
+	// testing.
 	TestFileURLWebP = TestFileURL + domain.WebPExtension
 )
 
 var (
-	SVGFile = domain.File{
+	// svgFile is the default domain.File with an SVG mime
+	// type used for testing.
+	svgFile = domain.File{
 		Id:       1,
 		Url:      "/uploads/gopher.svg",
 		Name:     "gopher.svg",
@@ -80,7 +84,9 @@ var (
 		Mime:     "image/svg+xml",
 		Private:  false,
 	}
-	PNGFile = domain.File{
+	// pngFile is the default domain.File with an PNG mime
+	// type used for testing.
+	pngFile = domain.File{
 		Id:       1,
 		Url:      "/uploads/gopher.png",
 		Name:     "gopher.png",
@@ -88,7 +94,9 @@ var (
 		Mime:     "image/png",
 		Private:  false,
 	}
-	JPGFile = domain.File{
+	// jpgFile is the default domain.File with an JPG mime
+	// type used for testing.
+	jpgFile = domain.File{
 		Id:       1,
 		Url:      "/uploads/gopher.jpg",
 		Name:     "gopher.jpg",
@@ -96,10 +104,26 @@ var (
 		Mime:     "image/jpeg",
 		Private:  false,
 	}
-	opts = &domain.Options{
-		MediaSizes: domain.MediaSizes{"thumbnail": domain.MediaSize{SizeKey: "thumb", SizeName: "thumb", Width: 300, Height: 300, Crop: false}},
+	// testMedia is the default media Item used for
+	// testing.
+	testMedia = domain.Media{
+		Id:   MediaID,
+		File: domain.File{Id: 1, Url: TestFileURL},
 	}
-	testMedia      = domain.Media{Id: MediaID, File: domain.File{Id: 1, Url: TestFileURL}}
+	// testMediaSlice are the default media items used
+	// for testing.
+	testMediaSlice = domain.MediaItems{
+		domain.Media{
+			Id:   MediaID,
+			File: domain.File{Id: 1, Url: TestFileURL},
+		},
+		domain.Media{
+			Id:   MediaID,
+			File: domain.File{Id: 1, Url: TestFileURL},
+		},
+	}
+	// testMediaSizes are the default media sizes used
+	// for testing.
 	testMediaSizes = domain.Media{
 		Id: MediaID,
 		Sizes: domain.MediaSizes{
@@ -110,6 +134,11 @@ var (
 			},
 		},
 		File: domain.File{Id: 1, Url: TestFileURL},
+	}
+	// opts is the default options with media sizes used
+	// for testing.
+	opts = &domain.Options{
+		MediaSizes: domain.MediaSizes{"thumbnail": domain.MediaSize{SizeKey: "thumb", SizeName: "thumb", Width: 300, Height: 300, Crop: false}},
 	}
 )
 
@@ -136,4 +165,100 @@ func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Opti
 	c.config = cfg
 
 	return c
+}
+
+func (t *MediaServiceTestSuite) TestService_List() {
+	tt := map[string]struct {
+		mock func(r *repo.Repository, s *storage.Bucket)
+		want interface{}
+	}{
+		"Success": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("List", dummy.DefaultParams).Return(testMediaSlice, 2, nil)
+			},
+			testMediaSlice,
+		},
+		"Error": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("List", dummy.DefaultParams).Return(nil, 0, fmt.Errorf("error"))
+			},
+			"error",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(nil, nil, test.mock)
+			got, _, err := s.List(dummy.DefaultParams)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *MediaServiceTestSuite) TestService_Find() {
+	tt := map[string]struct {
+		mock func(r *repo.Repository, s *storage.Bucket)
+		want interface{}
+	}{
+		"Success": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("Find", 1).Return(testMedia, nil)
+			},
+			testMedia,
+		},
+		"Error": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("Find", 1).Return(domain.Media{}, fmt.Errorf("error"))
+			},
+			"error",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(nil, nil, test.mock)
+			got, err := s.Find(1)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *MediaServiceTestSuite) TestService_Update() {
+	tt := map[string]struct {
+		mock func(r *repo.Repository, s *storage.Bucket)
+		want interface{}
+	}{
+		"Success": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("Update", testMedia).Return(testMedia, nil)
+			},
+			testMedia,
+		},
+		"Error": {
+			func(r *repo.Repository, s *storage.Bucket) {
+				r.On("Update", testMedia).Return(domain.Media{}, fmt.Errorf("error"))
+			},
+			"error",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(nil, nil, test.mock)
+			got, err := s.Update(testMedia)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.Equal(test.want, got)
+		})
+	}
 }

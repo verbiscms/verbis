@@ -26,12 +26,12 @@ func (s *Service) ReGenerateWebP() (int, error) {
 		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error regenerating webp images, none found", Operation: op, Err: fmt.Errorf("no webp images to process")}
 	}
 
-	go s.regenerateWebp(mm)
+	go s.generateWebP(mm)
 
 	return total, nil
 }
 
-func (s *Service) regenerateWebp(items domain.MediaItems) {
+func (s *Service) generateWebP(items domain.MediaItems) {
 	for _, m := range items {
 		s.deleteWebP(m.File, false)
 		s.fileToWebP(m.File)

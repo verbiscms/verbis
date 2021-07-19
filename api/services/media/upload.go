@@ -34,7 +34,7 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 	}
 
 	defer func() {
-		err = out.Close()
+		err := out.Close()
 		if err != nil {
 			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing file with the name: " + file.Filename, Operation: op, Err: err})
 		}
