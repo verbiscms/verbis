@@ -42,15 +42,23 @@ type FailedMigrationFile struct {
 	File  domain.File   `json:"file"`
 }
 
+const (
+	// migrateConcurrentAllowance is the amount of files that
+	// are allowed to be migrated concurrently.
+	migrateConcurrentAllowance = 20
+)
+
 var (
 	// ErrAlreadyMigrating is returned by Migrate() when a
 	// migration is already in progress.
 	ErrAlreadyMigrating = errors.New("migration is already in progress")
+	// ErrNoFilesToMigrate is returned by Migrate() when no
+	// files have been found to process.
+	ErrNoFilesToMigrate = errors.New("no files to migrate")
 	// migrateTrackChan is the channel used for sending and
 	// processing migrations.
-	migrateTrackChan = make(chan migration, 20)
+	migrateTrackChan = make(chan migration, migrateConcurrentAllowance)
 	// migrateWg is the wait group for migrations.
-	migrateWg = sync.WaitGroup{}
 )
 
 // fail appends an error to the migration stack and adds
@@ -87,6 +95,7 @@ type migration struct {
 	file domain.File
 	from domain.StorageChange
 	to   domain.StorageChange
+	wg   *sync.WaitGroup
 }
 
 // Migrate satisfies the Provider interface by accepting a
@@ -122,6 +131,10 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 		return 0, err
 	}
 
+	if total == 0 {
+		return 0, &errors.Error{Code: errors.INVALID, Message: "Error no files found with provider: " + from.Provider.String(), Operation: op, Err: ErrNoFilesToMigrate}
+	}
+
 	// TODO, this needs to be stored in the cache, if there are multiple
 	// migrations on a stateless platform, there will be
 	// inconsistencies
@@ -131,6 +144,8 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 		MigratedAt: time.Now(),
 	}
 
+	logger.Debug(fmt.Sprintf("Starting storage migration with %d files being processed", total))
+
 	go s.processMigration(ff, from, to)
 
 	return total, nil
@@ -139,16 +154,20 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 // processMigration ranges over the given files and adds a
 // migration to the migrateTrackChan.
 func (s *Storage) processMigration(files domain.Files, from, to domain.StorageChange) {
+	var wg sync.WaitGroup
+
 	for _, file := range files {
+		wg.Add(1)
 		migrateTrackChan <- migration{
 			file: file,
 			from: from,
 			to:   to,
+			wg:   &wg,
 		}
 		go s.migrateBackground()
 	}
 
-	migrateWg.Wait()
+	wg.Wait()
 	s.isMigrating = false
 
 	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", s.migration.Succeeded))
@@ -159,12 +178,9 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 // original bytes, uploading to the new destination
 // and deleting the original file.
 func (s *Storage) migrateBackground() {
-	migrateWg.Add(1)
 	m := <-migrateTrackChan
 
-	defer func() {
-		migrateWg.Done()
-	}()
+	defer m.wg.Done()
 
 	buf, _, err := s.Find(m.file.Url)
 	if err != nil {
