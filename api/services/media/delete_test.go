@@ -19,8 +19,8 @@ func (t *MediaServiceTestSuite) TestService_Delete() {
 	}{
 		"Success": {
 			func(r *repo.Repository, s *storage.Bucket) {
-				r.On("Find", MediaId).Return(testMedia, nil)
-				r.On("Delete", MediaId).Return(nil)
+				r.On("Find", MediaID).Return(testMedia, nil)
+				r.On("Delete", MediaID).Return(nil)
 				s.On("Delete", 1).Return(fmt.Errorf("error"))
 				s.On("Find", TestFileURLWebP).Return(nil, domain.File{}, fmt.Errorf("error"))
 			},
@@ -28,14 +28,14 @@ func (t *MediaServiceTestSuite) TestService_Delete() {
 		},
 		"Find Error": {
 			func(r *repo.Repository, s *storage.Bucket) {
-				r.On("Find", MediaId).Return(domain.Media{}, fmt.Errorf("error"))
+				r.On("Find", MediaID).Return(domain.Media{}, fmt.Errorf("error"))
 			},
 			"error",
 		},
 		"Delete Error": {
 			func(r *repo.Repository, s *storage.Bucket) {
-				r.On("Find", MediaId).Return(domain.Media{Id: MediaId}, nil)
-				r.On("Delete", MediaId).Return(fmt.Errorf("error"))
+				r.On("Find", MediaID).Return(domain.Media{Id: MediaID}, nil)
+				r.On("Delete", MediaID).Return(fmt.Errorf("error"))
 			},
 			"error",
 		},
@@ -44,7 +44,7 @@ func (t *MediaServiceTestSuite) TestService_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(nil, nil, test.mock)
-			err := s.Delete(MediaId)
+			err := s.Delete(MediaID)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return

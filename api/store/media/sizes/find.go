@@ -14,11 +14,11 @@ import (
 //
 // Returns a media sizes by searching with the given media ID.
 // Returns errors.INTERNAL if there was an error executing the query.
-func (s *Store) Find(mediaId int) (domain.MediaSizes, error) {
+func (s *Store) Find(mediaID int) (domain.MediaSizes, error) {
 	const op = "SizesStore.Find"
 
 	q := s.selectStmt().
-		Where(TableName+".media_id", "=", mediaId)
+		Where(TableName+".media_id", "=", mediaID)
 
 	var sizes []domain.MediaSize
 	err := s.DB().Select(&sizes, q.Build())

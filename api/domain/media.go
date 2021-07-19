@@ -35,9 +35,9 @@ type (
 	// MediaSize defines an individual media size that's
 	// stored in the database.
 	MediaSize struct {
-		Id       int           `db:"id" json:"id"` //nolint
-		FileId   int           `db:"file_id" json:"-"`
-		MediaId  int           `db:"media_id" json:"-"`
+		Id       int           `db:"id" json:"id"`      //nolint
+		FileId   int           `db:"file_id" json:"-"`  //nolint
+		MediaId  int           `db:"media_id" json:"-"` //nolint
 		SizeKey  string        `db:"size_key" json:"-" binding:"required,numeric"`
 		SizeName string        `db:"size_name" json:"name" binding:"required,numeric"`
 		Width    int           `db:"width" json:"width" binding:"required,numeric"`
@@ -54,7 +54,7 @@ type (
 		Description string           `json:"description"`
 		Sizes       MediaSizesPublic `json:"sizes"`
 		UserId      int              `json:"user_id"` //nolint
-		Url         string           `json:"url"`
+		Url         string           `json:"url"`     //nolint
 		Name        string           `json:"name"`
 		Path        string           `json:"path"`
 		Mime        Mime             `json:"mime"`

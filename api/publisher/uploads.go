@@ -35,7 +35,7 @@ func (r *publish) Upload(g *gin.Context, webp bool) (*[]byte, domain.Mime, error
 	if webp && r.Options.MediaServeWebP && r.WebP.Accepts(g) {
 		bytes, file, err = r.Storage.Find(path + domain.WebPExtension)
 		if err == nil {
-			return &bytes, file.Mime, err
+			return &bytes, file.Mime, nil
 		}
 	}
 

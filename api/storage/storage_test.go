@@ -72,9 +72,9 @@ func (t *StorageTestSuite) SetupOptions(mock func(m *mocks.Service, r *repo.Repo
 }
 
 const (
-	// TestFileUrl is the default file url used for
+	// TestFileURL is the default file url used for
 	// testing.
-	TestFileUrl = "/file.txt"
+	TestFileURL = "/file.txt"
 	// TestBucket is the default storage bucket used
 	// for testing.
 	TestBucket = "verbis-bucket"

@@ -15,14 +15,14 @@ import (
 //
 // Returns nil if the media sizes were created successfully.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
-func (s *Store) Create(mediaId int, sizes domain.MediaSizes) (domain.MediaSizes, error) {
+func (s *Store) Create(mediaID int, sizes domain.MediaSizes) (domain.MediaSizes, error) {
 	const op = "SizesStore.Create"
 
 	for key, size := range sizes {
 		q := s.Builder().
 			Insert(s.Schema()+TableName).
 			Column("file_id", size.FileId).
-			Column("media_id", mediaId).
+			Column("media_id", mediaID).
 			Column("size_name", size.SizeName).
 			Column("size_key", key).
 			Column("width", size.Width).

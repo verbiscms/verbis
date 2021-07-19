@@ -71,7 +71,7 @@ func (t *MediaSuite) ToMultiPartE(path string) (*multipart.FileHeader, error) {
 	}
 
 	mr := multipart.NewReader(body, writer.Boundary())
-	mt, err := mr.ReadForm(99999)
+	mt, err := mr.ReadForm(99999) //nolint
 	if err != nil {
 		return nil, err
 	}
@@ -101,7 +101,7 @@ func (t *MediaSuite) Image() image.Image {
 
 	img := image.NewRGBA(image.Rectangle{Min: upLeft, Max: lowRight})
 
-	// Colors are defined by Red, Green, Blue, Alpha uint8 values.
+	// Colours are defined by Red, Green, Blue, Alpha uint8 values.
 	cyan := color.RGBA{R: 100, G: 200, B: 200, A: 0xff}
 
 	// Set color for each pixel.

@@ -18,7 +18,7 @@ func (t *StorageTestSuite) TestStorage_CreateBucket() {
 		want    interface{}
 		status  int
 		message string
-		input interface{}
+		input   interface{}
 		mock    func(m *mocks.Provider)
 	}{
 		"Success": {

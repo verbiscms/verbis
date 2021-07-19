@@ -32,6 +32,8 @@ type MigrationInfo struct {
 	MigratedAt time.Time `json:"migrated_at"`
 	// Any errors that have occurred during the migration.
 	Errors []FailedMigrationFile `json:"errors"`
+	// Avoid data race for go routine
+	mtx *sync.Mutex
 }
 
 // FailedMigrationFile represents an error when migrating.
@@ -60,8 +62,10 @@ var (
 // fail appends an error to the migration stack and adds
 // one to failed files and files processed retrospectively.
 func (m *MigrationInfo) fail(file domain.File, err error) {
-	m.Failed += 1
-	m.FilesProcessed += 1
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+	m.Failed++
+	m.FilesProcessed++
 	m.Errors = append(m.Errors, FailedMigrationFile{
 		Error: errors.ToError(err),
 		File:  file,
@@ -73,8 +77,10 @@ func (m *MigrationInfo) fail(file domain.File, err error) {
 // succeed adds a succeeded file to the migration stack as
 // well as adding one to the files processed.
 func (m *MigrationInfo) succeed(file domain.File) {
-	m.Succeeded += 1
-	m.FilesProcessed += 1
+	m.mtx.Lock()
+	defer m.mtx.Unlock()
+	m.Succeeded++
+	m.FilesProcessed++
 	m.storeMigration()
 	logger.Info("Successfully migrated file: " + file.Name)
 }
@@ -138,6 +144,7 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 	s.migration = MigrationInfo{
 		Total:      total,
 		MigratedAt: time.Now(),
+		mtx:        &sync.Mutex{},
 	}
 
 	logger.Debug(fmt.Sprintf("Starting storage migration with %d files being processed", total))

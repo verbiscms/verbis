@@ -64,7 +64,7 @@ type Env struct {
 	// The JSON file for GCP storage.
 	GCPJson string `json:"STORAGE_GCP_JSON_FILE"`
 	// The Project ID for GCP storage.
-	GCPProjectId string `json:"STORAGE_GCP_PROJECT_ID"`
+	GCPProjectID string `json:"STORAGE_GCP_PROJECT_ID"`
 	// The account details for Azure storage.
 	AzureAccount string `json:"STORAGE_AZURE_ACCOUNT"`
 	// The account details for Azure storage.
@@ -117,7 +117,7 @@ func Load() (*Env, error) {
 		AWSAccessKey:    os.Getenv("STORAGE_AWS_ACCESS_KEY"),
 		AWSSecret:       os.Getenv("STORAGE_AWS_SECRET"),
 		GCPJson:         os.Getenv("STORAGE_GCP_JSON"),
-		GCPProjectId:    os.Getenv("STORAGE_GCP_PROJECT_ID"),
+		GCPProjectID:    os.Getenv("STORAGE_GCP_PROJECT_ID"),
 		AzureAccount:    os.Getenv("STORAGE_AZURE_ACCOUNT"),
 		AzureKey:        os.Getenv("STORAGE_AZURE_KEY"),
 	}, nil

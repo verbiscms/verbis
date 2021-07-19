@@ -7,9 +7,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/store/options"
 	"github.com/graymeta/stow"
-	_ "github.com/graymeta/stow/azure"
-	_ "github.com/graymeta/stow/google"
-	_ "github.com/graymeta/stow/s3"
 	"github.com/spf13/cast"
 	"strings"
 )

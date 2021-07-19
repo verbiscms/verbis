@@ -121,7 +121,7 @@ func (t *StorageTestSuite) TestBucket_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, _, err := s.Find(TestFileUrl)
+			got, _, err := s.Find(TestFileURL)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

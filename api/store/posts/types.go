@@ -9,7 +9,7 @@ import (
 )
 
 // postType
-func (s *Store) postType(post *domain.PostDatum) domain.PostType { //nolint
+func (s *Store) postType(post *domain.PostDatum) domain.PostType {
 	if s.Options.Homepage == post.Id {
 		return domain.PostType{
 			PageType: domain.HomeType,

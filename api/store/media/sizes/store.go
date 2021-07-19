@@ -14,9 +14,9 @@ import (
 // Repository defines methods for media sizes
 // to interact with the database.
 type Repository interface {
-	Find(mediaId int) (domain.MediaSizes, error)
-	Create(mediaId int, sizes domain.MediaSizes) (domain.MediaSizes, error)
-	Delete(mediaId int) error
+	Find(mediaID int) (domain.MediaSizes, error)
+	Create(mediaID int, sizes domain.MediaSizes) (domain.MediaSizes, error)
+	Delete(mediaID int) error
 }
 
 // Store defines the data layer for media sizes.

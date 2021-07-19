@@ -27,7 +27,7 @@ func (s *Storage) Info() (Configuration, error) {
 		return Configuration{}, err
 	}
 
-	var m = make(domain.StorageProviders, 0)
+	var m = make(domain.StorageProviders)
 	for k, v := range internal.Providers {
 		m[k] = v.Info(s.env)
 	}

@@ -17,7 +17,7 @@ var json = "json"
 func TestGCP(t *testing.T) {
 	UtilTestProvider(&environment.Env{
 		GCPJson:      "json",
-		GCPProjectId: "secret",
+		GCPProjectID: "secret",
 	}, &gcp{json: &json}, t)
 }
 
