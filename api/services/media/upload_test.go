@@ -33,33 +33,33 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			&domain.Options{},
 			func(r *repo.Repository, s *storage.Bucket) {
 				s.On("Exists", "gopher.svg").Return(false)
-				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(SVGFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: SVGFile, FileId: 1}).Return(domain.Media{UserId: 1, File: SVGFile}, nil)
+				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(svgFile, nil)
+				r.On("Create", domain.Media{UserId: 1, File: svgFile, FileId: 1}).Return(domain.Media{UserId: 1, File: svgFile}, nil)
 			},
 			nil,
-			domain.Media{UserId: 1, File: SVGFile},
+			domain.Media{UserId: 1, File: svgFile},
 		},
 		"JPG": {
 			filepath.Join(t.TestDataPath, "gopher.jpg"),
 			&domain.Options{},
 			func(r *repo.Repository, s *storage.Bucket) {
 				s.On("Exists", "gopher.jpg").Return(false)
-				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(JPGFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: JPGFile, FileId: 1}).Return(domain.Media{UserId: 1, File: JPGFile}, nil)
+				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
+				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{UserId: 1, File: jpgFile}, nil)
 			},
 			nil,
-			domain.Media{UserId: 1, File: JPGFile},
+			domain.Media{UserId: 1, File: jpgFile},
 		},
 		"PNG": {
 			filepath.Join(t.TestDataPath, "gopher.png"),
 			&domain.Options{},
 			func(r *repo.Repository, s *storage.Bucket) {
 				s.On("Exists", "gopher.png").Return(false)
-				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(PNGFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: PNGFile, FileId: 1}).Return(domain.Media{UserId: 1, File: PNGFile}, nil)
+				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(pngFile, nil)
+				r.On("Create", domain.Media{UserId: 1, File: pngFile, FileId: 1}).Return(domain.Media{UserId: 1, File: pngFile}, nil)
 			},
 			nil,
-			domain.Media{UserId: 1, File: PNGFile},
+			domain.Media{UserId: 1, File: pngFile},
 		},
 		"Open Error": {
 			"",
@@ -83,8 +83,8 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			opts,
 			func(r *repo.Repository, s *storage.Bucket) {
 				s.On("Exists", "gopher.jpg").Return(false)
-				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(JPGFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: JPGFile, FileId: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
+				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
+				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
 			},
 			func(r *resizer.Resizer) {
 				r.On("Resize", mock.Anything, mock.Anything, mock.Anything).Return(nil, &errors.Error{Message: "error"})
@@ -96,8 +96,8 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			&domain.Options{},
 			func(r *repo.Repository, s *storage.Bucket) {
 				s.On("Exists", "gopher.jpg").Return(false)
-				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(JPGFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: JPGFile, FileId: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
+				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
+				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
 			},
 			nil,
 			"error",
@@ -210,7 +210,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 		want    interface{}
 	}{
 		"JPG": {
-			JPGFile,
+			jpgFile,
 			func() multipart.File {
 				part := t.ToMultiPart(filepath.Join(t.TestDataPath, "gopher.jpg"))
 				open, err := part.Open()
@@ -220,15 +220,15 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 				return open
 			},
 			func(r *repo.Repository, s *storage.Bucket) {
-				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(JPGFile, nil)
+				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
 			},
 			func(r *resizer.Resizer) {
 				r.On("Resize", mock.Anything, mock.Anything, mock.Anything).Return(bytes.NewReader([]byte("test")), nil)
 			},
-			domain.MediaSizes{"thumbnail": domain.MediaSize{FileId: 1, SizeKey: "thumbnail", SizeName: "gopher-300x300.jpg", Width: 300, Height: 300, File: JPGFile}},
+			domain.MediaSizes{"thumbnail": domain.MediaSize{FileId: 1, SizeKey: "thumbnail", SizeName: "thumb", Width: 300, Height: 300, File: jpgFile}},
 		},
 		"PNG": {
-			PNGFile,
+			pngFile,
 			func() multipart.File {
 				part := t.ToMultiPart(filepath.Join(t.TestDataPath, "gopher.png"))
 				open, err := part.Open()
@@ -238,15 +238,15 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 				return open
 			},
 			func(r *repo.Repository, s *storage.Bucket) {
-				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(JPGFile, nil)
+				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
 			},
 			func(r *resizer.Resizer) {
 				r.On("Resize", mock.Anything, mock.Anything, mock.Anything).Return(bytes.NewReader([]byte("test")), nil)
 			},
-			domain.MediaSizes{"thumbnail": domain.MediaSize{FileId: 1, SizeKey: "thumbnail", SizeName: "gopher-300x300.png", Width: 300, Height: 300, File: JPGFile}},
+			domain.MediaSizes{"thumbnail": domain.MediaSize{FileId: 1, SizeKey: "thumbnail", SizeName: "thumb", Width: 300, Height: 300, File: jpgFile}},
 		},
 		"Cant Resize": {
-			SVGFile,
+			svgFile,
 			func() multipart.File {
 				return nil
 			},
@@ -255,7 +255,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 			m,
 		},
 		"Resize Error": {
-			JPGFile,
+			jpgFile,
 			func() multipart.File {
 				part := t.ToMultiPart(filepath.Join(t.TestDataPath, "gopher.jpg"))
 				open, err := part.Open()
@@ -271,7 +271,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 			"error",
 		},
 		"Upload Error": {
-			JPGFile,
+			jpgFile,
 			func() multipart.File {
 				part := t.ToMultiPart(filepath.Join(t.TestDataPath, "gopher.jpg"))
 				open, err := part.Open()
@@ -325,9 +325,9 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 		want    string
 	}{
 		"Success": {
-			domain.Media{File: PNGFile, Sizes: domain.MediaSizes{"thumbnail": domain.MediaSize{File: PNGFile}}},
+			domain.Media{File: pngFile, Sizes: domain.MediaSizes{"thumbnail": domain.MediaSize{File: pngFile}}},
 			func(r *repo.Repository, s *storage.Bucket) {
-				s.On("Find", PNGFile.Url).Return([]byte("test"), PNGFile, nil)
+				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(domain.File{}, nil)
 			},
 			func(e *webp.Execer) {
@@ -337,18 +337,18 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 			"Successfully converted to WebP image with the path",
 		},
 		"Find Error": {
-			domain.Media{File: PNGFile},
+			domain.Media{File: pngFile},
 			func(r *repo.Repository, s *storage.Bucket) {
-				s.On("Find", PNGFile.Url).Return(nil, domain.File{}, fmt.Errorf("find error"))
+				s.On("Find", pngFile.Url).Return(nil, domain.File{}, fmt.Errorf("find error"))
 			},
 			nil,
 			&domain.Options{MediaConvertWebP: true},
 			"find error",
 		},
 		"Convert Error": {
-			domain.Media{File: PNGFile},
+			domain.Media{File: pngFile},
 			func(r *repo.Repository, s *storage.Bucket) {
-				s.On("Find", PNGFile.Url).Return([]byte("test"), PNGFile, nil)
+				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
 			},
 			func(e *webp.Execer) {
 				e.On("Convert", bytes.NewReader([]byte("test")), 0).Return(nil, fmt.Errorf("convert error"))
@@ -357,9 +357,9 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 			"convert error",
 		},
 		"Storage Error": {
-			domain.Media{File: PNGFile},
+			domain.Media{File: pngFile},
 			func(r *repo.Repository, s *storage.Bucket) {
-				s.On("Find", PNGFile.Url).Return([]byte("test"), PNGFile, nil)
+				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(domain.File{}, fmt.Errorf("storage error"))
 			},
 			func(e *webp.Execer) {
@@ -376,7 +376,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 			"",
 		},
 		"Cant Resize": {
-			domain.Media{File: SVGFile},
+			domain.Media{File: svgFile},
 			nil,
 			nil,
 			&domain.Options{MediaConvertWebP: true},
@@ -400,183 +400,3 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 		})
 	}
 }
-
-//func (t *MediaServiceTestSuite) TestClient_Upload() {
-//	size := domain.MediaSize{
-//		SizeName: "Test Size",
-//		Width:    100,
-//		Height:   100,
-//		Crop:     true,
-//	}
-//
-//	tt := map[string]struct {
-//		input  string
-//		cfg    domain.ThemeConfig
-//		opts   domain.OptionsBAD
-//		want   domain.Media
-//		err    string
-//	}{
-//		"SVG": {
-//			t.MediaPath + "/gopher.svg",
-//			domain.ThemeConfig{
-//				Media: domain.MediaConfig{
-//					UploadPath: "/uploads",
-//				},
-//			},
-//			domain.OptionsBAD{},
-//			domain.Media{
-//				Url:      "/uploads/gopher.svg",
-//				FilePath: "",
-//				FileSize: 7623,
-//				FileName: "gopher.svg",
-//				Sizes:    domain.MediaSizes{},
-//				Mime:     "image/svg+xml",
-//			},
-//			"",
-//		},
-//		"PNG": {
-//			t.MediaPath + "/gopher.png",
-//			domain.ThemeConfig{
-//				Media: domain.MediaConfig{
-//					UploadPath: "/uploads",
-//				},
-//			},
-//			domain.OptionsBAD{},
-//			domain.Media{
-//				Url:      "/uploads/gopher.png",
-//				FilePath: "",
-//				FileSize: 163677,
-//				FileName: "gopher.png",
-//				Sizes:    domain.MediaSizes{},
-//				Mime:     "image/png",
-//			},
-//			"",
-//		},
-//		"JPG": {
-//			t.MediaPath + "/gopher.jpg",
-//			domain.ThemeConfig{
-//				Media: domain.MediaConfig{
-//					UploadPath: "/uploads",
-//				},
-//			},
-//			domain.OptionsBAD{},
-//			domain.Media{
-//				Url:      "/uploads/gopher.jpg",
-//				FilePath: "",
-//				FileSize: 162023,
-//				FileName: "gopher.jpg",
-//				Sizes:    domain.MediaSizes{},
-//				Mime:     "image/jpeg",
-//			},
-//			"",
-//		},
-//		"PNG Size": {
-//			t.MediaPath + "/gopher.png",
-//			domain.ThemeConfig{
-//				Media: domain.MediaConfig{
-//					UploadPath: "/uploads",
-//				},
-//			},
-//			domain.OptionsBAD{
-//				MediaSizes: domain.MediaSizes{
-//					"fileToWebP": size,
-//				},
-//			},
-//			domain.Media{
-//				Url:      "/uploads/gopher.png",
-//				FilePath: "",
-//				FileSize: 163677,
-//				FileName: "gopher.png",
-//				Sizes: domain.MediaSizes{
-//					"fileToWebP": domain.MediaSize{
-//						Url:      "/uploads/gopher-100x100.png",
-//						Name:     "gopher-100x100.png",
-//						SizeName: "Test Size",
-//						Width:    100,
-//						Height:   100,
-//						Crop:     true,
-//					},
-//				},
-//				Mime: "image/png",
-//			},
-//			"",
-//		},
-//		"JPG Size": {
-//			t.MediaPath + "/gopher.jpg",
-//			domain.ThemeConfig{
-//				Media: domain.MediaConfig{
-//					UploadPath: "/uploads",
-//				},
-//			},
-//			domain.OptionsBAD{
-//				MediaSizes: domain.MediaSizes{
-//					"fileToWebP": size,
-//				},
-//			},
-//			domain.Media{
-//				Url:      "/uploads/gopher.jpg",
-//				FilePath: "",
-//				FileSize: 162023,
-//				FileName: "gopher.jpg",
-//				Sizes: domain.MediaSizes{
-//					"fileToWebP": domain.MediaSize{
-//						Url:      "/uploads/gopher-100x100.jpg",
-//						Name:     "gopher-100x100.jpg",
-//						SizeName: "Test Size",
-//						Width:    100,
-//						Height:   100,
-//						Crop:     true,
-//					},
-//				},
-//				Mime: "image/jpeg",
-//			},
-//			"",
-//		},
-//		"Nil": {
-//			"",
-//			domain.ThemeConfig{},
-//			domain.OptionsBAD{},
-//			domain.Media{},
-//			"Error opening file with the name",
-//		},
-//	}
-//
-//	for name, fileToWebP := range tt {
-//		t.Run(name, func() {
-//			c := t.Setup(fileToWebP.cfg, fileToWebP.opts)
-//			c.exists = fileToWebP.exists
-//
-//			var mt = &multipart.FileHeader{}
-//			if fileToWebP.input != "" {
-//				mt = t.File(fileToWebP.input)
-//			}
-//
-//			got, err := c.Upload(mt)
-//			if err != nil {
-//				t.Contains(errors.Message(err), fileToWebP.err)
-//				return
-//			}
-//
-//			defer func() {
-//				c.Delete(got)
-//			}()
-//
-//			t.Equal(fileToWebP.want.Url, got.Url)
-//			t.Equal(fileToWebP.want.FilePath, got.FilePath)
-//			t.Equal(fileToWebP.want.FileSize, got.FileSize)
-//			t.Equal(fileToWebP.want.FileName, got.FileName)
-//			t.Equal(fileToWebP.want.Mime, got.Mime)
-//
-//			if fileToWebP.want.Sizes != nil {
-//				for k, v := range fileToWebP.want.Sizes {
-//					t.Equal(v.Url, got.Sizes[k].Url)
-//					t.Equal(v.Name, got.Sizes[k].Name)
-//					t.Equal(v.SizeName, got.Sizes[k].SizeName)
-//					t.Equal(v.Width, got.Sizes[k].Width)
-//					t.Equal(v.Height, got.Sizes[k].Height)
-//					t.Equal(v.Crop, got.Sizes[k].Crop)
-//				}
-//			}
-//		})
-//	}
-//}

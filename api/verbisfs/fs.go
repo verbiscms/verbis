@@ -22,14 +22,12 @@ type FS interface {
 	// mode O_RDONLY.
 	// Returns ErrFileNotFound on failed lookup
 	Open(name string) (fs.File, error)
-
 	// ReadFile reads the named file and returns the contents.
 	// A successful call returns err == nil, not err == EOF.
 	// Because ReadFile reads the whole file, it does not
 	// treat an EOF from Read as an error to be reported.
 	// Returns ErrFileNotFound on failed lookup.
 	ReadFile(name string) ([]byte, error)
-
 	// ReadDir reads the named directory, returning all its
 	// directory entries sorted by filename. If an error
 	// occurs reading the directory, ReadDir returns
