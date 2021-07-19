@@ -35,8 +35,8 @@ func TestMediaService(t *testing.T) {
 }
 
 const (
-	// MediaId is the default ID use for testing.
-	MediaId = 1
+	// MediaID is the default ID use for testing.
+	MediaID = 1
 )
 
 // BeforeTest setups the LogWriter
@@ -99,9 +99,9 @@ var (
 	opts = &domain.Options{
 		MediaSizes: domain.MediaSizes{"thumbnail": domain.MediaSize{SizeKey: "thumb", SizeName: "thumb", Width: 300, Height: 300, Crop: false}},
 	}
-	testMedia      = domain.Media{Id: MediaId, File: domain.File{Id: 1, Url: TestFileURL}}
+	testMedia      = domain.Media{Id: MediaID, File: domain.File{Id: 1, Url: TestFileURL}}
 	testMediaSizes = domain.Media{
-		Id: MediaId,
+		Id: MediaID,
 		Sizes: domain.MediaSizes{
 			"thumnbnail": domain.MediaSize{
 				SizeKey:  "key",

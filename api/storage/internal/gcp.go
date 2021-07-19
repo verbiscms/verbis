@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
 	"github.com/graymeta/stow/google"
-	_ "github.com/graymeta/stow/google"
 	"io/ioutil"
 )
 
@@ -42,7 +41,7 @@ func (g *gcp) Dial(env *environment.Env) (stow.Location, error) {
 	}
 	return dialler(google.Kind, stow.ConfigMap{
 		google.ConfigJSON:      json,
-		google.ConfigProjectId: env.GCPProjectId,
+		google.ConfigProjectId: env.GCPProjectID,
 	})
 }
 
@@ -58,7 +57,7 @@ func (g *gcp) Info(env *environment.Env) domain.StorageProviderInfo {
 		EnvironmentKeys: GCPEnvKeys,
 	}
 
-	if env.GCPJson == "" && env.GCPProjectId == "" {
+	if env.GCPJson == "" && env.GCPProjectID == "" {
 		sp.Error = ErrMessageConfigNotSet + domain.StorageGCP.TitleCase().String()
 		return sp
 	}

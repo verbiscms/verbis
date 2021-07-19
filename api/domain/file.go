@@ -20,9 +20,9 @@ type (
 	File struct {
 		Id         int             `db:"id" json:"-"` //nolint
 		UUID       uuid.UUID       `db:"uuid" json:"uuid"`
-		Url        string          `db:"url" json:"url"`
+		Url        string          `db:"url" json:"url"` //nolint
 		Name       string          `db:"name" json:"name"`
-		BucketId   string          `db:"bucket_id" json:"bucket_id"`
+		BucketId   string          `db:"bucket_id" json:"bucket_id"` //nolint
 		Mime       Mime            `db:"mime" json:"mime"`
 		SourceType string          `db:"source_type" json:"source_type"`
 		Provider   StorageProvider `db:"provider" json:"provider"`

@@ -69,9 +69,4 @@ var (
 			Provider: domain.StorageLocal,
 		},
 	}
-	// The default storage change used for testing.
-	storageChange = domain.StorageChange{
-		Provider: "provider",
-		Bucket:   "bucket",
-	}
 )

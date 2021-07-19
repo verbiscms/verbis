@@ -15,12 +15,12 @@ import (
 func (t *StorageTestSuite) TestStorage_Save() {
 	tt := map[string]struct {
 		input domain.StorageChange
-		mock  func(m *mocks.Service,  r *repo.Repository, o *options.Repository)
+		mock  func(m *mocks.Service, r *repo.Repository, o *options.Repository)
 		want  interface{}
 	}{
 		"Success": {
 			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
-			func(m *mocks.Service,  r *repo.Repository, o *options.Repository) {
+			func(m *mocks.Service, r *repo.Repository, o *options.Repository) {
 				mockValidateSuccess(m, r)
 				o.On("Update", "storage_provider", domain.StorageLocal).Return(nil)
 				o.On("Update", "storage_bucket", "").Return(nil)
@@ -34,7 +34,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 		},
 		"Provider Error": {
 			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
-			func(m *mocks.Service,  r *repo.Repository, o *options.Repository) {
+			func(m *mocks.Service, r *repo.Repository, o *options.Repository) {
 				mockValidateSuccess(m, r)
 				o.On("Update", "storage_provider", domain.StorageLocal).Return(&errors.Error{Message: "provider error"})
 			},
@@ -42,7 +42,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 		},
 		"Bucket Error": {
 			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
-			func(m *mocks.Service,  r *repo.Repository, o *options.Repository) {
+			func(m *mocks.Service, r *repo.Repository, o *options.Repository) {
 				mockValidateSuccess(m, r)
 				o.On("Update", "storage_provider", domain.StorageLocal).Return(nil)
 				o.On("Update", "storage_bucket", "").Return(&errors.Error{Message: "bucket error"})

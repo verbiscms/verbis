@@ -81,7 +81,7 @@ func UtilTestDecode(fn func(file multipart.File) Imager, path string, t *testing
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			file, teardown := test.input()
-			defer teardown()
+			defer teardown() // nolint
 
 			imager := fn(file)
 			enc, err := imager.Decode()

@@ -22,6 +22,7 @@ func (t *StorageTestSuite) TestMigrationInfo_Fail() {
 		Failed: 0,
 		Total:  100,
 		Errors: nil,
+		mtx:    &sync.Mutex{},
 	}
 	mi.fail(fileRemote, fmt.Errorf("error"))
 	t.Equal(1, mi.FilesProcessed)
@@ -30,21 +31,23 @@ func (t *StorageTestSuite) TestMigrationInfo_Fail() {
 }
 
 func (t *StorageTestSuite) TestMigrationInfo_Succeed() {
+	mtx := &sync.Mutex{}
+
 	tt := map[string]struct {
 		input MigrationInfo
 		want  MigrationInfo
 	}{
 		"Simple": {
-			MigrationInfo{Total: 100, Succeeded: 0, FilesProcessed: 0},
-			MigrationInfo{Total: 100, Succeeded: 1, FilesProcessed: 1, Progress: 1},
+			MigrationInfo{Total: 100, Succeeded: 0, FilesProcessed: 0, mtx: mtx},
+			MigrationInfo{Total: 100, Succeeded: 1, FilesProcessed: 1, Progress: 1, mtx: mtx},
 		},
 		"Half": {
-			MigrationInfo{Total: 100, Succeeded: 50, FilesProcessed: 50},
-			MigrationInfo{Total: 100, Succeeded: 51, FilesProcessed: 51, Progress: 51},
+			MigrationInfo{Total: 100, Succeeded: 50, FilesProcessed: 50, mtx: mtx},
+			MigrationInfo{Total: 100, Succeeded: 51, FilesProcessed: 51, Progress: 51, mtx: mtx},
 		},
 		"100": {
-			MigrationInfo{Total: 100, Succeeded: 99, FilesProcessed: 99},
-			MigrationInfo{Total: 100, Succeeded: 100, FilesProcessed: 100, Progress: 100},
+			MigrationInfo{Total: 100, Succeeded: 99, FilesProcessed: 99, mtx: mtx},
+			MigrationInfo{Total: 100, Succeeded: 100, FilesProcessed: 100, Progress: 100, mtx: mtx},
 		},
 	}
 
@@ -212,6 +215,7 @@ func (t *StorageTestSuite) TestStorage_MigrateBackground() {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
 			s.migration.Total = 2
+			s.migration.mtx = &sync.Mutex{}
 
 			wg := sync.WaitGroup{}
 			wg.Add(1)

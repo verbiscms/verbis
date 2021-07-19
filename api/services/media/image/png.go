@@ -21,7 +21,7 @@ type PNG struct {
 // Encode transforms a PNG to a bytes.Buffer with the
 // given compression ration.
 // Returns errors.INTERNAL if the PNG could not be encoded.
-func (p *PNG) Encode(image image.Image, comp int) (*bytes.Buffer, error) {
+func (p *PNG) Encode(img image.Image, comp int) (*bytes.Buffer, error) {
 	const op = "PNG.Encode"
 
 	enc := &png.Encoder{
@@ -29,7 +29,7 @@ func (p *PNG) Encode(image image.Image, comp int) (*bytes.Buffer, error) {
 	}
 
 	buf := new(bytes.Buffer)
-	err := enc.Encode(buf, image)
+	err := enc.Encode(buf, img)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: ErrEncodeMessage, Operation: op, Err: err}
 	}

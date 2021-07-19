@@ -88,14 +88,14 @@ type Service struct {
 }
 
 // New creates a new testMedia Service.
-func New(opts *domain.Options, storage storage.Bucket, repo media.Repository) *Service {
+func New(opts *domain.Options, store storage.Bucket, repo media.Repository) *Service {
 	p := paths.Get()
 	return &Service{
 		options: opts,
 		config:  config.Get(),
 		paths:   p,
 		webp:    webp.New(p.Bin + webp.Path),
-		storage: storage,
+		storage: store,
 		repo:    repo,
 		resizer: &resizer.Resize{},
 	}

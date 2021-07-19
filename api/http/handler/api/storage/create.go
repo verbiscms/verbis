@@ -36,5 +36,5 @@ func (s *Storage) CreateBucket(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created bucket: " + info.Bucket, nil)
+	api.Respond(ctx, http.StatusOK, "Successfully created bucket: "+info.Bucket, nil)
 }

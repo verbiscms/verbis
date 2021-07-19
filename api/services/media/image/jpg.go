@@ -21,7 +21,7 @@ type JPG struct {
 // Encode transforms a JPG to a bytes.Buffer with the
 // given compression ration.
 // Returns errors.INTERNAL if the JPG could not be encoded.
-func (j *JPG) Encode(image image.Image, comp int) (*bytes.Buffer, error) {
+func (j *JPG) Encode(img image.Image, comp int) (*bytes.Buffer, error) {
 	const op = "JPG.Encode"
 
 	opts := &jpeg.Options{
@@ -29,7 +29,7 @@ func (j *JPG) Encode(image image.Image, comp int) (*bytes.Buffer, error) {
 	}
 
 	buf := new(bytes.Buffer)
-	err := jpeg.Encode(buf, image, opts)
+	err := jpeg.Encode(buf, img, opts)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: ErrEncodeMessage, Operation: op, Err: err}
 	}
