@@ -9,6 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
 	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
@@ -18,6 +19,7 @@ import (
 	_ "github.com/graymeta/stow/google"
 	_ "github.com/graymeta/stow/s3"
 	"github.com/stretchr/testify/suite"
+	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -31,6 +33,11 @@ type StorageTestSuite struct {
 // TestStorage asserts testing has begun.
 func TestStorage(t *testing.T) {
 	suite.Run(t, new(StorageTestSuite))
+}
+
+// BeforeTest discards the log.
+func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
+	logger.SetOutput(ioutil.Discard)
 }
 
 // Setup the suite with the mock functions.
@@ -57,10 +64,10 @@ func (t *StorageTestSuite) SetupOptions(mock func(m *mocks.Service, r *repo.Repo
 		mock(m, r, o)
 	}
 	return &Storage{
-		filesRepo: r,
+		filesRepo:   r,
 		optionsRepo: o,
-		service:   m,
-		env:       &environment.Env{},
+		service:     m,
+		env:         &environment.Env{},
 	}
 }
 

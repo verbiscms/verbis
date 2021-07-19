@@ -6,17 +6,21 @@ package storage
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
+	"github.com/stretchr/testify/mock"
+	"io/ioutil"
+	"strings"
+	"sync"
 )
 
 func (t *StorageTestSuite) TestMigrationInfo_Fail() {
 	mi := MigrationInfo{
 		Failed: 0,
+		Total:  100,
 		Errors: nil,
 	}
 	mi.fail(fileRemote, fmt.Errorf("error"))
@@ -46,7 +50,7 @@ func (t *StorageTestSuite) TestMigrationInfo_Succeed() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			test.input.succeed()
+			test.input.succeed(domain.File{})
 			t.Equal(test.want, test.input)
 		})
 	}
@@ -60,6 +64,18 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 		mock      func(m *mocks.Service, r *repo.Repository)
 		want      interface{}
 	}{
+		"Success": {
+			false,
+			domain.StorageChange{Provider: domain.StorageAWS},
+			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
+			func(m *mocks.Service, r *repo.Repository) {
+				mockValidateSuccess(m, r)
+				r.On("List", mock.Anything).Return(filesSlice, 2, nil)
+				r.On("FindByURL", filesSlice[0].Url).Return(domain.File{}, fmt.Errorf("error"))
+				r.On("FindByURL", filesSlice[1].Url).Return(domain.File{}, fmt.Errorf("error"))
+			},
+			2,
+		},
 		"Already Migrating": {
 			true,
 			domain.StorageChange{},
@@ -87,19 +103,19 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
-				r.On("List", params.Params{LimitAll: false}).Return(nil, 0, &errors.Error{Message: "error"})
+				r.On("List", mock.Anything).Return(nil, 0, &errors.Error{Message: "error"})
 			},
 			"error",
 		},
-		"Test": {
+		"Zero Length": {
 			false,
 			domain.StorageChange{Provider: domain.StorageAWS},
 			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
-				r.On("List", params.Params{LimitAll: false}).Return(nil, 0, &errors.Error{Message: "error"})
+				r.On("List", mock.Anything).Return(nil, 0, nil)
 			},
-			"error",
+			"Error no files found with provide",
 		},
 	}
 
@@ -120,28 +136,95 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 	}
 }
 
-//func (t *StorageTestSuite) TestStorage_MigrateBackground() {
-//	tt := map[string]struct {
-//		file domain.File
-//		from domain.StorageChange
-//		to   domain.StorageChange
-//		mock func(m *mocks.Service, r *repo.Repository)
-//		want MigrationInfo
-//	}{
-//		"Same Provider": {
-//			domain.File{Provider: domain.StorageAWS},
-//			domain.StorageChange{Provider: domain.StorageLocal},
-//			domain.StorageChange{Provider: domain.StorageAWS},
-//			nil,
-//			MigrationInfo{},
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func() {
-//			s := t.Setup(test.mock)
-//			s.migrateBackground(test.file, test.from, test.to)
-//			t.Equal(test.want, s.migration)
-//		})
-//	}
-//}
+func (t *StorageTestSuite) TestStorage_MigrateBackground() {
+	tt := map[string]struct {
+		mock func(m *mocks.Service, r *repo.Repository)
+		want MigrationInfo
+	}{
+		"Find Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("FindByURL", fileRemote.Url).Return(domain.File{}, fmt.Errorf("error"))
+			},
+			MigrationInfo{Failed: 1, Succeeded: 0},
+		},
+		"Upload Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
+
+				c := &mocks.StowContainer{}
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
+
+				item := &mocks.StowItem{}
+				item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
+				c.On("Item", mock.Anything).Return(item, nil)
+
+				m.On("Bucket", mock.Anything, mock.Anything).Return(nil, fmt.Errorf("Error"))
+			},
+			MigrationInfo{Failed: 1, Succeeded: 0},
+		},
+		"Delete Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
+
+				item := &mocks.StowItem{}
+				item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
+				item.On("ID").Return("item")
+
+				c := &mocks.StowContainer{}
+				c.On("Item", mock.Anything).Return(item, nil)
+				c.On("Put", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(item, nil)
+				c.On("ID").Return("bucket")
+
+				m.On("BucketByFile", domain.File{}).Return(c, nil)
+				m.On("Bucket", mock.Anything, mock.Anything).Return(c, nil)
+				r.On("Create", mock.Anything).Return(domain.File{}, nil)
+
+				r.On("Find", mock.Anything).Return(domain.File{}, fmt.Errorf("error"))
+			},
+			MigrationInfo{Failed: 1, Succeeded: 0},
+		},
+		"Success": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
+
+				item := &mocks.StowItem{}
+				item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
+				item.On("ID").Return("item")
+
+				c := &mocks.StowContainer{}
+				c.On("Item", mock.Anything).Return(item, nil)
+				c.On("Put", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(item, nil)
+				c.On("ID").Return("bucket")
+				c.On("RemoveItem", mock.Anything).Return(nil)
+
+				m.On("BucketByFile", domain.File{}).Return(c, nil).Times(2)
+				m.On("Bucket", mock.Anything, mock.Anything).Return(c, nil)
+
+				r.On("Create", mock.Anything).Return(domain.File{}, nil)
+				r.On("Find", mock.Anything).Return(domain.File{}, nil)
+				r.On("Delete", mock.Anything).Return(nil)
+			},
+			MigrationInfo{Failed: 0, Succeeded: 1},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(test.mock)
+			s.migration.Total = 2
+
+			wg := sync.WaitGroup{}
+			wg.Add(1)
+			c := make(chan migration, 1)
+			c <- migration{
+				file: fileRemote,
+				wg:   &wg,
+			}
+
+			s.migrateBackground(c)
+
+			t.Equal(test.want.Failed, s.migration.Failed)
+			t.Equal(test.want.Succeeded, s.migration.Succeeded)
+		})
+	}
+}

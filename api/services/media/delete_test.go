@@ -120,7 +120,7 @@ func (t *MediaServiceTestSuite) TestService_DeleteWebP() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(nil, nil, test.mock)
-			s.deleteWebP(file)
+			s.deleteWebP(file, true)
 			got := t.LogWriter
 			t.Contains(got.String(), test.want)
 			t.Reset()

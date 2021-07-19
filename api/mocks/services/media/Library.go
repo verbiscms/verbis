@@ -82,6 +82,27 @@ func (_m *Library) List(meta params.Params) (domain.MediaItems, int, error) {
 	return r0, r1, r2
 }
 
+// ReGenerateWebP provides a mock function with given fields:
+func (_m *Library) ReGenerateWebP() (int, error) {
+	ret := _m.Called()
+
+	var r0 int
+	if rf, ok := ret.Get(0).(func() int); ok {
+		r0 = rf()
+	} else {
+		r0 = ret.Get(0).(int)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Update provides a mock function with given fields: m
 func (_m *Library) Update(m domain.Media) (domain.Media, error) {
 	ret := _m.Called(m)

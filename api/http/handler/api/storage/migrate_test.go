@@ -47,6 +47,15 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			migrateBadValidation,
 			nil,
 		},
+		"Not Found": {
+			nil,
+			http.StatusOK,
+			"not found",
+			migrate,
+			func(m *mocks.Provider) {
+				m.On("Migrate", migrate.From, migrate.To).Return(0, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			},
+		},
 		"Invalid": {
 			nil,
 			http.StatusBadRequest,

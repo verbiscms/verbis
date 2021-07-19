@@ -35,7 +35,7 @@ func (s *Service) Delete(id int) error {
 
 // delete files removes all files from the storage bucket.
 func (s *Service) deleteFiles(item domain.Media) {
-	const op = "Service.DeleteFiles"
+	const op = "Media.DeleteFiles"
 
 	// Remove original file
 	err := s.storage.Delete(item.File.Id)
@@ -45,7 +45,7 @@ func (s *Service) deleteFiles(item domain.Media) {
 	logger.Info("Deleted original testMedia item: " + item.File.Url)
 
 	// Delete original WebP
-	s.deleteWebP(item.File)
+	s.deleteWebP(item.File, true)
 
 	// Remove testMedia sizes
 	for _, size := range item.Sizes {
@@ -57,13 +57,13 @@ func (s *Service) deleteFiles(item domain.Media) {
 		logger.Info("Deleted testMedia size: " + size.File.Url)
 
 		// Delete sized WebP
-		s.deleteWebP(size.File)
+		s.deleteWebP(size.File, true)
 	}
 }
 
 // deleteWebP removes any webp images from the bucket.
-func (s *Service) deleteWebP(file domain.File) {
-	const op = "Service.DeleteWebP"
+func (s *Service) deleteWebP(file domain.File, log bool) {
+	const op = "Media.DeleteWebP"
 
 	_, webp, err := s.storage.Find(file.Url + domain.WebPExtension)
 	if err != nil {
@@ -72,7 +72,9 @@ func (s *Service) deleteWebP(file domain.File) {
 
 	err = s.storage.Delete(webp.Id)
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting webp image: " + webp.Url, Operation: op, Err: err}).Error()
+		if log {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting webp image: " + webp.Url, Operation: op, Err: err}).Error()
+		}
 		return
 	}
 
