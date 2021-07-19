@@ -1,117 +1,114 @@
-# Create Storage Table
-# TODO add no duplicates for url and name
-# Index for url for faster lookups
+##############################################
+# Create Files Table
+##############################################
+
 CREATE TABLE `files`
 (
     `id`          int           NOT NULL AUTO_INCREMENT,
-    `bucket_id`   text          NOT NULL,
     `uuid`        varchar(36)   NOT NULL,
-    `url`         text          NOT NULL,
+    `url`         varchar(500)  NOT NULL,
     `name`        varchar(255)  NOT NULL,
     `path`        text          NOT NULL,
+    `bucket_id`   text          NOT NULL,
     `mime`        varchar(150)  NOT NULL,
     `source_type` varchar(255)  NOT NULL,
     `provider`    varchar(255)  NOT NULL,
     `region`      varchar(255)  NOT NULL,
     `bucket`      varchar(255)  NOT NULL,
-    `file_size`   int           NOT NULL,
+    `file_size`    int           NOT NULL,
     `private`     bit DEFAULT 0 NOT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
+    PRIMARY KEY (`id`),
+    KEY `files_url_index` (`url`),
+    CONSTRAINT files_unique UNIQUE (url)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+##############################################
 # Create Media Sizes Table
-CREATE TABLE `media_sizes`
-(
-    `id`        int           NOT NULL AUTO_INCREMENT,
-    `file_id`   int           NOT NULL,
-    `media_id`  int           NOT NULL,
-    `size_key`  varchar(255)  NOT NULL,
-    `size_name` varchar(255)  NOT NULL,
-    `width`     int           NOT NULL,
-    `height`    int           NOT NULL,
-    `crop`      bit DEFAULT 0 NOT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
+##############################################
 
+CREATE TABLE `media_sizes` (
+                               `id`        int           NOT NULL AUTO_INCREMENT,
+                               `uuid`      varchar(36)   NOT NULL,
+                               `file_id`    int           NOT NULL,
+                               `media_id`  int           NOT NULL,
+                               `size_key`  varchar(255)  NOT NULL,
+                               `size_name` varchar(255)  NOT NULL,
+                               `width`     int           NOT NULL,
+                               `height`    int           NOT NULL,
+                               `crop`      bit DEFAULT 0 NOT NULL,
+                               PRIMARY KEY (`id`),
+                               KEY `media_size_file_index` (`file_id`),
+                               KEY `media_size_media_index` (`media_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+##############################################
 # Inserts for Storage
-INSERT INTO storage (`uuid`, `url`, `file_size`, `name`, `mime`, `path`, `region`, `provider`, `bucket`, `source_type`)
-SELECT `uuid`,
-       `url`,
-       `file_size`,
-       `file_name`,
-       `mime`,
-       `file_path`,
-       '''',
-       '' local'', '''',
-       '' media ''
+##############################################
+
+# Delete Duplicate URLS
+DELETE FROM media m WHERE id IN (
+    WITH DeleteURL as (SELECT `id`,
+                              ROW_NUMBER() OVER(PARTITION BY url ORDER BY ID DESC) row_num
+                       FROM media) SELECT id FROM DeleteURL WHERE row_num > 1
+);
+
+# Insert main files (no media sizes)
+INSERT INTO files (`uuid`, `url`, `file_size`, `name`, `mime`, `path`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
+SELECT `uuid`, `url`, `file_size`, `file_name`, `mime`, `file_path`, url AS bucket_id, '' AS region, 'local' AS provider,  '' AS bucket, 'media'
 FROM media;
 
-INSERT INTO storage (`uuid`, `url`, `file_size`, `name`, `mime`, `path`, `region`, `provider`, `bucket`, `source_type`)
-    (SELECT sizes.uuid,
-            sizes.url,
-            sizes.file_size,
-            sizes.name,
-            media.mime,
-            media.file_path,
-            '''',
-            '' local'', '''',
-            '' media ''
+# Insert media sizes
+INSERT INTO files (`url`, `uuid`, `file_size`, `name`, `mime`, `path`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
+    (SELECT sizes.url, sizes.uuid,  sizes.file_size, sizes.name, media.mime, media.file_path, sizes.url AS bucket_id, '' AS region, 'local' AS provider, '' AS bucket, 'media'
      FROM media,
-          json_table(sizes, '' $.* ''
-                     COLUMNS(
-                             uuid VARCHAR(255) PATH ''$**.uuid'',
-                             url VARCHAR(255) PATH ''$**.url'',
-                             file_size VARCHAR(255) PATH ''$**.file_size'',
-                             name VARCHAR(255) PATH ''$**.name''
+          JSON_TABLE(sizes, '$.*'
+                     COLUMNS (
+                         uuid VARCHAR(255) PATH '$**.uuid',
+                         url VARCHAR(255) PATH '$**.url',
+                         file_size VARCHAR(255) PATH '$**.file_size',
+                         name VARCHAR(255) PATH '$**.name'
                          )
               ) AS sizes);
 
-# Inserts for Media
-ALTER table media
-    ADD COLUMN `storage_id` int NOT NULL DEFAULT 0;
-
-UPDATE media m
-    JOIN storage s on m.uuid = s.uuid
-SET m.file_id = s.id
-WHERE m.uuid = s.uuid;
-
+##############################################
 # Inserts for Media Sizes
-# INSERT INTO media_sizes (`file_id`, `media_id`, `name`, `width`, `height`, `crop`)
-#     (SELECT storage.id, m.id, sizes.width, sizes.height, sizes.sizename, crop
-#     FROM media AS m,
-#          json_table(sizes, ''$.*''
-#                 COLUMNS (
-#                     width VARCHAR(255) PATH ''$**.width'',
-#                     height VARCHAR(255) PATH ''$**.height'',
-#                     sizename VARCHAR(255) PATH ''$**.size_name'',
-#                     crop VARCHAR(255) PATH ''$**.crop''
-#                 )
-#              ) AS sizes);
+##############################################
 
-SELECT media.id,
-       sizes.width,
-       sizes.height,
-       sizes.size_name,
-       sizes.crop,
-       CASE
-           WHEN sizes.size_name = ''HD Size'' THEN ''hd''
-           WHEN sizes.size_name = ''Large Size'' THEN ''large''
-           WHEN sizes.size_name = ''Medium Size'' THEN ''medium''
-           WHEN sizes.size_name = ''Thumbnail Size'' THEN ''thumbnail''
-           ELSE '''' END AS keyname
-FROM media AS media,
-     JSON_TABLE(sizes, '' $.* ''
-                COLUMNS(
-                        width INT PATH ''$**.width'',
-                        height INT PATH ''$**.height'',
-                        size_name VARCHAR(255) PATH ''$**.size_name'',
-                        crop INT PATH ''$**.crop''
-                    )
-         ) AS sizes;
+INSERT INTO media_sizes (`file_id`, `media_id`, `uuid`, `width`, `height`, `crop`, `size_name`, `size_key`)
+    (SELECT 0, media.id, sizes.uuid, sizes.width, sizes.height, sizes.crop, sizes.size_name,
+            CASE
+                WHEN sizes.size_name = 'HD Size' THEN 'hd'
+                WHEN sizes.size_name = 'Large Size' THEN 'large'
+                WHEN sizes.size_name = 'Medium Size' THEN 'medium'
+                WHEN sizes.size_name = 'Thumbnail Size' THEN 'thumbnail'
+                ELSE 'Default Size' END AS keyname
+     FROM media,
+          JSON_TABLE(sizes, '$.*'
+                     COLUMNS (
+                         width INT PATH '$**.width',
+                         height INT PATH '$**.height',
+                         size_name VARCHAR(255) PATH '$**.size_name',
+                         crop INT PATH '$**.crop',
+                         uuid VARCHAR(255) PATH '$**.uuid'
+                         )
+              ) AS sizes);
 
+##############################################
+# MediaTable Alter
+##############################################
 
+ALTER TABLE media ADD COLUMN (`file_id` INT NOT NULL);
+
+##############################################
+# File ID Inserts
+##############################################
+
+UPDATE `media` INNER JOIN `files` ON media.uuid = files.uuid SET media.file_id = files.id WHERE media.uuid = files.uuid;
+UPDATE `media_sizes` INNER JOIN `files` ON media_sizes.uuid = files.uuid SET media_sizes.file_id = files.id WHERE media_sizes.uuid = files.uuid;
+
+##############################################
+# Drop Columns
+##############################################
 
 ALTER TABLE media
     DROP COLUMN uuid,
@@ -122,5 +119,5 @@ ALTER TABLE media
     DROP COLUMN sizes,
     DROP COLUMN mime;
 
-ALTER TABLE media
+ALTER TABLE media_sizes
     DROP COLUMN uuid;
