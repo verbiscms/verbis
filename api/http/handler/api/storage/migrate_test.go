@@ -49,7 +49,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 		},
 		"Not Found": {
 			nil,
-			http.StatusOK,
+			http.StatusBadRequest,
 			"not found",
 			migrate,
 			func(m *mocks.Provider) {

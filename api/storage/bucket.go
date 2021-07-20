@@ -72,10 +72,10 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		return domain.File{}, err
 	}
 
-	return s.upload(provider, bucket, u)
+	return s.upload(provider, bucket, u, true)
 }
 
-func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload) (domain.File, error) {
+func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, createDB bool) (domain.File, error) {
 	const op = "Storage.Upload"
 
 	cont, err := s.service.Bucket(p, b)
@@ -108,7 +108,7 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload) (d
 		region = ""
 	}
 
-	file, err := s.filesRepo.Create(domain.File{
+	f := domain.File{
 		UUID:       u.UUID,
 		Url:        "/" + vstrings.TrimSlashes(u.Path),
 		Name:       path.Base(u.Path),
@@ -120,8 +120,13 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload) (d
 		Bucket:     bucket,
 		FileSize:   u.Size,
 		Private:    false,
-	})
+	}
 
+	if !createDB {
+		return f, nil
+	}
+
+	file, err := s.filesRepo.Create(f)
 	if err != nil {
 		return domain.File{}, err
 	}
@@ -138,6 +143,10 @@ func (s *Storage) Exists(name string) bool {
 // Delete satisfies the Bucket interface by accepting an ID
 // and deleting a file from the bucket and database.
 func (s *Storage) Delete(id int) error {
+	return s.deleteFile(true, id)
+}
+
+func (s *Storage) deleteFile(database bool, id int) error {
 	const op = "Storage.Delete"
 
 	file, err := s.filesRepo.Find(id)
@@ -153,6 +162,10 @@ func (s *Storage) Delete(id int) error {
 	err = bucket.RemoveItem(file.ID(s.paths.Storage))
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
+	}
+
+	if !database {
+		return nil
 	}
 
 	err = s.filesRepo.Delete(file.Id)

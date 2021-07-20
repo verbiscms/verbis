@@ -76,10 +76,16 @@ func (t *StorageTestSuite) TestContainer_CreateBucket() {
 		"Success": {
 			func(m *mocks.Service, r *repo.Repository) {
 				loc := &mocks.StowLocation{}
-				loc.On("CreateContainer", TestBucket).Return(nil, nil)
+				cont := &mocks.StowContainer{}
+				cont.On("ID").Return("bucket-id")
+				cont.On("Name").Return("bucket-name")
+				loc.On("CreateContainer", TestBucket).Return(cont, nil)
 				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
-			nil,
+			domain.Bucket{
+				Id:   "bucket-id",
+				Name: "bucket-name",
+			},
 		},
 		"Service Error": {
 			func(m *mocks.Service, r *repo.Repository) {
@@ -100,12 +106,12 @@ func (t *StorageTestSuite) TestContainer_CreateBucket() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.CreateBucket(domain.StorageLocal, TestBucket)
+			got, err := s.CreateBucket(domain.StorageLocal, TestBucket)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
-			t.Equal(test.want, err)
+			t.Equal(test.want, got)
 		})
 	}
 }

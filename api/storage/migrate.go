@@ -47,7 +47,7 @@ type FailedMigrationFile struct {
 const (
 	// migrateConcurrentAllowance is the amount of files that
 	// are allowed to be migrated concurrently.
-	migrateConcurrentAllowance = 20
+	migrateConcurrentAllowance = 1
 )
 
 var (
@@ -175,10 +175,12 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 	}
 
 	wg.Wait()
-	s.isMigrating = false
 
 	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", s.migration.Succeeded))
 	logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", s.migration.Failed))
+
+	s.isMigrating = false
+	s.migration = MigrationInfo{}
 }
 
 // migrateBackground processes the migration by finding the
@@ -204,17 +206,25 @@ func (s *Storage) migrateBackground(channel chan migration) {
 		SourceType: m.file.SourceType,
 	}
 
-	_, err = s.upload(m.to.Provider, m.to.Bucket, u)
+	file, err := s.upload(m.to.Provider, m.to.Bucket, u, false)
 	if err != nil {
 		s.migration.fail(m.file, err)
 		return
 	}
 
-	err = s.Delete(m.file.Id)
+	err = s.deleteFile(false, m.file.Id)
 	if err != nil {
 		s.migration.fail(m.file, err)
 		return
 	}
 
-	s.migration.succeed(m.file)
+	file.Id = m.file.Id
+
+	updated, err := s.filesRepo.Update(file)
+	if err != nil {
+		s.migration.fail(m.file, err)
+		return
+	}
+
+	s.migration.succeed(updated)
 }

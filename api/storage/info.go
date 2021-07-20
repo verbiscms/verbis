@@ -16,7 +16,7 @@ type Configuration struct {
 	ActiveBucket   string                  `json:"active_bucket"`
 	Providers      domain.StorageProviders `json:"providers"`
 	IsMigrating    bool                    `json:"is_migrating"`
-	MigrationInfo  MigrationInfo           `json:"migration_info"`
+	MigrationInfo  MigrationInfo           `json:"migration"`
 }
 
 // Info satisfies the Provider interface by returning a

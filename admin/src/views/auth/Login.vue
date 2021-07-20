@@ -64,6 +64,9 @@ export default {
 		}
 	},
 	methods: {
+		/*
+		 * doLogin()
+		 */
 		doLogin() {
 			this.doingAxios = true;
 			this.authMessage = '';
@@ -80,7 +83,6 @@ export default {
 						});
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						return;

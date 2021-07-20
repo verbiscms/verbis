@@ -12,13 +12,13 @@ type Repository struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: mediaId, _a1
-func (_m *Repository) Create(mediaId int, _a1 domain.MediaSizes) (domain.MediaSizes, error) {
-	ret := _m.Called(mediaId, _a1)
+// Create provides a mock function with given fields: mediaID, _a1
+func (_m *Repository) Create(mediaID int, _a1 domain.MediaSizes) (domain.MediaSizes, error) {
+	ret := _m.Called(mediaID, _a1)
 
 	var r0 domain.MediaSizes
 	if rf, ok := ret.Get(0).(func(int, domain.MediaSizes) domain.MediaSizes); ok {
-		r0 = rf(mediaId, _a1)
+		r0 = rf(mediaID, _a1)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.MediaSizes)
@@ -27,7 +27,7 @@ func (_m *Repository) Create(mediaId int, _a1 domain.MediaSizes) (domain.MediaSi
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(int, domain.MediaSizes) error); ok {
-		r1 = rf(mediaId, _a1)
+		r1 = rf(mediaID, _a1)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -35,13 +35,13 @@ func (_m *Repository) Create(mediaId int, _a1 domain.MediaSizes) (domain.MediaSi
 	return r0, r1
 }
 
-// Delete provides a mock function with given fields: mediaId
-func (_m *Repository) Delete(mediaId int) error {
-	ret := _m.Called(mediaId)
+// Delete provides a mock function with given fields: mediaID
+func (_m *Repository) Delete(mediaID int) error {
+	ret := _m.Called(mediaID)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(int) error); ok {
-		r0 = rf(mediaId)
+		r0 = rf(mediaID)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -49,13 +49,13 @@ func (_m *Repository) Delete(mediaId int) error {
 	return r0
 }
 
-// Find provides a mock function with given fields: mediaId
-func (_m *Repository) Find(mediaId int) (domain.MediaSizes, error) {
-	ret := _m.Called(mediaId)
+// Find provides a mock function with given fields: mediaID
+func (_m *Repository) Find(mediaID int) (domain.MediaSizes, error) {
+	ret := _m.Called(mediaID)
 
 	var r0 domain.MediaSizes
 	if rf, ok := ret.Get(0).(func(int) domain.MediaSizes); ok {
-		r0 = rf(mediaId)
+		r0 = rf(mediaID)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(domain.MediaSizes)
@@ -64,7 +64,7 @@ func (_m *Repository) Find(mediaId int) (domain.MediaSizes, error) {
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(int) error); ok {
-		r1 = rf(mediaId)
+		r1 = rf(mediaID)
 	} else {
 		r1 = ret.Error(1)
 	}

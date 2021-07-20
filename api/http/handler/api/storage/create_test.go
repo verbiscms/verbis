@@ -6,6 +6,7 @@ package storage
 
 import (
 	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
+	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/storage"
@@ -22,12 +23,18 @@ func (t *StorageTestSuite) TestStorage_CreateBucket() {
 		mock    func(m *mocks.Provider)
 	}{
 		"Success": {
-			nil,
+			domain.Bucket{
+				Id:   "bucket-id",
+				Name: "bucket-name",
+			},
 			http.StatusOK,
-			"Successfully created bucket: " + storageChange.Bucket,
+			"Successfully created bucket: bucket-name",
 			storageChange,
 			func(m *mocks.Provider) {
-				m.On("CreateBucket", storageChange.Provider, storageChange.Bucket).Return(nil)
+				m.On("CreateBucket", storageChange.Provider, storageChange.Bucket).Return(domain.Bucket{
+					Id:   "bucket-id",
+					Name: "bucket-name",
+				}, nil)
 			},
 		},
 		"Validation Failed": {
