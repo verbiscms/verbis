@@ -10,12 +10,12 @@ import (
 	"github.com/ainsleyclark/verbis/api/logger"
 )
 
-// Delete satisfies the Library to remove possible testMedia
+// Delete satisfies the Library to remove possible media
 // item combinations from the file system, if the file
 // does not exist (user moved) it will be
 // skipped and logged out.
 func (s *Service) Delete(id int) error {
-	// Find the original testMedia item
+	// Find the original media item
 	item, err := s.repo.Find(id)
 	if err != nil {
 		return err
@@ -40,24 +40,29 @@ func (s *Service) deleteFiles(item domain.Media) {
 	// Remove original file
 	err := s.storage.Delete(item.File.Id)
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting original testMedia item: " + item.File.Url, Operation: op, Err: err}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting original media item: " + item.File.Url, Operation: op, Err: err}).Error()
 	}
 	logger.Info("Deleted original media item: " + item.File.Url)
 
 	// Delete original WebP
 	s.deleteWebP(item.File, true)
 
-	// Remove testMedia sizes
+	// Remove media sizes
 	for _, size := range item.Sizes {
 		// Delete original
 		err = s.storage.Delete(size.File.Id)
 		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting testMedia size: " + size.File.Url, Operation: op, Err: err}).Error()
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting media size: " + size.File.Url, Operation: op, Err: err}).Error()
 		}
 		logger.Info("Deleted media size: " + size.File.Url)
 
 		// Delete sized WebP
 		s.deleteWebP(size.File, true)
+	}
+
+	err = s.repo.Delete(item.Id)
+	if err != nil {
+		logger.WithError(err).Error()
 	}
 }
 
@@ -76,14 +81,6 @@ func (s *Service) deleteWebP(file domain.File, log bool) {
 	if err != nil {
 		if log {
 			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting webp image: " + webp.Url, Operation: op, Err: err}).Error()
-		}
-		return
-	}
-
-	err = s.storage.Delete(webp.Id)
-	if err != nil {
-		if log {
-			logger.WithError(err).Error()
 		}
 		return
 	}
