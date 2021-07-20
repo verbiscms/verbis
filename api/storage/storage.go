@@ -49,7 +49,7 @@ type Container interface {
 	// CreateBucket creates a folder or bucket on the provider
 	// by name.
 	// Returns errors.INVALID if there was an error creating the bucket.
-	CreateBucket(provider domain.StorageProvider, name string) error
+	CreateBucket(provider domain.StorageProvider, name string) (domain.Bucket, error)
 	// DeleteBucket removes a folder or bucket from the
 	// provider by name.
 	// Returns errors.INVALID if there was an error deleting the bucket.

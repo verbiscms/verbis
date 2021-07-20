@@ -53,20 +53,23 @@ func (s *Storage) ListBuckets(provider domain.StorageProvider) (domain.Buckets, 
 // CreateBucket satisfies the Container interface by
 // accepting a name, and creating a new bucket
 // from the provider.
-func (s *Storage) CreateBucket(provider domain.StorageProvider, name string) error {
+func (s *Storage) CreateBucket(provider domain.StorageProvider, name string) (domain.Bucket, error) {
 	const op = "Storage.CreateBucket"
 
 	prov, err := s.service.Provider(provider)
 	if err != nil {
-		return err
+		return domain.Bucket{}, err
 	}
 
-	_, err = prov.CreateContainer(name)
+	bucket, err := prov.CreateContainer(name)
 	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Error creating bucket: " + name, Operation: op, Err: err}
+		return domain.Bucket{}, &errors.Error{Code: errors.INVALID, Message: "Error creating bucket with the name: " + name, Operation: op, Err: err}
 	}
 
-	return nil
+	return domain.Bucket{
+		Id:   bucket.ID(),
+		Name: bucket.Name(),
+	}, nil
 }
 
 // DeleteBucket satisfies the Container interface by

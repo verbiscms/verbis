@@ -13,17 +13,24 @@ type Container struct {
 }
 
 // CreateBucket provides a mock function with given fields: provider, name
-func (_m *Container) CreateBucket(provider domain.StorageProvider, name string) error {
+func (_m *Container) CreateBucket(provider domain.StorageProvider, name string) (domain.Bucket, error) {
 	ret := _m.Called(provider, name)
 
-	var r0 error
-	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) error); ok {
+	var r0 domain.Bucket
+	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) domain.Bucket); ok {
 		r0 = rf(provider, name)
 	} else {
-		r0 = ret.Error(0)
+		r0 = ret.Get(0).(domain.Bucket)
 	}
 
-	return r0
+	var r1 error
+	if rf, ok := ret.Get(1).(func(domain.StorageProvider, string) error); ok {
+		r1 = rf(provider, name)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // DeleteBucket provides a mock function with given fields: provider, name

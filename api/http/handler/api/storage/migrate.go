@@ -37,7 +37,7 @@ func (s *Storage) Migrate(ctx *gin.Context) {
 
 	total, err := s.Storage.Migrate(migrate.From, migrate.To)
 	if errors.Code(err) == errors.NOTFOUND {
-		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
+		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
 	} else if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)

@@ -27,7 +27,7 @@ func (s *Storage) CreateBucket(ctx *gin.Context) {
 		return
 	}
 
-	err = s.Storage.CreateBucket(info.Provider, info.Bucket)
+	bucket, err := s.Storage.CreateBucket(info.Provider, info.Bucket)
 	if err != nil && errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
@@ -36,5 +36,5 @@ func (s *Storage) CreateBucket(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created bucket: "+info.Bucket, nil)
+	api.Respond(ctx, http.StatusOK, "Successfully created bucket: "+bucket.Name, bucket)
 }
