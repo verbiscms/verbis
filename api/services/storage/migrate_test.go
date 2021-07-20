@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
+	"github.com/ainsleyclark/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
 	"github.com/stretchr/testify/mock"
 	"io/ioutil"
@@ -186,6 +186,28 @@ func (t *StorageTestSuite) TestStorage_MigrateBackground() {
 			},
 			MigrationInfo{Failed: 1, Succeeded: 0},
 		},
+		"Repo Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
+
+				item := &mocks.StowItem{}
+				item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
+				item.On("ID").Return("item")
+
+				c := &mocks.StowContainer{}
+				c.On("Item", mock.Anything).Return(item, nil)
+				c.On("Put", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(item, nil)
+				c.On("ID").Return("bucket")
+				c.On("RemoveItem", mock.Anything).Return(nil)
+
+				m.On("BucketByFile", domain.File{}).Return(c, nil).Times(2)
+				m.On("Bucket", mock.Anything, mock.Anything).Return(c, nil)
+
+				r.On("Find", mock.Anything).Return(domain.File{}, nil)
+				r.On("Update", mock.Anything).Return(domain.File{}, fmt.Errorf("error"))
+			},
+			MigrationInfo{Failed: 1, Succeeded: 0},
+		},
 		"Success": {
 			func(m *mocks.Service, r *repo.Repository) {
 				r.On("FindByURL", mock.Anything).Return(domain.File{}, nil)
@@ -203,9 +225,8 @@ func (t *StorageTestSuite) TestStorage_MigrateBackground() {
 				m.On("BucketByFile", domain.File{}).Return(c, nil).Times(2)
 				m.On("Bucket", mock.Anything, mock.Anything).Return(c, nil)
 
-				r.On("Create", mock.Anything).Return(domain.File{}, nil)
 				r.On("Find", mock.Anything).Return(domain.File{}, nil)
-				r.On("Delete", mock.Anything).Return(nil)
+				r.On("Update", mock.Anything).Return(domain.File{}, nil)
 			},
 			MigrationInfo{Failed: 0, Succeeded: 1},
 		},

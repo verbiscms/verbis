@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/logger"
 	resizer "github.com/ainsleyclark/verbis/api/mocks/services/media/resizer"
-	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
+	storage "github.com/ainsleyclark/verbis/api/mocks/services/storage"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/ainsleyclark/verbis/api/test/dummy"

@@ -7,7 +7,7 @@ package storage
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
+	"github.com/ainsleyclark/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
 	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
 )

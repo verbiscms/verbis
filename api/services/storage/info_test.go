@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
+	"github.com/ainsleyclark/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
-	"github.com/ainsleyclark/verbis/api/storage/internal"
+	internal2 "github.com/ainsleyclark/verbis/api/services/storage/internal"
 	"github.com/graymeta/stow"
 )
 
@@ -53,9 +53,9 @@ func (t *StorageTestSuite) TestStorage_Info() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			orig := internal.Providers
-			defer func() { internal.Providers = orig }()
-			internal.Providers = internal.ProviderMap{"test": &mockProviderErr{}}
+			orig := internal2.Providers
+			defer func() { internal2.Providers = orig }()
+			internal2.Providers = internal2.ProviderMap{"test": &mockProviderErr{}}
 
 			s := t.Setup(test.mock)
 			got, err := s.Info()
