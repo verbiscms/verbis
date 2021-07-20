@@ -6,7 +6,7 @@ package storage
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/storage/internal"
+	internal2 "github.com/ainsleyclark/verbis/api/services/storage/internal"
 )
 
 // Configuration represents the information returned
@@ -28,7 +28,7 @@ func (s *Storage) Info() (Configuration, error) {
 	}
 
 	var m = make(domain.StorageProviders)
-	for k, v := range internal.Providers {
+	for k, v := range internal2.Providers {
 		m[k] = v.Info(s.env)
 	}
 

@@ -10,7 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/storage/internal"
+	internal2 "github.com/ainsleyclark/verbis/api/services/storage/internal"
 	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/ainsleyclark/verbis/api/store/options"
 )
@@ -104,7 +104,7 @@ type Storage struct {
 	optionsRepo options.Repository
 	filesRepo   files.Repository
 	paths       paths.Paths
-	service     internal.StorageServices
+	service     internal2.StorageServices
 	isMigrating bool
 	migration   MigrationInfo
 }
@@ -145,7 +145,7 @@ func New(cfg Config) (*Storage, error) {
 		optionsRepo: cfg.Options,
 		filesRepo:   cfg.Files,
 		paths:       paths.Get(),
-		service: &internal.Service{
+		service: &internal2.Service{
 			Env:     cfg.Environment,
 			Options: cfg.Options,
 		},

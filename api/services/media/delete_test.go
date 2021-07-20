@@ -7,7 +7,7 @@ package media
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
-	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
+	storage "github.com/ainsleyclark/verbis/api/mocks/services/storage"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/stretchr/testify/mock"
 )

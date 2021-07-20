@@ -11,9 +11,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/services/site"
+	storage2 "github.com/ainsleyclark/verbis/api/services/storage"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/services/webp"
-	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/sys"
 	"github.com/ainsleyclark/verbis/api/tpl"
@@ -47,7 +47,7 @@ type Deps struct {
 	// template
 	tmpl      tpl.TemplateHandler
 	System    sys.System
-	Storage   storage.Provider
+	Storage   storage2.Provider
 	Installed bool
 	Running   bool
 }
@@ -112,7 +112,7 @@ func New(cfg Config) *Deps {
 		opts = cfg.Store.Options.Struct()
 	}
 
-	st, err := storage.New(storage.Config{
+	st, err := storage2.New(storage2.Config{
 		Environment: cfg.Env,
 		Options:     cfg.Store.Options,
 		Files:       cfg.Store.Files,

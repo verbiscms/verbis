@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/mocks/storage/mocks"
+	"github.com/ainsleyclark/verbis/api/mocks/services/storage/mocks"
 	"github.com/graymeta/stow"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"

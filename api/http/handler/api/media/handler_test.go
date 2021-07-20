@@ -9,7 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
-	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
+	storage "github.com/ainsleyclark/verbis/api/mocks/services/storage"
 	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"

@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/domain"
+	storage "github.com/ainsleyclark/verbis/api/mocks/services/storage"
 	webp "github.com/ainsleyclark/verbis/api/mocks/services/webp"
-	storage "github.com/ainsleyclark/verbis/api/mocks/storage"
 	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/stretchr/testify/mock"
 )

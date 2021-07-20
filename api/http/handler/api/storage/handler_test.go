@@ -7,8 +7,8 @@ package storage
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/storage"
-	"github.com/ainsleyclark/verbis/api/storage"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/storage"
+	storage2 "github.com/ainsleyclark/verbis/api/services/storage"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
 	"testing"
@@ -48,7 +48,7 @@ var (
 	}
 	// The default storageConfiguration used for
 	// testing.
-	storageConfig = storage.Configuration{
+	storageConfig = storage2.Configuration{
 		ActiveProvider: "test",
 		ActiveBucket:   "test",
 	}

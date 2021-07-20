@@ -11,8 +11,8 @@ import (
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/services/media/resizer"
+	storage2 "github.com/ainsleyclark/verbis/api/services/storage"
 	"github.com/ainsleyclark/verbis/api/services/webp"
-	"github.com/ainsleyclark/verbis/api/storage"
 	"github.com/ainsleyclark/verbis/api/store/media"
 	"mime/multipart"
 )
@@ -82,13 +82,13 @@ type Service struct {
 	config  *domain.ThemeConfig
 	paths   paths.Paths
 	webp    webp.Execer
-	storage storage.Bucket
+	storage storage2.Bucket
 	repo    media.Repository
 	resizer resizer.Resizer
 }
 
 // New creates a new testMedia Service.
-func New(opts *domain.Options, store storage.Bucket, repo media.Repository) *Service {
+func New(opts *domain.Options, store storage2.Bucket, repo media.Repository) *Service {
 	p := paths.Get()
 	return &Service{
 		options: opts,
