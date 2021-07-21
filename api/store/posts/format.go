@@ -24,7 +24,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 			if layout {
 				// TODO, Cacheable is always false.
-				p.Layout = s.finder.Layout(p, false)
+				p.Layout = s.finder.Layout(s.ThemePath, p, false)
 			}
 
 			p.Permalink = s.permalink(&p)

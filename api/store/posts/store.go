@@ -70,7 +70,7 @@ func New(cfg *config.Config) *Store {
 		fields:     fields.New(cfg),
 		meta:       meta.New(cfg),
 		users:      users.New(cfg),
-		finder:     location.NewLocation(cfg.ThemePath),
+		finder:     &location.Location{},
 	}
 }
 

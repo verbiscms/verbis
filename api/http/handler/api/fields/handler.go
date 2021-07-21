@@ -27,6 +27,6 @@ type Fields struct {
 func New(d *deps.Deps) *Fields {
 	return &Fields{
 		Deps:   d,
-		finder: location.NewLocation(d.ThemePath()),
+		finder: &location.Location{},
 	}
 }

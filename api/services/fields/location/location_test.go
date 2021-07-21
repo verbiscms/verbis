@@ -10,7 +10,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"os"
@@ -46,10 +45,6 @@ func (t *LocationTestSuite) SetupSuite() {
 	t.Path = filepath.Join(filepath.Dir(wd)+"./../..") + "/test/testdata/fields"
 }
 
-func TestNewLocation(t *testing.T) {
-	assert.Equal(t, &Location{JSONPath: "test/fields"}, NewLocation("test"))
-}
-
 func (t *LocationTestSuite) TestLocation_GetLayout() {
 	tt := map[string]struct {
 		cacheable bool
@@ -80,8 +75,8 @@ func (t *LocationTestSuite) TestLocation_GetLayout() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			l := &Location{JSONPath: t.Path + test.jsonPath}
-			t.Equal(test.want, l.Layout(domain.PostDatum{}, test.cacheable))
+			l := &Location{}
+			t.Equal(test.want, l.Layout(t.Path + test.jsonPath, domain.PostDatum{}, test.cacheable))
 		})
 	}
 }
@@ -240,7 +235,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 	}
 }
 
-func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
+func (t *LocationTestSuite) TestLocation_FieldGroupWalker() {
 	testPath := "/test-field-groups/"
 
 	var fg domain.FieldGroups
@@ -284,16 +279,13 @@ func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			l := &Location{
-				JSONPath: t.Path + test.path,
-			}
-			got, err := l.fieldGroupWalker()
-
+			logger.SetOutput(ioutil.Discard)
+			l := &Location{}
+			got, err := l.fieldGroupWalker(t.Path + test.path)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return
 			}
-
 			t.Equal(test.want, got)
 		})
 	}
