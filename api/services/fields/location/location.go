@@ -29,6 +29,10 @@ type Location struct {
 	Groups domain.FieldGroups
 }
 
+// FieldPath is where the JSON files reside within the
+// theme
+const FieldPath = "fields"
+
 // Layout
 //
 // Obtains layouts specific for the arguments passed. If
@@ -46,7 +50,7 @@ func (l *Location) Layout(themePath string, post domain.PostDatum, cacheable boo
 		}
 	}
 
-	fg, err := l.fieldGroupWalker(themePath)
+	fg, err := l.fieldGroupWalker(filepath.Join(themePath, FieldPath))
 	if err != nil {
 		logger.WithError(err).Error()
 	}

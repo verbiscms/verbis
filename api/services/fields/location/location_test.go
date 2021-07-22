@@ -76,7 +76,7 @@ func (t *LocationTestSuite) TestLocation_GetLayout() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			l := &Location{}
-			t.Equal(test.want, l.Layout(t.Path + test.jsonPath, domain.PostDatum{}, test.cacheable))
+			t.Equal(test.want, l.Layout(t.Path+test.jsonPath, domain.PostDatum{}, test.cacheable))
 		})
 	}
 }
