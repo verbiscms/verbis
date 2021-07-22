@@ -52,7 +52,7 @@ func (c *Fields) List(ctx *gin.Context) {
 		post.Category = &category
 	}
 
-	fields := c.finder.Layout(post, c.Options.CacheServerFields)
+	fields := c.finder.Layout(c.ThemePath(), post, c.Options.CacheServerFields)
 
 	api.Respond(ctx, http.StatusOK, "Successfully obtained fields", fields)
 }

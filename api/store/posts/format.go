@@ -6,6 +6,8 @@ package posts
 
 import (
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
+	"path/filepath"
 )
 
 // format traverses the raw posts and constructs out new
@@ -24,7 +26,11 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 			if layout {
 				// TODO, Cacheable is always false.
-				p.Layout = s.finder.Layout(p, false)
+				theme, err := s.options.GetTheme()
+				if err != nil {
+					logger.WithError(err).Panic()
+				}
+				p.Layout = s.finder.Layout(filepath.Join(s.Paths.Themes, theme), p, false)
 			}
 
 			p.Permalink = s.permalink(&p)
