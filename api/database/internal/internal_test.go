@@ -6,8 +6,8 @@ package internal
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/database/internal/testdata"
 	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/ainsleyclark/verbis/api/test/testdata/updates"
 	"github.com/stretchr/testify/suite"
 	"testing"
 )
@@ -36,6 +36,6 @@ func (t *InternalTestSuite) Setup(mf func(m sqlmock.Sqlmock)) Migrator {
 		Down:   nil,
 		Driver: MySQLDriver,
 		DB:     t.DB,
-		Embed:  updates.Static,
+		Embed:  testdata.Static,
 	}
 }

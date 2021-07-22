@@ -28,7 +28,7 @@ type MediaTestSuite struct {
 	test.HandlerSuite
 }
 
-// TestCategories
+// TestMedia
 //
 // Assert testing has begun.
 func TestMedia(t *testing.T) {
@@ -81,8 +81,7 @@ func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(s *mo
 func (t *MediaTestSuite) ImagePath() string {
 	wd, err := os.Getwd()
 	t.NoError(err)
-	apiPath := filepath.Join(filepath.Dir(wd), "../../..")
-	return apiPath + "/test/testdata/spa/images/gopher.svg"
+	return filepath.Join(wd, "testdata", "gopher.svg")
 }
 
 var (
