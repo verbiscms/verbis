@@ -23,14 +23,14 @@ import (
 
 type TplTestSuite struct {
 	suite.Suite
-	apiPath   string
-	logWriter bytes.Buffer
+	TestPath string
+	Logger   bytes.Buffer
 }
 
 func (t *TplTestSuite) BeforeTest(suiteName, testName string) {
 	b := bytes.Buffer{}
-	t.logWriter = b
-	logger.SetOutput(&t.logWriter)
+	t.Logger = b
+	logger.SetOutput(&t.Logger)
 	t.SetAPIPath()
 }
 
@@ -41,11 +41,11 @@ func TestTpl(t *testing.T) {
 func (t *TplTestSuite) SetAPIPath() {
 	wd, err := os.Getwd()
 	t.NoError(err)
-	t.apiPath = filepath.Join(filepath.Dir(wd), "..")
+	t.TestPath = filepath.Join(wd, "testdata")
 }
 
 func (t *TplTestSuite) Reset() {
-	t.logWriter.Reset()
+	t.Logger.Reset()
 }
 
 func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostDatum) {
