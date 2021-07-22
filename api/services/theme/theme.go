@@ -43,7 +43,7 @@ var (
 
 // New
 //
-// Creates a new SiteRepository.
+// Creates a new Repository.
 func New() Repository {
 	return &theme{
 		config:     config.Get(),

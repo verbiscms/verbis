@@ -15,11 +15,8 @@ import (
 // store.
 type Config struct {
 	database.Driver
-	Theme        *domain.ThemeConfig
-	Options      *domain.Options
 	Paths        paths.Paths
 	Owner        *domain.User
 	ThemeService theme.Repository
-	ThemePath    string
 	Running      bool
 }

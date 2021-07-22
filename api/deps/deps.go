@@ -7,11 +7,12 @@ package deps
 import (
 	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/common/paths"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/services/site"
-	storage2 "github.com/ainsleyclark/verbis/api/services/storage"
+	"github.com/ainsleyclark/verbis/api/services/storage"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/store"
@@ -20,6 +21,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/verbisfs"
 	"github.com/ainsleyclark/verbis/api/watchers"
 	"os"
+	"path/filepath"
 )
 
 // Deps holds dependencies used by many.
@@ -47,7 +49,7 @@ type Deps struct {
 	// template
 	tmpl      tpl.TemplateHandler
 	System    sys.System
-	Storage   storage2.Provider
+	Storage   storage.Provider
 	Installed bool
 	Running   bool
 }
@@ -85,10 +87,6 @@ type Config struct {
 
 	// Env
 	Env *environment.Env
-
-	// Config
-	Config *domain.ThemeConfig
-
 	Paths paths.Paths
 
 	Installed bool
@@ -103,28 +101,32 @@ func New(cfg Config) *Deps {
 		panic("Must have a store")
 	}
 
-	if cfg.Config == nil && cfg.Running {
-		panic("Must have a configuration")
-	}
 
 	var opts domain.Options
 	if cfg.Running {
 		opts = cfg.Store.Options.Struct()
 	}
 
-	st, err := storage2.New(storage2.Config{
+	st, err := storage.New(storage.Config{
 		Environment: cfg.Env,
 		Options:     cfg.Store.Options,
 		Files:       cfg.Store.Files,
 	})
 	if err != nil {
-		logger.Panic(err.Error())
+		logger.WithError(err).Panic()
 	}
+
+	activeTheme, err := cfg.Store.Options.GetTheme()
+	if err != nil {
+		logger.WithError(err).Panic()
+	}
+
+	config.Init(filepath.Join(cfg.Paths.Themes, activeTheme))
 
 	d := &Deps{
 		Env:     cfg.Env,
 		Store:   cfg.Store,
-		Config:  cfg.Config,
+		Config:   config.Get(),
 		Options: &opts,
 		Paths:   cfg.Paths,
 		tmpl:    nil,
