@@ -8,13 +8,6 @@ before:
     - go mod tidy
     - go generate ./...
     - cmd: cd admin && npm run build && cd ../
-    - cmd: mv .gitignore .gitignore.bak
-    - cmd: cp .gitignore.build .gitignore
-# Hooks to after before build
-after:
-  hooks:
-    - cmd: rm .gitignore
-    - cmd: mv .gitignore.bak .gitignore
 # Main Verbis build
 builds:
   - id: "main"
@@ -50,8 +43,10 @@ archives:
       - LICENSE
       - themes
       - .env.example
-      - .gitignore
-      - docs
+      - src: .gitignore.build
+        dst: .gitignore
+      - src: 'www/docs/*.md'
+        dst: docs
 checksum:
   name_template: 'checksums.txt'
   algorithm: sha256
