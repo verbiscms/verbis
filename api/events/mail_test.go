@@ -28,7 +28,7 @@ import (
 // testing.
 type EventTestSuite struct {
 	test.HandlerSuite
-	Logger   *bytes.Buffer
+	Logger *bytes.Buffer
 }
 
 // Assert testing has begun.
