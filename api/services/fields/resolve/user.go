@@ -9,9 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// user
-//
-// Resolves a user from the given value.
+// user resolves a user from the given value.
 // Returns the domain.User if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) user(value domain.FieldValue) (interface{}, error) {

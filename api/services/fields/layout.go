@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/cast"
 )
 
-// GetGroup
-//
+// GetLayout returns a field group layout by the given name.
+// Logs errors.NOTFOUND if the layout could not be found by the given name.
 func (s *Service) GetLayout(name string, args ...interface{}) domain.Field {
 	l, err := layout.ByName(name, s.handleLayoutArgs(args))
 	if err != nil {
@@ -23,14 +23,12 @@ func (s *Service) GetLayout(name string, args ...interface{}) domain.Field {
 	return l
 }
 
-// GetGroups
-//
+// GetLayouts returns all field group layouts.
 func (s *Service) GetLayouts(args ...interface{}) domain.FieldGroups {
 	return s.handleLayoutArgs(args)
 }
 
-// handleLayoutArgs
-//
+// handleLayoutArgs processes the args for finding layouts.
 func (s *Service) handleLayoutArgs(args []interface{}) domain.FieldGroups {
 	switch len(args) {
 	case 1:
@@ -40,13 +38,11 @@ func (s *Service) handleLayoutArgs(args []interface{}) domain.FieldGroups {
 	}
 }
 
-// getLayoutByPost
-//
-// Returns the layout by post with the given ID.
+// getLayoutByPost returns the layout by post with the given ID.
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining/formatting the post.
 func (s *Service) getLayoutByPost(id interface{}) domain.FieldGroups {
-	const op = "FieldsService.getFieldsByPost"
+	const op = "FieldsService.GetLayoutByPost"
 
 	i, err := cast.ToIntE(id)
 	if err != nil {

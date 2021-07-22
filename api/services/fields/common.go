@@ -14,11 +14,10 @@ import (
 	"strings"
 )
 
-// handleArgs
-//
-// The array of interfaces are presumed to be the following:
+// handleArgs processes the args for handling fields. The
+// slice of interfaces are presumed to be the
+// following:
 // [0] for post ID, fields are obtained by the post given.
-//
 // Returns the fields to be modified & processed.
 func (s *Service) handleArgs(args []interface{}) domain.PostFields {
 	const op = "FieldsService.HandleArgs"
@@ -45,9 +44,8 @@ func (s *Service) handleArgs(args []interface{}) domain.PostFields {
 	return s.getFieldsByPost(id)
 }
 
-// getFieldsByPost
-//
-// Returns the fields by post with the given ID.
+// getFieldsByPost Returns the fields by post with the
+// given ID.
 // Logs errors.INVALID if the id failed to be cast to an int.
 // Logs if the post if was not found or there was an error obtaining the post.
 func (s *Service) getFieldsByPost(id int) domain.PostFields {
@@ -59,9 +57,8 @@ func (s *Service) getFieldsByPost(id int) domain.PostFields {
 	return fields
 }
 
-// findFieldByName
-//
-// Returns a singular domain.PostField by the given name.
+// findFieldByName returns a singular domain.PostField by
+// the given name.
 // Returns errors.NOTFOUND if the field does not exist.
 func (s *Service) findFieldByName(name string, fields domain.PostFields) (domain.PostField, error) {
 	const op = "FieldsService.findFieldByName"
@@ -83,10 +80,8 @@ type walker struct {
 	*Service
 }
 
-// Walk
-//
-// Constructs a pipe based on the key, name, SEPARATOR and the index
-// in order to look up dynamic Flexible content and Repeater
+// Walk constructs a pipe based on the key, name, SEPARATOR and the
+// index in order to look up dynamic Flexible content and Repeater
 // types. The key `flex|0|repeater|0|text` will be split
 // and looked up. If the child value is of type Repeater
 // or Flexible the function will call itself meaning

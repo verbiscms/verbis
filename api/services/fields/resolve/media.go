@@ -9,9 +9,9 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// media
 //
-// Resolves a media from the given value.
+//
+// media resolves a media from the given value.
 // Returns the domain.Media if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) media(value domain.FieldValue) (interface{}, error) {
