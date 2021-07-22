@@ -10,9 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/services/fields/resolve"
 )
 
-// GetField
-//
-// Returns the value of a specific field.
+// GetField returns the value of a specific field.
 // Returns errors.NOTFOUND if the field was not found by the given key.
 func (s *Service) GetField(name string, args ...interface{}) interface{} {
 	fields := s.handleArgs(args)
@@ -27,9 +25,7 @@ func (s *Service) GetField(name string, args ...interface{}) interface{} {
 	return resolved.Value
 }
 
-// GetFieldObject
-//
-// Returns the raw object of a specific field.
+// GetFieldObject returns the raw object of a specific field.
 // Returns errors.NOTFOUND if the field was not found by the given key.
 func (s *Service) GetFieldObject(name string, args ...interface{}) domain.PostField {
 	fields := s.handleArgs(args)

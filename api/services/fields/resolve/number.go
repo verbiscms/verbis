@@ -11,9 +11,7 @@ import (
 	"strings"
 )
 
-// number
-//
-// Casts the domain.FieldValue to int64.
+// number casts the domain.FieldValue to int64.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an int64.
 func (v *Value) number(value domain.FieldValue) (interface{}, error) {
 	const op = "FieldResolver.Number"

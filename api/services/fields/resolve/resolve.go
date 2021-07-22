@@ -43,9 +43,7 @@ type valuer func(field domain.FieldValue) (interface{}, error)
 // to resolve field values.
 type valueMap map[string]valuer
 
-// Field
-//
-// Resolve's a field value.
+// Field resolve's a field value.
 func Field(field domain.PostField, d *deps.Deps) domain.PostField {
 	exec := &Value{
 		deps: d,
@@ -54,9 +52,7 @@ func Field(field domain.PostField, d *deps.Deps) domain.PostField {
 	return resolved
 }
 
-// getMap
-//
-// Returns the map of functions for resolving values.
+// getMap Returns the map of functions for resolving values.
 func (v *Value) getMap() valueMap {
 	return valueMap{
 		"button_group": v.choice,
@@ -72,13 +68,10 @@ func (v *Value) getMap() valueMap {
 	}
 }
 
-// resolve
-//
-// This function is the core for resolving the fields value
-// for use with templates. It determines if the given
-// field values is a slice or array or singular and
-// returns a resolved field value or a slice of
-// interfaces.
+// resolve this function is the core for resolving the fields value
+// for use with templates. It determines if the given field values
+// is a slice or array or singular and returns a resolved field
+// value or a slice of interfaces.
 func (v *Value) resolve(field domain.PostField) domain.PostField {
 	original := field.OriginalValue
 
@@ -113,11 +106,9 @@ func (v *Value) resolve(field domain.PostField) domain.PostField {
 	return field
 }
 
-// execute
-//
-// Executes the function based on the fields type.
-// If the function is not within the valueMap,
-// the original value will be returned.
+// execute executes the function based on the fields type.
+// If the function is not within the valueMap, the
+// original value will be returned.
 func (v *Value) execute(value, typ string) interface{} {
 	fn, ok := v.getMap()[typ]
 	if !ok {

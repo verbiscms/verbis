@@ -31,7 +31,7 @@ type Location struct {
 
 // FieldPath is where the JSON files reside within the
 // theme
-const FieldPath = "fields"
+var FieldPath = "fields"
 
 // Layout
 //
@@ -134,20 +134,20 @@ func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups { // 
 // fieldGroupWalker will loop over all of the json files that have been
 // stored in /storage/fields and append them to the array to be
 // returned.
-// Returns errors.INTERNAL if the path file not be read or be unmarshalled
+// Returns errors.INTERNAL if the file file not be read or be unmarshalled
 func (l *Location) fieldGroupWalker(path string) (domain.FieldGroups, error) {
 	const op = "Fields.FieldGroupWalker"
 
 	var fg domain.FieldGroups
 	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No file or directory with the path: %s", path), Operation: op, Err: err}
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No file or directory with the file: %s", path), Operation: op, Err: err}
 		}
 
 		if filepath.Ext(info.Name()) == ".json" {
 			file, err := ioutil.ReadFile(path)
 			if err != nil {
-				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field file with the path: %s", path), Operation: op, Err: err}).Error()
+				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field file with the file: %s", path), Operation: op, Err: err}).Error()
 				return nil
 			}
 
@@ -159,7 +159,7 @@ func (l *Location) fieldGroupWalker(path string) (domain.FieldGroups, error) {
 			}
 
 			if fields.Fields == nil {
-				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No fields exist with the path: %s", path), Operation: op, Err: fmt.Errorf("layout does not contain any fields")}).Error()
+				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No fields exist with the file: %s", path), Operation: op, Err: fmt.Errorf("layout does not contain any fields")}).Error()
 				return nil
 			}
 

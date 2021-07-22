@@ -4,7 +4,7 @@ project_name: Verbis
 before:
   hooks:
     - echo {{.Version}}
-    - make all
+      #- make all
     - go mod tidy
     - go generate ./...
     - cmd: cd admin && npm run build && cd ../
