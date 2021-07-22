@@ -6,7 +6,9 @@ package sys
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
+	database "github.com/ainsleyclark/verbis/api/mocks/database"
 	"github.com/ainsleyclark/verbis/api/version"
 	sm "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
@@ -122,26 +124,37 @@ func TestSys_HasUpdate(t *testing.T) {
 	}
 }
 
-//func TestSys_Update(t *testing.T) {
-//	logger.SetOutput(ioutil.Discard)
-//
-//	tt := map[string]struct {
-//		want interface{}
-//	}{
-//		"Success": {
-//			"0.0.1",
-//		},
-//	}
-//
-//	for name, test := range tt {
-//		t.Run(name, func(t *testing.T) {
-//			s := Sys{updater: test.patcher()}
-//			got, err := s.Update()
-//			if err != nil {
-//				assert.Contains(t, errors.Message(err), err)
-//				return
-//			}
-//			assert.Equal(t, test.want, got)
-//		})
-//	}
-//}
+func TestSys_Update(t *testing.T) {
+	logger.SetOutput(ioutil.Discard)
+
+	tt := map[string]struct {
+		mock func (m *database.Driver)
+		want interface{}
+	}{
+		"Success": {
+			func(m *database.Driver) {
+
+			},
+			"Error updating Verbis with status code",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			d := &database.Driver{}
+			if test.mock != nil {
+				test.mock(d)
+			}
+			s := Sys{
+				Driver: d,
+				updater: &updater.Updater{Provider: &mockProvider{}},
+			}
+			got, err := s.Update(false)
+			if err != nil {
+				assert.Contains(t, errors.Message(err), test.want)
+				return
+			}
+			assert.Equal(t, test.want, got)
+		})
+	}
+}

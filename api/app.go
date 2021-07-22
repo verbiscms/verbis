@@ -29,12 +29,12 @@ var App = struct {
 }
 
 const (
-	// APIRoute is the URI route for incoming and outgoing
-	// requests.
-	APIRoute = "/api/v1"
+	// HTTPAPIRoute is the URI route for incoming and
+	// outgoing requests via the API.
+	HTTPAPIRoute = "/api/v1"
 	// Repo is the URI for the hosted github Verbis
 	// repository.
-	Repo = "https://github.com/ainsleyclark/verbis"
+	Repo = "https://github.com/verbiscms/verbis"
 	// AssetsChannel is the maximum amount of concurrent
 	// requests for serving assets on the frontend.
 	AssetsChannel = 10

@@ -5,14 +5,10 @@
 package sys
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/updater"
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/version"
-	"github.com/mouuff/go-rocket-update/pkg/provider"
-	"runtime"
 	"strconv"
 	"time"
 )
@@ -24,7 +20,7 @@ func (s *Sys) LatestVersion() string {
 	const op = "System.LatestVersion"
 	remote, err := s.updater.GetLatestVersion()
 	if err != nil {
-		logger.Panic(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining remote version", Operation: op, Err: err})
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining remote version", Operation: op, Err: err}).Panic()
 	}
 	return remote
 }
@@ -40,7 +36,6 @@ func (s *Sys) HasUpdate() bool {
 // Update updates the Verbis executable and runs any DB
 // migrations. It calls Restart() upon a successful
 // update.
-//
 // Returns errors.INVALID if Verbis is already up to date.
 // Returns errors.INTERNAL if it could not be updated.
 func (s *Sys) Update(restart bool) (string, error) {
@@ -51,14 +46,13 @@ func (s *Sys) Update(restart bool) (string, error) {
 	logger.Info("Attempting to update Verbis to version: " + ver)
 	logger.Info("Updating executable")
 
-	s.updater.Provider = &provider.Github{
-		RepositoryURL: api.Repo,
-		ArchiveName:   fmt.Sprintf("verbis_%s_%s_%s.zip", s.LatestVersion(), runtime.GOOS, runtime.GOARCH),
-	}
-
 	code, err := s.updater.Update()
 	if err != nil {
 		logger.Error("Executable updated failed, rolling back")
+		err := s.updater.Rollback()
+		if err != nil {
+			logger.Panic(err)
+		}
 		switch code {
 		case updater.UpToDate:
 			return "", &errors.Error{Code: errors.INVALID, Message: "Verbis is up to date", Operation: op, Err: err}

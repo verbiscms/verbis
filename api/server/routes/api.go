@@ -19,7 +19,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 	h := handler.NewAPI(d)
 
 	// API Routes
-	api := s.Group(app.APIRoute)
+	api := s.Group(app.HTTPAPIRoute)
 	{
 		// API Middleware
 		api.Use(middleware.CORS())
