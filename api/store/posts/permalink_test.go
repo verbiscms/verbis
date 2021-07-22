@@ -7,7 +7,9 @@ package posts
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"regexp"
 )
 
@@ -35,7 +37,7 @@ var (
 func (t *PostsTestSuite) TestStore_Permalink() {
 	tt := map[string]struct {
 		input domain.PostDatum
-		opts  domain.Options
+		opts  func(repository *mocks.Repository)
 		cfg   domain.ThemeConfig
 		mock  func(m sqlmock.Sqlmock)
 		want  string
@@ -44,7 +46,9 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Id: 1},
 			},
-			domain.Options{Homepage: 1},
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{Homepage: 1})
+			},
 			domain.ThemeConfig{},
 			nil,
 			"/",
@@ -53,7 +57,9 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "page"},
 			},
-			domain.Options{},
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{})
+			},
 			domain.ThemeConfig{},
 			nil,
 			"/page",
@@ -62,8 +68,8 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "page"},
 			},
-			domain.Options{
-				SeoEnforceSlash: true,
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{SeoEnforceSlash: true})
 			},
 			domain.ThemeConfig{},
 			nil,
@@ -73,7 +79,9 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "article", Resource: "news"},
 			},
-			domain.Options{},
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{})
+			},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -89,8 +97,8 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "article", Resource: "news"},
 			},
-			domain.Options{
-				SeoEnforceSlash: true,
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{SeoEnforceSlash: true})
 			},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
@@ -108,7 +116,9 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &category,
 			},
-			domain.Options{},
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{})
+			},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -126,8 +136,8 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &category,
 			},
-			domain.Options{
-				SeoEnforceSlash: true,
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{SeoEnforceSlash: true})
 			},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
@@ -146,7 +156,9 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
-			domain.Options{},
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{})
+			},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -168,7 +180,9 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
-			domain.Options{},
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{})
+			},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -189,8 +203,8 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
-			domain.Options{
-				SeoEnforceSlash: true,
+			func(m *mocks.Repository) {
+				m.On("Struct").Return(domain.Options{SeoEnforceSlash: true})
 			},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
@@ -213,9 +227,10 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			s.Options = &test.opts
-			s.Theme = &test.cfg
-
+			opts := &mocks.Repository{}
+			test.opts(opts)
+			s.options = opts
+			config.Set(test.cfg)
 			got := s.permalink(&test.input)
 			t.Equal(test.want, got)
 		})

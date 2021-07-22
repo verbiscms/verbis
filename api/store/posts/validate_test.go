@@ -7,6 +7,7 @@ package posts
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/services/theme"
 	"github.com/stretchr/testify/mock"
@@ -206,9 +207,7 @@ func (t *PostsTestSuite) TestStore_Validate() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			s.Theme = &domain.ThemeConfig{
-				Resources: test.resources,
-			}
+			config.Set(domain.ThemeConfig{Resources: test.resources})
 
 			theme := &mocks.Repository{}
 			if test.theme != nil {
