@@ -86,7 +86,7 @@ type Config struct {
 	Store *store.Repository
 
 	// Env
-	Env *environment.Env
+	Env   *environment.Env
 	Paths paths.Paths
 
 	Installed bool
@@ -100,7 +100,6 @@ func New(cfg Config) *Deps {
 	if cfg.Store == nil && cfg.Running {
 		panic("Must have a store")
 	}
-
 
 	var opts domain.Options
 	if cfg.Running {
@@ -126,7 +125,7 @@ func New(cfg Config) *Deps {
 	d := &Deps{
 		Env:     cfg.Env,
 		Store:   cfg.Store,
-		Config:   config.Get(),
+		Config:  config.Get(),
 		Options: &opts,
 		Paths:   cfg.Paths,
 		tmpl:    nil,
