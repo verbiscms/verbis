@@ -15,10 +15,6 @@ import (
 	"testing"
 )
 
-const (
-	TestPath = "testdata"
-)
-
 func Setup(t *testing.T) *mocks.TemplateExecutor {
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
@@ -27,7 +23,7 @@ func Setup(t *testing.T) *mocks.TemplateExecutor {
 	mc := &mocks.TemplateConfig{}
 
 	m.On("Config").Return(mc)
-	mc.On("GetRoot").Return(filepath.Join(wd, TestPath))
+	mc.On("GetRoot").Return(filepath.Join(wd, "testdata"))
 
 	return m
 }

@@ -41,7 +41,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 		wantName    string
 	}{
 		"Simple": {
-			tpl.Config{Extension: ".html", Root: root},
+			tpl.Config{Extension: ".html"},
 			"standard",
 			nil,
 			nil,
@@ -49,7 +49,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 			"standard",
 		},
 		"Extension": {
-			tpl.Config{Extension: ".html", Root: root},
+			tpl.Config{Extension: ".html"},
 			"standard.html",
 			nil,
 			nil,
@@ -57,7 +57,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 			"standard",
 		},
 		"Error": {
-			tpl.Config{Extension: ".html", Root: root},
+			tpl.Config{Extension: ".html"},
 			"error",
 			nil,
 			nil,
@@ -65,7 +65,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 			"error",
 		},
 		"Master": {
-			tpl.Config{Extension: ".html", Root: root, Master: "layout"},
+			tpl.Config{Extension: ".html", Master: "layout"},
 			"child",
 			nil,
 			nil,
@@ -73,7 +73,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 			"child",
 		},
 		"File Handler Error": {
-			tpl.Config{Extension: ".html", Root: root},
+			tpl.Config{Extension: ".html"},
 			"standard",
 			nil,
 			func(config tpl.TemplateConfig, template string) (content string, err error) {
@@ -83,7 +83,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 			"standard",
 		},
 		"With Data": {
-			tpl.Config{Extension: ".html", Root: root},
+			tpl.Config{Extension: ".html"},
 			"data",
 			"verbis",
 			nil,
@@ -96,7 +96,7 @@ func (t *TplTestSuite) TestExecute_Execute() {
 		t.Run(name, func() {
 			tm, ctx, post := t.Setup()
 
-			test.config.Root = t.apiPath + test.config.Root
+			test.config.Root = t.TestPath
 			execute := Execute{
 				tm,
 				test.config,
