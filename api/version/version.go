@@ -34,7 +34,6 @@ func init() {
 
 // Header is the header name used to send the current
 // verbis version in http requests.
-// TODO, Implement in Responses
 const Header = "Verbis-Version"
 
 // String returns the complete version string, including
@@ -46,6 +45,7 @@ func String() string {
 	return Version
 }
 
+// Must is an alias for version.Must
 func Must(v string) *version.Version {
 	return version.Must(version.NewVersion(v))
 }

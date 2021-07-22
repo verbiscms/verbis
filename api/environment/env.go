@@ -75,8 +75,8 @@ var (
 	// basePath is the absolute path of the Verbis project,
 	// where the .env is stored.
 	basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-	// envExt is the environment file extension.
-	envExt = ".env"
+	// EnvExtension is the environment file extension.
+	EnvExtension = ".env"
 )
 
 const (
@@ -90,7 +90,7 @@ const (
 // Returns errors.INVALID if the env file failed to load.
 func Load() (*Env, error) {
 	const op = "environment.Load"
-	err := godotenv.Load(basePath + "/" + envExt)
+	err := godotenv.Load(basePath + "/" + EnvExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not load the .env file", Operation: op, Err: err}
 	}
@@ -149,7 +149,7 @@ func (e *Env) Set(key string, value interface{}) error {
 		return &errors.Error{Code: errors.INVALID, Message: "Error casting value to string", Operation: op, Err: err}
 	}
 
-	path := basePath + "/" + envExt
+	path := basePath + "/" + EnvExtension
 	env, err := godotenv.Read(path)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error reading env file with the path " + path, Operation: op, Err: err}
