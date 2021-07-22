@@ -56,18 +56,16 @@ type (
 )
 
 const (
-	// The amount of files in the stack to be retrieved.
+	// StackDepth is the amount of files in the stack to be retrieved.
 	StackDepth = 200
-	// How many files to move up in the runtime.Caller
+	// StackSkip defines how many files to move up in the runtime.Caller
 	// before obtaining the stack.
 	StackSkip = 2
 )
 
-// getData
-//
-// Retrieves all the necessary template data to show
-// the recovery page. If a template executor has
-// been set, the template file stack will be
+// getData Retrieves all the necessary template data
+// to show the recovery page. If a template executor
+// has been set, the template file stack will be
 // retrieved,
 func (r *Recover) getData() *Data {
 	return &Data{
@@ -82,10 +80,8 @@ func (r *Recover) getData() *Data {
 	}
 }
 
-// getStackData
-//
-// Check if the template exec has been set, if it has
-// retrieve the file stack for the template. and
+// getStackData checks if the template exec has been set, if
+// it has retrieve the file stack for the template. and
 // prepend it to the stack.
 func (r *Recover) getStackData() trace.Stack {
 	stack := r.tracer.Trace(StackDepth, StackSkip)
@@ -105,9 +101,8 @@ func (r *Recover) getStackData() trace.Stack {
 	return stack
 }
 
-// getErrorData
-//
-// Returns error friendly Error data for the template.
+// getErrorData Returns error friendly Error data for
+// the template.
 func (r *Recover) getErrorData() Error {
 	return Error{
 		Code:      r.err.Code,
@@ -117,9 +112,8 @@ func (r *Recover) getErrorData() Error {
 	}
 }
 
-// getRequestData
-//
-// Returns error friendly Request data for the template.
+// getRequestData returns error friendly Request data for
+// the template.
 func (r *Recover) getRequestData() Request {
 	ctx := r.config.Context
 
@@ -142,9 +136,8 @@ func (r *Recover) getRequestData() Request {
 	}
 }
 
-// getContextData
-//
-// Returns error friendly request Context for the template.
+// getContextData returns error friendly request Context for
+// the template.
 func (r *Recover) getContextData() Context {
 	return Context{
 		Version: api.App.Version,
