@@ -11,6 +11,7 @@ import (
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
 	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/mock"
 	"net/http"
 )
 
@@ -33,7 +34,7 @@ func (t *FieldTestSuite) TestFields_List() {
 				}
 				u.On("Find", 123).Return(user, nil)
 				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
-				l.On("Layout", post, false).Return(fieldGroups, nil)
+				l.On("Layout", mock.Anything, post, false).Return(fieldGroups, nil)
 			},
 			"/forms?user_id=123",
 		},
@@ -49,7 +50,7 @@ func (t *FieldTestSuite) TestFields_List() {
 				u.On("Owner").Return(user)
 				u.On("Find", 123).Return(user, nil)
 				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
-				l.On("Layout", post, false).Return(fieldGroups, nil)
+				l.On("Layout", mock.Anything, post, false).Return(fieldGroups, nil)
 			},
 			"/forms",
 		},
@@ -65,7 +66,7 @@ func (t *FieldTestSuite) TestFields_List() {
 				}
 				u.On("Find", 123).Return(user, nil)
 				c.On("Find", 123).Return(category, nil)
-				l.On("Layout", post, false).Return(fieldGroups, nil)
+				l.On("Layout", mock.Anything, post, false).Return(fieldGroups, nil)
 			},
 			"/forms?category_id=123&user_id=123",
 		},
@@ -80,7 +81,7 @@ func (t *FieldTestSuite) TestFields_List() {
 				}
 				u.On("Find", 123).Return(user, nil)
 				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
-				l.On("Layout", post, false).Return(fieldGroups, nil)
+				l.On("Layout", mock.Anything, post, false).Return(fieldGroups, nil)
 			},
 			"/forms?page_template=template&user_id=123",
 		},
@@ -95,7 +96,7 @@ func (t *FieldTestSuite) TestFields_List() {
 				}
 				u.On("Find", 123).Return(user, nil)
 				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
-				l.On("Layout", post, false).Return(fieldGroups, nil)
+				l.On("Layout", mock.Anything, post, false).Return(fieldGroups, nil)
 			},
 			"/forms?layout=layout&user_id=123",
 		},
@@ -110,7 +111,7 @@ func (t *FieldTestSuite) TestFields_List() {
 				}
 				u.On("Find", 123).Return(user, nil)
 				c.On("Find", 0).Return(domain.Category{}, fmt.Errorf("error"))
-				l.On("Layout", post, false).Return(fieldGroups, nil)
+				l.On("Layout", mock.Anything, post, false).Return(fieldGroups, nil)
 			},
 			"/forms?resource=resource&user_id=123",
 		},

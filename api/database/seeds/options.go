@@ -73,30 +73,30 @@ func (s *Seeder) runOptions() error {
 		"media_upload_max_width":    0,
 		"media_upload_max_height":   0,
 		"media_organise_year_month": true,
-		"media_images_sizes": map[string]domain.MediaSizeOptions{
+		"media_images_sizes": map[string]domain.MediaSize{
 			"thumbnail": {
-				Name:   "Thumbnail Size",
-				Width:  550,
-				Height: 300,
-				Crop:   true,
+				SizeName: "Thumbnail Size",
+				Width:    550,
+				Height:   300,
+				Crop:     true,
 			},
 			"medium": {
-				Name:   "Medium Size",
-				Width:  992,
-				Height: 0,
-				Crop:   false,
+				SizeName: "Medium Size",
+				Width:    992,
+				Height:   0,
+				Crop:     false,
 			},
 			"large": {
-				Name:   "Large Size",
-				Width:  1280,
-				Height: 0,
-				Crop:   false,
+				SizeName: "Large Size",
+				Width:    1280,
+				Height:   0,
+				Crop:     false,
 			},
 			"hd": {
-				Name:   "HD Size",
-				Width:  1920,
-				Height: 0,
-				Crop:   false,
+				SizeName: "HD Size",
+				Width:    1920,
+				Height:   0,
+				Crop:     false,
 			},
 		},
 		// Cache
@@ -120,6 +120,10 @@ func (s *Seeder) runOptions() error {
 		"minify_svg":  false,
 		"minify_json": false,
 		"minify_xml":  false,
+		// Storage
+		"storage_provider":     "local",
+		"storage_bucket":       "",
+		"storage_backup_local": true,
 	}
 
 	err := s.models.Options.Insert(optionsSeed)

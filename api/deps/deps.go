@@ -6,10 +6,13 @@ package deps
 
 import (
 	"github.com/ainsleyclark/verbis/api"
+	"github.com/ainsleyclark/verbis/api/common/paths"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
+	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/services/site"
+	"github.com/ainsleyclark/verbis/api/services/storage"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/services/webp"
 	"github.com/ainsleyclark/verbis/api/store"
@@ -18,6 +21,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/verbisfs"
 	"github.com/ainsleyclark/verbis/api/watchers"
 	"os"
+	"path/filepath"
 )
 
 // Deps holds dependencies used by many.
@@ -25,41 +29,29 @@ import (
 // at a given time, i.e. one per Site built.
 type Deps struct {
 	Env *environment.Env
-
 	// The database layer
 	Store *store.Repository
-
 	// Configuration file of the site
 	Config *domain.ThemeConfig
-
 	// Site
 	Site site.Repository
-
 	// Theme
-	Theme theme.Repository
-
+	Theme   theme.Repository
 	Watcher *watchers.Batch
-
 	// Options
 	Options *domain.Options
-
 	// Paths
 	Paths paths.Paths
-
 	// File System (Web and SPA)
 	FS *verbisfs.FileSystem
-
 	// Webp
 	WebP webp.Execer
-
 	// template
-	tmpl tpl.TemplateHandler
-
-	System sys.System
-
+	tmpl      tpl.TemplateHandler
+	System    sys.System
+	Storage   storage.Provider
 	Installed bool
-
-	Running bool
+	Running   bool
 }
 
 func (d *Deps) ThemePath() string {
@@ -75,7 +67,7 @@ func (d *Deps) SetTmpl(tmpl tpl.TemplateHandler) {
 }
 
 func (d *Deps) SetOptions(options *domain.Options) {
-	d.Options = options
+	*d.Options = *options
 }
 
 func (d *Deps) SetTheme(name string) error {
@@ -94,11 +86,7 @@ type Config struct {
 	Store *store.Repository
 
 	// Env
-	Env *environment.Env
-
-	// Config
-	Config *domain.ThemeConfig
-
+	Env   *environment.Env
 	Paths paths.Paths
 
 	Installed bool
@@ -113,19 +101,31 @@ func New(cfg Config) *Deps {
 		panic("Must have a store")
 	}
 
-	if cfg.Config == nil && cfg.Running {
-		panic("Must have a configuration")
-	}
-
 	var opts domain.Options
 	if cfg.Running {
 		opts = cfg.Store.Options.Struct()
 	}
 
+	st, err := storage.New(storage.Config{
+		Environment: cfg.Env,
+		Options:     cfg.Store.Options,
+		Files:       cfg.Store.Files,
+	})
+	if err != nil {
+		logger.WithError(err).Panic()
+	}
+
+	activeTheme, err := cfg.Store.Options.GetTheme()
+	if err != nil {
+		logger.WithError(err).Panic()
+	}
+
+	config.Init(filepath.Join(cfg.Paths.Themes, activeTheme))
+
 	d := &Deps{
 		Env:     cfg.Env,
 		Store:   cfg.Store,
-		Config:  cfg.Config,
+		Config:  config.Get(),
 		Options: &opts,
 		Paths:   cfg.Paths,
 		tmpl:    nil,
@@ -134,6 +134,7 @@ func New(cfg Config) *Deps {
 		Theme:   theme.New(),
 		FS:      verbisfs.New(api.Production, cfg.Paths),
 		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
+		Storage: st,
 		System:  cfg.System,
 	}
 

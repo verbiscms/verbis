@@ -6,9 +6,11 @@ package posts
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
+	themeConfig "github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	theme "github.com/ainsleyclark/verbis/api/mocks/services/theme"
 	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
 	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
 	"github.com/ainsleyclark/verbis/api/store/config"
@@ -51,19 +53,25 @@ func (t *PostsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 		domain.Layout{Key: "layout", Name: "Layout"},
 	}, nil)
 
-	return New(&config.Config{
+	themeConfig.Set(domain.ThemeConfig{})
+
+	opts := &mocks.Repository{}
+	opts.On("Struct").Return(domain.Options{})
+	opts.On("GetTheme").Return("theme", nil)
+
+	s := New(&config.Config{
 		Driver:       t.Driver,
 		ThemeService: th,
-		Theme:        &domain.ThemeConfig{},
 		Owner: &domain.User{
 			UserPart: domain.UserPart{
 				Id: 1,
 			},
 		},
-		Options: &domain.Options{
-			Homepage: 999,
-		},
 	})
+
+	s.options = opts
+
+	return s
 }
 
 func (t *PostsTestSuite) SetupMock(mf func(m sqlmock.Sqlmock), mfm func(c *categories.Repository, f *fields.Repository, m *meta.Repository)) *Store {

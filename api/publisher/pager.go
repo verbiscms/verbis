@@ -209,7 +209,7 @@ func (p *page) CheckSession() error {
 //
 // Returns a new post, or error by trimming leading forward
 // slashes. It performs a lookup by comparing the last
-// part of the URL, e.g /news/posts will be stripped
+// part of the URI, e.g /news/posts will be stripped
 // and 'posts' will be obtained from the store.
 //
 // Returns errors.NOTFOUND If the permalink does not match
@@ -257,7 +257,7 @@ func (p *page) resolve() (*domain.PostDatum, error) {
 //
 // Returns a bool indicating if a redirect has occurred by
 // comparing the path and the enforce slash in the opts.
-// If the URL contains a query parameter, or the post
+// If the URI contains a query parameter, or the post
 // is the homepage the function will not redirect.
 func (p *page) HandleTrailingSlash() bool {
 	if p.HasQuery() {
@@ -293,7 +293,7 @@ func (p *page) HandleTrailingSlash() bool {
 //
 // Returns a bool indicating if a redirect has occurred by
 // stripping out unnecessary forward slashes from the
-// URL.
+// URI.
 // Logs errors.INTERNAL if there was an error compiling the
 // regex used for comparing the path.
 func (p *page) HandleRedirect() bool {

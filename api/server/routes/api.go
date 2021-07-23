@@ -19,7 +19,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 	h := handler.NewAPI(d)
 
 	// API Routes
-	api := s.Group(app.APIRoute)
+	api := s.Group(app.HTTPAPIRoute)
 	{
 		// API Middleware
 		api.Use(middleware.CORS())
@@ -93,7 +93,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// Fields
 		operator.GET("/fields", h.Fields.List)
 
-		// options
+		// Options
 		operator.GET("/options", h.Options.List)
 		operator.GET("/options/:name", h.Options.Find)
 		operator.POST("/options", h.Options.UpdateCreate)
@@ -114,6 +114,14 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// Forms
 		operator.GET("/forms", h.Forms.List)
 		operator.GET("/forms/:id", h.Forms.Find)
+
+		// Storage
+		operator.POST("/storage", h.Storage.Save)
+		operator.GET("/storage/config", h.Storage.Config)
+		operator.POST("/storage/migrate", h.Storage.Migrate)
+		operator.POST("/storage/bucket", h.Storage.CreateBucket)
+		operator.GET("/storage/bucket/:name", h.Storage.ListBuckets)
+		operator.DELETE("/storage/bucket/:name", h.Storage.DeleteBucket)
 
 		// Administrator
 		admin := api.Group("")

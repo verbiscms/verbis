@@ -5,28 +5,32 @@
 package posts
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/store/categories"
 )
 
 // permalink
 //
-// Returns the posts absolute URL with resources and
+// Returns the posts absolute URI with resources and
 // categories. Forward slashes are added to the
 // permalink if they are enabled within the
 // options.
 func (s *Store) permalink(post *domain.PostDatum) string {
 	permaLink := ""
 
+	opts := s.options.Struct()
+	cfg := config.Get()
+
 	postResource := post.Resource
 	hiddenCategory := true
 
-	if post.IsHomepage(s.Options.Homepage) {
+	if post.IsHomepage(opts.Homepage) {
 		return "/"
 	}
 
 	if post.HasResource() {
-		resource, ok := s.Theme.Resources[postResource]
+		resource, ok := cfg.Resources[postResource]
 		if ok {
 			permaLink += "/" + resource.Slug
 			hiddenCategory = resource.HideCategorySlug
@@ -63,12 +67,12 @@ func (s *Store) permalink(post *domain.PostDatum) string {
 		permaLink += "/" + catSlugs[i]
 	}
 
-	isHome := post.IsHomepage(s.Options.Homepage)
+	isHome := post.IsHomepage(opts.Homepage)
 	if !isHome || permaLink == "" {
 		permaLink += "/" + post.Slug
 	}
 
-	if s.Options.SeoEnforceSlash && !isHome {
+	if opts.SeoEnforceSlash && !isHome {
 		permaLink += "/"
 	}
 

@@ -6,8 +6,8 @@ package publisher
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/common/strings"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/strings"
 	"github.com/gin-gonic/gin"
 	"path/filepath"
 	"strconv"
@@ -21,11 +21,11 @@ type headerWriter interface {
 // Headers represents the the header struct for setting gin headers
 // for frontend caching.
 type headers struct {
-	options domain.Options
+	options *domain.Options
 }
 
 // NewCache - Construct
-func newHeaders(o domain.Options) *headers {
+func newHeaders(o *domain.Options) *headers {
 	return &headers{
 		options: o,
 	}

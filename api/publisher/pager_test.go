@@ -38,7 +38,7 @@ func TestPage(t *testing.T) {
 			gin.DefaultWriter = ioutil.Discard
 			r := gin.Default()
 
-			h := newHeaders(test.options)
+			h := newHeaders(&test.options)
 
 			server := httptest.NewServer(r)
 			defer server.Close()

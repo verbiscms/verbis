@@ -6,10 +6,10 @@ package redirects
 
 import (
 	"database/sql"
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 )
 
 // List
@@ -30,7 +30,9 @@ func (s *Store) List(meta params.Params) (domain.Redirects, int, error) {
 	}
 
 	// Apply order.
-	q.OrderBy(meta.OrderBy, meta.OrderDirection)
+	if meta.OrderBy != "" {
+		q.OrderBy(meta.OrderBy, meta.OrderDirection)
+	}
 	countQ := q.Count()
 
 	// Apply pagination.

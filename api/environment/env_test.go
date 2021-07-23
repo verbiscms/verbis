@@ -6,8 +6,8 @@ package environment
 
 import (
 	"fmt"
+	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
 	"github.com/ainsleyclark/verbis/api/errors"
-	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
@@ -20,9 +20,8 @@ import (
 // testing.
 type EnvTestSuite struct {
 	suite.Suite
-	apiPath     string
-	envPath     string
-	originalEnv []byte
+	TestDataPath string
+	OriginalEnv  []byte
 }
 
 // TestEnv asserts testing has begun.
@@ -35,8 +34,7 @@ func (t *EnvTestSuite) SetupSuite() {
 	logrus.SetOutput(ioutil.Discard)
 	wd, err := os.Getwd()
 	t.NoError(err)
-	t.apiPath = filepath.Join(filepath.Dir(wd), "")
-	t.envPath = t.apiPath + "/test/testdata/env" + string(os.PathSeparator) + ".env"
+	t.TestDataPath = filepath.Join(wd, "testdata")
 }
 
 // ChangePath Assigns a new path to the test suite and
@@ -47,26 +45,26 @@ func (t *EnvTestSuite) ChangePath(path string) func() {
 	fn := func() {
 		basePath = basePathOrig
 	}
-	basePath = t.apiPath + path
+	basePath = path
 	return fn
 }
 
 // Original saves the original .env test file in bytes.
 func (t *EnvTestSuite) Original() {
-	file, err := ioutil.ReadFile(t.envPath)
+	file, err := ioutil.ReadFile(filepath.Join(t.TestDataPath, ".env"))
 	if err != nil {
 		t.Fail("Error reading test env path")
 	}
-	t.originalEnv = file
+	t.OriginalEnv = file
 }
 
 // Overwrite the original .env test file.
 func (t *EnvTestSuite) Overwrite() {
-	file, err := os.Create(t.envPath)
+	file, err := os.Create(filepath.Join(t.TestDataPath, ".env"))
 	if err != nil {
 		t.Fail("Error removing original test env")
 	}
-	_, err = file.WriteString(string(t.originalEnv))
+	_, err = file.WriteString(string(t.OriginalEnv))
 	if err != nil {
 		t.Fail("Error creating original test env")
 	}
@@ -78,7 +76,7 @@ func (t *EnvTestSuite) TestLoad() {
 		want interface{}
 	}{
 		"Success": {
-			"/test/testdata/env",
+			t.TestDataPath,
 			&Env{
 				AppEnv:          "dev",
 				AppDebug:        "true",
@@ -167,7 +165,7 @@ func (t *EnvTestSuite) TestEnv_Set() {
 		"Success": {
 			"key",
 			"value",
-			"/test/testdata/env",
+			t.TestDataPath,
 			nil,
 		},
 		"Bad Value": {
@@ -205,7 +203,7 @@ func (t *EnvTestSuite) TestEnv_Set() {
 }
 
 func (t *EnvTestSuite) TestEnv_SetError() {
-	teardown := t.ChangePath("/test/testdata/env")
+	teardown := t.ChangePath(t.TestDataPath)
 	defer teardown()
 
 	orig := write

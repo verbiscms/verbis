@@ -9,9 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/google/uuid"
-	"os"
-	"path/filepath"
+	"github.com/jmoiron/sqlx/types"
 	"time"
 )
 
@@ -19,17 +17,13 @@ type (
 	// Media defines the core media entity for Verbis.
 	Media struct {
 		Id          int        `db:"id" json:"id"` //nolint
-		UUID        uuid.UUID  `db:"uuid" json:"uuid"`
-		Url         string     `db:"url" json:"url"` //nolint
 		Title       string     `db:"title" json:"title"`
 		Alt         string     `db:"alt" json:"alt"`
 		Description string     `db:"description" json:"description"`
-		FilePath    string     `db:"file_path" json:"-"`
-		FileSize    int64      `db:"file_size" json:"file_size"`
-		FileName    string     `db:"file_name" json:"file_name"`
-		Sizes       MediaSizes `db:"sizes" json:"sizes"`
-		Mime        Mime       `db:"mime" json:"mime"`
+		Sizes       MediaSizes `db:"-" json:"sizes"`
 		UserId      int        `db:"user_id" json:"user_id"` //nolint
+		FileId      int        `db:"file_id" json:"-"`       //nolint
+		File        File       `db:"file" json:"file"`
 		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
 	}
@@ -41,89 +35,98 @@ type (
 	// MediaSize defines an individual media size that's
 	// stored in the database.
 	MediaSize struct {
-		UUID     uuid.UUID `db:"uuid" json:"uuid"`
-		Url      string    `db:"url" json:"url"` //nolint
-		Name     string    `db:"name" json:"name"`
-		SizeName string    `db:"size_name" json:"size_name"`
-		FileSize int64     `db:"file_size" json:"file_size"`
-		Width    int       `db:"width" json:"width"`
-		Height   int       `db:"height" json:"height"`
-		Crop     bool      `db:"crop" json:"crop"`
+		Id       int           `db:"id" json:"id"`      //nolint
+		FileId   int           `db:"file_id" json:"-"`  //nolint
+		MediaId  int           `db:"media_id" json:"-"` //nolint
+		SizeKey  string        `db:"size_key" json:"-" binding:"required,numeric"`
+		SizeName string        `db:"size_name" json:"name" binding:"required,numeric"`
+		Width    int           `db:"width" json:"width" binding:"required,numeric"`
+		Height   int           `db:"height" json:"height" binding:"required,numeric"`
+		Crop     types.BitBool `db:"crop" json:"crop"`
+		File     File          `db:"file" json:"file"`
 	}
-	// MediaSizeOptions defines the options for saving different
-	// image sizes when uploaded.
-	MediaSizeOptions struct {
-		Name   string `db:"name" json:"name" binding:"required,numeric"`
-		Width  int    `db:"width" json:"width" binding:"required,numeric"`
-		Height int    `db:"height" json:"height" binding:"required,numeric"`
-		Crop   bool   `db:"crop" json:"crop"`
+	// MediaPublic represents a media item sent back to the
+	// frontend or API.
+	MediaPublic struct {
+		Id          int              `json:"id"` //nolint
+		Title       string           `json:"title"`
+		Alt         string           `json:"alt"`
+		Description string           `json:"description"`
+		Sizes       MediaSizesPublic `json:"sizes"`
+		UserId      int              `json:"user_id"` //nolint
+		Url         string           `json:"url"`     //nolint
+		Name        string           `json:"name"`
+		Path        string           `json:"path"`
+		Mime        Mime             `json:"mime"`
+		FileSize    int64            `json:"file_size"`
+		CreatedAt   time.Time        `json:"created_at"`
+		UpdatedAt   time.Time        `json:"updated_at"`
+	}
+	// MediaSizesPublic represents media sizes sent back to
+	// the frontend or API.
+	MediaSizesPublic map[string]MediaSizePublic
+	// MediaSizePublic represents a media size sent back to
+	// the frontend or API.
+	MediaSizePublic struct {
+		Name     string        `json:"name"`
+		Width    int           `json:"width"`
+		Height   int           `json:"height"`
+		Crop     types.BitBool `json:"crop"`
+		URL      string        `json:"url"`
+		Path     string        `json:"path"`
+		Mime     Mime          `json:"mime"`
+		FileSize int64         `json:"file_size"`
 	}
 )
 
 const (
-	// WebPExtension defines the extension used for webp images.
+	// WebPExtension defines the extension used for WebP images.
 	WebPExtension = ".webp"
 )
 
-// UploadPath returns the upload path of the media item
-// without the storage uploads path, for example:
-// 2020/01/photo.jpg
-func (m *Media) UploadPath() string {
-	if !m.IsOrganiseYearMonth() {
-		return m.UUID.String() + m.Extension()
-	}
-	return m.FilePath + string(os.PathSeparator) + m.UUID.String() + m.Extension()
-}
-
-// IsOrganiseYearMonth returns a bool indicating if the
-// file has been saved a year month path, i.e 2020/01.
-func (m *Media) IsOrganiseYearMonth() bool {
-	return m.FilePath != ""
-}
-
-// Extension returns the extension of the file by stripping
-// from the url.
-func (m *Media) Extension() string {
-	return filepath.Ext(m.Url)
-}
-
-// PossibleFiles Returns a the possible files saved to the
-// system after the files have been uploaded. Note: This
-// does not include the upload path.
-func (m *Media) PossibleFiles() []string {
-	files := []string{
-		m.UploadPath(),
-		m.UploadPath() + ".webp",
-	}
+// Public converts a Media type to a public struct.
+func (m *Media) Public() MediaPublic {
+	var ms = make(MediaSizesPublic, len(m.Sizes))
 	for _, v := range m.Sizes {
-		path := m.FilePath + string(os.PathSeparator) + v.UUID.String() + m.Extension()
-		files = append(files, path, path+WebPExtension)
+		ms[v.SizeKey] = MediaSizePublic{
+			Name:     v.SizeName,
+			Width:    v.Width,
+			Height:   v.Height,
+			Crop:     v.Crop,
+			URL:      v.File.Url,
+			Mime:     v.File.Mime,
+			FileSize: v.File.FileSize,
+		}
 	}
-	return files
+
+	if len(ms) == 0 {
+		ms = nil
+	}
+
+	return MediaPublic{
+		Id:          m.Id,
+		Title:       m.Title,
+		Alt:         m.Alt,
+		Description: m.Description,
+		Sizes:       ms,
+		UserId:      m.UserId,
+		Url:         m.File.Url,
+		Name:        m.File.Name,
+		Mime:        m.File.Mime,
+		FileSize:    m.File.FileSize,
+		UpdatedAt:   m.UpdatedAt,
+		CreatedAt:   m.CreatedAt,
+	}
 }
 
-// Mime is a string representation of a MIME type.
-type Mime string
-
-// CanResize Returns true if the mime type is of JPG or
-// PNG, determining if the image can be resized.
-func (m Mime) CanResize() bool {
-	return m.IsJPG() || m.IsPNG()
-}
-
-// IsJPG returns true if the mime type is of JPG.
-func (m Mime) IsJPG() bool {
-	return m == "image/jpeg" || m == "image/jp2"
-}
-
-// IsPNG returns true if the mime type is of PNG.
-func (m Mime) IsPNG() bool {
-	return m == "image/png"
-}
-
-// String is the stringer on Mime type.
-func (m Mime) String() string {
-	return string(m)
+// Public converts a MediaItems type to a slice of
+// public structs.
+func (m MediaItems) Public() []MediaPublic {
+	var mp = make([]MediaPublic, len(m))
+	for i, v := range m {
+		mp[i] = v.Public()
+	}
+	return mp
 }
 
 // Scan implements the scanner for MediaSizes. unmarshal

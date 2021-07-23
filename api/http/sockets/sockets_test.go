@@ -2,9 +2,9 @@ package sockets
 
 import (
 	"bytes"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/suite"

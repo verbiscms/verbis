@@ -7,10 +7,10 @@ package cmd
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/cache"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/sys"
@@ -82,7 +82,7 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 
 	// Init Theme
 	// TODO: We need pass the default theme (Verbis 2021)
-	s, c, err := store.New(db, running)
+	s, err := store.New(db, running)
 	if err != nil {
 		printError(err.Error())
 	}
@@ -92,7 +92,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	return &deps.Config{
 		Store:   s,
 		Env:     env,
-		Config:  c,
 		Paths:   p,
 		Running: running,
 		System:  system,

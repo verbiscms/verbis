@@ -34,7 +34,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 		},
 		"API Path": {
 			http.StatusOK,
-			app.APIRoute,
+			app.HTTPAPIRoute,
 			"",
 			nil,
 		},

@@ -126,19 +126,30 @@ func TestSys_HasUpdate(t *testing.T) {
 //	logger.SetOutput(ioutil.Discard)
 //
 //	tt := map[string]struct {
+//		mock func(m *database.Driver)
 //		want interface{}
 //	}{
 //		"Success": {
-//			"0.0.1",
+//			func(m *database.Driver) {
+//
+//			},
+//			"Error updating Verbis with status code",
 //		},
 //	}
 //
 //	for name, test := range tt {
 //		t.Run(name, func(t *testing.T) {
-//			s := Sys{updater: test.patcher()}
-//			got, err := s.Update()
+//			d := &database.Driver{}
+//			if test.mock != nil {
+//				test.mock(d)
+//			}
+//			s := Sys{
+//				Driver:  d,
+//				updater: &updater.Updater{Provider: &mockProvider{}},
+//			}
+//			got, err := s.Update(false)
 //			if err != nil {
-//				assert.Contains(t, errors.Message(err), err)
+//				assert.Contains(t, errors.Message(err), test.want)
 //				return
 //			}
 //			assert.Equal(t, test.want, got)

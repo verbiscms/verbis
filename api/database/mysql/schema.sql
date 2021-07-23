@@ -1,316 +1,130 @@
--- MySQL dump 10.13  Distrib 8.0.21, for osx10.15 (x86_64)
---
--- ------------------------------------------------------
--- Server version	8.0.21
+##############################################
+# Create Files Table
+##############################################
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!50503 SET NAMES utf8mb4 */;
-/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
-/*!40103 SET TIME_ZONE='+00:00' */;
-/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
-/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `categories`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `categories` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `uuid` varchar(36) NOT NULL,
-    `slug` varchar(150) NOT NULL,
-    `name` varchar(150) NOT NULL,
-    `description` text,
-    `resource` varchar(150) NOT NULL,
-    `parent_id` int DEFAULT NULL,
-    `archive_id` int DEFAULT NULL,
-    `updated_at` timestamp NOT NULL,
-    `created_at` timestamp NOT NULL,
+CREATE TABLE `files`
+(
+    `id`          int           NOT NULL AUTO_INCREMENT,
+    `uuid`        varchar(36)   NOT NULL,
+    `url`         varchar(500)  NOT NULL,
+    `name`        varchar(255)  NOT NULL,
+    `bucket_id`   text          NOT NULL,
+    `mime`        varchar(150)  NOT NULL,
+    `source_type` varchar(255)  NOT NULL,
+    `provider`    varchar(255)  NOT NULL,
+    `region`      varchar(255)  NOT NULL,
+    `bucket`      varchar(255)  NOT NULL,
+    `file_size`    int           NOT NULL,
+    `private`     bit DEFAULT 0 NOT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `slug` (`slug`)
+    KEY `files_url_index` (`url`),
+    CONSTRAINT files_unique UNIQUE (url)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `forms`
---
+##############################################
+# Create Media Sizes Table
+##############################################
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `forms` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `uuid` varchar(36) NOT NULL,
-    `name` varchar(150) NOT NULL,
-    `email_send` bit DEFAULT 0 NOT NULL,
-    `email_message` mediumtext NULL,
-    `email_subject` varchar(78) NOT NULL,
-    `recipients` varchar(1000) NOT NULL,
-    `store_db` bit DEFAULT 0 NOT NULL,
-    `updated_at` timestamp NOT NULL,
-    `created_at` timestamp NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `media_sizes` (
+   `id`        int           NOT NULL AUTO_INCREMENT,
+   `uuid`      varchar(36)   NOT NULL,
+   `file_id`    int           NOT NULL,
+   `media_id`  int           NOT NULL,
+   `size_key`  varchar(255)  NOT NULL,
+   `size_name` varchar(255)  NOT NULL,
+   `width`     int           NOT NULL,
+   `height`    int           NOT NULL,
+   `crop`      bit DEFAULT 0 NOT NULL,
+   PRIMARY KEY (`id`),
+   KEY `media_size_file_index` (`file_id`),
+   KEY `media_size_media_index` (`media_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
 
---
--- Table structure for table `form_fields`
---
+##############################################
+# Inserts for Storage
+##############################################
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `form_fields` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `uuid` varchar(36) NOT NULL,
-    `form_id` int NOT NULL,
-    `key` varchar(150) NOT NULL,
-    `label` varchar(150) NOT NULL,
-    `type` varchar(150) NOT NULL,
-    `validation` varchar(500) NOT NULL,
-    `required` bit DEFAULT 0 NOT NULL,
-    `options` json,
-    PRIMARY KEY (`id`),
-    KEY `form_id_index` (`form_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+# Delete Duplicate URLS
+DELETE FROM media m WHERE id IN (
+    WITH DeleteURL as (SELECT `id`,
+      ROW_NUMBER() OVER(PARTITION BY url ORDER BY ID DESC) row_num
+FROM media) SELECT id FROM DeleteURL WHERE row_num > 1
+);
 
---
--- Table structure for table `form_submissions`
---
+# Insert main files (no media sizes)
+INSERT INTO files (`uuid`, `url`, `file_size`, `name`, `mime`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
+SELECT `uuid`, `url`, `file_size`, `file_name`, `mime`, CONCAT('uploads/', media.file_path, '/', media.uuid, '.', SUBSTRING_INDEX(media.file_name, '.', -1)) AS bucket_id, '' AS region, 'local' AS provider,  '' AS bucket, 'media'
+FROM media;
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `form_submissions` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `uuid` varchar(36) NOT NULL,
-    `form_id` int NOT NULL,
-    `fields` json,
-    `ip_address` varchar(20) NOT NULL,
-    `user_agent` varchar(1000) NOT NULL,
-    `sent_at` timestamp NULL DEFAULT NULL,
-    PRIMARY KEY (`id`),
-    KEY `form_id_index` (`form_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+# Insert media sizes
+INSERT INTO files (`url`, `uuid`, `file_size`, `name`, `mime`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
+    (SELECT sizes.url, sizes.uuid,  sizes.file_size, sizes.name, media.mime, CONCAT('uploads/', media.file_path, '/', sizes.uuid, '.', SUBSTRING_INDEX(media.file_name, '.', -1)) AS bucket_id, '' AS region, 'local' AS provider, '' AS bucket, 'media'
+     FROM media,
+          JSON_TABLE(sizes, '$.*'
+                     COLUMNS (
+                         uuid VARCHAR(255) PATH '$**.uuid',
+                         url VARCHAR(255) PATH '$**.url',
+                         file_size VARCHAR(255) PATH '$**.file_size',
+                         name VARCHAR(255) PATH '$**.name'
+                         )
+              ) AS sizes);
 
---
--- Table structure for table `media`
---
+##############################################
+# Inserts for Media Sizes
+##############################################
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `media` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `uuid` varchar(36) NOT NULL,
-    `url` varchar(255) NOT NULL,
-    `title` varchar(150) NOT NULL,
-    `alt` varchar(150) NOT NULL,
-    `description` text NOT NULL,
-    `file_path` varchar(255) NOT NULL,
-    `file_size` int NOT NULL,
-    `file_name` varchar(255) NOT NULL,
-    `sizes` json DEFAULT NULL,
-    `mime` varchar(150) NOT NULL,
-    `user_id` int NOT NULL,
-    `updated_at` timestamp NOT NULL,
-    `created_at` timestamp NOT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+INSERT INTO media_sizes (`file_id`, `media_id`, `uuid`, `width`, `height`, `crop`, `size_name`, `size_key`)
+    (SELECT 0, media.id, sizes.uuid, sizes.width, sizes.height, sizes.crop, sizes.size_name,
+            CASE
+                WHEN sizes.size_name = 'HD Size' THEN 'hd'
+                WHEN sizes.size_name = 'Large Size' THEN 'large'
+                WHEN sizes.size_name = 'Medium Size' THEN 'medium'
+                WHEN sizes.size_name = 'Thumbnail Size' THEN 'thumbnail'
+                ELSE 'Default Size' END AS keyname
+     FROM media,
+          JSON_TABLE(sizes, '$.*'
+                     COLUMNS (
+                         width INT PATH '$**.width',
+                         height INT PATH '$**.height',
+                         size_name VARCHAR(255) PATH '$**.size_name',
+                         crop INT PATH '$**.crop',
+                         uuid VARCHAR(255) PATH '$**.uuid'
+                         )
+              ) AS sizes);
 
---
--- Table structure for table `options`
---
+##############################################
+# MediaTable Alter
+##############################################
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `options` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `option_name` varchar(255) NOT NULL,
-    `option_value` json DEFAULT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+ALTER TABLE media ADD COLUMN (`file_id` INT NOT NULL);
 
---
--- Table structure for table `password_resets`
---
+##############################################
+# File ID Inserts
+##############################################
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `password_resets` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `email` varchar(255) NOT NULL,
-    `token` varchar(255) NOT NULL,
-    `created_at` timestamp NOT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+UPDATE `media` INNER JOIN `files` ON media.uuid = files.uuid SET media.file_id = files.id WHERE media.uuid = files.uuid;
+UPDATE `media_sizes` INNER JOIN `files` ON media_sizes.uuid = files.uuid SET media_sizes.file_id = files.id WHERE media_sizes.uuid = files.uuid;
 
---
--- Table structure for table `post_categories`
---
+##############################################
+# Drop Columns
+##############################################
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `post_categories` (
-    `category_id` int NOT NULL,
-    `post_id` int NOT NULL,
-    PRIMARY KEY (`category_id`,`post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+ALTER TABLE media
+    DROP COLUMN uuid,
+    DROP COLUMN url,
+    DROP COLUMN file_path,
+    DROP COLUMN file_size,
+    DROP COLUMN file_name,
+    DROP COLUMN sizes,
+    DROP COLUMN mime;
 
---
--- Table structure for table `post_fields`
---
+ALTER TABLE media_sizes
+    DROP COLUMN uuid;
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `post_fields` (
-    /* `id` int NOT NULL AUTO_INCREMENT, */
-    `post_id` int NOT NULL,
-    `uuid` varchar(36) NOT NULL,
-    `type` varchar(250) NOT NULL,
-    `name` varchar(250) NOT NULL,
-    `field_key` varchar(500) NOT NULL,
-    `value` longtext NULL,
-    /*PRIMARY KEY (`id`), */
-    KEY `post_id_index` (`post_id`),
-    CONSTRAINT post_fields_unique
-        UNIQUE (uuid, field_key, post_id, name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
+##############################################
+# Add To Options
+##############################################
 
---
--- Table structure for table `posts`
---
+INSERT INTO options(`option_name`, `option_value`) VALUES('storage_provider', '\"local\"');
+INSERT INTO options(`option_name`, `option_value`) VALUES('storage_bucket', '\"\"')
 
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `posts` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `uuid` varchar(36) NOT NULL,
-    `title` varchar(500) NOT NULL,
-    `slug` varchar(150) NOT NULL,
-    `status` varchar(150) NOT NULL DEFAULT 'draft',
-    `resource` varchar(150) NOT NULL,
-    `page_template` varchar(150) NOT NULL DEFAULT 'default',
-    `layout` varchar(150)  NOT NULL DEFAULT 'default',
-    `codeinjection_head` longtext NOT NULL,
-    `codeinjection_foot` longtext NOT NULL,
-    `user_id` int NOT NULL,
-    `published_at` timestamp NULL DEFAULT NULL,
-    `updated_at` timestamp NOT NULL,
-    `created_at` timestamp NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `slug` (`slug`),
-    KEY `user_id_index` (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `post_options`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `post_options` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `post_id` int NOT NULL,
-    `seo` json DEFAULT NULL,
-    `meta` json DEFAULT NULL,
-    `edit_lock` varchar(150) NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `post_id_index` (`post_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `redirects`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `redirects` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `from_path` varchar(255) NOT NULL,
-    `to_path` varchar(255) NOT NULL,
-    `code` int NOT NULL,
-    `updated_at` timestamp NOT NULL,
-    `created_at` timestamp NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `redirect_from_path` (`from_path`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `roles`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `roles` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `name` varchar(255) NOT NULL,
-    `description` text NOT NULL,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `user_roles`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `user_roles` (
-    `user_id` int NOT NULL,
-    `role_id` int NOT NULL,
-    PRIMARY KEY (`user_id`,`role_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `users`
---
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `users` (
-    `id` int NOT NULL AUTO_INCREMENT,
-    `uuid` varchar(36) NOT NULL,
-    `first_name` varchar(150) NOT NULL,
-    `last_name` varchar(150) NOT NULL,
-    `email` varchar(255) NOT NULL,
-    `password` varchar(60) NOT NULL,
-    `website` text NOT NULL,
-    `facebook` text NOT NULL,
-    `twitter` text NOT NULL,
-    `linked_in` text NOT NULL,
-    `instagram` text NOT NULL,
-    `biography` longtext NOT NULL,
-    `profile_picture_id` INT NULL,
-    `token` varchar(38) NOT NULL,
-    `token_last_used` timestamp NULL DEFAULT NULL,
-    `email_verified_at` timestamp NULL DEFAULT NULL,
-    `updated_at` timestamp NOT NULL,
-    `created_at` timestamp NOT NULL,
-    PRIMARY KEY (`id`),
-    UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
-/*!40101 SET character_set_client = @saved_cs_client */;
-/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
-
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-
--- Dump completed on 2020-09-22 14:13:46

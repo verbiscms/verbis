@@ -5,8 +5,8 @@
 package environment
 
 import (
+	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
 	"github.com/ainsleyclark/verbis/api/errors"
-	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	pkgValidate "github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
@@ -19,71 +19,64 @@ import (
 
 // Env defines the environment variables set in the .env file.
 type Env struct {
-
 	// Prod, production or dev.
 	AppEnv string `json:"APP_ENV"`
-
 	// If Verbis is in debug mode (true, false).
 	AppDebug string `json:"APP_DEBUG"`
-
 	// The port the server should listen to.
 	AppPort string `json:"APP_PORT" binding:"required"`
-
 	// The database port.
 	DbDriver string `json:"DB_DRIVER" binding:"required"` //nolint
-
 	// The database host (IP) for the store.
 	DbHost string `json:"DB_HOST" binding:"required"` //nolint
-
 	// The database port for the store.
 	DbPort string `json:"DB_PORT" binding:"required"` //nolint
-
 	// The database name.
 	DbDatabase string `json:"DB_DATABASE" binding:"required"` //nolint
-
 	// The database user name.
 	DbUser string `json:"DB_USERNAME" binding:"required"` //nolint
-
 	// The database port.
 	DbPassword string `json:"DB_PASSWORD" binding:"required"` //nolint
-
 	// The database port.
 	DbSchema string `json:"DB_SCHEMA"` //nolint
-
 	// The database port.
 	MailDriver string `json:"MAIL_DRIVER"`
-
 	// The mailing from address.
 	MailFromAddress string `json:"MAIL_FROM_ADDRESS"`
-
 	// The mailing from name.
 	MailFromName string `json:"MAIL_FROM_NAME"`
-
 	// The API key for Sparkpost.
 	SparkpostAPIKey string `json:"SPARKPOST_API_KEY"`
-
 	// The url for Sparkpost (could be EU).
 	SparkpostURL string `json:"SPARKPOST_URL"`
-
 	// The API key for MailGun.
 	MailGunAPIKey string `json:"MAILGUN_API_KEY"`
-
 	// The url for MailGun.
 	MailGunURL string `json:"MAILGUN_URL"`
-
 	// The domain for MailGun.
 	MailGunDomain string `json:"MAILGUN_DOMAIN"`
-
 	// The API key for SendGrid.
 	SendGridAPIKey string `json:"SENDGRID_API_KEY"`
+	// The access key for AWS storage.
+	AWSAccessKey string `json:"STORAGE_AWS_ACCESS_KEY"`
+	// The access secret for AWS storage.
+	AWSSecret string `json:"STORAGE_AWS_SECRET"`
+	// The JSON file for GCP storage.
+	GCPJson string `json:"STORAGE_GCP_JSON_FILE"`
+	// The Project ID for GCP storage.
+	GCPProjectID string `json:"STORAGE_GCP_PROJECT_ID"`
+	// The account details for Azure storage.
+	AzureAccount string `json:"STORAGE_AZURE_ACCOUNT"`
+	// The account details for Azure storage.
+	AzureKey string `json:"STORAGE_AZURE_KEY"`
 }
 
 var (
 	// basePath is the absolute path of the Verbis project,
 	// where the .env is stored.
 	basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
-	// envExt is the environment file extension.
-	envExt = ".env"
+	// EnvExtension is the environment file extension.
+	EnvExtension = ".env"
 )
 
 const (
@@ -97,7 +90,7 @@ const (
 // Returns errors.INVALID if the env file failed to load.
 func Load() (*Env, error) {
 	const op = "environment.Load"
-	err := godotenv.Load(basePath + "/" + envExt)
+	err := godotenv.Load(basePath + "/" + EnvExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not load the .env file", Operation: op, Err: err}
 	}
@@ -121,6 +114,12 @@ func Load() (*Env, error) {
 		MailGunURL:      os.Getenv("MAILGUN_URL"),
 		MailGunDomain:   os.Getenv("MAILGUN_DOMAIN"),
 		SendGridAPIKey:  os.Getenv("SENDGRID_API_KEY"),
+		AWSAccessKey:    os.Getenv("STORAGE_AWS_ACCESS_KEY"),
+		AWSSecret:       os.Getenv("STORAGE_AWS_SECRET"),
+		GCPJson:         os.Getenv("STORAGE_GCP_JSON"),
+		GCPProjectID:    os.Getenv("STORAGE_GCP_PROJECT_ID"),
+		AzureAccount:    os.Getenv("STORAGE_AZURE_ACCOUNT"),
+		AzureKey:        os.Getenv("STORAGE_AZURE_KEY"),
 	}, nil
 }
 
@@ -150,7 +149,7 @@ func (e *Env) Set(key string, value interface{}) error {
 		return &errors.Error{Code: errors.INVALID, Message: "Error casting value to string", Operation: op, Err: err}
 	}
 
-	path := basePath + "/" + envExt
+	path := basePath + "/" + EnvExtension
 	env, err := godotenv.Read(path)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error reading env file with the path " + path, Operation: op, Err: err}

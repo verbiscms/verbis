@@ -7,10 +7,11 @@ package users
 import (
 	"database/sql"
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/common/encryption"
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
 	"time"
 )
 
@@ -36,7 +37,7 @@ func (s *Store) CheckSession(token string) error {
 	// Destroy the token and create a new one if session expired.
 	inactiveFor := time.Since(*u.TokenLastUsed).Minutes()
 
-	if int(inactiveFor) > s.Config.Theme.Admin.InactiveSessionTime {
+	if int(inactiveFor) > config.Get().Admin.InactiveSessionTime {
 		newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
 		q := s.Builder().

@@ -5,11 +5,12 @@
 package webp
 
 import (
+	"bytes"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-gonic/gin"
 	"github.com/nickalie/go-webpbin"
+	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -20,7 +21,7 @@ import (
 type Execer interface {
 	Accepts(ctx *gin.Context) bool
 	File(g *gin.Context, path string, mime domain.Mime) ([]byte, error)
-	Convert(path string, compression int)
+	Convert(in io.Reader, compression int) (*bytes.Reader, error)
 }
 
 // Path defines the path where the executables reside.
@@ -85,20 +86,22 @@ func (w *WebP) File(ctx *gin.Context, path string, mime domain.Mime) ([]byte, er
 //
 // Converts an image to WebP based on compression and
 // decoded image. Compression level is also set.
-func (w *WebP) Convert(path string, compression int) {
+func (w *WebP) Convert(in io.Reader, compression int) (*bytes.Reader, error) {
 	const op = "Webp.Convert"
 
 	webpbin.Dest(w.binPath)
 
+	var buf = &bytes.Buffer{}
+
 	err := webpbin.NewCWebP().
 		Quality(uint(compression)).
-		InputFile(path).
-		OutputFile(path + ".webp").
+		Input(in).
+		Output(buf).
 		Run()
 
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error convert the image to WebP", Operation: op, Err: err}).Error()
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error converting image to WebP", Operation: op, Err: err}
 	}
 
-	logger.Debug("Saved WebP file with the path: " + path)
+	return bytes.NewReader(buf.Bytes()), nil
 }

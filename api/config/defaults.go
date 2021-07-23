@@ -9,7 +9,7 @@ import "github.com/ainsleyclark/verbis/api/domain"
 var (
 	// DefaultTheme is Global configuration for the theme,
 	// sets defaults to ensure that there are no
-	// empty values within the themes config
+	// empty values within the themes Config
 	// to prevent any errors.
 	DefaultTheme = domain.ThemeConfig{
 		Theme:         domain.Theme{},

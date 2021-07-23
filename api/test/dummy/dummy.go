@@ -5,7 +5,7 @@
 package dummy
 
 import (
-	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 )
 

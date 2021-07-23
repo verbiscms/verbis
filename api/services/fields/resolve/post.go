@@ -9,9 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// post
-//
-// Resolves a post from the given value.
+// post resolves a post from the given value.
 // Returns the domain.PostDatum if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) post(value domain.FieldValue) (interface{}, error) {

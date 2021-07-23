@@ -23,16 +23,13 @@ type Layout struct {
 	SubFields SubFields
 }
 
-// Subfields represents the collection of fields used
+// SubFields represents the collection of fields used
 // for templates. It has various functions attached
 // to it making it easier to loop over.
 type SubFields domain.PostFields
 
-// GetFlexible
-//
-// Returns the collection of Layouts from the given key and returns
-// a new Flexible.
-//
+// GetFlexible Returns the collection of Layouts from the
+// given key and returns a new Flexible.
 // Returns errors.INVALID if the field type is not flexible content.
 // Returns errors.INTERNAL if the layouts could not be cast to a string slice.
 func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
@@ -64,11 +61,9 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 	return s.resolveFlexible("", field, fields)
 }
 
-// getLayouts
-//
-// Loops over the given layouts (e.g ["layout1","layout2"] and builds up
-// an array of SUbFields if the SubField layout matches the ranged
-// layout.
+// resolveFlexible Loops over the given layouts (e.g ["layout1","layout2"]
+// and builds up an array of SUbFields if the SubField layout
+// matches the ranged layout.
 // Fields are resolved dependant on the format parameter.
 // Returns a new Flexible.
 func (s *Service) resolveFlexible(key string, field domain.PostField, fields domain.PostFields) Flexible {
@@ -98,16 +93,12 @@ func (s *Service) resolveFlexible(key string, field domain.PostField, fields dom
 	return flexible
 }
 
-// HasRows
-//
-// Determines if the Flexible content has any rows.
+// HasRows determines if the Flexible content has any rows.
 func (f Flexible) HasRows() bool {
 	return len(f) != 0
 }
 
-// SubField
-//
-// Returns a sub field by key or nil if it wasn't found.
+// SubField returns a sub field by key or nil if it wasn't found.
 func (s SubFields) SubField(name string) interface{} {
 	for _, sub := range s {
 		if name == sub.Name {
@@ -117,9 +108,7 @@ func (s SubFields) SubField(name string) interface{} {
 	return nil
 }
 
-// First
-//
-// Returns the first element in the sub fields, or nil if
+// First returns the first element in the sub fields, or nil if
 // the length of the sub fields is zero.
 func (s SubFields) First() interface{} {
 	if len(s) == 0 {
@@ -128,9 +117,7 @@ func (s SubFields) First() interface{} {
 	return s[0]
 }
 
-// Last
-//
-// Returns the last element in the sub fields, or nil if
+// Last returns the last element in the sub fields, or nil if
 // the length of the sub fields is zero.
 func (s SubFields) Last() interface{} {
 	if len(s) == 0 {

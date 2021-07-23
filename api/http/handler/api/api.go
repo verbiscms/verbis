@@ -5,7 +5,7 @@
 package api
 
 import (
-	"github.com/ainsleyclark/verbis/api/helpers/params"
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/gin-gonic/gin"
 )
 

@@ -5,10 +5,12 @@
 package media
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"mime/multipart"
 	"os"
+	"path/filepath"
 )
 
 func (t *MediaServiceTestSuite) TestClient_Validate() {
@@ -31,7 +33,7 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 			"Error opening file with the name",
 		},
 		"Text File": {
-			t.MediaPath + "/test.txt",
+			filepath.Join(t.TestDataPath, "/test.txt"),
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"text/plain; charset=utf-8"},
@@ -43,7 +45,7 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 			nil,
 		},
 		"Image": {
-			t.MediaPath + "/gopher.png",
+			filepath.Join(t.TestDataPath, "/gopher.png"),
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},
@@ -53,13 +55,13 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 			nil,
 		},
 		"Mime": {
-			t.MediaPath + "/gopher.png",
+			filepath.Join(t.TestDataPath, "/gopher.png"),
 			domain.ThemeConfig{},
 			domain.Options{},
 			"The file is not permitted to be uploaded",
 		},
 		"File Size": {
-			t.MediaPath + "/gopher.png",
+			filepath.Join(t.TestDataPath, "/gopher.png"),
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},
@@ -71,7 +73,7 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 			"The file exceeds the maximum size restriction",
 		},
 		"Image Width": {
-			t.MediaPath + "/gopher.png",
+			filepath.Join(t.TestDataPath, "/gopher.png"),
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},
@@ -83,7 +85,7 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 			"The image exceeds the width/height restrictions",
 		},
 		"Image Height": {
-			t.MediaPath + "/gopher.png",
+			filepath.Join(t.TestDataPath, "/gopher.png"),
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},
@@ -98,11 +100,15 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			c := t.Setup(test.cfg, test.opts)
+			c := t.Setup(&test.cfg, &test.opts, nil)
 
 			var mt = &multipart.FileHeader{}
 			if test.input != "" {
-				mt = t.File(test.input)
+				multi, err := t.ToMultiPartE(test.input)
+				if err != nil {
+					fmt.Println(err)
+				}
+				mt = multi
 			}
 
 			got := c.Validate(mt)
@@ -122,7 +128,7 @@ func (t *MediaServiceTestSuite) TestValidator_Mime() {
 		want  interface{}
 	}{
 		"Success": {
-			t.MediaPath + "/gopher.png",
+			filepath.Join(t.TestDataPath, "/gopher.png"),
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"image/png"},
@@ -130,8 +136,8 @@ func (t *MediaServiceTestSuite) TestValidator_Mime() {
 			},
 			nil,
 		},
-		"Bad Mime": {
-			t.MediaPath + "/gopher.png",
+		"Bad mime": {
+			filepath.Join(t.TestDataPath, "/gopher.png"),
 			domain.ThemeConfig{
 				Media: domain.MediaConfig{
 					AllowedFileTypes: []string{"text/plain; charset=utf-8"},

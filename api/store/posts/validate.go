@@ -5,6 +5,7 @@
 package posts
 
 import (
+	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
@@ -23,19 +24,21 @@ func (s *Store) validate(p *domain.PostCreate, checkSlug bool) error {
 		}
 	}
 
-	resource, ok := s.Theme.Resources[p.Resource]
+	cfg := config.Get()
+
+	resource, ok := cfg.Resources[p.Resource]
 	if ok {
 		if resource.Hidden {
 			return nil
 		}
 	}
 
-	err := s.validatePageTemplate(p)
+	err := s.validatePageTemplate(cfg, p)
 	if err != nil {
 		return err
 	}
 
-	err = s.validatePageLayout(p)
+	err = s.validatePageLayout(cfg, p)
 	if err != nil {
 		return err
 	}
@@ -85,10 +88,10 @@ func (s *Store) validateSlug(p *domain.PostCreate) error {
 // is found in the current theme.
 // Returns nil if it was found.
 // Returns ErrNoPageTemplate if the page template was not found.
-func (s *Store) validatePageTemplate(p *domain.PostCreate) error {
+func (s *Store) validatePageTemplate(cfg *domain.ThemeConfig, p *domain.PostCreate) error {
 	const op = "PostStore.ValidatePageTemplate"
 
-	tpl, err := s.ThemeService.Templates(s.Theme.Theme.Name)
+	tpl, err := s.ThemeService.Templates(cfg.Theme.Name)
 	if err != nil {
 		return err
 	}
@@ -111,10 +114,10 @@ func (s *Store) validatePageTemplate(p *domain.PostCreate) error {
 // found in the current theme.
 // Returns nil if it was found.
 // Returns ErrNoPageLayout if the page layout was not found.
-func (s *Store) validatePageLayout(p *domain.PostCreate) error {
+func (s *Store) validatePageLayout(cfg *domain.ThemeConfig, p *domain.PostCreate) error {
 	const op = "PostStore.ValidatePageLayout"
 
-	tpl, err := s.ThemeService.Layouts(s.Theme.Theme.Name)
+	tpl, err := s.ThemeService.Layouts(cfg.Theme.Name)
 	if err != nil {
 		return err
 	}

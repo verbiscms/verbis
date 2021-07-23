@@ -4,17 +4,10 @@ project_name: Verbis
 before:
   hooks:
     - echo {{.Version}}
-    - make all
+    #- make all
     - go mod tidy
     - go generate ./...
     - cmd: cd admin && npm run build && cd ../
-    - cmd: mv .gitignore .gitignore.bak
-    - cmd: cp .gitignore.build .gitignore
-# Hooks to after before build
-after:
-  hooks:
-    - cmd: rm .gitignore
-    - cmd: mv .gitignore.bak .gitignore
 # Main Verbis build
 builds:
   - id: "main"
@@ -39,8 +32,7 @@ builds:
       - -X 'github.com/ainsleyclark/verbis/api.ProductionString=true' -X 'github.com/ainsleyclark/verbis/api/version.Version={{.Version}}'
 # Zip
 archives:
-  -
-    builds:
+  - builds:
       - main
     format: zip
     name_template: "{{ tolower .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}"
@@ -50,8 +42,10 @@ archives:
       - LICENSE
       - themes
       - .env.example
-      - .gitignore
-      - docs
+      - src: .gitignore.build
+        dst: .gitignore
+      - src: 'www/docs/*.md'
+        dst: docs
 checksum:
   name_template: 'checksums.txt'
   algorithm: sha256

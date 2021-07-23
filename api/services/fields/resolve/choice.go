@@ -18,9 +18,7 @@ type choice struct {
 	Value string `json:"value"`
 }
 
-// choice
-//
-// Unmarshalls the domain.FieldValue into a choice type.
+// choice unmarshalls the domain.FieldValue into a choice type.
 // Returns errors.INVALID if the unmarshal was not successful.
 func (v *Value) choice(value domain.FieldValue) (interface{}, error) {
 	const op = "FieldResolver.choice"

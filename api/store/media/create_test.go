@@ -10,56 +10,69 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/test"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media/sizes"
 	"regexp"
 )
 
 var (
-	CreateQuery = "INSERT INTO `media` (`uuid`, `url`, `title`, `alt`, `description`, `file_path`, `file_size`, `file_name`, `sizes`, `mime`, `user_id`, `updated_at`, `created_at`) VALUES ('00000000-0000-0000-0000-000000000000', '', '', '', '', '', 0, 'gopher.png', ?, '', 0, NOW(), NOW())"
+	CreateQuery = "INSERT INTO `media` (`title`, `alt`, `description`, `user_id`, `file_id`, `updated_at`, `created_at`) VALUES ('', '', '', 0, 0, NOW(), NOW())"
 )
 
 func (t *MediaTestSuite) TestStore_Create() {
 	tt := map[string]struct {
-		want interface{}
-		mock func(m sqlmock.Sqlmock)
+		want      interface{}
+		mockSizes func(m *mocks.Repository)
+		mock      func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
 			mediaItem,
+			func(m *mocks.Repository) {
+				m.On("Create", mediaItem.Id, mediaItem.Sizes).Return(mediaItem.Sizes, nil)
+			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAny{}).
 					WillReturnResult(sqlmock.NewResult(int64(mediaItem.Id), 1))
 			},
 		},
 		"No Rows": {
-			"Error creating category with the name",
+			"Error creating media item with the name",
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAny{}).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAny{}).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 		"Last Insert ID Error": {
-			"Error getting the newly created category ID",
+			"Error getting the newly created media item ID",
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAny{}).
 					WillReturnResult(sqlmock.NewErrorResult(fmt.Errorf("err")))
+			},
+		},
+		"Sizes Error": {
+			"error",
+			func(m *mocks.Repository) {
+				m.On("Create", mediaItem.Id, mediaItem.Sizes).Return(nil, fmt.Errorf("error"))
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
+					WillReturnResult(sqlmock.NewResult(int64(mediaItem.Id), 1))
 			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
+			s := t.Setup(test.mock, test.mockSizes)
 			cat, err := s.Create(mediaItem)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)

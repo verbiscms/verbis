@@ -9,9 +9,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/errors"
 )
 
-// category
-//
-// Resolves a category from the given value.
+// category resolves a category from the given value.
 // Returns the domain.Category if it was found and no error occurred.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an integer.
 func (v *Value) category(value domain.FieldValue) (interface{}, error) {

@@ -35,7 +35,7 @@ func (m *Media) Update(ctx *gin.Context) {
 	}
 	item.Id = id
 
-	updated, err := m.Store.Media.Update(item)
+	updated, err := m.service.Update(item)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
@@ -44,5 +44,5 @@ func (m *Media) Update(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully updated media item with ID: "+strconv.Itoa(id), updated)
+	api.Respond(ctx, http.StatusOK, "Successfully updated media item with ID: "+strconv.Itoa(id), updated.Public())
 }
