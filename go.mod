@@ -11,7 +11,7 @@ require (
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/frankban/quicktest v1.11.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9
-	github.com/gabriel-vasile/mimetype v1.3.0
+	github.com/gabriel-vasile/mimetype v1.3.1
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
