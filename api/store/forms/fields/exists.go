@@ -5,10 +5,10 @@
 package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
 )
 
 // Exists

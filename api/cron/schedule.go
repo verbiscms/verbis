@@ -5,10 +5,10 @@
 package cron
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/jasonlvhit/gocron"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/publisher"
 )
 
 // Scheduler defines all necessary cron jobs for the application

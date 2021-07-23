@@ -5,8 +5,8 @@
 package params
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/common/params"
 )
 
 // Query defines the map of arguments passed to

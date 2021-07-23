@@ -5,11 +5,11 @@
 package attributes
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/tpl/funcs/auth"
+	"github.com/verbiscms/verbis/api/tpl/internal"
 	"testing"
 )
 

@@ -6,11 +6,11 @@ package media
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media/sizes"
-	"github.com/ainsleyclark/verbis/api/store/config"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/media/sizes"
+	"github.com/verbiscms/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

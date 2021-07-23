@@ -5,9 +5,9 @@
 package tpl
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/verbisfs"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/verbisfs"
 	"html/template"
 	"io"
 )

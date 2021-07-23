@@ -6,8 +6,8 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/spf13/cobra"
+	"github.com/verbiscms/verbis/api"
 	"strconv"
 )
 

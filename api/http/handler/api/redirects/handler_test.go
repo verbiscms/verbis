@@ -5,12 +5,12 @@
 package redirects
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
-	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/redirects"
+	"github.com/verbiscms/verbis/api/store"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

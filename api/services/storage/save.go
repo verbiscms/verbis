@@ -5,8 +5,8 @@
 package storage
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 // Save satisfies the Provider interface by changing the

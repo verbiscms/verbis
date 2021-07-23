@@ -3,7 +3,7 @@
 package mocks
 
 import (
-	builder "github.com/ainsleyclark/verbis/api/database/builder"
+	builder "github.com/verbiscms/verbis/api/database/builder"
 
 	mock "github.com/stretchr/testify/mock"
 

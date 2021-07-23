@@ -3,11 +3,11 @@
 package mocks
 
 import (
-	domain "github.com/ainsleyclark/verbis/api/domain"
+	domain "github.com/verbiscms/verbis/api/domain"
 
 	mock "github.com/stretchr/testify/mock"
 
-	params "github.com/ainsleyclark/verbis/api/common/params"
+	params "github.com/verbiscms/verbis/api/common/params"
 
 	uuid "github.com/google/uuid"
 )

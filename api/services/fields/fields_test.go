@@ -5,7 +5,7 @@
 package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 func (t *FieldTestSuite) TestService_GetFields() {

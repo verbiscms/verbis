@@ -5,10 +5,10 @@
 package public
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/errors"
+	mocks "github.com/verbiscms/verbis/api/mocks/publisher"
 	"net/http"
 )
 

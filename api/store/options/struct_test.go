@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/domain"
 	"math"
 	"regexp"
 )

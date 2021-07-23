@@ -5,10 +5,10 @@
 package internal
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
 	"github.com/graymeta/stow/s3"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
 )
 
 // amazon satisfies the provider interface by implementing

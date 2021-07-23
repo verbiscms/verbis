@@ -5,7 +5,7 @@
 package pagination
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/common/params"
 	"math"
 )
 

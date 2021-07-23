@@ -5,10 +5,10 @@
 package storage
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/params"
-	vstrings "github.com/ainsleyclark/verbis/api/common/strings"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/common/params"
+	vstrings "github.com/verbiscms/verbis/api/common/strings"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 	"io/ioutil"
 	"path"
 	"strings"

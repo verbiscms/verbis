@@ -5,8 +5,8 @@
 package logger
 
 import (
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/sirupsen/logrus"
+	"github.com/verbiscms/verbis/api/environment"
 	"io"
 	"io/ioutil"
 	"os"

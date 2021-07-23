@@ -6,12 +6,12 @@ package fields
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	location "github.com/ainsleyclark/verbis/api/mocks/services/fields/location"
-	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
-	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/domain"
+	location "github.com/verbiscms/verbis/api/mocks/services/fields/location"
+	categories "github.com/verbiscms/verbis/api/mocks/store/categories"
+	users "github.com/verbiscms/verbis/api/mocks/store/users"
 	"net/http"
 )
 

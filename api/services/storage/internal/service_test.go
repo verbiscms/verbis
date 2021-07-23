@@ -6,13 +6,13 @@ package internal
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/mocks/services/storage/mocks"
-	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"github.com/graymeta/stow"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
+	options "github.com/verbiscms/verbis/api/mocks/store/options"
 	"testing"
 )
 

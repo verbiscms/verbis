@@ -6,11 +6,11 @@ package posts
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/options"
 )
 
 func (t *PostsTestSuite) TestStore_Format() {

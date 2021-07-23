@@ -7,9 +7,9 @@ package logger
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gookit/color"
 	"github.com/sirupsen/logrus"
+	"github.com/verbiscms/verbis/api/errors"
 	"net/http"
 	"strings"
 	"time"

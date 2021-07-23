@@ -7,7 +7,7 @@ package importer
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 	"io"
 	"mime/multipart"
 	"net/http"

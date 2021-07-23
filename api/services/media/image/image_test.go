@@ -6,9 +6,9 @@ package image
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/test"
 	"image"
 	"mime/multipart"
 	"os"

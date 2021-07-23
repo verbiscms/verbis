@@ -5,8 +5,8 @@
 package mocks
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/graymeta/stow"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 type StowLocation interface {

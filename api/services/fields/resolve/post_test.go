@@ -6,8 +6,8 @@ package resolve
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/posts"
 )
 
 func (t *ResolverTestSuite) TestValue_Post() {

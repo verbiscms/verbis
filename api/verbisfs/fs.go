@@ -5,10 +5,10 @@
 package verbisfs
 
 import (
-	"github.com/ainsleyclark/verbis/admin"
-	"github.com/ainsleyclark/verbis/api/common/paths"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/www"
+	"github.com/verbiscms/verbis/admin"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/www"
 	"io/fs"
 	"path/filepath"
 )

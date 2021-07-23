@@ -6,10 +6,10 @@ package media
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	mocks "github.com/verbiscms/verbis/api/mocks/services/media"
 	"net/http"
 )
 

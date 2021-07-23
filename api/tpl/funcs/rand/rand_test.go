@@ -6,8 +6,8 @@ package rand
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
 	"testing"
 )
 

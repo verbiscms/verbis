@@ -5,8 +5,8 @@
 package publisher
 
 import (
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api"
 )
 
 // ServeChan is the channel for serving pages for the

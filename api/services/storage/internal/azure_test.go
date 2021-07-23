@@ -5,7 +5,7 @@
 package internal
 
 import (
-	"github.com/ainsleyclark/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/environment"
 	"testing"
 )
 

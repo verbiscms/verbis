@@ -5,10 +5,10 @@
 package meta
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/tpl/internal"
 	"testing"
 )
 

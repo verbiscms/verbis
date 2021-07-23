@@ -5,11 +5,11 @@
 package mysql
 
 import (
-	"github.com/ainsleyclark/verbis/api/database/builder"
-	"github.com/ainsleyclark/verbis/api/database/internal"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/version"
+	"github.com/verbiscms/verbis/api/database/builder"
+	"github.com/verbiscms/verbis/api/database/internal"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/version"
 	// Import sql driver, required!
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gookit/color"

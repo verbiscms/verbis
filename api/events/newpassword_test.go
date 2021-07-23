@@ -5,8 +5,8 @@
 package events
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 func (t *EventTestSuite) Test_NewPasswordDispatch() {

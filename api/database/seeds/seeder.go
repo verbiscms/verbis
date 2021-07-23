@@ -5,8 +5,8 @@
 package seeds
 
 import (
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/store"
 )
 
 type Seeder struct {

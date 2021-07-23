@@ -6,9 +6,9 @@ package internal
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/database/internal/testdata"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/database/internal/testdata"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

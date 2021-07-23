@@ -6,13 +6,13 @@ package auth
 
 import (
 	"fmt"
-	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
-	store "github.com/ainsleyclark/verbis/api/store/auth"
 	"github.com/gin-gonic/gin"
+	validation "github.com/verbiscms/verbis/api/common/vaidation"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/handler/api"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/auth"
+	store "github.com/verbiscms/verbis/api/store/auth"
 	"net/http"
 	"time"
 )

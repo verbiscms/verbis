@@ -5,8 +5,8 @@
 package seeds
 
 import (
-	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 // runOptions will insert all default values for the options

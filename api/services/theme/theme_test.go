@@ -5,11 +5,11 @@
 package theme
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/config"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/logger"
 	"io/ioutil"
 	"os"
 	"path/filepath"

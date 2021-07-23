@@ -5,9 +5,9 @@
 package cast
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
 // Creates a new cast Namespace

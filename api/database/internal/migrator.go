@@ -8,11 +8,11 @@ import (
 	"database/sql"
 	"embed"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/database/updates"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
 	sm "github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
+	"github.com/verbiscms/verbis/api/database/updates"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
 )
 
 // Migrator is the core updater for Verbis, it takes in a

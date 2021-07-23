@@ -5,11 +5,11 @@
 package resolve
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/store"
 	"io/ioutil"
 	"testing"
 )

@@ -6,12 +6,12 @@ package server
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gin-contrib/location"
+	"github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/middleware"
+	"github.com/verbiscms/verbis/api/logger"
 	"io/ioutil"
 	"net/http"
 	"net/http/pprof"

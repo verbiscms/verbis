@@ -6,12 +6,12 @@ package auth
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
-	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/users"
+	"github.com/verbiscms/verbis/api/store"
 	"net/http"
 	"net/http/httptest"
 	"testing"

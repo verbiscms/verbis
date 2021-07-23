@@ -5,10 +5,10 @@
 package breadcrumbs
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
-	"github.com/ainsleyclark/verbis/api/verbis"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/tpl/internal"
+	"github.com/verbiscms/verbis/api/verbis"
 	"testing"
 )
 

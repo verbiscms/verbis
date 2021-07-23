@@ -1,6 +1,0 @@
-CREATE TABLE `subscribers` (
-   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-   `email` VARCHAR(255) NOT NULL,
-   `updated_at` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-   `created_at` TIMESTAMP
-);

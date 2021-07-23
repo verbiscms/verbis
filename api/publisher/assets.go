@@ -6,11 +6,11 @@ package publisher
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/common/mime"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/common/mime"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"

@@ -6,8 +6,8 @@ package cache
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/patrickmn/go-cache"
+	"github.com/verbiscms/verbis/api/domain"
 	"time"
 )
 

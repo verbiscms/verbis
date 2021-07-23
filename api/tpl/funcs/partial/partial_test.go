@@ -5,10 +5,10 @@
 package partial
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/tpl"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/dict"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
+	mocks "github.com/verbiscms/verbis/api/mocks/tpl"
+	"github.com/verbiscms/verbis/api/tpl/funcs/dict"
 	"html/template"
 	"os"
 	"path/filepath"
@@ -26,6 +26,32 @@ func Setup(t *testing.T) *mocks.TemplateExecutor {
 	mc.On("GetRoot").Return(filepath.Join(wd, "testdata"))
 
 	return m
+}
+
+func TestNamespace_Partial_ExecuteError(t *testing.T) {
+	m := &mocks.TemplateExecutor{}
+	mc := &mocks.TemplateConfig{}
+
+	wd, err := os.Getwd()
+	assert.NoError(t, err)
+
+	m.On("Config").Return(mc)
+	mc.On("GetRoot").Return(wd)
+
+	orig := newTpl
+	defer func() { newTpl = orig }()
+
+	newTpl = func(name string) *template.Template {
+		return template.New("name")
+	}
+
+	_, err = Partial(nil, m)("testdata/baddata.cms", nil)
+	if err == nil {
+		t.Fatal("expecting error")
+		return
+	}
+
+	assert.Contains(t, err.Error(), "incomplete or empty template")
 }
 
 func TestNamespace_Partial(t *testing.T) {
@@ -53,12 +79,6 @@ func TestNamespace_Partial(t *testing.T) {
 			false,
 			template.HTML(""),
 		},
-		//"Error Executing": {
-		//	`html/partial.cms`,
-		//	[]interface{}{make(chan int),make(chan int)},
-		//	false,
-		//	template.HTML("unable to execute partial file"),
-		//},
 		"File Mime": {
 			`images/gopher.png`,
 			nil,
