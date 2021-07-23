@@ -8,7 +8,7 @@ import (
 	"fmt"
 	sm "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
-	"github.com/mouuff/go-rocket-update/pkg/updater"
+	rocket "github.com/mouuff/go-rocket-update/pkg/updater"
 	"github.com/stretchr/testify/assert"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/version"
@@ -82,7 +82,7 @@ func TestSys_LatestVersion(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			s := Sys{updater: &updater.Updater{Provider: test.input}}
+			s := Sys{client: &rocket.Updater{Provider: test.input}}
 			if test.panics {
 				assert.Panics(t, func() {
 					s.LatestVersion()
@@ -115,13 +115,14 @@ func TestSys_HasUpdate(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			s := Sys{
 				version: test.input,
-				updater: &updater.Updater{Provider: &mockProvider{}},
+				client:  &rocket.Updater{Provider: &mockProvider{}},
 			}
 			assert.Equal(t, test.want, s.HasUpdate())
 		})
 	}
 }
 
+//
 //func TestSys_Update(t *testing.T) {
 //	logger.SetOutput(ioutil.Discard)
 //
@@ -129,10 +130,8 @@ func TestSys_HasUpdate(t *testing.T) {
 //		mock func(m *database.Driver)
 //		want interface{}
 //	}{
-//		"Success": {
-//			func(m *database.Driver) {
-//
-//			},
+//		"Up To Date": {
+//			nil,
 //			"Error updating Verbis with status code",
 //		},
 //	}
@@ -144,8 +143,8 @@ func TestSys_HasUpdate(t *testing.T) {
 //				test.mock(d)
 //			}
 //			s := Sys{
-//				Driver:  d,
-//				updater: &updater.Updater{Provider: &mockProvider{}},
+//				Driver: d,
+//				client: &rocket.Updater{Provider: &mockProvider{}},
 //			}
 //			got, err := s.Update(false)
 //			if err != nil {
