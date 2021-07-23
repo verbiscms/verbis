@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-
 package api
 
 var (
@@ -31,22 +29,18 @@ var App = struct {
 }
 
 const (
-	// APIRoute is the URL route for incoming and outgoing
-	// requests.
-	APIRoute = "/api/v1"
-
-	// Repo is the URL for the hosted github Verbis
+	// HTTPAPIRoute is the URI route for incoming and
+	// outgoing requests via the API.
+	HTTPAPIRoute = "/api/v1"
+	// Repo is the URI for the hosted github Verbis
 	// repository.
-	Repo = "https://github.com/ainsleyclark/verbis"
-
+	Repo = "https://github.com/verbiscms/verbis"
 	// AssetsChannel is the maximum amount of concurrent
 	// requests for serving assets on the frontend.
 	AssetsChannel = 10
-
 	// UploadChannel is the maximum amount of concurrent
 	// requests for serving uploads on the frontend.
 	UploadChannel = 10
-
 	// ServerChannel is the maximum amount of concurrent
 	// requests for serving posts on the frontend.
 	ServerChannel = 50

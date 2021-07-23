@@ -21,7 +21,7 @@ var (
 		Short: "Install will run the doctor command and then run database schema and insert any data dependant on Verbis.",
 		Long: `This command will install first run Verbis doctor to see if the database,
 exists and is passable. Install will then run the migration to insert into the schema.
-Seeds are also run, inserting options and any necessary configuration into the 
+Seeds are also run, inserting options and any necessary configuration into the
 database.`,
 		Run: Install,
 	}
@@ -85,7 +85,7 @@ func setURL() string {
 	fmt.Println("If in development, be sure to append a port (for example: http://127.0.0.1:8080):")
 
 	prompt := promptui.Prompt{
-		Label: "URL",
+		Label: "URI",
 		Validate: func(input string) error {
 			if input == "" {
 				return fmt.Errorf("enter url")

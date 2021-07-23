@@ -21,7 +21,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"os"
-	"path/filepath"
 	"testing"
 )
 
@@ -29,9 +28,7 @@ import (
 // testing.
 type EventTestSuite struct {
 	test.HandlerSuite
-	logger   *bytes.Buffer
-	apiPath  string
-	testPath string
+	Logger *bytes.Buffer
 }
 
 // Assert testing has begun.
@@ -39,20 +36,10 @@ func TestEvent(t *testing.T) {
 	suite.Run(t, &EventTestSuite{})
 }
 
-// The default test path.
-const TestPath = "/test/testdata/mail"
-
-func (t *EventTestSuite) SetupSuite() {
-	wd, err := os.Getwd()
-	t.NoError(err)
-	t.apiPath = filepath.Dir(wd)
-	t.testPath = t.apiPath + TestPath
-}
-
 func (t *EventTestSuite) Setup(withErr bool) *deps.Deps {
 	buf := &bytes.Buffer{}
 	logger.SetOutput(buf)
-	t.logger = buf
+	t.Logger = buf
 
 	mt := &tpl.TemplateHandler{}
 	m := &tpl.TemplateExecutor{}
@@ -307,7 +294,7 @@ func (t *EventTestSuite) Test_MailSend() {
 			test.mock(mockFs)
 			test.input.Deps.FS = &verbisfs.FileSystem{Web: mockFs}
 			test.input.Send("data", []string{"hello@verbiscms.com"}, nil)
-			t.Contains(t.logger.String(), test.want)
+			t.Contains(t.Logger.String(), test.want)
 		})
 	}
 }

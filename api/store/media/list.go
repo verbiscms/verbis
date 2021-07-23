@@ -6,10 +6,10 @@ package media
 
 import (
 	"database/sql"
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 )
 
 // List
@@ -20,8 +20,7 @@ import (
 func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 	const op = "MediaStore.List"
 
-	q := s.Builder().
-		From(s.Schema() + TableName)
+	q := s.selectStmt()
 
 	// Apply filters.
 	err := database.FilterRows(s.Driver, q, meta.Filters, TableName)
@@ -30,7 +29,9 @@ func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 	}
 
 	// Apply order.
-	q.OrderBy(meta.OrderBy, meta.OrderDirection)
+	if meta.OrderBy != "" {
+		q.OrderBy(meta.OrderBy, meta.OrderDirection)
+	}
 	countQ := q.Count()
 
 	// Apply pagination.
@@ -52,6 +53,15 @@ func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 	err = s.DB().QueryRow(countQ).Scan(&total)
 	if err != nil {
 		return nil, -1, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the total number of media items", Operation: op, Err: err}
+	}
+
+	// Obtain the sizes
+	for index, item := range media {
+		sizes, err := s.sizes.Find(item.Id)
+		if err != nil {
+			return nil, 0, err
+		}
+		media[index].Sizes = sizes
 	}
 
 	return media, total, nil

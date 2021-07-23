@@ -7,9 +7,9 @@ package forms
 import (
 	"fmt"
 	"github.com/ainsleyclark/go-mail"
+	"github.com/ainsleyclark/verbis/api/common/encryption"
+	"github.com/ainsleyclark/verbis/api/common/mime"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/encryption"
-	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/gabriel-vasile/mimetype"
 	"io"
 	"io/ioutil"

@@ -8,12 +8,11 @@ import (
 	"bytes"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
-	service "github.com/ainsleyclark/verbis/api/mocks/services/media"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
+	storage "github.com/ainsleyclark/verbis/api/mocks/services/storage"
 	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"io"
 	"mime/multipart"
@@ -29,7 +28,7 @@ type MediaTestSuite struct {
 	test.HandlerSuite
 }
 
-// TestCategories
+// TestMedia
 //
 // Assert testing has begun.
 func TestMedia(t *testing.T) {
@@ -42,19 +41,16 @@ func TestMedia(t *testing.T) {
 //
 // A helper to obtain a mock media handler
 // for testing.
-func (t *MediaTestSuite) Setup(mf func(m *mocks.Repository)) *Media {
-	m := &mocks.Repository{}
-	ms := &service.Library{}
-	ms.On("Delete", mock.Anything)
+func (t *MediaTestSuite) Setup(mf func(m *mocks.Library)) *Media {
+	ms := &mocks.Library{}
 	if mf != nil {
-		mf(m)
+		mf(ms)
 	}
-	d := &deps.Deps{
-		Store: &store.Repository{
-			Media: m,
-		},
-	}
-	media := New(d)
+	media := New(&deps.Deps{
+		Options: &domain.Options{},
+		Storage: &storage.Provider{},
+		Store:   &store.Repository{},
+	})
 	media.service = ms
 	return media
 }
@@ -63,19 +59,17 @@ func (t *MediaTestSuite) Setup(mf func(m *mocks.Repository)) *Media {
 //
 // A helper to obtain a mock media handler
 // and uploads for testing.
-func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(m *mocks.Repository, s *service.Library, u *users.Repository, mfh []multipart.FileHeader)) *Media {
-	m := &mocks.Repository{}
-	ms := &service.Library{}
+func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(s *mocks.Library, u *users.Repository, mfh []multipart.FileHeader)) *Media {
+	m := &mocks.Library{}
 	mu := &users.Repository{}
 	if mf != nil {
-		mf(m, ms, mu, files)
+		mf(m, mu, files)
 	}
 	return &Media{
-		service: ms,
+		service: m,
 		Deps: &deps.Deps{
 			Store: &store.Repository{
-				Media: m,
-				User:  mu,
+				User: mu,
 			},
 		},
 	}
@@ -87,8 +81,7 @@ func (t *MediaTestSuite) SetupUpload(files []multipart.FileHeader, mf func(m *mo
 func (t *MediaTestSuite) ImagePath() string {
 	wd, err := os.Getwd()
 	t.NoError(err)
-	apiPath := filepath.Join(filepath.Dir(wd), "../../..")
-	return apiPath + "/test/testdata/spa/images/gopher.svg"
+	return filepath.Join(wd, "testdata", "gopher.svg")
 }
 
 var (
@@ -102,12 +95,10 @@ var (
 	mediaItems = domain.MediaItems{
 		{
 			Id:    1,
-			Url:   "/uploads/1",
 			Title: "title",
 		},
 		{
 			Id:    1,
-			Url:   "/uploads/1",
 			Title: "title",
 		},
 	}

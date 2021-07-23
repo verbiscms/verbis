@@ -6,12 +6,10 @@ package test
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/stretchr/testify/suite"
 	"image"
 	"image/color"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -21,8 +19,6 @@ import (
 // library testing.
 type MediaSuite struct {
 	suite.Suite
-	ApiPath   string
-	MediaPath string
 }
 
 // MediaTestPath is the default media test path.
@@ -30,15 +26,6 @@ const MediaTestPath = "/test/testdata/media"
 
 func NewMediaSuite() MediaSuite {
 	return MediaSuite{}
-}
-
-// SetupSuite reassigns API path for testing.
-func (t *MediaSuite) SetupSuite() {
-	logger.SetOutput(ioutil.Discard)
-	wd, err := os.Getwd()
-	t.NoError(err)
-	t.ApiPath = filepath.Join(filepath.Dir(wd), "../")
-	t.MediaPath = t.ApiPath + MediaTestPath
 }
 
 // DummyFile creates a dummy file for testing with the
@@ -56,29 +43,50 @@ func (t *MediaSuite) DummyFile(path string) func() {
 	}
 }
 
-// File converts a file path into a *multipart.FileHeader.
-func (t *MediaSuite) File(path string) *multipart.FileHeader {
+// ToMultiPartE converts a file path into a
+// *multipart.FileHeader.
+func (t *MediaSuite) ToMultiPartE(path string) (*multipart.FileHeader, error) {
 	file, err := os.Open(path)
-	t.NoError(err)
+	if err != nil {
+		return nil, err
+	}
 	defer file.Close()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
 	part, err := writer.CreateFormFile("file", filepath.Base(path))
-	t.NoError(err)
+	if err != nil {
+		return nil, err
+	}
+
 	_, err = io.Copy(part, file)
-	t.NoError(err)
+	if err != nil {
+		return nil, err
+	}
 
 	err = writer.Close()
-	t.NoError(err)
+	if err != nil {
+		return nil, err
+	}
 
 	mr := multipart.NewReader(body, writer.Boundary())
-	mt, err := mr.ReadForm(99999)
-	t.NoError(err)
+	mt, err := mr.ReadForm(99999) //nolint
+	if err != nil {
+		return nil, err
+	}
+
 	ft := mt.File["file"][0]
 
-	return ft
+	return ft, nil
+}
+
+// ToMultiPart returns a multipart.FilHeader with
+// test checks.
+func (t *MediaSuite) ToMultiPart(path string) *multipart.FileHeader {
+	header, err := t.ToMultiPartE(path)
+	t.NoError(err)
+	return header
 }
 
 // Image returns a new image.Image for testing.
@@ -93,7 +101,7 @@ func (t *MediaSuite) Image() image.Image {
 
 	img := image.NewRGBA(image.Rectangle{Min: upLeft, Max: lowRight})
 
-	// Colors are defined by Red, Green, Blue, Alpha uint8 values.
+	// Colours are defined by Red, Green, Blue, Alpha uint8 values.
 	cyan := color.RGBA{R: 100, G: 200, B: 200, A: 0xff}
 
 	// Set color for each pixel.

@@ -20,11 +20,6 @@ import (
 	"testing"
 )
 
-const (
-	// The SPA test dir.
-	TestPath = "/test/testdata/spa"
-)
-
 // SPATestSuite defines the helper used for SPA
 // testing.
 type SPATestSuite struct {
@@ -45,13 +40,11 @@ func TestSPA(t *testing.T) {
 // A helper to obtain a SPA handler for testing.
 func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gin.Context), ctx *gin.Context) *SPA {
 	logger.SetOutput(ioutil.Discard)
-
 	m := &mocks.Publisher{}
 	mfs := &mockFS.FS{}
 	if mf != nil {
 		mf(m, mfs, ctx)
 	}
-
 	return &SPA{
 		Deps: &deps.Deps{
 			FS: &verbisfs.FileSystem{

@@ -12,11 +12,9 @@ import (
 // in the `tags` field type.
 type tags []string
 
-// tags
-//
-// Uses the Array() function on the domain.FieldValue type to split
-// the value by a comma delimiter, and loops over the values to
-// build up a tags array to be sent back.
+// tags Uses the Array() function on the domain.FieldValue type to
+// split the value by a comma delimiter, and loops over the values
+// to build up a tags array to be sent back.
 func (v *Value) tags(value domain.FieldValue) interface{} {
 	var t tags
 	for _, v := range value.Slice() {

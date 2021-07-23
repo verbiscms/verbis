@@ -5,6 +5,13 @@ build:
 	go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=false' -X 'github.com/ainsleyclark/verbis/api/version.Version=$(VER)'"
 .PHONY: build
 
+# Set Verbis up when cloned.
+setup:
+	go mod tidy
+	cd admin && npm install
+	cd admin && npm run build
+.PHONY: setup
+
 # Builds and serves
 serve:
 	$(MAKE) build && ./verbisexec start
@@ -39,6 +46,11 @@ format:
 test:
 	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
 .PHONY: test
+
+# Test with -v
+test-v:
+	go clean -testcache && go test -race -v $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
+.PHONY: test-v
 
 # Run all the tests and opens the coverage report
 cover: test

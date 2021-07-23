@@ -203,10 +203,10 @@ func (t *APITestSuite) TestRespond() {
 
 func (t *APITestSuite) TestAbortJSON() {
 	tt := map[string]struct {
-		status     int
-		message    string
-		data       interface{}
-		want       RespondJSON
+		status  int
+		message string
+		data    interface{}
+		want    RespondJSON
 	}{
 		"With Data": {
 			gohttp.StatusOK,
@@ -216,7 +216,7 @@ func (t *APITestSuite) TestAbortJSON() {
 				Status:  gohttp.StatusOK,
 				Error:   false,
 				Message: "message",
-				Data:   map[string]interface{}{"test": "test"},
+				Data:    map[string]interface{}{"test": "test"},
 			},
 		},
 		"Nil Data": {

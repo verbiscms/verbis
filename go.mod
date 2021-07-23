@@ -25,6 +25,7 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/websocket v1.4.2
+	github.com/graymeta/stow v0.2.7
 	github.com/hashicorp/go-version v1.3.0
 	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jmoiron/sqlx v1.3.4

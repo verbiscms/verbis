@@ -5,9 +5,9 @@
 package forms
 
 import (
+	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	validation "github.com/ainsleyclark/verbis/api/helpers/vaidation"
 	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
 	"github.com/gin-gonic/gin"
@@ -43,7 +43,7 @@ func (t *FormsTestSuite) TestForms_Send() {
 			"/forms/" + uniq,
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "name", Message: "Name is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "name", Message: "SizeName is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
 			formBadValidation,

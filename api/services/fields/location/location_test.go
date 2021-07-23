@@ -7,10 +7,8 @@ package location
 import (
 	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 	"io/ioutil"
 	"os"
@@ -22,66 +20,68 @@ import (
 // field testing.
 type LocationTestSuite struct {
 	suite.Suite
-	Path string
+	TestPath          string
+	OriginalFieldPath string
 }
 
-// TestLocation
-//
-// Assert testing has begun.
+// TestLocation asserts testing has begun.
 func TestLocation(t *testing.T) {
 	suite.Run(t, new(LocationTestSuite))
 }
 
-// SetupSuite
-//
-// Discard the logger on setup and init caching.
+// SetupSuite Discard the logger on setup and
+// init caching.
 func (t *LocationTestSuite) SetupSuite() {
 	cache.Init()
 
-	logger.Init(&environment.Env{})
 	logger.SetOutput(ioutil.Discard)
 
 	wd, err := os.Getwd()
 	t.NoError(err)
-	t.Path = filepath.Join(filepath.Dir(wd)+"./../..") + "/test/testdata/fields"
+	t.OriginalFieldPath = FieldPath
+	FieldPath = ""
+
+	t.TestPath = filepath.Join(wd, "testdata")
 }
 
-func TestNewLocation(t *testing.T) {
-	assert.Equal(t, &Location{JSONPath: "test/fields"}, NewLocation("test"))
+// TearDownSuite reassigns field file after the
+// tests.
+func (t *LocationTestSuite) TearDownSuite() {
+	FieldPath = t.OriginalFieldPath
 }
 
 func (t *LocationTestSuite) TestLocation_GetLayout() {
 	tt := map[string]struct {
 		cacheable bool
-		jsonPath  string
+		file      string
 		want      interface{}
 	}{
 		"Bad Path": {
-			cacheable: false,
-			jsonPath:  "wrongval",
-			want:      domain.FieldGroups{},
+			false,
+			"wrongval",
+			domain.FieldGroups{},
 		},
 		"Not Cached": {
-			cacheable: false,
-			jsonPath:  "/test-get-layout",
-			want:      domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
+			false,
+			"location.json",
+			domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
 		},
 		"Cacheable Nil": {
-			cacheable: true,
-			jsonPath:  "/test-get-layout",
-			want:      domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
+			true,
+			"location.json",
+			domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
 		},
 		"Cacheable": {
-			cacheable: true,
-			jsonPath:  "/test-get-layout",
-			want:      domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
+			true,
+			"location.json",
+			domain.FieldGroups{{Title: "title", Fields: domain.Fields{{Name: "test"}}}},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			l := &Location{JSONPath: t.Path + test.jsonPath}
-			t.Equal(test.want, l.Layout(domain.PostDatum{}, test.cacheable))
+			l := &Location{}
+			t.Equal(test.want, l.Layout(filepath.Join(t.TestPath, test.file), domain.PostDatum{}, test.cacheable))
 		})
 	}
 }
@@ -240,60 +240,55 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 	}
 }
 
-func (t *LocationTestSuite) TestLocation_fieldGroupWalker() {
-	testPath := "/test-field-groups/"
-
+func (t *LocationTestSuite) TestLocation_FieldGroupWalker() {
 	var fg domain.FieldGroups
 
 	id, err := uuid.Parse("6a4d7442-1020-490f-a3e2-436f9135bc24")
 	t.NoError(err)
 
-	// For bad path
-	err = os.Chmod(t.Path+testPath+"open-error/location.json", 000)
+	// For bad file
+	openErrorPath := filepath.Join(t.TestPath, "open-error.json")
+	err = os.Chmod(openErrorPath, 000)
 	t.NoError(err)
 	defer func() {
-		err = os.Chmod(t.Path+testPath+"open-error/location.json", os.ModePerm)
+		err = os.Chmod(openErrorPath, os.ModePerm)
 		t.NoError(err)
 	}()
 
 	tt := map[string]struct {
-		path string
+		file string
 		want interface{}
 	}{
 		"Success": {
-			path: testPath + "/success",
-			want: domain.FieldGroups{{UUID: id, Title: "Title", Fields: domain.Fields{{Name: "test"}}}, {UUID: id, Title: "Title", Fields: domain.Fields{{Name: "test"}}}},
+			"success.json",
+			domain.FieldGroups{{UUID: id, Title: "Title", Fields: domain.Fields{{Name: "test"}}}},
 		},
-		"Bad Path": {
-			path: testPath + "/wrongval",
-			want: "no such file or directory",
+		"Bad TestPath": {
+			"wrongval",
+			"no such file or directory",
 		},
 		"Unmarshal Error": {
-			path: testPath + "/unmarshal",
-			want: fg,
+			"unmarshal.json",
+			fg,
 		},
 		"Open Error": {
-			path: testPath + "/open-error",
-			want: fg,
+			"open-error.json",
+			fg,
 		},
 		"Empty Fields": {
-			path: testPath + "/empty",
-			want: fg,
+			"empty.json",
+			fg,
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			l := &Location{
-				JSONPath: t.Path + test.path,
-			}
-			got, err := l.fieldGroupWalker()
-
+			l := &Location{}
+			got, err := l.fieldGroupWalker(filepath.Join(t.TestPath, test.file))
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return
 			}
-
 			t.Equal(test.want, got)
 		})
 	}

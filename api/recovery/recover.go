@@ -96,9 +96,6 @@ func (h *Handler) Recover(cfg Config) []byte {
 	return tmpl
 }
 
-// HTTPRecovery
-//
-//
 func (h *Handler) HTTPRecovery() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		defer func() {

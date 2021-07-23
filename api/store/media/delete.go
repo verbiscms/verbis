@@ -13,12 +13,13 @@ import (
 
 // Delete
 //
-// Returns nil if the category was successfully deleted.
+// Returns nil if the media item was successfully deleted.
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if the category was not found.
 func (s *Store) Delete(id int) error {
 	const op = "MediaStore.Delete"
 
+	// Delete from main table
 	q := s.Builder().
 		DeleteFrom(s.Schema()+TableName).
 		Where("id", "=", id)
@@ -28,6 +29,12 @@ func (s *Store) Delete(id int) error {
 		return &errors.Error{Code: errors.NOTFOUND, Message: fmt.Sprintf("No media item exists with the ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
+	}
+
+	// Delete from sizes table
+	err = s.sizes.Delete(id)
+	if err != nil {
+		return err
 	}
 
 	return nil

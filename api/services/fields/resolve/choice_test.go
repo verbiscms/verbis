@@ -52,7 +52,7 @@ func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
 			field: domain.PostField{OriginalValue: "test", Key: "", Type: "button_group"},
 			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "button_group", Value: "test"},
 		},
-		"Button Group Key": {
+		"Button Group SizeKey": {
 			field: domain.PostField{OriginalValue: "test", Key: "", Type: "button_group"},
 			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "button_group", Value: "test"},
 		},
@@ -67,7 +67,7 @@ func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
 			field: domain.PostField{OriginalValue: "test", Key: "", Type: "radio"},
 			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "radio", Value: "test"},
 		},
-		"Radio Key": {
+		"Radio SizeKey": {
 			field: domain.PostField{OriginalValue: "test", Key: "", Type: "radio"},
 			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "radio", Value: "test"},
 		},
@@ -82,7 +82,7 @@ func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
 			field: domain.PostField{OriginalValue: "test", Key: "", Type: "select"},
 			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "select", Value: "test"},
 		},
-		"Select Key": {
+		"Select SizeKey": {
 			field: domain.PostField{OriginalValue: "test", Key: "", Type: "select"},
 			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "select", Value: "test"},
 		},

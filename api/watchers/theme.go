@@ -150,7 +150,7 @@ OuterLoop:
 //		for {
 //			select {
 //			case event := <-b.watcher.Event:
-//				name := event.Name()
+//				name := event.SizeName()
 //				if isExcludedDir(name) || isExcludedFile(name) || name == b.path {
 //					continue OuterLoop
 //				}

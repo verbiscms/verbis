@@ -5,9 +5,9 @@
 package spa
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/mime"
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/gin-gonic/gin"

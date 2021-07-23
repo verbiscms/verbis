@@ -1,6 +1,0 @@
-{"client_ip":"127.0.0.1","data_length":10,"latency_time":3880302,"level":"info","msg":"","request_method":"GET","request_uri":"/api/v1/posts","status_code":200,"time":"2020-09-24 19:56:04","user_agent":"PostmanRuntime/7.26.5"}
-{"client_ip":"127.0.0.1","data_length":10,"latency_time":2094181,"level":"info","msg":"","request_method":"GET","request_uri":"/api/v1/posts","status_code":200,"time":"2020-09-24 19:56:06","user_agent":"PostmanRuntime/7.26.5"}
-{"client_ip":"127.0.0.1","data_length":10,"latency_time":1718331,"level":"info","msg":"","request_method":"GET","request_uri":"/api/v1/posts","status_code":200,"time":"2020-09-24 19:56:17","user_agent":"PostmanRuntime/7.26.5"}
-{"client_ip":"127.0.0.1","data_length":10,"latency_time":1391773,"level":"info","msg":"","request_method":"GET","request_uri":"/api/v1/users","status_code":200,"time":"2020-09-24 19:56:24","user_agent":"PostmanRuntime/7.26.5"}
-{"client_ip":"127.0.0.1","data_length":10,"latency_time":3381599,"level":"info","msg":"","request_method":"GET","request_uri":"/api/v1/media","status_code":200,"time":"2020-09-24 19:59:14","user_agent":"PostmanRuntime/7.26.5"}
-{"client_ip":"127.0.0.1","data_length":10,"latency_time":1824537,"level":"info","msg":"","request_method":"GET","request_uri":"/api/v1/posts","status_code":200,"time":"2020-09-24 19:59:17","user_agent":"PostmanRuntime/7.26.5"}

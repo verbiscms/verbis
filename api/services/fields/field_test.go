@@ -56,7 +56,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 
 			got := s.GetField(test.key, test.args...)
 			if test.err {
-				t.Contains(t.logWriter.String(), test.want)
+				t.Contains(t.LogWriter.String(), test.want)
 				t.Reset()
 				return
 			}
@@ -113,7 +113,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 
 			got := s.GetFieldObject(test.key, test.args...)
 			if test.err {
-				t.Contains(t.logWriter.String(), test.want)
+				t.Contains(t.LogWriter.String(), test.want)
 				t.Reset()
 				return
 			}

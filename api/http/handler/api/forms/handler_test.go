@@ -7,10 +7,12 @@ package forms
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
 	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
 	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"io/ioutil"
 	"testing"
 )
 
@@ -43,6 +45,7 @@ func (t *FormsTestSuite) Setup(mf func(m *mocks.Repository)) *Forms {
 			Forms: m,
 		},
 	}
+	logger.SetOutput(ioutil.Discard)
 	return New(d)
 }
 

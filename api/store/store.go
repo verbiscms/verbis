@@ -5,15 +5,14 @@
 package store
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
 	"github.com/ainsleyclark/verbis/api/services/theme"
 	"github.com/ainsleyclark/verbis/api/store/auth"
 	"github.com/ainsleyclark/verbis/api/store/categories"
 	storeConfig "github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/fields"
+	"github.com/ainsleyclark/verbis/api/store/files"
 	"github.com/ainsleyclark/verbis/api/store/forms"
 	"github.com/ainsleyclark/verbis/api/store/media"
 	"github.com/ainsleyclark/verbis/api/store/options"
@@ -21,7 +20,6 @@ import (
 	"github.com/ainsleyclark/verbis/api/store/redirects"
 	"github.com/ainsleyclark/verbis/api/store/roles"
 	"github.com/ainsleyclark/verbis/api/store/users"
-	"os"
 )
 
 // Repository defines all of the repositories used
@@ -30,6 +28,7 @@ type Repository struct {
 	Auth       auth.Repository
 	Categories categories.Repository
 	Fields     fields.Repository
+	Files      files.Repository
 	Forms      forms.Repository
 	Media      media.Repository
 	Options    options.Repository
@@ -39,50 +38,27 @@ type Repository struct {
 	User       users.Repository
 }
 
-// TODO Change!
-// Create a new database instance, connect
+// New creates a new database instance, connect
 // to database.
-func New(db database.Driver, running bool) (*Repository, *domain.ThemeConfig, error) {
+// TODO Change!
+func New(db database.Driver, running bool) (*Repository, error) {
 	cfg := &storeConfig.Config{
 		Driver:       db,
-		Options:      nil,
 		Paths:        paths.Get(),
 		Owner:        nil,
 		ThemeService: theme.New(),
-		Running:      false,
+		Running:      running,
 	}
 
 	user := users.New(cfg)
-	var themeConfig *domain.ThemeConfig
-
-	if running {
-		optsStore := options.New(cfg)
-
-		opts := optsStore.Struct()
-		cfg.Options = &opts
-
-		activeTheme, err := optsStore.GetTheme()
-		if err != nil {
-			return nil, nil, err
-		}
-
-		// TODO, some sanity check here
-		themePath := cfg.Paths.Themes + string(os.PathSeparator) + activeTheme
-
-		themeConfig = config.Init(themePath)
-		cfg.Theme = themeConfig
-		cfg.ThemePath = themePath
-
-		cfg.ThemeService = theme.New()
-
-		owner := user.Owner()
-		cfg.Owner = &owner
-	}
+	owner := user.Owner()
+	cfg.Owner = &owner
 
 	return &Repository{
 		Auth:       auth.New(cfg),
 		Categories: categories.New(cfg),
 		Fields:     fields.New(cfg),
+		Files:      files.New(cfg),
 		Forms:      forms.New(cfg),
 		Media:      media.New(cfg),
 		Options:    options.New(cfg),
@@ -90,5 +66,5 @@ func New(db database.Driver, running bool) (*Repository, *domain.ThemeConfig, er
 		Redirects:  redirects.New(cfg),
 		Roles:      roles.New(cfg),
 		User:       user,
-	}, themeConfig, nil
+	}, nil
 }

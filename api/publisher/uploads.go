@@ -22,23 +22,24 @@ func (r *publish) Upload(g *gin.Context, webp bool) (*[]byte, domain.Mime, error
 		<-UploadChan
 	}()
 
-	url := g.Request.URL.Path
-
 	// Set cache headers
 	r.cacher.Cache(g)
 
-	media, path, err := r.Store.Media.FindByURL(url)
-	if err != nil {
-		return nil, "", err
+	var (
+		bytes []byte
+		file  domain.File
+		err   error
+	)
+
+	path := g.Request.URL.Path
+	if webp && r.Options.MediaServeWebP && r.WebP.Accepts(g) {
+		bytes, file, err = r.Storage.Find(path + domain.WebPExtension)
+		if err == nil {
+			return &bytes, file.Mime, nil
+		}
 	}
 
-	acceptsWebP := r.WebP.Accepts(g)
-	if !webp {
-		acceptsWebP = false
-	}
-
-	// Get the data & mime type from the media store
-	file, mimeType, err := r.media.Serve(media, path, acceptsWebP)
+	bytes, file, err = r.Storage.Find(path)
 	if err != nil {
 		return nil, "", err
 	}
@@ -49,5 +50,5 @@ func (r *publish) Upload(g *gin.Context, webp bool) (*[]byte, domain.Mime, error
 	//	return mimeType, &file, nil
 	//}
 
-	return &file, mimeType, nil
+	return &bytes, file.Mime, nil
 }

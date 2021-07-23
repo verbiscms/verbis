@@ -101,7 +101,7 @@ type Categories struct {
 // {{ $result := categories (dict "limit" 10) }}
 // {{ with $result.Categories }}
 //     {{ range $category := . }}
-//         <h2>{{ $category.Name }}</h2>
+//         <h2>{{ $category.SizeName }}</h2>
 //     {{ end }}
 //     {{ else }}
 //         <h4>No categories found</h4>

@@ -19,7 +19,7 @@ import (
 
 // Finder defines the method for obtaining field layouts.
 type Finder interface {
-	Layout(post domain.PostDatum, cacheable bool) domain.FieldGroups
+	Layout(themePath string, post domain.PostDatum, cacheable bool) domain.FieldGroups
 }
 
 // Location defines
@@ -27,25 +27,19 @@ type Location struct {
 	// Groups defines the current field groups that
 	// are saved to disk in storage.
 	Groups domain.FieldGroups
-	// jsonPath defines where JSON files containing
-	// domain.FieldGroups are kept
-	JSONPath string
 }
 
-// NewLocation - Construct
-func NewLocation(path string) *Location {
-	return &Location{
-		JSONPath: path + "/fields",
-	}
-}
+// FieldPath is where the JSON files reside within the
+// theme
+var FieldPath = "fields"
 
-// GetLayout
+// Layout
 //
 // Obtains layouts specific for the arguments passed. If
 // caching allows and the domain.FieldGroups have
 // been cached, it will return the cached
 // version
-func (l *Location) Layout(post domain.PostDatum, cacheable bool) domain.FieldGroups {
+func (l *Location) Layout(themePath string, post domain.PostDatum, cacheable bool) domain.FieldGroups {
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
 	var found bool
@@ -56,7 +50,7 @@ func (l *Location) Layout(post domain.PostDatum, cacheable bool) domain.FieldGro
 		}
 	}
 
-	fg, err := l.fieldGroupWalker()
+	fg, err := l.fieldGroupWalker(filepath.Join(themePath, FieldPath))
 	if err != nil {
 		logger.WithError(err).Error()
 	}
@@ -73,10 +67,8 @@ func (l *Location) Layout(post domain.PostDatum, cacheable bool) domain.FieldGro
 	return groups
 }
 
-// groupResolver
-//
-// Loops over all of the locations within the config json file
-// that is defined. Compares the location sets with with
+// groupResolver oops over all of the locations within the config
+// json file that is defined. Compares the location sets with
 // properties of the post, user and category passed.
 // Produces an array of field groups that can be
 // returned for the post.
@@ -139,26 +131,23 @@ func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups { // 
 	return fg
 }
 
-// FieldGroupWalker
-//
-// This function will loop over all of the json files that have been
+// fieldGroupWalker will loop over all of the json files that have been
 // stored in /storage/fields and append them to the array to be
 // returned.
-//
-// Returns errors.INTERNAL if the path file not be read or be unmarshalled
-func (l *Location) fieldGroupWalker() (domain.FieldGroups, error) {
-	const op = "Fields.GetFieldGroups"
+// Returns errors.INTERNAL if the file file not be read or be unmarshalled
+func (l *Location) fieldGroupWalker(path string) (domain.FieldGroups, error) {
+	const op = "Fields.FieldGroupWalker"
 
 	var fg domain.FieldGroups
-	err := filepath.Walk(l.JSONPath, func(path string, info os.FileInfo, err error) error {
+	err := filepath.Walk(path, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
-			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No file or directory with the path: %s", path), Operation: op, Err: err}
+			return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No file or directory with the file: %s", path), Operation: op, Err: err}
 		}
 
 		if filepath.Ext(info.Name()) == ".json" {
 			file, err := ioutil.ReadFile(path)
 			if err != nil {
-				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field file with the path: %s", path), Operation: op, Err: err}).Error()
+				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read field file with the file: %s", path), Operation: op, Err: err}).Error()
 				return nil
 			}
 
@@ -170,7 +159,7 @@ func (l *Location) fieldGroupWalker() (domain.FieldGroups, error) {
 			}
 
 			if fields.Fields == nil {
-				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No fields exist with the path: %s", path), Operation: op, Err: fmt.Errorf("layout does not contain any fields")}).Error()
+				logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("No fields exist with the file: %s", path), Operation: op, Err: fmt.Errorf("layout does not contain any fields")}).Error()
 				return nil
 			}
 
@@ -187,11 +176,9 @@ func (l *Location) fieldGroupWalker() (domain.FieldGroups, error) {
 	return fg, nil
 }
 
-// checkLocation
-//
-// Checks to see if there has been a match within the location
-// json passed, the string could be resource. page
-// template or anything defined within fields.
+// checkLocation checks to see if there has been a match within
+// the location json passed, the string could be resource,
+// page template or anything defined within fields.
 func checkLocation(check string, location domain.FieldLocation) bool {
 	var match = false
 
@@ -209,12 +196,9 @@ func checkLocation(check string, location domain.FieldLocation) bool {
 	return match
 }
 
-// checkMatch
-//
-// Checks to see if the there has been a match within
-// the location json block by using an array of booleans, if there
-// has already been a match, it will return false. Useful
-// for and location json blocks not or.
+// checkMatch Checks to see if the there has been a match within
+// the location json block by using an array of booleans, if
+// there has already been a match, it will return false.
 func checkMatch(matches []bool) bool {
 	for _, a := range matches {
 		if !a {
@@ -224,10 +208,8 @@ func checkMatch(matches []bool) bool {
 	return true
 }
 
-// hasBeenAdded
-//
-// Checks to see if there already been a match within
-// the array of field groups by comparing key and
+// hasBeenAdded Checks to see if there already been a match
+// within the array of field groups by comparing key and
 // the UUID.
 func hasBeenAdded(key string, fg domain.FieldGroups) bool {
 	for _, v := range fg {

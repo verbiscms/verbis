@@ -5,8 +5,12 @@
 package posts
 
 import (
+	"fmt"
 	"github.com/ainsleyclark/verbis/api/domain"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 )
 
 func (t *PostsTestSuite) TestStore_Format() {
@@ -83,4 +87,16 @@ func (t *PostsTestSuite) TestStore_Format() {
 			t.Equal(test.want, got)
 		})
 	}
+}
+
+func (t *PostsTestSuite) TestStore_Format_Panic() {
+	s := t.Setup(nil)
+	m := &mocks.Repository{}
+	m.On("GetTheme", mock.Anything).Return(nil, fmt.Errorf("error"))
+	s.options = m
+	assert.Panics(t.T(), func() {
+		s.format([]postsRaw{
+			{Post: postData[0].Post}, {Post: postData[1].Post},
+		}, true)
+	})
 }

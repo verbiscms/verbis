@@ -36,19 +36,18 @@ func (r *publish) SiteMap() SiteMapper {
 
 // NewRender - Construct
 func NewRender(d *deps.Deps) Publisher {
-	options := d.Store.Options.Struct()
 	return &publish{
 		d,
 		minify.New(minify.Config{
-			MinifyHTML: options.MinifyHTML,
-			MinifyCSS:  options.MinifyCSS,
-			MinifyJS:   options.MinifyJS,
-			MinifySVG:  options.MinifySVG,
-			MinifyJSON: options.MinifyJSON,
-			MinifyXML:  options.MinifyXML,
+			MinifyHTML: d.Options.MinifyHTML,
+			MinifyCSS:  d.Options.MinifyCSS,
+			MinifyJS:   d.Options.MinifyJS,
+			MinifySVG:  d.Options.MinifySVG,
+			MinifyJSON: d.Options.MinifyJSON,
+			MinifyXML:  d.Options.MinifyXML,
 		}),
-		newHeaders(options),
+		newHeaders(d.Options),
 		NewSitemap(d),
-		media.New(d.Options, d.Store.Media.Exists),
+		media.New(d.Options, d.Storage, d.Store.Media),
 	}
 }

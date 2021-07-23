@@ -7,7 +7,7 @@ package media
 import (
 	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -18,15 +18,15 @@ func (t *MediaTestSuite) TestMedia_Update() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.Repository)
+		mock    func(m *mocks.Library)
 		url     string
 	}{
 		"Success": {
-			mediaItem,
+			mediaItem.Public(),
 			http.StatusOK,
 			"Successfully updated media item with ID: 123",
 			mediaItem,
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("Update", mediaItem).Return(mediaItem, nil)
 			},
 			"/media/123",
@@ -36,7 +36,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			http.StatusBadRequest,
 			"Validation failed",
 			`{"id": "wrongid"}`,
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("Update", mediaBadValidation).Return(mediaItem, fmt.Errorf("error"))
 			},
 			"/media/123",
@@ -46,7 +46,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			http.StatusBadRequest,
 			"A valid ID is required to update the media item",
 			mediaItem,
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("Update", mediaItem).Return(mediaItem, fmt.Errorf("error"))
 			},
 			"/media/wrongid",
@@ -56,7 +56,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			http.StatusBadRequest,
 			"not found",
 			&mediaItem,
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("Update", mediaItem).Return(mediaItem, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/media/123",
@@ -66,7 +66,7 @@ func (t *MediaTestSuite) TestMedia_Update() {
 			http.StatusInternalServerError,
 			"internal",
 			mediaItem,
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("Update", mediaItem).Return(mediaItem, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/media/123",

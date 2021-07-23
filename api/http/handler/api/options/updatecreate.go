@@ -44,7 +44,5 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 		return
 	}
 
-	o.SetOptions(&vOptions)
-
 	api.Respond(ctx, http.StatusOK, "Successfully created/updated options", nil)
 }

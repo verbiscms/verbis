@@ -5,132 +5,115 @@
 package media
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/params"
+	"github.com/ainsleyclark/verbis/api/common/paths"
 	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/paths"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/services/media/image"
+	"github.com/ainsleyclark/verbis/api/services/media/resizer"
+	storage2 "github.com/ainsleyclark/verbis/api/services/storage"
 	"github.com/ainsleyclark/verbis/api/services/webp"
-	"github.com/gabriel-vasile/mimetype"
+	"github.com/ainsleyclark/verbis/api/store/media"
 	"mime/multipart"
-	"path/filepath"
 )
 
-// Library defines methods for media items to
+// Library defines methods for testMedia items to
 // save, validate and delete from the
 // local file system.
 type Library interface {
-	Upload(file *multipart.FileHeader) (domain.Media, error)
-	Serve(media domain.Media, path string, acceptWebP bool) ([]byte, domain.Mime, error)
+	// List returns a slice of media items with the total amount.
+	// Returns errors.INTERNAL if the SQL query was invalid.
+	// Returns errors.NOTFOUND if there are no media items available.
+	List(meta params.Params) (domain.MediaItems, int, error)
+	// Find returns a media item by searching with the given ID.
+	// Returns errors.INTERNAL if there was an error executing the query.
+	// Returns errors.NOTFOUND if the media item was not found by the given ID.
+	Find(id int) (domain.Media, error)
+	// Update returns an updated media item by updating title, alt,
+	// description and updated_at fields.
+	// Returns errors.CONFLICT if the validation failed.
+	// Returns errors.INTERNAL if the SQL query was invalid or the function
+	// could not obtain the newly created ID.
+	Update(m domain.Media) (domain.Media, error)
+	// Upload uploads a testMedia item to the library. Media items
+	// will be opened and saved to the local file system or
+	// bucket dependant on storage. Images are resized and
+	// saved in correspondence to the options. This
+	// function expects that validate has been
+	// called before it is run.
+	// Returns errors.INTERNAL on any eventuality the file could not be opened.
+	// Returns errors.INVALID if the mimetype could not be found.
+	Upload(file *multipart.FileHeader, userID int) (domain.Media, error)
+	// Validate accepts a multipart.FileHeader to see if the
+	// testMedia item is valid before uploading. It will check
+	// if the file is a valid mime type, if the file size
+	// is less than the size specified in the options
+	// and finally checks the image boundaries.
+	// Returns errors.INVALID any of the conditions fail.
 	Validate(file *multipart.FileHeader) error
-	Delete(item domain.Media)
+	// Delete removes the testMedia item from the database and
+	// storage system. Generated sizes and WebP images
+	// will also be removed.
+	// Returns errors.NOTFOUND if the file does not exist.
+	// Returns errors.INTERNAL if the file could not be deleted from the database.
+	// Logs errors.INTERNAL if the file could not be deleted from the storage bucket.
+	Delete(id int) error
+	// ReGenerateWebP generate's WebP deletes any WebP images
+	// associated with media items and their sizes. It
+	// returns a total amount of media items being
+	// processed in the background.
+	// Returns an errors of the media items could not be listed.
+	ReGenerateWebP() (int, error)
 }
 
-// Service
-//
-// Defines the service for uploading, validating, deleting
-// and serving rich media from the Verbis media library.
+var (
+	// ErrMimeType is returned by validate when a mimetype is
+	// not permitted.
+	ErrMimeType = errors.New("mimetype is not permitted")
+	// ErrFileTooBig is returned by validate when a file is to
+	// big to be uploaded.
+	ErrFileTooBig = errors.New("file size to big to be uploaded")
+)
+
+// Service Defines the service for uploading, validating, deleting
+// and serving rich testMedia from the Verbis testMedia library.
 type Service struct {
 	options *domain.Options
 	config  *domain.ThemeConfig
 	paths   paths.Paths
-	exists  func(fileName string) bool
 	webp    webp.Execer
+	storage storage2.Bucket
+	repo    media.Repository
+	resizer resizer.Resizer
 }
 
-// ExistsFunc is used by the uploader to determine if a
-// media item exists in the library.
-type ExistsFunc func(fileName string) bool
-
-// New
-//
-// Creates a new Service.
-func New(opts *domain.Options, fn ExistsFunc) *Service {
+// New creates a new testMedia Service.
+func New(opts *domain.Options, store storage2.Bucket, repo media.Repository) *Service {
 	p := paths.Get()
 	return &Service{
 		options: opts,
 		config:  config.Get(),
 		paths:   p,
-		exists:  fn,
 		webp:    webp.New(p.Bin + webp.Path),
+		storage: store,
+		repo:    repo,
+		resizer: &resizer.Resize{},
 	}
 }
 
-// Upload
-//
-// Satisfies the Library to upload a media item to the
-// library. Media items will be opened and saved to
-// the local file system. Images are resized and
-// saved in correspondence to the options.
-// This function expects that validate
-// has been called before it is run.
-//
-// Returns errors.INTERNAL on any eventuality the file could not be opened.
-// Returns errors.INVALID if the mimetype could not be found.
-func (s *Service) Upload(file *multipart.FileHeader) (domain.Media, error) {
-	const op = "Media.Uploader.Upload"
-
-	h, err := file.Open()
-	defer func() {
-		err = h.Close()
-		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing file with the name: " + file.Filename, Operation: op, Err: err})
-		}
-	}()
-
-	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Error opening file with the name: " + file.Filename, Operation: op, Err: err}
-	}
-
-	m, err := mimetype.DetectReader(h)
-	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INVALID, Message: "Mime type not found", Operation: op, Err: err}
-	}
-
-	_, err = h.Seek(0, 0)
-	if err != nil {
-		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking file", Operation: op, Err: err}
-	}
-
-	u := uploader{
-		File:       h,
-		Options:    s.options,
-		Config:     s.config,
-		Exists:     s.exists,
-		UploadPath: s.paths.Uploads,
-		FileName:   file.Filename,
-		Extension:  filepath.Ext(file.Filename),
-		Size:       file.Size,
-		Mime:       domain.Mime(m.String()),
-		Resizer:    &image.Resize{},
-		WebP:       s.webp,
-	}
-
-	return u.Save()
+// List satisfies the Library to list a collection of media
+// items.
+func (s *Service) List(meta params.Params) (domain.MediaItems, int, error) {
+	return s.repo.List(meta)
 }
 
-// Validate
-//
-// Satisfies the Library to see if the media item passed
-// is valid. It will check if the file is a valid
-// mime type, if the file size is less than the
-// size specified in the options and finally
-// checks the image boundaries.
-//
-// Returns errors.INVALID any of the conditions fail.
-func (s *Service) Validate(file *multipart.FileHeader) error {
-	return validate(file, s.options, s.config)
+// Find satisfies the Library to find a media item by
+// searching by ID.
+func (s *Service) Find(id int) (domain.Media, error) {
+	return s.repo.Find(id)
 }
 
-// Delete
-//
-// Satisfies the Library to remove possible media item
-// combinations from the file system, if the file
-// does not exist (user moved) it will be
-// skipped.
-//
-// Logs errors.INTERNAL if the file could not be deleted.
-func (s *Service) Delete(item domain.Media) {
-	deleteItem(item, s.paths.Uploads)
+// Update satisfies the Library to update a media item.
+func (s *Service) Update(m domain.Media) (domain.Media, error) {
+	return s.repo.Update(m)
 }

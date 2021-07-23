@@ -7,7 +7,41 @@ package resolve
 import (
 	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/ainsleyclark/verbis/api/logger"
+	"github.com/ainsleyclark/verbis/api/store"
+	"github.com/stretchr/testify/suite"
+	"io/ioutil"
+	"testing"
 )
+
+// ResolverTestSuite defines the helper used for resolver
+// field testing.
+type ResolverTestSuite struct {
+	suite.Suite
+}
+
+// TestResolver
+//
+// Assert testing has begun.
+func TestResolver(t *testing.T) {
+	suite.Run(t, new(ResolverTestSuite))
+}
+
+// SetupSuite
+//
+// Discard the logger on setup.
+func (t *ResolverTestSuite) SetupSuite() {
+	logger.SetOutput(ioutil.Discard)
+}
+
+// GetValue returns a default value.
+func (t *ResolverTestSuite) GetValue() *Value {
+	return &Value{
+		&deps.Deps{
+			Store: &store.Repository{},
+		},
+	}
+}
 
 func (t *ResolverTestSuite) Test_Field() {
 	d := &deps.Deps{}

@@ -24,6 +24,10 @@ type Formatter struct {
 	buf             *bytes.Buffer
 }
 
+// Prefix is the string written to the log before any
+// message.
+const Prefix = "[VERBIS]"
+
 // Format building log message.
 func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	if !f.Colours {
@@ -34,7 +38,7 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	f.buf = b
 	f.entry = entry
 
-	b.WriteString("[VERBIS] ")
+	b.WriteString(Prefix + " ")
 
 	f.Time()
 	f.StatusCode()
@@ -50,6 +54,7 @@ func (f *Formatter) Format(entry *logrus.Entry) ([]byte, error) {
 	str = strings.TrimSuffix(str, "|")
 	str = strings.TrimSuffix(str, "|")
 	str = strings.TrimSuffix(str, " ")
+	str = strings.ReplaceAll(str, "||", "")
 	str += "\n"
 
 	return []byte(str), nil
@@ -175,7 +180,8 @@ func (f *Formatter) Fields() {
 	}
 }
 
-// HasError determines if a verbis error has been logged.
+// HasError determines if a error.Error type has been
+// logged.
 func (f *Formatter) HasError() (interface{}, bool) {
 	e := f.entry.Data["error"]
 	if e == nil {

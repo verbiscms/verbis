@@ -6,12 +6,13 @@ package posts
 
 import (
 	"fmt"
+	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/params"
 	"github.com/ainsleyclark/verbis/api/services/fields/location"
 	"github.com/ainsleyclark/verbis/api/store/config"
 	"github.com/ainsleyclark/verbis/api/store/fields"
+	"github.com/ainsleyclark/verbis/api/store/options"
 	"github.com/ainsleyclark/verbis/api/store/posts/categories"
 	"github.com/ainsleyclark/verbis/api/store/posts/meta"
 	"github.com/ainsleyclark/verbis/api/store/users"
@@ -37,6 +38,7 @@ type Store struct {
 	categories categories.Repository
 	fields     fields.Repository
 	meta       meta.Repository
+	options    options.Repository
 	users      users.Repository
 	finder     location.Finder
 }
@@ -70,7 +72,8 @@ func New(cfg *config.Config) *Store {
 		fields:     fields.New(cfg),
 		meta:       meta.New(cfg),
 		users:      users.New(cfg),
-		finder:     location.NewLocation(cfg.ThemePath),
+		options:    options.New(cfg),
+		finder:     &location.Location{},
 	}
 }
 

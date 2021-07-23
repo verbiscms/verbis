@@ -15,20 +15,15 @@ import (
 	"testing"
 )
 
-const (
-	TestPath = "/test/testdata"
-)
-
 func Setup(t *testing.T) *mocks.TemplateExecutor {
 	wd, err := os.Getwd()
 	assert.NoError(t, err)
-	apiPath := filepath.Join(filepath.Dir(wd), "../..")
 
 	m := &mocks.TemplateExecutor{}
 	mc := &mocks.TemplateConfig{}
 
 	m.On("Config").Return(mc)
-	mc.On("GetRoot").Return(apiPath + TestPath)
+	mc.On("GetRoot").Return(filepath.Join(wd, "testdata"))
 
 	return m
 }
@@ -41,19 +36,19 @@ func TestNamespace_Partial(t *testing.T) {
 		want     interface{}
 	}{
 		"Success": {
-			`html/partial.cms`,
+			`partial.cms`,
 			nil,
 			false,
 			template.HTML(`<h1>This is a partial file.</h1>`),
 		},
 		"Wrong Path": {
-			`html/wrongpath.cms`,
+			`wrongpath.cms`,
 			nil,
 			false,
 			"no such file or directory",
 		},
 		"Bad Data": {
-			`html/partial-baddata.cms`,
+			`html/baddata.cms`,
 			nil,
 			false,
 			template.HTML(""),
@@ -71,25 +66,25 @@ func TestNamespace_Partial(t *testing.T) {
 			template.HTML(""),
 		},
 		"Dict": {
-			`html/partial-dict.cms`,
+			`dict.cms`,
 			map[string]interface{}{"Text": "cms"},
 			false,
 			template.HTML("cms"),
 		},
 		"Single Input": {
-			`html/partial-data.cms`,
+			`data.cms`,
 			"verbis",
 			false,
 			template.HTML("verbis"),
 		},
 		"Multiple Inputs": {
-			`html/partial-data.cms`,
+			`data.cms`,
 			[]interface{}{"hello", "verbis"},
 			true,
 			template.HTML("[hello verbis]"),
 		},
 		"Multiple Inputs 2": {
-			`html/partial-data.cms`,
+			`data.cms`,
 			[]interface{}{"hello", "verbis", 1, 2, 3},
 			true,
 			template.HTML("[hello verbis 1 2 3]"),

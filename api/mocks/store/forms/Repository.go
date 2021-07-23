@@ -7,7 +7,7 @@ import (
 
 	mock "github.com/stretchr/testify/mock"
 
-	params "github.com/ainsleyclark/verbis/api/helpers/params"
+	params "github.com/ainsleyclark/verbis/api/common/params"
 
 	uuid "github.com/google/uuid"
 )

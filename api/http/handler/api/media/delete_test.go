@@ -5,9 +5,8 @@
 package media
 
 import (
-	"fmt"
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -17,15 +16,14 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(u *mocks.Repository)
+		mock    func(m *mocks.Library)
 		url     string
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully deleted media item with ID: 123",
-			func(m *mocks.Repository) {
-				m.On("Find", 123).Return(mediaItem, nil)
+			func(m *mocks.Library) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/media/123",
@@ -34,7 +32,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"A valid ID is required to delete a media item",
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("Delete", 123).Return(nil)
 			},
 			"/media/wrongid",
@@ -43,18 +41,8 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"not found",
-			func(m *mocks.Repository) {
-				m.On("Find", 123).Return(mediaItem, nil)
+			func(m *mocks.Library) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
-			},
-			"/media/123",
-		},
-		"Find Error": {
-			nil,
-			http.StatusBadRequest,
-			"No media item found with the ID: 123",
-			func(m *mocks.Repository) {
-				m.On("Find", 123).Return(mediaItem, fmt.Errorf("error"))
 			},
 			"/media/123",
 		},
@@ -62,8 +50,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.Repository) {
-				m.On("Find", 123).Return(mediaItem, nil)
+			func(m *mocks.Library) {
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 			"/media/123",
@@ -72,7 +59,7 @@ func (t *MediaTestSuite) TestMedia_Delete() {
 			nil,
 			http.StatusInternalServerError,
 			"internal",
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("Find", 123).Return(mediaItem, nil)
 				m.On("Delete", 123).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},

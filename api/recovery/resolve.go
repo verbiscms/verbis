@@ -13,20 +13,19 @@ const (
 	// TplPrefix defines the prefix for template searching
 	// such as "errors-500.html".
 	TplPrefix = "error"
-	// The extension of the web error file.
+	// VerbisErrorExtension is the extension of the web
+	// error file.
 	VerbisErrorExtension = ".html"
-	// The main layout of the web error file.
+	// VerbisErrorLayout is the main layout of the web
+	// error file.
 	VerbisErrorLayout = "layouts/main"
 )
 
-// resolver
-//
-// Looks up custom error pages from the theme. It starts
-// by looking at error-`code`.extension, if the tmpl
-// does not exist it will continue to look for
-// error.extension. Finally it uses the main
+// resolver Looks up custom error pages from the theme.
+// It starts by looking at error-`code`.extension, if
+// the tmpl does not exist it will continue to look
+// for error.extension. Finally it uses the main
 // verbis error pages.
-//
 // Returns the template path, the template execute and
 // if the file is a custom template.
 func (r *Recover) resolveErrorPage(custom bool) (string, tpl.TemplateExecutor, bool) {
@@ -58,10 +57,8 @@ func (r *Recover) resolveErrorPage(custom bool) (string, tpl.TemplateExecutor, b
 	return path, exec, false
 }
 
-// verbisErrorResolver
-//
-// Returns a new tpl.TemplateExecutor when no other custom
-// error templates have been found.
+// verbisErrorResolver Returns a new tpl.TemplateExecutor when
+// no other custom error templates have been found.
 func (r *Recover) verbisErrorResolver() (string, tpl.TemplateExecutor) {
 	return "templates/error", r.deps.Tmpl().Prepare(tpl.Config{
 		Extension: VerbisErrorExtension,

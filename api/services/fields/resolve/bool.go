@@ -10,9 +10,7 @@ import (
 	"github.com/spf13/cast"
 )
 
-// checkbox
-//
-// Casts the domain.FieldValue to a boolean.
+// checkbox casts the domain.FieldValue to a boolean.
 // Returns errors.INVALID if the domain.FieldValue could not be cast to an bool.
 func (v *Value) checkbox(value domain.FieldValue) (interface{}, error) {
 	const op = "FieldResolver.checkbox"

@@ -10,6 +10,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/ainsleyclark/verbis/api/database"
 	"github.com/ainsleyclark/verbis/api/errors"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media/sizes"
 	"regexp"
 )
 
@@ -19,11 +20,15 @@ var (
 
 func (t *MediaTestSuite) TestStore_Delete() {
 	tt := map[string]struct {
-		want interface{}
-		mock func(m sqlmock.Sqlmock)
+		want      interface{}
+		mockSizes func(m *mocks.Repository)
+		mock      func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
 			nil,
+			func(m *mocks.Repository) {
+				m.On("Delete", mediaItem.Id).Return(nil)
+			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -31,6 +36,7 @@ func (t *MediaTestSuite) TestStore_Delete() {
 		},
 		"No Rows": {
 			"No media item exists with the ID",
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(sql.ErrNoRows)
@@ -38,16 +44,27 @@ func (t *MediaTestSuite) TestStore_Delete() {
 		},
 		"Internal Error": {
 			database.ErrQueryMessage,
+			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
 					WillReturnError(fmt.Errorf("error"))
+			},
+		},
+		"Sizes Error": {
+			"error",
+			func(m *mocks.Repository) {
+				m.On("Delete", mediaItem.Id).Return(fmt.Errorf("error"))
+			},
+			func(m sqlmock.Sqlmock) {
+				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
+					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(test.mock)
+			s := t.Setup(test.mock, test.mockSizes)
 			err := s.Delete(mediaItem.Id)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)

@@ -3,8 +3,12 @@
 package mocks
 
 import (
+	bytes "bytes"
+
 	domain "github.com/ainsleyclark/verbis/api/domain"
 	gin "github.com/gin-gonic/gin"
+
+	io "io"
 
 	mock "github.com/stretchr/testify/mock"
 )
@@ -28,9 +32,27 @@ func (_m *Execer) Accepts(ctx *gin.Context) bool {
 	return r0
 }
 
-// Convert provides a mock function with given fields: path, compression
-func (_m *Execer) Convert(path string, compression int) {
-	_m.Called(path, compression)
+// Convert provides a mock function with given fields: in, compression
+func (_m *Execer) Convert(in io.Reader, compression int) (*bytes.Reader, error) {
+	ret := _m.Called(in, compression)
+
+	var r0 *bytes.Reader
+	if rf, ok := ret.Get(0).(func(io.Reader, int) *bytes.Reader); ok {
+		r0 = rf(in, compression)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*bytes.Reader)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(io.Reader, int) error); ok {
+		r1 = rf(in, compression)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // File provides a mock function with given fields: g, path, mime
@@ -54,18 +76,4 @@ func (_m *Execer) File(g *gin.Context, path string, mime domain.Mime) ([]byte, e
 	}
 
 	return r0, r1
-}
-
-// Install provides a mock function with given fields:
-func (_m *Execer) Install() error {
-	ret := _m.Called()
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
 }

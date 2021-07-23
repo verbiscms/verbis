@@ -5,25 +5,24 @@
 package media
 
 import (
+	"github.com/ainsleyclark/verbis/api/common/mime"
 	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/helpers/mime"
 	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gabriel-vasile/mimetype"
 	"image"
 	"mime/multipart"
 )
 
-var (
-	// ErrMimeType is returned by validate when a mimetype is
-	// not permitted.
-	ErrMimeType = errors.New("mimetype is not permitted")
-	// ErrFileTooBig is returned by validate when a file is to
-	// big to be uploaded.
-	ErrFileTooBig = errors.New("file size to big to be uploaded")
-)
+// Validate
+//
+// Satisfies the Library to see if the testMedia item passed
+// is valid.
+func (s *Service) Validate(file *multipart.FileHeader) error {
+	return validate(file, s.options, s.config)
+}
 
-// validator defines the helper for validating media items.
+// validator defines the helper for validating testMedia items.
 type validator struct {
 	Config  *domain.ThemeConfig
 	Options *domain.Options

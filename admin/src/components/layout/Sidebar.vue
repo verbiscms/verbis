@@ -151,13 +151,20 @@
 						<template v-slot:body>
 							<nav class="aside-nav">
 								<ul>
-									<!-- Categories -->
+									<!-- Storage -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'storage' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'storage' }">
+											<i class="feather feather-hard-drive"></i>
+											<span>Storage</span>
+										</router-link>
+									</li><!-- /Storage -->
+									<!-- Console -->
 									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'console' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'console' }">
 											<i class="feather feather-terminal"></i>
 											<span>Console</span>
 										</router-link>
-									</li><!-- /Categories -->
+									</li><!-- /Console -->
 								</ul>
 							</nav>
 						</template>

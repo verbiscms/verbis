@@ -22,7 +22,7 @@ func (m *Media) List(ctx *gin.Context) {
 
 	p := api.Params(ctx).Get()
 
-	media, total, err := m.Store.Media.List(p)
+	media, total, err := m.service.List(p)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return
@@ -34,5 +34,5 @@ func (m *Media) List(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully obtained media", media, pagination.Get(p, total))
+	api.Respond(ctx, http.StatusOK, "Successfully obtained media", media.Public(), pagination.Get(p, total))
 }

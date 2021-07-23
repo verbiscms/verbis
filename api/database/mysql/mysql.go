@@ -10,6 +10,7 @@ import (
 	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/ainsleyclark/verbis/api/version"
+	// Import sql driver, required!
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gookit/color"
 	sm "github.com/hashicorp/go-version"

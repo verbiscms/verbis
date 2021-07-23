@@ -6,7 +6,7 @@ package media
 
 import (
 	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
+	mocks "github.com/ainsleyclark/verbis/api/mocks/services/media"
 	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -17,13 +17,13 @@ func (t *MediaTestSuite) TestMedia_List() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(u *mocks.Repository)
+		mock    func(m *mocks.Library)
 	}{
 		"Success": {
-			mediaItems,
+			mediaItems.Public(),
 			http.StatusOK,
 			"Successfully obtained media",
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("List", dummy.DefaultParams).Return(mediaItems, 1, nil)
 			},
 		},
@@ -31,7 +31,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			nil,
 			http.StatusOK,
 			"no media found",
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.NOTFOUND, Message: "no media found"})
 			},
 		},
@@ -39,7 +39,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			nil,
 			http.StatusBadRequest,
 			"conflict",
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
@@ -47,7 +47,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			nil,
 			http.StatusBadRequest,
 			"invalid",
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
@@ -55,7 +55,7 @@ func (t *MediaTestSuite) TestMedia_List() {
 			nil,
 			http.StatusInternalServerError,
 			"internal",
-			func(m *mocks.Repository) {
+			func(m *mocks.Library) {
 				m.On("List", dummy.DefaultParams).Return(nil, 0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},

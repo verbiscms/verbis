@@ -17,7 +17,7 @@ import (
 // functions that provide namespaces.
 var GenericNamespaceRegistry []func(d *deps.Deps) *FuncsNamespace
 
-// GenericNamespaceRegistry represents the slice of generic
+// FuncNamespaces represents the slice of generic
 // functions that provide namespaces.
 type FuncNamespaces []*FuncsNamespace
 
