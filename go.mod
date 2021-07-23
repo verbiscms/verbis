@@ -5,9 +5,7 @@ go 1.16
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/ainsleyclark/go-mail v1.0.3
-	github.com/ainsleyclark/updater v0.0.4-0.20210622125846-ab0f587c3597
 	github.com/briandowns/spinner v1.11.1
-	github.com/common-nighthawk/go-figure v0.0.0-20200609044655-c4b36f998cf2
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/fatih/color v1.12.0 // indirect
