@@ -6,8 +6,8 @@ package resolve
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/media"
 )
 
 func (t *ResolverTestSuite) TestValue_Media() {

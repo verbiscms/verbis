@@ -5,10 +5,10 @@
 package auth
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/encryption"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store/config"
-	"github.com/ainsleyclark/verbis/api/store/users"
+	"github.com/verbiscms/verbis/api/common/encryption"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/store/users"
 )
 
 // Repository defines methods for the auth layer

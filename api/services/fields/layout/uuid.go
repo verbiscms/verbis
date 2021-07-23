@@ -5,8 +5,8 @@
 package layout
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/google/uuid"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 // walkerByUUID

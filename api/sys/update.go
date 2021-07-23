@@ -6,9 +6,9 @@ package sys
 
 import (
 	"github.com/ainsleyclark/updater"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/version"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/version"
 	"strconv"
 	"time"
 )

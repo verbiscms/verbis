@@ -5,7 +5,7 @@
 package internal
 
 import (
-	"github.com/ainsleyclark/verbis/api/version"
+	"github.com/verbiscms/verbis/api/version"
 )
 
 func (t *InternalTestSuite) TestAddMigration() {

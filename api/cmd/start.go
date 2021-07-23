@@ -6,13 +6,13 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/cron"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/server"
-	"github.com/ainsleyclark/verbis/api/server/routes"
-	"github.com/ainsleyclark/verbis/api/tpl/tplimpl"
 	"github.com/kyokomi/emoji"
 	"github.com/spf13/cobra"
+	"github.com/verbiscms/verbis/api/cron"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/server"
+	"github.com/verbiscms/verbis/api/server/routes"
+	"github.com/verbiscms/verbis/api/tpl/tplimpl"
 )
 
 var (

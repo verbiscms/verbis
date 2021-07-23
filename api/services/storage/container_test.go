@@ -6,12 +6,12 @@ package storage
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/mocks/services/storage/mocks"
-	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
 	"github.com/graymeta/stow"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
+	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 )
 
 func (t *StorageTestSuite) TestContainer_ListBuckets() {

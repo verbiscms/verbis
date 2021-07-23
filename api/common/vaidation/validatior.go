@@ -6,10 +6,10 @@ package validation
 
 import (
 	"fmt"
-	strings2 "github.com/ainsleyclark/verbis/api/common/strings"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/gin-gonic/gin/binding"
 	pkgValidate "github.com/go-playground/validator/v10"
+	strings2 "github.com/verbiscms/verbis/api/common/strings"
+	"github.com/verbiscms/verbis/api/domain"
 	"golang.org/x/crypto/bcrypt"
 	"regexp"
 	"strings"

@@ -2,7 +2,7 @@ VER=`cat VERSION`
 
 # Build
 build:
-	go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=false' -X 'github.com/ainsleyclark/verbis/api/version.Version=$(VER)'"
+	go build -o verbisexec -ldflags="-X 'github.com/verbiscms/verbis/api.ProductionString=false' -X 'github.com/verbiscms/verbis/api/version.Version=$(VER)'"
 .PHONY: build
 
 # Set Verbis up when cloned.
@@ -19,7 +19,7 @@ serve:
 
 # Builds Verbis for production
 build-prod:
-	go build -o verbisexec -ldflags="-X 'github.com/ainsleyclark/verbis/api.ProductionString=true' -X 'github.com/ainsleyclark/verbis/api/version.Version=$(VER)'"
+	go build -o verbisexec -ldflags="-X 'github.com/verbiscms/verbis/api.ProductionString=true' -X 'github.com/verbiscms/verbis/api/version.Version=$(VER)'"
 .PHONY: build-prod
 
 # Creates and build dist folder

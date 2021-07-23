@@ -6,9 +6,9 @@ package forms
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
-	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
+	"github.com/verbiscms/verbis/api/domain"
+	fields "github.com/verbiscms/verbis/api/mocks/store/forms/fields"
+	submissions "github.com/verbiscms/verbis/api/mocks/store/forms/submissions"
 )
 
 func (t *FormsTestSuite) TestStore_Submit() {

@@ -6,9 +6,9 @@ package fields
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
+	"github.com/verbiscms/verbis/api/domain"
+	categories "github.com/verbiscms/verbis/api/mocks/store/categories"
+	fields "github.com/verbiscms/verbis/api/mocks/store/fields"
 )
 
 func (t *FieldTestSuite) TestService_HandleArgs() {

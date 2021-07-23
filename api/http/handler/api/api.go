@@ -5,8 +5,8 @@
 package api
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/params"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/common/params"
 )
 
 const (

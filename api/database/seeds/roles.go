@@ -5,7 +5,7 @@
 package seeds
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 // runRoles will insert all default values for the user roles

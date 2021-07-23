@@ -5,12 +5,12 @@
 package posts
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/pagination"
-	store "github.com/ainsleyclark/verbis/api/store/posts"
-	"github.com/ainsleyclark/verbis/api/tpl/params"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/pagination"
+	store "github.com/verbiscms/verbis/api/store/posts"
+	"github.com/verbiscms/verbis/api/tpl/params"
 )
 
 const (

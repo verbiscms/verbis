@@ -2,12 +2,12 @@ package sockets
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/common/paths"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/logger"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"

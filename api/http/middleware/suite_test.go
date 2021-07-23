@@ -5,9 +5,9 @@
 package middleware
 
 import (
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/test"
 	"net/http"
 	"testing"
 )

@@ -6,10 +6,10 @@ package themes
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/config"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/services/theme"
-	store "github.com/ainsleyclark/verbis/api/mocks/store/options"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/config"
+	mocks "github.com/verbiscms/verbis/api/mocks/services/theme"
+	store "github.com/verbiscms/verbis/api/mocks/store/options"
 	"net/http"
 )
 

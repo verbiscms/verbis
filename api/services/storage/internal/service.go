@@ -2,12 +2,12 @@ package internal
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/store/options"
 	"github.com/graymeta/stow"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/store/options"
 	"strings"
 )
 

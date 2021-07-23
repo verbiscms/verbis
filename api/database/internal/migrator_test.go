@@ -7,9 +7,9 @@ package internal
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/version"
 	sm "github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
+	"github.com/verbiscms/verbis/api/version"
 	"path/filepath"
 )
 

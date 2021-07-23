@@ -5,8 +5,8 @@
 package tpl
 
 import (
-	mocks "github.com/ainsleyclark/verbis/api/mocks/verbisfs"
 	"github.com/stretchr/testify/assert"
+	mocks "github.com/verbiscms/verbis/api/mocks/verbisfs"
 	"testing"
 )
 

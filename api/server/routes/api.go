@@ -5,11 +5,11 @@
 package routes
 
 import (
-	app "github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/http/handler"
-	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/server"
+	app "github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/http/handler"
+	"github.com/verbiscms/verbis/api/http/middleware"
+	"github.com/verbiscms/verbis/api/server"
 )
 
 // apiRoutes

@@ -6,9 +6,9 @@ package watchers
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/fsnotify/fsnotify"
 	"github.com/radovskyb/watcher"
+	"github.com/verbiscms/verbis/api/errors"
 	"time"
 )
 

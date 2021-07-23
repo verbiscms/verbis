@@ -7,12 +7,12 @@ package media
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/common/params"
-	"github.com/ainsleyclark/verbis/api/domain"
-	storage "github.com/ainsleyclark/verbis/api/mocks/services/storage"
-	webp "github.com/ainsleyclark/verbis/api/mocks/services/webp"
-	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/domain"
+	storage "github.com/verbiscms/verbis/api/mocks/services/storage"
+	webp "github.com/verbiscms/verbis/api/mocks/services/webp"
+	repo "github.com/verbiscms/verbis/api/mocks/store/media"
 )
 
 func (t *MediaServiceTestSuite) TestService_ReGenerateWebP() {

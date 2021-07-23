@@ -6,12 +6,12 @@ package sys
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/version"
 	sm "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
 	"github.com/mouuff/go-rocket-update/pkg/updater"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/version"
 	"io/ioutil"
 	"testing"
 )

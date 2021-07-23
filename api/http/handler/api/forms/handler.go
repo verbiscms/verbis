@@ -5,9 +5,9 @@
 package forms
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/events"
 )
 
 // Handler defines methods for forms to interact with the server.

@@ -6,12 +6,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/database/seeds"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/kyokomi/emoji"
 	"github.com/manifoldco/promptui"
 	"github.com/spf13/cobra"
+	"github.com/verbiscms/verbis/api/database/seeds"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
 	"net/url"
 )
 

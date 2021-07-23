@@ -6,9 +6,9 @@ package domain
 
 import (
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/errors"
 	"testing"
 )
 

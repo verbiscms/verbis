@@ -5,9 +5,9 @@
 package publisher
 
 import (
-	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 // UploadChan is the channel for serving uploads for the

@@ -7,10 +7,10 @@ package resizer
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/services/media/image"
 	"github.com/disintegration/imaging"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/services/media/image"
 	stdimage "image"
 )
 

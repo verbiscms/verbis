@@ -5,9 +5,9 @@
 package attributes
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/tpl/funcs/auth"
+	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
 // Creates a new attributes Namespace

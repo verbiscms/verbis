@@ -5,9 +5,9 @@
 package auth
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/events"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/events"
 )
 
 // AuthHandler defines methods for auth methods to interact with the server

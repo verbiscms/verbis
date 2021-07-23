@@ -6,10 +6,10 @@ package webp
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
 	"github.com/nickalie/go-webpbin"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 	"io"
 	"io/ioutil"
 	"os"

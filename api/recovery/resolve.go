@@ -5,7 +5,7 @@
 package recovery
 
 import (
-	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/verbiscms/verbis/api/tpl"
 	"strconv"
 )
 

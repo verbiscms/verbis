@@ -5,8 +5,8 @@
 package internal
 
 import (
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/environment"
 	"os"
 	"path/filepath"
 	"testing"

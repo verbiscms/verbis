@@ -6,8 +6,8 @@ package resolve
 
 import (
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 // choice defines the properties to be sent to the template

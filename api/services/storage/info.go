@@ -5,8 +5,8 @@
 package storage
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	internal2 "github.com/ainsleyclark/verbis/api/services/storage/internal"
+	"github.com/verbiscms/verbis/api/domain"
+	internal2 "github.com/verbiscms/verbis/api/services/storage/internal"
 )
 
 // Configuration represents the information returned

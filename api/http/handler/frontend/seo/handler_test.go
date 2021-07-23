@@ -5,11 +5,11 @@
 package seo
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	mocks "github.com/verbiscms/verbis/api/mocks/publisher"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

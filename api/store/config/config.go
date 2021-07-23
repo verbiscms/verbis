@@ -5,10 +5,10 @@
 package config
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/paths"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/services/theme"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/services/theme"
 )
 
 // Config represents the configuration parsed to the

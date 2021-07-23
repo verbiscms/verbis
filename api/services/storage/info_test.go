@@ -6,12 +6,12 @@ package storage
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/mocks/services/storage/mocks"
-	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
-	internal2 "github.com/ainsleyclark/verbis/api/services/storage/internal"
 	"github.com/graymeta/stow"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
+	repo "github.com/verbiscms/verbis/api/mocks/store/files"
+	internal2 "github.com/verbiscms/verbis/api/services/storage/internal"
 )
 
 type mockProviderErr struct{}

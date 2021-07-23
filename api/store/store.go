@@ -5,21 +5,21 @@
 package store
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/paths"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/services/theme"
-	"github.com/ainsleyclark/verbis/api/store/auth"
-	"github.com/ainsleyclark/verbis/api/store/categories"
-	storeConfig "github.com/ainsleyclark/verbis/api/store/config"
-	"github.com/ainsleyclark/verbis/api/store/fields"
-	"github.com/ainsleyclark/verbis/api/store/files"
-	"github.com/ainsleyclark/verbis/api/store/forms"
-	"github.com/ainsleyclark/verbis/api/store/media"
-	"github.com/ainsleyclark/verbis/api/store/options"
-	"github.com/ainsleyclark/verbis/api/store/posts"
-	"github.com/ainsleyclark/verbis/api/store/redirects"
-	"github.com/ainsleyclark/verbis/api/store/roles"
-	"github.com/ainsleyclark/verbis/api/store/users"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/services/theme"
+	"github.com/verbiscms/verbis/api/store/auth"
+	"github.com/verbiscms/verbis/api/store/categories"
+	storeConfig "github.com/verbiscms/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/store/fields"
+	"github.com/verbiscms/verbis/api/store/files"
+	"github.com/verbiscms/verbis/api/store/forms"
+	"github.com/verbiscms/verbis/api/store/media"
+	"github.com/verbiscms/verbis/api/store/options"
+	"github.com/verbiscms/verbis/api/store/posts"
+	"github.com/verbiscms/verbis/api/store/redirects"
+	"github.com/verbiscms/verbis/api/store/roles"
+	"github.com/verbiscms/verbis/api/store/users"
 )
 
 // Repository defines all of the repositories used

@@ -6,7 +6,6 @@ package minify
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/errors"
 	min "github.com/tdewolff/minify/v2"
 	"github.com/tdewolff/minify/v2/css"
 	"github.com/tdewolff/minify/v2/html"
@@ -14,6 +13,7 @@ import (
 	"github.com/tdewolff/minify/v2/json"
 	"github.com/tdewolff/minify/v2/svg"
 	"github.com/tdewolff/minify/v2/xml"
+	"github.com/verbiscms/verbis/api/errors"
 	"io/ioutil"
 	"regexp"
 )
