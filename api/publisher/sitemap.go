@@ -6,6 +6,7 @@ package publisher
 
 import (
 	"bytes"
+	"context"
 	"encoding/xml"
 	"fmt"
 	"github.com/verbiscms/verbis/api/cache"
@@ -47,6 +48,7 @@ type Sitemap struct {
 
 const (
 	SiteMapsDir = "sitemaps"
+	cacheExpiry = time.Hour * 6
 )
 
 // index defines the the XML data for rendering a the main (index) sitemap.
@@ -155,7 +157,7 @@ func (s *Sitemap) Index() ([]byte, error) {
 		return nil, err
 	}
 
-	go cache.Store.Set("sitemap-index", &xmlData, cache.RememberForever)
+	go cache.Set(context.Background(), "sitemap-index", &xmlData, cache.Options{Expiration: cacheExpiry})
 
 	return xmlData, nil
 }
@@ -182,7 +184,7 @@ func (s *Sitemap) XSL(index bool) ([]byte, error) {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the xsl file with the path: %s", path), Operation: op, Err: err}
 	}
 
-	go cache.Store.Set(fileName, &data, cache.RememberForever)
+	go cache.Set(context.Background(), fileName, &data, cache.Options{Expiration: cacheExpiry})
 
 	return data, nil
 }
@@ -257,9 +259,9 @@ func (s *Sitemap) findResourceBySlug(slug string) (domain.Resource, error) {
 //
 // Returns no error.
 func (s *Sitemap) ClearCache() {
-	cache.Store.Delete("sitemap-index")
+	cache.Delete(context.Background(), "sitemap-index")
 	for _, v := range s.resources {
-		cache.Store.Delete("sitemap-" + v.Name)
+		cache.Delete(context.Background(), "sitemap-"+v.Name)
 	}
 }
 
@@ -419,8 +421,8 @@ func (s *Sitemap) formatXML(data interface{}, index bool) ([]byte, error) {
 //
 // Returns [[byte if found or nil.
 func (s *Sitemap) getCachedFile(key string) []byte {
-	cachedIndex, found := cache.Store.Get(key)
-	if found {
+	cachedIndex, err := cache.Get(context.Background(), key)
+	if err == nil {
 		cachedBytes := cachedIndex.(*[]byte)
 		return *cachedBytes
 	}

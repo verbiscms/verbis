@@ -6,7 +6,6 @@ package posts
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
@@ -28,9 +27,6 @@ func (c *Posts) Update(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-
-	// TODO: This needs to be in the store.
-	cache.ClearPostCache(post.Id)
 
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {

@@ -44,7 +44,5 @@ func (c *Categories) Update(ctx *gin.Context) {
 		return
 	}
 
-	defer c.clearCache(updatedCategory.Id)
-
 	api.Respond(ctx, http.StatusOK, "Successfully updated category with ID: "+strconv.Itoa(category.Id), updatedCategory)
 }
