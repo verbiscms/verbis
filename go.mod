@@ -20,7 +20,7 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.3 // indirect
-	github.com/google/uuid v1.1.2
+	github.com/google/uuid v1.3.0
 	github.com/gookit/color v1.4.2
 	github.com/gorilla/websocket v1.4.2
 	github.com/graymeta/stow v0.2.7
