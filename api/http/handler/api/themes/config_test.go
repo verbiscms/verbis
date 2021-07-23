@@ -5,8 +5,8 @@
 package themes
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/config"
 	"net/http"
 )
 

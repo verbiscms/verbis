@@ -6,7 +6,7 @@ package encryption
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"strconv"
@@ -27,11 +27,9 @@ func GenerateUserToken(name, email string) string {
 // Returns errors.INTERNAL if the bcrypt failed to generate from password.
 func GenerateEmailToken(email string) (string, error) {
 	const op = "Encryption.GenerateEmailToken"
-
 	hash, err := bcrypt.GenerateFromPassword([]byte(email), bcrypt.DefaultCost)
 	if err != nil {
 		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not generate the email token with the email: %s", email), Operation: op, Err: err}
 	}
-
 	return MD5Hash(string(hash)), nil
 }

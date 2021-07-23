@@ -8,12 +8,12 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/common/params"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media/sizes"
-	"github.com/ainsleyclark/verbis/api/test/dummy"
+	"github.com/verbiscms/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/handler/api"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/media/sizes"
+	"github.com/verbiscms/verbis/api/test/dummy"
 	"regexp"
 )
 

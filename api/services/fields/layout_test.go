@@ -6,8 +6,8 @@ package fields
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	posts "github.com/ainsleyclark/verbis/api/mocks/store/posts"
+	"github.com/verbiscms/verbis/api/domain"
+	posts "github.com/verbiscms/verbis/api/mocks/store/posts"
 )
 
 func (t *FieldTestSuite) TestService_GetLayout() {

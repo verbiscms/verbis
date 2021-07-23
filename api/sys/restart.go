@@ -6,7 +6,7 @@ package sys
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 	"os"
 	"path/filepath"
 	"syscall"

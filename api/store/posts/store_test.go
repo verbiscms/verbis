@@ -6,17 +6,17 @@ package posts
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	themeConfig "github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/domain"
-	theme "github.com/ainsleyclark/verbis/api/mocks/services/theme"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/options"
-	categories "github.com/ainsleyclark/verbis/api/mocks/store/posts/categories"
-	meta "github.com/ainsleyclark/verbis/api/mocks/store/posts/meta"
-	"github.com/ainsleyclark/verbis/api/store/config"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	themeConfig "github.com/verbiscms/verbis/api/config"
+	"github.com/verbiscms/verbis/api/domain"
+	theme "github.com/verbiscms/verbis/api/mocks/services/theme"
+	fields "github.com/verbiscms/verbis/api/mocks/store/fields"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/options"
+	categories "github.com/verbiscms/verbis/api/mocks/store/posts/categories"
+	meta "github.com/verbiscms/verbis/api/mocks/store/posts/meta"
+	"github.com/verbiscms/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

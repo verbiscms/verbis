@@ -5,10 +5,10 @@
 package paths
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/paths"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
 	"testing"
 )
 

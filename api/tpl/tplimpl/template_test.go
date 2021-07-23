@@ -3,8 +3,8 @@ package tplimpl
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/tpl"
 	"html/template"
 	"sync"
 )

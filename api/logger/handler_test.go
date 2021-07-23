@@ -6,8 +6,8 @@ package logger
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 func (t *LoggerTestSuite) TestHandler() {

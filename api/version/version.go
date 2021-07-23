@@ -6,9 +6,8 @@ package version
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
 	"github.com/hashicorp/go-version"
-	log "github.com/sirupsen/logrus"
+	"github.com/verbiscms/verbis/api"
 )
 
 // Version is  The main version number that is being run
@@ -24,10 +23,7 @@ var Prerelease = ""
 var SemVer *version.Version
 
 func init() {
-	v, err := version.NewVersion(Version)
-	if err != nil {
-		log.Fatal(err)
-	}
+	v := Must(Version)
 	SemVer = v
 	api.App.Version = String()
 }

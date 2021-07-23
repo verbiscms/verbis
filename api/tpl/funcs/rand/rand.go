@@ -5,8 +5,8 @@
 package rand
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/strings"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/common/strings"
 	"math/rand"
 	"time"
 )

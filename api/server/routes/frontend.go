@@ -5,14 +5,14 @@
 package routes
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler"
-	"github.com/ainsleyclark/verbis/api/http/middleware"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/server"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/config"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/handler"
+	"github.com/verbiscms/verbis/api/http/middleware"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/server"
 	"io/fs"
 	"net/http"
 )

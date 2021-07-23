@@ -5,7 +5,7 @@
 package seeds
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 // runPosts will insert all demo psots for the user.

@@ -6,11 +6,11 @@ package fields
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/services/fields/resolve"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/services/fields/resolve"
 	"strings"
 )
 

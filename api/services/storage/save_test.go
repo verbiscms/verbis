@@ -5,11 +5,11 @@
 package storage
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/mocks/services/storage/mocks"
-	repo "github.com/ainsleyclark/verbis/api/mocks/store/files"
-	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
+	repo "github.com/verbiscms/verbis/api/mocks/store/files"
+	options "github.com/verbiscms/verbis/api/mocks/store/options"
 )
 
 func (t *StorageTestSuite) TestStorage_Save() {

@@ -6,14 +6,14 @@ package database
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/database/builder"
-	"github.com/ainsleyclark/verbis/api/database/internal"
-	"github.com/ainsleyclark/verbis/api/database/mysql"
-	"github.com/ainsleyclark/verbis/api/database/postgres"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
+	"github.com/verbiscms/verbis/api/database/builder"
+	"github.com/verbiscms/verbis/api/database/internal"
+	"github.com/verbiscms/verbis/api/database/mysql"
+	"github.com/verbiscms/verbis/api/database/postgres"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 // Driver represents the functions and methods for

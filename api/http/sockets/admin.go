@@ -6,13 +6,13 @@ package sockets
 
 import (
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/watchers"
 	"github.com/gorilla/websocket"
 	"github.com/radovskyb/watcher"
+	"github.com/verbiscms/verbis/api/config"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/watchers"
 	"net/http"
 	"syscall"
 )

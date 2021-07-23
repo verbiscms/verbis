@@ -5,8 +5,8 @@
 package dummy
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/params"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
+	"github.com/verbiscms/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/http/handler/api"
 )
 
 var (

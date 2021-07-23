@@ -5,10 +5,10 @@
 package forms
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	"github.com/ainsleyclark/verbis/api/http/pagination"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/handler/api"
+	"github.com/verbiscms/verbis/api/http/pagination"
 	"net/http"
 )
 

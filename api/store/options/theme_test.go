@@ -7,7 +7,7 @@ package options
 import (
 	"database/sql"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 	"regexp"
 )
 

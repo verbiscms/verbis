@@ -6,13 +6,13 @@ package wordpress
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/common/encryption"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/importer"
-	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/gookit/color"
 	"github.com/kyokomi/emoji"
+	"github.com/verbiscms/verbis/api/common/encryption"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/importer"
+	"github.com/verbiscms/verbis/api/store"
 	"mime/multipart"
 	"runtime"
 	"strings"

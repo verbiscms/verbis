@@ -5,9 +5,9 @@
 package site
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
 )
 

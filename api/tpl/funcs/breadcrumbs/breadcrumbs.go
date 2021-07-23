@@ -6,10 +6,10 @@ package breadcrumbs
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/tpl/embedded"
-	"github.com/ainsleyclark/verbis/api/verbis"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/tpl/embedded"
+	"github.com/verbiscms/verbis/api/verbis"
 	"html/template"
 )
 

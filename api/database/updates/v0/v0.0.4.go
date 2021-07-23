@@ -5,9 +5,9 @@
 package v0
 
 import (
-	"github.com/ainsleyclark/verbis/api/database/internal"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/version"
+	"github.com/verbiscms/verbis/api/database/internal"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/version"
 	"path/filepath"
 )
 

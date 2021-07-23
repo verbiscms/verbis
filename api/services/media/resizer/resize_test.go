@@ -7,10 +7,10 @@ package resizer
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/mocks/services/media/image"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/mocks/services/media/image"
 	stdimage "image"
 	"testing"
 )

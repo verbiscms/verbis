@@ -5,8 +5,8 @@
 package importer
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
+	"github.com/verbiscms/verbis/api/errors"
 	"net/url"
 )
 

@@ -5,15 +5,15 @@
 package media
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/params"
-	"github.com/ainsleyclark/verbis/api/common/paths"
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/services/media/resizer"
-	storage2 "github.com/ainsleyclark/verbis/api/services/storage"
-	"github.com/ainsleyclark/verbis/api/services/webp"
-	"github.com/ainsleyclark/verbis/api/store/media"
+	"github.com/verbiscms/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/config"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/services/media/resizer"
+	storage2 "github.com/verbiscms/verbis/api/services/storage"
+	"github.com/verbiscms/verbis/api/services/webp"
+	"github.com/verbiscms/verbis/api/store/media"
 	"mime/multipart"
 )
 

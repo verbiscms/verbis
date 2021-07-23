@@ -6,11 +6,11 @@ package middleware
 
 import (
 	"fmt"
-	app "github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/redirects"
-	"github.com/ainsleyclark/verbis/api/store"
+	app "github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/redirects"
+	"github.com/verbiscms/verbis/api/store"
 	"net/http"
 )
 

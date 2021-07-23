@@ -5,12 +5,12 @@
 package media
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/params"
-	"github.com/ainsleyclark/verbis/api/database/builder"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store/config"
-	"github.com/ainsleyclark/verbis/api/store/files"
-	"github.com/ainsleyclark/verbis/api/store/media/sizes"
+	"github.com/verbiscms/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/database/builder"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/store/files"
+	"github.com/verbiscms/verbis/api/store/media/sizes"
 )
 
 // Repository defines methods for media items

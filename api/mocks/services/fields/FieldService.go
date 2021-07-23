@@ -3,8 +3,8 @@
 package mocks
 
 import (
-	domain "github.com/ainsleyclark/verbis/api/domain"
-	fields "github.com/ainsleyclark/verbis/api/services/fields"
+	domain "github.com/verbiscms/verbis/api/domain"
+	fields "github.com/verbiscms/verbis/api/services/fields"
 
 	mock "github.com/stretchr/testify/mock"
 )

@@ -5,13 +5,13 @@
 package forms
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/params"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/store/config"
-	"github.com/ainsleyclark/verbis/api/store/forms/fields"
-	"github.com/ainsleyclark/verbis/api/store/forms/submissions"
 	"github.com/google/uuid"
+	"github.com/verbiscms/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/store/forms/fields"
+	"github.com/verbiscms/verbis/api/store/forms/submissions"
 )
 
 // Repository defines methods for forms

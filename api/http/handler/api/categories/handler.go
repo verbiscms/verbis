@@ -5,12 +5,12 @@
 package categories
 
 import (
-	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/common/params"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/store/posts"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/cache"
+	"github.com/verbiscms/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/store/posts"
 )
 
 // Handler defines methods for categories to interact with the server.

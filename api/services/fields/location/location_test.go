@@ -5,11 +5,11 @@
 package location
 
 import (
-	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/cache"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/logger"
 	"io/ioutil"
 	"os"
 	"path/filepath"

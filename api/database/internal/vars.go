@@ -4,7 +4,7 @@
 
 package internal
 
-import "github.com/ainsleyclark/verbis/api/errors"
+import "github.com/verbiscms/verbis/api/errors"
 
 var (
 	// Tables define the current database tables within

@@ -7,8 +7,8 @@ package tplimpl
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
-	"github.com/ainsleyclark/verbis/api/tpl/variables"
+	"github.com/verbiscms/verbis/api/tpl/internal"
+	"github.com/verbiscms/verbis/api/tpl/variables"
 	"golang.org/x/net/html"
 	"html/template"
 )

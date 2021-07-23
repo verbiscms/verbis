@@ -5,10 +5,10 @@
 package site
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/sys"
-	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/sys"
+	"github.com/verbiscms/verbis/api/version"
 	"testing"
 )
 

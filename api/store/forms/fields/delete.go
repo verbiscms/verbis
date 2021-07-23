@@ -7,8 +7,8 @@ package fields
 import (
 	"database/sql"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 // Delete

@@ -5,12 +5,12 @@
 package tplimpl
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
-	"github.com/ainsleyclark/verbis/api/tpl/variables"
-	"github.com/ainsleyclark/verbis/api/verbis"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/tpl"
+	"github.com/verbiscms/verbis/api/tpl/internal"
+	"github.com/verbiscms/verbis/api/tpl/variables"
+	"github.com/verbiscms/verbis/api/verbis"
 	"html/template"
 	"io"
 	"sync"

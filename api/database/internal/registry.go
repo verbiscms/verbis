@@ -5,9 +5,9 @@
 package internal
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/version"
 	sm "github.com/hashicorp/go-version"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/version"
 	"sort"
 )
 

@@ -5,10 +5,10 @@
 package system
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/sys"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	mocks "github.com/verbiscms/verbis/api/mocks/sys"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

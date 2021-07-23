@@ -6,13 +6,13 @@ package storage
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/common/paths"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
-	internal2 "github.com/ainsleyclark/verbis/api/services/storage/internal"
-	"github.com/ainsleyclark/verbis/api/store/files"
-	"github.com/ainsleyclark/verbis/api/store/options"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/errors"
+	internal2 "github.com/verbiscms/verbis/api/services/storage/internal"
+	"github.com/verbiscms/verbis/api/store/files"
+	"github.com/verbiscms/verbis/api/store/options"
 )
 
 // Provider describes the main storage system for Verbis.

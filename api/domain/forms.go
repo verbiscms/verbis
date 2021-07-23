@@ -8,9 +8,9 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
+	"github.com/verbiscms/verbis/api/errors"
 	"strings"
 	"time"
 )

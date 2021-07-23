@@ -7,8 +7,8 @@ package logger
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/sirupsen/logrus"
+	"github.com/verbiscms/verbis/api/errors"
 	"io"
 )
 

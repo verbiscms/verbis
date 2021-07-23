@@ -5,10 +5,10 @@
 package publisher
 
 import (
-	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/cache"
+	"github.com/verbiscms/verbis/api/domain"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"

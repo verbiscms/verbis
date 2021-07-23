@@ -5,12 +5,12 @@
 package spa
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/mime"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/common/mime"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/publisher"
 	"net/http"
 	"strings"
 )

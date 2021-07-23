@@ -5,11 +5,11 @@
 package publisher
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/minify"
-	"github.com/ainsleyclark/verbis/api/services/media"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/minify"
+	"github.com/verbiscms/verbis/api/services/media"
 )
 
 // Publisher

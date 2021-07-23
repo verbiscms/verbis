@@ -6,16 +6,16 @@ package fields
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
-	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/fields"
-	media "github.com/ainsleyclark/verbis/api/mocks/store/media"
-	posts "github.com/ainsleyclark/verbis/api/mocks/store/posts"
-	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
-	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/logger"
+	categories "github.com/verbiscms/verbis/api/mocks/store/categories"
+	fields "github.com/verbiscms/verbis/api/mocks/store/fields"
+	media "github.com/verbiscms/verbis/api/mocks/store/media"
+	posts "github.com/verbiscms/verbis/api/mocks/store/posts"
+	users "github.com/verbiscms/verbis/api/mocks/store/users"
+	"github.com/verbiscms/verbis/api/store"
 	"testing"
 )
 

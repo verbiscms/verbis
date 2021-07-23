@@ -5,8 +5,8 @@
 package domain
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/errors"
 	"testing"
 )
 

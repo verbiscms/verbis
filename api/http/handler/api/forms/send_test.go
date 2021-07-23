@@ -5,14 +5,14 @@
 package forms
 
 import (
-	validation "github.com/ainsleyclark/verbis/api/common/vaidation"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/mock"
+	validation "github.com/verbiscms/verbis/api/common/vaidation"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/handler/api"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/forms"
 	"net/http"
 )
 

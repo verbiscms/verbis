@@ -5,7 +5,7 @@
 package categories
 
 import (
-	"github.com/ainsleyclark/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/store/config"
 )
 
 // Repository defines methods for post categories

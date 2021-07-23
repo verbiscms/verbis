@@ -5,15 +5,15 @@
 package auth
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/logger"
-	events "github.com/ainsleyclark/verbis/api/mocks/events"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
-	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/logger"
+	events "github.com/verbiscms/verbis/api/mocks/events"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/auth"
+	"github.com/verbiscms/verbis/api/store"
+	"github.com/verbiscms/verbis/api/test"
 	"io/ioutil"
 	"testing"
 )

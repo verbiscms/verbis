@@ -6,10 +6,10 @@ package logger
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/environment"
 	"io"
 	"io/ioutil"
 	"net/http"

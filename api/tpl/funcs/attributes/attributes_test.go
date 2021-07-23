@@ -5,14 +5,14 @@
 package attributes
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
-	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/auth"
-	"github.com/ainsleyclark/verbis/api/tpl/internal"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/users"
+	"github.com/verbiscms/verbis/api/store"
+	"github.com/verbiscms/verbis/api/tpl/funcs/auth"
+	"github.com/verbiscms/verbis/api/tpl/internal"
 	"net/http"
 	"net/http/httptest"
 	"testing"

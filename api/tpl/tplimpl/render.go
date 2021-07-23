@@ -6,9 +6,9 @@ package tplimpl
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/tpl"
-	"github.com/ainsleyclark/verbis/api/tpl/funcs/partial"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/tpl"
+	"github.com/verbiscms/verbis/api/tpl/funcs/partial"
 	"html/template"
 	"io"
 	"io/ioutil"
@@ -19,6 +19,9 @@ import (
 
 // FileHandler function describing the process for obtaining template files.
 type FileHandler func(config tpl.TemplateConfig, template string) (content string, err error)
+
+// fpAbs is an alias for filepath.Abs
+var fpAbs = filepath.Abs
 
 // DefaultFileHandler
 //
@@ -43,7 +46,7 @@ func DefaultFileHandler() FileHandler {
 		}
 
 		// Get the absolute path of the root template
-		abs, err := filepath.Abs(config.GetRoot() + string(os.PathSeparator) + template + config.GetExtension())
+		abs, err := fpAbs(config.GetRoot() + string(os.PathSeparator) + template + config.GetExtension())
 		if err != nil {
 			return "", &errors.Error{Code: errors.TEMPLATE, Message: fmt.Sprintf("Error obtaining absolute file of template:%v", path), Operation: op, Err: err}
 		}

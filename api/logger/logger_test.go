@@ -7,9 +7,9 @@ package logger
 import (
 	"bytes"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/sirupsen/logrus"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 func (t *LoggerTestSuite) TestInit() {
