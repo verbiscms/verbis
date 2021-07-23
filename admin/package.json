@@ -13,7 +13,7 @@
 		"axios": "^0.21.1",
 		"core-js": "^3.6.5",
 		"debounce": "^1.2.0",
-		"dotenv": "^8.2.0",
+		"dotenv": "^10.0.0",
 		"prismjs": "^1.21.0",
 		"tiptap": "^1.30.0",
 		"tiptap-extensions": "^1.33.1",
