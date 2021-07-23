@@ -6,7 +6,7 @@ package image
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 	"image"
 	"image/png"
 	"mime/multipart"

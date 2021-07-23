@@ -5,8 +5,8 @@
 package layout
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/domain"
 	"testing"
 )
 

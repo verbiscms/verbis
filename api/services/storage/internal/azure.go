@@ -5,10 +5,10 @@
 package internal
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
 	az "github.com/graymeta/stow/azure"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
 )
 
 // azure satisfies the provider interface by implementing

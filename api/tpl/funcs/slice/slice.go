@@ -6,7 +6,7 @@ package slice
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 	"reflect"
 )
 

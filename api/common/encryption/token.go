@@ -6,7 +6,7 @@ package encryption
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
 	"strconv"

@@ -5,8 +5,8 @@
 package posts
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/deps"
 )
 
 // Handler defines methods for posts to interact with the server.

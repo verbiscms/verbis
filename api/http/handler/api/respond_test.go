@@ -6,11 +6,11 @@ package api
 
 import (
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/pagination"
-	"github.com/ainsleyclark/verbis/api/version"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/pagination"
+	"github.com/verbiscms/verbis/api/version"
 	gohttp "net/http"
 	"time"
 )

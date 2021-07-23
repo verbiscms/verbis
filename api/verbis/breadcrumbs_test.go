@@ -6,11 +6,11 @@ package verbis
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/posts"
-	"github.com/ainsleyclark/verbis/api/store"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/posts"
+	"github.com/verbiscms/verbis/api/store"
 	"testing"
 )
 

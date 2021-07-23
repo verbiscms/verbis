@@ -5,7 +5,7 @@
 package verbisfs
 
 import (
-	"github.com/ainsleyclark/verbis/api/www"
+	"github.com/verbiscms/verbis/api/www"
 	"testing"
 )
 

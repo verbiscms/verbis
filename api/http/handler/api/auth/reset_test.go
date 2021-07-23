@@ -5,12 +5,12 @@
 package auth
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	events "github.com/ainsleyclark/verbis/api/mocks/events"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/auth"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	events "github.com/verbiscms/verbis/api/mocks/events"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/auth"
 	"net/http"
 )
 

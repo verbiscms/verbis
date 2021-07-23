@@ -5,10 +5,10 @@
 package domain
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx/types"
+	"github.com/verbiscms/verbis/api/errors"
 	"io"
 	"path/filepath"
 	"strings"

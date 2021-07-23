@@ -6,8 +6,8 @@ package storage
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 // validate determines if the domain.StorageChange is

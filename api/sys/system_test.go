@@ -6,9 +6,9 @@ package sys
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/logger"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/database"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/logger"
+	mocks "github.com/verbiscms/verbis/api/mocks/database"
 	"io/ioutil"
 	"testing"
 )

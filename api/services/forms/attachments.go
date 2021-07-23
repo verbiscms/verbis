@@ -7,10 +7,10 @@ package forms
 import (
 	"fmt"
 	"github.com/ainsleyclark/go-mail"
-	"github.com/ainsleyclark/verbis/api/common/encryption"
-	"github.com/ainsleyclark/verbis/api/common/mime"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gabriel-vasile/mimetype"
+	"github.com/verbiscms/verbis/api/common/encryption"
+	"github.com/verbiscms/verbis/api/common/mime"
+	"github.com/verbiscms/verbis/api/errors"
 	"io"
 	"io/ioutil"
 	"mime/multipart"

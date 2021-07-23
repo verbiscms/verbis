@@ -5,9 +5,9 @@
 package tplimpl
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/tpl"
 	"html/template"
 	"io"
 	"sync"

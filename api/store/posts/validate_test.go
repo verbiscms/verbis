@@ -7,10 +7,10 @@ package posts
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/services/theme"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/config"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/services/theme"
 	"regexp"
 )
 

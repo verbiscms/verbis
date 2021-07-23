@@ -5,8 +5,8 @@
 package safe
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/errors"
 	"html/template"
 )
 

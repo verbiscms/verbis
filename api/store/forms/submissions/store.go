@@ -5,8 +5,8 @@
 package submissions
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/store/config"
 )
 
 // Repository defines methods for form submissions

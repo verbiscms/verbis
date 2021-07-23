@@ -5,9 +5,9 @@
 package cache
 
 import (
-	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/cache"
+	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
 )
 

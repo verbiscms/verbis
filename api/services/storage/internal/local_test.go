@@ -5,9 +5,9 @@
 package internal
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
 	"testing"
 )
 

@@ -5,8 +5,8 @@
 package public
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/errors"
 	"net/http"
 )
 

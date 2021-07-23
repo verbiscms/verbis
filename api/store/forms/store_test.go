@@ -6,12 +6,12 @@ package forms
 
 import (
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/domain"
-	fields "github.com/ainsleyclark/verbis/api/mocks/store/forms/fields"
-	submissions "github.com/ainsleyclark/verbis/api/mocks/store/forms/submissions"
-	"github.com/ainsleyclark/verbis/api/store/config"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/domain"
+	fields "github.com/verbiscms/verbis/api/mocks/store/forms/fields"
+	submissions "github.com/verbiscms/verbis/api/mocks/store/forms/submissions"
+	"github.com/verbiscms/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

@@ -5,9 +5,9 @@
 package storage
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/graymeta/stow"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 // pageSize is the number of containers to retrieve in the

@@ -6,9 +6,9 @@ package auth
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/mocks/store/users"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/mocks/store/users"
 )
 
 func (t *AuthTestSuite) TestStore_Logout() {

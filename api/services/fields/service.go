@@ -5,8 +5,8 @@
 package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 // FieldService defines methods for obtaining fields for the front end templates.

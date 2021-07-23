@@ -6,17 +6,17 @@ package posts
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/common/params"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/services/fields/location"
-	"github.com/ainsleyclark/verbis/api/store/config"
-	"github.com/ainsleyclark/verbis/api/store/fields"
-	"github.com/ainsleyclark/verbis/api/store/options"
-	"github.com/ainsleyclark/verbis/api/store/posts/categories"
-	"github.com/ainsleyclark/verbis/api/store/posts/meta"
-	"github.com/ainsleyclark/verbis/api/store/users"
 	"github.com/google/uuid"
+	"github.com/verbiscms/verbis/api/common/params"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/services/fields/location"
+	"github.com/verbiscms/verbis/api/store/config"
+	"github.com/verbiscms/verbis/api/store/fields"
+	"github.com/verbiscms/verbis/api/store/options"
+	"github.com/verbiscms/verbis/api/store/posts/categories"
+	"github.com/verbiscms/verbis/api/store/posts/meta"
+	"github.com/verbiscms/verbis/api/store/users"
 )
 
 // Repository defines methods for posts

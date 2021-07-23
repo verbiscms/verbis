@@ -5,12 +5,12 @@
 package public
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	publisher "github.com/ainsleyclark/verbis/api/mocks/publisher"
-	theme "github.com/ainsleyclark/verbis/api/mocks/services/theme"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	publisher "github.com/verbiscms/verbis/api/mocks/publisher"
+	theme "github.com/verbiscms/verbis/api/mocks/services/theme"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

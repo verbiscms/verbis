@@ -6,13 +6,13 @@ package sys
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/version"
 	sm "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
 	"github.com/mouuff/go-rocket-update/pkg/updater"
+	"github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/version"
 	"runtime"
 )
 

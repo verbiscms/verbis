@@ -5,7 +5,7 @@
 package main
 
 import (
-	"github.com/ainsleyclark/verbis/api/cmd"
+	"github.com/verbiscms/verbis/api/cmd"
 	"runtime"
 )
 

@@ -6,10 +6,10 @@ package internal
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
 	"github.com/graymeta/stow/google"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
 	"io/ioutil"
 )
 

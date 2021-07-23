@@ -6,17 +6,17 @@ package users
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/pagination"
-	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/test/dummy"
-	"github.com/ainsleyclark/verbis/api/tpl/params"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/pagination"
+	"github.com/verbiscms/verbis/api/store"
+	"github.com/verbiscms/verbis/api/test/dummy"
+	"github.com/verbiscms/verbis/api/tpl/params"
 	"testing"
 
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/users"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/users"
 )
 
 type noStringer struct{}

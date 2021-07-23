@@ -6,9 +6,9 @@ package domain
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/errors"
 	"strings"
 	"testing"
 )

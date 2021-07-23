@@ -6,9 +6,9 @@ package forms
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	dynamicstruct "github.com/ompluscator/dynamic-struct"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 	"golang.org/x/net/html"
 	"mime/multipart"
 )

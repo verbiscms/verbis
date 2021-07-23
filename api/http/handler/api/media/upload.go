@@ -6,9 +6,9 @@ package media
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
 )
 

@@ -5,7 +5,7 @@
 package importer
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 func SendNewPassword(user domain.UserPart, password string, site domain.Site) error {

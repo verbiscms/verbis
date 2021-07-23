@@ -2,8 +2,9 @@ package tplimpl
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"fmt"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 func (t *TplTestSuite) TestNew() {
@@ -12,21 +13,32 @@ func (t *TplTestSuite) TestNew() {
 	t.Equal(tm, *New(d))
 }
 
+type mockWriterErr string
+
+func (m mockWriterErr) Write(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("error")
+}
+
 func (t *TplTestSuite) TestTemplateManager_ExecuteTpl() {
 	tt := map[string]struct {
 		text string
-		data interface{}
+		err  bool
 		want interface{}
 	}{
 		"Success": {
-			text: "test",
-			data: nil,
-			want: "test",
+			"test",
+			false,
+			"test",
 		},
 		"Bad template": {
-			text: "{{ {{.wrong}} }}",
-			data: nil,
-			want: "Error parsing template",
+			"{{ {{.wrong}} }}",
+			false,
+			"Error parsing template",
+		},
+		"Error parsing": {
+			"test",
+			true,
+			"Error executing template",
 		},
 	}
 
@@ -35,14 +47,23 @@ func (t *TplTestSuite) TestTemplateManager_ExecuteTpl() {
 			d := &deps.Deps{}
 			tm := TemplateManager{deps: d}
 
-			b := bytes.Buffer{}
-			err := tm.ExecuteTpl(&b, test.text, test.data)
+			var (
+				err error
+				buf = bytes.Buffer{}
+			)
+
+			if test.err {
+				err = tm.ExecuteTpl(mockWriterErr(""), test.text, nil)
+			} else {
+				err = tm.ExecuteTpl(&buf, test.text, nil)
+			}
+
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
 
-			t.Equal(test.want, b.String())
+			t.Equal(test.want, buf.String())
 		})
 	}
 }

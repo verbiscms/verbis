@@ -5,9 +5,9 @@
 package middleware
 
 import (
-	app "github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/deps"
 	"github.com/gin-gonic/gin"
+	app "github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/deps"
 	"strings"
 )
 

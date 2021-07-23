@@ -5,9 +5,9 @@
 package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/services/fields/location"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/services/fields/location"
 )
 
 // Handler defines methods for fields to interact with the server.

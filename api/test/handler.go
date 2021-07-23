@@ -7,9 +7,9 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/cache"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/cache"
 	"io"
 	"io/ioutil"
 	"net/http"

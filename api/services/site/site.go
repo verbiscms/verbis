@@ -5,9 +5,9 @@
 package site
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/sys"
-	"github.com/ainsleyclark/verbis/api/version"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/sys"
+	"github.com/verbiscms/verbis/api/version"
 )
 
 // Repository defines methods for the site.

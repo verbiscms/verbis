@@ -8,9 +8,9 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/database"
-	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/media/sizes"
+	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/errors"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/media/sizes"
 	"regexp"
 )
 

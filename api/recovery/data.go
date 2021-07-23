@@ -5,10 +5,10 @@
 package recovery
 
 import (
-	"github.com/ainsleyclark/verbis/api"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/recovery/trace"
 	"github.com/gin-contrib/location"
+	"github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/recovery/trace"
 	"io/ioutil"
 	"net/http"
 )

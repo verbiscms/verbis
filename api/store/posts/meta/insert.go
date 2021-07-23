@@ -5,7 +5,7 @@
 package meta
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/domain"
 )
 
 // Insert

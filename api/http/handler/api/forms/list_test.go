@@ -5,10 +5,10 @@
 package forms
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/store/forms"
-	"github.com/ainsleyclark/verbis/api/test/dummy"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/errors"
+	mocks "github.com/verbiscms/verbis/api/mocks/store/forms"
+	"github.com/verbiscms/verbis/api/test/dummy"
 	"net/http"
 )
 

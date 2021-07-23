@@ -4,7 +4,7 @@
 
 package forms
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import "github.com/verbiscms/verbis/api/domain"
 
 // Submit
 //

@@ -6,10 +6,10 @@ package config
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
 	"os"
 	"path/filepath"
 	"testing"

@@ -8,13 +8,13 @@ import (
 	"bytes"
 	"database/sql/driver"
 	sqlMock "github.com/DATA-DOG/go-sqlmock"
-	"github.com/ainsleyclark/verbis/api/cache"
-	"github.com/ainsleyclark/verbis/api/database/builder"
-	"github.com/ainsleyclark/verbis/api/logger"
-	"github.com/ainsleyclark/verbis/api/mocks/database"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/cache"
+	"github.com/verbiscms/verbis/api/database/builder"
+	"github.com/verbiscms/verbis/api/logger"
+	"github.com/verbiscms/verbis/api/mocks/database"
 	"testing"
 )
 

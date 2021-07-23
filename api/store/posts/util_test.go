@@ -5,7 +5,7 @@
 package posts
 
 import (
-	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
+	users "github.com/verbiscms/verbis/api/mocks/store/users"
 )
 
 func (t *PostsTestSuite) TestStore_CheckOwner() {

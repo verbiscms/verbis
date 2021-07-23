@@ -8,7 +8,7 @@ import (
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 type (

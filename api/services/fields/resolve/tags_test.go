@@ -4,7 +4,7 @@
 
 package resolve
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import "github.com/verbiscms/verbis/api/domain"
 
 func (t *ResolverTestSuite) TestValue_Tags() {
 	tt := map[string]struct {

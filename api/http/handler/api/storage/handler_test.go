@@ -5,12 +5,12 @@
 package storage
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/services/storage"
-	storage2 "github.com/ainsleyclark/verbis/api/services/storage"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	mocks "github.com/verbiscms/verbis/api/mocks/services/storage"
+	storage2 "github.com/verbiscms/verbis/api/services/storage"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 

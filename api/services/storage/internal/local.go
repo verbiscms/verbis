@@ -5,11 +5,11 @@
 package internal
 
 import (
-	"github.com/ainsleyclark/verbis/api/common/paths"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
 	"github.com/graymeta/stow"
 	stowLocal "github.com/graymeta/stow/local"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
 )
 
 // local satisfies the provider interface by implementing

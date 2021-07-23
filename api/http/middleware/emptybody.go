@@ -7,8 +7,8 @@ package middleware
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/ainsleyclark/verbis/api/http/handler/api"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/http/handler/api"
 	"io/ioutil"
 	"net/http"
 )

@@ -6,10 +6,10 @@ package media
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	storage "github.com/ainsleyclark/verbis/api/mocks/services/storage"
-	repo "github.com/ainsleyclark/verbis/api/mocks/store/media"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/domain"
+	storage "github.com/verbiscms/verbis/api/mocks/services/storage"
+	repo "github.com/verbiscms/verbis/api/mocks/store/media"
 )
 
 func (t *MediaServiceTestSuite) TestService_Delete() {

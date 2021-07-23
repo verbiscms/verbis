@@ -6,15 +6,19 @@ package partial
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/tpl"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/tpl"
 	"html/template"
+	"path/filepath"
 	"strings"
 )
 
 // Func describes the function for includes or rendering
 // partials within the template.
 type Func func(name string, data ...interface{}) (template.HTML, error)
+
+// newTpl is an alias for template.New
+var newTpl = template.New
 
 // Partial
 //
@@ -30,7 +34,7 @@ func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) Func {
 	const op = "Templates.Partial"
 
 	return func(name string, data ...interface{}) (template.HTML, error) {
-		path := exec.Config().GetRoot() + "/" + name
+		path := filepath.Join(exec.Config().GetRoot(), name)
 
 		var context interface{}
 		if len(data) == 1 {
@@ -41,7 +45,7 @@ func Partial(tplFuncs template.FuncMap, exec tpl.TemplateExecutor) Func {
 
 		pathArr := strings.Split(path, "/")
 
-		file, err := template.New(pathArr[len(pathArr)-1]).Funcs(tplFuncs).ParseFiles(path)
+		file, err := newTpl(pathArr[len(pathArr)-1]).Funcs(tplFuncs).ParseFiles(path)
 		if err != nil {
 			return "", &errors.Error{Code: errors.TEMPLATE, Message: "Error parsing partial", Operation: op, Err: err}
 		}

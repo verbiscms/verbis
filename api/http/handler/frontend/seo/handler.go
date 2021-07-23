@@ -5,9 +5,9 @@
 package seo
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/publisher"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/publisher"
 )
 
 // Handler defines methods for seo routes to

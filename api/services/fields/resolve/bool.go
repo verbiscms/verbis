@@ -5,9 +5,9 @@
 package resolve
 
 import (
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 // checkbox casts the domain.FieldValue to a boolean.

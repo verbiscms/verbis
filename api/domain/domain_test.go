@@ -8,9 +8,9 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/errors"
 	"github.com/spf13/cast"
 	"github.com/stretchr/testify/assert"
+	"github.com/verbiscms/verbis/api/errors"
 	"testing"
 )
 

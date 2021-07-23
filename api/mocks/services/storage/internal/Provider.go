@@ -3,8 +3,8 @@
 package mocks
 
 import (
-	domain "github.com/ainsleyclark/verbis/api/domain"
-	environment "github.com/ainsleyclark/verbis/api/environment"
+	domain "github.com/verbiscms/verbis/api/domain"
+	environment "github.com/verbiscms/verbis/api/environment"
 
 	mock "github.com/stretchr/testify/mock"
 

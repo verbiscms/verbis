@@ -5,9 +5,9 @@
 package media
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/services/media"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/services/media"
 )
 
 // Handler defines methods for media items to interact with the server.

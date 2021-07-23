@@ -5,8 +5,8 @@
 package routes
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/server"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/server"
 )
 
 // Load

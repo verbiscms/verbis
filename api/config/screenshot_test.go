@@ -5,7 +5,7 @@
 package config
 
 import (
-	"github.com/ainsleyclark/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 func (t *ConfigTestSuite) Test_FindScreenshot() {

@@ -5,15 +5,15 @@
 package themes
 
 import (
-	"github.com/ainsleyclark/verbis/api/config"
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/logger"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/services/theme"
-	options "github.com/ainsleyclark/verbis/api/mocks/store/options"
-	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/config"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/logger"
+	mocks "github.com/verbiscms/verbis/api/mocks/services/theme"
+	options "github.com/verbiscms/verbis/api/mocks/store/options"
+	"github.com/verbiscms/verbis/api/store"
+	"github.com/verbiscms/verbis/api/test"
 	"io/ioutil"
 	"testing"
 )

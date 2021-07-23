@@ -2,11 +2,11 @@ package internal
 
 import (
 	"fmt"
-	"github.com/ainsleyclark/verbis/api/domain"
-	"github.com/ainsleyclark/verbis/api/environment"
-	"github.com/ainsleyclark/verbis/api/errors"
-	"github.com/ainsleyclark/verbis/api/logger"
 	"github.com/graymeta/stow"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
 )
 
 // Provider defines the methods used for dialling and

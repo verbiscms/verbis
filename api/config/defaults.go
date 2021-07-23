@@ -4,7 +4,7 @@
 
 package config
 
-import "github.com/ainsleyclark/verbis/api/domain"
+import "github.com/verbiscms/verbis/api/domain"
 
 var (
 	// DefaultTheme is Global configuration for the theme,

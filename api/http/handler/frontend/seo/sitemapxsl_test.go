@@ -6,9 +6,9 @@ package seo
 
 import (
 	"fmt"
-	mocks "github.com/ainsleyclark/verbis/api/mocks/publisher"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
+	mocks "github.com/verbiscms/verbis/api/mocks/publisher"
 	"net/http"
 )
 

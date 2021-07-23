@@ -6,7 +6,7 @@ RUN mkdir /verbis
 WORKDIR /verbis
 
 # Add Maintainer Info
-LABEL maintainer="Ainsley Clark <ainsley@reddico.co.uk>"
+LABEL maintainer="Ainsley Clark <info@ainsleyclark.com>"
 
 # Copy go mod and sum files
 #COPY go.mod go.sum ./

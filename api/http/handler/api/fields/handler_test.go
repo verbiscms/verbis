@@ -5,14 +5,14 @@
 package fields
 
 import (
-	"github.com/ainsleyclark/verbis/api/deps"
-	"github.com/ainsleyclark/verbis/api/domain"
-	location "github.com/ainsleyclark/verbis/api/mocks/services/fields/location"
-	categories "github.com/ainsleyclark/verbis/api/mocks/store/categories"
-	users "github.com/ainsleyclark/verbis/api/mocks/store/users"
-	"github.com/ainsleyclark/verbis/api/store"
-	"github.com/ainsleyclark/verbis/api/test"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	location "github.com/verbiscms/verbis/api/mocks/services/fields/location"
+	categories "github.com/verbiscms/verbis/api/mocks/store/categories"
+	users "github.com/verbiscms/verbis/api/mocks/store/users"
+	"github.com/verbiscms/verbis/api/store"
+	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
 
