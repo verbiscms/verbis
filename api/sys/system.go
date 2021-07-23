@@ -5,15 +5,13 @@
 package sys
 
 import (
-	"fmt"
 	sm "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
-	"github.com/mouuff/go-rocket-update/pkg/updater"
+	rocket "github.com/mouuff/go-rocket-update/pkg/updater"
 	"github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/version"
-	"runtime"
 )
 
 // System represents cor functions for interacting with
@@ -31,7 +29,7 @@ type Sys struct {
 	// The path of the current executable.
 	ExecutablePath string
 	Driver         database.Driver
-	updater        *updater.Updater
+	client         *rocket.Updater
 	version        *sm.Version
 }
 
@@ -43,7 +41,7 @@ func New(db database.Driver) *Sys {
 		logger.Panic(err)
 	}
 
-	u := &updater.Updater{
+	u := &rocket.Updater{
 		Provider: &provider.Github{
 			RepositoryURL: api.Repo,
 		},
@@ -53,13 +51,8 @@ func New(db database.Driver) *Sys {
 	s := &Sys{
 		Driver:         db,
 		ExecutablePath: exec,
-		updater:        u,
+		client:         u,
 		version:        version.SemVer,
-	}
-
-	s.updater.Provider = &provider.Github{
-		RepositoryURL: api.Repo,
-		ArchiveName:   fmt.Sprintf("verbis_%s_%s_%s.zip", s.LatestVersion(), runtime.GOOS, runtime.GOARCH),
 	}
 
 	return s
