@@ -32,7 +32,7 @@ require (
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/lib/pq v1.8.0
+	github.com/lib/pq v1.10.2
 	github.com/mailgun/mailgun-go/v4 v4.5.1 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-isatty v0.0.13 // indirect
