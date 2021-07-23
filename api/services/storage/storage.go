@@ -89,12 +89,18 @@ type Bucket interface {
 	Exists(name string) bool
 }
 
-// TODO
+// Migrator defines the methods used for migrating fields to
+// different storage providers.
 type Migrator interface {
 	// Migrate migrates all files from one location to another.
-	// TODO
-	// |||||||||||||||||||||||||||||||||||||||||||||||||||||||
-	Migrate(from, to domain.StorageChange) (int, error)
+	// If delete is set to true, the original files will be
+	// deleted from the source destination. It returns
+	// the total amount of files processing in the
+	// background up on success.
+	// Returns errors.INVALID if there is a migration already in progress
+	// or the from and to providers are the same.
+	// Returns errors.NOTFOUND if there were no files found with the from provider.
+	Migrate(from, to domain.StorageChange, delete bool) (int, error)
 }
 
 // Storage represents the implementation of a Verbis

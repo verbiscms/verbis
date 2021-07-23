@@ -103,7 +103,7 @@ type migration struct {
 // Migrate satisfies the Provider interface by accepting a
 // from and to StorageChange to migrate files to the
 // remote provider or local storage.
-func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
+func (s *Storage) Migrate(from, to domain.StorageChange, delete bool) (int, error) {
 	const op = "Storage.Migrate"
 
 	if s.isMigrating {
@@ -149,14 +149,14 @@ func (s *Storage) Migrate(from, to domain.StorageChange) (int, error) {
 
 	logger.Debug(fmt.Sprintf("Starting storage migration with %d files being processed", total))
 
-	go s.processMigration(ff, from, to)
+	go s.processMigration(ff, from, to, delete)
 
 	return total, nil
 }
 
 // processMigration ranges over the given files and adds a
 // migration to the migrateTrackChan.
-func (s *Storage) processMigration(files domain.Files, from, to domain.StorageChange) {
+func (s *Storage) processMigration(files domain.Files, from, to domain.StorageChange, delete bool) {
 	var wg sync.WaitGroup
 
 	// migrateTrackChan is the channel used for sending and
@@ -171,7 +171,7 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 			to:   to,
 			wg:   &wg,
 		}
-		go s.migrateBackground(c)
+		go s.migrateBackground(c, delete)
 	}
 
 	wg.Wait()
@@ -186,7 +186,7 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 // migrateBackground processes the migration by finding the
 // original bytes, uploading to the new destination
 // and deleting the original file.
-func (s *Storage) migrateBackground(channel chan migration) {
+func (s *Storage) migrateBackground(channel chan migration, delete bool) {
 	m := <-channel
 
 	defer m.wg.Done()
@@ -212,10 +212,12 @@ func (s *Storage) migrateBackground(channel chan migration) {
 		return
 	}
 
-	err = s.deleteFile(false, m.file.Id)
-	if err != nil {
-		s.migration.fail(m.file, err)
-		return
+	if delete {
+		err = s.deleteFile(false, m.file.Id)
+		if err != nil {
+			s.migration.fail(m.file, err)
+			return
+		}
 	}
 
 	file.Id = m.file.Id
