@@ -12,8 +12,8 @@ import (
 func TestString(t *testing.T) {
 	tt := map[string]struct {
 		version string
-		pre string
-		want  string
+		pre     string
+		want    string
 	}{
 		"Empty Prerelease": {
 			"v0.0.1",
@@ -46,8 +46,8 @@ func TestString(t *testing.T) {
 func TestMust(t *testing.T) {
 	tt := map[string]struct {
 		version string
-		panics bool
-		want  interface{}
+		panics  bool
+		want    interface{}
 	}{
 		"Success": {
 			"v0.0.1",

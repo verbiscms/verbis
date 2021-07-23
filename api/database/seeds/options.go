@@ -120,6 +120,10 @@ func (s *Seeder) runOptions() error {
 		"minify_svg":  false,
 		"minify_json": false,
 		"minify_xml":  false,
+		// Storage
+		"storage_provider":     "local",
+		"storage_bucket":       "",
+		"storage_backup_local": true,
 	}
 
 	err := s.models.Options.Insert(optionsSeed)

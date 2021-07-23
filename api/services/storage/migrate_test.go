@@ -129,7 +129,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			if test.migrating {
 				s.isMigrating = true
 			}
-			total, err := s.Migrate(test.from, test.to)
+			total, err := s.Migrate(test.from, test.to, true)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -246,7 +246,7 @@ func (t *StorageTestSuite) TestStorage_MigrateBackground() {
 				wg:   &wg,
 			}
 
-			s.migrateBackground(c)
+			s.migrateBackground(c, true)
 
 			t.Equal(test.want.Failed, s.migration.Failed)
 			t.Equal(test.want.Succeeded, s.migration.Succeeded)

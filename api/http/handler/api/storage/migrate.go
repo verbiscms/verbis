@@ -16,8 +16,9 @@ import (
 // migration represents the data send from the frontend
 // to start a migration.
 type migration struct {
-	From domain.StorageChange `json:"from"`
-	To   domain.StorageChange `json:"to"`
+	From   domain.StorageChange `json:"from"`
+	To     domain.StorageChange `json:"to"`
+	Delete bool                 `json:"delete"`
 }
 
 // Migrate
@@ -35,7 +36,7 @@ func (s *Storage) Migrate(ctx *gin.Context) {
 		return
 	}
 
-	total, err := s.Storage.Migrate(migrate.From, migrate.To)
+	total, err := s.Storage.Migrate(migrate.From, migrate.To, migrate.Delete)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

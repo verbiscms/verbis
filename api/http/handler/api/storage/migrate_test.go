@@ -14,8 +14,9 @@ import (
 )
 
 var migrate = migration{
-	From: storageChange,
-	To:   storageChange,
+	From:   storageChange,
+	To:     storageChange,
+	Delete: false,
 }
 
 var migrateBadValidation = migration{
@@ -37,7 +38,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"Successfully started migration, processing 5 files",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To).Return(5, nil)
+				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(5, nil)
 			},
 		},
 		"Validation Failed": {
@@ -53,7 +54,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"not found",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To).Return(0, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(0, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Invalid": {
@@ -62,7 +63,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"invalid",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To).Return(0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
@@ -71,7 +72,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"conflict",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To).Return(0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
@@ -80,7 +81,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"internal",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To).Return(0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

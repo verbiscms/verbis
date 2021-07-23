@@ -131,7 +131,7 @@
 							<option v-for="(provider, providerIndex) in filteredProviders()" :value="providerIndex" :key="providerIndex">{{ provider['name'] }}</option>
 						</select>
 					</div>
-				</FormGroup>
+				</FormGroup><!-- /Provider -->
 				<!-- Bucket -->
 				<FormGroup v-if="migrate['validProvider']" label="Bucket*" :error="errors['migrate_modal_bucket']">
 					<div class="form-select-cont form-input">
@@ -140,7 +140,15 @@
 							<option v-for="(bucket, bucketIndex) in buckets" :value="bucket['id']" :key="bucketIndex">{{ bucket['name'] }}</option>
 						</select>
 					</div>
-				</FormGroup>
+				</FormGroup><!-- /Bucket -->
+				<!-- Delete -->
+				<div class="migrate-delete">
+					<h6 class="margin">Delete original files?</h6>
+					<div class="toggle">
+						<input type="checkbox" class="toggle-switch" id="migration-delete" v-model="migrate['delete']" :true-value="true" :false-value="false" />
+						<label for="migration-delete"></label>
+					</div>
+				</div><!-- /Delete -->
 			</template>
 		</Modal>
 		<!-- =====================
@@ -242,6 +250,7 @@ export default {
 		migrate: {
 			provider: "",
 			bucket: "",
+			delete: false,
 			validProvider: false,
 			isRemote: false,
 		},
@@ -393,6 +402,7 @@ export default {
 					},
 				}
 			}
+			migration['delete'] = this.migrate['delete'];
 			this.axios.post("/storage/migrate", migration)
 				.then(res => {
 					this.$noty.success(res.data.message);
@@ -568,5 +578,17 @@ export default {
 			height: 50px;
 		}
 	}
+
+	// Migrate
+	// =========================================================================
+
+	.migrate {
+
+		&-delete {
+			display: flex;
+			justify-content: space-between;
+		}
+	}
+
 
 </style>

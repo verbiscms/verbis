@@ -63,5 +63,4 @@ func New(db database.Driver) *Sys {
 	}
 
 	return s
-
 }

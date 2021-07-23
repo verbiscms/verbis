@@ -9,11 +9,6 @@ import (
 	"sync"
 )
 
-const (
-	// The path of test templates to be executed.
-	root = "/test/testdata/tpl"
-)
-
 func (t *TplTestSuite) TestTemplateManager_Prepare() {
 	tm := TemplateManager{deps: &deps.Deps{}}
 	config := tpl.Config{}
