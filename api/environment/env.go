@@ -39,7 +39,29 @@ type Env struct {
 	DbPassword string `json:"DB_PASSWORD" binding:"required"` //nolint
 	// The database port.
 	DbSchema string `json:"DB_SCHEMA"` //nolint
-	// The database port.
+	// The cache driver to use.
+	CacheDriver string `json:"CACHE_DRIVER"`
+	// Redis IP address.
+	RedisAddress string `json:"REDIS_ADDRESS"`
+	// The password for Redis.
+	RedisPassword string `json:"REDIS_PASSWORD"`
+	// The database to use for Redis.
+	RedisDb string `json:"REDIS_DB"` //nolint
+	// The IP addresses to use for MemCached.
+	MemCachedHosts string `json:"MEMCACHED_HOSTS"`
+	// The access key for AWS storage.
+	AWSAccessKey string `json:"STORAGE_AWS_ACCESS_KEY"`
+	// The access secret for AWS storage.
+	AWSSecret string `json:"STORAGE_AWS_SECRET"`
+	// The JSON file for GCP storage.
+	GCPJson string `json:"STORAGE_GCP_JSON_FILE"`
+	// The Project ID for GCP storage.
+	GCPProjectID string `json:"STORAGE_GCP_PROJECT_ID"`
+	// The account details for Azure storage.
+	AzureAccount string `json:"STORAGE_AZURE_ACCOUNT"`
+	// The account details for Azure storage.
+	AzureKey string `json:"STORAGE_AZURE_KEY"`
+	// The mail driver to use.
 	MailDriver string `json:"MAIL_DRIVER"`
 	// The mailing from address.
 	MailFromAddress string `json:"MAIL_FROM_ADDRESS"`
@@ -57,18 +79,6 @@ type Env struct {
 	MailGunDomain string `json:"MAILGUN_DOMAIN"`
 	// The API key for SendGrid.
 	SendGridAPIKey string `json:"SENDGRID_API_KEY"`
-	// The access key for AWS storage.
-	AWSAccessKey string `json:"STORAGE_AWS_ACCESS_KEY"`
-	// The access secret for AWS storage.
-	AWSSecret string `json:"STORAGE_AWS_SECRET"`
-	// The JSON file for GCP storage.
-	GCPJson string `json:"STORAGE_GCP_JSON_FILE"`
-	// The Project ID for GCP storage.
-	GCPProjectID string `json:"STORAGE_GCP_PROJECT_ID"`
-	// The account details for Azure storage.
-	AzureAccount string `json:"STORAGE_AZURE_ACCOUNT"`
-	// The account details for Azure storage.
-	AzureKey string `json:"STORAGE_AZURE_KEY"`
 }
 
 var (
@@ -105,6 +115,17 @@ func Load() (*Env, error) {
 		DbUser:          os.Getenv("DB_USERNAME"),
 		DbPassword:      os.Getenv("DB_PASSWORD"),
 		DbSchema:        os.Getenv("DB_SCHEMA"),
+		CacheDriver:     os.Getenv("CACHE_DRIVER"),
+		RedisAddress:    os.Getenv("REDIS_ADDRESS"),
+		RedisPassword:   os.Getenv("REDIS_PASSWORD"),
+		RedisDb:         os.Getenv("REDIS_DB"),
+		MemCachedHosts:  os.Getenv("MEMCACHED_HOSTS"),
+		AWSAccessKey:    os.Getenv("STORAGE_AWS_ACCESS_KEY"),
+		AWSSecret:       os.Getenv("STORAGE_AWS_SECRET"),
+		GCPJson:         os.Getenv("STORAGE_GCP_JSON"),
+		GCPProjectID:    os.Getenv("STORAGE_GCP_PROJECT_ID"),
+		AzureAccount:    os.Getenv("STORAGE_AZURE_ACCOUNT"),
+		AzureKey:        os.Getenv("STORAGE_AZURE_KEY"),
 		MailDriver:      os.Getenv("MAIL_DRIVER"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
 		MailFromName:    os.Getenv("MAIL_FROM_NAME"),
@@ -114,12 +135,6 @@ func Load() (*Env, error) {
 		MailGunURL:      os.Getenv("MAILGUN_URL"),
 		MailGunDomain:   os.Getenv("MAILGUN_DOMAIN"),
 		SendGridAPIKey:  os.Getenv("SENDGRID_API_KEY"),
-		AWSAccessKey:    os.Getenv("STORAGE_AWS_ACCESS_KEY"),
-		AWSSecret:       os.Getenv("STORAGE_AWS_SECRET"),
-		GCPJson:         os.Getenv("STORAGE_GCP_JSON"),
-		GCPProjectID:    os.Getenv("STORAGE_GCP_PROJECT_ID"),
-		AzureAccount:    os.Getenv("STORAGE_AZURE_ACCOUNT"),
-		AzureKey:        os.Getenv("STORAGE_AZURE_KEY"),
 	}, nil
 }
 

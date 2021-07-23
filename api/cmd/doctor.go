@@ -51,6 +51,13 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	// Init logging
 	logger.Init(env)
 
+	// Init Cache
+	err = cache.Load(env)
+	if err != nil {
+		printError(err.Error())
+		return nil, nil, err
+	}
+
 	// Check if the environment values are valid
 	vErrors := env.Validate()
 	if vErrors != nil {
@@ -65,9 +72,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
-	// Init Cache
-	cache.Init()
 
 	p := paths.Get()
 	system := sys.New(db)

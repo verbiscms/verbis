@@ -9,7 +9,6 @@ import (
 	pkgValidate "github.com/go-playground/validator/v10"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	posts "github.com/verbiscms/verbis/api/mocks/store/posts"
@@ -29,7 +28,6 @@ type UsersTestSuite struct {
 //
 // Assert testing has begun.
 func TestUsers(t *testing.T) {
-	cache.Init()
 	suite.Run(t, &UsersTestSuite{
 		HandlerSuite: test.NewHandlerSuite(),
 	})

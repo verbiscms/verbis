@@ -5,6 +5,7 @@
 package location
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/verbiscms/verbis/api/cache"
@@ -44,8 +45,8 @@ func (l *Location) Layout(themePath string, post domain.PostDatum, cacheable boo
 	// layout has already been cached, return.
 	var found bool
 	if cacheable {
-		cached, found := cache.Store.Get("field_layout_" + post.UUID.String())
-		if found {
+		cached, err := cache.Get(context.Background(), "field_layout_"+post.UUID.String())
+		if err == nil {
 			return cached.(domain.FieldGroups)
 		}
 	}
@@ -61,7 +62,9 @@ func (l *Location) Layout(themePath string, post domain.PostDatum, cacheable boo
 
 	// Set the cache field layout if the cache was not found
 	if !found && cacheable {
-		cache.Store.Set("field_layout_"+post.UUID.String(), groups, cache.RememberForever)
+		cache.Set(context.Background(), "field_layout_"+post.UUID.String(), groups, cache.Options{
+			Expiration: cache.RememberForever,
+		})
 	}
 
 	return groups

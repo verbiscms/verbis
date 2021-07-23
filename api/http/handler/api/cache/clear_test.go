@@ -5,8 +5,10 @@
 package cache
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/deps"
+	"github.com/stretchr/testify/mock"
+	mocks "github.com/verbiscms/verbis/api/mocks/cache"
 	"net/http"
 )
 
@@ -14,20 +16,31 @@ func (t *CacheTestSuite) TestCache_Clear() {
 	tt := map[string]struct {
 		status  int
 		message string
+		mock    func(m *mocks.Cacher)
 		want    interface{}
 	}{
 		"Success": {
 			http.StatusOK,
 			"Successfully cleared server cache",
+			func(m *mocks.Cacher) {
+				m.On("Clear", mock.Anything).Return(nil)
+			},
+			nil,
+		},
+		"Error": {
+			http.StatusInternalServerError,
+			"Error clearing server cache",
+			func(m *mocks.Cacher) {
+				m.On("Clear", mock.Anything).Return(fmt.Errorf("error"))
+			},
 			nil,
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			mock := New(&deps.Deps{})
 			t.RequestAndServe("POST", "/reset", "/reset", nil, func(ctx *gin.Context) {
-				mock.Clear(ctx)
+				t.Setup(test.mock).Clear(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

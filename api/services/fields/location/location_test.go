@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/logger"
 	"io/ioutil"
 	"os"
@@ -32,7 +33,8 @@ func TestLocation(t *testing.T) {
 // SetupSuite Discard the logger on setup and
 // init caching.
 func (t *LocationTestSuite) SetupSuite() {
-	cache.Init()
+	err := cache.Load(&environment.Env{CacheDriver: cache.MemoryStore})
+	t.NoError(err)
 
 	logger.SetOutput(ioutil.Discard)
 

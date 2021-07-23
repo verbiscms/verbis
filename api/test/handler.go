@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/suite"
-	"github.com/verbiscms/verbis/api/cache"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -52,8 +51,6 @@ func NewHandlerSuite() HandlerSuite {
 	gin.DefaultWriter = ioutil.Discard
 	rr := httptest.NewRecorder()
 	ctx, engine := gin.CreateTestContext(rr)
-	cache.Init()
-
 	return HandlerSuite{
 		Recorder: rr,
 		Context:  ctx,

@@ -11,7 +11,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/database/builder"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/mocks/database"
@@ -62,8 +61,6 @@ func (a DBAnyJSONMessage) Match(v driver.Value) bool {
 // New recorder for testing
 // controllers, initialises gin & sets gin mode.
 func NewDBSuite(t *testing.T) DBSuite {
-	cache.Init()
-
 	buf := &bytes.Buffer{}
 	logger.SetOutput(buf)
 
