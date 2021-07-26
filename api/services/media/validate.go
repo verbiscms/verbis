@@ -7,6 +7,7 @@ package media
 import (
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/verbiscms/verbis/api/common/mime"
+	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
@@ -19,7 +20,7 @@ import (
 // Satisfies the Library to see if the testMedia item passed
 // is valid.
 func (s *Service) Validate(file *multipart.FileHeader) error {
-	return validate(file, s.options, s.config)
+	return validate(file, s.options, config.Get())
 }
 
 // validator defines the helper for validating testMedia items.

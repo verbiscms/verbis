@@ -6,6 +6,7 @@ package spa
 
 import (
 	"github.com/gin-gonic/gin"
+	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/common/mime"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/errors"
@@ -60,7 +61,7 @@ func (s *SPA) Serve(ctx *gin.Context) {
 //
 // Returns any files for the SPA.
 func (s *SPA) file(path string, ctx *gin.Context) {
-	file := strings.ReplaceAll(path, "/admin", "")
+	file := strings.ReplaceAll(path, app.AdminPath, "")
 	extensionArr := strings.Split(file, ".")
 	extension := extensionArr[len(extensionArr)-1]
 

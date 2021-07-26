@@ -7,6 +7,7 @@ package auth
 import (
 	"context"
 	"github.com/gin-gonic/gin"
+	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/events"
@@ -61,7 +62,7 @@ func (a *Auth) SendResetPassword(ctx *gin.Context) {
 
 	err = a.resetPassword.Dispatch(events.ResetPassword{
 		User: user.UserPart,
-		URL:  a.Deps.Options.SiteUrl + "/admin/password/reset/" + token,
+		URL:  a.Deps.Options.SiteUrl + app.AdminPath + "/password/reset/" + token,
 	}, []string{user.Email}, nil)
 
 	if err != nil {
