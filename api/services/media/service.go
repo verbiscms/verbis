@@ -7,7 +7,6 @@ package media
 import (
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/common/paths"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/services/media/resizer"
@@ -79,7 +78,6 @@ var (
 // and serving rich testMedia from the Verbis testMedia library.
 type Service struct {
 	options *domain.Options
-	config  *domain.ThemeConfig
 	paths   paths.Paths
 	webp    webp.Execer
 	storage storage2.Bucket
@@ -92,7 +90,6 @@ func New(opts *domain.Options, store storage2.Bucket, repo media.Repository) *Se
 	p := paths.Get()
 	return &Service{
 		options: opts,
-		config:  config.Get(),
 		paths:   p,
 		webp:    webp.New(p.Bin + webp.Path),
 		storage: store,
