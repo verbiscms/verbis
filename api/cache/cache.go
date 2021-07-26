@@ -122,7 +122,7 @@ func Set(ctx context.Context, key interface{}, value interface{}, options Option
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error setting cache key: " + str, Operation: op, Err: err}
 	}
-	//logger.Debug("Successfully set cache item with key: " + str)
+	logger.Debug("Successfully set cache item with key: " + str)
 	return nil
 }
 
@@ -136,7 +136,7 @@ func Delete(ctx context.Context, key interface{}) error {
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error deleting cache key: " + str, Operation: op, Err: err}
 	}
-	//logger.Debug("Successfully deleted cache item with key: " + str)
+	logger.Debug("Successfully deleted cache item with key: " + str)
 	return nil
 }
 

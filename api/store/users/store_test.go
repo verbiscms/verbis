@@ -7,7 +7,6 @@ package users
 import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/suite"
-	theme "github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/store/config"
 	"github.com/verbiscms/verbis/api/test"
@@ -46,13 +45,8 @@ func (t *UsersTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 // SetupSession
 //
 // Helper for checking session testing.
-func (t *UsersTestSuite) SetupSession(session int, mf func(m sqlmock.Sqlmock)) *Store {
+func (t *UsersTestSuite) SetupSession(mf func(m sqlmock.Sqlmock)) *Store {
 	s := t.Setup(mf)
-	theme.Set(domain.ThemeConfig{
-		Admin: domain.AdminConfig{
-			InactiveSessionTime: session,
-		},
-	})
 	return s
 }
 
