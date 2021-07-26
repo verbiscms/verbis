@@ -18,18 +18,14 @@ type MiddlewareTestSuite struct {
 	test.HandlerSuite
 }
 
-// TestMiddleware
-//
-// Assert testing has begun.
+// TestMiddleware asserts testing has begun.
 func TestMiddleware(t *testing.T) {
 	suite.Run(t, &MiddlewareTestSuite{
 		HandlerSuite: test.NewHandlerSuite(),
 	})
 }
 
-// DefaultHandler
-//
-// Is a helper func for returning data for testing.
-func (t *MiddlewareTestSuite) DefaultHandler(g *gin.Context) {
-	g.String(http.StatusOK, "verbis")
+// DefaultHandler is a helper func for returning data for testing.
+func (t *MiddlewareTestSuite) DefaultHandler(ctx *gin.Context) {
+	ctx.String(http.StatusOK, "verbis")
 }

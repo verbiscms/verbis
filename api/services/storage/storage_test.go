@@ -10,11 +10,14 @@ import (
 	_ "github.com/graymeta/stow/azure"
 	_ "github.com/graymeta/stow/google"
 	_ "github.com/graymeta/stow/s3"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
+	mockCache "github.com/verbiscms/verbis/api/mocks/cache"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 	options "github.com/verbiscms/verbis/api/mocks/store/options"
@@ -37,6 +40,9 @@ func TestStorage(t *testing.T) {
 
 // BeforeTest discards the log.
 func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
+	c := &mockCache.Cacher{}
+	c.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, nil).Times(100)
+	cache.SetDriver(c)
 	logger.SetOutput(ioutil.Discard)
 }
 

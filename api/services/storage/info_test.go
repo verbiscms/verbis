@@ -7,11 +7,14 @@ package storage
 import (
 	"fmt"
 	"github.com/graymeta/stow"
+	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
+	mockCache "github.com/verbiscms/verbis/api/mocks/cache"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
-	internal2 "github.com/verbiscms/verbis/api/services/storage/internal"
+	"github.com/verbiscms/verbis/api/services/storage/internal"
 )
 
 type mockProviderErr struct{}
@@ -26,12 +29,16 @@ func (m *mockProviderErr) Info(env *environment.Env) domain.StorageProviderInfo 
 
 func (t *StorageTestSuite) TestStorage_Info() {
 	tt := map[string]struct {
-		mock func(m *mocks.Service, r *repo.Repository)
-		want interface{}
+		mock  func(m *mocks.Service, r *repo.Repository)
+		cache func(c *mockCache.Cacher)
+		want  interface{}
 	}{
 		"Success": {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+			},
+			func(c *mockCache.Cacher) {
+				c.On("Get", mock.Anything, MigrationCacheKey).Return(MigrationInfo{}, nil)
 			},
 			Configuration{
 				ActiveProvider: domain.StorageAWS,
@@ -47,15 +54,22 @@ func (t *StorageTestSuite) TestStorage_Info() {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, "", fmt.Errorf("error"))
 			},
+			func(c *mockCache.Cacher) {
+				c.On("Get", mock.Anything, MigrationCacheKey).Return(MigrationInfo{}, nil)
+			},
 			"error",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			orig := internal2.Providers
-			defer func() { internal2.Providers = orig }()
-			internal2.Providers = internal2.ProviderMap{"test": &mockProviderErr{}}
+			orig := internal.Providers
+			defer func() { internal.Providers = orig }()
+			internal.Providers = internal.ProviderMap{"test": &mockProviderErr{}}
+
+			c := &mockCache.Cacher{}
+			test.cache(c)
+			cache.SetDriver(c)
 
 			s := t.Setup(test.mock)
 			got, err := s.Info()
