@@ -45,6 +45,7 @@ func New(d *deps.Deps) *Server {
 	// Global middleware
 	r.Use(logger.Middleware())
 	r.Use(location.Default())
+	r.Use(middleware.Setters(d))
 	r.Use(middleware.Redirects(d))
 
 	if !api.Production {

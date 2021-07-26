@@ -5,6 +5,8 @@
 package storage
 
 import (
+	"context"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	internal2 "github.com/verbiscms/verbis/api/services/storage/internal"
 )
@@ -32,12 +34,18 @@ func (s *Storage) Info() (Configuration, error) {
 		m[k] = v.Info(s.env)
 	}
 
+	var migrationInfo MigrationInfo
+	mi, found := cache.Get(context.Background(), MigrationCacheKey)
+	if found == nil {
+		migrationInfo = mi.(MigrationInfo)
+	}
+
 	c := Configuration{
 		ActiveProvider: provider,
 		ActiveBucket:   bucket,
 		Providers:      m,
 		IsMigrating:    s.isMigrating,
-		MigrationInfo:  s.migration,
+		MigrationInfo:  migrationInfo,
 	}
 
 	return c, nil

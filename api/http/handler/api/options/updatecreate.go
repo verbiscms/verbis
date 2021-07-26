@@ -7,10 +7,12 @@ package options
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
+	"time"
 )
 
 // UpdateCreate
@@ -43,6 +45,14 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}
+
+	err = cache.Set(ctx, cache.OptionsKey, vOptions, cache.Options{Expiration: time.Minute * 16})
+	if err != nil {
+		api.Respond(ctx, http.StatusInternalServerError, "Error updating options cache", err)
+		return
+	}
+
+	o.SetOptions(&vOptions)
 
 	api.Respond(ctx, http.StatusOK, "Successfully created/updated options", nil)
 }

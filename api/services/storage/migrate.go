@@ -6,7 +6,9 @@ package storage
 
 import (
 	"bytes"
+	"context"
 	"fmt"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
@@ -35,6 +37,10 @@ type MigrationInfo struct {
 	// Avoid data race for go routine
 	mtx *sync.Mutex
 }
+
+const (
+	MigrationCacheKey = "stmigrate"
+)
 
 // FailedMigrationFile represents an error when migrating.
 // It includes an error.Error as well as a file for
@@ -87,8 +93,13 @@ func (m *MigrationInfo) succeed(file domain.File) {
 
 // calculateProcessed
 func (m *MigrationInfo) storeMigration() {
-	// TODO - we need to override the cache with the updated MigrationInfo here!
 	m.Progress = (m.FilesProcessed * 100) / m.Total
+	err := cache.Set(context.Background(), MigrationCacheKey, m, cache.Options{
+		Expiration: cache.RememberForever,
+	})
+	if err != nil {
+		logger.WithError(err).Error()
+	}
 }
 
 // migration is an entity used to help to process file
@@ -137,9 +148,6 @@ func (s *Storage) Migrate(from, to domain.StorageChange, deleteFiles bool) (int,
 		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error no files found with provider: " + from.Provider.String(), Operation: op, Err: ErrNoFilesToMigrate}
 	}
 
-	// TODO, this needs to be stored in the cache, if there are multiple
-	// migrations on a stateless platform, there will be
-	// inconsistencies
 	s.isMigrating = true
 	s.migration = MigrationInfo{
 		Total:      total,
@@ -178,6 +186,11 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 
 	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", s.migration.Succeeded))
 	logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", s.migration.Failed))
+
+	err := cache.Delete(context.Background(), MigrationCacheKey)
+	if err != nil {
+		logger.WithError(err).Error()
+	}
 
 	s.isMigrating = false
 	s.migration = MigrationInfo{}
