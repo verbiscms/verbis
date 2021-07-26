@@ -159,3 +159,9 @@ ALTER TABLE media
 
 ALTER TABLE media_sizes
     DROP COLUMN uuid;
+
+##############################################
+# Delete Password Resets
+##############################################
+
+DROP TABLE password_resets;

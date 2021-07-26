@@ -68,7 +68,7 @@ ci:
 
 # Make mocks keeping directory tree
 mock:
-	cd api && rm -rf mocks && mockery --all --keeptree
+	cd api && rm -rf mocks && mockery --all --keeptree --exported=true
 .PHONY: mock
 
 # Run linter

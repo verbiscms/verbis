@@ -5,12 +5,16 @@
 package location
 
 import (
+	"bytes"
+	"fmt"
 	"github.com/google/uuid"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/logger"
+	mockCache "github.com/verbiscms/verbis/api/mocks/cache"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -52,7 +56,7 @@ func (t *LocationTestSuite) TearDownSuite() {
 	FieldPath = t.OriginalFieldPath
 }
 
-func (t *LocationTestSuite) TestLocation_GetLayout() {
+func (t *LocationTestSuite) TestLocation_Layout() {
 	tt := map[string]struct {
 		cacheable bool
 		file      string
@@ -86,6 +90,18 @@ func (t *LocationTestSuite) TestLocation_GetLayout() {
 			t.Equal(test.want, l.Layout(filepath.Join(t.TestPath, test.file), domain.PostDatum{}, test.cacheable))
 		})
 	}
+}
+
+func (t *LocationTestSuite) TestLocation_Layout_CacheError() {
+	buf := &bytes.Buffer{}
+	logger.SetOutput(buf)
+	c := &mockCache.Cacher{}
+	c.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
+	c.On("Get", mock.Anything, mock.Anything, mock.Anything).Return(nil, fmt.Errorf("Error"))
+	cache.SetDriver(c)
+	l := &Location{}
+	l.Layout(filepath.Join(t.TestPath, "location.json"), domain.PostDatum{}, true)
+	t.Contains(buf.String(), "error")
 }
 
 func (t *LocationTestSuite) TestLocation_GroupResolver() {

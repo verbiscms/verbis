@@ -138,24 +138,29 @@ func (t *CacheTestSuite) TestSet() {
 	}{
 		"Success": {
 			func(m *mocks.Cacher) {
-				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
+				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+					Return(nil)
 			},
-			"Successfully set cache item with key",
+			nil,
 		},
 		"Error": {
 			func(m *mocks.Cacher) {
-				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
+				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
-			"error",
+			"Error setting cache key",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.Setup(test.mock)
-			Set(context.Background(), "key", "key", Options{})
-			t.Contains(t.LogWriter.String(), test.want)
-			t.Reset()
+			err := Set(context.Background(), "key", "key", Options{})
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.Equal(test.want, err)
 		})
 	}
 }
@@ -167,24 +172,29 @@ func (t *CacheTestSuite) TestDelete() {
 	}{
 		"Success": {
 			func(m *mocks.Cacher) {
-				m.On("Delete", mock.Anything, mock.Anything).Return(nil)
+				m.On("Delete", mock.Anything, mock.Anything).
+					Return(nil)
 			},
-			"Successfully deleted cache item with key",
+			nil,
 		},
 		"Error": {
 			func(m *mocks.Cacher) {
-				m.On("Delete", mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
+				m.On("Delete", mock.Anything, mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
-			"error",
+			"Error deleting cache key",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.Setup(test.mock)
-			Delete(context.Background(), "key")
-			t.Contains(t.LogWriter.String(), test.want)
-			t.Reset()
+			err := Delete(context.Background(), "key")
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.Equal(test.want, err)
 		})
 	}
 }
@@ -196,13 +206,15 @@ func (t *CacheTestSuite) TestInvalidate() {
 	}{
 		"Success": {
 			func(m *mocks.Cacher) {
-				m.On("Invalidate", mock.Anything, mock.Anything).Return(nil)
+				m.On("Invalidate", mock.Anything, mock.Anything).
+					Return(nil)
 			},
 			nil,
 		},
 		"Error": {
 			func(m *mocks.Cacher) {
-				m.On("Invalidate", mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
+				m.On("Invalidate", mock.Anything, mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			"Error invalidating cache",
 		},
@@ -228,13 +240,15 @@ func (t *CacheTestSuite) TestClear() {
 	}{
 		"Success": {
 			func(m *mocks.Cacher) {
-				m.On("Clear", mock.Anything).Return(nil)
+				m.On("Clear", mock.Anything).
+					Return(nil)
 			},
 			nil,
 		},
 		"Error": {
 			func(m *mocks.Cacher) {
-				m.On("Clear", mock.Anything).Return(fmt.Errorf("error"))
+				m.On("Clear", mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			"Error clearing cache",
 		},

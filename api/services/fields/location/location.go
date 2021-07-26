@@ -62,9 +62,12 @@ func (l *Location) Layout(themePath string, post domain.PostDatum, cacheable boo
 
 	// Set the cache field layout if the cache was not found
 	if !found && cacheable {
-		cache.Set(context.Background(), "field_layout_"+post.UUID.String(), groups, cache.Options{
+		err := cache.Set(context.Background(), "field_layout_"+post.UUID.String(), groups, cache.Options{
 			Expiration: cache.RememberForever,
 		})
+		if err != nil {
+			logger.WithError(err).Error()
+		}
 	}
 
 	return groups
