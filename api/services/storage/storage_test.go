@@ -47,11 +47,11 @@ func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
 }
 
 // Setup the suite with the mock functions.
-func (t *StorageTestSuite) Setup(mock func(s *mocks.Service, r *repo.Repository)) *Storage {
+func (t *StorageTestSuite) Setup(mf func(s *mocks.Service, r *repo.Repository)) *Storage {
 	m := &mocks.Service{}
 	r := &repo.Repository{}
-	if mock != nil {
-		mock(m, r)
+	if mf != nil {
+		mf(m, r)
 	}
 	return &Storage{
 		filesRepo: r,
@@ -62,12 +62,12 @@ func (t *StorageTestSuite) Setup(mock func(s *mocks.Service, r *repo.Repository)
 
 // Setup the suite with mock functions including
 // options.
-func (t *StorageTestSuite) SetupOptions(mock func(m *mocks.Service, r *repo.Repository, o *options.Repository)) *Storage {
+func (t *StorageTestSuite) SetupOptions(mf func(m *mocks.Service, r *repo.Repository, o *options.Repository)) *Storage {
 	m := &mocks.Service{}
 	r := &repo.Repository{}
 	o := &options.Repository{}
-	if mock != nil {
-		mock(m, r, o)
+	if mf != nil {
+		mf(m, r, o)
 	}
 	return &Storage{
 		filesRepo:   r,

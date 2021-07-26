@@ -162,7 +162,6 @@ func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Opti
 
 	c := New(opts, s, r)
 	c.resizer = &resizer.Resizer{}
-	c.config = cfg
 
 	return c
 }

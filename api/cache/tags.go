@@ -12,5 +12,5 @@ var Tags = struct {
 
 const (
 	OptionsKey     = "options"
-	ThemeConfigKey = "themecfg"
+	ThemeConfigKey = "theme_config"
 )
