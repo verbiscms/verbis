@@ -6,6 +6,7 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/common/encryption"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/events"
 )
@@ -25,6 +26,10 @@ type Auth struct {
 	*deps.Deps
 	// Reset password email event.
 	resetPassword events.Dispatcher
+	// The function used for hashing passwords.
+	hashPasswordFunc func(password string) (string, error)
+	// The function used for generating tokens.
+	generateTokenFunc func(email string) (string, error)
 }
 
 // New
@@ -32,7 +37,9 @@ type Auth struct {
 // Creates a new auth handler.
 func New(d *deps.Deps) *Auth {
 	return &Auth{
-		Deps:          d,
-		resetPassword: events.NewResetPassword(d),
+		Deps:              d,
+		resetPassword:     events.NewResetPassword(d),
+		hashPasswordFunc:  encryption.HashPassword,
+		generateTokenFunc: encryption.GenerateEmailToken,
 	}
 }

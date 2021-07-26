@@ -73,7 +73,7 @@ func Load(env *environment.Env) error {
 	}
 
 	switch env.CacheDriver {
-	case MemoryStore:
+	case MemoryStore, "":
 		client := gocache.New(DefaultExpiry, DefaultCleanup)
 		cacheStore := store.NewGoCache(client, nil)
 		c = cache.New(cacheStore)
@@ -115,27 +115,29 @@ func Get(ctx context.Context, key interface{}) (interface{}, error) {
 // Set set's a singular item in memory by key, value
 // and options (tags and expiration time).
 // Logs errors.INTERNAL if the item could not be set.
-func Set(ctx context.Context, key interface{}, value interface{}, options Options) {
+func Set(ctx context.Context, key interface{}, value interface{}, options Options) error {
 	const op = "Cache.Set"
 	str := cast.ToString(key)
 	err := c.Set(ctx, key, value, options.toStore())
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error setting cache key: " + str, Operation: op, Err: err}).Error()
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error setting cache key: " + str, Operation: op, Err: err}
 	}
-	logger.Trace("Successfully set cache item with key: " + str)
+	//logger.Debug("Successfully set cache item with key: " + str)
+	return nil
 }
 
 // Delete removes a singular item from the cache by
 // a specific key.
 // Logs errors.INTERNAL if the item could not be deleted.
-func Delete(ctx context.Context, key interface{}) {
+func Delete(ctx context.Context, key interface{}) error {
 	const op = "Cache.Delete"
 	str := cast.ToString(key)
 	err := c.Delete(ctx, key)
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting cache key: " + str, Operation: op, Err: err}).Error()
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error deleting cache key: " + str, Operation: op, Err: err}
 	}
-	logger.Trace("Successfully deleted cache item with key: " + str)
+	//logger.Debug("Successfully deleted cache item with key: " + str)
+	return nil
 }
 
 // Invalidate removes items from the cache via the

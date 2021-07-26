@@ -5,7 +5,10 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/cache"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
@@ -33,11 +36,20 @@ func (a *Auth) ResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	err = a.Store.Auth.ResetPassword(rp.Token, rp.NewPassword)
-	if errors.Code(err) == errors.NOTFOUND {
-		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
+	c, err := cache.Get(ctx, rp.Token)
+	if err != nil {
+		api.Respond(ctx, http.StatusBadRequest, "No user exists with the token: "+rp.Token, &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
-	} else if err != nil {
+	}
+
+	user, ok := c.(domain.User)
+	if !ok {
+		api.Respond(ctx, http.StatusInternalServerError, "Error converting cache item to user", &errors.Error{Code: errors.INTERNAL, Err: fmt.Errorf("cast to user error"), Operation: op})
+		return
+	}
+
+	err = a.Store.Auth.ResetPassword(user.Email, rp.NewPassword)
+	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
 	}

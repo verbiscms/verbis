@@ -33,7 +33,6 @@ type SiteMapper interface {
 	Index() ([]byte, error)
 	Pages(resource string) ([]byte, error)
 	XSL(index bool) ([]byte, error)
-	ClearCache()
 }
 
 // Sitemap represents the generation of sitemap.xml files for use
@@ -157,7 +156,12 @@ func (s *Sitemap) Index() ([]byte, error) {
 		return nil, err
 	}
 
-	go cache.Set(context.Background(), "sitemap-index", &xmlData, cache.Options{Expiration: cacheExpiry})
+	go func() {
+		err := cache.Set(context.Background(), "sitemap-index", &xmlData, cache.Options{Expiration: cacheExpiry})
+		if err != nil {
+			logger.WithError(err).Error()
+		}
+	}()
 
 	return xmlData, nil
 }
@@ -184,7 +188,12 @@ func (s *Sitemap) XSL(index bool) ([]byte, error) {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the xsl file with the path: %s", path), Operation: op, Err: err}
 	}
 
-	go cache.Set(context.Background(), fileName, &data, cache.Options{Expiration: cacheExpiry})
+	go func() {
+		err := cache.Set(context.Background(), fileName, &data, cache.Options{Expiration: cacheExpiry})
+		if err != nil {
+			logger.WithError(err)
+		}
+	}()
 
 	return data, nil
 }
@@ -252,17 +261,6 @@ func (s *Sitemap) findResourceBySlug(slug string) (domain.Resource, error) {
 		}
 	}
 	return domain.Resource{}, fmt.Errorf("not found")
-}
-
-// ClearCache - Clears all of the cached data from the index.xml file
-// as well as the resources xml files.
-//
-// Returns no error.
-func (s *Sitemap) ClearCache() {
-	cache.Delete(context.Background(), "sitemap-index")
-	for _, v := range s.resources {
-		cache.Delete(context.Background(), "sitemap-"+v.Name)
-	}
 }
 
 // getPosts obtains all of the posts for the sitemap in created at
