@@ -31,14 +31,8 @@ type (
 		FileExtension string      `yaml:"file_extension" json:"file_extension"`
 		TemplateDir   string      `yaml:"template_dir" json:"template_dir"`
 		LayoutDir     string      `yaml:"layout_dir" json:"layout_dir"`
-		Admin         AdminConfig `yaml:"admin" json:"admin"`
 		Media         MediaConfig `yaml:"media" json:"media"`
 		Editor        Editor      `yaml:"editor" json:"editor"`
-	}
-	// AdminConfig defines the configuration for the SPA.
-	AdminConfig struct {
-		Path                string `yaml:"admin_path,omitempty" json:"admin_path,omitempty"`
-		InactiveSessionTime int    `yaml:"inactive_session_time,omitempty" json:"inactive_session_time,omitempty"`
 	}
 	// MediaConfig defines the configuration for any media.
 	MediaConfig struct {

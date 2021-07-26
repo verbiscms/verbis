@@ -8,11 +8,16 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/verbiscms/verbis/api/common/encryption"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"time"
+)
+
+const (
+	// InactiveSessionTime defines the amount of time in
+	// minutes before a suer is kicked out.
+	InactiveSessionTime = 60
 )
 
 // CheckSession
@@ -37,7 +42,7 @@ func (s *Store) CheckSession(token string) error {
 	// Destroy the token and create a new one if session expired.
 	inactiveFor := time.Since(*u.TokenLastUsed).Minutes()
 
-	if int(inactiveFor) > config.Get().Admin.InactiveSessionTime {
+	if int(inactiveFor) > InactiveSessionTime {
 		newToken := encryption.GenerateUserToken(u.FirstName+u.LastName, u.Email)
 
 		q := s.Builder().

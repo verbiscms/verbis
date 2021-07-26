@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/kyokomi/emoji"
 	"github.com/spf13/cobra"
+	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/server"
 	"github.com/verbiscms/verbis/api/server/routes"
@@ -44,7 +45,7 @@ up the server on the port specified in the .env file.`,
 			// Print listening success
 			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", cfg.Env.Port()))
 			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", d.Options.SiteUrl)
-			emoji.Printf(":key: Or visit the admin area at:  %s \n", d.Options.SiteUrl+"/admin")
+			emoji.Printf(":key: Or visit the admin area at:  %s \n", d.Options.SiteUrl+app.AdminPath)
 			fmt.Println()
 
 			// Listen & serve.
