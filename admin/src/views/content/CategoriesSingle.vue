@@ -386,7 +386,6 @@ export default {
 						this.newItem = false;
 					})
 					.catch(err => {
-						this.helpers.checkServer(err);
 						if (err.response.status === 400) {
 							this.validate(err.response.data.data.errors);
 							this.$noty.error("Fix the errors before saving the category.");
@@ -420,7 +419,6 @@ export default {
 						}
 					})
 					.catch(err => {
-						this.helpers.checkServer(err);
 						if (err.response.status === 400) {
 							this.validate(err.response.data.data.errors);
 							this.$noty.error(this.errorMsg);

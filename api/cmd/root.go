@@ -37,7 +37,7 @@ func Execute() {
 // Add child commands and bootstrap
 func init() {
 	rootCmd.AddCommand(versionCmd)
-	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(newStartCmd())
 	rootCmd.AddCommand(doctorCmd)
 	rootCmd.AddCommand(installCmd)
 	rootCmd.AddCommand(uninstallCmd)

@@ -50,7 +50,7 @@ func (t *LoggerTestSuite) Setup() *bytes.Buffer {
 
 // SetupHandler is a helper function for setting up the
 // http handler.
-func (t *LoggerTestSuite) SetupHandler(fn func(ctx *gin.Context)) *bytes.Buffer {
+func (t *LoggerTestSuite) SetupHandler(fn func(ctx *gin.Context), url string) *bytes.Buffer {
 	buf := t.Setup()
 
 	gin.SetMode(gin.TestMode)
@@ -59,11 +59,11 @@ func (t *LoggerTestSuite) SetupHandler(fn func(ctx *gin.Context)) *bytes.Buffer 
 	ctx, engine := gin.CreateTestContext(rr)
 	engine.Use(Middleware())
 
-	engine.GET("/test", func(ctx *gin.Context) {
+	engine.GET(url, func(ctx *gin.Context) {
 		fn(ctx)
 	})
 
-	req := httptest.NewRequest(http.MethodGet, "/test", nil)
+	req := httptest.NewRequest(http.MethodGet, url, nil)
 	ctx.Request = req
 
 	engine.ServeHTTP(rr, req)

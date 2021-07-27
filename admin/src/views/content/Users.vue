@@ -292,7 +292,6 @@ export default {
 					this.getUsers();
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.$noty.error(err.response.data.message);
 						return;

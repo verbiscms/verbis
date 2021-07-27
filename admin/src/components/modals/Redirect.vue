@@ -137,13 +137,12 @@ export default {
 					this.$noty.success("Successfully created redirect");
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						this.$noty.error("Fix the errors before saving the category.");
 						return;
 					}
-					this.$noty.error(err.response.data.message);
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.emit();
@@ -165,13 +164,12 @@ export default {
 					this.$noty.success("Successfully updated redirect");
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						this.$noty.error("Fix the errors before saving the category.");
 						return;
 					}
-					this.$noty.error(err.response.data.message);
+					this.helpers.handleResponse(err);
 				})
 				.finally(() => {
 					this.emit();

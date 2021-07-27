@@ -4,16 +4,11 @@ import (
 	"bytes"
 	"github.com/gorilla/websocket"
 	"github.com/stretchr/testify/suite"
-	"github.com/verbiscms/verbis/api/common/paths"
-	"github.com/verbiscms/verbis/api/deps"
-	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/logger"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 )
 
@@ -21,59 +16,31 @@ import (
 // testing.
 type SocketsTestSuite struct {
 	suite.Suite
-	logger  bytes.Buffer
-	apiPath string
+	LogWriter bytes.Buffer
 }
 
-// TestSockets
-//
-// Assert testing has begun.
+// TestSockets asserts testing has begun.
 func TestSockets(t *testing.T) {
 	suite.Run(t, &SocketsTestSuite{})
 }
 
-// BeforeTest
-//
-// Assign the logger to a buffer.
+// BeforeTest assign the logger to a buffer.
 func (t *SocketsTestSuite) BeforeTest(suiteName, testName string) {
 	b := bytes.Buffer{}
-	t.logger = b
-	logger.SetOutput(&t.logger)
+	logger.SetOutput(&b)
+	t.LogWriter = b
 }
 
-// SetupSuite
-//
-// Reassign API path for testing.
-func (t *SocketsTestSuite) SetupSuite() {
-	logger.SetOutput(ioutil.Discard)
-	wd, err := os.Getwd()
-	t.NoError(err)
-	t.apiPath = filepath.Join(filepath.Dir(wd), "../")
+// Reset the log writer.
+func (t *SocketsTestSuite) Reset() {
+	t.LogWriter.Reset()
 }
 
-// Setup
-//
-// A helper to obtain a a new test server handler
-// for testing.
-func (t *SocketsTestSuite) Setup() (*websocket.Conn, func()) {
-	//log := &bytes.Buffer{}
-	//logger.Init(&environment.Env{})
-	//logger.SetOutput(log)
-
-	d := &deps.Deps{
-		Store:  nil,
-		Config: nil,
-		Options: &domain.Options{
-			ActiveTheme: "verbis",
-		},
-		Paths: paths.Paths{
-			Base: t.apiPath + "/test/testdata",
-		},
-		Running: false,
-	}
-
+// Setup is a helper to obtain a a new test server handler
+// for websocket testing.
+func (t *SocketsTestSuite) Setup(handler http.Handler) (*websocket.Conn, func()) {
 	// Create test server with the echo handler.
-	s := httptest.NewServer(http.Handler(Admin(d)))
+	s := httptest.NewServer(handler)
 
 	// Convert http://127.0.0.1 to ws://127.0.0.
 	u := "ws" + strings.TrimPrefix(s.URL, "http")
@@ -81,11 +48,22 @@ func (t *SocketsTestSuite) Setup() (*websocket.Conn, func()) {
 	// Connect to the server
 	ws, _, err := websocket.DefaultDialer.Dial(u, nil)
 	if err != nil {
-		t.Fail("error dialing websocket", err) //nolint
+		t.Fail("error dialing websocket", err)
 	}
 
 	return ws, func() {
 		s.Close()
 		ws.Close()
 	}
+}
+
+func (t *SocketsTestSuite) TestClose() {
+	t.Setup(Handler())
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		Close()
+	}()
+	wg.Wait()
 }

@@ -418,7 +418,6 @@ export default {
 					}, Math.floor(Math.random() * (230 - 100 + 1)) + 100);
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
 					if (err.response.status === 415) {
 						setTimeout(() => {
 							this.$set(this.media[index], "unsupported", err.response.data.message);
