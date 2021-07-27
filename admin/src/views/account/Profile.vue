@@ -381,7 +381,6 @@ export default {
 					this.$noty.success("Password updated successfully.");
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						this.$noty.error("Fix the errors before resetting password.");

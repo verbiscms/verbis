@@ -128,7 +128,6 @@ export default {
 					this.$emit("update", true)
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						this.$noty.error("Fix the errors before saving the user.");
