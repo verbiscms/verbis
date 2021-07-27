@@ -19,8 +19,7 @@ import (
 	"github.com/verbiscms/verbis/api/sys"
 	"github.com/verbiscms/verbis/api/tpl"
 	"github.com/verbiscms/verbis/api/verbisfs"
-	"github.com/verbiscms/verbis/api/watchers"
-	"os"
+	"github.com/verbiscms/verbis/api/watcher"
 	"path/filepath"
 )
 
@@ -37,7 +36,7 @@ type Deps struct {
 	Site site.Repository
 	// Theme
 	Theme   theme.Repository
-	Watcher *watchers.Batch
+	Watcher watcher.FileWatcher
 	// Options
 	Options *domain.Options
 	// Paths
@@ -55,7 +54,7 @@ type Deps struct {
 }
 
 func (d *Deps) ThemePath() string {
-	return d.Paths.Base + string(os.PathSeparator) + "themes" + string(os.PathSeparator) + d.Options.ActiveTheme
+	return filepath.Join(d.Paths.Themes, d.Options.ActiveTheme)
 }
 
 func (d *Deps) Tmpl() tpl.TemplateHandler {
@@ -137,9 +136,6 @@ func New(cfg Config) *Deps {
 		Storage: st,
 		System:  cfg.System,
 	}
-
-	d.Watcher = watchers.New(d.ThemePath())
-	d.Watcher.Start()
 
 	return d
 }

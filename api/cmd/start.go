@@ -6,13 +6,18 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/kyokomi/emoji"
 	"github.com/spf13/cobra"
+	"github.com/verbiscms/livereload"
 	"github.com/verbiscms/verbis/api/cron"
 	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/server"
 	"github.com/verbiscms/verbis/api/server/routes"
 	"github.com/verbiscms/verbis/api/tpl/tplimpl"
+	"github.com/verbiscms/verbis/api/watcher"
+	"syscall"
 )
 
 var (
@@ -52,6 +57,10 @@ up the server on the port specified in the .env file.`,
 			scheduler := cron.New(d)
 			go scheduler.Run()
 
+			w := watcher.New()
+			handleFileEvents(w, d, serve)
+			defer w.Close()
+
 			// Listen & serve.
 			err = serve.ListenAndServe(cfg.Env.Port())
 			if err != nil {
@@ -60,3 +69,45 @@ up the server on the port specified in the .env file.`,
 		},
 	}
 )
+
+func handleFileEvents(w watcher.FileWatcher, d *deps.Deps, s *server.Server) {
+	go func() {
+		err := w.Watch(d.Paths.Themes, watcher.PollingDuration)
+		if err != nil {
+			logger.WithError(err).Error()
+		}
+	}()
+
+	livereload.Initialize()
+	s.GET("/livereload.js", gin.WrapF(livereload.ServeJS))
+	s.GET("/livereload", gin.WrapF(livereload.Handler))
+
+	go func() {
+		for {
+			select {
+			case event := <-w.Events():
+				if event.IsDir() {
+					continue
+				}
+
+				if !event.IsPath(d.ThemePath()) {
+					continue
+				}
+
+				fmt.Println(event.Name())
+				livereload.ForceRefresh()
+
+			// TODO, if is confiig path go and get the config
+			//sockets.BroadCast(sockets.AdminSocketData{Theme: domain.ThemeConfig{
+			//	Theme: domain.Theme{
+			//		Title: event.Path,
+			//	},
+			//}})
+			case err := <-w.Errors():
+				if err.Err != syscall.EPIPE {
+					logger.WithError(err).Error()
+				}
+			}
+		}
+	}()
+}

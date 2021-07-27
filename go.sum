@@ -225,6 +225,8 @@ github.com/hashicorp/serf v0.8.2/go.mod h1:6hOLApaqBFA1NXqRQAsxw9QxuDEvNxSQRwA/J
 github.com/hpcloud/tail v1.0.0/go.mod h1:ab1qPbhIpdTxEkNHXyeSf5vhxWSCs/tWer42PpOxQnU=
 github.com/inconshreveable/mousetrap v1.0.0 h1:Z8tu5sraLXCXIcARxBp/8cbvlwVa7Z1NHg9XEKhtSvM=
 github.com/inconshreveable/mousetrap v1.0.0/go.mod h1:PxqpIevigyE2G7u3NXJIT2ANytuPF1OarO4DADm73n8=
+github.com/jaschaephraim/lrserver v0.0.0-20171129202958-50d19f603f71 h1:24NdJ5N6gtrcoeS4JwLMeruKFmg20QdF/5UnX5S/j18=
+github.com/jaschaephraim/lrserver v0.0.0-20171129202958-50d19f603f71/go.mod h1:ozZLfjiLmXytkIUh200wMeuoQJ4ww06wN+KZtFP6j3g=
 github.com/jasonlvhit/gocron v0.0.1 h1:qTt5qF3b3srDjeOIR4Le1LfeyvoYzJlYpqvG7tJX5YU=
 github.com/jasonlvhit/gocron v0.0.1/go.mod h1:k9a3TV8VcU73XZxfVHCHWMWF9SOqgoku0/QlY2yvlA4=
 github.com/jaytaylor/html2text v0.0.0-20190408195923-01ec452cbe43/go.mod h1:CVKlgaMiht+LXvHG173ujK6JUhZXKb2u/BQtjPDIvyk=
@@ -425,6 +427,10 @@ github.com/ugorji/go/codec v1.2.6/go.mod h1:V6TCNZ4PHqoHGFZuSG1W8nrCzzdgA2DozYxW
 github.com/ulikunitz/xz v0.5.6/go.mod h1:2bypXElzHzzJZwzH67Y6wb67pO62Rzfn7BSiF4ABRW8=
 github.com/ulikunitz/xz v0.5.10 h1:t92gobL9l3HE202wg3rlk19F6X+JOxl9BBrCCMYEYd8=
 github.com/ulikunitz/xz v0.5.10/go.mod h1:nbz6k7qbPmH4IRqmfOplQw/tblSgqTqBwxkY0oWt/14=
+github.com/verbiscms/livereload v0.0.0-20210727101250-ab7c3c9b7cf3 h1:AHWeUHGipLQsEzjXSb2gT3Wtj5umcq3BS1m5eCApn+k=
+github.com/verbiscms/livereload v0.0.0-20210727101250-ab7c3c9b7cf3/go.mod h1:br1MxCp+OnA63q44IyDByg1yE7pN/5jLVDBMvwx0VzQ=
+github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572 h1://BT1dpDC19W/gHZ5oHPZ/P3a8/XiBT5XkQ9zJFclc8=
+github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572/go.mod h1:br1MxCp+OnA63q44IyDByg1yE7pN/5jLVDBMvwx0VzQ=
 github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 h1:nIPpBwaJSVYIxUFsDv3M8ofmx9yWTog9BfvIu0q41lo=
 github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8/go.mod h1:HUYIGzjTL3rfEspMxjDjgmT5uz5wzYJKVo23qUhYTos=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=

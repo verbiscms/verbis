@@ -55,7 +55,6 @@ export const optionsMixin = {
 					this.$noty.success("Site options updated successfully.");
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
 						this.$noty.error(this.errorMsg);
