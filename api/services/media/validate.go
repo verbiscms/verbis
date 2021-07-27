@@ -7,7 +7,6 @@ package media
 import (
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/verbiscms/verbis/api/common/mime"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
@@ -19,13 +18,13 @@ import (
 //
 // Satisfies the Library to see if the testMedia item passed
 // is valid.
-func (s *Service) Validate(file *multipart.FileHeader) error {
-	return validate(file, s.options, config.Get())
+func (s *Service) Validate(file *multipart.FileHeader, cfg domain.ThemeConfig) error {
+	return validate(file, s.options, cfg)
 }
 
 // validator defines the helper for validating testMedia items.
 type validator struct {
-	Config  *domain.ThemeConfig
+	Config  domain.ThemeConfig
 	Options *domain.Options
 	Size    int64
 	File    multipart.File
@@ -34,7 +33,7 @@ type validator struct {
 // validate Checks for valid mime types, file sizes and
 // image sizes
 // Returns errors.INVALID if any condition is not met.
-func validate(h *multipart.FileHeader, opts *domain.Options, cfg *domain.ThemeConfig) error {
+func validate(h *multipart.FileHeader, opts *domain.Options, cfg domain.ThemeConfig) error {
 	const op = "Media.Validate"
 
 	file, err := h.Open()

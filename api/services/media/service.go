@@ -49,7 +49,7 @@ type Library interface {
 	// is less than the size specified in the options
 	// and finally checks the image boundaries.
 	// Returns errors.INVALID any of the conditions fail.
-	Validate(file *multipart.FileHeader) error
+	Validate(file *multipart.FileHeader, cfg domain.ThemeConfig) error
 	// Delete removes the testMedia item from the database and
 	// storage system. Generated sizes and WebP images
 	// will also be removed.
