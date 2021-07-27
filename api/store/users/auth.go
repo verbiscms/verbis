@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-const (
+var (
 	// InactiveSessionTime defines the amount of time in
 	// minutes before a suer is kicked out.
 	InactiveSessionTime = 60

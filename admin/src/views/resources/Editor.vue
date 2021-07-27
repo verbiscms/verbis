@@ -572,7 +572,6 @@ export default {
 								})
 							})
 							.catch(err => {
-								this.helpers.checkServer(err);
 								if (err.response.status === 400) {
 									const msg = err.response.data.message,
 										errors = err.response.data.data.errors;

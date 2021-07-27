@@ -42,14 +42,6 @@ func (t *UsersTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 	})
 }
 
-// SetupSession
-//
-// Helper for checking session testing.
-func (t *UsersTestSuite) SetupSession(mf func(m sqlmock.Sqlmock)) *Store {
-	s := t.Setup(mf)
-	return s
-}
-
 const (
 	// The default user ID used for testing.
 	userID = "1"

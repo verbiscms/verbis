@@ -153,7 +153,7 @@ func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Opti
 	}
 
 	if cfg == nil {
-		cfg = &domain.ThemeConfig{}
+		cfg = &domain.ThemeConfig{} //nolint
 	}
 
 	if opts == nil {

@@ -15,48 +15,63 @@ func (t *LoggerTestSuite) TestHandler() {
 		err     interface{}
 		message interface{}
 		code    int
+		url     string
 		want    interface{}
 	}{
 		"Nil": {
 			nil,
 			nil,
 			200,
+			"/test",
 			"200 | [INFO]  | 192.0.2.1 |   GET    \"/test\"\n",
 		},
 		"Error": {
 			&errors.Error{Code: errors.INTERNAL, Message: "message", Operation: "logger.Log", Err: fmt.Errorf("err")},
 			nil,
 			200,
+			"/test",
 			"200 | [INFO]  | 192.0.2.1 |   GET    \"/test\" | [code] internal [msg] message [op] logger.Log [error] err",
 		},
 		"Message": {
 			nil,
 			"message",
 			200,
+			"/test",
 			"200 | [INFO]  | 192.0.2.1 |   GET    \"/test\" | [msg] message",
+		},
+		"Admin": {
+			nil,
+			"message",
+			200,
+			"/admin",
+			"",
 		},
 		"400": {
 			nil,
 			"",
 			400,
+			"/test",
 			"400 | [ERROR] | 192.0.2.1 |   GET    \"/test\"\n",
 		},
 		"401": {
 			nil,
 			"",
 			401,
+			"/test",
 			"401 | [ERROR] | 192.0.2.1 |   GET    \"/test\"\n",
 		},
 		"404": {
 			nil,
 			"",
 			404,
+			"/test",
 			"404 | [ERROR] | 192.0.2.1 |   GET    \"/test\"\n",
 		},
 		"500": {
 			nil,
 			"",
 			500,
+			"/test",
 			"500 | [ERROR] | 192.0.2.1 |   GET    \"/test\"\n",
 		},
 	}
@@ -71,7 +86,7 @@ func (t *LoggerTestSuite) TestHandler() {
 					ctx.Set("verbis_message", test.message)
 				}
 				ctx.String(test.code, "test")
-			})
+			}, test.url)
 			t.Contains(buf.String(), test.want)
 		})
 	}

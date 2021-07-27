@@ -12,7 +12,6 @@ require (
 	github.com/eko/gocache/v2 v2.1.0
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/frankban/quicktest v1.11.0 // indirect
-	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gabriel-vasile/mimetype v1.3.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-contrib/gzip v0.0.3
@@ -60,6 +59,7 @@ require (
 	github.com/tdewolff/minify/v2 v2.9.10
 	github.com/ugorji/go v1.2.6 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
+	github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023

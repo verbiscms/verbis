@@ -5,46 +5,44 @@
 package sockets
 
 import (
-	"fmt"
+	"encoding/json"
 	"github.com/gorilla/websocket"
-	"time"
+	"github.com/verbiscms/verbis/api/domain"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 )
 
-func (t *SocketsTestSuite) Test_AdminSocket() {
-	t.T().Skip("Todo")
+func (t *SocketsTestSuite) TestHandler_Error() {
+	t.T().Skip() // Data race
+	orig := adminUpgrade
+	defer func() { adminUpgrade = orig }()
+	adminUpgrade.CheckOrigin = func(r *http.Request) bool {
+		return false
+	}
+	s := httptest.NewServer(Handler())
+	_, _, err := websocket.DefaultDialer.Dial("ws"+strings.TrimPrefix(s.URL, "http"), nil)
+	t.Error(err)
+}
 
-	tt := map[string]struct {
-		message string
-		want    interface{}
-	}{
-		"Success": {
-			"test",
-			"test",
+func (t *SocketsTestSuite) TestAdminSocket() {
+	conn, teardown := t.Setup(Handler())
+	defer teardown()
+
+	cfg := AdminData{Theme: domain.ThemeConfig{
+		Theme: domain.Theme{
+			Title: "verbis",
 		},
+	}}
+
+	AdminHub.Broadcast <- cfg
+	_, got, err := conn.ReadMessage()
+	t.NoError(err)
+
+	want, err := json.Marshal(cfg)
+	if err != nil {
+		t.Fail("error marshalling config", err)
 	}
 
-	for name, test := range tt {
-		t.Run(name, func() {
-			conn, _ := t.Setup()
-			//defer teardown()
-
-			err := conn.WriteMessage(websocket.TextMessage, []byte(test.message))
-			if err != nil {
-				t.Error(err)
-			}
-
-			err = conn.WriteMessage(websocket.TextMessage, []byte("ffff"))
-			if err != nil {
-				t.Error(err)
-			}
-
-			time.Sleep(10 * time.Millisecond)
-
-			fmt.Println(t.logger.String())
-
-			//color.Red.Println(t.logger.String())
-
-			// t.Equal(test.want, string(p))
-		})
-	}
+	t.Equal(string(want), string(got))
 }

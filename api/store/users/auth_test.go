@@ -106,7 +106,10 @@ func (t *UsersTestSuite) TestStore_CheckSession() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.SetupSession(test.session, test.mock)
+			s := t.Setup(test.mock)
+			orig := InactiveSessionTime
+			defer func() { InactiveSessionTime = orig }()
+			InactiveSessionTime = test.session
 			err := s.CheckSession(u.Token)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)

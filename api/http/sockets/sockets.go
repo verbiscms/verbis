@@ -4,19 +4,7 @@
 
 package sockets
 
-import (
-	"github.com/gorilla/websocket"
-)
-
-type Connector interface {
-	Reader(ws *websocket.Conn)
-	Writer(ws *websocket.Conn)
+// Close the sockets that have been opened by Verbis.
+func Close() {
+	AdminHub.close <- true
 }
-
-const (
-// Time allowed to write the file to the client.
-//writeWait = 10 * time.Second
-
-// Time allowed to read the next pong message from the client.
-//pongWait = 5 * time.Second
-)
