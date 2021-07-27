@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 	"github.com/verbiscms/verbis/api/errors"
+	"strings"
 	"time"
 )
 
@@ -61,6 +62,10 @@ func Middleware() gin.HandlerFunc {
 			"request_url":    ctx.Request.RequestURI,
 			"message":        verbisMessage,
 			"error":          verbisError,
+		}
+
+		if strings.Contains(ctx.Request.URL.String(), "/admin") {
+			return
 		}
 
 		if status >= 200 && status < 400 {

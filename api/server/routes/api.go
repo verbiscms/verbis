@@ -5,6 +5,7 @@
 package routes
 
 import (
+	"github.com/gin-gonic/gin"
 	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/http/handler"
@@ -27,7 +28,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		api.Use(middleware.EmptyBody())
 
 		// Sockets
-		api.GET("/ws", sockets.Handler())
+		api.GET("/ws", gin.WrapH(sockets.Handler()))
 
 		// Site
 		api.GET("/site", h.Site.Global)
