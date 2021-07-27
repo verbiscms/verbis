@@ -48,7 +48,7 @@ func (m *Media) Upload(ctx *gin.Context) {
 		return
 	}
 
-	err = m.service.Validate(files[0])
+	err = m.service.Validate(files[0], *m.Config)
 	if err != nil {
 		api.Respond(ctx, http.StatusUnsupportedMediaType, errors.Message(err), err)
 		return
