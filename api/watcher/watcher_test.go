@@ -61,11 +61,8 @@ func TestBatcher_Watch(t *testing.T) {
 		"Event": {
 			func(b *Batcher, wg *sync.WaitGroup) {
 				defer wg.Done()
-				select {
-				case event := <-b.Events():
-					assert.Equal(t, watcher.Create, event.Op)
-					break
-				}
+				event := <-b.Events()
+				assert.Equal(t, watcher.Create, event.Op)
 			},
 			func(b *Batcher) {
 				b.watcher.TriggerEvent(watcher.Chmod, nil)
@@ -75,11 +72,8 @@ func TestBatcher_Watch(t *testing.T) {
 		"Error": {
 			func(b *Batcher, wg *sync.WaitGroup) {
 				defer wg.Done()
-				select {
-				case err := <-b.Errors():
-					assert.Equal(t, "Error watching file system", err.Message)
-					break
-				}
+				err := <-b.Errors()
+				assert.Equal(t, "Error watching file system", err.Message)
 			},
 			func(b *Batcher) {
 				b.watcher.Error <- &errors.Error{Message: "message"}

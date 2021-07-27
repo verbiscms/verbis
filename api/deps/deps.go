@@ -20,6 +20,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl"
 	"github.com/verbiscms/verbis/api/verbisfs"
 	"github.com/verbiscms/verbis/api/watcher"
+	"os"
 	"path/filepath"
 )
 
@@ -54,7 +55,7 @@ type Deps struct {
 }
 
 func (d *Deps) ThemePath() string {
-	return filepath.Join(d.Paths.Themes, d.Options.ActiveTheme)
+	return d.Paths.Base + string(os.PathSeparator) + "themes" + string(os.PathSeparator) + d.Options.ActiveTheme
 }
 
 func (d *Deps) Tmpl() tpl.TemplateHandler {

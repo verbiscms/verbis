@@ -12,6 +12,7 @@ import (
 	"github.com/verbiscms/livereload"
 	"github.com/verbiscms/verbis/api/cron"
 	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/http/sockets"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/server"
 	"github.com/verbiscms/verbis/api/server/routes"
@@ -20,15 +21,20 @@ import (
 	"syscall"
 )
 
-var (
-	startCmd = &cobra.Command{
+type serverCmd struct {
+	liveReload bool
+}
+
+func newStartCmd() *cobra.Command {
+	sc := serverCmd{}
+
+	cmd := &cobra.Command{
 		Use:   "start",
 		Short: "Running start will start Verbis project from the current directory and run the CMS project.",
 		Long: `This command will start Verbis from the current directory. First it will
 run Verbis doctor to see if the environment is configured correctly. It will then start
 up the server on the port specified in the .env file.`,
 		Run: func(cmd *cobra.Command, args []string) {
-
 			// Run doctor
 			cfg, _, err := doctor(true)
 			if err != nil {
@@ -58,8 +64,9 @@ up the server on the port specified in the .env file.`,
 			go scheduler.Run()
 
 			w := watcher.New()
-			handleFileEvents(w, d, serve)
+			handleFileEvents(w, d, serve, sc)
 			defer w.Close()
+			defer sockets.Close()
 
 			// Listen & serve.
 			err = serve.ListenAndServe(cfg.Env.Port())
@@ -68,9 +75,11 @@ up the server on the port specified in the .env file.`,
 			}
 		},
 	}
-)
+	cmd.Flags().BoolVarP(&sc.liveReload, "watch", "w", false, "Enables live reload")
+	return cmd
+}
 
-func handleFileEvents(w watcher.FileWatcher, d *deps.Deps, s *server.Server) {
+func handleFileEvents(w watcher.FileWatcher, d *deps.Deps, s *server.Server, cmd serverCmd) {
 	go func() {
 		err := w.Watch(d.Paths.Themes, watcher.PollingDuration)
 		if err != nil {
@@ -78,9 +87,11 @@ func handleFileEvents(w watcher.FileWatcher, d *deps.Deps, s *server.Server) {
 		}
 	}()
 
-	livereload.Initialize()
-	s.GET("/livereload.js", gin.WrapF(livereload.ServeJS))
-	s.GET("/livereload", gin.WrapF(livereload.Handler))
+	if cmd.liveReload {
+		livereload.Initialize()
+		s.GET("/livereload.js", gin.WrapF(livereload.ServeJS))
+		s.GET("/livereload", gin.WrapF(livereload.Handler))
+	}
 
 	go func() {
 		for {
@@ -94,15 +105,16 @@ func handleFileEvents(w watcher.FileWatcher, d *deps.Deps, s *server.Server) {
 					continue
 				}
 
-				fmt.Println(event.Name())
-				livereload.ForceRefresh()
+				if cmd.liveReload {
+					livereload.ForceRefresh()
+				}
 
-			// TODO, if is confiig path go and get the config
-			//sockets.BroadCast(sockets.AdminSocketData{Theme: domain.ThemeConfig{
-			//	Theme: domain.Theme{
-			//		Title: event.Path,
-			//	},
-			//}})
+				// Check if it's the configuration file
+				//sockets.AdminHub.Broadcast <- sockets.AdminData{Theme: domain.ThemeConfig{
+				//	Theme: domain.Theme{
+				//		Title: event.Path,
+				//	},
+				//}}
 			case err := <-w.Errors():
 				if err.Err != syscall.EPIPE {
 					logger.WithError(err).Error()
