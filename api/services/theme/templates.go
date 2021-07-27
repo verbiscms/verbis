@@ -6,6 +6,7 @@ package theme
 
 import (
 	"fmt"
+	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"os"
@@ -23,6 +24,7 @@ import (
 func (t *theme) Templates(theme string) (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 
+	t.config = config.Get()
 	tplDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + t.config.TemplateDir
 	tplDir = strings.ReplaceAll(tplDir, "//", "/")
 

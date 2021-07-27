@@ -3,6 +3,7 @@
     <!-- =====================
 		Home
 		===================== -->
+		<h1>kjhkj</h1>
     <section class="section section-coloured">
         <div class="container">
             <div class="row">
@@ -16,34 +17,6 @@
         </div><!-- /Container -->
     </section>
 
-    {{ wrong }}
-
-
-        {{ flexible "content_blocks" }}
-    {{ $crumbs := breadcrumbsHTML }}
-{{ $crumbs }}
-{{/*    <!-- Title -->*/}}
-{{/*    {{ with $crumbs.Title -}}*/}}
-{{/*        <h4>{{ . }}</h4>*/}}
-{{/*    {{- end }}*/}}
-{{/*    <nav aria-label="breadcrumb">*/}}
-{{/*        <ol class="breadcrumb">*/}}
-{{/*        {{- range $crumb := $crumbs.Items }}*/}}
-{{/*            <!-- Crumb -->*/}}
-{{/*            {{ if not $crumb.Found -}}*/}}
-{{/*                <li class="breadcrumb-item">*/}}
-{{/*                    {{ $crumb.Text }}*/}}
-{{/*                    <span class="breadcrumb-separator">{{ with $crumbs.Seperator }}{{ . }}{{ end }}</span>*/}}
-{{/*                </li>*/}}
-{{/*            {{- else -}}*/}}
-{{/*                <li class="breadcrumb-item {{- if $crumb.Active }} active {{- end }}" {{ if $crumb.Active -}} aria-current="page" {{- end }}>*/}}
-{{/*                    <a href="{{ $crumb.Link }}">{{ $crumb.Text }}</a>*/}}
-{{/*                    <span class="breadcrumb-separator">{{ with $crumbs.Separator }}{{ . }}{{- end }}</span>*/}}
-{{/*                </li>*/}}
-{{/*            {{- end -}}*/}}
-{{/*        {{- end }}*/}}
-{{/*        </ol>*/}}
-{{/*    </nav>*/}}
-
 
 {{ end }}
+

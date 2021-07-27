@@ -6,15 +6,12 @@ package sockets
 
 import (
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
-	"github.com/radovskyb/watcher"
-	"github.com/verbiscms/verbis/api/config"
-	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
-	"github.com/verbiscms/verbis/api/watchers"
 	"net/http"
-	"syscall"
 )
 
 var (
@@ -28,64 +25,63 @@ var (
 	}
 )
 
-// adminSocket
-type adminSocket struct {
-	ThemePath  string
-	ConfigPath string
-	Watcher    *watcher.Watcher
+type AdminSocketData struct {
+	Theme domain.ThemeConfig `json:"theme"`
 }
 
 // Admin
-//
-//
-func Admin(d *deps.Deps) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		const op = "AdminSocket.Handler"
+type Admin struct {
+	ws *websocket.Conn
+}
 
-		conn, err := adminUpgrader.Upgrade(w, r, nil)
+type adminhub struct {
+	Broadcast chan AdminSocketData
+	Receive   chan []byte
+	Close     chan bool
+}
+
+var hub = adminhub{
+	Broadcast: make(chan AdminSocketData),
+	Receive:   nil,
+	Close:     make(chan bool),
+}
+
+func Handler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		const op = "Admin.Handler"
+		conn, err := adminUpgrader.Upgrade(ctx.Writer, ctx.Request, nil)
 		if err != nil {
 			logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error upgrading request to websocket", Operation: op, Err: err})
 		}
-
-		go func() {
-			for {
-				writer(conn, d.Watcher, d.ThemePath())
-			}
-		}()
+		run(conn)
 	}
 }
 
-// writer
-//
-//
-func writer(conn *websocket.Conn, w *watchers.Batch, path string) {
-	const op = "AdminSocket.Handler.Writer"
-
-	select {
-	case event := <-w.Event:
-		if event.Name() != config.FileName && event.Op != watcher.Write {
-			return
-		}
-
-		logger.Info("Updating theme configuration file, sending socket")
-		cfg := config.Fetch(path)
-
-		// Marshal the configuration file.
-		b, err := json.Marshal(cfg)
-		if err != nil {
-			logger.WithError(&errors.Error{Code: op, Message: "Error marshalling theme configuration", Operation: op, Err: err}).Error()
-			return
-		}
-
-		// Set the file back to the socket.
-		err = conn.WriteMessage(websocket.TextMessage, b)
-		if err != nil {
-			logger.WithError(&errors.Error{Code: op, Message: "Error sending socket message", Operation: op, Err: err}).Error()
-		}
-
-	case err := <-w.Error:
-		if err.Err != syscall.EPIPE {
-			logger.WithError(&errors.Error{Code: op, Message: "Error watching theme configuration", Operation: op, Err: err}).Error()
+func run(conn *websocket.Conn) {
+	for {
+		select {
+		case as := <-hub.Broadcast:
+			b, err := json.Marshal(as)
+			if err != nil {
+				logger.WithError(err).Error()
+				return
+			}
+			err = conn.WriteMessage(websocket.TextMessage, b)
+			if err != nil {
+				logger.WithError(err).Error()
+				return
+			}
+		case <-hub.Close:
+			conn.Close()
 		}
 	}
+	conn.Close()
+}
+
+func BroadCast(a AdminSocketData) {
+	hub.Broadcast <- a
+}
+
+func Close() {
+	hub.Close <- true
 }

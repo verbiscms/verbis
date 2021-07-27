@@ -9,6 +9,7 @@ import (
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/http/handler"
 	"github.com/verbiscms/verbis/api/http/middleware"
+	"github.com/verbiscms/verbis/api/http/sockets"
 	"github.com/verbiscms/verbis/api/server"
 )
 
@@ -26,7 +27,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		api.Use(middleware.EmptyBody())
 
 		// Sockets
-		//api.GET("/ws", gin.WrapF(sockets.Admin(d)))
+		api.GET("/ws", sockets.Handler())
 
 		// Site
 		api.GET("/site", h.Site.Global)

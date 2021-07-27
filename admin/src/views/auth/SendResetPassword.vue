@@ -62,8 +62,6 @@ export default {
 					this.$router.push({name: 'login'});
 				})
 				.catch(err => {
-					this.helpers.checkServer(err);
-
 					if (err.response.status === 400) {
 						const errors = err.response.data.data.errors;
 						if (errors) {
