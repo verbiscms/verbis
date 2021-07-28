@@ -21,7 +21,7 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 		status  int
 		message string
 		input   string
-		mock    func(m *mocks.Repository, c *cache.Cacher)
+		mock    func(m *mocks.Repository, c *cache.Store)
 		url     string
 	}{
 		"Success": {
@@ -29,7 +29,7 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 			http.StatusOK,
 			"Successfully verified token",
 			token,
-			func(m *mocks.Repository, c *cache.Cacher) {
+			func(m *mocks.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, token).Return(user, nil)
 			},
 			"/verify/" + token,
@@ -39,7 +39,7 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 			http.StatusNotFound,
 			"No user exists with the token: " + token,
 			token,
-			func(m *mocks.Repository, c *cache.Cacher) {
+			func(m *mocks.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, token).Return(nil, fmt.Errorf("error"))
 			},
 			"/verify/" + token,

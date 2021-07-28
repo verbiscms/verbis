@@ -14,7 +14,7 @@ import (
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
-	mocks "github.com/verbiscms/verbis/api/mocks/cache"
+	mocks "github.com/verbiscms/verbis/api/mocks/cache/mocks"
 	"testing"
 )
 
@@ -47,13 +47,15 @@ func (t *CacheTestSuite) Reset() {
 	t.LogWriter.Reset()
 }
 
-// Setup assigns a mock Cacher to c.
-func (t *CacheTestSuite) Setup(mf func(m *mocks.Cacher)) {
-	m := &mocks.Cacher{}
+// Setup assigns a mock Store to c.
+func (t *CacheTestSuite) Setup(mf func(m *mocks.StoreInterface)) *Cache {
+	m := &mocks.StoreInterface{}
 	if mf != nil {
 		mf(m)
 	}
-	c = m
+	return &Cache{
+		store: m,
+	}
 }
 
 func (t *CacheTestSuite) TestLoad() {
@@ -85,8 +87,7 @@ func (t *CacheTestSuite) TestLoad() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			defer func() { c = nil }()
-			err := Load(test.input)
+			c, err := Load(test.input)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return
@@ -94,24 +95,24 @@ func (t *CacheTestSuite) TestLoad() {
 			if c == nil {
 				t.Fail("nil Driver")
 			}
-			t.Equal(test.want, Driver)
+			t.Equal(test.want, c.Driver())
 		})
 	}
 }
 
 func (t *CacheTestSuite) TestGet() {
 	tt := map[string]struct {
-		mock func(m *mocks.Cacher)
+		mock func(m *mocks.StoreInterface)
 		want interface{}
 	}{
 		"Success": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Get", mock.Anything, mock.Anything).Return("item", nil)
 			},
 			"item",
 		},
 		"Error": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Get", mock.Anything, mock.Anything).Return(nil, fmt.Errorf("error"))
 			},
 			"Error getting item with key",
@@ -120,8 +121,8 @@ func (t *CacheTestSuite) TestGet() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.Setup(test.mock)
-			got, err := Get(context.Background(), "key")
+			c := t.Setup(test.mock)
+			got, err := c.Get(context.Background(), "key")
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -133,88 +134,82 @@ func (t *CacheTestSuite) TestGet() {
 
 func (t *CacheTestSuite) TestSet() {
 	tt := map[string]struct {
-		mock func(m *mocks.Cacher)
+		mock func(m *mocks.StoreInterface)
 		want interface{}
 	}{
 		"Success": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
 					Return(nil)
 			},
-			nil,
+			"Successfully set cache item with key",
 		},
 		"Error": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
-					Return(fmt.Errorf("error"))
+					Return(fmt.Errorf("set error"))
 			},
-			"Error setting cache key",
+			"set error",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.Setup(test.mock)
-			err := Set(context.Background(), "key", "key", Options{})
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
-				return
-			}
-			t.Equal(test.want, err)
+			c := t.Setup(test.mock)
+			c.Set(context.Background(), "key", "key", Options{})
+			t.Contains(t.LogWriter.String(), test.want)
+			t.Reset()
 		})
 	}
 }
 
 func (t *CacheTestSuite) TestDelete() {
 	tt := map[string]struct {
-		mock func(m *mocks.Cacher)
+		mock func(m *mocks.StoreInterface)
 		want interface{}
 	}{
 		"Success": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Delete", mock.Anything, mock.Anything).
 					Return(nil)
 			},
-			nil,
+			"Successfully deleted cache item with key",
 		},
 		"Error": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Delete", mock.Anything, mock.Anything).
-					Return(fmt.Errorf("error"))
+					Return(fmt.Errorf("delete error"))
 			},
-			"Error deleting cache key",
+			"delete error",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.Setup(test.mock)
-			err := Delete(context.Background(), "key")
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
-				return
-			}
-			t.Equal(test.want, err)
+			c := t.Setup(test.mock)
+			c.Delete(context.Background(), "key")
+			t.Contains(t.LogWriter.String(), test.want)
+			t.Reset()
 		})
 	}
 }
 
 func (t *CacheTestSuite) TestInvalidate() {
 	tt := map[string]struct {
-		mock func(m *mocks.Cacher)
+		mock func(m *mocks.StoreInterface)
 		want interface{}
 	}{
 		"Success": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Invalidate", mock.Anything, mock.Anything).
 					Return(nil)
 			},
 			nil,
 		},
 		"Error": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Invalidate", mock.Anything, mock.Anything).
-					Return(fmt.Errorf("error"))
+					Return(fmt.Errorf("invalidate error"))
 			},
 			"Error invalidating cache",
 		},
@@ -222,8 +217,8 @@ func (t *CacheTestSuite) TestInvalidate() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.Setup(test.mock)
-			err := Invalidate(context.Background(), InvalidateOptions{})
+			c := t.Setup(test.mock)
+			err := c.Invalidate(context.Background(), InvalidateOptions{})
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -235,18 +230,18 @@ func (t *CacheTestSuite) TestInvalidate() {
 
 func (t *CacheTestSuite) TestClear() {
 	tt := map[string]struct {
-		mock func(m *mocks.Cacher)
+		mock func(m *mocks.StoreInterface)
 		want interface{}
 	}{
 		"Success": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Clear", mock.Anything).
 					Return(nil)
 			},
 			nil,
 		},
 		"Error": {
-			func(m *mocks.Cacher) {
+			func(m *mocks.StoreInterface) {
 				m.On("Clear", mock.Anything).
 					Return(fmt.Errorf("error"))
 			},
@@ -256,42 +251,13 @@ func (t *CacheTestSuite) TestClear() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.Setup(test.mock)
-			err := Clear(context.Background())
+			c := t.Setup(test.mock)
+			err := c.Clear(context.Background())
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
 			t.Equal(test.want, err)
-		})
-	}
-}
-
-func (t *CacheTestSuite) TestSetDriver() {
-	tt := map[string]struct {
-		input  Cacher
-		panics bool
-	}{
-		"Success": {
-			&mocks.Cacher{},
-			false,
-		},
-		"Error": {
-			nil,
-			true,
-		},
-	}
-
-	for name, test := range tt {
-		t.Run(name, func() {
-			if test.panics {
-				t.Panics(func() {
-					SetDriver(test.input)
-				})
-				return
-			}
-			SetDriver(test.input)
-			t.Equal(test.input, c)
 		})
 	}
 }

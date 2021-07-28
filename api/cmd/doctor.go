@@ -7,7 +7,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/deps"
@@ -50,13 +49,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 
 	// Init logging
 	logger.Init(env)
-
-	// Init Cache
-	err = cache.Load(env)
-	if err != nil {
-		printError(err.Error())
-		return nil, nil, err
-	}
 
 	// Check if the environment values are valid
 	vErrors := env.Validate()

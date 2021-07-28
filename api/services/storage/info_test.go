@@ -8,10 +8,9 @@ import (
 	"fmt"
 	"github.com/graymeta/stow"
 	"github.com/stretchr/testify/mock"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
-	mockCache "github.com/verbiscms/verbis/api/mocks/cache"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 	"github.com/verbiscms/verbis/api/services/storage/internal"
@@ -30,14 +29,14 @@ func (m *mockProviderErr) Info(env *environment.Env) domain.StorageProviderInfo 
 func (t *StorageTestSuite) TestStorage_Info() {
 	tt := map[string]struct {
 		mock  func(m *mocks.Service, r *repo.Repository)
-		cache func(c *mockCache.Cacher)
+		cache func(c *cache.Store)
 		want  interface{}
 	}{
 		"Success": {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
 			},
-			func(c *mockCache.Cacher) {
+			func(c *cache.Store) {
 				c.On("Get", mock.Anything, MigrationCacheKey).Return(MigrationInfo{}, nil)
 			},
 			Configuration{
@@ -54,7 +53,7 @@ func (t *StorageTestSuite) TestStorage_Info() {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, "", fmt.Errorf("error"))
 			},
-			func(c *mockCache.Cacher) {
+			func(c *cache.Store) {
 				c.On("Get", mock.Anything, MigrationCacheKey).Return(MigrationInfo{}, nil)
 			},
 			"error",
@@ -67,9 +66,8 @@ func (t *StorageTestSuite) TestStorage_Info() {
 			defer func() { internal.Providers = orig }()
 			internal.Providers = internal.ProviderMap{"test": &mockProviderErr{}}
 
-			c := &mockCache.Cacher{}
+			c := &cache.Store{}
 			test.cache(c)
-			cache.SetDriver(c)
 
 			s := t.Setup(test.mock)
 			got, err := s.Info()

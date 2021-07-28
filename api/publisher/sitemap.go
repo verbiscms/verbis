@@ -156,12 +156,7 @@ func (s *Sitemap) Index() ([]byte, error) {
 		return nil, err
 	}
 
-	go func() {
-		err := cache.Set(context.Background(), "sitemap-index", &xmlData, cache.Options{Expiration: cacheExpiry})
-		if err != nil {
-			logger.WithError(err).Error()
-		}
-	}()
+	go s.deps.Cache.Set(context.Background(), "sitemap-index", &xmlData, cache.Options{Expiration: cacheExpiry})
 
 	return xmlData, nil
 }
@@ -188,12 +183,7 @@ func (s *Sitemap) XSL(index bool) ([]byte, error) {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the xsl file with the path: %s", path), Operation: op, Err: err}
 	}
 
-	go func() {
-		err := cache.Set(context.Background(), fileName, &data, cache.Options{Expiration: cacheExpiry})
-		if err != nil {
-			logger.WithError(err)
-		}
-	}()
+	go s.deps.Cache.Set(context.Background(), fileName, &data, cache.Options{Expiration: cacheExpiry})
 
 	return data, nil
 }
@@ -419,7 +409,7 @@ func (s *Sitemap) formatXML(data interface{}, index bool) ([]byte, error) {
 //
 // Returns [[byte if found or nil.
 func (s *Sitemap) getCachedFile(key string) []byte {
-	cachedIndex, err := cache.Get(context.Background(), key)
+	cachedIndex, err := s.deps.Cache.Get(context.Background(), key)
 	if err == nil {
 		cachedBytes := cachedIndex.(*[]byte)
 		return *cachedBytes

@@ -5,12 +5,13 @@
 package deps
 
 import (
+	"fmt"
 	"github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
 	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
-	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/services/site"
 	"github.com/verbiscms/verbis/api/services/storage"
 	"github.com/verbiscms/verbis/api/services/theme"
@@ -28,7 +29,8 @@ import (
 // There will be normally only one instance of deps in play
 // at a given time, i.e. one per Site built.
 type Deps struct {
-	Env *environment.Env
+	Env   *environment.Env
+	Cache cache.Store
 	// The database layer
 	Store *store.Repository
 	// Configuration file of the site
@@ -100,9 +102,14 @@ type Config struct {
 	Running bool
 }
 
-func New(cfg Config) *Deps {
+func New(cfg Config) (*Deps, error) {
 	if cfg.Store == nil && cfg.Running {
-		panic("Must have a store")
+		return nil, fmt.Errorf("must have a store")
+	}
+
+	cs, err := cache.Load(cfg.Env)
+	if err != nil {
+		return nil, err
 	}
 
 	var opts domain.Options
@@ -116,18 +123,19 @@ func New(cfg Config) *Deps {
 		Files:       cfg.Store.Files,
 	})
 	if err != nil {
-		logger.WithError(err).Panic()
+		return nil, err
 	}
 
 	activeTheme, err := cfg.Store.Options.GetTheme()
 	if err != nil {
-		logger.WithError(err).Panic()
+		return nil, err
 	}
 
 	config.Init(filepath.Join(cfg.Paths.Themes, activeTheme))
 
 	d := &Deps{
 		Env:     cfg.Env,
+		Cache:   cs,
 		Store:   cfg.Store,
 		Config:  config.Get(),
 		Options: &opts,
@@ -142,5 +150,5 @@ func New(cfg Config) *Deps {
 		System:  cfg.System,
 	}
 
-	return d
+	return d, nil
 }

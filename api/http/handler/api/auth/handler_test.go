@@ -6,12 +6,11 @@ package auth
 
 import (
 	"github.com/stretchr/testify/suite"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/logger"
-	mockCache "github.com/verbiscms/verbis/api/mocks/cache"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	events "github.com/verbiscms/verbis/api/mocks/events"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/auth"
 	users "github.com/verbiscms/verbis/api/mocks/store/users"
@@ -60,18 +59,18 @@ func (t *AuthTestSuite) Setup(mf func(m *mocks.Repository)) *Auth {
 //
 // A helper to obtain a mock auth handler
 // for testing with cache.
-func (t *AuthTestSuite) SetupCache(mf func(m *mocks.Repository, c *mockCache.Cacher)) *Auth {
+func (t *AuthTestSuite) SetupCache(mf func(m *mocks.Repository, c *cache.Store)) *Auth {
 	logger.SetOutput(ioutil.Discard)
 	m := &mocks.Repository{}
-	c := &mockCache.Cacher{}
+	c := &cache.Store{}
 	if mf != nil {
 		mf(m, c)
 	}
-	cache.SetDriver(c)
 	d := &deps.Deps{
 		Store: &store.Repository{
 			Auth: m,
 		},
+		Cache:   c,
 		Env:     &environment.Env{},
 		Options: &domain.Options{},
 	}
@@ -82,21 +81,20 @@ func (t *AuthTestSuite) SetupCache(mf func(m *mocks.Repository, c *mockCache.Cac
 //
 // A helper to obtain a mock categories handler
 // for testing.
-func (t *AuthTestSuite) SetupDispatcher(mf func(m *mocks.Repository, c *mockCache.Cacher, u *users.Repository), ms func(m *events.Dispatcher)) *Auth {
+func (t *AuthTestSuite) SetupDispatcher(mf func(m *mocks.Repository, c *cache.Store, u *users.Repository), ms func(m *events.Dispatcher)) *Auth {
 	logger.SetOutput(ioutil.Discard)
 	m := &mocks.Repository{}
-	c := &mockCache.Cacher{}
+	c := &cache.Store{}
 	u := &users.Repository{}
 	if mf != nil {
 		mf(m, c, u)
 	}
-	cache.SetDriver(c)
-
 	d := &deps.Deps{
 		Store: &store.Repository{
 			Auth: m,
 			User: u,
 		},
+		Cache:   c,
 		Env:     &environment.Env{},
 		Options: &domain.Options{},
 	}

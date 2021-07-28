@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
-	mockCache "github.com/verbiscms/verbis/api/mocks/cache"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	events "github.com/verbiscms/verbis/api/mocks/events"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/auth"
 	users "github.com/verbiscms/verbis/api/mocks/store/users"
@@ -37,7 +37,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 		message    string
 		input      interface{}
 		dispatcher func(m *events.Dispatcher)
-		mock       func(m *mocks.Repository, c *mockCache.Cacher, u *users.Repository)
+		mock       func(m *mocks.Repository, c *cache.Store, u *users.Repository)
 		tokenFunc  func(email string) (string, error)
 	}{
 		"Success": {
@@ -46,7 +46,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 			"A fresh verification link has been sent to your email",
 			srp,
 			dispatchSuccess,
-			func(m *mocks.Repository, c *mockCache.Cacher, u *users.Repository) {
+			func(m *mocks.Repository, c *cache.Store, u *users.Repository) {
 				u.On("FindByEmail", srp.Email).Return(user, nil)
 				c.On("Set", mock.Anything, "token", user, mock.Anything).Return(nil)
 			},
@@ -67,7 +67,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 			"No user found with email: " + srp.Email,
 			srp,
 			dispatchSuccess,
-			func(m *mocks.Repository, c *mockCache.Cacher, u *users.Repository) {
+			func(m *mocks.Repository, c *cache.Store, u *users.Repository) {
 				u.On("FindByEmail", srp.Email).Return(domain.User{}, fmt.Errorf("error"))
 			},
 			hashSuccess,
@@ -78,24 +78,12 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 			"Error generating user token",
 			srp,
 			dispatchSuccess,
-			func(m *mocks.Repository, c *mockCache.Cacher, u *users.Repository) {
+			func(m *mocks.Repository, c *cache.Store, u *users.Repository) {
 				u.On("FindByEmail", srp.Email).Return(user, nil)
 			},
 			func(email string) (string, error) {
 				return "", fmt.Errorf("error")
 			},
-		},
-		"Cache Set Error": {
-			nil,
-			http.StatusInternalServerError,
-			"Error sending password reset",
-			srp,
-			dispatchSuccess,
-			func(m *mocks.Repository, c *mockCache.Cacher, u *users.Repository) {
-				u.On("FindByEmail", srp.Email).Return(user, nil)
-				c.On("Set", mock.Anything, "token", user, mock.Anything).Return(fmt.Errorf("Error"))
-			},
-			hashSuccess,
 		},
 		"Dispatch Error": {
 			nil,
@@ -105,7 +93,7 @@ func (t *AuthTestSuite) TestAuth_SendResetPassword() {
 			func(m *events.Dispatcher) {
 				m.On("Dispatch", mock.Anything, mock.Anything, mock.Anything).Return(&errors.Error{Code: errors.INTERNAL, Message: "dispatch"})
 			},
-			func(m *mocks.Repository, c *mockCache.Cacher, u *users.Repository) {
+			func(m *mocks.Repository, c *cache.Store, u *users.Repository) {
 				u.On("FindByEmail", srp.Email).Return(user, nil)
 				c.On("Set", mock.Anything, "token", user, mock.Anything).Return(nil)
 			},

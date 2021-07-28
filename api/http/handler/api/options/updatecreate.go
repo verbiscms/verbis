@@ -46,12 +46,7 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 		return
 	}
 
-	err = cache.Set(ctx, cache.OptionsKey, vOptions, cache.Options{Expiration: time.Minute * 16})
-	if err != nil {
-		api.Respond(ctx, http.StatusInternalServerError, "Error updating options cache", err)
-		return
-	}
-
+	o.Cache.Set(ctx, cache.OptionsKey, vOptions, cache.Options{Expiration: time.Minute * 15})
 	o.SetOptions(&vOptions)
 
 	api.Respond(ctx, http.StatusOK, "Successfully created/updated options", nil)

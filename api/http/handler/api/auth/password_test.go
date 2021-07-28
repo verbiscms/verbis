@@ -34,14 +34,14 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.Repository, c *cache.Cacher)
+		mock    func(m *mocks.Repository, c *cache.Store)
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully reset password",
 			rp,
-			func(m *mocks.Repository, c *cache.Cacher) {
+			func(m *mocks.Repository, c *cache.Store) {
 				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
 				c.On("Get", mock.Anything, rp.Token).Return(user, nil)
 			},
@@ -51,7 +51,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			http.StatusBadRequest,
 			"Validation failed",
 			rpdBadValidation,
-			func(m *mocks.Repository, c *cache.Cacher) {
+			func(m *mocks.Repository, c *cache.Store) {
 				m.On("ResetPassword", rpdBadValidation.Token, rpdBadValidation.NewPassword).Return(nil)
 			},
 		},
@@ -60,7 +60,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			http.StatusBadRequest,
 			"No user exists with the token: " + rp.Token,
 			rp,
-			func(m *mocks.Repository, c *cache.Cacher) {
+			func(m *mocks.Repository, c *cache.Store) {
 				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
 				c.On("Get", mock.Anything, rp.Token).Return(nil, fmt.Errorf("error"))
 			},
@@ -70,7 +70,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			http.StatusInternalServerError,
 			"Error converting cache item to user",
 			rp,
-			func(m *mocks.Repository, c *cache.Cacher) {
+			func(m *mocks.Repository, c *cache.Store) {
 				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
 				c.On("Get", mock.Anything, rp.Token).Return(make(chan int), nil)
 			},
@@ -80,7 +80,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			http.StatusInternalServerError,
 			"error",
 			rp,
-			func(m *mocks.Repository, c *cache.Cacher) {
+			func(m *mocks.Repository, c *cache.Store) {
 				m.On("ResetPassword", user.Email, rp.NewPassword).Return(&errors.Error{Message: "error"})
 				c.On("Get", mock.Anything, rp.Token).Return(user, nil)
 			},

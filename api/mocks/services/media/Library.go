@@ -145,13 +145,13 @@ func (_m *Library) Upload(file *multipart.FileHeader, userID int) (domain.Media,
 	return r0, r1
 }
 
-// Validate provides a mock function with given fields: file
-func (_m *Library) Validate(file *multipart.FileHeader) error {
-	ret := _m.Called(file)
+// Validate provides a mock function with given fields: file, cfg
+func (_m *Library) Validate(file *multipart.FileHeader, cfg domain.ThemeConfig) error {
+	ret := _m.Called(file, cfg)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(*multipart.FileHeader) error); ok {
-		r0 = rf(file)
+	if rf, ok := ret.Get(0).(func(*multipart.FileHeader, domain.ThemeConfig) error); ok {
+		r0 = rf(file, cfg)
 	} else {
 		r0 = ret.Error(0)
 	}
