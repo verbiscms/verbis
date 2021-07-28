@@ -24,14 +24,14 @@ func (s *Store) validate(p *domain.PostCreate, checkSlug bool) error {
 		}
 	}
 
-	cfg := config.Get()
-
-	resource, ok := cfg.Resources[p.Resource]
-	if ok {
-		if resource.Hidden {
-			return nil
-		}
-	}
+	//cfg := config.Get()
+	//
+	//resource, ok := cfg.Resources[p.Resource]
+	//if ok {
+	//	if resource.Hidden {
+	//		return nil
+	//	}
+	//}
 
 	//err := s.validatePageTemplate(cfg, p)
 	//if err != nil {
