@@ -6,26 +6,33 @@ package theme
 
 import (
 	"errors"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
-	"os"
+	"github.com/verbiscms/verbis/api/store/options"
 )
 
-// Repository defines methods for the theme.
-type Repository interface {
-	List(activeTheme string) ([]*domain.ThemeConfig, error)
-	Find(theme string) (*domain.ThemeConfig, error)
+// Service defines methods for the Theme.
+type Service interface {
+	// Config gets the themes configuration from the themes
+	// path.
+	// Logs errors.INTERNAL if the unmarshalling was
+	// unsuccessful and returns the DefaultTheme
+	// variable.
+	Config() (domain.ThemeConfig, error)
+	Find(theme string) (domain.ThemeConfig, error)
+	List(activeTheme string) ([]domain.ThemeConfig, error)
 	Exists(theme string) bool
 	Templates(theme string) (domain.Templates, error)
 	Layouts(theme string) (domain.Layouts, error)
 	Screenshot(theme string, file string) ([]byte, domain.Mime, error)
 }
 
-// Site defines the data layer for Posts
-type theme struct {
+// Theme defines the data layer for Verbis themes.
+type Theme struct {
 	config     *domain.ThemeConfig
-	options    *domain.Options
+	cache      cache.Store
+	options    options.Repository
 	themesPath string
 }
 
@@ -36,39 +43,20 @@ var (
 	// ErrNoLayouts is returned by Layouts when no page
 	// layouts have been found by the walk matcher.
 	ErrNoLayouts = errors.New("no page templates found")
-	// ErrNoTheme is returned by Exists when no theme
+	// ErrNoTheme is returned by Exists when no Theme
 	// has been found.
-	ErrNoTheme = errors.New("no theme found")
+	ErrNoTheme = errors.New("no Theme found")
+	// ErrNoThemes is returned by List when no themes
+	// have been found by looping over the theme's
+	// directory.
+	ErrNoThemes = errors.New("no themes found")
 )
 
-// New
-//
-// Creates a new Repository.
-func New() Repository {
-	return &theme{
-		config:     config.Get(),
+// New Creates a new Theme service.
+func New(cache cache.Store, options options.Repository) *Theme {
+	return &Theme{
+		cache:      cache,
+		options:    options,
 		themesPath: paths.Get().Themes,
 	}
-}
-
-// List
-//
-// List all theme configurations.
-func (t *theme) List(activeTheme string) ([]*domain.ThemeConfig, error) {
-	return config.All(t.themesPath, activeTheme)
-}
-
-// Find
-//
-// Find a theme configuration.
-func (t *theme) Find(theme string) (*domain.ThemeConfig, error) {
-	return config.Find(t.themesPath + string(os.PathSeparator) + theme)
-}
-
-// Exists
-//
-// Checks if a theme exists by name.
-func (t *theme) Exists(theme string) bool {
-	_, err := os.Stat(t.themesPath + string(os.PathSeparator) + theme)
-	return !os.IsNotExist(err)
 }

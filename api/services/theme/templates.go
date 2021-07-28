@@ -15,12 +15,12 @@ import (
 // Templates
 //
 // Retrieves all templates stored within the templates
-// directory of the theme path.
+// directory of the Theme path.
 //
 // Returns ErrNoTemplates in any error case.
 // Returns errors.NOTFOUND if no templates were found.
 // Returns errors.INTERNAL if the template path is invalid.
-func (t *theme) Templates(theme string) (domain.Templates, error) {
+func (t *Theme) Templates(theme string) (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 
 	tplDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + t.config.TemplateDir

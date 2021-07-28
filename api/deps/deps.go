@@ -38,7 +38,7 @@ type Deps struct {
 	// Site
 	Site site.Repository
 	// Theme
-	Theme   theme.Repository
+	Theme   theme.Service
 	Watcher watcher.FileWatcher
 	// Options
 	Options *domain.Options
@@ -143,7 +143,7 @@ func New(cfg Config) (*Deps, error) {
 		tmpl:    nil,
 		Running: cfg.Running,
 		Site:    site.New(&opts, cfg.System),
-		Theme:   theme.New(),
+		Theme:   theme.New(cs, cfg.Store.Options),
 		FS:      verbisfs.New(api.Production, cfg.Paths),
 		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
 		Storage: st,

@@ -15,12 +15,12 @@ import (
 // Layouts
 //
 // Retrieves all layouts stored within the layouts
-// directory of the theme path.
+// directory of the Theme path.
 //
 // Returns ErrNoLayouts in any error case.
 // Returns errors.NOTFOUND if no layouts were found.
 // Returns errors.INTERNAL if the layout path is invalid.
-func (t *theme) Layouts(theme string) (domain.Layouts, error) {
+func (t *Theme) Layouts(theme string) (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
 	layoutDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + t.config.LayoutDir
