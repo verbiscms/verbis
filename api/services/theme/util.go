@@ -15,7 +15,7 @@ import (
 //
 // Walk through root and return array of strings
 // to the file path.
-func (t *theme) walkMatch(root, pattern string) ([]string, error) {
+func (t *Theme) walkMatch(root, pattern string) ([]string, error) {
 	const op = "SiteRepository.walkMatch"
 
 	var matches []string
@@ -48,6 +48,6 @@ func (t *theme) walkMatch(root, pattern string) ([]string, error) {
 //
 // Cleans the file name to a friendly string for
 // page templates and layouts.
-func (t *theme) fileName(file string) string {
+func (t *Theme) fileName(file string) string {
 	return strings.Title(strings.ToLower(strings.ReplaceAll(file, "-", " ")))
 }
