@@ -12,6 +12,7 @@ import (
 	"github.com/verbiscms/livereload"
 	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/sockets"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/server"
@@ -42,7 +43,10 @@ up the server on the port specified in the .env file.`,
 			}
 
 			cfg.Running = true
-			d := deps.New(*cfg)
+			d, err := deps.New(*cfg)
+			if err != nil {
+				printError(errors.Message(err))
+			}
 
 			// Set dependencies
 			d.SetTmpl(tplimpl.New(d))

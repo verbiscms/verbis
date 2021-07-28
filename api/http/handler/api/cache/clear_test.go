@@ -16,13 +16,13 @@ func (t *CacheTestSuite) TestCache_Clear() {
 	tt := map[string]struct {
 		status  int
 		message string
-		mock    func(m *mocks.Cacher)
+		mock    func(m *mocks.Store)
 		want    interface{}
 	}{
 		"Success": {
 			http.StatusOK,
 			"Successfully cleared server cache",
-			func(m *mocks.Cacher) {
+			func(m *mocks.Store) {
 				m.On("Clear", mock.Anything).Return(nil)
 			},
 			nil,
@@ -30,7 +30,7 @@ func (t *CacheTestSuite) TestCache_Clear() {
 		"Error": {
 			http.StatusInternalServerError,
 			"Error clearing server cache",
-			func(m *mocks.Cacher) {
+			func(m *mocks.Store) {
 				m.On("Clear", mock.Anything).Return(fmt.Errorf("error"))
 			},
 			nil,

@@ -19,19 +19,27 @@ import (
 	"time"
 )
 
-// Cacher defines methods for interacting with the
+// Store defines methods for interacting with the
 // caching system.
-type Cacher interface {
-	store.StoreInterface
+type Store interface {
+	Get(ctx context.Context, key interface{}) (interface{}, error)
+	Set(ctx context.Context, key interface{}, value interface{}, options Options)
+	Delete(ctx context.Context, key interface{})
+	Invalidate(ctx context.Context, options InvalidateOptions) error
+	Clear(ctx context.Context) error
+	Driver() string
 }
 
-var (
-	// c is an alias for a Cacher or store.StoreInterface
-	// used by go-cache.
-	c Cacher
-	// Driver is the current driver being used.
-	Driver string
-)
+// Cache defines the methods for interacting with the
+// cache layer.
+type Cache struct {
+	// store is the package store interface used for interacting
+	// with the cache store.
+	store store.StoreInterface
+	// driver is the current store being used, it can be
+	// MemoryStore, RedisStore or MemcachedStore.
+	driver string
+}
 
 const (
 	// MemoryStore is the Redis Driver, depicted
@@ -65,19 +73,23 @@ var (
 // getting and deleting. Drivers supported are Memory
 // Redis and MemCached.
 // Returns ErrInvalidDriver if the driver passed does not exist.
-func Load(env *environment.Env) error {
+func Load(env *environment.Env) (*Cache, error) {
 	const op = "Cache.Load"
 
 	if env == nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Error loading cache", Operation: op, Err: fmt.Errorf("nil environment")}
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Error loading cache", Operation: op, Err: fmt.Errorf("nil environment")}
 	}
+
+	c := Cache{}
 
 	switch env.CacheDriver {
 	case MemoryStore, "":
 		client := gocache.New(DefaultExpiry, DefaultCleanup)
 		cacheStore := store.NewGoCache(client, nil)
-		c = cache.New(cacheStore)
-		Driver = MemoryStore
+		c = Cache{
+			store:  cache.New(cacheStore),
+			driver: MemoryStore,
+		}
 	case RedisStore:
 		opts := &redis.Options{
 			Addr:     env.RedisAddress,
@@ -85,26 +97,30 @@ func Load(env *environment.Env) error {
 			DB:       cast.ToInt(env.RedisDb),
 		}
 		cacheStore := store.NewRedis(redis.NewClient(opts), nil)
-		c = cache.New(cacheStore)
-		Driver = RedisStore
+		c = Cache{
+			store:  cache.New(cacheStore),
+			driver: RedisStore,
+		}
 	case MemcachedStore:
 		memcacheStore := store.NewMemcache(memcache.New(env.MemCachedHosts), &store.Options{
 			Expiration: DefaultExpiry,
 		})
-		c = cache.New(memcacheStore)
-		Driver = MemcachedStore
+		c = Cache{
+			store:  cache.New(memcacheStore),
+			driver: MemcachedStore,
+		}
 	default:
-		return &errors.Error{Code: errors.INVALID, Message: "Error loading cache, invalid Driver: " + env.CacheDriver, Operation: op, Err: ErrInvalidDriver}
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Error loading cache, invalid Driver: " + env.CacheDriver, Operation: op, Err: ErrInvalidDriver}
 	}
 
-	return nil
+	return &c, nil
 }
 
 // Get retrieves a specific item from the cache by key.
 // Returns errors.NOTFOUND if it could not be found.
-func Get(ctx context.Context, key interface{}) (interface{}, error) {
+func (c *Cache) Get(ctx context.Context, key interface{}) (interface{}, error) {
 	const op = "Cache.Get"
-	i, err := c.Get(ctx, key)
+	i, err := c.store.Get(ctx, key)
 	str := cast.ToString(key)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error getting item with key: " + str, Operation: op, Err: err}
@@ -115,37 +131,37 @@ func Get(ctx context.Context, key interface{}) (interface{}, error) {
 // Set set's a singular item in memory by key, value
 // and options (tags and expiration time).
 // Logs errors.INTERNAL if the item could not be set.
-func Set(ctx context.Context, key interface{}, value interface{}, options Options) error {
+func (c *Cache) Set(ctx context.Context, key interface{}, value interface{}, options Options) {
 	const op = "Cache.Set"
 	str := cast.ToString(key)
-	err := c.Set(ctx, key, value, options.toStore())
+	err := c.store.Set(ctx, key, value, options.toStore())
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error setting cache key: " + str, Operation: op, Err: err}
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error setting cache key: " + str, Operation: op, Err: err}).Error()
+		return
 	}
 	logger.Debug("Successfully set cache item with key: " + str)
-	return nil
 }
 
 // Delete removes a singular item from the cache by
 // a specific key.
 // Logs errors.INTERNAL if the item could not be deleted.
-func Delete(ctx context.Context, key interface{}) error {
+func (c *Cache) Delete(ctx context.Context, key interface{}) {
 	const op = "Cache.Delete"
 	str := cast.ToString(key)
-	err := c.Delete(ctx, key)
+	err := c.store.Delete(ctx, key)
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error deleting cache key: " + str, Operation: op, Err: err}
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting cache key: " + str, Operation: op, Err: err}).Error()
+		return
 	}
 	logger.Debug("Successfully deleted cache item with key: " + str)
-	return nil
 }
 
 // Invalidate removes items from the cache via the
 // InvalidateOptions passed.
 // Returns errors.INVALID if the cache could not be invalidated.
-func Invalidate(ctx context.Context, options InvalidateOptions) error {
+func (c *Cache) Invalidate(ctx context.Context, options InvalidateOptions) error {
 	const op = "Cache.Invalidate"
-	err := c.Invalidate(ctx, options.toStore())
+	err := c.store.Invalidate(ctx, options.toStore())
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error invalidating cache", Operation: op, Err: err}
 	}
@@ -154,22 +170,17 @@ func Invalidate(ctx context.Context, options InvalidateOptions) error {
 
 // Clear removes all items from the cache.
 // Returns errors.INTERNAL if the cache could not be cleared.
-func Clear(ctx context.Context) error {
+func (c *Cache) Clear(ctx context.Context) error {
 	const op = "Cache.Clear"
-	err := c.Clear(ctx)
+	err := c.store.Clear(ctx)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error clearing cache", Operation: op, Err: err}
 	}
 	return nil
 }
 
-// SetDriver updates the cache to a new driver. If
-// the cacher passed to the function is nil, it
-// will panic.
-func SetDriver(cacher Cacher) {
-	if cacher == nil {
-		logger.Panic("Nil cacher")
-		return
-	}
-	c = cacher
+// Driver returns the current store being used, it can be
+// MemoryStore, RedisStore or MemcachedStore.
+func (c *Cache) Driver() string {
+	return c.driver
 }

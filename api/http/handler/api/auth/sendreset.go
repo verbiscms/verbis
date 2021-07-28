@@ -54,11 +54,7 @@ func (a *Auth) SendResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	err = cache.Set(context.Background(), token, user, cache.Options{Expiration: PasswordExpiry})
-	if err != nil {
-		api.Respond(ctx, http.StatusInternalServerError, "Error sending password reset", &errors.Error{Code: errors.INTERNAL, Err: err, Operation: op})
-		return
-	}
+	a.Cache.Set(context.Background(), token, user, cache.Options{Expiration: PasswordExpiry})
 
 	err = a.resetPassword.Dispatch(events.ResetPassword{
 		User: user.UserPart,

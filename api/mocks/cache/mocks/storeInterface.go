@@ -5,8 +5,9 @@ package mocks
 import (
 	context "context"
 
-	store "github.com/eko/gocache/v2/store"
 	mock "github.com/stretchr/testify/mock"
+
+	store "github.com/eko/gocache/v2/store"
 
 	time "time"
 )

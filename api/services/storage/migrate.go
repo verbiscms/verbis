@@ -6,9 +6,7 @@ package storage
 
 import (
 	"bytes"
-	"context"
 	"fmt"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
@@ -94,12 +92,12 @@ func (m *MigrationInfo) succeed(file domain.File) {
 // calculateProcessed
 func (m *MigrationInfo) storeMigration() {
 	m.Progress = (m.FilesProcessed * 100) / m.Total
-	err := cache.Set(context.Background(), MigrationCacheKey, m, cache.Options{
-		Expiration: cache.RememberForever,
-	})
-	if err != nil {
-		logger.WithError(err).Error()
-	}
+	//err := cache.Set(context.Background(), MigrationCacheKey, m, cache.Options{
+	//	Expiration: cache.RememberForever,
+	//})
+	//if err != nil {
+	//	logger.WithError(err).Error()
+	//}
 }
 
 // migration is an entity used to help to process file
@@ -187,10 +185,10 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", s.migration.Succeeded))
 	logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", s.migration.Failed))
 
-	err := cache.Delete(context.Background(), MigrationCacheKey)
-	if err != nil {
-		logger.WithError(err).Error()
-	}
+	//err := cache.Delete(context.Background(), MigrationCacheKey)
+	//if err != nil {
+	//	logger.WithError(err).Error()
+	//}
 
 	s.isMigrating = false
 	s.migration = MigrationInfo{}
