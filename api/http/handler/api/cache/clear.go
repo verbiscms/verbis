@@ -6,7 +6,7 @@ package cache
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/cache"
+	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
 )
@@ -17,7 +17,11 @@ import (
 func (c *Cache) Clear(ctx *gin.Context) {
 	const op = "CacheHandler.Clear"
 
-	cache.Store.Flush()
+	err := c.Cache.Clear(ctx)
+	if err != nil {
+		api.Respond(ctx, http.StatusInternalServerError, "Error clearing server cache", &errors.Error{Code: errors.INTERNAL, Message: "Error clearing cache", Operation: op, Err: err})
+		return
+	}
 
 	api.Respond(ctx, http.StatusOK, "Successfully cleared server cache", nil)
 }

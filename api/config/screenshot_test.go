@@ -4,22 +4,16 @@
 
 package config
 
-import (
-	"github.com/verbiscms/verbis/api/errors"
-)
+import "github.com/verbiscms/verbis/api/errors"
 
 func (t *ConfigTestSuite) Test_FindScreenshot() {
 	tt := map[string]struct {
 		path string
 		want interface{}
 	}{
-		"SVG": {
-			t.apiPath + TestSingularPath,
-			"/themes/verbis/screenshot.svg",
-		},
 		"PNG": {
-			t.apiPath + "/test/testdata/themes/verbis2",
-			"/themes/verbis2/screenshot.png",
+			t.TestPath,
+			"/themes/testdata/screenshot.png",
 		},
 		"Wrong Path": {
 			"wrong",
@@ -29,7 +23,7 @@ func (t *ConfigTestSuite) Test_FindScreenshot() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			got, err := FindScreenshot(test.path)
+			got, err := findScreenshot(test.path)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

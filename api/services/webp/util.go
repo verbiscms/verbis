@@ -6,8 +6,8 @@ package webp
 
 import (
 	"bytes"
+	"github.com/ainsleyclark/go-webpbin"
 	"github.com/gin-gonic/gin"
-	"github.com/nickalie/go-webpbin"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"io"
@@ -88,8 +88,6 @@ func (w *WebP) File(ctx *gin.Context, path string, mime domain.Mime) ([]byte, er
 // decoded image. Compression level is also set.
 func (w *WebP) Convert(in io.Reader, compression int) (*bytes.Reader, error) {
 	const op = "Webp.Convert"
-
-	webpbin.Dest(w.binPath)
 
 	var buf = &bytes.Buffer{}
 

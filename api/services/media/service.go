@@ -7,11 +7,10 @@ package media
 import (
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/common/paths"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/services/media/resizer"
-	storage2 "github.com/verbiscms/verbis/api/services/storage"
+	storage "github.com/verbiscms/verbis/api/services/storage"
 	"github.com/verbiscms/verbis/api/services/webp"
 	"github.com/verbiscms/verbis/api/store/media"
 	"mime/multipart"
@@ -50,7 +49,7 @@ type Library interface {
 	// is less than the size specified in the options
 	// and finally checks the image boundaries.
 	// Returns errors.INVALID any of the conditions fail.
-	Validate(file *multipart.FileHeader) error
+	Validate(file *multipart.FileHeader, cfg domain.ThemeConfig) error
 	// Delete removes the testMedia item from the database and
 	// storage system. Generated sizes and WebP images
 	// will also be removed.
@@ -79,20 +78,18 @@ var (
 // and serving rich testMedia from the Verbis testMedia library.
 type Service struct {
 	options *domain.Options
-	config  *domain.ThemeConfig
 	paths   paths.Paths
 	webp    webp.Execer
-	storage storage2.Bucket
+	storage storage.Bucket
 	repo    media.Repository
 	resizer resizer.Resizer
 }
 
 // New creates a new testMedia Service.
-func New(opts *domain.Options, store storage2.Bucket, repo media.Repository) *Service {
+func New(opts *domain.Options, store storage.Bucket, repo media.Repository) *Service {
 	p := paths.Get()
 	return &Service{
 		options: opts,
-		config:  config.Get(),
 		paths:   p,
 		webp:    webp.New(p.Bin + webp.Path),
 		storage: store,

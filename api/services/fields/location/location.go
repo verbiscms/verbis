@@ -7,7 +7,6 @@ package location
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
@@ -42,13 +41,13 @@ var FieldPath = "fields"
 func (l *Location) Layout(themePath string, post domain.PostDatum, cacheable bool) domain.FieldGroups {
 	// If the cache allows for caching of layouts & if the
 	// layout has already been cached, return.
-	var found bool
-	if cacheable {
-		cached, found := cache.Store.Get("field_layout_" + post.UUID.String())
-		if found {
-			return cached.(domain.FieldGroups)
-		}
-	}
+	//var found bool
+	//if cacheable {
+	//	cached, err := cache.Get(context.Background(), "field_layout_"+post.UUID.String())
+	//	if err == nil {
+	//		return cached.(domain.FieldGroups)
+	//	}
+	//}
 
 	fg, err := l.fieldGroupWalker(filepath.Join(themePath, FieldPath))
 	if err != nil {
@@ -60,9 +59,14 @@ func (l *Location) Layout(themePath string, post domain.PostDatum, cacheable boo
 	groups := l.groupResolver(post)
 
 	// Set the cache field layout if the cache was not found
-	if !found && cacheable {
-		cache.Store.Set("field_layout_"+post.UUID.String(), groups, cache.RememberForever)
-	}
+	//if !found && cacheable {
+	//	err := cache.Set(context.Background(), "field_layout_"+post.UUID.String(), groups, cache.Options{
+	//		Expiration: cache.RememberForever,
+	//	})
+	//	if err != nil {
+	//		logger.WithError(err).Error()
+	//	}
+	//}
 
 	return groups
 }

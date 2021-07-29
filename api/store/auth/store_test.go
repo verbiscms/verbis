@@ -56,11 +56,4 @@ var (
 		},
 		Token: "token",
 	}
-	// The default password reset used for
-	// testing.
-	passwordReset = domain.PasswordReset{
-		Id:    1,
-		Email: user.Email,
-		Token: user.Token,
-	}
 )

@@ -12,20 +12,6 @@ type Repository struct {
 	mock.Mock
 }
 
-// CleanPasswordResets provides a mock function with given fields:
-func (_m *Repository) CleanPasswordResets() error {
-	ret := _m.Called()
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func() error); ok {
-		r0 = rf()
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // Login provides a mock function with given fields: email, password
 func (_m *Repository) Login(email string, password string) (domain.User, error) {
 	ret := _m.Called(email, password)
@@ -68,65 +54,16 @@ func (_m *Repository) Logout(token string) (int, error) {
 	return r0, r1
 }
 
-// ResetPassword provides a mock function with given fields: token, password
-func (_m *Repository) ResetPassword(token string, password string) error {
-	ret := _m.Called(token, password)
+// ResetPassword provides a mock function with given fields: email, password
+func (_m *Repository) ResetPassword(email string, password string) error {
+	ret := _m.Called(email, password)
 
 	var r0 error
 	if rf, ok := ret.Get(0).(func(string, string) error); ok {
-		r0 = rf(token, password)
+		r0 = rf(email, password)
 	} else {
 		r0 = ret.Error(0)
 	}
 
 	return r0
-}
-
-// SendResetPassword provides a mock function with given fields: email
-func (_m *Repository) SendResetPassword(email string) (domain.UserPart, string, error) {
-	ret := _m.Called(email)
-
-	var r0 domain.UserPart
-	if rf, ok := ret.Get(0).(func(string) domain.UserPart); ok {
-		r0 = rf(email)
-	} else {
-		r0 = ret.Get(0).(domain.UserPart)
-	}
-
-	var r1 string
-	if rf, ok := ret.Get(1).(func(string) string); ok {
-		r1 = rf(email)
-	} else {
-		r1 = ret.Get(1).(string)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(string) error); ok {
-		r2 = rf(email)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
-// VerifyPasswordToken provides a mock function with given fields: token
-func (_m *Repository) VerifyPasswordToken(token string) (domain.PasswordReset, error) {
-	ret := _m.Called(token)
-
-	var r0 domain.PasswordReset
-	if rf, ok := ret.Get(0).(func(string) domain.PasswordReset); ok {
-		r0 = rf(token)
-	} else {
-		r0 = ret.Get(0).(domain.PasswordReset)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(token)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
 }

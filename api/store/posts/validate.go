@@ -5,7 +5,7 @@
 package posts
 
 import (
-	"github.com/verbiscms/verbis/api/config"
+	//	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
@@ -24,24 +24,24 @@ func (s *Store) validate(p *domain.PostCreate, checkSlug bool) error {
 		}
 	}
 
-	cfg := config.Get()
+	//cfg := config.Get()
+	//
+	//resource, ok := cfg.Resources[p.Resource]
+	//if ok {
+	//	if resource.Hidden {
+	//		return nil
+	//	}
+	//}
 
-	resource, ok := cfg.Resources[p.Resource]
-	if ok {
-		if resource.Hidden {
-			return nil
-		}
-	}
-
-	err := s.validatePageTemplate(cfg, p)
-	if err != nil {
-		return err
-	}
-
-	err = s.validatePageLayout(cfg, p)
-	if err != nil {
-		return err
-	}
+	//err := s.validatePageTemplate(cfg, p)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//err = s.validatePageLayout(cfg, p)
+	//if err != nil {
+	//	return err
+	//}
 
 	return nil
 }
@@ -84,54 +84,55 @@ func (s *Store) validateSlug(p *domain.PostCreate) error {
 	return nil
 }
 
-// validatePageTemplate checks to see if a page template
-// is found in the current theme.
-// Returns nil if it was found.
-// Returns ErrNoPageTemplate if the page template was not found.
-func (s *Store) validatePageTemplate(cfg *domain.ThemeConfig, p *domain.PostCreate) error {
-	const op = "PostStore.ValidatePageTemplate"
-
-	tpl, err := s.ThemeService.Templates(cfg.Theme.Name)
-	if err != nil {
-		return err
-	}
-
-	found := false
-	for _, v := range tpl {
-		if v.Key == p.PageTemplate {
-			found = true
-		}
-	}
-
-	if !found {
-		return &errors.Error{Code: errors.CONFLICT, Message: "Validation failed, no page template exists: " + p.PageTemplate, Operation: op, Err: ErrNoPageTemplate}
-	}
-
-	return nil
-}
-
-// validatePageLayout Checks to see if a page layout is
-// found in the current theme.
-// Returns nil if it was found.
-// Returns ErrNoPageLayout if the page layout was not found.
-func (s *Store) validatePageLayout(cfg *domain.ThemeConfig, p *domain.PostCreate) error {
-	const op = "PostStore.ValidatePageLayout"
-
-	tpl, err := s.ThemeService.Layouts(cfg.Theme.Name)
-	if err != nil {
-		return err
-	}
-
-	found := false
-	for _, v := range tpl {
-		if v.Key == p.PageLayout {
-			found = true
-		}
-	}
-
-	if !found {
-		return &errors.Error{Code: errors.CONFLICT, Message: "Validation failed, no page layout exists: " + p.PageLayout, Operation: op, Err: ErrNoPageLayout}
-	}
-
-	return nil
-}
+//
+//// validatePageTemplate checks to see if a page template
+//// is found in the current theme.
+//// Returns nil if it was found.
+//// Returns ErrNoPageTemplate if the page template was not found.
+//func (s *Store) validatePageTemplate(cfg *domain.ThemeConfig, p *domain.PostCreate) error {
+//	const op = "PostStore.ValidatePageTemplate"
+//
+//	tpl, err := s.ThemeService.Templates(cfg.Theme.Name)
+//	if err != nil {
+//		return err
+//	}
+//
+//	found := false
+//	for _, v := range tpl {
+//		if v.Key == p.PageTemplate {
+//			found = true
+//		}
+//	}
+//
+//	if !found {
+//		return &errors.Error{Code: errors.CONFLICT, Message: "Validation failed, no page template exists: " + p.PageTemplate, Operation: op, Err: ErrNoPageTemplate}
+//	}
+//
+//	return nil
+//}
+//
+//// validatePageLayout Checks to see if a page layout is
+//// found in the current theme.
+//// Returns nil if it was found.
+//// Returns ErrNoPageLayout if the page layout was not found.
+//func (s *Store) validatePageLayout(cfg *domain.ThemeConfig, p *domain.PostCreate) error {
+//	const op = "PostStore.ValidatePageLayout"
+//
+//	tpl, err := s.ThemeService.Layouts(cfg.Theme.Name)
+//	if err != nil {
+//		return err
+//	}
+//
+//	found := false
+//	for _, v := range tpl {
+//		if v.Key == p.PageLayout {
+//			found = true
+//		}
+//	}
+//
+//	if !found {
+//		return &errors.Error{Code: errors.CONFLICT, Message: "Validation failed, no page layout exists: " + p.PageLayout, Operation: op, Err: ErrNoPageLayout}
+//	}
+//
+//	return nil
+//}

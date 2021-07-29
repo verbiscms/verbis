@@ -5,11 +5,15 @@
 package auth
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
+	app "github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/events"
 	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
+	"time"
 )
 
 // SendResetPassword defines the data to be validated when a
@@ -17,6 +21,10 @@ import (
 type SendResetPassword struct {
 	Email string `json:"email" binding:"required,email"`
 }
+
+const (
+	PasswordExpiry = time.Minute * 15
+)
 
 // SendResetPassword
 //
@@ -34,18 +42,23 @@ func (a *Auth) SendResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	user, token, err := a.Store.Auth.SendResetPassword(srp.Email)
-	if errors.Code(err) == errors.NOTFOUND {
-		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
-		return
-	} else if err != nil {
-		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+	user, err := a.Store.User.FindByEmail(srp.Email)
+	if err != nil {
+		api.Respond(ctx, http.StatusBadRequest, "No user found with email: "+srp.Email, &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
+	token, err := a.generateTokenFunc(user.Email)
+	if err != nil {
+		api.Respond(ctx, http.StatusInternalServerError, "Error generating user token", &errors.Error{Code: errors.INTERNAL, Err: err, Operation: op})
+		return
+	}
+
+	a.Cache.Set(context.Background(), token, user, cache.Options{Expiration: PasswordExpiry})
+
 	err = a.resetPassword.Dispatch(events.ResetPassword{
-		User: user,
-		URL:  a.Deps.Options.SiteUrl + "/admin/password/reset/" + token,
+		User: user.UserPart,
+		URL:  a.Deps.Options.SiteUrl + app.AdminPath + "/password/reset/" + token,
 	}, []string{user.Email}, nil)
 
 	if err != nil {

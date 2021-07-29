@@ -38,8 +38,8 @@ const (
 // Setup
 //
 // Sets defaults and returns a new Theme repo.
-func (t *ThemeTestSuite) Setup() *theme {
-	return &theme{
+func (t *ThemeTestSuite) Setup() *Theme {
+	return &Theme{
 		config: &domain.ThemeConfig{
 			FileExtension: ".cms",
 			LayoutDir:     "layouts",

@@ -5,6 +5,7 @@
 package routes
 
 import (
+	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/http/handler"
 	"github.com/verbiscms/verbis/api/server"
@@ -15,7 +16,7 @@ import (
 // Vue (SPA) routes.
 func spaRoutes(d *deps.Deps, s *server.Server) {
 	h := handler.NewSPA(d)
-	spa := s.Group("/admin")
+	spa := s.Group(app.AdminPath)
 	spa.GET("/*any", h.Serve)
 	spa.GET("", h.Serve)
 }

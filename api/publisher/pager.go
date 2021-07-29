@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
@@ -24,12 +23,12 @@ import (
 
 type page struct {
 	*deps.Deps
-	ctx        *gin.Context
-	post       *domain.PostDatum
-	url        *url.URL
-	cacheKey   string
-	foundCache bool
-	home       int
+	ctx  *gin.Context
+	post *domain.PostDatum
+	url  *url.URL
+	//cacheKey   string
+	//foundCache bool
+	home int
 }
 
 var (
@@ -69,7 +68,6 @@ func newPage(d *deps.Deps, ctx *gin.Context) (page, bool, error) {
 	}
 
 	p.post = post
-	p.cacheKey = cache.GetPostKey(post.Id)
 
 	return p, false, nil
 }
@@ -102,9 +100,9 @@ func (p *page) Execute() ([]byte, error) {
 	}
 
 	b := buf.Bytes()
-	if p.CanCache() && !p.foundCache {
-		go p.Cache(b)
-	}
+	//if p.CanCache() && !p.foundCache {
+	//go p.Cache(b)
+	//}
 
 	return b, nil
 }
@@ -152,23 +150,23 @@ func (p *page) IsResourcePublic() error {
 // Cache
 //
 // Cache the post with keys.
-func (p *page) Cache(b []byte) {
-	cache.Store.Set(p.cacheKey, b, cache.RememberForever)
-}
+//func (p *page) Cache(b []byte) {
+//	cache.Store.Set(p.cacheKey, b, cache.RememberForever)
+//}
 
 // GetCached
 //
 // Obtains the post from the store, if there was none
 // found, false with nil bytes will be returned.
-func (p *page) GetCached() ([]byte, bool) {
-	var c interface{}
-	c, ok := cache.Store.Get(p.cacheKey)
-	if ok && c != nil {
-		p.foundCache = true
-		return c.([]byte), true
-	}
-	return nil, false
-}
+//func (p *page) GetCached() ([]byte, bool) {
+//	var c interface{}
+//	c, ok := cache.Store.Get(p.cacheKey)
+//	if ok && c != nil {
+//		p.foundCache = true
+//		return c.([]byte), true
+//	}
+//	return nil, false
+//}
 
 // CanCache
 //

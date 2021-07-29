@@ -6,7 +6,7 @@ package storage
 
 import (
 	"github.com/verbiscms/verbis/api/domain"
-	internal2 "github.com/verbiscms/verbis/api/services/storage/internal"
+	"github.com/verbiscms/verbis/api/services/storage/internal"
 )
 
 // Configuration represents the information returned
@@ -28,16 +28,22 @@ func (s *Storage) Info() (Configuration, error) {
 	}
 
 	var m = make(domain.StorageProviders)
-	for k, v := range internal2.Providers {
+	for k, v := range internal.Providers {
 		m[k] = v.Info(s.env)
 	}
+
+	//var migrationInfo MigrationInfo
+	//mi, found := cache.Get(context.Background(), MigrationCacheKey)
+	//if found == nil {
+	//	migrationInfo = mi.(MigrationInfo)
+	//}
 
 	c := Configuration{
 		ActiveProvider: provider,
 		ActiveBucket:   bucket,
 		Providers:      m,
-		IsMigrating:    s.isMigrating,
-		MigrationInfo:  s.migration,
+		//IsMigrating:    s.isMigrating,
+		//MigrationInfo:  MigrationInfo{},
 	}
 
 	return c, nil

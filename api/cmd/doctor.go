@@ -7,7 +7,6 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/deps"
@@ -65,9 +64,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
-	// Init Cache
-	cache.Init()
 
 	p := paths.Get()
 	system := sys.New(db)
