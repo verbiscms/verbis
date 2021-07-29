@@ -6,11 +6,12 @@ package storage
 
 import (
 	"fmt"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
-	internal2 "github.com/verbiscms/verbis/api/services/storage/internal"
+	"github.com/verbiscms/verbis/api/services/storage/internal"
 	"github.com/verbiscms/verbis/api/store/files"
 	"github.com/verbiscms/verbis/api/store/options"
 )
@@ -110,9 +111,8 @@ type Storage struct {
 	optionsRepo options.Repository
 	filesRepo   files.Repository
 	paths       paths.Paths
-	service     internal2.StorageServices
-	isMigrating bool
-	migration   MigrationInfo
+	service     internal.StorageServices
+	cache       cache.Store
 }
 
 // Config defines the configuration passed to create a new
@@ -121,6 +121,7 @@ type Config struct {
 	Environment *environment.Env
 	Options     options.Repository
 	Files       files.Repository
+	Cache       cache.Store
 }
 
 // Validate validates the configuration to ensure there are
@@ -135,6 +136,9 @@ func (c Config) Validate() error {
 	}
 	if c.Files == nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error, no files repository set", Operation: op, Err: fmt.Errorf("nil files store")}
+	}
+	if c.Cache == nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error, no cache set", Operation: op, Err: fmt.Errorf("nil cache store")}
 	}
 	return nil
 }
@@ -151,7 +155,7 @@ func New(cfg Config) (*Storage, error) {
 		optionsRepo: cfg.Options,
 		filesRepo:   cfg.Files,
 		paths:       paths.Get(),
-		service: &internal2.Service{
+		service: &internal.Service{
 			Env:     cfg.Environment,
 			Options: cfg.Options,
 		},

@@ -28,8 +28,8 @@ var AssetsChan = make(chan int, api.AssetsChannel)
 // return a 404.
 // It then sets cache headers using the cacher interface & checks if a webp
 // image is available with the path of .jpg.webp. The minify is the used
-// to see if the file can be minfied.
-func (r *publish) Asset(g *gin.Context, webp bool) (*[]byte, domain.Mime, error) {
+// to see if the file can be minified.
+func (r *publish) Asset(ctx *gin.Context, webp bool) (*[]byte, domain.Mime, error) {
 	const op = "publish.GetAsset"
 
 	AssetsChan <- 1
@@ -37,7 +37,7 @@ func (r *publish) Asset(g *gin.Context, webp bool) (*[]byte, domain.Mime, error)
 		<-AssetsChan
 	}()
 
-	url := g.Request.URL.Path
+	url := ctx.Request.URL.Path
 
 	// Get the relevant paths
 	assetsPath := r.ThemePath() + string(os.PathSeparator) + r.Config.AssetsPath
@@ -46,16 +46,16 @@ func (r *publish) Asset(g *gin.Context, webp bool) (*[]byte, domain.Mime, error)
 
 	file, err := ioutil.ReadFile(assetsPath + fileName)
 	if err != nil {
-		return nil, "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Unable to read the file with the path: %s", assetsPath+fileName), Operation: op, Err: err}
+		return nil, "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error reading the file with the path: %s", assetsPath+fileName), Operation: op, Err: err}
 	}
 
 	// Set cache headers
-	r.cacher.Cache(g)
+	r.cacher.Cache(ctx)
 
 	// Check if the serving of webp's is allowed & get the
 	// webp images and assign if not nil
-	if r.Options.MediaServeWebP && r.WebP.Accepts(g) && webp {
-		webpFile, err := r.WebP.File(g, assetsPath+fileName, domain.Mime(mimeType))
+	if r.Options.MediaServeWebP && r.WebP.Accepts(ctx) && webp {
+		webpFile, err := r.WebP.File(ctx, assetsPath+fileName, domain.Mime(mimeType))
 		if err == nil {
 			return &webpFile, "image/webp", nil
 		}

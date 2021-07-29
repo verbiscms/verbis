@@ -6,7 +6,8 @@ package cache
 
 import (
 	"github.com/stretchr/testify/suite"
-	"github.com/verbiscms/verbis/api/cache"
+	"github.com/verbiscms/verbis/api/deps"
+	mocks "github.com/verbiscms/verbis/api/mocks/cache"
 	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
@@ -30,6 +31,12 @@ func TestCache(t *testing.T) {
 //
 // A helper to obtain a mock cache handler
 // for testing.
-func (t *CacheTestSuite) Setup() {
-	cache.Init()
+func (t *CacheTestSuite) Setup(mock func(m *mocks.Store)) *Cache {
+	m := &mocks.Store{}
+	if mock != nil {
+		mock(m)
+	}
+	return New(&deps.Deps{
+		Cache: m,
+	})
 }

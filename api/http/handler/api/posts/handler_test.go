@@ -6,7 +6,6 @@ package posts
 
 import (
 	"github.com/stretchr/testify/suite"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/posts"
@@ -35,7 +34,6 @@ func TestPosts(t *testing.T) {
 // A helper to obtain a mock posts handler
 // for testing.
 func (t *PostsTestSuite) Setup(mf func(m *mocks.Repository)) *Posts {
-	cache.Init()
 	m := &mocks.Repository{}
 	if mf != nil {
 		mf(m)

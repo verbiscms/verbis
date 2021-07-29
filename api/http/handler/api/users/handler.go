@@ -6,11 +6,7 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/cache"
-	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/deps"
-	"github.com/verbiscms/verbis/api/logger"
-	"github.com/verbiscms/verbis/api/store/posts"
 )
 
 // Handler defines methods for users to interact with the server
@@ -43,12 +39,12 @@ func New(d *deps.Deps) *Users {
 //
 // Clear the post cache that have the given user ID
 // attached to it.
-func (u *Users) clearCache(id int) {
-	go func() {
-		p, _, err := u.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
-		if err != nil {
-			logger.WithError(err).Error()
-		}
-		cache.ClearUserCache(id, p)
-	}()
-}
+//func (u *Users) clearCache(id int) {
+//	go func() {
+//		p, _, err := u.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
+//		if err != nil {
+//			logger.WithError(err).Error()
+//		}
+//		cache.ClearUserCache(id, p)
+//	}()
+//}

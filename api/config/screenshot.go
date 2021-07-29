@@ -30,13 +30,13 @@ var (
 	}
 )
 
-// FindScreenshot ranges over the allowed screenshot
+// findScreenshot ranges over the allowed screenshot
 // extensions and checks for a match, if the
 // screenshot has been found, a url will
 // be returned.
 // Returns errors.NOTFOUND if no screenshot was found.
-func FindScreenshot(path string) (string, error) {
-	const op = "Theme.FindScreenshot"
+func findScreenshot(path string) (string, error) {
+	const op = "Theme.findScreenshot"
 
 	for _, v := range ScreenshotExtensions {
 		name := path + string(os.PathSeparator) + ScreenshotName + v

@@ -5,7 +5,6 @@
 package storage
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/domain"
@@ -87,8 +86,16 @@ func (m *MigrationInfo) succeed(file domain.File) {
 
 // calculateProcessed
 func (m *MigrationInfo) storeMigration() {
-	// TODO - we need to override the cache with the updated MigrationInfo here!
 	m.Progress = (m.FilesProcessed * 100) / m.Total
+
+
+
+	//err := cache.Set(context.Background(), MigrationCacheKey, m, cache.Options{
+	//	Expiration: cache.RememberForever,
+	//})
+	//if err != nil {
+	//	logger.WithError(err).Error()
+	//}
 }
 
 // migration is an entity used to help to process file
@@ -106,9 +113,9 @@ type migration struct {
 func (s *Storage) Migrate(from, to domain.StorageChange, deleteFiles bool) (int, error) {
 	const op = "Storage.Migrate"
 
-	if s.isMigrating {
-		return 0, &errors.Error{Code: errors.INVALID, Message: "Error migration is already in progress", Operation: op, Err: ErrAlreadyMigrating}
-	}
+	//if s.isMigrating {
+	//	return 0, &errors.Error{Code: errors.INVALID, Message: "Error migration is already in progress", Operation: op, Err: ErrAlreadyMigrating}
+	//}
 
 	if from.Provider == to.Provider {
 		return 0, &errors.Error{Code: errors.INVALID, Message: "Error providers cannot be the same", Operation: op, Err: fmt.Errorf("providers are the same")}
@@ -137,15 +144,12 @@ func (s *Storage) Migrate(from, to domain.StorageChange, deleteFiles bool) (int,
 		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error no files found with provider: " + from.Provider.String(), Operation: op, Err: ErrNoFilesToMigrate}
 	}
 
-	// TODO, this needs to be stored in the cache, if there are multiple
-	// migrations on a stateless platform, there will be
-	// inconsistencies
-	s.isMigrating = true
-	s.migration = MigrationInfo{
-		Total:      total,
-		MigratedAt: time.Now(),
-		mtx:        &sync.Mutex{},
-	}
+	//s.isMigrating = true
+	//s.migration = MigrationInfo{
+	//	Total:      total,
+	//	MigratedAt: time.Now(),
+	//	mtx:        &sync.Mutex{},
+	//}
 
 	logger.Debug(fmt.Sprintf("Starting storage migration with %d files being processed", total))
 
@@ -176,11 +180,16 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 
 	wg.Wait()
 
-	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", s.migration.Succeeded))
-	logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", s.migration.Failed))
+	//logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", s.migration.Succeeded))
+	//logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", s.migration.Failed))
 
-	s.isMigrating = false
-	s.migration = MigrationInfo{}
+	//err := cache.Delete(context.Background(), MigrationCacheKey)
+	//if err != nil {
+	//	logger.WithError(err).Error()
+	//}
+
+	//s.isMigrating = false
+	//s.migration = MigrationInfo{}
 }
 
 // migrateBackground processes the migration by finding the
@@ -191,42 +200,42 @@ func (s *Storage) migrateBackground(channel chan migration, deleteFiles bool) {
 
 	defer m.wg.Done()
 
-	buf, _, err := s.Find(m.file.Url)
-	if err != nil {
-		s.migration.fail(m.file, err)
-		return
-	}
+	//buf, _, err := s.Find(m.file.Url)
+	//if err != nil {
+	//	s.migration.fail(m.file, err)
+	//	return
+	//}
 
-	u := domain.Upload{
-		UUID:       m.file.UUID,
-		Path:       m.file.Url,
-		Size:       m.file.FileSize,
-		Contents:   bytes.NewReader(buf),
-		Private:    bool(m.file.Private),
-		SourceType: m.file.SourceType,
-	}
-
-	file, err := s.upload(m.to.Provider, m.to.Bucket, u, false)
-	if err != nil {
-		s.migration.fail(m.file, err)
-		return
-	}
-
-	if deleteFiles {
-		err = s.deleteFile(false, m.file.Id)
-		if err != nil {
-			s.migration.fail(m.file, err)
-			return
-		}
-	}
-
-	file.Id = m.file.Id
-
-	updated, err := s.filesRepo.Update(file)
-	if err != nil {
-		s.migration.fail(m.file, err)
-		return
-	}
-
-	s.migration.succeed(updated)
+	//u := domain.Upload{
+	//	UUID:       m.file.UUID,
+	//	Path:       m.file.Url,
+	//	Size:       m.file.FileSize,
+	//	Contents:   bytes.NewReader(buf),
+	//	Private:    bool(m.file.Private),
+	//	SourceType: m.file.SourceType,
+	//}
+	//
+	//file, err := s.upload(m.to.Provider, m.to.Bucket, u, false)
+	//if err != nil {
+	//	s.migration.fail(m.file, err)
+	//	return
+	//}
+	//
+	//if deleteFiles {
+	//	err = s.deleteFile(false, m.file.Id)
+	//	if err != nil {
+	//		s.migration.fail(m.file, err)
+	//		return
+	//	}
+	//}
+	//
+	//file.Id = m.file.Id
+	//
+	//updated, err := s.filesRepo.Update(file)
+	//if err != nil {
+	//	s.migration.fail(m.file, err)
+	//	return
+	//}
+	//
+	//s.migration.succeed(updated)
 }

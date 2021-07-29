@@ -6,11 +6,7 @@ package categories
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/cache"
-	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/deps"
-	"github.com/verbiscms/verbis/api/logger"
-	"github.com/verbiscms/verbis/api/store/posts"
 )
 
 // Handler defines methods for categories to interact with the server.
@@ -42,12 +38,12 @@ func New(d *deps.Deps) *Categories {
 //
 // Clear the post cache that have the given category ID
 // attached to it.
-func (c *Categories) clearCache(id int) {
-	go func() {
-		p, _, err := c.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
-		if err != nil {
-			logger.WithError(err).Error()
-		}
-		cache.ClearCategoryCache(id, p)
-	}()
-}
+//func (c *Categories) clearCache(id int) {
+//	go func() {
+//		p, _, err := c.Store.Posts.List(params.Params{LimitAll: true}, false, posts.ListConfig{})
+//		if err != nil {
+//			logger.WithError(err).Error()
+//		}
+//		cache.ClearCategoryCache(id, p)
+//	}()
+//}

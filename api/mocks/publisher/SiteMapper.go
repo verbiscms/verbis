@@ -9,11 +9,6 @@ type SiteMapper struct {
 	mock.Mock
 }
 
-// ClearCache provides a mock function with given fields:
-func (_m *SiteMapper) ClearCache() {
-	_m.Called()
-}
-
 // Index provides a mock function with given fields:
 func (_m *SiteMapper) Index() ([]byte, error) {
 	ret := _m.Called()

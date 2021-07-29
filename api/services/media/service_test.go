@@ -153,7 +153,7 @@ func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Opti
 	}
 
 	if cfg == nil {
-		cfg = &domain.ThemeConfig{}
+		cfg = &domain.ThemeConfig{} //nolint
 	}
 
 	if opts == nil {
@@ -162,7 +162,6 @@ func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Opti
 
 	c := New(opts, s, r)
 	c.resizer = &resizer.Resizer{}
-	c.config = cfg
 
 	return c
 }

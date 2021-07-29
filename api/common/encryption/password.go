@@ -5,7 +5,6 @@
 package encryption
 
 import (
-	"fmt"
 	"github.com/verbiscms/verbis/api/errors"
 	"golang.org/x/crypto/bcrypt"
 	"math/rand"
@@ -25,7 +24,7 @@ func HashPassword(password string) (string, error) {
 	bytePassword := []byte(password)
 	hashedPassword, err := bcrypt.GenerateFromPassword(bytePassword, DefaultCost)
 	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Could not hash the password with the string: %s", password), Operation: op, Err: err}
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error hashing password", Operation: op, Err: err}
 	}
 	return string(hashedPassword), err
 }

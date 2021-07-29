@@ -85,6 +85,7 @@ export default {
 				token: this.token,
 			})
 				.then(() => {
+					this.$noty.success("Successfully reset password")
 					this.$router.push({name: 'login', query: { reset: "true" }});
 				})
 				.catch(err => {

@@ -18,7 +18,7 @@ import (
 func (t *Themes) Templates(ctx *gin.Context) {
 	const op = "ThemeHandler.Templates"
 
-	templates, err := t.Theme.Templates(t.Deps.Options.ActiveTheme)
+	templates, err := t.Theme.Templates()
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

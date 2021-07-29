@@ -116,3 +116,7 @@ func WithError(err interface{}) *logrus.Entry {
 func SetOutput(writer io.Writer) {
 	logger.SetOutput(writer)
 }
+
+func SetLevel(level logrus.Level) {
+	logger.SetLevel(level)
+}

@@ -127,11 +127,6 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 
 			t.Engine.Use(Redirects(&deps.Deps{
 				Store: &store.Repository{Redirects: mock},
-				Config: &domain.ThemeConfig{
-					Admin: domain.AdminConfig{
-						Path: "admin",
-					},
-				},
 			}))
 
 			t.RequestAndServe(http.MethodGet, test.url, test.url, nil, t.DefaultHandler)

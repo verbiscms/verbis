@@ -14,12 +14,10 @@ import (
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
-	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 	options "github.com/verbiscms/verbis/api/mocks/store/options"
 	"github.com/verbiscms/verbis/api/store/files"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
@@ -36,16 +34,19 @@ func TestStorage(t *testing.T) {
 }
 
 // BeforeTest discards the log.
-func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
-	logger.SetOutput(ioutil.Discard)
-}
+//func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
+//	c := &mockCache.Cacher{}
+//	c.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, nil).Times(100)
+//	cache.SetDriver(c)
+//	logger.SetOutput(ioutil.Discard)
+//}
 
 // Setup the suite with the mock functions.
-func (t *StorageTestSuite) Setup(mock func(s *mocks.Service, r *repo.Repository)) *Storage {
+func (t *StorageTestSuite) Setup(mf func(s *mocks.Service, r *repo.Repository)) *Storage {
 	m := &mocks.Service{}
 	r := &repo.Repository{}
-	if mock != nil {
-		mock(m, r)
+	if mf != nil {
+		mf(m, r)
 	}
 	return &Storage{
 		filesRepo: r,
@@ -56,12 +57,12 @@ func (t *StorageTestSuite) Setup(mock func(s *mocks.Service, r *repo.Repository)
 
 // Setup the suite with mock functions including
 // options.
-func (t *StorageTestSuite) SetupOptions(mock func(m *mocks.Service, r *repo.Repository, o *options.Repository)) *Storage {
+func (t *StorageTestSuite) SetupOptions(mf func(m *mocks.Service, r *repo.Repository, o *options.Repository)) *Storage {
 	m := &mocks.Service{}
 	r := &repo.Repository{}
 	o := &options.Repository{}
-	if mock != nil {
-		mock(m, r, o)
+	if mf != nil {
+		mf(m, r, o)
 	}
 	return &Storage{
 		filesRepo:   r,
