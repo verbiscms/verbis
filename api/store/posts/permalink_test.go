@@ -7,7 +7,6 @@ package posts
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/options"
 	"regexp"
@@ -230,7 +229,6 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			opts := &mocks.Repository{}
 			test.opts(opts)
 			s.options = opts
-			config.Set(test.cfg)
 			got := s.permalink(&test.input)
 			t.Equal(test.want, got)
 		})

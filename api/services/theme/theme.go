@@ -21,7 +21,7 @@ type Service interface {
 	// unsuccessful and returns the DefaultTheme
 	// variable.
 	Config() (domain.ThemeConfig, error)
-	Set(theme string) (domain.ThemeConfig, error)
+	Activate(theme string) (domain.ThemeConfig, error)
 	Find(theme string) (domain.ThemeConfig, error)
 	List() ([]domain.ThemeConfig, error)
 	Exists(theme string) bool
@@ -32,7 +32,7 @@ type Service interface {
 
 // Theme defines the data layer for Verbis themes.
 type Theme struct {
-	config      config.Provider
+	config     config.Provider
 	cache      cache.Store
 	options    options.Repository
 	themesPath string
@@ -58,7 +58,7 @@ var (
 func New(cache cache.Store, options options.Repository) *Theme {
 	themePath := paths.Get().Themes
 	return &Theme{
-		config: &config.Config{ThemePath: themePath},
+		config:     &config.Config{ThemePath: themePath},
 		cache:      cache,
 		options:    options,
 		themesPath: paths.Get().Themes,

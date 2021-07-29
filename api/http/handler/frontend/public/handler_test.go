@@ -49,9 +49,9 @@ func (t *PublicTestSuite) Setup(mf func(m *publisher.Publisher, ctx *gin.Context
 // SetupTheme
 //
 // A helper to obtain a public handler for testing.
-func (t *PublicTestSuite) SetupTheme(mf func(m *publisher.Publisher, t *theme.Repository, ctx *gin.Context), ctx *gin.Context) *Public {
+func (t *PublicTestSuite) SetupTheme(mf func(m *publisher.Publisher, t *theme.Service, ctx *gin.Context), ctx *gin.Context) *Public {
 	m := &publisher.Publisher{}
-	mt := &theme.Repository{}
+	mt := &theme.Service{}
 	if mf != nil {
 		mf(m, mt, ctx)
 	}

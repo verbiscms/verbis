@@ -87,19 +87,13 @@ export default {
 		 * setTheme()
 		 */
 		setTheme(name) {
-			console.log("hello")
-			this.axios.post("/theme", {
-				theme: name,
-			}).then(res => {
-				console.log(res)
-				this.$store.commit("setTheme", res.data.data);
-			}).catch(err => {
-				this.helpers.handleResponse(err);
-				console.log(err);
-			}).finally(() => {
-				this.$set(this.data, 'active_theme', name)
-			})
-
+			this.axios.post("/themes/" + name)
+				.then(res => {
+					this.$store.commit("setTheme", res.data.data);
+					this.$set(this.data, 'active_theme', name)
+				}).catch(err => {
+					this.helpers.handleResponse(err);
+				})
 		},
 		/*
 		 * isActive()

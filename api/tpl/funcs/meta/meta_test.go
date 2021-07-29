@@ -12,7 +12,7 @@ import (
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/logger"
-	siteMocks "github.com/verbiscms/verbis/api/mocks/services/site"
+	site "github.com/verbiscms/verbis/api/mocks/services/site"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/media"
 	tplMocks "github.com/verbiscms/verbis/api/mocks/tpl"
 	"github.com/verbiscms/verbis/api/store"
@@ -24,7 +24,7 @@ import (
 )
 
 func Setup(opts domain.Options, post domain.Post) (*Namespace, *mocks.Repository) {
-	mockSite := &siteMocks.Repository{}
+	mockSite := &site.Service{}
 	mockSite.On("Global").Return(domain.Site{})
 
 	m := &mocks.Repository{}

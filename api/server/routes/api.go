@@ -50,20 +50,19 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// Middleware
 		operator.Use(middleware.OperatorTokenCheck(d))
 
-		// Update
+		// System
 		operator.POST("/update", h.System.Update)
 
+		// Session
 		operator.GET("/session", h.Auth.CheckSession)
 
 		// Themes
 		operator.GET("/themes", h.Themes.List)
 		operator.GET("/themes/:name", h.Themes.Find)
-
-		// Themes
+		operator.POST("/themes/:name", h.Themes.Activate)
 		operator.GET("/layouts", h.Themes.Layouts)
 		operator.GET("/templates", h.Themes.Templates)
 		operator.GET("/config", h.Themes.Config)
-		operator.POST("/theme", h.Themes.Update)
 
 		// Posts
 		operator.GET("/posts", h.Posts.List)

@@ -24,9 +24,7 @@ type SiteTestSuite struct {
 	ThemePath string
 }
 
-// TestSite
-//
-// Assert testing has begun.
+// TestSite asserts testing has begun.
 func TestSite(t *testing.T) {
 	suite.Run(t, &SiteTestSuite{
 		HandlerSuite: test.NewHandlerSuite(),
@@ -34,12 +32,10 @@ func TestSite(t *testing.T) {
 	})
 }
 
-// Setup
-//
-// A helper to obtain a mock categories handler
+// Setup is a helper to obtain a mock site handler
 // for testing.
-func (t *SiteTestSuite) Setup(mf func(m *mocks.Repository)) *Site {
-	m := &mocks.Repository{}
+func (t *SiteTestSuite) Setup(mf func(m *mocks.Service)) *Site {
+	m := &mocks.Service{}
 	if mf != nil {
 		mf(m)
 	}
@@ -69,7 +65,7 @@ var (
 
 func (t *SiteTestSuite) TestSite_Global() {
 	t.RequestAndServe(http.MethodGet, "/site", "/site", nil, func(ctx *gin.Context) {
-		t.Setup(func(m *mocks.Repository) {
+		t.Setup(func(m *mocks.Service) {
 			m.On("Global").Return(site)
 		}).Global(ctx)
 	})

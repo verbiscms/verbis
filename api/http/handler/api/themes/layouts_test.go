@@ -17,30 +17,30 @@ func (t *ThemesTestSuite) TestThemes_Layouts() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.Repository)
+		mock    func(m *mocks.Service)
 	}{
 		"Success": {
 			layouts,
 			http.StatusOK,
 			"Successfully obtained layouts",
-			func(m *mocks.Repository) {
-				m.On("Layouts", TestActiveTheme).Return(layouts, nil)
+			func(m *mocks.Service) {
+				m.On("Layouts").Return(layouts, nil)
 			},
 		},
 		"Not Found": {
 			nil,
 			http.StatusOK,
 			"not found",
-			func(m *mocks.Repository) {
-				m.On("Layouts", TestActiveTheme).Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Service) {
+				m.On("Layouts").Return(domain.Layouts{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
 			"internal",
-			func(m *mocks.Repository) {
-				m.On("Layouts", TestActiveTheme).Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Service) {
+				m.On("Layouts").Return(domain.Layouts{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

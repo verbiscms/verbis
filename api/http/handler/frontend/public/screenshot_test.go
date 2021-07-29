@@ -19,14 +19,14 @@ func (t *PublicTestSuite) TestPublic_Screenshot() {
 		want    interface{}
 		status  int
 		content string
-		mock    func(m *publisher.Publisher, mt *theme.Repository, ctx *gin.Context)
+		mock    func(m *publisher.Publisher, mt *theme.Service, ctx *gin.Context)
 		url     string
 	}{
 		"Success": {
 			testString,
 			http.StatusOK,
 			"image/png",
-			func(m *publisher.Publisher, mt *theme.Repository, ctx *gin.Context) {
+			func(m *publisher.Publisher, mt *theme.Service, ctx *gin.Context) {
 				mt.On("Screenshot", "theme", "screenshot.jpg").Return(*t.bytes, domain.Mime("image/png"), nil)
 			},
 			"/theme/screenshot.jpg",
@@ -35,7 +35,7 @@ func (t *PublicTestSuite) TestPublic_Screenshot() {
 			testString,
 			http.StatusNotFound,
 			"text/html",
-			func(m *publisher.Publisher, mt *theme.Repository, ctx *gin.Context) {
+			func(m *publisher.Publisher, mt *theme.Service, ctx *gin.Context) {
 				mt.On("Screenshot", "theme", "screenshot.jpg").Return(*t.bytes, domain.Mime("image/png"), &errors.Error{Code: errors.NOTFOUND})
 				m.On("NotFound", ctx).Run(func(args mock.Arguments) {
 					ctx.Data(http.StatusNotFound, "text/html", []byte(testString))

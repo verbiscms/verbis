@@ -12,6 +12,27 @@ type Service struct {
 	mock.Mock
 }
 
+// Activate provides a mock function with given fields: _a0
+func (_m *Service) Activate(_a0 string) (domain.ThemeConfig, error) {
+	ret := _m.Called(_a0)
+
+	var r0 domain.ThemeConfig
+	if rf, ok := ret.Get(0).(func(string) domain.ThemeConfig); ok {
+		r0 = rf(_a0)
+	} else {
+		r0 = ret.Get(0).(domain.ThemeConfig)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(_a0)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // Config provides a mock function with given fields:
 func (_m *Service) Config() (domain.ThemeConfig, error) {
 	ret := _m.Called()
@@ -142,27 +163,6 @@ func (_m *Service) Screenshot(_a0 string, file string) ([]byte, domain.Mime, err
 	}
 
 	return r0, r1, r2
-}
-
-// Set provides a mock function with given fields: _a0
-func (_m *Service) Set(_a0 string) (domain.ThemeConfig, error) {
-	ret := _m.Called(_a0)
-
-	var r0 domain.ThemeConfig
-	if rf, ok := ret.Get(0).(func(string) domain.ThemeConfig); ok {
-		r0 = rf(_a0)
-	} else {
-		r0 = ret.Get(0).(domain.ThemeConfig)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(string) error); ok {
-		r1 = rf(_a0)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
 }
 
 // Templates provides a mock function with given fields:

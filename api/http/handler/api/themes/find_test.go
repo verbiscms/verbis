@@ -7,6 +7,7 @@ package themes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/verbiscms/verbis/api/config"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	mocks "github.com/verbiscms/verbis/api/mocks/services/theme"
 	"net/http"
@@ -17,15 +18,15 @@ func (t *ThemesTestSuite) TestThemes_Find() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.Repository)
+		mock    func(m *mocks.Service)
 		url     string
 	}{
 		"Success": {
 			config.DefaultTheme,
 			http.StatusOK,
 			"Successfully obtained theme config",
-			func(m *mocks.Repository) {
-				m.On("Find", TestActiveTheme).Return(&config.DefaultTheme, nil)
+			func(m *mocks.Service) {
+				m.On("Find", TestActiveTheme).Return(config.DefaultTheme, nil)
 			},
 			"/themes/verbis",
 		},
@@ -33,8 +34,8 @@ func (t *ThemesTestSuite) TestThemes_Find() {
 			nil,
 			http.StatusOK,
 			"not found",
-			func(m *mocks.Repository) {
-				m.On("Find", "wrongname").Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Service) {
+				m.On("Find", "wrongname").Return(domain.ThemeConfig{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 			"/themes/wrongname",
 		},
@@ -42,8 +43,8 @@ func (t *ThemesTestSuite) TestThemes_Find() {
 			nil,
 			http.StatusInternalServerError,
 			"internal",
-			func(m *mocks.Repository) {
-				m.On("Find", TestActiveTheme).Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Service) {
+				m.On("Find", TestActiveTheme).Return(domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 			"/themes/verbis",
 		},

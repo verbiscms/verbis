@@ -49,7 +49,7 @@ func (t *Theme) Config() (domain.ThemeConfig, error) {
 	return cfg, nil
 }
 
-func (t *Theme) Set(theme string) (domain.ThemeConfig, error) {
+func (t *Theme) Activate(theme string) (domain.ThemeConfig, error) {
 	const op = "Theme.Set"
 
 	ok := t.Exists(theme)
