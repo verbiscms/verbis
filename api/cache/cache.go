@@ -106,21 +106,26 @@ func Load(env *environment.Env) (*Cache, error) {
 			driver: MemoryStore,
 		}
 	case RedisStore:
-		client, err := getRedisStore(env)
-		if err != nil {
-			return nil, &errors.Error{Code: errors.INVALID, Message: "Error pinging redis cache", Operation: op, Err: err}
+		opts := &redis.Options{
+			Addr:     env.RedisAddress,
+			Password: env.RedisPassword,
+
+			DB: cast.ToInt(env.RedisDb),
 		}
+		cacheStore := store.NewRedis(redis.NewClient(opts), nil)
+
+		fmt.Println(cacheStore.Set(context.Background(), "hhh", "", &store.Options{}))
+
 		c = Cache{
-			store:  client,
+			store:  cache.New(cacheStore),
 			driver: RedisStore,
 		}
 	case MemcachedStore:
-		client, err := getMemcachedStore(env)
-		if err != nil {
-			return nil, &errors.Error{Code: errors.INVALID, Message: "Error pinging memcached cache", Operation: op, Err: err}
-		}
+		memcacheStore := store.NewMemcache(memcache.New(env.MemCachedHosts), &store.Options{
+			Expiration: DefaultExpiry,
+		})
 		c = Cache{
-			store:  client,
+			store:  cache.New(memcacheStore),
 			driver: MemcachedStore,
 		}
 	default:
@@ -128,39 +133,6 @@ func Load(env *environment.Env) (*Cache, error) {
 	}
 
 	return &c, nil
-}
-
-func getRedisStore(env *environment.Env) (store.StoreInterface, error) {
-	opts := &redis.Options{
-		Addr:     env.RedisAddress,
-		Password: env.RedisPassword,
-		DB:       cast.ToInt(env.RedisDb),
-	}
-
-	client := redis.NewClient(opts)
-	status := client.Ping(context.Background())
-
-	err := status.Err()
-	if err != nil {
-		return nil, err
-	}
-
-	return store.NewRedis(client, nil), nil
-}
-
-func getMemcachedStore(env *environment.Env) (store.StoreInterface, error) {
-	client := memcache.New(env.MemCachedHosts)
-
-	err := client.Ping()
-	if err != nil {
-		return nil, err
-	}
-
-	memcacheStore := store.NewMemcache(memcache.New(env.MemCachedHosts), &store.Options{
-		Expiration: DefaultExpiry,
-	})
-
-	return cache.New(memcacheStore), nil
 }
 
 // Get retrieves a specific item from the cache by key.

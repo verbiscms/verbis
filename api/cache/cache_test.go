@@ -76,7 +76,7 @@ func (t *CacheTestSuite) TestLoad() {
 			MemoryStore,
 		},
 		"Redis": {
-			&environment.Env{CacheDriver: RedisStore},
+			&environment.Env{CacheDriver: RedisStore, RedisAddress: "127.0.0.1:8080"},
 			RedisStore,
 		},
 		"Memcached": {
