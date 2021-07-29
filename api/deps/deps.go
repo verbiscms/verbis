@@ -9,7 +9,6 @@ import (
 	"github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/services/site"
@@ -22,7 +21,6 @@ import (
 	"github.com/verbiscms/verbis/api/verbisfs"
 	"github.com/verbiscms/verbis/api/watcher"
 	"os"
-	"path/filepath"
 )
 
 // Deps holds dependencies used by many.
@@ -36,7 +34,7 @@ type Deps struct {
 	// Configuration file of the site
 	Config *domain.ThemeConfig
 	// Site
-	Site site.Repository
+	Site site.Service
 	// Theme
 	Theme   theme.Service
 	Watcher watcher.FileWatcher
@@ -126,23 +124,17 @@ func New(cfg Config) (*Deps, error) {
 		return nil, err
 	}
 
-	activeTheme, err := cfg.Store.Options.GetTheme()
-	if err != nil {
-		return nil, err
-	}
-
-	config.Init(filepath.Join(cfg.Paths.Themes, activeTheme))
 
 	d := &Deps{
 		Env:     cfg.Env,
 		Cache:   cs,
 		Store:   cfg.Store,
-		Config:  config.Get(),
+		//Config:  config.Get(),
 		Options: &opts,
 		Paths:   cfg.Paths,
 		tmpl:    nil,
 		Running: cfg.Running,
-		Site:    site.New(&opts, cfg.System),
+		Site:    site.New(cfg.Store.Options, cfg.System),
 		Theme:   theme.New(cs, cfg.Store.Options),
 		FS:      verbisfs.New(api.Production, cfg.Paths),
 		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
