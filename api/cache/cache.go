@@ -45,6 +45,22 @@ type Store interface {
 	Driver() string
 }
 
+type Pinger interface {
+	Ping() error
+}
+
+func Ping(p Pinger) error {
+	return p.Ping()
+}
+
+type mem struct {
+	memcache.Client
+}
+
+func (m *mem) Ping() error {
+	return m.Ping()
+}
+
 // Cache defines the methods for interacting with the
 // cache layer.
 type Cache struct {
@@ -63,9 +79,9 @@ const (
 	// RedisStore is the Redis Driver, depicted
 	// in the environment.
 	RedisStore = "redis"
-	// MemcachedStore is the Memcached Driver, depicted
+	// MemcacheStore is the Memcached Driver, depicted
 	// in the environment.
-	MemcachedStore = "memcached"
+	MemcacheStore = "memcache"
 	// DefaultExpiry defines how many minutes the item
 	// lasts for in the cache by default.
 	DefaultExpiry = -1
@@ -82,6 +98,21 @@ var (
 	// invalid driver was passed via the env.
 	ErrInvalidDriver = errors.New("invalid cache Driver")
 )
+
+//type APinger interface {
+//	Ping(context.Context) (error)
+//}
+//
+//type BPinger interface {
+//	Ping() (error)
+//}
+//
+//switch ping.(type) {
+//case APinger:
+//...
+//case BPinger:
+//...
+//}
 
 // Load initialises the cache store by the environment.
 // It will load a driver into memory ready for setting
@@ -120,13 +151,13 @@ func Load(env *environment.Env) (*Cache, error) {
 			store:  cache.New(cacheStore),
 			driver: RedisStore,
 		}
-	case MemcachedStore:
+	case MemcacheStore:
 		memcacheStore := store.NewMemcache(memcache.New(env.MemCachedHosts), &store.Options{
 			Expiration: DefaultExpiry,
 		})
 		c = Cache{
 			store:  cache.New(memcacheStore),
-			driver: MemcachedStore,
+			driver: MemcacheStore,
 		}
 	default:
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error loading cache, invalid Driver: " + env.CacheDriver, Operation: op, Err: ErrInvalidDriver}
