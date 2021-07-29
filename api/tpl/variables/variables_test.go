@@ -17,7 +17,7 @@ func TestData(t *testing.T) {
 		Options: Options{},
 	}
 
-	mockSite := &mocks.Repository{}
+	mockSite := &mocks.Service{}
 	mockSite.On("Global").Return(domain.Site{})
 
 	got := Data(&deps.Deps{

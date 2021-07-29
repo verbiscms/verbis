@@ -81,7 +81,7 @@ func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostDatu
 		},
 	}
 
-	mockSite := &mocks.Repository{}
+	mockSite := &mocks.Service{}
 	mockSite.On("Global").Return(domain.Site{})
 
 	d := &deps.Deps{

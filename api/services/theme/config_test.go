@@ -98,7 +98,7 @@ func (t *ThemeTestSuite) TestTheme_Config() {
 	}
 }
 
-func (t *ThemeTestSuite) TestTheme_Set() {
+func (t *ThemeTestSuite) TestTheme_Activate() {
 	tt := map[string]struct {
 		input string
 		mock  func(o *options.Repository, c *cache.Store, cf *config.Provider)
@@ -145,7 +145,7 @@ func (t *ThemeTestSuite) TestTheme_Set() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			th := t.SetupMock(test.mock)
-			got, err := th.Set(test.input)
+			got, err := th.Activate(test.input)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return

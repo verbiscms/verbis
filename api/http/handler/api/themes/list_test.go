@@ -16,30 +16,30 @@ func (t *ThemesTestSuite) TestThemes_List() {
 		want    interface{}
 		status  int
 		message string
-		mock    func(m *mocks.Repository)
+		mock    func(m *mocks.Service)
 	}{
 		"Success": {
 			themes,
 			http.StatusOK,
 			"Successfully obtained themes",
-			func(m *mocks.Repository) {
-				m.On("List", TestActiveTheme).Return(themes, nil)
+			func(m *mocks.Service) {
+				m.On("List").Return(themes, nil)
 			},
 		},
 		"Not Found": {
 			nil,
 			http.StatusOK,
 			"not found",
-			func(m *mocks.Repository) {
-				m.On("List", TestActiveTheme).Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Service) {
+				m.On("List").Return(nil, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Internal Error": {
 			nil,
 			http.StatusInternalServerError,
 			"internal",
-			func(m *mocks.Repository) {
-				m.On("List", TestActiveTheme).Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Service) {
+				m.On("List").Return(nil, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

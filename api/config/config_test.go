@@ -18,7 +18,7 @@ import (
 type ConfigTestSuite struct {
 	suite.Suite
 	TestPath string
-	Config domain.ThemeConfig
+	Config   domain.ThemeConfig
 }
 
 // TestConfig asserts testing has begun.
@@ -38,14 +38,13 @@ func (t *ConfigTestSuite) SetupSuite() {
 		Title:      "test",
 		Name:       "testdata",
 		Screenshot: "/themes/testdata/screenshot.png",
-		Active:     true,
+		Active:     false,
 	}
 	t.Config = d
 }
 
-
 func (t *ConfigTestSuite) Test_Get() {
-	c := Config{ThemePath: t.TestPath,}
+	c := Config{ThemePath: t.TestPath}
 	cfg, err := c.Get("")
 	t.NoError(err)
 	t.Equal(t.Config, cfg)
@@ -54,7 +53,7 @@ func (t *ConfigTestSuite) Test_Get() {
 func (t *ConfigTestSuite) Test_GetThemeConfig() {
 	tt := map[string]struct {
 		filename string
-		want    interface{}
+		want     interface{}
 	}{
 		"Success": {
 			FileName,
