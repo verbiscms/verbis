@@ -8,8 +8,7 @@ import (
 	"fmt"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
-	"os"
-	"strings"
+	"path/filepath"
 )
 
 // Templates
@@ -23,20 +22,13 @@ import (
 func (t *Theme) Templates() (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 
-	cfg, err := t.Config()
+	path, cfg, err := t.getActiveTheme()
 	if err != nil {
 		return nil, err
 	}
 
-	theme, err := t.options.GetTheme()
-	if err != nil {
-		return nil, err
-	}
-
-	tplDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + cfg.TemplateDir
-	tplDir = strings.ReplaceAll(tplDir, "//", "/")
-
-	files, err := t.walkMatch(tplDir, "*"+cfg.FileExtension, cfg.FileExtension)
+	tplDir := filepath.Join(path, cfg.TemplateDir)
+	files, err := t.walkMatch(tplDir, "*"+cfg.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting templates with the path: %s", tplDir), Operation: op, Err: ErrNoTemplates}
 	}

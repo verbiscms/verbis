@@ -11,7 +11,7 @@ import (
 
 func (t *ThemeTestSuite) TestTheme_Screenshot() {
 	tt := map[string]struct {
-		theme string
+		input string
 		file  string
 		want  interface{}
 	}{
@@ -34,8 +34,8 @@ func (t *ThemeTestSuite) TestTheme_Screenshot() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup()
-			_, mime, err := s.Screenshot(test.theme, test.file)
+			s := t.Setup(test.input)
+			_, mime, err := s.Screenshot(test.input, test.file)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

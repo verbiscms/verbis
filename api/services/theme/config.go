@@ -17,16 +17,19 @@ import (
 )
 
 const (
-	ConfigCacheKey = "theme_config"
+	configCacheKey = "theme_config"
 )
 
 func (t *Theme) Config() (domain.ThemeConfig, error) {
-	c, err := t.cache.Get(context.Background(), ConfigCacheKey)
+	const op = "Theme.Config"
+
+	c, err := t.cache.Get(context.Background(), configCacheKey)
 	if err == nil {
 		cfg, ok := c.(domain.ThemeConfig)
 		if ok {
 			return cfg, nil
 		}
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error casting cache item to theme config", Operation: op, Err: fmt.Errorf("bad cast")})
 	}
 
 	theme, err := t.options.GetTheme()
@@ -39,7 +42,7 @@ func (t *Theme) Config() (domain.ThemeConfig, error) {
 		return domain.ThemeConfig{}, err
 	}
 
-	t.cache.Set(context.Background(), ConfigCacheKey, cfg, cache.Options{
+	t.cache.Set(context.Background(), configCacheKey, cfg, cache.Options{
 		Expiration: cache.RememberForever,
 	})
 
@@ -47,9 +50,11 @@ func (t *Theme) Config() (domain.ThemeConfig, error) {
 }
 
 func (t *Theme) Set(theme string) (domain.ThemeConfig, error) {
+	const op = "Theme.Set"
+
 	ok := t.Exists(theme)
 	if !ok {
-		return domain.ThemeConfig{}, fmt.Errorf("no theme found")
+		return domain.ThemeConfig{}, &errors.Error{Code: errors.INVALID, Message: "Error finding theme: " + theme, Operation: op, Err: fmt.Errorf("no theme found")}
 	}
 
 	err := t.options.SetTheme(theme)
@@ -57,7 +62,7 @@ func (t *Theme) Set(theme string) (domain.ThemeConfig, error) {
 		return domain.ThemeConfig{}, err
 	}
 
-	t.cache.Delete(context.Background(), ConfigCacheKey)
+	t.cache.Delete(context.Background(), configCacheKey)
 
 	cfg, err := t.Config()
 	if err != nil {
@@ -79,11 +84,16 @@ func (t *Theme) Find(theme string) (domain.ThemeConfig, error) {
 
 // List all Theme configurations.
 func (t *Theme) List() ([]domain.ThemeConfig, error) {
-	const op = "Theme.All"
+	const op = "Theme.List"
 
 	files, err := ioutil.ReadDir(t.themesPath)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error finding themes", Err: err, Operation: op}
+	}
+
+	theme, err := t.options.GetTheme()
+	if err != nil {
+		return nil, err
 	}
 
 	var themes []domain.ThemeConfig
@@ -98,13 +108,8 @@ func (t *Theme) List() ([]domain.ThemeConfig, error) {
 			continue
 		}
 
-		theme, err := t.options.GetTheme()
-		if err != nil {
-			return nil, err
-		}
-
-		if theme != cfg.Theme.Name {
-			cfg.Theme.Active = false
+		if theme == cfg.Theme.Name {
+			cfg.Theme.Active = true
 		}
 
 		themes = append(themes, cfg)
