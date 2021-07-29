@@ -5,6 +5,7 @@ go 1.16
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/ainsleyclark/go-mail v1.0.3
+	github.com/ainsleyclark/go-webpbin v0.0.0-20210727131937-6c249994879e // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b
 	github.com/briandowns/spinner v1.16.0
 	github.com/disintegration/imaging v1.6.2
@@ -40,7 +41,6 @@ require (
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/mouuff/go-rocket-update v1.5.0
 	github.com/nickalie/go-binwrapper v0.0.0-20190114141239-525121d43c84 // indirect
-	github.com/nickalie/go-webpbin v0.0.0-20170427122138-7e79cf5bb01e
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/ompluscator/dynamic-struct v1.2.0

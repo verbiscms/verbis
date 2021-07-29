@@ -42,8 +42,8 @@ func (s *Storage) Info() (Configuration, error) {
 		ActiveProvider: provider,
 		ActiveBucket:   bucket,
 		Providers:      m,
-		IsMigrating:    s.isMigrating,
-		MigrationInfo:  MigrationInfo{},
+		//IsMigrating:    s.isMigrating,
+		//MigrationInfo:  MigrationInfo{},
 	}
 
 	return c, nil
