@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/store/options"
 )
@@ -20,17 +21,18 @@ type Service interface {
 	// unsuccessful and returns the DefaultTheme
 	// variable.
 	Config() (domain.ThemeConfig, error)
+	Set(theme string) (domain.ThemeConfig, error)
 	Find(theme string) (domain.ThemeConfig, error)
-	List(activeTheme string) ([]domain.ThemeConfig, error)
+	List() ([]domain.ThemeConfig, error)
 	Exists(theme string) bool
-	Templates(theme string) (domain.Templates, error)
-	Layouts(theme string) (domain.Layouts, error)
+	Templates() (domain.Templates, error)
+	Layouts() (domain.Layouts, error)
 	Screenshot(theme string, file string) ([]byte, domain.Mime, error)
 }
 
 // Theme defines the data layer for Verbis themes.
 type Theme struct {
-	config     *domain.ThemeConfig
+	config      config.Provider
 	cache      cache.Store
 	options    options.Repository
 	themesPath string
@@ -54,7 +56,9 @@ var (
 
 // New Creates a new Theme service.
 func New(cache cache.Store, options options.Repository) *Theme {
+	themePath := paths.Get().Themes
 	return &Theme{
+		config: &config.Config{ThemePath: themePath},
 		cache:      cache,
 		options:    options,
 		themesPath: paths.Get().Themes,

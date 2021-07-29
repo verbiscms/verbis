@@ -74,16 +74,6 @@ func (d *Deps) SetOptions(options *domain.Options) {
 	*d.Options = *options
 }
 
-func (d *Deps) SetTheme(name string) error {
-	err := d.Store.Options.SetTheme(name)
-	if err != nil {
-		return err
-	}
-	d.Options.ActiveTheme = name
-	//d.Watcher.SetTheme(d.Paths.Themes + string(os.PathSeparator) + name)
-	return nil
-}
-
 type Config struct {
 
 	// The database layer
@@ -119,23 +109,29 @@ func New(cfg Config) (*Deps, error) {
 		Environment: cfg.Env,
 		Options:     cfg.Store.Options,
 		Files:       cfg.Store.Files,
+		Cache: cs,
 	})
 	if err != nil {
 		return nil, err
 	}
 
+	themeService := theme.New(cs, cfg.Store.Options)
+	config, err := themeService.Config()
+	if err != nil {
+		return nil, err
+	}
 
 	d := &Deps{
-		Env:     cfg.Env,
-		Cache:   cs,
-		Store:   cfg.Store,
-		//Config:  config.Get(),
+		Env:   cfg.Env,
+		Cache: cs,
+		Store: cfg.Store,
+		Config:  &config,
 		Options: &opts,
 		Paths:   cfg.Paths,
 		tmpl:    nil,
 		Running: cfg.Running,
 		Site:    site.New(cfg.Store.Options, cfg.System),
-		Theme:   theme.New(cs, cfg.Store.Options),
+		Theme:   themeService,
 		FS:      verbisfs.New(api.Production, cfg.Paths),
 		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
 		Storage: st,

@@ -20,13 +20,23 @@ import (
 // Returns ErrNoLayouts in any error case.
 // Returns errors.NOTFOUND if no layouts were found.
 // Returns errors.INTERNAL if the layout path is invalid.
-func (t *Theme) Layouts(theme string) (domain.Layouts, error) {
+func (t *Theme) Layouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
-	layoutDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + t.config.LayoutDir
+	cfg, err := t.Config()
+	if err != nil {
+		return nil, err
+	}
+
+	theme, err := t.options.GetTheme()
+	if err != nil {
+		return nil, err
+	}
+
+	layoutDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + cfg.LayoutDir
 	layoutDir = strings.ReplaceAll(layoutDir, "//", "/")
 
-	files, err := t.walkMatch(layoutDir, "*"+t.config.FileExtension)
+	files, err := t.walkMatch(layoutDir, "*"+cfg.FileExtension, cfg.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting layouts with the path: %s", layoutDir), Operation: op, Err: ErrNoLayouts}
 	}

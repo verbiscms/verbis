@@ -99,7 +99,7 @@ const (
 // environment file.
 // Returns errors.INVALID if the env file failed to load.
 func Load() (*Env, error) {
-	const op = "environment.Load"
+	const op = "Environment.Load"
 	err := godotenv.Load(basePath + "/" + EnvExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not load the .env file", Operation: op, Err: err}

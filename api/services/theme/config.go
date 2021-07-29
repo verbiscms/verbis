@@ -7,7 +7,7 @@ package theme
 import (
 	"context"
 	"fmt"
-	"github.com/ghodss/yaml"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
@@ -17,20 +17,16 @@ import (
 )
 
 const (
-	// FileName is the default configuration file name within
-	// the Theme.
-	FileName       = "config.yml"
 	ConfigCacheKey = "theme_config"
 )
 
 func (t *Theme) Config() (domain.ThemeConfig, error) {
 	c, err := t.cache.Get(context.Background(), ConfigCacheKey)
-	if err != nil {
+	if err == nil {
 		cfg, ok := c.(domain.ThemeConfig)
-		if !ok {
-			return domain.ThemeConfig{}, fmt.Errorf("error casting etc")
+		if ok {
+			return cfg, nil
 		}
-		return cfg, nil
 	}
 
 	theme, err := t.options.GetTheme()
@@ -38,10 +34,36 @@ func (t *Theme) Config() (domain.ThemeConfig, error) {
 		return domain.ThemeConfig{}, err
 	}
 
-	cfg, err := getThemeConfig(filepath.Join(t.themesPath, theme), FileName)
+	cfg, err := t.config.Get(theme)
 	if err != nil {
 		return domain.ThemeConfig{}, err
 	}
+
+	t.cache.Set(context.Background(), ConfigCacheKey, cfg, cache.Options{
+		Expiration: cache.RememberForever,
+	})
+
+	return cfg, nil
+}
+
+func (t *Theme) Set(theme string) (domain.ThemeConfig, error) {
+	ok := t.Exists(theme)
+	if !ok {
+		return domain.ThemeConfig{}, fmt.Errorf("no theme found")
+	}
+
+	err := t.options.SetTheme(theme)
+	if err != nil {
+		return domain.ThemeConfig{}, err
+	}
+
+	t.cache.Delete(context.Background(), ConfigCacheKey)
+
+	cfg, err := t.Config()
+	if err != nil {
+		return domain.ThemeConfig{}, err
+	}
+
 	return cfg, nil
 }
 
@@ -52,11 +74,11 @@ func (t *Theme) Exists(theme string) bool {
 }
 
 func (t *Theme) Find(theme string) (domain.ThemeConfig, error) {
-	return getThemeConfig(filepath.Join(t.themesPath, theme), FileName)
+	return t.config.Get(theme)
 }
 
 // List all Theme configurations.
-func (t *Theme) List(activeTheme string) ([]domain.ThemeConfig, error) {
+func (t *Theme) List() ([]domain.ThemeConfig, error) {
 	const op = "Theme.All"
 
 	files, err := ioutil.ReadDir(t.themesPath)
@@ -69,14 +91,22 @@ func (t *Theme) List(activeTheme string) ([]domain.ThemeConfig, error) {
 		if !f.IsDir() {
 			continue
 		}
-		cfg, err := getThemeConfig(filepath.Join(t.themesPath, f.Name()), FileName)
+
+		cfg, err := t.config.Get(f.Name())
 		if err != nil {
 			logger.WithError(err).Error()
 			continue
 		}
-		if activeTheme != cfg.Theme.Name {
+
+		theme, err := t.options.GetTheme()
+		if err != nil {
+			return nil, err
+		}
+
+		if theme != cfg.Theme.Name {
 			cfg.Theme.Active = false
 		}
+
 		themes = append(themes, cfg)
 	}
 
@@ -85,33 +115,4 @@ func (t *Theme) List(activeTheme string) ([]domain.ThemeConfig, error) {
 	}
 
 	return themes, nil
-}
-
-// getThemeConfig is a wrapper for Fetch taking in a path
-// and filename and unmarshalling the yaml file into the
-// Theme configuration.
-func getThemeConfig(path, filename string) (domain.ThemeConfig, error) {
-	const op = "Theme.Fetch"
-
-	file, err := ioutil.ReadFile(filepath.Join(path, filename))
-	if err != nil {
-		return domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "Error retrieving Theme config file", Operation: op, Err: err}
-	}
-
-	var cfg domain.ThemeConfig
-	err = yaml.Unmarshal(file, &cfg)
-	if err != nil {
-		return domain.ThemeConfig{}, &errors.Error{Code: errors.INTERNAL, Message: "Syntax error in Theme config file", Operation: op, Err: err}
-	}
-
-	screenshot, err := findScreenshot(path)
-	if err == nil {
-		cfg.Theme.Screenshot = screenshot
-	}
-
-	cfg.Theme.Name = filepath.Base(path)
-	cfg.Theme.Active = true
-	cfg.Resources = cfg.Resources.Clean()
-
-	return cfg, nil
 }

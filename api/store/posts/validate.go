@@ -5,7 +5,7 @@
 package posts
 
 import (
-//	"github.com/verbiscms/verbis/api/config"
+	//	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"

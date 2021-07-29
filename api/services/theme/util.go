@@ -15,7 +15,7 @@ import (
 //
 // Walk through root and return array of strings
 // to the file path.
-func (t *Theme) walkMatch(root, pattern string) ([]string, error) {
+func (t *Theme) walkMatch(root, pattern, extension string) ([]string, error) {
 	const op = "SiteRepository.walkMatch"
 
 	var matches []string
@@ -31,7 +31,7 @@ func (t *Theme) walkMatch(root, pattern string) ([]string, error) {
 			return err
 		} else if matched {
 			template := strings.Replace(path, root+"/", "", 1)
-			template = strings.Replace(template, t.config.FileExtension, "", -1)
+			template = strings.Replace(template, extension, "", -1)
 			matches = append(matches, template)
 		}
 		return nil

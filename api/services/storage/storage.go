@@ -112,7 +112,7 @@ type Storage struct {
 	filesRepo   files.Repository
 	paths       paths.Paths
 	service     internal.StorageServices
-	cache cache.Store
+	cache       cache.Store
 }
 
 // Config defines the configuration passed to create a new
@@ -121,6 +121,7 @@ type Config struct {
 	Environment *environment.Env
 	Options     options.Repository
 	Files       files.Repository
+	Cache       cache.Store
 }
 
 // Validate validates the configuration to ensure there are
@@ -135,6 +136,9 @@ func (c Config) Validate() error {
 	}
 	if c.Files == nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error, no files repository set", Operation: op, Err: fmt.Errorf("nil files store")}
+	}
+	if c.Cache == nil {
+		return &errors.Error{Code: errors.INVALID, Message: "Error, no cache set", Operation: op, Err: fmt.Errorf("nil cache store")}
 	}
 	return nil
 }

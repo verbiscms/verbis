@@ -6,6 +6,7 @@ package store
 
 import (
 	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/store/auth"
 	"github.com/verbiscms/verbis/api/store/categories"
@@ -41,11 +42,13 @@ type Repository struct {
 // to database.
 // TODO Change!
 func New(db database.Driver, running bool) (*Repository, error) {
+	p := paths.Get()
 	cfg := &storeConfig.Config{
 		Driver:  db,
-		Paths:   paths.Get(),
+		Paths:  p,
 		Owner:   nil,
 		Running: running,
+		Theme: &config.Config{ThemePath: p.Themes},
 	}
 
 	user := users.New(cfg)
