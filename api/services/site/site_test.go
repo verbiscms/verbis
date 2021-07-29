@@ -7,22 +7,27 @@ package site
 import (
 	"github.com/stretchr/testify/assert"
 	"github.com/verbiscms/verbis/api/domain"
-	mocks "github.com/verbiscms/verbis/api/mocks/sys"
+	mockOptions "github.com/verbiscms/verbis/api/mocks/store/options"
+	mockSys "github.com/verbiscms/verbis/api/mocks/sys"
 	"github.com/verbiscms/verbis/api/version"
 	"testing"
 )
 
 func TestSite_Config(t *testing.T) {
-	mock := &mocks.System{}
-	mock.On("LatestVersion").Return("v0.0.1")
-	mock.On("HasUpdate").Return(false)
+	ms := &mockSys.System{}
+	ms.On("LatestVersion").Return("v0.0.1")
+	ms.On("HasUpdate").Return(false)
 
-	opts := &domain.Options{
+	opts := domain.Options{
 		SiteTitle:       "title",
 		SiteDescription: "description",
 		SiteLogo:        "logo",
 		SiteUrl:         "url",
 	}
+
+	mo := &mockOptions.Repository{}
+	mo.On("Struct").Return(opts)
+
 	want := domain.Site{
 		Title:         opts.SiteTitle,
 		Description:   opts.SiteDescription,
@@ -33,6 +38,6 @@ func TestSite_Config(t *testing.T) {
 		HasUpdate:     false,
 	}
 
-	s := New(opts, mock)
+	s := New(mo, ms)
 	assert.Equal(t, want, s.Global())
 }
