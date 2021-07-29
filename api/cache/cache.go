@@ -22,11 +22,26 @@ import (
 // Store defines methods for interacting with the
 // caching system.
 type Store interface {
+	// Get retrieves a specific item from the cache by key.
+	// Returns errors.NOTFOUND if it could not be found.
 	Get(ctx context.Context, key interface{}) (interface{}, error)
+	// Set set's a singular item in memory by key, value
+	// and options (tags and expiration time).
+	// Logs errors.INTERNAL if the item could not be set.
 	Set(ctx context.Context, key interface{}, value interface{}, options Options)
+	// Delete removes a singular item from the cache by
+	// a specific key.
+	// Logs errors.INTERNAL if the item could not be deleted.
 	Delete(ctx context.Context, key interface{})
+	// Invalidate removes items from the cache via the
+	// InvalidateOptions passed.
+	// Returns errors.INVALID if the cache could not be invalidated.
 	Invalidate(ctx context.Context, options InvalidateOptions) error
+	// Clear removes all items from the cache.
+	// Returns errors.INTERNAL if the cache could not be cleared.
 	Clear(ctx context.Context) error
+	// Driver returns the current store being used, it can be
+	// MemoryStore, RedisStore or MemcachedStore.
 	Driver() string
 }
 
@@ -91,22 +106,21 @@ func Load(env *environment.Env) (*Cache, error) {
 			driver: MemoryStore,
 		}
 	case RedisStore:
-		opts := &redis.Options{
-			Addr:     env.RedisAddress,
-			Password: env.RedisPassword,
-			DB:       cast.ToInt(env.RedisDb),
+		client, err := getRedisStore(env)
+		if err != nil {
+			return nil, &errors.Error{Code: errors.INVALID, Message: "Error pinging redis cache", Operation: op, Err: err}
 		}
-		cacheStore := store.NewRedis(redis.NewClient(opts), nil)
 		c = Cache{
-			store:  cache.New(cacheStore),
+			store:  client,
 			driver: RedisStore,
 		}
 	case MemcachedStore:
-		memcacheStore := store.NewMemcache(memcache.New(env.MemCachedHosts), &store.Options{
-			Expiration: DefaultExpiry,
-		})
+		client, err := getMemcachedStore(env)
+		if err != nil {
+			return nil, &errors.Error{Code: errors.INVALID, Message: "Error pinging memcached cache", Operation: op, Err: err}
+		}
 		c = Cache{
-			store:  cache.New(memcacheStore),
+			store:  client,
 			driver: MemcachedStore,
 		}
 	default:
@@ -114,6 +128,39 @@ func Load(env *environment.Env) (*Cache, error) {
 	}
 
 	return &c, nil
+}
+
+func getRedisStore(env *environment.Env) (store.StoreInterface, error) {
+	opts := &redis.Options{
+		Addr:     env.RedisAddress,
+		Password: env.RedisPassword,
+		DB:       cast.ToInt(env.RedisDb),
+	}
+
+	client := redis.NewClient(opts)
+	status := client.Ping(context.Background())
+
+	err := status.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	return store.NewRedis(client, nil), nil
+}
+
+func getMemcachedStore(env *environment.Env) (store.StoreInterface, error) {
+	client := memcache.New(env.MemCachedHosts)
+
+	err := client.Ping()
+	if err != nil {
+		return nil, err
+	}
+
+	memcacheStore := store.NewMemcache(memcache.New(env.MemCachedHosts), &store.Options{
+		Expiration: DefaultExpiry,
+	})
+
+	return cache.New(memcacheStore), nil
 }
 
 // Get retrieves a specific item from the cache by key.
