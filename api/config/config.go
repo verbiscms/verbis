@@ -60,7 +60,6 @@ func getThemeConfig(path, filename string) (domain.ThemeConfig, error) {
 	}
 
 	cfg.Theme.Name = filepath.Base(path)
-	cfg.Theme.Active = true
 	cfg.Resources = cfg.Resources.Clean()
 
 	return cfg, nil

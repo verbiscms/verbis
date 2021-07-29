@@ -5,13 +5,14 @@
 package theme
 
 import (
+	"fmt"
 	"github.com/verbiscms/verbis/api/domain"
-	"github.com/verbiscms/verbis/api/errors"
+	options "github.com/verbiscms/verbis/api/mocks/store/options"
 )
 
 func (t *ThemeTestSuite) TestTheme_Layouts() {
 	tt := map[string]struct {
-		theme string
+		input string
 		want  interface{}
 	}{
 		"Success": {
@@ -24,23 +25,36 @@ func (t *ThemeTestSuite) TestTheme_Layouts() {
 		},
 		"Wrong Path": {
 			"wrong",
-			"Error getting layouts with the path:",
+			ErrNoLayouts.Error(),
 		},
 		"No Layouts": {
 			"empty",
-			"No layouts available",
+			ErrNoLayouts.Error(),
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup()
-			got, err := s.Layouts(test.theme)
+			s := t.Setup(test.input)
+			got, err := s.Layouts()
 			if err != nil {
-				t.Contains(errors.Message(err), test.want)
+				t.Contains(err.Error(), test.want)
 				return
 			}
 			t.Equal(test.want, got)
 		})
 	}
+}
+
+func (t *ThemeTestSuite) TestTheme_LayoutsError() {
+	o := &options.Repository{}
+	o.On("GetTheme").Return("", fmt.Errorf("error"))
+	theme := Theme{options: o}
+	got, err := theme.Layouts()
+	if err == nil {
+		t.Fail("expecting error")
+		return
+	}
+	t.Nil(got)
+	t.Equal("error", err.Error())
 }

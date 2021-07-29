@@ -8,8 +8,7 @@ import (
 	"fmt"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
-	"os"
-	"strings"
+	"path/filepath"
 )
 
 // Layouts
@@ -23,20 +22,13 @@ import (
 func (t *Theme) Layouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
-	cfg, err := t.Config()
+	path, cfg, err := t.getActiveTheme()
 	if err != nil {
 		return nil, err
 	}
 
-	theme, err := t.options.GetTheme()
-	if err != nil {
-		return nil, err
-	}
-
-	layoutDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + cfg.LayoutDir
-	layoutDir = strings.ReplaceAll(layoutDir, "//", "/")
-
-	files, err := t.walkMatch(layoutDir, "*"+cfg.FileExtension, cfg.FileExtension)
+	layoutDir := filepath.Join(path, cfg.LayoutDir)
+	files, err := t.walkMatch(layoutDir, "*"+cfg.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting layouts with the path: %s", layoutDir), Operation: op, Err: ErrNoLayouts}
 	}

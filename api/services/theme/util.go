@@ -5,6 +5,8 @@
 package theme
 
 import (
+	"github.com/verbiscms/verbis/api/common/files"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"os"
 	"path/filepath"
@@ -15,7 +17,7 @@ import (
 //
 // Walk through root and return array of strings
 // to the file path.
-func (t *Theme) walkMatch(root, pattern, extension string) ([]string, error) {
+func (t *Theme) walkMatch(root, pattern string) ([]string, error) {
 	const op = "SiteRepository.walkMatch"
 
 	var matches []string
@@ -31,8 +33,7 @@ func (t *Theme) walkMatch(root, pattern, extension string) ([]string, error) {
 			return err
 		} else if matched {
 			template := strings.Replace(path, root+"/", "", 1)
-			template = strings.Replace(template, extension, "", -1)
-			matches = append(matches, template)
+			matches = append(matches, files.RemoveFileExtension(template))
 		}
 		return nil
 	})
@@ -50,4 +51,18 @@ func (t *Theme) walkMatch(root, pattern, extension string) ([]string, error) {
 // page templates and layouts.
 func (t *Theme) fileName(file string) string {
 	return strings.Title(strings.ToLower(strings.ReplaceAll(file, "-", " ")))
+}
+
+func (t *Theme) getActiveTheme() (string, domain.ThemeConfig, error) {
+	theme, err := t.options.GetTheme()
+	if err != nil {
+		return "", domain.ThemeConfig{}, err
+	}
+
+	cfg, err := t.Config()
+	if err != nil {
+		return "", domain.ThemeConfig{}, err
+	}
+
+	return filepath.Join(t.themesPath, theme), cfg, nil
 }
