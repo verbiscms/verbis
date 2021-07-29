@@ -6,7 +6,13 @@ package middleware
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/logger"
+	"net/http"
+	"strings"
+	"time"
 )
 
 // Setters ensures that the theme options and domain configuration
@@ -17,68 +23,43 @@ import (
 // or the theme configuration could not be found.
 func Setters(d *deps.Deps) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		//if ctx.Request.Method != http.MethodGet {
-		//	ctx.Next()
-		//	return
-		//}
-		//
-		//if strings.Contains(ctx.Request.URL.Path, ".") {
-		//	ctx.Next()
-		//	return
-		//}
-		//
-		//setOptions(d, ctx)
-		//setTheme(d, ctx)
+		if ctx.Request.Method != http.MethodGet {
+			ctx.Next()
+			return
+		}
+
+		if strings.Contains(ctx.Request.URL.Path, ".") {
+			ctx.Next()
+			return
+		}
+
+		setOptions(d, ctx)
+		setTheme(d)
 
 		ctx.Next()
 	}
 }
 
-//
-//func setOptions(d *deps.Deps, ctx *gin.Context) {
-//	var opts domain.Options
-//	cachedOpts, err := cache.Get(ctx, cache.OptionsKey)
-//	if err != nil {
-//		opts = d.Store.Options.Struct()
-//		err = cache.Set(ctx, cache.OptionsKey, opts, cache.Options{
-//			Expiration: time.Minute * 15,
-//			Tags:       nil,
-//		})
-//		if err != nil {
-//			logger.Panic(err)
-//			ctx.Next()
-//			return
-//		}
-//	} else {
-//		opts = cachedOpts.(domain.Options)
-//	}
-//	d.SetOptions(&opts)
-//}
-//
-//var themeFetcher = config.Fetch
-//
-//// setTheme
-//func setTheme(d *deps.Deps, ctx *gin.Context) {
-//	var theme domain.ThemeConfig
-//	cachedTheme, err := cache.Get(ctx, cache.ThemeConfigKey)
-//	if err != nil {
-//		cfg := themeFetcher(filepath.Join(d.Paths.Themes, d.Options.ActiveTheme))
-//		if cfg == nil {
-//			logger.Panic(err)
-//			ctx.Next()
-//			return
-//		}
-//		err = cache.Set(ctx, cache.ThemeConfigKey, *cfg, cache.Options{
-//			Expiration: time.Minute * 15,
-//		})
-//		if err != nil {
-//			logger.Panic(err)
-//			ctx.Next()
-//			return
-//		}
-//		theme = *cfg
-//	} else {
-//		theme = cachedTheme.(domain.ThemeConfig)
-//	}
-//	d.Config = &theme
-//}
+
+func setOptions(d *deps.Deps, ctx *gin.Context) {
+	var opts domain.Options
+	cachedOpts, err := d.Cache.Get(ctx, cache.OptionsKey)
+	if err == nil {
+		opts = cachedOpts.(domain.Options)
+	} else {
+		opts = d.Store.Options.Struct()
+		d.Cache.Set(ctx, cache.OptionsKey, opts, cache.Options{
+			Expiration: time.Minute * 15,
+		})
+	}
+	d.Options = &opts
+}
+
+// setTheme
+func setTheme(d *deps.Deps) {
+	config, err := d.Theme.Config()
+	if err != nil {
+		logger.Panic(err)
+	}
+	d.Config = &config
+}

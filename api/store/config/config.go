@@ -6,6 +6,7 @@ package config
 
 import (
 	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/domain"
 )
@@ -16,5 +17,6 @@ type Config struct {
 	database.Driver
 	Paths   paths.Paths
 	Owner   *domain.User
+	Theme config.Provider
 	Running bool
 }

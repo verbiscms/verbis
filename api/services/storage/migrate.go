@@ -35,10 +35,6 @@ type MigrationInfo struct {
 	mtx *sync.Mutex
 }
 
-const (
-	MigrationCacheKey = "stmigrate"
-)
-
 // FailedMigrationFile represents an error when migrating.
 // It includes an error.Error as well as a file for
 // debugging.
@@ -91,6 +87,9 @@ func (m *MigrationInfo) succeed(file domain.File) {
 // calculateProcessed
 func (m *MigrationInfo) storeMigration() {
 	m.Progress = (m.FilesProcessed * 100) / m.Total
+
+
+
 	//err := cache.Set(context.Background(), MigrationCacheKey, m, cache.Options{
 	//	Expiration: cache.RememberForever,
 	//})

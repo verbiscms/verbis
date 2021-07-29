@@ -6,8 +6,8 @@ package webp
 
 import (
 	"bytes"
-	"github.com/gin-gonic/gin"
 	"github.com/ainsleyclark/go-webpbin"
+	"github.com/gin-gonic/gin"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"io"

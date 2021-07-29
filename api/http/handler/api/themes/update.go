@@ -6,12 +6,9 @@ package themes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
-	"github.com/verbiscms/verbis/api/services/theme"
 	"net/http"
-	"os"
 )
 
 // UpdateTheme defines the data to be validated when a
@@ -35,19 +32,11 @@ func (t *Themes) Update(ctx *gin.Context) {
 		return
 	}
 
-	ok := t.Theme.Exists(u.Theme)
-	if !ok {
-		api.Respond(ctx, http.StatusBadRequest, "No theme exists with the name: "+u.Theme, &errors.Error{Code: errors.INVALID, Err: theme.ErrNoTheme, Operation: op})
-		return
-	}
-
-	err = t.SetTheme(u.Theme)
+	config, err := t.Theme.Set(u.Theme)
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, "Error setting theme", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 
-	config.Fetch(t.Paths.Themes + string(os.PathSeparator) + u.Theme)
-
-	api.Respond(ctx, http.StatusOK, "Successfully changed theme with the name: "+u.Theme, config.Get())
+	api.Respond(ctx, http.StatusOK, "Successfully changed theme with the name: "+u.Theme, config)
 }
