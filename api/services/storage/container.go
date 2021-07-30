@@ -34,7 +34,7 @@ func (s *Storage) ListBuckets(provider domain.StorageProvider) (domain.Buckets, 
 	for {
 		containers, cursor, contErr = prov.Containers("", cursor, pageSize)
 		if contErr != nil {
-			return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining buckets", Operation: op, Err: err}
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining buckets", Operation: op, Err: contErr}
 		}
 		for _, container := range containers {
 			buckets = append(buckets, domain.Bucket{
