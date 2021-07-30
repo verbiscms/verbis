@@ -5,7 +5,13 @@
 package cmd
 
 import (
+	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/logger"
+	"io/fs"
+	"os"
+	"path/filepath"
 )
 
 var (
@@ -13,7 +19,19 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-
+			err := filepath.Walk(paths.Get().Storage, func(path string, info fs.FileInfo, err error) error {
+				ext := filepath.Ext(path)
+				if ext == ".webp" {
+					err := os.Remove(path)
+					if err != nil {
+						logger.Trace(err)
+					}
+				}
+				return nil
+			})
+			if err != nil {
+				fmt.Println(err)
+			}
 		},
 	}
 )

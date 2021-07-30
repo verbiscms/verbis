@@ -27,19 +27,18 @@ func Setters(d *deps.Deps) gin.HandlerFunc {
 			ctx.Next()
 			return
 		}
-
 		if strings.Contains(ctx.Request.URL.Path, ".") {
 			ctx.Next()
 			return
 		}
-
 		setOptions(d, ctx)
 		setTheme(d)
-
 		ctx.Next()
 	}
 }
 
+// setOptions retrieves the options from the
+// Options Service and sets it to deps.
 func setOptions(d *deps.Deps, ctx *gin.Context) {
 	var opts domain.Options
 	cachedOpts, err := d.Cache.Get(ctx, cache.OptionsKey)
@@ -54,11 +53,13 @@ func setOptions(d *deps.Deps, ctx *gin.Context) {
 	d.Options = &opts
 }
 
-// setTheme
+// setTheme retrieves the theme configuration from the
+// Theme Service and sets it to deps.
 func setTheme(d *deps.Deps) {
 	config, err := d.Theme.Config()
 	if err != nil {
 		logger.Panic(err)
+		return
 	}
 	d.Config = &config
 }

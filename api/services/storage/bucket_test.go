@@ -143,7 +143,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 			func(m *mocks.Service, r *repo.Repository) {
 				item := &mocks.StowItem{}
 				item.On("ID").Return("test.txt")
-				item.On("URL").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
+				item.On("Url").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
 
 				cont := &mocks.StowContainer{}
 				cont.On("ID").Return("bucket")
@@ -232,7 +232,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 			func(m *mocks.Service, r *repo.Repository) {
 				item := &mocks.StowItem{}
 				item.On("ID").Return("test.txt")
-				item.On("URL").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
+				item.On("Url").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
 
 				cont := &mocks.StowContainer{}
 				cont.On("ID").Return("bucket")

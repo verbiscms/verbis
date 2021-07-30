@@ -51,80 +51,36 @@ CREATE TABLE `media_sizes`
 DELETE
 FROM media m
 WHERE id IN (
-    WITH DeleteURL as (SELECT `id`,
-                              ROW_NUMBER() OVER (PARTITION BY url ORDER BY ID DESC) row_num
-                       FROM media)
+    WITH DeleteURL as (SELECT `id`, ROW_NUMBER() OVER (PARTITION BY url ORDER BY ID DESC) row_num FROM media)
     SELECT id
     FROM DeleteURL
     WHERE row_num > 1
 );
 
 # Insert main files (no media sizes)
-INSERT INTO files (`uuid`, `url`, `file_size`, `name`, `mime`, `path`, `bucket_id`, `region`, `provider`, `bucket`,
-                   `source_type`)
-SELECT `uuid`,
-       `url`,
-       `file_size`,
-       `file_name`,
-       `mime`,
-       `file_path`,
-       url  AS bucket_id,
-       '''' AS region,
-       ''      local'' AS provider, '''' AS bucket,
-       ''      media ''
+INSERT INTO files (`uuid`, `url`, `file_size`, `name`, `mime`, `path`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
+SELECT `uuid`,`url`, `file_size`, `file_name`, `mime`, `file_path`, url  AS bucket_id, '' AS region, 'local' AS provider, '' AS bucket, 'media'
 FROM media;
 
 # Insert media sizes
-INSERT INTO files (`url`, `uuid`, `file_size`, `name`, `mime`, `path`, `bucket_id`, `region`, `provider`, `bucket`,
-                   `source_type`)
-    (SELECT sizes.url,
-            sizes.uuid,
-            sizes.file_size,
-            sizes.name,
-            media.mime,
-            media.file_path,
-            sizes.url AS bucket_id,
-            ''''      AS region,
-            ''           local'' AS provider, '''' AS bucket,
-            ''           media ''
-     FROM media,
-          JSON_TABLE(sizes, '' $.* ''
-                     COLUMNS(
-                             uuid VARCHAR(255) PATH ''$**.uuid'',
-                             url VARCHAR(255) PATH ''$**.url'',
-                             file_size VARCHAR(255) PATH ''$**.file_size'',
-                             name VARCHAR(255) PATH ''$**.name''
-                         )
-              ) AS sizes);
+INSERT INTO files (`url`, `uuid`, `file_size`, `name`, `mime`, `path`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
+    (SELECT sizes.url,sizes.uuid,sizes.file_size, sizes.name,media.mime, media.file_path, sizes.url AS bucket_id,'' AS region,'local' AS provider,  '' AS bucket, 'media' FROM media,
+    JSON_TABLE(sizes, '$.*' COLUMNS(uuid VARCHAR(255) PATH '$**.uuid', url VARCHAR(255) PATH '$**.url',file_size VARCHAR(255) PATH '$**.file_size', name VARCHAR(255) PATH '$**.name')) AS sizes);
 
 ##############################################
 # Inserts for Media Sizes
 ##############################################
 
 INSERT INTO media_sizes (`file_id`, `media_id`, `uuid`, `width`, `height`, `crop`, `size_name`, `size_key`)
-    (SELECT 0,
-            media.id,
-            sizes.uuid,
-            sizes.width,
-            sizes.height,
-            sizes.crop,
-            sizes.size_name,
+    (SELECT 0, media.id, sizes.uuid, sizes.width, sizes.height, sizes.crop, sizes.size_name,
             CASE
-                WHEN sizes.size_name = ''HD Size'' THEN ''hd''
-                WHEN sizes.size_name = ''Large Size'' THEN ''large''
-                WHEN sizes.size_name = ''Medium Size'' THEN ''medium''
-                WHEN sizes.size_name = ''Thumbnail Size'' THEN ''thumbnail''
-                ELSE ''Default Size'' END AS keyname
+                WHEN sizes.size_name = 'HD Size' THEN 'hd'
+                WHEN sizes.size_name = 'Large Size' THEN 'large'
+                WHEN sizes.size_name = 'Medium Size' THEN 'medium'
+                WHEN sizes.size_name = 'Thumbnail Size' THEN 'thumbnail'
+                ELSE 'Default Size' END AS keyname
      FROM media,
-         JSON_TABLE (sizes, '' $.*''
-         COLUMNS (
-         width INT PATH '' $**.width '',
-         height INT PATH '' $**.height '',
-         size_name VARCHAR (255) PATH '' $**.size_name '',
-         crop INT PATH '' $**.crop '',
-         uuid VARCHAR (255) PATH '' $**.uuid ''
-         )
-         ) AS sizes);
+         JSON_TABLE (sizes, '$.*'COLUMNS (width INT PATH '$**.width', height INT PATH '$**.height', size_name VARCHAR (255) PATH '$**.size_name', crop INT PATH '$**.crop', uuid VARCHAR (255) PATH '$**.uuid' )) AS sizes);
 
 ##############################################
 # MediaTable Alter

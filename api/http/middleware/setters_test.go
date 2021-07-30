@@ -6,10 +6,14 @@ package middleware
 
 //
 //func (t *MiddlewareTestSuite) Test_Setters() {
+//	opts := &domain.Options{
+//		SiteTitle: "middleware",
+//	}
+//
 //	tt := map[string]struct {
 //		url    string
 //		method string
-//		mock   func(m *options.Repository, c *mockCache.Cacher)
+//		mock   func(m *options.Repository, c *cache.Store, th *theme.Service)
 //	}{
 //		"Method Post": {
 //			"/news",
@@ -21,29 +25,31 @@ package middleware
 //			http.MethodGet,
 //			nil,
 //		},
+//		"From Cache": {
+//			"/news",
+//			http.MethodGet,
+//			func(m *options.Repository, c *cache.Store, th *theme.Service) {
+//				c.On("Get").Return(mock.Anything, mock.Anything).Return(opts, nil)
+//			},
+//		},
 //	}
 //
 //	for name, test := range tt {
 //		t.Run(name, func() {
 //			var (
-//				o = &options.Repository{}
-//				c = &mockCache.Cacher{}
+//				o  = &options.Repository{}
+//				c  = &cache.Store{}
+//				th = &theme.Service{}
 //			)
-//
 //			if test.mock != nil {
-//				test.mock(o, c)
+//				test.mock(o, c, th)
 //			}
-//
 //			d := &deps.Deps{
 //				Store: &store.Repository{Options: o},
+//				Cache: c,
 //			}
-//
-//			cache.SetDriver(c)
-//
 //			t.Engine.Use(Setters(d))
-//
 //			t.RequestAndServe(test.method, test.url, test.url, nil, t.DefaultHandler)
-//
 //			t.Context.Request.Body.Close()
 //			t.Reset()
 //		})
