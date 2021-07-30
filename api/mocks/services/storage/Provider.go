@@ -3,6 +3,8 @@
 package mocks
 
 import (
+	context "context"
+
 	mock "github.com/stretchr/testify/mock"
 	domain "github.com/verbiscms/verbis/api/domain"
 
@@ -107,20 +109,20 @@ func (_m *Provider) Find(url string) ([]byte, domain.File, error) {
 	return r0, r1, r2
 }
 
-// Info provides a mock function with given fields:
-func (_m *Provider) Info() (storage.Configuration, error) {
-	ret := _m.Called()
+// Info provides a mock function with given fields: ctx
+func (_m *Provider) Info(ctx context.Context) (storage.Configuration, error) {
+	ret := _m.Called(ctx)
 
 	var r0 storage.Configuration
-	if rf, ok := ret.Get(0).(func() storage.Configuration); ok {
-		r0 = rf()
+	if rf, ok := ret.Get(0).(func(context.Context) storage.Configuration); ok {
+		r0 = rf(ctx)
 	} else {
 		r0 = ret.Get(0).(storage.Configuration)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
+	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
+		r1 = rf(ctx)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -151,20 +153,20 @@ func (_m *Provider) ListBuckets(provider domain.StorageProvider) (domain.Buckets
 	return r0, r1
 }
 
-// Migrate provides a mock function with given fields: from, to, delete
-func (_m *Provider) Migrate(from domain.StorageChange, to domain.StorageChange, delete bool) (int, error) {
-	ret := _m.Called(from, to, delete)
+// Migrate provides a mock function with given fields: ctx, from, to, delete
+func (_m *Provider) Migrate(ctx context.Context, from domain.StorageChange, to domain.StorageChange, delete bool) (int, error) {
+	ret := _m.Called(ctx, from, to, delete)
 
 	var r0 int
-	if rf, ok := ret.Get(0).(func(domain.StorageChange, domain.StorageChange, bool) int); ok {
-		r0 = rf(from, to, delete)
+	if rf, ok := ret.Get(0).(func(context.Context, domain.StorageChange, domain.StorageChange, bool) int); ok {
+		r0 = rf(ctx, from, to, delete)
 	} else {
 		r0 = ret.Get(0).(int)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(domain.StorageChange, domain.StorageChange, bool) error); ok {
-		r1 = rf(from, to, delete)
+	if rf, ok := ret.Get(1).(func(context.Context, domain.StorageChange, domain.StorageChange, bool) error); ok {
+		r1 = rf(ctx, from, to, delete)
 	} else {
 		r1 = ret.Error(1)
 	}

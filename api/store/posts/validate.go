@@ -23,8 +23,6 @@ func (s *Store) validate(p *domain.PostCreate, checkSlug bool) error {
 			return err
 		}
 	}
-
-	//cfg := config.Get()
 	//
 	//resource, ok := cfg.Resources[p.Resource]
 	//if ok {

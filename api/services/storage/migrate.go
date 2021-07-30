@@ -50,8 +50,11 @@ const (
 	// migrateConcurrentAllowance is the amount of files that
 	// are allowed to be migrated concurrently.
 	migrateConcurrentAllowance = 1
-
-	migrationKey         = "storage_migration"
+	// migrationKey is the key used in the cache used for
+	// retrieving migration information.
+	migrationKey = "storage_migration"
+	// migrationIsMigrating is the key used in the cache used for
+	// determining if there is a migration taking place.
 	migrationIsMigrating = "storage_is_migrating"
 )
 
@@ -67,8 +70,6 @@ var (
 // fail appends an error to the migration stack and adds
 // one to failed files and files processed retrospectively.
 func (m *MigrationInfo) fail(file domain.File, err error) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
 	m.Failed++
 	m.FilesProcessed++
 	m.Errors = append(m.Errors, FailedMigrationFile{
@@ -82,8 +83,6 @@ func (m *MigrationInfo) fail(file domain.File, err error) {
 // succeed adds a succeeded file to the migration stack as
 // well as adding one to the files processed.
 func (m *MigrationInfo) succeed(file domain.File) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
 	m.Succeeded++
 	m.FilesProcessed++
 	m.Progress = (m.FilesProcessed * 100) / m.Total
@@ -148,10 +147,7 @@ func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageChange, de
 // files.
 func (s *Storage) isMigrating(ctx context.Context) bool {
 	_, err := s.cache.Get(ctx, migrationIsMigrating)
-	if err == nil {
-		return true
-	}
-	return false
+	return err == nil
 }
 
 // getMigration returns the current migration information in
@@ -213,9 +209,12 @@ func (s *Storage) processMigration(ctx context.Context, files domain.Files, from
 func (s *Storage) migrateBackground(ctx context.Context, channel chan migration, deleteFiles bool, info *MigrationInfo) {
 	m := <-channel
 
+	info.mtx.Lock()
+
 	defer func() {
-		m.wg.Done()
 		s.cache.Set(ctx, migrationKey, info, cache.Options{Expiration: cache.RememberForever})
+		info.mtx.Unlock()
+		m.wg.Done()
 	}()
 
 	buf, _, err := s.Find(m.file.Url)
