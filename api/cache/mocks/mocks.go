@@ -9,3 +9,10 @@ import "github.com/eko/gocache/v2/store"
 type storeInterface interface {
 	store.StoreInterface
 }
+
+type provider interface {
+	Ping() error
+	Validate() error
+	Driver() string
+	Store() store.StoreInterface
+}

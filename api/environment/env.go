@@ -164,7 +164,7 @@ func (e *Env) Set(key string, value interface{}) error {
 		return &errors.Error{Code: errors.INVALID, Message: "Error casting value to string", Operation: op, Err: err}
 	}
 
-	path := basePath + "/" + EnvExtension
+	path := filepath.Join(basePath, EnvExtension)
 	env, err := godotenv.Read(path)
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error reading env file with the path " + path, Operation: op, Err: err}
