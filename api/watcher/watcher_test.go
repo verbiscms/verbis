@@ -112,12 +112,12 @@ func TestBatcher_Watch_Error(t *testing.T) {
 		"Wrong Path": {
 			"wrong",
 			PollingDuration,
-			"no such file or directory",
+			"Error adding path",
 		},
 		"Bad Poll": {
 			t.TempDir(),
 			0,
-			"error: duration is less than 1ns",
+			"Error starting watcher",
 		},
 	}
 
@@ -129,7 +129,7 @@ func TestBatcher_Watch_Error(t *testing.T) {
 				t.Fatalf("eror")
 				return
 			}
-			assert.Contains(t, err.Error(), test.want)
+			assert.Contains(t, errors.Message(err), test.want)
 		})
 	}
 }

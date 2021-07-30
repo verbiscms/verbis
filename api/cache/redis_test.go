@@ -10,15 +10,15 @@ import (
 )
 
 func (t *CacheTestSuite) TestRedis() {
-	t.UtilTestProvider_Success(&redis{
+	t.UtilTestProviderSuccess(&redis{
 		client: pkg.NewClient(&pkg.Options{Addr: "", Password: ""}),
 		env:    &environment.Env{RedisAddress: "127.0.0.1", RedisPassword: "password"},
 	}, RedisStore)
-	t.UtilTestProvider_Error(&redis{
+	t.UtilTestProviderError(&redis{
 		client: pkg.NewClient(&pkg.Options{Addr: "", Password: ""}),
 		env:    &environment.Env{RedisAddress: "127.0.0.1", RedisPassword: ""},
 	})
-	t.UtilTestProvider_Error(&redis{
+	t.UtilTestProviderError(&redis{
 		client: pkg.NewClient(&pkg.Options{Addr: "", Password: ""}),
 		env:    &environment.Env{RedisAddress: "", RedisPassword: "password"},
 	})
