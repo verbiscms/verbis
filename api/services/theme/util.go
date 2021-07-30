@@ -13,9 +13,7 @@ import (
 	"strings"
 )
 
-// walkMatch
-//
-// Walk through root and return array of strings
+// walkMatch walks through root and return array of strings
 // to the file path.
 func (t *Theme) walkMatch(root, pattern string) ([]string, error) {
 	const op = "SiteRepository.walkMatch"
@@ -45,14 +43,14 @@ func (t *Theme) walkMatch(root, pattern string) ([]string, error) {
 	return matches, nil
 }
 
-// fileName
-//
-// Cleans the file name to a friendly string for
+// fileName Cleans the file name to a friendly string for
 // page templates and layouts.
 func (t *Theme) fileName(file string) string {
 	return strings.Title(strings.ToLower(strings.ReplaceAll(file, "-", " ")))
 }
 
+// getActive theme retrieves the active theme name, and
+// configuration for that theme.
 func (t *Theme) getActiveTheme() (string, domain.ThemeConfig, error) {
 	theme, err := t.options.GetTheme()
 	if err != nil {

@@ -14,45 +14,35 @@ import (
 	"mime/multipart"
 )
 
-// Validate
 //
-// Satisfies the Library to see if the testMedia item passed
-// is valid.
-func (s *Service) Validate(file *multipart.FileHeader, cfg domain.ThemeConfig) error {
-	return validate(file, s.options, cfg)
-}
-
-// validator defines the helper for validating testMedia items.
-type validator struct {
-	Config  domain.ThemeConfig
-	Options *domain.Options
-	Size    int64
-	File    multipart.File
-}
-
-// validate Checks for valid mime types, file sizes and
-// image sizes
-// Returns errors.INVALID if any condition is not met.
-func validate(h *multipart.FileHeader, opts *domain.Options, cfg domain.ThemeConfig) error {
+//
+// Validate satisfies the Library to see if the media item passed
+// and is valid for upload.
+func (s *Service) Validate(file *multipart.FileHeader) error {
 	const op = "Media.Validate"
 
-	file, err := h.Open()
+	cfg, err := s.theme.Config()
+	if err != nil {
+		return err
+	}
+
+	mt, err := file.Open()
 	defer func() {
-		err := file.Close()
+		err := mt.Close()
 		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing file with the name: " + h.Filename, Operation: op, Err: err})
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error closing file with the name: " + file.Filename, Operation: op, Err: err})
 		}
 	}()
 
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error opening file with the name: " + h.Filename, Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error opening file with the name: " + file.Filename, Operation: op, Err: err}
 	}
 
 	v := validator{
 		Config:  cfg,
-		Options: opts,
-		Size:    h.Size,
-		File:    file,
+		Options: s.options.Struct(),
+		Size:    file.Size,
+		File:    mt,
 	}
 
 	err = v.Mime()
@@ -72,6 +62,22 @@ func validate(h *multipart.FileHeader, opts *domain.Options, cfg domain.ThemeCon
 
 	return nil
 }
+
+// validator defines the helper for validating media items.
+type validator struct {
+	Config  domain.ThemeConfig
+	Options domain.Options
+	Size    int64
+	File    multipart.File
+}
+
+//// validate Checks for valid mime types, file sizes and
+//// image sizes
+//// Returns errors.INVALID if any condition is not met.
+//func validate(h *multipart.FileHeader, opts domain.Options, cfg domain.ThemeConfig) error {
+//
+//	return nil
+//}
 
 // Mime checks if a mimetype is valid by comparing the
 // mime with the allowed file types in the configuration.

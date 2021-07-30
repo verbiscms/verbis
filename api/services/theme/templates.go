@@ -11,14 +11,8 @@ import (
 	"path/filepath"
 )
 
-// Templates
-//
-// Retrieves all templates stored within the templates
-// directory of the Theme path.
-//
-// Returns ErrNoTemplates in any error case.
-// Returns errors.NOTFOUND if no templates were found.
-// Returns errors.INTERNAL if the template path is invalid.
+// Templates satisfies the Theme interface by retrieving all
+// templates from the active theme.
 func (t *Theme) Templates() (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 

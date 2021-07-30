@@ -11,14 +11,8 @@ import (
 	"path/filepath"
 )
 
-// Layouts
-//
-// Retrieves all layouts stored within the layouts
-// directory of the Theme path.
-//
-// Returns ErrNoLayouts in any error case.
-// Returns errors.NOTFOUND if no layouts were found.
-// Returns errors.INTERNAL if the layout path is invalid.
+// Layouts satisfies the Theme interface by retrieving all
+// template layouts from the active theme.
 func (t *Theme) Layouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 

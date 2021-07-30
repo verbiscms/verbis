@@ -6,13 +6,13 @@ package webp
 
 import (
 	"bytes"
-	"github.com/ainsleyclark/go-webpbin"
 	"github.com/gin-gonic/gin"
+	"github.com/nickalie/go-webpbin"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"io"
 	"io/ioutil"
-	"os"
+	"path/filepath"
 	"strings"
 )
 
@@ -25,23 +25,19 @@ type Execer interface {
 }
 
 // Path defines the path where the executables reside.
-const Path = string(os.PathSeparator) + "webp"
+const Path = "webp"
 
-// WebP
-//
-// Defines the service for installing, converting, serving
+// WebP defines the service for installing, converting, serving
 // and determining if the browser can accept WebP
 // images.
 type WebP struct {
 	binPath string
 }
 
-// New
-//
-// Creates a new WebP Execer.
+// New creates a new WebP Execer.
 func New(binPath string) *WebP {
 	return &WebP{
-		binPath: binPath,
+		binPath: filepath.Join(binPath, Path),
 	}
 }
 
@@ -50,20 +46,15 @@ const (
 	Header = "image/webp"
 )
 
-// Accepts
-//
-// Determines if the browser can serve webp images by
-// looking up the 'image/WebP' header.
+// Accepts determines if the browser can serve webp images
+// by looking up the 'image/WebP' header.
 func (w *WebP) Accepts(ctx *gin.Context) bool {
 	acceptHeader := ctx.Request.Header.Get("Accept")
-	return strings.Contains(acceptHeader, "image/webp")
+	return strings.Contains(acceptHeader, Header)
 }
 
-// File
-//
 // File first checks to see if the browser accepts WebP
 // images and if the mime type is jpg or a png.
-//
 // Returns the data file if found.
 // Returns errors.INTERNAL if no file was found.
 func (w *WebP) File(ctx *gin.Context, path string, mime domain.Mime) ([]byte, error) {
@@ -82,12 +73,12 @@ func (w *WebP) File(ctx *gin.Context, path string, mime domain.Mime) ([]byte, er
 	return data, nil
 }
 
-// Convert
-//
-// Converts an image to WebP based on compression and
+// Convert converts an image to WebP based on compression and
 // decoded image. Compression level is also set.
 func (w *WebP) Convert(in io.Reader, compression int) (*bytes.Reader, error) {
 	const op = "Webp.Convert"
+
+	webpbin.Dest(w.binPath)
 
 	var buf = &bytes.Buffer{}
 

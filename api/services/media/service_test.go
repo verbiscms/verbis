@@ -12,7 +12,9 @@ import (
 	"github.com/verbiscms/verbis/api/logger"
 	resizer "github.com/verbiscms/verbis/api/mocks/services/media/resizer"
 	storage "github.com/verbiscms/verbis/api/mocks/services/storage"
+	theme "github.com/verbiscms/verbis/api/mocks/services/theme"
 	repo "github.com/verbiscms/verbis/api/mocks/store/media"
+	options "github.com/verbiscms/verbis/api/mocks/store/options"
 	"github.com/verbiscms/verbis/api/test"
 	"github.com/verbiscms/verbis/api/test/dummy"
 	"io/ioutil"
@@ -137,30 +139,26 @@ var (
 	}
 	// opts is the default options with media sizes used
 	// for testing.
-	opts = &domain.Options{
+	opts = domain.Options{
 		MediaSizes: domain.MediaSizes{"thumbnail": domain.MediaSize{SizeKey: "thumb", SizeName: "thumb", Width: 300, Height: 300, Crop: false}},
 	}
 )
 
 // Setup is a helper to obtain a mock testMedia Service
 // for testing.
-func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Options, mock func(r *repo.Repository, s *storage.Bucket)) *Service {
+func (t *MediaServiceTestSuite) Setup(o domain.Options, mock func(r *repo.Repository, s *storage.Bucket, t *theme.Service)) *Service {
 	r := &repo.Repository{}
 	s := &storage.Bucket{}
+	or := &options.Repository{}
+	th := &theme.Service{}
 
 	if mock != nil {
-		mock(r, s)
+		mock(r, s, th)
 	}
 
-	if cfg == nil {
-		cfg = &domain.ThemeConfig{} //nolint
-	}
+	or.On("Struct").Return(o)
 
-	if opts == nil {
-		opts = &domain.Options{}
-	}
-
-	c := New(opts, s, r)
+	c := New(r, s, or, th)
 	c.resizer = &resizer.Resizer{}
 
 	return c
@@ -168,17 +166,17 @@ func (t *MediaServiceTestSuite) Setup(cfg *domain.ThemeConfig, opts *domain.Opti
 
 func (t *MediaServiceTestSuite) TestService_List() {
 	tt := map[string]struct {
-		mock func(r *repo.Repository, s *storage.Bucket)
+		mock func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
 		want interface{}
 	}{
 		"Success": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("List", dummy.DefaultParams).Return(testMediaSlice, 2, nil)
 			},
 			testMediaSlice,
 		},
 		"Error": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("List", dummy.DefaultParams).Return(nil, 0, fmt.Errorf("error"))
 			},
 			"error",
@@ -187,7 +185,7 @@ func (t *MediaServiceTestSuite) TestService_List() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(nil, nil, test.mock)
+			s := t.Setup(domain.Options{}, test.mock)
 			got, _, err := s.List(dummy.DefaultParams)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
@@ -200,17 +198,17 @@ func (t *MediaServiceTestSuite) TestService_List() {
 
 func (t *MediaServiceTestSuite) TestService_Find() {
 	tt := map[string]struct {
-		mock func(r *repo.Repository, s *storage.Bucket)
+		mock func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
 		want interface{}
 	}{
 		"Success": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("Find", 1).Return(testMedia, nil)
 			},
 			testMedia,
 		},
 		"Error": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("Find", 1).Return(domain.Media{}, fmt.Errorf("error"))
 			},
 			"error",
@@ -219,7 +217,7 @@ func (t *MediaServiceTestSuite) TestService_Find() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(nil, nil, test.mock)
+			s := t.Setup(domain.Options{}, test.mock)
 			got, err := s.Find(1)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
@@ -232,17 +230,17 @@ func (t *MediaServiceTestSuite) TestService_Find() {
 
 func (t *MediaServiceTestSuite) TestService_Update() {
 	tt := map[string]struct {
-		mock func(r *repo.Repository, s *storage.Bucket)
+		mock func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
 		want interface{}
 	}{
 		"Success": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("Update", testMedia).Return(testMedia, nil)
 			},
 			testMedia,
 		},
 		"Error": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("Update", testMedia).Return(domain.Media{}, fmt.Errorf("error"))
 			},
 			"error",
@@ -251,7 +249,7 @@ func (t *MediaServiceTestSuite) TestService_Update() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(nil, nil, test.mock)
+			s := t.Setup(domain.Options{}, test.mock)
 			got, err := s.Update(testMedia)
 			if err != nil {
 				t.Contains(err.Error(), test.want)

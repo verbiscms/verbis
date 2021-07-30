@@ -13,13 +13,8 @@ import (
 	"path/filepath"
 )
 
-// Screenshot
-//
-// Finds a screenshot in the Theme directory based on the
-// Theme passed (e.g. verbis) and the file passed
-// (e.g. screenshot.png).
-//
-// Returns errors.NOTFOUND if there was not screenshot found.
+// Screenshot satisfies the Theme interface by retrieving a
+// screenshot in bytes by a theme and file input.
 func (t *Theme) Screenshot(theme, file string) ([]byte, domain.Mime, error) {
 	const op = "SiteRepository.Screenshot"
 
