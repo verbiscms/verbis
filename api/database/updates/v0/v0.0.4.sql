@@ -117,6 +117,13 @@ ALTER TABLE media_sizes
     DROP COLUMN uuid;
 
 ##############################################
+# Add To Options
+##############################################
+
+INSERT INTO options(`option_name`, `option_value`) VALUES('storage_provider', '\"local\"');
+INSERT INTO options(`option_name`, `option_value`) VALUES('storage_bucket', '\"\"');
+
+##############################################
 # Delete Password Resets
 ##############################################
 
