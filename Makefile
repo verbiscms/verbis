@@ -68,7 +68,7 @@ ci:
 
 # Make mocks keeping directory tree
 mock:
-	cd api && rm -rf mocks && mockery --all --keeptree --exported=true
+	cd api && rm -rf mocks && mockery --all --keeptree --exported=true && rm mocks/cache/providerAdder.go
 .PHONY: mock
 
 # Run linter

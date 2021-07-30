@@ -20,6 +20,9 @@ const (
 	configCacheKey = "theme_config"
 )
 
+// Config satisfies the Theme interface by retrieving a
+// theme configuration. The config will be cached
+// for ever until it is wiped by Set().
 func (t *Theme) Config() (domain.ThemeConfig, error) {
 	const op = "Theme.Config"
 
@@ -49,8 +52,10 @@ func (t *Theme) Config() (domain.ThemeConfig, error) {
 	return cfg, nil
 }
 
+// Activate satisfies the Theme interface by activating a
+// theme by name.
 func (t *Theme) Activate(theme string) (domain.ThemeConfig, error) {
-	const op = "Theme.Set"
+	const op = "Theme.Activate"
 
 	ok := t.Exists(theme)
 	if !ok {
@@ -72,17 +77,21 @@ func (t *Theme) Activate(theme string) (domain.ThemeConfig, error) {
 	return cfg, nil
 }
 
-// Exists checks if a Theme exists by name.
+// Exists satisfies the Theme interface by checking to see
+// if a theme exists by name.
 func (t *Theme) Exists(theme string) bool {
 	_, err := os.Stat(filepath.Join(t.themesPath, theme))
 	return !os.IsNotExist(err)
 }
 
+// Find satisfies the Theme interface by retrieving a config
+// by name.
 func (t *Theme) Find(theme string) (domain.ThemeConfig, error) {
 	return t.config.Get(theme)
 }
 
-// List all Theme configurations.
+// List satisfies the Theme interface by listing all theme
+// configurations in the theme path.
 func (t *Theme) List() ([]domain.ThemeConfig, error) {
 	const op = "Theme.List"
 
@@ -101,17 +110,14 @@ func (t *Theme) List() ([]domain.ThemeConfig, error) {
 		if !f.IsDir() {
 			continue
 		}
-
 		cfg, err := t.config.Get(f.Name())
 		if err != nil {
 			logger.WithError(err).Error()
 			continue
 		}
-
 		if theme == cfg.Theme.Name {
 			cfg.Theme.Active = true
 		}
-
 		themes = append(themes, cfg)
 	}
 

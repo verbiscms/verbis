@@ -115,7 +115,7 @@ func (t *LoggerTestSuite) TestLogger() {
 }
 
 func (t *LoggerTestSuite) TestLogger_Fatal() {
-	buf := t.Setup()
+	buf := t.Setup() // nolint
 	defer func() {
 		logger = logrus.New()
 	}()

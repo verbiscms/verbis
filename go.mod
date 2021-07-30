@@ -5,7 +5,6 @@ go 1.16
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/ainsleyclark/go-mail v1.0.3
-	github.com/ainsleyclark/go-webpbin v0.0.0-20210727131937-6c249994879e // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b
 	github.com/briandowns/spinner v1.16.0
 	github.com/disintegration/imaging v1.6.2
@@ -41,6 +40,7 @@ require (
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/mouuff/go-rocket-update v1.5.0
 	github.com/nickalie/go-binwrapper v0.0.0-20190114141239-525121d43c84 // indirect
+	github.com/nickalie/go-webpbin v0.0.0-20170427122138-7e79cf5bb01e
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/ompluscator/dynamic-struct v1.2.0
@@ -62,6 +62,7 @@ require (
 	github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	google.golang.org/appengine v1.6.7 // indirect

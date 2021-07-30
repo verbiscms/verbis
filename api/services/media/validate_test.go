@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
+	storage "github.com/verbiscms/verbis/api/mocks/services/storage"
+	theme "github.com/verbiscms/verbis/api/mocks/services/theme"
+	repo "github.com/verbiscms/verbis/api/mocks/store/media"
 	"mime/multipart"
 	"os"
 	"path/filepath"
@@ -16,16 +19,26 @@ import (
 func (t *MediaServiceTestSuite) TestClient_Validate() {
 	tt := map[string]struct {
 		input string
-		cfg   domain.ThemeConfig
+		mock  func(r *repo.Repository, s *storage.Bucket, t *theme.Service)
 		opts  domain.Options
 		want  interface{}
 	}{
+		"Config Error": {
+			"",
+			func(r *repo.Repository, s *storage.Bucket, t *theme.Service) {
+				t.On("Config").Return(domain.ThemeConfig{}, &errors.Error{Message: "config error"})
+			},
+			domain.Options{},
+			"config error",
+		},
 		"Nil File": {
 			"",
-			domain.ThemeConfig{
-				Media: domain.MediaConfig{
-					AllowedFileTypes: []string{"text/plain; charset=utf-8"},
-				},
+			func(r *repo.Repository, s *storage.Bucket, t *theme.Service) {
+				t.On("Config").Return(domain.ThemeConfig{
+					Media: domain.MediaConfig{
+						AllowedFileTypes: []string{"text/plain; charset=utf-8"},
+					},
+				}, nil)
 			},
 			domain.Options{
 				MediaUploadMaxHeight: 1,
@@ -34,10 +47,12 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 		},
 		"Text File": {
 			filepath.Join(t.TestDataPath, "/test.txt"),
-			domain.ThemeConfig{
-				Media: domain.MediaConfig{
-					AllowedFileTypes: []string{"text/plain; charset=utf-8"},
-				},
+			func(r *repo.Repository, s *storage.Bucket, t *theme.Service) {
+				t.On("Config").Return(domain.ThemeConfig{
+					Media: domain.MediaConfig{
+						AllowedFileTypes: []string{"text/plain; charset=utf-8"},
+					},
+				}, nil)
 			},
 			domain.Options{
 				MediaUploadMaxHeight: 1,
@@ -46,26 +61,32 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 		},
 		"Image": {
 			filepath.Join(t.TestDataPath, "/gopher.png"),
-			domain.ThemeConfig{
-				Media: domain.MediaConfig{
-					AllowedFileTypes: []string{"image/png"},
-				},
+			func(r *repo.Repository, s *storage.Bucket, t *theme.Service) {
+				t.On("Config").Return(domain.ThemeConfig{
+					Media: domain.MediaConfig{
+						AllowedFileTypes: []string{"image/png"},
+					},
+				}, nil)
 			},
 			domain.Options{},
 			nil,
 		},
 		"Mime": {
 			filepath.Join(t.TestDataPath, "/gopher.png"),
-			domain.ThemeConfig{},
+			func(r *repo.Repository, s *storage.Bucket, t *theme.Service) {
+				t.On("Config").Return(domain.ThemeConfig{}, nil)
+			},
 			domain.Options{},
 			"The file is not permitted to be uploaded",
 		},
 		"File Size": {
 			filepath.Join(t.TestDataPath, "/gopher.png"),
-			domain.ThemeConfig{
-				Media: domain.MediaConfig{
-					AllowedFileTypes: []string{"image/png"},
-				},
+			func(r *repo.Repository, s *storage.Bucket, t *theme.Service) {
+				t.On("Config").Return(domain.ThemeConfig{
+					Media: domain.MediaConfig{
+						AllowedFileTypes: []string{"image/png"},
+					},
+				}, nil)
 			},
 			domain.Options{
 				MediaUploadMaxSize: 1,
@@ -74,10 +95,12 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 		},
 		"Image Width": {
 			filepath.Join(t.TestDataPath, "/gopher.png"),
-			domain.ThemeConfig{
-				Media: domain.MediaConfig{
-					AllowedFileTypes: []string{"image/png"},
-				},
+			func(r *repo.Repository, s *storage.Bucket, t *theme.Service) {
+				t.On("Config").Return(domain.ThemeConfig{
+					Media: domain.MediaConfig{
+						AllowedFileTypes: []string{"image/png"},
+					},
+				}, nil)
 			},
 			domain.Options{
 				MediaUploadMaxWidth: 1,
@@ -86,10 +109,12 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 		},
 		"Image Height": {
 			filepath.Join(t.TestDataPath, "/gopher.png"),
-			domain.ThemeConfig{
-				Media: domain.MediaConfig{
-					AllowedFileTypes: []string{"image/png"},
-				},
+			func(r *repo.Repository, s *storage.Bucket, t *theme.Service) {
+				t.On("Config").Return(domain.ThemeConfig{
+					Media: domain.MediaConfig{
+						AllowedFileTypes: []string{"image/png"},
+					},
+				}, nil)
 			},
 			domain.Options{
 				MediaUploadMaxHeight: 1,
@@ -100,7 +125,7 @@ func (t *MediaServiceTestSuite) TestClient_Validate() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			c := t.Setup(&test.cfg, &test.opts, nil)
+			c := t.Setup(test.opts, test.mock)
 
 			var mt = &multipart.FileHeader{}
 			if test.input != "" {
@@ -159,8 +184,8 @@ func (t *MediaServiceTestSuite) TestValidator_Mime() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			v := validator{
-				Config:  &test.cfg,
-				Options: &domain.Options{},
+				Config:  test.cfg,
+				Options: domain.Options{},
 			}
 
 			file, _ := os.Open(test.input) // Ignore on purpose

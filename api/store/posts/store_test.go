@@ -45,7 +45,7 @@ func (t *PostsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 		mf(t.Mock)
 	}
 
-	th := &theme.Repository{}
+	th := &theme.Service{}
 	th.On("Templates", mock.Anything).Return(domain.Templates{
 		domain.Template{Key: "template", Name: "template"},
 	}, nil)

@@ -102,6 +102,8 @@ func (f *Formatter) StatusCode() {
 func (f *Formatter) Level() {
 	cc := color.Style{} //nolint
 	switch f.entry.Level {
+	case logrus.TraceLevel:
+		cc = color.Style{color.FgGray, color.OpBold}
 	case logrus.DebugLevel:
 		cc = color.Style{color.FgGray, color.OpBold}
 	case logrus.WarnLevel:
