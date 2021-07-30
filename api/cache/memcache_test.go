@@ -10,11 +10,11 @@ import (
 )
 
 func (t *CacheTestSuite) TestMemcache() {
-	t.UtilTestProvider_Success(&memcache{
+	t.UtilTestProviderSuccess(&memcache{
 		client: pkg.New(""),
 		env:    &environment.Env{MemCachedHosts: "127.0.0.1"},
 	}, MemcacheStore)
-	t.UtilTestProvider_Error(&memcache{
+	t.UtilTestProviderError(&memcache{
 		client: pkg.New(""),
 		env:    &environment.Env{MemCachedHosts: ""},
 	})

@@ -79,7 +79,7 @@ func (t *CacheTestSuite) TestInit() {
 	t.NotNil(got[MemcacheStore](&environment.Env{}))
 }
 
-func (t *CacheTestSuite) UtilTestProvider_Success(p provider, name string) {
+func (t *CacheTestSuite) UtilTestProviderSuccess(p provider, name string) {
 	// Test Driver() method
 	t.Equal(name, p.Driver())
 
@@ -93,7 +93,7 @@ func (t *CacheTestSuite) UtilTestProvider_Success(p provider, name string) {
 	t.IsType(&cache.Cache{}, store)
 }
 
-func (t *CacheTestSuite) UtilTestProvider_Error(p provider) {
+func (t *CacheTestSuite) UtilTestProviderError(p provider) {
 	// Test Validate() method
 	err := p.Validate()
 	t.Errorf(err, "expecting provider to fail validation")

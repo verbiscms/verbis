@@ -12,7 +12,8 @@
     <link href="/assets/css/app.css" rel="stylesheet" />
 </head>
 <body class="landing-page">
-	<h1>Hey therehhfkghfgk </h1>
+	<h1>Hey Team
+	Hello</h1>
     {{ template "content" . }}
     {{ verbisFoot }}
     <!-- Javascript -->
