@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
@@ -25,14 +26,16 @@ type Provider interface {
 	// information about the state of the storage.
 	// Which includes active provider and bucket,
 	// and environment state for each provider.
+	//
 	// Returns errors.INVALID if the options lookup failed.
 	Info() (Configuration, error)
 	// Save changes the current storage provider and bucket.
 	// It will be validated before the options table is
 	// updated.
+	//
 	// Returns errors.INVALID if validation failed.
-	// Returns errors.INTERNAL if there was a problem updating
-	// the options table.
+	//
+	// Returns errors.INTERNAL if there was a problem updating the options table.
 	Save(info domain.StorageChange) error
 	Migrator
 	Container
@@ -45,14 +48,17 @@ type Provider interface {
 type Container interface {
 	// ListBuckets retrieves all buckets that are currently in
 	// the provider and returns a slice of domain.Buckets.
+	//
 	// Returns errors.INVALID if there was an error obtaining the buckets.
 	ListBuckets(provider domain.StorageProvider) (domain.Buckets, error)
 	// CreateBucket creates a folder or bucket on the provider
 	// by name.
+	//
 	// Returns errors.INVALID if there was an error creating the bucket.
 	CreateBucket(provider domain.StorageProvider, name string) (domain.Bucket, error)
 	// DeleteBucket removes a folder or bucket from the
 	// provider by name.
+	//
 	// Returns errors.INVALID if there was an error deleting the bucket.
 	DeleteBucket(provider domain.StorageProvider, name string) error
 }
@@ -66,7 +72,9 @@ type Bucket interface {
 	// the appropriate bucket to obtain the file contents.
 	// It returns the byte value of the file as well as
 	// the domain.File.
+	//
 	// Returns errors.INTERNAL if the file could not be opened or read.
+	//
 	// Returns errors.NOTFOUND if the file could not be retrieved from the bucket.
 	Find(url string) ([]byte, domain.File, error)
 	// Upload adds a domain.Upload to the database as well as
@@ -74,15 +82,18 @@ type Bucket interface {
 	// file is seeked, the mime type is obtained and it
 	// is inserted into the database and uploaded to
 	// the bucket.
+	//
 	// Returns errors.INVALID if the bucket could not be obtained.
-	// Returns errors.INTERNAL if the contents couldn't be seeked or the mime
-	// type could not be obtained.
+	//
+	// Returns errors.INTERNAL if the contents couldn't be seeked or the mime type
+	// could not be obtained.
 	Upload(upload domain.Upload) (domain.File, error)
 	// Delete removes an item from the the bucket. It first retrieves
 	// the file by a lookup from the database, obtains the correct
 	// bucket, then removes the file from the storage provider.
 	// The file data will also be deleted from
 	// the database.
+	//
 	// Returns errors.INVALID if the file could not be deleted from the bucket.
 	Delete(id int) error
 	// Exists queries the database by the given name and
@@ -98,10 +109,12 @@ type Migrator interface {
 	// deleted from the source destination. It returns
 	// the total amount of files processing in the
 	// background up on success.
-	// Returns errors.INVALID if there is a migration already in progress
-	// or the from and to providers are the same.
+	//
+	// Returns errors.INVALID if there is a migration already in progress or the
+	// from and to providers are the same.
+	//
 	// Returns errors.NOTFOUND if there were no files found with the from provider.
-	Migrate(from, to domain.StorageChange, delete bool) (int, error)
+	Migrate(ctx context.Context, from, to domain.StorageChange, delete bool) (int, error)
 }
 
 // Storage represents the implementation of a Verbis

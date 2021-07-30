@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"context"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/services/storage/internal"
 )
@@ -16,12 +17,12 @@ type Configuration struct {
 	ActiveBucket   string                  `json:"active_bucket"`
 	Providers      domain.StorageProviders `json:"providers"`
 	IsMigrating    bool                    `json:"is_migrating"`
-	MigrationInfo  MigrationInfo           `json:"migration"`
+	MigrationInfo  *MigrationInfo          `json:"migration"`
 }
 
 // Info satisfies the Provider interface by returning a
 // domain.StorageConfiguration.
-func (s *Storage) Info() (Configuration, error) {
+func (s *Storage) Info(ctx context.Context) (Configuration, error) {
 	provider, bucket, err := s.service.Config()
 	if err != nil {
 		return Configuration{}, err
@@ -32,18 +33,22 @@ func (s *Storage) Info() (Configuration, error) {
 		m[k] = v.Info(s.env)
 	}
 
-	//var migrationInfo MigrationInfo
-	//mi, found := cache.Get(context.Background(), MigrationCacheKey)
-	//if found == nil {
-	//	migrationInfo = mi.(MigrationInfo)
-	//}
+	isMigrating := s.isMigrating(ctx)
+	var migrationInfo *MigrationInfo
+	if isMigrating {
+		mi, err := s.getMigration()
+		if err != nil {
+			return Configuration{}, err
+		}
+		migrationInfo = mi
+	}
 
 	c := Configuration{
 		ActiveProvider: provider,
 		ActiveBucket:   bucket,
 		Providers:      m,
-		//IsMigrating:    s.isMigrating,
-		//MigrationInfo:  MigrationInfo{},
+		IsMigrating:    isMigrating,
+		MigrationInfo:  migrationInfo,
 	}
 
 	return c, nil

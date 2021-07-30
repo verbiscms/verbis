@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"github.com/spf13/cast"
 	"github.com/verbiscms/verbis/api/domain"
@@ -21,7 +22,7 @@ func (s *Storage) validate(info domain.StorageChange) error {
 		return fmt.Errorf("bucket cannot be empty")
 	}
 
-	cfg, err := s.Info()
+	cfg, err := s.Info(context.Background())
 	if err != nil {
 		return err
 	}

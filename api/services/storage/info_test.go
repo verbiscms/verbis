@@ -5,6 +5,7 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"github.com/graymeta/stow"
 	"github.com/stretchr/testify/mock"
@@ -27,17 +28,18 @@ func (m *mockProviderErr) Info(env *environment.Env) domain.StorageProviderInfo 
 }
 
 func (t *StorageTestSuite) TestStorage_Info() {
+	mi := &MigrationInfo{Total: 10}
 	tt := map[string]struct {
 		mock  func(m *mocks.Service, r *repo.Repository)
 		cache func(c *cache.Store)
 		want  interface{}
 	}{
-		"Success": {
+		"Not Migrating": {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
 			},
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, MigrationCacheKey).Return(MigrationInfo{}, nil)
+				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, fmt.Errorf("error"))
 			},
 			Configuration{
 				ActiveProvider: domain.StorageAWS,
@@ -46,15 +48,41 @@ func (t *StorageTestSuite) TestStorage_Info() {
 					"test": domain.StorageProviderInfo{},
 				},
 				IsMigrating:   false,
-				MigrationInfo: MigrationInfo{},
+				MigrationInfo: nil,
 			},
 		},
-		"Error": {
+		"Is Migrating": {
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+			},
+			func(c *cache.Store) {
+				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, nil)
+				c.On("Get", mock.Anything, migrationKey).Return(mi, nil)
+			},
+			Configuration{
+				ActiveProvider: domain.StorageAWS,
+				ActiveBucket:   TestBucket,
+				Providers: domain.StorageProviders{
+					"test": domain.StorageProviderInfo{},
+				},
+				IsMigrating:   true,
+				MigrationInfo: mi,
+			},
+		},
+		"Config Error": {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, "", fmt.Errorf("error"))
 			},
+			nil,
+			"error",
+		},
+		"Migration Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+			},
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, MigrationCacheKey).Return(MigrationInfo{}, nil)
+				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, nil)
+				c.On("Get", mock.Anything, migrationKey).Return(nil, fmt.Errorf("error"))
 			},
 			"error",
 		},
@@ -66,11 +94,14 @@ func (t *StorageTestSuite) TestStorage_Info() {
 			defer func() { internal.Providers = orig }()
 			internal.Providers = internal.ProviderMap{"test": &mockProviderErr{}}
 
-			c := &cache.Store{}
-			test.cache(c)
-
 			s := t.Setup(test.mock)
-			got, err := s.Info()
+			c := &cache.Store{}
+			if test.cache != nil {
+				test.cache(c)
+			}
+			s.cache = c
+
+			got, err := s.Info(context.Background())
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return
