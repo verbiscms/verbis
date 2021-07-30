@@ -109,7 +109,7 @@ func New(cfg Config) (*Deps, error) {
 		Environment: cfg.Env,
 		Options:     cfg.Store.Options,
 		Files:       cfg.Store.Files,
-		Cache: cs,
+		Cache:       cs,
 	})
 	if err != nil {
 		return nil, err
@@ -122,9 +122,9 @@ func New(cfg Config) (*Deps, error) {
 	}
 
 	d := &Deps{
-		Env:   cfg.Env,
-		Cache: cs,
-		Store: cfg.Store,
+		Env:     cfg.Env,
+		Cache:   cs,
+		Store:   cfg.Store,
 		Config:  &config,
 		Options: &opts,
 		Paths:   cfg.Paths,

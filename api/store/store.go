@@ -45,10 +45,10 @@ func New(db database.Driver, running bool) (*Repository, error) {
 	p := paths.Get()
 	cfg := &storeConfig.Config{
 		Driver:  db,
-		Paths:  p,
+		Paths:   p,
 		Owner:   nil,
 		Running: running,
-		Theme: &config.Config{ThemePath: p.Themes},
+		Theme:   &config.Config{ThemePath: p.Themes},
 	}
 
 	user := users.New(cfg)
