@@ -13,6 +13,8 @@ import (
 
 // Service defines methods for the site.
 type Service interface {
+	// Global returns the domain.Site struct obtained from the
+	// options and retrieves the latest Verbis version.
 	Global() domain.Site
 }
 
