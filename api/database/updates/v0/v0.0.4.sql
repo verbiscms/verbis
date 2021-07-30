@@ -58,13 +58,13 @@ WHERE id IN (
 );
 
 # Insert main files (no media sizes)
-INSERT INTO files (`uuid`, `url`, `file_size`, `name`, `mime`, `path`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
-SELECT `uuid`,`url`, `file_size`, `file_name`, `mime`, `file_path`, url  AS bucket_id, '' AS region, 'local' AS provider, '' AS bucket, 'media'
+INSERT INTO files (`uuid`, `url`, `file_size`, `name`, `mime`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
+SELECT `uuid`, `url`, `file_size`, `file_name`, `mime`, CONCAT('uploads/', media.file_path, '/', media.uuid, '.', SUBSTRING_INDEX(media.file_name, '.', -1)) AS bucket_id, '' AS region, 'local' AS provider,  '' AS bucket, 'media'
 FROM media;
 
 # Insert media sizes
-INSERT INTO files (`url`, `uuid`, `file_size`, `name`, `mime`, `path`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
-    (SELECT sizes.url,sizes.uuid,sizes.file_size, sizes.name,media.mime, media.file_path, sizes.url AS bucket_id,'' AS region,'local' AS provider,  '' AS bucket, 'media' FROM media,
+INSERT INTO files (`url`, `uuid`, `file_size`, `name`, `mime`, `bucket_id`, `region`, `provider`, `bucket`, `source_type`)
+    (SELECT sizes.url,sizes.uuid,sizes.file_size, sizes.name,media.mime, CONCAT('uploads/', media.file_path, '/', sizes.uuid, '.', SUBSTRING_INDEX(media.file_name, '.', -1)) AS bucket_id,'' AS region,'local' AS provider, '' AS bucket, 'media' FROM media,
     JSON_TABLE(sizes, '$.*' COLUMNS(uuid VARCHAR(255) PATH '$**.uuid', url VARCHAR(255) PATH '$**.url',file_size VARCHAR(255) PATH '$**.file_size', name VARCHAR(255) PATH '$**.name')) AS sizes);
 
 ##############################################
