@@ -17,6 +17,6 @@ type Config struct {
 	database.Driver
 	Paths   paths.Paths
 	Owner   *domain.User
-	Theme config.Provider
+	Theme   config.Provider
 	Running bool
 }

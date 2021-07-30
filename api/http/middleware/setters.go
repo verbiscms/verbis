@@ -40,7 +40,6 @@ func Setters(d *deps.Deps) gin.HandlerFunc {
 	}
 }
 
-
 func setOptions(d *deps.Deps, ctx *gin.Context) {
 	var opts domain.Options
 	cachedOpts, err := d.Cache.Get(ctx, cache.OptionsKey)

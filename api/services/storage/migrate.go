@@ -88,8 +88,6 @@ func (m *MigrationInfo) succeed(file domain.File) {
 func (m *MigrationInfo) storeMigration() {
 	m.Progress = (m.FilesProcessed * 100) / m.Total
 
-
-
 	//err := cache.Set(context.Background(), MigrationCacheKey, m, cache.Options{
 	//	Expiration: cache.RememberForever,
 	//})

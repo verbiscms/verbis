@@ -9,7 +9,6 @@ import (
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/store/categories"
-
 	//	"github.com/verbiscms/verbis/api/store/categories"
 )
 
