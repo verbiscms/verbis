@@ -51,8 +51,7 @@ var (
 // be added to the ProviderMap.
 func (p ProviderMap) RegisterProvider(name domain.StorageProvider, provider Provider) {
 	const op = "Storage.RegisterProvider"
-	_, exists := p[name]
-	if exists {
+	if p.Exists(name) {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error, Duplicate provider: " + name.String(), Operation: op, Err: fmt.Errorf("duplicate storage provider")}).Panic()
 		return
 	}

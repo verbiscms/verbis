@@ -60,36 +60,70 @@ func (t *CacheTestSuite) Setup(mf func(m *mocks.StoreInterface)) *Cache {
 
 func (t *CacheTestSuite) TestLoad() {
 	tt := map[string]struct {
+		mock  func(m *mocks.Provider)
 		input *environment.Env
 		want  interface{}
 	}{
-		"Nil Env": {
-			nil,
-			"nil environment",
-		},
-		"Invalid Driver": {
-			&environment.Env{CacheDriver: "wrong"},
-			ErrInvalidDriver.Error(),
-		},
-		"Memory": {
+		"Success": {
+			func(m *mocks.Provider) {
+				m.On("Validate").Return(nil)
+				m.On("Ping").Return(nil)
+				m.On("Driver").Return(MemoryStore)
+				m.On("Store").Return(nil)
+			},
 			&environment.Env{CacheDriver: MemoryStore},
 			MemoryStore,
 		},
-		"Redis": {
-			&environment.Env{CacheDriver: RedisStore, RedisAddress: "127.0.0.1:8080"},
-			RedisStore,
+		"Default": {
+			func(m *mocks.Provider) {
+				m.On("Validate").Return(nil)
+				m.On("Ping").Return(nil)
+				m.On("Driver").Return(MemoryStore)
+				m.On("Store").Return(nil)
+			},
+			&environment.Env{CacheDriver: ""},
+			MemoryStore,
 		},
-		"Memcached": {
-			&environment.Env{CacheDriver: MemcachedStore},
-			MemcachedStore,
+		"Nil Env": {
+			nil,
+			nil,
+			"Error loading cache",
+		},
+		"Invalid Driver": {
+			nil,
+			&environment.Env{CacheDriver: "wrong"},
+			"Error loading cache, invalid driver",
+		},
+		"Validate Error": {
+			func(m *mocks.Provider) {
+				m.On("Validate").Return(fmt.Errorf("error"))
+			},
+			&environment.Env{CacheDriver: MemoryStore},
+			"Error loading cache, validation failed",
+		},
+		"Ping Error": {
+			func(m *mocks.Provider) {
+				m.On("Validate").Return(nil)
+				m.On("Ping").Return(fmt.Errorf("error"))
+				m.On("Driver").Return(MemoryStore)
+			},
+			&environment.Env{CacheDriver: MemoryStore},
+			"Error error pinging cache store",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
+			m := &mocks.Provider{}
+			if test.mock != nil {
+				test.mock(m)
+			}
+			providers = providerMap{MemoryStore: func(env *environment.Env) provider {
+				return m
+			}}
 			c, err := Load(test.input)
 			if err != nil {
-				t.Contains(err.Error(), test.want)
+				t.Contains(errors.Message(err), test.want)
 				return
 			}
 			if c == nil {

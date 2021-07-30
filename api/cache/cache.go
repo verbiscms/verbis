@@ -7,11 +7,7 @@ package cache
 import (
 	"context"
 	"fmt"
-	"github.com/bradfitz/gomemcache/memcache"
-	"github.com/eko/gocache/v2/cache"
 	"github.com/eko/gocache/v2/store"
-	"github.com/go-redis/redis/v8"
-	gocache "github.com/patrickmn/go-cache"
 	"github.com/spf13/cast"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
@@ -43,22 +39,6 @@ type Store interface {
 	// Driver returns the current store being used, it can be
 	// MemoryStore, RedisStore or MemcachedStore.
 	Driver() string
-}
-
-type Pinger interface {
-	Ping() error
-}
-
-func Ping(p Pinger) error {
-	return p.Ping()
-}
-
-type mem struct {
-	memcache.Client
-}
-
-func (m *mem) Ping() error {
-	return m.Ping()
 }
 
 // Cache defines the methods for interacting with the
@@ -99,24 +79,9 @@ var (
 	ErrInvalidDriver = errors.New("invalid cache Driver")
 )
 
-//type APinger interface {
-//	Ping(context.Context) (error)
-//}
-//
-//type BPinger interface {
-//	Ping() (error)
-//}
-//
-//switch ping.(type) {
-//case APinger:
-//...
-//case BPinger:
-//...
-//}
-
 // Load initialises the cache store by the environment.
 // It will load a driver into memory ready for setting
-// getting and deleting. Drivers supported are Memory
+// getting setting and deleting. Drivers supported are Memory
 // Redis and MemCached.
 // Returns ErrInvalidDriver if the driver passed does not exist.
 func Load(env *environment.Env) (*Cache, error) {
@@ -126,44 +91,31 @@ func Load(env *environment.Env) (*Cache, error) {
 		return nil, &errors.Error{Code: errors.INVALID, Message: "Error loading cache", Operation: op, Err: fmt.Errorf("nil environment")}
 	}
 
-	c := Cache{}
-
-	switch env.CacheDriver {
-	case MemoryStore, "":
-		client := gocache.New(DefaultExpiry, DefaultCleanup)
-		cacheStore := store.NewGoCache(client, nil)
-		c = Cache{
-			store:  cache.New(cacheStore),
-			driver: MemoryStore,
-		}
-	case RedisStore:
-		opts := &redis.Options{
-			Addr:     env.RedisAddress,
-			Password: env.RedisPassword,
-
-			DB: cast.ToInt(env.RedisDb),
-		}
-		cacheStore := store.NewRedis(redis.NewClient(opts), nil)
-
-		fmt.Println(cacheStore.Set(context.Background(), "hhh", "", &store.Options{}))
-
-		c = Cache{
-			store:  cache.New(cacheStore),
-			driver: RedisStore,
-		}
-	case MemcacheStore:
-		memcacheStore := store.NewMemcache(memcache.New(env.MemCachedHosts), &store.Options{
-			Expiration: DefaultExpiry,
-		})
-		c = Cache{
-			store:  cache.New(memcacheStore),
-			driver: MemcacheStore,
-		}
-	default:
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Error loading cache, invalid Driver: " + env.CacheDriver, Operation: op, Err: ErrInvalidDriver}
+	driver := env.CacheDriver
+	if env.CacheDriver == "" {
+		driver = MemoryStore
 	}
 
-	return &c, nil
+	if !providers.Exists(driver) {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Error loading cache, invalid driver: " + env.CacheDriver, Operation: op, Err: ErrInvalidDriver}
+	}
+
+	prov := providers[driver](env)
+
+	err := prov.Validate()
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Error loading cache, validation failed", Operation: op, Err: ErrInvalidDriver}
+	}
+
+	err = prov.Ping()
+	if err != nil {
+		return nil, &errors.Error{Code: errors.INVALID, Message: "Error error pinging cache store: " + prov.Driver(), Operation: op, Err: err}
+	}
+
+	return &Cache{
+		store:  prov.Store(),
+		driver: prov.Driver(),
+	}, nil
 }
 
 // Get retrieves a specific item from the cache by key.
@@ -189,7 +141,7 @@ func (c *Cache) Set(ctx context.Context, key interface{}, value interface{}, opt
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error setting cache key: " + str, Operation: op, Err: err}).Error()
 		return
 	}
-	logger.Debug("Successfully set cache item with key: " + str)
+	logger.Trace("Successfully set cache item with key: " + str)
 }
 
 // Delete removes a singular item from the cache by
@@ -203,7 +155,7 @@ func (c *Cache) Delete(ctx context.Context, key interface{}) {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting cache key: " + str, Operation: op, Err: err}).Error()
 		return
 	}
-	logger.Debug("Successfully deleted cache item with key: " + str)
+	logger.Trace("Successfully deleted cache item with key: " + str)
 }
 
 // Invalidate removes items from the cache via the
