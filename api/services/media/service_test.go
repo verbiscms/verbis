@@ -68,9 +68,9 @@ func (t *MediaServiceTestSuite) File(path string) []byte {
 const (
 	// MediaID is the default ID use for testing.
 	MediaID = 1
-	// TestFileURL defines the URL for media items for testing.
+	// TestFileURL defines the Url for media items for testing.
 	TestFileURL = "/uploads/2020/01/file.jpg"
-	// TestFileURL defines the WebP URL for media items for
+	// TestFileURL defines the WebP Url for media items for
 	// testing.
 	TestFileURLWebP = TestFileURL + domain.WebPExtension
 )
