@@ -28,13 +28,12 @@ type Provider interface {
 	// and environment state for each provider.
 	//
 	// Returns errors.INVALID if the options lookup failed.
-	Info() (Configuration, error)
+	Info(ctx context.Context) (Configuration, error)
 	// Save changes the current storage provider and bucket.
 	// It will be validated before the options table is
 	// updated.
 	//
 	// Returns errors.INVALID if validation failed.
-	//
 	// Returns errors.INTERNAL if there was a problem updating the options table.
 	Save(info domain.StorageChange) error
 	Migrator
@@ -74,7 +73,6 @@ type Bucket interface {
 	// the domain.File.
 	//
 	// Returns errors.INTERNAL if the file could not be opened or read.
-	//
 	// Returns errors.NOTFOUND if the file could not be retrieved from the bucket.
 	Find(url string) ([]byte, domain.File, error)
 	// Upload adds a domain.Upload to the database as well as
@@ -84,7 +82,6 @@ type Bucket interface {
 	// the bucket.
 	//
 	// Returns errors.INVALID if the bucket could not be obtained.
-	//
 	// Returns errors.INTERNAL if the contents couldn't be seeked or the mime type
 	// could not be obtained.
 	Upload(upload domain.Upload) (domain.File, error)

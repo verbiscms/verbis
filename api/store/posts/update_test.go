@@ -66,19 +66,21 @@ func (t *PostsTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 		},
 		"Validation Failed": {
-			domain.PostCreate{
-				Post: domain.Post{
-					Id: 1,
-				},
-			},
+			postCreate,
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.Id, "validation", post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 					WillReturnRows(rows)
+
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = 'slug' AND `posts`.`resource` = '')"
+				validationRows := sqlmock.NewRows([]string{"id"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(q)).
+					WillReturnRows(validationRows)
 			},
-			"no page template exists",
+			"Validation failed, the slug already exists",
 		},
 		"No Rows": {
 			postCreate,

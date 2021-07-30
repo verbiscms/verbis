@@ -7,7 +7,9 @@ package posts
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/stretchr/testify/mock"
 	"github.com/verbiscms/verbis/api/domain"
+	config "github.com/verbiscms/verbis/api/mocks/config"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/options"
 	"regexp"
 )
@@ -226,6 +228,9 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
+			cfg := &config.Provider{}
+			cfg.On("Get", mock.Anything).Return(test.cfg, nil)
+			s.Theme = cfg
 			opts := &mocks.Repository{}
 			test.opts(opts)
 			s.options = opts

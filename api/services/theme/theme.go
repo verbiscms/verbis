@@ -18,19 +18,23 @@ type Service interface {
 	// Config obtains the current active theme configuration from
 	// the themes path. The configuration will be stored in
 	// cache until another them is activated.
+	//
 	// Logs errors.INTERNAL if the cache item could not be cast.
 	// Returns an error if the theme or configuration could not be obtained.
 	Config() (domain.ThemeConfig, error)
 	// Activate sets a new theme based on the theme string provided.
 	// The cache will be cleaned and set if the activation was successful.
+	//
 	// Returns errors.INVALID if the theme could not be found within the themes directory.
 	// Returns an error if the theme or configuration could not be obtained.
 	Activate(theme string) (domain.ThemeConfig, error)
 	// Find retrieves a theme configuration by name.
+	//
 	// Returns an error if the theme could not be found.
 	Find(theme string) (domain.ThemeConfig, error)
 	// List retrieves all theme configuration files from the themes
 	// directory.
+	//
 	// Returns errors.INTERNAL if there was an error reading the theme directory.
 	// Returns errors.NOTFOUND ErrNoThemes if there are no themes available.
 	// Logs error if the the configuration is not found in a given directory.
@@ -40,12 +44,14 @@ type Service interface {
 	Exists(theme string) bool
 	// Templates retrieves all templates stored within the
 	// templates directory of the active theme.
+	//
 	// Returns ErrNoTemplates in any error case.
 	// Returns errors.NOTFOUND if no templates were found.
 	// Returns errors.INTERNAL if the template path is invalid.
 	Templates() (domain.Templates, error)
 	// Layouts retrieves all layouts stored within the
 	// layouts directory of the active theme.
+	//
 	// Returns ErrNoLayouts in any error case.
 	// Returns errors.NOTFOUND if no layouts were found.
 	// Returns errors.INTERNAL if the layout path is invalid.
@@ -53,6 +59,7 @@ type Service interface {
 	// Screenshot finds a screenshot in the Theme directory based on
 	// the Theme passed (e.g. verbis) and the file passed
 	// (e.g. screenshot.png).
+	//
 	// Returns errors.NOTFOUND if there was not screenshot found.
 	Screenshot(theme string, file string) ([]byte, domain.Mime, error)
 }
@@ -79,11 +86,11 @@ var (
 )
 
 // New Creates a new Theme service.
-func New(cache cache.Store, options options.Repository) *Theme {
+func New(store cache.Store, options options.Repository) *Theme {
 	themePath := paths.Get().Themes
 	return &Theme{
 		config:     &config.Config{ThemePath: themePath},
-		cache:      cache,
+		cache:      store,
 		options:    options,
 		themesPath: paths.Get().Themes,
 	}

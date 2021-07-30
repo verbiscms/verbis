@@ -56,16 +56,13 @@ func (t *PostsTestSuite) TestStore_Create() {
 			domain.PostCreate{},
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
-				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
-
-				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
-				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
+				q := "SELECT EXISTS (SELECT `posts`.`id` FROM `posts` WHERE `posts`.`slug` = '' AND `posts`.`resource` = '')"
+				rows := sqlmock.NewRows([]string{"id"}).
+					AddRow(true)
+				m.ExpectQuery(regexp.QuoteMeta(q)).
 					WillReturnRows(rows)
 			},
-			"Validation failed, no page template exists",
+			"Validation failed, the slug already exists",
 		},
 		"No Rows": {
 			postCreate,

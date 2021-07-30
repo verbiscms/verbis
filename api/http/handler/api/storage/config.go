@@ -18,7 +18,7 @@ import (
 func (s *Storage) Config(ctx *gin.Context) {
 	const op = "StorageHandler.Config"
 
-	info, err := s.Storage.Info()
+	info, err := s.Storage.Info(ctx)
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return
