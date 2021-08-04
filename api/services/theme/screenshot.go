@@ -13,14 +13,9 @@ import (
 	"path/filepath"
 )
 
-// Screenshot
-//
-// Finds a screenshot in the theme directory based on the
-// theme passed (e.g. verbis) and the file passed
-// (e.g. screenshot.png).
-//
-// Returns errors.NOTFOUND if there was not screenshot found.
-func (t *theme) Screenshot(theme, file string) ([]byte, domain.Mime, error) {
+// Screenshot satisfies the Theme interface by retrieving a
+// screenshot in bytes by a theme and file input.
+func (t *Theme) Screenshot(theme, file string) ([]byte, domain.Mime, error) {
 	const op = "SiteRepository.Screenshot"
 
 	filePath := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + file

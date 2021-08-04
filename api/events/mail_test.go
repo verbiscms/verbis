@@ -54,7 +54,7 @@ func (t *EventTestSuite) Setup(withErr bool) *deps.Deps {
 			Return(mock.Anything, nil)
 	}
 
-	ms := &site.Repository{}
+	ms := &site.Service{}
 	ms.On("Global").Return(domain.Site{})
 
 	d := &deps.Deps{

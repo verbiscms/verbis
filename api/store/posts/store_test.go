@@ -8,9 +8,8 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	themeConfig "github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
-	theme "github.com/verbiscms/verbis/api/mocks/services/theme"
+	mockConfig "github.com/verbiscms/verbis/api/mocks/config"
 	fields "github.com/verbiscms/verbis/api/mocks/store/fields"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/options"
 	categories "github.com/verbiscms/verbis/api/mocks/store/posts/categories"
@@ -45,28 +44,21 @@ func (t *PostsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 		mf(t.Mock)
 	}
 
-	th := &theme.Repository{}
-	th.On("Templates", mock.Anything).Return(domain.Templates{
-		domain.Template{Key: "template", Name: "template"},
-	}, nil)
-	th.On("Layouts", mock.Anything).Return(domain.Layouts{
-		domain.Layout{Key: "layout", Name: "Layout"},
-	}, nil)
-
-	themeConfig.Set(domain.ThemeConfig{})
+	mcfg := &mockConfig.Provider{}
+	mcfg.On("Get", mock.Anything).Return(domain.ThemeConfig{}, nil)
 
 	opts := &mocks.Repository{}
 	opts.On("Struct").Return(domain.Options{})
 	opts.On("GetTheme").Return("theme", nil)
 
 	s := New(&config.Config{
-		Driver:       t.Driver,
-		ThemeService: th,
+		Driver: t.Driver,
 		Owner: &domain.User{
 			UserPart: domain.UserPart{
 				Id: 1,
 			},
 		},
+		Theme: mcfg,
 	})
 
 	s.options = opts

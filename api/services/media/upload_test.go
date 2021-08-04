@@ -13,6 +13,7 @@ import (
 	"github.com/verbiscms/verbis/api/errors"
 	resizer "github.com/verbiscms/verbis/api/mocks/services/media/resizer"
 	storage "github.com/verbiscms/verbis/api/mocks/services/storage"
+	theme "github.com/verbiscms/verbis/api/mocks/services/theme"
 	webp "github.com/verbiscms/verbis/api/mocks/services/webp"
 	repo "github.com/verbiscms/verbis/api/mocks/store/media"
 	"mime/multipart"
@@ -23,15 +24,15 @@ import (
 func (t *MediaServiceTestSuite) TestClient_Upload() {
 	tt := map[string]struct {
 		input   string
-		opts    *domain.Options
-		mock    func(r *repo.Repository, s *storage.Bucket)
+		opts    domain.Options
+		mock    func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
 		resizer func(r *resizer.Resizer)
 		want    interface{}
 	}{
 		"SVG": {
 			filepath.Join(t.TestDataPath, "gopher.svg"),
-			&domain.Options{},
-			func(r *repo.Repository, s *storage.Bucket) {
+			domain.Options{},
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.svg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(svgFile, nil)
 				r.On("Create", domain.Media{UserId: 1, File: svgFile, FileId: 1}).Return(domain.Media{UserId: 1, File: svgFile}, nil)
@@ -41,8 +42,8 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 		},
 		"JPG": {
 			filepath.Join(t.TestDataPath, "gopher.jpg"),
-			&domain.Options{},
-			func(r *repo.Repository, s *storage.Bucket) {
+			domain.Options{},
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.jpg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
 				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{UserId: 1, File: jpgFile}, nil)
@@ -52,8 +53,8 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 		},
 		"PNG": {
 			filepath.Join(t.TestDataPath, "gopher.png"),
-			&domain.Options{},
-			func(r *repo.Repository, s *storage.Bucket) {
+			domain.Options{},
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.png").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(pngFile, nil)
 				r.On("Create", domain.Media{UserId: 1, File: pngFile, FileId: 1}).Return(domain.Media{UserId: 1, File: pngFile}, nil)
@@ -63,15 +64,15 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 		},
 		"Open Error": {
 			"",
-			&domain.Options{},
+			domain.Options{},
 			nil,
 			nil,
 			"Error opening file",
 		},
 		"Upload Error": {
 			filepath.Join(t.TestDataPath, "gopher.svg"),
-			&domain.Options{},
-			func(r *repo.Repository, s *storage.Bucket) {
+			domain.Options{},
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.svg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(domain.File{}, &errors.Error{Message: "error"})
 			},
@@ -81,7 +82,7 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 		"Resize Error": {
 			filepath.Join(t.TestDataPath, "gopher.jpg"),
 			opts,
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.jpg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
 				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
@@ -93,8 +94,8 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 		},
 		"Repo Error": {
 			filepath.Join(t.TestDataPath, "gopher.jpg"),
-			&domain.Options{},
-			func(r *repo.Repository, s *storage.Bucket) {
+			domain.Options{},
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.jpg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
 				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
@@ -106,7 +107,7 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(&domain.ThemeConfig{}, test.opts, test.mock)
+			s := t.Setup(test.opts, test.mock)
 
 			var mt = &multipart.FileHeader{}
 			if test.input != "" {
@@ -134,23 +135,23 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 func (t *MediaServiceTestSuite) TestClient_Dir() {
 	now := time.Now()
 	tt := map[string]struct {
-		input *domain.Options
-		want  string
+		date bool
+		want string
 	}{
 		"Date": {
-			&domain.Options{MediaOrganiseDate: true},
+			true,
 			filepath.Join(paths.Uploads, now.Format("2006"), now.Format("01")),
 		},
 		"Prefix": {
-			&domain.Options{MediaOrganiseDate: false},
+			false,
 			paths.Uploads,
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(nil, test.input, nil)
-			got := s.dir()
+			s := t.Setup(domain.Options{}, nil)
+			got := s.dir(test.date)
 			t.Equal(test.want, got)
 		})
 	}
@@ -160,13 +161,13 @@ func (t *MediaServiceTestSuite) TestClient_CleanFileName() {
 	tt := map[string]struct {
 		name string
 		ext  string
-		mock func(r *repo.Repository, s *storage.Bucket)
+		mock func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
 		want string
 	}{
 		"Simple": {
 			"gopher",
 			".png",
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.png").Return(false)
 			},
 			"gopher",
@@ -174,7 +175,7 @@ func (t *MediaServiceTestSuite) TestClient_CleanFileName() {
 		"Remove Characters": {
 			"g£&*@oph£$er",
 			".png",
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.png").Return(false)
 			},
 			"gopher",
@@ -182,7 +183,7 @@ func (t *MediaServiceTestSuite) TestClient_CleanFileName() {
 		"Exists": {
 			"gopher",
 			".png",
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.png").Return(true)
 				s.On("Exists", "gopher-1.png").Return(false)
 			},
@@ -192,7 +193,7 @@ func (t *MediaServiceTestSuite) TestClient_CleanFileName() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(nil, nil, test.mock)
+			s := t.Setup(domain.Options{}, test.mock)
 			got := s.cleanFileName(test.name, test.ext)
 			t.Equal(test.want, got)
 		})
@@ -205,7 +206,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 	tt := map[string]struct {
 		file    domain.File
 		multi   func() multipart.File
-		mock    func(r *repo.Repository, s *storage.Bucket)
+		mock    func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
 		resizer func(r *resizer.Resizer)
 		want    interface{}
 	}{
@@ -219,7 +220,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 				}
 				return open
 			},
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
 			},
 			func(r *resizer.Resizer) {
@@ -237,7 +238,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 				}
 				return open
 			},
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
 			},
 			func(r *resizer.Resizer) {
@@ -280,7 +281,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 				}
 				return open
 			},
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(domain.File{}, fmt.Errorf("error"))
 			},
 			func(r *resizer.Resizer) {
@@ -294,7 +295,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 		t.Run(name, func() {
 			r := &resizer.Resizer{}
 
-			s := t.Setup(nil, opts, test.mock)
+			s := t.Setup(domain.Options{}, test.mock)
 
 			if test.resizer != nil {
 				test.resizer(r)
@@ -306,7 +307,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 				defer file.Close()
 			}
 
-			got, err := s.resize(test.file, file)
+			got, err := s.resize(test.file, file, opts)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return
@@ -319,74 +320,74 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 	tt := map[string]struct {
 		input   domain.Media
-		mock    func(r *repo.Repository, s *storage.Bucket)
+		mock    func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
 		webp    func(e *webp.Execer)
-		options *domain.Options
+		options domain.Options
 		want    string
 	}{
 		"Success": {
 			domain.Media{File: pngFile, Sizes: domain.MediaSizes{"thumbnail": domain.MediaSize{File: pngFile}}},
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(domain.File{}, nil)
 			},
 			func(e *webp.Execer) {
 				e.On("Convert", bytes.NewReader([]byte("test")), 0).Return(bytes.NewReader([]byte("test")), nil)
 			},
-			&domain.Options{MediaConvertWebP: true},
+			domain.Options{MediaConvertWebP: true},
 			"Successfully converted to WebP image with the path",
 		},
 		"Find Error": {
 			domain.Media{File: pngFile},
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Find", pngFile.Url).Return(nil, domain.File{}, fmt.Errorf("find error"))
 			},
 			nil,
-			&domain.Options{MediaConvertWebP: true},
+			domain.Options{MediaConvertWebP: true},
 			"find error",
 		},
 		"Convert Error": {
 			domain.Media{File: pngFile},
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
 			},
 			func(e *webp.Execer) {
 				e.On("Convert", bytes.NewReader([]byte("test")), 0).Return(nil, fmt.Errorf("convert error"))
 			},
-			&domain.Options{MediaConvertWebP: true},
+			domain.Options{MediaConvertWebP: true},
 			"convert error",
 		},
 		"Storage Error": {
 			domain.Media{File: pngFile},
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(domain.File{}, fmt.Errorf("storage error"))
 			},
 			func(e *webp.Execer) {
 				e.On("Convert", bytes.NewReader([]byte("test")), 0).Return(bytes.NewReader([]byte("test")), nil)
 			},
-			&domain.Options{MediaConvertWebP: true},
+			domain.Options{MediaConvertWebP: true},
 			"storage error",
 		},
 		"OptionsBAD Permitted": {
 			domain.Media{},
 			nil,
 			nil,
-			&domain.Options{MediaConvertWebP: false},
+			domain.Options{MediaConvertWebP: false},
 			"",
 		},
 		"Cant Resize": {
 			domain.Media{File: svgFile},
 			nil,
 			nil,
-			&domain.Options{MediaConvertWebP: true},
+			domain.Options{MediaConvertWebP: true},
 			"",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(nil, test.options, test.mock)
+			s := t.Setup(test.options, test.mock)
 			w := &webp.Execer{}
 
 			if test.webp != nil {
@@ -394,7 +395,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 			}
 			s.webp = w
 
-			s.toWebP(test.input)
+			s.toWebP(test.input, 0)
 			t.Contains(t.LogWriter.String(), test.want)
 			t.Reset()
 		})

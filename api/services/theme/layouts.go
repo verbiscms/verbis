@@ -8,25 +8,21 @@ import (
 	"fmt"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
-	"os"
-	"strings"
+	"path/filepath"
 )
 
-// Layouts
-//
-// Retrieves all layouts stored within the layouts
-// directory of the theme path.
-//
-// Returns ErrNoLayouts in any error case.
-// Returns errors.NOTFOUND if no layouts were found.
-// Returns errors.INTERNAL if the layout path is invalid.
-func (t *theme) Layouts(theme string) (domain.Layouts, error) {
+// Layouts satisfies the Theme interface by retrieving all
+// template layouts from the active theme.
+func (t *Theme) Layouts() (domain.Layouts, error) {
 	const op = "SiteRepository.GetLayouts"
 
-	layoutDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + t.config.LayoutDir
-	layoutDir = strings.ReplaceAll(layoutDir, "//", "/")
+	path, cfg, err := t.getActiveTheme()
+	if err != nil {
+		return nil, err
+	}
 
-	files, err := t.walkMatch(layoutDir, "*"+t.config.FileExtension)
+	layoutDir := filepath.Join(path, cfg.LayoutDir)
+	files, err := t.walkMatch(layoutDir, "*"+cfg.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting layouts with the path: %s", layoutDir), Operation: op, Err: ErrNoLayouts}
 	}

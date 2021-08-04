@@ -34,11 +34,11 @@ func (s *Service) ReGenerateWebP() (int, error) {
 func (s *Service) generateWebP(items domain.MediaItems) {
 	for _, m := range items {
 		s.deleteWebP(m.File, false)
-		s.fileToWebP(m.File)
+		//s.fileToWebP(m.File)
 
 		for _, size := range m.Sizes {
 			s.deleteWebP(size.File, false)
-			s.fileToWebP(size.File)
+			//s.fileToWebP(size.File)
 		}
 	}
 }

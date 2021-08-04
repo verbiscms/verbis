@@ -7,13 +7,14 @@ package media
 import (
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/common/paths"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/services/media/resizer"
-	storage2 "github.com/verbiscms/verbis/api/services/storage"
+	storage "github.com/verbiscms/verbis/api/services/storage"
+	"github.com/verbiscms/verbis/api/services/theme"
 	"github.com/verbiscms/verbis/api/services/webp"
 	"github.com/verbiscms/verbis/api/store/media"
+	"github.com/verbiscms/verbis/api/store/options"
 	"mime/multipart"
 )
 
@@ -22,15 +23,18 @@ import (
 // local file system.
 type Library interface {
 	// List returns a slice of media items with the total amount.
+	//
 	// Returns errors.INTERNAL if the SQL query was invalid.
 	// Returns errors.NOTFOUND if there are no media items available.
 	List(meta params.Params) (domain.MediaItems, int, error)
 	// Find returns a media item by searching with the given ID.
+	//
 	// Returns errors.INTERNAL if there was an error executing the query.
 	// Returns errors.NOTFOUND if the media item was not found by the given ID.
 	Find(id int) (domain.Media, error)
 	// Update returns an updated media item by updating title, alt,
 	// description and updated_at fields.
+	//
 	// Returns errors.CONFLICT if the validation failed.
 	// Returns errors.INTERNAL if the SQL query was invalid or the function
 	// could not obtain the newly created ID.
@@ -41,6 +45,7 @@ type Library interface {
 	// saved in correspondence to the options. This
 	// function expects that validate has been
 	// called before it is run.
+	//
 	// Returns errors.INTERNAL on any eventuality the file could not be opened.
 	// Returns errors.INVALID if the mimetype could not be found.
 	Upload(file *multipart.FileHeader, userID int) (domain.Media, error)
@@ -49,11 +54,13 @@ type Library interface {
 	// if the file is a valid mime type, if the file size
 	// is less than the size specified in the options
 	// and finally checks the image boundaries.
+	//
 	// Returns errors.INVALID any of the conditions fail.
 	Validate(file *multipart.FileHeader) error
 	// Delete removes the testMedia item from the database and
 	// storage system. Generated sizes and WebP images
 	// will also be removed.
+	//
 	// Returns errors.NOTFOUND if the file does not exist.
 	// Returns errors.INTERNAL if the file could not be deleted from the database.
 	// Logs errors.INTERNAL if the file could not be deleted from the storage bucket.
@@ -62,6 +69,7 @@ type Library interface {
 	// associated with media items and their sizes. It
 	// returns a total amount of media items being
 	// processed in the background.
+	//
 	// Returns an errors of the media items could not be listed.
 	ReGenerateWebP() (int, error)
 }
@@ -78,25 +86,25 @@ var (
 // Service Defines the service for uploading, validating, deleting
 // and serving rich testMedia from the Verbis testMedia library.
 type Service struct {
-	options *domain.Options
-	config  *domain.ThemeConfig
+	repo    media.Repository
+	storage storage.Bucket
+	options options.Repository
+	theme   theme.Service
 	paths   paths.Paths
 	webp    webp.Execer
-	storage storage2.Bucket
-	repo    media.Repository
 	resizer resizer.Resizer
 }
 
 // New creates a new testMedia Service.
-func New(opts *domain.Options, store storage2.Bucket, repo media.Repository) *Service {
+func New(repo media.Repository, store storage.Bucket, options options.Repository, themeService theme.Service) *Service {
 	p := paths.Get()
 	return &Service{
-		options: opts,
-		config:  config.Get(),
-		paths:   p,
-		webp:    webp.New(p.Bin + webp.Path),
-		storage: store,
 		repo:    repo,
+		storage: store,
+		options: options,
+		theme:   themeService,
+		paths:   p,
+		webp:    webp.New(p.Bin),
 		resizer: &resizer.Resize{},
 	}
 }

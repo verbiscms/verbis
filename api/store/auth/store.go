@@ -16,10 +16,7 @@ import (
 type Repository interface {
 	Login(email, password string) (domain.User, error)
 	Logout(token string) (int, error)
-	ResetPassword(token, password string) error
-	SendResetPassword(email string) (domain.UserPart, string, error)
-	VerifyPasswordToken(token string) (domain.PasswordReset, error)
-	CleanPasswordResets() error
+	ResetPassword(email string, password string) error
 }
 
 // Store defines the data layer for auth.
@@ -34,8 +31,6 @@ type Store struct {
 }
 
 const (
-	// The database table name for password resets.
-	PasswordTableName = "password_resets"
 	// ErrLoginMsg is returned by login when
 	// authentication failed.
 	ErrLoginMsg = "These credentials don't match our records."

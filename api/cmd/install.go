@@ -12,6 +12,7 @@ import (
 	"github.com/verbiscms/verbis/api/database/seeds"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 	"net/url"
 )
 
@@ -33,7 +34,10 @@ func Install(cmd *cobra.Command, args []string) {
 	if err != nil {
 		printError(err.Error())
 	}
-	d := deps.New(*cfg)
+	d, err := deps.New(*cfg)
+	if err != nil {
+		printError(errors.Message(err))
+	}
 
 	// Check if the database exists.
 	// TODO NOT WORKING

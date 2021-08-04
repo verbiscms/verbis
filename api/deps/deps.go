@@ -5,12 +5,12 @@
 package deps
 
 import (
+	"fmt"
 	"github.com/verbiscms/verbis/api"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
-	"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
-	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/services/site"
 	"github.com/verbiscms/verbis/api/services/storage"
 	"github.com/verbiscms/verbis/api/services/theme"
@@ -21,22 +21,22 @@ import (
 	"github.com/verbiscms/verbis/api/verbisfs"
 	"github.com/verbiscms/verbis/api/watcher"
 	"os"
-	"path/filepath"
 )
 
 // Deps holds dependencies used by many.
 // There will be normally only one instance of deps in play
 // at a given time, i.e. one per Site built.
 type Deps struct {
-	Env *environment.Env
+	Env   *environment.Env
+	Cache cache.Store
 	// The database layer
 	Store *store.Repository
 	// Configuration file of the site
 	Config *domain.ThemeConfig
 	// Site
-	Site site.Repository
+	Site site.Service
 	// Theme
-	Theme   theme.Repository
+	Theme   theme.Service
 	Watcher watcher.FileWatcher
 	// Options
 	Options *domain.Options
@@ -67,17 +67,11 @@ func (d *Deps) SetTmpl(tmpl tpl.TemplateHandler) {
 }
 
 func (d *Deps) SetOptions(options *domain.Options) {
-	*d.Options = *options
-}
-
-func (d *Deps) SetTheme(name string) error {
-	err := d.Store.Options.SetTheme(name)
-	if err != nil {
-		return err
+	if d.Options == nil {
+		d.Options = options
+		return
 	}
-	d.Options.ActiveTheme = name
-	//d.Watcher.SetTheme(d.Paths.Themes + string(os.PathSeparator) + name)
-	return nil
+	*d.Options = *options
 }
 
 type Config struct {
@@ -96,9 +90,14 @@ type Config struct {
 	Running bool
 }
 
-func New(cfg Config) *Deps {
+func New(cfg Config) (*Deps, error) {
 	if cfg.Store == nil && cfg.Running {
-		panic("Must have a store")
+		return nil, fmt.Errorf("must have a store")
+	}
+
+	cs, err := cache.Load(cfg.Env)
+	if err != nil {
+		return nil, err
 	}
 
 	var opts domain.Options
@@ -110,33 +109,34 @@ func New(cfg Config) *Deps {
 		Environment: cfg.Env,
 		Options:     cfg.Store.Options,
 		Files:       cfg.Store.Files,
+		Cache:       cs,
 	})
 	if err != nil {
-		logger.WithError(err).Panic()
+		return nil, err
 	}
 
-	activeTheme, err := cfg.Store.Options.GetTheme()
+	themeService := theme.New(cs, cfg.Store.Options)
+	config, err := themeService.Config()
 	if err != nil {
-		logger.WithError(err).Panic()
+		return nil, err
 	}
-
-	config.Init(filepath.Join(cfg.Paths.Themes, activeTheme))
 
 	d := &Deps{
 		Env:     cfg.Env,
+		Cache:   cs,
 		Store:   cfg.Store,
-		Config:  config.Get(),
+		Config:  &config,
 		Options: &opts,
 		Paths:   cfg.Paths,
 		tmpl:    nil,
 		Running: cfg.Running,
-		Site:    site.New(&opts, cfg.System),
-		Theme:   theme.New(),
+		Site:    site.New(cfg.Store.Options, cfg.System),
+		Theme:   themeService,
 		FS:      verbisfs.New(api.Production, cfg.Paths),
 		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
 		Storage: st,
 		System:  cfg.System,
 	}
 
-	return d
+	return d, nil
 }

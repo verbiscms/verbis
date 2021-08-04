@@ -10,11 +10,13 @@ import (
 	_ "github.com/graymeta/stow/azure"
 	_ "github.com/graymeta/stow/google"
 	_ "github.com/graymeta/stow/s3"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 	options "github.com/verbiscms/verbis/api/mocks/store/options"
@@ -35,38 +37,46 @@ func TestStorage(t *testing.T) {
 	suite.Run(t, new(StorageTestSuite))
 }
 
-// BeforeTest discards the log.
+// BeforeTest discards
 func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
 	logger.SetOutput(ioutil.Discard)
 }
 
 // Setup the suite with the mock functions.
-func (t *StorageTestSuite) Setup(mock func(s *mocks.Service, r *repo.Repository)) *Storage {
+func (t *StorageTestSuite) Setup(mf func(s *mocks.Service, r *repo.Repository)) *Storage {
 	m := &mocks.Service{}
 	r := &repo.Repository{}
-	if mock != nil {
-		mock(m, r)
+	if mf != nil {
+		mf(m, r)
 	}
+	mc := &cache.Store{}
+	mc.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Times(100)
+	mc.On("Get", mock.Anything, mock.Anything).Return(false, fmt.Errorf("errr")).Times(100)
 	return &Storage{
 		filesRepo: r,
 		service:   m,
 		env:       &environment.Env{},
+		cache:     mc,
 	}
 }
 
 // Setup the suite with mock functions including
 // options.
-func (t *StorageTestSuite) SetupOptions(mock func(m *mocks.Service, r *repo.Repository, o *options.Repository)) *Storage {
+func (t *StorageTestSuite) SetupOptions(mf func(m *mocks.Service, r *repo.Repository, o *options.Repository)) *Storage {
 	m := &mocks.Service{}
 	r := &repo.Repository{}
 	o := &options.Repository{}
-	if mock != nil {
-		mock(m, r, o)
+	mc := &cache.Store{}
+	mc.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Times(100)
+	mc.On("Get", mock.Anything, mock.Anything).Return(false, fmt.Errorf("errr")).Times(100)
+	if mf != nil {
+		mf(m, r, o)
 	}
 	return &Storage{
 		filesRepo:   r,
 		optionsRepo: o,
 		service:     m,
+		cache:       mc,
 		env:         &environment.Env{},
 	}
 }
@@ -141,6 +151,7 @@ func (t *StorageTestSuite) TestNew() {
 				Environment: &environment.Env{},
 				Options:     &options.Repository{},
 				Files:       &files.Store{},
+				Cache:       &cache.Store{},
 			},
 			nil,
 		},
@@ -172,6 +183,7 @@ func (t *StorageTestSuite) TestConfig_Validate() {
 				Environment: &environment.Env{},
 				Options:     &options.Repository{},
 				Files:       &files.Store{},
+				Cache:       &cache.Store{},
 			},
 			nil,
 		},
@@ -191,6 +203,14 @@ func (t *StorageTestSuite) TestConfig_Validate() {
 				Options:     &options.Repository{},
 			},
 			"Error, no files repository set",
+		},
+		"Nil Cache": {
+			Config{
+				Environment: &environment.Env{},
+				Options:     &options.Repository{},
+				Files:       &files.Store{},
+			},
+			"Error, no cache set",
 		},
 	}
 

@@ -8,25 +8,21 @@ import (
 	"fmt"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
-	"os"
-	"strings"
+	"path/filepath"
 )
 
-// Templates
-//
-// Retrieves all templates stored within the templates
-// directory of the theme path.
-//
-// Returns ErrNoTemplates in any error case.
-// Returns errors.NOTFOUND if no templates were found.
-// Returns errors.INTERNAL if the template path is invalid.
-func (t *theme) Templates(theme string) (domain.Templates, error) {
+// Templates satisfies the Theme interface by retrieving all
+// templates from the active theme.
+func (t *Theme) Templates() (domain.Templates, error) {
 	const op = "SiteRepository.Templates"
 
-	tplDir := t.themesPath + string(os.PathSeparator) + theme + string(os.PathSeparator) + t.config.TemplateDir
-	tplDir = strings.ReplaceAll(tplDir, "//", "/")
+	path, cfg, err := t.getActiveTheme()
+	if err != nil {
+		return nil, err
+	}
 
-	files, err := t.walkMatch(tplDir, "*"+t.config.FileExtension)
+	tplDir := filepath.Join(path, cfg.TemplateDir)
+	files, err := t.walkMatch(tplDir, "*"+cfg.FileExtension)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error getting templates with the path: %s", tplDir), Operation: op, Err: ErrNoTemplates}
 	}

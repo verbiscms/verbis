@@ -5,7 +5,11 @@
 package theme
 
 import (
-	"os"
+	"fmt"
+	"github.com/stretchr/testify/mock"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
+	config "github.com/verbiscms/verbis/api/mocks/config"
+	options "github.com/verbiscms/verbis/api/mocks/store/options"
 	"path/filepath"
 	"runtime"
 )
@@ -23,12 +27,12 @@ func (t *ThemeTestSuite) TestTheme_Util() {
 		want    interface{}
 	}{
 		"Bad Pattern": {
-			t.apiPath + ThemesPath + string(os.PathSeparator) + "verbis",
+			filepath.Join(t.TestPath, ThemeName),
 			"\\",
 			filepath.ErrBadPattern.Error(),
 		},
 		"Is Directory": {
-			t.apiPath + ThemesPath + string(os.PathSeparator) + "empty",
+			filepath.Join(t.TestPath, "empty"),
 			"*.cms",
 			s,
 		},
@@ -41,8 +45,58 @@ func (t *ThemeTestSuite) TestTheme_Util() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup()
+			s := t.Setup("")
 			got, err := s.walkMatch(test.root, test.pattern)
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.Equal(test.want, got)
+		})
+	}
+}
+
+func (t *ThemeTestSuite) TestTheme_GetActiveTheme() {
+	tt := map[string]struct {
+		mock func(o *options.Repository, c *cache.Store, cf *config.Provider)
+		want interface{}
+	}{
+		"Success": {
+			func(o *options.Repository, c *cache.Store, cf *config.Provider) {
+				o.On("GetTheme").
+					Return("theme", nil).
+					Once()
+				c.On("Get", mock.Anything, configCacheKey).
+					Return(cfg1, nil)
+			},
+			filepath.Join(t.TestPath, "theme"),
+		},
+		"Options Error": {
+			func(o *options.Repository, c *cache.Store, cf *config.Provider) {
+				o.On("GetTheme").
+					Return("", fmt.Errorf("error"))
+			},
+			"error",
+		},
+		"Config Error": {
+			func(o *options.Repository, c *cache.Store, cf *config.Provider) {
+				o.On("GetTheme").
+					Return("", nil).
+					Once()
+				c.On("Get", mock.Anything, configCacheKey).
+					Return(nil, fmt.Errorf("error"))
+				o.On("GetTheme").
+					Return("", fmt.Errorf("error")).
+					Once()
+			},
+			"error",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.SetupMock(test.mock)
+			got, _, err := s.getActiveTheme()
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return

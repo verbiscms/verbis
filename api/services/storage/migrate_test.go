@@ -5,11 +5,13 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"github.com/stretchr/testify/mock"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 	"io/ioutil"
@@ -60,11 +62,19 @@ func (t *StorageTestSuite) TestMigrationInfo_Succeed() {
 }
 
 func (t *StorageTestSuite) TestStorage_Migrate() {
+	mockCacheSuccess := func(m *cache.Store) {
+		m.On("Get", mock.Anything, migrationIsMigrating).Return(false, fmt.Errorf("error"))
+		m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Times(100)
+		m.On("Delete", mock.Anything, migrationIsMigrating)
+		m.On("Delete", mock.Anything, migrationKey)
+	}
+
 	tt := map[string]struct {
 		migrating bool
 		from      domain.StorageChange
 		to        domain.StorageChange
 		mock      func(m *mocks.Service, r *repo.Repository)
+		cache     func(m *cache.Store)
 		want      interface{}
 	}{
 		"Success": {
@@ -77,6 +87,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 				r.On("FindByURL", filesSlice[0].Url).Return(domain.File{}, fmt.Errorf("error"))
 				r.On("FindByURL", filesSlice[1].Url).Return(domain.File{}, fmt.Errorf("error"))
 			},
+			mockCacheSuccess,
 			2,
 		},
 		"Already Migrating": {
@@ -84,6 +95,9 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			domain.StorageChange{},
 			domain.StorageChange{},
 			nil,
+			func(m *cache.Store) {
+				m.On("Get", mock.Anything, migrationIsMigrating).Return(true, nil)
+			},
 			"Error migration is already in progress",
 		},
 		"Same Providers": {
@@ -91,6 +105,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			domain.StorageChange{Provider: domain.StorageAWS},
 			domain.StorageChange{Provider: domain.StorageAWS},
 			nil,
+			mockCacheSuccess,
 			"Error providers cannot be the same",
 		},
 		"Validation Failed": {
@@ -98,6 +113,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			domain.StorageChange{Provider: domain.StorageLocal},
 			domain.StorageChange{Provider: domain.StorageAWS},
 			nil,
+			mockCacheSuccess,
 			"Validation failed",
 		},
 		"Repo Error": {
@@ -108,6 +124,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 				mockValidateSuccess(m, r)
 				r.On("List", mock.Anything).Return(nil, 0, &errors.Error{Message: "error"})
 			},
+			mockCacheSuccess,
 			"error",
 		},
 		"Zero Length": {
@@ -118,6 +135,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 				mockValidateSuccess(m, r)
 				r.On("List", mock.Anything).Return(nil, 0, nil)
 			},
+			mockCacheSuccess,
 			"Error no files found with provide",
 		},
 	}
@@ -125,16 +143,59 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
+			c := &cache.Store{}
+			test.cache(c)
+			s.cache = c
+
 			s.env = &environment.Env{AWSAccessKey: "key", AWSSecret: "secret"}
-			if test.migrating {
-				s.isMigrating = true
-			}
-			total, err := s.Migrate(test.from, test.to, true)
+			total, err := s.Migrate(context.Background(), test.from, test.to, true)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
 			}
 			t.Equal(test.want, total)
+		})
+	}
+}
+
+func (t *StorageTestSuite) TestStorage_GetMigration() {
+	tt := map[string]struct {
+		mock func(c *cache.Store)
+		want interface{}
+	}{
+		"Success": {
+			func(c *cache.Store) {
+				c.On("Get", mock.Anything, migrationKey).Return(&MigrationInfo{Total: 10}, nil)
+			},
+			MigrationInfo{Total: 10},
+		},
+		"Find Error": {
+			func(c *cache.Store) {
+				c.On("Get", mock.Anything, migrationKey).Return(nil, fmt.Errorf("error"))
+			},
+			"Error getting migration",
+		},
+		"Cast Error": {
+			func(c *cache.Store) {
+				c.On("Get", mock.Anything, migrationKey).Return(100, nil)
+			},
+			"Error getting migration",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			c := &cache.Store{}
+			test.mock(c)
+			s := t.Setup(nil)
+			s.cache = c
+			got, err := s.getMigration()
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+			t.NotNil(got)
+			t.Equal(test.want, *got)
 		})
 	}
 }
@@ -235,8 +296,6 @@ func (t *StorageTestSuite) TestStorage_MigrateBackground() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			s.migration.Total = 2
-			s.migration.mtx = &sync.Mutex{}
 
 			wg := sync.WaitGroup{}
 			wg.Add(1)
@@ -246,10 +305,14 @@ func (t *StorageTestSuite) TestStorage_MigrateBackground() {
 				wg:   &wg,
 			}
 
-			s.migrateBackground(c, true)
+			mi := &MigrationInfo{
+				mtx:   &sync.Mutex{},
+				Total: 2,
+			}
+			s.migrateBackground(context.Background(), c, true, mi)
 
-			t.Equal(test.want.Failed, s.migration.Failed)
-			t.Equal(test.want.Succeeded, s.migration.Succeeded)
+			t.Equal(test.want.Failed, mi.Failed)
+			t.Equal(test.want.Succeeded, mi.Succeeded)
 		})
 	}
 }

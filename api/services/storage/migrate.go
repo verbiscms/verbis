@@ -6,7 +6,9 @@ package storage
 
 import (
 	"bytes"
+	"context"
 	"fmt"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
@@ -48,6 +50,12 @@ const (
 	// migrateConcurrentAllowance is the amount of files that
 	// are allowed to be migrated concurrently.
 	migrateConcurrentAllowance = 1
+	// migrationKey is the key used in the cache used for
+	// retrieving migration information.
+	migrationKey = "storage_migration"
+	// migrationIsMigrating is the key used in the cache used for
+	// determining if there is a migration taking place.
+	migrationIsMigrating = "storage_is_migrating"
 )
 
 var (
@@ -62,33 +70,23 @@ var (
 // fail appends an error to the migration stack and adds
 // one to failed files and files processed retrospectively.
 func (m *MigrationInfo) fail(file domain.File, err error) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
 	m.Failed++
 	m.FilesProcessed++
 	m.Errors = append(m.Errors, FailedMigrationFile{
 		Error: errors.ToError(err),
 		File:  file,
 	})
-	m.storeMigration()
+	m.Progress = (m.FilesProcessed * 100) / m.Total
 	logger.WithError(err).Error()
 }
 
 // succeed adds a succeeded file to the migration stack as
 // well as adding one to the files processed.
 func (m *MigrationInfo) succeed(file domain.File) {
-	m.mtx.Lock()
-	defer m.mtx.Unlock()
 	m.Succeeded++
 	m.FilesProcessed++
-	m.storeMigration()
-	logger.Info("Successfully migrated file: " + file.Name)
-}
-
-// calculateProcessed
-func (m *MigrationInfo) storeMigration() {
-	// TODO - we need to override the cache with the updated MigrationInfo here!
 	m.Progress = (m.FilesProcessed * 100) / m.Total
+	logger.Debug("Successfully migrated file: " + file.Name)
 }
 
 // migration is an entity used to help to process file
@@ -103,10 +101,10 @@ type migration struct {
 // Migrate satisfies the Provider interface by accepting a
 // from and to StorageChange to migrate files to the
 // remote provider or local storage.
-func (s *Storage) Migrate(from, to domain.StorageChange, deleteFiles bool) (int, error) {
+func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageChange, deleteFiles bool) (int, error) {
 	const op = "Storage.Migrate"
 
-	if s.isMigrating {
+	if s.isMigrating(ctx) {
 		return 0, &errors.Error{Code: errors.INVALID, Message: "Error migration is already in progress", Operation: op, Err: ErrAlreadyMigrating}
 	}
 
@@ -137,26 +135,48 @@ func (s *Storage) Migrate(from, to domain.StorageChange, deleteFiles bool) (int,
 		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error no files found with provider: " + from.Provider.String(), Operation: op, Err: ErrNoFilesToMigrate}
 	}
 
-	// TODO, this needs to be stored in the cache, if there are multiple
-	// migrations on a stateless platform, there will be
-	// inconsistencies
-	s.isMigrating = true
-	s.migration = MigrationInfo{
-		Total:      total,
-		MigratedAt: time.Now(),
-		mtx:        &sync.Mutex{},
-	}
-
 	logger.Debug(fmt.Sprintf("Starting storage migration with %d files being processed", total))
 
-	go s.processMigration(ff, from, to, deleteFiles)
+	go s.processMigration(ctx, ff, from, to, deleteFiles)
 
 	return total, nil
 }
 
+// isMigrating retrieves the migrationIsMigrating key from the
+// cache and returns true if the app is already migrating
+// files.
+func (s *Storage) isMigrating(ctx context.Context) bool {
+	_, err := s.cache.Get(ctx, migrationIsMigrating)
+	return err == nil
+}
+
+// getMigration returns the current migration information in
+// the background.
+func (s *Storage) getMigration() (*MigrationInfo, error) {
+	const op = "Storage.GetMigration"
+	c, err := s.cache.Get(context.Background(), migrationKey)
+	if err != nil {
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error getting migration", Operation: op, Err: err}
+	}
+	mi, ok := c.(*MigrationInfo)
+	if !ok {
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error getting migration", Operation: op, Err: fmt.Errorf("error converting to type MigrationInfo")}
+	}
+	return mi, nil
+}
+
 // processMigration ranges over the given files and adds a
 // migration to the migrateTrackChan.
-func (s *Storage) processMigration(files domain.Files, from, to domain.StorageChange, deleteFiles bool) {
+func (s *Storage) processMigration(ctx context.Context, files domain.Files, from, to domain.StorageChange, deleteFiles bool) {
+	mi := &MigrationInfo{
+		Total:      len(files),
+		MigratedAt: time.Now(),
+		mtx:        &sync.Mutex{},
+	}
+
+	s.cache.Set(ctx, migrationIsMigrating, true, cache.Options{Expiration: cache.RememberForever})
+	s.cache.Set(ctx, migrationKey, mi, cache.Options{Expiration: cache.RememberForever})
+
 	var wg sync.WaitGroup
 
 	// migrateTrackChan is the channel used for sending and
@@ -171,29 +191,35 @@ func (s *Storage) processMigration(files domain.Files, from, to domain.StorageCh
 			to:   to,
 			wg:   &wg,
 		}
-		go s.migrateBackground(c, deleteFiles)
+		go s.migrateBackground(ctx, c, deleteFiles, mi)
 	}
 
 	wg.Wait()
 
-	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", s.migration.Succeeded))
-	logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", s.migration.Failed))
+	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", mi.Succeeded))
+	logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", mi.Failed))
 
-	s.isMigrating = false
-	s.migration = MigrationInfo{}
+	s.cache.Delete(context.Background(), migrationIsMigrating)
+	s.cache.Delete(context.Background(), migrationKey)
 }
 
 // migrateBackground processes the migration by finding the
 // original bytes, uploading to the new destination
 // and deleting the original file.
-func (s *Storage) migrateBackground(channel chan migration, deleteFiles bool) {
+func (s *Storage) migrateBackground(ctx context.Context, channel chan migration, deleteFiles bool, info *MigrationInfo) {
 	m := <-channel
 
-	defer m.wg.Done()
+	info.mtx.Lock()
+
+	defer func() {
+		s.cache.Set(ctx, migrationKey, info, cache.Options{Expiration: cache.RememberForever})
+		info.mtx.Unlock()
+		m.wg.Done()
+	}()
 
 	buf, _, err := s.Find(m.file.Url)
 	if err != nil {
-		s.migration.fail(m.file, err)
+		info.fail(m.file, err)
 		return
 	}
 
@@ -208,14 +234,14 @@ func (s *Storage) migrateBackground(channel chan migration, deleteFiles bool) {
 
 	file, err := s.upload(m.to.Provider, m.to.Bucket, u, false)
 	if err != nil {
-		s.migration.fail(m.file, err)
+		info.fail(m.file, err)
 		return
 	}
 
 	if deleteFiles {
 		err = s.deleteFile(false, m.file.Id)
 		if err != nil {
-			s.migration.fail(m.file, err)
+			info.fail(m.file, err)
 			return
 		}
 	}
@@ -224,9 +250,9 @@ func (s *Storage) migrateBackground(channel chan migration, deleteFiles bool) {
 
 	updated, err := s.filesRepo.Update(file)
 	if err != nil {
-		s.migration.fail(m.file, err)
+		info.fail(m.file, err)
 		return
 	}
 
-	s.migration.succeed(updated)
+	info.succeed(updated)
 }

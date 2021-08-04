@@ -5,10 +5,13 @@
 package auth
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/mock"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/auth"
 	"net/http"
 )
@@ -31,15 +34,16 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 		status  int
 		message string
 		input   interface{}
-		mock    func(m *mocks.Repository)
+		mock    func(m *mocks.Repository, c *cache.Store)
 	}{
 		"Success": {
 			nil,
 			http.StatusOK,
 			"Successfully reset password",
 			rp,
-			func(m *mocks.Repository) {
-				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(nil)
+			func(m *mocks.Repository, c *cache.Store) {
+				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
+				c.On("Get", mock.Anything, rp.Token).Return(user, nil)
 			},
 		},
 		"Validation Failed": {
@@ -47,26 +51,38 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			http.StatusBadRequest,
 			"Validation failed",
 			rpdBadValidation,
-			func(m *mocks.Repository) {
+			func(m *mocks.Repository, c *cache.Store) {
 				m.On("ResetPassword", rpdBadValidation.Token, rpdBadValidation.NewPassword).Return(nil)
 			},
 		},
-		"Not Found": {
+		"Cache Get Error": {
 			nil,
 			http.StatusBadRequest,
-			"not found",
+			"No user exists with the token: " + rp.Token,
 			rp,
-			func(m *mocks.Repository) {
-				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(&errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+			func(m *mocks.Repository, c *cache.Store) {
+				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
+				c.On("Get", mock.Anything, rp.Token).Return(nil, fmt.Errorf("error"))
 			},
 		},
-		"Internal Error": {
+		"Cast Error": {
 			nil,
 			http.StatusInternalServerError,
-			"internal",
+			"Error converting cache item to user",
 			rp,
-			func(m *mocks.Repository) {
-				m.On("ResetPassword", rp.Token, rp.NewPassword).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+			func(m *mocks.Repository, c *cache.Store) {
+				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
+				c.On("Get", mock.Anything, rp.Token).Return(make(chan int), nil)
+			},
+		},
+		"Repo Error": {
+			nil,
+			http.StatusInternalServerError,
+			"error",
+			rp,
+			func(m *mocks.Repository, c *cache.Store) {
+				m.On("ResetPassword", user.Email, rp.NewPassword).Return(&errors.Error{Message: "error"})
+				c.On("Get", mock.Anything, rp.Token).Return(user, nil)
 			},
 		},
 	}
@@ -74,7 +90,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.RequestAndServe(http.MethodPost, "/reset", "/reset", test.input, func(ctx *gin.Context) {
-				t.Setup(test.mock).ResetPassword(ctx)
+				t.SetupCache(test.mock).ResetPassword(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

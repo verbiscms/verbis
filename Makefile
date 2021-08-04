@@ -44,12 +44,12 @@ format:
 
 # Test uses race and coverage
 test:
-	go clean -testcache && go test -race $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
+	go clean -testcache && go test -race $$(go list ./... | grep -v /api/mocks/ | grep -v /api/test) -coverprofile=coverage.out -covermode=atomic
 .PHONY: test
 
 # Test with -v
 test-v:
-	go clean -testcache && go test -race -v $$(go list ./... | grep -v /res/ | grep -v /api/mocks/ | grep -v /build/ | grep -v /api/test | grep -v /api/importer) -coverprofile=coverage.out -covermode=atomic
+	go clean -testcache && go test -race -v $$(go list ./... | grep -v /api/mocks/ | grep -v /api/test) -coverprofile=coverage.out -covermode=atomic
 .PHONY: test-v
 
 # Run all the tests and opens the coverage report
@@ -68,7 +68,7 @@ ci:
 
 # Make mocks keeping directory tree
 mock:
-	cd api && rm -rf mocks && mockery --all --keeptree
+	cd api && rm -rf mocks && mockery --all --keeptree --exported=true && rm mocks/cache/providerAdder.go
 .PHONY: mock
 
 # Run linter

@@ -11,30 +11,31 @@ import (
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/domain"
 	storage "github.com/verbiscms/verbis/api/mocks/services/storage"
+	theme "github.com/verbiscms/verbis/api/mocks/services/theme"
 	webp "github.com/verbiscms/verbis/api/mocks/services/webp"
 	repo "github.com/verbiscms/verbis/api/mocks/store/media"
 )
 
 func (t *MediaServiceTestSuite) TestService_ReGenerateWebP() {
 	tt := map[string]struct {
-		mock func(r *repo.Repository, s *storage.Bucket)
+		mock func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
 		want interface{}
 	}{
 		"Find Error": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("List", params.Params{LimitAll: true}).Return(domain.MediaItems{testMedia}, 1, nil)
 				s.On("Find", mock.Anything).Return(nil, domain.File{}, fmt.Errorf("error"))
 			},
 			1,
 		},
 		"List Error": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("List", params.Params{LimitAll: true}).Return(nil, 0, fmt.Errorf("error"))
 			},
 			"error",
 		},
 		"None Found": {
-			func(r *repo.Repository, s *storage.Bucket) {
+			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				r.On("List", params.Params{LimitAll: true}).Return(nil, 0, nil)
 			},
 			"no webp images to process",
@@ -43,7 +44,7 @@ func (t *MediaServiceTestSuite) TestService_ReGenerateWebP() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			s := t.Setup(nil, nil, test.mock)
+			s := t.Setup(domain.Options{}, test.mock)
 			got, err := s.ReGenerateWebP()
 			if err != nil {
 				t.Contains(err.Error(), test.want)
@@ -55,14 +56,14 @@ func (t *MediaServiceTestSuite) TestService_ReGenerateWebP() {
 }
 
 func (t *MediaServiceTestSuite) TestService_GenerateWebP() {
-	mockfn := func(r *repo.Repository, s *storage.Bucket) {
+	mockfn := func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 		s.On("Find", testMedia.File.Url+domain.WebPExtension).Return(nil, domain.File{Id: 1}, nil)
 		s.On("Delete", 1).Return(nil)
 		s.On("Find", testMedia.File.Url).Return(nil, domain.File{}, nil)
 		s.On("Upload", mock.Anything).Return(domain.File{}, nil)
 	}
 
-	s := t.Setup(nil, nil, mockfn)
+	s := t.Setup(domain.Options{}, mockfn)
 	w := &webp.Execer{}
 	w.On("Convert", mock.Anything, 0).Return(bytes.NewReader([]byte("test")), nil)
 

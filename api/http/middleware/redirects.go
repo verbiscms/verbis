@@ -22,7 +22,7 @@ func Redirects(d *deps.Deps) gin.HandlerFunc {
 	return func(g *gin.Context) {
 		path := g.Request.URL.String()
 
-		if strings.Contains(path, d.Config.Admin.Path) || strings.Contains(path, app.HTTPAPIRoute) {
+		if strings.Contains(path, app.AdminPath) || strings.Contains(path, app.HTTPAPIRoute) {
 			g.Next()
 			return
 		}

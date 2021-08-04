@@ -6,6 +6,7 @@ package storage
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/mock"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
@@ -38,7 +39,8 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"Successfully started migration, processing 5 files",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(5, nil)
+				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+					Return(5, nil)
 			},
 		},
 		"Validation Failed": {
@@ -54,7 +56,8 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"not found",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(0, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
+				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+					Return(0, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
 		"Invalid": {
@@ -63,7 +66,8 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"invalid",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+					Return(0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
@@ -72,7 +76,8 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"conflict",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+					Return(0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
@@ -81,7 +86,8 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"internal",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", migrate.From, migrate.To, migrate.Delete).Return(0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+					Return(0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

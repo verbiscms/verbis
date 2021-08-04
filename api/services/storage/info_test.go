@@ -5,13 +5,16 @@
 package storage
 
 import (
+	"context"
 	"fmt"
 	"github.com/graymeta/stow"
+	"github.com/stretchr/testify/mock"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
-	internal2 "github.com/verbiscms/verbis/api/services/storage/internal"
+	"github.com/verbiscms/verbis/api/services/storage/internal"
 )
 
 type mockProviderErr struct{}
@@ -25,13 +28,18 @@ func (m *mockProviderErr) Info(env *environment.Env) domain.StorageProviderInfo 
 }
 
 func (t *StorageTestSuite) TestStorage_Info() {
+	mi := &MigrationInfo{Total: 10}
 	tt := map[string]struct {
-		mock func(m *mocks.Service, r *repo.Repository)
-		want interface{}
+		mock  func(m *mocks.Service, r *repo.Repository)
+		cache func(c *cache.Store)
+		want  interface{}
 	}{
-		"Success": {
+		"Not Migrating": {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+			},
+			func(c *cache.Store) {
+				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, fmt.Errorf("error"))
 			},
 			Configuration{
 				ActiveProvider: domain.StorageAWS,
@@ -40,12 +48,41 @@ func (t *StorageTestSuite) TestStorage_Info() {
 					"test": domain.StorageProviderInfo{},
 				},
 				IsMigrating:   false,
-				MigrationInfo: MigrationInfo{},
+				MigrationInfo: nil,
 			},
 		},
-		"Error": {
+		"Is Migrating": {
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+			},
+			func(c *cache.Store) {
+				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, nil)
+				c.On("Get", mock.Anything, migrationKey).Return(mi, nil)
+			},
+			Configuration{
+				ActiveProvider: domain.StorageAWS,
+				ActiveBucket:   TestBucket,
+				Providers: domain.StorageProviders{
+					"test": domain.StorageProviderInfo{},
+				},
+				IsMigrating:   true,
+				MigrationInfo: mi,
+			},
+		},
+		"Config Error": {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageAWS, "", fmt.Errorf("error"))
+			},
+			nil,
+			"error",
+		},
+		"Migration Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+			},
+			func(c *cache.Store) {
+				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, nil)
+				c.On("Get", mock.Anything, migrationKey).Return(nil, fmt.Errorf("error"))
 			},
 			"error",
 		},
@@ -53,12 +90,18 @@ func (t *StorageTestSuite) TestStorage_Info() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			orig := internal2.Providers
-			defer func() { internal2.Providers = orig }()
-			internal2.Providers = internal2.ProviderMap{"test": &mockProviderErr{}}
+			orig := internal.Providers
+			defer func() { internal.Providers = orig }()
+			internal.Providers = internal.ProviderMap{"test": &mockProviderErr{}}
 
 			s := t.Setup(test.mock)
-			got, err := s.Info()
+			c := &cache.Store{}
+			if test.cache != nil {
+				test.cache(c)
+			}
+			s.cache = c
+
+			got, err := s.Info(context.Background())
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return

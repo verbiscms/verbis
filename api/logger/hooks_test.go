@@ -36,7 +36,6 @@ func (t *LoggerTestSuite) TestWriterHook_Fire() {
 	tt := map[string]struct {
 		input io.Writer
 		entry *logrus.Entry
-		err   interface{}
 		want  interface{}
 	}{
 		"Error Entry": {
@@ -44,23 +43,20 @@ func (t *LoggerTestSuite) TestWriterHook_Fire() {
 			&logrus.Entry{
 				Logger: &logrus.Logger{Formatter: &mockFormatErr{}},
 			},
-			&errors.Error{Code: errors.INTERNAL, Message: "Error obtaining the entry string", Operation: "logger.Hook.Fire", Err: fmt.Errorf("err")},
-			"",
+			"Error obtaining the entry string",
 		},
 		"Error Writer": {
 			&mockWriterErr{},
 			&logrus.Entry{
 				Logger: &logrus.Logger{Formatter: &mockFormat{}},
 			},
-			&errors.Error{Code: errors.INTERNAL, Message: "Error writing entry to io.Writer", Operation: "logger.Hook.Fire", Err: fmt.Errorf("err")},
-			"",
+			"Error writing entry to io.Writer",
 		},
 		"Success": {
 			buf,
 			&logrus.Entry{
 				Logger: &logrus.Logger{Formatter: &mockFormat{}},
 			},
-			nil,
 			"test",
 		},
 	}
@@ -69,8 +65,8 @@ func (t *LoggerTestSuite) TestWriterHook_Fire() {
 		t.Run(name, func() {
 			h := t.SetupHooks(test.input)
 			err := h.Fire(test.entry)
-			if test.err != nil {
-				t.Equal(test.err, err)
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
 				return
 			}
 			t.Equal(test.want, buf.String())

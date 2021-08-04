@@ -5,9 +5,11 @@
 package posts
 
 import (
-	"github.com/verbiscms/verbis/api/config"
+	//"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/store/categories"
+	//	"github.com/verbiscms/verbis/api/store/categories"
 )
 
 // permalink
@@ -20,7 +22,11 @@ func (s *Store) permalink(post *domain.PostDatum) string {
 	permaLink := ""
 
 	opts := s.options.Struct()
-	cfg := config.Get()
+
+	cfg, err := s.Theme.Get(opts.ActiveTheme)
+	if err != nil {
+		logger.WithError(err).Panic()
+	}
 
 	postResource := post.Resource
 	hiddenCategory := true

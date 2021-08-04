@@ -5,12 +5,7 @@
 package auth
 
 import (
-	"database/sql"
-	"github.com/verbiscms/verbis/api/common/encryption"
-	"github.com/verbiscms/verbis/api/database"
-	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
-	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/store/users"
 )
 
@@ -24,14 +19,8 @@ import (
 // Returns errors.NOTFOUND if the user was not found by the given token.
 // Returns errors.INTERNAL if the SQL query was invalid, unable to
 // create a new password or delete from the password resets table.
-func (s *Store) ResetPassword(token, password string) error {
+func (s *Store) ResetPassword(email, password string) error {
 	const op = "AuthStore.ResetPassword"
-
-	// Check if the token is valid.
-	rp, err := s.VerifyPasswordToken(token)
-	if err != nil {
-		return err
-	}
 
 	hash, err := s.hashPasswordFunc(password)
 	if err != nil {
@@ -42,100 +31,11 @@ func (s *Store) ResetPassword(token, password string) error {
 	q := s.Builder().
 		Update(s.Schema()+users.TableName).
 		Column("password", "?").
-		Where("email", "=", rp.Email)
+		Where("email", "=", email)
 
 	_, err = s.DB().Exec(q.Build(), hash)
 	if err != nil {
-		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating the users table with the new password", Operation: op, Err: err}
-	}
-
-	// Delete from the password resets table.
-	q = s.Builder().
-		DeleteFrom(s.Schema()+PasswordTableName).
-		Where("token", "=", token)
-
-	_, err = s.DB().Exec(q.Build())
-	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting from the password resets table", Operation: op, Err: err})
-	}
-
-	return nil
-}
-
-// SendResetPassword
-//
-// Obtains the user by email and generates a new email token.
-// A temporary record is inserted to the password resets
-// table and an email is sent to the user by the reset
-// passwords event.
-// passwords event.
-// Returns errors.NOTFOUND if the user was not found by the given email.
-// Returns errors.INTERNAL if the SQL query was invalid.
-func (s *Store) SendResetPassword(email string) (domain.UserPart, string, error) {
-	const op = "AuthRepository.SendResetPassword"
-
-	user, err := s.userStore.FindByEmail(email)
-	if err != nil {
-		return domain.UserPart{}, "", err
-	}
-
-	token, err := encryption.GenerateEmailToken(email)
-	if err != nil {
-		return domain.UserPart{}, "", err
-	}
-
-	q := s.Builder().
-		Insert(s.Schema()+PasswordTableName).
-		Column("email", email).
-		Column("token", token).
-		Column("created_at", "NOW()")
-
-	_, err = s.DB().Exec(q.Build())
-	if err != nil {
-		return domain.UserPart{}, "", &errors.Error{Code: errors.INTERNAL, Message: "Error inserting into password resets", Operation: op, Err: err}
-	}
-
-	return user.UserPart, token, nil
-}
-
-// VerifyPasswordToken
-//
-// Checks to see if the token is valid from the password resets table.
-// Returns errors.INTERNAL if there was an error executing the query.
-// Returns errors.NOTFOUND if the user was not found by the given token.
-func (s *Store) VerifyPasswordToken(token string) (domain.PasswordReset, error) {
-	const op = "AuthStore.VerifyPasswordToken"
-
-	q := s.Builder().
-		From(s.Schema()+PasswordTableName).
-		Where("token", "=", token).
-		Limit(1)
-
-	var pr domain.PasswordReset
-	err := s.DB().Get(&pr, q.Build())
-	if err == sql.ErrNoRows {
-		return domain.PasswordReset{}, &errors.Error{Code: errors.NOTFOUND, Message: "No user exists with the token: " + token, Operation: op, Err: err}
-	} else if err != nil {
-		return domain.PasswordReset{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
-	}
-
-	return pr, nil
-}
-
-// CleanPasswordResets
-//
-// Verify the token is valid from the password resets table
-// Returns errors.INTERNAL if the SQL query was invalid.
-func (s *Store) CleanPasswordResets() error {
-	const op = "AuthStore.CleanPasswordResets"
-
-	q := s.Builder().
-		DeleteFrom(s.Schema() + PasswordTableName).
-		WhereRaw("created_at < (NOW() - INTERVAL 2 HOUR)")
-
-	_, err := s.DB().Exec(q.Build())
-	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Error deleting from the reset passwords table", Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error updating users table with the new password", Operation: op, Err: err}
 	}
 
 	return nil

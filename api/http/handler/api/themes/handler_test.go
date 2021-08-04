@@ -11,8 +11,6 @@ import (
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/logger"
 	mocks "github.com/verbiscms/verbis/api/mocks/services/theme"
-	options "github.com/verbiscms/verbis/api/mocks/store/options"
-	"github.com/verbiscms/verbis/api/store"
 	"github.com/verbiscms/verbis/api/test"
 	"io/ioutil"
 	"testing"
@@ -44,10 +42,10 @@ const (
 //
 // A helper to obtain a mock themes handler
 // for testing.
-func (t *ThemesTestSuite) Setup(mf func(m *mocks.Repository)) *Themes {
+func (t *ThemesTestSuite) Setup(mf func(m *mocks.Service)) *Themes {
 	logger.SetOutput(ioutil.Discard)
 
-	m := &mocks.Repository{}
+	m := &mocks.Service{}
 	if mf != nil {
 		mf(m)
 	}
@@ -61,28 +59,6 @@ func (t *ThemesTestSuite) Setup(mf func(m *mocks.Repository)) *Themes {
 	}
 
 	return New(d)
-}
-
-// SetupOptions
-//
-// A helper to obtain a mock themes handler
-// with options for testing.
-func (t *ThemesTestSuite) SetupOptions(mf func(m *mocks.Repository, mo *options.Repository)) *Themes {
-	s := t.Setup(nil)
-
-	m := &mocks.Repository{}
-	mo := &options.Repository{}
-
-	if mf != nil {
-		mf(m, mo)
-	}
-
-	s.Store = &store.Repository{
-		Options: mo,
-	}
-	s.Theme = m
-
-	return s
 }
 
 var (
@@ -101,7 +77,7 @@ var (
 		},
 	}
 	// The default themes configs used for testing.
-	themes = []*domain.ThemeConfig{
+	themes = []domain.ThemeConfig{
 		{
 			Theme: domain.Theme{
 				Title:       "Verbis",

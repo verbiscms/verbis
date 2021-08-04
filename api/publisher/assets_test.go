@@ -7,7 +7,6 @@ package publisher
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/assert"
-	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/domain"
 	"io/ioutil"
 	"net/http"
@@ -16,7 +15,7 @@ import (
 )
 
 func TestRender_GetAsset(t *testing.T) {
-	cache.Init()
+	//cache.Init()
 
 	tt := map[string]struct {
 		url     string

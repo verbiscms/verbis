@@ -10,8 +10,10 @@ import (
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/logger"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	events "github.com/verbiscms/verbis/api/mocks/events"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/auth"
+	users "github.com/verbiscms/verbis/api/mocks/store/users"
 	"github.com/verbiscms/verbis/api/store"
 	"github.com/verbiscms/verbis/api/test"
 	"io/ioutil"
@@ -35,7 +37,7 @@ func TestAuth(t *testing.T) {
 
 // Setup
 //
-// A helper to obtain a mock categories handler
+// A helper to obtain a mock auth handler
 // for testing.
 func (t *AuthTestSuite) Setup(mf func(m *mocks.Repository)) *Auth {
 	logger.SetOutput(ioutil.Discard)
@@ -55,14 +57,53 @@ func (t *AuthTestSuite) Setup(mf func(m *mocks.Repository)) *Auth {
 
 // Setup
 //
+// A helper to obtain a mock auth handler
+// for testing with cache.
+func (t *AuthTestSuite) SetupCache(mf func(m *mocks.Repository, c *cache.Store)) *Auth {
+	logger.SetOutput(ioutil.Discard)
+	m := &mocks.Repository{}
+	c := &cache.Store{}
+	if mf != nil {
+		mf(m, c)
+	}
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Auth: m,
+		},
+		Cache:   c,
+		Env:     &environment.Env{},
+		Options: &domain.Options{},
+	}
+	return New(d)
+}
+
+// Setup
+//
 // A helper to obtain a mock categories handler
 // for testing.
-func (t *AuthTestSuite) SetupDispatcher(mf func(m *mocks.Repository), ms func(m *events.Dispatcher)) *Auth {
-	a := t.Setup(mf)
+func (t *AuthTestSuite) SetupDispatcher(mf func(m *mocks.Repository, c *cache.Store, u *users.Repository), ms func(m *events.Dispatcher)) *Auth {
+	logger.SetOutput(ioutil.Discard)
+	m := &mocks.Repository{}
+	c := &cache.Store{}
+	u := &users.Repository{}
+	if mf != nil {
+		mf(m, c, u)
+	}
+	d := &deps.Deps{
+		Store: &store.Repository{
+			Auth: m,
+			User: u,
+		},
+		Cache:   c,
+		Env:     &environment.Env{},
+		Options: &domain.Options{},
+	}
+
 	mr := &events.Dispatcher{}
 	if ms != nil {
 		ms(mr)
 	}
+	a := New(d)
 	a.resetPassword = mr
 	return a
 }

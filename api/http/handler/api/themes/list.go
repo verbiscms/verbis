@@ -18,7 +18,7 @@ import (
 func (t *Themes) List(ctx *gin.Context) {
 	const op = "ThemeHandler.Layouts"
 
-	themes, err := t.Theme.List(t.Options.ActiveTheme)
+	themes, err := t.Theme.List()
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusOK, errors.Message(err), err)
 		return

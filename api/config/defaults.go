@@ -18,10 +18,6 @@ var (
 		FileExtension: ".cms",
 		TemplateDir:   "templates",
 		LayoutDir:     "layouts",
-		Admin: domain.AdminConfig{
-			Path:                "/admin",
-			InactiveSessionTime: 60,
-		},
 		Media: domain.MediaConfig{
 			UploadPath: "/uploads",
 			AllowedFileTypes: []string{

@@ -6,23 +6,31 @@ package logger
 
 import (
 	"github.com/sirupsen/logrus"
+	"github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/environment"
 	"io"
 	"io/ioutil"
 	"os"
 )
 
-// logger is an alias for the the standard logger.
-var logger = logrus.New()
+var (
+	// logger is an alias for the the standard logger.
+	logger = logrus.New()
+	// production is an alias of the api.Production to
+	// define logging levels.
+	production = api.Production
+)
 
 // Init will set up the logger and set logging levels
 // dependant on environment variables.
 func Init(env *environment.Env) {
 	isDebug := env.IsDebug()
 
-	// Set log level depending on SuperAdmin var
-	if isDebug {
+	// Set log level depending on Debug or Production.
+	if !production {
 		logger.SetLevel(logrus.TraceLevel)
+	} else if isDebug {
+		logger.SetLevel(logrus.DebugLevel)
 	} else {
 		logger.SetLevel(logrus.InfoLevel)
 	}
@@ -33,10 +41,10 @@ func Init(env *environment.Env) {
 		Debug:           isDebug,
 	})
 
-	// Send all logs to nowhere by default
+	// Send all logs to nowhere by default.
 	logger.SetOutput(ioutil.Discard)
 
-	// Send logs with level higher than warning to stderr
+	// Send logs with level higher than warning to stderr.
 	logger.AddHook(&WriterHook{
 		Writer: os.Stderr,
 		LogLevels: []logrus.Level{
@@ -51,48 +59,49 @@ func Init(env *environment.Env) {
 	logger.AddHook(&WriterHook{
 		Writer: os.Stdout,
 		LogLevels: []logrus.Level{
+			logrus.TraceLevel,
 			logrus.InfoLevel,
 			logrus.DebugLevel,
 		},
 	})
 }
 
-// Trace - Log a trace message with args.
+// Trace logs a trace message with args.
 func Trace(args ...interface{}) {
 	logger.Trace(args...)
 }
 
-// Debug - Log a debug message with args.
+// Debug logs a debug message with args.
 func Debug(args ...interface{}) {
 	logger.Debug(args...)
 }
 
-// Info - Log a info message with args.
+// Info logs a info message with args.
 func Info(args ...interface{}) {
 	logger.Info(args...)
 }
 
-// Warn - Log a warn message with args.
+// Warn logs a warn message with args.
 func Warn(args ...interface{}) {
 	logger.Warn(args...)
 }
 
-// Error - Log a error message with args.
+// Error logs a error message with args.
 func Error(args ...interface{}) {
 	logger.Error(args...)
 }
 
-// Fatal - Log a fatal message with args.
+// Fatal logs a fatal message with args.
 func Fatal(args ...interface{}) {
 	logger.Fatal(args...)
 }
 
-// Panic - Log a panic message with args.
+// Panic logs a panic message with args.
 func Panic(args ...interface{}) {
 	logger.Panic(args...)
 }
 
-// WithField - Logs with field, sets a new map containing
+// WithField logs with field, sets a new map containing
 // "fields".
 func WithField(key string, value interface{}) *logrus.Entry {
 	return logger.WithFields(logrus.Fields{"fields": logrus.Fields{
@@ -100,7 +109,7 @@ func WithField(key string, value interface{}) *logrus.Entry {
 	}})
 }
 
-// WithFields -Logs with fields, sets a new map containing
+// WithFields logs with fields, sets a new map containing
 // "fields".
 func WithFields(fields logrus.Fields) *logrus.Entry {
 	return logger.WithFields(logrus.Fields{"fields": fields})
@@ -115,4 +124,9 @@ func WithError(err interface{}) *logrus.Entry {
 // useful for testing.
 func SetOutput(writer io.Writer) {
 	logger.SetOutput(writer)
+}
+
+// SetLevel sets the lavel of the logger.
+func SetLevel(level logrus.Level) {
+	logger.SetLevel(level)
 }

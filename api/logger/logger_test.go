@@ -14,25 +14,36 @@ import (
 
 func (t *LoggerTestSuite) TestInit() {
 	tt := map[string]struct {
-		env  environment.Env
-		want interface{}
+		production bool
+		env        environment.Env
+		want       interface{}
 	}{
+		"Not Production": {
+			false,
+			environment.Env{AppDebug: "true"},
+			"trace",
+		},
 		"Not Debug": {
+			true,
 			environment.Env{AppDebug: "false"},
 			"info",
 		},
 		"Debug": {
+			true,
 			environment.Env{AppDebug: "true"},
-			"trace",
+			"debug",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
+			orig := production
 			defer func() {
 				logger = nil
 				logger = logrus.New()
+				production = orig
 			}()
+			production = test.production
 			Init(&test.env)
 			t.Equal(test.want, logger.Level.String())
 		})
@@ -104,14 +115,11 @@ func (t *LoggerTestSuite) TestLogger() {
 }
 
 func (t *LoggerTestSuite) TestLogger_Fatal() {
-	buf := t.Setup() //nolint
-
+	buf := t.Setup() // nolint
 	defer func() {
 		logger = logrus.New()
 	}()
-
 	logger.ExitFunc = func(i int) {}
-
 	Fatal("fatal")
 	t.Contains(buf.String(), "fatal")
 }
@@ -128,4 +136,12 @@ func (t *LoggerTestSuite) TestLogger_SetOutput() {
 	buf := &bytes.Buffer{}
 	SetOutput(buf)
 	t.Equal(buf, logger.Out)
+}
+
+func (t *LoggerTestSuite) TestSetLevel() {
+	defer func() {
+		logger = logrus.New()
+	}()
+	SetLevel(logrus.WarnLevel)
+	t.Equal(logrus.WarnLevel, logger.GetLevel())
 }

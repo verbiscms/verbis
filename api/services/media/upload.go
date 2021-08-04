@@ -40,6 +40,8 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		}
 	}()
 
+	opts := s.options.Struct()
+
 	_, err = out.Seek(0, 0)
 	if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error seeking file", Operation: op, Err: err}
@@ -49,7 +51,7 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		// E.g. .jpg or .png
 		ext = filepath.Ext(file.Filename)
 		// E.g. uploads/2020/01/gopher.png
-		path = filepath.Join(s.dir(), s.cleanFileName(file.Filename, ext)+ext)
+		path = filepath.Join(s.dir(opts.MediaOrganiseDate), s.cleanFileName(file.Filename, ext)+ext)
 	)
 
 	upload, err := s.storage.Upload(domain.Upload{
@@ -65,7 +67,7 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		return domain.Media{}, err
 	}
 
-	sizes, err := s.resize(upload, out)
+	sizes, err := s.resize(upload, out, opts)
 	if err != nil {
 		return domain.Media{}, err
 	}
@@ -81,8 +83,8 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 		return domain.Media{}, err
 	}
 
-	if s.options.MediaConvertWebP {
-		go s.toWebP(media)
+	if opts.MediaConvertWebP {
+		go s.toWebP(media, opts.MediaCompression)
 	}
 
 	return media, nil
@@ -93,10 +95,10 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 // by date, a date path will be created if it does
 // not exist, for example '2020/01', otherwise
 // it returns an empty string.
-func (s *Service) dir() string {
+func (s *Service) dir(organiseDate bool) string {
 	const prefix = paths.Uploads
 
-	if !s.options.MediaOrganiseDate {
+	if !organiseDate {
 		return prefix
 	}
 
@@ -142,7 +144,7 @@ func (s *Service) cleanFileName(name, ext string) string {
 // options and decodes, resizes and saves the
 // testMedia size.
 // Returns nil, (with no error) if the testMedia item can not be resized.
-func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes, error) {
+func (s *Service) resize(file domain.File, mp multipart.File, opts domain.Options) (domain.MediaSizes, error) {
 	if !file.Mime.CanResize() {
 		return nil, nil
 	}
@@ -152,7 +154,7 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 		savedSizes = make(domain.MediaSizes)
 	)
 
-	for key, size := range s.options.MediaSizes {
+	for key, size := range opts.MediaSizes {
 		var (
 			// E.g. gopher
 			extRemoved = files.RemoveFileExtension(file.Name)
@@ -171,13 +173,13 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 		// Resize and save if the file is a JPG.
 		if file.Mime.IsJPG() {
 			j := image.JPG{File: mp}
-			buf, err = s.resizer.Resize(&j, s.options.MediaCompression, size)
+			buf, err = s.resizer.Resize(&j, opts.MediaCompression, size)
 		}
 
 		// Resize and save if the file is a PNG.
 		if file.Mime.IsPNG() {
 			p := image.PNG{File: mp}
-			buf, err = s.resizer.Resize(&p, s.options.MediaCompression, size)
+			buf, err = s.resizer.Resize(&p, opts.MediaCompression, size)
 		}
 
 		if err != nil {
@@ -222,21 +224,21 @@ func (s *Service) resize(file domain.File, mp multipart.File) (domain.MediaSizes
 // and converts the images to webp. If the file
 // exists, and an error occurred, it will be
 // logged.
-func (s *Service) toWebP(media domain.Media) {
+func (s *Service) toWebP(media domain.Media, compression int) {
 	if !media.File.Mime.CanResize() {
 		return
 	}
 
-	s.fileToWebP(media.File)
+	s.fileToWebP(media.File, compression)
 
 	for _, v := range media.Sizes {
-		s.fileToWebP(v.File)
+		s.fileToWebP(v.File, compression)
 	}
 }
 
 // fileToWebP converts a domain.File to a WebP image.
 // Logs errors if the item failed to convert.
-func (s *Service) fileToWebP(file domain.File) {
+func (s *Service) fileToWebP(file domain.File, compression int) {
 	path := file.Url + domain.WebPExtension
 
 	logger.Debug("Attempting to convert image to WebP: " + path)
@@ -248,7 +250,7 @@ func (s *Service) fileToWebP(file domain.File) {
 	}
 
 	read := bytes.NewReader(b)
-	convert, err := s.webp.Convert(read, s.options.MediaCompression)
+	convert, err := s.webp.Convert(read, compression)
 	if err != nil {
 		logger.WithError(err).Error()
 		return

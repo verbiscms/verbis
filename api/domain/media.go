@@ -72,7 +72,7 @@ type (
 		Width    int           `json:"width"`
 		Height   int           `json:"height"`
 		Crop     types.BitBool `json:"crop"`
-		URL      string        `json:"url"`
+		Url      string        `json:"url"` //nolint
 		Path     string        `json:"path"`
 		Mime     Mime          `json:"mime"`
 		FileSize int64         `json:"file_size"`
@@ -93,7 +93,7 @@ func (m *Media) Public() MediaPublic {
 			Width:    v.Width,
 			Height:   v.Height,
 			Crop:     v.Crop,
-			URL:      v.File.Url,
+			Url:      v.File.Url,
 			Mime:     v.File.Mime,
 			FileSize: v.File.FileSize,
 		}

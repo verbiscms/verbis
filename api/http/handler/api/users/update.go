@@ -44,7 +44,5 @@ func (u *Users) Update(ctx *gin.Context) {
 		return
 	}
 
-	defer u.clearCache(updatedUser.Id)
-
 	api.Respond(ctx, http.StatusOK, "Successfully updated user with ID: "+strconv.Itoa(user.Id), updatedUser)
 }

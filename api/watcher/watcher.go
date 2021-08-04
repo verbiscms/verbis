@@ -16,9 +16,16 @@ import (
 // FileWatcher is an interface for implementing file notification
 // watchers.
 type FileWatcher interface {
+	// Watch starts the watch event with a given path and
+	// polling duration.
+	// Returns errors.INVALID if the path does not exist.
+	// Returns errors.INTERNAL if the watcher could not be started.
 	Watch(path string, poll time.Duration) error
+	// Events is the channel that an Event is passed to.
 	Events() <-chan Event
+	// Errors is the channel that an errors.Error is passed to.
 	Errors() <-chan errors.Error
+	// Close closes the watcher.
 	Close()
 }
 
@@ -30,8 +37,6 @@ type Event struct {
 	Mime      string
 	Extension string
 }
-
-const Watch = watcher.Chmod
 
 // Batcher describes the implementation of a FileWatcher.
 type Batcher struct {
@@ -72,7 +77,7 @@ func (b *Batcher) Close() {
 
 // PollingDuration is the default duration that file
 // watchers should poll for.
-const PollingDuration = time.Millisecond * 1
+const PollingDuration = time.Millisecond * 10
 
 // Watch is a blocking operation. It should be called with
 // go func(). It adds the path to the watcher and polls
@@ -111,14 +116,14 @@ func (b *Batcher) Watch(path string, poll time.Duration) error {
 	// Add the recursive path to watch for.
 	err := b.watcher.AddRecursive(path)
 	if err != nil {
-		return err
+		return &errors.Error{Code: errors.INVALID, Message: "Error adding path: " + path, Operation: op, Err: err}
 	}
 
 	// Start the watching process - it'll check for changes
 	// with the given polling duration.
 	err = b.watcher.Start(poll)
 	if err != nil {
-		return err
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error starting watcher", Operation: op, Err: err}
 	}
 
 	return nil

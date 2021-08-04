@@ -16,7 +16,7 @@ type Handler interface {
 	Config(ctx *gin.Context)
 	Templates(ctx *gin.Context)
 	Layouts(ctx *gin.Context)
-	Update(ctx *gin.Context)
+	Activate(ctx *gin.Context)
 }
 
 // Themes defines the handler for all site routes.
