@@ -72,7 +72,7 @@ type (
 		Width    int           `json:"width"`
 		Height   int           `json:"height"`
 		Crop     types.BitBool `json:"crop"`
-		Url      string        `json:"url"`
+		Url      string        `json:"url"` //nolint
 		Path     string        `json:"path"`
 		Mime     Mime          `json:"mime"`
 		FileSize int64         `json:"file_size"`
