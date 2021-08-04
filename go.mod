@@ -5,18 +5,20 @@ go 1.16
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/ainsleyclark/go-mail v1.0.3
+	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b
 	github.com/briandowns/spinner v1.16.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
+	github.com/eko/gocache/v2 v2.1.0
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/frankban/quicktest v1.11.0 // indirect
-	github.com/fsnotify/fsnotify v1.4.9
 	github.com/gabriel-vasile/mimetype v1.3.0
 	github.com/ghodss/yaml v1.0.0
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-playground/validator/v10 v10.7.0
+	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
@@ -25,8 +27,6 @@ require (
 	github.com/gorilla/websocket v1.4.2
 	github.com/graymeta/stow v0.2.7
 	github.com/hashicorp/go-version v1.3.0
-	github.com/jaschaephraim/lrserver v0.0.0-20171129202958-50d19f603f71 // indirect
-	github.com/jasonlvhit/gocron v0.0.1
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.3.0
 	github.com/json-iterator/go v1.1.11 // indirect
@@ -52,19 +52,20 @@ require (
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.0+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1
-	github.com/spf13/cast v1.3.1
+	github.com/spf13/cast v1.4.0
 	github.com/spf13/cobra v1.1.1
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/tdewolff/minify/v2 v2.9.10
 	github.com/ugorji/go v1.2.6 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
-	github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572 // indirect
+	github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023
 	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
+	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
