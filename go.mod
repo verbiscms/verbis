@@ -17,7 +17,7 @@ require (
 	github.com/gin-contrib/gzip v0.0.3
 	github.com/gin-contrib/location v0.0.2
 	github.com/gin-gonic/gin v1.7.2
-	github.com/go-playground/validator/v10 v10.7.0
+	github.com/go-playground/validator/v10 v10.8.0
 	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/golang/protobuf v1.5.2 // indirect
@@ -32,7 +32,6 @@ require (
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible
-	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/lib/pq v1.8.0
 	github.com/mailgun/mailgun-go/v4 v4.5.1 // indirect
 	github.com/manifoldco/promptui v0.8.0
@@ -64,7 +63,6 @@ require (
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
 	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023
-	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
