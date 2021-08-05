@@ -84,12 +84,12 @@ func (t *SysTestSuite) TestNew() {
 
 			if test.panic {
 				t.Panics(func() {
-					New(&mocks.Driver{})
+					New(&mocks.Driver{}, true)
 				})
 				return
 			}
 
-			got := New(&mocks.Driver{})
+			got := New(&mocks.Driver{}, true)
 			t.Equal(test.want, got.ExecutablePath)
 		})
 	}

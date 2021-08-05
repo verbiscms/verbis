@@ -31,10 +31,13 @@ type SPA struct {
 //
 // Creates a new spa handler.
 func New(d *deps.Deps) *SPA {
-	return &SPA{
-		Deps:      d,
-		publisher: publisher.NewRender(d),
+	s := &SPA{
+		Deps: d,
 	}
+	if d.Installed {
+		s.publisher = publisher.NewRender(d)
+	}
+	return s
 }
 
 // Operation for Errors
@@ -68,7 +71,9 @@ func (s *SPA) file(path string, ctx *gin.Context) {
 	data, err := s.FS.SPA.ReadFile(file)
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + path, Operation: op, Err: err}).Error()
-		s.publisher.NotFound(ctx)
+		if s.Installed {
+			s.publisher.NotFound(ctx)
+		}
 		return
 	}
 
@@ -84,7 +89,9 @@ func (s *SPA) page(ctx *gin.Context) {
 
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading admin admin file with the path: " + "index.html", Operation: op, Err: err}).Error()
-		s.publisher.NotFound(ctx)
+		if s.Installed {
+			s.publisher.NotFound(ctx)
+		}
 		return
 	}
 

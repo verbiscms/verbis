@@ -22,8 +22,12 @@ type System interface {
 	Update(restart bool) (string, error)
 	LatestVersion() string
 	HasUpdate() bool
+	Installer
+}
+
+type Installer interface {
 	Install(db domain.InstallVerbis, restart bool) error
-	Preflight(db domain.InstallPreflight) error
+	Validate(step int, data interface{}) error
 }
 
 // Sys defines the base and core functionality for Verbis,
@@ -32,7 +36,7 @@ type Sys struct {
 	// The path of the current executable.
 	ExecutablePath string
 	Driver         database.Driver
-	Installed bool
+	Installed      bool
 	client         *rocket.Updater
 	version        *sm.Version
 }
@@ -55,7 +59,7 @@ func New(db database.Driver, installed bool) *Sys {
 	s := &Sys{
 		Driver:         db,
 		ExecutablePath: exec,
-		Installed: installed,
+		Installed:      installed,
 		client:         u,
 		version:        version.SemVer,
 	}

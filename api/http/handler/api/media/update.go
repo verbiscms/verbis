@@ -33,7 +33,7 @@ func (m *Media) Update(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the media item", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	item.Id = id
+	item.ID = id
 
 	updated, err := m.service.Update(item)
 	if errors.Code(err) == errors.NOTFOUND {

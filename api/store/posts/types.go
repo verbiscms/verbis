@@ -6,7 +6,7 @@ package posts
 
 // postType
 //func (s *Store) postType(post *domain.PostDatum) domain.PostType {
-//	if s.Options.Homepage == post.Id {
+//	if s.Options.Homepage == post.ID {
 //		return domain.PostType{
 //			PageType: domain.HomeType,
 //		}

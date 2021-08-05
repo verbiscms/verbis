@@ -68,9 +68,9 @@ func (t *MediaServiceTestSuite) File(path string) []byte {
 const (
 	// MediaID is the default ID use for testing.
 	MediaID = 1
-	// TestFileURL defines the Url for media items for testing.
+	// TestFileURL defines the URL for media items for testing.
 	TestFileURL = "/uploads/2020/01/file.jpg"
-	// TestFileURL defines the WebP Url for media items for
+	// TestFileURL defines the WebP URL for media items for
 	// testing.
 	TestFileURLWebP = TestFileURL + domain.WebPExtension
 )
@@ -79,63 +79,63 @@ var (
 	// svgFile is the default domain.File with an SVG mime
 	// type used for testing.
 	svgFile = domain.File{
-		Id:       1,
-		Url:      "/uploads/gopher.svg",
+		ID:       1,
+		URL:      "/uploads/gopher.svg",
 		Name:     "gopher.svg",
-		BucketId: "/uploads/gopher.svg",
+		BucketID: "/uploads/gopher.svg",
 		Mime:     "image/svg+xml",
 		Private:  false,
 	}
 	// pngFile is the default domain.File with an PNG mime
 	// type used for testing.
 	pngFile = domain.File{
-		Id:       1,
-		Url:      "/uploads/gopher.png",
+		ID:       1,
+		URL:      "/uploads/gopher.png",
 		Name:     "gopher.png",
-		BucketId: "/uploads/gopher.png",
+		BucketID: "/uploads/gopher.png",
 		Mime:     "image/png",
 		Private:  false,
 	}
 	// jpgFile is the default domain.File with an JPG mime
 	// type used for testing.
 	jpgFile = domain.File{
-		Id:       1,
-		Url:      "/uploads/gopher.jpg",
+		ID:       1,
+		URL:      "/uploads/gopher.jpg",
 		Name:     "gopher.jpg",
-		BucketId: "/uploads/gopher.jpg",
+		BucketID: "/uploads/gopher.jpg",
 		Mime:     "image/jpeg",
 		Private:  false,
 	}
 	// testMedia is the default media Item used for
 	// testing.
 	testMedia = domain.Media{
-		Id:   MediaID,
-		File: domain.File{Id: 1, Url: TestFileURL},
+		ID:   MediaID,
+		File: domain.File{ID: 1, URL: TestFileURL},
 	}
 	// testMediaSlice are the default media items used
 	// for testing.
 	testMediaSlice = domain.MediaItems{
 		domain.Media{
-			Id:   MediaID,
-			File: domain.File{Id: 1, Url: TestFileURL},
+			ID:   MediaID,
+			File: domain.File{ID: 1, URL: TestFileURL},
 		},
 		domain.Media{
-			Id:   MediaID,
-			File: domain.File{Id: 1, Url: TestFileURL},
+			ID:   MediaID,
+			File: domain.File{ID: 1, URL: TestFileURL},
 		},
 	}
 	// testMediaSizes are the default media sizes used
 	// for testing.
 	testMediaSizes = domain.Media{
-		Id: MediaID,
+		ID: MediaID,
 		Sizes: domain.MediaSizes{
 			"thumnbnail": domain.MediaSize{
 				SizeKey:  "key",
 				SizeName: "name",
-				File:     domain.File{Id: 1, Url: TestFileURL},
+				File:     domain.File{ID: 1, URL: TestFileURL},
 			},
 		},
-		File: domain.File{Id: 1, Url: TestFileURL},
+		File: domain.File{ID: 1, URL: TestFileURL},
 	}
 	// opts is the default options with media sizes used
 	// for testing.

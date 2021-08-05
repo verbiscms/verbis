@@ -27,8 +27,8 @@ func (t *FieldsTestSuite) TestStore_Find() {
 			fields,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"post_id", "type", "name", "field_key", "value"}).
-					AddRow(fields[0].PostId, fields[0].Type, fields[0].Name, fields[0].Key, fields[0].OriginalValue).
-					AddRow(fields[1].PostId, fields[1].Type, fields[1].Name, fields[1].Key, fields[1].OriginalValue)
+					AddRow(fields[0].PostID, fields[0].Type, fields[0].Name, fields[0].Key, fields[0].OriginalValue).
+					AddRow(fields[1].PostID, fields[1].Type, fields[1].Name, fields[1].Key, fields[1].OriginalValue)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
@@ -49,7 +49,7 @@ func (t *FieldsTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(field.PostId)
+			got, err := s.Find(field.PostID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -68,8 +68,8 @@ func (t *FieldsTestSuite) TestStore_FindByPostAndKey() {
 			fields,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"post_id", "type", "name", "field_key", "value"}).
-					AddRow(fields[0].PostId, fields[0].Type, fields[0].Name, fields[0].Key, fields[0].OriginalValue).
-					AddRow(fields[1].PostId, fields[1].Type, fields[1].Name, fields[1].Key, fields[1].OriginalValue)
+					AddRow(fields[0].PostID, fields[0].Type, fields[0].Name, fields[0].Key, fields[0].OriginalValue).
+					AddRow(fields[1].PostID, fields[1].Type, fields[1].Name, fields[1].Key, fields[1].OriginalValue)
 				m.ExpectQuery(regexp.QuoteMeta(FindByPostAndKeyQuery)).WillReturnRows(rows)
 			},
 		},
@@ -90,7 +90,7 @@ func (t *FieldsTestSuite) TestStore_FindByPostAndKey() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.FindByPostAndKey(field.PostId, field.Key)
+			got, err := s.FindByPostAndKey(field.PostID, field.Key)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

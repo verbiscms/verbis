@@ -26,7 +26,7 @@ func (t *SizesTestSuite) TestStore_Find() {
 			sizes,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "size_key", "size_name"}).
-					AddRow(sizes["hd"].Id, sizes["hd"].SizeKey, sizes["hd"].SizeName)
+					AddRow(sizes["hd"].ID, sizes["hd"].SizeKey, sizes["hd"].SizeName)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},

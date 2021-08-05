@@ -50,6 +50,7 @@ func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gi
 			FS: &verbisfs.FileSystem{
 				SPA: mfs,
 			},
+			Installed: true,
 		},
 		publisher: m,
 	}

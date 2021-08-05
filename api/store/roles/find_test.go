@@ -26,7 +26,7 @@ func (t *RolesTestSuite) TestStore_Find() {
 			role,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name", "description"}).
-					AddRow(role.Id, role.Name, role.Description)
+					AddRow(role.ID, role.Name, role.Description)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
@@ -47,7 +47,7 @@ func (t *RolesTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(role.Id)
+			got, err := s.Find(role.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

@@ -33,7 +33,7 @@ func (u *Users) Update(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the user", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	user.Id = id
+	user.ID = id
 
 	updatedUser, err := u.Store.User.Update(user)
 	if errors.Code(err) == errors.NOTFOUND {
@@ -44,5 +44,5 @@ func (u *Users) Update(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully updated user with ID: "+strconv.Itoa(user.Id), updatedUser)
+	api.Respond(ctx, http.StatusOK, "Successfully updated user with ID: "+strconv.Itoa(user.ID), updatedUser)
 }

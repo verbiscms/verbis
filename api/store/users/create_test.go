@@ -28,7 +28,7 @@ func (t *UsersTestSuite) TestStore_Create() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}, test.DBAnyString{}, test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(user.ID), 1))
 
 				m.ExpectExec(regexp.QuoteMeta(CreatePivotQuery)).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -71,7 +71,7 @@ func (t *UsersTestSuite) TestStore_Create() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}, test.DBAnyString{}, test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(user.ID), 1))
 
 				m.ExpectExec(regexp.QuoteMeta(CreatePivotQuery)).
 					WillReturnError(fmt.Errorf("error"))

@@ -43,7 +43,7 @@ func (s *Store) Create(r domain.Redirect) (domain.Redirect, error) {
 	if err != nil {
 		return domain.Redirect{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created redirect ID", Operation: op, Err: err}
 	}
-	r.Id = int(id)
+	r.ID = int(id)
 
 	return r, nil
 }

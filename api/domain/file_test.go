@@ -20,12 +20,12 @@ func TestFile_ID(t *testing.T) {
 		want   interface{}
 	}{
 		"Local": {
-			File{BucketId: "uploads/2020/01/test.jpg", Provider: StorageLocal},
+			File{BucketID: "uploads/2020/01/test.jpg", Provider: StorageLocal},
 			"prefix",
 			"prefix/uploads/2020/01/test.jpg",
 		},
 		"Remote": {
-			File{BucketId: "uploads/2020/01/test.jpg"},
+			File{BucketID: "uploads/2020/01/test.jpg"},
 			"prefix",
 			"uploads/2020/01/test.jpg",
 		},
@@ -33,7 +33,7 @@ func TestFile_ID(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			got := test.input.ID(test.prefix)
+			got := test.input.FullPath(test.prefix)
 			assert.Equal(t, test.want, got)
 		})
 	}

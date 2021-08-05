@@ -32,8 +32,8 @@ func (t *FilesTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "url", "name", "bucket_id", "provider"}).
-					AddRow(files[0].Id, files[0].Url, files[0].Name, files[0].BucketId, files[0].Provider).
-					AddRow(files[1].Id, files[1].Url, files[1].Name, files[1].BucketId, files[1].Provider)
+					AddRow(files[0].ID, files[0].URL, files[0].Name, files[0].BucketID, files[0].Provider).
+					AddRow(files[1].ID, files[1].URL, files[1].Name, files[1].BucketID, files[1].Provider)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
@@ -74,8 +74,8 @@ func (t *FilesTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "url", "name", "bucket_id", "provider"}).
-					AddRow(files[0].Id, files[0].Url, files[0].Name, files[0].BucketId, files[0].Provider).
-					AddRow(files[1].Id, files[1].Url, files[1].Name, files[1].BucketId, files[1].Provider)
+					AddRow(files[0].ID, files[0].URL, files[0].Name, files[0].BucketID, files[0].Provider).
+					AddRow(files[1].ID, files[1].URL, files[1].Name, files[1].BucketID, files[1].Provider)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).
 					WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).

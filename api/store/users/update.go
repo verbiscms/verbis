@@ -32,7 +32,7 @@ func (s *Store) Update(u domain.User) (domain.User, error) {
 		Column("biography", u.Biography).
 		Column("profile_picture_id", u.ProfilePictureID).
 		Column("updated_at", "NOW()").
-		Where("id", "=", u.Id)
+		Where("id", "=", u.ID)
 
 	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
@@ -42,7 +42,7 @@ func (s *Store) Update(u domain.User) (domain.User, error) {
 	}
 
 	// Update the pivot table
-	err = s.updateUserRoles(u.Id, u.Role.Id)
+	err = s.updateUserRoles(u.ID, u.Role.ID)
 	if err != nil {
 		return domain.User{}, err
 	}

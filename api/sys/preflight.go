@@ -5,27 +5,52 @@
 package sys
 
 import (
+	"fmt"
+	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/logger"
 )
 
+const (
+	InstallDatabaseStep = iota
+	InstallUserStep
+	InstallSiteStep
+)
+
 // newDB is an alias for creating a new database.
 var newDB = database.New
 
-// Preflight checks to see if the database is valid before
-// proceeding with the installation.
-func (s *Sys) Preflight(db domain.InstallPreflight) error {
+func (s *Sys) Validate(step int, data interface{}) error {
+	switch step {
+	case InstallDatabaseStep:
+		db, ok := data.(domain.InstallDatabase)
+		if !ok {
+			return fmt.Errorf("error")
+		}
+		fmt.Println("got here")
+		err := validation.Validator()(data)
+		if err != nil {
+			return err
+		}
+		return s.Preflight(db)
+	default:
+		return validation.Validator().Struct(data)
+	}
+}
+
+
+func (s *Sys) ValidateDatabaseStep(db domain.InstallDatabase) error {
 	logger.Info("Attempting to connect to database")
 
 	env := &environment.Env{
 		DbDriver:   database.MySQLDriver,
-		DbHost:     db.DbHost,
-		DbPort:     db.DbPort,
-		DbDatabase: db.DbDatabase,
-		DbUser:     db.DbUser,
-		DbPassword: db.DbPassword,
+		DbHost:     db.DBHost,
+		DbPort:     db.DBPort,
+		DbDatabase: db.DBDatabase,
+		DbUser:     db.DBUser,
+		DbPassword: db.DBPassword,
 	}
 
 	_, err := newDB(env)
@@ -33,6 +58,37 @@ func (s *Sys) Preflight(db domain.InstallPreflight) error {
 		return err
 	}
 
-	logger.Info("Successfully connected to the database: " + db.DbDatabase)
+	logger.Info("Successfully connected to the database: " + db.DBDatabase)
+	return nil
+}
+
+func (s *Sys) ValidateUserStep(user domain.InstallUser) error {
+	return validation.Validator().Struct(user)
+}
+
+func (s *Sys) ValidateSiteStep(site domain.InstallSite) error {
+	return validation.Validator().Struct(site)
+}
+
+// Preflight checks to see if the database is valid before
+// proceeding with the installation.
+func (s *Sys) Preflight(db domain.InstallDatabase) error {
+	logger.Info("Attempting to connect to database")
+
+	env := &environment.Env{
+		DbDriver:   database.MySQLDriver,
+		DbHost:     db.DBHost,
+		DbPort:     db.DBPort,
+		DbDatabase: db.DBDatabase,
+		DbUser:     db.DBUser,
+		DbPassword: db.DBPassword,
+	}
+
+	_, err := newDB(env)
+	if err != nil {
+		return err
+	}
+
+	logger.Info("Successfully connected to the database: " + db.DBDatabase)
 	return nil
 }

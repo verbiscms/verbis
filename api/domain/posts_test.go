@@ -101,7 +101,7 @@ func TestPostDatum_IsHomepage(t *testing.T) {
 			2,
 			false,
 		},
-		"Zero ID": {
+		"Zero FullPath": {
 			0,
 			2,
 			false,
@@ -111,7 +111,7 @@ func TestPostDatum_IsHomepage(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			p := PostDatum{
-				Post: Post{Id: test.id},
+				Post: Post{ID: test.id},
 			}
 			got := p.IsHomepage(test.input)
 			assert.Equal(t, test.want, got)

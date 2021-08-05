@@ -50,7 +50,7 @@ func (t *PostsTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists(post.Id)
+			got := s.Exists(post.ID)
 			t.RunT(test.want, got)
 		})
 	}

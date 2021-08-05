@@ -42,16 +42,16 @@ func (s *Store) Create(f domain.Form) (domain.Form, error) {
 	if err != nil {
 		return domain.Form{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created form ID", Operation: op, Err: err}
 	}
-	f.Id = int(id)
+	f.ID = int(id)
 
 	for _, v := range f.Fields {
-		err := s.fields.Insert(f.Id, v)
+		err := s.fields.Insert(f.ID, v)
 		if err != nil {
 			return domain.Form{}, err
 		}
 	}
 
-	submissions, err := s.submissions.Find(f.Id)
+	submissions, err := s.submissions.Find(f.ID)
 	if err == nil {
 		f.Submissions = submissions
 	}

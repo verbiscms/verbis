@@ -31,11 +31,11 @@ func (t *PostsTestSuite) TestStore_Format() {
 		"Duplicate": {
 			false,
 			[]postsRaw{
-				{Post: domain.Post{Id: 1, Slug: "slug"}}, {Post: domain.Post{Id: 1, Slug: "slug"}},
+				{Post: domain.Post{ID: 1, Slug: "slug"}}, {Post: domain.Post{ID: 1, Slug: "slug"}},
 			},
 			domain.PostData{
 				{
-					Post:   domain.Post{Id: 1, Slug: "slug", Permalink: "/slug"},
+					Post:   domain.Post{ID: 1, Slug: "slug", Permalink: "/slug"},
 					Fields: domain.PostFields{},
 				},
 			},
@@ -44,14 +44,14 @@ func (t *PostsTestSuite) TestStore_Format() {
 			false,
 			[]postsRaw{
 				{
-					Post:  domain.Post{Id: 1, Slug: "slug", Title: "post", Permalink: "/slug"},
+					Post:  domain.Post{ID: 1, Slug: "slug", Title: "post", Permalink: "/slug"},
 					Field: postsRawFields{Name: "name", PostId: 1, UUID: &key},
 				},
 			},
 			domain.PostData{
 				{
-					Post:   domain.Post{Id: 1, Slug: "slug", Title: "post", Permalink: "/slug"},
-					Fields: domain.PostFields{domain.PostField{Name: "name", PostId: 1, UUID: key}},
+					Post:   domain.Post{ID: 1, Slug: "slug", Title: "post", Permalink: "/slug"},
+					Fields: domain.PostFields{domain.PostField{Name: "name", PostID: 1, UUID: key}},
 				},
 			},
 		},
@@ -59,22 +59,22 @@ func (t *PostsTestSuite) TestStore_Format() {
 			false,
 			[]postsRaw{
 				{
-					Post:  domain.Post{Id: 1, Slug: "slug", Title: "post", Permalink: "/slug"},
+					Post:  domain.Post{ID: 1, Slug: "slug", Title: "post", Permalink: "/slug"},
 					Field: postsRawFields{Name: "name", PostId: 1, UUID: &key},
 				},
 				{
-					Post:  domain.Post{Id: 2, Slug: "slug", Title: "post", Permalink: "/slug"},
+					Post:  domain.Post{ID: 2, Slug: "slug", Title: "post", Permalink: "/slug"},
 					Field: postsRawFields{Name: "name", PostId: 2, UUID: &key},
 				},
 			},
 			domain.PostData{
 				{
-					Post:   domain.Post{Id: 1, Slug: "slug", Title: "post", Permalink: "/slug"},
-					Fields: domain.PostFields{domain.PostField{Name: "name", PostId: 1, UUID: key}},
+					Post:   domain.Post{ID: 1, Slug: "slug", Title: "post", Permalink: "/slug"},
+					Fields: domain.PostFields{domain.PostField{Name: "name", PostID: 1, UUID: key}},
 				},
 				{
-					Post:   domain.Post{Id: 2, Slug: "slug", Title: "post", Permalink: "/slug"},
-					Fields: domain.PostFields{domain.PostField{Name: "name", PostId: 2, UUID: key}},
+					Post:   domain.Post{ID: 2, Slug: "slug", Title: "post", Permalink: "/slug"},
+					Fields: domain.PostFields{domain.PostField{Name: "name", PostID: 2, UUID: key}},
 				},
 			},
 		},

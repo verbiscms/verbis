@@ -68,7 +68,7 @@ func TestGetBreadcrumbs(t *testing.T) {
 		BreadcrumbsHomepageText: "Home",
 		BreadcrumbsHideHomePage: false,
 		Homepage:                1,
-		SiteUrl:                 "http://verbiscms.com",
+		SiteURL:                 "http://verbiscms.com",
 	}
 
 	tt := map[string]struct {
@@ -79,7 +79,7 @@ func TestGetBreadcrumbs(t *testing.T) {
 	}{
 		"Home": {
 			domain.PostDatum{
-				Post: domain.Post{Id: 1},
+				Post: domain.Post{ID: 1},
 			},
 			opts,
 			nil,
@@ -94,13 +94,13 @@ func TestGetBreadcrumbs(t *testing.T) {
 		},
 		"Hide Home": {
 			domain.PostDatum{
-				Post: domain.Post{Id: 1},
+				Post: domain.Post{ID: 1},
 			},
 			domain.Options{
 				BreadcrumbsEnable:       true,
 				BreadcrumbsHideHomePage: true,
 				Homepage:                1,
-				SiteUrl:                 "http://verbiscms.com",
+				SiteURL:                 "http://verbiscms.com",
 			},
 			nil,
 			Breadcrumbs{
@@ -197,7 +197,7 @@ func TestGetBreadcrumbs(t *testing.T) {
 				BreadcrumbsEnable:       true,
 				BreadcrumbsHomepageText: "Home",
 				SeoEnforceSlash:         true,
-				SiteUrl:                 "http://verbiscms.com",
+				SiteURL:                 "http://verbiscms.com",
 			},
 			func(m *mocks.Repository) {
 				m.On("FindBySlug", "news").
@@ -220,7 +220,7 @@ func TestGetBreadcrumbs(t *testing.T) {
 				BreadcrumbsEnable:       true,
 				BreadcrumbsHomepageText: "Home",
 				SeoEnforceSlash:         true,
-				SiteUrl:                 "http://verbiscms.com",
+				SiteURL:                 "http://verbiscms.com",
 			},
 			func(m *mocks.Repository) {
 				m.On("FindBySlug", "news").

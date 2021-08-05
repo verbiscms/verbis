@@ -67,7 +67,7 @@ type Container interface {
 // or work with the local file system dependant on
 // what is set in the options table.
 type Bucket interface {
-	// Find looks up the file with the given Url and retrieves
+	// Find looks up the file with the given URL and retrieves
 	// the appropriate bucket to obtain the file contents.
 	// It returns the byte value of the file as well as
 	// the domain.File.

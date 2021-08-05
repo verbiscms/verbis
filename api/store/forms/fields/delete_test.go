@@ -48,7 +48,7 @@ func (t *FieldsTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Delete(form.Id)
+			err := s.Delete(form.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

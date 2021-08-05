@@ -68,16 +68,16 @@ func (t *TplTestSuite) Setup() (*TemplateManager, *gin.Context, *domain.PostDatu
 
 	post := &domain.PostDatum{
 		Post: domain.Post{
-			Id:           1,
+			ID:           1,
 			Slug:         "/page",
 			Title:        "My Verbis Page",
 			Status:       "published",
 			PageTemplate: "single",
 			PageLayout:   "main",
-			UserId:       1,
+			UserID:       1,
 		},
 		Fields: domain.PostFields{
-			{PostId: 1, Type: "text", Name: "text", Key: "", OriginalValue: "Hello World!"},
+			{PostID: 1, Type: "text", Name: "text", Key: "", OriginalValue: "Hello World!"},
 		},
 	}
 

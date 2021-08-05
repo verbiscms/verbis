@@ -62,10 +62,10 @@ func (s *Store) Create(u domain.UserCreate) (domain.User, error) {
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created user ID", Operation: op, Err: err}
 	}
-	u.User.Id = int(id)
+	u.User.ID = int(id)
 
 	// Insert into the pivot table
-	err = s.createUserRoles(int(id), u.Role.Id)
+	err = s.createUserRoles(int(id), u.Role.ID)
 	if err != nil {
 		return domain.User{}, err
 	}

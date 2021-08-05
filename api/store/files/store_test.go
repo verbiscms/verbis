@@ -46,26 +46,26 @@ func (t *FilesTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 var (
 	// The default file used for testing.
 	file = domain.File{
-		Id:       1,
-		Url:      "/uploads/2020/01/file.jpg",
+		ID:       1,
+		URL:      "/uploads/2020/01/file.jpg",
 		Name:     "file.jpg",
-		BucketId: "uploads/2020/01/file.jpg",
+		BucketID: "uploads/2020/01/file.jpg",
 		Provider: domain.StorageLocal,
 	}
 	// The default files used for testing.
 	files = domain.Files{
 		{
-			Id:       1,
-			Url:      "/uploads/2020/01/file.jpg",
+			ID:       1,
+			URL:      "/uploads/2020/01/file.jpg",
 			Name:     "file.jpg",
-			BucketId: "uploads/2020/01/file.jpg",
+			BucketID: "uploads/2020/01/file.jpg",
 			Provider: domain.StorageLocal,
 		},
 		{
-			Id:       2,
-			Url:      "/uploads/2020/01/file-2.jpg",
+			ID:       2,
+			URL:      "/uploads/2020/01/file-2.jpg",
 			Name:     "file-2.jpg",
-			BucketId: "uploads/2020/01/file.jpg",
+			BucketID: "uploads/2020/01/file.jpg",
 			Provider: domain.StorageLocal,
 		},
 	}

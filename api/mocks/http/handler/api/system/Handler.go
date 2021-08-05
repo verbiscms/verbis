@@ -12,6 +12,16 @@ type Handler struct {
 	mock.Mock
 }
 
+// Install provides a mock function with given fields: ctx
+func (_m *Handler) Install(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
+// Preflight provides a mock function with given fields: ctx
+func (_m *Handler) Preflight(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
 // Update provides a mock function with given fields: ctx
 func (_m *Handler) Update(ctx *gin.Context) {
 	_m.Called(ctx)

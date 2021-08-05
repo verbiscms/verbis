@@ -26,7 +26,7 @@ func (t *PostsTestSuite) TestStore_Find() {
 			postDatumLayout,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.ID, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 					WillReturnRows(rows)
 			},
@@ -51,7 +51,7 @@ func (t *PostsTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(post.Id, false)
+			got, err := s.Find(post.ID, false)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -70,7 +70,7 @@ func (t *PostsTestSuite) TestStore_FindBySlug() {
 			postDatumLayout,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.ID, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindBySlugQuery))).
 					WillReturnRows(rows)
 			},

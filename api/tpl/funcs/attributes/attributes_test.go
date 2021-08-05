@@ -28,7 +28,7 @@ func TestNamespace_Body(t *testing.T) {
 	}{
 		"ID": {
 			domain.Post{
-				Id:           123,
+				ID:           123,
 				Title:        "title",
 				Resource:     "",
 				PageTemplate: "template",
@@ -39,7 +39,7 @@ func TestNamespace_Body(t *testing.T) {
 		},
 		"Resource": {
 			domain.Post{
-				Id:           1,
+				ID:           1,
 				Title:        "title",
 				Resource:     "resource",
 				PageTemplate: "template",
@@ -50,7 +50,7 @@ func TestNamespace_Body(t *testing.T) {
 		},
 		"template": {
 			domain.Post{
-				Id:           1,
+				ID:           1,
 				Title:        "title",
 				Resource:     "resource",
 				PageTemplate: "%$££@template*&",
@@ -61,7 +61,7 @@ func TestNamespace_Body(t *testing.T) {
 		},
 		"Logged In": {
 			domain.Post{
-				Id:           1,
+				ID:           1,
 				Title:        "title",
 				Resource:     "",
 				PageTemplate: "template",
@@ -119,7 +119,7 @@ func TestNamespace_Homepage(t *testing.T) {
 
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
-			post := &domain.PostDatum{Post: domain.Post{Id: test.input}}
+			post := &domain.PostDatum{Post: domain.Post{ID: test.input}}
 			ns := Namespace{
 				deps: &deps.Deps{Options: &domain.Options{Homepage: 1}},
 				tpld: &internal.TemplateDeps{Post: post},

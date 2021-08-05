@@ -55,7 +55,7 @@ func (t *PostsTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *Store {
 		Driver: t.Driver,
 		Owner: &domain.User{
 			UserPart: domain.UserPart{
-				Id: 1,
+				ID: 1,
 			},
 		},
 		Theme: mcfg,
@@ -90,14 +90,14 @@ var (
 	layout domain.FieldGroups
 	// The default post used for testing.
 	post = domain.Post{
-		Id:    1,
+		ID:    1,
 		Slug:  "slug",
 		Title: "post",
 	}
 	// The default post create used for testing.
 	postCreate = domain.PostCreate{
 		Post: domain.Post{
-			Id:           1,
+			ID:           1,
 			Title:        "post",
 			Slug:         "slug",
 			PageTemplate: "template",
@@ -108,7 +108,7 @@ var (
 	// The default post datum used for testing.
 	postDatum = domain.PostDatum{
 		Post: domain.Post{
-			Id:        1,
+			ID:        1,
 			Slug:      "slug",
 			Title:     "post",
 			Permalink: "/slug",
@@ -120,7 +120,7 @@ var (
 	// for testing.
 	postDatumLayout = domain.PostDatum{
 		Post: domain.Post{
-			Id:        1,
+			ID:        1,
 			Slug:      "slug",
 			Title:     "post",
 			Permalink: "/slug",
@@ -132,7 +132,7 @@ var (
 	posts = domain.PostData{
 		{
 			Post: domain.Post{
-				Id:        1,
+				ID:        1,
 				Slug:      "slug",
 				Title:     "post",
 				Permalink: "/slug",
@@ -140,7 +140,7 @@ var (
 		},
 		{
 			Post: domain.Post{
-				Id:        2,
+				ID:        2,
 				Slug:      "slug1",
 				Title:     "post1",
 				Permalink: "/slug",
@@ -150,7 +150,7 @@ var (
 	postData = domain.PostData{
 		{
 			Post: domain.Post{
-				Id:        1,
+				ID:        1,
 				Slug:      "slug",
 				Title:     "post",
 				Permalink: "/slug",
@@ -159,7 +159,7 @@ var (
 		},
 		{
 			Post: domain.Post{
-				Id:        2,
+				ID:        2,
 				Slug:      "slug1",
 				Title:     "post1",
 				Permalink: "/slug1",

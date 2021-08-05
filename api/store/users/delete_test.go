@@ -25,7 +25,7 @@ func (t *UsersTestSuite) TestStore_Delete() {
 		mock func(m sqlmock.Sqlmock)
 	}{
 		"Success": {
-			user.Id,
+			user.ID,
 			user,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
@@ -41,7 +41,7 @@ func (t *UsersTestSuite) TestStore_Delete() {
 			nil,
 		},
 		"No Rows": {
-			user.Id,
+			user.ID,
 			"No user exists with the ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
@@ -49,7 +49,7 @@ func (t *UsersTestSuite) TestStore_Delete() {
 			},
 		},
 		"Internal Error": {
-			user.Id,
+			user.ID,
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
@@ -57,7 +57,7 @@ func (t *UsersTestSuite) TestStore_Delete() {
 			},
 		},
 		"Error Pivot": {
-			user.Id,
+			user.ID,
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).

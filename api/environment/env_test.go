@@ -138,13 +138,13 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 		"Bad Validation": {
 			Env{},
 			validation.Errors{
-				validation.Error{Key: "app_port", Type: "required", Message: "App Port is required."},
-				validation.Error{Key: "db_driver", Type: "required", Message: "Db Driver is required."},
-				validation.Error{Key: "db_host", Type: "required", Message: "Db Host is required."},
-				validation.Error{Key: "db_port", Type: "required", Message: "Db Port is required."},
-				validation.Error{Key: "db_database", Type: "required", Message: "Db Database is required."},
-				validation.Error{Key: "db", Type: "required", Message: "Db is required."},
-				validation.Error{Key: "db_password", Type: "required", Message: "Db Password is required."},
+				validation.Error{Key: "APP_PORT", Type: "required", Message: "APP PORT is required."},
+				validation.Error{Key: "DB_DRIVER", Type: "required", Message: "DB DRIVER is required."},
+				validation.Error{Key: "DB_HOST", Type: "required", Message: "DB HOST is required."},
+				validation.Error{Key: "DB_PORT", Type: "required", Message: "DB PORT is required."},
+				validation.Error{Key: "DB_DATABASE", Type: "required", Message: "DB DATABASE is required."},
+				validation.Error{Key: "DB_USERNAME", Type: "required", Message: "DB USERNAME is required."},
+				validation.Error{Key: "DB_PASSWORD", Type: "required", Message: "DB PASSWORD is required."},
 			},
 		},
 	}

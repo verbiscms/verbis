@@ -27,9 +27,9 @@ func (t *PostsTestSuite) TestStore_Create() {
 
 	repoSuccess := func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
 		var cat *int
-		c.On("Insert", postCreate.Id, cat).Return(nil)
-		f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
-		m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
+		c.On("Insert", postCreate.ID, cat).Return(nil)
+		f.On("Insert", postCreate.ID, postCreate.Fields).Return(nil)
+		m.On("Insert", postCreate.ID, domain.PostOptions{}).Return(nil)
 	}
 
 	tt := map[string]struct {
@@ -44,10 +44,10 @@ func (t *PostsTestSuite) TestStore_Create() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(post.ID), 1))
 
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.ID, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).WillReturnRows(rows)
 			},
 			postDatum,
@@ -97,16 +97,16 @@ func (t *PostsTestSuite) TestStore_Create() {
 		"Meta Error": {
 			postCreate,
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
-				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(fmt.Errorf("error"))
+				f.On("Insert", postCreate.ID, postCreate.Fields).Return(nil)
+				m.On("Insert", postCreate.ID, domain.PostOptions{}).Return(fmt.Errorf("error"))
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(post.ID), 1))
 
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.ID, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 					WillReturnRows(rows)
 			},
@@ -115,16 +115,16 @@ func (t *PostsTestSuite) TestStore_Create() {
 		"Fields Error": {
 			postCreate,
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				f.On("Insert", postCreate.Id, postCreate.Fields).Return(fmt.Errorf("error"))
-				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
+				f.On("Insert", postCreate.ID, postCreate.Fields).Return(fmt.Errorf("error"))
+				m.On("Insert", postCreate.ID, domain.PostOptions{}).Return(nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(post.ID), 1))
 
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.ID, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 					WillReturnRows(rows)
 			},
@@ -133,7 +133,7 @@ func (t *PostsTestSuite) TestStore_Create() {
 		"Category Error": {
 			domain.PostCreate{
 				Post: domain.Post{
-					Id:           1,
+					ID:           1,
 					Title:        "post",
 					Slug:         "slug",
 					PageTemplate: "template",
@@ -143,17 +143,17 @@ func (t *PostsTestSuite) TestStore_Create() {
 				Fields:   domain.PostFields{},
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("Insert", postCreate.Id, &category).Return(fmt.Errorf("error"))
-				f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
-				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
+				c.On("Insert", postCreate.ID, &category).Return(fmt.Errorf("error"))
+				f.On("Insert", postCreate.ID, postCreate.Fields).Return(nil)
+				m.On("Insert", postCreate.ID, domain.PostOptions{}).Return(nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(post.ID), 1))
 
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.ID, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 					WillReturnRows(rows)
 			},

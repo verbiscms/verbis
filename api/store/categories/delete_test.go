@@ -69,7 +69,7 @@ func (t *CategoriesTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Delete(category.Id)
+			err := s.Delete(category.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

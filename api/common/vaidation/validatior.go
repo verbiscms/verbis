@@ -5,29 +5,18 @@
 package validation
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin/binding"
-	pkgValidate "github.com/go-playground/validator/v10"
-	strings2 "github.com/verbiscms/verbis/api/common/strings"
+	"github.com/go-playground/validator/v10"
+	vstrings "github.com/verbiscms/verbis/api/common/strings"
 	"github.com/verbiscms/verbis/api/domain"
 	"golang.org/x/crypto/bcrypt"
-	"regexp"
+	"reflect"
 	"strings"
+	"sync"
 )
 
-// Validator defines methods for checking the validation errors
-type Validator interface {
-	Process(errors pkgValidate.ValidationErrors) []Error
-	CmdCheck(key string, data interface{}) error
-	message(kind string, field string, param string) string
-}
-
-// Validation defines site wide validation for endpoints
-// and using the Package validation helper.
-type Validation struct {
-	Package *pkgValidate.Validate
-}
-
+// Errors defines a slice of validation errors used
+// within the application.
 type Errors []Error
 
 // Error defines the structure when returning
@@ -38,95 +27,74 @@ type Error struct {
 	Message string `json:"message"`
 }
 
-// New - Construct & set tag name
-func New() *Validation {
-	const op = "Validation.New"
-	v := &Validation{
-		Package: pkgValidate.New(),
-	}
+// defaultValidator defines site wide validation for endpoints
+// and using the validate helper.
+type defaultValidator struct {
+	once     sync.Once
+	validate *validator.Validate
+}
 
-	v.Package.SetTagName("binding")
+// v is the singleton of the defaultProvider.
+var v = &defaultValidator{}
 
-	if v, ok := binding.Validator.Engine().(*pkgValidate.Validate); ok {
-		err := v.RegisterValidation("password", comparePassword)
-		if err != nil {
-			fmt.Println(err)
-			// Using logger has an import cycle.
-			// logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error registering password validation", Operation: op, Err: err})
-		}
-	}
+// init assigns the gin binding to the default
+// validator. It also initialises the validation
+// package.
+func init() {
+	binding.Validator = v
+	v.lazyInit()
+}
 
-	return v
+// Validator returns to package validation used for
+// validation structs and maps etc..
+func Validator() *validator.Validate {
+	return v.validate
 }
 
 // Process handles validation errors and passes back to respond.
-func (v *Validation) Process(errors pkgValidate.ValidationErrors) []Error {
+// If the kind of the error is not of type ValidationErrors
+// nil will be returned.
+func Process(err error) Errors {
 	var returnErrors []Error
+
+	errors, ok := err.(validator.ValidationErrors)
+	if !ok {
+		return nil
+	}
+
 	for _, e := range errors {
-		field := e.Field()
-		result := strings.Split(e.Namespace(), ".")
-
-		// TODO: Clean up here
-		if len(result) > 2 && !strings.Contains(e.Namespace(), "PostCreate") || !strings.Contains(e.Namespace(), "UserCreate") {
-			field = ""
-			for i := 1; i < len(result); i++ {
-				field += result[i]
-			}
-		}
-
-		field = strings.ReplaceAll(field, "Part", "")
-		field = strings.ReplaceAll(field, "User", "")
-
-		reg := regexp.MustCompile(`[A-Z][^A-Z]*`)
-		fieldString := ""
-
-		if field == "" {
-			field = e.StructField()
-		}
-
-		submatchall := reg.FindAllString(field, -1)
-		for _, element := range submatchall {
-			if element == "User" || element == "post" {
-				continue
-			}
-			fieldString += strings.ToLower(element) + "_"
-		}
-
 		returnErrors = append(returnErrors, Error{
-			Key:     strings.TrimRight(fieldString, "_"),
+			Key:     e.Field(),
 			Type:    e.Tag(),
-			Message: v.message(e.Tag(), field, e.Param()),
+			Message: message(e.Tag(), e.Field(), e.Param()),
 		})
 	}
 
 	return returnErrors
 }
 
-// CmdCheck is a function for checking validation by struct on the command line.
-func (v *Validation) CmdCheck(key string, data interface{}) error {
-	err := v.Package.Struct(data)
-
-	if err != nil {
-		validationErrors, _ := err.(pkgValidate.ValidationErrors)
-		formatted := v.Process(validationErrors)
-
-		for _, e := range formatted {
-			if e.Key == key {
-				return fmt.Errorf(e.Message)
-			}
+// getKey traverses over the field and converts the string to
+// title case.
+func getKey(field string) string {
+	split := strings.Split(field, "_")
+	var str []string
+	for _, item := range split {
+		if item == "id" || item == "Id" || item == "url" || item == "Url" {
+			str = append(str, strings.ToUpper(item))
+			continue
 		}
+		str = append(str, strings.Title(item))
 	}
-
-	return nil
+	return strings.Join(str, " ")
 }
 
 // message checks the kind, field and parameters and binds custom
 // error messages.
-func (v *Validation) message(kind, field, param string) string {
+func message(kind, field, param string) string {
 	var errorMsg string
 
-	field = strings2.AddSpace(field)
-	param = strings2.AddSpace(param)
+	field = getKey(field)
+	param = vstrings.AddSpace(param)
 
 	switch kind {
 	case "required":
@@ -144,21 +112,75 @@ func (v *Validation) message(kind, field, param string) string {
 	case "ip":
 		errorMsg = field + " must be valid IP address."
 	case "url":
-		errorMsg = "Enter a valid url."
+		errorMsg = "Enter a valid URL."
 	case "eqfield":
 		errorMsg = field + " must equal the " + param + "."
 	case "password":
 		errorMsg = field + " doesn't match our records."
+	default:
+		errorMsg = "Validation failed on the " + field + " field."
 	}
-
 	return errorMsg
 }
 
 // comparePassword for the password field on the domain.UserPasswordReset
 // (custom validation)
-func comparePassword(fl pkgValidate.FieldLevel) bool {
+func comparePassword(fl validator.FieldLevel) bool {
 	curPass := fl.Field().String()
 	reset := fl.Parent().Interface().(*domain.UserPasswordReset)
 	err := bcrypt.CompareHashAndPassword([]byte(reset.DBPassword), []byte(curPass))
 	return err == nil
+}
+
+// Engine is the implementation of the StructValidator
+// for gin.
+func (v *defaultValidator) Engine() interface{} {
+	v.lazyInit()
+	return v.validate
+}
+
+// ValidateStruct is the implementation of the StructValidator
+// for gin.
+func (v *defaultValidator) ValidateStruct(obj interface{}) error {
+	if kindOfData(obj) == reflect.Struct {
+		v.lazyInit()
+		if err := v.validate.Struct(obj); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// kindOfData returns the reflect.Kind of the data passed,
+// if the item is a pointer, it will be de referenced.
+func kindOfData(data interface{}) reflect.Kind {
+	value := reflect.ValueOf(data)
+	valueType := value.Kind()
+	if valueType == reflect.Ptr {
+		valueType = value.Elem().Kind()
+	}
+	return valueType
+}
+
+// lazyInit initialises the defaultValidator on initialisation.
+// It creates a new validator, sets the tag key and
+// registers a tag name function.
+func (v *defaultValidator) lazyInit() {
+	v.once.Do(func() {
+		v.validate = validator.New()
+		v.validate.RegisterTagNameFunc(tagNameFunc)
+		v.validate.SetTagName("binding")
+		_ = v.validate.RegisterValidation("password", comparePassword)
+	})
+}
+
+// tagNameFunc sets the validation key. If the validation_key
+// exists it will be returned, otherwise the `json` key
+// will be returned.
+func tagNameFunc(fld reflect.StructField) string {
+	key := fld.Tag.Get("validation_key")
+	if key != "" {
+		return key
+	}
+	return fld.Tag.Get("json")
 }

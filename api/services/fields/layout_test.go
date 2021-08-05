@@ -129,7 +129,7 @@ func (t *FieldTestSuite) TestService_HandleLayoutArgs() {
 			args:   []interface{}{1},
 			mock: func(p *posts.Repository) {
 				p.On("Find", 1, true).Return(domain.PostDatum{
-					Post: domain.Post{Id: 1, Title: "post"},
+					Post: domain.Post{ID: 1, Title: "post"},
 					Layout: domain.FieldGroups{
 						{Title: "test1", Fields: domain.Fields{{Name: "key1"}, {Name: "key2"}}},
 					},
@@ -168,7 +168,7 @@ func (t *FieldTestSuite) TestService_GetLayoutsByPost() {
 			id: 1,
 			mock: func(p *posts.Repository) {
 				p.On("Find", 1, true).Return(domain.PostDatum{
-					Post:   domain.Post{Id: 1, Title: "post"},
+					Post:   domain.Post{ID: 1, Title: "post"},
 					Layout: domain.FieldGroups{{Title: "test"}},
 				}, nil)
 			},

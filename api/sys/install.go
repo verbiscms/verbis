@@ -26,12 +26,11 @@ func (s *Sys) Install(db domain.InstallVerbis, restart bool) error {
 	}()
 
 	env := &environment.Env{
-		//DbDriver:   db.DbDriver,
-		DbHost:     db.DbHost,
-		DbPort:     db.DbPort,
-		DbDatabase: db.DbDatabase,
-		DbUser:     db.DbUser,
-		DbPassword: db.DbPassword,
+		DbHost:     db.DBHost,
+		DbPort:     db.DBPort,
+		DbDatabase: db.DBDatabase,
+		DbUser:     db.DBUser,
+		DbPassword: db.DBPassword,
 	}
 
 	// Connect to database
@@ -40,7 +39,7 @@ func (s *Sys) Install(db domain.InstallVerbis, restart bool) error {
 	if err != nil {
 		return err
 	}
-	logger.Info("Successfully connected to the database: " + db.DbDatabase)
+	logger.Info("Successfully connected to the database: " + db.DBDatabase)
 
 	// Migrate
 	logger.Info("Migrating database")

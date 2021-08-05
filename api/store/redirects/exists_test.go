@@ -47,7 +47,7 @@ func (t *RedirectsTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists(redirect.Id)
+			got := s.Exists(redirect.ID)
 			t.RunT(test.want, got)
 		})
 	}

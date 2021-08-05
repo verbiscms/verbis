@@ -49,26 +49,26 @@ func (t *RedirectsTestSuite) Setup(mf func(m *mocks.Repository)) *Redirects {
 var (
 	// The default redirect used for testing.
 	redirect = domain.Redirect{
-		Id:   123,
+		ID:   123,
 		From: "/test",
 		To:   "/testing",
 		Code: 301,
 	}
 	// The default redirect with wrong validation used for testing.
 	redirectBadValidation = domain.Redirect{
-		Id:   123,
+		ID:   123,
 		From: "/test",
 		Code: 301,
 	}
 	// The default redirects used for testing.
 	redirects = domain.Redirects{
 		{
-			Id:   123,
+			ID:   123,
 			From: "/test",
 			To:   "/testing",
 		},
 		{
-			Id:   124,
+			ID:   124,
 			From: "/test1",
 			To:   "/testing2",
 		},

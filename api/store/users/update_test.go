@@ -26,7 +26,7 @@ func (t *UsersTestSuite) TestStore_Update() {
 			user,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(user.ID), 1))
 
 				m.ExpectExec(regexp.QuoteMeta(UpdatePivotQuery)).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -50,7 +50,7 @@ func (t *UsersTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(user.ID), 1))
 
 				m.ExpectExec(regexp.QuoteMeta(UpdatePivotQuery)).
 					WillReturnError(fmt.Errorf("error"))

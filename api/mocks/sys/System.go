@@ -55,11 +55,11 @@ func (_m *System) LatestVersion() string {
 }
 
 // Preflight provides a mock function with given fields: db
-func (_m *System) Preflight(db domain.InstallPreflight) error {
+func (_m *System) Preflight(db domain.InstallDatabase) error {
 	ret := _m.Called(db)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(domain.InstallPreflight) error); ok {
+	if rf, ok := ret.Get(0).(func(domain.InstallDatabase) error); ok {
 		r0 = rf(db)
 	} else {
 		r0 = ret.Error(0)

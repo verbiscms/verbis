@@ -55,7 +55,7 @@ var (
 		SiteTitle:        "test",
 		SiteDescription:  "test",
 		SiteLogo:         "test",
-		SiteUrl:          "http://verbiscms.com",
+		SiteURL:          "http://verbiscms.com",
 		ActiveTheme:      "theme",
 		GeneralLocale:    "test",
 		MediaCompression: 10,

@@ -38,7 +38,7 @@ func (t *SysTestSuite) TestSys_Preflight() {
 			newDB = test.fn
 			s := Sys{}
 
-			err := s.Preflight(domain.InstallPreflight{})
+			err := s.Preflight(domain.InstallDatabase{})
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return

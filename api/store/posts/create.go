@@ -61,7 +61,7 @@ func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 	if err != nil {
 		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created post ID", Operation: op, Err: err}
 	}
-	p.Id = int(id)
+	p.ID = int(id)
 
 	// Create the post meta.
 	err = s.meta.Insert(int(id), p.SeoMeta)
@@ -81,5 +81,5 @@ func (s *Store) Create(p domain.PostCreate) (domain.PostDatum, error) {
 		return domain.PostDatum{}, err
 	}
 
-	return s.Find(p.Id, true)
+	return s.Find(p.ID, true)
 }

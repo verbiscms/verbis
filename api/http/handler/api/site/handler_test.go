@@ -58,7 +58,7 @@ var (
 		Title:       "Verbis",
 		Description: "VerbisCMS",
 		Logo:        "/logo.svg",
-		Url:         "verbiscms.com",
+		URL:         "verbiscms.com",
 		Version:     "0.1",
 	}
 )

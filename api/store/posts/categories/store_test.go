@@ -53,10 +53,10 @@ var (
 	// The default post used for testing.
 	post = domain.PostDatum{
 		Post: domain.Post{
-			Id: 1,
+			ID: 1,
 		},
 		Category: &domain.Category{
-			Id: 2,
+			ID: 2,
 		},
 	}
 )

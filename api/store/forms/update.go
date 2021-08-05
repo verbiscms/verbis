@@ -29,7 +29,7 @@ func (s *Store) Update(f domain.Form) (domain.Form, error) {
 		Column("email_subject", f.EmailSubject).
 		Column("store_db", f.StoreDB).
 		Column("updated_at", "NOW()").
-		Where("id", "=", f.Id)
+		Where("id", "=", f.ID)
 
 	_, err := s.DB().Exec(q.Build(), uuid.New().String())
 	if err == sql.ErrNoRows {
@@ -39,13 +39,13 @@ func (s *Store) Update(f domain.Form) (domain.Form, error) {
 	}
 
 	for _, v := range f.Fields {
-		err := s.fields.Insert(f.Id, v)
+		err := s.fields.Insert(f.ID, v)
 		if err != nil {
 			return domain.Form{}, err
 		}
 	}
 
-	submissions, err := s.submissions.Find(f.Id)
+	submissions, err := s.submissions.Find(f.ID)
 	if err == nil {
 		f.Submissions = submissions
 	}

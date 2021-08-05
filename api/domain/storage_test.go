@@ -17,7 +17,7 @@ func TestBuckets_IsValid(t *testing.T) {
 	}{
 		"Valid": {
 			"bucket",
-			Buckets{Bucket{Name: "bucket-name", Id: "bucket"}},
+			Buckets{Bucket{Name: "bucket-name", ID: "bucket"}},
 			true,
 		},
 		"Not Valid": {

@@ -23,7 +23,7 @@ func (s *Store) Exists(field domain.PostField) bool {
 	q := s.Builder().
 		Select("id").
 		From(s.Schema()+TableName).
-		Where("post_id", "=", field.PostId).
+		Where("post_id", "=", field.PostID).
 		Where("type", "=", field.Type).
 		Where("field_key", "=", field.Key).
 		Where("name", "=", field.Name).

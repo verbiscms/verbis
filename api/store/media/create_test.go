@@ -27,11 +27,11 @@ func (t *MediaTestSuite) TestStore_Create() {
 		"Success": {
 			mediaItem,
 			func(m *mocks.Repository) {
-				m.On("Create", mediaItem.Id, mediaItem.Sizes).Return(mediaItem.Sizes, nil)
+				m.On("Create", mediaItem.ID, mediaItem.Sizes).Return(mediaItem.Sizes, nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(mediaItem.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(mediaItem.ID), 1))
 			},
 		},
 		"No Rows": {
@@ -61,11 +61,11 @@ func (t *MediaTestSuite) TestStore_Create() {
 		"Sizes Error": {
 			"error",
 			func(m *mocks.Repository) {
-				m.On("Create", mediaItem.Id, mediaItem.Sizes).Return(nil, fmt.Errorf("error"))
+				m.On("Create", mediaItem.ID, mediaItem.Sizes).Return(nil, fmt.Errorf("error"))
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(mediaItem.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(mediaItem.ID), 1))
 			},
 		},
 	}

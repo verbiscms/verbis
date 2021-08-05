@@ -49,7 +49,7 @@ func (t *MetaTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists(meta.PostId)
+			got := s.Exists(meta.PostID)
 			t.RunT(test.want, got)
 		})
 	}

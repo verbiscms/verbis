@@ -35,7 +35,7 @@ func (t *MediaServiceTestSuite) TestService_Delete() {
 		},
 		"Delete Error": {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-				r.On("Find", MediaID).Return(domain.Media{Id: MediaID}, nil)
+				r.On("Find", MediaID).Return(domain.Media{ID: MediaID}, nil)
 				r.On("Delete", MediaID).Return(fmt.Errorf("error"))
 			},
 			"error",
@@ -63,18 +63,18 @@ func (t *MediaServiceTestSuite) TestService_DeleteFiles() {
 		"Delete Success": {
 			testMedia,
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-				s.On("Delete", testMedia.File.Id).Return(nil)
+				s.On("Delete", testMedia.File.ID).Return(nil)
 				s.On("Find", TestFileURLWebP).Return(nil, domain.File{}, fmt.Errorf("error"))
-				r.On("Delete", testMedia.Id).Return(nil)
+				r.On("Delete", testMedia.ID).Return(nil)
 			},
 			"Deleted original media item",
 		},
 		"Single Error": {
 			testMedia,
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-				s.On("Delete", testMedia.File.Id).Return(fmt.Errorf("singular deleted"))
+				s.On("Delete", testMedia.File.ID).Return(fmt.Errorf("singular deleted"))
 				s.On("Find", TestFileURLWebP).Return(nil, domain.File{}, fmt.Errorf("Error"))
-				r.On("Delete", testMedia.Id).Return(nil)
+				r.On("Delete", testMedia.ID).Return(nil)
 			},
 			"singular deleted",
 		},
@@ -83,16 +83,16 @@ func (t *MediaServiceTestSuite) TestService_DeleteFiles() {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Delete", mock.Anything).Return(fmt.Errorf("size deleted"))
 				s.On("Find", TestFileURLWebP).Return(nil, domain.File{}, fmt.Errorf("Error"))
-				r.On("Delete", testMedia.Id).Return(nil)
+				r.On("Delete", testMedia.ID).Return(nil)
 			},
 			"size deleted",
 		},
 		"Repo Error": {
 			testMedia,
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-				s.On("Delete", testMedia.File.Id).Return(nil)
+				s.On("Delete", testMedia.File.ID).Return(nil)
 				s.On("Find", TestFileURLWebP).Return(nil, domain.File{}, fmt.Errorf("error"))
-				r.On("Delete", testMedia.Id).Return(fmt.Errorf("repo error"))
+				r.On("Delete", testMedia.ID).Return(fmt.Errorf("repo error"))
 			},
 			"repo error",
 		},
@@ -110,7 +110,7 @@ func (t *MediaServiceTestSuite) TestService_DeleteFiles() {
 }
 
 func (t *MediaServiceTestSuite) TestService_DeleteWebP() {
-	file := domain.File{Id: 1, Url: "/uploads/test.jpg", Name: "test.jpg"}
+	file := domain.File{ID: 1, URL: "/uploads/test.jpg", Name: "test.jpg"}
 
 	tt := map[string]struct {
 		mock func(r *repo.Repository, s *storage.Bucket, th *theme.Service)
@@ -119,7 +119,7 @@ func (t *MediaServiceTestSuite) TestService_DeleteWebP() {
 		"Success": {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Find", "/uploads/test.jpg.webp").Return(nil, file, nil)
-				s.On("Delete", file.Id).Return(nil)
+				s.On("Delete", file.ID).Return(nil)
 			},
 			"Deleted WebP file",
 		},
@@ -133,7 +133,7 @@ func (t *MediaServiceTestSuite) TestService_DeleteWebP() {
 		"Delete Error": {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Find", "/uploads/test.jpg.webp").Return(nil, file, nil)
-				s.On("Delete", file.Id).Return(fmt.Errorf("webp error"))
+				s.On("Delete", file.ID).Return(fmt.Errorf("webp error"))
 			},
 			"webp error",
 		},

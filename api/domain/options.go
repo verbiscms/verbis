@@ -30,7 +30,7 @@ type (
 		SiteTitle       string `json:"site_title" binding:"required"`
 		SiteDescription string `json:"site_description" binding:"required"`
 		SiteLogo        string `json:"site_logo" binding:"required"`
-		SiteUrl         string `json:"site_url" binding:"required,url"` //nolint
+		SiteURL         string `json:"site_url" binding:"required,url"`
 		// Theme
 		ActiveTheme string `json:"active_theme" binding:"required"`
 		Homepage    int    `json:"homepage"`
@@ -55,7 +55,7 @@ type (
 		MetaDescription         string `json:"meta_description" binding:"omitempty"`
 		MetaFacebookTitle       string `json:"meta_facebook_title" binding:"omitempty"`
 		MetaFacebookDescription string `json:"meta_facebook_description" binding:"omitempty"`
-		MetaFacebookImageId     int    `json:"meta_facebook_image_id" binding:"numeric"` //nolint
+		MetaFacebookImageID     int    `json:"meta_facebook_image_id" binding:"numeric"`
 		MetaTwitterTitle        string `json:"meta_twitter_title" binding:"omitempty"`
 		MetaTwitterDescription  string `json:"meta_twitter_description" binding:"omitempty"`
 		MetaTwitterImageID      int    `json:"meta_twitter_image_id" binding:"omitempty,numeric"`

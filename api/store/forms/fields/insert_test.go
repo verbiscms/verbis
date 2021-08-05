@@ -33,7 +33,7 @@ func (t *FieldsTestSuite) TestStore_Insert() {
 					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(formField.Options).
-					WillReturnResult(sqlmock.NewResult(int64(formField.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(formField.ID), 1))
 			},
 		},
 		"Update Error": {
@@ -55,7 +55,7 @@ func (t *FieldsTestSuite) TestStore_Insert() {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}, formField.Options).
-					WillReturnResult(sqlmock.NewResult(int64(formField.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(formField.ID), 1))
 			},
 		},
 		"Create Error": {
@@ -74,7 +74,7 @@ func (t *FieldsTestSuite) TestStore_Insert() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Insert(form.Id, formField)
+			err := s.Insert(form.ID, formField)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return
@@ -94,7 +94,7 @@ func (t *FieldsTestSuite) TestStore_Create() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}, formField.Options).
-					WillReturnResult(sqlmock.NewResult(int64(formField.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(formField.ID), 1))
 			},
 		},
 		"No Rows": {
@@ -118,7 +118,7 @@ func (t *FieldsTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.create(form.Id, formField)
+			err := s.create(form.ID, formField)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -138,7 +138,7 @@ func (t *FieldsTestSuite) TestStore_Update() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(formField.Options).
-					WillReturnResult(sqlmock.NewResult(int64(formField.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(formField.ID), 1))
 			},
 		},
 		"No Rows": {
@@ -162,7 +162,7 @@ func (t *FieldsTestSuite) TestStore_Update() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.update(form.Id, formField)
+			err := s.update(form.ID, formField)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

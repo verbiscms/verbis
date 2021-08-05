@@ -217,7 +217,7 @@ func (s *Storage) migrateBackground(ctx context.Context, channel chan migration,
 		m.wg.Done()
 	}()
 
-	buf, _, err := s.Find(m.file.Url)
+	buf, _, err := s.Find(m.file.URL)
 	if err != nil {
 		info.fail(m.file, err)
 		return
@@ -225,7 +225,7 @@ func (s *Storage) migrateBackground(ctx context.Context, channel chan migration,
 
 	u := domain.Upload{
 		UUID:       m.file.UUID,
-		Path:       m.file.Url,
+		Path:       m.file.URL,
 		Size:       m.file.FileSize,
 		Contents:   bytes.NewReader(buf),
 		Private:    bool(m.file.Private),
@@ -239,14 +239,14 @@ func (s *Storage) migrateBackground(ctx context.Context, channel chan migration,
 	}
 
 	if deleteFiles {
-		err = s.deleteFile(false, m.file.Id)
+		err = s.deleteFile(false, m.file.ID)
 		if err != nil {
 			info.fail(m.file, err)
 			return
 		}
 	}
 
-	file.Id = m.file.Id
+	file.ID = m.file.ID
 
 	updated, err := s.filesRepo.Update(file)
 	if err != nil {

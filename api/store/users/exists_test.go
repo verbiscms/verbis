@@ -47,7 +47,7 @@ func (t *UsersTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists(user.Id)
+			got := s.Exists(user.ID)
 			t.RunT(test.want, got)
 		})
 	}

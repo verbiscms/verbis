@@ -32,7 +32,7 @@ func Setup() (*Namespace, *mocks.Repository) {
 
 func TestNamespace_Find(t *testing.T) {
 	user := domain.User{
-		UserPart: domain.UserPart{Id: 1, FirstName: "verbis"},
+		UserPart: domain.UserPart{ID: 1, FirstName: "verbis"},
 	}
 
 	tt := map[string]struct {
@@ -82,8 +82,8 @@ func TestNamespace_Find(t *testing.T) {
 
 func TestNamespace_List(t *testing.T) {
 	users := domain.Users{
-		domain.User{UserPart: domain.UserPart{Id: 1, FirstName: "verbis"}},
-		domain.User{UserPart: domain.UserPart{Id: 1, FirstName: "cms"}},
+		domain.User{UserPart: domain.UserPart{ID: 1, FirstName: "verbis"}},
+		domain.User{UserPart: domain.UserPart{ID: 1, FirstName: "cms"}},
 	}
 
 	tt := map[string]struct {

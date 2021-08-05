@@ -49,7 +49,7 @@ func (t *FieldsTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Delete(field.PostId)
+			err := s.Delete(field.PostID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -90,7 +90,7 @@ func (t *FieldsTestSuite) TestStore_DeleteField() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.deleteField(field.PostId, field)
+			err := s.deleteField(field.PostID, field)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

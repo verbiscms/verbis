@@ -22,12 +22,12 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		api.Use(middleware.CORS())
 		api.Use(middleware.EmptyBody())
 
-		if d.Installed {
+		if !d.Installed {
 			h := handler.NewInstall(d)
 			// Preflight
-			api.POST("/install/preflight", h.System.Preflight)
+			api.POST("/install/validate/:step", h.System.Preflight)
 			// Install
-			api.POST("/install/database", h.System.Install)
+			api.POST("/install", h.System.Install)
 			return
 		}
 

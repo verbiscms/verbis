@@ -103,4 +103,3 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 		System:  system,
 	}, db, nil
 }
-

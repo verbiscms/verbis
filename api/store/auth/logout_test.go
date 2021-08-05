@@ -17,7 +17,7 @@ func (t *AuthTestSuite) TestStore_Logout() {
 		mock func(m *mocks.Repository)
 	}{
 		"Success": {
-			user.Id,
+			user.ID,
 			func(m *mocks.Repository) {
 				m.On("FindByToken", user.Token).Return(user, nil)
 				m.On("UpdateToken", "newtoken").Return(nil)

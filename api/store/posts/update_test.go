@@ -25,21 +25,21 @@ func (t *PostsTestSuite) TestStore_Update() {
 	category := 1
 	repoSuccess := func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
 		var cat *int
-		c.On("Insert", postCreate.Id, cat).Return(nil)
-		f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
-		m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
+		c.On("Insert", postCreate.ID, cat).Return(nil)
+		f.On("Insert", postCreate.ID, postCreate.Fields).Return(nil)
+		m.On("Insert", postCreate.ID, domain.PostOptions{}).Return(nil)
 	}
 	storeSuccess := func(m sqlmock.Sqlmock) {
 		rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-			AddRow(post.Id, post.Slug, post.Title)
+			AddRow(post.ID, post.Slug, post.Title)
 		m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 			WillReturnRows(rows)
 
 		m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-			WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
+			WillReturnResult(sqlmock.NewResult(int64(post.ID), 1))
 
 		rowsL := sqlmock.NewRows([]string{"id", "slug", "title"}).
-			AddRow(post.Id, post.Slug, post.Title)
+			AddRow(post.ID, post.Slug, post.Title)
 		m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 			WillReturnRows(rowsL)
 	}
@@ -70,7 +70,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, "validation", post.Title)
+					AddRow(post.ID, "validation", post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 					WillReturnRows(rows)
 
@@ -87,7 +87,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.ID, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 					WillReturnRows(rows)
 
@@ -101,7 +101,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 			repoSuccess,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(post.Id, post.Slug, post.Title)
+					AddRow(post.ID, post.Slug, post.Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(FindQuery))).
 					WillReturnRows(rows)
 
@@ -113,8 +113,8 @@ func (t *PostsTestSuite) TestStore_Update() {
 		"Meta Error": {
 			postCreate,
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
-				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(fmt.Errorf("error"))
+				f.On("Insert", postCreate.ID, postCreate.Fields).Return(nil)
+				m.On("Insert", postCreate.ID, domain.PostOptions{}).Return(fmt.Errorf("error"))
 			},
 			storeSuccess,
 			"error",
@@ -122,8 +122,8 @@ func (t *PostsTestSuite) TestStore_Update() {
 		"Fields Error": {
 			postCreate,
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				f.On("Insert", postCreate.Id, postCreate.Fields).Return(fmt.Errorf("error"))
-				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
+				f.On("Insert", postCreate.ID, postCreate.Fields).Return(fmt.Errorf("error"))
+				m.On("Insert", postCreate.ID, domain.PostOptions{}).Return(nil)
 			},
 			storeSuccess,
 			"error",
@@ -131,7 +131,7 @@ func (t *PostsTestSuite) TestStore_Update() {
 		"Category Error": {
 			domain.PostCreate{
 				Post: domain.Post{
-					Id:           1,
+					ID:           1,
 					Title:        "post",
 					Slug:         "slug",
 					PageTemplate: "template",
@@ -141,9 +141,9 @@ func (t *PostsTestSuite) TestStore_Update() {
 				Fields:   domain.PostFields{},
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("Insert", postCreate.Id, &category).Return(fmt.Errorf("error"))
-				f.On("Insert", postCreate.Id, postCreate.Fields).Return(nil)
-				m.On("Insert", postCreate.Id, domain.PostOptions{}).Return(nil)
+				c.On("Insert", postCreate.ID, &category).Return(fmt.Errorf("error"))
+				f.On("Insert", postCreate.ID, postCreate.Fields).Return(nil)
+				m.On("Insert", postCreate.ID, domain.PostOptions{}).Return(nil)
 			},
 			storeSuccess,
 			"error",

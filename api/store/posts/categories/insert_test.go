@@ -17,7 +17,7 @@ func (t *PostCategoriesTestSuite) TestStore_Insert() {
 		mock  func(m sqlmock.Sqlmock)
 	}{
 		"Update": {
-			&post.Category.Id,
+			&post.Category.ID,
 			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
@@ -30,7 +30,7 @@ func (t *PostCategoriesTestSuite) TestStore_Insert() {
 			},
 		},
 		"Update Error": {
-			&post.Category.Id,
+			&post.Category.ID,
 			"error",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
@@ -69,7 +69,7 @@ func (t *PostCategoriesTestSuite) TestStore_Insert() {
 			},
 		},
 		"Create": {
-			&post.Category.Id,
+			&post.Category.ID,
 			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
@@ -82,7 +82,7 @@ func (t *PostCategoriesTestSuite) TestStore_Insert() {
 			},
 		},
 		"Create Error": {
-			&post.Category.Id,
+			&post.Category.ID,
 			"error",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id"}).
@@ -109,7 +109,7 @@ func (t *PostCategoriesTestSuite) TestStore_Insert() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Insert(post.Id, test.input)
+			err := s.Insert(post.ID, test.input)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return

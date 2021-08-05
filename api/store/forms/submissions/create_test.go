@@ -28,7 +28,7 @@ func (t *SubmissionTestSuite) TestStore_Create() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
 					WithArgs(test.DBAnyString{}, formSubmission.Fields).
-					WillReturnResult(sqlmock.NewResult(int64(formSubmission.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(formSubmission.ID), 1))
 			},
 		},
 		"No Rows": {

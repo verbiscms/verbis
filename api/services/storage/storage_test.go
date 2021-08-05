@@ -105,11 +105,11 @@ var (
 	// fileLocal is the default local file used for
 	// testing.
 	fileLocal = domain.File{
-		Id:         0,
+		ID:         0,
 		UUID:       upload.UUID,
-		Url:        "/uploads/2020/01/test.txt",
+		URL:        "/uploads/2020/01/test.txt",
 		Name:       "test.txt",
-		BucketId:   "uploads/2020/01/test.txt",
+		BucketID:   "uploads/2020/01/test.txt",
 		Mime:       "text/plain; charset=utf-8",
 		SourceType: domain.MediaSourceType,
 		Provider:   domain.StorageLocal,
@@ -121,11 +121,11 @@ var (
 	// fileRemote is the default remote file used for
 	// testing.
 	fileRemote = domain.File{
-		Id:         0,
+		ID:         0,
 		UUID:       upload.UUID,
-		Url:        "/uploads/2020/01/test.txt",
+		URL:        "/uploads/2020/01/test.txt",
 		Name:       "test.txt",
-		BucketId:   "uploads/2020/01/test.txt",
+		BucketID:   "uploads/2020/01/test.txt",
 		Mime:       "text/plain; charset=utf-8",
 		SourceType: domain.MediaSourceType,
 		Provider:   domain.StorageAWS,

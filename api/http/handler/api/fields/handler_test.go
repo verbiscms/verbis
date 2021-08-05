@@ -74,7 +74,7 @@ var (
 	}
 	// The default category used for testing.
 	category = domain.Category{
-		Id:       123,
+		ID:       123,
 		Slug:     "/cat",
 		Name:     "Category",
 		Resource: "test",
@@ -82,12 +82,12 @@ var (
 	// The default user used for testing.
 	user = domain.User{
 		UserPart: domain.UserPart{
-			Id:        123,
+			ID:        123,
 			FirstName: "Verbis",
 			LastName:  "CMS",
 			Email:     "verbis@verbiscms.com",
 			Role: domain.Role{
-				Id: 1,
+				ID: 1,
 			},
 		},
 	}

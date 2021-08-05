@@ -37,5 +37,5 @@ func (c *Posts) Create(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created post with ID: "+strconv.Itoa(newPost.Id), newPost)
+	api.Respond(ctx, http.StatusOK, "Successfully created post with ID: "+strconv.Itoa(newPost.ID), newPost)
 }

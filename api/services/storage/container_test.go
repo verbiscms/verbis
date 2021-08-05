@@ -35,8 +35,8 @@ func (t *StorageTestSuite) TestContainer_ListBuckets() {
 				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
 			domain.Buckets{
-				domain.Bucket{Id: "id-1", Name: "name-1"},
-				domain.Bucket{Id: "id-2", Name: "name-2"},
+				domain.Bucket{ID: "id-1", Name: "name-1"},
+				domain.Bucket{ID: "id-2", Name: "name-2"},
 			},
 		},
 		"Service Error": {
@@ -83,7 +83,7 @@ func (t *StorageTestSuite) TestContainer_CreateBucket() {
 				m.On("Provider", domain.StorageLocal).Return(loc, nil)
 			},
 			domain.Bucket{
-				Id:   "bucket-id",
+				ID:   "bucket-id",
 				Name: "bucket-name",
 			},
 		},

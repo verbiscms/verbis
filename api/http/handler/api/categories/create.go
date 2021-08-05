@@ -37,5 +37,5 @@ func (c *Categories) Create(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created category with ID: "+strconv.Itoa(category.Id), newCategory)
+	api.Respond(ctx, http.StatusOK, "Successfully created category with ID: "+strconv.Itoa(category.ID), newCategory)
 }

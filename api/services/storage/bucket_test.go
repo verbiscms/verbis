@@ -163,8 +163,8 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				item.On("ID").Return("uploads/2020/01/test.txt")
 
 				cont := &mocks.StowContainer{}
-				cont.On("ID").Return("bucket")
 				cont.On("Put", mock.Anything, upload.Contents, upload.Size, mock.Anything).Return(item, nil)
+				cont.On("ID").Return("bucket")
 
 				m.On("Config").Return(domain.StorageAWS, "", nil)
 				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
@@ -235,8 +235,8 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				item.On("URL").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
 
 				cont := &mocks.StowContainer{}
-				cont.On("ID").Return("bucket")
 				cont.On("Put", "/uploads/2020/01/"+key+".txt", upload.Contents, upload.Size, mock.Anything).Return(item, nil)
+				cont.On("ID").Return("bucket")
 
 				m.On("Config").Return(domain.StorageLocal, "", nil)
 				m.On("Bucket", domain.StorageLocal, "").Return(cont, nil)

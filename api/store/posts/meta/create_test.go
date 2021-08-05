@@ -26,15 +26,15 @@ func (t *MetaTestSuite) TestStore_Create() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(meta.PostId, meta.Seo, meta.Meta).
-					WillReturnResult(sqlmock.NewResult(int64(meta.Id), 1))
+					WithArgs(meta.PostID, meta.Seo, meta.Meta).
+					WillReturnResult(sqlmock.NewResult(int64(meta.ID), 1))
 			},
 		},
 		"No Rows": {
 			"Error creating meta with the post ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(meta.PostId, meta.Seo, meta.Meta).
+					WithArgs(meta.PostID, meta.Seo, meta.Meta).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -42,7 +42,7 @@ func (t *MetaTestSuite) TestStore_Create() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(meta.PostId, meta.Seo, meta.Meta).
+					WithArgs(meta.PostID, meta.Seo, meta.Meta).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -51,7 +51,7 @@ func (t *MetaTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.create(meta.PostId, meta)
+			err := s.create(meta.PostID, meta)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

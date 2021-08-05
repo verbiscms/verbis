@@ -22,7 +22,7 @@ type (
 	// UserPart defines the User with non-sensitive
 	// information.
 	UserPart struct {
-		Id               int        `db:"id" json:"id"` //nolint
+		ID               int        `db:"id" json:"id"`
 		UUID             uuid.UUID  `db:"uuid" json:"uuid"`
 		FirstName        string     `db:"first_name" json:"first_name" binding:"required,max=150,alpha"`
 		LastName         string     `db:"last_name" json:"last_name" binding:"required,max=150,alpha"`
@@ -58,7 +58,7 @@ type (
 	// Role defines the role a user has, from the pivot
 	// table.
 	Role struct {
-		Id          int    `db:"id" json:"id" binding:"required,numeric"` //nolint
+		ID          int    `db:"id" json:"id" binding:"required,numeric" validation_key:"role_id"`
 		Name        string `db:"name" json:"name"`
 		Description string `db:"description" json:"description"`
 	}
@@ -103,7 +103,7 @@ func (u Users) HideCredentials() UsersParts {
 // tokens.
 func (u *User) HideCredentials() UserPart {
 	return UserPart{
-		Id:               u.Id,
+		ID:               u.ID,
 		UUID:             u.UUID,
 		FirstName:        u.FirstName,
 		LastName:         u.LastName,

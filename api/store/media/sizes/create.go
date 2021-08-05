@@ -21,7 +21,7 @@ func (s *Store) Create(mediaID int, sizes domain.MediaSizes) (domain.MediaSizes,
 	for key, size := range sizes {
 		q := s.Builder().
 			Insert(s.Schema()+TableName).
-			Column("file_id", size.FileId).
+			Column("file_id", size.FileID).
 			Column("media_id", mediaID).
 			Column("size_name", size.SizeName).
 			Column("size_key", key).
@@ -41,7 +41,7 @@ func (s *Store) Create(mediaID int, sizes domain.MediaSizes) (domain.MediaSizes,
 			return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created media size ID", Operation: op, Err: err}
 		}
 
-		size.Id = int(id)
+		size.ID = int(id)
 		sizes[key] = size
 	}
 

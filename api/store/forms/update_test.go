@@ -29,13 +29,13 @@ func (t *FormsTestSuite) TestStore_Update() {
 		"Success": {
 			form,
 			func(f *fields.Repository, s *submissions.Repository) {
-				f.On("Insert", form.Id, form.Fields[0]).Return(nil)
-				s.On("Find", form.Id).Return(form.Submissions, nil)
+				f.On("Insert", form.ID, form.Fields[0]).Return(nil)
+				s.On("Find", form.ID).Return(form.Submissions, nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(form.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(form.ID), 1))
 			},
 		},
 		"No Rows": {
@@ -59,12 +59,12 @@ func (t *FormsTestSuite) TestStore_Update() {
 		"Error Fields": {
 			"error",
 			func(f *fields.Repository, s *submissions.Repository) {
-				f.On("Insert", form.Id, formFields[0]).Return(&errors.Error{Message: "error"})
+				f.On("Insert", form.ID, formFields[0]).Return(&errors.Error{Message: "error"})
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(form.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(form.ID), 1))
 			},
 		},
 	}

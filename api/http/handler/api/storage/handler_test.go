@@ -43,8 +43,8 @@ func (t *StorageTestSuite) Setup(mf func(m *mocks.Provider)) *Storage {
 var (
 	// The default buckets used for testing.
 	buckets = domain.Buckets{
-		domain.Bucket{Id: "1", Name: "verbis"},
-		domain.Bucket{Id: "2", Name: "verbis"},
+		domain.Bucket{ID: "1", Name: "verbis"},
+		domain.Bucket{ID: "2", Name: "verbis"},
 	}
 	// The default storageConfiguration used for
 	// testing.

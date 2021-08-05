@@ -30,7 +30,7 @@ func (s *Store) Update(r domain.Redirect) (domain.Redirect, error) {
 		Column("to_path", r.To).
 		Column("code", r.Code).
 		Column("updated_at", "NOW()").
-		Where("id", "=", r.Id)
+		Where("id", "=", r.ID)
 
 	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {

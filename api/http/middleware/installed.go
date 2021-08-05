@@ -23,7 +23,7 @@ var (
 	// excludedInstall are the post routes excluded from
 	// being redirected.
 	excludedInstall = []string{
-		app.HTTPAPIRoute + "/install/preflight",
+		app.HTTPAPIRoute + "/install/validate",
 		app.HTTPAPIRoute + "/install",
 	}
 )
@@ -51,7 +51,7 @@ func Installed(d *deps.Deps) gin.HandlerFunc {
 		}
 
 		for _, exclude := range excludedInstall {
-			if ctx.Request.Method == http.MethodPost && url == exclude {
+			if ctx.Request.Method == http.MethodPost && strings.Contains(url, exclude) {
 				ctx.Next()
 				return
 			}

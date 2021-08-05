@@ -7,7 +7,6 @@ package environment
 import (
 	"bytes"
 	_ "embed"
-	pkgValidate "github.com/go-playground/validator/v10"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
@@ -156,11 +155,9 @@ func Load() (*Env, error) {
 // there are no validation errors, nil will be
 // returned.
 func (e *Env) Validate() validation.Errors {
-	v := validation.New()
-	err := v.Package.Struct(e)
+	err := validation.Validator().Struct(e)
 	if err != nil {
-		validationErrors := err.(pkgValidate.ValidationErrors)
-		return v.Process(validationErrors)
+		return validation.Process(err)
 	}
 	return nil
 }

@@ -32,8 +32,8 @@ func (t *RedirectsTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
-					AddRow(redirects[0].Id, redirects[0].From, redirects[0].To, redirects[0].Code).
-					AddRow(redirects[1].Id, redirects[1].From, redirects[1].To, redirects[1].Code)
+					AddRow(redirects[0].ID, redirects[0].From, redirects[0].To, redirects[0].Code).
+					AddRow(redirects[1].ID, redirects[1].From, redirects[1].To, redirects[1].Code)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
@@ -72,8 +72,8 @@ func (t *RedirectsTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
-					AddRow(redirects[0].Id, redirects[0].From, redirects[0].To, redirects[0].Code).
-					AddRow(redirects[1].Id, redirects[1].From, redirects[1].To, redirects[1].Code)
+					AddRow(redirects[0].ID, redirects[0].From, redirects[0].To, redirects[0].Code).
+					AddRow(redirects[1].ID, redirects[1].From, redirects[1].To, redirects[1].Code)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},

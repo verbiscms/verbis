@@ -10,7 +10,7 @@ package posts
 // Returns the owner ID under circumstances.
 func (s *Store) checkOwner(id int) int {
 	if id == 0 || !s.users.Exists(id) {
-		return s.Owner.Id
+		return s.Owner.ID
 	}
 	return id
 }

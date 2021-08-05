@@ -35,7 +35,7 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 		return nil, domain.File{}, err
 	}
 
-	id := file.ID(s.paths.Storage)
+	id := file.FullPath(s.paths.Storage)
 
 	item, err := bucket.Item(id)
 	if err != nil {
@@ -110,9 +110,9 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 
 	f := domain.File{
 		UUID:       u.UUID,
-		Url:        "/" + vstrings.TrimSlashes(u.Path),
+		URL:        "/" + vstrings.TrimSlashes(u.Path),
 		Name:       path.Base(u.Path),
-		BucketId:   id,
+		BucketID:   id,
 		Mime:       mime,
 		SourceType: u.SourceType,
 		Provider:   p,
@@ -159,7 +159,7 @@ func (s *Storage) deleteFile(database bool, id int) error {
 		return err
 	}
 
-	err = bucket.RemoveItem(file.ID(s.paths.Storage))
+	err = bucket.RemoveItem(file.FullPath(s.paths.Storage))
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
 	}
@@ -168,7 +168,7 @@ func (s *Storage) deleteFile(database bool, id int) error {
 		return nil
 	}
 
-	err = s.filesRepo.Delete(file.Id)
+	err = s.filesRepo.Delete(file.ID)
 	if err != nil {
 		return err
 	}

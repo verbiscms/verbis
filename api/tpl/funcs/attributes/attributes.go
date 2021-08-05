@@ -31,7 +31,7 @@ func (ns *Namespace) Body() string {
 	}
 
 	// Page ID (e.g. page-id-2)
-	body.WriteString(fmt.Sprintf("page-id-%v ", p.Id))
+	body.WriteString(fmt.Sprintf("page-id-%v ", p.ID))
 
 	// Title
 	body.WriteString(fmt.Sprintf("page-title-%s ", cssValidString(p.Title)))

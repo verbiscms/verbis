@@ -23,8 +23,8 @@ func (t *MetaTestSuite) TestStore_Insert() {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
 					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(meta.Seo, meta.Meta, meta.PostId).
-					WillReturnResult(sqlmock.NewResult(int64(meta.Id), 1))
+					WithArgs(meta.Seo, meta.Meta, meta.PostID).
+					WillReturnResult(sqlmock.NewResult(int64(meta.ID), 1))
 			},
 		},
 		"Update Error": {
@@ -35,7 +35,7 @@ func (t *MetaTestSuite) TestStore_Insert() {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
 					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(meta.Seo, meta.Meta, meta.PostId).
+					WithArgs(meta.Seo, meta.Meta, meta.PostID).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -47,8 +47,8 @@ func (t *MetaTestSuite) TestStore_Insert() {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
 					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(meta.PostId, meta.Seo, meta.Meta).
-					WillReturnResult(sqlmock.NewResult(int64(meta.Id), 1))
+					WithArgs(meta.PostID, meta.Seo, meta.Meta).
+					WillReturnResult(sqlmock.NewResult(int64(meta.ID), 1))
 			},
 		},
 		"Create Error": {
@@ -59,7 +59,7 @@ func (t *MetaTestSuite) TestStore_Insert() {
 				m.ExpectQuery(regexp.QuoteMeta(ExistsQuery)).
 					WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(meta.PostId, meta.Seo, meta.Meta).
+					WithArgs(meta.PostID, meta.Seo, meta.Meta).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -68,7 +68,7 @@ func (t *MetaTestSuite) TestStore_Insert() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Insert(meta.PostId, meta)
+			err := s.Insert(meta.PostID, meta)
 			if err != nil {
 				t.Contains(err.Error(), test.want)
 				return

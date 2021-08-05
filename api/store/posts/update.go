@@ -19,7 +19,7 @@ import (
 func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 	const op = "PostStore.Create"
 
-	oldPost, err := s.Find(p.Id, false)
+	oldPost, err := s.Find(p.ID, false)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
@@ -47,7 +47,7 @@ func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 		Column("user_id", s.checkOwner(p.Author)).
 		Column("published_at", p.PublishedAt).
 		Column("updated_at", "NOW()").
-		Where("id", "=", p.Id)
+		Where("id", "=", p.ID)
 
 	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {
@@ -57,22 +57,22 @@ func (s *Store) Update(p domain.PostCreate) (domain.PostDatum, error) {
 	}
 
 	// Update the post meta.
-	err = s.meta.Insert(p.Id, p.SeoMeta)
+	err = s.meta.Insert(p.ID, p.SeoMeta)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
 
 	// Update the post fields.
-	err = s.fields.Insert(p.Id, p.Fields)
+	err = s.fields.Insert(p.ID, p.Fields)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
 
 	// Update the post categories
-	err = s.categories.Insert(p.Id, p.Category)
+	err = s.categories.Insert(p.ID, p.Category)
 	if err != nil {
 		return domain.PostDatum{}, err
 	}
 
-	return s.Find(p.Id, true)
+	return s.Find(p.ID, true)
 }

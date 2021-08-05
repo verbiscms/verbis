@@ -26,7 +26,7 @@ func (t *RedirectsTestSuite) TestStore_Create() {
 			redirect,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(redirect.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(redirect.ID), 1))
 			},
 		},
 		"Validation Failed": {

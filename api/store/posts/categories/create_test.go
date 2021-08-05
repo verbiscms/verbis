@@ -26,7 +26,7 @@ func (t *PostCategoriesTestSuite) TestStore_Create() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(post.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(post.ID), 1))
 			},
 		},
 		"No Rows": {
@@ -48,7 +48,7 @@ func (t *PostCategoriesTestSuite) TestStore_Create() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.create(post.Id, post.Category.Id)
+			err := s.create(post.ID, post.Category.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

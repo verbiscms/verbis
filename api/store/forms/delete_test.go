@@ -28,8 +28,8 @@ func (t *FormsTestSuite) TestStore_Delete() {
 		"Success": {
 			nil,
 			func(f *fields.Repository, s *submissions.Repository) {
-				f.On("Delete", form.Id).Return(nil)
-				s.On("Delete", form.Id).Return(nil)
+				f.On("Delete", form.ID).Return(nil)
+				s.On("Delete", form.ID).Return(nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
@@ -55,8 +55,8 @@ func (t *FormsTestSuite) TestStore_Delete() {
 		"Fields Error": {
 			"error",
 			func(f *fields.Repository, s *submissions.Repository) {
-				f.On("Delete", form.Id).Return(&errors.Error{Message: "error"})
-				s.On("Delete", form.Id).Return(nil)
+				f.On("Delete", form.ID).Return(&errors.Error{Message: "error"})
+				s.On("Delete", form.ID).Return(nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
@@ -66,8 +66,8 @@ func (t *FormsTestSuite) TestStore_Delete() {
 		"Submission Error": {
 			"error",
 			func(f *fields.Repository, s *submissions.Repository) {
-				f.On("Delete", form.Id).Return(nil)
-				s.On("Delete", form.Id).Return(&errors.Error{Message: "error"})
+				f.On("Delete", form.ID).Return(nil)
+				s.On("Delete", form.ID).Return(&errors.Error{Message: "error"})
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
@@ -79,7 +79,7 @@ func (t *FormsTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock, test.mockForms)
-			err := s.Delete(form.Id)
+			err := s.Delete(form.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

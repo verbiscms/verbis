@@ -16,13 +16,13 @@ import (
 type (
 	// Media defines the core media entity for Verbis.
 	Media struct {
-		Id          int        `db:"id" json:"id"` //nolint
+		ID          int        `db:"id" json:"id"`
 		Title       string     `db:"title" json:"title"`
 		Alt         string     `db:"alt" json:"alt"`
 		Description string     `db:"description" json:"description"`
 		Sizes       MediaSizes `db:"-" json:"sizes"`
-		UserId      int        `db:"user_id" json:"user_id"` //nolint
-		FileId      int        `db:"file_id" json:"-"`       //nolint
+		UserID      int        `db:"user_id" json:"user_id"`
+		FileID      int        `db:"file_id" json:"-"`
 		File        File       `db:"file" json:"file"`
 		CreatedAt   time.Time  `db:"created_at" json:"created_at"`
 		UpdatedAt   time.Time  `db:"updated_at" json:"updated_at"`
@@ -35,9 +35,9 @@ type (
 	// MediaSize defines an individual media size that's
 	// stored in the database.
 	MediaSize struct {
-		Id       int           `db:"id" json:"id"`      //nolint
-		FileId   int           `db:"file_id" json:"-"`  //nolint
-		MediaId  int           `db:"media_id" json:"-"` //nolint
+		ID       int           `db:"id" json:"id"`
+		FileID   int           `db:"file_id" json:"-"`
+		MediaID  int           `db:"media_id" json:"-"`
 		SizeKey  string        `db:"size_key" json:"-" binding:"required,numeric"`
 		SizeName string        `db:"size_name" json:"name" binding:"required,numeric"`
 		Width    int           `db:"width" json:"width" binding:"required,numeric"`
@@ -48,13 +48,13 @@ type (
 	// MediaPublic represents a media item sent back to the
 	// frontend or API.
 	MediaPublic struct {
-		Id          int              `json:"id"` //nolint
+		ID          int              `json:"id"`
 		Title       string           `json:"title"`
 		Alt         string           `json:"alt"`
 		Description string           `json:"description"`
 		Sizes       MediaSizesPublic `json:"sizes"`
-		UserId      int              `json:"user_id"` //nolint
-		Url         string           `json:"url"`     //nolint
+		UserID      int              `json:"user_id"`
+		URL         string           `json:"url"`
 		Name        string           `json:"name"`
 		Path        string           `json:"path"`
 		Mime        Mime             `json:"mime"`
@@ -72,7 +72,7 @@ type (
 		Width    int           `json:"width"`
 		Height   int           `json:"height"`
 		Crop     types.BitBool `json:"crop"`
-		Url      string        `json:"url"` //nolint
+		URL      string        `json:"url"`
 		Path     string        `json:"path"`
 		Mime     Mime          `json:"mime"`
 		FileSize int64         `json:"file_size"`
@@ -93,7 +93,7 @@ func (m *Media) Public() MediaPublic {
 			Width:    v.Width,
 			Height:   v.Height,
 			Crop:     v.Crop,
-			Url:      v.File.Url,
+			URL:      v.File.URL,
 			Mime:     v.File.Mime,
 			FileSize: v.File.FileSize,
 		}
@@ -104,13 +104,13 @@ func (m *Media) Public() MediaPublic {
 	}
 
 	return MediaPublic{
-		Id:          m.Id,
+		ID:          m.ID,
 		Title:       m.Title,
 		Alt:         m.Alt,
 		Description: m.Description,
 		Sizes:       ms,
-		UserId:      m.UserId,
-		Url:         m.File.Url,
+		UserID:      m.UserID,
+		URL:         m.File.URL,
 		Name:        m.File.Name,
 		Mime:        m.File.Mime,
 		FileSize:    m.File.FileSize,

@@ -20,7 +20,7 @@ func (s *Seeder) runPosts() error {
 			Status:       "published",
 			PageTemplate: "",
 			PageLayout:   "",
-			UserId:       0,
+			UserID:       0,
 		},
 		Author:   0,
 		Category: nil,

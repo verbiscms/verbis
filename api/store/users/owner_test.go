@@ -25,7 +25,7 @@ func (t *UsersTestSuite) TestStore_Owner() {
 			user,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token", "roles.name"}).
-					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
+					AddRow(user.ID, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(OwnerQuery)).WillReturnRows(rows)
 			},
 			false,

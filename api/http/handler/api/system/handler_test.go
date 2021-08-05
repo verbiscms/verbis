@@ -45,30 +45,32 @@ func (t *SystemTestSuite) Setup(mf func(m *mocks.System)) *System {
 
 var (
 	// The default install database used for testing.
-	preflight = domain.InstallPreflight{
-		DbHost:     "host",
-		DbPort:     "port",
-		DbDatabase: "database",
-		DbUser:     "user",
-		DbPassword: "password",
+	preflight = domain.InstallDatabase{
+		DBHost:     "host",
+		DBPort:     "port",
+		DBDatabase: "database",
+		DBUser:     "user",
+		DBPassword: "password",
 	}
 	// The default install database with wrong validation
 	// used for testing.
-	preflightBadValidation = domain.InstallPreflight{
-		DbPort:     "port",
-		DbDatabase: "database",
-		DbUser:     "user",
-		DbPassword: "password",
+	preflightBadValidation = domain.InstallDatabase{
+		DBPort:     "port",
+		DBDatabase: "database",
+		DBUser:     "user",
+		DBPassword: "password",
 	}
 	// The default install verbis used for testing.
 	install = domain.InstallVerbis{
-		DbHost:              "host",
-		DbPort:              "port",
-		DbDatabase:          "database",
-		DbUser:              "user",
-		DbPassword:          "password",
+		InstallDatabase: domain.InstallDatabase{
+			DBHost:     "host",
+			DBPort:     "port",
+			DBDatabase: "database",
+			DBUser:     "user",
+			DBPassword: "password",
+		},
 		SiteTitle:           "title",
-		SiteUrl:             "http://127.0.0.1",
+		SiteURL:             "http://127.0.0.1",
 		UserFirstName:       "verbis",
 		UserLastName:        "cms",
 		UserEmail:           "hello@verbiscms.com",
@@ -79,12 +81,14 @@ var (
 	// The default install verbis with wrong validation
 	// used for testing.
 	installBadValidation = domain.InstallVerbis{
-		DbHost:              "host",
-		DbPort:              "port",
-		DbDatabase:          "database",
-		DbUser:              "user",
-		DbPassword:          "password",
-		SiteUrl:             "http://127.0.0.1",
+		InstallDatabase: domain.InstallDatabase{
+			DBHost:     "host",
+			DBPort:     "port",
+			DBDatabase: "database",
+			DBUser:     "user",
+			DBPassword: "password",
+		},
+		SiteURL:             "http://127.0.0.1",
 		UserFirstName:       "verbis",
 		UserLastName:        "cms",
 		UserEmail:           "hello@verbiscms.com",

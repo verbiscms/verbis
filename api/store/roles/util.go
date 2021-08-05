@@ -19,7 +19,7 @@ func (s *Store) validate(r domain.Role) error {
 
 	exists := s.Exists(r.Name)
 	if exists {
-		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Validation failed, the role ID already exists: %d", r.Id), Operation: op, Err: ErrRoleExists}
+		return &errors.Error{Code: errors.CONFLICT, Message: fmt.Sprintf("Validation failed, the role ID already exists: %d", r.ID), Operation: op, Err: ErrRoleExists}
 	}
 
 	return nil

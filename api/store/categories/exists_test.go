@@ -48,7 +48,7 @@ func (t *CategoriesTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists(category.Id)
+			got := s.Exists(category.ID)
 			t.RunT(test.want, got)
 		})
 	}

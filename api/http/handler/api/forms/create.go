@@ -37,5 +37,5 @@ func (f *Forms) Create(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created form with ID: "+strconv.Itoa(form.Id), newForm)
+	api.Respond(ctx, http.StatusOK, "Successfully created form with ID: "+strconv.Itoa(form.ID), newForm)
 }

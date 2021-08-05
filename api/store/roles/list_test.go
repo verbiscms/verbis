@@ -26,8 +26,8 @@ func (t *RolesTestSuite) TestStore_List() {
 			roles,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name", "description"}).
-					AddRow(roles[0].Id, roles[0].Name, roles[0].Description).
-					AddRow(roles[1].Id, roles[1].Name, roles[1].Description)
+					AddRow(roles[0].ID, roles[0].Name, roles[0].Description).
+					AddRow(roles[1].ID, roles[1].Name, roles[1].Description)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 			},
 		},

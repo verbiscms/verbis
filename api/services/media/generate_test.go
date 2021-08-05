@@ -57,9 +57,9 @@ func (t *MediaServiceTestSuite) TestService_ReGenerateWebP() {
 
 func (t *MediaServiceTestSuite) TestService_GenerateWebP() {
 	mockfn := func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-		s.On("Find", testMedia.File.Url+domain.WebPExtension).Return(nil, domain.File{Id: 1}, nil)
+		s.On("Find", testMedia.File.URL+domain.WebPExtension).Return(nil, domain.File{ID: 1}, nil)
 		s.On("Delete", 1).Return(nil)
-		s.On("Find", testMedia.File.Url).Return(nil, domain.File{}, nil)
+		s.On("Find", testMedia.File.URL).Return(nil, domain.File{}, nil)
 		s.On("Upload", mock.Anything).Return(domain.File{}, nil)
 	}
 

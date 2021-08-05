@@ -97,9 +97,11 @@ func New(cfg Config) (*Deps, error) {
 			Paths:     cfg.Paths,
 			Installed: false,
 			Running:   false,
-			Options:   &domain.Options{},
-			FS:        verbisfs.New(api.Production, cfg.Paths),
-			System:    cfg.System,
+			Options: &domain.Options{
+				SiteURL: "http://localhost:" + cfg.Env.AppPort,
+			},
+			FS:     verbisfs.New(api.Production, cfg.Paths),
+			System: cfg.System,
 		}, nil
 	}
 

@@ -32,7 +32,7 @@ func (f *Forms) Update(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the form", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	form.Id = id
+	form.ID = id
 
 	updatedForm, err := f.Store.Forms.Update(form)
 	if errors.Code(err) == errors.NOTFOUND {
@@ -43,5 +43,5 @@ func (f *Forms) Update(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully updated form with ID: "+strconv.Itoa(form.Id), updatedForm)
+	api.Respond(ctx, http.StatusOK, "Successfully updated form with ID: "+strconv.Itoa(form.ID), updatedForm)
 }

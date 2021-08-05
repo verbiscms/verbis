@@ -33,7 +33,7 @@ func (t *RedirectsTestSuite) TestRedirects_Create() {
 			},
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "to", Message: "To is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "to_path", Message: "To Path is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
 			redirectBadValidation,

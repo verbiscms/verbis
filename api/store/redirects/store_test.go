@@ -50,7 +50,7 @@ const (
 var (
 	// The default redirect used for testing.
 	redirect = domain.Redirect{
-		Id:   1,
+		ID:   1,
 		From: "/from",
 		To:   "/to",
 		Code: 301,
@@ -58,13 +58,13 @@ var (
 	// The default redirects used for testing.
 	redirects = domain.Redirects{
 		{
-			Id:   1,
+			ID:   1,
 			From: "/from",
 			To:   "/to",
 			Code: 301,
 		},
 		{
-			Id:   2,
+			ID:   2,
 			From: "/from",
 			To:   "/to",
 			Code: 301,

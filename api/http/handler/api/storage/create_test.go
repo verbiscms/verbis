@@ -24,7 +24,7 @@ func (t *StorageTestSuite) TestStorage_CreateBucket() {
 	}{
 		"Success": {
 			domain.Bucket{
-				Id:   "bucket-id",
+				ID:   "bucket-id",
 				Name: "bucket-name",
 			},
 			http.StatusOK,
@@ -32,7 +32,7 @@ func (t *StorageTestSuite) TestStorage_CreateBucket() {
 			storageChange,
 			func(m *mocks.Provider) {
 				m.On("CreateBucket", storageChange.Provider, storageChange.Bucket).Return(domain.Bucket{
-					Id:   "bucket-id",
+					ID:   "bucket-id",
 					Name: "bucket-name",
 				}, nil)
 			},

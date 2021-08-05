@@ -16,7 +16,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 	var posts = make(domain.PostData, 0)
 
 	for _, v := range raw {
-		if !s.find(posts, v.Id) {
+		if !s.find(posts, v.ID) {
 			p := domain.PostDatum{
 				Post:     v.Post,
 				Author:   v.Author.HideCredentials(),
@@ -40,7 +40,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 		if v.Field.UUID != nil {
 			field := domain.PostField{
-				PostId:        v.Field.PostId,
+				PostID:        v.Field.PostId,
 				UUID:          *v.Field.UUID,
 				Type:          v.Field.Type,
 				Name:          v.Field.Name,
@@ -50,7 +50,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 			}
 
 			for fi, fv := range posts {
-				if fv.Id == v.Id {
+				if fv.ID == v.ID {
 					posts[fi].Fields = append(posts[fi].Fields, field)
 				}
 			}
@@ -63,7 +63,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 // find checks if the post data is already in the slice.
 func (s *Store) find(posts domain.PostData, id int) bool {
 	for _, v := range posts {
-		if v.Id == id {
+		if v.ID == id {
 			return true
 		}
 	}
