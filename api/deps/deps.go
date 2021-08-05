@@ -91,6 +91,18 @@ type Config struct {
 }
 
 func New(cfg Config) (*Deps, error) {
+	if !cfg.Installed {
+		return &Deps{
+			Env:       cfg.Env,
+			Paths:     cfg.Paths,
+			Installed: false,
+			Running:   false,
+			Options:   &domain.Options{},
+			FS:        verbisfs.New(api.Production, cfg.Paths),
+			System:    cfg.System,
+		}, nil
+	}
+
 	if cfg.Store == nil && cfg.Running {
 		return nil, fmt.Errorf("must have a store")
 	}

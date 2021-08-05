@@ -30,6 +30,15 @@ type Driver interface {
 	Drop() error
 }
 
+const (
+	// MySQLDriver driver is represented under DB_DRIVER
+	// for MySQL.
+	MySQLDriver = internal.MySQLDriver
+	// PostgresDriver driver is represented under
+	// DB_DRIVER for postgres.
+	PostgresDriver = internal.PostgresDriver
+)
+
 // New creates a new database driver dependant on the
 // environment.
 // Returns errors.INTERNAL if there there was an error setting up the driver.

@@ -7,6 +7,7 @@ package system
 import (
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
 	mocks "github.com/verbiscms/verbis/api/mocks/sys"
 	"github.com/verbiscms/verbis/api/test"
 	"testing"
@@ -41,3 +42,54 @@ func (t *SystemTestSuite) Setup(mf func(m *mocks.System)) *System {
 	}
 	return New(d)
 }
+
+var (
+	// The default install database used for testing.
+	preflight = domain.InstallPreflight{
+		DbHost:     "host",
+		DbPort:     "port",
+		DbDatabase: "database",
+		DbUser:     "user",
+		DbPassword: "password",
+	}
+	// The default install database with wrong validation
+	// used for testing.
+	preflightBadValidation = domain.InstallPreflight{
+		DbPort:     "port",
+		DbDatabase: "database",
+		DbUser:     "user",
+		DbPassword: "password",
+	}
+	// The default install verbis used for testing.
+	install = domain.InstallVerbis{
+		DbHost:              "host",
+		DbPort:              "port",
+		DbDatabase:          "database",
+		DbUser:              "user",
+		DbPassword:          "password",
+		SiteTitle:           "title",
+		SiteUrl:             "http://127.0.0.1",
+		UserFirstName:       "verbis",
+		UserLastName:        "cms",
+		UserEmail:           "hello@verbiscms.com",
+		UserPassword:        "password",
+		UserConfirmPassword: "password",
+		Robots:              false,
+	}
+	// The default install verbis with wrong validation
+	// used for testing.
+	installBadValidation = domain.InstallVerbis{
+		DbHost:              "host",
+		DbPort:              "port",
+		DbDatabase:          "database",
+		DbUser:              "user",
+		DbPassword:          "password",
+		SiteUrl:             "http://127.0.0.1",
+		UserFirstName:       "verbis",
+		UserLastName:        "cms",
+		UserEmail:           "hello@verbiscms.com",
+		UserPassword:        "password",
+		UserConfirmPassword: "password",
+		Robots:              false,
+	}
+)

@@ -9,11 +9,7 @@ import (
 	sm "github.com/hashicorp/go-version"
 	"github.com/mouuff/go-rocket-update/pkg/provider"
 	rocket "github.com/mouuff/go-rocket-update/pkg/updater"
-	"github.com/stretchr/testify/assert"
-	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/version"
-	"io/ioutil"
-	"testing"
 )
 
 type mockErrProvider struct{}
@@ -60,9 +56,7 @@ func (m *mockProvider) Close() error {
 	return nil
 }
 
-func TestSys_LatestVersion(t *testing.T) {
-	logger.SetOutput(ioutil.Discard)
-
+func (t *SysTestSuite) TestSys_LatestVersion() {
 	tt := map[string]struct {
 		input  provider.Provider
 		panics bool
@@ -81,22 +75,20 @@ func TestSys_LatestVersion(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			s := Sys{client: &rocket.Updater{Provider: test.input}}
 			if test.panics {
-				assert.Panics(t, func() {
+				t.Panics(func() {
 					s.LatestVersion()
 				})
 				return
 			}
-			assert.Equal(t, test.want, s.LatestVersion())
+			t.Equal(test.want, s.LatestVersion())
 		})
 	}
 }
 
-func TestSys_HasUpdate(t *testing.T) {
-	logger.SetOutput(ioutil.Discard)
-
+func (t *SysTestSuite) TestSys_HasUpdate() {
 	tt := map[string]struct {
 		input *sm.Version
 		want  interface{}
@@ -112,12 +104,12 @@ func TestSys_HasUpdate(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			s := Sys{
 				version: test.input,
 				client:  &rocket.Updater{Provider: &mockProvider{}},
 			}
-			assert.Equal(t, test.want, s.HasUpdate())
+			t.Equal(test.want, s.HasUpdate())
 		})
 	}
 }

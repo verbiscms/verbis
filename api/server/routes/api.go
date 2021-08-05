@@ -14,18 +14,24 @@ import (
 	"github.com/verbiscms/verbis/api/server"
 )
 
-// apiRoutes
-//
-// API facing routes.
+// apiRoutes API facing routes.
 func apiRoutes(d *deps.Deps, s *server.Server) {
-	h := handler.NewAPI(d)
-
-	// API Routes
 	api := s.Group(app.HTTPAPIRoute)
 	{
 		// API Middleware
 		api.Use(middleware.CORS())
 		api.Use(middleware.EmptyBody())
+
+		if d.Installed {
+			h := handler.NewInstall(d)
+			// Preflight
+			api.POST("/install/preflight", h.System.Preflight)
+			// Install
+			api.POST("/install/database", h.System.Install)
+			return
+		}
+
+		h := handler.NewAPI(d)
 
 		// Sockets
 		api.GET("/ws", gin.WrapH(sockets.Handler()))

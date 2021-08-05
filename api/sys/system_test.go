@@ -6,14 +6,30 @@ package sys
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/logger"
 	mocks "github.com/verbiscms/verbis/api/mocks/database"
 	"io/ioutil"
 	"testing"
 )
 
-func TestNew(t *testing.T) {
+// SysTestSuite defines the helper used for system
+// testing.
+type SysTestSuite struct {
+	suite.Suite
+}
+
+// TestSys asserts testing has begun.
+func TestSys(t *testing.T) {
+	suite.Run(t, new(SysTestSuite))
+}
+
+// SetupSuite discards the logger
+func (t *SysTestSuite) SetupSuite() {
+	logger.SetOutput(ioutil.Discard)
+}
+
+func (t *SysTestSuite) TestNew() {
 	logger.SetOutput(ioutil.Discard)
 
 	tt := map[string]struct {
@@ -49,9 +65,9 @@ func TestNew(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			if test.exec == nil {
-				t.Fatal("exec function cannot be nil")
+				t.Fail("exec function cannot be nil")
 				return
 			}
 
@@ -67,14 +83,14 @@ func TestNew(t *testing.T) {
 			bin = test.bin
 
 			if test.panic {
-				assert.Panics(t, func() {
+				t.Panics(func() {
 					New(&mocks.Driver{})
 				})
 				return
 			}
 
 			got := New(&mocks.Driver{})
-			assert.Equal(t, test.want, got.ExecutablePath)
+			t.Equal(test.want, got.ExecutablePath)
 		})
 	}
 }

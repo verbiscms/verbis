@@ -45,6 +45,10 @@ func (s *Sys) HasUpdate() bool {
 func (s *Sys) Update(restart bool) (string, error) {
 	const op = "System.Update"
 
+	if !s.Installed || s.Driver == nil {
+		return "", &errors.Error{Code: errors.CONFLICT, Message: "Verbis not installed, cannot update", Operation: op, Err: fmt.Errorf("verbis not installed")}
+	}
+
 	ver := s.LatestVersion()
 
 	logger.Info("Attempting to update Verbis to version: " + ver)

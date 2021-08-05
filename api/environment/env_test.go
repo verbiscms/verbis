@@ -5,11 +5,13 @@
 package environment
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/errors"
+	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -219,6 +221,85 @@ func (t *EnvTestSuite) TestEnv_SetError() {
 		return
 	}
 	t.Contains(errors.Message(err), "Error writing env file with the path")
+}
+
+func (t *EnvTestSuite) TestEnv_Install() {
+	tt := map[string]struct {
+		input Env
+		path  string
+		tpl   string
+		new   func(name string) *template.Template
+		want  interface{}
+	}{
+		"Parse Error": {
+			Env{},
+			t.TestDataPath,
+			"",
+			func(name string) *template.Template {
+				tpl, err := template.New("wrong").Parse("text")
+				t.NoError(err)
+				err = tpl.Execute(&bytes.Buffer{}, nil)
+				t.NoError(err)
+				return tpl
+			},
+			"Error parsing env tpl",
+		},
+		"Execute Error": {
+			Env{},
+			t.TestDataPath,
+			"{{ .bad }}",
+			newTpl,
+			"Error executing env tpl",
+		},
+		"Write Error": {
+			Env{
+				DbDriver: "driver",
+			},
+			"/",
+			"{{ .DbDriver }}",
+			newTpl,
+			"Error writing env file",
+		},
+		"Success": {
+			Env{
+				DbDriver: "driver",
+			},
+			filepath.Join(t.TestDataPath, "tpl"),
+			"{{ .DbDriver }}",
+			newTpl,
+			"driver",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			teardown := t.ChangePath(test.path)
+			origEnv := envTpl
+			origNewTpl := newTpl
+			t.Original()
+			defer func() {
+				teardown()
+				envTpl = origEnv
+				newTpl = origNewTpl
+				t.Overwrite()
+			}()
+			envTpl = test.tpl
+			newTpl = test.new
+
+			err := test.input.Install()
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+
+			t.Nil(err)
+			file, err := ioutil.ReadFile(test.path + EnvExtension)
+			t.NoError(err)
+			t.Equal(test.want, string(file))
+			err = os.Remove(test.path + EnvExtension)
+			t.NoError(err)
+		})
+	}
 }
 
 func (t *EnvTestSuite) TestEnv_Port() {
