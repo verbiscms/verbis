@@ -44,22 +44,6 @@ func (t *SystemTestSuite) Setup(mf func(m *mocks.System)) *System {
 }
 
 var (
-	// The default install database used for testing.
-	preflight = domain.InstallDatabase{
-		DBHost:     "host",
-		DBPort:     "port",
-		DBDatabase: "database",
-		DBUser:     "user",
-		DBPassword: "password",
-	}
-	// The default install database with wrong validation
-	// used for testing.
-	preflightBadValidation = domain.InstallDatabase{
-		DBPort:     "port",
-		DBDatabase: "database",
-		DBUser:     "user",
-		DBPassword: "password",
-	}
 	// The default install verbis used for testing.
 	install = domain.InstallVerbis{
 		InstallDatabase: domain.InstallDatabase{
@@ -69,14 +53,18 @@ var (
 			DBUser:     "user",
 			DBPassword: "password",
 		},
-		SiteTitle:           "title",
-		SiteURL:             "http://127.0.0.1",
-		UserFirstName:       "verbis",
-		UserLastName:        "cms",
-		UserEmail:           "hello@verbiscms.com",
-		UserPassword:        "password",
-		UserConfirmPassword: "password",
-		Robots:              false,
+		InstallUser: domain.InstallUser{
+			UserFirstName:       "verbis",
+			UserLastName:        "cms",
+			UserEmail:           "hello@verbiscms.com",
+			UserPassword:        "password",
+			UserConfirmPassword: "password",
+		},
+		InstallSite: domain.InstallSite{
+			SiteTitle:           "title",
+			SiteURL:             "http://127.0.0.1",
+			Robots:              false,
+		},
 	}
 	// The default install verbis with wrong validation
 	// used for testing.
@@ -88,12 +76,16 @@ var (
 			DBUser:     "user",
 			DBPassword: "password",
 		},
-		SiteURL:             "http://127.0.0.1",
-		UserFirstName:       "verbis",
-		UserLastName:        "cms",
-		UserEmail:           "hello@verbiscms.com",
-		UserPassword:        "password",
-		UserConfirmPassword: "password",
-		Robots:              false,
+		InstallUser: domain.InstallUser{
+			UserFirstName:       "verbis",
+			UserLastName:        "cms",
+			UserEmail:           "hello@verbiscms.com",
+			UserPassword:        "password",
+			UserConfirmPassword: "password",
+		},
+		InstallSite: domain.InstallSite{
+			SiteURL:             "http://127.0.0.1",
+			Robots:              false,
+		},
 	}
 )

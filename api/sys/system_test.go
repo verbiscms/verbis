@@ -7,6 +7,7 @@ package sys
 import (
 	"fmt"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/logger"
 	mocks "github.com/verbiscms/verbis/api/mocks/database"
 	"io/ioutil"
@@ -28,6 +29,51 @@ func TestSys(t *testing.T) {
 func (t *SysTestSuite) SetupSuite() {
 	logger.SetOutput(ioutil.Discard)
 }
+
+var (
+	// The default install verbis used for testing.
+	install = domain.InstallVerbis{
+		InstallDatabase: domain.InstallDatabase{
+			DBHost:     "host",
+			DBPort:     "port",
+			DBDatabase: "database",
+			DBUser:     "user",
+			DBPassword: "password",
+		},
+		InstallUser: domain.InstallUser{
+			UserFirstName:       "verbis",
+			UserLastName:        "cms",
+			UserEmail:           "hello@verbiscms.com",
+			UserPassword:        "password",
+			UserConfirmPassword: "password",
+		},
+		InstallSite: domain.InstallSite{
+			SiteTitle:           "title",
+			SiteURL:             "http://127.0.0.1",
+			Robots:              false,
+		},
+	}
+	// The default install verbis with wrong validation
+	// used for testing.
+	installBadValidation = domain.InstallVerbis{
+		InstallDatabase: domain.InstallDatabase{
+			DBPort:     "port",
+			DBDatabase: "database",
+			DBUser:     "user",
+			DBPassword: "password",
+		},
+		InstallUser: domain.InstallUser{
+			UserLastName:        "cms",
+			UserEmail:           "hello@verbiscms.com",
+			UserPassword:        "password",
+			UserConfirmPassword: "password",
+		},
+		InstallSite: domain.InstallSite{
+			SiteURL:             "http://127.0.0.1",
+			Robots:              false,
+		},
+	}
+)
 
 func (t *SysTestSuite) TestNew() {
 	logger.SetOutput(ioutil.Discard)

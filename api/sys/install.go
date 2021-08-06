@@ -13,6 +13,9 @@ import (
 	"github.com/verbiscms/verbis/api/store"
 )
 
+// Install installs the application. The InstallVerbis struct
+// will be validated before installing. The system will
+// restart dependant on the arg passed.
 func (s *Sys) Install(db domain.InstallVerbis, restart bool) error {
 	defer func() {
 		if !restart {
@@ -72,4 +75,31 @@ func (s *Sys) Install(db domain.InstallVerbis, restart bool) error {
 	logger.Info("Successfully wrote to .env file")
 
 	return nil
+}
+
+// newDB is an alias for creating a new database.
+var newDB = database.New
+
+// getDatabase dials the database and returns a new
+// database.Driver, or an error if there was a
+// problem connecting.
+func (s *Sys) getDatabase(id domain.InstallDatabase) (database.Driver, error) {
+	logger.Info("Attempting to connect to database")
+
+	env := &environment.Env{
+		DbDriver:   database.MySQLDriver,
+		DbHost:     id.DBHost,
+		DbPort:     id.DBPort,
+		DbDatabase: id.DBDatabase,
+		DbUser:     id.DBUser,
+		DbPassword: id.DBPassword,
+	}
+
+	db, err := newDB(env)
+	if err != nil {
+		return nil, err
+	}
+
+	logger.Info("Successfully connected to the database: " + id.DBDatabase)
+	return db, nil
 }

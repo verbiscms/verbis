@@ -27,7 +27,7 @@ type System interface {
 
 type Installer interface {
 	Install(db domain.InstallVerbis, restart bool) error
-	Validate(step int, data interface{}) error
+	ValidateInstall(step int, install domain.InstallVerbis) error
 }
 
 // Sys defines the base and core functionality for Verbis,

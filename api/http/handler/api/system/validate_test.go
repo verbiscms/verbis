@@ -7,9 +7,8 @@ package system
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	validation "github.com/verbiscms/verbis/api/common/vaidation"
-	"github.com/verbiscms/verbis/api/http/handler/api"
 	mocks "github.com/verbiscms/verbis/api/mocks/sys"
+	"github.com/verbiscms/verbis/api/sys"
 	"net/http"
 )
 
@@ -18,6 +17,7 @@ func (t *SystemTestSuite) TestInstall_Preflight() {
 		want      interface{}
 		status    int
 		message   string
+		url string
 		input     interface{}
 		installed bool
 		mock      func(m *mocks.System)
@@ -25,49 +25,60 @@ func (t *SystemTestSuite) TestInstall_Preflight() {
 		"Success": {
 			nil,
 			http.StatusOK,
-			"Successfully connected to database",
-			&preflight,
+			"Successfully validated install data",
+			"/install/1",
+			&install,
 			false,
 			func(m *mocks.System) {
-				m.On("Preflight", preflight).Return(nil)
+				m.On("ValidateInstall", sys.InstallDatabaseStep, install).Return(nil)
 			},
 		},
 		"Already Installed": {
 			nil,
 			http.StatusBadRequest,
 			"Verbis is already installed",
-			&preflight,
+			"/install/1",
+			nil,
 			true,
-			func(m *mocks.System) {
-				m.On("Preflight", preflight).Return(nil)
-			},
+			nil,
+		},
+		"No Input": {
+			nil,
+			http.StatusBadRequest,
+			"Pass a valid number to validate a step",
+			"/install/wrong",
+			nil,
+			false,
+			nil,
+		},
+		"Decode Error": {
+			nil,
+			http.StatusBadRequest,
+			"Error unmarshalling install",
+			"/install/1",
+			"wrong",
+			false,
+			nil,
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "db_host", Message: "Db Host is required.", Type: "required"}}},
+			nil,
 			http.StatusBadRequest,
 			"Validation failed",
-			&preflightBadValidation,
-			false,
-			nil,
-		},
-		"Error": {
-			nil,
-			http.StatusBadRequest,
-			"connection error",
-			&preflight,
+			"/install/1",
+			&install,
 			false,
 			func(m *mocks.System) {
-				m.On("Preflight", preflight).Return(fmt.Errorf("connection error"))
+				m.On("ValidateInstall", sys.InstallDatabaseStep, install).Return(fmt.Errorf("error"))
 			},
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe(http.MethodPost, "/install", "/install", test.input, func(ctx *gin.Context) {
+			t.RequestAndServe(http.MethodPost, test.url, "/install/:step", test.input, func(ctx *gin.Context) {
 				s := t.Setup(test.mock)
 				s.Installed = test.installed
-				s.Preflight(ctx)
+				s.ValidateInstall(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})
