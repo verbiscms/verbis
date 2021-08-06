@@ -25,7 +25,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		if !d.Installed {
 			h := handler.NewInstall(d)
 			// Preflight
-			api.POST("/install/validate/:step", h.System.Preflight)
+			api.POST("/install/validate/:step", h.System.ValidateInstall)
 			// Install
 			api.POST("/install", h.System.Install)
 			return
