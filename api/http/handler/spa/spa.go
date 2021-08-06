@@ -50,6 +50,14 @@ const op = "SPA.Serve"
 func (s *SPA) Serve(ctx *gin.Context) {
 	path := ctx.Request.URL.Path
 
+	// Check if the path is the installed path and
+	// the app is installed, if it is the user
+	// should not be there, abort.
+	if path == "/admin/install" && s.Installed {
+		s.publisher.NotFound(ctx)
+		return
+	}
+
 	// If the path is a file
 	if strings.Contains(path, ".") {
 		s.file(path, ctx)
