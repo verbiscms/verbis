@@ -40,7 +40,7 @@
 								</FormGroup>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
-									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doPreflight" :class="{ 'btn-loading' : doingAxios }">Install</button>
+									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doValidate" :class="{ 'btn-loading' : doingAxios }">Next</button>
 								</div>
 							</form>
 						</div><!-- /Card Cont -->
@@ -79,7 +79,8 @@
 								</FormGroup>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
-									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doPreflight" :class="{ 'btn-loading' : doingAxios }">Install</button>
+									<button v-if="this.step !== 0" type="submit" class="btn btn-arrow btn-arrow-left btn-transparent btn-arrow mr-2" @click.prevent="step--;">Previous</button>
+									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doValidate" :class="{ 'btn-loading' : doingAxios }">Next</button>
 								</div>
 							</form>
 						</div><!-- /Card Cont -->
@@ -115,10 +116,9 @@
 										<label for="cache-frontend"></label>
 									</div>
 								</div>
-
 								<!-- Submit -->
 								<div class="auth-btn-cont">
-									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doPreflight" :class="{ 'btn-loading' : doingAxios }">Install</button>
+									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doInstall" :class="{ 'btn-loading' : doingAxios }">Install</button>
 								</div>
 							</form>
 						</div><!-- /Card Cont -->
@@ -140,42 +140,26 @@ export default {
 	components: {FormGroup},
 	data: () => ({
 		doingAxios: false,
-		data: {
-			driver: "",
-			host: "",
-			port: "",
-			database: "",
-			user: "",
-			password: "",
-			schema: "",
-			site_title: "",
-			site_url: "",
-			user_first_name: "",
-			user_last_name: "",
-			user_email: "",
-			user_password: "",
-			user_confirm_password: "",
-			robots: true,
-		},
+		data: {},
 		installMessage: "",
 		errors: {},
 		step: 1,
 	}),
 	methods: {
 		/*
-		 * doPreflight()
-		 * Install the database
+		 * doValidate()
+		 * Validates each step of the install.
 		 */
-		doPreflight() {
+		doValidate() {
 			this.installMessage = '';
 			this.doingAxios = true;
 
-			this.axios.post("/install/validate/1", this.data)
+			this.axios.post("/install/validate/" + this.step, this.data)
 				.then(res => {
 					console.log(res);
 					this.errors = [];
 					this.$noty.success("Connected to database");
-					this.step = 2;
+					this.step++;
 				})
 				.catch(err => {
 					if (err.response.status === 400) {
@@ -186,6 +170,41 @@ export default {
 						}
 						this.validate(err.response.data.data.errors);
 						this.$noty.error("Fix the errors to install Verbis.",)
+						return;
+					}
+					this.helpers.handleResponse(err);
+				})
+				.finally(() => {
+					setTimeout(() => {
+						this.doingAxios = false;
+					}, this.timeoutDelay)
+				});
+		},
+		/*
+		 * doInstall()
+		 * Installs the application.
+		 */
+		doInstall() {
+			this.doValidate();
+
+			this.installMessage = '';
+			this.doingAxios = true;
+			this.errors = [];
+
+			this.axios.post("/install", this.data)
+				.then(() => {
+					this.$noty.success("Successfully installed verbis");
+				})
+				.catch(err => {
+					console.log(err);
+					if (err.response.status === 400) {
+						const errors = err.response.data.data.errors;
+						if (!errors) {
+							this.installMessage = err.response.data.message;
+							return;
+						}
+						this.validate(err.response.data.data.errors);
+						this.$noty.error("Fix the errors to install Verbis.")
 						return;
 					}
 					this.helpers.handleResponse(err);

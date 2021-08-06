@@ -50,6 +50,22 @@
 			margin-left: 16px;
 			transition: opacity 100ms ease;
 		}
+
+		&-left {
+
+			&:after {
+				display: none;
+			}
+
+			&:before {
+				content: url('~@/assets/images/btn-arrow.svg');
+				position: relative;
+				display: block;
+				margin-right: 16px;
+				transition: opacity 100ms ease;
+				transform: rotate(180deg);
+			}
+		}
 	}
 
 	// Icon

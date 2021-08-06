@@ -26,7 +26,7 @@ type System interface {
 }
 
 type Installer interface {
-	Install(db domain.InstallVerbis, restart bool) error
+	Install(db domain.InstallVerbis) error
 	ValidateInstall(step int, install domain.InstallVerbis) error
 }
 

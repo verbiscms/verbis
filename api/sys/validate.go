@@ -38,7 +38,7 @@ func (s *Sys) ValidateInstall(step int, install domain.InstallVerbis) error {
 		if err != nil {
 			return err
 		}
-		_, err = s.getDatabase(install.InstallDatabase)
+		_, _, err = s.getDatabase(install.InstallDatabase)
 		if err != nil {
 			return err
 		}

@@ -199,6 +199,8 @@ var newTpl = template.New
 func (e *Env) Install() error {
 	const op = "Env.Install"
 
+	e.AppPort = cast.ToString(DefaultPort)
+
 	tp, err := newTpl("").Parse(envTpl)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error parsing env tpl", Operation: op, Err: err}
@@ -210,7 +212,7 @@ func (e *Env) Install() error {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing env tpl", Operation: op, Err: err}
 	}
 
-	err = ioutil.WriteFile(basePath+EnvExtension, buf.Bytes(), os.ModePerm)
+	err = ioutil.WriteFile(filepath.Join(basePath, EnvExtension), buf.Bytes(), os.ModePerm)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error writing env file", Operation: op, Err: err}
 	}

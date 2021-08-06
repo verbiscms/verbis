@@ -105,7 +105,7 @@ func (m *MySQL) Close() error {
 // Returns errors.INTERNAL if the migration failed.
 func (m *MySQL) Install() error {
 	const op = "MySQL.Install"
-	err := m.migrator.Migrate(version.SemVer)
+	err := m.migrator.Migrate(version.SemVer, true)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error installing Verbis", Operation: op, Err: err}
 	}
@@ -117,7 +117,7 @@ func (m *MySQL) Install() error {
 // Returns errors.INTERNAL if the migration failed.
 func (m *MySQL) Migrate(ver *sm.Version) error {
 	const op = "MySQL.Migrate"
-	err := m.migrator.Migrate(ver)
+	err := m.migrator.Migrate(ver, false)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error migrating", Operation: op, Err: err}
 	}

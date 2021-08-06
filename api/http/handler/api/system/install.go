@@ -10,7 +10,9 @@ import (
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
+	"github.com/verbiscms/verbis/api/logger"
 	"net/http"
+	"time"
 )
 
 // Install
@@ -32,7 +34,7 @@ func (s *System) Install(ctx *gin.Context) {
 		return
 	}
 
-	err = s.System.Install(install, true)
+	err = s.System.Install(install)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
@@ -42,4 +44,12 @@ func (s *System) Install(ctx *gin.Context) {
 	}
 
 	api.Respond(ctx, http.StatusOK, "Successfully installed Verbis", nil)
+
+	go func() {
+		time.Sleep(time.Second * 1)
+		err = s.System.Restart()
+		if err != nil {
+			logger.WithError(err).Panic()
+		}
+	}()
 }

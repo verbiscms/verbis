@@ -51,9 +51,13 @@ func New(db database.Driver, running bool) (*Repository, error) {
 		Theme:   &config.Config{ThemePath: p.Themes},
 	}
 
+	// If Verbis is not installed, there is no owner
+	// to obtain.
 	user := users.New(cfg)
-	owner := user.Owner()
-	cfg.Owner = &owner
+	if running {
+		owner := user.Owner()
+		cfg.Owner = &owner
+	}
 
 	return &Repository{
 		Auth:       auth.New(cfg),

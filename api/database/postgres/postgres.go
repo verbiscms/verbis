@@ -147,7 +147,7 @@ func (p *Postgres) Drop() error {
 }
 
 func (p *Postgres) Migrate(version *sm.Version) error {
-	err := p.migrator.Migrate(version)
+	err := p.migrator.Migrate(version, false)
 	if err != nil {
 		return err
 	}

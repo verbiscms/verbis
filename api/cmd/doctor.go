@@ -101,5 +101,6 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 		Paths:   p,
 		Running: running,
 		System:  system,
+		Installed: true,
 	}, db, nil
 }

@@ -22,7 +22,7 @@ import (
 // 1.9.9 and no more, to allow for schema
 // changes.
 type Migrator interface {
-	Migrate(version *sm.Version) error
+	Migrate(version *sm.Version, install bool) error
 }
 
 // migrate is the implementation of the Migrator which has
@@ -54,7 +54,7 @@ func NewMigrator(driver string, db *sqlx.DB) (Migrator, error) {
 // but no more than a version.Major.
 // The function panics if the migration could not be
 // rolled back if an error occurred.
-func (r *migrate) Migrate(version *sm.Version) (err error) {
+func (r *migrate) Migrate(version *sm.Version, install bool) (err error) {
 	tx, err := r.DB.Begin()
 	if err != nil {
 		return err
@@ -84,14 +84,17 @@ func (r *migrate) Migrate(version *sm.Version) (err error) {
 
 		canMigrate, err = r.canMigrate(version, migration.SemVer)
 		if err != nil {
+			logger.WithError(err)
 			return
 		}
-		if !canMigrate {
+
+		if !canMigrate && !install {
 			continue
 		}
 
 		err = r.process(migration, tx)
 		if err != nil {
+			logger.WithError(err)
 			return
 		}
 

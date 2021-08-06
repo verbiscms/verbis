@@ -4,7 +4,9 @@
 
 package updates
 
-import "embed"
+import (
+	"embed"
+)
 
 var (
 	//go:embed v0/*.sql

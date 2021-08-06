@@ -42,13 +42,19 @@ type (
 
 // ToUser returns user information from the
 // installation struct.
-func (i *InstallVerbis) ToUser() *User {
-	return &User{
-		UserPart: UserPart{
-			FirstName: i.UserFirstName,
-			LastName:  i.UserLastName,
-			Email:     i.UserEmail,
+func (i *InstallVerbis) ToUser() UserCreate {
+	return UserCreate{
+		User:            User{
+			UserPart: UserPart{
+				FirstName: i.UserFirstName,
+				LastName:  i.UserLastName,
+				Email:     i.UserEmail,
+				Role: Role{
+					ID: OwnerRoleID,
+				},
+			},
 		},
-		Password: i.UserPassword,
+		Password:        i.UserPassword,
+		ConfirmPassword: i.UserConfirmPassword,
 	}
 }

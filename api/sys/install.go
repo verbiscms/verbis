@@ -16,33 +16,14 @@ import (
 // Install installs the application. The InstallVerbis struct
 // will be validated before installing. The system will
 // restart dependant on the arg passed.
-func (s *Sys) Install(db domain.InstallVerbis, restart bool) error {
-	defer func() {
-		if !restart {
-			return
-		}
-		logger.Info("Restarting Verbis")
-		err := s.Restart()
-		if err != nil {
-			logger.WithError(err).Panic()
-		}
-	}()
-
-	env := &environment.Env{
-		DbHost:     db.DBHost,
-		DbPort:     db.DBPort,
-		DbDatabase: db.DBDatabase,
-		DbUser:     db.DBUser,
-		DbPassword: db.DBPassword,
-	}
-
+func (s *Sys) Install(install domain.InstallVerbis) error {
 	// Connect to database
 	logger.Info("Attempting to connect to database")
-	driver, err := database.New(env)
+	driver, env, err := s.getDatabase(install.InstallDatabase)
 	if err != nil {
 		return err
 	}
-	logger.Info("Successfully connected to the database: " + db.DBDatabase)
+	logger.Info("Successfully connected to the database: " + install.DBDatabase)
 
 	// Migrate
 	logger.Info("Migrating database")
@@ -66,6 +47,26 @@ func (s *Sys) Install(db domain.InstallVerbis, restart bool) error {
 	}
 	logger.Info("Successfully ran seeds")
 
+	// Create the owner
+	_, err = repository.User.Create(install.ToUser())
+	if err != nil {
+		return err
+	}
+
+	// Update the options
+	err = repository.Options.Update("site_url", install.SiteURL)
+	if err != nil {
+		return err
+	}
+	err = repository.Options.Update("site_title", install.SiteTitle)
+	if err != nil {
+		return err
+	}
+	err = repository.Options.Update("seo_private", install.Robots)
+	if err != nil {
+		return err
+	}
+
 	// Write to the env
 	logger.Info("Attempting to write to env file")
 	err = env.Install()
@@ -83,10 +84,10 @@ var newDB = database.New
 // getDatabase dials the database and returns a new
 // database.Driver, or an error if there was a
 // problem connecting.
-func (s *Sys) getDatabase(id domain.InstallDatabase) (database.Driver, error) {
+func (s *Sys) getDatabase(id domain.InstallDatabase) (database.Driver, environment.Env, error) {
 	logger.Info("Attempting to connect to database")
 
-	env := &environment.Env{
+	env := environment.Env{
 		DbDriver:   database.MySQLDriver,
 		DbHost:     id.DBHost,
 		DbPort:     id.DBPort,
@@ -95,11 +96,11 @@ func (s *Sys) getDatabase(id domain.InstallDatabase) (database.Driver, error) {
 		DbPassword: id.DBPassword,
 	}
 
-	db, err := newDB(env)
+	db, err := newDB(&env)
 	if err != nil {
-		return nil, err
+		return nil, environment.Env{}, err
 	}
 
 	logger.Info("Successfully connected to the database: " + id.DBDatabase)
-	return db, nil
+	return db, env, nil
 }

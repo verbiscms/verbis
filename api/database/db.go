@@ -14,6 +14,8 @@ import (
 	"github.com/verbiscms/verbis/api/database/postgres"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
+	// Import Updates
+	_ "github.com/verbiscms/verbis/api/database/updates/v0"
 )
 
 // Driver represents the functions and methods for

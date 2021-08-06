@@ -9,6 +9,7 @@ import (
 	"github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/database/updates"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/services/site"
@@ -92,6 +93,7 @@ type Config struct {
 
 func New(cfg Config) (*Deps, error) {
 	if !cfg.Installed {
+		_ = updates.Static
 		return &Deps{
 			Env:       cfg.Env,
 			Paths:     cfg.Paths,
@@ -144,6 +146,7 @@ func New(cfg Config) (*Deps, error) {
 		Paths:   cfg.Paths,
 		tmpl:    nil,
 		Running: cfg.Running,
+		Installed: cfg.Installed,
 		Site:    site.New(cfg.Store.Options, cfg.System),
 		Theme:   themeService,
 		FS:      verbisfs.New(api.Production, cfg.Paths),
