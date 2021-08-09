@@ -57,7 +57,7 @@ func (s *Store) List(meta params.Params) (domain.MediaItems, int, error) {
 
 	// Obtain the sizes
 	for index, item := range media {
-		sizes, err := s.sizes.Find(item.Id)
+		sizes, err := s.sizes.Find(item.ID)
 		if err != nil {
 			return nil, 0, err
 		}

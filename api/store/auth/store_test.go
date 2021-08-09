@@ -46,7 +46,7 @@ var (
 	// The default user used for testing.
 	user = domain.User{
 		UserPart: domain.UserPart{
-			Id:        1,
+			ID:        1,
 			FirstName: "Verbis",
 			LastName:  "CMS",
 			Email:     "verbis@verbiscms.com",

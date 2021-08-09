@@ -26,7 +26,7 @@ func (s *Store) Create(r domain.Role) (domain.Role, error) {
 
 	q := s.Builder().
 		Insert(s.Schema()+TableName).
-		Column("id", r.Id).
+		Column("id", r.ID).
 		Column("name", r.Name).
 		Column("description", r.Description)
 

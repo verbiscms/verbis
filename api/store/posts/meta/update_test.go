@@ -26,15 +26,15 @@ func (t *MetaTestSuite) TestStore_Update() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(meta.Seo, meta.Meta, meta.PostId).
-					WillReturnResult(sqlmock.NewResult(int64(meta.Id), 1))
+					WithArgs(meta.Seo, meta.Meta, meta.PostID).
+					WillReturnResult(sqlmock.NewResult(int64(meta.ID), 1))
 			},
 		},
 		"No Rows": {
 			"Error updating meta with the post ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(meta.Seo, meta.Meta, meta.PostId).
+					WithArgs(meta.Seo, meta.Meta, meta.PostID).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -42,7 +42,7 @@ func (t *MetaTestSuite) TestStore_Update() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WithArgs(meta.Seo, meta.Meta, meta.PostId).
+					WithArgs(meta.Seo, meta.Meta, meta.PostID).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},
@@ -51,7 +51,7 @@ func (t *MetaTestSuite) TestStore_Update() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.update(meta.PostId, meta)
+			err := s.update(meta.PostID, meta)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

@@ -36,8 +36,8 @@ func (t *UsersTestSuite) TestStore_List() {
 			"",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "roles.name"}).
-					AddRow(users[0].Id, users[0].FirstName, users[0].LastName, users[0].Email, users[0].Role.Name).
-					AddRow(users[1].Id, users[0].FirstName, users[1].LastName, users[1].Email, users[1].Role.Name)
+					AddRow(users[0].ID, users[0].FirstName, users[0].LastName, users[0].Email, users[0].Role.Name).
+					AddRow(users[1].ID, users[0].FirstName, users[1].LastName, users[1].Email, users[1].Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
@@ -50,8 +50,8 @@ func (t *UsersTestSuite) TestStore_List() {
 			"owner",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "roles.name"}).
-					AddRow(users[0].Id, users[0].FirstName, users[0].LastName, users[0].Email, users[0].Role.Name).
-					AddRow(users[1].Id, users[0].FirstName, users[1].LastName, users[1].Email, users[1].Role.Name)
+					AddRow(users[0].ID, users[0].FirstName, users[0].LastName, users[0].Email, users[0].Role.Name).
+					AddRow(users[1].ID, users[0].FirstName, users[1].LastName, users[1].Email, users[1].Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListRoleQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountRoleQuery)).WillReturnRows(countRows)
@@ -94,8 +94,8 @@ func (t *UsersTestSuite) TestStore_List() {
 			"",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "roles.name"}).
-					AddRow(users[0].Id, users[0].FirstName, users[0].LastName, users[0].Email, users[0].Role.Name).
-					AddRow(users[1].Id, users[0].FirstName, users[1].LastName, users[1].Email, users[1].Role.Name)
+					AddRow(users[0].ID, users[0].FirstName, users[0].LastName, users[0].Email, users[0].Role.Name).
+					AddRow(users[1].ID, users[0].FirstName, users[1].LastName, users[1].Email, users[1].Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},

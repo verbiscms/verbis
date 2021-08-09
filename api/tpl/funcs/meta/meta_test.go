@@ -184,7 +184,7 @@ func TestNamespace(t *testing.T) {
 }
 
 func TestTemplateMeta_GetImage(t *testing.T) {
-	media := domain.Media{Id: 1, File: domain.File{Url: "testurl"}}
+	media := domain.Media{ID: 1, File: domain.File{URL: "testurl"}}
 
 	tt := map[string]struct {
 		mock func(m *mocks.Repository)
@@ -194,7 +194,7 @@ func TestTemplateMeta_GetImage(t *testing.T) {
 			func(m *mocks.Repository) {
 				m.On("Find", 1).Return(media, nil)
 			},
-			media.File.Url,
+			media.File.URL,
 		},
 		"Error": {
 			func(m *mocks.Repository) {
@@ -221,11 +221,11 @@ func TestTemplateMeta_IsHomepage(t *testing.T) {
 		want  bool
 	}{
 		"Success": {
-			domain.Post{Id: 1},
+			domain.Post{ID: 1},
 			true,
 		},
 		"Error": {
-			domain.Post{Id: 2},
+			domain.Post{ID: 2},
 			false,
 		},
 	}

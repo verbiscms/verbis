@@ -25,5 +25,5 @@ func (s *Store) Logout(token string) (int, error) {
 		return -1, err
 	}
 
-	return user.Id, nil
+	return user.ID, nil
 }

@@ -23,7 +23,7 @@ func (s *Store) Create(f domain.FormSubmission) error {
 	q := s.Builder().
 		Insert(s.Schema()+TableName).
 		Column("uuid", "?").
-		Column("form_id", f.FormId).
+		Column("form_id", f.FormID).
 		Column("fields", "?").
 		Column("ip_address", f.IPAddress).
 		Column("user_agent", f.UserAgent).
@@ -31,7 +31,7 @@ func (s *Store) Create(f domain.FormSubmission) error {
 
 	_, err := s.DB().Exec(q.Build(), uuid.New().String(), f.Fields)
 	if err == sql.ErrNoRows {
-		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error creating form submission with the form ID: %d", f.Id), Operation: op, Err: err}
+		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error creating form submission with the form ID: %d", f.ID), Operation: op, Err: err}
 	} else if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}

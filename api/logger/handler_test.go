@@ -7,6 +7,7 @@ package logger
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/errors"
 )
 
@@ -43,7 +44,7 @@ func (t *LoggerTestSuite) TestHandler() {
 			nil,
 			"message",
 			200,
-			"/admin",
+			app.AdminPath,
 			"",
 		},
 		"400": {
@@ -78,6 +79,9 @@ func (t *LoggerTestSuite) TestHandler() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
+			orig := app.Production
+			defer func() { app.Production = orig }()
+			app.Production = true
 			buf := t.SetupHandler(func(ctx *gin.Context) {
 				if test.err != nil {
 					ctx.Set("verbis_error", test.err)

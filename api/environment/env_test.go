@@ -5,11 +5,13 @@
 package environment
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/errors"
+	"html/template"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -136,13 +138,13 @@ func (t *EnvTestSuite) TestEnv_Validate() {
 		"Bad Validation": {
 			Env{},
 			validation.Errors{
-				validation.Error{Key: "app_port", Type: "required", Message: "App Port is required."},
-				validation.Error{Key: "db_driver", Type: "required", Message: "Db Driver is required."},
-				validation.Error{Key: "db_host", Type: "required", Message: "Db Host is required."},
-				validation.Error{Key: "db_port", Type: "required", Message: "Db Port is required."},
-				validation.Error{Key: "db_database", Type: "required", Message: "Db Database is required."},
-				validation.Error{Key: "db", Type: "required", Message: "Db is required."},
-				validation.Error{Key: "db_password", Type: "required", Message: "Db Password is required."},
+				validation.Error{Key: "APP_PORT", Type: "required", Message: "APP PORT is required."},
+				validation.Error{Key: "DB_DRIVER", Type: "required", Message: "DB DRIVER is required."},
+				validation.Error{Key: "DB_HOST", Type: "required", Message: "DB HOST is required."},
+				validation.Error{Key: "DB_PORT", Type: "required", Message: "DB PORT is required."},
+				validation.Error{Key: "DB_DATABASE", Type: "required", Message: "DB DATABASE is required."},
+				validation.Error{Key: "DB_USERNAME", Type: "required", Message: "DB USERNAME is required."},
+				validation.Error{Key: "DB_PASSWORD", Type: "required", Message: "DB PASSWORD is required."},
 			},
 		},
 	}
@@ -221,18 +223,101 @@ func (t *EnvTestSuite) TestEnv_SetError() {
 	t.Contains(errors.Message(err), "Error writing env file with the path")
 }
 
+func (t *EnvTestSuite) TestEnv_Install() {
+	tt := map[string]struct {
+		input Env
+		path  string
+		tpl   string
+		new   func(name string) *template.Template
+		want  interface{}
+	}{
+		"Parse Error": {
+			Env{},
+			filepath.Dir(t.TestDataPath),
+			"",
+			func(name string) *template.Template {
+				tpl, err := template.New("wrong").Parse("text")
+				t.NoError(err)
+				err = tpl.Execute(&bytes.Buffer{}, nil)
+				t.NoError(err)
+				return tpl
+			},
+			"Error parsing env tpl",
+		},
+		"Execute Error": {
+			Env{},
+			filepath.Dir(t.TestDataPath),
+			"{{ .bad }}",
+			newTpl,
+			"Error executing env tpl",
+		},
+		"Write Error": {
+			Env{
+				DbDriver: "driver",
+			},
+			"/",
+			"{{ .DbDriver }}",
+			newTpl,
+			"Error writing env file",
+		},
+		"Success": {
+			Env{
+				DbDriver: "driver",
+			},
+			filepath.Dir(t.TestDataPath),
+			"{{ .DbDriver }}",
+			newTpl,
+			"driver",
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			teardown := t.ChangePath(test.path)
+			origEnv := envTpl
+			origNewTpl := newTpl
+			t.Original()
+
+			defer func() {
+				teardown()
+				envTpl = origEnv
+				newTpl = origNewTpl
+				_ = os.Remove(filepath.Join(test.path, EnvExtension))
+				t.Overwrite()
+			}()
+			envTpl = test.tpl
+			newTpl = test.new
+
+			err := test.input.Install()
+			if err != nil {
+				t.Contains(errors.Message(err), test.want)
+				return
+			}
+
+			t.Nil(err)
+			file, err := ioutil.ReadFile(filepath.Join(test.path, EnvExtension))
+			t.NoError(err)
+			t.Equal(test.want, string(file))
+		})
+	}
+}
+
 func (t *EnvTestSuite) TestEnv_Port() {
 	tt := map[string]struct {
 		port string
 		want int
 	}{
+		"Default": {
+			"",
+			DefaultPort,
+		},
 		"Success": {
 			"8000",
 			8000,
 		},
 		"Error": {
 			"prod",
-			5000,
+			DefaultPort,
 		},
 	}
 

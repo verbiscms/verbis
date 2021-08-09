@@ -34,9 +34,11 @@ func init() {
 			}
 			return nil
 		},
-		CallBackDown: nil,
-		Stage:        version.Patch,
-		SQLPath:      filepath.Join(Version, "v0.0.4.sql"),
+		CallBackDown: func() error {
+			return nil
+		},
+		Stage:   version.Patch,
+		SQLPath: filepath.Join(Version, "v0.0.4.sql"),
 	})
 	if err != nil {
 		logger.Panic(err)

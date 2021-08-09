@@ -24,7 +24,7 @@ func (s *Store) update(f domain.PostField) (domain.PostField, error) {
 		Update(s.Schema()+TableName).
 		Column("value", f.OriginalValue).
 		Column("field_key", f.Key).
-		Where("post_id", "=", f.PostId).
+		Where("post_id", "=", f.PostID).
 		Where("field_key", "=", f.Key).
 		Where("name", "=", f.Name)
 

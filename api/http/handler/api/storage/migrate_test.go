@@ -44,7 +44,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			},
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "from_provider", Message: "From Provider is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "provider", Message: "Provider is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
 			migrateBadValidation,

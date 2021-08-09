@@ -33,7 +33,7 @@ func (c *Categories) Update(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the category", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	category.Id = id
+	category.ID = id
 
 	updatedCategory, err := c.Store.Categories.Update(category)
 	if errors.Code(err) == errors.NOTFOUND {
@@ -44,5 +44,5 @@ func (c *Categories) Update(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully updated category with ID: "+strconv.Itoa(category.Id), updatedCategory)
+	api.Respond(ctx, http.StatusOK, "Successfully updated category with ID: "+strconv.Itoa(category.ID), updatedCategory)
 }

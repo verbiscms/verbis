@@ -14,6 +14,8 @@ import (
 	"github.com/verbiscms/verbis/api/database/postgres"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
+	// Import Updates
+	_ "github.com/verbiscms/verbis/api/database/updates/v0"
 )
 
 // Driver represents the functions and methods for
@@ -29,6 +31,15 @@ type Driver interface {
 	Dump(path, filename string) error
 	Drop() error
 }
+
+const (
+	// MySQLDriver driver is represented under DB_DRIVER
+	// for MySQL.
+	MySQLDriver = internal.MySQLDriver
+	// PostgresDriver driver is represented under
+	// DB_DRIVER for postgres.
+	PostgresDriver = internal.PostgresDriver
+)
 
 // New creates a new database driver dependant on the
 // environment.

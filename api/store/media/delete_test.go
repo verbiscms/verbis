@@ -27,7 +27,7 @@ func (t *MediaTestSuite) TestStore_Delete() {
 		"Success": {
 			nil,
 			func(m *mocks.Repository) {
-				m.On("Delete", mediaItem.Id).Return(nil)
+				m.On("Delete", mediaItem.ID).Return(nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
@@ -53,7 +53,7 @@ func (t *MediaTestSuite) TestStore_Delete() {
 		"Sizes Error": {
 			"error",
 			func(m *mocks.Repository) {
-				m.On("Delete", mediaItem.Id).Return(fmt.Errorf("error"))
+				m.On("Delete", mediaItem.ID).Return(fmt.Errorf("error"))
 			},
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(DeleteQuery)).
@@ -65,7 +65,7 @@ func (t *MediaTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock, test.mockSizes)
-			err := s.Delete(mediaItem.Id)
+			err := s.Delete(mediaItem.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

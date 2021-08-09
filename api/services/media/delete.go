@@ -22,7 +22,7 @@ func (s *Service) Delete(id int) error {
 	}
 
 	// Remove from the database
-	err = s.repo.Delete(item.Id)
+	err = s.repo.Delete(item.ID)
 	if err != nil {
 		return err
 	}
@@ -38,11 +38,11 @@ func (s *Service) deleteFiles(item domain.Media) {
 	const op = "Media.DeleteFiles"
 
 	// Remove original file
-	err := s.storage.Delete(item.File.Id)
+	err := s.storage.Delete(item.File.ID)
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting original media item: " + item.File.Url, Operation: op, Err: err}).Error()
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting original media item: " + item.File.URL, Operation: op, Err: err}).Error()
 	}
-	logger.Info("Deleted original media item: " + item.File.Url)
+	logger.Info("Deleted original media item: " + item.File.URL)
 
 	// Delete original WebP
 	s.deleteWebP(item.File, true)
@@ -50,17 +50,17 @@ func (s *Service) deleteFiles(item domain.Media) {
 	// Remove media sizes
 	for _, size := range item.Sizes {
 		// Delete original
-		err = s.storage.Delete(size.File.Id)
+		err = s.storage.Delete(size.File.ID)
 		if err != nil {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting media size: " + size.File.Url, Operation: op, Err: err}).Error()
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting media size: " + size.File.URL, Operation: op, Err: err}).Error()
 		}
-		logger.Info("Deleted media size: " + size.File.Url)
+		logger.Info("Deleted media size: " + size.File.URL)
 
 		// Delete sized WebP
 		s.deleteWebP(size.File, true)
 	}
 
-	err = s.repo.Delete(item.Id)
+	err = s.repo.Delete(item.ID)
 	if err != nil {
 		logger.WithError(err).Error()
 	}
@@ -70,20 +70,20 @@ func (s *Service) deleteFiles(item domain.Media) {
 func (s *Service) deleteWebP(file domain.File, log bool) {
 	const op = "Media.DeleteWebP"
 
-	url := file.Url + domain.WebPExtension
+	url := file.URL + domain.WebPExtension
 
 	_, webp, err := s.storage.Find(url)
 	if err != nil {
 		return
 	}
 
-	err = s.storage.Delete(webp.Id)
+	err = s.storage.Delete(webp.ID)
 	if err != nil {
 		if log {
-			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting webp image: " + webp.Url, Operation: op, Err: err}).Error()
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error deleting webp image: " + webp.URL, Operation: op, Err: err}).Error()
 		}
 		return
 	}
 
-	logger.Info("Deleted WebP file: " + webp.Url)
+	logger.Info("Deleted WebP file: " + webp.URL)
 }

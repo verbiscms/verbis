@@ -18,7 +18,7 @@ import (
 type (
 	// Post defines the main page entity of Verbis.
 	Post struct {
-		Id                int           `db:"id" json:"id" binding:"numeric"` //nolint
+		ID                int           `db:"id" json:"id" binding:"numeric"`
 		UUID              uuid.UUID     `db:"uuid" json:"uuid"`
 		Slug              string        `db:"slug" json:"slug" binding:"required,max=150"`
 		Permalink         string        `db:"-" json:"permalink"`
@@ -29,7 +29,7 @@ type (
 		PageLayout        string        `db:"layout" json:"layout,omitempty" binding:"required,max=150"`
 		CodeInjectionHead string        `db:"codeinjection_head" json:"codeinjection_head,omitempty"`
 		CodeInjectionFoot string        `db:"codeinjection_foot" json:"codeinjection_foot,omitempty"`
-		UserId            int           `db:"user_id" json:"-"` //nolint
+		UserID            int           `db:"user_id" json:"-"`
 		IsArchive         types.BitBool `db:"archive" json:"archive"`
 		PublishedAt       *time.Time    `db:"published_at" json:"published_at"`
 		CreatedAt         time.Time     `db:"created_at" json:"created_at"`
@@ -53,7 +53,7 @@ type (
 	// PostField defines the individual field that is attached
 	// to a post.
 	PostField struct {
-		PostId        int         `db:"post_id" json:"-"` //nolint
+		PostID        int         `db:"post_id" json:"-"`
 		UUID          uuid.UUID   `db:"uuid" json:"uuid" binding:"required"`
 		Type          string      `db:"type" json:"type"`
 		Name          string      `db:"name" json:"name"`
@@ -73,8 +73,8 @@ type (
 	// PostOptions defines the global post options that
 	// includes post meta and post seo information.
 	PostOptions struct {
-		Id       int       `json:"-"`                            //nolint
-		PostId   int       `json:"-" binding:"required|numeric"` //nolint
+		ID       int       `json:"-"`
+		PostID   int       `json:"-" binding:"required|numeric"`
 		Meta     *PostMeta `db:"meta" json:"meta"`
 		Seo      *PostSeo  `db:"seo" json:"seo"`
 		EditLock string    `db:"edit_lock" json:"edit_lock"`
@@ -92,14 +92,14 @@ type (
 	PostTwitter struct {
 		Title       string `json:"title,omitempty"`
 		Description string `json:"description,omitempty"`
-		ImageId     int    `json:"image_id,omitempty" binding:"numeric"` //nolint
+		ImageID     int    `json:"image_id,omitempty" binding:"numeric"`
 	}
 	// PostFacebook defines the opengraph meta information
 	// used when calling the VerbisHeader.
 	PostFacebook struct {
 		Title       string `json:"title,omitempty"`
 		Description string `json:"description,omitempty"`
-		ImageId     int    `json:"image_id,omitempty" binding:"numeric"` //nolint
+		ImageID     int    `json:"image_id,omitempty" binding:"numeric"`
 	}
 	// PostSeo defines the options for Seo on the post,
 	// including if the post is index-able, if it
@@ -168,7 +168,7 @@ func (p *PostDatum) IsHomepage(id int) bool {
 	if id == 0 {
 		return false
 	}
-	return id == p.Post.Id
+	return id == p.Post.ID
 }
 
 // Tpl Converts a PostDatum to a PostTemplate and hides

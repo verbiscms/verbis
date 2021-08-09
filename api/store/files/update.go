@@ -21,9 +21,9 @@ func (s *Store) Update(f domain.File) (domain.File, error) {
 	q := s.Builder().
 		Update(s.Schema()+TableName).
 		Column("uuid", f.UUID.String()).
-		Column("url", f.Url).
+		Column("url", f.URL).
 		Column("name", f.Name).
-		Column("bucket_id", f.BucketId).
+		Column("bucket_id", f.BucketID).
 		Column("mime", f.Mime).
 		Column("source_type", f.SourceType).
 		Column("provider", f.Provider).
@@ -31,7 +31,7 @@ func (s *Store) Update(f domain.File) (domain.File, error) {
 		Column("bucket", f.Bucket).
 		Column("file_size", f.FileSize).
 		Column("private", f.Private).
-		Where("id", "=", f.Id)
+		Where("id", "=", f.ID)
 
 	_, err := s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {

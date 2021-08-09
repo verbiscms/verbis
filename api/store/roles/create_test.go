@@ -26,7 +26,7 @@ func (t *RolesTestSuite) TestStore_Create() {
 			role,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(role.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(role.ID), 1))
 			},
 		},
 		"Validation Failed": {

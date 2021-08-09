@@ -23,8 +23,8 @@ func (s *Store) Create(m domain.Media) (domain.Media, error) {
 		Column("title", "").
 		Column("alt", "").
 		Column("description", "").
-		Column("user_id", m.UserId).
-		Column("file_id", m.FileId).
+		Column("user_id", m.UserID).
+		Column("file_id", m.FileID).
 		Column("updated_at", "NOW()").
 		Column("created_at", "NOW()")
 
@@ -39,10 +39,10 @@ func (s *Store) Create(m domain.Media) (domain.Media, error) {
 	if err != nil {
 		return domain.Media{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created media item ID", Operation: op, Err: err}
 	}
-	m.Id = int(id)
+	m.ID = int(id)
 
 	// Insert to sizes table
-	sizes, err := s.sizes.Create(m.Id, m.Sizes)
+	sizes, err := s.sizes.Create(m.ID, m.Sizes)
 	if err != nil {
 		return domain.Media{}, err
 	}

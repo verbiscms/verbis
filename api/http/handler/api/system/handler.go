@@ -11,6 +11,8 @@ import (
 
 // Handler defines methods for the system to interact with the server.
 type Handler interface {
+	ValidateInstall(ctx *gin.Context)
+	Install(ctx *gin.Context)
 	Update(ctx *gin.Context)
 }
 

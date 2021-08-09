@@ -9,6 +9,7 @@ import (
 	"github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/database/updates"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/services/site"
@@ -91,6 +92,21 @@ type Config struct {
 }
 
 func New(cfg Config) (*Deps, error) {
+	if !cfg.Installed {
+		_ = updates.Static
+		return &Deps{
+			Env:       cfg.Env,
+			Paths:     cfg.Paths,
+			Installed: false,
+			Running:   false,
+			Options: &domain.Options{
+				SiteURL: "http://localhost:" + cfg.Env.AppPort,
+			},
+			FS:     verbisfs.New(api.Production, cfg.Paths),
+			System: cfg.System,
+		}, nil
+	}
+
 	if cfg.Store == nil && cfg.Running {
 		return nil, fmt.Errorf("must have a store")
 	}
@@ -122,20 +138,21 @@ func New(cfg Config) (*Deps, error) {
 	}
 
 	d := &Deps{
-		Env:     cfg.Env,
-		Cache:   cs,
-		Store:   cfg.Store,
-		Config:  &config,
-		Options: &opts,
-		Paths:   cfg.Paths,
-		tmpl:    nil,
-		Running: cfg.Running,
-		Site:    site.New(cfg.Store.Options, cfg.System),
-		Theme:   themeService,
-		FS:      verbisfs.New(api.Production, cfg.Paths),
-		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
-		Storage: st,
-		System:  cfg.System,
+		Env:       cfg.Env,
+		Cache:     cs,
+		Store:     cfg.Store,
+		Config:    &config,
+		Options:   &opts,
+		Paths:     cfg.Paths,
+		tmpl:      nil,
+		Running:   cfg.Running,
+		Installed: cfg.Installed,
+		Site:      site.New(cfg.Store.Options, cfg.System),
+		Theme:     themeService,
+		FS:        verbisfs.New(api.Production, cfg.Paths),
+		WebP:      webp.New(cfg.Paths.Bin + webp.Path),
+		Storage:   st,
+		System:    cfg.System,
 	}
 
 	return d, nil

@@ -50,7 +50,18 @@ const routes = [
 		meta: { transitionName : 'slide' },
 	},
 	/**
+	 * Install
+	 *
+	 */
+	{
+		path: "/install",
+		name: "install",
+		component: () => import("../views/install/Install.vue"),
+		meta: { transitionName : 'slide' },
+	},
+	/**
 	 * Site
+	 *
 	 */
 	{
 		path: "/site",
@@ -255,7 +266,9 @@ const checkSession = () => {
  *
  */
 router.beforeEach((to, from, next) => {
-	checkSession();
+	if (to.name !== "install") {
+		checkSession();
+	}
 	if (store.state.auth) {
 		if (to.name === "login") {
 			// Redirect to the page
@@ -266,7 +279,16 @@ router.beforeEach((to, from, next) => {
 		}
 		next();
 	} else {
-		if (to.name === "login" || to.name === "password-reset" || to.name === "send-password-reset" || to.name === "error") {
+		const excluded = [
+			"login",
+			"password-reset",
+			"send-password-reset",
+			"error",
+			"install"
+		]
+		if (excluded.includes(to.name)) {
+			// console.log("in");
+			// checkSession();
 			next();
 		} else {
 			next({

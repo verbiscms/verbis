@@ -48,7 +48,7 @@ func (t *PostCategoriesTestSuite) TestStore_Update() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.update(post.Id, post.Category.Id)
+			err := s.update(post.ID, post.Category.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

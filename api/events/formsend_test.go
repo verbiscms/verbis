@@ -17,7 +17,7 @@ func (t *EventTestSuite) Test_FormSendDispatch() {
 	}{
 		"Success": {
 			FormSend{
-				Form:   &domain.Form{Id: 1},
+				Form:   &domain.Form{ID: 1},
 				Values: domain.FormValues{},
 			},
 			false,
@@ -34,7 +34,7 @@ func (t *EventTestSuite) Test_FormSendDispatch() {
 		"With Values": {
 			FormSend{
 				Form: &domain.Form{
-					Id: 1,
+					ID: 1,
 					Fields: domain.FormFields{
 						domain.FormField{Key: "wrong"},
 						domain.FormField{Key: "text"},

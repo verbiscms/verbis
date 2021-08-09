@@ -19,7 +19,7 @@ import (
 // Returns errors.CONFLICT if the the category (name) already exists.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
 func (s *Store) Create(u domain.UserCreate) (domain.User, error) {
-	const op = "userStore.Create"
+	const op = "UserStore.Create"
 
 	err := s.validate(u.User)
 	if err != nil {
@@ -62,10 +62,10 @@ func (s *Store) Create(u domain.UserCreate) (domain.User, error) {
 	if err != nil {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created user ID", Operation: op, Err: err}
 	}
-	u.User.Id = int(id)
+	u.User.ID = int(id)
 
 	// Insert into the pivot table
-	err = s.createUserRoles(int(id), u.Role.Id)
+	err = s.createUserRoles(int(id), u.Role.ID)
 	if err != nil {
 		return domain.User{}, err
 	}

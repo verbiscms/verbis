@@ -49,7 +49,7 @@ var (
 	// The default media sizes used for testing.
 	sizes = domain.MediaSizes{
 		"hd": domain.MediaSize{
-			Id:       1,
+			ID:       1,
 			SizeKey:  "hd",
 			SizeName: "gopher-1920x1080.jpg",
 		},

@@ -28,7 +28,7 @@ func (t *UsersTestSuite) TestStore_Find() {
 			user,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token", "roles.name"}).
-					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
+					AddRow(user.ID, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
@@ -49,7 +49,7 @@ func (t *UsersTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(user.Id)
+			got, err := s.Find(user.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -68,7 +68,7 @@ func (t *UsersTestSuite) TestStore_FindByToken() {
 			user,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token", "roles.name"}).
-					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
+					AddRow(user.ID, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByTokenQuery)).WillReturnRows(rows)
 			},
 		},
@@ -108,7 +108,7 @@ func (t *UsersTestSuite) TestStore_FindByEmail() {
 			user,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token", "roles.name"}).
-					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
+					AddRow(user.ID, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByEmailQuery)).WillReturnRows(rows)
 			},
 		},

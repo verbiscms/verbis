@@ -23,7 +23,7 @@ func (c *Fields) List(ctx *gin.Context) {
 
 	userID, err := strconv.Atoi(ctx.Query("user_id"))
 	if err != nil || userID == 0 {
-		userID = c.Store.User.Owner().Id
+		userID = c.Store.User.Owner().ID
 	}
 
 	categoryID, err := strconv.Atoi(ctx.Query("category_id"))
@@ -36,12 +36,12 @@ func (c *Fields) List(ctx *gin.Context) {
 			Resource:     resource,
 			PageTemplate: ctx.Query("page_template"),
 			PageLayout:   ctx.Query("layout"),
-			UserId:       userID,
+			UserID:       userID,
 		},
 	}
 
 	// Get the author associated with the post
-	author, err := c.Store.User.Find(post.UserId)
+	author, err := c.Store.User.Find(post.UserID)
 	if err == nil {
 		post.Author = author.HideCredentials()
 	}

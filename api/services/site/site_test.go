@@ -22,7 +22,7 @@ func TestSite_Config(t *testing.T) {
 		SiteTitle:       "title",
 		SiteDescription: "description",
 		SiteLogo:        "logo",
-		SiteUrl:         "url",
+		SiteURL:         "url",
 	}
 
 	mo := &mockOptions.Repository{}
@@ -32,7 +32,7 @@ func TestSite_Config(t *testing.T) {
 		Title:         opts.SiteTitle,
 		Description:   opts.SiteDescription,
 		Logo:          opts.SiteLogo,
-		Url:           opts.SiteUrl,
+		URL:           opts.SiteURL,
 		Version:       version.Version,
 		RemoteVersion: "v0.0.1",
 		HasUpdate:     false,

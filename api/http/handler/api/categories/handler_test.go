@@ -57,26 +57,26 @@ func (t *CategoriesTestSuite) Setup(mf func(m *mocks.Repository)) *Categories {
 var (
 	// The default category used for testing.
 	category = domain.Category{
-		Id:       123,
+		ID:       123,
 		Slug:     "/cat",
 		Name:     "Category",
 		Resource: "test",
 	}
 	// The default category with wrong validation used for testing.
 	categoryBadValidation = domain.Category{
-		Id:       123,
+		ID:       123,
 		Name:     "Category",
 		Resource: "test",
 	}
 	// The default categories used for testing.
 	categories = domain.Categories{
 		{
-			Id:   123,
+			ID:   123,
 			Slug: "/cat",
 			Name: "Category",
 		},
 		{
-			Id:   124,
+			ID:   124,
 			Slug: "/cat1",
 			Name: "Category1",
 		},

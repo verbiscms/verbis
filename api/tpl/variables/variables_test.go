@@ -12,7 +12,7 @@ import (
 func TestData(t *testing.T) {
 	td := TemplateData{
 		Site:    domain.Site{},
-		Theme:   domain.ThemeConfig{},
+		Config:  domain.ThemeConfig{},
 		Post:    domain.PostDatum{},
 		Options: Options{},
 	}

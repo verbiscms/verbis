@@ -32,7 +32,7 @@ func (s *Site) Global() domain.Site {
 		Title:         o.SiteTitle,
 		Description:   o.SiteDescription,
 		Logo:          o.SiteLogo,
-		Url:           o.SiteUrl,
+		URL:           o.SiteURL,
 		Version:       version.Version,
 		RemoteVersion: s.sys.LatestVersion(),
 		HasUpdate:     s.sys.HasUpdate(),

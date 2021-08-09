@@ -48,7 +48,7 @@ func (t *UsersTestSuite) TestStore_CheckSession() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "email", "token", "roles.name"}).
-					AddRow(user.Id, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
+					AddRow(user.ID, user.FirstName, user.LastName, user.Email, user.Token, user.Role.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByTokenQuery)).WillReturnRows(rows)
 			},
 		},
@@ -57,7 +57,7 @@ func (t *UsersTestSuite) TestStore_CheckSession() {
 			"Session expired, please login again",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "token_last_used", "token"}).
-					AddRow(user.Id, &old, "token")
+					AddRow(user.ID, &old, "token")
 				m.ExpectQuery(regexp.QuoteMeta(FindByTokenQuery)).WillReturnRows(rows)
 
 				m.ExpectExec(regexp.QuoteMeta(UpdateTokenQuery)).
@@ -70,7 +70,7 @@ func (t *UsersTestSuite) TestStore_CheckSession() {
 			"Error updating the user's token with the name",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "token_last_used", "token"}).
-					AddRow(user.Id, &old, "token")
+					AddRow(user.ID, &old, "token")
 				m.ExpectQuery(regexp.QuoteMeta(FindByTokenQuery)).WillReturnRows(rows)
 
 				m.ExpectExec(regexp.QuoteMeta(UpdateTokenQuery)).
@@ -83,7 +83,7 @@ func (t *UsersTestSuite) TestStore_CheckSession() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "token_last_used", "token"}).
-					AddRow(user.Id, &now, "token")
+					AddRow(user.ID, &now, "token")
 				m.ExpectQuery(regexp.QuoteMeta(FindByTokenQuery)).WillReturnRows(rows)
 
 				m.ExpectExec(regexp.QuoteMeta(UpdateTokenUsedQuery)).
@@ -95,7 +95,7 @@ func (t *UsersTestSuite) TestStore_CheckSession() {
 			"Error updating the user last token used column",
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "token_last_used", "token"}).
-					AddRow(user.Id, &now, "token")
+					AddRow(user.ID, &now, "token")
 				m.ExpectQuery(regexp.QuoteMeta(FindByTokenQuery)).WillReturnRows(rows)
 
 				m.ExpectExec(regexp.QuoteMeta(UpdateTokenUsedQuery)).
@@ -130,7 +130,7 @@ func (t *UsersTestSuite) TestStore_ResetPassword() {
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(RestPasswordQuery)).
 					WithArgs(test.DBAnyString{}).
-					WillReturnResult(sqlmock.NewResult(int64(user.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(user.ID), 1))
 			},
 		},
 		"No Rows": {
@@ -154,7 +154,7 @@ func (t *UsersTestSuite) TestStore_ResetPassword() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.ResetPassword(user.Id, passwordReset)
+			err := s.ResetPassword(user.ID, passwordReset)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -169,7 +169,7 @@ func (t *UsersTestSuite) TestStore_ResetPassword_FailedHash() {
 	s.hashPasswordFunc = func(password string) (string, error) {
 		return "", fmt.Errorf("error")
 	}
-	err := s.ResetPassword(user.Id, passwordReset)
+	err := s.ResetPassword(user.ID, passwordReset)
 	want := "error"
 	t.Equal(want, err.Error())
 }

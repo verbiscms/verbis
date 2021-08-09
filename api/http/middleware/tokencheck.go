@@ -26,7 +26,7 @@ func AdminTokenCheck(d *deps.Deps) gin.HandlerFunc {
 			return
 		}
 
-		if u.Role.Id > 1 {
+		if u.Role.ID > 1 {
 			g.Next()
 		} else {
 			api.AbortJSON(g, http.StatusForbidden, "You must have access level of administrator to access this endpoint.", nil)
@@ -47,7 +47,7 @@ func OperatorTokenCheck(d *deps.Deps) gin.HandlerFunc {
 			return
 		}
 
-		if u.Role.Id > 0 {
+		if u.Role.ID > 0 {
 			g.Next()
 		} else {
 			api.AbortJSON(g, http.StatusForbidden, "You must have access level of operator to access this endpoint.", nil)
@@ -93,7 +93,7 @@ func checkUserToken(d *deps.Deps, g *gin.Context) (*domain.User, error) {
 		return &domain.User{}, err
 	}
 
-	if u.Role.Id == domain.BannedRoleID {
+	if u.Role.ID == domain.BannedRoleID {
 		api.AbortJSON(g, http.StatusForbidden, "Your account has been suspended by the administration team", nil)
 		return &domain.User{}, err
 	}

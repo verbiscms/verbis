@@ -26,7 +26,7 @@ func (t *SubmissionTestSuite) TestStore_Find() {
 			formSubmissions,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"form_id", "ip_address", "user_agent"}).
-					AddRow(formSubmission.FormId, formSubmission.IPAddress, formSubmission.UserAgent)
+					AddRow(formSubmission.FormID, formSubmission.IPAddress, formSubmission.UserAgent)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},
@@ -50,7 +50,7 @@ func (t *SubmissionTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(form.Id)
+			got, err := s.Find(form.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

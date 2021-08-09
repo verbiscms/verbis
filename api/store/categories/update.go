@@ -29,11 +29,11 @@ func (s *Store) Update(c domain.Category) (domain.Category, error) {
 		Column("slug", c.Slug).
 		Column("name", c.Name).
 		Column("description", c.Description).
-		Column("parent_id", c.ParentId).
+		Column("parent_id", c.ParentID).
 		Column("resource", c.Resource).
-		Column("archive_id", c.ArchiveId).
+		Column("archive_id", c.ArchiveID).
 		Column("updated_at", "NOW()").
-		Where("id", "=", c.Id)
+		Where("id", "=", c.ID)
 
 	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {

@@ -50,12 +50,12 @@ var (
 	// The default roles used for testing.
 	roles = domain.Roles{
 		{
-			Id:          1,
+			ID:          1,
 			Name:        "Banned",
 			Description: "Banned Role",
 		},
 		{
-			Id:          2,
+			ID:          2,
 			Name:        "Administrator",
 			Description: "Administrator Role",
 		},

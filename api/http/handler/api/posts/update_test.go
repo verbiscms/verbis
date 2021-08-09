@@ -35,7 +35,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			"/posts/123",
 		},
 		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "post_title", Message: "Post Title is required.", Type: "required"}}},
+			api.ErrorJSON{Errors: validation.Errors{{Key: "title", Message: "Title is required.", Type: "required"}}},
 			http.StatusBadRequest,
 			"Validation failed",
 			postBadValidation,

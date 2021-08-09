@@ -31,9 +31,9 @@ func (s *Store) Create(c domain.Category) (domain.Category, error) {
 		Column("slug", c.Slug).
 		Column("name", c.Name).
 		Column("description", c.Description).
-		Column("parent_id", c.ParentId).
+		Column("parent_id", c.ParentID).
 		Column("resource", c.Resource).
-		Column("archive_id", c.ArchiveId).
+		Column("archive_id", c.ArchiveID).
 		Column("updated_at", "NOW()").
 		Column("created_at", "NOW()")
 
@@ -48,7 +48,7 @@ func (s *Store) Create(c domain.Category) (domain.Category, error) {
 	if err != nil {
 		return domain.Category{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created category ID", Operation: op, Err: err}
 	}
-	c.Id = int(id)
+	c.ID = int(id)
 
 	return c, nil
 }

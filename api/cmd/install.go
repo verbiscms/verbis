@@ -43,7 +43,7 @@ func Install(cmd *cobra.Command, args []string) {
 	// TODO NOT WORKING
 	//err = db.CheckExists()
 	//if err != nil {
-	//	printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DbDatabase))
+	//	printError(fmt.Sprintf("A database with the name %s has already been installed. \nPlease run verbis uninstall if you want to delete it.", cfg.Env.DBDatabase))
 	//}
 
 	// Get the user & site variables
@@ -196,7 +196,7 @@ func createOwner() *domain.UserCreate {
 				LastName:  lastName,
 				Email:     email,
 				Role: domain.Role{
-					Id: domain.OwnerRoleID,
+					ID: domain.OwnerRoleID,
 				},
 			},
 		},

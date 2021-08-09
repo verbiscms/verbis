@@ -22,7 +22,7 @@ func (s *Store) create(f domain.PostField) (domain.PostField, error) {
 	q := s.Builder().
 		Insert(s.Schema()+TableName).
 		Column("uuid", "?").
-		Column("post_id", f.PostId).
+		Column("post_id", f.PostID).
 		Column("type", f.Type).
 		Column("name", f.Name).
 		Column("value", f.OriginalValue).

@@ -50,19 +50,19 @@ const (
 var (
 	// The default form used for testing.
 	form = domain.Form{
-		Id:   1,
+		ID:   1,
 		Name: "Form",
 	}
 	// The default formSubmission used for testing.
 	formSubmission = domain.FormSubmission{
-		FormId:    1,
+		FormID:    1,
 		IPAddress: "127.0.0.1",
 		UserAgent: "chrome",
 	}
 	// The default formSubmission used for testing.
 	formSubmissions = domain.FormSubmissions{
 		{
-			FormId:    1,
+			FormID:    1,
 			IPAddress: "127.0.0.1",
 			UserAgent: "chrome",
 		},

@@ -38,8 +38,8 @@ func (t *PostsTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(posts[0].Id, posts[0].Slug, posts[0].Title).
-					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
+					AddRow(posts[0].ID, posts[0].Slug, posts[0].Title).
+					AddRow(posts[1].ID, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListQuery))).
 					WillReturnRows(rows)
 
@@ -92,8 +92,8 @@ func (t *PostsTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(posts[0].Id, posts[0].Slug, posts[0].Title).
-					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
+					AddRow(posts[0].ID, posts[0].Slug, posts[0].Title).
+					AddRow(posts[1].ID, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListQuery))).
 					WillReturnRows(rows)
 
@@ -108,8 +108,8 @@ func (t *PostsTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(posts[0].Id, posts[0].Slug, posts[0].Title).
-					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
+					AddRow(posts[0].ID, posts[0].Slug, posts[0].Title).
+					AddRow(posts[1].ID, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListPagesQuery))).
 					WillReturnRows(rows)
 
@@ -127,8 +127,8 @@ func (t *PostsTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(posts[0].Id, posts[0].Slug, posts[0].Title).
-					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
+					AddRow(posts[0].ID, posts[0].Slug, posts[0].Title).
+					AddRow(posts[1].ID, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListResourceQuery))).
 					WillReturnRows(rows)
 
@@ -146,8 +146,8 @@ func (t *PostsTestSuite) TestStore_List() {
 			dummy.DefaultParams,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "title"}).
-					AddRow(posts[0].Id, posts[0].Slug, posts[0].Title).
-					AddRow(posts[1].Id, posts[1].Slug, posts[1].Title)
+					AddRow(posts[0].ID, posts[0].Slug, posts[0].Title).
+					AddRow(posts[1].ID, posts[1].Slug, posts[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(selectStmt(ListStatusQuery))).
 					WillReturnRows(rows)
 

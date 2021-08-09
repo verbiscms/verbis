@@ -87,18 +87,18 @@ func (t *MediaTestSuite) ImagePath() string {
 var (
 	// The default media item used for testing.
 	mediaItem = domain.Media{
-		Id: 123,
+		ID: 123,
 	}
 	// The default media item with wrong validation used for testing.
 	mediaBadValidation = &domain.Media{}
 	// The default media items used for testing.
 	mediaItems = domain.MediaItems{
 		{
-			Id:    1,
+			ID:    1,
 			Title: "title",
 		},
 		{
-			Id:    1,
+			ID:    1,
 			Title: "title",
 		},
 	}

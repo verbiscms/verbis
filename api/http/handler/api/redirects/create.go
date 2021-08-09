@@ -37,5 +37,5 @@ func (r *Redirects) Create(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created redirect with ID: "+strconv.Itoa(newRedirect.Id), newRedirect)
+	api.Respond(ctx, http.StatusOK, "Successfully created redirect with ID: "+strconv.Itoa(newRedirect.ID), newRedirect)
 }

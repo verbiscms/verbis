@@ -39,7 +39,7 @@ func (ns *Namespace) Admin() bool {
 		return false
 	}
 
-	if user.Role.Id < domain.AdminRoleID {
+	if user.Role.ID < domain.AdminRoleID {
 		return false
 	}
 

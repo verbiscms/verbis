@@ -58,10 +58,11 @@ up the server on the port specified in the .env file.`,
 			routes.Load(d, serve)
 
 			// Print listening success
-			printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", cfg.Env.Port()))
-			emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", d.Options.SiteUrl)
-			emoji.Printf(":key: Or visit the admin area at:  %s \n", d.Options.SiteUrl+app.AdminPath)
-			fmt.Println()
+			if d.Installed {
+				printStarted(cfg.Env.Port(), d.Options.SiteURL)
+			} else {
+				printInstall(d.Options.SiteURL)
+			}
 
 			w := watcher.New()
 			handleFileEvents(w, d, serve, sc)
@@ -77,6 +78,19 @@ up the server on the port specified in the .env file.`,
 	}
 	cmd.Flags().BoolVarP(&sc.liveReload, "watch", "w", false, "Enables live reload")
 	return cmd
+}
+
+func printStarted(port int, url string) {
+	printSuccess(fmt.Sprintf("Verbis listening on port: %d \n", port))
+	emoji.Printf(":backhand_index_pointing_right: Visit your site at:          %s \n", url)
+	emoji.Printf(":key: Or visit the admin area at:  %s \n", url+app.AdminPath)
+	fmt.Println()
+}
+
+func printInstall(url string) {
+	printSuccess("Welcome to Verbis")
+	emoji.Printf("\n :backhand_index_pointing_right: Get your site setup at:          %s \n", url)
+	fmt.Println()
 }
 
 func handleFileEvents(w watcher.FileWatcher, d *deps.Deps, s *server.Server, cmd serverCmd) {

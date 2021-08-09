@@ -67,6 +67,19 @@ func NewAPI(d *deps.Deps) *APIHandler {
 	}
 }
 
+// InstallerHandler defines all handler functions for
+// install necessary routes.
+type InstallerHandler struct {
+	System system.Handler
+}
+
+// NewInstall returns a new install handler.
+func NewInstall(d *deps.Deps) *InstallerHandler {
+	return &InstallerHandler{
+		System: system.New(d),
+	}
+}
+
 // FrontendHandler defines all handler functions for
 // frontend routes.
 type FrontendHandler struct {

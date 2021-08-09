@@ -12,8 +12,8 @@ type (
 	// Bucket represents a named group of Files, it could
 	// be remote or local.
 	Bucket struct {
-		Id   string `json:"id" binding:"required"` //nolint
-		Name string `json:"name"`                  //nolint
+		ID   string `json:"id" binding:"required"`
+		Name string `json:"name"`
 	}
 	// Buckets represents the slice of Bucket's.
 	Buckets []Bucket
@@ -49,7 +49,7 @@ type (
 // match.
 func (b Buckets) IsValid(bucket string) bool {
 	for _, v := range b {
-		if v.Id == bucket {
+		if v.ID == bucket {
 			return true
 		}
 	}

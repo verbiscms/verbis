@@ -22,9 +22,9 @@ import (
 var (
 	cat  = &domain.Category{}
 	post = domain.Post{
-		Id:     1,
+		ID:     1,
 		Title:  "test title",
-		UserId: 1,
+		UserID: 1,
 	}
 	postData = domain.PostDatum{
 		Post:     post,

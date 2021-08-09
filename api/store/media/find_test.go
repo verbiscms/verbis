@@ -27,11 +27,11 @@ func (t *MediaTestSuite) TestStore_Find() {
 		"Success": {
 			mediaItem,
 			func(m *mocks.Repository) {
-				m.On("Find", mediaItem.Id).Return(mediaItem.Sizes, nil)
+				m.On("Find", mediaItem.ID).Return(mediaItem.Sizes, nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
-					AddRow(mediaItem.Id, mediaItem.File.Name, mediaItem.Title)
+					AddRow(mediaItem.ID, mediaItem.File.Name, mediaItem.Title)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},
@@ -55,11 +55,11 @@ func (t *MediaTestSuite) TestStore_Find() {
 		"Sizes Error": {
 			"error",
 			func(m *mocks.Repository) {
-				m.On("Find", mediaItem.Id).Return(nil, fmt.Errorf("error"))
+				m.On("Find", mediaItem.ID).Return(nil, fmt.Errorf("error"))
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
-					AddRow(mediaItem.Id, mediaItem.File.Name, mediaItem.Title)
+					AddRow(mediaItem.ID, mediaItem.File.Name, mediaItem.Title)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},
@@ -69,7 +69,7 @@ func (t *MediaTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock, test.mockSizes)
-			got, err := s.Find(mediaItem.Id)
+			got, err := s.Find(mediaItem.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/logger"
 	mocks "github.com/verbiscms/verbis/api/mocks/publisher"
@@ -50,6 +51,7 @@ func (t *SPATestSuite) Setup(mf func(m *mocks.Publisher, mfs *mockFS.FS, ctx *gi
 			FS: &verbisfs.FileSystem{
 				SPA: mfs,
 			},
+			Installed: true,
 		},
 		publisher: m,
 	}
@@ -104,7 +106,7 @@ func (t *SPATestSuite) TestSPA() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.RequestAndServe(http.MethodGet, "/admin"+test.url, "*any", nil, func(ctx *gin.Context) {
+			t.RequestAndServe(http.MethodGet, app.AdminPath+test.url, "*any", nil, func(ctx *gin.Context) {
 				spa := t.Setup(test.mock, ctx)
 				spa.Serve(ctx)
 			})

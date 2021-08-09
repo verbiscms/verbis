@@ -35,10 +35,10 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.svg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(svgFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: svgFile, FileId: 1}).Return(domain.Media{UserId: 1, File: svgFile}, nil)
+				r.On("Create", domain.Media{UserID: 1, File: svgFile, FileID: 1}).Return(domain.Media{UserID: 1, File: svgFile}, nil)
 			},
 			nil,
-			domain.Media{UserId: 1, File: svgFile},
+			domain.Media{UserID: 1, File: svgFile},
 		},
 		"JPG": {
 			filepath.Join(t.TestDataPath, "gopher.jpg"),
@@ -46,10 +46,10 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.jpg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{UserId: 1, File: jpgFile}, nil)
+				r.On("Create", domain.Media{UserID: 1, File: jpgFile, FileID: 1}).Return(domain.Media{UserID: 1, File: jpgFile}, nil)
 			},
 			nil,
-			domain.Media{UserId: 1, File: jpgFile},
+			domain.Media{UserID: 1, File: jpgFile},
 		},
 		"PNG": {
 			filepath.Join(t.TestDataPath, "gopher.png"),
@@ -57,10 +57,10 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.png").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(pngFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: pngFile, FileId: 1}).Return(domain.Media{UserId: 1, File: pngFile}, nil)
+				r.On("Create", domain.Media{UserID: 1, File: pngFile, FileID: 1}).Return(domain.Media{UserID: 1, File: pngFile}, nil)
 			},
 			nil,
-			domain.Media{UserId: 1, File: pngFile},
+			domain.Media{UserID: 1, File: pngFile},
 		},
 		"Open Error": {
 			"",
@@ -85,7 +85,7 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.jpg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
+				r.On("Create", domain.Media{UserID: 1, File: jpgFile, FileID: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
 			},
 			func(r *resizer.Resizer) {
 				r.On("Resize", mock.Anything, mock.Anything, mock.Anything).Return(nil, &errors.Error{Message: "error"})
@@ -98,7 +98,7 @@ func (t *MediaServiceTestSuite) TestClient_Upload() {
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
 				s.On("Exists", "gopher.jpg").Return(false)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(jpgFile, nil)
-				r.On("Create", domain.Media{UserId: 1, File: jpgFile, FileId: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
+				r.On("Create", domain.Media{UserID: 1, File: jpgFile, FileID: 1}).Return(domain.Media{}, &errors.Error{Message: "error"})
 			},
 			nil,
 			"error",
@@ -226,7 +226,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 			func(r *resizer.Resizer) {
 				r.On("Resize", mock.Anything, mock.Anything, mock.Anything).Return(bytes.NewReader([]byte("test")), nil)
 			},
-			domain.MediaSizes{"thumbnail": domain.MediaSize{FileId: 1, SizeKey: "thumbnail", SizeName: "thumb", Width: 300, Height: 300, File: jpgFile}},
+			domain.MediaSizes{"thumbnail": domain.MediaSize{FileID: 1, SizeKey: "thumbnail", SizeName: "thumb", Width: 300, Height: 300, File: jpgFile}},
 		},
 		"PNG": {
 			pngFile,
@@ -244,7 +244,7 @@ func (t *MediaServiceTestSuite) TestClient_Resize() {
 			func(r *resizer.Resizer) {
 				r.On("Resize", mock.Anything, mock.Anything, mock.Anything).Return(bytes.NewReader([]byte("test")), nil)
 			},
-			domain.MediaSizes{"thumbnail": domain.MediaSize{FileId: 1, SizeKey: "thumbnail", SizeName: "thumb", Width: 300, Height: 300, File: jpgFile}},
+			domain.MediaSizes{"thumbnail": domain.MediaSize{FileID: 1, SizeKey: "thumbnail", SizeName: "thumb", Width: 300, Height: 300, File: jpgFile}},
 		},
 		"Cant Resize": {
 			svgFile,
@@ -328,7 +328,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 		"Success": {
 			domain.Media{File: pngFile, Sizes: domain.MediaSizes{"thumbnail": domain.MediaSize{File: pngFile}}},
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
+				s.On("Find", pngFile.URL).Return([]byte("test"), pngFile, nil)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(domain.File{}, nil)
 			},
 			func(e *webp.Execer) {
@@ -340,7 +340,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 		"Find Error": {
 			domain.Media{File: pngFile},
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-				s.On("Find", pngFile.Url).Return(nil, domain.File{}, fmt.Errorf("find error"))
+				s.On("Find", pngFile.URL).Return(nil, domain.File{}, fmt.Errorf("find error"))
 			},
 			nil,
 			domain.Options{MediaConvertWebP: true},
@@ -349,7 +349,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 		"Convert Error": {
 			domain.Media{File: pngFile},
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
+				s.On("Find", pngFile.URL).Return([]byte("test"), pngFile, nil)
 			},
 			func(e *webp.Execer) {
 				e.On("Convert", bytes.NewReader([]byte("test")), 0).Return(nil, fmt.Errorf("convert error"))
@@ -360,7 +360,7 @@ func (t *MediaServiceTestSuite) TestClient_TopWebP() {
 		"Storage Error": {
 			domain.Media{File: pngFile},
 			func(r *repo.Repository, s *storage.Bucket, th *theme.Service) {
-				s.On("Find", pngFile.Url).Return([]byte("test"), pngFile, nil)
+				s.On("Find", pngFile.URL).Return([]byte("test"), pngFile, nil)
 				s.On("Upload", mock.AnythingOfType("domain.Upload")).Return(domain.File{}, fmt.Errorf("storage error"))
 			},
 			func(e *webp.Execer) {

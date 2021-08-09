@@ -5,11 +5,14 @@
 package environment
 
 import (
-	pkgValidate "github.com/go-playground/validator/v10"
+	"bytes"
+	_ "embed"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cast"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/errors"
+	"html/template"
+	"io/ioutil"
 	"strconv"
 
 	"github.com/joho/godotenv"
@@ -87,6 +90,16 @@ var (
 	basePath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
 	// EnvExtension is the environment file extension.
 	EnvExtension = ".env"
+	// The default environment when no file is loaded.
+	defaults = Env{
+		AppEnv:   "dev",
+		AppDebug: "false",
+		AppPort:  strconv.Itoa(DefaultPort),
+	}
+	// The default tpl file for the environment (used when
+	// installing).
+	//go:embed env.txt
+	envTpl string
 )
 
 const (
@@ -100,9 +113,9 @@ const (
 // Returns errors.INVALID if the env file failed to load.
 func Load() (*Env, error) {
 	const op = "Environment.Load"
-	err := godotenv.Load(basePath + "/" + EnvExtension)
+	err := godotenv.Load(filepath.Join(basePath, EnvExtension))
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Could not load the .env file", Operation: op, Err: err}
+		return &defaults, &errors.Error{Code: errors.INVALID, Message: "Could not load the .env file", Operation: op, Err: err}
 	}
 	return &Env{
 		AppEnv:          os.Getenv("APP_ENV"),
@@ -142,11 +155,9 @@ func Load() (*Env, error) {
 // there are no validation errors, nil will be
 // returned.
 func (e *Env) Validate() validation.Errors {
-	v := validation.New()
-	err := v.Package.Struct(e)
+	err := validation.Validator().Struct(e)
 	if err != nil {
-		validationErrors := err.(pkgValidate.ValidationErrors)
-		return v.Process(validationErrors)
+		return validation.Process(err)
 	}
 	return nil
 }
@@ -180,11 +191,43 @@ func (e *Env) Set(key string, value interface{}) error {
 	return nil
 }
 
+// newTpl is an alias for template.New
+var newTpl = template.New
+
+// Install Parses the the env and creates a
+// new .env file in the root directory.
+func (e *Env) Install() error {
+	const op = "Env.Install"
+
+	e.AppPort = cast.ToString(DefaultPort)
+
+	tp, err := newTpl("").Parse(envTpl)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error parsing env tpl", Operation: op, Err: err}
+	}
+
+	buf := bytes.Buffer{}
+	err = tp.ExecuteTemplate(&buf, "", e)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error executing env tpl", Operation: op, Err: err}
+	}
+
+	err = ioutil.WriteFile(filepath.Join(basePath, EnvExtension), buf.Bytes(), os.ModePerm)
+	if err != nil {
+		return &errors.Error{Code: errors.INTERNAL, Message: "Error writing env file", Operation: op, Err: err}
+	}
+
+	return nil
+}
+
 // Port returns the env port as an integer, if the strconv
 // produced an error, the default port of 5000 will
 // be used,
 func (e *Env) Port() int {
 	const op = "Env.Port"
+	if e.AppPort == "" {
+		return DefaultPort
+	}
 	port, err := strconv.Atoi(e.AppPort)
 	if err != nil {
 		log.WithError(&errors.Error{Code: errors.INVALID, Message: "Unable to cast app port to int using port 5000", Operation: op, Err: err}).Error()

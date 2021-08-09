@@ -42,7 +42,7 @@ func (t *UsersTestSuite) TestStore_CreateUserRoles() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.createUserRoles(user.Id, user.Role.Id)
+			err := s.createUserRoles(user.ID, user.Role.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -76,7 +76,7 @@ func (t *UsersTestSuite) TestStore_UpdateUserRoles() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.updateUserRoles(user.Id, user.Role.Id)
+			err := s.updateUserRoles(user.ID, user.Role.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -110,7 +110,7 @@ func (t *UsersTestSuite) TestStore_DeleteUserRoles() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.deleteUserRoles(user.Id)
+			err := s.deleteUserRoles(user.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

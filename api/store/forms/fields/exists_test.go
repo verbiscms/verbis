@@ -49,7 +49,7 @@ func (t *FieldsTestSuite) TestStore_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got := s.Exists(formField.Id, formField)
+			got := s.Exists(formField.ID, formField)
 			t.RunT(test.want, got)
 		})
 	}

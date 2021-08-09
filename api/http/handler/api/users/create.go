@@ -37,5 +37,5 @@ func (u *Users) Create(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully created user with ID: "+strconv.Itoa(user.Id), user)
+	api.Respond(ctx, http.StatusOK, "Successfully created user with ID: "+strconv.Itoa(user.ID), user)
 }

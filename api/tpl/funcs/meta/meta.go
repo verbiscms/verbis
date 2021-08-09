@@ -47,7 +47,7 @@ func (tm *TemplateMeta) GetImage(id int) string {
 		return ""
 	}
 	// TODO: This should be dynamic, not dependant on Site url.
-	return tm.deps.Site.Global().Url + img.File.Url
+	return tm.deps.Site.Global().URL + img.File.URL
 }
 
 // IsHomepage

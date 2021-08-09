@@ -46,19 +46,19 @@ const (
 var (
 	// The default role used for testing.
 	role = domain.Role{
-		Id:          domain.BannedRoleID,
+		ID:          domain.BannedRoleID,
 		Name:        "Banned",
 		Description: "The user has been banned from the system.",
 	}
 	// The default roles used for testing.
 	roles = domain.Roles{
 		{
-			Id:          domain.BannedRoleID,
+			ID:          domain.BannedRoleID,
 			Name:        "Banned",
 			Description: "The user has been banned from the system.",
 		},
 		{
-			Id:          domain.ContributorRoleID,
+			ID:          domain.ContributorRoleID,
 			Name:        "Contributor",
 			Description: "The user can create and edit their own draft posts, but they are unable to edit drafts of users or published posts.",
 		},

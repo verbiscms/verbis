@@ -33,12 +33,12 @@ func (t *MediaTestSuite) TestStore_List() {
 		"Success": {
 			dummy.DefaultParams,
 			func(m *mocks.Repository) {
-				m.On("Find", mediaItem.Id).Return(mediaItem.Sizes, nil)
+				m.On("Find", mediaItem.ID).Return(mediaItem.Sizes, nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
-					AddRow(mediaItems[0].Id, mediaItems[0].File.Name, mediaItems[0].Title).
-					AddRow(mediaItems[1].Id, mediaItems[1].File.Name, mediaItems[1].Title)
+					AddRow(mediaItems[0].ID, mediaItems[0].File.Name, mediaItems[0].Title).
+					AddRow(mediaItems[1].ID, mediaItems[1].File.Name, mediaItems[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)
@@ -81,8 +81,8 @@ func (t *MediaTestSuite) TestStore_List() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
-					AddRow(mediaItems[0].Id, mediaItems[0].File.Name, mediaItems[0].Title).
-					AddRow(mediaItems[1].Id, mediaItems[1].File.Name, mediaItems[1].Title)
+					AddRow(mediaItems[0].ID, mediaItems[0].File.Name, mediaItems[0].Title).
+					AddRow(mediaItems[1].ID, mediaItems[1].File.Name, mediaItems[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnError(fmt.Errorf("error"))
 			},
@@ -92,12 +92,12 @@ func (t *MediaTestSuite) TestStore_List() {
 		"Sizes Error": {
 			dummy.DefaultParams,
 			func(m *mocks.Repository) {
-				m.On("Find", mediaItem.Id).Return(nil, fmt.Errorf("error"))
+				m.On("Find", mediaItem.ID).Return(nil, fmt.Errorf("error"))
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "file.name", "title"}).
-					AddRow(mediaItems[0].Id, mediaItems[0].File.Name, mediaItems[0].Title).
-					AddRow(mediaItems[1].Id, mediaItems[1].File.Name, mediaItems[1].Title)
+					AddRow(mediaItems[0].ID, mediaItems[0].File.Name, mediaItems[0].Title).
+					AddRow(mediaItems[1].ID, mediaItems[1].File.Name, mediaItems[1].Title)
 				m.ExpectQuery(regexp.QuoteMeta(ListQuery)).WillReturnRows(rows)
 				countRows := sqlmock.NewRows([]string{"rowdata"}).AddRow("2")
 				m.ExpectQuery(regexp.QuoteMeta(CountQuery)).WillReturnRows(countRows)

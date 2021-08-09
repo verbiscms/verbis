@@ -19,7 +19,7 @@ type (
 	// Form defines the data for sending data to the API
 	// from the client side.
 	Form struct {
-		Id           int             `db:"id" json:"id" binding:"numeric"` //nolint
+		ID           int             `db:"id" json:"id" binding:"numeric"`
 		UUID         uuid.UUID       `db:"uuid" json:"uuid"`
 		Name         string          `db:"name" json:"name" binding:"required,max=500"`
 		Fields       FormFields      `db:"fields" json:"fields"`
@@ -38,9 +38,9 @@ type (
 	// FormField defines a individual field from the pivot
 	// table.
 	FormField struct {
-		Id         int           `db:"id" json:"id" binding:"numeric"` //nolint
+		ID         int           `db:"id" json:"id" binding:"numeric"`
 		UUID       uuid.UUID     `db:"uuid" json:"uuid"`
-		FormId     int           `db:"form_id" json:"-"` //nolint
+		FormID     int           `db:"form_id" json:"-"`
 		Key        string        `db:"key" json:"key" binding:"required"`
 		Label      FormLabel     `db:"label" json:"label" binding:"required"`
 		Type       string        `db:"type" json:"type" binding:"required"`
@@ -52,9 +52,9 @@ type (
 	FormFields []FormField
 	// FormSubmission defines a submission of the of a form.
 	FormSubmission struct {
-		Id        int        `db:"id" json:"id" binding:"numeric"` //nolint
+		ID        int        `db:"id" json:"id" binding:"numeric"`
 		UUID      uuid.UUID  `db:"uuid" json:"uuid"`
-		FormId    int        `db:"form_id" json:"form_id"` //nolint
+		FormID    int        `db:"form_id" json:"form_id"`
 		Fields    FormValues `db:"fields" json:"fields"`
 		IPAddress string     `db:"ip_address" json:"ip_address"`
 		UserAgent string     `db:"user_agent" json:"user_agent"`

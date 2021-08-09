@@ -44,7 +44,7 @@ func (t *PostCategoriesTestSuite) TestStore_DeletePivot() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			err := s.Delete(post.Id)
+			err := s.Delete(post.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return

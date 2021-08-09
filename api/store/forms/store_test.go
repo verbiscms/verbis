@@ -62,7 +62,7 @@ const (
 var (
 	// The default form used for testing.
 	form = domain.Form{
-		Id:   1,
+		ID:   1,
 		Name: "Form",
 		Fields: domain.FormFields{
 			domain.FormField{
@@ -73,7 +73,7 @@ var (
 		},
 		Submissions: domain.FormSubmissions{
 			domain.FormSubmission{
-				FormId:    1,
+				FormID:    1,
 				IPAddress: "127.0.0.1",
 				UserAgent: "chrome",
 			},
@@ -82,7 +82,7 @@ var (
 	// The default forms used for testing.
 	forms = domain.Forms{
 		{
-			Id:   1,
+			ID:   1,
 			Name: "Form",
 			Fields: domain.FormFields{
 				domain.FormField{
@@ -93,14 +93,14 @@ var (
 			},
 			Submissions: domain.FormSubmissions{
 				domain.FormSubmission{
-					FormId:    1,
+					FormID:    1,
 					IPAddress: "127.0.0.1",
 					UserAgent: "chrome",
 				},
 			},
 		},
 		{
-			Id:   2,
+			ID:   2,
 			Name: "Form1",
 			Fields: domain.FormFields{
 				domain.FormField{
@@ -111,7 +111,7 @@ var (
 			},
 			Submissions: domain.FormSubmissions{
 				domain.FormSubmission{
-					FormId:    1,
+					FormID:    1,
 					IPAddress: "127.0.0.1",
 					UserAgent: "chrome",
 				},

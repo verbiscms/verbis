@@ -50,8 +50,8 @@ const (
 var (
 	// The default meta used for testing.
 	meta = domain.PostOptions{
-		Id:     1,
-		PostId: 2,
+		ID:     1,
+		PostID: 2,
 		Meta: &domain.PostMeta{
 			Title:       "title",
 			Description: "description",

@@ -49,7 +49,7 @@ func (t *PostsTestSuite) Setup(mf func(m *mocks.Repository)) *Posts {
 var (
 	// The default post used for testing.
 	post = domain.Post{
-		Id:           123,
+		ID:           123,
 		Slug:         "/post",
 		Title:        "post",
 		PageTemplate: "tpl",
@@ -58,7 +58,7 @@ var (
 	// The default post create used for testing.
 	postCreate = domain.PostCreate{
 		Post: domain.Post{
-			Id:           123,
+			ID:           123,
 			Title:        "post",
 			Slug:         "/post",
 			PageTemplate: "tpl",
@@ -67,7 +67,7 @@ var (
 	}
 	postData = domain.PostDatum{
 		Post: domain.Post{
-			Id:           123,
+			ID:           123,
 			Slug:         "/post",
 			Title:        "post",
 			PageTemplate: "tpl",
@@ -77,7 +77,7 @@ var (
 	// The default post with wrong validation used for testing.
 	postBadValidation = domain.PostCreate{
 		Post: domain.Post{
-			Id: 123,
+			ID: 123,
 			//	Title:        "post",
 			Slug:         "/post",
 			PageTemplate: "tpl",
@@ -88,7 +88,7 @@ var (
 	posts = domain.PostData{
 		{
 			Post: domain.Post{
-				Id:           123,
+				ID:           123,
 				Slug:         "/post",
 				Title:        "post",
 				PageTemplate: "tpl",
@@ -97,7 +97,7 @@ var (
 		},
 		{
 			Post: domain.Post{
-				Id:           124,
+				ID:           124,
 				Slug:         "/post1",
 				Title:        "post1",
 				PageTemplate: "tpl",

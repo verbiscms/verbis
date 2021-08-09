@@ -30,12 +30,12 @@ func (t *FormsTestSuite) TestStore_Find() {
 		"Success": {
 			form,
 			func(f *fields.Repository, s *submissions.Repository) {
-				f.On("Find", form.Id).Return(form.Fields, nil)
-				s.On("Find", form.Id).Return(form.Submissions, nil)
+				f.On("Find", form.ID).Return(form.Fields, nil)
+				s.On("Find", form.ID).Return(form.Submissions, nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name"}).
-					AddRow(form.Id, form.Name)
+					AddRow(form.ID, form.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
 					WillReturnRows(rows)
 			},
@@ -61,7 +61,7 @@ func (t *FormsTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock, test.mockForms)
-			got, err := s.Find(form.Id)
+			got, err := s.Find(form.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -80,12 +80,12 @@ func (t *FormsTestSuite) TestStore_FindByUUID() {
 		"Success": {
 			form,
 			func(f *fields.Repository, s *submissions.Repository) {
-				f.On("Find", form.Id).Return(form.Fields, nil)
-				s.On("Find", form.Id).Return(form.Submissions, nil)
+				f.On("Find", form.ID).Return(form.Fields, nil)
+				s.On("Find", form.ID).Return(form.Submissions, nil)
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name"}).
-					AddRow(form.Id, form.Name)
+					AddRow(form.ID, form.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByUUIDQuery)).
 					WillReturnRows(rows)
 			},
@@ -93,11 +93,11 @@ func (t *FormsTestSuite) TestStore_FindByUUID() {
 		"Find Error": {
 			"error",
 			func(f *fields.Repository, s *submissions.Repository) {
-				f.On("Find", form.Id).Return(domain.FormFields{}, &errors.Error{Message: "error"})
+				f.On("Find", form.ID).Return(domain.FormFields{}, &errors.Error{Message: "error"})
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "name"}).
-					AddRow(form.Id, form.Name)
+					AddRow(form.ID, form.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByUUIDQuery)).
 					WillReturnRows(rows)
 			},

@@ -72,7 +72,7 @@ func NewService(d *deps.Deps, p *domain.PostDatum) *Service {
 	}
 	return &Service{
 		deps:   d,
-		postID: p.Id,
+		postID: p.ID,
 		fields: fields,
 		layout: layouts,
 	}

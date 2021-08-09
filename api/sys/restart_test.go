@@ -6,11 +6,9 @@ package sys
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
-func TestSys_Restart(t *testing.T) {
+func (t *SysTestSuite) TestSys_Restart() {
 	tt := map[string]struct {
 		sys  func(argv0 string, argv []string, envv []string) (err error)
 		want interface{}
@@ -30,9 +28,9 @@ func TestSys_Restart(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			if test.sys == nil {
-				t.Fatal("sys function cannot be nil")
+				t.Fail("sys function cannot be nil")
 				return
 			}
 
@@ -45,16 +43,16 @@ func TestSys_Restart(t *testing.T) {
 			s := Sys{ExecutablePath: "exec"}
 			err := s.Restart()
 			if err != nil {
-				assert.Contains(t, err.Error(), test.want)
+				t.Contains(err.Error(), test.want)
 				return
 			}
-			assert.Equal(t, test.want, err)
+			t.Equal(test.want, err)
 		})
 	}
 }
 
-func TestSys_Restart_Error(t *testing.T) {
+func (t *SysTestSuite) TestSys_Restart_Error() {
 	s := &Sys{ExecutablePath: "wrong"}
 	err := s.Restart()
-	assert.Contains(t, err.Error(), "no such file or directory")
+	t.Contains(err.Error(), "no such file or directory")
 }

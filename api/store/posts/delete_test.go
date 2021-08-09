@@ -33,9 +33,9 @@ func (t *PostsTestSuite) TestStore_Delete() {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("Delete", post.Id).Return(nil)
-				f.On("Delete", post.Id).Return(nil)
-				m.On("Delete", post.Id).Return(nil)
+				c.On("Delete", post.ID).Return(nil)
+				f.On("Delete", post.ID).Return(nil)
+				m.On("Delete", post.ID).Return(nil)
 			},
 		},
 		"No Rows": {
@@ -61,9 +61,9 @@ func (t *PostsTestSuite) TestStore_Delete() {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("Delete", post.Id).Return(&errors.Error{Message: database.ErrQueryMessage})
-				f.On("Delete", post.Id).Return(nil)
-				m.On("Delete", post.Id).Return(nil)
+				c.On("Delete", post.ID).Return(&errors.Error{Message: database.ErrQueryMessage})
+				f.On("Delete", post.ID).Return(nil)
+				m.On("Delete", post.ID).Return(nil)
 			},
 		},
 		"Fields Error": {
@@ -73,9 +73,9 @@ func (t *PostsTestSuite) TestStore_Delete() {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("Delete", post.Id).Return(nil)
-				f.On("Delete", post.Id).Return(&errors.Error{Message: database.ErrQueryMessage})
-				m.On("Delete", post.Id).Return(nil)
+				c.On("Delete", post.ID).Return(nil)
+				f.On("Delete", post.ID).Return(&errors.Error{Message: database.ErrQueryMessage})
+				m.On("Delete", post.ID).Return(nil)
 			},
 		},
 		"Meta Error": {
@@ -85,9 +85,9 @@ func (t *PostsTestSuite) TestStore_Delete() {
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			func(c *categories.Repository, f *fields.Repository, m *meta.Repository) {
-				c.On("Delete", post.Id).Return(nil)
-				f.On("Delete", post.Id).Return(nil)
-				m.On("Delete", post.Id).Return(&errors.Error{Message: database.ErrQueryMessage})
+				c.On("Delete", post.ID).Return(nil)
+				f.On("Delete", post.ID).Return(nil)
+				m.On("Delete", post.ID).Return(&errors.Error{Message: database.ErrQueryMessage})
 			},
 		},
 	}
@@ -95,7 +95,7 @@ func (t *PostsTestSuite) TestStore_Delete() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.SetupMock(test.mock, test.repo)
-			err := s.Delete(post.Id)
+			err := s.Delete(post.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				if t.Logger.String() != "" {

@@ -12,7 +12,7 @@ package posts
 //		want      domain.PostType
 //	}{
 //		"Homepage": {
-//			domain.PostDatum{Post: domain.Post{Id: 1}},
+//			domain.PostDatum{Post: domain.Post{ID: 1}},
 //			nil,
 //			1,
 //			domain.PostType{
@@ -20,7 +20,7 @@ package posts
 //			},
 //		},
 //		"Archive Set": {
-//			domain.PostDatum{Post: domain.Post{Id: 1, IsArchive: true}},
+//			domain.PostDatum{Post: domain.Post{ID: 1, IsArchive: true}},
 //			domain.Resources{"news": domain.Resource{Name: "News"}},
 //			999,
 //			domain.PostType{
@@ -30,7 +30,7 @@ package posts
 //			},
 //		},
 //		"Archive Slug": {
-//			domain.PostDatum{Post: domain.Post{Id: 1, IsArchive: true, Slug: "news"}},
+//			domain.PostDatum{Post: domain.Post{ID: 1, IsArchive: true, Slug: "news"}},
 //			domain.Resources{"news": domain.Resource{Name: "News"}},
 //			999,
 //			domain.PostType{
@@ -39,7 +39,7 @@ package posts
 //			},
 //		},
 //		"Resource": {
-//			domain.PostDatum{Post: domain.Post{Id: 1, Resource: "news"}},
+//			domain.PostDatum{Post: domain.Post{ID: 1, Resource: "news"}},
 //			domain.Resources{"news": domain.Resource{Name: "News"}},
 //			999,
 //			domain.PostType{
@@ -48,7 +48,7 @@ package posts
 //			},
 //		},
 //		"Single": {
-//			domain.PostDatum{Post: domain.Post{Id: 1}},
+//			domain.PostDatum{Post: domain.Post{ID: 1}},
 //			nil,
 //			999,
 //			domain.PostType{

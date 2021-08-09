@@ -43,7 +43,7 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 		"1 Args (post template)": {
 			fields: nil,
 			args: []interface{}{domain.PostTemplate{
-				Post:   domain.Post{Id: 1, Title: "post"},
+				Post:   domain.Post{ID: 1, Title: "post"},
 				Fields: domain.PostFields{{Type: "text", Name: "post"}},
 			}},
 			mock: nil,

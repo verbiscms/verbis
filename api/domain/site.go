@@ -17,7 +17,7 @@ type (
 		Title         string `json:"title"`
 		Description   string `json:"description"`
 		Logo          string `json:"logo"`
-		Url           string `json:"url"` //nolint
+		URL           string `json:"url"`
 		Version       string `json:"version"`
 		RemoteVersion string `json:"remote_version"`
 		HasUpdate     bool   `json:"has_update"`

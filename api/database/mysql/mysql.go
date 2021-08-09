@@ -5,11 +5,14 @@
 package mysql
 
 import (
+	"fmt"
 	"github.com/verbiscms/verbis/api/database/builder"
 	"github.com/verbiscms/verbis/api/database/internal"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/version"
+	"strings"
+
 	// Import sql driver, required!
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gookit/color"
@@ -105,7 +108,7 @@ func (m *MySQL) Close() error {
 // Returns errors.INTERNAL if the migration failed.
 func (m *MySQL) Install() error {
 	const op = "MySQL.Install"
-	err := m.migrator.Migrate(version.SemVer)
+	err := m.migrator.Migrate(version.SemVer, true)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error installing Verbis", Operation: op, Err: err}
 	}
@@ -117,7 +120,7 @@ func (m *MySQL) Install() error {
 // Returns errors.INTERNAL if the migration failed.
 func (m *MySQL) Migrate(ver *sm.Version) error {
 	const op = "MySQL.Migrate"
-	err := m.migrator.Migrate(ver)
+	err := m.migrator.Migrate(ver, false)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error migrating", Operation: op, Err: err}
 	}
@@ -144,12 +147,16 @@ func (m *MySQL) Tables() ([]string, error) {
 		var exists bool
 		err := m.driver.QueryRow(q).Scan(&exists)
 		if err != nil {
+			return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error executing sql query", Operation: op, Err: err}
+		}
+
+		if !exists {
 			failedTables = append(failedTables, table)
 		}
 	}
 
 	if len(failedTables) > 0 {
-		return failedTables, &errors.Error{Code: errors.INVALID, Message: internal.ErrTableNotFoundMessage, Operation: op, Err: internal.ErrTableNotFound}
+		return failedTables, &errors.Error{Code: errors.INVALID, Message: internal.ErrTableNotFoundMessage, Operation: op, Err: fmt.Errorf("%s: %s", internal.ErrTableNotFound, strings.Join(failedTables, ", "))}
 	}
 
 	return nil, nil

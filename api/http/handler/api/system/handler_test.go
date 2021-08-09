@@ -7,6 +7,7 @@ package system
 import (
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
 	mocks "github.com/verbiscms/verbis/api/mocks/sys"
 	"github.com/verbiscms/verbis/api/test"
 	"testing"
@@ -41,3 +42,48 @@ func (t *SystemTestSuite) Setup(mf func(m *mocks.System)) *System {
 	}
 	return New(d)
 }
+
+var (
+	// The default install verbis used for testing.
+	install = domain.InstallVerbis{
+		InstallDatabase: domain.InstallDatabase{
+			DBHost:     "host",
+			DBPort:     "port",
+			DBDatabase: "database",
+			DBUser:     "user",
+			DBPassword: "password",
+		},
+		InstallUser: domain.InstallUser{
+			UserFirstName:       "verbis",
+			UserLastName:        "cms",
+			UserEmail:           "hello@verbiscms.com",
+			UserPassword:        "password",
+			UserConfirmPassword: "password",
+		},
+		InstallSite: domain.InstallSite{
+			SiteTitle: "title",
+			Robots:    false,
+		},
+	}
+	// The default install verbis with wrong validation
+	// used for testing.
+	installBadValidation = domain.InstallVerbis{
+		InstallDatabase: domain.InstallDatabase{
+			DBHost:     "host",
+			DBPort:     "port",
+			DBDatabase: "database",
+			DBUser:     "user",
+			DBPassword: "password",
+		},
+		InstallUser: domain.InstallUser{
+			UserFirstName:       "verbis",
+			UserLastName:        "cms",
+			UserEmail:           "hello@verbiscms.com",
+			UserPassword:        "password",
+			UserConfirmPassword: "password",
+		},
+		InstallSite: domain.InstallSite{
+			Robots: false,
+		},
+	}
+)

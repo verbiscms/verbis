@@ -41,11 +41,8 @@ archives:
       - README.md
       - LICENSE
       - themes
-      - .env.example
       - src: .gitignore.build
         dst: .gitignore
-      - src: 'www/docs/*.md'
-        dst: docs
 checksum:
   name_template: 'checksums.txt'
   algorithm: sha256

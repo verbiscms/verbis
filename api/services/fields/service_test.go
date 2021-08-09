@@ -124,7 +124,7 @@ func (t *FieldTestSuite) TestNewService() {
 
 	pd := &domain.PostDatum{
 		Post: domain.Post{
-			Id: 1,
+			ID: 1,
 		},
 		Layout: l,
 		Fields: f,

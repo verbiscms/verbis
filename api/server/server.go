@@ -45,8 +45,12 @@ func New(d *deps.Deps) *Server {
 	// Global middleware
 	r.Use(logger.Middleware())
 	r.Use(location.Default())
-	r.Use(middleware.Setters(d))
-	r.Use(middleware.Redirects(d))
+	r.Use(middleware.Installed(d))
+
+	if d.Installed {
+		r.Use(middleware.Setters(d))
+		r.Use(middleware.Redirects(d))
+	}
 
 	if !api.Production {
 		debug := r.Group("/debug/pprof")
@@ -82,7 +86,7 @@ func pprofHandler(h http.HandlerFunc) gin.HandlerFunc {
 // ListenAndServe runs Verbis on a given port
 // Returns errors.INVALID if the server could not start
 func (s *Server) ListenAndServe(port int) error {
-	const op = "router.ListenAndServe"
+	const op = "Router.ListenAndServe"
 
 	passedPort := strconv.Itoa(port)
 

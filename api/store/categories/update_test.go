@@ -26,7 +26,7 @@ func (t *CategoriesTestSuite) TestStore_Update() {
 			category,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(category.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(category.ID), 1))
 			},
 		},
 		"Validation Failed": {

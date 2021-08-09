@@ -67,12 +67,12 @@ var (
 	// The default user used for testing.
 	user = domain.User{
 		UserPart: domain.UserPart{
-			Id:        123,
+			ID:        123,
 			FirstName: "Verbis",
 			LastName:  "CMS",
 			Email:     "verbis@verbiscms.com",
 			Role: domain.Role{
-				Id: 1,
+				ID: 1,
 			},
 		},
 	}
@@ -92,7 +92,7 @@ var (
 				LastName:  "CMS",
 				Email:     "verbis@verbiscms.com",
 				Role: domain.Role{
-					Id: 123,
+					ID: 123,
 				},
 			},
 		},
@@ -115,12 +115,12 @@ var (
 	users = domain.Users{
 		{
 			UserPart: domain.UserPart{
-				Id: 123, FirstName: "Verbis", LastName: "CMS",
+				ID: 123, FirstName: "Verbis", LastName: "CMS",
 			},
 		},
 		{
 			UserPart: domain.UserPart{
-				Id: 123, FirstName: "Verbis", LastName: "CMS",
+				ID: 123, FirstName: "Verbis", LastName: "CMS",
 			},
 		},
 	}

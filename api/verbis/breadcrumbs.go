@@ -85,7 +85,7 @@ func GetBreadcrumbs(post *domain.PostDatum, d *deps.Deps) Breadcrumbs {
 
 	bc.Items = Items{
 		{
-			Link:     d.Options.SiteUrl,
+			Link:     d.Options.SiteURL,
 			Text:     d.Options.BreadcrumbsHomepageText,
 			Position: 1,
 			Found:    true,
@@ -125,7 +125,7 @@ func traverseChild(post *domain.PostDatum, d *deps.Deps, bc Breadcrumbs) Breadcr
 		pt, err := d.Store.Posts.FindBySlug(b[i])
 		if err != nil {
 			bc.Items = append(bc.Items, Item{
-				Link:     d.Options.SiteUrl + link + slash,
+				Link:     d.Options.SiteURL + link + slash,
 				Text:     cleanTitle(b[i]),
 				Position: pos,
 				Found:    false,
@@ -135,7 +135,7 @@ func traverseChild(post *domain.PostDatum, d *deps.Deps, bc Breadcrumbs) Breadcr
 		}
 
 		bc.Items = append(bc.Items, Item{
-			Link:     d.Options.SiteUrl + pt.Permalink,
+			Link:     d.Options.SiteURL + pt.Permalink,
 			Text:     pt.Title,
 			Position: pos,
 			Found:    true,

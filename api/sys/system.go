@@ -10,6 +10,7 @@ import (
 	rocket "github.com/mouuff/go-rocket-update/pkg/updater"
 	"github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/database"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/version"
 )
@@ -21,6 +22,12 @@ type System interface {
 	Update(restart bool) (string, error)
 	LatestVersion() string
 	HasUpdate() bool
+	Installer
+}
+
+type Installer interface {
+	Install(db domain.InstallVerbis) error
+	ValidateInstall(step int, install domain.InstallVerbis) error
 }
 
 // Sys defines the base and core functionality for Verbis,
@@ -29,13 +36,14 @@ type Sys struct {
 	// The path of the current executable.
 	ExecutablePath string
 	Driver         database.Driver
+	Installed      bool
 	client         *rocket.Updater
 	version        *sm.Version
 }
 
 // New creates a new system type, used for restarting
 // and manipulating the system.
-func New(db database.Driver) *Sys {
+func New(db database.Driver, installed bool) *Sys {
 	exec, err := execPath()
 	if err != nil {
 		logger.Panic(err)
@@ -51,6 +59,7 @@ func New(db database.Driver) *Sys {
 	s := &Sys{
 		Driver:         db,
 		ExecutablePath: exec,
+		Installed:      installed,
 		client:         u,
 		version:        version.SemVer,
 	}

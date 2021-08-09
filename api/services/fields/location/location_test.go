@@ -105,7 +105,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: domain.FieldGroups{},
 		},
 		"Already Added": {
-			post: domain.PostDatum{Post: domain.Post{Id: 1, Title: "title", Status: "published"}},
+			post: domain.PostDatum{Post: domain.Post{ID: 1, Title: "title", Status: "published"}},
 			groups: domain.FieldGroups{
 				{Title: "status", UUID: uu},
 				{Title: "status", UUID: uu},
@@ -113,7 +113,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: domain.FieldGroups{{Title: "status", UUID: uu}},
 		},
 		"Status": {
-			post: domain.PostDatum{Post: domain.Post{Id: 1, Title: "title", Status: "published"}},
+			post: domain.PostDatum{Post: domain.Post{ID: 1, Title: "title", Status: "published"}},
 			groups: domain.FieldGroups{
 				{
 					Title: "status",
@@ -125,7 +125,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: domain.FieldGroups{{Title: "status"}},
 		},
 		"post": {
-			post: domain.PostDatum{Post: domain.Post{Id: 1}},
+			post: domain.PostDatum{Post: domain.Post{ID: 1}},
 			groups: domain.FieldGroups{
 				{
 					Title: "post",
@@ -185,7 +185,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: domain.FieldGroups{},
 		},
 		"Category": {
-			post: domain.PostDatum{Category: &domain.Category{Id: 1}},
+			post: domain.PostDatum{Category: &domain.Category{ID: 1}},
 			groups: domain.FieldGroups{
 				{
 					Title: "category",
@@ -209,7 +209,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 			want: domain.FieldGroups{},
 		},
 		"Author": {
-			post: domain.PostDatum{Author: domain.UserPart{Id: 1}},
+			post: domain.PostDatum{Author: domain.UserPart{ID: 1}},
 			groups: domain.FieldGroups{
 				{
 					Title: "post",
@@ -223,7 +223,7 @@ func (t *LocationTestSuite) TestLocation_GroupResolver() {
 		"Role": {
 			post: domain.PostDatum{Author: domain.UserPart{
 				Role: domain.Role{
-					Id: 1,
+					ID: 1,
 				},
 			},
 			},

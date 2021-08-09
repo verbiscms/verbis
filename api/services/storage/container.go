@@ -38,7 +38,7 @@ func (s *Storage) ListBuckets(provider domain.StorageProvider) (domain.Buckets, 
 		}
 		for _, container := range containers {
 			buckets = append(buckets, domain.Bucket{
-				Id:   container.ID(),
+				ID:   container.ID(),
 				Name: container.Name(),
 			})
 		}
@@ -67,7 +67,7 @@ func (s *Storage) CreateBucket(provider domain.StorageProvider, name string) (do
 	}
 
 	return domain.Bucket{
-		Id:   bucket.ID(),
+		ID:   bucket.ID(),
 		Name: bucket.Name(),
 	}, nil
 }

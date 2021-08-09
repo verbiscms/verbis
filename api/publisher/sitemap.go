@@ -139,14 +139,14 @@ func (s *Sitemap) Index() ([]byte, error) {
 		}
 
 		viewData.Items = append(viewData.Items, viewItem{
-			Slug:      s.options.SiteUrl + "/sitemaps/" + v.Slug + "/sitemap.xml",
+			Slug:      s.options.SiteURL + "/sitemaps/" + v.Slug + "/sitemap.xml",
 			CreatedAt: time.Now().Format(time.RFC3339),
 		})
 	}
 
 	if s.hasRedirects() {
 		viewData.Items = append(viewData.Items, viewItem{
-			Slug:      s.options.SiteUrl + "/sitemaps/redirects/sitemap.xml",
+			Slug:      s.options.SiteURL + "/sitemaps/redirects/sitemap.xml",
 			CreatedAt: time.Now().Format(time.RFC3339),
 		})
 	}
@@ -291,7 +291,7 @@ func (s *Sitemap) retrievePages(resource string) ([]viewItem, error) {
 
 		if !strings.InSlice(resource, s.options.SeoSitemapExcluded) && !exclude {
 			items = append(items, viewItem{
-				Slug:      s.options.SiteUrl + v.Permalink,
+				Slug:      s.options.SiteURL + v.Permalink,
 				CreatedAt: v.CreatedAt.Format(time.RFC3339),
 			})
 		}
@@ -393,9 +393,9 @@ func (s *Sitemap) formatXML(data interface{}, index bool) ([]byte, error) {
 	b.WriteString(xml.Header)
 
 	if index {
-		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/main-sitemap.xsl"?>`+"\n", s.options.SiteUrl))
+		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/main-sitemap.xsl"?>`+"\n", s.options.SiteURL))
 	} else {
-		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/resources-sitemap.xsl"?>`+"\n", s.options.SiteUrl))
+		b.WriteString(fmt.Sprintf(`<?xml-stylesheet type="text/xsl" href="%s/resources-sitemap.xsl"?>`+"\n", s.options.SiteURL))
 	}
 
 	b.Write(xmlString)

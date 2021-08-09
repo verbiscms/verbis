@@ -29,7 +29,7 @@ func TestCategory_HasCategory(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			p := Category{
-				ParentId: test.input,
+				ParentID: test.input,
 			}
 			got := p.HasParent()
 			assert.Equal(t, test.want, got)

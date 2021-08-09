@@ -26,7 +26,7 @@ func (t *FilesTestSuite) TestStore_Create() {
 			file,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(file.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(file.ID), 1))
 			},
 		},
 		"No Rows": {

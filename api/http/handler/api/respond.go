@@ -7,7 +7,6 @@ package api
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/pagination"
@@ -103,10 +102,8 @@ func checkResponseData(ctx *gin.Context, data interface{}) interface{} {
 
 		errType := reflect.TypeOf(v.Err)
 		if errType.String() == "validator.ValidationErrors" && v.Code == errors.INVALID {
-			validationErrors := v.Err.(validator.ValidationErrors)
-			val := validation.New()
 			return &ErrorJSON{
-				Errors: val.Process(validationErrors),
+				Errors: validation.Process(v.Err),
 			}
 		} else {
 			return gin.H{}

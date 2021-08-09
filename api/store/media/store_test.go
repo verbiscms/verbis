@@ -64,7 +64,7 @@ const (
 var (
 	// The default media item used for testing.
 	mediaItem = domain.Media{
-		Id: 1,
+		ID: 1,
 		File: domain.File{
 			Name: "gopher.png",
 		},
@@ -84,14 +84,14 @@ var (
 	// The default media items used for testing.
 	mediaItems = domain.MediaItems{
 		{
-			Id: 1,
+			ID: 1,
 			File: domain.File{
 				Name: "gopher.png",
 			},
 			Sizes: mediaItemSizes,
 		},
 		{
-			Id: 1,
+			ID: 1,
 			File: domain.File{
 				Name: "gopher-2.png",
 			},

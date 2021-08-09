@@ -18,11 +18,11 @@ type (
 	// File represents a storage file which could be stored
 	// in the cloud, or on the local file system.
 	File struct {
-		Id         int             `db:"id" json:"-"` //nolint
+		ID         int             `db:"id" json:"-"`
 		UUID       uuid.UUID       `db:"uuid" json:"uuid"`
-		Url        string          `db:"url" json:"url"` //nolint
+		URL        string          `db:"url" json:"url"`
 		Name       string          `db:"name" json:"name"`
-		BucketId   string          `db:"bucket_id" json:"bucket_id"` //nolint
+		BucketID   string          `db:"bucket_id" json:"bucket_id"`
 		Mime       Mime            `db:"mime" json:"mime"`
 		SourceType string          `db:"source_type" json:"source_type"`
 		Provider   StorageProvider `db:"provider" json:"provider"`
@@ -54,13 +54,13 @@ const (
 	FormAttachmentSourceType = "form_attachment"
 )
 
-// ID retrieves the full path for the upload. If the
+// FullPath retrieves the full path for the upload. If the
 // file is local, the prefix will be added.
-func (f *File) ID(prefix string) string {
+func (f *File) FullPath(prefix string) string {
 	if f.Provider == StorageLocal {
-		return filepath.Join(prefix, f.BucketId)
+		return filepath.Join(prefix, f.BucketID)
 	}
-	return f.BucketId
+	return f.BucketID
 }
 
 // Extension returns the extension of the file by stripping

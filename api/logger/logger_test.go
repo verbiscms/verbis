@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/sirupsen/logrus"
+	"github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
 )
@@ -37,13 +38,13 @@ func (t *LoggerTestSuite) TestInit() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			orig := production
+			orig := api.Production
 			defer func() {
 				logger = nil
 				logger = logrus.New()
-				production = orig
+				api.Production = orig
 			}()
-			production = test.production
+			api.Production = test.production
 			Init(&test.env)
 			t.Equal(test.want, logger.Level.String())
 		})
@@ -144,4 +145,13 @@ func (t *LoggerTestSuite) TestSetLevel() {
 	}()
 	SetLevel(logrus.WarnLevel)
 	t.Equal(logrus.WarnLevel, logger.GetLevel())
+}
+
+func (t *LoggerTestSuite) TestSetLogger() {
+	defer func() {
+		logger = logrus.New()
+	}()
+	l := logger
+	SetLogger(l)
+	t.Equal(l, logger)
 }

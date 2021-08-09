@@ -96,7 +96,7 @@ func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups { // 
 						case "status":
 							locationSet = append(locationSet, checkLocation(post.Status, rule))
 						case "post":
-							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Id), rule))
+							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.ID), rule))
 						case "page_template":
 							locationSet = append(locationSet, checkLocation(post.PageTemplate, rule))
 						case "page_layout":
@@ -105,14 +105,14 @@ func (l *Location) groupResolver(post domain.PostDatum) domain.FieldGroups { // 
 							locationSet = append(locationSet, checkLocation(post.Resource, rule))
 						case "category":
 							if post.Category != nil {
-								locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Category.Id), rule))
+								locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Category.ID), rule))
 							} else {
 								locationSet = append(locationSet, checkLocation("", rule))
 							}
 						case "author":
-							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Author.Id), rule))
+							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Author.ID), rule))
 						case "role":
-							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Author.Role.Id), rule))
+							locationSet = append(locationSet, checkLocation(strconv.Itoa(post.Author.Role.ID), rule))
 						}
 					}
 

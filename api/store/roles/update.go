@@ -28,7 +28,7 @@ func (s *Store) Update(r domain.Role) (domain.Role, error) {
 		Update(s.Schema()+TableName).
 		Column("name", r.Name).
 		Column("description", r.Description).
-		Where("id", "=", r.Id)
+		Where("id", "=", r.ID)
 
 	_, err = s.DB().Exec(q.Build())
 	if err == sql.ErrNoRows {

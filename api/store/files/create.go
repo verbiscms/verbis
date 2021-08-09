@@ -21,9 +21,9 @@ func (s *Store) Create(f domain.File) (domain.File, error) {
 	q := s.Builder().
 		Insert(s.Schema()+TableName).
 		Column("uuid", f.UUID.String()).
-		Column("url", f.Url).
+		Column("url", f.URL).
 		Column("name", f.Name).
-		Column("bucket_id", f.BucketId).
+		Column("bucket_id", f.BucketID).
 		Column("mime", f.Mime).
 		Column("source_type", f.SourceType).
 		Column("provider", f.Provider).
@@ -43,7 +43,7 @@ func (s *Store) Create(f domain.File) (domain.File, error) {
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error getting the newly created file ID", Operation: op, Err: err}
 	}
-	f.Id = int(id)
+	f.ID = int(id)
 
 	return f, nil
 }

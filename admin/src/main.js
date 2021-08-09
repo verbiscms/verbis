@@ -99,6 +99,8 @@ new Vue({
  * Dispatch global store
  *
  */
-store.dispatch('getSiteConfig').catch(err => {
-	Vue.prototype.helpers.handleResponse(err)
-})
+if (window.location.pathname !== "/admin/install") {
+	store.dispatch('getSiteConfig').catch(err => {
+		Vue.prototype.helpers.handleResponse(err)
+	})
+}

@@ -18,18 +18,18 @@ var (
 	FindCategoryQuery = "SELECT * FROM `categories` WHERE `id` = '2' LIMIT 1"
 	parent            = 2
 	category          = domain.Category{
-		Id:   1,
+		ID:   1,
 		Slug: "cat",
 		Name: "Category",
 	}
 	categoryChild = domain.Category{
-		Id:       1,
+		ID:       1,
 		Slug:     "cat",
 		Name:     "Category",
-		ParentId: &parent,
+		ParentID: &parent,
 	}
 	categoryParent = domain.Category{
-		Id:   1,
+		ID:   1,
 		Slug: "parent",
 		Name: "Category",
 	}
@@ -45,7 +45,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 	}{
 		"Homepage": {
 			domain.PostDatum{
-				Post: domain.Post{Id: 1},
+				Post: domain.Post{ID: 1},
 			},
 			func(m *mocks.Repository) {
 				m.On("Struct").Return(domain.Options{Homepage: 1})
@@ -171,7 +171,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(categoryParent.Id, categoryParent.Slug, categoryParent.Name)
+					AddRow(categoryParent.ID, categoryParent.Slug, categoryParent.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindCategoryQuery)).WillReturnRows(rows)
 			},
 			"/news/parent/cat/article",
@@ -218,7 +218,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			},
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(categoryParent.Id, categoryParent.Slug, categoryParent.Name)
+					AddRow(categoryParent.ID, categoryParent.Slug, categoryParent.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindCategoryQuery)).WillReturnRows(rows)
 			},
 			"/news/parent/cat/article/",

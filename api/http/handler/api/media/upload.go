@@ -54,7 +54,7 @@ func (m *Media) Upload(ctx *gin.Context) {
 		return
 	}
 
-	media, err := m.service.Upload(files[0], user.Id)
+	media, err := m.service.Upload(files[0], user.ID)
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return

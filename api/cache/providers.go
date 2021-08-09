@@ -45,7 +45,7 @@ var (
 )
 
 // RegisterProvider adds a provider to the provider map.
-// Id the provider already exists the function will
+// FullPath the provider already exists the function will
 // panic with errors.INTERNAL, duplicate cache
 // provider.
 func (p providerMap) RegisterProvider(name string, fn providerAdder) {

@@ -65,7 +65,7 @@ func (f *Forms) Send(ctx *gin.Context) {
 	}
 
 	sub := domain.FormSubmission{
-		FormId:    form.Id,
+		FormID:    form.ID,
 		Fields:    values,
 		IPAddress: ctx.ClientIP(),
 		UserAgent: ctx.Request.UserAgent(),
@@ -90,5 +90,5 @@ func (f *Forms) Send(ctx *gin.Context) {
 		}
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully sent form with ID: "+strconv.Itoa(form.Id), nil)
+	api.Respond(ctx, http.StatusOK, "Successfully sent form with ID: "+strconv.Itoa(form.ID), nil)
 }

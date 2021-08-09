@@ -21,7 +21,7 @@ func (s *Store) Insert(postID int, fields domain.PostFields) error {
 	}
 
 	for _, v := range fields {
-		v.PostId = postID
+		v.PostID = postID
 		_, err := s.create(v)
 		if err != nil {
 			return err

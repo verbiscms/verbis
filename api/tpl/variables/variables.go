@@ -15,7 +15,7 @@ type (
 	// in templates.
 	TemplateData struct {
 		Site    domain.Site
-		Theme   domain.ThemeConfig
+		Config  domain.ThemeConfig
 		Post    domain.PostDatum
 		Options Options
 	}
@@ -48,9 +48,9 @@ type (
 // bound to posts and the context.
 func Data(d *deps.Deps, ctx *gin.Context, post *domain.PostDatum) interface{} {
 	return TemplateData{
-		Site:  d.Site.Global(),
-		Theme: *d.Config,
-		Post:  *post,
+		Site:   d.Site.Global(),
+		Config: *d.Config,
+		Post:   *post,
 		Options: Options{
 			Social: Social{
 				Facebook:  d.Options.SocialFacebook,

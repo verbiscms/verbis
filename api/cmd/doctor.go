@@ -40,15 +40,30 @@ environment.`,
 func doctor(running bool) (*deps.Config, database.Driver, error) {
 	printSpinner("Running doctor...")
 
+	// Load Paths
+	p := paths.Get()
+
 	// Load the environment (.env file)
 	env, err := environment.Load()
-	if err != nil {
-		printError(err.Error())
-		return nil, nil, err
-	}
 
 	// Init logging
 	logger.Init(env)
+
+	// Print system info
+	logger.Info(fmt.Sprintf("Verbis Version: %s, %s", version.Version, version.Prerelease))
+	logger.Info(fmt.Sprintf("Go runtime version: %s", runtime.Version()))
+
+	// Env not found, return a bare-bones app for installing
+	// verbis.
+	if err != nil {
+		return &deps.Config{
+			Env:       env,
+			Paths:     p,
+			Installed: false,
+			Running:   false,
+			System:    sys.New(nil, false),
+		}, nil, nil
+	}
 
 	// Check if the environment values are valid
 	vErrors := env.Validate()
@@ -65,19 +80,19 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 		return nil, nil, err
 	}
 
-	p := paths.Get()
-	system := sys.New(db)
+	_, err = db.Tables()
+	if err != nil {
+		printError(err.Error())
+	}
 
-	logger.Info(fmt.Sprintf("Verbis Version: %s, %s", version.Version, version.Prerelease))
-	logger.Info(fmt.Sprintf("Go runtime version: %s", runtime.Version()))
+	system := sys.New(db, true)
 
 	// TODO: Check if the database is installed && db.IsInstalled
 	if system.HasUpdate() {
 		logger.Warn(fmt.Sprintf("Verbis outdated, please visit the dashboard to update to version: %s", system.LatestVersion()))
 	}
 
-	// Init Theme
-	// TODO: We need pass the default theme (Verbis 2021)
+	// Init Store
 	s, err := store.New(db, running)
 	if err != nil {
 		printError(err.Error())
@@ -86,10 +101,11 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	printSuccess("All checks passed.")
 
 	return &deps.Config{
-		Store:   s,
-		Env:     env,
-		Paths:   p,
-		Running: running,
-		System:  system,
+		Store:     s,
+		Env:       env,
+		Paths:     p,
+		Running:   running,
+		System:    system,
+		Installed: true,
 	}, db, nil
 }

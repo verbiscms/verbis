@@ -29,7 +29,7 @@ func (t *FieldTestSuite) TestFields_List() {
 			"Successfully obtained fields",
 			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
 				post := domain.PostDatum{
-					Post:   domain.Post{UserId: 123},
+					Post:   domain.Post{UserID: 123},
 					Author: user.HideCredentials(),
 				}
 				u.On("Find", 123).Return(user, nil)
@@ -44,7 +44,7 @@ func (t *FieldTestSuite) TestFields_List() {
 			"Successfully obtained fields",
 			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
 				post := domain.PostDatum{
-					Post:   domain.Post{UserId: 123},
+					Post:   domain.Post{UserID: 123},
 					Author: user.HideCredentials(),
 				}
 				u.On("Owner").Return(user)
@@ -60,7 +60,7 @@ func (t *FieldTestSuite) TestFields_List() {
 			"Successfully obtained fields",
 			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
 				post := domain.PostDatum{
-					Post:     domain.Post{UserId: 123},
+					Post:     domain.Post{UserID: 123},
 					Category: &category,
 					Author:   user.HideCredentials(),
 				}
@@ -76,7 +76,7 @@ func (t *FieldTestSuite) TestFields_List() {
 			"Successfully obtained fields",
 			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
 				post := domain.PostDatum{
-					Post:   domain.Post{UserId: 123, PageTemplate: "template"},
+					Post:   domain.Post{UserID: 123, PageTemplate: "template"},
 					Author: user.HideCredentials(),
 				}
 				u.On("Find", 123).Return(user, nil)
@@ -91,7 +91,7 @@ func (t *FieldTestSuite) TestFields_List() {
 			"Successfully obtained fields",
 			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
 				post := domain.PostDatum{
-					Post:   domain.Post{UserId: 123, PageLayout: "layout"},
+					Post:   domain.Post{UserID: 123, PageLayout: "layout"},
 					Author: user.HideCredentials(),
 				}
 				u.On("Find", 123).Return(user, nil)
@@ -106,7 +106,7 @@ func (t *FieldTestSuite) TestFields_List() {
 			"Successfully obtained fields",
 			func(l *location.Finder, u *users.Repository, c *categories.Repository) {
 				post := domain.PostDatum{
-					Post:   domain.Post{UserId: 123, Resource: "resource"},
+					Post:   domain.Post{UserID: 123, Resource: "resource"},
 					Author: user.HideCredentials(),
 				}
 				u.On("Find", 123).Return(user, nil)

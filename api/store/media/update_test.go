@@ -26,7 +26,7 @@ func (t *MediaTestSuite) TestStore_Update() {
 			mediaItem,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
-					WillReturnResult(sqlmock.NewResult(int64(mediaItem.Id), 1))
+					WillReturnResult(sqlmock.NewResult(int64(mediaItem.ID), 1))
 			},
 		},
 		"No Rows": {

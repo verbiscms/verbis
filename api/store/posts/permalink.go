@@ -46,7 +46,7 @@ func (s *Store) permalink(post *domain.PostDatum) string {
 	var catSlugs []string
 	if post.HasCategory() && !hiddenCategory {
 		catSlugs = append(catSlugs, post.Category.Slug)
-		parentID := post.Category.ParentId
+		parentID := post.Category.ParentID
 
 		for {
 			if parentID == nil {
@@ -65,7 +65,7 @@ func (s *Store) permalink(post *domain.PostDatum) string {
 			}
 
 			catSlugs = append(catSlugs, category.Slug)
-			parentID = category.ParentId
+			parentID = category.ParentID
 		}
 	}
 

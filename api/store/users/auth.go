@@ -73,7 +73,7 @@ func (s *Store) CheckSession(token string) error {
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.INVALID if the user could not be updated.
 func (s *Store) ResetPassword(id int, reset domain.UserPasswordReset) error {
-	const op = "userStore.ResetPassword"
+	const op = "UserStore.ResetPassword"
 
 	password, err := s.hashPasswordFunc(reset.NewPassword)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *Store) ResetPassword(id int, reset domain.UserPasswordReset) error {
 // Returns nil if the token last used column was successfully updated.
 // Returns errors.INTERNAL if the sql query failed to execute or the token does not exist.
 func (s *Store) UpdateToken(token string) error {
-	const op = "userStore.UpdateToken"
+	const op = "UserStore.UpdateToken"
 
 	q := s.Builder().
 		Update(s.Schema()+TableName).

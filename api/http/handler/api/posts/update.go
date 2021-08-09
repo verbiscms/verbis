@@ -33,7 +33,7 @@ func (c *Posts) Update(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "A valid ID is required to update the post", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-	post.Id = id
+	post.ID = id
 
 	updatedPost, err := c.Store.Posts.Update(post)
 	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
@@ -44,5 +44,5 @@ func (c *Posts) Update(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.Id), updatedPost)
+	api.Respond(ctx, http.StatusOK, "Successfully updated post with ID: "+strconv.Itoa(updatedPost.ID), updatedPost)
 }

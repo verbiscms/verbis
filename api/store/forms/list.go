@@ -58,11 +58,11 @@ func (s *Store) List(meta params.Params) (domain.Forms, int, error) {
 
 	// Assign form fields & submissions.
 	for k, v := range forms {
-		fields, err := s.fields.Find(v.Id)
+		fields, err := s.fields.Find(v.ID)
 		if err == nil {
 			forms[k].Fields = fields
 		}
-		submission, err := s.submissions.Find(v.Id)
+		submission, err := s.submissions.Find(v.ID)
 		if err == nil {
 			forms[k].Submissions = submission
 		}

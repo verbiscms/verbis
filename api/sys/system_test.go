@@ -6,14 +6,74 @@ package sys
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/logger"
 	mocks "github.com/verbiscms/verbis/api/mocks/database"
 	"io/ioutil"
 	"testing"
 )
 
-func TestNew(t *testing.T) {
+// SysTestSuite defines the helper used for system
+// testing.
+type SysTestSuite struct {
+	suite.Suite
+}
+
+// TestSys asserts testing has begun.
+func TestSys(t *testing.T) {
+	suite.Run(t, new(SysTestSuite))
+}
+
+// SetupSuite discards the logger
+func (t *SysTestSuite) SetupSuite() {
+	logger.SetOutput(ioutil.Discard)
+}
+
+var (
+	// The default install verbis used for testing.
+	install = domain.InstallVerbis{
+		InstallDatabase: domain.InstallDatabase{
+			DBHost:     "host",
+			DBPort:     "port",
+			DBDatabase: "database",
+			DBUser:     "user",
+			DBPassword: "password",
+		},
+		InstallUser: domain.InstallUser{
+			UserFirstName:       "verbis",
+			UserLastName:        "cms",
+			UserEmail:           "hello@verbiscms.com",
+			UserPassword:        "password",
+			UserConfirmPassword: "password",
+		},
+		InstallSite: domain.InstallSite{
+			SiteTitle: "title",
+			Robots:    false,
+		},
+	}
+	// The default install verbis with wrong validation
+	// used for testing.
+	installBadValidation = domain.InstallVerbis{
+		InstallDatabase: domain.InstallDatabase{
+			DBPort:     "port",
+			DBDatabase: "database",
+			DBUser:     "user",
+			DBPassword: "password",
+		},
+		InstallUser: domain.InstallUser{
+			UserLastName:        "cms",
+			UserEmail:           "hello@verbiscms.com",
+			UserPassword:        "password",
+			UserConfirmPassword: "password",
+		},
+		InstallSite: domain.InstallSite{
+			Robots: false,
+		},
+	}
+)
+
+func (t *SysTestSuite) TestNew() {
 	logger.SetOutput(ioutil.Discard)
 
 	tt := map[string]struct {
@@ -49,9 +109,9 @@ func TestNew(t *testing.T) {
 	}
 
 	for name, test := range tt {
-		t.Run(name, func(t *testing.T) {
+		t.Run(name, func() {
 			if test.exec == nil {
-				t.Fatal("exec function cannot be nil")
+				t.Fail("exec function cannot be nil")
 				return
 			}
 
@@ -67,14 +127,14 @@ func TestNew(t *testing.T) {
 			bin = test.bin
 
 			if test.panic {
-				assert.Panics(t, func() {
-					New(&mocks.Driver{})
+				t.Panics(func() {
+					New(&mocks.Driver{}, true)
 				})
 				return
 			}
 
-			got := New(&mocks.Driver{})
-			assert.Equal(t, test.want, got.ExecutablePath)
+			got := New(&mocks.Driver{}, true)
+			t.Equal(test.want, got.ExecutablePath)
 		})
 	}
 }

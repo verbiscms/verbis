@@ -27,7 +27,7 @@ func (t *RedirectsTestSuite) TestStore_Find() {
 			redirect,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
-					AddRow(redirect.Id, redirect.From, redirect.To, redirect.Code)
+					AddRow(redirect.ID, redirect.From, redirect.To, redirect.Code)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
@@ -48,7 +48,7 @@ func (t *RedirectsTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(redirect.Id)
+			got, err := s.Find(redirect.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -67,7 +67,7 @@ func (t *RedirectsTestSuite) TestStore_FindByFrom() {
 			redirect,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
-					AddRow(redirect.Id, redirect.From, redirect.To, redirect.Code)
+					AddRow(redirect.ID, redirect.From, redirect.To, redirect.Code)
 				m.ExpectQuery(regexp.QuoteMeta(FindByFromQuery)).WillReturnRows(rows)
 			},
 		},

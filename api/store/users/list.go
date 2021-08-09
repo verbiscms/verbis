@@ -18,7 +18,7 @@ import (
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if there are no categories available.
 func (s *Store) List(meta params.Params, role string) (domain.Users, int, error) {
-	const op = "userStore.List"
+	const op = "UserStore.List"
 
 	q := s.selectStmt()
 

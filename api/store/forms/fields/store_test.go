@@ -50,12 +50,12 @@ const (
 var (
 	// The default form used for testing.
 	form = domain.Form{
-		Id:   1,
+		ID:   1,
 		Name: "Form",
 	}
 	// The default form field used for testing.
 	formField = domain.FormField{
-		Id:    1,
+		ID:    1,
 		Key:   "key",
 		Label: "label",
 		Type:  "type",

@@ -84,8 +84,8 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
 				r.On("List", mock.Anything).Return(filesSlice, 2, nil)
-				r.On("FindByURL", filesSlice[0].Url).Return(domain.File{}, fmt.Errorf("error"))
-				r.On("FindByURL", filesSlice[1].Url).Return(domain.File{}, fmt.Errorf("error"))
+				r.On("FindByURL", filesSlice[0].URL).Return(domain.File{}, fmt.Errorf("error"))
+				r.On("FindByURL", filesSlice[1].URL).Return(domain.File{}, fmt.Errorf("error"))
 			},
 			mockCacheSuccess,
 			2,
@@ -207,7 +207,7 @@ func (t *StorageTestSuite) TestStorage_MigrateBackground() {
 	}{
 		"Find Error": {
 			func(m *mocks.Service, r *repo.Repository) {
-				r.On("FindByURL", fileRemote.Url).Return(domain.File{}, fmt.Errorf("error"))
+				r.On("FindByURL", fileRemote.URL).Return(domain.File{}, fmt.Errorf("error"))
 			},
 			MigrationInfo{Failed: 1, Succeeded: 0},
 		},

@@ -16,9 +16,6 @@ import (
 var (
 	// logger is an alias for the the standard logger.
 	logger = logrus.New()
-	// production is an alias of the api.Production to
-	// define logging levels.
-	production = api.Production
 )
 
 // Init will set up the logger and set logging levels
@@ -27,7 +24,7 @@ func Init(env *environment.Env) {
 	isDebug := env.IsDebug()
 
 	// Set log level depending on Debug or Production.
-	if !production {
+	if !api.Production {
 		logger.SetLevel(logrus.TraceLevel)
 	} else if isDebug {
 		logger.SetLevel(logrus.DebugLevel)
@@ -126,7 +123,12 @@ func SetOutput(writer io.Writer) {
 	logger.SetOutput(writer)
 }
 
-// SetLevel sets the lavel of the logger.
+// SetLevel sets the level of the logger.
 func SetLevel(level logrus.Level) {
 	logger.SetLevel(level)
+}
+
+// SetLogger sets the application logger.
+func SetLogger(l *logrus.Logger) {
+	logger = l
 }

@@ -30,7 +30,7 @@ func (t *CategoriesTestSuite) TestStore_Find() {
 			category,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(category.Id, category.Slug, category.Name)
+					AddRow(category.ID, category.Slug, category.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 			},
 		},
@@ -51,7 +51,7 @@ func (t *CategoriesTestSuite) TestStore_Find() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.Find(category.Id)
+			got, err := s.Find(category.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -70,7 +70,7 @@ func (t *CategoriesTestSuite) TestStore_FindByPost() {
 			category,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(category.Id, category.Slug, category.Name)
+					AddRow(category.ID, category.Slug, category.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByPostQuery)).WithArgs().WillReturnRows(rows)
 			},
 		},
@@ -110,7 +110,7 @@ func (t *CategoriesTestSuite) TestStore_FindBySlug() {
 			category,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(category.Id, category.Slug, category.Name)
+					AddRow(category.ID, category.Slug, category.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindBySlugQuery)).WillReturnRows(rows)
 			},
 		},
@@ -150,7 +150,7 @@ func (t *CategoriesTestSuite) TestStore_FindByName() {
 			category,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(category.Id, category.Slug, category.Name)
+					AddRow(category.ID, category.Slug, category.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindByNameQuery)).WillReturnRows(rows)
 			},
 		},
@@ -190,7 +190,7 @@ func (t *CategoriesTestSuite) TestStore_FindParent() {
 			category,
 			func(m sqlmock.Sqlmock) {
 				rows := sqlmock.NewRows([]string{"id", "slug", "name"}).
-					AddRow(category.Id, category.Slug, category.Name)
+					AddRow(category.ID, category.Slug, category.Name)
 				m.ExpectQuery(regexp.QuoteMeta(FindParentQuery)).WillReturnRows(rows)
 			},
 		},
@@ -211,7 +211,7 @@ func (t *CategoriesTestSuite) TestStore_FindParent() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			got, err := s.FindParent(category.Id)
+			got, err := s.FindParent(category.ID)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
