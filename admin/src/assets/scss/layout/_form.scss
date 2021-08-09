@@ -58,9 +58,6 @@
         @include on-event {
             box-shadow: $form-box-shadow;
         }
-
-
-
     }
 
     &-group {
@@ -79,7 +76,6 @@
 
             #{$self}-message {
                 opacity: 1;
-                transform: translateY(calc(100% + 2px));
             }
         }
 
@@ -451,28 +447,11 @@
         }
     }
 
-    // Check
-    // =========================================================================
-
-
     // Error & Valid
     // =========================================================================
 
     &-group {
 
-        &-error,
-        &-valid {
-            //margin-bottom: 1rem;
-
-
-        }
-
-        &-error {
-
-            input {
-                //border: 1px solid $orange;
-            }
-        }
     }
 
     // Is Invalid
@@ -486,15 +465,14 @@
     // =========================================================================
 
     &-error {
-        position: absolute;
+	    display: none;
+        position: relative;
         display: flex;
         align-items: center;
         color: $orange;
         font-size: 13px;
         font-weight: 500;
-        margin-bottom: $form-group-margin-bottom;
         opacity: 0;
-        transform: translateY(calc(-100% - 6px));
         transition: opacity 200ms ease, transform 200ms ease;
         will-change: opacity, transform;
 
@@ -508,8 +486,10 @@
 
         // Use animation here not transition
         &-show {
+	        display: block;
             opacity: 1;
-            transform: translateY(calc(-100% - 6px));
+	        margin-top: $form-group-margin-bottom;
+	        margin-bottom: $form-group-margin-bottom;
         }
     }
 

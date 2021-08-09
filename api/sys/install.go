@@ -11,6 +11,7 @@ import (
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/store"
+	"strconv"
 )
 
 // Install installs the application. The InstallVerbis struct
@@ -54,7 +55,7 @@ func (s *Sys) Install(install domain.InstallVerbis) error {
 	}
 
 	// Update the options
-	err = repository.Options.Update("site_url", install.SiteURL)
+	err = repository.Options.Update("site_url", "http://localhost:" + strconv.Itoa(env.Port()))
 	if err != nil {
 		return err
 	}

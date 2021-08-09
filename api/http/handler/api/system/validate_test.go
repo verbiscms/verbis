@@ -64,6 +64,17 @@ func (t *SystemTestSuite) TestInstall_Preflight() {
 			nil,
 			http.StatusBadRequest,
 			"Validation failed",
+			"/install/2",
+			&install,
+			false,
+			func(m *mocks.System) {
+				m.On("ValidateInstall", sys.InstallUserStep, install).Return(fmt.Errorf("error"))
+			},
+		},
+		"Validation Failed DB": {
+			nil,
+			http.StatusBadRequest,
+			"error",
 			"/install/1",
 			&install,
 			false,

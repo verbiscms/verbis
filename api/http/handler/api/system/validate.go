@@ -11,6 +11,7 @@ import (
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
+	"github.com/verbiscms/verbis/api/sys"
 	"net/http"
 	"strconv"
 )
@@ -42,7 +43,11 @@ func (s *System) ValidateInstall(ctx *gin.Context) {
 
 	err = s.System.ValidateInstall(step, install)
 	if err != nil {
-		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
+		msg := "Validation failed"
+		if step == sys.InstallDatabaseStep {
+			msg = err.Error()
+		}
+		api.Respond(ctx, http.StatusBadRequest, msg, &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
 

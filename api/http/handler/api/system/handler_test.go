@@ -62,7 +62,6 @@ var (
 		},
 		InstallSite: domain.InstallSite{
 			SiteTitle:           "title",
-			SiteURL:             "http://127.0.0.1",
 			Robots:              false,
 		},
 	}
@@ -84,7 +83,6 @@ var (
 			UserConfirmPassword: "password",
 		},
 		InstallSite: domain.InstallSite{
-			SiteURL:             "http://127.0.0.1",
 			Robots:              false,
 		},
 	}

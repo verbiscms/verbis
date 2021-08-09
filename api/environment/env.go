@@ -225,6 +225,9 @@ func (e *Env) Install() error {
 // be used,
 func (e *Env) Port() int {
 	const op = "Env.Port"
+	if e.AppPort == "" {
+		return DefaultPort
+	}
 	port, err := strconv.Atoi(e.AppPort)
 	if err != nil {
 		log.WithError(&errors.Error{Code: errors.INVALID, Message: "Unable to cast app port to int using port 5000", Operation: op, Err: err}).Error()

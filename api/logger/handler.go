@@ -7,7 +7,9 @@ package logger
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/errors"
+	"strings"
 	"time"
 )
 
@@ -63,9 +65,9 @@ func Middleware() gin.HandlerFunc {
 			"error":          verbisError,
 		}
 
-		//if strings.Contains(ctx.Request.URL.String(), "/admin") && api.Production {
-		//	return
-		//}
+		if strings.Contains(ctx.Request.URL.String(), "/admin") && api.Production {
+			return
+		}
 
 		if status >= 200 && status < 400 {
 			logger.WithFields(fields).Info()

@@ -307,13 +307,17 @@ func (t *EnvTestSuite) TestEnv_Port() {
 		port string
 		want int
 	}{
+		"Default": {
+			"",
+			DefaultPort,
+		},
 		"Success": {
 			"8000",
 			8000,
 		},
 		"Error": {
 			"prod",
-			5000,
+			DefaultPort,
 		},
 	}
 

@@ -12,7 +12,7 @@
 					<div class="auth-card" v-if="step === 1">
 						<div class="auth-card-cont">
 							<!-- Auth Text -->
-							<div class="auth-text auth-text-margin">
+							<div class="auth-text">
 								<h2>Install Verbis</h2>
 								<p>Welcome to the Verbis installer, please fill out your database credentials below.</p>
 							</div>
@@ -40,7 +40,7 @@
 								</FormGroup>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
-									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doValidate" :class="{ 'btn-loading' : doingAxios }">Next</button>
+									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doValidate">Next</button>
 								</div>
 							</form>
 						</div><!-- /Card Cont -->
@@ -51,7 +51,7 @@
 					<div class="auth-card" v-if="step === 2">
 						<div class="auth-card-cont">
 							<!-- Auth Text -->
-							<div class="auth-text auth-text-margin">
+							<div class="auth-text">
 								<h2>Create a user</h2>
 								<p>Welcome to the Verbis installer, please fill out your database credentials below.</p>
 							</div>
@@ -71,16 +71,16 @@
 								</FormGroup>
 								<!-- Password -->
 								<FormGroup :error="errors['user_password']">
-									<input type="text" placeholder="User" class="form-input" v-model="data['user_password']">
+									<input type="password" placeholder="Password" class="form-input" v-model="data['user_password']">
 								</FormGroup>
 								<!-- Confirm Password -->
 								<FormGroup :error="errors['user_confirm_password']">
-									<input type="text" placeholder="User" class="form-input" v-model="data['user_confirm_password']">
+									<input type="password" placeholder="Confirm Password" class="form-input" v-model="data['user_confirm_password']">
 								</FormGroup>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
 									<button v-if="this.step !== 0" type="submit" class="btn btn-arrow btn-arrow-left btn-transparent btn-arrow mr-2" @click.prevent="step--;">Previous</button>
-									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doValidate" :class="{ 'btn-loading' : doingAxios }">Next</button>
+									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doValidate">Next</button>
 								</div>
 							</form>
 						</div><!-- /Card Cont -->
@@ -91,19 +91,15 @@
 					<div class="auth-card" v-if="step === 3">
 						<div class="auth-card-cont">
 							<!-- Auth Text -->
-							<div class="auth-text auth-text-margin">
+							<div class="auth-text">
 								<h2>About your site</h2>
 								<p>Welcome to the Verbis installer, please fill out your database credentials below.</p>
 							</div>
 							<form class="form form-center">
 								<span class="form-error" v-html="installMessage" :class="{ 'form-error-show' : installMessage }"></span>
-								<!-- Host -->
+								<!-- Title -->
 								<FormGroup :error="errors['site_title']">
 									<input type="text" placeholder="Site Title" class="form-input" v-model="data['site_title']">
-								</FormGroup>
-								<!-- Port -->
-								<FormGroup :error="errors['site_url']">
-									<input type="text" placeholder="Site URL" class="form-input" v-model="data['site_url']">
 								</FormGroup>
 								<!-- Database -->
 								<div class="d-flex align-items-center">
@@ -112,15 +108,29 @@
 										<p>Enabling private will place a <code>no robots</code> meta tag on the site.</p>
 									</div>
 									<div class="toggle">
-										<input type="checkbox" class="toggle-switch" id="cache-frontend" checked v-model="data['cache_frontend']" :true-value="true" :false-value="false" />
+										<input type="checkbox" class="toggle-switch" id="cache-frontend" checked v-model="data['cache_frontend']" :true-value="false" :false-value="true" />
 										<label for="cache-frontend"></label>
 									</div>
 								</div>
 								<!-- Submit -->
 								<div class="auth-btn-cont">
+									<button type="submit" class="btn btn-arrow btn-arrow-left btn-transparent btn-arrow mr-2" @click.prevent="step--;">Previous</button>
 									<button type="submit" class="btn btn-arrow btn-transparent btn-arrow" @click.prevent="doInstall" :class="{ 'btn-loading' : doingAxios }">Install</button>
 								</div>
 							</form>
+						</div><!-- /Card Cont -->
+					</div><!-- /Card -->
+					<!-- =====================
+						Installing (Step 4)
+						===================== -->
+					<div class="auth-card" v-if="step === 4">
+						<div class="auth-card-cont">
+							<!-- Auth Text -->
+							<div class="auth-text">
+								<h2>Installing Verbis...</h2>
+								<p>You're just seconds away from a new installation of Verbis.</p>
+							</div>
+							<div class="spinner mt-3"></div>
 						</div><!-- /Card Cont -->
 					</div><!-- /Card -->
 				</div><!-- /Col -->
@@ -140,7 +150,18 @@ export default {
 	components: {FormGroup},
 	data: () => ({
 		doingAxios: false,
-		data: {},
+		data: {
+			db_host: "192.168.1.10",
+			db_port: "3306",
+			db_database: "install",
+			db_user: "root",
+			db_password: "password",
+			user_first_name: "Ainsley",
+			user_last_name: "Clark",
+			user_email: "ainsley@reddico.co.uk",
+			user_password: "password",
+			user_confirm_password: "password",
+		},
 		installMessage: "",
 		errors: {},
 		step: 1,
@@ -153,13 +174,13 @@ export default {
 		doValidate() {
 			this.installMessage = '';
 			this.doingAxios = true;
+			this.errors = [];
 
 			this.axios.post("/install/validate/" + this.step, this.data)
-				.then(res => {
-					console.log(res);
-					this.errors = [];
-					this.$noty.success("Connected to database");
-					this.step++;
+				.then(() => {
+					if (this.step !== 4) {
+						this.step++;
+					}
 				})
 				.catch(err => {
 					if (err.response.status === 400) {
@@ -193,10 +214,14 @@ export default {
 
 			this.axios.post("/install", this.data)
 				.then(() => {
-					this.$noty.success("Successfully installed verbis");
+					setTimeout(() => {
+						this.$noty.success("Successfully installed verbis");
+						this.$router.push({ name: 'login' })
+						this.doingAxios = false;
+					}, 4000);
 				})
 				.catch(err => {
-					console.log(err);
+					this.doingAxios = false;
 					if (err.response.status === 400) {
 						const errors = err.response.data.data.errors;
 						if (!errors) {
@@ -209,11 +234,6 @@ export default {
 					}
 					this.helpers.handleResponse(err);
 				})
-				.finally(() => {
-					setTimeout(() => {
-						this.doingAxios = false;
-					}, this.timeoutDelay)
-				});
 		},
 		/*
 		 * validate()
