@@ -28,7 +28,7 @@ func (t *MiddlewareTestSuite) Test_Redirects() {
 	}{
 		"Admin Path": {
 			http.StatusOK,
-			"/admin",
+			app.AdminPath,
 			"",
 			nil,
 		},

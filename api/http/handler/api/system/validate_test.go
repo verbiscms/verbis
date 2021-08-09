@@ -17,7 +17,7 @@ func (t *SystemTestSuite) TestInstall_Preflight() {
 		want      interface{}
 		status    int
 		message   string
-		url string
+		url       string
 		input     interface{}
 		installed bool
 		mock      func(m *mocks.System)

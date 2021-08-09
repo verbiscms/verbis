@@ -61,8 +61,8 @@ var (
 			UserConfirmPassword: "password",
 		},
 		InstallSite: domain.InstallSite{
-			SiteTitle:           "title",
-			Robots:              false,
+			SiteTitle: "title",
+			Robots:    false,
 		},
 	}
 	// The default install verbis with wrong validation
@@ -83,7 +83,7 @@ var (
 			UserConfirmPassword: "password",
 		},
 		InstallSite: domain.InstallSite{
-			Robots:              false,
+			Robots: false,
 		},
 	}
 )

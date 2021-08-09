@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/exec"
 	"regexp"
+	"strings"
 	"testing"
 )
 
@@ -71,9 +72,7 @@ func (t *MySQLTestSuite) Setup(mf func(m sqlmock.Sqlmock)) *MySQL {
 func (t *MySQLTestSuite) SetupSuite() {
 	db, m, err := sqlmock.New()
 	t.NoError(err)
-
 	sqlxDB := sqlx.NewDb(db, "sqlmock")
-
 	t.Mock = m
 	t.DB = sqlxDB
 }
@@ -128,13 +127,13 @@ func (t *MySQLTestSuite) TestMySQL_Close() {
 
 type mockMigratorError struct{}
 
-func (m *mockMigratorError) Migrate(ver *sm.Version) error {
+func (m *mockMigratorError) Migrate(ver *sm.Version, install bool) error {
 	return fmt.Errorf("error")
 }
 
 type mockMigrator struct{}
 
-func (m *mockMigrator) Migrate(ver *sm.Version) error {
+func (m *mockMigrator) Migrate(ver *sm.Version, install bool) error {
 	return nil
 }
 
@@ -190,6 +189,59 @@ func (t *MySQLTestSuite) TestMySQL_Migrate() {
 				return
 			}
 			t.Equal(err, test.want)
+		})
+	}
+}
+
+func (t *MySQLTestSuite) TestMySQL_Tables() {
+	var tbl []string
+
+	tt := map[string]struct {
+		mock func(m sqlmock.Sqlmock)
+		want interface{}
+	}{
+		"Success": {
+			func(m sqlmock.Sqlmock) {
+				for _, table := range internal.Tables {
+					q := "SELECT EXISTS (SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = 'verbis' AND `table_name` = '" + table + "' LIMIT 1)"
+					rows := sqlmock.NewRows([]string{"id"}).
+						AddRow(true)
+					m.ExpectQuery(regexp.QuoteMeta(q)).WillReturnRows(rows)
+				}
+			},
+			tbl,
+		},
+		"DB Error": {
+			func(m sqlmock.Sqlmock) {
+				for _, table := range internal.Tables {
+					q := "SELECT EXISTS (SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = 'verbis' AND `table_name` = '" + table + "' LIMIT 1)"
+					m.ExpectQuery(regexp.QuoteMeta(q)).WillReturnError(fmt.Errorf("error"))
+				}
+			},
+			"error",
+		},
+		"Failed Tables": {
+			func(m sqlmock.Sqlmock) {
+				for _, table := range internal.Tables {
+					q := "SELECT EXISTS (SELECT * FROM `information_schema`.`tables` WHERE `table_schema` = 'verbis' AND `table_name` = '" + table + "' LIMIT 1)"
+					rows := sqlmock.NewRows([]string{"id"}).
+						AddRow(false)
+					m.ExpectQuery(regexp.QuoteMeta(q)).WillReturnRows(rows)
+				}
+			},
+			strings.Join(internal.Tables, ", "),
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			m := t.Setup(test.mock)
+			got, err := m.Tables()
+			if err != nil {
+				t.Contains(err.Error(), test.want)
+				return
+			}
+			t.Equal(test.want, got)
 		})
 	}
 }

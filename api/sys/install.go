@@ -11,6 +11,7 @@ import (
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/store"
+	"github.com/verbiscms/verbis/api/store/options"
 	"strconv"
 )
 
@@ -55,15 +56,7 @@ func (s *Sys) Install(install domain.InstallVerbis) error {
 	}
 
 	// Update the options
-	err = repository.Options.Update("site_url", "http://localhost:" + strconv.Itoa(env.Port()))
-	if err != nil {
-		return err
-	}
-	err = repository.Options.Update("site_title", install.SiteTitle)
-	if err != nil {
-		return err
-	}
-	err = repository.Options.Update("seo_private", install.Robots)
+	err = s.installOptions(repository.Options, install.InstallSite, env.Port())
 	if err != nil {
 		return err
 	}
@@ -104,4 +97,20 @@ func (s *Sys) getDatabase(id domain.InstallDatabase) (database.Driver, environme
 
 	logger.Info("Successfully connected to the database: " + id.DBDatabase)
 	return db, env, nil
+}
+
+func (s *Sys) installOptions(repo options.Repository, install domain.InstallSite, port int) error {
+	err := repo.Update("site_url", "http://localhost:"+strconv.Itoa(port))
+	if err != nil {
+		return err
+	}
+	err = repo.Update("site_title", install.SiteTitle)
+	if err != nil {
+		return err
+	}
+	err = repo.Update("seo_private", install.Robots)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -5,8 +5,6 @@
 package users
 
 import (
-	"database/sql"
-	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
@@ -18,7 +16,7 @@ import (
 // Logs errors.INTERNAL if there was an error executing the query.
 // Logs errors.NOTFOUND if the category was not found by the given ID.
 func (s *Store) Owner() domain.User {
-	const op = "userStore.Owner"
+	const op = "UserStore.Owner"
 
 	q := s.selectStmt().
 		Where(s.Schema()+"roles.id", "=", domain.OwnerRoleID).
@@ -26,10 +24,8 @@ func (s *Store) Owner() domain.User {
 
 	var user domain.User
 	err := s.DB().Get(&user, q.Build())
-	if err == sql.ErrNoRows {
-		logger.WithError(&errors.Error{Code: errors.NOTFOUND, Message: "No owner exists", Operation: op, Err: err}).Panic()
-	} else if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}).Panic()
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.NOTFOUND, Message: "No owner exists", Operation: op, Err: err}).Fatal()
 	}
 
 	return user

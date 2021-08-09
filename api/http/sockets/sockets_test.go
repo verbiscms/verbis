@@ -26,7 +26,7 @@ func TestSockets(t *testing.T) {
 
 // mtx is used to prevent the data race for
 // setting logger.
-var mtx =  &sync.Mutex{}
+var mtx = &sync.Mutex{}
 
 // BeforeTest assign the logger to a buffer.
 func (t *SocketsTestSuite) BeforeTest(suiteName, testName string) {

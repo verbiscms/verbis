@@ -7,6 +7,7 @@ package logger
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/errors"
 )
 
@@ -43,7 +44,7 @@ func (t *LoggerTestSuite) TestHandler() {
 			nil,
 			"message",
 			200,
-			"/admin",
+			app.AdminPath,
 			"",
 		},
 		"400": {

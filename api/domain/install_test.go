@@ -16,18 +16,27 @@ func TestInstallVerbis_ToUser(t *testing.T) {
 	}{
 		"Success": {
 			&InstallVerbis{
-				UserFirstName: "Verbis",
-				UserLastName:  "CMS",
-				UserEmail:     "hello@verbiscms.com",
-				UserPassword:  "password",
-			},
-			&User{
-				UserPart: UserPart{
-					FirstName: "Verbis",
-					LastName:  "CMS",
-					Email:     "hello@verbiscms.com",
+				InstallUser: InstallUser{
+					UserFirstName:       "Verbis",
+					UserLastName:        "CMS",
+					UserEmail:           "hello@verbiscms.com",
+					UserPassword:        "password",
+					UserConfirmPassword: "password",
 				},
-				Password: "password",
+			},
+			UserCreate{
+				User: User{
+					UserPart: UserPart{
+						FirstName: "Verbis",
+						LastName:  "CMS",
+						Email:     "hello@verbiscms.com",
+						Role: Role{
+							ID: OwnerRoleID,
+						},
+					},
+				},
+				Password:        "password",
+				ConfirmPassword: "password",
 			},
 		},
 	}

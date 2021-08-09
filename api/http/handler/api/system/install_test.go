@@ -29,7 +29,7 @@ func (t *SystemTestSuite) TestInstall_Install() {
 			&install,
 			false,
 			func(m *mocks.System) {
-				m.On("Install", install, true).Return(nil)
+				m.On("Install", install).Return(nil)
 			},
 		},
 		"Already Installed": {
@@ -39,7 +39,7 @@ func (t *SystemTestSuite) TestInstall_Install() {
 			&install,
 			true,
 			func(m *mocks.System) {
-				m.On("Install", install, true).Return(nil)
+				m.On("Install", install).Return(nil)
 			},
 		},
 		"Validation Failed": {
@@ -57,7 +57,7 @@ func (t *SystemTestSuite) TestInstall_Install() {
 			&install,
 			false,
 			func(m *mocks.System) {
-				m.On("Install", install, true).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Install", install).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Internal Error": {
@@ -67,7 +67,7 @@ func (t *SystemTestSuite) TestInstall_Install() {
 			&install,
 			false,
 			func(m *mocks.System) {
-				m.On("Install", install, true).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Install", install).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

@@ -11,12 +11,11 @@ var (
 	// Verbis.
 	Tables = []string{
 		"categories",
-		"form_fields",
-		"form_submissions",
+		"files",
 		"forms",
 		"media",
+		"media_sizes",
 		"options",
-		"password_resets",
 		"post_categories",
 		"post_fields",
 		"post_options",
@@ -31,7 +30,7 @@ var (
 var (
 	// ErrTableNotFound is returned by the driver if there are
 	// tables missing from the installation.
-	ErrTableNotFound = errors.New("database tables missing from verbis installation")
+	ErrTableNotFound = errors.New("database tables missing from Verbis")
 )
 
 const (

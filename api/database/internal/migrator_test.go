@@ -208,12 +208,12 @@ func (t *InternalTestSuite) TestMigrator_Migrate() {
 
 			if test.panics {
 				t.Panics(func() {
-					m.Migrate(test.version) //nolint
+					m.Migrate(test.version, false) //nolint
 				})
 				return
 			}
 
-			err := m.Migrate(test.version)
+			err := m.Migrate(test.version, false)
 			t.RunExpectationsT(err, test.want)
 		})
 	}

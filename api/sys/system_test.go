@@ -48,9 +48,8 @@ var (
 			UserConfirmPassword: "password",
 		},
 		InstallSite: domain.InstallSite{
-			SiteTitle:           "title",
-			SiteURL:             "http://127.0.0.1",
-			Robots:              false,
+			SiteTitle: "title",
+			Robots:    false,
 		},
 	}
 	// The default install verbis with wrong validation
@@ -69,8 +68,7 @@ var (
 			UserConfirmPassword: "password",
 		},
 		InstallSite: domain.InstallSite{
-			SiteURL:             "http://127.0.0.1",
-			Robots:              false,
+			Robots: false,
 		},
 	}
 )

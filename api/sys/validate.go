@@ -51,4 +51,3 @@ func (s *Sys) ValidateInstall(step int, install domain.InstallVerbis) error {
 		return &errors.Error{Code: errors.INVALID, Message: "Error validating install", Operation: op, Err: fmt.Errorf("invalid step provided: %d", step)}
 	}
 }
-

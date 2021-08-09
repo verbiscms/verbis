@@ -15,9 +15,9 @@ import (
 func (t *SysTestSuite) TestSys_Validate() {
 	tt := map[string]struct {
 		input domain.InstallVerbis
-		step int
-		fn   func(env *environment.Env) (database.Driver, error)
-		want interface{}
+		step  int
+		fn    func(env *environment.Env) (database.Driver, error)
+		want  interface{}
 	}{
 		"Database Success": {
 			install,

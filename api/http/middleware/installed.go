@@ -40,7 +40,7 @@ func Installed(d *deps.Deps) gin.HandlerFunc {
 
 		url := ctx.Request.URL.String()
 
-		if url == InstallRoute {
+		if url == app.AdminInstallPath {
 			ctx.Next()
 			return
 		}
@@ -62,7 +62,7 @@ func Installed(d *deps.Deps) gin.HandlerFunc {
 			return
 		}
 
-		ctx.Redirect(http.StatusMovedPermanently, "/admin/install")
+		ctx.Redirect(http.StatusMovedPermanently, app.AdminInstallPath)
 		ctx.Abort()
 	}
 }

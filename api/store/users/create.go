@@ -19,7 +19,7 @@ import (
 // Returns errors.CONFLICT if the the category (name) already exists.
 // Returns errors.INTERNAL if the SQL query was invalid or the function could not get the newly created ID.
 func (s *Store) Create(u domain.UserCreate) (domain.User, error) {
-	const op = "userStore.Create"
+	const op = "UserStore.Create"
 
 	err := s.validate(u.User)
 	if err != nil {

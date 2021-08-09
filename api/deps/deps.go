@@ -138,21 +138,21 @@ func New(cfg Config) (*Deps, error) {
 	}
 
 	d := &Deps{
-		Env:     cfg.Env,
-		Cache:   cs,
-		Store:   cfg.Store,
-		Config:  &config,
-		Options: &opts,
-		Paths:   cfg.Paths,
-		tmpl:    nil,
-		Running: cfg.Running,
+		Env:       cfg.Env,
+		Cache:     cs,
+		Store:     cfg.Store,
+		Config:    &config,
+		Options:   &opts,
+		Paths:     cfg.Paths,
+		tmpl:      nil,
+		Running:   cfg.Running,
 		Installed: cfg.Installed,
-		Site:    site.New(cfg.Store.Options, cfg.System),
-		Theme:   themeService,
-		FS:      verbisfs.New(api.Production, cfg.Paths),
-		WebP:    webp.New(cfg.Paths.Bin + webp.Path),
-		Storage: st,
-		System:  cfg.System,
+		Site:      site.New(cfg.Store.Options, cfg.System),
+		Theme:     themeService,
+		FS:        verbisfs.New(api.Production, cfg.Paths),
+		WebP:      webp.New(cfg.Paths.Bin + webp.Path),
+		Storage:   st,
+		System:    cfg.System,
 	}
 
 	return d, nil

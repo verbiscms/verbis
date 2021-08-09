@@ -233,7 +233,7 @@ func (t *EnvTestSuite) TestEnv_Install() {
 	}{
 		"Parse Error": {
 			Env{},
-			t.TestDataPath,
+			filepath.Dir(t.TestDataPath),
 			"",
 			func(name string) *template.Template {
 				tpl, err := template.New("wrong").Parse("text")
@@ -246,7 +246,7 @@ func (t *EnvTestSuite) TestEnv_Install() {
 		},
 		"Execute Error": {
 			Env{},
-			t.TestDataPath,
+			filepath.Dir(t.TestDataPath),
 			"{{ .bad }}",
 			newTpl,
 			"Error executing env tpl",
@@ -264,7 +264,7 @@ func (t *EnvTestSuite) TestEnv_Install() {
 			Env{
 				DbDriver: "driver",
 			},
-			filepath.Join(t.TestDataPath, "tpl"),
+			filepath.Dir(t.TestDataPath),
 			"{{ .DbDriver }}",
 			newTpl,
 			"driver",
@@ -277,10 +277,12 @@ func (t *EnvTestSuite) TestEnv_Install() {
 			origEnv := envTpl
 			origNewTpl := newTpl
 			t.Original()
+
 			defer func() {
 				teardown()
 				envTpl = origEnv
 				newTpl = origNewTpl
+				_ = os.Remove(filepath.Join(test.path, EnvExtension))
 				t.Overwrite()
 			}()
 			envTpl = test.tpl
@@ -293,11 +295,9 @@ func (t *EnvTestSuite) TestEnv_Install() {
 			}
 
 			t.Nil(err)
-			file, err := ioutil.ReadFile(test.path + EnvExtension)
+			file, err := ioutil.ReadFile(filepath.Join(test.path, EnvExtension))
 			t.NoError(err)
 			t.Equal(test.want, string(file))
-			err = os.Remove(test.path + EnvExtension)
-			t.NoError(err)
 		})
 	}
 }

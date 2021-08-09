@@ -14,7 +14,7 @@ import (
 // Returns nil if the validation passed on update/create.
 // Returns errors.CONFLICT if the email already exists in the store.
 func (s *Store) validate(c domain.User) error {
-	const op = "userStore.Validate"
+	const op = "UserStore.Validate"
 
 	exists := s.ExistsByEmail(c.Email)
 	if exists {

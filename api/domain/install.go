@@ -26,8 +26,8 @@ type (
 	// InstallSite defines the data used for creating the
 	// site during installation.
 	InstallSite struct {
-		SiteTitle           string `json:"site_title" binding:"required"`
-		Robots              bool   `json:"robots"`
+		SiteTitle string `json:"site_title" binding:"required"`
+		Robots    bool   `json:"robots"`
 	}
 	// InstallVerbis defines the data used for installing the
 	// Verbis user information and critical system info
@@ -43,7 +43,7 @@ type (
 // installation struct.
 func (i *InstallVerbis) ToUser() UserCreate {
 	return UserCreate{
-		User:            User{
+		User: User{
 			UserPart: UserPart{
 				FirstName: i.UserFirstName,
 				LastName:  i.UserLastName,

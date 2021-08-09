@@ -80,6 +80,11 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 		return nil, nil, err
 	}
 
+	_, err = db.Tables()
+	if err != nil {
+		printError(err.Error())
+	}
+
 	system := sys.New(db, true)
 
 	// TODO: Check if the database is installed && db.IsInstalled
@@ -96,11 +101,11 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 	printSuccess("All checks passed.")
 
 	return &deps.Config{
-		Store:   s,
-		Env:     env,
-		Paths:   p,
-		Running: running,
-		System:  system,
+		Store:     s,
+		Env:       env,
+		Paths:     p,
+		Running:   running,
+		System:    system,
 		Installed: true,
 	}, db, nil
 }

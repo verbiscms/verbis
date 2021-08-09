@@ -228,7 +228,7 @@ func (m *mail) ExecuteHTML(file string, data interface{}) (string, error) {
 // Returns errors.INTERNAL if the template could not be
 // parsed or executed.
 func (m *mail) ExecuteText(file string, data interface{}) (string, error) {
-	const op = "Mail.ExecuteText"
+	const op = "Mail.executeText"
 
 	tmpl, err := template.ParseFS(m.Deps.FS.Web, filepath.Join(MailDir, file+MailTextExtension))
 	if err != nil {

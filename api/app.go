@@ -38,6 +38,9 @@ const (
 	// AdminPath is the URL for serving the Vue SPA
 	// backend.
 	AdminPath = "/admin"
+	// AdminInstallPath is the URL for installing Verbis
+	// via the Vue SPA.
+	AdminInstallPath = AdminPath + "/install"
 	// AssetsChannel is the maximum amount of concurrent
 	// requests for serving assets on the frontend.
 	AssetsChannel = 10

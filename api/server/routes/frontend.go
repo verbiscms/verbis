@@ -23,6 +23,19 @@ import (
 func frontendRoutes(d *deps.Deps, s *server.Server) {
 	h := handler.NewFrontend(d)
 
+	// Serve Verbis Assets
+	//s.GET("/verbis/*any", d.FS.Web.HTTP("/verbis", "public"))
+	fsys, err := fs.Sub(d.FS.Web, "public")
+	if err != nil {
+		logger.Fatal(&errors.Error{Code: errors.INTERNAL, Message: "Error creating sub FS", Operation: "Router.Frontend", Err: err})
+	}
+
+	s.StaticFS("/verbis", http.FS(fsys))
+
+	if !d.Installed {
+		return
+	}
+
 	// TODO: This check should be in config
 	uploadPath := d.Config.Media.UploadPath
 	if uploadPath == "" {
@@ -34,15 +47,6 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 
 	// Serve assets
 	s.GET("/assets/*any", h.Public.Assets)
-
-	// Serve Verbis Assets
-	//s.GET("/verbis/*any", d.FS.Web.HTTP("/verbis", "public"))
-	fsys, err := fs.Sub(d.FS.Web, "public")
-	if err != nil {
-		logger.Fatal(&errors.Error{Code: errors.INTERNAL, Message: "Error creating sub FS", Operation: "Router.Frontend", Err: err})
-	}
-
-	s.StaticFS("/verbis", http.FS(fsys))
 
 	// Serve uploads
 	s.GET("/"+uploadPath+"/*any", h.Public.Uploads)
