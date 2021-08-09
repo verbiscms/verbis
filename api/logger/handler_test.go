@@ -79,6 +79,9 @@ func (t *LoggerTestSuite) TestHandler() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
+			orig := app.Production
+			defer func() { app.Production = orig }()
+			app.Production = true
 			buf := t.SetupHandler(func(ctx *gin.Context) {
 				if test.err != nil {
 					ctx.Set("verbis_error", test.err)
