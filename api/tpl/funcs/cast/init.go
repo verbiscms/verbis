@@ -10,7 +10,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
-// Creates a new cast Namespace
+// New creates a new cast Namespace.
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{deps: d}
 }
@@ -21,6 +21,7 @@ type Namespace struct {
 	deps *deps.Deps
 }
 
+// name defines the identifier for the namespace.
 const name = "cast"
 
 // Adds the namespace methods to the internal.FuncsNamespace

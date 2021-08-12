@@ -9,7 +9,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
-// Creates a new reflect Namespace
+// New creates a new reflect Namespace.
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{deps: d}
 }

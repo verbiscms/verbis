@@ -10,7 +10,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
-// Creates a new auth Namespace
+// New creates a new auth Namespace.
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 	return &Namespace{
 		deps: d,
@@ -25,9 +25,11 @@ type Namespace struct {
 	ctx  *gin.Context
 }
 
+// name defines the identifier for the namespace.
 const name = "auth"
 
-// Creates a new Namespace and returns a new internal.FuncsNamespace
+// Init creates a new Namespace and returns a new
+// internal.FuncsNamespace
 func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ctx := New(d, t)
 

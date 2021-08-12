@@ -10,7 +10,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
-// Creates a new fields Namespace
+// New creates a new fields Namespace.
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 	f := fields.NewService(d, t.Post)
 	return &Namespace{
@@ -26,9 +26,11 @@ type Namespace struct {
 	fields fields.FieldService
 }
 
+// name defines the identifier for the namespace.
 const name = "fields"
 
-//  Creates a new Namespace and returns a new internal.FuncsNamespace
+// Init creates a new Namespace and returns a new
+// internal.FuncsNamespace.
 func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ctx := New(d, t)
 

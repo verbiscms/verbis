@@ -9,7 +9,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
-// Creates a new debug Namespace
+// New creates a new debug Namespace.
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{deps: d}
 }
@@ -20,6 +20,7 @@ type Namespace struct {
 	deps *deps.Deps
 }
 
+// name defines the identifier for the namespace.
 const name = "paths"
 
 // Adds the namespace debug to the internal.FuncsNamespace

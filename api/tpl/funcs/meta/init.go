@@ -12,7 +12,7 @@ import (
 	"html/template"
 )
 
-// Creates a new meta Namespace
+// New creates a new meta Namespace.
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 	if t.Post.SeoMeta.Seo == nil {
 		t.Post.SeoMeta.Seo = &domain.PostSeo{Private: false, ExcludeSitemap: false, Canonical: ""}
@@ -36,9 +36,11 @@ type Namespace struct {
 	funcs  template.FuncMap
 }
 
+// name defines the identifier for the namespace.
 const name = "meta"
 
-//  Creates a new Namespace and returns a new internal.FuncsNamespace
+// Init Creates a new Namespace and returns a new
+// internal.FuncsNamespace.
 func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ctx := New(d, t)
 

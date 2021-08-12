@@ -31,7 +31,8 @@ type Service struct {
 }
 
 // Nav defines the type for obtaining navigational
-// menus. It contains a key which
+// menus. It contains a key which is mapped
+// to the ID defined in the theme config.
 type Nav map[string]Items
 
 // Menu defines the data retrieved by calling Get.

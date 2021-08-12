@@ -24,20 +24,20 @@ var (
 
 // Get
 //
-// Obtains the breadcrumbs for the post in a struct
-// verbis.Breadcrumbs
+// Returns a navigation menu with the arguments passed.
+// If the menu does not exist, an error will occur.
 //
-// Example: {{ $crumbs := breadcrumbs }}
+// Example: {{ nav (dict "menu" "main-menu") }}
 func (ns *Namespace) Get(args nav.Args) (nav.Menu, error) {
 	return ns.nav.Get(args)
 }
 
 // HTML
 //
-// Returns the breadcrumbs already constructed as
+// Returns a navigation menu already constructed as
 // HTML data.
 //
-// Example: {{ $crumbs := breadcrumbsHTML }}
+// Example: {{ navHTML (dict "menu" "main-menu") }}
 func (ns *Namespace) HTML(args nav.Args) (template.HTML, error) {
 	const op = "Templates.Nav.HTML"
 
@@ -55,9 +55,8 @@ func (ns *Namespace) HTML(args nav.Args) (template.HTML, error) {
 
 	var b bytes.Buffer
 	err = ns.deps.Tmpl().ExecuteTpl(&b, string(file), menu)
-
 	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error parsing template", Operation: op, Err: err}
+		return "", err
 	}
 
 	return template.HTML(gohtml.Format(b.String())), nil

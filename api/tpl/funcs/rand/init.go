@@ -9,7 +9,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
-// Creates a new reflect Namespace
+// New creates a new rand Namespace.
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{deps: d}
 }
@@ -20,7 +20,8 @@ type Namespace struct {
 	deps *deps.Deps
 }
 
-const name = "reflect"
+// name defines the identifier for the namespace.
+const name = "rand"
 
 // Adds the namespace methods to the internal.FuncsNamespace
 // on initialisation.

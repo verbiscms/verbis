@@ -10,7 +10,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl/internal"
 )
 
-// Creates a new reflect Namespace
+// New creates a new reflect Namespace.
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 	return &Namespace{
 		deps: d,
@@ -27,7 +27,8 @@ type Namespace struct {
 
 const name = "url"
 
-//  Creates a new Namespace and returns a new internal.FuncsNamespace
+// Init Creates a new Namespace and returns a new
+// internal.FuncsNamespace.
 func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ctx := New(d, t)
 

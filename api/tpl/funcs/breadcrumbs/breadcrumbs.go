@@ -55,7 +55,7 @@ func (ns *Namespace) HTML() template.HTML {
 	})
 
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error parsing template", Operation: op, Err: err}).Error()
+		logger.WithError(err).Error()
 	}
 
 	return template.HTML(b.String())

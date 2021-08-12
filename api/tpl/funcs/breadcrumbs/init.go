@@ -10,7 +10,7 @@ import (
 	"github.com/verbiscms/verbis/api/verbis"
 )
 
-// Creates a new breadcrumbs Namespace
+// New creates a new breadcrumbs Namespace.
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 	return &Namespace{
 		deps:   d,
@@ -25,9 +25,11 @@ type Namespace struct {
 	crumbs verbis.Breadcrumbs
 }
 
+// name defines the identifier for the namespace.
 const name = "breadcrumbs"
 
-//  Creates a new Namespace and returns a new internal.FuncsNamespace
+// Init creates a new Namespace and returns a new
+// internal.FuncsNamespace.
 func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ctx := New(d, t)
 

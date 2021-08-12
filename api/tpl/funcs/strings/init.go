@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-// Creates a new strings Namespace
+// New creates a new strings Namespace.
 func New(d *deps.Deps) *Namespace {
 	return &Namespace{deps: d}
 }
@@ -21,6 +21,7 @@ type Namespace struct {
 	deps *deps.Deps
 }
 
+// name defines the identifier for the namespace.
 const name = "strings"
 
 // Adds the namespace methods to the internal.FuncsNamespace

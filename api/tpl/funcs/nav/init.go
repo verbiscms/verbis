@@ -11,15 +11,15 @@ import (
 	"github.com/verbiscms/verbis/api/verbis/nav"
 )
 
-// Creates a new breadcrumbs Namespace
+// New creates a new breadcrumbs Namespace.
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
-	nav, err := nav.New(d, t.Post)
+	n, err := nav.New(d, t.Post)
 	if err != nil {
 		logger.WithError(err).Panic()
 	}
 	return &Namespace{
 		deps: d,
-		nav:  nav,
+		nav:  n,
 	}
 }
 
@@ -30,9 +30,11 @@ type Namespace struct {
 	nav  nav.Getter
 }
 
+// name defines the identifier for the namespace.
 const name = "nav"
 
-// Init creates a new Namespace and returns a new internal.FuncsNamespace
+// Init creates a new Namespace and returns a new
+// internal.FuncsNamespace.
 func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ctx := New(d, t)
 
