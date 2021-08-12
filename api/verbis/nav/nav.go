@@ -2,7 +2,19 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package events
+package verbis
 
 type Nav struct {
+	Items []NavItem
+}
+
+type NavItem struct {
+	Href string
+	Text string
+	IsActive bool
+	HasChildren bool
+	Target string
+	Rel []string
+	Download string
+	Nav Nav
 }
