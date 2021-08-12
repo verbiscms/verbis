@@ -20,8 +20,9 @@ import (
 )
 
 var (
-	postID = 1
-	post   = domain.PostDatum{
+	postID     = 1
+	categoryID = 1
+	post       = domain.PostDatum{
 		Post: domain.Post{
 			ID:        1,
 			Title:     "title",
@@ -176,7 +177,7 @@ func TestGet(t *testing.T) {
 				Items:   Items{{Href: post.Permalink, Title: post.Title, PostID: &postID, External: false}},
 			},
 		},
-		"Post Error": {
+		"Invalid": {
 			Args{"menu": "main-menu"},
 			Nav{"main-menu": Items{{Href: "link-one", PostID: &postID}}},
 			&domain.PostDatum{},
@@ -186,7 +187,7 @@ func TestGet(t *testing.T) {
 			},
 			Menu{
 				Options: Options{Menu: "main-menu"},
-				Items:   Items{{Href: "link-one", PostID: &postID}},
+				Items:   Items{{Href: "link-one", PostID: &postID, Invalid: true}},
 			},
 		},
 		"Current": {

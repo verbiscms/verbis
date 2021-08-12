@@ -20,7 +20,7 @@
 <!-- Navigation -->
 {{ define "nav" }}
 	{{ if gt (len .Items) 0 -}}
-		<ul id="{{ .Options.Menu }}" class="nav-list {{- with .Options.MenuClass -}} {{ . }} {{- end }}">
+		<ul id="{{ .Options.Menu }}" class="nav-list {{ with .Options.MenuClass -}} {{ . }} {{- end }}">
 			{{ range $item := .Items -}}
 				{{ template "item" $item }}
 			{{- end }}
@@ -31,7 +31,7 @@
 <!-- Content -->
 {{ define "content" }}
 	{{ navHTML (dict "menu" "main-menu") }}
-	{{ $nav := nav (dict "menu" "main-menu") }}
-	{{ template "nav" $nav }}
+{{/*	{{  nav (dict "menu" "main-menu") }}*/}}
+{{/*	{{ template "nav" $nav }}*/}}
 {{ end }}
 

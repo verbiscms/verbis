@@ -5,6 +5,7 @@
 package nav
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -54,6 +55,41 @@ func TestItems_Length(t *testing.T) {
 	for name, test := range tt {
 		t.Run(name, func(t *testing.T) {
 			got := test.input.Length()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestItem_LiClasses(t *testing.T) {
+	tt := map[string]struct {
+		input Item
+		want  string
+	}{
+		"Has Children": {
+			Item{HasChildren: true},
+			LiClass + "-has-children",
+		},
+		"Is Active": {
+			Item{IsActive: true},
+			LiClass + "-active",
+		},
+		"Post ID": {
+			Item{PostID: &postID},
+			fmt.Sprintf("%s-post-id-%d", LiClass, postID),
+		},
+		"Category ID": {
+			Item{CategoryID: &categoryID},
+			fmt.Sprintf("%s-category-id-%d", LiClass, categoryID),
+		},
+		"All": {
+			Item{HasChildren: true, IsActive: true, PostID: &postID, CategoryID: &categoryID},
+			fmt.Sprintf("%s-has-children %s-active %s-post-id-1 %s-category-id-1", LiClass, LiClass, LiClass, LiClass),
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.LiClasses()
 			assert.Equal(t, test.want, got)
 		})
 	}

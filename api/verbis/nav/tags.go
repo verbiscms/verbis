@@ -6,19 +6,24 @@ package nav
 
 import "strings"
 
+// TODO:
+// Rel should be a string,
+// We need to account for depth in the template
+// https://vuejsdevelopers.com/2017/10/23/vue-js-tree-menu-recursive-components/
+
 // Relative defines the tag for 'rel' appearing on
 // link items.
-type Relative []string
+type Relative string
 
 // Tags joins the tag on a space, for use with
 // templates.
 func (r Relative) Tags() string {
 	var parts []string
-	for _, s := range r {
-		if strings.TrimSpace(s) != "" {
-			parts = append(parts, s)
-		}
-	}
+	//for _, s := range r {
+	//	if strings.TrimSpace(s) != "" {
+	//		parts = append(parts, s)
+	//	}
+	//}
 	return strings.Join(parts, " ")
 }
 

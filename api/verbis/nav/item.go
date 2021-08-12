@@ -4,6 +4,11 @@
 
 package nav
 
+import (
+	"fmt"
+	"strings"
+)
+
 // Items defines the slice of navigational Item's.
 type Items []Item
 
@@ -56,6 +61,37 @@ type Item struct {
 	Rel Relative `json:"rel"`
 	// Specifies specifies an optional link to download a file.
 	Download string `json:"download"`
+	// Is true when a post has been deleted or modified.
+	Invalid bool `json:"invalid"`
+}
+
+const (
+	// LiClass defines the CSS class for appending
+	// class names to the nav item.
+	LiClass = "nav-item"
+)
+
+// LiClasses returns a string of classes to be added to
+// the <li> element when executing a template. These
+// classes can act as helpers to target with CSS.
+func (i *Item) LiClasses() string {
+	var classes []string
+	if i.HasChildren {
+		classes = append(classes, "has-children")
+	}
+	if i.IsActive {
+		classes = append(classes, "active")
+	}
+	if i.PostID != nil {
+		classes = append(classes, fmt.Sprintf("post-id-%d", *i.PostID))
+	}
+	if i.CategoryID != nil {
+		classes = append(classes, fmt.Sprintf("category-id-%d", *i.CategoryID))
+	}
+	for idx, class := range classes {
+		classes[idx] = LiClass + "-" + class
+	}
+	return strings.Join(classes, " ")
 }
 
 // HasDownload determines if the item has a download

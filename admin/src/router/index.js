@@ -211,6 +211,12 @@ const routes = [
 		meta: { transitionName : 'fade' },
 	},
 	{
+		path: '/settings/menus',
+		name: 'settings-menus',
+		component: () => import('../views/settings/Menus.vue'),
+		meta: { transitionName : 'fade' },
+	},
+	{
 		path: '/settings/redirects',
 		name: 'settings-redirects',
 		component: () => import('../views/settings/Redirects.vue'),

@@ -226,6 +226,13 @@
 											<span>Themes</span>
 										</router-link>
 									</li><!-- /Media -->
+									<!-- Menus -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-menus' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'settings-menus' }">
+											<i class="feather feather-menu"></i>
+											<span>Menus</span>
+										</router-link>
+									</li><!-- /Menus -->
 									<!-- Redirects -->
 									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'settings-redirects' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'settings-redirects' }">

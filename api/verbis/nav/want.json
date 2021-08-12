@@ -1,1 +1,17 @@
-{"main-menu": [{"href": "http://localhost:8080/admin", "text": "My Link", "children": [{"href": "http://localhost:8080/admin", "text": "My Link"}]}]}
+{
+	"main-menu": {
+		"name": "Test",
+		"items": [
+			{
+				"href": "http://localhost:8080/admin",
+				"text": "My Link",
+				"children": [
+					{
+						"href": "http://localhost:8080/admin",
+						"text": "My Link"
+					}
+				]
+			}
+		]
+	}
+}

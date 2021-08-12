@@ -12,7 +12,6 @@ import (
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
-	"github.com/verbiscms/verbis/api/logger"
 )
 
 // Getter defines the method used for obtaining
@@ -33,12 +32,16 @@ type Service struct {
 // Nav defines the type for obtaining navigational
 // menus. It contains a key which is mapped
 // to the ID defined in the theme config.
-type Nav map[string]Items
+type Nav map[string]struct {
+	Name  string `json:"name"`
+	Items Items  `json:"items"`
+}
 
 // Menu defines the data retrieved by calling Get.
 // It returns a slice if Item's as well as the
 // options passed to it.
 type Menu struct {
+	Name    string
 	Items   Items
 	Options Options
 }
@@ -102,12 +105,13 @@ func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 		return c.(Menu), nil
 	}
 
-	items, err := s.getNavItems(opts)
+	items, name, err := s.getNavItems(opts)
 	if err != nil {
 		return Menu{}, &errors.Error{Code: errors.INVALID, Message: "Error obtaining navigation items", Operation: op, Err: err}
 	}
 
 	m := Menu{
+		Name:    name,
 		Options: opts,
 		Items:   items,
 	}
@@ -124,13 +128,13 @@ func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 // getNavItems obtains the navigational items by comparing
 // the menu name with the options.
 // Returns ErrMenuNotFound if lookup failed.
-func (s *Service) getNavItems(opts Options) (Items, error) {
+func (s *Service) getNavItems(opts Options) (Items, string, error) {
 	for menu, nav := range s.nav {
 		if menu == opts.Menu {
-			return s.processItems(nav), nil
+			return s.processItems(nav.Items), nav.Name, nil
 		}
 	}
-	return nil, fmt.Errorf("%s: %s", ErrMenuNotFound, opts.Menu)
+	return nil, "", fmt.Errorf("%s: %s", ErrMenuNotFound, opts.Menu)
 }
 
 // processItems iterates over the navigational items and processes
@@ -157,8 +161,8 @@ func (s *Service) processItems(items Items) Items {
 			// assign the permalink to the href value.
 			post, err := s.deps.Store.Posts.Find(*item.PostID, false)
 			if err != nil {
-				logger.Warn(fmt.Sprintf("Error retrieving nav item with the post ID: %d", item.PostID))
-				continue // We can assume it's been deleted or removed.
+				items[idx].Invalid = true
+				continue // We can assume it's been deleted or removed, but mark it as invalid.
 			}
 			items[idx].Href = post.Permalink
 

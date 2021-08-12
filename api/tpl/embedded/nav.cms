@@ -1,4 +1,29 @@
-<h1>Hello</h1>
+{{- "<!-- Verbis - Navigation -->" | safeHTML }}
 
-{{ .Items }}
-{{ .Options }}
+<!-- Item -->
+{{ define "item" -}}
+	<li class="nav-item {{ .LiClasses }}">
+		<a class="nav-link" href="{{ .Href }}" {{ with .Title -}} title="{{ . }}" {{- end }} {{ if .Rel.HasTags -}} rel="{{ .Rel.Tags }}" {{- end }}>{{ .Text }}</a>
+        {{ if .HasChildren -}}
+            {{ template "sub" .Children }}
+        {{- end }}
+	</li>
+{{- end }}
+
+<!-- Sub -->
+{{ define "sub" -}}
+	<ul class="nav-sub-menu">
+        {{ range $item := . -}}
+            {{ template "item" $item }}
+        {{- end }}
+	</ul>
+{{- end }}
+
+<!-- Menu -->
+{{ if gt (len .Items) 0 -}}
+	<ul id="{{ .Options.Menu }}" class="nav-list {{- with .Options.MenuClass -}} {{ . }} {{- end }}">
+        {{ range $item := .Items -}}
+            {{ template "item" $item }}
+        {{- end }}
+	</ul>
+{{- end }}
