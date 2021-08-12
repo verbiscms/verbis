@@ -31,6 +31,7 @@ type (
 		FileExtension string      `yaml:"file_extension" json:"file_extension"`
 		TemplateDir   string      `yaml:"template_dir" json:"template_dir"`
 		LayoutDir     string      `yaml:"layout_dir" json:"layout_dir"`
+		Menus         Menus       `yaml:"menus" json:"menus"`
 		Media         MediaConfig `yaml:"media" json:"media"`
 		Editor        Editor      `yaml:"editor" json:"editor"`
 	}
@@ -80,6 +81,15 @@ type (
 		Key  string `json:"key"`
 		Name string `json:"name"`
 	}
+	// Menu defines a singular navigational menu that is
+	// registered within the application. It consists
+	// of a unique name and identifier.
+	Menu struct {
+		Name string `yaml:"name" json:"name"`
+		ID   string `yaml:"id" json:"id"`
+	}
+	// Menus represents the slice of Menu's.
+	Menus []Menu
 	// Layouts represents the slice of Layout's.
 	Layouts []Layout
 	// Editor defines editor options for the admin interface.
