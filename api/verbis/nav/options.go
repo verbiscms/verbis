@@ -7,6 +7,7 @@ package nav
 import (
 	"encoding/json"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
+	"github.com/verbiscms/verbis/api/errors"
 )
 
 // Args represents the arguments for obtaining a
@@ -17,14 +18,15 @@ type Args map[string]interface{}
 // struct. Returns an error on failed marshal
 // or unmarshal.
 func (a Args) ToOptions() (Options, error) {
+	const op = "Nav.Args.ToOptions"
 	m, err := json.Marshal(a)
 	if err != nil {
-		return Options{}, err
+		return Options{}, &errors.Error{Code: errors.INVALID, Message: "Error converting arguments to navigation options", Operation: op, Err: err}
 	}
 	opts := Options{}
 	err = json.Unmarshal(m, &opts)
 	if err != nil {
-		return Options{}, err
+		return Options{}, &errors.Error{Code: errors.INVALID, Message: "Error converting arguments to navigation options", Operation: op, Err: err}
 	}
 	return opts, nil
 }

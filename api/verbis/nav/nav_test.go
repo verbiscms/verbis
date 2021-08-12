@@ -111,9 +111,15 @@ func TestGet(t *testing.T) {
 			nil,
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(Items{{Href: "link-one", Title: "title"}}, nil)
+				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(Menu{
+					Items:   Items{{Href: "link-one", Title: "title"}},
+					Options: Options{Menu: "main-menu"},
+				}, nil)
 			},
-			Items{{Href: "link-one", Title: "title"}},
+			Menu{
+				Options: Options{Menu: "main-menu"},
+				Items:   Items{{Href: "link-one", Title: "title"}},
+			},
 		},
 		"Simple": {
 			Args{"menu": "main-menu"},
@@ -122,7 +128,10 @@ func TestGet(t *testing.T) {
 			func(m *posts.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
 			},
-			Items{{Href: "link-one", Title: "title"}},
+			Menu{
+				Options: Options{Menu: "main-menu"},
+				Items:   Items{{Href: "link-one", Title: "title"}},
+			},
 		},
 		"Children": {
 			Args{"menu": "main-menu"},
@@ -135,9 +144,12 @@ func TestGet(t *testing.T) {
 			func(m *posts.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
 			},
-			Items{{Href: "link-one", HasChildren: true, Children: Items{
-				{Href: "link-two"},
-			}}},
+			Menu{
+				Options: Options{Menu: "main-menu"},
+				Items: Items{{Href: "link-one", HasChildren: true, Children: Items{
+					{Href: "link-two"},
+				}}},
+			},
 		},
 		"External": {
 			Args{"menu": "main-menu"},
@@ -146,7 +158,10 @@ func TestGet(t *testing.T) {
 			func(m *posts.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
 			},
-			Items{{Href: "link-one", External: true}},
+			Menu{
+				Options: Options{Menu: "main-menu"},
+				Items:   Items{{Href: "link-one", External: true}},
+			},
 		},
 		"Post": {
 			Args{"menu": "main-menu"},
@@ -156,7 +171,10 @@ func TestGet(t *testing.T) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
 				m.On("Find", postID, false).Return(post, nil)
 			},
-			Items{{Href: post.Permalink, Title: post.Title, PostID: &postID, External: false}},
+			Menu{
+				Options: Options{Menu: "main-menu"},
+				Items:   Items{{Href: post.Permalink, Title: post.Title, PostID: &postID, External: false}},
+			},
 		},
 		"Post Error": {
 			Args{"menu": "main-menu"},
@@ -166,7 +184,10 @@ func TestGet(t *testing.T) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
 				m.On("Find", postID, false).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
-			Items{{Href: "link-one", PostID: &postID}},
+			Menu{
+				Options: Options{Menu: "main-menu"},
+				Items:   Items{{Href: "link-one", PostID: &postID}},
+			},
 		},
 		"Current": {
 			Args{"menu": "main-menu"},
@@ -176,7 +197,10 @@ func TestGet(t *testing.T) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
 				m.On("Find", postID, false).Return(post, nil)
 			},
-			Items{{Href: post.Permalink, PostID: &postID, Title: post.Title, External: false, IsActive: true}},
+			Menu{
+				Options: Options{Menu: "main-menu"},
+				Items:   Items{{Href: post.Permalink, PostID: &postID, Title: post.Title, External: false, IsActive: true}},
+			},
 		},
 	}
 
