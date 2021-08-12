@@ -111,5 +111,7 @@ type (
 		// Storage
 		StorageProvider StorageProvider `json:"storage_provider"`
 		StorageBucket   string          `json:"storage_bucket"`
+		// Menus
+		NavMenus map[string]interface{} `json:"nav_menus"`
 	}
 )
