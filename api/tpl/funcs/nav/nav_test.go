@@ -86,7 +86,7 @@ func TestNamespace_HTML(t *testing.T) {
 			},
 			template.HTML("test"),
 		},
-		"Nav Error": {
+		"Menus Error": {
 			func(th *tpl.TemplateHandler, m *mocks.Getter) {
 				m.On("Get", args).Return(menu, fmt.Errorf("nav error"))
 			},

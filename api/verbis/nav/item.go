@@ -27,42 +27,49 @@ func (i Items) Length() int {
 // nav menu tree. An item can embed multiple
 // children.
 type Item struct {
-	// The link href value of the item, this could be
-	// a post URL, category URL or an external link.
+	// Href link value of the item, this could be a post
+	// URL, category URL or an external link.
 	Href string `json:"href"`
-	// The text value of the link. If the text is empty
-	// the post title will be used (if it's not
-	// external).
+	// Text is the text value of the link. If the text is
+	// empty the post title will be used (if it's not external).
 	Text string `json:"text"`
-	// Is true when the current page being viewed is equal
-	// to the item.
+	// IsActive defines if the current page being viewed is
+	// equal to the item being displayed.
 	IsActive bool `json:"is_active"`
-	// Is true when the item has another navigation menu
-	// below it.
-	HasChildren bool `json:"has_children"`
-	// The title of the link, can be empty.
+	// Title of the link, can be empty.
 	Title string `json:"title"`
+	// Depth is the integer defining how deep the item is
+	// in the nav hierarchy.
+	Depth int `json:"depth"`
 	// Children contains a slice of items recursively. It can
 	// be used to nest additional menus.
 	Children Items `json:"children"`
-	// Optional Post ID that can be attached to the item.
+	// PostID - Optional Post ID that can be attached to
+	// the item.
 	PostID *int `json:"post_id"`
-	// Optional Category ID that can be attached to the item.
+	// CategoryID - Optional Category ID that can be attached
+	// to the item.
 	CategoryID *int `json:"category_id"`
-	// Is true if the link is marked as external (i.e. not a
-	// Post or Category).
+	// External defines if the link is marked as external (i.e.
+	// not a Post or Category).
 	External bool `json:"external"`
-	// Is true if the link should open in a new tab or
+	// Classes are the CSS classes to be outputted on the
+	// item. Specifically on the <li> item.
+	Classes string `json:"classes"`
+	// NewTab defines if the link should open in a new tab or
 	// window.
 	NewTab bool `json:"new_tab"`
-	// Specifies the relationship between the current page
+	// Rel Specifies the relationship between the current page
 	// and the item. See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel
 	// for more details.
-	Rel Relative `json:"rel"`
-	// Specifies specifies an optional link to download a file.
+	Rel string `json:"rel"`
+	// Download specifies an optional link to download
+	// a file.
 	Download string `json:"download"`
 	// Is true when a post has been deleted or modified.
 	Invalid bool `json:"invalid"`
+	// TODO:
+	// Should we have type here? For example, download, post, category or external?
 }
 
 const (
@@ -71,12 +78,18 @@ const (
 	LiClass = "nav-item"
 )
 
+// HasChildren determines if an item has any children
+// beneath it by comparing length.
+func (i *Item) HasChildren() bool {
+	return len(i.Children) > 0
+}
+
 // LiClasses returns a string of classes to be added to
 // the <li> element when executing a template. These
 // classes can act as helpers to target with CSS.
 func (i *Item) LiClasses() string {
 	var classes []string
-	if i.HasChildren {
+	if i.HasChildren() {
 		classes = append(classes, "has-children")
 	}
 	if i.IsActive {

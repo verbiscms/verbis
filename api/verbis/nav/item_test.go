@@ -60,13 +60,36 @@ func TestItems_Length(t *testing.T) {
 	}
 }
 
+func TestItem_HasChildren(t *testing.T) {
+	tt := map[string]struct {
+		input Item
+		want  bool
+	}{
+		"True": {
+			Item{Children: Items{Item{}}},
+			true,
+		},
+		"False": {
+			Item{},
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.input.HasChildren()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
 func TestItem_LiClasses(t *testing.T) {
 	tt := map[string]struct {
 		input Item
 		want  string
 	}{
 		"Has Children": {
-			Item{HasChildren: true},
+			Item{Children: Items{Item{}}},
 			LiClass + "-has-children",
 		},
 		"Is Active": {
@@ -82,7 +105,7 @@ func TestItem_LiClasses(t *testing.T) {
 			fmt.Sprintf("%s-category-id-%d", LiClass, categoryID),
 		},
 		"All": {
-			Item{HasChildren: true, IsActive: true, PostID: &postID, CategoryID: &categoryID},
+			Item{Children: Items{Item{}}, IsActive: true, PostID: &postID, CategoryID: &categoryID},
 			fmt.Sprintf("%s-has-children %s-active %s-post-id-1 %s-category-id-1", LiClass, LiClass, LiClass, LiClass),
 		},
 	}

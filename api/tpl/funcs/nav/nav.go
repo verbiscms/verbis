@@ -11,6 +11,8 @@ import (
 	"github.com/verbiscms/verbis/api/verbis/nav"
 	"github.com/yosssi/gohtml"
 	"html/template"
+	"io/ioutil"
+	"path/filepath"
 )
 
 var (
@@ -39,18 +41,26 @@ func (ns *Namespace) Get(args nav.Args) (nav.Menu, error) {
 //
 // Example: {{ navHTML (dict "menu" "main-menu") }}
 func (ns *Namespace) HTML(args nav.Args) (template.HTML, error) {
-	const op = "Templates.Nav.HTML"
-
-	path := TemplateName + EmbeddedExtension
-
-	file, err := embedded.Static.ReadFile(path)
-	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error reading static file: " + path, Operation: op, Err: err}
-	}
+	const op = "Templates.Menus.HTML"
 
 	menu, err := ns.nav.Get(args)
 	if err != nil {
 		return "", err
+	}
+
+	var (
+		file   []byte
+		tplErr error
+	)
+
+	if menu.Options.Partial == "" {
+		file, tplErr = ioutil.ReadFile(filepath.Join(ns.deps.ThemePath(), menu.Options.Partial))
+	} else {
+		file, tplErr = embedded.Static.ReadFile(TemplateName + EmbeddedExtension)
+	}
+
+	if tplErr != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
 	}
 
 	var b bytes.Buffer

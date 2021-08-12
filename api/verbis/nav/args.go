@@ -18,30 +18,47 @@ type Args map[string]interface{}
 // struct. Returns an error on failed marshal
 // or unmarshal.
 func (a Args) ToOptions() (Options, error) {
-	const op = "Nav.Args.ToOptions"
+	const op = "Menus.Args.ToOptions"
+
 	m, err := json.Marshal(a)
 	if err != nil {
 		return Options{}, &errors.Error{Code: errors.INVALID, Message: "Error converting arguments to navigation options", Operation: op, Err: err}
 	}
+
 	opts := Options{}
 	err = json.Unmarshal(m, &opts)
 	if err != nil {
 		return Options{}, &errors.Error{Code: errors.INVALID, Message: "Error converting arguments to navigation options", Operation: op, Err: err}
 	}
+
 	return opts, nil
 }
 
 // Options represents the options for obtaining a
 // navigational menu.
 type Options struct {
-	Menu      string `json:"menu" binding:"required"`
+	// The menu ID defined in the theme configuration file
+	// this is the only parameter that is required
+	// for lookup of a navigation menu.
+	Menu string `json:"menu" binding:"required"`
+	// MenuClass is the CSS class that is wrapped by the
+	// <uL> HTML element.
 	MenuClass string `json:"menu_class"`
-	LiClass   string `json:"li_class"`
+	// LiClass is the CSS class that is wrapped by the
+	// <li> HTML element.
+	LiClass string `json:"li_class"`
+	// LinkClass is the CSS class that is wrapped by the
+	// <a> HTML element.
 	LinkClass string `json:"link_class"`
-	Depth     int    `json:"depth"`
+	// Depth defines how many levels of the hierarchy are
+	// to be included. 0 means all, which is the default.
+	Depth int `json:"depth"`
+	// Partial is a file name of a partial to be used to
+	// execute the template.
+	Partial string `json:"partial"`
 }
 
-// Validate validates the options struct to ensure
+// Validate validates the options' struct to ensure
 // the correct fields are parsed.
 func (o *Options) Validate() error {
 	return validation.Validator().Struct(o)

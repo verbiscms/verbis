@@ -14,6 +14,16 @@ import (
 	"github.com/verbiscms/verbis/api/errors"
 )
 
+// TODO:
+// We need to account for depth in the template by passing depth
+// Check if the partial works within the tpl file.
+// Better naming conventions for interface and structs
+// Clear cache for "options" when we update the options struct
+// in the handler.
+// Options service?
+//
+// https://vuejsdevelopers.com/2017/10/23/vue-js-tree-menu-recursive-components/
+
 // Getter defines the method used for obtaining
 // nav menus from Verbis.
 type Getter interface {
@@ -26,13 +36,16 @@ type Getter interface {
 type Service struct {
 	deps *deps.Deps
 	post *domain.PostDatum
-	nav  Nav
+	nav  Menus
 }
 
-// Nav defines the type for obtaining navigational
+// Menus defines the type for obtaining navigational
 // menus. It contains a key which is mapped
 // to the ID defined in the theme config.
-type Nav map[string]struct {
+type Menus map[string]Nav
+
+// TODO, Should this be called nav?
+type Nav struct {
 	Name  string `json:"name"`
 	Items Items  `json:"items"`
 }
@@ -57,14 +70,14 @@ var (
 // the NavMenus field in the options from a map[string]interface
 // to a nav item.
 func New(d *deps.Deps, post *domain.PostDatum) (*Service, error) {
-	const op = "Nav.New"
+	const op = "Menus.New"
 
 	m, err := json.Marshal(d.Options.NavMenus)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling navigation menus", Operation: op, Err: err}
 	}
 
-	nav := Nav{}
+	nav := Menus{}
 	err = json.Unmarshal(m, &nav)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling navigation menus", Operation: op, Err: err}
@@ -91,7 +104,7 @@ func (s *Service) Get(args Args) (Menu, error) {
 // by options as opposed to passing a
 // map[string]interface{}.
 func (s *Service) GetFromOptions(opts Options) (Menu, error) {
-	const op = "Nav.Get"
+	const op = "Menus.Get"
 
 	err := opts.Validate()
 	if err != nil {
@@ -119,7 +132,7 @@ func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 	// Cache the results forever.
 	go s.deps.Cache.Set(context.Background(), "nav-menu-"+opts.Menu, m, cache.Options{
 		Expiration: cache.RememberForever,
-		Tags:       []string{"menu"},
+		Tags:       []string{"menus", "options"},
 	})
 
 	return m, nil
@@ -131,7 +144,7 @@ func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 func (s *Service) getNavItems(opts Options) (Items, string, error) {
 	for menu, nav := range s.nav {
 		if menu == opts.Menu {
-			return s.processItems(nav.Items), nav.Name, nil
+			return s.processItems(nav.Items, 0), nav.Name, nil
 		}
 	}
 	return nil, "", fmt.Errorf("%s: %s", ErrMenuNotFound, opts.Menu)
@@ -140,13 +153,18 @@ func (s *Service) getNavItems(opts Options) (Items, string, error) {
 // processItems iterates over the navigational items and processes
 // them. The function is recursively called if the item has
 // any children.
-func (s *Service) processItems(items Items) Items {
+func (s *Service) processItems(items Items, depth int) Items {
 	for idx, item := range items {
+		items[idx].Depth = depth
+
 		// Obtain the child navigation menu if there is
 		// one present.
 		if item.Children != nil {
-			items[idx].HasChildren = true
-			items[idx].Children = s.processItems(item.Children)
+			// TODO if depth in the options is greater
+			// than the depth passed as argument,
+			// we need to exit, and not run
+			// this conditional.
+			items[idx].Children = s.processItems(item.Children, depth+1)
 		}
 
 		// If the item is external, we can presume there is
