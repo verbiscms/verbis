@@ -5,17 +5,21 @@
 package nav
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
 )
 
 // Getter defines the method used for obtaining
 // nav menus from Verbis.
 type Getter interface {
-	Get(args Args) (Items, error)
+	Get(args Args) (Menu, error)
+	GetFromOptions(opts Options) (Menu, error)
 }
 
 // Service defines the helper for obtaining navigational
@@ -30,47 +34,12 @@ type Service struct {
 // menus. It contains a key which
 type Nav map[string]Items
 
-// Items defines the slice of navigational Item's.
-type Items []Item
-
-// Item defines a singular navigation item within the
-// nav menu tree. An item can embed multiple
-// children.
-type Item struct {
-	// The link href value of the item, this could be
-	// a post URL, category URL or an external link.
-	Href string `json:"href"`
-	// The text value of the link. If the text is empty
-	// the post title will be used (if it's not
-	// external).
-	Text string `json:"text"`
-	// Is true when the current page being viewed is equal
-	// to the item.
-	IsActive bool `json:"is_active"`
-	// Is true when the item has another navigation menu
-	// below it.
-	HasChildren bool `json:"has_children"`
-	// The title of the link, can be empty.
-	Title string `json:"title"`
-	// Children contains a slice of items recursively. It can
-	// be used to nest additional menus.
-	Children Items `json:"children"`
-	// Optional Post ID that can be attached to the item.
-	PostID *int `json:"post_id"`
-	// Optional Category ID that can be attached to the item.
-	CategoryID *int `json:"category_id"`
-	// Is true if the link is marked as external (i.e. not a
-	// Post or Category).
-	External bool `json:"external"`
-	// Is true if the link should open in a new tab or
-	// window.
-	NewTab bool `json:"new_tab"`
-	// Specifies the relationship between the current page
-	// and the item. See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel
-	// for more details.
-	Rel []string `json:"rel"`
-	// Specifies specifies an optional link to download a file.
-	Download string `json:"download"`
+// Menu defines the data retrieved by calling Get.
+// It returns a slice if Item's as well as the
+// options passed to it.
+type Menu struct {
+	Items   Items
+	Options Options
 }
 
 var (
@@ -104,27 +73,51 @@ func New(d *deps.Deps, post *domain.PostDatum) (*Service, error) {
 	}, nil
 }
 
-// Get parses the arguments and retrieves the navigational Items
-// from the database.
-func (s *Service) Get(args Args) (Items, error) {
+// Get parses the arguments and retrieves the navigational
+// Items from the database.
+func (s *Service) Get(args Args) (Menu, error) {
+	opts, err := args.ToOptions()
+	if err != nil {
+		return Menu{}, err
+	}
+	return s.GetFromOptions(opts)
+}
+
+// GetFromOptions is an alias for retrieving nav items
+// by options as opposed to passing a
+// map[string]interface{}.
+func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 	const op = "Nav.Get"
 
-	opts, err := args.toOptions()
+	err := opts.Validate()
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Error converting arguments to navigation options", Operation: op, Err: err}
+		return Menu{}, &errors.Error{Code: errors.INVALID, Message: "Error validating navigation options", Operation: op, Err: err}
 	}
 
-	err = opts.Validate()
-	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Error validating navigation options", Operation: op, Err: err}
+	// Try and obtain the cached navigational items
+	// if it exists.
+	c, err := s.deps.Cache.Get(context.Background(), "nav-menu-"+opts.Menu)
+	if err == nil {
+		return c.(Menu), nil
 	}
 
 	items, err := s.getNavItems(opts)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INVALID, Message: "Error obtaining navigation items", Operation: op, Err: err}
+		return Menu{}, &errors.Error{Code: errors.INVALID, Message: "Error obtaining navigation items", Operation: op, Err: err}
 	}
 
-	return items, nil
+	m := Menu{
+		Options: opts,
+		Items:   items,
+	}
+
+	// Cache the results forever.
+	go s.deps.Cache.Set(context.Background(), "nav-menu-"+opts.Menu, m, cache.Options{
+		Expiration: cache.RememberForever,
+		Tags:       []string{"menu"},
+	})
+
+	return m, nil
 }
 
 // getNavItems obtains the navigational items by comparing
@@ -163,6 +156,7 @@ func (s *Service) processItems(items Items) Items {
 			// assign the permalink to the href value.
 			post, err := s.deps.Store.Posts.Find(*item.PostID, false)
 			if err != nil {
+				logger.Warn(fmt.Sprintf("Error retrieving nav item with the post ID: %d", item.PostID))
 				continue // We can assume it's been deleted or removed.
 			}
 			items[idx].Href = post.Permalink

@@ -6,13 +6,20 @@ package nav
 
 import (
 	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/tpl/internal"
+	"github.com/verbiscms/verbis/api/verbis/nav"
 )
 
 // Creates a new breadcrumbs Namespace
 func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
+	nav, err := nav.New(d, t.Post)
+	if err != nil {
+		logger.WithError(err).Panic()
+	}
 	return &Namespace{
 		deps: d,
+		nav:  nav,
 	}
 }
 
@@ -20,11 +27,12 @@ func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 // as template functions.
 type Namespace struct {
 	deps *deps.Deps
+	nav  nav.Getter
 }
 
-const name = "breadcrumbs"
+const name = "nav"
 
-//  Creates a new Namespace and returns a new internal.FuncsNamespace
+// Init creates a new Namespace and returns a new internal.FuncsNamespace
 func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 	ctx := New(d, t)
 
@@ -39,10 +47,11 @@ func Init(d *deps.Deps, t *internal.TemplateDeps) *internal.FuncsNamespace {
 		nil,
 	)
 
-	//ns.AddMethodMapping(ctx.HTML,
-	//	"breadcrumbsHTML",
-	//	[]string{"crumbsHTML"},
-	//	nil,
-	//)
+	ns.AddMethodMapping(ctx.HTML,
+		"navHTML",
+		nil,
+		nil,
+	)
+
 	return ns
 }

@@ -11,6 +11,7 @@ import (
 	"github.com/verbiscms/verbis/api/tpl/funcs/breadcrumbs"
 	"github.com/verbiscms/verbis/api/tpl/funcs/fields"
 	"github.com/verbiscms/verbis/api/tpl/funcs/meta"
+	"github.com/verbiscms/verbis/api/tpl/funcs/nav"
 	"github.com/verbiscms/verbis/api/tpl/funcs/url"
 	"github.com/verbiscms/verbis/api/tpl/internal"
 
@@ -97,6 +98,7 @@ func (t *TemplateManager) getFrontendNamespaces(td *internal.TemplateDeps) inter
 		breadcrumbs.Init(t.deps, td),
 		fields.Init(t.deps, td),
 		meta.Init(t.deps, td),
+		nav.Init(t.deps, td),
 		url.Init(t.deps, td),
 	}
 }

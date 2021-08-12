@@ -89,10 +89,9 @@ layout_dir: layouts
 # | and a unique ID attached to it.
 # |
 # |
-menus: [
+menus:
     - name: "Main Menu"
-        id: "main-menu"
-]
+      id: "main-menu"
 
 # |
 # |--------------------------------------------------------------------------

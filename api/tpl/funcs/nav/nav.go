@@ -4,6 +4,15 @@
 
 package nav
 
+import (
+	"bytes"
+	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/tpl/embedded"
+	"github.com/verbiscms/verbis/api/verbis/nav"
+	"github.com/yosssi/gohtml"
+	"html/template"
+)
+
 var (
 	// TemplateName is the name of the file containing
 	// the markup of breadcrumbs
@@ -13,20 +22,14 @@ var (
 	EmbeddedExtension = ".cms"
 )
 
-type Args map[string]interface{}
-
 // Get
 //
 // Obtains the breadcrumbs for the post in a struct
 // verbis.Breadcrumbs
 //
 // Example: {{ $crumbs := breadcrumbs }}
-func (ns *Namespace) Get(id string, args Args) {
-	// validate the arguments,
-	// if id is not nil,
-	//
-
-	return
+func (ns *Namespace) Get(args nav.Args) (nav.Menu, error) {
+	return ns.nav.Get(args)
 }
 
 // HTML
@@ -35,25 +38,27 @@ func (ns *Namespace) Get(id string, args Args) {
 // HTML data.
 //
 // Example: {{ $crumbs := breadcrumbsHTML }}
-//func (ns *Namespace) HTML() template.HTML {
-//	const op = "Templates.Breadcrumbs"
-//
-//	path := TemplateName + EmbeddedExtension
-//
-//	file, err := embedded.Static.ReadFile(path)
-//	if err != nil {
-//		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error reading static file: " + path, Operation: op, Err: err}).Error()
-//		return ""
-//	}
-//
-//	var b bytes.Buffer
-//	err = ns.deps.Tmpl().ExecuteTpl(&b, string(file), map[string]interface{}{
-//		"breadcrumbs": ns.crumbs,
-//	})
-//
-//	if err != nil {
-//		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error parsing template", Operation: op, Err: err}).Error()
-//	}
-//
-//	return template.HTML(b.String())
-//}
+func (ns *Namespace) HTML(args nav.Args) (template.HTML, error) {
+	const op = "Templates.Nav.HTML"
+
+	path := TemplateName + EmbeddedExtension
+
+	file, err := embedded.Static.ReadFile(path)
+	if err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error reading static file: " + path, Operation: op, Err: err}
+	}
+
+	menu, err := ns.nav.Get(args)
+	if err != nil {
+		return "", err
+	}
+
+	var b bytes.Buffer
+	err = ns.deps.Tmpl().ExecuteTpl(&b, string(file), menu)
+
+	if err != nil {
+		return "", &errors.Error{Code: errors.INTERNAL, Message: "Error parsing template", Operation: op, Err: err}
+	}
+
+	return template.HTML(gohtml.Format(b.String())), nil
+}

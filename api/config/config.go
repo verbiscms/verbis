@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/ghodss/yaml"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
@@ -51,6 +52,7 @@ func getThemeConfig(path, filename string) (domain.ThemeConfig, error) {
 
 	err = yaml.Unmarshal(file, &cfg)
 	if err != nil {
+		fmt.Println(err)
 		return DefaultTheme, &errors.Error{Code: errors.INVALID, Message: "Syntax error in theme config file", Operation: op, Err: err}
 	}
 

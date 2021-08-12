@@ -13,10 +13,10 @@ import (
 // Verbis navigation menu.
 type Args map[string]interface{}
 
-// toOptions parses the arguments to the Options{}
+// ToOptions parses the arguments to the nav.Options{}
 // struct. Returns an error on failed marshal
 // or unmarshal.
-func (a Args) toOptions() (Options, error) {
+func (a Args) ToOptions() (Options, error) {
 	m, err := json.Marshal(a)
 	if err != nil {
 		return Options{}, err
