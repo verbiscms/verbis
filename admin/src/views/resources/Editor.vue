@@ -4,6 +4,7 @@
 <template>
 	<section>
 		<div class="auth-container editor-auth-container">
+			{{ data.slug }}
 			<!-- =====================
 				Header
 				===================== -->
@@ -31,11 +32,15 @@
 										<template slot="items">
 											<a v-if="!newItem" :href="isHomepage ? getSiteUrl : getSiteUrl + computedSlug" class="popover-item popover-item-icon" target="_blank">
 												<i class="feather feather-eye"></i>
-												<span>Preview</span>
+												<span>See page</span>
 											</a>
+											<div v-if="!newItem" class="popover-item popover-item-icon" @click.prevent="generatePreview()">
+												<i class="feather feather-eye"></i>
+												<span>Preview changes</span>
+											</div>
 											<div class="popover-item popover-item-icon" @click.prevent="saveWithStatus('draft')">
 												<i class="feather feather-edit"></i>
-												<span>Safe draft</span>
+												<span>Save draft</span>
 											</div>
 											<div class="popover-item popover-item-icon" @click.prevent="saveWithStatus('private')">
 												<i class="feather feather-lock"></i>
@@ -262,9 +267,9 @@ export default {
 	},
 	mounted() {
 		this.init();
-	},
-	watch: {
-
+		if (!this.newItem) {
+			this.$socket.send('lock: ' + this.data.id);
+		}
 	},
 	methods: {
 		/*
@@ -590,6 +595,7 @@ export default {
 					} else {
 						this.axios.put("/posts/" + this.$route.params.id, this.data)
 							.then(() => {
+								// TODO: Avoid the extra call
 								this.$noty.success("Page updated successfully.")
 							})
 							.catch(err => {
@@ -647,6 +653,20 @@ export default {
 		updateCodeInjection(e) {
 			this.data['codeinjection_head'] = e.header;
 			this.data['codeinjection_foot'] = e.footer;
+		},
+		/*
+		 * generatePreview() ()
+		 * Handler for closing the slug edit button,
+		 * restore default values.
+		 */
+		generatePreview() {
+			this.axios.post("/editor/preview", this.data)
+				.then(res => {
+					window.open(res.data.data, '_blank').focus();
+				})
+				.catch(err => {
+					this.helpers.handleResponse(err);
+				})
 		},
 		/*
 		 * resolveCategorySlug()

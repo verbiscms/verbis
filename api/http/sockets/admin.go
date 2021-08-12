@@ -25,23 +25,29 @@ var (
 	}
 )
 
-// AdminData represents the struct of data to be sent
+// SendData represents the struct of data to be sent
 // back to the SPA via the websocket.
-type AdminData struct {
+type SendData struct {
 	Theme domain.ThemeConfig `json:"theme"`
+}
+
+// ReceiveData represents the struct of data to be received
+// from to the SPA via the websocket.
+type ReceiveData struct {
+	Lock int `json:"lock"`
 }
 
 // AdminHub are the channels of broadcast and receiving
 // messages for the admin socket.
 var AdminHub = struct {
-	// Channel for sending AdminData
-	Broadcast chan AdminData
+	// Channel for sending SendData
+	Broadcast chan SendData
 	// Channel for receiving any data.
 	Receive chan []byte
 	// Channel for closing the socket
 	close chan bool
 }{
-	Broadcast: make(chan AdminData),
+	Broadcast: make(chan SendData),
 	Receive:   nil,
 	close:     make(chan bool),
 }
@@ -61,22 +67,31 @@ func Handler() http.HandlerFunc {
 	}
 }
 
-// run runs the web socket connection, marshals the AdminData on
+// run runs the web socket connection, marshals the SendData on
 // the Broadcast channel and closes the connection if any data
 // is received on AdminHub.Close
 func run(conn *websocket.Conn) {
 	const op = "Sockets.Admin.Run"
 	for {
+		_, message, err := conn.ReadMessage()
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error reading websocket broadcast", Operation: op, Err: err}).Error()
+		}
+
+		//recieve := ReceiveData{}
+		//json.Unmarshal()
+
+		AdminHub.Receive <- message
 		select {
 		case as := <-AdminHub.Broadcast:
 			b, err := json.Marshal(as)
 			if err != nil {
-				logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error sending admin websocket broadcast", Operation: op, Err: err}).Error()
+				logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error sending websocket broadcast", Operation: op, Err: err}).Error()
 				return
 			}
 			err = conn.WriteMessage(websocket.TextMessage, b)
 			if err != nil {
-				logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error sending admin websocket broadcast", Operation: op, Err: err}).Error()
+				logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error sending websocket broadcast", Operation: op, Err: err}).Error()
 				return
 			}
 			logger.Info("Sent admin websocket")

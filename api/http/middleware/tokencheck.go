@@ -26,6 +26,8 @@ func AdminTokenCheck(d *deps.Deps) gin.HandlerFunc {
 			return
 		}
 
+		g.Set("user", u)
+
 		if u.Role.ID > 1 {
 			g.Next()
 		} else {

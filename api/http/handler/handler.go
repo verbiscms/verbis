@@ -9,6 +9,7 @@ import (
 	"github.com/verbiscms/verbis/api/http/handler/api/auth"
 	"github.com/verbiscms/verbis/api/http/handler/api/cache"
 	"github.com/verbiscms/verbis/api/http/handler/api/categories"
+	"github.com/verbiscms/verbis/api/http/handler/api/editor"
 	"github.com/verbiscms/verbis/api/http/handler/api/fields"
 	"github.com/verbiscms/verbis/api/http/handler/api/forms"
 	"github.com/verbiscms/verbis/api/http/handler/api/media"
@@ -32,6 +33,7 @@ type APIHandler struct {
 	Auth       auth.Handler
 	Cache      cache.Handler
 	Categories categories.Handler
+	Editor     editor.Handler
 	Fields     fields.Handler
 	Forms      forms.Handler
 	Media      media.Handler
@@ -52,6 +54,7 @@ func NewAPI(d *deps.Deps) *APIHandler {
 		Auth:       auth.New(d),
 		Cache:      cache.New(d),
 		Categories: categories.New(d),
+		Editor:     editor.New(d),
 		Fields:     fields.New(d),
 		Forms:      forms.New(d),
 		Media:      media.New(d),

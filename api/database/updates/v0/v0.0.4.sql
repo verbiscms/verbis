@@ -128,3 +128,10 @@ INSERT INTO options(`option_name`, `option_value`) VALUES('storage_bucket', '\"\
 ##############################################
 
 DROP TABLE password_resets;
+
+##############################################
+# Add Edit Lock
+##############################################
+
+ALTER TABLE post_options
+	ADD COLUMN (`edit_lock` VARCHAR(38) NOT NULL);

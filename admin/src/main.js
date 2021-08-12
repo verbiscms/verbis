@@ -20,6 +20,7 @@ import axios from 'axios'
 import titleMixin from './util/title';
 import VueNoty from 'vuejs-noty'
 import OnLoad from 'vue-onload'
+import VueNativeSock from 'vue-native-websocket'
 import { PrismEditor } from 'vue-prism-editor';
 import {globalMixin} from "@/util/global";
 require('./functions.js');
@@ -76,6 +77,10 @@ Vue.use(require('vue-moment'));
 
 // OnLoad
 Vue.use(OnLoad)
+
+// Websocket
+//this.ws = new WebSocket('ws://' + window.location.host + '/api/v1/ws');
+Vue.use(VueNativeSock, 'ws://localhost:5000/api/v1/ws')
 
 /**
  * Components

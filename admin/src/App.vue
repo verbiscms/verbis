@@ -45,33 +45,6 @@ export default {
 	data: () => ({
 		sidebarOpen: false,
 	}),
-	methods: {
-		sendSocketMessage: function(message) {
-			this.ws.send(message);
-		},
-	},
-	created: function() {
-		// console.log(this.$store.state.site)
-		//
-		// this.ws = new WebSocket('ws://' + window.location.host + '/api/v1/ws');
-		//
-		// this.ws.onopen = function(ctx){
-		// 	console.log(ctx);
-		// 	console.log("Web socket open")
-		// }
-		//
-		// this.ws.onerror = function(ctx){
-		// 	console.log(ctx);
-		// 	console.log("** WS ERROR **")
-		// }
-		//
-		// this.ws.onmessage = (msg) => {
-		// 	console.log(msg);
-		// 	let response = JSON.parse(msg.data);
-		// 	console.log(response);
-		// 	//this.$store.commit("setTheme", response)
-		// };
-	},
 	computed: {
 		/*
 		 * isLoggedIn()

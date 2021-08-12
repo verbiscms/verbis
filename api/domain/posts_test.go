@@ -186,6 +186,29 @@ func TestPostField_IsValueJSON(t *testing.T) {
 	}
 }
 
+func TestPostOptions_IsBeingEdited(t *testing.T) {
+	tt := map[string]struct {
+		options PostOptions
+		want    bool
+	}{
+		"True": {
+			PostOptions{EditLockToken: "token"},
+			true,
+		},
+		"False": {
+			PostOptions{EditLockToken: ""},
+			false,
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			got := test.options.IsBeingEdited()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
 func TestPostMeta_Scan(t *testing.T) {
 	UtilTestScanner(&PostMeta{Title: "title"}, t)
 }

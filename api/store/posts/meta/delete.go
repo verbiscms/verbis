@@ -17,7 +17,7 @@ import (
 // Returns errors.INTERNAL if the SQL query was invalid.
 // Returns errors.NOTFOUND if the post meta was not found.
 func (s *Store) Delete(postID int) error {
-	const op = "CategoryStore.Delete"
+	const op = "MetaStore.Delete"
 
 	q := s.Builder().
 		DeleteFrom(s.Schema()+TableName).

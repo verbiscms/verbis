@@ -59,6 +59,6 @@ var (
 		Seo: &domain.PostSeo{
 			Canonical: "canonical",
 		},
-		EditLock: "",
+		EditLockToken: "",
 	}
 )

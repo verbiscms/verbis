@@ -29,7 +29,7 @@ func (t *SocketsTestSuite) TestAdminSocket() {
 	conn, teardown := t.Setup(Handler())
 	defer teardown()
 
-	cfg := AdminData{Theme: domain.ThemeConfig{
+	cfg := SendData{Theme: domain.ThemeConfig{
 		Theme: domain.Theme{
 			Title: "verbis",
 		},

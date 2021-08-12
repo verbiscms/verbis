@@ -30,6 +30,8 @@ type Repository interface {
 	Delete(id int) error
 	Exists(id int) bool
 	ExistsBySlug(slug string) bool
+	Lock(postID int, token string) error
+	Unlock(postID int) error
 }
 
 // Store defines the data layer for posts.
@@ -97,7 +99,7 @@ type postsRawFields struct {
 
 // selectStmt
 func selectStmt(query string) string {
-	return fmt.Sprintf(`SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta',
+	return fmt.Sprintf(`SELECT posts.*, post_options.seo 'options.seo', post_options.meta 'options.meta', post_options.edit_lock 'options.edit_lock',
        users.id as 'author.id', users.uuid as 'author.uuid', users.first_name 'author.first_name', users.last_name 'author.last_name', users.email 'author.email', users.website 'author.website', users.facebook 'author.facebook', users.twitter 'author.twitter', users.linked_in 'author.linked_in',
        users.instagram 'author.instagram', users.biography 'author.biography', users.profile_picture_id 'author.profile_picture_id', users.updated_at 'author.updated_at', users.created_at 'author.created_at',
        roles.id 'author.roles.id', roles.name 'author.roles.name', roles.description 'author.roles.description',

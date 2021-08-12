@@ -17,6 +17,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path"
 	"regexp"
 	"strings"
 )
@@ -100,6 +101,7 @@ func (p *page) Execute() ([]byte, error) {
 	}
 
 	b := buf.Bytes()
+
 	//if p.CanCache() && !p.foundCache {
 	//go p.Cache(b)
 	//}
@@ -193,7 +195,7 @@ func (p *page) HasQuery() bool {
 //
 // Returns errors.NOTFOUND if the page is not public.
 func (p *page) CheckSession() error {
-	const op = "publisher.Page.CheckSession"
+	const op = "Publisher.Page.CheckSession"
 
 	_, err := p.ctx.Cookie("verbis-session")
 	if err != nil && !p.post.IsPublic() {
@@ -237,18 +239,44 @@ func (p *page) resolve() (*domain.PostDatum, error) {
 		return &post, nil
 	}
 
-	post, err := p.Store.Posts.FindBySlug(last)
+	var (
+		post domain.PostDatum
+		err  error
+	)
+
+	if p.ctx.Query("preview") == "true" {
+		post, err = p.getCachedPreview()
+	} else {
+		post, err = p.Store.Posts.FindBySlug(last)
+		if strings.TrimSuffix(post.Permalink, "/") != urlTrimmed {
+			fmt.Println("innnn")
+			return nil, notFoundErr
+		}
+	}
+
 	if errors.Code(err) == errors.NOTFOUND {
 		return nil, notFoundErr
 	} else if err != nil {
 		logger.WithError(err).Error()
 	}
 
-	if strings.TrimSuffix(post.Permalink, "/") != urlTrimmed {
-		return nil, notFoundErr
+	return &post, nil
+}
+
+// getCachedPreview obtains the post from the cache that
+// has been stored in preview mode.
+func (p *page) getCachedPreview() (domain.PostDatum, error) {
+	c, err := p.Cache.Get(p.ctx, "editor-preview-"+path.Base(p.url.String()))
+	if err != nil {
+		return domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "Error finding preview cache item", Err: errors.New("no preview post found")}
 	}
 
-	return &post, nil
+	post, ok := c.(domain.PostDatum)
+	if !ok {
+		return domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "Error casting cache item to Post Data", Err: errors.New("error casting cache item")}
+	}
+
+	return post, nil
 }
 
 // HandleTrailingSlash

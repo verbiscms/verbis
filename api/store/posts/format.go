@@ -17,6 +17,14 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 
 	for _, v := range raw {
 		if !s.find(posts, v.ID) {
+			if v.Post.SeoMeta.IsBeingEdited() {
+				user, err := s.users.FindByToken(v.Post.SeoMeta.EditLockToken)
+				if err != nil {
+					logger.WithError(err).Panic()
+				}
+				v.Post.SeoMeta.EditedBy = &user.UserPart
+			}
+
 			p := domain.PostDatum{
 				Post:     v.Post,
 				Author:   v.Author.HideCredentials(),

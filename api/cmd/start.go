@@ -124,7 +124,7 @@ func handleFileEvents(w watcher.FileWatcher, d *deps.Deps, s *server.Server, cmd
 				}
 
 				// Check if it's the configuration file
-				//sockets.AdminHub.Broadcast <- sockets.AdminData{Theme: domain.ThemeConfig{
+				//sockets.AdminHub.Broadcast <- sockets.SendData{Theme: domain.ThemeConfig{
 				//	Theme: domain.Theme{
 				//		Title: event.Path,
 				//	},

@@ -20,9 +20,9 @@ func (s *Store) create(id int, p domain.PostOptions) error {
 	const op = "MetaStore.Create"
 
 	// No support for marshalling json for builder currently.
-	q := "INSERT INTO " + s.Schema() + "post_options (post_id, seo, meta) VALUES (?, ?, ?)"
+	q := "INSERT INTO " + s.Schema() + "post_options (post_id, seo, meta, edit_lock) VALUES (?, ?, ?, ?)"
 
-	_, err := s.DB().Exec(q, id, p.Seo, p.Meta)
+	_, err := s.DB().Exec(q, id, p.Seo, p.Meta, "")
 	if err == sql.ErrNoRows {
 		return &errors.Error{Code: errors.INTERNAL, Message: fmt.Sprintf("Error creating meta with the post ID: %d", id), Operation: op, Err: err}
 	} else if err != nil {

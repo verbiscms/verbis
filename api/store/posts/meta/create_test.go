@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	CreateQuery = "INSERT INTO post_options (post_id, seo, meta) VALUES (?, ?, ?)"
+	CreateQuery = "INSERT INTO post_options (post_id, seo, meta, edit_lock) VALUES (?, ?, ?, ?)"
 )
 
 func (t *MetaTestSuite) TestStore_Create() {
@@ -26,7 +26,7 @@ func (t *MetaTestSuite) TestStore_Create() {
 			nil,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(meta.PostID, meta.Seo, meta.Meta).
+					WithArgs(meta.PostID, meta.Seo, meta.Meta, meta.EditLockToken).
 					WillReturnResult(sqlmock.NewResult(int64(meta.ID), 1))
 			},
 		},
@@ -34,7 +34,7 @@ func (t *MetaTestSuite) TestStore_Create() {
 			"Error creating meta with the post ID",
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(meta.PostID, meta.Seo, meta.Meta).
+					WithArgs(meta.PostID, meta.Seo, meta.Meta, meta.EditLockToken).
 					WillReturnError(sql.ErrNoRows)
 			},
 		},
@@ -42,7 +42,7 @@ func (t *MetaTestSuite) TestStore_Create() {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
 				m.ExpectExec(regexp.QuoteMeta(CreateQuery)).
-					WithArgs(meta.PostID, meta.Seo, meta.Meta).
+					WithArgs(meta.PostID, meta.Seo, meta.Meta, meta.EditLockToken).
 					WillReturnError(fmt.Errorf("error"))
 			},
 		},

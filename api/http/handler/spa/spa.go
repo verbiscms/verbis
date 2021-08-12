@@ -48,23 +48,23 @@ const op = "SPA.Serve"
 // Serve all of the administrator & operator assets and serve the
 // file extension based on the content type.
 func (s *SPA) Serve(ctx *gin.Context) {
-	path := ctx.Request.URL.Path
+	urlPath := ctx.Request.URL.Path
 
-	// Check if the path is the installed path and
+	// Check if the urlPath is the installed urlPath and
 	// the app is installed, if it is the user
 	// should not be there, abort.
-	if path == "/admin/install" && s.Installed {
+	if urlPath == app.AdminInstallPath && s.Installed {
 		s.publisher.NotFound(ctx)
 		return
 	}
 
-	// If the path is a file
-	if strings.Contains(path, ".") {
-		s.file(path, ctx)
+	// If the urlPath is a file
+	if strings.Contains(urlPath, ".") {
+		s.file(urlPath, ctx)
 		return
 	}
 
-	// If the path is index.html
+	// If the urlPath is index.html
 	s.page(ctx)
 }
 

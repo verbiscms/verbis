@@ -130,6 +130,9 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator.GET("/storage/bucket/:name", h.Storage.ListBuckets)
 		operator.DELETE("/storage/bucket/:name", h.Storage.DeleteBucket)
 
+		// Editor
+		operator.POST("/editor/preview", h.Editor.Preview)
+
 		// Administrator
 		admin := api.Group("")
 		admin.Use(middleware.AdminTokenCheck(d))

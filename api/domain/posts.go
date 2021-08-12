@@ -73,11 +73,12 @@ type (
 	// PostOptions defines the global post options that
 	// includes post meta and post seo information.
 	PostOptions struct {
-		ID       int       `json:"-"`
-		PostID   int       `json:"-" binding:"required|numeric"`
-		Meta     *PostMeta `db:"meta" json:"meta"`
-		Seo      *PostSeo  `db:"seo" json:"seo"`
-		EditLock string    `db:"edit_lock" json:"edit_lock"`
+		ID            int       `json:"-"`
+		PostID        int       `json:"-" binding:"required|numeric"`
+		Meta          *PostMeta `db:"meta" json:"meta"`
+		Seo           *PostSeo  `db:"seo" json:"seo"`
+		EditedBy      *UserPart `json:"edited_by"`
+		EditLockToken string    `db:"edit_lock" json:"-"`
 	}
 	// PostMeta defines the global meta information for the
 	// post used when calling the VerbisHeader.
@@ -201,6 +202,12 @@ func (f *PostField) IsValueJSON() bool {
 	}
 	var js map[string]interface{}
 	return json.Unmarshal([]byte(f.OriginalValue), &js) == nil
+}
+
+// IsBeingEdited determines if a post is currently being
+// edited in the SPA.
+func (o *PostOptions) IsBeingEdited() bool {
+	return o.EditLockToken != ""
 }
 
 // Scan implements the scanner for PostMeta. unmarshal
