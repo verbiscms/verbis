@@ -19,9 +19,8 @@ require (
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.9.0
-	github.com/go-redis/redis/v8 v8.11.2
+	github.com/go-redis/redis/v8 v8.11.3
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/gookit/color v1.4.2
@@ -65,5 +64,4 @@ require (
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
