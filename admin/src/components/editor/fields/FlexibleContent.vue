@@ -96,6 +96,7 @@
 
 import {fieldMixin} from "@/util/fields/fields"
 import {layoutMixin} from "@/util/fields/layout"
+import draggable from 'vuedraggable'
 
 // Basic
 import FieldText from "@/components/editor/fields/Text";
@@ -122,7 +123,7 @@ import FieldPost from "@/components/editor/fields/Post";
 import FieldUser from "@/components/editor/fields/User";
 
 import Popover from "@/components/misc/Popover";
-import draggable from 'vuedraggable'
+
 
 export default {
 	name: "FieldFlexible",

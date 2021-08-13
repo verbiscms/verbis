@@ -92,6 +92,8 @@ layout_dir: layouts
 menus:
     - name: "Main Menu"
       id: "main-menu"
+    - name: "Footer Menu"
+      id: "footer-menu"
 
 # |
 # |--------------------------------------------------------------------------

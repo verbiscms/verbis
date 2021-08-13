@@ -111,6 +111,13 @@ class helpers {
 		return pattern.test(url)
 	}
 
+	// Generate random alpha num string
+	randomString(length) {
+		const chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+		let result = '';
+		for (let i = length; i > 0; --i) result += chars[Math.floor(Math.random() * chars.length)];
+		return result;
+	}
 }
 
 Vue.prototype.helpers = new helpers();

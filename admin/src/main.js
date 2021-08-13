@@ -20,8 +20,10 @@ import axios from 'axios'
 import titleMixin from './util/title';
 import VueNoty from 'vuejs-noty'
 import OnLoad from 'vue-onload'
+import VueNestable from 'vue-nestable'
 import { PrismEditor } from 'vue-prism-editor';
 import {globalMixin} from "@/util/global";
+
 require('./functions.js');
 
 // Local
@@ -55,6 +57,9 @@ Vue.mixin(globalMixin);
 
 // Title
 Vue.mixin(titleMixin);
+
+// Nestable
+Vue.use(VueNestable)
 
 /**
  * Plugins

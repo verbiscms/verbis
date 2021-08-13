@@ -3,12 +3,38 @@
 		"name": "Test",
 		"items": [
 			{
+				"id": 1,
 				"href": "http://localhost:8080/admin",
-				"text": "My Link",
+				"text": "My Link 1",
 				"children": [
 					{
+						"id": 2,
 						"href": "http://localhost:8080/admin",
-						"text": "My Link"
+						"text": "My Link 2"
+					}
+				]
+			},
+			{
+				"href": "http://localhost:8080/admin",
+				"text": "My Link 3",
+				"id": 3,
+				"children": [
+					{
+						"id": 4,
+						"href": "http://localhost:8080/admin",
+						"text": "My Link 4"
+					}
+				]
+			},
+			{
+				"href": "http://localhost:8080/admin",
+				"text": "My Link 5",
+				"id": 5,
+				"children": [
+					{
+						"id": 6,
+						"href": "http://localhost:8080/admin",
+						"text": "My Link 6"
 					}
 				]
 			}
