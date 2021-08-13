@@ -52,7 +52,9 @@ type Options struct {
 	LinkClass string `json:"link_class"`
 	// Depth defines how many levels of the hierarchy are
 	// to be included. 0 means all, which is the default.
-	Depth int `json:"depth"`
+	// However, the depth must be greater than 0 or
+	// the options will fail validation.
+	Depth int `json:"depth" binding:"gte=0"`
 	// Partial is a file name of a partial to be used to
 	// execute the template.
 	Partial string `json:"partial"`

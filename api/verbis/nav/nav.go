@@ -15,13 +15,8 @@ import (
 )
 
 // TODO:
-// We need to account for depth in the template by passing depth
 // Check if the partial works within the tpl file.
 // Better naming conventions for interface and structs
-// Clear cache for "options" when we update the options struct
-// in the handler.
-// Options service?
-//
 // https://vuejsdevelopers.com/2017/10/23/vue-js-tree-menu-recursive-components/
 
 // Getter defines the method used for obtaining
@@ -115,7 +110,13 @@ func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 	// if it exists.
 	c, err := s.deps.Cache.Get(context.Background(), "nav-menu-"+opts.Menu)
 	if err == nil {
-		return c.(Menu), nil
+		m, ok := c.(Menu)
+		// If the cast was successful and the options
+		// remain the same, return the cached
+		// version.
+		if ok && m.Options == opts {
+			return m, nil
+		}
 	}
 
 	items, name, err := s.getNavItems(opts)
@@ -144,7 +145,7 @@ func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 func (s *Service) getNavItems(opts Options) (Items, string, error) {
 	for menu, nav := range s.nav {
 		if menu == opts.Menu {
-			return s.processItems(nav.Items, 0), nav.Name, nil
+			return s.processItems(nav.Items, opts.Depth, 1), nav.Name, nil
 		}
 	}
 	return nil, "", fmt.Errorf("%s: %s", ErrMenuNotFound, opts.Menu)
@@ -153,18 +154,26 @@ func (s *Service) getNavItems(opts Options) (Items, string, error) {
 // processItems iterates over the navigational items and processes
 // them. The function is recursively called if the item has
 // any children.
-func (s *Service) processItems(items Items, depth int) Items {
+func (s *Service) processItems(items Items, depth, currDepth int) Items {
 	for idx, item := range items {
-		items[idx].Depth = depth
+		// Assign the item the current depth.
+		items[idx].Depth = currDepth
 
 		// Obtain the child navigation menu if there is
 		// one present.
 		if item.Children != nil {
-			// TODO if depth in the options is greater
-			// than the depth passed as argument,
+			// If the depth in the options is greater
+			// than the depth passed as argument, or the
+			// depth is 0 (all items).
 			// we need to exit, and not run
 			// this conditional.
-			items[idx].Children = s.processItems(item.Children, depth+1)
+			if depth == 0 || currDepth < depth {
+				items[idx].Children = s.processItems(item.Children, depth, currDepth+1)
+			} else {
+				// Reset the children as there shouldn't be
+				// any here.
+				items[idx].Children = nil
+			}
 		}
 
 		// If the item is external, we can presume there is
@@ -174,6 +183,7 @@ func (s *Service) processItems(items Items, depth int) Items {
 			continue
 		}
 
+		// Assign post attributes.
 		if item.PostID != nil {
 			// Obtain the post if there is one attached and
 			// assign the permalink to the href value.
@@ -196,6 +206,8 @@ func (s *Service) processItems(items Items, depth int) Items {
 				items[idx].IsActive = true
 			}
 		}
+
+		// TODO: Assign category attributes.
 	}
 
 	return items

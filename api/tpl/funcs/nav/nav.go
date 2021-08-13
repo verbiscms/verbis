@@ -53,8 +53,8 @@ func (ns *Namespace) HTML(args nav.Args) (template.HTML, error) {
 		tplErr error
 	)
 
-	if menu.Options.Partial == "" {
-		file, tplErr = ioutil.ReadFile(filepath.Join(ns.deps.ThemePath(), menu.Options.Partial))
+	if menu.Options.Partial != "" {
+		file, tplErr = ioutil.ReadFile(filepath.Join(ns.themeGetter(), menu.Options.Partial))
 	} else {
 		file, tplErr = embedded.Static.ReadFile(TemplateName + EmbeddedExtension)
 	}

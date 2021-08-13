@@ -18,16 +18,18 @@ func New(d *deps.Deps, t *internal.TemplateDeps) *Namespace {
 		logger.WithError(err).Panic()
 	}
 	return &Namespace{
-		deps: d,
-		nav:  n,
+		deps:        d,
+		nav:         n,
+		themeGetter: d.ThemePath,
 	}
 }
 
 // Namespace defines the methods breadcrumbs posts to be used
 // as template functions.
 type Namespace struct {
-	deps *deps.Deps
-	nav  nav.Getter
+	deps        *deps.Deps
+	nav         nav.Getter
+	themeGetter func() string
 }
 
 // name defines the identifier for the namespace.

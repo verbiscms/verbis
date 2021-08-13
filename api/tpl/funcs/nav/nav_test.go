@@ -17,6 +17,8 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -67,6 +69,10 @@ func TestNamespace_Get(t *testing.T) {
 }
 
 func TestNamespace_HTML(t *testing.T) {
+	wd, err := os.Getwd()
+	assert.NoError(t, err)
+	testPath := filepath.Join(wd, "testdata")
+
 	tt := map[string]struct {
 		mock func(th *tpl.TemplateHandler, n *mocks.Getter)
 		fn   func(ns *Namespace) (interface{}, error)
@@ -85,6 +91,20 @@ func TestNamespace_HTML(t *testing.T) {
 				return ns.HTML(args)
 			},
 			template.HTML("test"),
+		},
+		"Partial": {
+			func(th *tpl.TemplateHandler, m *mocks.Getter) {
+				m.On("Get", nav.Args{"menu": "main-menu", "partial": "nav.cms"}).Return(nav.Menu{Options: nav.Options{Partial: "nav.cms"}}, nil)
+				th.On("ExecuteTpl", &bytes.Buffer{}, mock.Anything, mock.Anything).Run(func(args mock.Arguments) {
+					arg := args.Get(0).(io.Writer)
+					_, err := arg.Write([]byte(args.Get(1).(string)))
+					assert.NoError(t, err)
+				}).Return(nil)
+			},
+			func(ns *Namespace) (interface{}, error) {
+				return ns.HTML(nav.Args{"menu": "main-menu", "partial": "nav.cms"})
+			},
+			template.HTML("<h1>\n  Hello\n</h1>"),
 		},
 		"Menus Error": {
 			func(th *tpl.TemplateHandler, m *mocks.Getter) {
@@ -131,6 +151,9 @@ func TestNamespace_HTML(t *testing.T) {
 			ns := &Namespace{
 				deps: &deps.Deps{},
 				nav:  navMock,
+				themeGetter: func() string {
+					return testPath
+				},
 			}
 			ns.deps.SetTmpl(tplMock)
 

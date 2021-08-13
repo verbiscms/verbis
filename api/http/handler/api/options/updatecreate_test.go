@@ -8,11 +8,12 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/cache"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
-	cache "github.com/verbiscms/verbis/api/mocks/cache"
+	mockCache "github.com/verbiscms/verbis/api/mocks/cache"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/options"
 	"net/http"
 )
@@ -33,7 +34,7 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 		message string
 		input   interface{}
 		mock    func(m *mocks.Repository)
-		cache   func(m *cache.Store)
+		cache   func(m *mockCache.Store)
 	}{
 		"Success": {
 			nil,
@@ -43,7 +44,8 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 			func(m *mocks.Repository) {
 				m.On("Insert", dbOptions).Return(nil)
 			},
-			func(m *cache.Store) {
+			func(m *mockCache.Store) {
+				m.On("Invalidate", mock.Anything, cache.InvalidateOptions{Tags: []string{"options"}}).Return(nil)
 				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil)
 			},
 		},
@@ -77,12 +79,24 @@ func (t *OptionsTestSuite) TestOptions_UpdateCreate() {
 			},
 			nil,
 		},
+		"Invalidate Error": {
+			nil,
+			http.StatusInternalServerError,
+			"invalidate",
+			optionsStruct,
+			func(m *mocks.Repository) {
+				m.On("Insert", dbOptions).Return(nil)
+			},
+			func(m *mockCache.Store) {
+				m.On("Invalidate", mock.Anything, cache.InvalidateOptions{Tags: []string{"options"}}).Return(&errors.Error{Code: errors.INTERNAL, Message: "invalidate"})
+			},
+		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.RequestAndServe(http.MethodPost, "/posts", "/posts", test.input, func(ctx *gin.Context) {
-				c := &cache.Store{}
+				c := &mockCache.Store{}
 				if test.cache != nil {
 					test.cache(c)
 				}

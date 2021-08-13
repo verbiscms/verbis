@@ -30,7 +30,8 @@
 
 <!-- Content -->
 {{ define "content" }}
-	{{ navHTML (dict "menu" "main-menu") }}
+	{{ navHTML (dict "menu" "main-menu" "partial" "") }}
+
 {{/*	{{  nav (dict "menu" "main-menu") }}*/}}
 {{/*	{{ template "nav" $nav }}*/}}
 {{ end }}

@@ -46,6 +46,12 @@ func (o *Options) UpdateCreate(ctx *gin.Context) {
 		return
 	}
 
+	err = o.Cache.Invalidate(ctx, cache.InvalidateOptions{Tags: []string{"options"}})
+	if err != nil {
+		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
+		return
+	}
+
 	o.Cache.Set(ctx, cache.OptionsKey, vOptions, cache.Options{Expiration: time.Minute * 15})
 	o.SetOptions(&vOptions)
 
