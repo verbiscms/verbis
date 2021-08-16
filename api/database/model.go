@@ -22,7 +22,7 @@ var (
 // If there is no filters set, an empty string will be returned.
 // Returns errors.INVALID if the operator or column name was not found.
 func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]params.Filter, table string) error {
-	const op = "Model.filterRows"
+	const op = "Model.FilterRows"
 
 	operators := []string{"=", ">", ">=", "<", "<=", "<>", "LIKE", "IN", "NOT LIKE", "like", "in", "not like"}
 

@@ -2,41 +2,43 @@
 	Nav Item
 	===================== -->
 <template>
-	<div class="item card card-small-box-shadow card-expand card-expand-full-width">
-		<Collapse :show="false" class="collapse-border-bottom">
-			<template v-slot:header>
-				<div class="card-header">
-					<p class="card-title">{{ item['text'] }}</p>
-					<div class="card-controls">
-						<i class="feather feather-chevron-down"></i>
-					</div>
-				</div><!-- /Card Header -->
-			</template>
-			<template v-slot:body @dragstart="test();">
-				<div class="card-body">
-					<!-- Label -->
-					<FormGroup label="Label*">
-						<input class="form-input form-input-white" type="text" v-model="item['text']">
-					</FormGroup>
-					<!-- Title -->
-					<FormGroup label="Title">
-						<input class="form-input form-input-white" type="text" v-model="item['title']">
-					</FormGroup>
+	<el-card class="item box-card" shadow="never" :class="{ 'item-disabled' : disabled }">
+		<el-collapse v-model="activeItem">
+			<el-collapse-item :disabled="disabled" :title="item.text" class="item-collapse" name="item">
+				<!-- Header -->
+				<template class="item-header" #title>
+					{{ item.text }}
+				</template>
+				<el-form ref="form" :model="item" :rules="rules" label-position="top">
+					<!-- Link Text -->
+					<el-form-item label="Link Text" prop="name">
+						<el-input placeholder="Link Text*" label="Link Text*" v-model="item.text" clearable></el-input>
+					</el-form-item>
+					<!-- Link Text -->
+					<el-form-item label="Link Title">
+						<el-input placeholder="Title" label="Link Title" v-model="item.title" clearable></el-input>
+					</el-form-item>
 					<!-- Rel -->
-					<FormGroup label="Rel">
-						<input class="form-input form-input-white" type="text" v-model="item['rel']">
-					</FormGroup>
+					<el-form-item label="Rel Attribute">
+						<el-input placeholder="Rel" label="Rel Attribute" v-model="item.rel" clearable></el-input>
+					</el-form-item>
+					<!-- Description -->
+					<el-form-item label="Description" class="form-group">
+						<el-input type="textarea" :rows="4" placeholder="Description" v-model="item.description" resize="none"></el-input>
+					</el-form-item>
 					<!-- Open Tab -->
-					<FormGroup label="Open link in new tab">
-						<div class="toggle">
-							<input type="checkbox" class="toggle-switch" id="cache-frontend" checked v-model="item['new_tab']" :true-value="true" :false-value="false" />
-							<label for="cache-frontend"></label>
-						</div>
-					</FormGroup>
-				</div><!-- /Card Body -->
-			</template>
-		</Collapse><!-- /Cache assets? -->
-	</div>
+					<el-form-item>
+						<el-checkbox v-model="item['new_tab']">Open in new tab</el-checkbox>
+					</el-form-item>
+					<!-- Toolbar -->
+					<div class="item-toolbar">
+						<el-link class="item-toolbar-link" type="danger" @click="removeItem">Remove</el-link>
+						<el-link class="item-toolbar-link" @click="collapse">Cancel</el-link>
+					</div>
+				</el-form>
+			</el-collapse-item>
+		</el-collapse>
+	</el-card>
 </template>
 
 <!-- =====================
@@ -44,31 +46,42 @@
 	===================== -->
 <script>
 
-import Collapse from "@/components/misc/Collapse";
-import FormGroup from "@/components/forms/FormGroup";
-
 export default {
 	name: "NavItem",
 	props: {
 		item: {
 			type: Object,
 		},
-	},
-	components: {
-		Collapse,
-		FormGroup,
-	},
-	data: () => ({
-		show: true,
-		gridSize: 70,
-		isActive: true,
-	}),
-	methods: {
-		test() {
-			console.log("fired")
+		disabled: {
+			type: Boolean,
+			default: false,
 		}
 	},
-	computed: {
+	data: () => ({
+		activeItem: "",
+		rules: {
+			name: [
+				{ required: true, message: 'Enter link text for the menu item', trigger: 'blur' },
+			],
+		},
+	}),
+	methods: {
+		/*
+		 * removeItem()
+		 * Remove an item from the menu, emits
+		 * back up to the parent.
+		 */
+		removeItem() {
+			this.$emit("remove", this.item);
+		},
+		/*
+		 * collapse()
+		 * Collapses the current item (when cancel)
+		 * is clicked.
+		 */
+		collapse() {
+			this.activeItem = ""
+		},
 	}
 }
 
@@ -79,26 +92,54 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
+	// Item
+	// =========================================================================
 
-.item {
-	//background: $white;
-	border-radius: 4px;
-	margin-bottom: 1rem;
-	width: 50%;
+	.item {
+		width: 50%;
+		background-color: $white;
+		padding: 0 20px;
 
-	.card-header {
-		padding: 0.8rem;
-	}
+		// Props
+		// =========================================================================
 
-	&-cont {
-		margin-left: 50px;
-	}
-	.card {
+		::v-deep {
 
-		.card-header {
-			padding: 1rem;
+			.el-collapse,
+			.el-collapse-item__wrap,
+			.el-collapse-item__header {
+				border: none !important;
+			}
+
+			.el-collapse-item__content {
+				padding-bottom: 1rem;
+				user-select: none;
+			}
+
+			.el-card__body {
+				padding: 0;
+			}
+		}
+
+		// Toolbar
+		// =========================================================================
+
+		&-toolbar {
+			display: flex;
+
+
+			&-link:first-child {
+				margin-right: 10px;
+			}
+		}
+
+		// Disabled
+		// =========================================================================
+
+		&-disabled {
+			pointer-events: none;
+			user-select: none;
 		}
 	}
-}
 
 </style>

@@ -12,85 +12,118 @@
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
-							<button class="btn btn-fixed-height btn-orange" @click.prevent="save" :class="{ 'btn-loading' : saving }">
-								Update&nbsp;<span class="btn-hide-text-mob">Menus</span>
-							</button>
+							<el-button type="primary" @click.prevent="save" :loading="saving">Update Menus</el-button>
 						</div>
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<!-- Spinner -->
-			<div v-show="doingAxios" class="media-spinner spinner-container">
-				<div class="spinner spinner-large spinner-grey"></div>
-			</div>
-			<div v-show="!doingAxios" class="row trans-fade-in-anim">
+			<div v-if="!doingAxios" class="row trans-fade-in-anim">
 				<!-- =====================
 					Menu Picker
 					===================== -->
 				<div class="col-12">
 					<h3 class="mb-3">Select a menu to edit</h3>
-					<div class="menu-picker card card-padding-large">
-						<div class="menu-picker-select">
-							<!-- Menu -->
-							<FormGroup class="form-group-no-margin form-select-cont form-input">
-								<select class="form-select" v-model="activeMenuKey">
-									<option v-for="(menu, key) in menus" :key="key" :value="key">{{ menu['name'] }}</option>
-								</select>
-							</FormGroup>
-						</div>
-						<a @click="showNewModal = true;">Or create a new menu</a>
-					</div>
+					<el-card class="box-card mb-4" shadow="never">
+						<el-select v-model="activeMenuKey" placeholder="Select">
+							<el-option
+								v-for="(menu, key) in menus"
+								:key="key"
+								:label="menu.name"
+								:value="key">
+							</el-option>
+						</el-select>
+						<el-link class="ml-2" @click="showNewModal = true">Or create a new one</el-link>
+					</el-card>
 				</div>
 				<!-- =====================
 					Item Picker
 					===================== -->
 				<div class="col-12 col-desk-3">
 					<h3 class="mb-3">Add items</h3>
-					<div class="card card-padding-large card-small-box-shadow">
-
-					</div>
+					<el-card class="box-card" :body-style="{ padding: '0' }" shadow="never">
+						<el-collapse class="test" v-model="activeCollapse">
+							<!-- Posts -->
+							<el-collapse-item title="Posts" name="posts">
+								<NavPostsFilter @update="addPosts"></NavPostsFilter>
+							</el-collapse-item>
+							<!-- External -->
+							<el-collapse-item title="External" name="external">
+								<el-form :model="newItem" ref="newExternalItem" label-position="top">
+									<!-- Link Text -->
+									<el-form-item label="Link Text" prop="text" :rules="{ required: true, message: 'Enter a link text.', trigger: 'blur' }">
+										<el-input placeholder="Link Text*" label="Link Text*" v-model="newItem.text" clearable></el-input>
+									</el-form-item>
+									<!-- URL -->
+									<el-form-item label="Link Text" prop="url" :rules="{ required: true, message: 'Enter a link URL.', trigger: 'blur' }">
+										<el-input placeholder="URL*" label="Link URL*" v-model="newItem.url" clearable></el-input>
+									</el-form-item>
+									<!-- Add to Menu -->
+									<el-button size="medium" plain @click="addExternal('newExternalItem')">Add to Menu</el-button>
+								</el-form>
+							</el-collapse-item>
+							<!-- Categories -->
+							<el-collapse-item disabled title="Categories" name="categories">
+								<!-- TODO -->
+							</el-collapse-item>
+						</el-collapse>
+					</el-card>
 				</div><!-- /Col -->
 				<!-- =====================
 					Items
 					===================== -->
 				<div class="col-12 col-desk-9" v-if="!doingAxios">
 					<h3 class="mb-3">Menu hierarchy</h3>
-					<vue-nestable v-model="activeMenu().items" :max-depth="10" :threshold="30" children-prop="children">
+					<vue-nestable
+						v-model="activeMenu().items"
+						:max-depth="10"
+						:threshold="30"
+						children-prop="children"
+						@input="isDragging = true"
+						@change="handleAfterDrag">
 						<vue-nestable-handle slot-scope="{ item }" :item="item">
-							<NavItem :item="item"></NavItem>
+							<NavItem
+								@remove="removeItem"
+								:disabled="isDragging"
+								:item="item"></NavItem>
 						</vue-nestable-handle>
 					</vue-nestable>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
 		<!-- =====================
-			Provider Modal
+			Create New Modal
 			===================== -->
-		<Modal :show.sync="showNewModal">
-			<template slot="button">
-				<button class="btn" @click="createMenu()">Create Menu</button>
-			</template>
-			<template slot="text">
-				<!-- Create Menu -->
-				<div class="text-cont">
-					<h2>Create a menu</h2>
-					<p class="t-left">Select a menu location and assign the new menu a name.</p>
-				</div>
+		<el-dialog :visible.sync="showNewModal" width="30%">
+			<!-- Title -->
+			<div slot="title">
+				<h2 class="mb-0">Create a menu</h2>
+				<p>Select a menu location and assign the new menu a name.</p>
+			</div>
+			<!-- Form -->
+			<el-form :model="newItem" ref="newMenu" label-position="left" label-width="auto ">
 				<!-- Name -->
-				<FormGroup label="Name*" :error="errors['new_menu_name']">
-					<input placeholder="Enter a menu name" class="form-input form-input-white" type="text" v-model="newMenu['name']">
-				</FormGroup>
+				<el-form-item
+					label="Name"
+					prop="name"
+					:rules="{ required: true, message: 'Enter a Menu Name.', trigger: 'blur' }">
+					<el-input placeholder="Name" v-model="newMenu.name"></el-input>
+				</el-form-item>
 				<!-- Location -->
-				<FormGroup label="Location*" :error="errors['new_menu_id']">
-					<div class="form-select-cont form-input">
-						<select class="form-select" v-model="newMenu['id']">
-							<option value="" disabled selected>Select a location</option>
-							<option v-for="menu in getThemeMenus" :key="menu['id']" :value="menu['id']">{{ menu.name }}</option>
-						</select>
-					</div>
-				</FormGroup>
-			</template>
-		</Modal>
+				<el-form-item
+					label="Location"
+					prop="location"
+					:rules="{ required: true, message: 'Enter a Menu Location.', trigger: 'change' }">
+					<el-select v-model="newMenu.id" placeholder="Select">
+						<el-option v-for="menu in getThemeMenus" :key="menu.id" :label="menu.name" :value="menu.id"></el-option>
+					</el-select>
+				</el-form-item>
+			</el-form>
+			<!-- Footer -->
+			<span slot="footer" class="dialog-footer">
+				<el-button @click="showNewModal = false">Cancel</el-button>
+				<el-button type="primary" @click="createMenu('newMenu')">Create Menu</el-button>
+			</span>
+		</el-dialog>
 	</section>
 </template>
 
@@ -101,19 +134,19 @@
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import {optionsMixin} from "@/util/options";
-import Modal from "@/components/modals/General";
 import NavItem from "@/components/nav/NavItem";
-import FormGroup from "@/components/forms/FormGroup";
+import NavPostsFilter from "../../components/nav/NavPostsFilter";
+
 
 export default {
 	name: "Menus",
 	title: 'Menu Settings',
 	mixins: [optionsMixin],
 	components: {
+		NavPostsFilter,
 		Breadcrumbs,
-		FormGroup,
-		Modal,
 		NavItem,
+
 	},
 	data: () => ({
 		errorMsg: "Fix the errors before saving performance settings.",
@@ -124,43 +157,79 @@ export default {
 			name: "",
 			id: "",
 		},
+		newItem: {},
+		dialogVisible: false,
+		isDragging: false,
+		activeCollapse: "",
 	}),
+	created() {
+		setTimeout(() => {
+			this.isDragging = false;
+		}, 200);
+	},
 	methods: {
-		//runAfterGet() {
-		//	this.activeMenu =
-		//},
-		createMenu() {
-			this.errors = {};
+		createMenu(formName) {
+			this.$refs[formName].validate((valid) => {
+				if (valid) {
+					if (this.newMenu.id in this.menus) {
+						this.$set(this.menus, "unassigned-" + this.helpers.randomString("10"), this.menus[this.newMenu.id]);
+					}
 
-			if (this.newMenu['name'] === "") {
-				this.$set(this.errors, 'new_menu_name', "Enter a name for the menu");
-			}
-			if (this.newMenu['id'] === "") {
-				this.$set(this.errors, 'new_menu_id', "Select a menu location");
-			}
+					this.$set(this.menus, this.newMenu.id, {
+						name: this.newMenu.name
+					});
 
-			if (!this.helpers.isEmptyObject(this.errors)) {
-				return
-			}
-
-			if (this.newMenu.id in this.menus) {
-				this.$set(this.menus, "unassigned-" + this.helpers.randomString("10"), this.menus[this.newMenu.id]);
-			}
-
-			this.$set(this.menus, this.newMenu.id, {
-				name: this.newMenu.name
+					this.activeMenuKey = this.newMenu.id;
+					this.newMenu = {};
+					this.showNewModal = false;
+				}
 			});
-
-			this.activeMenuKey = this.newMenu.id;
-			this.newMenu = {};
-			this.showNewModal = false;
 		},
-
 		deleteMenu(menu) {
 			this.$delete(this.menus, menu)
 		},
+		/*
+		 * removeItem()
+		 * Removes an item from the hierarchy.
+		 */
+		removeItem(item) {
+			const items = this.menus[this.activeMenuKey].items;
+
+			this.testRemove(items, item.id);
+		},
+
+		testRemove(items, id) {
+
+			items.forEach(item => {
+				if (item.id === id ) {
+					this.menus.splice()
+				}
+				console.log(item.id, id);
+			});
+		},
+
+		addPosts(items) {
+			items.forEach(item => {
+				this.menus[this.activeMenuKey].items.push({
+					post_id: item.post.id,
+					text: item.post.title,
+				});
+			})
+		},
+		addExternal(formName) {
+			this.$refs[formName].validate((valid) => {
+				if (valid) {
+					console.log(this.newItem);
+				}
+			});
+		},
 		activeMenu() {
 			return this.menus[this.activeMenuKey];
+		},
+		handleAfterDrag() {
+			this.$nextTick(() => {
+				this.isDragging = false;
+			}, 400);
 		},
 	},
 	computed: {
@@ -195,6 +264,7 @@ export default {
 	Styles
 	===================== -->
 <style lang="scss">
+
 
 /*
 * Style for nestable
