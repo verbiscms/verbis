@@ -98,7 +98,6 @@ export default {
 	.item {
 		width: 50%;
 		background-color: $white;
-		padding: 0 20px;
 
 		// Props
 		// =========================================================================
