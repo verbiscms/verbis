@@ -3,6 +3,30 @@
 // This file contains all styles related to the forms of the site.
 // -----------------------------------------------------------------------------
 
+// Input
+// =========================================================================
+
+.el-form {
+	$self: &;
+
+	&--label-top {
+
+
+		#{$self}-item__label {
+			line-height: 1;
+		}
+	}
+
+	&-item {
+
+		&__label {
+			font-size: 10px;
+			color: $secondary !important;
+		}
+	}
+}
+
+
 .form {
     $self: &;
 

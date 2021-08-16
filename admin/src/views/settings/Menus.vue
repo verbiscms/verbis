@@ -38,10 +38,13 @@
 				<!-- =====================
 					Item Picker
 					===================== -->
-				<div class="col-12 col-desk-3">
+				<div class="col-12 col-desk-4" v-if="activeMenuKey !== ''">
+
+
+
 					<h3 class="mb-3">Add items</h3>
 					<el-card class="box-card" :body-style="{ padding: '0' }" shadow="never">
-						<el-collapse class="test" v-model="activeCollapse">
+						<el-collapse class="collapse collapse-bg-header" accordion v-model="activeCollapse">
 							<!-- Posts -->
 							<el-collapse-item title="Posts" name="posts">
 								<NavPostsFilter @update="addPosts"></NavPostsFilter>
@@ -58,7 +61,12 @@
 										<el-input placeholder="URL*" label="Link URL*" v-model="newItem.url" clearable></el-input>
 									</el-form-item>
 									<!-- Add to Menu -->
-									<el-button size="medium" plain @click="addExternal('newExternalItem')">Add to Menu</el-button>
+									<div>
+
+									</div>
+									<el-button size="small" plain @click="addExternal('newExternalItem')">
+										Add to Menu
+									</el-button>
 								</el-form>
 							</el-collapse-item>
 							<!-- Categories -->
@@ -71,23 +79,29 @@
 				<!-- =====================
 					Items
 					===================== -->
-				<div class="col-12 col-desk-9" v-if="!doingAxios">
+				<div class="col-12 col-desk-8" v-if="activeMenuKey !== '' && !doingAxios">
 					<h3 class="mb-3">Menu hierarchy</h3>
-					<vue-nestable
-						v-model="activeMenu().items"
-						:max-depth="10"
-						:threshold="30"
-						children-prop="children"
-						@input="isDragging = true"
-						@change="handleAfterDrag">
-						<vue-nestable-handle slot-scope="{ item }" :item="item">
-							<NavItem
-								@remove="removeItem"
-								:disabled="isDragging"
-								:item="item"></NavItem>
-						</vue-nestable-handle>
-					</vue-nestable>
+					<el-card class="box-card" shadow="never">
+						<vue-nestable
+							v-model="activeMenu().items"
+							:max-depth="10"
+							:threshold="30"
+							children-prop="children"
+							@input="isDragging = true"
+							@change="handleAfterDrag">
+							<vue-nestable-handle slot-scope="{ item }" :item="item">
+								<NavItem
+									@remove="removeItem"
+									:disabled="isDragging"
+									:item="item"></NavItem>
+							</vue-nestable-handle>
+						</vue-nestable>
+					</el-card>
+					<el-link type="danger" @click="this.deleteMenu">Remove Menu</el-link>
 				</div><!-- /Col -->
+				<el-empty v-if="activeMenuKey === ''" description="No Menus">
+					<el-button type="primary" @click="showNewModal = true">Create a new Menu</el-button>
+				</el-empty>
 			</div><!-- /Row -->
 		</div><!-- /Container -->
 		<!-- =====================
@@ -185,8 +199,10 @@ export default {
 				}
 			});
 		},
-		deleteMenu(menu) {
-			this.$delete(this.menus, menu)
+		deleteMenu() {
+			let key = this.activeMenuKey;
+			this.activeMenuKey = "";
+			this.$delete(this.menus, key);
 		},
 		/*
 		 * removeItem()
