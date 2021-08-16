@@ -55,7 +55,7 @@
 					===================== -->
 				<div class="col-12 col-desk-9" v-if="!doingAxios">
 					<h3 class="mb-3">Menu hierarchy</h3>
-					<vue-nestable v-model="activeMenu().items" :max-depth="10" :threshold="30" children-prop="children" :hooks="{'beforeMove': this.test}">
+					<vue-nestable v-model="activeMenu().items" :max-depth="10" :threshold="30" children-prop="children">
 						<vue-nestable-handle slot-scope="{ item }" :item="item">
 							<NavItem :item="item"></NavItem>
 						</vue-nestable-handle>
