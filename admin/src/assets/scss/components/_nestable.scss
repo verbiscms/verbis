@@ -52,10 +52,10 @@
 	left: 0;
 	right: 0;
 	bottom: 0;
+	width: 60%;
 	background-color: rgba($primary, 0.274);
 	border: 1px dashed rgb(73, 100, 241);
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
+	border-radius: 4px;
 }
 .nestable-drag-layer {
 	position: fixed;

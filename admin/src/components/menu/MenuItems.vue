@@ -6,7 +6,7 @@
 	<div class="items">
 		<el-card class="items-card" :body-style="{ padding: '0px' }" shadow="never">
 			<!-- Nestable Items -->
-			<div class="items-nestable">
+			<div class="items-nestable" :class="{ 'items-nestable-disabled' : doingBulk }">
 				<vue-nestable
 					v-model="elements"
 					:max-depth="10"
@@ -116,10 +116,9 @@ export default {
 		 * handleAfterDrag()
 		 */
 		handleAfterDrag() {
-			this.isDragging = false;
-			// this.$nextTick(() => {
-			// 	this.isDragging = false;
-			// }, 500);
+			this.$nextTick(() => {
+				this.isDragging = false;
+			}, 500);
 		},
 	},
 	computed: {
@@ -153,6 +152,14 @@ export default {
 
 	&-nestable {
 		padding: 1.4rem;
+
+		&-disabled {
+			pointer-events: none;
+
+			::v-deep .item-header-checkbox {
+				pointer-events: auto;
+			}
+		}
 	}
 
 	&-footer {

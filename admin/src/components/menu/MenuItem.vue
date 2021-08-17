@@ -217,17 +217,6 @@ export default {
 
 		&-disabled {
 			pointer-events: none;
-			user-select: none;
-
-
-			* {
-				pointer-events: none !important;
-				user-select: none !important;
-			}
-			::v-deep .el-collapse-item__header {
-				pointer-events: none;
-				user-select: none;
-			}
 		}
 
 		// Li Class
