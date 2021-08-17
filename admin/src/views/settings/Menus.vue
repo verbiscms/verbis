@@ -80,6 +80,13 @@
 					<!-- Attributes -->
 					<h3 class="mb-3">Menu attributes</h3>
 					<el-card class="menu-attributes" shadow="never">
+						<el-form label-position="left">
+							<el-form-item label="Menu Location">
+								<el-checkbox-group v-model="location">
+									<el-checkbox v-for="(menu, index) in getThemeMenus" :key="index" :label="menu.name"></el-checkbox>
+								</el-checkbox-group>
+							</el-form-item>
+						</el-form>
 
 					</el-card>
 				</div><!-- /Col -->
@@ -106,6 +113,8 @@ import MenuPostsFilter from "../../components/menu/MenuPostsFilter";
 import MenuItems from "../../components/menu/MenuItems";
 import MenuNewModal from "../../components/menu/MenuNewModal";
 
+// ID_START is the identifier for where menu item
+// ID's will start.
 const ID_START = 10000;
 
 export default {
@@ -113,21 +122,22 @@ export default {
 	title: 'Menu Settings',
 	mixins: [optionsMixin],
 	components: {
-		MenuNewModal,
 		Breadcrumbs,
+		MenuNewModal,
 		MenuPostsFilter,
 		MenuItems,
 	},
 	data: () => ({
-		errorMsg: "Fix the errors before saving performance settings.",
-		successMsg: "Performance options updated successfully.",
+		errorMsg: "Fix the errors before updating menu settings.",
+		successMsg: "Menu's updated successfully.",
 		activeMenuKey: "main-menu",
 		showNewModal: false,
 		newItem: {},
 		dialogVisible: false,
 		isDragging: false,
 		activeCollapse: "",
-		doingBulk: false
+		doingBulk: false,
+		location: "",
 	}),
 	methods: {
 		/**

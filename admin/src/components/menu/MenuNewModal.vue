@@ -9,7 +9,7 @@
 			<p>Select a menu location and assign the new menu a name.</p>
 		</div>
 		<!-- Form -->
-		<el-form :model="menu" ref="newMenu" label-position="left" label-width="auto ">
+		<el-form :model="menu" ref="newMenu" label-position="left" label-width="auto">
 			<!-- Name -->
 			<el-form-item label="Name" prop="name" :rules="{ required: true, message: 'Enter a Menu Name.', trigger: 'blur' }">
 				<el-input placeholder="Name" v-model="menu.name"></el-input>
