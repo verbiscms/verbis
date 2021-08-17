@@ -3,11 +3,11 @@
 	===================== -->
 <template>
 	<el-card class="item box-card" shadow="never" :class="{ 'item-disabled' : disabled }">
-		<el-collapse v-model="activeItem">
-			<el-collapse-item :disabled="disabled" :title="item.text" class="item-collapse" name="item">
+		<el-collapse :disabled="disabled" v-model="activeItem">
+			<el-collapse-item :title="item.text" class="item-collapse" name="item">
 				<!-- Header -->
 				<template class="item-header" #title>
-					<el-checkbox class="item-header-checkbox" v-if="bulk"  v-model="checked" @change="handleCheckChange"></el-checkbox>
+					<el-checkbox class="item-header-checkbox" v-if="bulk" v-model="checked" @change="handleCheckChange"></el-checkbox>
 					{{ item.text }}
 				</template>
 				<el-form ref="form" :model="item" :rules="rules" label-position="top">
@@ -24,9 +24,9 @@
 						<el-checkbox v-model="item['new_tab']">Open in new tab</el-checkbox>
 					</el-form-item>
 					<!-- CSS Clases -->
-					<el-form-item label="LI Classes">
+					<el-form-item label="Li Classes">
 						<el-tag class="item-li-class-tag" :key="tag" v-for="tag in item['li_classes']" closable :disable-transitions="false" @close="handleClose(tag)">
-							{{tag}}
+							{{ tag }}
 						</el-tag>
 						<el-input v-if="inputVisible" v-model="inputValue" ref="saveLiClasses" size="mini" @keyup.native.enter="handleInputConfirm" @blur="handleInputConfirm">
 						</el-input>
@@ -90,13 +90,15 @@ export default {
 		},
 	}),
 	watch: {
+		/*
+		 * Collapse the item if it's in bulk mode.
+		 */
 		bulk: function() {
-			this.activeItem = "";
+			this.collapse();
 		}
 	},
 	methods: {
 		/*
-		 * removeItem()
 		 * Remove an item from the menu, emits
 		 * back up to the parent.
 		 */
@@ -104,7 +106,6 @@ export default {
 			this.$emit("remove", this.item);
 		},
 		/*
-		 * collapse()
 		 * Collapses the current item (when cancel)
 		 * is clicked.
 		 */
@@ -112,27 +113,37 @@ export default {
 			this.activeItem = ""
 		},
 		/*
-		 * handleCheckChange()
 		 * Updates the parent when the checkbox is
 		 * changed.
 		 */
 		handleCheckChange() {
+			console.log("somethings changed");
 			this.$emit("checked", this.checked);
 		},
+		/**
+		 * Removes a class from the li_classes array,
+		 * when the close button is clicked.
+		 * @param tag
+		 */
 		handleClose(tag) {
 			this.item['li_classes'].splice(this.item['li_classes'].indexOf(tag), 1);
 		},
+		/**
+		 * Shows the input for entering <li> classes.
+		 */
 		showInput() {
 			this.inputVisible = true;
 			this.$nextTick(() => {
 				this.$refs.saveLiClasses.$refs.input.focus();
 			});
 		},
+		/**
+		 * handleInputConfirm
+		 */
 		handleInputConfirm() {
 			let inputValue = this.inputValue;
-			console.log("fired");
-
-
+			// Check if the array exists, if not create
+			// a new one, required!
 			if (!this.item['li_classes']) {
 				this.item['li_classes'] = [];
 			}
@@ -196,7 +207,6 @@ export default {
 		&-toolbar {
 			display: flex;
 
-
 			&-link:first-child {
 				margin-right: 10px;
 			}
@@ -206,8 +216,18 @@ export default {
 		// =========================================================================
 
 		&-disabled {
-		//	pointer-events: none;
-			//user-select: none;
+			pointer-events: none;
+			user-select: none;
+
+
+			* {
+				pointer-events: none !important;
+				user-select: none !important;
+			}
+			::v-deep .el-collapse-item__header {
+				pointer-events: none;
+				user-select: none;
+			}
 		}
 
 		// Li Class

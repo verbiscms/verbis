@@ -2,33 +2,39 @@
 	Menu Items
 	===================== -->
 <template>
+	<!-- Menu Items -->
 	<div class="items">
-		<el-card class="items-card" shadow="never">
+		<el-card class="items-card" :body-style="{ padding: '0px' }" shadow="never">
 			<!-- Nestable Items -->
-			<vue-nestable
-				v-model="elements"
-				:max-depth="10"
-				:threshold="30"
-				children-prop="children"
-				@input="isDragging = true"
-				@change="handleAfterDrag">
-				<vue-nestable-handle slot-scope="{ item }" :item="item">
-					<!-- Specific Menu Item -->
-					<MenuItem
-						@remove="removeItem(item.id)"
-						@checked="handleChecked(item)"
-						:disabled="disableDrag"
-						:item="item"
-						:bulk="doingBulk">
-					</MenuItem>
-				</vue-nestable-handle>
-			</vue-nestable>
+			<div class="items-nestable">
+				<vue-nestable
+					v-model="elements"
+					:max-depth="10"
+					:threshold="30"
+					children-prop="children"
+					@input="isDragging = true"
+					@change="handleAfterDrag">
+					<vue-nestable-handle slot-scope="{ item }" :item="item">
+						<!-- Specific Menu Item -->
+						<MenuItem
+							@remove="removeItem(item.id)"
+							@checked="handleChecked(item)"
+							:disabled="isDragging"
+							:item="item"
+							:bulk="doingBulk">
+						</MenuItem>
+					</vue-nestable-handle>
+				</vue-nestable>
+			</div><!-- /Nestable Items -->
+			<!-- Footer -->
+			<div class="items-footer">
+				<!-- Bulk Select -->
+				<el-checkbox v-model="doingBulk">Bulk select</el-checkbox>
+				<!--		<el-link class="ml-2" type="danger" @click="this.deleteMenu">Remove menu</el-link>-->
+				<el-link :disabled="checked.length === 0" class="ml-2" @click="removeItems()" v-if="doingBulk">Remove selected items</el-link>
+			</div><!-- /Footer -->
 		</el-card>
-		<!-- Bulk Select -->
-		<el-checkbox v-model="doingBulk">Bulk select</el-checkbox>
-<!--		<el-link class="ml-2" type="danger" @click="this.deleteMenu">Remove menu</el-link>-->
-		<el-link :disabled="checked.length === 0" class="ml-2" @click="removeItems()" v-if="doingBulk">Remove selected items</el-link>
-	</div>
+	</div><!-- /Menu Items -->
 </template>
 
 <!-- =====================
@@ -51,13 +57,12 @@ export default {
 	},
 	data: () => ({
 		doingBulk: false,
-		disableDrag: false,
 		isDragging: false,
 		checked: [],
 	}),
 	created() {
 		setTimeout(() => {
-			this.disableDrag = false;
+			this.isDragging = false;
 		}, 200);
 	},
 	methods: {
@@ -111,12 +116,17 @@ export default {
 		 * handleAfterDrag()
 		 */
 		handleAfterDrag() {
-			this.$nextTick(() => {
-				this.disableDrag = false;
-			}, 500);
+			this.isDragging = false;
+			// this.$nextTick(() => {
+			// 	this.isDragging = false;
+			// }, 500);
 		},
 	},
 	computed: {
+		/**
+		 * Computed prop for emitting the items to
+		 * the parent.
+		 */
 		elements: {
 			get() {
 				return this.items;
@@ -140,8 +150,27 @@ export default {
 
 .items {
 
+
+	&-nestable {
+		padding: 1.4rem;
+	}
+
+	&-footer {
+		padding: 1rem 1.6rem;
+	}
+
+	// Card
+	// =========================================================================
+
 	&-card {
 		margin-bottom: 1rem;
+	}
+
+	// Footer
+	// =========================================================================
+
+	&-footer {
+		border-top: 1px solid rgba($grey, 0.3);
 	}
 }
 

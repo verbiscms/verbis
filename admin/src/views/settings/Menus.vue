@@ -70,52 +70,28 @@
 						</el-collapse>
 					</el-card>
 				</div><!-- /Col -->
-
-
 				<!-- =====================
 					Items
 					===================== -->
 				<div class="col-12 col-desk-8" v-if="activeMenuKey !== '' && !doingAxios">
+					<!-- Hierarchy -->
 					<h3 class="mb-3">Menu hierarchy</h3>
-					<MenuItems :items.sync="menus[activeMenuKey].items"></MenuItems>
+					<MenuItems class="mb-5" :items.sync="menus[activeMenuKey].items"></MenuItems>
+					<!-- Attributes -->
+					<h3 class="mb-3">Menu attributes</h3>
+					<el-card class="menu-attributes" shadow="never">
+
+					</el-card>
 				</div><!-- /Col -->
 				<el-empty v-if="activeMenuKey === ''" description="No Menus">
 					<el-button type="primary" @click="showNewModal = true">Create a new Menu</el-button>
 				</el-empty>
 			</div><!-- /Row -->
 		</div><!-- /Container -->
-
-
-
-
 		<!-- =====================
 			Create New Modal
 			===================== -->
-		<el-dialog :visible.sync="showNewModal" width="30%">
-			<!-- Title -->
-			<div slot="title">
-				<h2 class="mb-0">Create a menu</h2>
-				<p>Select a menu location and assign the new menu a name.</p>
-			</div>
-			<!-- Form -->
-			<el-form :model="newItem" ref="newMenu" label-position="left" label-width="auto ">
-				<!-- Name -->
-				<el-form-item label="Name" prop="name" :rules="{ required: true, message: 'Enter a Menu Name.', trigger: 'blur' }">
-					<el-input placeholder="Name" v-model="newMenu.name"></el-input>
-				</el-form-item>
-				<!-- Location -->
-				<el-form-item label="Location" prop="id" :rules="{ required: true, message: 'Enter a Menu Location.', trigger: 'change' }">
-					<el-select v-model="newMenu.id" placeholder="Select">
-						<el-option v-for="menu in getThemeMenus" :key="menu.id" :label="menu.name" :value="menu.id"></el-option>
-					</el-select>
-				</el-form-item>
-			</el-form>
-			<!-- Footer -->
-			<span slot="footer" class="dialog-footer">
-				<el-button @click="showNewModal = false">Cancel</el-button>
-				<el-button type="primary" @click="createMenu('newMenu')">Create Menu</el-button>
-			</span>
-		</el-dialog>
+		<MenuNewModal :visible.sync="showNewModal" :menus="getThemeMenus" @create="createMenu"></MenuNewModal>
 	</section>
 </template>
 
@@ -128,6 +104,7 @@ import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import {optionsMixin} from "@/util/options";
 import MenuPostsFilter from "../../components/menu/MenuPostsFilter";
 import MenuItems from "../../components/menu/MenuItems";
+import MenuNewModal from "../../components/menu/MenuNewModal";
 
 const ID_START = 10000;
 
@@ -136,6 +113,7 @@ export default {
 	title: 'Menu Settings',
 	mixins: [optionsMixin],
 	components: {
+		MenuNewModal,
 		Breadcrumbs,
 		MenuPostsFilter,
 		MenuItems,
@@ -145,7 +123,6 @@ export default {
 		successMsg: "Performance options updated successfully.",
 		activeMenuKey: "main-menu",
 		showNewModal: false,
-		newMenu: {},
 		newItem: {},
 		dialogVisible: false,
 		isDragging: false,
@@ -157,25 +134,17 @@ export default {
 		 * Creates a new menu and adds it the menus
 		 * object. If form validation is rejected
 		 * the function will return.
-		 * @param formName
 		 */
-		createMenu(formName) {
-			this.$refs[formName].validate((valid) => {
-				console.log(valid);
-				if (valid) {
-					if (this.newMenu.id in this.menus) {
-						this.$set(this.menus, "unassigned-" + this.helpers.randomString("10"), this.menus[this.newMenu.id]);
-					}
-
-					this.$set(this.menus, this.newMenu.id, {
-						name: this.newMenu.name
-					});
-
-					this.activeMenuKey = this.newMenu.id;
-					this.newMenu = {};
-					this.showNewModal = false;
-				}
+		createMenu(menu) {
+			if (menu.id in this.menus) {
+				this.$set(this.menus, "unassigned-" + this.helpers.randomString("10"), this.menus[this.newMenu.id]);
+			}
+			this.$set(this.menus, menu.id, {
+				name: menu.name,
+				items: [],
 			});
+			this.activeMenuKey = menu.id;
+			this.showNewModal = false;
 		},
 		/**
 		 * Deletes the currently active menu.
@@ -247,7 +216,7 @@ export default {
 		flattenItems(items) {
 			return items.reduce((acc, item) => {
 				acc.push(item);
-				if (item.children.length) {
+				if (item.children && item.children.length) {
 					return acc.concat(this.flattenItems(item.children));
 				}
 				return acc;
@@ -294,31 +263,29 @@ export default {
 	===================== -->
 <style lang="scss">
 
+// Menu
+// =========================================================================
 
-/*
-* Style for nestable
-*/
+.menu {
 
-	.menu {
+	// Picker
+	// =========================================================================
 
-		// Picker
-		// =========================================================================
+	&-picker {
+		display: flex;
+		align-items: center;
+		padding: 20px;
 
-		&-picker {
-			display: flex;
-			align-items: center;
-			padding: 20px;
+		&-select {
+			margin-bottom: 0;
+			min-width: 30%;
+			margin-right: 1rem;
+		}
 
-			&-select {
-				margin-bottom: 0;
-				min-width: 30%;
-				margin-right: 1rem;
-			}
-
-			a {
-				cursor: pointer;
-			}
+		a {
+			cursor: pointer;
 		}
 	}
+}
 
 </style>
