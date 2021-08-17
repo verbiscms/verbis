@@ -27,6 +27,8 @@ func (i Items) Length() int {
 // nav menu tree. An item can embed multiple
 // children.
 type Item struct {
+	// ID is the unique identifier of a menu item.
+	ID int `json:"id"`
 	// Href link value of the item, this could be a post
 	// URL, category URL or an external link.
 	Href string `json:"href"`
@@ -55,14 +57,14 @@ type Item struct {
 	External bool `json:"external"`
 	// Classes are the CSS classes to be outputted on the
 	// item. Specifically on the <li> item.
-	Classes string `json:"classes"`
+	Classes TagSlice `json:"li_classes"`
 	// NewTab defines if the link should open in a new tab or
 	// window.
 	NewTab bool `json:"new_tab"`
 	// Rel Specifies the relationship between the current page
 	// and the item. See https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel
 	// for more details.
-	Rel string `json:"rel"`
+	Rel TagSlice `json:"rel"`
 	// Download specifies an optional link to download
 	// a file.
 	Download string `json:"download"`
@@ -103,6 +105,9 @@ func (i *Item) LiClasses() string {
 	}
 	for idx, class := range classes {
 		classes[idx] = LiClass + "-" + class
+	}
+	if i.Classes.HasTags() {
+		classes = append(classes, i.Classes...)
 	}
 	return strings.Join(classes, " ")
 }

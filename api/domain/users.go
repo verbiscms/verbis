@@ -24,8 +24,8 @@ type (
 	UserPart struct {
 		ID               int        `db:"id" json:"id"`
 		UUID             uuid.UUID  `db:"uuid" json:"uuid"`
-		FirstName        string     `db:"first_name" json:"first_name" binding:"required,max=150,alpha"`
-		LastName         string     `db:"last_name" json:"last_name" binding:"required,max=150,alpha"`
+		FirstName        string     `db:"first_name" json:"first_name" binding:"required,max=150"`
+		LastName         string     `db:"last_name" json:"last_name" binding:"required,max=150"`
 		Email            string     `db:"email" json:"email" binding:"required,email,max=255"`
 		Website          string     `db:"website" json:"website,omitempty" binding:"omitempty,url"`
 		Facebook         string     `db:"facebook" json:"facebook"`

@@ -41,7 +41,7 @@ func (ns *Namespace) Get(args nav.Args) (nav.Menu, error) {
 //
 // Example: {{ navHTML (dict "menu" "main-menu") }}
 func (ns *Namespace) HTML(args nav.Args) (template.HTML, error) {
-	const op = "Templates.Menus.HTML"
+	const op = "Templates.menusDB.HTML"
 
 	menu, err := ns.nav.Get(args)
 	if err != nil {

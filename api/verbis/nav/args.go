@@ -18,7 +18,7 @@ type Args map[string]interface{}
 // struct. Returns an error on failed marshal
 // or unmarshal.
 func (a Args) ToOptions() (Options, error) {
-	const op = "Menus.Args.ToOptions"
+	const op = "menusDB.Args.ToOptions"
 
 	m, err := json.Marshal(a)
 	if err != nil {

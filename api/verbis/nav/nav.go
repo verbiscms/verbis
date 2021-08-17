@@ -15,9 +15,7 @@ import (
 )
 
 // TODO:
-// Check if the partial works within the tpl file.
 // Better naming conventions for interface and structs
-// https://vuejsdevelopers.com/2017/10/23/vue-js-tree-menu-recursive-components/
 
 // Getter defines the method used for obtaining
 // nav menus from Verbis.
@@ -31,16 +29,16 @@ type Getter interface {
 type Service struct {
 	deps *deps.Deps
 	post *domain.PostDatum
-	nav  Menus
+	nav  menusDB
 }
 
-// Menus defines the type for obtaining navigational
+// menusDB defines the type for obtaining navigational
 // menus. It contains a key which is mapped
 // to the ID defined in the theme config.
-type Menus map[string]Nav
+type menusDB map[string]menuDB
 
-// TODO, Should this be called nav?
-type Nav struct {
+// menuDB is the items represented in the database.
+type menuDB struct {
 	Name  string `json:"name"`
 	Items Items  `json:"items"`
 }
@@ -65,14 +63,14 @@ var (
 // the NavMenus field in the options from a map[string]interface
 // to a nav item.
 func New(d *deps.Deps, post *domain.PostDatum) (*Service, error) {
-	const op = "Menus.New"
+	const op = "Nav.New"
 
 	m, err := json.Marshal(d.Options.NavMenus)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error marshalling navigation menus", Operation: op, Err: err}
 	}
 
-	nav := Menus{}
+	nav := menusDB{}
 	err = json.Unmarshal(m, &nav)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error unmarshalling navigation menus", Operation: op, Err: err}
@@ -99,7 +97,7 @@ func (s *Service) Get(args Args) (Menu, error) {
 // by options as opposed to passing a
 // map[string]interface{}.
 func (s *Service) GetFromOptions(opts Options) (Menu, error) {
-	const op = "Menus.Get"
+	const op = "Nav.Get"
 
 	err := opts.Validate()
 	if err != nil {
@@ -196,7 +194,7 @@ func (s *Service) processItems(items Items, depth, currDepth int) Items {
 
 			// Check if the link text is empty, if it is
 			// assign the post title.
-			if item.Title == "" {
+			if item.Title == "" && item.Title != post.Title {
 				items[idx].Title = post.Title
 			}
 

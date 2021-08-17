@@ -39,15 +39,12 @@
 					Item Picker
 					===================== -->
 				<div class="col-12 col-desk-4" v-if="activeMenuKey !== ''">
-
-
-
 					<h3 class="mb-3">Add items</h3>
 					<el-card class="box-card" :body-style="{ padding: '0' }" shadow="never">
 						<el-collapse class="collapse collapse-bg-header" accordion v-model="activeCollapse">
 							<!-- Posts -->
 							<el-collapse-item title="Posts" name="posts">
-								<NavPostsFilter @update="addPosts"></NavPostsFilter>
+								<MenuPostsFilter @update="addPosts"></MenuPostsFilter>
 							</el-collapse-item>
 							<!-- External -->
 							<el-collapse-item title="External" name="external">
@@ -61,9 +58,6 @@
 										<el-input placeholder="URL*" label="Link URL*" v-model="newItem.url" clearable></el-input>
 									</el-form-item>
 									<!-- Add to Menu -->
-									<div>
-
-									</div>
 									<el-button size="small" plain @click="addExternal('newExternalItem')">
 										Add to Menu
 									</el-button>
@@ -76,34 +70,24 @@
 						</el-collapse>
 					</el-card>
 				</div><!-- /Col -->
+
+
 				<!-- =====================
 					Items
 					===================== -->
 				<div class="col-12 col-desk-8" v-if="activeMenuKey !== '' && !doingAxios">
 					<h3 class="mb-3">Menu hierarchy</h3>
-					<el-card class="box-card" shadow="never">
-						<vue-nestable
-							v-model="activeMenu().items"
-							:max-depth="10"
-							:threshold="30"
-							children-prop="children"
-							@input="isDragging = true"
-							@change="handleAfterDrag">
-							<vue-nestable-handle slot-scope="{ item }" :item="item">
-								<NavItem
-									@remove="removeItem"
-									:disabled="isDragging"
-									:item="item"></NavItem>
-							</vue-nestable-handle>
-						</vue-nestable>
-					</el-card>
-					<el-link type="danger" @click="this.deleteMenu">Remove Menu</el-link>
+					<MenuItems :items.sync="menus[activeMenuKey].items"></MenuItems>
 				</div><!-- /Col -->
 				<el-empty v-if="activeMenuKey === ''" description="No Menus">
 					<el-button type="primary" @click="showNewModal = true">Create a new Menu</el-button>
 				</el-empty>
 			</div><!-- /Row -->
 		</div><!-- /Container -->
+
+
+
+
 		<!-- =====================
 			Create New Modal
 			===================== -->
@@ -116,17 +100,11 @@
 			<!-- Form -->
 			<el-form :model="newItem" ref="newMenu" label-position="left" label-width="auto ">
 				<!-- Name -->
-				<el-form-item
-					label="Name"
-					prop="name"
-					:rules="{ required: true, message: 'Enter a Menu Name.', trigger: 'blur' }">
+				<el-form-item label="Name" prop="name" :rules="{ required: true, message: 'Enter a Menu Name.', trigger: 'blur' }">
 					<el-input placeholder="Name" v-model="newMenu.name"></el-input>
 				</el-form-item>
 				<!-- Location -->
-				<el-form-item
-					label="Location"
-					prop="location"
-					:rules="{ required: true, message: 'Enter a Menu Location.', trigger: 'change' }">
+				<el-form-item label="Location" prop="id" :rules="{ required: true, message: 'Enter a Menu Location.', trigger: 'change' }">
 					<el-select v-model="newMenu.id" placeholder="Select">
 						<el-option v-for="menu in getThemeMenus" :key="menu.id" :label="menu.name" :value="menu.id"></el-option>
 					</el-select>
@@ -148,42 +126,42 @@
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import {optionsMixin} from "@/util/options";
-import NavItem from "@/components/nav/NavItem";
-import NavPostsFilter from "../../components/nav/NavPostsFilter";
+import MenuPostsFilter from "../../components/menu/MenuPostsFilter";
+import MenuItems from "../../components/menu/MenuItems";
 
+const ID_START = 10000;
 
 export default {
 	name: "Menus",
 	title: 'Menu Settings',
 	mixins: [optionsMixin],
 	components: {
-		NavPostsFilter,
 		Breadcrumbs,
-		NavItem,
-
+		MenuPostsFilter,
+		MenuItems,
 	},
 	data: () => ({
 		errorMsg: "Fix the errors before saving performance settings.",
 		successMsg: "Performance options updated successfully.",
 		activeMenuKey: "main-menu",
 		showNewModal: false,
-		newMenu: {
-			name: "",
-			id: "",
-		},
+		newMenu: {},
 		newItem: {},
 		dialogVisible: false,
 		isDragging: false,
 		activeCollapse: "",
+		doingBulk: false
 	}),
-	created() {
-		setTimeout(() => {
-			this.isDragging = false;
-		}, 200);
-	},
 	methods: {
+		/**
+		 * Creates a new menu and adds it the menus
+		 * object. If form validation is rejected
+		 * the function will return.
+		 * @param formName
+		 */
 		createMenu(formName) {
 			this.$refs[formName].validate((valid) => {
+				console.log(valid);
 				if (valid) {
 					if (this.newMenu.id in this.menus) {
 						this.$set(this.menus, "unassigned-" + this.helpers.randomString("10"), this.menus[this.newMenu.id]);
@@ -199,53 +177,88 @@ export default {
 				}
 			});
 		},
+		/**
+		 * Deletes the currently active menu.
+		 */
 		deleteMenu() {
 			let key = this.activeMenuKey;
 			this.activeMenuKey = "";
 			this.$delete(this.menus, key);
 		},
-		/*
-		 * removeItem()
-		 * Removes an item from the hierarchy.
+		/**
+		 * Adds a post to the menu hierarchy.
+		 * @param items
 		 */
-		removeItem(item) {
-			const items = this.menus[this.activeMenuKey].items;
-
-			this.testRemove(items, item.id);
-		},
-
-		testRemove(items, id) {
-
-			items.forEach(item => {
-				if (item.id === id ) {
-					this.menus.splice()
-				}
-				console.log(item.id, id);
-			});
-		},
-
 		addPosts(items) {
 			items.forEach(item => {
-				this.menus[this.activeMenuKey].items.push({
+				this.addNewItem(item.post.title, item.post.url, {
 					post_id: item.post.id,
-					text: item.post.title,
 				});
 			})
 		},
+		/**
+		 * Adds an external item to the menu hierarchy.
+		 * @param formName
+		 */
 		addExternal(formName) {
 			this.$refs[formName].validate((valid) => {
 				if (valid) {
-					console.log(this.newItem);
+					this.addNewItem(this.newItem.text, this.newItem.href);
+					this.newItem = {};
 				}
 			});
 		},
+		/**
+		 * Generates a new item with ID, text, href and
+		 * default values.
+		 * @param text
+		 * @param href
+		 * @param opts
+		 */
+		addNewItem(text, href, opts = {}) {
+			this.menus[this.activeMenuKey].items.push({
+				id: this.getID(),
+				text: text,
+				href: href,
+				rel: [],
+				li_classes: [],
+				...opts
+			});
+		},
+		/**
+		 * Returns a unique identifier for the menu item,
+		 * if there are no items in the menu, ID_START
+		 * will be returned.
+		 * @return {number}
+		 */
+		getID() {
+			const items = this.menus[this.activeMenuKey].items;
+			if (!items.length) {
+				return ID_START;
+			}
+			const reduced = this.flattenItems(items);
+			return Math.max.apply(Math, reduced.map(function(o) { return o.id; })) + 1;
+		},
+		/**
+		 * Reduces the menu hierarchy and returns a
+		 * flattened array.
+		 * @param items
+		 */
+		flattenItems(items) {
+			return items.reduce((acc, item) => {
+				acc.push(item);
+				if (item.children.length) {
+					return acc.concat(this.flattenItems(item.children));
+				}
+				return acc;
+			}, []);
+		},
+		/**
+		 * Returns the current active menu.
+		 * @returns {*}
+		 */
 		activeMenu() {
 			return this.menus[this.activeMenuKey];
-		},
-		handleAfterDrag() {
-			this.$nextTick(() => {
-				this.isDragging = false;
-			}, 400);
 		},
 	},
 	computed: {
@@ -285,94 +298,6 @@ export default {
 /*
 * Style for nestable
 */
-.nestable {
-	position: relative;
-}
-.nestable-rtl {
-	direction: rtl;
-}
-.nestable .nestable-list {
-	margin: 0;
-	padding: 0 0 0 40px;
-	list-style-type: none;
-}
-.nestable-rtl .nestable-list {
-	padding: 0 40px 0 0;
-}
-.nestable > .nestable-list {
-	padding: 0;
-}
-.nestable-item,
-.nestable-item-copy {
-	margin: 10px 0 0;
-}
-.nestable-item:first-child,
-.nestable-item-copy:first-child {
-	margin-top: 0;
-}
-.nestable-item .nestable-list,
-.nestable-item-copy .nestable-list {
-	margin-top: 10px;
-}
-.nestable-item {
-	position: relative;
-}
-.nestable-item.is-dragging .nestable-list {
-	pointer-events: none;
-}
-.nestable-item.is-dragging * {
-	opacity: 0;
-	filter: alpha(opacity=0);
-}
-
-.nestable-item.is-dragging {
-
-	.item {
-		height: 55px !important;
-	}
-}
-
-.nestable-item.is-dragging:before {
-	content: ' ';
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: rgba($primary, 0.274);
-	border: 1px dashed rgb(73, 100, 241);
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
-}
-.nestable-drag-layer {
-	position: fixed;
-	top: 0;
-	left: 0;
-	z-index: 100;
-	pointer-events: none;
-}
-.nestable-rtl .nestable-drag-layer {
-	left: auto;
-	right: 0;
-}
-.nestable-drag-layer > .nestable-list {
-	//position: absolute;
-	//top: 0;
-	//left: 0;
-	//padding: 0;
-	//background-color: rgba(106, 127, 233, 0.274);
-}
-.nestable-rtl .nestable-drag-layer > .nestable-list {
-	padding: 0;
-}
-.nestable [draggable="true"]  {
-	cursor: move;
-
-	.collapse-content {
-		cursor: default;
-	}
-}
-
 
 	.menu {
 

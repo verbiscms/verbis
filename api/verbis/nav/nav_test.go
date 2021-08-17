@@ -68,7 +68,7 @@ func TestNew(t *testing.T) {
 func TestGet(t *testing.T) {
 	tt := map[string]struct {
 		input      Args
-		navigation Menus
+		navigation menusDB
 		post       *domain.PostDatum
 		mock       func(m *posts.Repository, c *cache.Store)
 		want       interface{}
@@ -127,7 +127,7 @@ func TestGet(t *testing.T) {
 		},
 		"Simple": {
 			Args{"menu": "main-menu"},
-			Menus{"main-menu": Nav{Items: Items{{Href: "link-one", Title: "title"}}}},
+			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", Title: "title"}}}},
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
@@ -139,7 +139,7 @@ func TestGet(t *testing.T) {
 		},
 		"Children": {
 			Args{"menu": "main-menu"},
-			Menus{"main-menu": Nav{Items: Items{
+			menusDB{"main-menu": menuDB{Items: Items{
 				{Href: "link-one", Children: Items{
 					{Href: "link-two"},
 				}},
@@ -157,7 +157,7 @@ func TestGet(t *testing.T) {
 		},
 		"Zero Depth": {
 			Args{"menu": "main-menu", "depth": 0},
-			Menus{"main-menu": Nav{Items: Items{
+			menusDB{"main-menu": menuDB{Items: Items{
 				{Href: "link-one", Children: Items{
 					{Href: "link-two"},
 				}},
@@ -175,7 +175,7 @@ func TestGet(t *testing.T) {
 		},
 		"Depth of Two": {
 			Args{"menu": "main-menu", "depth": 2},
-			Menus{"main-menu": Nav{Items: Items{
+			menusDB{"main-menu": menuDB{Items: Items{
 				{Href: "link-one", Children: Items{
 					{Href: "link-two", Children: Items{
 						{Href: "link-three"},
@@ -197,7 +197,7 @@ func TestGet(t *testing.T) {
 		},
 		"Depth of Three": {
 			Args{"menu": "main-menu", "depth": 3},
-			Menus{"main-menu": Nav{Items: Items{
+			menusDB{"main-menu": menuDB{Items: Items{
 				{Href: "link-one", Children: Items{
 					{Href: "link-two", Children: Items{
 						{Href: "link-three", Children: Items{
@@ -223,7 +223,7 @@ func TestGet(t *testing.T) {
 		},
 		"External": {
 			Args{"menu": "main-menu"},
-			Menus{"main-menu": Nav{Items: Items{{Href: "link-one", External: true}}}},
+			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", External: true}}}},
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
@@ -235,7 +235,7 @@ func TestGet(t *testing.T) {
 		},
 		"Post": {
 			Args{"menu": "main-menu"},
-			Menus{"main-menu": Nav{Items: Items{{Href: "link-one", PostID: &postID}}}},
+			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", PostID: &postID}}}},
 			&domain.PostDatum{},
 			func(m *posts.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
@@ -248,7 +248,7 @@ func TestGet(t *testing.T) {
 		},
 		"Invalid": {
 			Args{"menu": "main-menu"},
-			Menus{"main-menu": Nav{Items: Items{{Href: "link-one", PostID: &postID}}}},
+			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", PostID: &postID}}}},
 			&domain.PostDatum{},
 			func(m *posts.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
@@ -261,7 +261,7 @@ func TestGet(t *testing.T) {
 		},
 		"Current": {
 			Args{"menu": "main-menu"},
-			Menus{"main-menu": Nav{Items: Items{{Href: "link-one", PostID: &postID}}}},
+			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", PostID: &postID}}}},
 			&post,
 			func(m *posts.Repository, c *cache.Store) {
 				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))

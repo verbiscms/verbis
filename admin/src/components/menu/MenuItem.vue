@@ -7,6 +7,7 @@
 			<el-collapse-item :disabled="disabled" :title="item.text" class="item-collapse" name="item">
 				<!-- Header -->
 				<template class="item-header" #title>
+					<el-checkbox class="item-header-checkbox" v-if="bulk"  v-model="checked" @change="handleCheckChange"></el-checkbox>
 					{{ item.text }}
 				</template>
 				<el-form ref="form" :model="item" :rules="rules" label-position="top">
@@ -15,20 +16,32 @@
 						<el-input placeholder="Link Text*" label="Link Text*" v-model="item.text" clearable></el-input>
 					</el-form-item>
 					<!-- Link Text -->
-					<el-form-item label="Link Title">
+					<el-form-item class="mb-0" label="Link Title">
 						<el-input placeholder="Title" label="Link Title" v-model="item.title" clearable></el-input>
-					</el-form-item>
-					<!-- Rel -->
-					<el-form-item label="Rel Attribute">
-						<el-input placeholder="Rel" label="Rel Attribute" v-model="item.rel" clearable></el-input>
-					</el-form-item>
-					<!-- Description -->
-					<el-form-item label="Description" class="form-group">
-						<el-input type="textarea" :rows="4" placeholder="Description" v-model="item.description" resize="none"></el-input>
 					</el-form-item>
 					<!-- Open Tab -->
 					<el-form-item>
 						<el-checkbox v-model="item['new_tab']">Open in new tab</el-checkbox>
+					</el-form-item>
+					<!-- CSS Clases -->
+					<el-form-item label="LI Classes">
+						<el-tag class="item-li-class-tag" :key="tag" v-for="tag in item['li_classes']" closable :disable-transitions="false" @close="handleClose(tag)">
+							{{tag}}
+						</el-tag>
+						<el-input v-if="inputVisible" v-model="inputValue" ref="saveLiClasses" size="mini" @keyup.native.enter="handleInputConfirm" @blur="handleInputConfirm">
+						</el-input>
+						<el-button v-else class="item-li-class-btn" size="small" @click="showInput">+ New class</el-button>
+					</el-form-item>
+					<!-- Rel -->
+					<el-form-item label="Rel Attribute">
+						<el-select  v-model="item.rel" multiple collapse-tags placeholder="Rel">
+							<el-option v-for="item in REL" :key="item" :label="item" :value="item">
+							</el-option>
+						</el-select>
+					</el-form-item>
+					<!-- Description -->
+					<el-form-item label="Description" class="form-group">
+						<el-input type="textarea" :rows="4" placeholder="Description" v-model="item.description" resize="none"></el-input>
 					</el-form-item>
 					<!-- Toolbar -->
 					<div class="item-toolbar">
@@ -47,7 +60,7 @@
 <script>
 
 export default {
-	name: "NavItem",
+	name: "MenuItem",
 	props: {
 		item: {
 			type: Object,
@@ -55,16 +68,32 @@ export default {
 		disabled: {
 			type: Boolean,
 			default: false,
-		}
+		},
+		bulk: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	data: () => ({
+		REL: [
+			'alternate', 'author', 'bookmark', 'external', 'help', 'license', 'next',
+			'nofollow', 'noopener', 'noreferrer', 'prev', 'search', 'tag'
+		],
 		activeItem: "",
+		checked: false,
+		inputVisible: false,
+		inputValue: '',
 		rules: {
 			name: [
 				{ required: true, message: 'Enter link text for the menu item', trigger: 'blur' },
 			],
 		},
 	}),
+	watch: {
+		bulk: function() {
+			this.activeItem = "";
+		}
+	},
 	methods: {
 		/*
 		 * removeItem()
@@ -82,6 +111,37 @@ export default {
 		collapse() {
 			this.activeItem = ""
 		},
+		/*
+		 * handleCheckChange()
+		 * Updates the parent when the checkbox is
+		 * changed.
+		 */
+		handleCheckChange() {
+			this.$emit("checked", this.checked);
+		},
+		handleClose(tag) {
+			this.item['li_classes'].splice(this.item['li_classes'].indexOf(tag), 1);
+		},
+		showInput() {
+			this.inputVisible = true;
+			this.$nextTick(() => {
+				this.$refs.saveLiClasses.$refs.input.focus();
+			});
+		},
+		handleInputConfirm() {
+			let inputValue = this.inputValue;
+			console.log("fired");
+
+
+			if (!this.item['li_classes']) {
+				this.item['li_classes'] = [];
+			}
+			if (inputValue) {
+				this.item['li_classes'].push(inputValue);
+			}
+			this.inputVisible = false;
+			this.inputValue = '';
+		}
 	}
 }
 
@@ -96,7 +156,7 @@ export default {
 	// =========================================================================
 
 	.item {
-		width: 50%;
+		width: 60%;
 		background-color: $white;
 
 		// Props
@@ -120,6 +180,16 @@ export default {
 			}
 		}
 
+		// Header
+		// =========================================================================
+
+		&-header {
+
+			&-checkbox {
+				margin-right: 10px;
+			}
+		}
+
 		// Toolbar
 		// =========================================================================
 
@@ -136,8 +206,18 @@ export default {
 		// =========================================================================
 
 		&-disabled {
-			pointer-events: none;
-			user-select: none;
+		//	pointer-events: none;
+			//user-select: none;
+		}
+
+		// Li Class
+		// =========================================================================
+
+		&-li-class {
+
+			&-tag {
+				margin-right: 5px;
+			}
 		}
 	}
 

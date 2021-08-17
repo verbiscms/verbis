@@ -36,7 +36,7 @@ export default {
 		awaitingSearch: false,
 	}),
 	methods: {
-		/*
+		/**
 		 * search()
 		 * Awaits for a timeout and then calls
 		 * the makeRequest() function.
@@ -50,7 +50,7 @@ export default {
 			}
 			this.awaitingSearch = true;
 		},
-		/*
+		/**
 		 * makeRequest()
 		 * Searches the API for the posts using the
 		 * query string param. Updates the parent
