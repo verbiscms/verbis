@@ -126,6 +126,7 @@ func New(cfg Config) (*Deps, error) {
 		Options:     cfg.Store.Options,
 		Files:       cfg.Store.Files,
 		Cache:       cs,
+		Paths:       cfg.Paths,
 	})
 	if err != nil {
 		return nil, err

@@ -15,6 +15,7 @@ import (
 	"github.com/verbiscms/verbis/api/services/storage/internal"
 	"github.com/verbiscms/verbis/api/store/files"
 	"github.com/verbiscms/verbis/api/store/options"
+	"os"
 )
 
 // Provider describes the main storage system for Verbis.
@@ -132,6 +133,7 @@ type Config struct {
 	Options     options.Repository
 	Files       files.Repository
 	Cache       cache.Store
+	Paths       paths.Paths
 }
 
 // Validate validates the configuration to ensure there are
@@ -150,26 +152,40 @@ func (c Config) Validate() error {
 	if c.Cache == nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error, no cache set", Operation: op, Err: fmt.Errorf("nil cache store")}
 	}
+	if c.Paths.Storage == "" {
+		return &errors.Error{Code: errors.INVALID, Message: "Error, no storage path set", Operation: op, Err: fmt.Errorf("empty storage path")}
+	}
 	return nil
 }
 
 // New creates a new Storage client. The configuration will
 // be validated and a new storage client returned.
 func New(cfg Config) (*Storage, error) {
+	const op = "Storage.New"
+
 	err := cfg.Validate()
 	if err != nil {
 		return nil, err
 	}
+
+	if _, err := os.Stat(cfg.Paths.Storage); os.IsNotExist(err) {
+		err = os.Mkdir(cfg.Paths.Storage, os.ModePerm)
+		if err != nil {
+			return nil, &errors.Error{Code: errors.CONFLICT, Message: "Error creating storage folder", Operation: op, Err: err}
+		}
+	}
+
 	s := &Storage{
 		env:         cfg.Environment,
 		optionsRepo: cfg.Options,
 		filesRepo:   cfg.Files,
-		paths:       paths.Get(),
+		paths:       cfg.Paths,
 		cache:       cfg.Cache,
 		service: &internal.Service{
 			Env:     cfg.Environment,
 			Options: cfg.Options,
 		},
 	}
+
 	return s, nil
 }

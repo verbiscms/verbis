@@ -12,6 +12,7 @@ import (
 	_ "github.com/graymeta/stow/s3"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
+	"github.com/verbiscms/verbis/api/common/paths"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
@@ -152,8 +153,19 @@ func (t *StorageTestSuite) TestNew() {
 				Options:     &options.Repository{},
 				Files:       &files.Store{},
 				Cache:       &cache.Store{},
+				Paths:       paths.Paths{Storage: t.T().TempDir()},
 			},
 			nil,
+		},
+		"Error Folder": {
+			Config{
+				Environment: &environment.Env{},
+				Options:     &options.Repository{},
+				Files:       &files.Store{},
+				Cache:       &cache.Store{},
+				Paths:       paths.Paths{Storage: "/wrong"},
+			},
+			"Error creating storage folder",
 		},
 		"Error": {
 			Config{},
@@ -184,6 +196,7 @@ func (t *StorageTestSuite) TestConfig_Validate() {
 				Options:     &options.Repository{},
 				Files:       &files.Store{},
 				Cache:       &cache.Store{},
+				Paths:       paths.Paths{Storage: "test"},
 			},
 			nil,
 		},
@@ -211,6 +224,15 @@ func (t *StorageTestSuite) TestConfig_Validate() {
 				Files:       &files.Store{},
 			},
 			"Error, no cache set",
+		},
+		"Nil Path": {
+			Config{
+				Environment: &environment.Env{},
+				Options:     &options.Repository{},
+				Files:       &files.Store{},
+				Cache:       &cache.Store{},
+			},
+			"Error, no storage path set",
 		},
 	}
 

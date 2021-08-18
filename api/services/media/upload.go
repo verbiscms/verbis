@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/verbiscms/verbis/api/common/files"
 	"github.com/verbiscms/verbis/api/common/paths"
+	vstrings "github.com/verbiscms/verbis/api/common/strings"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
@@ -96,7 +97,7 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 // not exist, for example '2020/01', otherwise
 // it returns an empty string.
 func (s *Service) dir(organiseDate bool) string {
-	const prefix = paths.Uploads
+	prefix := filepath.Base(paths.Uploads)
 
 	if !organiseDate {
 		return prefix
@@ -161,7 +162,7 @@ func (s *Service) resize(file domain.File, mp multipart.File, opts domain.Option
 			// E.g. gopher-100x100.png
 			urlName = extRemoved + "-" + strconv.Itoa(size.Width) + "x" + strconv.Itoa(size.Height) + ext
 			// E.g. uploads/2020/01/gopher-100x100.png
-			path = filepath.Join(filepath.Dir(file.URL), urlName)
+			path = vstrings.TrimSlashes(filepath.Join(filepath.Dir(file.URL), urlName))
 			// For resizing image
 			buf *bytes.Reader
 			// Error resizes
@@ -239,7 +240,7 @@ func (s *Service) toWebP(media domain.Media, compression int) {
 // fileToWebP converts a domain.File to a WebP image.
 // Logs errors if the item failed to convert.
 func (s *Service) fileToWebP(file domain.File, compression int) {
-	path := file.URL + domain.WebPExtension
+	path := vstrings.TrimSlashes(file.URL + domain.WebPExtension)
 
 	logger.Debug("Attempting to convert image to WebP: " + path)
 
