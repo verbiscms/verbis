@@ -63,10 +63,6 @@
 									</el-button>
 								</el-form>
 							</el-collapse-item>
-							<!-- Categories -->
-							<el-collapse-item disabled title="Categories" name="categories">
-								<!-- TODO -->
-							</el-collapse-item>
 						</el-collapse>
 					</el-card>
 				</div><!-- /Col -->
@@ -81,13 +77,12 @@
 					<h3 class="mb-3">Menu attributes</h3>
 					<el-card class="menu-attributes" shadow="never">
 						<el-form label-position="left">
-							<el-form-item label="Menu Location">
-								<el-checkbox-group v-model="location">
+							<el-form-item class="mb-0" label="Menu Location">
+								<el-checkbox-group class="menu-attributes-locations" v-model="location">
 									<el-checkbox v-for="(menu, index) in getThemeMenus" :key="index" :label="menu.name"></el-checkbox>
 								</el-checkbox-group>
 							</el-form-item>
 						</el-form>
-
 					</el-card>
 				</div><!-- /Col -->
 				<el-empty v-if="activeMenuKey === ''" description="No Menus">
@@ -294,6 +289,18 @@ export default {
 
 		a {
 			cursor: pointer;
+		}
+	}
+
+	// Attributes
+	// =========================================================================
+
+	&-attributes {
+
+		&-locations {
+			//background-color: red;
+			display: flex;
+			flex-direction: column;
 		}
 	}
 }

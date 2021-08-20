@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/params"
+	vstrings "github.com/verbiscms/verbis/api/common/strings"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
@@ -225,7 +226,7 @@ func (s *Storage) migrateBackground(ctx context.Context, channel chan migration,
 
 	u := domain.Upload{
 		UUID:       m.file.UUID,
-		Path:       m.file.URL,
+		Path:       vstrings.TrimSlashes(m.file.URL),
 		Size:       m.file.FileSize,
 		Contents:   bytes.NewReader(buf),
 		Private:    bool(m.file.Private),
