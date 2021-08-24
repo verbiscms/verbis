@@ -42,8 +42,8 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 		uploadPath = "uploads"
 	}
 
-	frontend := s.Group("")
-	frontend.Use(middleware.Redirects(d))
+	s.Use(middleware.Redirects(d))
+	s.Use(middleware.Proxy(d))
 
 	// Serve assets
 	s.GET("/assets/*any", h.Public.Assets)

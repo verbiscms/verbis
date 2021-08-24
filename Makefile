@@ -5,6 +5,10 @@ build:
 	go build -o verbisexec -ldflags="-X 'github.com/verbiscms/verbis/api.ProductionString=false' -X 'github.com/verbiscms/verbis/api/version.Version=$(VER)'"
 .PHONY: build
 
+build-linux:
+	env GOOS=linux GOARCH=amd64 go build -o verbisexec-linux -ldflags="-X 'github.com/verbiscms/verbis/api.ProductionString=true' -X 'github.com/verbiscms/verbis/api/version.Version=$(VER)'"
+.PHONY: build
+
 # Set Verbis up when cloned.
 setup:
 	go mod tidy

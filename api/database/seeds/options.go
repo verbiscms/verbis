@@ -124,6 +124,8 @@ func (s *Seeder) runOptions() error {
 		"storage_provider":     "local",
 		"storage_bucket":       "",
 		"storage_backup_local": true,
+		// Proxy
+		"proxies": nil,
 	}
 
 	err := s.models.Options.Insert(optionsSeed)

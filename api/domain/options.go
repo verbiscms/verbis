@@ -111,5 +111,7 @@ type (
 		// Storage
 		StorageProvider StorageProvider `json:"storage_provider"`
 		StorageBucket   string          `json:"storage_bucket"`
+		// Proxies
+		Proxies []Proxy `json:"proxies"`
 	}
 )

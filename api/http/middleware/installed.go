@@ -13,12 +13,6 @@ import (
 	"strings"
 )
 
-const (
-	// InstallRoute defines the URL for installing
-	// Verbis.
-	InstallRoute = "/admin/install"
-)
-
 var (
 	// excludedInstall are the post routes excluded from
 	// being redirected.
@@ -28,9 +22,9 @@ var (
 	}
 )
 
-// Installed redirects to the install URL if the application
+// Installed redirects to the installation URL if the application
 // is not in install mode or the current path is not the
-// install URL.
+// installation URL.
 func Installed(d *deps.Deps) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if d.Installed {
