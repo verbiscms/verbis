@@ -80,7 +80,7 @@ func captureTokens(pattern *regexp.Regexp, input string) *strings.Replacer {
 		return nil
 	}
 	values := groups[0][1:]
-	replace := make([]string, 2*len(values))
+	replace := make([]string, 2*len(values)) //nolint
 	for i, v := range values {
 		j := 2 * i
 		replace[j] = "$" + strconv.Itoa(i+1)
@@ -128,12 +128,12 @@ func rewriteURL(rewriteRegex map[*regexp.Regexp]string, req *http.Request) error
 
 	for k, v := range rewriteRegex {
 		if replacer := captureTokens(k, rawURI); replacer != nil {
-			url, err := req.URL.Parse(replacer.Replace(v))
+			uri, err := req.URL.Parse(replacer.Replace(v))
 			if err != nil {
 				return err
 			}
 
-			req.URL = url
+			req.URL = uri
 
 			return nil // Rewrite only once
 		}

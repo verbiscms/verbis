@@ -68,5 +68,5 @@ func (t *MediaServiceTestSuite) TestService_GenerateWebP() {
 	w.On("Convert", mock.Anything, 0).Return(bytes.NewReader([]byte("test")), nil)
 
 	s.webp = w
-	s.generateWebP(domain.MediaItems{testMediaSizes})
+	s.generateWebP(domain.MediaItems{testMediaSizes}, 0)
 }

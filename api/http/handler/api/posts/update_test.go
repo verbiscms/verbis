@@ -7,13 +7,19 @@ package posts
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/mock"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	mocks "github.com/verbiscms/verbis/api/mocks/store/posts"
 	"net/http"
 )
+
+var mockCacheSuccess = func(c *cache.Store) {
+	c.On("Invalidate", mock.Anything, mock.Anything).Return(nil)
+}
 
 func (t *PostsTestSuite) TestPosts_Update() {
 	tt := map[string]struct {
@@ -22,6 +28,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 		message string
 		input   interface{}
 		mock    func(m *mocks.Repository)
+		cache   func(c *cache.Store)
 		url     string
 	}{
 		"Success": {
@@ -32,6 +39,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			func(m *mocks.Repository) {
 				m.On("Update", postCreate).Return(postData, nil)
 			},
+			mockCacheSuccess,
 			"/posts/123",
 		},
 		"Validation Failed": {
@@ -42,6 +50,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			func(m *mocks.Repository) {
 				m.On("Update", postBadValidation).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
+			mockCacheSuccess,
 			"/posts/123",
 		},
 		"Invalid ID": {
@@ -52,6 +61,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			func(m *mocks.Repository) {
 				m.On("Update", postCreate).Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
+			mockCacheSuccess,
 			"/posts/wrongid",
 		},
 		"Not Found": {
@@ -62,6 +72,7 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			func(m *mocks.Repository) {
 				m.On("Update", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
+			mockCacheSuccess,
 			"/posts/123",
 		},
 		"Internal": {
@@ -72,6 +83,20 @@ func (t *PostsTestSuite) TestPosts_Update() {
 			func(m *mocks.Repository) {
 				m.On("Update", postCreate).Return(domain.PostDatum{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
+			mockCacheSuccess,
+			"/posts/123",
+		},
+		"Cache Invalid Error": {
+			nil,
+			http.StatusInternalServerError,
+			"cache",
+			post,
+			func(m *mocks.Repository) {
+				m.On("Update", postCreate).Return(postData, nil)
+			},
+			func(c *cache.Store) {
+				c.On("Invalidate", mock.Anything, mock.Anything).Return(&errors.Error{Code: errors.INTERNAL, Message: "cache"})
+			},
 			"/posts/123",
 		},
 	}
@@ -79,7 +104,11 @@ func (t *PostsTestSuite) TestPosts_Update() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.RequestAndServe(http.MethodPut, test.url, "/posts/:id", test.input, func(ctx *gin.Context) {
-				t.Setup(test.mock).Update(ctx)
+				s := t.Setup(test.mock)
+				c := &cache.Store{}
+				test.cache(c)
+				s.Deps.Cache = c
+				s.Update(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

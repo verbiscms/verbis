@@ -7,10 +7,7 @@ package posts
 import (
 	"fmt"
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/stretchr/testify/mock"
 	"github.com/verbiscms/verbis/api/domain"
-	config "github.com/verbiscms/verbis/api/mocks/config"
-	mocks "github.com/verbiscms/verbis/api/mocks/store/options"
 	"regexp"
 )
 
@@ -38,7 +35,7 @@ var (
 func (t *PostsTestSuite) TestStore_Permalink() {
 	tt := map[string]struct {
 		input domain.PostDatum
-		opts  func(repository *mocks.Repository)
+		opts  domain.Options
 		cfg   domain.ThemeConfig
 		mock  func(m sqlmock.Sqlmock)
 		want  string
@@ -47,9 +44,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{ID: 1},
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{Homepage: 1})
-			},
+			domain.Options{Homepage: 1},
 			domain.ThemeConfig{},
 			nil,
 			"/",
@@ -58,9 +53,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "page"},
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{})
-			},
+			domain.Options{},
 			domain.ThemeConfig{},
 			nil,
 			"/page",
@@ -69,9 +62,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "page"},
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{SeoEnforceSlash: true})
-			},
+			domain.Options{SeoEnforceSlash: true},
 			domain.ThemeConfig{},
 			nil,
 			"/page/",
@@ -80,9 +71,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "article", Resource: "news"},
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{})
-			},
+			domain.Options{},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -98,9 +87,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 			domain.PostDatum{
 				Post: domain.Post{Slug: "article", Resource: "news"},
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{SeoEnforceSlash: true})
-			},
+			domain.Options{SeoEnforceSlash: true},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -117,9 +104,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &category,
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{})
-			},
+			domain.Options{},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -137,9 +122,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &category,
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{SeoEnforceSlash: true})
-			},
+			domain.Options{SeoEnforceSlash: true},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -157,9 +140,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{})
-			},
+			domain.Options{},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -181,9 +162,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{})
-			},
+			domain.Options{},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -204,9 +183,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 				Post:     domain.Post{Slug: "article", Resource: "news"},
 				Category: &categoryChild,
 			},
-			func(m *mocks.Repository) {
-				m.On("Struct").Return(domain.Options{SeoEnforceSlash: true})
-			},
+			domain.Options{SeoEnforceSlash: true},
 			domain.ThemeConfig{
 				Resources: domain.Resources{
 					"news": {
@@ -228,13 +205,7 @@ func (t *PostsTestSuite) TestStore_Permalink() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.Setup(test.mock)
-			cfg := &config.Provider{}
-			cfg.On("Get", mock.Anything).Return(test.cfg, nil)
-			s.Theme = cfg
-			opts := &mocks.Repository{}
-			test.opts(opts)
-			s.options = opts
-			got := s.permalink(&test.input)
+			got := s.permalink(&test.input, test.opts, test.cfg)
 			t.Equal(test.want, got)
 		})
 	}
