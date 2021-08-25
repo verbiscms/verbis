@@ -38,7 +38,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 			},
 			key: "key1",
 			mock: func(f *fields.Repository, c *categories.Repository, ca *cache.Store) {
-				ca.On("Get", mock.Anything, "field-0-key1-"+FieldCacheKey).
+				ca.On("Get", mock.Anything, "field-0-0-key1-"+standardCacheKey).
 					Return("test", nil)
 			},
 			args: nil,

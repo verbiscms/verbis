@@ -13,12 +13,12 @@ import (
 // GetField returns the value of a specific field.
 // Returns errors.NOTFOUND if the field was not found by the given key.
 func (s *Service) GetField(name string, args ...interface{}) interface{} {
-	f, ok := s.getCacheField(name, FieldCacheKey)
+	fields, id := s.handleArgs(args)
+
+	f, ok := s.getCacheField(name, standardCacheKey, id)
 	if ok {
 		return f
 	}
-
-	fields := s.handleArgs(args)
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
@@ -27,7 +27,7 @@ func (s *Service) GetField(name string, args ...interface{}) interface{} {
 
 	resolved := resolve.Field(field, s.deps)
 
-	s.setCacheField(resolved.Value, name, FieldCacheKey)
+	s.setCacheField(resolved.Value, name, standardCacheKey, id)
 
 	return resolved.Value
 }
@@ -35,7 +35,7 @@ func (s *Service) GetField(name string, args ...interface{}) interface{} {
 // GetFieldObject returns the raw object of a specific field.
 // Returns errors.NOTFOUND if the field was not found by the given key.
 func (s *Service) GetFieldObject(name string, args ...interface{}) domain.PostField {
-	fields := s.handleArgs(args)
+	fields, _ := s.handleArgs(args)
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {

@@ -38,12 +38,12 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 		return nil
 	}
 
-	r, ok := s.getCacheField(name, RepeaterCacheKey)
+	fields, id := s.handleArgs(args)
+
+	r, ok := s.getCacheField(name, repeaterCacheKey, id)
 	if ok {
 		return r.(Repeater)
 	}
-
-	fields := s.handleArgs(args)
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
@@ -57,7 +57,7 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 
 	repeater = s.resolveRepeater("", field, fields)
 
-	s.setCacheField(repeater, name, RepeaterCacheKey)
+	s.setCacheField(repeater, name, repeaterCacheKey, id)
 
 	return repeater
 }

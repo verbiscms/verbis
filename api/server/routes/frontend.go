@@ -10,7 +10,6 @@ import (
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler"
-	"github.com/verbiscms/verbis/api/http/middleware"
 	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/server"
 	"io/fs"
@@ -41,9 +40,6 @@ func frontendRoutes(d *deps.Deps, s *server.Server) {
 	if uploadPath == "" {
 		uploadPath = "uploads"
 	}
-
-	s.Use(middleware.Redirects(d))
-	s.Use(middleware.Proxy(d))
 
 	// Serve assets
 	s.GET("/assets/*any", h.Public.Assets)

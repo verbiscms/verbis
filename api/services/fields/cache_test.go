@@ -23,7 +23,7 @@ func (t *FieldTestSuite) TestService_GetCacheField() {
 			"name",
 			"field1",
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, "field-0-name-field1").
+				c.On("Get", mock.Anything, "field-0-0-name-field1").
 					Return("test", nil)
 			},
 			true,
@@ -33,7 +33,7 @@ func (t *FieldTestSuite) TestService_GetCacheField() {
 			"name",
 			"field1",
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, "field-0-name-field1").
+				c.On("Get", mock.Anything, "field-0-0-name-field1").
 					Return(nil, fmt.Errorf("error"))
 			},
 			false,
@@ -50,7 +50,7 @@ func (t *FieldTestSuite) TestService_GetCacheField() {
 			s := Service{
 				deps: &deps.Deps{Cache: c},
 			}
-			got, ok := s.getCacheField(test.name, test.key)
+			got, ok := s.getCacheField(test.name, test.key, 0)
 			t.Equal(test.found, ok)
 			t.Equal(test.want, got)
 		})

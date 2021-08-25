@@ -35,7 +35,7 @@ func (t *FieldTestSuite) TestService_GetRepeater() {
 			nil,
 			"test",
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, "field-0-test-repeater").
+				c.On("Get", mock.Anything, "field-0-0-test-repeater").
 					Return(Repeater{
 						Row{{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
 					}, nil)

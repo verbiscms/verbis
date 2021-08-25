@@ -74,7 +74,8 @@ func (t *FieldTestSuite) TestService_HandleArgs() {
 
 	for name, test := range tt {
 		t.Run(name, func() {
-			t.Equal(test.want, t.GetMockService(test.fields, test.mock).handleArgs(test.args))
+			got, _ := t.GetMockService(test.fields, test.mock).handleArgs(test.args)
+			t.Equal(test.want, got)
 		})
 	}
 }

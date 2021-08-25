@@ -45,7 +45,7 @@ func (t *FieldTestSuite) TestService_GetFlexible() {
 			nil,
 			"test",
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, "field-0-test-flexible").
+				c.On("Get", mock.Anything, "field-0-0-test-flexible").
 					Return(Flexible{
 						{Name: "layout1", SubFields: SubFields{{Type: "text", Name: "text1", OriginalValue: "text1", Value: "text1", Key: "flex|0|text1"}}},
 					}, nil)

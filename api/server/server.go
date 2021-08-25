@@ -46,6 +46,8 @@ func New(d *deps.Deps) *Server {
 	r.Use(logger.Middleware())
 	r.Use(location.Default())
 	r.Use(middleware.Installed(d))
+	r.Use(middleware.Redirects(d))
+	r.Use(middleware.Proxy(d))
 
 	if d.Installed {
 		r.Use(middleware.Setters(d))

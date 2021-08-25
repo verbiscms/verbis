@@ -46,12 +46,12 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 		return nil
 	}
 
-	f, ok := s.getCacheField(name, FlexibleCacheKey)
+	fields, id := s.handleArgs(args)
+
+	f, ok := s.getCacheField(name, flexibleCacheKey, id)
 	if ok {
 		return f.(Flexible)
 	}
-
-	fields := s.handleArgs(args)
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
@@ -65,7 +65,7 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 
 	flexible = s.resolveFlexible("", field, fields)
 
-	s.setCacheField(flexible, name, FlexibleCacheKey)
+	s.setCacheField(flexible, name, flexibleCacheKey, id)
 
 	return flexible
 }
