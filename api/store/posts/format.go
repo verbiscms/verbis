@@ -15,6 +15,13 @@ import (
 func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 	var posts = make(domain.PostData, 0)
 
+	opts := s.options.Struct()
+
+	cfg, err := s.Theme.Get(opts.ActiveTheme)
+	if err != nil {
+		logger.WithError(err).Panic()
+	}
+
 	for _, v := range raw {
 		if !s.find(posts, v.ID) {
 			p := domain.PostDatum{
@@ -33,7 +40,7 @@ func (s *Store) format(raw []postsRaw, layout bool) domain.PostData {
 				p.Layout = s.finder.Layout(filepath.Join(s.Paths.Themes, theme), p, false)
 			}
 
-			p.Permalink = s.permalink(&p)
+			p.Permalink = s.permalink(&p, opts, cfg)
 
 			posts = append(posts, p)
 		}
