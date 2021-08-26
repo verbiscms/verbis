@@ -53,37 +53,47 @@
 					<!-- Header -->
 					<div class="proxies-config-header">
 						<h2>Configuration</h2>
-						<el-button size="small" @click="showNewModal = true">New Proxy</el-button>
+						<el-button size="small" @click="showModal = true">New Proxy</el-button>
 					</div>
+					<el-alert class="mb-3" title="Order" type="warning" description="The order of which the proxies are defined are important for more info visit the link to the left." show-icon></el-alert>
 					<!-- Proxies -->
-					<draggable v-if="proxies && proxies.length" v-model="proxies" draggable=".item">
-						<div v-for="(proxy, index) in proxies" :key="index" class="item">
+					<draggable
+						class="proxies-draggable"
+						:class="{ 'proxies-draggable-dragging' : drag }"
+						v-if="proxies && proxies.length"
+						v-model="proxies"
+						@start="drag = true"
+						@end="drag = false">
+						<div v-for="(proxy, index) in proxies" :key="index" class="proxies-draggable-item">
 							<el-card class="box-card" shadow="never">
-								<div class="proxies-config-item-header">
-									<h4>{{ proxy.path }}</h4>
-									<el-button-group>
-										<el-button size="mini" icon="el-icon-edit" @click=""></el-button>
-										<el-button size="mini" icon="el-icon-rank"></el-button>
-										<el-popconfirm confirmButtonText="Yes" cancelButtonText="No" icon="el-icon-info" iconColor="red" title="Are you sure to delete this proxy?" @confirm="deleteProxy(index)">
-											<template #reference>
-												<el-button size="mini" icon="el-icon-delete"></el-button>
-											</template>
-										</el-popconfirm>
-									</el-button-group>
-								</div>
+								<!-- Header -->
+								<template #header>
+									<div class="proxies-config-item-header">
+										<span>{{ proxy.path }}</span>
+										<el-button-group>
+											<el-button size="small" icon="el-icon-edit" @click="editProxy(index)"></el-button>
+											<el-button size="small" icon="el-icon-rank"></el-button>
+											<el-popconfirm confirmButtonText="Yes" cancelButtonText="No" icon="el-icon-danger" iconColor="red" title="Are you sure to delete this proxy?" @confirm="deleteProxy(index)">
+												<template #reference>
+													<el-button size="small" icon="el-icon-delete"></el-button>
+												</template>
+											</el-popconfirm>
+										</el-button-group>
+									</div>
+								</template>
 								<!-- Path -->
 								<div class="proxies-config-item">
-									<h4>Path:</h4>
+									<h6>Path:</h6>
 									<p>{{ proxy.path }}</p>
 								</div>
 								<!-- Host -->
 								<div class="proxies-config-item">
-									<h4>Host:</h4>
+									<h6>Host:</h6>
 									<p>{{ proxy.host }}</p>
 								</div>
 								<!-- Rewrites -->
 								<div class="proxies-config-item">
-									<h4>Rewrites:</h4>
+									<h6>Rewrites:</h6>
 									<el-table v-if="proxy.rewrites && proxy['rewrites'].length" size="mini" :data="proxy.rewrites" border style="width: 100%; margin-top: 10px">
 										<el-table-column prop="from" label="From Path"></el-table-column>
 										<el-table-column prop="to" label="To Path"></el-table-column>
@@ -92,7 +102,7 @@
 								</div><!-- /Rewrites -->
 								<!-- Regex -->
 								<div class="proxies-config-item">
-									<h4>Regex Rewrites:</h4>
+									<h6>Regex Rewrites:</h6>
 									<el-table v-if="proxy.rewrites && proxy['rewrites'].length" size="mini" :data="proxy.rewrites" border style="width: 100%; margin-top: 10px">
 										<el-table-column prop="from" label="From Path"></el-table-column>
 										<el-table-column prop="to" label="To Path"></el-table-column>
@@ -113,7 +123,7 @@
 		<!-- =====================
 			Create New Modal
 			===================== -->
-		<NewProxyModal :visible.sync="showNewModal" @create="createProxy"></NewProxyModal>
+		<NewProxyModal :visible.sync="showModal" @create="createProxy"></NewProxyModal>
 	</section>
 </template>
 
@@ -143,8 +153,10 @@ export default {
 				{ required: true, message: 'Enter link text for the menu item', trigger: 'blur' },
 			],
 		},
-		showNewModal: false,
+		showModal: false,
 		activeCollapse: "",
+		updatingProxy: {},
+		drag: false,
 		rewriteExamples: [
 			{from: '/old', to: '/new'},
 			{from: '/api/*', to: '/$1'},
@@ -156,6 +168,28 @@ export default {
 			{from: '^/api/.+?/(.*)', to: '/v2/$1'},
 		]
 	}),
+	created() {
+		setTimeout(() => {
+			this.proxies =  [
+				{
+					"host": "https://35.214.23.223:5000/tools/serp-speed",
+					"path": "/tools/serp-speed",
+					"rewrites": {
+						"map/$1":"map/$3",
+					},
+					"rewrite_regex": [],
+				},
+				{
+					"host": "https://35.214.23.223:5000/tools/serp-speed",
+					"path": "/tools/reredirect",
+					"rewrites": {
+						"map/$1":"map/$3",
+					},
+					"rewrite_regex": [],
+				}
+			]
+		}, 500)
+	},
 	methods: {
 		/**
 		 * Creates a new reverse proxy and adds to the
@@ -163,12 +197,16 @@ export default {
 		 */
 		createProxy(proxy) {
 			this.proxies.push(proxy);
-			this.showNewModal = false;
+			this.showModal = false;
 		},
 		deleteProxy(index) {
 			if (index !== -1) {
 				this.proxies.splice(index, 1);
 			}
+		},
+		editProxy(index) {
+			this.updatingProxy = this.proxies[index];
+			this.showModal = true;
 		}
 	},
 	computed: {
@@ -206,6 +244,10 @@ export default {
 		.el-empty__description {
 			display: none !important;
 		}
+
+		.el-alert__description {
+			margin-top: 0;
+		}
 	}
 
 	// Config
@@ -225,7 +267,10 @@ export default {
 		}
 
 		&-item {
-			margin-bottom: 1rem;
+			margin-bottom: 10px;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
 
 			p {
 				margin-bottom: 0;
@@ -239,7 +284,13 @@ export default {
 				display: flex;
 				justify-content: space-between;
 				align-items: center;
-				border-bottom: 1px solid rgba($grey, 0.3);
+
+				span {
+					// TODO change to Element UI colour var
+					color: rgb(121, 187, 255);
+					font-weight: 600;
+					font-size: 0.9rem;
+				}
 			}
 		}
 	}
@@ -255,6 +306,26 @@ export default {
 
 		&-rewrite {
 			margin-bottom: 2.4rem;
+		}
+	}
+
+	// Draggable
+	// =========================================================================
+
+	&-draggable {
+		padding: 1rem;
+		// TODO change to Element UI colour var
+		border: 1px dashed rgba($grey, 0.3);
+		border-radius: 4px;
+
+		&-item {
+			margin-bottom: 1rem;
+		}
+
+		&-dragging {
+			// TODO change to Element UI colour var
+			background-color: #ecf5ff;
+			border: 1px dashed #409EFF;
 		}
 	}
 }

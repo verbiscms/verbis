@@ -66,6 +66,9 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		update: {
+			type: Object,
+		}
 	},
 	data: () => ({
 		proxy: {},
@@ -74,7 +77,6 @@ export default {
 				{ required: true, message: 'Enter a from path.', trigger: 'blur' },
 				{ required: true, message: 'Enter a to path.', trigger: 'blur' },
 			]
-
 		}
 	}),
 	mounted() {
