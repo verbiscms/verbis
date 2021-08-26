@@ -23,7 +23,7 @@ type (
 		// "/users/*/orders/*": "/user/$1/order/$2",
 		Rewrite map[string]string `json:"rewrite"`
 		// RegexRewrite defines rewrite rules using regexp.Rexexp
-		// with captures Every capture group in the values can
+		// with captures. Every capture group in the values can
 		// be retrieved by index e.g. $1, $2 and so on.
 		// Example:
 		// "^/old/[0.9]+/":     "/new",

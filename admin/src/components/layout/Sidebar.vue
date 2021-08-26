@@ -158,6 +158,13 @@
 											<span>Storage</span>
 										</router-link>
 									</li><!-- /Storage -->
+									<!-- Proxies -->
+									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'proxies' }" @click="$emit('close', true)">
+										<router-link class="aside-nav-link" :to="{ name: 'proxies' }">
+											<i class="feather feather-refresh-cw"></i>
+											<span>Proxies</span>
+										</router-link>
+									</li><!-- /Proxies -->
 									<!-- Console -->
 									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'console' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'console' }">

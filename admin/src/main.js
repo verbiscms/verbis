@@ -22,6 +22,9 @@ import VueNoty from 'vuejs-noty'
 import OnLoad from 'vue-onload'
 import { PrismEditor } from 'vue-prism-editor';
 import {globalMixin} from "@/util/global";
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+
 require('./functions.js');
 
 // Local
@@ -76,6 +79,9 @@ Vue.use(require('vue-moment'));
 
 // OnLoad
 Vue.use(OnLoad)
+
+// Element
+Vue.use(ElementUI);
 
 /**
  * Components

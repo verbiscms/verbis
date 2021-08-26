@@ -77,7 +77,7 @@ func (t *MiddlewareTestSuite) TestProxy() {
 			http.StatusOK,
 			"verbis",
 		},
-		"Success": {
+		"Simple": {
 			domain.Proxy{Host: "https://github.com", Path: "/test"},
 			"/test",
 			http.StatusOK,
