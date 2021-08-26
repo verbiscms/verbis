@@ -42,17 +42,17 @@ func New(d *deps.Deps) *Server {
 
 	server := &Server{r}
 
+	if d.Installed {
+		r.Use(middleware.Setters(d))
+		r.Use(middleware.Redirects(d))
+	}
+
 	// Global middleware
 	r.Use(logger.Middleware())
 	r.Use(location.Default())
 	r.Use(middleware.Installed(d))
 	r.Use(middleware.Redirects(d))
 	r.Use(middleware.Proxy(d))
-
-	if d.Installed {
-		r.Use(middleware.Setters(d))
-		r.Use(middleware.Redirects(d))
-	}
 
 	if !api.Production {
 		debug := r.Group("/debug/pprof")

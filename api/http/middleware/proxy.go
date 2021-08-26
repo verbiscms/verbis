@@ -18,12 +18,21 @@ import (
 	"strings"
 )
 
+// Proxy creates a reverse proxy as defined in the options.
+// The URL's will be parsed and compared. A new
+// httputil.ReverseProxy will be created to
+// handle traffic. URL's will be rewritten
+// if there are regex and rewrite rules
+// attached to the proxy.
+// Capture tokens, rewrite rules regex are replicated. from Echo as below.
+// https://github.com/labstack/echo/blob/master/middleware/middleware.go
 func Proxy(d *deps.Deps) gin.HandlerFunc {
 	const op = "Middleware.Proxy"
 
 	return func(ctx *gin.Context) {
 		for _, config := range d.Options.Proxies {
 			target, err := url.Parse(config.Host)
+
 			if err != nil {
 				logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error parsing proxy configuration", Operation: op, Err: err}).Error()
 				ctx.Next()
@@ -113,6 +122,7 @@ func rewriteURL(rewriteRegex map[*regexp.Regexp]string, req *http.Request) error
 	// want to use path part for rewriting and therefore
 	// trim prefix if it exists.
 	rawURI := req.RequestURI
+
 	if rawURI != "" && rawURI[0] != '/' {
 		prefix := ""
 		if req.URL.Scheme != "" {
@@ -127,14 +137,13 @@ func rewriteURL(rewriteRegex map[*regexp.Regexp]string, req *http.Request) error
 	}
 
 	for k, v := range rewriteRegex {
-		if replacer := captureTokens(k, rawURI); replacer != nil {
+		replacer := captureTokens(k, rawURI)
+		if replacer != nil {
 			uri, err := req.URL.Parse(replacer.Replace(v))
 			if err != nil {
 				return err
 			}
-
 			req.URL = uri
-
 			return nil // Rewrite only once
 		}
 	}
