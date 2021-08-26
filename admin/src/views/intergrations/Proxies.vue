@@ -14,16 +14,16 @@
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<div class="row">
+			<div class="row proxies">
 				<!-- =====================
 					Details
 					===================== -->
 				<div class="col-12 col-desk-5">
 					<!-- Header -->
 					<div class="proxies-info-header">
-						<h2 class="mb-0">Reverse Proxies:</h2>
-						<p>A reverse proxy server is a type of proxy server that typically sits behind the firewall in a private network and directs client requests to the appropriate backend server. A reverse proxy provides an additional level of abstraction and control to ensure the smooth flow of network traffic between clients and servers.</p>
-						<p></p>
+						<h2 class="mb-1">Reverse Proxies:</h2>
+						<p class="mb-2">A reverse proxy accepts a request from a client, forwards it to a server that can fulfill it, and returns the server’s response to the client. Verbis allows the use of reverse proxies to proxy traffic to external websites.</p>
+						<el-link href="https://verbiscms.com" target="_blank">Visit documentation</el-link>
 					</div>
 					<!-- Rewrites -->
 					<div class="proxies-info-rewrite">
@@ -56,16 +56,56 @@
 						<el-button size="small" @click="showNewModal = true">New Proxy</el-button>
 					</div>
 					<!-- Proxies -->
-					<draggable v-model="proxies" draggable=".item">
+					<draggable v-if="proxies && proxies.length" v-model="proxies" draggable=".item">
 						<div v-for="(proxy, index) in proxies" :key="index" class="item">
 							<el-card class="box-card" shadow="never">
-							<h2>{{ proxy.host }}</h2>
-							<h2>{{ proxy.path }}</h2>
-							<h2>{{ proxy.rewrite }}</h2>
-							<h2>{{ proxy.rewrite_regex }}</h2>
+								<div class="proxies-config-item-header">
+									<h4>{{ proxy.path }}</h4>
+									<el-button-group>
+										<el-button size="mini" icon="el-icon-edit" @click=""></el-button>
+										<el-button size="mini" icon="el-icon-rank"></el-button>
+										<el-popconfirm confirmButtonText="Yes" cancelButtonText="No" icon="el-icon-info" iconColor="red" title="Are you sure to delete this proxy?" @confirm="deleteProxy(index)">
+											<template #reference>
+												<el-button size="mini" icon="el-icon-delete"></el-button>
+											</template>
+										</el-popconfirm>
+									</el-button-group>
+								</div>
+								<!-- Path -->
+								<div class="proxies-config-item">
+									<h4>Path:</h4>
+									<p>{{ proxy.path }}</p>
+								</div>
+								<!-- Host -->
+								<div class="proxies-config-item">
+									<h4>Host:</h4>
+									<p>{{ proxy.host }}</p>
+								</div>
+								<!-- Rewrites -->
+								<div class="proxies-config-item">
+									<h4>Rewrites:</h4>
+									<el-table v-if="proxy.rewrites && proxy['rewrites'].length" size="mini" :data="proxy.rewrites" border style="width: 100%; margin-top: 10px">
+										<el-table-column prop="from" label="From Path"></el-table-column>
+										<el-table-column prop="to" label="To Path"></el-table-column>
+									</el-table>
+									<p v-else>No rewrites set</p>
+								</div><!-- /Rewrites -->
+								<!-- Regex -->
+								<div class="proxies-config-item">
+									<h4>Regex Rewrites:</h4>
+									<el-table v-if="proxy.rewrites && proxy['rewrites'].length" size="mini" :data="proxy.rewrites" border style="width: 100%; margin-top: 10px">
+										<el-table-column prop="from" label="From Path"></el-table-column>
+										<el-table-column prop="to" label="To Path"></el-table-column>
+									</el-table>
+									<p v-else>No rewrites set</p>
+								</div><!-- /Regex -->
 							</el-card>
 						</div>
 					</draggable><!-- /Proxies -->
+					<el-empty v-else :image-size="100">
+						<h4>No proxies available</h4>
+						<p>Click the button above to create a new proxy</p>
+					</el-empty>
 
 				</div><!-- /Col -->
 			</div><!-- /Row -->
@@ -104,6 +144,7 @@ export default {
 			],
 		},
 		showNewModal: false,
+		activeCollapse: "",
 		rewriteExamples: [
 			{from: '/old', to: '/new'},
 			{from: '/api/*', to: '/$1'},
@@ -124,6 +165,11 @@ export default {
 			this.proxies.push(proxy);
 			this.showNewModal = false;
 		},
+		deleteProxy(index) {
+			if (index !== -1) {
+				this.proxies.splice(index, 1);
+			}
+		}
 	},
 	computed: {
 		/**
@@ -152,6 +198,16 @@ export default {
 
 .proxies {
 
+	// Props
+	// =========================================================================
+
+	::v-deep {
+
+		.el-empty__description {
+			display: none !important;
+		}
+	}
+
 	// Config
 	// =========================================================================
 
@@ -167,6 +223,25 @@ export default {
 				margin-bottom: 0;
 			}
 		}
+
+		&-item {
+			margin-bottom: 1rem;
+
+			p {
+				margin-bottom: 0;
+			}
+
+			&:last-child {
+				margin-bottom: 0;
+			}
+
+			&-header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				border-bottom: 1px solid rgba($grey, 0.3);
+			}
+		}
 	}
 
 	// Info
@@ -179,7 +254,7 @@ export default {
 		}
 
 		&-rewrite {
-			margin-bottom: 2rem;
+			margin-bottom: 2.4rem;
 		}
 	}
 }
