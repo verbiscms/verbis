@@ -65,7 +65,7 @@
 						@start="drag = true"
 						@end="drag = false">
 						<div v-for="(proxy, index) in proxies" :key="index" class="proxies-draggable-item">
-							<el-card class="box-card" shadow="never">
+							<el-card class="proxies-card" shadow="never">
 								<!-- Header -->
 								<template #header>
 									<div class="proxies-config-item-header">
@@ -235,6 +235,7 @@ export default {
 // =========================================================================
 
 .proxies {
+	$self: &;
 
 	// Props
 	// =========================================================================
@@ -324,8 +325,13 @@ export default {
 
 		&-dragging {
 			// TODO change to Element UI colour var
-			background-color: #ecf5ff;
+
 			border: 1px dashed #409EFF;
+			cursor: pointer;
+
+			#{$self}-card {
+				background-color: #ecf5ff;
+			}
 		}
 	}
 }
