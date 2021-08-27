@@ -5,7 +5,7 @@
 	<!-- Body -->
 	<el-form class="item" :model="form" size="small" ref="form" label-width="120px" label-position="left">
 		<!-- Name -->
-		{{ test }}
+		<h2>https://stackoverflow.com/questions/62819916/computed-property-set-not-called-in-vue</h2>
 		<el-form-item label="Name" prop="name" :rules="{ required: true, message: 'Enter a Name.', trigger: 'blur' }">
 			<el-input placeholder="Add a name" v-model="test.name"></el-input>
 		</el-form-item>
@@ -188,6 +188,7 @@ export default {
 				console.log(el);
 			}
 		},
+
 		test: {
 			get() {
 				return this.itemTest;
