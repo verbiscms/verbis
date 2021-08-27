@@ -71,7 +71,7 @@
 						<el-alert class="config-alert" title="Order" type="warning" description="The order of which the proxies are defined are important for more info visit the link to the left." show-icon></el-alert>
 					</div><!-- /Config -->
 					<!-- Proxies -->
-					<el-form :model="form" size="small" ref="proxiesForm" label-width="120px" label-position="left" v-if="proxies && proxies.length">
+					<el-form v-if="proxies && proxies.length">
 						<el-collapse class="proxies" v-model="activeCollapse" accordion>
 							<draggable
 								class="proxies-draggable"
@@ -85,7 +85,12 @@
 									<!-- Header -->
 									<template slot="title">
 										<div class="proxies-header">
-											<span>{{ proxy.name }}</span>
+											<!-- Info -->
+											<div class="proxies-header-info">
+												<i class="el-icon-warning-outline c-danger" ref="proxyError"></i>
+												<span>{{ proxy.name }}</span>
+											</div>
+											<!--  Actions -->
 											<el-button-group class="proxies-header-btns">
 												<el-button size="mini" icon="el-icon-edit" @click="handleCollapse(index)"></el-button>
 												<el-button size="mini" icon="el-icon-rank" class="proxies-handle"></el-button>
@@ -97,75 +102,7 @@
 											</el-button-group>
 										</div>
 									</template><!-- /Header -->
-									<!-- Body -->
-									<div class="proxies-body">
-										<!-- Name -->
-										<el-form-item label="Name" prop="name" :rules="{ required: true, message: 'Enter a Name.', trigger: 'blur' }">
-											<el-input placeholder="Add a name" v-model="proxies[index].name"></el-input>
-										</el-form-item>
-										<!-- Path -->
-										<el-form-item label="Path" prop="path" :rules="{ required: true, message: 'Enter a Path.', trigger: 'blur' }">
-											<el-input placeholder="Add a path" v-model="proxies[index].path"></el-input>
-										</el-form-item>
-										<!-- Host -->
-										<el-form-item label="Host" prop="host" :rules="{ required: true, message: 'Enter a Host.', trigger: 'blur' }">
-											<el-input placeholder="Add a host" v-model="proxies[index].host"></el-input>
-										</el-form-item>
-										<!-- Rewrites -->
-										<el-form-item label="Rewrites" prop="rewrites">
-											<el-button size="mini" icon="el-icon-plus" @click="addRewrite(index)"></el-button>
-										</el-form-item>
-										<el-table v-if="proxy.rewrite && proxy['rewrite'].length" size="mini" :data="proxy.rewrite" border style="width: 100%; margin: 10px 0;">
-											<!-- From Path -->
-											<el-table-column prop="from" label="From Path">
-												<template slot-scope="scope">
-													<el-input placeholder="e.g. /api/*" v-model="scope.row.from" size="mini"></el-input>
-												</template>
-											</el-table-column>
-											<!-- To Path -->
-											<el-table-column prop="to" label="To Path">
-												<template slot-scope="scope">
-													<el-input placeholder="e.g. /$1" v-model="scope.row.to" size="mini"></el-input>
-												</template>
-											</el-table-column>
-											<!-- Delete -->
-											<el-table-column label="Actions" width="74px" align="right">
-												<template slot-scope="scope">
-													<el-button icon="el-icon-delete" size="mini" type="danger"  @click="handleDeleteRewrite(index, scope.$index)"></el-button>
-												</template>
-											</el-table-column>
-										</el-table>
-										<span v-else>
-											<p>No rewrites</p>
-										</span>
-										<!-- Regex -->
-										<el-form-item label="Regex Rewrites" prop="regex">
-											<el-button size="mini" icon="el-icon-plus" @click="addRewrite(index, true)"></el-button>
-										</el-form-item>
-										<el-table v-if="proxy.rewrite_regex && proxy.rewrite_regex.length" size="mini" :data="proxy.rewrite_regex" border style="width: 100%; margin-top: 10px">
-											<!-- From Path -->
-											<el-table-column prop="from" label="From Path">
-												<template slot-scope="scope">
-													<el-input placeholder="e.g. /old/[0.9]+/" v-model="scope.row.from" size="mini"></el-input>
-												</template>
-											</el-table-column>
-											<!-- To Path -->
-											<el-table-column prop="to" label="To Path">
-												<template slot-scope="scope">
-													<el-input placeholder="e.g. /new" v-model="scope.row.to" size="mini"></el-input>
-												</template>
-											</el-table-column>
-											<!-- Delete -->
-											<el-table-column label="Actions" width="74px" align="right">
-												<template slot-scope="scope">
-													<el-button icon="el-icon-delete" size="mini" type="danger"  @click="handleDeleteRewrite(index, scope.$index, true)"></el-button>
-												</template>
-											</el-table-column>
-										</el-table>
-										<span v-else>
-											<p>No regex rewrites</p>
-										</span>
-									</div><!-- /Body -->
+									<ProxyItem :item="proxy"></ProxyItem>
 								</el-collapse-item>
 							</draggable>
 						</el-collapse><!-- /Proxies -->
@@ -188,6 +125,7 @@
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
 import {optionsMixin} from "@/util/options";
 import draggable from 'vuedraggable'
+import ProxyItem from "../../components/proxies/ProxyItem";
 
 const UNASSIGNED_PREFIX = "Unassigned";
 
@@ -196,11 +134,18 @@ export default {
 	title: "Proxies",
 	mixins: [optionsMixin],
 	components: {
+		ProxyItem,
 		Breadcrumbs,
 		draggable,
 	},
 	data: () => ({
-		form: {},
+		form: [
+			{
+				name: "",
+				from: "",
+				to: "",
+			},
+		],
 		proxies: [],
 		rules: {
 			name: [
@@ -230,13 +175,21 @@ export default {
 			this.proxies = this.flattenProxies(proxies);
 		},
 		saveProxies() {
-			this.$refs['proxiesForm'].validate((valid) => {
-				if (valid) {
-					this.data['proxies'] = this.expandRewrites(this.proxies);
-					this.save();
-					return;
-				}
-				this.$message.error('Error saving proxies');
+			console.log(this.$refs);
+			this.proxies.forEach((proxy, index) => {
+				this.$refs['proxiesForm'][index].validate((valid) => {
+					if (valid) {
+						this.data['proxies'] = this.expandRewrites(this.proxies);
+						this.save();
+						return;
+					}
+					// add something to form
+
+					console.log(this.$refs['proxyError'][index]);
+
+					this.$message.error('Error saving proxies');
+				});
+
 			});
 		},
 		/**
@@ -271,28 +224,12 @@ export default {
 			this.activeCollapse = this.proxies.length - 1;
 		},
 		/**
-		 * Adds a rewrite regex to the proxy.
-		 * @param index
-		 * @param regex
-		 */
-		addRewrite(index, regex = false) {
-			const key = regex ? "rewrite_regex" : "rewrite";
-			this.proxies[index][key].push({
-				from: "",
-				to: "",
-			});
-			console.log("test")
-		},
-		handleDeleteRewrite(proxyIndex, rowIndex, regex = false) {
-			const key = regex ? "rewrite_regex" : "rewrite";
-			this.proxies[proxyIndex][key].splice(rowIndex, 1)
-		},
-		/**
 		 * Handles the accordion.
 		 */
 		handleCollapse(index) {
 			this.activeCollapse = index;
 		},
+
 		/**
 		 * Handle the start of a drag item, collapses
 		 * all accordion items.
@@ -353,8 +290,18 @@ export default {
 		 */
 		expandRewrites(proxies) {
 			proxies.forEach((proxy, index) => {
-				proxies[index].rewrite = proxy.rewrite.reduce((obj, item) => (obj[item.from] = item.to, obj) ,{});
-				proxies[index].rewrite_regex = proxy.rewrite_regex.reduce((obj, item) => (obj[item.from] = item.to, obj) ,{});
+				const rewrites = proxies[index].rewrite;
+				if (rewrites.length) {
+					proxies[index].rewrite = rewrites.reduce((obj, item) => (obj[item.from] = item.to, obj) ,{});
+				} else {
+					proxies[index].rewrite = {};
+				}
+				const regex = proxies[index].rewrite_regex;
+				if (regex.length) {
+					proxies[index].rewrite_regex = regex.reduce((obj, item) => (obj[item.from] = item.to, obj) ,{});
+				} else {
+					proxies[index].rewrite_regex = {};
+				}
 			});
 			return proxies;
 		}
