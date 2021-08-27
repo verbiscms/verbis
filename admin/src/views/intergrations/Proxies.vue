@@ -71,7 +71,7 @@
 						<el-alert class="config-alert" title="Order" type="warning" description="The order of which the proxies are defined are important for more info visit the link to the left." show-icon></el-alert>
 					</div><!-- /Config -->
 					<!-- Proxies -->
-					<el-form :model="form" size="small" ref="proxiesForm" label-width="80px" label-position="left" v-if="proxies && proxies.length">
+					<el-form :model="form" size="small" ref="proxiesForm" label-width="120px" label-position="left" v-if="proxies && proxies.length">
 						<el-collapse class="proxies" v-model="activeCollapse" accordion>
 							<draggable
 								class="proxies-draggable"
@@ -115,7 +115,7 @@
 										<el-form-item label="Rewrites" prop="rewrites">
 											<el-button size="mini" icon="el-icon-plus" @click="addRewrite(index)"></el-button>
 										</el-form-item>
-										<el-table v-if="proxy.rewrite && proxy['rewrite'].length" size="mini" :data="proxy.rewrite" border style="width: 100%; margin-top: 10px">
+										<el-table v-if="proxy.rewrite && proxy['rewrite'].length" size="mini" :data="proxy.rewrite" border style="width: 100%; margin: 10px 0;">
 											<!-- From Path -->
 											<el-table-column prop="from" label="From Path">
 												<template slot-scope="scope">
@@ -129,12 +129,42 @@
 												</template>
 											</el-table-column>
 											<!-- Delete -->
-											<el-table-column label="Actions" width="100px">
+											<el-table-column label="Actions" width="74px" align="right">
 												<template slot-scope="scope">
-													<el-button class="el-icon-delete" type="danger" style="color: #F56C6C" @click="handleDeleteRewrite(index, scope.$index)"></el-button>
+													<el-button icon="el-icon-delete" size="mini" type="danger"  @click="handleDeleteRewrite(index, scope.$index)"></el-button>
 												</template>
 											</el-table-column>
 										</el-table>
+										<span v-else>
+											<p>No rewrites</p>
+										</span>
+										<!-- Regex -->
+										<el-form-item label="Regex Rewrites" prop="regex">
+											<el-button size="mini" icon="el-icon-plus" @click="addRewrite(index, true)"></el-button>
+										</el-form-item>
+										<el-table v-if="proxy.rewrite_regex && proxy.rewrite_regex.length" size="mini" :data="proxy.rewrite_regex" border style="width: 100%; margin-top: 10px">
+											<!-- From Path -->
+											<el-table-column prop="from" label="From Path">
+												<template slot-scope="scope">
+													<el-input placeholder="e.g. /old/[0.9]+/" v-model="scope.row.from" size="mini"></el-input>
+												</template>
+											</el-table-column>
+											<!-- To Path -->
+											<el-table-column prop="to" label="To Path">
+												<template slot-scope="scope">
+													<el-input placeholder="e.g. /new" v-model="scope.row.to" size="mini"></el-input>
+												</template>
+											</el-table-column>
+											<!-- Delete -->
+											<el-table-column label="Actions" width="74px" align="right">
+												<template slot-scope="scope">
+													<el-button icon="el-icon-delete" size="mini" type="danger"  @click="handleDeleteRewrite(index, scope.$index, true)"></el-button>
+												</template>
+											</el-table-column>
+										</el-table>
+										<span v-else>
+											<p>No regex rewrites</p>
+										</span>
 									</div><!-- /Body -->
 								</el-collapse-item>
 							</draggable>
@@ -339,6 +369,17 @@ export default {
 <style scoped lang="scss">
 
 
+// Props
+// =========================================================================
+
+::v-deep {
+
+	.el-empty__description {
+		display: none !important;
+	}
+}
+
+
 // Info
 // =========================================================================
 
@@ -393,10 +434,6 @@ export default {
 
 	::v-deep {
 
-		.el-empty__description {
-			display: none !important;
-		}
-
 		.el-collapse-item__header {
 			border-bottom: 0;
 			height: auto;
@@ -418,7 +455,6 @@ export default {
 		.el-collapse-item.is-disabled .el-collapse-item__header {
 			cursor: default;
 		}
-
 	}
 
 	// Header
