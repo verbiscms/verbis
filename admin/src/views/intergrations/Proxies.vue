@@ -5,6 +5,7 @@
 	<section>
 		<div class="auth-container">
 			<div class="row">
+				<pre>{{ proxies }}</pre>
 				<div class="col-12">
 					<header class="header header-with-actions header-margin-large">
 						<div class="header-title">
@@ -102,7 +103,7 @@
 											</el-button-group>
 										</div>
 									</template><!-- /Header -->
-									<ProxyItem :item="proxy"></ProxyItem>
+									<ProxyItem></ProxyItem>
 								</el-collapse-item>
 							</draggable>
 						</el-collapse><!-- /Proxies -->
@@ -139,19 +140,6 @@ export default {
 		draggable,
 	},
 	data: () => ({
-		form: [
-			{
-				name: "",
-				from: "",
-				to: "",
-			},
-		],
-		proxies: [],
-		rules: {
-			name: [
-				{required: true, message: 'Enter link text for the menu item', trigger: 'blur'},
-			],
-		},
 		activeCollapse: "",
 		updatingProxy: {},
 		drag: false,
@@ -167,30 +155,8 @@ export default {
 		]
 	}),
 	methods: {
-		runAfterGet() {
-			let proxies = this.data['proxies'];
-			if (!proxies) {
-				return [];
-			}
-			this.proxies = this.flattenProxies(proxies);
-		},
 		saveProxies() {
-			console.log(this.$refs);
-			this.proxies.forEach((proxy, index) => {
-				this.$refs['proxiesForm'][index].validate((valid) => {
-					if (valid) {
-						this.data['proxies'] = this.expandRewrites(this.proxies);
-						this.save();
-						return;
-					}
-					// add something to form
-
-					console.log(this.$refs['proxyError'][index]);
-
-					this.$message.error('Error saving proxies');
-				});
-
-			});
+			// loop over
 		},
 		/**
 		 * Creates a new reverse proxy and adds to the
@@ -218,8 +184,8 @@ export default {
 				name: this.getUnassignedName(),
 				path: "",
 				host: "",
-				rewrite: [],
-				rewrite_regex: [],
+				rewrite: {},
+				rewrite_regex: {},
 			});
 			this.activeCollapse = this.proxies.length - 1;
 		},
@@ -229,7 +195,6 @@ export default {
 		handleCollapse(index) {
 			this.activeCollapse = index;
 		},
-
 		/**
 		 * Handle the start of a drag item, collapses
 		 * all accordion items.
@@ -256,56 +221,18 @@ export default {
 				}
 				counter++;
 			}
-		},
-		/**
-		 * Flattens a rewrite or regex rewrite
-		 * to an object
-		 * @param obj
-		 */
-		flattenRewrite(obj) {
-			let arr = [];
-			for (const key in obj) {
-				arr.push({'from': key, 'to': obj[key]});
-			}
-			return arr;
-		},
-		/**
-		 * Loops over the proxies and assigns the
-		 * rewrites and regex rewrites to an
-		 * array ready for processing.
-		 * @param proxies
-		 */
-		flattenProxies(proxies) {
-			proxies.forEach((proxy, index) => {
-				proxies[index]['rewrite'] = this.flattenRewrite(proxies[index]['rewrite']);
-				proxies[index]['rewrite_regex'] = this.flattenRewrite(proxies[index]['rewrite_regex']);
-			});
-			return proxies;
-		},
-		/**
-		 * Reduces the rewrites and regex rewrites to a
-		 * flattened array ob objects for the API to
-		 * store.
-		 * @param proxies
-		 */
-		expandRewrites(proxies) {
-			proxies.forEach((proxy, index) => {
-				const rewrites = proxies[index].rewrite;
-				if (rewrites.length) {
-					proxies[index].rewrite = rewrites.reduce((obj, item) => (obj[item.from] = item.to, obj) ,{});
-				} else {
-					proxies[index].rewrite = {};
-				}
-				const regex = proxies[index].rewrite_regex;
-				if (regex.length) {
-					proxies[index].rewrite_regex = regex.reduce((obj, item) => (obj[item.from] = item.to, obj) ,{});
-				} else {
-					proxies[index].rewrite_regex = {};
-				}
-			});
-			return proxies;
 		}
 	},
+	computed: {
+		proxies: {
+			get() {
+				return this.data['proxies'];
+			},
+			set(el) {
+				this.$set(this.data, 'proxies', el);
+			}
+		}
+	}
 }
 
 </script>
