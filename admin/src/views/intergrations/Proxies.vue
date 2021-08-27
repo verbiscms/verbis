@@ -11,6 +11,9 @@
 							<h1>Proxies</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
+						<div class="header-actions">
+							<el-button type="primary" @click.prevent="saveProxies" :loading="saving">Update Proxies</el-button>
+						</div>
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
@@ -78,13 +81,13 @@
 								v-loading="doingAxios"
 								@start="handleDragStart"
 								@end="drag = false">
-								<el-collapse-item v-for="(proxy, index) in proxies" :key="index" :disabled="true" class="proxies-item" :name="proxy.name">
+								<el-collapse-item v-for="(proxy, index) in proxies" :key="index" :disabled="true" class="proxies-item" :name="index">
 									<!-- Header -->
 									<template slot="title">
 										<div class="proxies-header">
 											<span>{{ proxy.name }}</span>
 											<el-button-group class="proxies-header-btns">
-												<el-button size="mini" icon="el-icon-edit" @click="handleCollapse(proxy)"></el-button>
+												<el-button size="mini" icon="el-icon-edit" @click="handleCollapse(index)"></el-button>
 												<el-button size="mini" icon="el-icon-rank" class="proxies-handle"></el-button>
 												<el-popconfirm confirmButtonText="Yes" cancelButtonText="No" icon="el-icon-danger" iconColor="red" title="Are you sure to delete this proxy?" @confirm="deleteProxy(index)">
 													<template #reference>
@@ -98,7 +101,7 @@
 									<div class="proxies-body">
 										<!-- Name -->
 										<el-form-item label="Name" prop="name" :rules="{ required: true, message: 'Enter a Name.', trigger: 'blur' }">
-											<el-input placeholder="Add a name" v-model="proxies[index].path"></el-input>
+											<el-input placeholder="Add a name" v-model="proxies[index].name"></el-input>
 										</el-form-item>
 										<!-- Path -->
 										<el-form-item label="Path" prop="path" :rules="{ required: true, message: 'Enter a Path.', trigger: 'blur' }">
@@ -106,16 +109,32 @@
 										</el-form-item>
 										<!-- Host -->
 										<el-form-item label="Host" prop="host" :rules="{ required: true, message: 'Enter a Host.', trigger: 'blur' }">
-											<el-input placeholder="Add a host" v-model="proxies[index].path"></el-input>
+											<el-input placeholder="Add a host" v-model="proxies[index].host"></el-input>
 										</el-form-item>
 										<!-- Rewrites -->
 										<el-form-item label="Rewrites" prop="rewrites">
-											<el-table v-if="proxy.rewrites && proxy['rewrites'].length" size="mini" :data="proxy.rewrites" border style="width: 100%; margin-top: 10px">
-												<el-table-column prop="from" label="From Path"></el-table-column>
-												<el-table-column prop="to" label="To Path"></el-table-column>
-											</el-table>
-											<p v-else>No rewrites set</p>
+											<el-button size="mini" icon="el-icon-plus" @click="addRewrite(index)"></el-button>
 										</el-form-item>
+										<el-table v-if="proxy.rewrite && proxy['rewrite'].length" size="mini" :data="proxy.rewrite" border style="width: 100%; margin-top: 10px">
+											<!-- From Path -->
+											<el-table-column prop="from" label="From Path">
+												<template slot-scope="scope">
+													<el-input placeholder="e.g. /api/*" v-model="scope.row.from" size="mini"></el-input>
+												</template>
+											</el-table-column>
+											<!-- To Path -->
+											<el-table-column prop="to" label="To Path">
+												<template slot-scope="scope">
+													<el-input placeholder="e.g. /$1" v-model="scope.row.to" size="mini"></el-input>
+												</template>
+											</el-table-column>
+											<!-- Delete -->
+											<el-table-column label="Actions" width="100px">
+												<template slot-scope="scope">
+													<el-button class="el-icon-delete" type="danger" style="color: #F56C6C" @click="handleDeleteRewrite(index, scope.$index)"></el-button>
+												</template>
+											</el-table-column>
+										</el-table>
 									</div><!-- /Body -->
 								</el-collapse-item>
 							</draggable>
@@ -152,6 +171,7 @@ export default {
 	},
 	data: () => ({
 		form: {},
+		proxies: [],
 		rules: {
 			name: [
 				{required: true, message: 'Enter link text for the menu item', trigger: 'blur'},
@@ -171,40 +191,35 @@ export default {
 			{from: '^/api/.+?/(.*)', to: '/v2/$1'},
 		]
 	}),
-	created() {
-		setTimeout(() => {
-			this.$set(this.data, 'proxies', [
-				{
-					"name": "Serp Speed",
-					"host": "https://35.214.23.223:5000/tools/serp-speed",
-					"path": "/tools/serp-speed",
-					"rewrites": [
-						{from: "mappp", to: "ap/$"},
-					],
-					"rewrite_regex": [],
-				},
-				{
-					"name": "ReReDirect",
-					"host": "https://35.214.23.223:5000/tools/serp-speed",
-					"path": "/tools/reredirect",
-					"rewrites": {
-						"map/$1": "map/$3",
-					},
-					"rewrite_regex": [],
-				}
-			]);
-		}, 500)
-	},
 	methods: {
+		runAfterGet() {
+			let proxies = this.data['proxies'];
+			if (!proxies) {
+				return [];
+			}
+			this.proxies = this.flattenProxies(proxies);
+		},
+		saveProxies() {
+			this.$refs['proxiesForm'].validate((valid) => {
+				if (valid) {
+					this.data['proxies'] = this.expandRewrites(this.proxies);
+					this.save();
+					return;
+				}
+				this.$message.error('Error saving proxies');
+			});
+		},
 		/**
 		 * Creates a new reverse proxy and adds to the
 		 * proxies array.
+		 * @param proxy
 		 */
 		createProxy(proxy) {
 			this.proxies.push(proxy);
 		},
 		/**
 		 * Deletes a reverse proxy from the array.
+		 * @param index
 		 */
 		deleteProxy(index) {
 			if (index !== -1) {
@@ -220,15 +235,33 @@ export default {
 				name: this.getUnassignedName(),
 				path: "",
 				host: "",
-				rewrites: [],
-				regex_rewrites: [],
-			})
+				rewrite: [],
+				rewrite_regex: [],
+			});
+			this.activeCollapse = this.proxies.length - 1;
+		},
+		/**
+		 * Adds a rewrite regex to the proxy.
+		 * @param index
+		 * @param regex
+		 */
+		addRewrite(index, regex = false) {
+			const key = regex ? "rewrite_regex" : "rewrite";
+			this.proxies[index][key].push({
+				from: "",
+				to: "",
+			});
+			console.log("test")
+		},
+		handleDeleteRewrite(proxyIndex, rowIndex, regex = false) {
+			const key = regex ? "rewrite_regex" : "rewrite";
+			this.proxies[proxyIndex][key].splice(rowIndex, 1)
 		},
 		/**
 		 * Handles the accordion.
 		 */
-		handleCollapse(proxy) {
-			this.activeCollapse = proxy.name;
+		handleCollapse(index) {
+			this.activeCollapse = index;
 		},
 		/**
 		 * Handle the start of a drag item, collapses
@@ -240,7 +273,7 @@ export default {
 		},
 		/**
 		 * Retrieves the unassigned name for a proxy
-		 * when no name is set. It will incrmement
+		 * when no name is set. It will increment
 		 * by one if none is found.
 		 */
 		getUnassignedName() {
@@ -257,20 +290,45 @@ export default {
 				counter++;
 			}
 		},
-	},
-	computed: {
 		/**
-		 *
+		 * Flattens a rewrite or regex rewrite
+		 * to an object
+		 * @param obj
 		 */
-		proxies: {
-			get() {
-				return this.data['proxies'];
-			},
-			set(el) {
-				this.data['proxies'] = el;
+		flattenRewrite(obj) {
+			let arr = [];
+			for (const key in obj) {
+				arr.push({'from': key, 'to': obj[key]});
 			}
+			return arr;
 		},
-	}
+		/**
+		 * Loops over the proxies and assigns the
+		 * rewrites and regex rewrites to an
+		 * array ready for processing.
+		 * @param proxies
+		 */
+		flattenProxies(proxies) {
+			proxies.forEach((proxy, index) => {
+				proxies[index]['rewrite'] = this.flattenRewrite(proxies[index]['rewrite']);
+				proxies[index]['rewrite_regex'] = this.flattenRewrite(proxies[index]['rewrite_regex']);
+			});
+			return proxies;
+		},
+		/**
+		 * Reduces the rewrites and regex rewrites to a
+		 * flattened array ob objects for the API to
+		 * store.
+		 * @param proxies
+		 */
+		expandRewrites(proxies) {
+			proxies.forEach((proxy, index) => {
+				proxies[index].rewrite = proxy.rewrite.reduce((obj, item) => (obj[item.from] = item.to, obj) ,{});
+				proxies[index].rewrite_regex = proxy.rewrite_regex.reduce((obj, item) => (obj[item.from] = item.to, obj) ,{});
+			});
+			return proxies;
+		}
+	},
 }
 
 </script>

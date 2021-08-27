@@ -44,6 +44,11 @@ func Proxy(d *deps.Deps) gin.HandlerFunc {
 				return
 			}
 
+			// TODO Test this!
+			for k, v := range config.RegexRewritePublic {
+				config.RegexRewrite[regexp.MustCompile(k)] = v
+			}
+
 			if config.Rewrite != nil {
 				if config.RegexRewrite == nil {
 					config.RegexRewrite = make(map[*regexp.Regexp]string)
