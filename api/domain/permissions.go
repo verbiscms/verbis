@@ -11,7 +11,7 @@ type Request map[string]Permission
 type Group map[string]Request
 
 type Permission struct {
-	Allow bool
+	Allow bool `json:"allow"`
 	// TBC
 }
 

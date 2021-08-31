@@ -34,7 +34,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 
 		h := handler.NewAPI(d)
 
-		api.Use(middleware.TokenCheck(d.Store.User))
+		//api.Use(middleware.TokenCheck(d.Store.User))
 
 		// Sockets
 		api.GET("/ws", gin.WrapH(sockets.Handler()))
