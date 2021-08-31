@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	app "github.com/verbiscms/verbis/api"
 	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/http/handler"
 	"github.com/verbiscms/verbis/api/http/middleware"
 	"github.com/verbiscms/verbis/api/http/sockets"
@@ -33,6 +34,8 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 
 		h := handler.NewAPI(d)
 
+		api.Use(middleware.TokenCheck(d.Store.User))
+
 		// Sockets
 		api.GET("/ws", gin.WrapH(sockets.Handler()))
 
@@ -47,14 +50,10 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		api.GET("/password/verify/:token", h.Auth.VerifyPasswordToken)
 		//	api.GET("/email/verify/:token", h.Auth.VerifyEmail)
 
-		// Forms
-		forms := api.Group("/forms")
-		forms.POST("/:uuid", h.Forms.Send)
-
 		// Operator
 		operator := api.Group("")
 		// Middleware
-		operator.Use(middleware.OperatorTokenCheck(d))
+		//operator.Use(middleware.OperatorTokenCheck(d))
 
 		// System
 		operator.POST("/update", h.System.Update)
@@ -62,80 +61,104 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		// Session
 		operator.GET("/session", h.Auth.CheckSession)
 
-		// Themes
-		operator.GET("/themes", h.Themes.List)
-		operator.GET("/themes/:name", h.Themes.Find)
-		operator.POST("/themes/:name", h.Themes.Activate)
-		operator.GET("/layouts", h.Themes.Layouts)
-		operator.GET("/templates", h.Themes.Templates)
-		operator.GET("/config", h.Themes.Config)
-
-		// Posts
-		operator.GET("/posts", h.Posts.List)
-		operator.GET("/posts/:id", h.Posts.Find)
-		operator.POST("/posts", h.Posts.Create)
-		operator.PUT("/posts/:id", h.Posts.Update)
-		operator.DELETE("/posts/:id", h.Posts.Delete)
-
-		// Categories
-		operator.GET("/categories", h.Categories.List)
-		operator.GET("/categories/:id", h.Categories.Find)
-		operator.POST("/categories", h.Categories.Create)
-		operator.PUT("/categories/:id", h.Categories.Update)
-		operator.DELETE("/categories/:id", h.Categories.Delete)
-
-		// Media
-		operator.GET("/media", h.Media.List)
-		operator.GET("/media/:id", h.Media.Find)
-		operator.POST("/media", h.Media.Upload)
-		operator.PUT("/media/:id", h.Media.Update)
-		operator.DELETE("/media/:id", h.Media.Delete)
-
-		// Users
-		operator.GET("/users", h.Users.List)
-		operator.GET("/users/:id", h.Users.Find)
-		operator.PUT("/users/:id", h.Users.Update)
-		operator.POST("/users/:id/reset-password", h.Users.ResetPassword)
-
 		// Fields
 		operator.GET("/fields", h.Fields.List)
-
-		// Options
-		operator.GET("/options", h.Options.List)
-		operator.GET("/options/:name", h.Options.Find)
-		operator.POST("/options", h.Options.UpdateCreate)
 
 		// Roles
 		operator.GET("/roles", h.Roles.List)
 
-		// Redirects
-		operator.GET("/redirects", h.Redirects.List)
-		operator.GET("/redirects/:id", h.Redirects.Find)
-		operator.POST("/redirects", h.Redirects.Create)
-		operator.PUT("/redirects/:id", h.Redirects.Update)
-		operator.DELETE("/redirects/:id", h.Redirects.Delete)
+		// Misc
+		operator.GET("/layouts", h.Themes.Layouts)
+		operator.GET("/templates", h.Themes.Templates)
+		operator.GET("/config", h.Themes.Config)
 
 		// Cache
 		operator.POST("/cache", h.Cache.Clear)
 
-		// Forms
-		operator.GET("/forms", h.Forms.List)
-		operator.GET("/forms/:id", h.Forms.Find)
+		// Themes
+		themes := api.Group("/themes")
+		{
+			themes.GET("", h.Themes.List)
+			themes.GET("/:name", h.Themes.Find)
+			themes.POST("/:name", h.Themes.Activate)
+		}
 
-		// Storage
-		operator.POST("/storage", h.Storage.Save)
-		operator.GET("/storage/config", h.Storage.Config)
-		operator.POST("/storage/migrate", h.Storage.Migrate)
-		operator.POST("/storage/bucket", h.Storage.CreateBucket)
-		operator.GET("/storage/bucket/:name", h.Storage.ListBuckets)
-		operator.DELETE("/storage/bucket/:name", h.Storage.DeleteBucket)
+		// Posts
+		posts := api.Group("/posts")
+		{
+			posts.GET("", h.Posts.List)
+			posts.GET("/:id", h.Posts.Find)
+			posts.POST("/", h.Posts.Create)
+			posts.PUT("/:id", h.Posts.Update)
+			posts.DELETE("/:id", h.Posts.Delete)
+		}
 
-		// Administrator
-		admin := api.Group("")
-		admin.Use(middleware.AdminTokenCheck(d))
+		// Categories
+		categories := api.Group("/categories")
+		{
+			categories.GET("", h.Categories.List)
+			categories.GET("/:id", h.Categories.Find)
+			categories.POST("/", h.Categories.Create)
+			categories.PUT("/:id", h.Categories.Update)
+			categories.DELETE("/:id", h.Categories.Delete)
+		}
+
+		// Media
+		media := api.Group("/media")
+		{
+			media.GET("", h.Media.List)
+			media.GET("/:id", h.Media.Find)
+			media.POST("", h.Media.Upload)
+			media.PUT("/:id", h.Media.Update)
+			media.DELETE("/:id", h.Media.Delete)
+		}
 
 		// Users
-		admin.POST("/users", h.Users.Create)
-		admin.DELETE("/users/:id", h.Users.Delete)
+		users := api.Group("/users")
+		{
+			users.GET("", h.Users.List)
+			users.GET("/:id", h.Users.Find)
+			users.PUT("/:id", h.Users.Update)
+			users.POST("", h.Users.Create)
+			users.DELETE("/:id", h.Users.Delete)
+			users.POST("/:id/reset-password", h.Users.ResetPassword)
+		}
+
+		// Settings
+		settings := api.Group("/options")
+		{
+			settings.GET("", middleware.Authorise("settings", domain.ListMethod), h.Options.List)
+			settings.GET("/:name", h.Options.Find)
+			settings.POST("", h.Options.UpdateCreate)
+		}
+
+		// Forms
+		forms := api.Group("/forms")
+		{
+			forms.GET("", h.Forms.List)
+			forms.GET("/:id", h.Forms.Find)
+			forms.POST("/:uuid", h.Forms.Send)
+		}
+
+		// Redirects
+		redirects := api.Group("/redirects")
+		{
+			redirects.GET("", h.Redirects.List)
+			redirects.GET("/:id", h.Redirects.Find)
+			redirects.POST("", h.Redirects.Create)
+			redirects.PUT("/:id", h.Redirects.Update)
+			redirects.DELETE("/:id", h.Redirects.Delete)
+		}
+
+		// Storage
+		storage := api.Group("/storage")
+		{
+			storage.POST("", h.Storage.Save)
+			storage.GET("/config", h.Storage.Config)
+			storage.POST("/migrate", h.Storage.Migrate)
+			storage.POST("/bucket", h.Storage.CreateBucket)
+			storage.GET("/bucket/:name", h.Storage.ListBuckets)
+			storage.DELETE("/bucket/:name", h.Storage.DeleteBucket)
+		}
 	}
 }
