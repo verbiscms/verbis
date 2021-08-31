@@ -11,6 +11,7 @@ type (
 		ID          int    `db:"id" json:"id" binding:"required,numeric" validation_key:"role_id"`
 		Name        string `db:"name" json:"name"`
 		Description string `db:"description" json:"description"`
+		Permissions Group  `db:"-" json:"permissions"`
 	}
 	// Roles represents the slice of Role's.
 	Roles []Role

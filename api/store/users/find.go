@@ -32,6 +32,9 @@ func (s *Store) Find(id int) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
+	// TEMP
+	user.Role.Permissions = domain.Permissions[user.Role.ID]
+
 	return user, nil
 }
 
