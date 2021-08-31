@@ -5,13 +5,10 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/gookit/color"
 	"github.com/spf13/cobra"
-	"github.com/verbiscms/verbis/api/common/paths"
-	"github.com/verbiscms/verbis/api/logger"
-	"io/fs"
-	"os"
-	"path/filepath"
+	"github.com/verbiscms/verbis/api/deps"
+	"github.com/verbiscms/verbis/api/services/media"
 )
 
 var (
@@ -19,19 +16,25 @@ var (
 		Use:   "test",
 		Short: "Test Command",
 		Run: func(cmd *cobra.Command, args []string) {
-			err := filepath.Walk(paths.Get().Storage, func(path string, info fs.FileInfo, err error) error {
-				ext := filepath.Ext(path)
-				if ext == ".webp" {
-					err := os.Remove(path)
-					if err != nil {
-						logger.Trace(err)
-					}
-				}
-				return nil
-			})
+			// Run doctor
+			cfg, _, err := doctor(true)
 			if err != nil {
-				fmt.Println(err)
+				printError(err.Error())
 			}
+
+			d, err := deps.New(*cfg)
+			if err != nil {
+				printError(err.Error())
+			}
+
+			m := media.New(d.Store.Media, d.Storage, d.Store.Options, d.Theme)
+
+			p, err := m.ReGenerateWebP()
+			if err != nil {
+				return
+			}
+
+			color.Green.Println(p)
 		},
 	}
 )

@@ -9,9 +9,9 @@
 <link rel=canonical href="{{ $seo.Canonical }}">
 {{ else }}
 {{ if .IsHomepage -}}
-<link rel=canonical href="{{ .Site.Url }}">
+<link rel=canonical href="{{ .Site.URL }}">
 {{ else -}}
-<link rel=canonical href="{{ .Site.Url }}{{ .Post.Permalink }}">
+<link rel=canonical href="{{ .Site.URL }}{{ .Post.Permalink }}">
 {{ end -}}
 {{ end -}}
 {{- /* Description */}}

@@ -5,7 +5,9 @@
 package fields
 
 import (
+	"github.com/stretchr/testify/mock"
 	"github.com/verbiscms/verbis/api/domain"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	categories "github.com/verbiscms/verbis/api/mocks/store/categories"
 	fields "github.com/verbiscms/verbis/api/mocks/store/fields"
 )
@@ -14,7 +16,7 @@ func (t *FieldTestSuite) TestService_GetField() {
 	tt := map[string]struct {
 		fields domain.PostFields
 		key    string
-		mock   func(f *fields.Repository, c *categories.Repository)
+		mock   func(f *fields.Repository, c *categories.Repository, ca *cache.Store)
 		args   []interface{}
 		want   interface{}
 		err    bool
@@ -23,25 +25,42 @@ func (t *FieldTestSuite) TestService_GetField() {
 			fields: domain.PostFields{
 				{Type: "text", Name: "key1", OriginalValue: "test"},
 			},
-			key:  "key1",
-			mock: nil,
+			key: "key1",
+			mock: func(f *fields.Repository, c *categories.Repository, ca *cache.Store) {
+				CacheFieldError(ca)
+			},
+			args: nil,
+			want: "test",
+		},
+		"From Cache": {
+			fields: domain.PostFields{
+				{Type: "text", Name: "key1", OriginalValue: "test"},
+			},
+			key: "key1",
+			mock: func(f *fields.Repository, c *categories.Repository, ca *cache.Store) {
+				ca.On("Get", mock.Anything, "field-0-0-key1-"+standardCacheKey).
+					Return("test", nil)
+			},
 			args: nil,
 			want: "test",
 		},
 		"No Field": {
 			fields: nil,
 			key:    "wrongval",
-			mock:   nil,
-			args:   nil,
-			want:   "",
-			err:    true,
+			mock: func(f *fields.Repository, c *categories.Repository, ca *cache.Store) {
+				CacheFieldError(ca)
+			},
+			args: nil,
+			want: "",
+			err:  true,
 		},
 		"Post": {
 			fields: domain.PostFields{
 				{Type: "text", Name: "key1", OriginalValue: "test"},
 			},
 			key: "key2",
-			mock: func(f *fields.Repository, c *categories.Repository) {
+			mock: func(f *fields.Repository, c *categories.Repository, ca *cache.Store) {
+				CacheFieldError(ca)
 				f.On("Find", 2).Return(domain.PostFields{{Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},
@@ -70,7 +89,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 	tt := map[string]struct {
 		fields domain.PostFields
 		key    string
-		mock   func(f *fields.Repository, c *categories.Repository)
+		mock   func(f *fields.Repository, c *categories.Repository, ca *cache.Store)
 		args   []interface{}
 		want   interface{}
 		err    bool
@@ -98,7 +117,7 @@ func (t *FieldTestSuite) TestService_GetFieldObject() {
 				{Type: "text", Name: "key1"},
 			},
 			key: "key2",
-			mock: func(f *fields.Repository, c *categories.Repository) {
+			mock: func(f *fields.Repository, c *categories.Repository, ca *cache.Store) {
 				f.On("Find", 2).Return(domain.PostFields{{Type: "text", Name: "key2", OriginalValue: "test"}}, nil)
 			},
 			args: []interface{}{2},

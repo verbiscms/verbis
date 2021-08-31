@@ -4,14 +4,14 @@
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="{{ with $meta.Title }}{{ . }}{{ end }}" />
 <meta property="twitter:description" content="{{ with $meta.Description }}{{ . }}{{ end }}" />
-{{- with .GetImage $meta.ImageId }}
+{{- with .GetImage $meta.ImageID }}
 <meta property="twitter:image" content="{{ . }}">
 {{- end -}}
 {{- else -}}
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="{{ with .Options.MetaTwitterTitle }}{{ . }}{{ end }}" />
 <meta property="twitter:description" content="{{ with .Options.MetaTwitterDescription }}{{ . }}{{ end }}" />
-{{- with .GetImage .Options.MetaFacebookImageId }}
+{{- with .GetImage .Options.MetaFacebookImageID }}
 <meta property="twitter:image" content="{{ . }}">
 {{- end -}}
 {{- end -}}
