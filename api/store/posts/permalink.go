@@ -5,11 +5,8 @@
 package posts
 
 import (
-	//"github.com/verbiscms/verbis/api/config"
 	"github.com/verbiscms/verbis/api/domain"
-	"github.com/verbiscms/verbis/api/logger"
 	"github.com/verbiscms/verbis/api/store/categories"
-	//	"github.com/verbiscms/verbis/api/store/categories"
 )
 
 // permalink
@@ -18,15 +15,8 @@ import (
 // categories. Forward slashes are added to the
 // permalink if they are enabled within the
 // options.
-func (s *Store) permalink(post *domain.PostDatum) string {
+func (s *Store) permalink(post *domain.PostDatum, opts domain.Options, cfg domain.ThemeConfig) string {
 	permaLink := ""
-
-	opts := s.options.Struct()
-
-	cfg, err := s.Theme.Get(opts.ActiveTheme)
-	if err != nil {
-		logger.WithError(err).Panic()
-	}
 
 	postResource := post.Resource
 	hiddenCategory := true

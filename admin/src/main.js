@@ -87,6 +87,9 @@ Vue.use(require('vue-moment'));
 // OnLoad
 Vue.use(OnLoad)
 
+// Element
+Vue.use(ElementUI);
+
 /**
  * Components
  *

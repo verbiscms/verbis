@@ -100,7 +100,7 @@ func (u *Upload) Validate() error {
 // AbsPath returns the absolute path of the upload
 // ready for uploading.
 func (u *Upload) AbsPath() string {
-	return strings.TrimPrefix(filepath.Join(filepath.Dir(u.Path), u.UUID.String()+filepath.Ext(u.Path)), ".")
+	return strings.TrimPrefix(strings.TrimPrefix(filepath.Join(filepath.Dir(u.Path), u.UUID.String()+filepath.Ext(u.Path)), "."), "/")
 }
 
 // Mime returns the Mime type of the upload.

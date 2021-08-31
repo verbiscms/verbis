@@ -122,11 +122,11 @@ func TestUpload_AbsPath(t *testing.T) {
 	}{
 		"Absolute": {
 			Upload{UUID: key, Path: "/uploads/2020/01/file.txt"},
-			"/uploads/2020/01/5855fe24-e0c5-11eb-ba80-0242ac130004.txt",
+			"uploads/2020/01/5855fe24-e0c5-11eb-ba80-0242ac130004.txt",
 		},
 		"Relative": {
 			Upload{UUID: key, Path: "/uploads/2020/01/file.txt"},
-			"/uploads/2020/01/5855fe24-e0c5-11eb-ba80-0242ac130004.txt",
+			"uploads/2020/01/5855fe24-e0c5-11eb-ba80-0242ac130004.txt",
 		},
 	}
 

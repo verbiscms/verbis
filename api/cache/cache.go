@@ -12,6 +12,7 @@ import (
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/logger"
+	"sync"
 	"time"
 )
 
@@ -77,6 +78,7 @@ var (
 	// ErrInvalidDriver is returned by Load when an
 	// invalid driver was passed via the env.
 	ErrInvalidDriver = errors.New("invalid cache Driver")
+	mtx              = sync.Mutex{}
 )
 
 // Load initialises the cache store by the environment.
@@ -122,6 +124,8 @@ func Load(env *environment.Env) (*Cache, error) {
 // Returns errors.NOTFOUND if it could not be found.
 func (c *Cache) Get(ctx context.Context, key interface{}) (interface{}, error) {
 	const op = "Cache.Get"
+	mtx.Lock()
+	defer mtx.Unlock()
 	i, err := c.store.Get(ctx, key)
 	str := cast.ToString(key)
 	if err != nil {
@@ -135,6 +139,8 @@ func (c *Cache) Get(ctx context.Context, key interface{}) (interface{}, error) {
 // Logs errors.INTERNAL if the item could not be set.
 func (c *Cache) Set(ctx context.Context, key interface{}, value interface{}, options Options) {
 	const op = "Cache.Set"
+	mtx.Lock()
+	defer mtx.Unlock()
 	str := cast.ToString(key)
 	err := c.store.Set(ctx, key, value, options.toStore())
 	if err != nil {
@@ -149,6 +155,8 @@ func (c *Cache) Set(ctx context.Context, key interface{}, value interface{}, opt
 // Logs errors.INTERNAL if the item could not be deleted.
 func (c *Cache) Delete(ctx context.Context, key interface{}) {
 	const op = "Cache.Delete"
+	mtx.Lock()
+	defer mtx.Unlock()
 	str := cast.ToString(key)
 	err := c.store.Delete(ctx, key)
 	if err != nil {
@@ -163,10 +171,13 @@ func (c *Cache) Delete(ctx context.Context, key interface{}) {
 // Returns errors.INVALID if the cache could not be invalidated.
 func (c *Cache) Invalidate(ctx context.Context, options InvalidateOptions) error {
 	const op = "Cache.Invalidate"
+	mtx.Lock()
+	defer mtx.Unlock()
 	err := c.store.Invalidate(ctx, options.toStore())
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error invalidating cache", Operation: op, Err: err}
 	}
+	logger.Trace(fmt.Sprintf("Successfully invalidated cache with tags: %v", options.Tags))
 	return nil
 }
 
@@ -174,10 +185,13 @@ func (c *Cache) Invalidate(ctx context.Context, options InvalidateOptions) error
 // Returns errors.INTERNAL if the cache could not be cleared.
 func (c *Cache) Clear(ctx context.Context) error {
 	const op = "Cache.Clear"
+	mtx.Lock()
+	defer mtx.Unlock()
 	err := c.store.Clear(ctx)
 	if err != nil {
 		return &errors.Error{Code: errors.INTERNAL, Message: "Error clearing cache", Operation: op, Err: err}
 	}
+	logger.Trace("Successfully cleared cache")
 	return nil
 }
 

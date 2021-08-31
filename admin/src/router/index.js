@@ -153,6 +153,12 @@ const routes = [
 		component: () => import('../views/intergrations/Console.vue'),
 		meta: { transitionName : 'fade' },
 	},
+	{
+		path: '/integrations/proxies',
+		name: 'proxies',
+		component: () => import('../views/intergrations/Proxies.vue'),
+		meta: { transitionName : 'fade' },
+	},
 	/**
 	 * Account
 	 *

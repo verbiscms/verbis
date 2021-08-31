@@ -15,7 +15,6 @@ import (
 
 	// Import sql driver, required!
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/gookit/color"
 	sm "github.com/hashicorp/go-version"
 	"github.com/jmoiron/sqlx"
 	"io/ioutil"
@@ -53,7 +52,6 @@ func Setup(env *environment.Env) (*MySQL, error) {
 
 	driver, err := sqlx.Connect("mysql", m.connectString())
 	if err != nil {
-		color.Red.Println(err)
 		return nil, &errors.Error{Code: errors.INVALID, Message: internal.ErrDBConnectionMessage, Operation: op, Err: err}
 	}
 

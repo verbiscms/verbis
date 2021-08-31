@@ -113,5 +113,7 @@ type (
 		StorageBucket   string          `json:"storage_bucket"`
 		// Menus
 		NavMenus map[string]interface{} `json:"nav_menus"`
+		// Proxies
+		Proxies []Proxy `json:"proxies"`
 	}
 )

@@ -6,10 +6,13 @@ package fields
 
 import (
 	"bytes"
+	"fmt"
+	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/logger"
+	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	categories "github.com/verbiscms/verbis/api/mocks/store/categories"
 	fields "github.com/verbiscms/verbis/api/mocks/store/fields"
 	media "github.com/verbiscms/verbis/api/mocks/store/media"
@@ -47,12 +50,13 @@ func (t *FieldTestSuite) Reset() {
 }
 
 // GetMockService mock service for testing.
-func (t *FieldTestSuite) GetMockService(f domain.PostFields, fnc func(f *fields.Repository, c *categories.Repository)) *Service {
+func (t *FieldTestSuite) GetMockService(f domain.PostFields, fnc func(f *fields.Repository, c *categories.Repository, ca *cache.Store)) *Service {
 	fieldsMock := &fields.Repository{}
 	categoryMock := &categories.Repository{}
+	cacheMock := &cache.Store{}
 
 	if fnc != nil {
-		fnc(fieldsMock, categoryMock)
+		fnc(fieldsMock, categoryMock, cacheMock)
 	}
 
 	s := t.GetService(f)
@@ -61,6 +65,7 @@ func (t *FieldTestSuite) GetMockService(f domain.PostFields, fnc func(f *fields.
 			Categories: categoryMock,
 			Fields:     fieldsMock,
 		},
+		Cache: cacheMock,
 	}
 
 	return s
@@ -110,10 +115,20 @@ func (t *FieldTestSuite) GetTypeMockService(fnc func(c *categories.Repository, m
 
 // GetService mock service for testing.
 func (t *FieldTestSuite) GetService(f domain.PostFields) *Service {
+	c := &cache.Store{}
+	CacheFieldError(c)
 	return &Service{
 		fields: f,
-		deps:   &deps.Deps{},
+		deps: &deps.Deps{
+			Cache: c,
+		},
 	}
+}
+
+var CacheFieldError = func(ca *cache.Store) {
+	ca.On("Get", mock.Anything, mock.Anything).
+		Return(nil, fmt.Errorf("error"))
+	ca.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything)
 }
 
 func (t *FieldTestSuite) TestNewService() {

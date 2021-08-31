@@ -45,7 +45,11 @@ pnpm-debug.log*
 admin/dist/*
 !admin/dist/.gitkeep
 verbisexec
+verbisexec-linux
 verbisexec.old
 *blob.go
 CREDENTIALS.md
 gcpjson.json
+
+# Temp
+themes/Reddico
