@@ -162,7 +162,7 @@
 									<li class="aside-nav-item" :class="{ 'aside-nav-item-active' : activePage === 'proxies' }" @click="$emit('close', true)">
 										<router-link class="aside-nav-link" :to="{ name: 'proxies' }">
 											<i class="feather feather-refresh-cw"></i>
-											<span>Proxies</span>
+											<span>Reverse Proxies</span>
 										</router-link>
 									</li><!-- /Proxies -->
 									<!-- Console -->

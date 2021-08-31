@@ -8,7 +8,7 @@
 				<div class="col-12">
 					<header class="header header-with-actions header-margin-large">
 						<div class="header-title">
-							<h1>Proxies</h1>
+							<h1>Reverse Proxies</h1>
 							<Breadcrumbs></Breadcrumbs>
 						</div>
 						<div class="header-actions">
@@ -26,7 +26,7 @@
 					<div class="info">
 						<!-- Header -->
 						<div class="info-header">
-							<h2 class="mb-1">Reverse Proxies:</h2>
+							<h2 class="mb-1">Information:</h2>
 							<p class="mb-2">A reverse proxy accepts a request from a client, forwards it to a server that
 								can fulfill it, and returns the server’s response to the client. Verbis allows the use of
 								reverse proxies to proxy traffic to external websites.</p>
@@ -49,7 +49,7 @@
 							<p>Regex Rewrites defines rewrite rules using regexp exppresions with captures. Every capture
 								group in the values can be retrieved by index e.g. $1, $2 and so on.</p>
 							<h6>Examples:</h6>
-							<el-table size="small" :data="rewriteExamples" border style="width: 100%; margin-top: 10px">
+							<el-table size="small" :data="regexExamples" border style="width: 100%; margin-top: 10px">
 								<el-table-column prop="from" label="From Path"></el-table-column>
 								<el-table-column prop="to" label="To Path"></el-table-column>
 							</el-table>
@@ -101,7 +101,13 @@
 														<el-button style="border-radius: 0;" :disabled="proxy.path === ''" size="mini" icon="el-icon-view"></el-button>
 													</el-link>
 													<!-- Delete -->
-													<el-popconfirm confirmButtonText="Yes" cancelButtonText="No" icon="el-icon-danger" iconColor="red" title="Are you sure to delete this proxy?" @confirm="deleteProxy(index)">
+													<el-popconfirm
+														confirmButtonText="Yes"
+														cancelButtonText="No"
+														icon="el-icon-danger"
+														iconColor="red"
+														title="Are you sure to delete this proxy?"
+														@confirm="deleteProxy(index)">
 														<template #reference>
 															<el-button style="border-radius: 0 4px 4px 0; border-left: 0;" size="mini" icon="el-icon-delete"></el-button>
 														</template>
@@ -220,7 +226,7 @@ export default {
 		 */
 		handleCollapse(index) {
 			if (this.activeCollapse.includes(index)) {
-				this.activeCollapse.splice(index, 1);
+				this.activeCollapse.splice(this.activeCollapse.indexOf(index), 1);
 				return;
 			}
 			this.activeCollapse.push(index);
