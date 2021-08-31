@@ -4,8 +4,6 @@
 
 package domain
 
-import "regexp"
-
 type (
 	// Proxy defines the configuration for a singular reverse proxy.
 	Proxy struct {
@@ -30,9 +28,6 @@ type (
 		// Example:
 		// "^/old/[0.9]+/":     "/new",
 		// "^/api/.+?/(.*)":    "/v2/$1",
-		RegexRewritePublic map[string]string `json:"rewrite_regex,omitempty"`
-
-		RegexRewrite map[*regexp.Regexp]string `db:"-" json:"-" `
-
+		RegexRewrite map[string]string `json:"rewrite_regex,omitempty"`
 	}
 )

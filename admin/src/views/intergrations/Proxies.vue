@@ -5,7 +5,6 @@
 	<section>
 		<div class="auth-container">
 			<div class="row">
-				<pre>{{ proxies }}</pre>
 				<div class="col-12">
 					<header class="header header-with-actions header-margin-large">
 						<div class="header-title">
@@ -71,47 +70,56 @@
 						<!-- Order Alert -->
 						<el-alert class="config-alert" title="Order" type="warning" description="The order of which the proxies are defined are important for more info visit the link to the left." show-icon></el-alert>
 					</div><!-- /Config -->
-					<!-- Proxies -->
-					<el-form v-if="proxies && proxies.length">
-						<el-collapse class="proxies" v-model="activeCollapse" accordion>
-							<draggable
-								class="proxies-draggable"
-								:class="{ 'proxies-draggable-dragging' : drag }"
-								v-model="proxies"
-								handle=".proxies-handle"
-								v-loading="doingAxios"
-								@start="handleDragStart"
-								@end="drag = false">
-								<el-collapse-item v-for="(proxy, index) in proxies" :key="index" :disabled="true" class="proxies-item" :name="index">
-									<!-- Header -->
-									<template slot="title">
-										<div class="proxies-header">
-											<!-- Info -->
-											<div class="proxies-header-info">
-												<i class="el-icon-warning-outline c-danger" ref="proxyError"></i>
-												<span>{{ proxy.name }}</span>
-											</div>
-											<!--  Actions -->
-											<el-button-group class="proxies-header-btns">
-												<el-button size="mini" icon="el-icon-edit" @click="handleCollapse(index)"></el-button>
-												<el-button size="mini" icon="el-icon-rank" class="proxies-handle"></el-button>
-												<el-popconfirm confirmButtonText="Yes" cancelButtonText="No" icon="el-icon-danger" iconColor="red" title="Are you sure to delete this proxy?" @confirm="deleteProxy(index)">
-													<template #reference>
-														<el-button style="border-radius: 0 4px 4px 0;" size="mini" icon="el-icon-delete"></el-button>
-													</template>
-												</el-popconfirm>
-											</el-button-group>
-										</div>
-									</template><!-- /Header -->
-									<ProxyItem></ProxyItem>
-								</el-collapse-item>
-							</draggable>
-						</el-collapse><!-- /Proxies -->
-					</el-form>
-					<el-empty v-else :image-size="100">
-						<h4>No proxies available</h4>
-						<p>Click the button above to create a new proxy</p>
-					</el-empty>
+					<div v-loading="doingAxios">
+						<!-- Proxies -->
+						<el-form v-if="proxies && proxies.length && !doingAxios">
+							<el-collapse class="proxies" v-model="activeCollapse">
+								<draggable
+									class="proxies-draggable"
+									:class="{ 'proxies-draggable-dragging' : drag }"
+									v-model="proxies"
+									handle=".proxies-handle"
+									@start="handleDragStart"
+									@end="drag = false">
+									<el-collapse-item v-for="(proxy, index) in proxies" :key="index" :disabled="true" class="proxies-item" :name="index">
+										<template slot="title">
+											<!-- Header -->
+											<div class="proxies-header" ref="proxyHeader">
+												<!-- Info -->
+												<div class="proxies-header-info">
+													<i class="el-icon-warning-outline" color="#F56C6C"></i>
+													<span>{{ proxy.name }}</span>
+												</div>
+												<!-- Actions -->
+												<el-button-group class="proxies-header-btns">
+													<!-- Edit -->
+													<el-button size="mini" icon="el-icon-edit" @click="handleCollapse(index)"></el-button>
+													<!-- Move -->
+													<el-button size="mini" icon="el-icon-rank" class="proxies-handle"></el-button>
+													<!-- Preview -->
+													<el-link :disabled="proxy.path === ''" target="_blank" :href="proxy.path" :underline="false">
+														<el-button style="border-radius: 0;" :disabled="proxy.path === ''" size="mini" icon="el-icon-view"></el-button>
+													</el-link>
+													<!-- Delete -->
+													<el-popconfirm confirmButtonText="Yes" cancelButtonText="No" icon="el-icon-danger" iconColor="red" title="Are you sure to delete this proxy?" @confirm="deleteProxy(index)">
+														<template #reference>
+															<el-button style="border-radius: 0 4px 4px 0; border-left: 0;" size="mini" icon="el-icon-delete"></el-button>
+														</template>
+													</el-popconfirm>
+												</el-button-group>
+											</div><!-- /Header -->
+										</template>
+										<!-- Proxy Item -->
+										<ProxyItem :item="proxy" :validating="isValidating" @validate="handleValidate($event, index)"></ProxyItem>
+									</el-collapse-item>
+								</draggable>
+							</el-collapse><!-- /Proxies -->
+						</el-form>
+						<el-empty v-else-if="!doingAxios" :image-size="100">
+							<h4>No proxies available</h4>
+							<p>Click the button above to create a new proxy</p>
+						</el-empty>
+					</div>
 				</div><!-- /Col -->
 			</el-row><!-- /Row -->
 		</div><!-- /Container -->
@@ -140,8 +148,9 @@ export default {
 		draggable,
 	},
 	data: () => ({
-		activeCollapse: "",
-		updatingProxy: {},
+		activeCollapse: [],
+		isValidating: false,
+		validForm: true,
 		drag: false,
 		rewriteExamples: [
 			{from: '/old', to: '/new'},
@@ -155,8 +164,22 @@ export default {
 		]
 	}),
 	methods: {
+		/**
+		 * Checks if the form is valid, if it
+		 * is it will continue to save to
+		 * the backend.
+		 */
 		saveProxies() {
-			// loop over
+			this.isValidating = true;
+			this.validForm = true;
+			setTimeout(() => {
+				this.isValidating = false;
+				if (!this.validForm) {
+					this.$message({showClose: true, message: 'Fix the errors before saving.', type: 'error'});
+					return;
+				}
+				this.save();
+			},100);
 		},
 		/**
 		 * Creates a new reverse proxy and adds to the
@@ -187,21 +210,42 @@ export default {
 				rewrite: {},
 				rewrite_regex: {},
 			});
-			this.activeCollapse = this.proxies.length - 1;
+			this.activeCollapse = [this.proxies.length - 1];
 		},
 		/**
-		 * Handles the accordion.
+		 * Handles the collapsing or proxy items, if the
+		 * index is already expanded,
+		 * it will be collapsed and visa versa.
+		 * @param index
 		 */
 		handleCollapse(index) {
-			this.activeCollapse = index;
+			if (this.activeCollapse.includes(index)) {
+				this.activeCollapse.splice(index, 1);
+				return;
+			}
+			this.activeCollapse.push(index);
 		},
 		/**
 		 * Handle the start of a drag item, collapses
 		 * all accordion items.
 		 */
 		handleDragStart() {
-			this.activeCollapse = "";
+			this.activeCollapse = [];
 			this.drag = true;
+		},
+		/**
+		 * Adds an error class to the proxies when
+		 * the user saves.
+		 * @param isValid
+		 * @param index
+		 */
+		handleValidate(isValid, index) {
+			if (isValid) {
+				this.$refs['proxyHeader'][index].classList.remove("proxies-header-error");
+				return;
+			}
+			this.$refs['proxyHeader'][index].classList.add("proxies-header-error");
+			this.validForm = false;
 		},
 		/**
 		 * Retrieves the unassigned name for a proxy
@@ -224,6 +268,10 @@ export default {
 		}
 	},
 	computed: {
+		/**
+		 * Gets and sets the proxies to the options
+		 * data.
+		 */
 		proxies: {
 			get() {
 				return this.data['proxies'];
@@ -270,7 +318,6 @@ export default {
 
 // Config
 // =========================================================================
-
 
 .config {
 
@@ -349,6 +396,31 @@ export default {
 			font-size: 0.9rem;
 		}
 
+		&-info {
+			display: flex;
+			align-items: center;
+		}
+
+		i {
+			display: none;
+			margin-right: 6px;
+			font-size: 16px;
+			// TODO change to Element UI colour var
+			color: #F56C6C;
+		}
+
+		&-error {
+
+			i {
+				display: block;
+			}
+
+			span {
+				// TODO change to Element UI colour var
+				color: #F56C6C;
+			}
+		}
+
 		&-btns {
 			display: flex;
 			align-items: center;
@@ -374,10 +446,18 @@ export default {
 
 	&-item {
 		border: 1px solid rgba(#DCDFE6, 0.5);
-		border-bottom: none;
+		border-top: 0;
 
-		&:last-child {
-			border-bottom: 1px solid rgba(#DCDFE6, 0.5);
+		&:first-child {
+			border-top: 1px solid rgba(#DCDFE6, 0.5);
+		}
+
+		&.sortable-chosen {
+
+			#{$self}-header {
+				background-color: #409eff1c;
+				border: 1px dashed #409EFF;
+			}
 		}
 	}
 
@@ -392,7 +472,6 @@ export default {
 
 		&-dragging {
 			// TODO change to Element UI colour var
-			border: 1px dashed #409EFF;
 			cursor: pointer;
 
 			#{$self}-card {

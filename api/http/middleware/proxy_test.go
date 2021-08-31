@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
-	"regexp"
 )
 
 type TestResponseRecorder struct {
@@ -111,6 +110,7 @@ func (t *MiddlewareTestSuite) TestProxy_Rewrite() {
 		"/api/*":            "/$1",
 		"/js/*":             "/public/javascripts/$1",
 		"/users/*/orders/*": "/user/$1/order/$2",
+		"/query/*":          "/$1",
 	}
 
 	tt := map[string]struct {
@@ -148,6 +148,11 @@ func (t *MiddlewareTestSuite) TestProxy_Rewrite() {
 			"/new-path",
 			http.StatusOK,
 		},
+		"Query": {
+			"/query/new?limit=10",
+			"/new?limit=10",
+			http.StatusOK,
+		},
 	}
 
 	for name, test := range tt {
@@ -167,9 +172,9 @@ func (t *MiddlewareTestSuite) TestProxy_RewriteRegex() {
 		"^/b/*/c/*": "/v2/$2/$1",
 		"^/c/*/*":   "/v3/$2",
 	}
-	rewritesRegex := map[*regexp.Regexp]string{
-		regexp.MustCompile("^/x/.+?/(.*)"):   "/v4/$1",
-		regexp.MustCompile("^/y/(.+?)/(.*)"): "/v5/$2/$1",
+	rewritesRegex := map[string]string{
+		"^/x/.+?/(.*)":   "/v4/$1",
+		"^/y/(.+?)/(.*)": "/v5/$2/$1",
 	}
 
 	tt := map[string]struct {
@@ -212,6 +217,11 @@ func (t *MiddlewareTestSuite) TestProxy_RewriteRegex() {
 			"/v4/test",
 			http.StatusOK,
 		},
+		//"Query": {
+		//	"/y/foo/bar?q=1#frag",
+		//	"/v5/bar?q=1",
+		//	http.StatusOK,
+		//},
 	}
 
 	for name, test := range tt {

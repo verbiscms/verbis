@@ -32,29 +32,27 @@ func Proxy(d *deps.Deps) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		for _, config := range d.Options.Proxies {
 			target, err := url.Parse(config.Host)
-
 			if err != nil {
 				logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error parsing proxy configuration", Operation: op, Err: err}).Error()
-				ctx.Next()
-				return
+				continue
 			}
 
 			if !strings.Contains(ctx.Request.URL.Path, config.Path) {
-				ctx.Next()
-				return
+				continue
 			}
 
-			// TODO Test this!
-			for k, v := range config.RegexRewritePublic {
-				config.RegexRewrite[regexp.MustCompile(k)] = v
+			regexRewrites := make(map[*regexp.Regexp]string)
+			if config.RegexRewrite == nil {
+				regexRewrites = make(map[*regexp.Regexp]string)
+			}
+
+			for k, v := range config.RegexRewrite {
+				regexRewrites[regexp.MustCompile(k)] = v
 			}
 
 			if config.Rewrite != nil {
-				if config.RegexRewrite == nil {
-					config.RegexRewrite = make(map[*regexp.Regexp]string)
-				}
 				for k, v := range rewriteRulesRegex(config.Rewrite) {
-					config.RegexRewrite[k] = v
+					regexRewrites[k] = v
 				}
 			}
 
@@ -68,7 +66,7 @@ func Proxy(d *deps.Deps) gin.HandlerFunc {
 					req.URL.Scheme = target.Scheme
 					req.URL.Host = target.Host
 
-					err := rewriteURL(config.RegexRewrite, req)
+					err := rewriteURL(regexRewrites, req)
 					if err != nil {
 						logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Error rewriting proxy URL", Operation: op, Err: err}).Error()
 						ctx.Next()
@@ -85,6 +83,8 @@ func Proxy(d *deps.Deps) gin.HandlerFunc {
 			proxy.ServeHTTP(ctx.Writer, ctx.Request)
 			ctx.Abort()
 		}
+
+		ctx.Next()
 	}
 }
 
