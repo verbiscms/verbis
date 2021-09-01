@@ -20,26 +20,26 @@ func (t *MiddlewareTestSuite) TestAuthorise() {
 		want   string
 	}{
 		"No User": {
-			domain.PermissionSettings,
+			domain.Permissions.Settings,
 			domain.ViewMethod,
 			nil,
 			http.StatusForbidden,
 			"User not found",
 		},
 		"Bad Cast": {
-			domain.PermissionSettings,
+			domain.Permissions.Settings,
 			domain.ViewMethod,
 			10,
 			http.StatusForbidden,
 			"Error converting to type user",
 		},
 		"Permission Denied": {
-			domain.PermissionSettings,
+			domain.Permissions.Settings,
 			domain.ViewMethod,
 			domain.User{
 				UserPart: domain.UserPart{
 					Role: domain.Role{
-						Permissions: domain.RbacGroup{domain.PermissionSettings: {
+						Permissions: domain.RbacGroup{domain.Permissions.Settings: {
 							domain.ViewMethod: {Allow: false},
 						}},
 					},
@@ -49,7 +49,7 @@ func (t *MiddlewareTestSuite) TestAuthorise() {
 			"Forbidden, you do not have access",
 		},
 		"Invalid Request": {
-			domain.PermissionSettings,
+			domain.Permissions.Settings,
 			domain.ViewMethod,
 			domain.User{
 				UserPart: domain.UserPart{
@@ -64,12 +64,12 @@ func (t *MiddlewareTestSuite) TestAuthorise() {
 			"Invalid request",
 		},
 		"Permitted": {
-			domain.PermissionSettings,
+			domain.Permissions.Settings,
 			domain.ViewMethod,
 			domain.User{
 				UserPart: domain.UserPart{
 					Role: domain.Role{
-						Permissions: domain.RbacGroup{domain.PermissionSettings: {
+						Permissions: domain.RbacGroup{domain.Permissions.Settings: {
 							domain.ViewMethod: {Allow: true},
 						}},
 					},

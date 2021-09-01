@@ -48,9 +48,27 @@ const (
 	DeleteMethod = "delete"
 )
 
-const (
-	PermissionSettings = "settings"
-)
+// Permissions defines an enum of permission groups to
+// be used to group web routes together,
+var Permissions = struct {
+	Posts        string
+	Categories   string
+	Media        string
+	Integrations string
+	Forms        string
+	Users        string
+	Settings     string
+	System       string
+}{
+	Posts:        "posts",
+	Categories:   "categories",
+	Media:        "media",
+	Integrations: "integrations",
+	Forms:        "forms",
+	Users:        "users",
+	Settings:     "settings",
+	System:       "system",
+}
 
 var (
 	// ErrNoGroupFound is returned by enforce when no
@@ -100,17 +118,68 @@ func (g RbacGroup) Enforce(group, method string) error {
 	return nil
 }
 
-var Permissions = Rbac{
+var PermissionMap = Rbac{
+	// Contributor Permissions
+	ContributorRoleID: RbacGroup{
+		Permissions.Posts: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Categories: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Media: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Integrations: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Forms: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Users: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Settings: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.System: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+	},
 	// Author Permissions
 	AuthorRoleID: RbacGroup{
-		PermissionSettings: {
+		Permissions.Settings: {
 			ViewMethod: {Allow: false},
 			// etc
 		},
 	},
 	// Owner Permissions
 	OwnerRoleID: RbacGroup{
-		PermissionSettings: {
+		Permissions.Settings: {
 			ViewMethod: {Allow: true},
 			// etc
 		},

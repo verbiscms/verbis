@@ -19,7 +19,7 @@ func (t *MiddlewareTestSuite) TestTokenCheck() {
 	user := domain.User{UserPart: domain.UserPart{Role: domain.Role{ID: domain.OwnerRoleID}}}
 
 	tt := map[string]struct {
-		mock func(m *mocks.Repository)
+		mock   func(m *mocks.Repository)
 		status int
 		want   string
 	}{

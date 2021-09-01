@@ -56,7 +56,7 @@ export default {
 		 */
 		doUpdate() {
 			this.updating = true;
-			this.axios.post("/update")
+			this.axios.post("/system/update")
 			.then(() => {
 				setTimeout(() => {
 					this.$store.dispatch("getSiteConfig")

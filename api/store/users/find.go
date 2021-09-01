@@ -32,10 +32,7 @@ func (s *Store) Find(id int) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	// TEMP
-	user.Role.Permissions = domain.Permissions[user.Role.ID]
-
-	return user, nil
+	return user.AssignPermissions(), nil
 }
 
 // FindByToken
@@ -58,7 +55,7 @@ func (s *Store) FindByToken(token string) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	return user, nil
+	return user.AssignPermissions(), nil
 }
 
 // FindByEmail
@@ -81,5 +78,5 @@ func (s *Store) FindByEmail(email string) (domain.User, error) {
 		return domain.User{}, &errors.Error{Code: errors.INTERNAL, Message: database.ErrQueryMessage, Operation: op, Err: err}
 	}
 
-	return user, nil
+	return user.AssignPermissions(), nil
 }

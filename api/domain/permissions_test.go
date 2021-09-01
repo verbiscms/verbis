@@ -10,7 +10,7 @@ import (
 )
 
 func TestRBAC_Get(t *testing.T) {
-	rbac := Rbac{OwnerRoleID: RbacGroup{PermissionSettings: {ViewMethod: {Allow: false}}}}
+	rbac := Rbac{OwnerRoleID: RbacGroup{Permissions.Settings: {ViewMethod: {Allow: false}}}}
 
 	tt := map[string]struct {
 		input int
@@ -18,7 +18,7 @@ func TestRBAC_Get(t *testing.T) {
 	}{
 		"Found": {
 			OwnerRoleID,
-			RbacGroup{PermissionSettings: {ViewMethod: {Allow: false}}},
+			RbacGroup{Permissions.Settings: {ViewMethod: {Allow: false}}},
 		},
 		"Not Found": {
 			BannedRoleID,
@@ -47,35 +47,35 @@ func TestPermissionGroup_Enforce(t *testing.T) {
 	}{
 		"No Group": {
 			RbacGroup{},
-			PermissionSettings,
+			Permissions.Settings,
 			ViewMethod,
 			ErrNoGroupFound,
 		},
 		"No Method": {
 			RbacGroup{
-				PermissionSettings: {},
+				Permissions.Settings: {},
 			},
-			PermissionSettings,
+			Permissions.Settings,
 			ViewMethod,
 			ErrNoMethodFound,
 		},
 		"Not Allowed": {
 			RbacGroup{
-				PermissionSettings: {
+				Permissions.Settings: {
 					ViewMethod: Permission{Allow: false},
 				},
 			},
-			PermissionSettings,
+			Permissions.Settings,
 			ViewMethod,
 			ErrPermissionDenied,
 		},
 		"Allowed": {
 			RbacGroup{
-				PermissionSettings: {
+				Permissions.Settings: {
 					ViewMethod: Permission{Allow: true},
 				},
 			},
-			PermissionSettings,
+			Permissions.Settings,
 			ViewMethod,
 			nil,
 		},

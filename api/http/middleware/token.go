@@ -12,7 +12,12 @@ import (
 	"net/http"
 )
 
-// TokenCheck - TODO Comments
+// TokenCheck checks to see if the user is authorised
+// and there is a valid token in the request header.
+// If there is none present, the session has
+// expired or the token is malformed, http.StatusUnauthorized
+// will be returned. If the user exists and is found,
+// rhe middleware will continue to proceed with the request.
 func TokenCheck(u users.Repository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		token := ctx.Request.Header.Get("token")
@@ -49,7 +54,7 @@ func TokenCheck(u users.Repository) gin.HandlerFunc {
 
 		// Bind the user to Gin's Context for processing
 		// down the request chain.
-		ctx.Set("user", user)
+		ctx.Set(ContextUser, user)
 		ctx.Next()
 	}
 }

@@ -110,7 +110,7 @@ func (u Users) AssignPermissions() Users {
 // AssignPermissions assigns the correct permissions to
 // the user by role ID.
 func (u User) AssignPermissions() User {
-	group, _ := Permissions.Get(u.Role.ID)
+	group, _ := PermissionMap.Get(u.Role.ID)
 	u.Role.Permissions = group
 	return u
 }
