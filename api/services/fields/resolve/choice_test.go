@@ -48,15 +48,15 @@ func (t *ResolverTestSuite) TestValue_ChoiceResolve() {
 		field domain.PostField
 		want  domain.PostField
 	}{
-		"Button Group Value": {
+		"Button RbacGroup Value": {
 			field: domain.PostField{OriginalValue: "test", Key: "", Type: "button_group"},
 			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "button_group", Value: "test"},
 		},
-		"Button Group SizeKey": {
+		"Button RbacGroup SizeKey": {
 			field: domain.PostField{OriginalValue: "test", Key: "", Type: "button_group"},
 			want:  domain.PostField{OriginalValue: "test", Key: "", Type: "button_group", Value: "test"},
 		},
-		"Button Group Map": {
+		"Button RbacGroup Map": {
 			field: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "", Type: "button_group"},
 			want: domain.PostField{OriginalValue: `{"key": "key1", "value": "value1"}`, Key: "", Type: "button_group", Value: choice{
 				Key:   "key1",

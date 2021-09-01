@@ -93,7 +93,7 @@ func TestHeaders_Cache(t *testing.T) {
 				CacheFrontend: false,
 			},
 		},
-		"Wrong Request": {
+		"Wrong RbacRequest": {
 			want: "max-age=1000, public",
 			url:  "/assets/images/test.jpg",
 			options: domain.Options{

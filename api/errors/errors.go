@@ -108,3 +108,13 @@ func ToError(err interface{}) *Error {
 func New(text string) error {
 	return errors.New(text)
 }
+
+// Wrap returns an error annotating err with a stack trace
+// at the point Wrap is called, and the supplied message.
+// If err is nil, Wrap returns nil.
+func Wrap(err error, message string) error {
+	if err == nil {
+		return nil
+	}
+	return fmt.Errorf("%s: %s", err.Error(), message)
+}

@@ -24,7 +24,7 @@ import (
 // handle traffic. URL's will be rewritten
 // if there are regex and rewrite rules
 // attached to the proxy.
-// Capture tokens, rewrite rules regex are replicated. from Echo as below.
+// Capture tokens, rewrite rules regex are replicated from Echo as below.
 // https://github.com/labstack/echo/blob/master/middleware/middleware.go
 func Proxy(d *deps.Deps) gin.HandlerFunc {
 	const op = "Middleware.Proxy"

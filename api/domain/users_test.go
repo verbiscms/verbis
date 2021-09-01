@@ -27,3 +27,23 @@ func TestUsers_HideCredentials(t *testing.T) {
 	want := UsersParts{up}
 	assert.Equal(t, want, u.HideCredentials())
 }
+
+func TestUser_AssignPermissions(t *testing.T) {
+	u := User{UserPart: UserPart{FirstName: "verbis", Role: Role{ID: OwnerRoleID}}}
+	got := u.AssignPermissions()
+	want := User{UserPart: UserPart{FirstName: "verbis", Role: Role{ID: OwnerRoleID, Permissions: Permissions[OwnerRoleID]}}}
+	assert.Equal(t, want, got)
+}
+
+func TestUsers_AssignPermissions(t *testing.T) {
+	u := Users{
+		User{UserPart: UserPart{FirstName: "verbis", Role: Role{ID: OwnerRoleID}}},
+		User{UserPart: UserPart{FirstName: "verbis", Role: Role{ID: AuthorRoleID}}},
+	}
+	got := u.AssignPermissions()
+	want := Users{
+		User{UserPart: UserPart{FirstName: "verbis", Role: Role{ID: OwnerRoleID, Permissions: Permissions[OwnerRoleID]}}},
+		User{UserPart: UserPart{FirstName: "verbis", Role: Role{ID: AuthorRoleID, Permissions: Permissions[AuthorRoleID]}}},
+	}
+	assert.Equal(t, want, got)
+}

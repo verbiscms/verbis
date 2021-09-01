@@ -123,3 +123,28 @@ func TestNew(t *testing.T) {
 	got := New("error")
 	assert.Errorf(t, want, got.Error())
 }
+
+func TestWrap(t *testing.T) {
+	tt := map[string]struct {
+		input   error
+		message string
+		want    error
+	}{
+		"Nil": {
+			nil,
+			"",
+			nil,
+		},
+		"With Error": {
+			New("error"),
+			"message",
+			New("error: message"),
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func(t *testing.T) {
+			assert.Equal(t, test.want, Wrap(test.input, test.message))
+		})
+	}
+}

@@ -97,3 +97,20 @@ func (u *User) HideCredentials() UserPart {
 		UpdatedAt:        u.UpdatedAt,
 	}
 }
+
+// AssignPermissions to a users slice by ranging over
+// users.
+func (u Users) AssignPermissions() Users {
+	for i, v := range u {
+		u[i] = v.AssignPermissions()
+	}
+	return u
+}
+
+// AssignPermissions assigns the correct permissions to
+// the user by role ID.
+func (u User) AssignPermissions() User {
+	group, _ := Permissions.Get(u.Role.ID)
+	u.Role.Permissions = group
+	return u
+}

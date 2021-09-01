@@ -29,17 +29,15 @@ func Authorise(group string, method string) gin.HandlerFunc {
 			},
 		}
 
-		permission, exists := domain.Permissions[user.Role.ID][group][method]
-		if !exists {
+		err := user.Role.Permissions.Enforce(group, method)
+		if err == domain.ErrPermissionDenied {
+			api.AbortJSON(ctx, http.StatusForbidden, fmt.Sprintf("Forbidden, you do not have access to the %s, group with the method %s", group, method), nil)
+			return
+		} else if err != nil {
 			api.AbortJSON(ctx, http.StatusBadRequest, "Invalid request", nil)
 			return
 		}
 
-		if !permission.Allow {
-			api.AbortJSON(ctx, http.StatusForbidden, fmt.Sprintf("Forbidden, you do not have access to the %s, group with the method %s", group, method), nil)
-			return
-		}
-
-		fmt.Println("carry on son")
+		ctx.Next()
 	}
 }
