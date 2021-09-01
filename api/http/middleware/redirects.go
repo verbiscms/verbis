@@ -14,9 +14,9 @@ import (
 // Redirects
 //
 // Determines if the path includes the admin path or the
-// api routes. If it doesnt, the redirect repository
+// api routes. If it doesn't, the redirect repository
 // will be called with the path, if there is a
-// match, the user will be redirect with the
+// match, the user will be redirected with the
 // appropriate code.
 func Redirects(d *deps.Deps) gin.HandlerFunc {
 	return func(g *gin.Context) {

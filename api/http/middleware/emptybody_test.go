@@ -65,10 +65,7 @@ func (t *MiddlewareTestSuite) TestEmptyBody() {
 		t.Run(name, func() {
 			t.Engine.Use(EmptyBody())
 
-			t.Engine.GET("/test", t.DefaultHandler)
-			t.Engine.PUT("/test", t.DefaultHandler)
-			t.Engine.POST("/test", t.DefaultHandler)
-			t.Engine.DELETE("/test", t.DefaultHandler)
+			t.Engine.Any("/test", t.DefaultHandler)
 
 			t.NewRequest(test.method, "/test", bytes.NewBuffer([]byte(test.input)))
 			t.Context.Request.Header.Set("Content-Mime", test.header)

@@ -12,21 +12,21 @@ import (
 	"net/http"
 )
 
+const ContextUser = "user"
+
 // Authorise - TODO Comments
 func Authorise(group string, method string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		//user, err := ctx.Get("user")
-		//if err != nil {
-		//	api.AbortJSON(ctx, http.StatusForbidden, "Your account has been suspended", nil)
-		//	return
-		//}
+		u, ok := ctx.Get(ContextUser)
+		if !ok || u == nil {
+			api.AbortJSON(ctx, http.StatusForbidden, "User not found", nil)
+			return
+		}
 
-		user := domain.User{
-			UserPart: domain.UserPart{
-				Role: domain.Role{
-					ID: domain.AuthorRoleID,
-				},
-			},
+		user, ok := u.(domain.User)
+		if !ok {
+			api.AbortJSON(ctx, http.StatusForbidden, "Error converting to type user", nil)
+			return
 		}
 
 		err := user.Role.Permissions.Enforce(group, method)

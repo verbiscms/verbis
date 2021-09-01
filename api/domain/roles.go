@@ -19,15 +19,15 @@ type (
 
 const (
 	// BannedRoleID is the default banned role ID.
-	BannedRoleID = 1
+	BannedRoleID = iota + 1
 	// ContributorRoleID is the default contributor role ID.
-	ContributorRoleID = 2
+	ContributorRoleID
 	// AuthorRoleID is the default author role ID.
-	AuthorRoleID = 3
+	AuthorRoleID
 	// EditorRoleID is the default editor role ID.
-	EditorRoleID = 4
+	EditorRoleID
 	// AdminRoleID is the default admin role ID.
-	AdminRoleID = 5
+	AdminRoleID
 	// OwnerRoleID is the default owner role ID.
-	OwnerRoleID = 6
+	OwnerRoleID
 )

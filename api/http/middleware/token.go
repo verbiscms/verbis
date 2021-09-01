@@ -50,5 +50,6 @@ func TokenCheck(u users.Repository) gin.HandlerFunc {
 		// Bind the user to Gin's Context for processing
 		// down the request chain.
 		ctx.Set("user", user)
+		ctx.Next()
 	}
 }
