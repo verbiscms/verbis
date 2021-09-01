@@ -172,16 +172,207 @@ var PermissionMap = Rbac{
 	},
 	// Author Permissions
 	AuthorRoleID: RbacGroup{
+		Permissions.Posts: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Categories: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Media: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Integrations: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Forms: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Users: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
 		Permissions.Settings: {
 			ViewMethod: {Allow: false},
-			// etc
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.System: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+	},
+	// Editor Permissions
+	EditorRoleID: RbacGroup{
+		Permissions.Posts: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Categories: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Media: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Integrations: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Forms: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Users: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.Settings: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+		Permissions.System: {
+			ViewMethod: {Allow: false},
+			CreateMethod: {Allow: false},
+			UpdateMethod: {Allow: false},
+			DeleteMethod: {Allow: false},
+		},
+	},
+	// Admin Permissions
+	AdminRoleID: RbacGroup{
+		Permissions.Posts: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Categories: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Media: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Integrations: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Forms: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Users: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Settings: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.System: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
 		},
 	},
 	// Owner Permissions
 	OwnerRoleID: RbacGroup{
+		Permissions.Posts: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Categories: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Media: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Integrations: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Forms: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.Users: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
 		Permissions.Settings: {
 			ViewMethod: {Allow: true},
-			// etc
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
+		},
+		Permissions.System: {
+			ViewMethod: {Allow: true},
+			CreateMethod: {Allow: true},
+			UpdateMethod: {Allow: true},
+			DeleteMethod: {Allow: true},
 		},
 	},
 }
+
