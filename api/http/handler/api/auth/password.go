@@ -5,7 +5,6 @@
 package auth
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
@@ -35,15 +34,10 @@ func (a *Auth) ResetPassword(ctx *gin.Context) {
 		return
 	}
 
-	c, err := a.Cache.Get(ctx, rp.Token)
+	user := domain.User{}
+	_, err = a.Cache.Get(ctx, rp.Token, &user)
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "No user exists with the token: "+rp.Token, &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
-		return
-	}
-
-	user, ok := c.(domain.User)
-	if !ok {
-		api.Respond(ctx, http.StatusInternalServerError, "Error converting cache item to user", &errors.Error{Code: errors.INTERNAL, Err: fmt.Errorf("cast to user error"), Operation: op})
 		return
 	}
 

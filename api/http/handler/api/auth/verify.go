@@ -22,7 +22,7 @@ func (a *Auth) VerifyPasswordToken(ctx *gin.Context) {
 
 	token := ctx.Param("token")
 
-	_, err := a.Cache.Get(ctx, token)
+	_, err := a.Cache.Get(ctx, token, nil)
 	if err != nil {
 		api.Respond(ctx, http.StatusNotFound, "No user exists with the token: "+token, &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return

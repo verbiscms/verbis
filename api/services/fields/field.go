@@ -13,12 +13,12 @@ import (
 // GetField returns the value of a specific field.
 // Returns errors.NOTFOUND if the field was not found by the given key.
 func (s *Service) GetField(name string, args ...interface{}) interface{} {
-	fields, id := s.handleArgs(args)
+	fields, _ := s.handleArgs(args)
 
-	f, ok := s.getCacheField(name, standardCacheKey, id)
-	if ok {
-		return f
-	}
+	//f, ok := s.getCacheField(name, standardCacheKey, id)
+	//if ok {
+	//	return f
+	//}
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
@@ -27,7 +27,7 @@ func (s *Service) GetField(name string, args ...interface{}) interface{} {
 
 	resolved := resolve.Field(field, s.deps)
 
-	s.setCacheField(resolved.Value, name, standardCacheKey, id)
+	//s.setCacheField(resolved.Value, name, standardCacheKey, id)
 
 	return resolved.Value
 }

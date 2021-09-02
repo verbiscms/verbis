@@ -48,7 +48,7 @@ func (c *Posts) Update(ctx *gin.Context) {
 
 	// Clear the field cache
 	err = c.Cache.Invalidate(ctx, cache.InvalidateOptions{
-		Tags: []string{fields.FieldCacheTag},
+		Tags: []string{fields.FieldCacheTag, "posts"},
 	})
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)

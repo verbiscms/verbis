@@ -5,6 +5,7 @@
 package publisher
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/verbiscms/verbis/api"
 )
@@ -38,10 +39,11 @@ func (r *publish) Page(ctx *gin.Context) ([]byte, error) {
 		return nil, err
 	}
 
-	//c, ok := pager.GetCached()
-	//if ok {
-	//	return c, nil
-	//}
+	c, ok := pager.GetCached()
+	if ok {
+		fmt.Println("From cache")
+		return c, nil
+	}
 
 	return pager.Execute()
 }

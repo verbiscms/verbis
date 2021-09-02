@@ -26,13 +26,10 @@ const (
 func (t *Theme) Config() (domain.ThemeConfig, error) {
 	const op = "Theme.Config"
 
-	c, err := t.cache.Get(context.Background(), configCacheKey)
+	c := domain.ThemeConfig{}
+	_, err := t.cache.Get(context.Background(), configCacheKey, &c)
 	if err == nil {
-		cfg, ok := c.(domain.ThemeConfig)
-		if ok {
-			return cfg, nil
-		}
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error casting cache item to theme config", Operation: op, Err: fmt.Errorf("bad cast")})
+		return c, nil
 	}
 
 	theme, err := t.options.GetTheme()

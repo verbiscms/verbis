@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
@@ -23,12 +24,12 @@ import (
 
 type page struct {
 	*deps.Deps
-	ctx  *gin.Context
-	post *domain.PostDatum
-	url  *url.URL
-	//cacheKey   string
-	//foundCache bool
-	home int
+	ctx        *gin.Context
+	post       *domain.PostDatum
+	url        *url.URL
+	cacheKey   string
+	foundCache bool
+	home       int
 }
 
 var (
@@ -67,6 +68,7 @@ func newPage(d *deps.Deps, ctx *gin.Context) (page, bool, error) {
 		return page{}, false, &errors.Error{Code: errors.NOTFOUND, Message: "No post found with the path: " + p.url.Path, Operation: op, Err: NoPostFound}
 	}
 
+	p.cacheKey = fmt.Sprintf("page:%d", post.ID)
 	p.post = post
 
 	return p, false, nil
@@ -100,9 +102,9 @@ func (p *page) Execute() ([]byte, error) {
 	}
 
 	b := buf.Bytes()
-	//if p.CanCache() && !p.foundCache {
-	//go p.Cache(b)
-	//}
+	if p.CanCache() && !p.foundCache {
+		go p.Cache(b)
+	}
 
 	return b, nil
 }
@@ -147,26 +149,26 @@ func (p *page) IsResourcePublic() error {
 	return nil
 }
 
-// Cache
-//
 // Cache the post with keys.
-//func (p *page) Cache(b []byte) {
-//	cache.Store.Set(p.cacheKey, b, cache.RememberForever)
-//}
+func (p *page) Cache(b []byte) {
+	p.Deps.Cache.Set(p.ctx, p.cacheKey, b, cache.Options{
+		Expiration: cache.RememberForever,
+		Tags:       []string{"posts"},
+	})
+}
 
 // GetCached
 //
 // Obtains the post from the store, if there was none
 // found, false with nil bytes will be returned.
-//func (p *page) GetCached() ([]byte, bool) {
-//	var c interface{}
-//	c, ok := cache.Store.Get(p.cacheKey)
-//	if ok && c != nil {
-//		p.foundCache = true
-//		return c.([]byte), true
-//	}
-//	return nil, false
-//}
+func (p *page) GetCached() ([]byte, bool) {
+	var buf []byte
+	_, err := p.Deps.Cache.Get(p.ctx, p.cacheKey, &buf)
+	if err == nil {
+		return buf, true
+	}
+	return nil, false
+}
 
 // CanCache
 //

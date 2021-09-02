@@ -5,9 +5,7 @@
 package fields
 
 import (
-	"context"
 	"fmt"
-	"github.com/verbiscms/verbis/api/cache"
 )
 
 const (
@@ -30,20 +28,21 @@ const (
 // If it is found, the field and true will be returned
 // to the caller.
 func (s *Service) getCacheField(name, key string, id int) (interface{}, bool) {
-	field, err := s.deps.Cache.Get(context.Background(), s.getCacheKey(name, key, id))
-	if err != nil {
-		return nil, false
-	}
-	return field, true
+	return nil, false
+	//field, err := s.deps.Cache.Get(context.Background(), s.getCacheKey(name, key, id))
+	//if err != nil {
+	//	return nil, false
+	//}
+	//return field, true
 }
 
 // setCacheField sets a cache field by name, key and the value
 // of the field.
 func (s *Service) setCacheField(val interface{}, name, key string, id int) {
-	s.deps.Cache.Set(context.Background(), s.getCacheKey(name, key, id), val, cache.Options{
-		Expiration: cache.RememberForever,
-		Tags:       []string{FieldCacheTag},
-	})
+	//s.deps.Cache.Set(context.Background(), s.getCacheKey(name, key, id), val, cache.Options{
+	//	Expiration: cache.RememberForever,
+	//	Tags:       []string{FieldCacheTag},
+	//})
 }
 
 // getCacheKey returns a unique cache key for a singular field.
