@@ -410,7 +410,7 @@ func (s *Sitemap) formatXML(data interface{}, index bool) ([]byte, error) {
 // Returns [[byte if found or nil.
 func (s *Sitemap) getCachedFile(key string) []byte {
 	var buf []byte
-	_, err := s.deps.Cache.Get(context.Background(), key, &buf)
+	err := s.deps.Cache.Get(context.Background(), key, &buf)
 	if err == nil {
 		return buf
 	}

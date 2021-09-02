@@ -17,10 +17,10 @@ const (
 	standardCacheKey = "standard"
 	// repeaterCacheKey is the key stored in the cache
 	// for repeater fields.
-	repeaterCacheKey = "repeater"
+	repeaterCacheKey = "repeater" //nolint
 	// flexibleCacheKey is the key stored in the cache
 	// for flexible fields.
-	flexibleCacheKey = "flexible"
+	flexibleCacheKey = "flexible" //nolint
 )
 
 // getCacheField obtains a cached field by key. If the field

@@ -163,7 +163,7 @@ func (p *page) Cache(b []byte) {
 // found, false with nil bytes will be returned.
 func (p *page) GetCached() ([]byte, bool) {
 	var buf []byte
-	_, err := p.Deps.Cache.Get(p.ctx, p.cacheKey, &buf)
+	err := p.Deps.Cache.Get(p.ctx, p.cacheKey, &buf)
 	if err == nil {
 		return buf, true
 	}

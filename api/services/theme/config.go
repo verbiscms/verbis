@@ -22,12 +22,10 @@ const (
 
 // Config satisfies the Theme interface by retrieving a
 // theme configuration. The config will be cached
-// for ever until it is wiped by Set().
+// forever until it is wiped by Set().
 func (t *Theme) Config() (domain.ThemeConfig, error) {
-	const op = "Theme.Config"
-
 	c := domain.ThemeConfig{}
-	_, err := t.cache.Get(context.Background(), configCacheKey, &c)
+	err := t.cache.Get(context.Background(), configCacheKey, &c)
 	if err == nil {
 		return c, nil
 	}

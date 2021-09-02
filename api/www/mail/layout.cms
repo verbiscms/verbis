@@ -351,14 +351,14 @@
                 <!-- =====================
                     Logo
                     ===================== -->
-                {{ if and .Site.Logo .Site.Url -}}
+                {{ if and .Site.Logo .Site.URL -}}
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                         <tr>
                             <td bgcolor="#F7F7F7" height="20" style="font-size:1px;line-height:1px">&nbsp;</td>
                         </tr>
                         <tr>
                             <td align="center">
-                                <img width="60" style="display: block; border: none; outline: none; text-decoration: none" src="{{ .Site.Url }}{{ .Site.Logo }}">
+                                <img width="60" style="display: block; border: none; outline: none; text-decoration: none" src="{{ .Site.URL }}{{ .Site.Logo }}">
                             </td>
                         </tr>
                         <tr>

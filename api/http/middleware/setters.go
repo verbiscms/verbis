@@ -41,7 +41,7 @@ func Setters(d *deps.Deps) gin.HandlerFunc {
 // Options Service and sets it to deps.
 func setOptions(d *deps.Deps, ctx *gin.Context) {
 	var opts domain.Options
-	_, err := d.Cache.Get(ctx, cache.OptionsKey, &opts)
+	err := d.Cache.Get(ctx, cache.OptionsKey, &opts)
 	if err != nil {
 		opts = d.Store.Options.Struct()
 		d.Cache.Set(ctx, cache.OptionsKey, opts, cache.Options{

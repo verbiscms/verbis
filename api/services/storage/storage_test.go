@@ -51,7 +51,7 @@ func (t *StorageTestSuite) Setup(mf func(s *mocks.Service, r *repo.Repository)) 
 	}
 	mc := &cache.Store{}
 	mc.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Times(100)
-	mc.On("Get", mock.Anything, mock.Anything).Return(false, fmt.Errorf("errr")).Times(100)
+	mc.On("Get", mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("errr")).Times(100)
 	return &Storage{
 		filesRepo: r,
 		service:   m,
@@ -68,7 +68,7 @@ func (t *StorageTestSuite) SetupOptions(mf func(m *mocks.Service, r *repo.Reposi
 	o := &options.Repository{}
 	mc := &cache.Store{}
 	mc.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Times(100)
-	mc.On("Get", mock.Anything, mock.Anything).Return(false, fmt.Errorf("errr")).Times(100)
+	mc.On("Get", mock.Anything, mock.Anything, mock.Anything).Return(fmt.Errorf("errr")).Times(100)
 	if mf != nil {
 		mf(m, r, o)
 	}

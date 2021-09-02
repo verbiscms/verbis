@@ -6,6 +6,7 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
@@ -22,7 +23,8 @@ func (a *Auth) VerifyPasswordToken(ctx *gin.Context) {
 
 	token := ctx.Param("token")
 
-	_, err := a.Cache.Get(ctx, token, nil)
+	var user domain.User
+	err := a.Cache.Get(ctx, token, &user)
 	if err != nil {
 		api.Respond(ctx, http.StatusNotFound, "No user exists with the token: "+token, &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return

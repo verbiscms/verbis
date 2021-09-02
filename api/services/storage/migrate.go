@@ -146,7 +146,7 @@ func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageChange, de
 // cache and returns true if the app is already migrating
 // files.
 func (s *Storage) isMigrating(ctx context.Context) bool {
-	_, err := s.cache.Get(ctx, migrationIsMigrating, nil)
+	err := s.cache.Get(ctx, migrationIsMigrating, nil)
 	return err == nil
 }
 
@@ -155,7 +155,7 @@ func (s *Storage) isMigrating(ctx context.Context) bool {
 func (s *Storage) getMigration() (*MigrationInfo, error) {
 	const op = "Storage.GetMigration"
 	mi := &MigrationInfo{}
-	_, err := s.cache.Get(context.Background(), migrationKey, mi)
+	err := s.cache.Get(context.Background(), migrationKey, mi)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error getting migration", Operation: op, Err: err}
 	}

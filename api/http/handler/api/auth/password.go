@@ -35,7 +35,7 @@ func (a *Auth) ResetPassword(ctx *gin.Context) {
 	}
 
 	user := domain.User{}
-	_, err = a.Cache.Get(ctx, rp.Token, &user)
+	err = a.Cache.Get(ctx, rp.Token, &user)
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "No user exists with the token: "+rp.Token, &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
