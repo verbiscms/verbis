@@ -16,7 +16,7 @@ type Fields map[string]interface{}
 // GetFields Returns all of the fields for the current post,
 // or post ID given.
 func (s *Service) GetFields(args ...interface{}) Fields {
-	fields, _ := s.handleArgs(args)
+	fields := s.handleArgs(args)
 
 	var f = make(Fields)
 	s.mapper(fields, func(field domain.PostField) {

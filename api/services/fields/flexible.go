@@ -46,12 +46,7 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 		return nil
 	}
 
-	fields, _ := s.handleArgs(args)
-
-	//f, ok := s.getCacheField(name, flexibleCacheKey, id)
-	//if ok {
-	//	return f.(Flexible)
-	//}
+	fields := s.handleArgs(args)
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
@@ -63,11 +58,7 @@ func (s *Service) GetFlexible(input interface{}, args ...interface{}) Flexible {
 		return nil
 	}
 
-	flexible = s.resolveFlexible("", field, fields)
-
-	//s.setCacheField(flexible, name, flexibleCacheKey, id)
-
-	return flexible
+	return s.resolveFlexible("", field, fields)
 }
 
 // resolveFlexible Loops over the given layouts (e.g ["layout1","layout2"]
