@@ -122,6 +122,7 @@ ALTER TABLE media_sizes
 
 INSERT INTO options(`option_name`, `option_value`) VALUES('storage_provider', '\"local\"');
 INSERT INTO options(`option_name`, `option_value`) VALUES('storage_bucket', '\"\"');
+INSERT INTO options(`option_name`, `option_value`) VALUES('proxies', '[]');
 
 ##############################################
 # Delete Password Resets

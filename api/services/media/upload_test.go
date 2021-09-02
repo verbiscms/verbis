@@ -140,11 +140,11 @@ func (t *MediaServiceTestSuite) TestClient_Dir() {
 	}{
 		"Date": {
 			true,
-			filepath.Join(paths.Uploads, now.Format("2006"), now.Format("01")),
+			filepath.Join(filepath.Base(paths.Uploads), now.Format("2006"), now.Format("01")),
 		},
 		"Prefix": {
 			false,
-			paths.Uploads,
+			filepath.Base(paths.Uploads),
 		},
 	}
 
