@@ -63,7 +63,7 @@ func (t *StorageTestSuite) TestMigrationInfo_Succeed() {
 
 func (t *StorageTestSuite) TestStorage_Migrate() {
 	mockCacheSuccess := func(m *cache.Store) {
-		m.On("Get", mock.Anything, migrationIsMigrating).Return(false, fmt.Errorf("error"))
+		m.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(fmt.Errorf("error"))
 		m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Times(100)
 		m.On("Delete", mock.Anything, migrationIsMigrating)
 		m.On("Delete", mock.Anything, migrationKey)
@@ -96,7 +96,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			domain.StorageChange{},
 			nil,
 			func(m *cache.Store) {
-				m.On("Get", mock.Anything, migrationIsMigrating).Return(true, nil)
+				m.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)
 			},
 			"Error migration is already in progress",
 		},
@@ -165,19 +165,16 @@ func (t *StorageTestSuite) TestStorage_GetMigration() {
 	}{
 		"Success": {
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationKey).Return(&MigrationInfo{Total: 10}, nil)
+				c.On("Get", mock.Anything, migrationKey, &MigrationInfo{}).Return(nil).Run(func(args mock.Arguments) {
+					arg := args.Get(2).(*MigrationInfo)
+					arg.Total = 10
+				})
 			},
 			MigrationInfo{Total: 10},
 		},
 		"Find Error": {
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationKey).Return(nil, fmt.Errorf("error"))
-			},
-			"Error getting migration",
-		},
-		"Cast Error": {
-			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationKey).Return(100, nil)
+				c.On("Get", mock.Anything, migrationKey, &MigrationInfo{}).Return(fmt.Errorf("error"))
 			},
 			"Error getting migration",
 		},

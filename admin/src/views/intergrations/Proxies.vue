@@ -280,7 +280,11 @@ export default {
 		 */
 		proxies: {
 			get() {
-				return this.data['proxies'];
+				const proxies = this.data['proxies'];
+				if (!proxies) {
+					return [];
+				}
+				return proxies;
 			},
 			set(el) {
 				this.$set(this.data, 'proxies', el);

@@ -115,3 +115,17 @@ func (r Resources) Clean() Resources {
 	}
 	return r
 }
+
+// MarshalBinary is an implementation for encoding.BinaryMarshaler
+// to marshal the entity when it is stored in the Redis or
+// MemCached stores.
+func (t ThemeConfig) MarshalBinary() (data []byte, err error) {
+	return marshaller(t)
+}
+
+// UnmarshalBinary is an implementation for encoding.UnmarshalBinary
+// to unmarshal the entity when it is stored in the Redis or
+// MemCached stores.
+func (t ThemeConfig) UnmarshalBinary(data []byte) error {
+	return unmarshaller(data, &t)
+}

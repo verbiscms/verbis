@@ -37,8 +37,8 @@ func (t *ThemeTestSuite) TestTheme_Config() {
 	}{
 		"From Config": {
 			func(o *options.Repository, c *cache.Store, cf *config.Provider) {
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+					Return(fmt.Errorf("error"))
 				o.On("GetTheme").
 					Return("theme", nil)
 				cf.On("Get", "theme").
@@ -49,24 +49,19 @@ func (t *ThemeTestSuite) TestTheme_Config() {
 		},
 		"From Cache": {
 			func(o *options.Repository, c *cache.Store, cf *config.Provider) {
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(cfg1, nil)
+				c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+					Return(nil).
+					Run(func(args mock.Arguments) {
+						arg := args.Get(2).(*domain.ThemeConfig)
+						arg.Theme = cfg1.Theme
+					})
 			},
 			cfg1,
 		},
-		"Cast Error": {
-			func(o *options.Repository, c *cache.Store, cf *config.Provider) {
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(100, nil)
-				o.On("GetTheme").
-					Return("", fmt.Errorf("error"))
-			},
-			"error",
-		},
 		"Options Error": {
 			func(o *options.Repository, c *cache.Store, cf *config.Provider) {
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(domain.ThemeConfig{}, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+					Return(fmt.Errorf("error"))
 				o.On("GetTheme").
 					Return("", fmt.Errorf("error"))
 			},
@@ -74,8 +69,8 @@ func (t *ThemeTestSuite) TestTheme_Config() {
 		},
 		"Config Error": {
 			func(o *options.Repository, c *cache.Store, cf *config.Provider) {
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+					Return(fmt.Errorf("error"))
 				o.On("GetTheme").
 					Return("theme", nil)
 				cf.On("Get", "theme").
@@ -110,8 +105,12 @@ func (t *ThemeTestSuite) TestTheme_Activate() {
 				o.On("SetTheme", "verbis").
 					Return(nil)
 				c.On("Delete", mock.Anything, configCacheKey)
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(cfg1, nil)
+				c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+					Return(nil).
+					Run(func(args mock.Arguments) {
+						arg := args.Get(2).(*domain.ThemeConfig)
+						arg.Theme = cfg1.Theme
+					})
 			},
 			cfg1,
 		},
@@ -134,8 +133,8 @@ func (t *ThemeTestSuite) TestTheme_Activate() {
 				o.On("SetTheme", "verbis").
 					Return(nil)
 				c.On("Delete", mock.Anything, configCacheKey)
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+					Return(fmt.Errorf("error"))
 				o.On("GetTheme").Return("", fmt.Errorf("error"))
 			},
 			"error",

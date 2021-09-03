@@ -38,10 +38,10 @@ func (r *publish) Page(ctx *gin.Context) ([]byte, error) {
 		return nil, err
 	}
 
-	//c, ok := pager.GetCached()
-	//if ok {
-	//	return c, nil
-	//}
+	c, ok := pager.GetCached()
+	if ok {
+		return c, nil
+	}
 
 	return pager.Execute()
 }

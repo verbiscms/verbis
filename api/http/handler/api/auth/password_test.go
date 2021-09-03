@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
 	validation "github.com/verbiscms/verbis/api/common/vaidation"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
 	cache "github.com/verbiscms/verbis/api/mocks/cache"
@@ -43,7 +44,11 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			rp,
 			func(m *mocks.Repository, c *cache.Store) {
 				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
-				c.On("Get", mock.Anything, rp.Token).Return(user, nil)
+				c.On("Get", mock.Anything, rp.Token, &domain.User{}).Run(func(args mock.Arguments) {
+					arg := args.Get(2).(*domain.User)
+					arg.Password = user.Password
+					arg.Email = user.Email
+				}).Return(nil)
 			},
 		},
 		"Validation Failed": {
@@ -61,18 +66,7 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			"No user exists with the token: " + rp.Token,
 			rp,
 			func(m *mocks.Repository, c *cache.Store) {
-				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
-				c.On("Get", mock.Anything, rp.Token).Return(nil, fmt.Errorf("error"))
-			},
-		},
-		"Cast Error": {
-			nil,
-			http.StatusInternalServerError,
-			"Error converting cache item to user",
-			rp,
-			func(m *mocks.Repository, c *cache.Store) {
-				m.On("ResetPassword", user.Email, rp.NewPassword).Return(nil)
-				c.On("Get", mock.Anything, rp.Token).Return(make(chan int), nil)
+				c.On("Get", mock.Anything, rp.Token, &domain.User{}).Return(fmt.Errorf("error"))
 			},
 		},
 		"Repo Error": {
@@ -81,8 +75,12 @@ func (t *AuthTestSuite) TestAuth_ResetPassword() {
 			"error",
 			rp,
 			func(m *mocks.Repository, c *cache.Store) {
+				c.On("Get", mock.Anything, rp.Token, &domain.User{}).Run(func(args mock.Arguments) {
+					arg := args.Get(2).(*domain.User)
+					arg.Password = user.Password
+					arg.Email = user.Email
+				}).Return(nil)
 				m.On("ResetPassword", user.Email, rp.NewPassword).Return(&errors.Error{Message: "error"})
-				c.On("Get", mock.Anything, rp.Token).Return(user, nil)
 			},
 		},
 	}

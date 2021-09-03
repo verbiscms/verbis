@@ -48,27 +48,18 @@ func (_m *Store) Driver() string {
 	return r0
 }
 
-// Get provides a mock function with given fields: ctx, key
-func (_m *Store) Get(ctx context.Context, key interface{}) (interface{}, error) {
-	ret := _m.Called(ctx, key)
+// Get provides a mock function with given fields: ctx, key, v
+func (_m *Store) Get(ctx context.Context, key interface{}, v interface{}) error {
+	ret := _m.Called(ctx, key, v)
 
-	var r0 interface{}
-	if rf, ok := ret.Get(0).(func(context.Context, interface{}) interface{}); ok {
-		r0 = rf(ctx, key)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, interface{}, interface{}) error); ok {
+		r0 = rf(ctx, key, v)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(interface{})
-		}
+		r0 = ret.Error(0)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, interface{}) error); ok {
-		r1 = rf(ctx, key)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // Invalidate provides a mock function with given fields: ctx, options

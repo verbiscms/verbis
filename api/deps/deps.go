@@ -76,19 +76,13 @@ func (d *Deps) SetOptions(options *domain.Options) {
 }
 
 type Config struct {
-
-	// The database layer
-	Store *store.Repository
-
-	// Env
-	Env   *environment.Env
-	Paths paths.Paths
-
+	Store     *store.Repository
+	Cache     cache.Store
+	Env       *environment.Env
+	Paths     paths.Paths
 	Installed bool
-
-	System sys.System
-
-	Running bool
+	System    sys.System
+	Running   bool
 }
 
 func New(cfg Config) (*Deps, error) {
@@ -111,11 +105,6 @@ func New(cfg Config) (*Deps, error) {
 		return nil, fmt.Errorf("must have a store")
 	}
 
-	cs, err := cache.Load(cfg.Env)
-	if err != nil {
-		return nil, err
-	}
-
 	var opts domain.Options
 	if cfg.Running {
 		opts = cfg.Store.Options.Struct()
@@ -125,14 +114,14 @@ func New(cfg Config) (*Deps, error) {
 		Environment: cfg.Env,
 		Options:     cfg.Store.Options,
 		Files:       cfg.Store.Files,
-		Cache:       cs,
 		Paths:       cfg.Paths,
+		Cache:       cfg.Cache,
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	themeService := theme.New(cs, cfg.Store.Options)
+	themeService := theme.New(cfg.Cache, cfg.Store.Options)
 	config, err := themeService.Config()
 	if err != nil {
 		return nil, err
@@ -140,7 +129,7 @@ func New(cfg Config) (*Deps, error) {
 
 	d := &Deps{
 		Env:       cfg.Env,
-		Cache:     cs,
+		Cache:     cfg.Cache,
 		Store:     cfg.Store,
 		Config:    &config,
 		Options:   &opts,

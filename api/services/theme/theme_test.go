@@ -51,7 +51,14 @@ func (t *ThemeTestSuite) Setup(theme string) *Theme {
 		LayoutDir:     "layouts",
 		FileExtension: ".cms",
 	}
-	c.On("Get", mock.Anything, configCacheKey).Return(cfg, nil)
+	c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+		Return(nil).
+		Run(func(args mock.Arguments) {
+			arg := args.Get(2).(*domain.ThemeConfig)
+			arg.TemplateDir = cfg.TemplateDir
+			arg.LayoutDir = cfg.LayoutDir
+			arg.FileExtension = cfg.FileExtension
+		})
 	o.On("GetTheme").Return(theme, nil)
 	th := New(c, o)
 	th.themesPath = t.TestPath

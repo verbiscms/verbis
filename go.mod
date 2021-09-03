@@ -31,7 +31,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible
-	github.com/lib/pq v1.10.2
+	github.com/lib/pq v1.10.3
 	github.com/mailgun/mailgun-go/v4 v4.5.2 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mattn/go-isatty v0.0.13 // indirect
@@ -57,6 +57,7 @@ require (
 	github.com/ugorji/go v1.2.6 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572
+	github.com/vmihailenco/msgpack v4.0.4+incompatible
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	github.com/yosssi/gohtml v0.0.0-20201013000340-ee4748c638f4 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
