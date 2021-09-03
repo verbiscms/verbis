@@ -105,10 +105,10 @@ func selectStmt(query string) string {
        CASE WHEN categories.id IS NULL THEN 0 ELSE categories.id END AS 'category.id',
        CASE WHEN categories.name IS NULL THEN '' ELSE categories.name END AS 'category.name',
        CASE WHEN categories.resource IS NULL THEN '' ELSE categories.resource END AS 'category.resource',
-       CASE WHEN pf.type IS NULL THEN "" ELSE pf.type END AS 'field.type',
-       CASE WHEN pf.field_key IS NULL THEN "" ELSE pf.field_key END AS 'field.field_key',
-       CASE WHEN pf.name IS NULL THEN "" ELSE pf.name END AS 'field.name',
-       CASE WHEN pf.value IS NULL THEN "" ELSE pf.value END AS 'field.value'
+       CASE WHEN pf.type IS NULL THEN '' ELSE pf.type END AS 'field.type',
+       CASE WHEN pf.field_key IS NULL THEN '' ELSE pf.field_key END AS 'field.field_key',
+       CASE WHEN pf.name IS NULL THEN '' ELSE pf.name END AS 'field.name',
+       CASE WHEN pf.value IS NULL THEN '' ELSE pf.value END AS 'field.value'
 FROM (%s) posts
       LEFT JOIN post_options ON posts.id = post_options.post_id
       LEFT JOIN users ON posts.user_id = users.id

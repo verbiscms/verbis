@@ -87,7 +87,7 @@ func TestMessage(t *testing.T) {
 
 func TestComparePassword(t *testing.T) {
 	fl := &mocks.FieldLevel{}
-	pr := &domain.UserPasswordReset{DBPassword: "wrong"}
+	pr := domain.UserPasswordReset{DBPassword: "wrong"}
 	fl.On("Field").Return(reflect.ValueOf("assord"))
 	fl.On("Parent").Return(reflect.ValueOf(pr))
 	got := comparePassword(fl)

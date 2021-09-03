@@ -127,7 +127,7 @@ func message(kind, field, param string) string {
 // (custom validation)
 func comparePassword(fl validator.FieldLevel) bool {
 	curPass := fl.Field().String()
-	reset := fl.Parent().Interface().(*domain.UserPasswordReset)
+	reset := fl.Parent().Interface().(domain.UserPasswordReset)
 	err := bcrypt.CompareHashAndPassword([]byte(reset.DBPassword), []byte(curPass))
 	return err == nil
 }
