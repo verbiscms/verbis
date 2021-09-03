@@ -10,7 +10,6 @@ import (
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
-	"github.com/verbiscms/verbis/api/services/fields"
 	"net/http"
 	"strconv"
 )
@@ -48,7 +47,7 @@ func (c *Posts) Update(ctx *gin.Context) {
 
 	// Clear the field cache
 	err = c.Cache.Invalidate(ctx, cache.InvalidateOptions{
-		Tags: []string{fields.FieldCacheTag},
+		Tags: []string{"posts"},
 	})
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)

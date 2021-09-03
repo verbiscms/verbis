@@ -57,6 +57,7 @@ require (
 	github.com/ugorji/go v1.2.6 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572
+	github.com/vmihailenco/msgpack v4.0.4+incompatible
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect

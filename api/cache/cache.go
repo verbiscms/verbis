@@ -6,6 +6,7 @@ package cache
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"github.com/eko/gocache/v2/store"
 	"github.com/spf13/cast"
@@ -21,7 +22,7 @@ import (
 type Store interface {
 	// Get retrieves a specific item from the cache by key.
 	// Returns errors.NOTFOUND if it could not be found.
-	Get(ctx context.Context, key interface{}) (interface{}, error)
+	Get(ctx context.Context, key interface{}, v interface{}) error
 	// Set set's a singular item in memory by key, value
 	// and options (tags and expiration time).
 	// Logs errors.INTERNAL if the item could not be set.
@@ -122,16 +123,24 @@ func Load(env *environment.Env) (*Cache, error) {
 
 // Get retrieves a specific item from the cache by key.
 // Returns errors.NOTFOUND if it could not be found.
-func (c *Cache) Get(ctx context.Context, key interface{}) (interface{}, error) {
+func (c *Cache) Get(ctx context.Context, key, v interface{}) error {
 	const op = "Cache.Get"
 	mtx.Lock()
 	defer mtx.Unlock()
-	i, err := c.store.Get(ctx, key)
-	str := cast.ToString(key)
-	if err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error getting item with key: " + str, Operation: op, Err: err}
+	result, err := c.store.Get(ctx, key)
+
+	switch r := result.(type) {
+	case []byte:
+		err = json.Unmarshal(r, v)
+	case string:
+		err = json.Unmarshal([]byte(r), v)
 	}
-	return i, nil
+
+	if err != nil {
+		return &errors.Error{Code: errors.NOTFOUND, Message: "Error getting item with key: " + cast.ToString(key), Operation: op, Err: err}
+	}
+
+	return nil
 }
 
 // Set set's a singular item in memory by key, value
@@ -141,12 +150,21 @@ func (c *Cache) Set(ctx context.Context, key interface{}, value interface{}, opt
 	const op = "Cache.Set"
 	mtx.Lock()
 	defer mtx.Unlock()
+
+	marshal, err := json.Marshal(value)
+	if err != nil {
+		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error marshalling cache item", Operation: op, Err: err}).Error()
+		return
+	}
+	value = marshal
+
 	str := cast.ToString(key)
-	err := c.store.Set(ctx, key, value, options.toStore())
+	err = c.store.Set(ctx, key, value, options.toStore())
 	if err != nil {
 		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error setting cache key: " + str, Operation: op, Err: err}).Error()
 		return
 	}
+
 	logger.Trace("Successfully set cache item with key: " + str)
 }
 

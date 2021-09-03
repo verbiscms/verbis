@@ -30,7 +30,7 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 			"Successfully verified token",
 			token,
 			func(m *mocks.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, token).Return(user, nil)
+				c.On("Get", mock.Anything, token, mock.Anything).Return(nil)
 			},
 			"/verify/" + token,
 		},
@@ -40,7 +40,7 @@ func (t *AuthTestSuite) TestAuth_VerifyPasswordToken() {
 			"No user exists with the token: " + token,
 			token,
 			func(m *mocks.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, token).Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, token, mock.Anything).Return(fmt.Errorf("error"))
 			},
 			"/verify/" + token,
 		},

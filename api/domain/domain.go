@@ -6,6 +6,9 @@ package domain
 
 import "encoding/json"
 
+// marshaller is the stdlib marshaller as an alias.
+var marshaller = json.Marshal
+
 // marshaller is the stdlib marshaller for Valuer
 // calls to the DB.
-var marshaller = json.Marshal
+var unmarshaller = json.Unmarshal

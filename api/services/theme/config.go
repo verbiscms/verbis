@@ -22,17 +22,12 @@ const (
 
 // Config satisfies the Theme interface by retrieving a
 // theme configuration. The config will be cached
-// for ever until it is wiped by Set().
+// forever until it is wiped by Set().
 func (t *Theme) Config() (domain.ThemeConfig, error) {
-	const op = "Theme.Config"
-
-	c, err := t.cache.Get(context.Background(), configCacheKey)
+	c := domain.ThemeConfig{}
+	err := t.cache.Get(context.Background(), configCacheKey, &c)
 	if err == nil {
-		cfg, ok := c.(domain.ThemeConfig)
-		if ok {
-			return cfg, nil
-		}
-		logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error casting cache item to theme config", Operation: op, Err: fmt.Errorf("bad cast")})
+		return c, nil
 	}
 
 	theme, err := t.options.GetTheme()

@@ -137,26 +137,59 @@ func (t *CacheTestSuite) TestLoad() {
 func (t *CacheTestSuite) TestGet() {
 	tt := map[string]struct {
 		mock func(m *mocks.StoreInterface)
+		run  func(cache *Cache) (interface{}, error)
 		want interface{}
 	}{
-		"Success": {
+		"String": {
 			func(m *mocks.StoreInterface) {
-				m.On("Get", mock.Anything, mock.Anything).Return("item", nil)
+				m.On("Get", mock.Anything, mock.Anything).Return("\"item\"", nil)
+			},
+			func(c *Cache) (interface{}, error) {
+				var tmp string
+				err := c.Get(context.Background(), "key", &tmp)
+				return tmp, err
 			},
 			"item",
+		},
+		"Int": {
+			func(m *mocks.StoreInterface) {
+				m.On("Get", mock.Anything, mock.Anything).Return("1", nil)
+			},
+			func(c *Cache) (interface{}, error) {
+				var tmp int
+				err := c.Get(context.Background(), "key", &tmp)
+				return tmp, err
+			},
+			1,
 		},
 		"Error": {
 			func(m *mocks.StoreInterface) {
 				m.On("Get", mock.Anything, mock.Anything).Return(nil, fmt.Errorf("error"))
 			},
+			func(c *Cache) (interface{}, error) {
+				var tmp string
+				err := c.Get(context.Background(), "key", &tmp)
+				return tmp, err
+			},
 			"Error getting item with key",
+		},
+		"Byte Slice": {
+			func(m *mocks.StoreInterface) {
+				m.On("Get", mock.Anything, mock.Anything).Return([]byte("\"test\""), nil)
+			},
+			func(c *Cache) (interface{}, error) {
+				var tmp string
+				err := c.Get(context.Background(), "key", &tmp)
+				return tmp, err
+			},
+			"test",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			c := t.Setup(test.mock)
-			got, err := c.Get(context.Background(), "key")
+			got, err := test.run(c)
 			if err != nil {
 				t.Contains(errors.Message(err), test.want)
 				return
@@ -168,21 +201,29 @@ func (t *CacheTestSuite) TestGet() {
 
 func (t *CacheTestSuite) TestSet() {
 	tt := map[string]struct {
-		mock func(m *mocks.StoreInterface)
-		want interface{}
+		mock  func(m *mocks.StoreInterface)
+		value interface{}
+		want  interface{}
 	}{
 		"Success": {
 			func(m *mocks.StoreInterface) {
 				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
 					Return(nil)
 			},
+			"key",
 			"Successfully set cache item with key",
+		},
+		"Marshal Error": {
+			nil,
+			make(chan bool),
+			"json: unsupported type",
 		},
 		"Error": {
 			func(m *mocks.StoreInterface) {
 				m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).
 					Return(fmt.Errorf("set error"))
 			},
+			"key",
 			"set error",
 		},
 	}
@@ -190,7 +231,7 @@ func (t *CacheTestSuite) TestSet() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			c := t.Setup(test.mock)
-			c.Set(context.Background(), "key", "key", Options{})
+			c.Set(context.Background(), "key", test.value, Options{})
 			t.Contains(t.LogWriter.String(), test.want)
 			t.Reset()
 		})

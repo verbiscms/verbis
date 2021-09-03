@@ -96,7 +96,7 @@ func (s *Service) Upload(file *multipart.FileHeader, userID int) (domain.Media, 
 // not exist, for example '2020/01', otherwise
 // it returns an empty string.
 func (s *Service) dir(organiseDate bool) string {
-	const prefix = paths.Uploads
+	prefix := filepath.Base(paths.Uploads)
 
 	if !organiseDate {
 		return prefix

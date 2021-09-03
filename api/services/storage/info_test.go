@@ -39,7 +39,7 @@ func (t *StorageTestSuite) TestStorage_Info() {
 				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
 			},
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(fmt.Errorf("error"))
 			},
 			Configuration{
 				ActiveProvider: domain.StorageAWS,
@@ -56,8 +56,11 @@ func (t *StorageTestSuite) TestStorage_Info() {
 				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
 			},
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, nil)
-				c.On("Get", mock.Anything, migrationKey).Return(mi, nil)
+				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)
+				c.On("Get", mock.Anything, migrationKey, &MigrationInfo{}).Return(nil).Run(func(args mock.Arguments) {
+					arg := args.Get(2).(*MigrationInfo)
+					arg.Total = 10
+				})
 			},
 			Configuration{
 				ActiveProvider: domain.StorageAWS,
@@ -81,8 +84,8 @@ func (t *StorageTestSuite) TestStorage_Info() {
 				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
 			},
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationIsMigrating).Return(false, nil)
-				c.On("Get", mock.Anything, migrationKey).Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)
+				c.On("Get", mock.Anything, migrationKey, mock.Anything).Return(fmt.Errorf("error"))
 			},
 			"error",
 		},

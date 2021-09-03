@@ -7,6 +7,7 @@ package theme
 import (
 	"fmt"
 	"github.com/stretchr/testify/mock"
+	"github.com/verbiscms/verbis/api/domain"
 	cache "github.com/verbiscms/verbis/api/mocks/cache"
 	config "github.com/verbiscms/verbis/api/mocks/config"
 	options "github.com/verbiscms/verbis/api/mocks/store/options"
@@ -66,8 +67,12 @@ func (t *ThemeTestSuite) TestTheme_GetActiveTheme() {
 				o.On("GetTheme").
 					Return("theme", nil).
 					Once()
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(cfg1, nil)
+				c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+					Return(nil).
+					Run(func(args mock.Arguments) {
+						arg := args.Get(2).(*domain.ThemeConfig)
+						arg.Theme = cfg1.Theme
+					})
 			},
 			filepath.Join(t.TestPath, "theme"),
 		},
@@ -83,8 +88,8 @@ func (t *ThemeTestSuite) TestTheme_GetActiveTheme() {
 				o.On("GetTheme").
 					Return("", nil).
 					Once()
-				c.On("Get", mock.Anything, configCacheKey).
-					Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, configCacheKey, &domain.ThemeConfig{}).
+					Return(fmt.Errorf("error"))
 				o.On("GetTheme").
 					Return("", fmt.Errorf("error")).
 					Once()

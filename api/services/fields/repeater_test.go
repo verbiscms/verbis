@@ -5,80 +5,53 @@
 package fields
 
 import (
-	"github.com/stretchr/testify/mock"
 	"github.com/verbiscms/verbis/api/domain"
-	cache "github.com/verbiscms/verbis/api/mocks/cache"
 )
 
 func (t *FieldTestSuite) TestService_GetRepeater() {
 	tt := map[string]struct {
 		fields domain.PostFields
 		input  interface{}
-		cache  func(c *cache.Store)
 		want   interface{}
 		err    bool
 	}{
 		"Cast to Repeater": {
-			nil,
-			Repeater{
+			fields: nil,
+			input: Repeater{
 				Row{{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
 				Row{{Type: "text", Name: "text", OriginalValue: "text2", Value: "text2", Key: "repeater|1|text"}},
 			},
-			CacheFieldError,
-			Repeater{
+			want: Repeater{
 				Row{{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
 				Row{{Type: "text", Name: "text", OriginalValue: "text2", Value: "text2", Key: "repeater|1|text"}},
 			},
-			false,
-		},
-		"From Cache": {
-			nil,
-			"test",
-			func(c *cache.Store) {
-				c.On("Get", mock.Anything, "field-0-0-test-repeater").
-					Return(Repeater{
-						Row{{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
-					}, nil)
-			},
-			Repeater{
-				Row{{Type: "text", Name: "text", OriginalValue: "text1", Value: "text1", Key: "repeater|0|text"}},
-			},
-			false,
+			err: false,
 		},
 		"No Stringer": {
-			nil,
-			noStringer{},
-			CacheFieldError,
-			"unable to cast fields.noStringer{} of type fields.noStringer to string",
-			true,
+			fields: nil,
+			input:  noStringer{},
+			want:   "unable to cast fields.noStringer{} of type fields.noStringer to string",
+			err:    true,
 		},
 		"No Field": {
-			nil,
-			"test",
-			CacheFieldError,
-			"",
-			true,
+			fields: nil,
+			input:  "test",
+			want:   "",
+			err:    true,
 		},
 		"Wrong Field Mime": {
-			domain.PostFields{
+			fields: domain.PostFields{
 				{Type: "text", Name: "test", OriginalValue: "text", Key: ""},
 			},
-			"test",
-			CacheFieldError,
-			"field with the name: test, is not a repeater",
-			true,
+			input: "test",
+			want:  "field with the name: test, is not a repeater",
+			err:   true,
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.GetService(test.fields)
-
-			c := &cache.Store{}
-			if test.cache != nil {
-				test.cache(c)
-			}
-			s.deps.Cache = c
 
 			got := s.GetRepeater(test.input)
 			if test.err {

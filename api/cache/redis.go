@@ -41,9 +41,6 @@ func (r *redis) Validate() error {
 	if r.env.RedisAddress == "" {
 		return errors.New("no redis address defined in env")
 	}
-	if r.env.RedisPassword == "" {
-		return errors.New("no redis password defined in ev")
-	}
 	return nil
 }
 

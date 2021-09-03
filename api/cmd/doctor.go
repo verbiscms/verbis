@@ -7,6 +7,7 @@ package cmd
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	"github.com/verbiscms/verbis/api/cache"
 	"github.com/verbiscms/verbis/api/common/paths"
 	"github.com/verbiscms/verbis/api/database"
 	"github.com/verbiscms/verbis/api/deps"
@@ -80,6 +81,12 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 		return nil, nil, err
 	}
 
+	// Load the cache store
+	cs, err := cache.Load(env)
+	if err != nil {
+		printError(err.Error())
+	}
+
 	_, err = db.Tables()
 	if err != nil {
 		printError(err.Error())
@@ -102,6 +109,7 @@ func doctor(running bool) (*deps.Config, database.Driver, error) {
 
 	return &deps.Config{
 		Store:     s,
+		Cache:     cs,
 		Env:       env,
 		Paths:     p,
 		Running:   running,

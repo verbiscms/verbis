@@ -19,29 +19,29 @@ import (
 // following:
 // [0] for post ID, fields are obtained by the post given.
 // Returns the fields to be modified & processed.
-func (s *Service) handleArgs(args []interface{}) (domain.PostFields, int) {
+func (s *Service) handleArgs(args []interface{}) domain.PostFields {
 	const op = "FieldsService.HandleArgs"
 
 	if len(args) == 0 {
-		return s.fields, 0
+		return s.fields
 	}
 
 	switch f := args[0].(type) {
 	case domain.PostDatum:
-		return f.Fields, f.Post.ID
+		return f.Fields
 	case domain.PostFields:
-		return f, 0
+		return f
 	case domain.PostTemplate:
-		return f.Fields, f.Post.ID
+		return f.Fields
 	}
 
 	id, err := cast.ToIntE(args[0])
 	if err != nil {
-		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Invalid argument passed to field", Operation: op, Err: fmt.Errorf("unable to cast post id to integer")}).Error()
-		return nil, 0
+		logger.WithError(&errors.Error{Code: errors.INVALID, Message: "Invalid argument passed to ", Operation: op, Err: fmt.Errorf("unable to cast post id to integer")}).Error()
+		return nil
 	}
 
-	return s.getFieldsByPost(id), id
+	return s.getFieldsByPost(id)
 }
 
 // getFieldsByPost Returns the fields by post with the

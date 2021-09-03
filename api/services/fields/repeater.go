@@ -38,12 +38,7 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 		return nil
 	}
 
-	fields, id := s.handleArgs(args)
-
-	r, ok := s.getCacheField(name, repeaterCacheKey, id)
-	if ok {
-		return r.(Repeater)
-	}
+	fields := s.handleArgs(args)
 
 	field, err := s.findFieldByName(name, fields)
 	if err != nil {
@@ -55,11 +50,7 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 		return nil
 	}
 
-	repeater = s.resolveRepeater("", field, fields)
-
-	s.setCacheField(repeater, name, repeaterCacheKey, id)
-
-	return repeater
+	return s.resolveRepeater("", field, fields)
 }
 
 // resolveRepeater loops through the given slice of domain.PostField
@@ -68,7 +59,7 @@ func (s *Service) GetRepeater(input interface{}, args ...interface{}) Repeater {
 // be looping through them anyway to append and format the fields.
 // Returns the sorted slice of fields.
 func (s *Service) resolveRepeater(key string, field domain.PostField, fields domain.PostFields) Repeater {
-	const op = "FieldsService.ResolveRepeater"
+	const op = "FieldsService.resolveRepeater"
 
 	amount, err := field.OriginalValue.Int()
 	if err != nil {
