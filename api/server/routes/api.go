@@ -105,6 +105,7 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		users.GET("", middleware.Authorise(domain.Permissions.Users, domain.ViewMethod), h.Users.List)
 		users.GET("/:id", middleware.Authorise(domain.Permissions.Users, domain.ViewMethod), h.Users.Find)
 		users.POST("", middleware.Authorise(domain.Permissions.Users, domain.CreateMethod), h.Users.Create)
+		// TODO, a user can't update his or her's own profile at the moment?
 		users.PUT("/:id", middleware.Authorise(domain.Permissions.Users, domain.UpdateMethod), h.Users.Update)
 		users.DELETE("/:id", middleware.Authorise(domain.Permissions.Users, domain.DeleteMethod), h.Users.Delete)
 		users.POST("/:id/reset-password", middleware.Authorise(domain.Permissions.Users, domain.UpdateMethod), h.Users.ResetPassword)
