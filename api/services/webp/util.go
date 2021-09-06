@@ -8,10 +8,13 @@ import (
 	"bytes"
 	"github.com/gin-gonic/gin"
 	"github.com/nickalie/go-webpbin"
+	"github.com/verbiscms/verbis/api/common/files"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
 	"io"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 )
@@ -36,8 +39,16 @@ type WebP struct {
 
 // New creates a new WebP Execer.
 func New(binPath string) *WebP {
+	const op = "WebP.New"
+	path := filepath.Join(binPath, Path)
+	if !files.DirectoryExists(path) {
+		err := os.MkdirAll(path, os.ModePerm)
+		if err != nil {
+			logger.WithError(&errors.Error{Code: errors.INTERNAL, Message: "Error creating webp path", Operation: op, Err: err})
+		}
+	}
 	return &WebP{
-		binPath: filepath.Join(binPath, Path),
+		binPath: path,
 	}
 }
 
