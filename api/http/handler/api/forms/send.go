@@ -58,7 +58,7 @@ func (f *Forms) Send(ctx *gin.Context) {
 	}
 
 	// service should be atatched to handler
-	values, attachments, err := service.NewReader(&form, f.Paths.Storage).Values()
+	values, attachments, err := service.NewReader(f.Storage, &form).Values()
 	if err != nil {
 		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
 		return

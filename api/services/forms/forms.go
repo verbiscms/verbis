@@ -9,14 +9,15 @@ import (
 	dynamicstruct "github.com/ompluscator/dynamic-struct"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/services/storage"
 	"golang.org/x/net/html"
 	"mime/multipart"
 )
 
 type Reader struct {
-	Form        *domain.Form
-	Reader      dynamicstruct.Reader
-	StoragePath string
+	Form    *domain.Form
+	Reader  dynamicstruct.Reader
+	Storage storage.Provider
 }
 
 type Sender struct {
@@ -24,11 +25,11 @@ type Sender struct {
 	Fields      domain.FormValues
 }
 
-func NewReader(form *domain.Form, path string) *Reader {
+func NewReader(store storage.Provider, form *domain.Form) *Reader {
 	return &Reader{
-		Form:        form,
-		Reader:      dynamicstruct.NewReader(form.Body),
-		StoragePath: path,
+		Form:    form,
+		Reader:  dynamicstruct.NewReader(form.Body),
+		Storage: store,
 	}
 }
 
@@ -45,7 +46,7 @@ func (r *Reader) Values() (domain.FormValues, Attachments, error) {
 		switch v.Type {
 		case "file":
 
-			a, err := getAttachment(field.Interface(), r.StoragePath)
+			a, err := getAttachment(field.Interface(), r.Storage)
 			if err != nil {
 				return nil, nil, err
 			}

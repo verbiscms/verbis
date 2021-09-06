@@ -15,6 +15,18 @@ func TestLocal_Dial(t *testing.T) {
 	UtilTestProviderDial(&environment.Env{}, &local{}, t)
 }
 
+func TestLocal_Dial_Directory(t *testing.T) {
+	l := local{path: t.TempDir()}
+	_, err := l.Dial(&environment.Env{})
+	assert.Nil(t, err)
+}
+
+func TestLocal_Dial_Directory_Error(t *testing.T) {
+	l := local{path: "/test"}
+	_, err := l.Dial(&environment.Env{})
+	assert.Error(t, err)
+}
+
 func TestLocal_Info(t *testing.T) {
 	l := local{}
 	got := l.Info(nil)
