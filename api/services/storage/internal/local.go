@@ -7,9 +7,11 @@ package internal
 import (
 	"github.com/graymeta/stow"
 	stowLocal "github.com/graymeta/stow/local"
+	"github.com/verbiscms/verbis/api/common/files"
 	"github.com/verbiscms/verbis/api/common/paths"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
+	"os"
 )
 
 // local satisfies the provider interface by implementing
@@ -27,6 +29,12 @@ const LocalName = "Local Storage"
 func (l *local) Dial(env *environment.Env) (stow.Location, error) {
 	if l.path == "" {
 		l.path = paths.Get().Storage
+	}
+	if !files.DirectoryExists(l.path) {
+		err := os.MkdirAll(l.path, os.ModePerm)
+		if err != nil {
+			return nil, err
+		}
 	}
 	return dialler(stowLocal.Kind, stow.ConfigMap{
 		stowLocal.ConfigKeyPath: l.path,

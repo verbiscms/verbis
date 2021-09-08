@@ -140,7 +140,7 @@ func New(cfg Config) (*Deps, error) {
 		Site:      site.New(cfg.Store.Options, cfg.System),
 		Theme:     themeService,
 		FS:        verbisfs.New(api.Production, cfg.Paths),
-		WebP:      webp.New(cfg.Paths.Bin + webp.Path),
+		WebP:      webp.New(cfg.Paths.Bin),
 		Storage:   st,
 		System:    cfg.System,
 	}

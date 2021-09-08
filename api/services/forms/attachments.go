@@ -5,12 +5,17 @@
 package forms
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/ainsleyclark/go-mail"
 	"github.com/gabriel-vasile/mimetype"
+	"github.com/google/uuid"
 	"github.com/verbiscms/verbis/api/common/encryption"
 	"github.com/verbiscms/verbis/api/common/mime"
+	"github.com/verbiscms/verbis/api/common/paths"
+	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/services/storage"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -77,7 +82,7 @@ func (a *Attachment) SizeMB() int {
 // getAttachment
 //
 //
-func getAttachment(i interface{}, uploadsPath string) (*Attachment, error) {
+func getAttachment(i interface{}, st storage.Provider) (*Attachment, error) {
 	const op = "Forms.getAttachement"
 
 	m, ok := i.(*multipart.FileHeader)
@@ -96,12 +101,12 @@ func getAttachment(i interface{}, uploadsPath string) (*Attachment, error) {
 		return nil, err
 	}
 
-	bytes, err := ioutil.ReadFile(path)
+	buf, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, &errors.Error{Code: errors.INTERNAL, Message: "", Operation: op, Err: err}
 	}
 
-	md5Name, err := dumpFile(bytes, m.Filename, uploadsPath)
+	md5Name, err := dumpFile(buf, m.Filename, st)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +115,7 @@ func getAttachment(i interface{}, uploadsPath string) (*Attachment, error) {
 		MIMEType: mt,
 		Filename: m.Filename,
 		MD5name:  md5Name,
-		Data:     bytes,
+		Data:     buf,
 		Size:     m.Size,
 	}, nil
 }
@@ -188,22 +193,39 @@ func validateFile(file *multipart.File, size int64) (string, error) { //nolint
 // saved to the forms storage folder.
 //
 // Returns errors.INTERNAL if the file could not be created or saved.
-func dumpFile(b []byte, name, path string) (string, error) {
+func dumpFile(b []byte, name string, st storage.Provider) (string, error) {
 	const op = "Forms.dumpFile"
 
 	ext := filepath.Ext(name)
 	file := encryption.MD5Hash(name+time.Now().String()) + ext
-	dst := path + "/forms/" + file
+	//dst := path + "/forms/" + file
+	//
+	//err := os.MkdirAll(dst, os.ModePerm)
+	//if err != nil {
+	//	return "", err
+	//}
 
-	err := os.MkdirAll(dst, os.ModePerm)
+	buf := bytes.NewReader(b)
+
+	_, err := st.Upload(domain.Upload{
+		UUID:       uuid.New(),
+		Path:       filepath.Join(filepath.Base(paths.Forms), file),
+		Size:       buf.Size(),
+		Contents:   buf,
+		Private:    false,
+		SourceType: domain.FormAttachmentSourceType,
+	})
 	if err != nil {
 		return "", err
 	}
 
-	err = ioutil.WriteFile(dst, b, os.ModePerm)
-	if err != nil {
-		return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to create file to save mail attachment to the system.", Operation: op, Err: err}
-	}
+	//
+	//err = ioutil.WriteFile(dst, b, os.ModePerm)
+	//if err != nil {
+	//	return "", &errors.Error{Code: errors.INTERNAL, Message: "Unable to create file to save mail attachment to the system.", Operation: op, Err: err}
+	//}
+	//
+	//return file, nil
 
 	return file, nil
 }
