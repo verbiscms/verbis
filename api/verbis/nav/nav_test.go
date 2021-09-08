@@ -106,7 +106,8 @@ func TestGet(t *testing.T) {
 			nil,
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			"Error obtaining navigation items",
 		},
@@ -115,10 +116,13 @@ func TestGet(t *testing.T) {
 			nil,
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(Menu{
-					Items:   Items{{Href: "link-one", Title: "title"}},
-					Options: Options{Menu: "main-menu"},
-				}, nil)
+				c.On("Get", mock.Anything, "nav-menu-main-menu", &Menu{}).
+					Return(nil).
+					Run(func(args mock.Arguments) {
+						arg := args.Get(2).(*Menu)
+						arg.Items = Items{{Href: "link-one", Title: "title"}}
+						arg.Options = Options{Menu: "main-menu"}
+					})
 			},
 			Menu{
 				Options: Options{Menu: "main-menu"},
@@ -130,7 +134,8 @@ func TestGet(t *testing.T) {
 			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", Title: "title"}}}},
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			Menu{
 				Options: Options{Menu: "main-menu"},
@@ -146,7 +151,8 @@ func TestGet(t *testing.T) {
 			}}},
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			Menu{
 				Options: Options{Menu: "main-menu"},
@@ -164,7 +170,8 @@ func TestGet(t *testing.T) {
 			}}},
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			Menu{
 				Options: Options{Menu: "main-menu"},
@@ -184,7 +191,8 @@ func TestGet(t *testing.T) {
 			}}},
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			Menu{
 				Options: Options{Menu: "main-menu", Depth: 2},
@@ -208,7 +216,8 @@ func TestGet(t *testing.T) {
 			}}},
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			Menu{
 				Options: Options{Menu: "main-menu", Depth: 3},
@@ -226,7 +235,8 @@ func TestGet(t *testing.T) {
 			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", External: true}}}},
 			nil,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			Menu{
 				Options: Options{Menu: "main-menu"},
@@ -238,8 +248,10 @@ func TestGet(t *testing.T) {
 			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", PostID: &postID}}}},
 			&domain.PostDatum{},
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
-				m.On("Find", postID, false).Return(post, nil)
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
+				m.On("Find", postID, false).
+					Return(post, nil)
 			},
 			Menu{
 				Options: Options{Menu: "main-menu"},
@@ -251,8 +263,10 @@ func TestGet(t *testing.T) {
 			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", PostID: &postID}}}},
 			&domain.PostDatum{},
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
-				m.On("Find", postID, false).Return(domain.PostDatum{}, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
+				m.On("Find", postID, false).
+					Return(domain.PostDatum{}, fmt.Errorf("error"))
 			},
 			Menu{
 				Options: Options{Menu: "main-menu"},
@@ -264,7 +278,8 @@ func TestGet(t *testing.T) {
 			menusDB{"main-menu": menuDB{Items: Items{{Href: "link-one", PostID: &postID}}}},
 			&post,
 			func(m *posts.Repository, c *cache.Store) {
-				c.On("Get", mock.Anything, "nav-menu-main-menu").Return(nil, fmt.Errorf("error"))
+				c.On("Get", mock.Anything, "nav-menu-main-menu", mock.Anything).
+					Return(fmt.Errorf("error"))
 				m.On("Find", postID, false).Return(post, nil)
 			},
 			Menu{

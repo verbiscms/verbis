@@ -105,16 +105,12 @@ func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 	}
 
 	// Try and obtain the cached navigational items
-	// if it exists.
-	c, err := s.deps.Cache.Get(context.Background(), "nav-menu-"+opts.Menu)
-	if err == nil {
-		m, ok := c.(Menu)
-		// If the cast was successful and the options
-		// remain the same, return the cached
-		// version.
-		if ok && m.Options == opts {
-			return m, nil
-		}
+	// if it exists and the options remain the
+	// same return the cached version.
+	m := Menu{}
+	err = s.deps.Cache.Get(context.Background(), "nav-menu-"+opts.Menu, &m)
+	if err == nil && m.Options == opts {
+		return m, nil
 	}
 
 	items, name, err := s.getNavItems(opts)
@@ -122,7 +118,7 @@ func (s *Service) GetFromOptions(opts Options) (Menu, error) {
 		return Menu{}, &errors.Error{Code: errors.INVALID, Message: "Error obtaining navigation items", Operation: op, Err: err}
 	}
 
-	m := Menu{
+	m = Menu{
 		Name:    name,
 		Options: opts,
 		Items:   items,
