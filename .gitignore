@@ -40,7 +40,7 @@ pnpm-debug.log*
 *.sw?
 
 # Verbis specific
-/storage"
+/storage
 /dist/*
 /bin/webp
 admin/dist/*
