@@ -5,10 +5,12 @@
 package storage
 
 import (
+	"fmt"
 	"github.com/verbiscms/verbis/api/common/params"
 	vstrings "github.com/verbiscms/verbis/api/common/strings"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
 	"io/ioutil"
 	"path"
 	"strings"
@@ -69,6 +71,19 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 
 	info := s.service.Config()
 
+	// Error converting image to WebP [op] Webp.Convert [error] exit status 255. Error! Could not process file -
+	// Error! Cannot read input picture file '-'
+	//
+	if info.LocalBackup && !info.Provider.IsLocal() {
+		go func() {
+			fmt.Println("processing backup")
+			_, err := s.upload(domain.StorageLocal, "", u, false)
+			if err != nil {
+				logger.WithError(err).Error()
+			}
+		}()
+	}
+
 	return s.upload(info.Provider, info.Bucket, u, true)
 }
 
@@ -119,6 +134,12 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 		Private:    false,
 	}
 
+	// Seek the file incase // TODO
+	_, err = u.Contents.Seek(0, 0)
+	if err != nil {
+		logger.WithError(&errors.Error{})
+	}
+
 	if !createDB {
 		return f, nil
 	}
@@ -140,7 +161,13 @@ func (s *Storage) Exists(name string) bool {
 // Delete satisfies the Bucket interface by accepting an ID
 // and deleting a file from the bucket and database.
 func (s *Storage) Delete(id int) error {
-	return s.deleteFile(true, id)
+
+	// TODO check if there is a local copy
+	err := s.deleteFile(true, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *Storage) deleteFile(database bool, id int) error {
@@ -160,6 +187,8 @@ func (s *Storage) deleteFile(database bool, id int) error {
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
 	}
+
+	fmt.Println(file.FullPath(s.paths.Storage))
 
 	if !database {
 		return nil
