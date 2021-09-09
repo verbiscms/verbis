@@ -43,13 +43,13 @@ func (t *StorageTestSuite) TestStorage_Validate() {
 			nil,
 			fmt.Errorf("bucket cannot be empty"),
 		},
-		"Info Error": {
-			domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket},
-			func(m *mocks.Service, r *repo.Repository) {
-				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal})
-			},
-			fmt.Errorf("Configuration not set for"),
-		},
+		//"Info Error": {
+		//	domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket},
+		//	func(m *mocks.Service, r *repo.Repository) {
+		//		m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal})
+		//	},
+		//	fmt.Errorf("Configuration not set for"),
+		//},
 		"Connect Error": {
 			domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket},
 			func(m *mocks.Service, r *repo.Repository) {
