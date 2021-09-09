@@ -42,7 +42,7 @@ func (t *StorageTestSuite) TestStorage_DeleteBucket() {
 			nil,
 			http.StatusBadRequest,
 			"Local bucket cannot be deleted",
-			domain.StorageChange{Provider: domain.StorageLocal},
+			domain.StorageConfig{Provider: domain.StorageLocal},
 			nil,
 		},
 		"Invalid": {

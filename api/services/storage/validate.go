@@ -11,13 +11,13 @@ import (
 	"github.com/verbiscms/verbis/api/domain"
 )
 
-// validate determines if the domain.StorageChange is
+// validate determines if the domain.StorageConfig is
 // valid before proceeding. It will check if the
 // bucket is empty (if it is a remote source),
 // check if the provider is connected, and
 // see if the bucket is valid from the
 // given provider.
-func (s *Storage) validate(info domain.StorageChange) error {
+func (s *Storage) validate(info domain.StorageConfig) error {
 	if !info.Provider.IsLocal() && info.Bucket == "" {
 		return fmt.Errorf("bucket cannot be empty")
 	}

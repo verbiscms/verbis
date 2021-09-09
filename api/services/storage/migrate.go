@@ -93,15 +93,15 @@ func (m *MigrationInfo) succeed(file domain.File) {
 // migrations.
 type migration struct {
 	file domain.File
-	from domain.StorageChange
-	to   domain.StorageChange
+	from domain.StorageConfig
+	to   domain.StorageConfig
 	wg   *sync.WaitGroup
 }
 
 // Migrate satisfies the Provider interface by accepting a
-// from and to StorageChange to migrate files to the
+// from and to StorageConfig to migrate files to the
 // remote provider or local storage.
-func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageChange, deleteFiles bool) (int, error) {
+func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageConfig, deleteFiles bool) (int, error) {
 	const op = "Storage.Migrate"
 
 	if s.isMigrating(ctx) {
@@ -164,7 +164,7 @@ func (s *Storage) getMigration() (*MigrationInfo, error) {
 
 // processMigration ranges over the given files and adds a
 // migration to the migrateTrackChan.
-func (s *Storage) processMigration(ctx context.Context, files domain.Files, from, to domain.StorageChange, deleteFiles bool) {
+func (s *Storage) processMigration(ctx context.Context, files domain.Files, from, to domain.StorageConfig, deleteFiles bool) {
 	mi := &MigrationInfo{
 		Total:      len(files),
 		MigratedAt: time.Now(),

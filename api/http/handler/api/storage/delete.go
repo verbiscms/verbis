@@ -21,7 +21,7 @@ import (
 func (s *Storage) DeleteBucket(ctx *gin.Context) {
 	const op = "StorageHandler.DeleteBucket"
 
-	var info domain.StorageChange
+	var info domain.StorageConfig
 	err := ctx.ShouldBindJSON(&info)
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})

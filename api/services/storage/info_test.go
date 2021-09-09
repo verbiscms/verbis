@@ -36,7 +36,7 @@ func (t *StorageTestSuite) TestStorage_Info() {
 	}{
 		"Not Migrating": {
 			func(m *mocks.Service, r *repo.Repository) {
-				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
 			},
 			func(c *cache.Store) {
 				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(fmt.Errorf("error"))
@@ -53,7 +53,7 @@ func (t *StorageTestSuite) TestStorage_Info() {
 		},
 		"Is Migrating": {
 			func(m *mocks.Service, r *repo.Repository) {
-				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
 			},
 			func(c *cache.Store) {
 				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)
@@ -72,16 +72,9 @@ func (t *StorageTestSuite) TestStorage_Info() {
 				MigrationInfo: mi,
 			},
 		},
-		"Config Error": {
-			func(m *mocks.Service, r *repo.Repository) {
-				m.On("Config").Return(domain.StorageAWS, "", fmt.Errorf("error"))
-			},
-			nil,
-			"error",
-		},
 		"Migration Error": {
 			func(m *mocks.Service, r *repo.Repository) {
-				m.On("Config").Return(domain.StorageAWS, TestBucket, nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
 			},
 			func(c *cache.Store) {
 				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)

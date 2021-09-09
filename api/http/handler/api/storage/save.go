@@ -20,7 +20,7 @@ import (
 func (s *Storage) Save(ctx *gin.Context) {
 	const op = "StorageHandler.Save"
 
-	var info domain.StorageChange
+	var info domain.StorageConfig
 	err := ctx.ShouldBindJSON(&info)
 	if err != nil {
 		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
@@ -36,5 +36,5 @@ func (s *Storage) Save(ctx *gin.Context) {
 		return
 	}
 
-	api.Respond(ctx, http.StatusOK, "Successfully set storage provider and bucket", nil)
+	api.Respond(ctx, http.StatusOK, "Successfully updated storage options", nil)
 }

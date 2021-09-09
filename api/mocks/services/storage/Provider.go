@@ -154,18 +154,18 @@ func (_m *Provider) ListBuckets(provider domain.StorageProvider) (domain.Buckets
 }
 
 // Migrate provides a mock function with given fields: ctx, from, to, delete
-func (_m *Provider) Migrate(ctx context.Context, from domain.StorageChange, to domain.StorageChange, delete bool) (int, error) {
+func (_m *Provider) Migrate(ctx context.Context, from domain.StorageConfig, to domain.StorageConfig, delete bool) (int, error) {
 	ret := _m.Called(ctx, from, to, delete)
 
 	var r0 int
-	if rf, ok := ret.Get(0).(func(context.Context, domain.StorageChange, domain.StorageChange, bool) int); ok {
+	if rf, ok := ret.Get(0).(func(context.Context, domain.StorageConfig, domain.StorageConfig, bool) int); ok {
 		r0 = rf(ctx, from, to, delete)
 	} else {
 		r0 = ret.Get(0).(int)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, domain.StorageChange, domain.StorageChange, bool) error); ok {
+	if rf, ok := ret.Get(1).(func(context.Context, domain.StorageConfig, domain.StorageConfig, bool) error); ok {
 		r1 = rf(ctx, from, to, delete)
 	} else {
 		r1 = ret.Error(1)
@@ -175,11 +175,11 @@ func (_m *Provider) Migrate(ctx context.Context, from domain.StorageChange, to d
 }
 
 // Save provides a mock function with given fields: info
-func (_m *Provider) Save(info domain.StorageChange) error {
+func (_m *Provider) Save(info domain.StorageConfig) error {
 	ret := _m.Called(info)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(domain.StorageChange) error); ok {
+	if rf, ok := ret.Get(0).(func(domain.StorageConfig) error); ok {
 		r0 = rf(info)
 	} else {
 		r0 = ret.Error(0)

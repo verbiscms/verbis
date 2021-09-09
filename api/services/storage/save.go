@@ -12,7 +12,7 @@ import (
 // Save satisfies the Provider interface by changing the
 // current storage providers by updating the options
 // table.
-func (s *Storage) Save(info domain.StorageChange) error {
+func (s *Storage) Save(info domain.StorageConfig) error {
 	const op = "Storage.Save"
 
 	err := s.validate(info)
@@ -25,12 +25,11 @@ func (s *Storage) Save(info domain.StorageChange) error {
 		info.Bucket = ""
 	}
 
-	err = s.optionsRepo.Update("storage_provider", info.Provider)
-	if err != nil {
-		return err
-	}
-
-	err = s.optionsRepo.Update("storage_bucket", info.Bucket)
+	err = s.optionsRepo.Insert(domain.OptionsDBMap{
+		"storage_provider":     info.Provider,
+		"storage_bucket":       info.Bucket,
+		"storage_local_backup": info.LocalBackup,
+	})
 	if err != nil {
 		return err
 	}

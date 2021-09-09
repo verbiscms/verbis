@@ -24,7 +24,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 		"Success": {
 			nil,
 			http.StatusOK,
-			"Successfully set storage provider and bucket",
+			"Successfully updated storage options",
 			storageChange,
 			func(m *mocks.Provider) {
 				m.On("Save", storageChange).Return(nil)

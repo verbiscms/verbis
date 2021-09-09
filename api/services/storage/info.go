@@ -18,16 +18,13 @@ type Configuration struct {
 	Providers      domain.StorageProviders `json:"providers"`
 	IsMigrating    bool                    `json:"is_migrating"`
 	MigrationInfo  *MigrationInfo          `json:"migration"`
+	LocalBackup    bool                    `json:"local_backup"`
 }
 
 // Info satisfies the Provider interface by returning a
 // domain.StorageConfiguration.
 func (s *Storage) Info(ctx context.Context) (Configuration, error) {
-	provider, bucket, err := s.service.Config()
-	if err != nil {
-		return Configuration{}, err
-	}
-
+	info := s.service.Config()
 	var m = make(domain.StorageProviders)
 	for k, v := range internal.Providers {
 		m[k] = v.Info(s.env)
@@ -44,11 +41,12 @@ func (s *Storage) Info(ctx context.Context) (Configuration, error) {
 	}
 
 	c := Configuration{
-		ActiveProvider: provider,
-		ActiveBucket:   bucket,
+		ActiveProvider: info.Provider,
+		ActiveBucket:   info.Bucket,
 		Providers:      m,
 		IsMigrating:    isMigrating,
 		MigrationInfo:  migrationInfo,
+		LocalBackup:    info.LocalBackup,
 	}
 
 	return c, nil

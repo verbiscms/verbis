@@ -179,45 +179,35 @@ func TestService_Bucket(t *testing.T) {
 
 func TestService_Config(t *testing.T) {
 	tt := map[string]struct {
-		mock     func(m *options.Repository)
-		error    string
-		provider domain.StorageProvider
-		bucket   string
+		mock func(m *options.Repository)
+		want domain.StorageConfig
 	}{
 		"Success": {
 			func(m *options.Repository) {
-				m.On("Find", "storage_provider").Return("\"aws\"", nil)
-				m.On("Find", "storage_bucket").Return("\"bucket\"", nil)
+				m.On("Struct").Return(domain.Options{
+					StorageProvider:    domain.StorageAWS,
+					StorageBucket:      "bucket",
+					StorageLocalBackup: true,
+				})
 			},
-			"",
-			domain.StorageAWS,
-			"bucket",
+			domain.StorageConfig{
+				Provider:    domain.StorageAWS,
+				Bucket:      "bucket",
+				LocalBackup: true,
+			},
 		},
 		"Empty Provider": {
 			func(m *options.Repository) {
-				m.On("Find", "storage_provider").Return("", nil)
-				m.On("Find", "storage_bucket").Return("\"bucket\"", nil)
+				m.On("Struct").Return(domain.Options{
+					StorageBucket:      "bucket",
+					StorageLocalBackup: true,
+				})
 			},
-			"",
-			domain.StorageLocal,
-			"bucket",
-		},
-		"Provider Error": {
-			func(m *options.Repository) {
-				m.On("Find", "storage_provider").Return(nil, fmt.Errorf("error"))
+			domain.StorageConfig{
+				Provider:    domain.StorageLocal,
+				Bucket:      "bucket",
+				LocalBackup: true,
 			},
-			"error",
-			"",
-			"",
-		},
-		"Bucket Error": {
-			func(m *options.Repository) {
-				m.On("Find", "storage_provider").Return("amazon", nil)
-				m.On("Find", "storage_bucket").Return(nil, fmt.Errorf("error"))
-			},
-			"error",
-			"",
-			"",
 		},
 	}
 
@@ -226,15 +216,8 @@ func TestService_Config(t *testing.T) {
 			m := &options.Repository{}
 			test.mock(m)
 			s := &Service{Env: &environment.Env{}, Options: m}
-
-			provider, bucket, err := s.Config()
-			if err != nil {
-				assert.Contains(t, errors.Message(err), test.error)
-				return
-			}
-
-			assert.Equal(t, test.provider, provider)
-			assert.Equal(t, test.bucket, bucket)
+			got := s.Config()
+			assert.Equal(t, test.want, got)
 		})
 	}
 }

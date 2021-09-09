@@ -25,5 +25,5 @@ type Service interface {
 	Provider(provider domain.StorageProvider) (stow.Location, error)
 	Bucket(provider domain.StorageProvider, bucket string) (stow.Container, error)
 	BucketByFile(file domain.File) (stow.Container, error)
-	Config() (domain.StorageProvider, string, error)
+	Config() domain.StorageConfig
 }

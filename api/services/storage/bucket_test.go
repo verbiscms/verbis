@@ -149,7 +149,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				cont.On("ID").Return("bucket")
 				cont.On("Put", "uploads/2020/01/"+key+".txt", upload.Contents, upload.Size, mock.Anything).Return(item, nil)
 
-				m.On("Config").Return(domain.StorageLocal, "", nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal})
 				m.On("Bucket", domain.StorageLocal, "").Return(cont, nil)
 				r.On("Create", fileLocal).Return(fileLocal, nil)
 			},
@@ -166,25 +166,17 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				cont.On("Put", mock.Anything, upload.Contents, upload.Size, mock.Anything).Return(item, nil)
 				cont.On("ID").Return("bucket")
 
-				m.On("Config").Return(domain.StorageAWS, "", nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS})
 				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
 				r.On("Create", fileRemote).Return(fileRemote, nil)
 			},
 			false,
 			fileRemote,
 		},
-		"Config Error": {
-			upload,
-			func(m *mocks.Service, r *repo.Repository) {
-				m.On("Config").Return(domain.StorageAWS, "", fmt.Errorf("error"))
-			},
-			false,
-			"error",
-		},
 		"Bucket Error": {
 			upload,
 			func(m *mocks.Service, r *repo.Repository) {
-				m.On("Config").Return(domain.StorageAWS, "", nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS})
 				m.On("Bucket", domain.StorageAWS, "").Return(nil, fmt.Errorf("error"))
 			},
 			false,
@@ -203,7 +195,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 			func(m *mocks.Service, r *repo.Repository) {
 				cont := &mocks.StowContainer{}
 				cont.On("Put", mock.Anything, upload.Contents, upload.Size, mock.Anything).Return(&mocks.StowItem{}, fmt.Errorf("error"))
-				m.On("Config").Return(domain.StorageAWS, "", nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS})
 				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
 			},
 			true,
@@ -221,7 +213,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 			func(m *mocks.Service, r *repo.Repository) {
 				cont := &mocks.StowContainer{}
 				cont.On("Put", mock.Anything, mock.Anything, upload.Size, mock.Anything).Return(&mocks.StowItem{}, nil)
-				m.On("Config").Return(domain.StorageAWS, "", nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS})
 				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
 			},
 			true,
@@ -238,7 +230,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				cont.On("Put", "uploads/2020/01/"+key+".txt", upload.Contents, upload.Size, mock.Anything).Return(item, nil)
 				cont.On("ID").Return("bucket")
 
-				m.On("Config").Return(domain.StorageLocal, "", nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal})
 				m.On("Bucket", domain.StorageLocal, "").Return(cont, nil)
 				r.On("Create", fileLocal).Return(domain.File{}, fmt.Errorf("error"))
 			},

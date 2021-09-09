@@ -58,6 +58,11 @@
 					<!-- Options -->
 					<div class="storage-config">
 						<h2 class="storage-title">Options:</h2>
+						<p>If a remote storage provider is activated, you can choose to keep a backup of the existing files locally below.</p>
+						<div class="d-flex justify-content-between align-items-center">
+							<el-switch inactive-text="Keep local backup?" v-model="info.local_backup"></el-switch>
+							<el-button size="small" :loading="saving" @click="saveInfo">Save Options</el-button>
+						</div>
 					</div><!-- /Migration -->
 				</div>
 				<!-- =====================
@@ -210,6 +215,7 @@ export default {
 		Breadcrumbs,
 	},
 	data: () => ({
+		value: true,
 		doingAxios: true,
 		text: "",
 		config: {},
@@ -220,9 +226,9 @@ export default {
 		info: {
 			provider: "",
 			bucket: "",
+			local_backup: false,
 		},
 		buckets: [],
-		errors: [],
 		activeProviders: [],
 		migrate: {
 			provider: "",
@@ -234,7 +240,9 @@ export default {
 		bucket: {
 			name: "",
 			loading: false,
-		}
+		},
+		saving: false,
+		backup: false,
 	}),
 	mounted() {
 		this.getConfig();
@@ -261,28 +269,11 @@ export default {
 					this.config = res.data.data;
 					this.doingAxios = false;
 					this.listBuckets(this.config['active_provider']).then(res => this.buckets = res);
-
 					this.info = {
 						provider: this.config['active_provider'],
-						bucket: this.config['active_bucket']
+						bucket: this.config['active_bucket'],
+						local_backup: this.config['local_backup']
 					}
-
-
-
-					// temporary
-					this.config['is_migrating'] = true;
-
-					this.config['migration'] = {
-						total: 100,
-						progress: 10,
-						succeeded: 10,
-						failed: 4,
-						files_processed: 20,
-						//migrated_at: false,
-						errors: []
-					}
-
-
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
@@ -371,8 +362,6 @@ export default {
 				}
 			}
 
-			console.log(migration);
-
 			migration['delete'] = this.migrate['delete'];
 			this.axios.post("/storage/migrate", migration)
 				.then(res => {
@@ -438,15 +427,22 @@ export default {
 		 * Changes the storage provider (info).
 		 */
 		saveInfo() {
+			this.saving = true;
 			this.axios.post("/storage", this.info)
 				.then(res => {
 					this.showProviderModal = false;
 					this.showBucketModal = false;
-					this.$noty.success(res.data.message);
+					this.$message({
+						message: res.data.message,
+						type: "success",
+					});
 					this.getConfig();
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
+				})
+				.finally(() => {
+					this.saving = false;
 				})
 		},
 		/*
@@ -533,10 +529,16 @@ export default {
 		}
 
 		&-migration {
-			margin-top: 1rem;
+			margin-top: 1.7rem;
 
 			h4 {
-				margin-bottom: 4px;
+				margin-bottom: 8px;
+			}
+
+			small {
+				margin-top: 8px;
+				display: block;
+				text-align: right;
 			}
 		}
 	}

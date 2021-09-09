@@ -16,8 +16,8 @@ import (
 // migration represents the data send from the frontend
 // to start a migration.
 type migration struct {
-	From   domain.StorageChange `json:"from"`
-	To     domain.StorageChange `json:"to"`
+	From   domain.StorageConfig `json:"from"`
+	To     domain.StorageConfig `json:"to"`
 	Delete bool                 `json:"delete"`
 }
 

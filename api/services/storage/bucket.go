@@ -67,12 +67,9 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Validation failed", Operation: op, Err: err}
 	}
 
-	provider, bucket, err := s.service.Config()
-	if err != nil {
-		return domain.File{}, err
-	}
+	info := s.service.Config()
 
-	return s.upload(provider, bucket, u, true)
+	return s.upload(info.Provider, info.Bucket, u, true)
 }
 
 func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, createDB bool) (domain.File, error) {

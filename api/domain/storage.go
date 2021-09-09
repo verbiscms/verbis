@@ -35,12 +35,13 @@ type (
 		EnvironmentKeys []string    `json:"environment_keys"`
 		EnvironmentSet  bool        `json:"environment_set"`
 	}
-	// StorageChange represents the data needed to change or
+	// StorageConfig represents the data needed to change or
 	// modify and existing storage provider or bucket.
-	StorageChange struct {
-		Provider StorageProvider `json:"provider" binding:"required"`
-		Bucket   string          `json:"bucket"`
-		Region   string          `json:"region"`
+	StorageConfig struct {
+		Provider    StorageProvider `json:"provider" binding:"required"`
+		Bucket      string          `json:"bucket"`
+		Region      string          `json:"region"`
+		LocalBackup bool            `json:"local_backup"`
 	}
 )
 

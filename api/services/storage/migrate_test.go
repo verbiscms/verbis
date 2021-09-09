@@ -71,16 +71,16 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 
 	tt := map[string]struct {
 		migrating bool
-		from      domain.StorageChange
-		to        domain.StorageChange
+		from      domain.StorageConfig
+		to        domain.StorageConfig
 		mock      func(m *mocks.Service, r *repo.Repository)
 		cache     func(m *cache.Store)
 		want      interface{}
 	}{
 		"Success": {
 			false,
-			domain.StorageChange{Provider: domain.StorageAWS},
-			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
+			domain.StorageConfig{Provider: domain.StorageAWS},
+			domain.StorageConfig{Provider: domain.StorageLocal, Bucket: TestBucket},
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
 				r.On("List", mock.Anything).Return(filesSlice, 2, nil)
@@ -92,8 +92,8 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 		},
 		"Already Migrating": {
 			true,
-			domain.StorageChange{},
-			domain.StorageChange{},
+			domain.StorageConfig{},
+			domain.StorageConfig{},
 			nil,
 			func(m *cache.Store) {
 				m.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)
@@ -102,24 +102,24 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 		},
 		"Same Providers": {
 			false,
-			domain.StorageChange{Provider: domain.StorageAWS},
-			domain.StorageChange{Provider: domain.StorageAWS},
+			domain.StorageConfig{Provider: domain.StorageAWS},
+			domain.StorageConfig{Provider: domain.StorageAWS},
 			nil,
 			mockCacheSuccess,
 			"Error providers cannot be the same",
 		},
 		"Validation Failed": {
 			false,
-			domain.StorageChange{Provider: domain.StorageLocal},
-			domain.StorageChange{Provider: domain.StorageAWS},
+			domain.StorageConfig{Provider: domain.StorageLocal},
+			domain.StorageConfig{Provider: domain.StorageAWS},
 			nil,
 			mockCacheSuccess,
 			"Validation failed",
 		},
 		"Repo Error": {
 			false,
-			domain.StorageChange{Provider: domain.StorageAWS},
-			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
+			domain.StorageConfig{Provider: domain.StorageAWS},
+			domain.StorageConfig{Provider: domain.StorageLocal, Bucket: TestBucket},
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
 				r.On("List", mock.Anything).Return(nil, 0, &errors.Error{Message: "error"})
@@ -129,8 +129,8 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 		},
 		"Zero Length": {
 			false,
-			domain.StorageChange{Provider: domain.StorageAWS},
-			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
+			domain.StorageConfig{Provider: domain.StorageAWS},
+			domain.StorageConfig{Provider: domain.StorageLocal, Bucket: TestBucket},
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
 				r.On("List", mock.Anything).Return(nil, 0, nil)
