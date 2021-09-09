@@ -7,10 +7,9 @@ package database
 import (
 	"fmt"
 	"github.com/verbiscms/verbis/api/common/params"
-	strings2 "github.com/verbiscms/verbis/api/common/strings"
+	verbisstrings "github.com/verbiscms/verbis/api/common/strings"
 	"github.com/verbiscms/verbis/api/database/builder"
 	"github.com/verbiscms/verbis/api/errors"
-	"regexp"
 	"strings"
 )
 
@@ -30,7 +29,7 @@ func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]p
 		counter := 0
 		for column, v := range filters {
 			// Strip tags
-			column = stripAlphaNum(strings.ToLower(column))
+			column = mysqlRealEscapeString(strings.ToLower(column))
 
 			// Check if the column exists before continuing
 			var exists bool
@@ -50,8 +49,8 @@ func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]p
 
 			for _, filter := range v {
 				// Strip tags
-				operator := stripAlphaNum(filter.Operator)
-				value := stripAlphaNum(filter.Value)
+				operator := mysqlRealEscapeString(filter.Operator)
+				value := mysqlRealEscapeString(filter.Value)
 
 				// Account for like or not like values
 				if operator == "like" || operator == "LIKE" || operator == "not like" || operator == "NOT LIKE" {
@@ -59,7 +58,7 @@ func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]p
 				}
 
 				// Check if the operator exists before continuing
-				if opExists := strings2.InSlice(operator, operators); !opExists {
+				if opExists := verbisstrings.InSlice(operator, operators); !opExists {
 					return &errors.Error{
 						Code:      errors.INVALID,
 						Message:   fmt.Sprintf("The %s operator does not exist", operator),
@@ -76,9 +75,44 @@ func FilterRows(driver Driver, query *builder.Sqlbuilder, filters map[string][]p
 	return nil
 }
 
-// stripAlphaNum strips characters and returns an
-// alpha numeric string for database processing.
-func stripAlphaNum(text string) string {
-	reg := regexp.MustCompile("[^a-zA-Z0-9 =<>%.@/!+_']+")
-	return reg.ReplaceAllString(text, "")
+func mysqlRealEscapeString(sql string) string {
+	dest := make([]byte, 0, 2*len(sql)) //nolint
+	var escape byte
+	for i := 0; i < len(sql); i++ {
+		c := sql[i]
+
+		escape = 0
+
+		switch c {
+		case 0: /* Must be escaped for 'mysql' */
+			escape = '0'
+		case '\n': /* Must be escaped for logs */
+			escape = 'n'
+		case '\r':
+			escape = 'r'
+		case '\\':
+			escape = '\\'
+		case '\'':
+			escape = '\''
+		case '"': /* Better safe than sorry */
+			escape = '"'
+		case '\032': //十进制26,八进制32,十六进制1a, /* This gives problems on Win32 */
+			escape = 'Z'
+		}
+
+		if escape != 0 {
+			dest = append(dest, '\\', escape)
+		} else {
+			dest = append(dest, c)
+		}
+	}
+
+	return string(dest)
 }
+
+//// stripAlphaNum strips characters and returns an
+//// alpha numeric string for database processing.
+//func stripAlphaNum(text string) string {
+//	reg := regexp.MustCompile("[^a-zA-Z0-9 =<>%.@/!+_']+")
+//	return reg.ReplaceAllString(text, "")
+//}
