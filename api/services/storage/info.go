@@ -6,6 +6,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/services/storage/internal"
 )
@@ -38,6 +39,9 @@ func (s *Storage) Info(ctx context.Context) (Configuration, error) {
 	}
 
 	isMigrating := s.isMigrating(ctx)
+
+	fmt.Println(isMigrating)
+
 	var migrationInfo *MigrationInfo
 	if isMigrating {
 		mi, err := s.getMigration()

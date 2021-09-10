@@ -409,11 +409,11 @@ export default {
 			this.axios.post("/storage/migrate", migration)
 				.then(res => {
 					this.$message({message: res.data.message, type: "success"});
-
 					this.showMigrateModal = false;
 				})
 				.catch(err => {
 					if (err.response.status === 400) {
+						this.showMigrateModal = false;
 						this.$message.error(err.response.data.message);
 						return;
 					}

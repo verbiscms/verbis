@@ -169,8 +169,12 @@ func (s *Storage) Migrate(ctx context.Context, toServer, deleteFiles bool) (int,
 // cache and returns true if the app is already migrating
 // files.
 func (s *Storage) isMigrating(ctx context.Context) bool {
-	err := s.cache.Get(ctx, migrationIsMigrating, nil)
-	return err == nil
+	var is bool
+	err := s.cache.Get(ctx, migrationIsMigrating, &is)
+	if err != nil {
+		return false
+	}
+	return is
 }
 
 // getMigration returns the current migration information in
