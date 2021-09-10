@@ -13,12 +13,10 @@ import (
 // Configuration represents the information returned
 // by the client of the current state of storage.
 type Configuration struct {
-	ActiveProvider domain.StorageProvider  `json:"active_provider"`
-	ActiveBucket   string                  `json:"active_bucket"`
-	Providers      domain.StorageProviders `json:"providers"`
-	IsMigrating    bool                    `json:"is_migrating"`
-	MigrationInfo  *MigrationInfo          `json:"migration"`
-	LocalBackup    bool                    `json:"local_backup"`
+	Info          domain.StorageConfig    `json:"info"`
+	Providers     domain.StorageProviders `json:"providers"`
+	IsMigrating   bool                    `json:"is_migrating"`
+	MigrationInfo *MigrationInfo          `json:"migration"`
 }
 
 // Info satisfies the Provider interface by returning a
@@ -27,6 +25,9 @@ func (s *Storage) Info(ctx context.Context) (Configuration, error) {
 	info := s.service.Config()
 	var m = make(domain.StorageProviders)
 	for k, v := range internal.Providers {
+		if k == domain.StorageLocal {
+			continue
+		}
 		m[k] = v.Info(s.env)
 	}
 
@@ -41,12 +42,10 @@ func (s *Storage) Info(ctx context.Context) (Configuration, error) {
 	}
 
 	c := Configuration{
-		ActiveProvider: info.Provider,
-		ActiveBucket:   info.Bucket,
-		Providers:      m,
-		IsMigrating:    isMigrating,
-		MigrationInfo:  migrationInfo,
-		LocalBackup:    info.LocalBackup,
+		Info:          info,
+		Providers:     m,
+		IsMigrating:   isMigrating,
+		MigrationInfo: migrationInfo,
 	}
 
 	return c, nil

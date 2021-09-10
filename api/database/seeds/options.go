@@ -121,10 +121,11 @@ func (s *Seeder) runOptions() error {
 		"minify_json": false,
 		"minify_xml":  false,
 		// Storage
-		"storage_provider":     "local",
-		"storage_bucket":       "",
-		"storage_local_backup": false,
-		"StorageServerBackup":  false,
+		"storage_provider":      "local",
+		"storage_bucket":        "",
+		"storage_upload_remote": false,
+		"storage_local_backup":  false,
+		"storage_remote_backup": false,
 		// Proxy
 		"proxies": nil,
 	}

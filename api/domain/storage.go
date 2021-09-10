@@ -38,12 +38,12 @@ type (
 	// StorageConfig represents the data needed to change or
 	// modify and existing storage provider or bucket.
 	StorageConfig struct {
-		//ActiveProvider StorageProvider `json:"active_provider" binding:"required"`
 		Provider     StorageProvider `json:"provider" binding:"required"`
 		Bucket       string          `json:"bucket"`
 		Region       string          `json:"region"`
+		UploadRemote bool            `json:"upload_remote"`
 		LocalBackup  bool            `json:"local_backup"`
-		ServerBackup bool            `json:"server_backup"`
+		RemoteBackup bool            `json:"remote_backup"`
 	}
 )
 

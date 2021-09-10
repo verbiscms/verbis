@@ -83,6 +83,11 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	// Obtain the configuration for the upload.
 	info := s.service.Config()
 
+	if !info.UploadRemote {
+		info.Provider = domain.StorageLocal
+		info.Bucket = ""
+	}
+
 	// If the local backup is enabled and the current settings
 	// are remote, backup the upload to the local provider.
 	if info.LocalBackup && !info.Provider.IsLocal() {
@@ -91,8 +96,10 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 
 	// If the server backup is enabled and the current settings
 	// are local, backup the upload to the remote provider.
-	if info.ServerBackup && !info.Provider.IsLocal() {
-		go s.backup(info.Provider, info.Bucket, u)
+	if info.RemoteBackup && info.Provider.IsLocal() {
+		// Obtain the correct connected provider.
+		cfg := s.service.Config()
+		go s.backup(cfg.Provider, cfg.Bucket, u)
 	}
 
 	return s.upload(info.Provider, info.Bucket, u, true)
@@ -152,7 +159,7 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 		Private:    false,
 	}
 
-	// Seek the file incase // TODO
+	// Seek the file back to the original bytes.
 	_, err = u.Contents.Seek(0, 0)
 	if err != nil {
 		logger.WithError(&errors.Error{})
@@ -176,60 +183,65 @@ func (s *Storage) Exists(name string) bool {
 	return s.filesRepo.Exists(name)
 }
 
-// existsByFile checks to see if a file exists and resides
-// in the bucket.
-func (s *Storage) existsByFile(id int) bool {
-	file, err := s.filesRepo.Find(id)
-	if err != nil {
-		return false
-	}
-
-	_, err = s.getFileBytes(file)
-	if err != nil {
-		return false
-	}
-
-	return true
-}
-
 // Delete satisfies the Bucket interface by accepting an ID
 // and deleting a file from the bucket and database.
 func (s *Storage) Delete(id int) error {
-
-	// TODO check if there is a local copy
-	err := s.deleteFile(true, id)
+	file, err := s.deleteFile(true, id)
 	if err != nil {
 		return err
 	}
+	go s.deleteBackups(file)
 	return nil
 }
 
-func (s *Storage) deleteFile(database bool, id int) error {
+func (s *Storage) deleteFile(database bool, id int) (domain.File, error) {
 	const op = "Storage.Delete"
 
 	file, err := s.filesRepo.Find(id)
 	if err != nil {
-		return err
+		return domain.File{}, err
 	}
 
 	bucket, err := s.service.BucketByFile(file)
 	if err != nil {
-		return err
+		return file, err
 	}
 
 	err = bucket.RemoveItem(file.FullPath(s.paths.Storage))
 	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
+		return file, &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
 	}
 
 	if !database {
-		return nil
+		return file, nil
 	}
 
 	err = s.filesRepo.Delete(file.ID)
 	if err != nil {
-		return err
+		return file, err
 	}
 
-	return nil
+	return file, nil
+}
+
+func (s *Storage) deleteBackups(file domain.File) {
+	cfg := s.service.Config()
+
+	if file.IsLocal() {
+		file.Provider = cfg.Provider
+		file.Bucket = cfg.Bucket
+	} else {
+		file.Provider = domain.StorageLocal
+		file.Bucket = ""
+	}
+
+	bucket, err := s.service.BucketByFile(file)
+	if err != nil {
+		return
+	}
+
+	err = bucket.RemoveItem(file.FullPath(s.paths.Storage))
+	if err != nil {
+		return
+	}
 }

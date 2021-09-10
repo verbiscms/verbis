@@ -27,7 +27,7 @@ func (s *Storage) validate(info domain.StorageConfig) error {
 		return err
 	}
 
-	if !cfg.Providers[info.Provider].Connected {
+	if !cfg.Providers[info.Provider].Connected && !info.Provider.IsLocal() {
 		return fmt.Errorf(cast.ToString(cfg.Providers[info.Provider].Error))
 	}
 

@@ -97,8 +97,10 @@ func (s *Service) Config() domain.StorageConfig {
 		opts.StorageProvider = domain.StorageLocal
 	}
 	return domain.StorageConfig{
-		Provider:    opts.StorageProvider,
-		Bucket:      opts.StorageBucket,
-		LocalBackup: opts.StorageLocalBackup,
+		Provider:     opts.StorageProvider,
+		Bucket:       opts.StorageBucket,
+		UploadRemote: opts.StorageUploadRemote,
+		LocalBackup:  opts.StorageLocalBackup,
+		RemoteBackup: opts.StorageRemoteBackup,
 	}
 }

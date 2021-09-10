@@ -42,8 +42,10 @@ func (t *StorageTestSuite) TestStorage_Info() {
 				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(fmt.Errorf("error"))
 			},
 			Configuration{
-				ActiveProvider: domain.StorageAWS,
-				ActiveBucket:   TestBucket,
+				Info: domain.StorageConfig{
+					Provider: domain.StorageAWS,
+					Bucket:   TestBucket,
+				},
 				Providers: domain.StorageProviders{
 					"test": domain.StorageProviderInfo{},
 				},
@@ -63,8 +65,10 @@ func (t *StorageTestSuite) TestStorage_Info() {
 				})
 			},
 			Configuration{
-				ActiveProvider: domain.StorageAWS,
-				ActiveBucket:   TestBucket,
+				Info: domain.StorageConfig{
+					Provider: domain.StorageAWS,
+					Bucket:   TestBucket,
+				},
 				Providers: domain.StorageProviders{
 					"test": domain.StorageProviderInfo{},
 				},

@@ -25,6 +25,11 @@
 					<div class="storage-config">
 						<h2 class="storage-title">Configuration:</h2>
 						<p>You are able to change storage providers and bucket's below. Each file is stored with it's own provider and bucket information.</p>
+<!--						<el-result icon="info" title="Info Tip" subTitle="Please follow the instructions">-->
+<!--							<template slot="extra">-->
+
+<!--							</template>-->
+<!--						</el-result>-->
 						<!-- Active Provider -->
 						<el-row class="storage-config-item">
 							<el-col :span="8">
@@ -32,7 +37,7 @@
 							</el-col>
 							<el-col :span="16">
 								<h4>Active Provider</h4>
-								<el-tag type="success" effect="plain" size="small">{{ config['active_provider'] }}</el-tag>
+								<el-tag type="success" effect="plain" size="small">{{ info['provider'] }}</el-tag>
 							</el-col>
 						</el-row><!-- /Active Provider -->
 						<!-- Active Bucket -->
@@ -42,7 +47,7 @@
 							</el-col>
 							<el-col :span="16">
 								<h4>Active Bucket</h4>
-								<el-tag type="success" effect="plain" size="small">{{ config['active_bucket'] }}</el-tag>
+								<el-tag type="success" effect="plain" size="small">{{ info['bucket'] }}</el-tag>
 							</el-col>
 						</el-row><!-- /Active Bucket -->
 					</div><!-- /Info -->
@@ -91,6 +96,37 @@
 						<div class="storage-config-item">
 							<h2 class="storage-title">Options:</h2>
 						</div><!-- /Heading -->
+
+						<!-- Upload to Remote -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-switch v-model="info.upload_remote" @change="saveInfo"></el-switch>
+							</el-col>
+							<el-col :span="16">
+								<h4>Upload to Remote</h4>
+								<p>If this is enabled, files will automatically be uploaded to the remote provider. If it is disabled, local file storage will be used.</p>
+							</el-col>
+						</el-row><!-- Upload to Remote -->
+						<!-- Keep Local Backup -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-switch v-model="info.local_backup" @change="saveInfo"></el-switch>
+							</el-col>
+							<el-col :span="16">
+								<h4>Local backup</h4>
+								<p>When a file is uploaded to the media library, and </p>
+							</el-col>
+						</el-row><!-- /Keep Local Backup -->
+						<!-- Keep Server Backup -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-switch v-model="info.remote_backup" @change="saveInfo"></el-switch>
+							</el-col>
+							<el-col :span="16">
+								<h4>Remote backup</h4>
+								<p>Keeps a remote backup of the file stored when a file is uploaded.</p>
+							</el-col>
+						</el-row><!-- /Keep Local Backup -->
 						<!-- Download -->
 						<el-row class="storage-config-item">
 							<el-col :span="8">
@@ -102,26 +138,6 @@
 								<el-alert v-if="downloading" title="Downloading, do not refresh the page" type="warning" show-icon></el-alert>
 							</el-col>
 						</el-row><!-- /Download -->
-						<!-- Keep Local Backup -->
-						<el-row class="storage-config-item">
-							<el-col :span="8">
-								<el-switch v-model="info.local_backup"></el-switch>
-							</el-col>
-							<el-col :span="16">
-								<h4>Local backup</h4>
-								<p>When a file is uploaded to the media library, and </p>
-							</el-col>
-						</el-row><!-- /Keep Local Backup -->
-						<!-- Keep Server Backup -->
-						<el-row class="storage-config-item">
-							<el-col :span="8">
-								<el-switch v-model="info.remote_backup"></el-switch>
-							</el-col>
-							<el-col :span="16">
-								<h4>Remote backup</h4>
-								<p>Keeps a remote backup of the file stored when a file is uploaded.</p>
-							</el-col>
-						</el-row><!-- /Keep Local Backup -->
 					</div><!-- /Options -->
 				</div>
 				<!-- =====================
@@ -129,31 +145,29 @@
 					===================== -->
 				<div class="col-12 col-desk-5 offset-desk-1">
 					<h2>Providers:</h2>
-					<div class="card card-small-box-shadow card-expand">
-						<el-collapse v-model="activeProviders">
-							<el-collapse-item class="storage-provider" v-for="(provider, key) in filteredProviders()" :key="key" :name="provider.name">
-								<!-- Header -->
-								<template #title>
-									<el-image class="storage-provider-image" :src="require('@/assets/images/' + getLogo(key))" fit="contain"></el-image>
-									<h4>{{ provider['name'] }}</h4>
-								</template><!-- /Header -->
-								<!-- Body -->
-								<div v-if="!provider['environment_set']">
-									<p>In order to use {{ provider.name }} as a storage provider please add the following keys to the <code>.env</code> file or use <code>export VARIABLE=value</code> and proceed to restart Verbis.</p>
-									<div v-for="(envKey, index) in provider['environment_keys']" :key="index">
-										<code>{{ envKey }}</code>
-									</div>
+					<el-collapse v-model="activeProviders">
+						<el-collapse-item class="storage-provider" v-for="(provider, key) in config.providers" :key="key" :name="provider.name">
+							<!-- Header -->
+							<template #title>
+								<el-image class="storage-provider-image" :src="require('@/assets/images/' + getLogo(key))" fit="contain"></el-image>
+								<h4>{{ provider['name'] }}</h4>
+							</template><!-- /Header -->
+							<!-- Body -->
+							<div v-if="!provider['environment_set']">
+								<p>In order to use {{ provider.name }} as a storage provider please add the following keys to the <code>.env</code> file or use <code>export VARIABLE=value</code> and proceed to restart Verbis.</p>
+								<div v-for="(envKey, index) in provider['environment_keys']" :key="index">
+									<code>{{ envKey }}</code>
 								</div>
-								<div v-if="provider['error'] && provider['environment_set']">
-									<p>There is an error connecting to {{ provider['name'] }}</p>
-									<p class="storage-error">{{ provider['error'] }}</p>
-								</div>
-								<div v-if="provider.connected">
-									<el-tag	type="success">Connected</el-tag>
-								</div>
-							</el-collapse-item><!-- /Body -->
-						</el-collapse>
-					</div><!-- /Card -->
+							</div>
+							<div v-if="provider['error'] && provider['environment_set']">
+								<p>There is an error connecting to {{ provider['name'] }}</p>
+								<p class="storage-error">{{ provider['error'] }}</p>
+							</div>
+							<div v-if="provider.connected">
+								<el-tag	type="success">Connected</el-tag>
+							</div>
+						</el-collapse-item><!-- /Body -->
+					</el-collapse>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
@@ -229,18 +243,6 @@
 			</template>
 			<!-- Form -->
 			<el-form ref="migrate-form" :v-model="migrate" label-width="140px" label-position="left">
-				<!-- Provider -->
-				<el-form-item label="Provider">
-					<el-select v-model="migrate.provider" placeholder="Select a provider" @change="changeMigrateModal()" style="width: 100%">
-						<el-option v-for="(provider, index) in filteredProviders()" :key="index" :value="index" :label="provider.name" :disabled="!provider.connected"></el-option>
-					</el-select>
-				</el-form-item>
-				<!-- Bucket -->
-				<el-form-item label="Bucket">
-					<el-select v-model="migrate.bucket" placeholder="Select a bucket" style="width: 100%;" :disabled="buckets.length === 0">
-						<el-option v-for="(bucket, index) in buckets" :key="index" :value="bucket.id" :label="bucket.name"></el-option>
-					</el-select>
-				</el-form-item>
 				<!-- Delete Files -->
 				<el-form-item label="Delete originals?">
 					<el-switch v-model="migrate['delete']"></el-switch>
@@ -277,7 +279,6 @@ export default {
 		Breadcrumbs,
 	},
 	data: () => ({
-		value: true,
 		doingAxios: true,
 		text: "",
 		config: {},
@@ -285,18 +286,11 @@ export default {
 		showMigrateModal: false,
 		showBucketModal: false,
 		providerBtnLoading: false,
-		info: {
-			provider: "",
-			bucket: "",
-			local_backup: false,
-		},
+		info: {},
 		buckets: [],
 		activeProviders: [],
 		migrate: {
-			provider: "",
-			bucket: "",
 			delete: false,
-			validProvider: false,
 			isRemote: false,
 		},
 		bucket: {
@@ -311,14 +305,11 @@ export default {
 		this.getConfig();
 	},
 	watch: {
-		showProviderModal: function () {
-			this.errors = [];
-		},
 		showMigrateModal: function() {
 			this.migrate.provider = "";
 			this.migrate.bucket = "";
 			this.migrate.validProvider = false;
-		}
+		},
 	},
 	methods: {
 		/*
@@ -331,36 +322,22 @@ export default {
 				.then(res => {
 					this.config = res.data.data;
 					this.doingAxios = false;
-					this.listBuckets(this.config['active_provider']).then(res => this.buckets = res);
-					this.info = {
-						provider: this.config['active_provider'],
-						bucket: this.config['active_bucket'],
-						local_backup: this.config['local_backup']
-					}
+					this.info = this.config.info;
+					this.listBuckets(this.info['provider']).then(res => this.buckets = res);
 
-					this.config.is_migrating = true;
-					this.config.migration = {
-						total: 400,
-						progress: 10,
-						succeeded: 10,
-						failed: 10,
-						files_processed: 10,
 
-					}
-
+					// this.config.is_migrating = true;
+					// this.config.migration = {
+					// 	total: 400,
+					// 	progress: 10,
+					// 	succeeded: 10,
+					// 	failed: 10,
+					// 	files_processed: 10,
+					// }
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
 				})
-		},
-		/*
-		 * filteredProviders()
-		 * Returns providers without local.
-		 */
-		filteredProviders() {
-			const providers =  Object.assign({}, this.config['providers']);
-			delete providers["local"];
-			return providers;
 		},
 		/*
 		 * changeProvider()
@@ -407,6 +384,7 @@ export default {
 		 * migration modal.
 		 */
 		handleMigrateModal(toRemote) {
+			console.log(toRemote);
 			this.$set(this.migrate, 'isRemote', toRemote);
 			this.showMigrateModal = true;
 		},
@@ -415,28 +393,11 @@ export default {
 		 * Posts to the backend and runs the migration.
 		 */
 		doMigrate() {
-			let migration =  {
-				from: {
-					provider: this.migrate['provider'],
-					bucket: this.migrate['bucket'],
-				},
-				to: {
-					provider: "local"
-				},
-			};
-			if (this.migrate['isRemote']) {
-				migration = {
-					from: {
-						provider: "local"
-					},
-					to: {
-						provider: this.migrate['provider'],
-						bucket: this.migrate['bucket'],
-					},
-				}
+			let migration = {
+				to_server: this.migrate['isRemote'],
+				delete: this.migrate['delete'],
 			}
-
-			migration['delete'] = this.migrate['delete'];
+			console.log(migration)
 			this.axios.post("/storage/migrate", migration)
 				.then(res => {
 					this.$noty.success(res.data.message);

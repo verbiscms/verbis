@@ -93,28 +93,51 @@ func (m *MigrationInfo) succeed(file domain.File) {
 // migrations.
 type migration struct {
 	file domain.File
-	from domain.StorageConfig
-	to   domain.StorageConfig
+	from migrationChange
+	to   migrationChange
 	wg   *sync.WaitGroup
+}
+
+type migrationChange struct {
+	Provider domain.StorageProvider
+	Bucket   string
 }
 
 // Migrate satisfies the Provider interface by accepting a
 // from and to StorageConfig to migrate files to the
 // remote provider or local storage.
-func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageConfig, deleteFiles bool) (int, error) {
+func (s *Storage) Migrate(ctx context.Context, toServer, deleteFiles bool) (int, error) {
 	const op = "Storage.Migrate"
 
 	if s.isMigrating(ctx) {
 		return 0, &errors.Error{Code: errors.INVALID, Message: "Error migration is already in progress", Operation: op, Err: ErrAlreadyMigrating}
 	}
 
-	if from.Provider == to.Provider {
-		return 0, &errors.Error{Code: errors.INVALID, Message: "Error providers cannot be the same", Operation: op, Err: fmt.Errorf("providers are the same")}
-	}
+	cfg := s.service.Config()
 
-	err := s.validate(to)
+	err := s.validate(cfg)
 	if err != nil {
 		return 0, &errors.Error{Code: errors.INVALID, Message: "Validation failed", Operation: op, Err: err}
+	}
+
+	var (
+		from = migrationChange{
+			Provider: cfg.Provider,
+			Bucket:   cfg.Bucket,
+		}
+		to = migrationChange{
+			Provider: domain.StorageLocal,
+		}
+	)
+
+	if toServer {
+		from = migrationChange{
+			Provider: domain.StorageLocal,
+		}
+		to = migrationChange{
+			Provider: cfg.Provider,
+			Bucket:   cfg.Bucket,
+		}
 	}
 
 	filters := params.Filters{
@@ -132,7 +155,7 @@ func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageConfig, de
 	}
 
 	if total == 0 {
-		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error no files found with provider: " + from.Provider.String(), Operation: op, Err: ErrNoFilesToMigrate}
+		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error, no files found to migrate", Operation: op, Err: ErrNoFilesToMigrate}
 	}
 
 	logger.Debug(fmt.Sprintf("Starting storage migration with %d files being processed", total))
@@ -164,7 +187,7 @@ func (s *Storage) getMigration() (*MigrationInfo, error) {
 
 // processMigration ranges over the given files and adds a
 // migration to the migrateTrackChan.
-func (s *Storage) processMigration(ctx context.Context, files domain.Files, from, to domain.StorageConfig, deleteFiles bool) {
+func (s *Storage) processMigration(ctx context.Context, files domain.Files, from, to migrationChange, deleteFiles bool) {
 	mi := &MigrationInfo{
 		Total:      len(files),
 		MigratedAt: time.Now(),
@@ -236,7 +259,7 @@ func (s *Storage) migrateBackground(ctx context.Context, channel chan migration,
 	}
 
 	if deleteFiles {
-		err = s.deleteFile(false, m.file.ID)
+		_, err := s.deleteFile(false, m.file.ID)
 		if err != nil {
 			info.fail(m.file, err)
 			return

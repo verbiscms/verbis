@@ -23,9 +23,11 @@ func (t *StorageTestSuite) TestStorage_Save() {
 			func(m *mocks.Service, r *repo.Repository, o *options.Repository) {
 				mockValidateSuccess(m, r)
 				o.On("Insert", domain.OptionsDBMap{
-					"storage_provider":     domain.StorageLocal,
-					"storage_bucket":       "",
-					"storage_local_backup": false,
+					"storage_provider":      domain.StorageLocal,
+					"storage_bucket":        "",
+					"storage_upload_remote": false,
+					"storage_local_backup":  false,
+					"storage_remote_backup": false,
 				}).Return(nil)
 			},
 			nil,
@@ -40,9 +42,11 @@ func (t *StorageTestSuite) TestStorage_Save() {
 			func(m *mocks.Service, r *repo.Repository, o *options.Repository) {
 				mockValidateSuccess(m, r)
 				o.On("Insert", domain.OptionsDBMap{
-					"storage_provider":     domain.StorageLocal,
-					"storage_bucket":       "",
-					"storage_local_backup": false,
+					"storage_provider":      domain.StorageLocal,
+					"storage_bucket":        "",
+					"storage_upload_remote": false,
+					"storage_local_backup":  false,
+					"storage_remote_backup": false,
 				}).Return(&errors.Error{Message: "error"})
 			},
 			"error",

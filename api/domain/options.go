@@ -111,8 +111,9 @@ type (
 		// Storage
 		StorageProvider     StorageProvider `json:"storage_provider"`
 		StorageBucket       string          `json:"storage_bucket"`
+		StorageUploadRemote bool            `json:"storage_upload_remote"`
 		StorageLocalBackup  bool            `json:"storage_local_backup"`
-		StorageServerBackup bool            `json:"storage_server_backup"`
+		StorageRemoteBackup bool            `json:"storage_remote_backup"`
 		// Proxies
 		Proxies []Proxy `json:"proxies"`
 	}

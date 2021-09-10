@@ -185,15 +185,19 @@ func TestService_Config(t *testing.T) {
 		"Success": {
 			func(m *options.Repository) {
 				m.On("Struct").Return(domain.Options{
-					StorageProvider:    domain.StorageAWS,
-					StorageBucket:      "bucket",
-					StorageLocalBackup: true,
+					StorageProvider:     domain.StorageAWS,
+					StorageBucket:       "bucket",
+					StorageUploadRemote: true,
+					StorageLocalBackup:  true,
+					StorageRemoteBackup: false,
 				})
 			},
 			domain.StorageConfig{
-				Provider:    domain.StorageAWS,
-				Bucket:      "bucket",
-				LocalBackup: true,
+				Provider:     domain.StorageAWS,
+				Bucket:       "bucket",
+				UploadRemote: true,
+				LocalBackup:  true,
+				RemoteBackup: false,
 			},
 		},
 		"Empty Provider": {

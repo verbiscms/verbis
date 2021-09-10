@@ -26,9 +26,11 @@ func (s *Storage) Save(info domain.StorageConfig) error {
 	}
 
 	err = s.optionsRepo.Insert(domain.OptionsDBMap{
-		"storage_provider":     info.Provider,
-		"storage_bucket":       info.Bucket,
-		"storage_local_backup": info.LocalBackup,
+		"storage_provider":      info.Provider,
+		"storage_bucket":        info.Bucket,
+		"storage_upload_remote": info.UploadRemote,
+		"storage_local_backup":  info.LocalBackup,
+		"storage_remote_backup": info.RemoteBackup,
 	})
 	if err != nil {
 		return err

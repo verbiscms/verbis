@@ -117,7 +117,7 @@ type Migrator interface {
 	// from and to providers are the same.
 	//
 	// Returns errors.NOTFOUND if there were no files found with the from provider.
-	Migrate(ctx context.Context, from, to domain.StorageConfig, delete bool) (int, error)
+	Migrate(ctx context.Context, server bool, delete bool) (int, error)
 }
 
 // Storage represents the implementation of a Verbis

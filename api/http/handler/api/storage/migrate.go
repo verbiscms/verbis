@@ -7,7 +7,6 @@ package storage
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
@@ -16,9 +15,8 @@ import (
 // migration represents the data send from the frontend
 // to start a migration.
 type migration struct {
-	From   domain.StorageConfig `json:"from"`
-	To     domain.StorageConfig `json:"to"`
-	Delete bool                 `json:"delete"`
+	Server bool `json:"to_server"`
+	Delete bool `json:"delete"`
 }
 
 // Migrate
@@ -36,7 +34,9 @@ func (s *Storage) Migrate(ctx *gin.Context) {
 		return
 	}
 
-	total, err := s.Storage.Migrate(ctx, migrate.From, migrate.To, migrate.Delete)
+	fmt.Println(migrate)
+
+	total, err := s.Storage.Migrate(ctx, migrate.Server, migrate.Delete)
 	if errors.Code(err) == errors.NOTFOUND {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
