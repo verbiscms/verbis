@@ -160,10 +160,7 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 	}
 
 	// Seek the file back to the original bytes.
-	_, err = u.Contents.Seek(0, 0)
-	if err != nil {
-		logger.WithError(&errors.Error{})
-	}
+	u.Contents.Seek(0, 0)
 
 	if !createDB {
 		return f, nil
@@ -224,6 +221,8 @@ func (s *Storage) deleteFile(database bool, id int) (domain.File, error) {
 	return file, nil
 }
 
+// deleteBackups deletes possible backup files from
+// the remote or local provider.
 func (s *Storage) deleteBackups(file domain.File) {
 	cfg := s.service.Config()
 

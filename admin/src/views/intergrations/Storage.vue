@@ -114,7 +114,7 @@
 							</el-col>
 							<el-col :span="16">
 								<h4>Upload to Remote</h4>
-								<p>If this is enabled, files will automatically be uploaded to the remote provider. If it is disabled, local file storage will be used.</p>
+								<p>Files will automatically be uploaded to and served from the remote provider. If it is disabled, local file storage will be used for storing and serving.</p>
 							</el-col>
 						</el-row><!-- Upload to Remote -->
 						<!-- Keep Local Backup -->
@@ -124,7 +124,7 @@
 							</el-col>
 							<el-col :span="16">
 								<h4>Local backup</h4>
-								<p>When a file is uploaded to the media library, and </p>
+								<p>Keeps a local backup of a file when it's uploaded if a remote provider is connected.</p>
 							</el-col>
 						</el-row><!-- /Keep Local Backup -->
 						<!-- Keep Server Backup -->
@@ -134,7 +134,7 @@
 							</el-col>
 							<el-col :span="16">
 								<h4>Remote backup</h4>
-								<p>Keeps a remote backup of the file stored when a file is uploaded.</p>
+								<p>Keeps a remote backup of a file when it's uploaded if a remote provider is connected.</p>
 							</el-col>
 						</el-row><!-- /Keep Local Backup -->
 						<!-- Download -->
@@ -247,7 +247,7 @@
 		<el-dialog :visible.sync="showMigrateModal" width="30%">
 			<!-- Header -->
 			<template #title>
-				<h2 v-if="migrate['isRemote']" class="mb-0">Migrate to Remote Provider</h2>
+				<h2 v-if="migrate['isRemote']" class="mb-0">Migrate to {{ config.providers[info.provider].name }}</h2>
 				<h2 v-else class="mb-0">Migrate to Local Storage</h2>
 				<p class="t-left">Select a remote provider and bucket below to migrate too.</p>
 			</template>
@@ -394,7 +394,6 @@ export default {
 		 * migration modal.
 		 */
 		handleMigrateModal(toRemote) {
-			console.log(toRemote);
 			this.$set(this.migrate, 'isRemote', toRemote);
 			this.showMigrateModal = true;
 		},
@@ -407,15 +406,15 @@ export default {
 				to_server: this.migrate['isRemote'],
 				delete: this.migrate['delete'],
 			}
-			console.log(migration)
 			this.axios.post("/storage/migrate", migration)
 				.then(res => {
-					this.$noty.success(res.data.message);
+					this.$message({message: res.data.message, type: "success"});
+
 					this.showMigrateModal = false;
 				})
 				.catch(err => {
 					if (err.response.status === 400) {
-						this.$noty.error(err.response.data.message);
+						this.$message.error(err.response.data.message);
 						return;
 					}
 					this.helpers.handleResponse(err);
@@ -452,7 +451,7 @@ export default {
 			this.axios.post("/storage/bucket", postData)
 				.then(res => {
 					this.buckets.push(res.data.data);
-					this.$noty.success("Successfully created bucket: " + postData.bucket)
+					this.$message({message: "Successfully created bucket: " + postData.bucket, type: "success"})
 				})
 				.catch(err => {
 					if (err.response.status === 400) {
@@ -477,10 +476,7 @@ export default {
 				.then(res => {
 					this.showProviderModal = false;
 					this.showBucketModal = false;
-					this.$message({
-						message: res.data.message,
-						type: "success",
-					});
+					this.$message({message: res.data.message, type: "success"});
 					this.getConfig();
 				})
 				.catch(err => {

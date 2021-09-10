@@ -365,5 +365,52 @@ func (t *StorageTestSuite) TestBucket_Delete() {
 }
 
 func (t *StorageTestSuite) TestBucket_DeleteBackup() {
+	tt := map[string]struct {
+		file domain.File
+		mock func(m *mocks.Service, r *repo.Repository)
+	}{
+		"Success": {
+			fileLocal,
+			func(m *mocks.Service, r *repo.Repository) {
+				f := fileLocal
+				f.Provider = domain.StorageAWS
+				f.Bucket = TestBucket
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
 
+				c := &mocks.StowContainer{}
+				m.On("BucketByFile", f).Return(c, nil)
+				c.On("RemoveItem", f.FullPath("")).Return(nil)
+			},
+		},
+		"Bucket Error": {
+			fileLocal,
+			func(m *mocks.Service, r *repo.Repository) {
+				f := fileLocal
+				f.Provider = domain.StorageAWS
+				f.Bucket = TestBucket
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
+				m.On("BucketByFile", f).Return(nil, fmt.Errorf("error"))
+			},
+		},
+		"Remove Error": {
+			fileLocal,
+			func(m *mocks.Service, r *repo.Repository) {
+				f := fileLocal
+				f.Provider = domain.StorageAWS
+				f.Bucket = TestBucket
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
+
+				c := &mocks.StowContainer{}
+				m.On("BucketByFile", f).Return(c, nil)
+				c.On("RemoveItem", f.FullPath("")).Return(fmt.Errorf("error"))
+			},
+		},
+	}
+
+	for name, test := range tt {
+		t.Run(name, func() {
+			s := t.Setup(test.mock)
+			s.deleteBackups(test.file)
+		})
+	}
 }
