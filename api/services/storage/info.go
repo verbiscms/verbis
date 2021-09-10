@@ -13,6 +13,7 @@ import (
 // Configuration represents the information returned
 // by the client of the current state of storage.
 type Configuration struct {
+	Connected     bool                    `json:"connected"`
 	Info          domain.StorageConfig    `json:"info"`
 	Providers     domain.StorageProviders `json:"providers"`
 	IsMigrating   bool                    `json:"is_migrating"`
@@ -31,6 +32,11 @@ func (s *Storage) Info(ctx context.Context) (Configuration, error) {
 		m[k] = v.Info(s.env)
 	}
 
+	connected := false
+	if m[info.Provider].Connected && !info.Provider.IsLocal() {
+		connected = true
+	}
+
 	isMigrating := s.isMigrating(ctx)
 	var migrationInfo *MigrationInfo
 	if isMigrating {
@@ -42,6 +48,7 @@ func (s *Storage) Info(ctx context.Context) (Configuration, error) {
 	}
 
 	c := Configuration{
+		Connected:     connected,
 		Info:          info,
 		Providers:     m,
 		IsMigrating:   isMigrating,
