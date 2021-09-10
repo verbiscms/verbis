@@ -76,8 +76,6 @@
 							</el-col>
 						</el-row><!-- Migrate To Server -->
 						<!-- Progress -->
-
-						{{ config.migration }}
 						<div v-if="config['is_migrating'] && config['migration']" class="storage-migration">
 							<h4>Migration in progress</h4>
 							<el-progress :text-inside="true" :stroke-width="20" :percentage="config.migration.progress"></el-progress>
@@ -101,7 +99,7 @@
 							<el-col :span="16">
 								<h4>Download Library</h4>
 								<p>By clicking download you are able to download the entire media library to your local machine. This will not include any items that are not stored in Verbis.</p>
-								<el-alert title="Downloading, do not refresh the page" type="warning" show-icon></el-alert>
+								<el-alert v-if="downloading" title="Downloading, do not refresh the page" type="warning" show-icon></el-alert>
 							</el-col>
 						</el-row><!-- /Download -->
 						<!-- Keep Local Backup -->
@@ -133,10 +131,10 @@
 					<h2>Providers:</h2>
 					<div class="card card-small-box-shadow card-expand">
 						<el-collapse v-model="activeProviders">
-							<el-collapse-item title="Consistency" v-for="(provider, key) in filteredProviders()" :key="key" :name="provider.name">
+							<el-collapse-item class="storage-provider" v-for="(provider, key) in filteredProviders()" :key="key" :name="provider.name">
 								<!-- Header -->
 								<template #title>
-									<el-image style="width: 50px; height: 50px" :src="require('@/assets/images/' + getLogo(key))" fit="contain"></el-image>
+									<el-image class="storage-provider-image" :src="require('@/assets/images/' + getLogo(key))" fit="contain"></el-image>
 									<h4>{{ provider['name'] }}</h4>
 								</template><!-- /Header -->
 								<!-- Body -->
@@ -149,6 +147,9 @@
 								<div v-if="provider['error'] && provider['environment_set']">
 									<p>There is an error connecting to {{ provider['name'] }}</p>
 									<p class="storage-error">{{ provider['error'] }}</p>
+								</div>
+								<div v-if="provider.connected">
+									<el-tag	type="success">Connected</el-tag>
 								</div>
 							</el-collapse-item><!-- /Body -->
 						</el-collapse>
@@ -336,6 +337,17 @@ export default {
 						bucket: this.config['active_bucket'],
 						local_backup: this.config['local_backup']
 					}
+
+					this.config.is_migrating = true;
+					this.config.migration = {
+						total: 400,
+						progress: 10,
+						succeeded: 10,
+						failed: 10,
+						files_processed: 10,
+
+					}
+
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
@@ -559,6 +571,16 @@ export default {
 
 	.storage {
 
+		// Props
+		// =========================================================================
+
+		&-title {
+			margin-bottom: 4px;
+		}
+
+		// Config
+		// =========================================================================
+
 		&-config {
 			margin-bottom: 2rem;
 
@@ -571,38 +593,32 @@ export default {
 			}
 		}
 
-		&-title {
-			margin-bottom: 4px;
-		}
+		// Provider
+		// =========================================================================
 
-		&-progress {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			margin-bottom: 2rem;
+		&-provider {
 
-			p {
-				margin-bottom: 0;
+			&-image {
+				width: 50px;
+				height: 50px;
+				margin-right: 10px;
+			}
+
+			::v-deep {
+
+				.el-collapse-item__header {
+					padding: 1rem;
+					height: 70px;
+				}
+
+				.el-collapse-item__content {
+					padding: 0 1rem 1rem 1rem;
+				}
 			}
 		}
 
-		&-error {
-			color: $orange;
-			font-weight: 500;
-			margin-bottom: 0;
-		}
-
-		&-image {
-			height: 50px;
-			width: 60px;
-			margin-right: 1rem;
-
-			img {
-				width: 100%;
-				height: 100%;
-				object-fit: contain;
-			}
-		}
+		// Migration
+		// =========================================================================
 
 		&-migration {
 			margin-top: 1.7rem;
@@ -619,31 +635,5 @@ export default {
 		}
 	}
 
-	// Bucket
-	// =========================================================================
-
-	.bucket {
-
-		&-cont {
-			display: flex;
-			align-items: center;
-		}
-
-		.btn {
-			margin-left: 10px;
-			height: 50px;
-		}
-	}
-
-	// Migrate
-	// =========================================================================
-
-	.migrate {
-
-		&-delete {
-			display: flex;
-			justify-content: space-between;
-		}
-	}
 
 </style>
