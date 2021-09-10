@@ -109,9 +109,10 @@ type (
 		FormIncludeLogo        bool     `json:"form_email_include_logo"`
 		FormEmailDisclosure    string   `json:"form_email_disclosure"`
 		// Storage
-		StorageProvider    StorageProvider `json:"storage_provider"`
-		StorageBucket      string          `json:"storage_bucket"`
-		StorageLocalBackup bool            `json:"storage_local_backup"`
+		StorageProvider     StorageProvider `json:"storage_provider"`
+		StorageBucket       string          `json:"storage_bucket"`
+		StorageLocalBackup  bool            `json:"storage_local_backup"`
+		StorageServerBackup bool            `json:"storage_server_backup"`
 		// Proxies
 		Proxies []Proxy `json:"proxies"`
 	}

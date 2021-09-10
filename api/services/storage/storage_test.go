@@ -239,3 +239,21 @@ func (m mockIOReaderReadError) Read(p []byte) (n int, err error) {
 func (m mockIOReaderReadError) Close() error {
 	return nil
 }
+
+type mockIOReaderWriteError struct{}
+
+func (m mockIOReaderWriteError) Seek(offset int64, whence int) (int64, error) {
+	return 0, nil
+}
+
+func (m mockIOReaderWriteError) Read(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("error")
+}
+
+func (m mockIOReaderWriteError) Close() error {
+	return nil
+}
+
+func (m mockIOReaderWriteError) Write(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("error")
+}

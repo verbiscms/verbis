@@ -4,9 +4,11 @@ package mocks
 
 import (
 	context "context"
+	io "io"
+
+	domain "github.com/verbiscms/verbis/api/domain"
 
 	mock "github.com/stretchr/testify/mock"
-	domain "github.com/verbiscms/verbis/api/domain"
 
 	storage "github.com/verbiscms/verbis/api/services/storage"
 )
@@ -58,6 +60,20 @@ func (_m *Provider) DeleteBucket(provider domain.StorageProvider, name string) e
 	var r0 error
 	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) error); ok {
 		r0 = rf(provider, name)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Download provides a mock function with given fields: w
+func (_m *Provider) Download(w io.Writer) error {
+	ret := _m.Called(w)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(io.Writer) error); ok {
+		r0 = rf(w)
 	} else {
 		r0 = ret.Error(0)
 	}

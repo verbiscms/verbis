@@ -123,7 +123,8 @@ func (s *Seeder) runOptions() error {
 		// Storage
 		"storage_provider":     "local",
 		"storage_bucket":       "",
-		"storage_local_backup": true,
+		"storage_local_backup": false,
+		"StorageServerBackup":  false,
 		// Proxy
 		"proxies": nil,
 	}

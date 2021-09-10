@@ -23,15 +23,6 @@ var (
 			//if err != nil {
 			//	printError(err.Error())
 			//}
-			//
-			//m := media.New(d.Store.Media, d.Storage, d.Store.Options, d.Theme)
-			//
-			//p, err := m.ReGenerateWebP()
-			//if err != nil {
-			//	return
-			//}
-			//
-			//color.Green.Println(p)
 		},
 	}
 )

@@ -5,7 +5,6 @@
 package storage
 
 import (
-	"fmt"
 	"github.com/verbiscms/verbis/api/common/params"
 	vstrings "github.com/verbiscms/verbis/api/common/strings"
 	"github.com/verbiscms/verbis/api/domain"
@@ -32,30 +31,41 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 		return nil, domain.File{}, err
 	}
 
-	bucket, err := s.service.BucketByFile(file)
+	buf, err := s.getFileBytes(file)
 	if err != nil {
 		return nil, domain.File{}, err
+	}
+
+	return buf, file, nil
+}
+
+func (s *Storage) getFileBytes(file domain.File) ([]byte, error) {
+	const op = "Test"
+
+	bucket, err := s.service.BucketByFile(file)
+	if err != nil {
+		return nil, err
 	}
 
 	id := file.FullPath(s.paths.Storage)
 
 	item, err := bucket.Item(id)
 	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the ID: " + id, Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the ID: " + id, Operation: op, Err: err}
 	}
 
 	open, err := item.Open()
 	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file", Operation: op, Err: err}
 	}
 	defer open.Close()
 
 	buf, err := ioutil.ReadAll(open)
 	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
 	}
 
-	return buf, file, nil
+	return buf, nil
 }
 
 // Upload satisfies the Bucket interface by accepting a
@@ -64,27 +74,35 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	const op = "Storage.Upload"
 
+	// Check for any upload errors before processing.
 	err := u.Validate()
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Validation failed", Operation: op, Err: err}
 	}
 
+	// Obtain the configuration for the upload.
 	info := s.service.Config()
 
-	// Error converting image to WebP [op] Webp.Convert [error] exit status 255. Error! Could not process file -
-	// Error! Cannot read input picture file '-'
-	//
+	// If the local backup is enabled and the current settings
+	// are remote, backup the upload to the local provider.
 	if info.LocalBackup && !info.Provider.IsLocal() {
-		go func() {
-			fmt.Println("processing backup")
-			_, err := s.upload(domain.StorageLocal, "", u, false)
-			if err != nil {
-				logger.WithError(err).Error()
-			}
-		}()
+		go s.backup(domain.StorageLocal, "", u)
+	}
+
+	// If the server backup is enabled and the current settings
+	// are local, backup the upload to the remote provider.
+	if info.ServerBackup && !info.Provider.IsLocal() {
+		go s.backup(info.Provider, info.Bucket, u)
 	}
 
 	return s.upload(info.Provider, info.Bucket, u, true)
+}
+
+func (s *Storage) backup(p domain.StorageProvider, b string, u domain.Upload) {
+	_, err := s.upload(p, b, u, false)
+	if err != nil {
+		logger.WithError(err).Error()
+	}
 }
 
 func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, createDB bool) (domain.File, error) {
@@ -158,6 +176,22 @@ func (s *Storage) Exists(name string) bool {
 	return s.filesRepo.Exists(name)
 }
 
+// existsByFile checks to see if a file exists and resides
+// in the bucket.
+func (s *Storage) existsByFile(id int) bool {
+	file, err := s.filesRepo.Find(id)
+	if err != nil {
+		return false
+	}
+
+	_, err = s.getFileBytes(file)
+	if err != nil {
+		return false
+	}
+
+	return true
+}
+
 // Delete satisfies the Bucket interface by accepting an ID
 // and deleting a file from the bucket and database.
 func (s *Storage) Delete(id int) error {
@@ -187,8 +221,6 @@ func (s *Storage) deleteFile(database bool, id int) error {
 	if err != nil {
 		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
 	}
-
-	fmt.Println(file.FullPath(s.paths.Storage))
 
 	if !database {
 		return nil

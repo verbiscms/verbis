@@ -18,57 +18,118 @@
 				<!-- =====================
 					Details
 					===================== -->
-				<div class="col-12 col-desk-5">
-					<!-- Configuration -->
+				<div class="col-12 col-desk-6">
+					<!-- =====================
+						Info
+						===================== -->
 					<div class="storage-config">
 						<h2 class="storage-title">Configuration:</h2>
 						<p>You are able to change storage providers and bucket's below. Each file is stored with it's own provider and bucket information.</p>
-						<!-- Provider Info -->
-						<div class="storage-config-cont">
-							<div>
+						<!-- Active Provider -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-link @click="showProviderModal = true">Change Provider</el-link>
+							</el-col>
+							<el-col :span="16">
 								<h4>Active Provider</h4>
 								<el-tag type="success" effect="plain" size="small">{{ config['active_provider'] }}</el-tag>
-							</div>
-							<el-link @click="showProviderModal = true">Change Provider</el-link>
-						</div><!-- /Provider Info -->
-						<!-- Bucket Info -->
-						<div class="storage-config-cont" v-if="config['active_provider'] !== 'local'">
-							<div>
+							</el-col>
+						</el-row><!-- /Active Provider -->
+						<!-- Active Bucket -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-link @click="showBucketModal = true">Change Bucket</el-link>
+							</el-col>
+							<el-col :span="16">
 								<h4>Active Bucket</h4>
 								<el-tag type="success" effect="plain" size="small">{{ config['active_bucket'] }}</el-tag>
-							</div>
-							<el-link @click="showBucketModal = true">Change Bucket</el-link>
-						</div><!-- /Bucket Info -->
-					</div><!-- /Configuration -->
-					<!-- Migration -->
+							</el-col>
+						</el-row><!-- /Active Bucket -->
+					</div><!-- /Info -->
+					<!-- =====================
+						Migration
+						===================== -->
+					<el-divider></el-divider>
 					<div class="storage-config">
-						<h2 class="storage-title">Migrate:</h2>
-						<p>You can migrate all of the Verbis file library to a remote cloud provider or the local file system with the buttons below. The provider must be connected before migrating.</p>
-						<div class="storage-config-btn-cont">
-							<el-button @click="handleMigrateModal(true)" plain>Migrate to Server</el-button>
-							<el-button @click="handleMigrateModal(false)" plain>Migrate to Local</el-button>
-						</div>
+						<!-- Heading -->
+						<div class="storage-config-item">
+							<h2 class="storage-title">Migrate:</h2>
+						</div><!-- /Heading -->
+						<!-- Migrate To Server -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-button @click="handleMigrateModal(true)" plain>Migrate to Server</el-button>
+							</el-col>
+							<el-col :span="16">
+								<h4>Migrate to Server</h4>
+								<p>Migrate all of the Verbis library to the remote provider, this will upload all files stored in the library. The provider must be connected before migrating.</p>
+							</el-col>
+						</el-row><!-- Migrate To Server -->
+						<!-- Migrate To Local -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-button @click="handleMigrateModal(false)" plain>Migrate to Local</el-button>
+							</el-col>
+							<el-col :span="16">
+								<h4>Migrate to Local</h4>
+								<p>Migrate all of the Verbis library to the local file system, this will download all files stored in the library. The provider must be connected before migrating.</p>
+							</el-col>
+						</el-row><!-- Migrate To Server -->
 						<!-- Progress -->
+
+						{{ config.migration }}
 						<div v-if="config['is_migrating'] && config['migration']" class="storage-migration">
 							<h4>Migration in progress</h4>
 							<el-progress :text-inside="true" :stroke-width="20" :percentage="config.migration.progress"></el-progress>
 							<small>Processing {{ config['migration']['files_processed'] }}/{{ config['migration']['total'] }} files</small>
 						</div>
 					</div><!-- /Migration -->
-					<!-- Options -->
+					<!-- =====================
+						Options
+						===================== -->
+					<el-divider></el-divider>
 					<div class="storage-config">
-						<h2 class="storage-title">Options:</h2>
-						<p>If a remote storage provider is activated, you can choose to keep a backup of the existing files locally below.</p>
-						<div class="d-flex justify-content-between align-items-center">
-							<el-switch inactive-text="Keep local backup?" v-model="info.local_backup"></el-switch>
-							<el-button size="small" :loading="saving" @click="saveInfo">Save Options</el-button>
-						</div>
-					</div><!-- /Migration -->
+						<!-- Heading -->
+						<div class="storage-config-item">
+							<h2 class="storage-title">Options:</h2>
+						</div><!-- /Heading -->
+						<!-- Download -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-button @click="download" :loading="downloading">Download</el-button>
+							</el-col>
+							<el-col :span="16">
+								<h4>Download Library</h4>
+								<p>By clicking download you are able to download the entire media library to your local machine. This will not include any items that are not stored in Verbis.</p>
+								<el-alert title="Downloading, do not refresh the page" type="warning" show-icon></el-alert>
+							</el-col>
+						</el-row><!-- /Download -->
+						<!-- Keep Local Backup -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-switch v-model="info.local_backup"></el-switch>
+							</el-col>
+							<el-col :span="16">
+								<h4>Local backup</h4>
+								<p>When a file is uploaded to the media library, and </p>
+							</el-col>
+						</el-row><!-- /Keep Local Backup -->
+						<!-- Keep Server Backup -->
+						<el-row class="storage-config-item">
+							<el-col :span="8">
+								<el-switch v-model="info.remote_backup"></el-switch>
+							</el-col>
+							<el-col :span="16">
+								<h4>Remote backup</h4>
+								<p>Keeps a remote backup of the file stored when a file is uploaded.</p>
+							</el-col>
+						</el-row><!-- /Keep Local Backup -->
+					</div><!-- /Options -->
 				</div>
 				<!-- =====================
 					Providers
 					===================== -->
-				<div class="col-12 col-desk-6 offset-desk-1">
+				<div class="col-12 col-desk-5 offset-desk-1">
 					<h2>Providers:</h2>
 					<div class="card card-small-box-shadow card-expand">
 						<el-collapse v-model="activeProviders">
@@ -243,6 +304,7 @@ export default {
 		},
 		saving: false,
 		backup: false,
+		downloading: false,
 	}),
 	mounted() {
 		this.getConfig();
@@ -445,6 +507,36 @@ export default {
 					this.saving = false;
 				})
 		},
+		/**
+		 * Download's the entire media library and creates
+		 * a new blob to download.
+		 */
+		download() {
+			this.downloading = true;
+			this.axios.get("/storage/download",
+				{responseType: 'blob'}
+			).then(res => {
+				console.log(res);
+				let fileName = res.headers["x-filename"],
+					fileUrl = window.URL.createObjectURL(new Blob([res.data], {type: "application/zip"})),
+					fileLink = document.createElement("a");
+				fileLink.href = fileUrl;
+
+				if (!fileName) {
+					fileName = "verbis-library.zip"
+				}
+
+				fileLink.setAttribute("download", fileName);
+				document.body.appendChild(fileLink);
+				fileLink.click();
+			})
+			.catch(err => {
+				this.helpers.handleResponse(err);
+			})
+			.finally(() => {
+				this.downloading = false;
+			})
+		},
 		/*
 		 * getLogo()
 		 * Returns the relevant provider logo.
@@ -467,30 +559,14 @@ export default {
 
 	.storage {
 
-		&-config-cont {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			margin-bottom: 1rem;
-
-			.link {
-				text-decoration: underline;
-				font-size: 14px;
-				cursor: pointer;
-				color: $secondary;
-
-				&:hover {
-					color: $primary;
-				}
-			}
-		}
-
 		&-config {
 			margin-bottom: 2rem;
 
-			&-btn-cont {
-				.btn:first-child {
-					margin-right: 10px;
+			&-item {
+				margin-bottom: 1.6rem;
+
+				p:last-child {
+					margin-bottom: 0;
 				}
 			}
 		}
@@ -569,6 +645,5 @@ export default {
 			justify-content: space-between;
 		}
 	}
-
 
 </style>

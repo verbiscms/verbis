@@ -27,6 +27,11 @@ func (_m *Handler) DeleteBucket(ctx *gin.Context) {
 	_m.Called(ctx)
 }
 
+// Download provides a mock function with given fields: ctx
+func (_m *Handler) Download(ctx *gin.Context) {
+	_m.Called(ctx)
+}
+
 // ListBuckets provides a mock function with given fields: ctx
 func (_m *Handler) ListBuckets(ctx *gin.Context) {
 	_m.Called(ctx)

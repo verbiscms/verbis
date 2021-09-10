@@ -15,6 +15,7 @@ import (
 	"github.com/verbiscms/verbis/api/services/storage/internal"
 	"github.com/verbiscms/verbis/api/store/files"
 	"github.com/verbiscms/verbis/api/store/options"
+	"io"
 )
 
 // Provider describes the main storage system for Verbis.
@@ -36,6 +37,11 @@ type Provider interface {
 	// Returns errors.INVALID if validation failed.
 	// Returns errors.INTERNAL if there was a problem updating the options table.
 	Save(info domain.StorageConfig) error
+	// Download retrieves the entire storage library from the
+	// container as a zip file.
+	//
+	// Returns an error if the files could not be retrieved.
+	Download(w io.Writer) error
 	Migrator
 	Container
 	Bucket
