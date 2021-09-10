@@ -50,6 +50,16 @@
 								<el-tag type="success" effect="plain" size="small">{{ info['bucket'] }}</el-tag>
 							</el-col>
 						</el-row><!-- /Active Bucket -->
+						<!-- Active Bucket -->
+						<el-row class="storage-config-item" align="center">
+							<el-col :span="8">
+								<el-button @click="disconnect">Disconnect</el-button>
+							</el-col>
+							<el-col :span="16">
+								<h4>Disconnect</h4>
+								<p>Removes the remote storage provider and defaults to the local file system.</p>
+							</el-col>
+						</el-row><!-- /Active Bucket -->
 					</div><!-- /Info -->
 					<!-- =====================
 						Migration
@@ -479,6 +489,12 @@ export default {
 				.finally(() => {
 					this.saving = false;
 				})
+		},
+		// THis needs to be in API.
+		disconnect() {
+			this.info.provider = ""
+			this.info.bucket = ""
+			this.saveInfo();
 		},
 		/**
 		 * Download's the entire media library and creates
