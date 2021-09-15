@@ -40,7 +40,7 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 }
 
 func (s *Storage) getFileBytes(file domain.File) ([]byte, error) {
-	const op = "Test"
+	const op = "Storage.GetFileBytes"
 
 	bucket, err := s.service.BucketByFile(file)
 	if err != nil {

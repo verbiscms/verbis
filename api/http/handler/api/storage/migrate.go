@@ -15,7 +15,7 @@ import (
 // migration represents the data send from the frontend
 // to start a migration.
 type migration struct {
-	Server bool `json:"to_server"`
+	Server bool `json:"to_server""`
 	Delete bool `json:"delete"`
 }
 
@@ -33,8 +33,6 @@ func (s *Storage) Migrate(ctx *gin.Context) {
 		api.Respond(ctx, http.StatusBadRequest, "Validation failed", &errors.Error{Code: errors.INVALID, Err: err, Operation: op})
 		return
 	}
-
-	fmt.Println(migrate)
 
 	total, err := s.Storage.Migrate(ctx, migrate.Server, migrate.Delete)
 	if errors.Code(err) == errors.NOTFOUND {

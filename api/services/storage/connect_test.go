@@ -12,7 +12,7 @@ import (
 	options "github.com/verbiscms/verbis/api/mocks/store/options"
 )
 
-func (t *StorageTestSuite) TestStorage_Save() {
+func (t *StorageTestSuite) TestStorage_Connect() {
 	tt := map[string]struct {
 		input domain.StorageConfig
 		mock  func(m *mocks.Service, r *repo.Repository, o *options.Repository)
@@ -56,7 +56,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.SetupOptions(test.mock)
-			got := s.Save(test.input)
+			got := s.Connect(test.input)
 			if got != nil {
 				t.Contains(errors.Message(got), test.want)
 				return

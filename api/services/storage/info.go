@@ -6,7 +6,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/services/storage/internal"
 )
@@ -23,7 +22,7 @@ type Configuration struct {
 
 // Info satisfies the Provider interface by returning a
 // domain.StorageConfiguration.
-func (s *Storage) Info(ctx context.Context) (Configuration, error) {
+func (s *Storage) Info(ctx context.Context) Configuration {
 	info := s.service.Config()
 	var m = make(domain.StorageProviders)
 	for k, v := range internal.Providers {
@@ -33,31 +32,22 @@ func (s *Storage) Info(ctx context.Context) (Configuration, error) {
 		m[k] = v.Info(s.env)
 	}
 
+	if info.Provider.IsLocal() {
+		info.Provider = ""
+	}
+
 	connected := false
 	if m[info.Provider].Connected && !info.Provider.IsLocal() {
 		connected = true
-	}
-
-	isMigrating := s.isMigrating(ctx)
-
-	fmt.Println(isMigrating)
-
-	var migrationInfo *MigrationInfo
-	if isMigrating {
-		mi, err := s.getMigration()
-		if err != nil {
-			return Configuration{}, err
-		}
-		migrationInfo = mi
 	}
 
 	c := Configuration{
 		Connected:     connected,
 		Info:          info,
 		Providers:     m,
-		IsMigrating:   isMigrating,
-		MigrationInfo: migrationInfo,
+		IsMigrating:   s.isMigrating(ctx),
+		MigrationInfo: s.getMigration(ctx),
 	}
 
-	return c, nil
+	return c
 }

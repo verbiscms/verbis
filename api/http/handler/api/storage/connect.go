@@ -12,13 +12,13 @@ import (
 	"net/http"
 )
 
-// Save
+// Connect
 //
 // Returns http.StatusOK if the provider changed successfully.
 // Returns http.StatusBadRequest if the request was invalid or validation failed.
 // Returns http.StatusInternalServerError if there was an error processing the change.
-func (s *Storage) Save(ctx *gin.Context) {
-	const op = "StorageHandler.Save"
+func (s *Storage) Connect(ctx *gin.Context) {
+	const op = "StorageHandler.Connect"
 
 	var info domain.StorageConfig
 	err := ctx.ShouldBindJSON(&info)
@@ -27,7 +27,7 @@ func (s *Storage) Save(ctx *gin.Context) {
 		return
 	}
 
-	err = s.Storage.Save(info)
+	err = s.Storage.Connect(info)
 	if errors.Code(err) == errors.INVALID || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return

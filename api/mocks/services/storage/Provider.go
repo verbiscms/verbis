@@ -18,6 +18,20 @@ type Provider struct {
 	mock.Mock
 }
 
+// Connect provides a mock function with given fields: info
+func (_m *Provider) Connect(info domain.StorageConfig) error {
+	ret := _m.Called(info)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(domain.StorageConfig) error); ok {
+		r0 = rf(info)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // CreateBucket provides a mock function with given fields: provider, name
 func (_m *Provider) CreateBucket(provider domain.StorageProvider, name string) (domain.Bucket, error) {
 	ret := _m.Called(provider, name)
@@ -60,6 +74,20 @@ func (_m *Provider) DeleteBucket(provider domain.StorageProvider, name string) e
 	var r0 error
 	if rf, ok := ret.Get(0).(func(domain.StorageProvider, string) error); ok {
 		r0 = rf(provider, name)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
+// Disconnect provides a mock function with given fields:
+func (_m *Provider) Disconnect() error {
+	ret := _m.Called()
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func() error); ok {
+		r0 = rf()
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -126,7 +154,7 @@ func (_m *Provider) Find(url string) ([]byte, domain.File, error) {
 }
 
 // Info provides a mock function with given fields: ctx
-func (_m *Provider) Info(ctx context.Context) (storage.Configuration, error) {
+func (_m *Provider) Info(ctx context.Context) storage.Configuration {
 	ret := _m.Called(ctx)
 
 	var r0 storage.Configuration
@@ -136,14 +164,7 @@ func (_m *Provider) Info(ctx context.Context) (storage.Configuration, error) {
 		r0 = ret.Get(0).(storage.Configuration)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context) error); ok {
-		r1 = rf(ctx)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // ListBuckets provides a mock function with given fields: provider
@@ -169,39 +190,25 @@ func (_m *Provider) ListBuckets(provider domain.StorageProvider) (domain.Buckets
 	return r0, r1
 }
 
-// Migrate provides a mock function with given fields: ctx, from, to, delete
-func (_m *Provider) Migrate(ctx context.Context, from domain.StorageConfig, to domain.StorageConfig, delete bool) (int, error) {
-	ret := _m.Called(ctx, from, to, delete)
+// Migrate provides a mock function with given fields: ctx, server, delete
+func (_m *Provider) Migrate(ctx context.Context, server bool, delete bool) (int, error) {
+	ret := _m.Called(ctx, server, delete)
 
 	var r0 int
-	if rf, ok := ret.Get(0).(func(context.Context, domain.StorageConfig, domain.StorageConfig, bool) int); ok {
-		r0 = rf(ctx, from, to, delete)
+	if rf, ok := ret.Get(0).(func(context.Context, bool, bool) int); ok {
+		r0 = rf(ctx, server, delete)
 	} else {
 		r0 = ret.Get(0).(int)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, domain.StorageConfig, domain.StorageConfig, bool) error); ok {
-		r1 = rf(ctx, from, to, delete)
+	if rf, ok := ret.Get(1).(func(context.Context, bool, bool) error); ok {
+		r1 = rf(ctx, server, delete)
 	} else {
 		r1 = ret.Error(1)
 	}
 
 	return r0, r1
-}
-
-// Save provides a mock function with given fields: info
-func (_m *Provider) Save(info domain.StorageConfig) error {
-	ret := _m.Called(info)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(domain.StorageConfig) error); ok {
-		r0 = rf(info)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
 }
 
 // Upload provides a mock function with given fields: upload

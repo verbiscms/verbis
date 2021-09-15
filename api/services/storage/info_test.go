@@ -34,21 +34,36 @@ func (t *StorageTestSuite) TestStorage_Info() {
 		cache func(c *cache.Store)
 		want  interface{}
 	}{
+		"Local": {
+			func(m *mocks.Service, r *repo.Repository) {
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal})
+			},
+			func(c *cache.Store) {
+				c.On("Get", mock.Anything, migrationIsMigratingKey, mock.Anything).
+					Return(fmt.Errorf("error"))
+				c.On("Get", mock.Anything, migrationKey, mock.Anything).
+					Return(fmt.Errorf("error"))
+			},
+			Configuration{
+				Info:          domain.StorageConfig{},
+				Providers:     domain.StorageProviders{"test": domain.StorageProviderInfo{}},
+				IsMigrating:   false,
+				MigrationInfo: nil,
+			},
+		},
 		"Not Migrating": {
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
 			},
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(fmt.Errorf("error"))
+				c.On("Get", mock.Anything, migrationIsMigratingKey, mock.Anything).
+					Return(fmt.Errorf("error"))
+				c.On("Get", mock.Anything, migrationKey, mock.Anything).
+					Return(fmt.Errorf("error"))
 			},
 			Configuration{
-				Info: domain.StorageConfig{
-					Provider: domain.StorageAWS,
-					Bucket:   TestBucket,
-				},
-				Providers: domain.StorageProviders{
-					"test": domain.StorageProviderInfo{},
-				},
+				Info:          domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket},
+				Providers:     domain.StorageProviders{"test": domain.StorageProviderInfo{}},
 				IsMigrating:   false,
 				MigrationInfo: nil,
 			},
@@ -58,33 +73,25 @@ func (t *StorageTestSuite) TestStorage_Info() {
 				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
 			},
 			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)
-				c.On("Get", mock.Anything, migrationKey, &MigrationInfo{}).Return(nil).Run(func(args mock.Arguments) {
-					arg := args.Get(2).(*MigrationInfo)
-					arg.Total = 10
-				})
+				c.On("Get", mock.Anything, migrationIsMigratingKey, mock.Anything).
+					Return(nil).
+					Run(func(args mock.Arguments) {
+						arg := args.Get(2).(*bool)
+						*arg = true
+					})
+				c.On("Get", mock.Anything, migrationKey, &MigrationInfo{}).
+					Return(nil).
+					Run(func(args mock.Arguments) {
+						arg := args.Get(2).(*MigrationInfo)
+						arg.Total = 10
+					})
 			},
 			Configuration{
-				Info: domain.StorageConfig{
-					Provider: domain.StorageAWS,
-					Bucket:   TestBucket,
-				},
-				Providers: domain.StorageProviders{
-					"test": domain.StorageProviderInfo{},
-				},
+				Info:          domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket},
+				Providers:     domain.StorageProviders{"test": domain.StorageProviderInfo{}},
 				IsMigrating:   true,
 				MigrationInfo: mi,
 			},
-		},
-		"Migration Error": {
-			func(m *mocks.Service, r *repo.Repository) {
-				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: TestBucket})
-			},
-			func(c *cache.Store) {
-				c.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)
-				c.On("Get", mock.Anything, migrationKey, mock.Anything).Return(fmt.Errorf("error"))
-			},
-			"error",
 		},
 	}
 
@@ -101,11 +108,7 @@ func (t *StorageTestSuite) TestStorage_Info() {
 			}
 			s.cache = c
 
-			got, err := s.Info(context.Background())
-			if err != nil {
-				t.Contains(err.Error(), test.want)
-				return
-			}
+			got := s.Info(context.Background())
 			t.Equal(test.want, got)
 		})
 	}

@@ -53,9 +53,9 @@ const (
 	// migrationKey is the key used in the cache used for
 	// retrieving migration information.
 	migrationKey = "storage_migration"
-	// migrationIsMigrating is the key used in the cache used for
+	// migrationIsMigratingKey is the key used in the cache used for
 	// determining if there is a migration taking place.
-	migrationIsMigrating = "storage_is_migrating"
+	migrationIsMigratingKey = "storage_is_migrating"
 )
 
 var (
@@ -165,12 +165,12 @@ func (s *Storage) Migrate(ctx context.Context, toServer, deleteFiles bool) (int,
 	return total, nil
 }
 
-// isMigrating retrieves the migrationIsMigrating key from the
+// isMigrating retrieves the migrationIsMigratingKey key from the
 // cache and returns true if the app is already migrating
 // files.
 func (s *Storage) isMigrating(ctx context.Context) bool {
 	var is bool
-	err := s.cache.Get(ctx, migrationIsMigrating, &is)
+	err := s.cache.Get(ctx, migrationIsMigratingKey, &is)
 	if err != nil {
 		return false
 	}
@@ -179,14 +179,13 @@ func (s *Storage) isMigrating(ctx context.Context) bool {
 
 // getMigration returns the current migration information in
 // the background.
-func (s *Storage) getMigration() (*MigrationInfo, error) {
-	const op = "Storage.GetMigration"
+func (s *Storage) getMigration(ctx context.Context) *MigrationInfo {
 	mi := &MigrationInfo{}
-	err := s.cache.Get(context.Background(), migrationKey, mi)
+	err := s.cache.Get(ctx, migrationKey, mi)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error getting migration", Operation: op, Err: err}
+		return nil
 	}
-	return mi, nil
+	return mi
 }
 
 // processMigration ranges over the given files and adds a
@@ -198,7 +197,7 @@ func (s *Storage) processMigration(ctx context.Context, files domain.Files, from
 		mtx:        &sync.Mutex{},
 	}
 
-	s.cache.Set(ctx, migrationIsMigrating, true, cache.Options{Expiration: cache.RememberForever})
+	s.cache.Set(ctx, migrationIsMigratingKey, true, cache.Options{Expiration: cache.RememberForever})
 	s.cache.Set(ctx, migrationKey, mi, cache.Options{Expiration: cache.RememberForever})
 
 	var wg sync.WaitGroup
@@ -223,7 +222,7 @@ func (s *Storage) processMigration(ctx context.Context, files domain.Files, from
 	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", mi.Succeeded))
 	logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", mi.Failed))
 
-	s.cache.Delete(context.Background(), migrationIsMigrating)
+	s.cache.Delete(context.Background(), migrationIsMigratingKey)
 	s.cache.Delete(context.Background(), migrationKey)
 }
 

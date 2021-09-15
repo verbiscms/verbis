@@ -27,16 +27,20 @@ type Provider interface {
 	// information about the state of the storage.
 	// Which includes active provider and bucket,
 	// and environment state for each provider.
-	//
-	// Returns errors.INVALID if the options lookup failed.
-	Info(ctx context.Context) (Configuration, error)
-	// Save changes the current storage provider and bucket.
+	Info(ctx context.Context) Configuration
+	// Connect changes the current storage provider and bucket.
 	// It will be validated before the options table is
 	// updated.
 	//
 	// Returns errors.INVALID if validation failed.
 	// Returns errors.INTERNAL if there was a problem updating the options table.
-	Save(info domain.StorageConfig) error
+	Connect(info domain.StorageConfig) error
+	// Disconnect changes the current storage provider to
+	// the local file system.
+	//
+	// Returns errors.INVALID if the provider is already local
+	// Returns errors.INTERNAL if there was a problem updating the options table.
+	Disconnect() error
 	// Download retrieves the entire storage library from the
 	// container as a zip file.
 	//

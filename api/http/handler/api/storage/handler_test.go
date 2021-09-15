@@ -9,7 +9,7 @@ import (
 	"github.com/verbiscms/verbis/api/deps"
 	"github.com/verbiscms/verbis/api/domain"
 	mocks "github.com/verbiscms/verbis/api/mocks/services/storage"
-	storage2 "github.com/verbiscms/verbis/api/services/storage"
+	"github.com/verbiscms/verbis/api/services/storage"
 	"github.com/verbiscms/verbis/api/test"
 	"testing"
 )
@@ -48,9 +48,11 @@ var (
 	}
 	// The default storageConfiguration used for
 	// testing.
-	storageConfig = storage2.Configuration{
-		ActiveProvider: "test",
-		ActiveBucket:   "test",
+	storageConfig = storage.Configuration{
+		Info: domain.StorageConfig{
+			Provider: "test",
+			Bucket:   "test",
+		},
 	}
 	// The default storageChange used for testing.
 	storageChange = domain.StorageConfig{

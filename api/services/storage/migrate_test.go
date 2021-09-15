@@ -63,20 +63,19 @@ func (t *StorageTestSuite) TestMigrationInfo_Succeed() {
 
 func (t *StorageTestSuite) TestStorage_Migrate() {
 	mockCacheSuccess := func(m *cache.Store) {
-		m.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(fmt.Errorf("error"))
+		m.On("Get", mock.Anything, migrationIsMigratingKey, mock.Anything).Return(fmt.Errorf("error"))
+		m.On("Get", mock.Anything, migrationKey, mock.Anything).Return(fmt.Errorf("error"))
 		m.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Times(100)
-		m.On("Delete", mock.Anything, migrationIsMigrating)
+		m.On("Delete", mock.Anything, migrationIsMigratingKey)
 		m.On("Delete", mock.Anything, migrationKey)
 	}
 
 	tt := map[string]struct {
-		migrating bool
-		mock      func(m *mocks.Service, r *repo.Repository)
-		cache     func(m *cache.Store)
-		want      interface{}
+		mock  func(m *mocks.Service, r *repo.Repository)
+		cache func(m *cache.Store)
+		want  interface{}
 	}{
 		"Success": {
-			false,
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
 				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal, Bucket: ""})
@@ -88,16 +87,18 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			2,
 		},
 		"Already Migrating": {
-			true,
 			nil,
 			func(m *cache.Store) {
-				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal, Bucket: ""})
-				m.On("Get", mock.Anything, migrationIsMigrating, mock.Anything).Return(nil)
+				m.On("Get", mock.Anything, migrationIsMigratingKey, mock.Anything).
+					Return(nil).
+					Run(func(args mock.Arguments) {
+						arg := args.Get(2).(*bool)
+						*arg = true
+					})
 			},
 			"Error migration is already in progress",
 		},
 		"Validation Failed": {
-			false,
 			func(m *mocks.Service, r *repo.Repository) {
 				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, Bucket: ""})
 			},
@@ -105,7 +106,6 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"Validation failed",
 		},
 		"Repo Error": {
-			false,
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
 				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal, Bucket: ""})
@@ -115,7 +115,6 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"error",
 		},
 		"Zero Length": {
-			false,
 			func(m *mocks.Service, r *repo.Repository) {
 				mockValidateSuccess(m, r)
 				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal, Bucket: ""})
@@ -148,6 +147,7 @@ func (t *StorageTestSuite) TestStorage_GetMigration() {
 	tt := map[string]struct {
 		mock func(c *cache.Store)
 		want interface{}
+		nil  bool
 	}{
 		"Success": {
 			func(c *cache.Store) {
@@ -157,12 +157,14 @@ func (t *StorageTestSuite) TestStorage_GetMigration() {
 				})
 			},
 			MigrationInfo{Total: 10},
+			false,
 		},
 		"Find Error": {
 			func(c *cache.Store) {
 				c.On("Get", mock.Anything, migrationKey, &MigrationInfo{}).Return(fmt.Errorf("error"))
 			},
-			"Error getting migration",
+			nil,
+			true,
 		},
 	}
 
@@ -172,12 +174,11 @@ func (t *StorageTestSuite) TestStorage_GetMigration() {
 			test.mock(c)
 			s := t.Setup(nil)
 			s.cache = c
-			got, err := s.getMigration()
-			if err != nil {
-				t.Contains(errors.Message(err), test.want)
+			got := s.getMigration(context.Background())
+			if test.nil {
+				t.Nil(got)
 				return
 			}
-			t.NotNil(got)
 			t.Equal(test.want, *got)
 		})
 	}

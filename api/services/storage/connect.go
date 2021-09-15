@@ -9,11 +9,11 @@ import (
 	"github.com/verbiscms/verbis/api/errors"
 )
 
-// Save satisfies the Provider interface by changing the
+// Connect satisfies the Provider interface by changing the
 // current storage providers by updating the options
 // table.
-func (s *Storage) Save(info domain.StorageConfig) error {
-	const op = "Storage.Save"
+func (s *Storage) Connect(info domain.StorageConfig) error {
+	const op = "Storage.Connect"
 
 	err := s.validate(info)
 	if err != nil {

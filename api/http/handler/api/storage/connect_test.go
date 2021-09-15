@@ -13,7 +13,7 @@ import (
 	"net/http"
 )
 
-func (t *StorageTestSuite) TestStorage_Save() {
+func (t *StorageTestSuite) TestStorage_Connect() {
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -27,7 +27,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 			"Successfully updated storage options",
 			storageChange,
 			func(m *mocks.Provider) {
-				m.On("Save", storageChange).Return(nil)
+				m.On("Connect", storageChange).Return(nil)
 			},
 		},
 		"Validation Failed": {
@@ -43,7 +43,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 			"invalid",
 			storageChange,
 			func(m *mocks.Provider) {
-				m.On("Save", storageChange).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
+				m.On("Connect", storageChange).Return(&errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
 		"Conflict": {
@@ -52,7 +52,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 			"conflict",
 			storageChange,
 			func(m *mocks.Provider) {
-				m.On("Save", storageChange).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+				m.On("Connect", storageChange).Return(&errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
 		"Internal Error": {
@@ -61,7 +61,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 			"internal",
 			storageChange,
 			func(m *mocks.Provider) {
-				m.On("Save", storageChange).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
+				m.On("Connect", storageChange).Return(&errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}
@@ -69,7 +69,7 @@ func (t *StorageTestSuite) TestStorage_Save() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			t.RequestAndServe(http.MethodPost, "/storage", "/storage", test.input, func(ctx *gin.Context) {
-				t.Setup(test.mock).Save(ctx)
+				t.Setup(test.mock).Connect(ctx)
 			})
 			t.RunT(test.want, test.status, test.message)
 		})

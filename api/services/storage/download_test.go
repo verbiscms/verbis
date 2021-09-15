@@ -6,10 +6,12 @@ package storage
 
 import (
 	"archive/zip"
+	"bytes"
 	"fmt"
 	"github.com/stretchr/testify/mock"
 	"github.com/verbiscms/verbis/api/common/params"
 	"github.com/verbiscms/verbis/api/domain"
+	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 	"io/ioutil"
@@ -31,9 +33,9 @@ func (t *StorageTestSuite) TestStorage_Download() {
 	}
 
 	tt := map[string]struct {
-		mock     func(m *mocks.Service, r *repo.Repository)
-		writeErr bool
-		want     interface{}
+		mock func(m *mocks.Service, r *repo.Repository)
+		err  bool
+		want interface{}
 	}{
 		"Success": {
 			func(m *mocks.Service, r *repo.Repository) {
@@ -57,6 +59,51 @@ func (t *StorageTestSuite) TestStorage_Download() {
 			false,
 			"error",
 		},
+		"File Bytes Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("List", params.Params{LimitAll: true}).
+					Return(domain.Files{file}, 1, nil)
+				m.On("BucketByFile", file).
+					Return(nil, &errors.Error{Message: "error"})
+			},
+			true,
+			"error",
+		},
+		"Create Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				f := domain.File{BucketID: ""}
+				const maxUint16 = 1<<16 + 10
+				for i := 0; i < maxUint16; i++ {
+					f.BucketID += "t"
+				}
+
+				r.On("List", params.Params{LimitAll: true}).
+					Return(domain.Files{f}, 1, nil)
+				c := &mocks.StowContainer{}
+				m.On("BucketByFile", f).Return(c, nil)
+
+				item := &mocks.StowItem{}
+				item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
+				c.On("Item", mock.Anything).Return(item, nil)
+			},
+			true,
+			"Error creating zip file",
+		},
+		"Write Error": {
+			func(m *mocks.Service, r *repo.Repository) {
+				r.On("List", params.Params{LimitAll: true}).
+					Return(domain.Files{file}, 1, nil)
+				c := &mocks.StowContainer{}
+				m.On("BucketByFile", file).Return(c, nil)
+
+				item := &mocks.StowItem{}
+				var buf []byte
+				item.On("Open").Return(ioutil.NopCloser(bytes.NewReader(buf)), nil)
+				c.On("Item", mock.Anything).Return(item, nil)
+			},
+			true,
+			"Error writing zip file",
+		},
 	}
 
 	for name, test := range tt {
@@ -70,6 +117,7 @@ func (t *StorageTestSuite) TestStorage_Download() {
 			defer func() {
 				open.Close()
 				os.Remove(fileName)
+				t.Reset()
 			}()
 
 			got := s.Download(open)
@@ -82,15 +130,13 @@ func (t *StorageTestSuite) TestStorage_Download() {
 			t.NoError(err)
 			defer reader.Close()
 
-			openFile, err := reader.Open("storage/test.txt")
-			if test.writeErr {
-				fmt.Println(err)
-				t.Error(err)
+			if test.err {
+				t.Contains(t.LogWriter.String(), errors.Message(err))
 				return
-			} else {
-				t.NoError(err)
 			}
 
+			openFile, err := reader.Open("storage/test.txt")
+			t.NoError(err)
 			contents, err := ioutil.ReadAll(openFile)
 			t.NoError(err)
 			t.Equal(test.want, string(contents))
