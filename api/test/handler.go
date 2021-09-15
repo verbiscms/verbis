@@ -54,7 +54,7 @@ func (r *ResponseRecorder) CloseNotify() <-chan bool {
 	return r.closeChannel
 }
 
-func (r *ResponseRecorder) closeClient() {
+func (r *ResponseRecorder) closeClient() { //nolint
 	r.closeChannel <- true
 }
 

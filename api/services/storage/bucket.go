@@ -93,6 +93,8 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		info.Bucket = ""
 	}
 
+	// TODO: Data race detected here with backups!
+
 	// If the local backup is enabled and the current settings
 	// are remote, backup the upload to the local provider.
 	if info.LocalBackup && !info.Provider.IsLocal() {
