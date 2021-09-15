@@ -72,10 +72,10 @@ func CreateTestResponseRecorder() *ResponseRecorder {
 func NewHandlerSuite() HandlerSuite {
 	gin.SetMode(gin.TestMode)
 	gin.DefaultWriter = ioutil.Discard
-	rr := httptest.NewRecorder()
+	rr := CreateTestResponseRecorder()
 	ctx, engine := gin.CreateTestContext(rr)
 	return HandlerSuite{
-		Recorder: CreateTestResponseRecorder(),
+		Recorder: rr,
 		Context:  ctx,
 		Engine:   engine,
 	}
@@ -157,9 +157,9 @@ func (t *HandlerSuite) RequestAndServe(method, url, engineURL string, body inter
 // Sets up a new recorder, engine and context upon
 // test completion.
 func (t *HandlerSuite) Reset() {
-	rr := httptest.NewRecorder()
+	rr := CreateTestResponseRecorder()
 	ctx, engine := gin.CreateTestContext(rr)
-	t.Recorder = CreateTestResponseRecorder()
+	t.Recorder = rr
 	t.Context = ctx
 	t.Engine = engine
 }
