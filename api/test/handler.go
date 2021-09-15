@@ -38,28 +38,28 @@ type RespondJSON struct {
 // HandlerSuite represents the suite of testing methods for controllers.
 type HandlerSuite struct {
 	suite.Suite
-	Recorder *TestResponseRecorder
+	Recorder *ResponseRecorder
 	Context  *gin.Context
 	Engine   *gin.Engine
 }
 
-// TestResponseRecorder expands the http.ResponseRecorder
+// ResponseRecorder expands the http.ResponseRecorder
 // to be a http.CloseNotifier.
-type TestResponseRecorder struct {
+type ResponseRecorder struct {
 	*httptest.ResponseRecorder
 	closeChannel chan bool
 }
 
-func (r *TestResponseRecorder) CloseNotify() <-chan bool {
+func (r *ResponseRecorder) CloseNotify() <-chan bool {
 	return r.closeChannel
 }
 
-func (r *TestResponseRecorder) closeClient() {
+func (r *ResponseRecorder) closeClient() {
 	r.closeChannel <- true
 }
 
-func CreateTestResponseRecorder() *TestResponseRecorder {
-	return &TestResponseRecorder{
+func CreateTestResponseRecorder() *ResponseRecorder {
+	return &ResponseRecorder{
 		httptest.NewRecorder(),
 		make(chan bool, 1),
 	}
@@ -184,7 +184,7 @@ func (t *HandlerSuite) marshalInput(i interface{}) *bytes.Buffer {
 // marshalWant
 //
 // Marshal the test want, if the test want arg
-// is is nil, return an empty JSON object.
+// is nil, return an empty JSON object.
 func (t *HandlerSuite) marshalWant(i interface{}) string {
 	str, ok := i.(string)
 	if ok {

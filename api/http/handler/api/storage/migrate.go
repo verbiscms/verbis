@@ -15,7 +15,7 @@ import (
 // migration represents the data send from the frontend
 // to start a migration.
 type migration struct {
-	Server bool `json:"to_server""`
+	Server bool `json:"to_server"`
 	Delete bool `json:"delete"`
 }
 

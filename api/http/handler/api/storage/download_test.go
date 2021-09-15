@@ -32,7 +32,8 @@ func (t *StorageTestSuite) TestStorage_Download() {
 			func(m *mocks.Provider, ctx *gin.Context) {
 				m.On("Download", ctx.Writer).Return(nil).Run(func(args mock.Arguments) {
 					arg := args.Get(0).(gin.ResponseWriter)
-					arg.Write([]byte("test"))
+					_, err := arg.Write([]byte("test"))
+					t.NoError(err)
 				})
 			},
 			false,

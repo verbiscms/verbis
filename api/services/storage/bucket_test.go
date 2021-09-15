@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
@@ -88,7 +88,7 @@ func (t *StorageTestSuite) TestBucket_Find() {
 				m.On("BucketByFile", domain.File{}).Return(c, nil)
 				c.On("Item", mock.Anything).Return(nil, fmt.Errorf("error"))
 			},
-			"Error obtaining file with the ID",
+			"Error obtaining downloadFile with the ID",
 		},
 		"Open Error": {
 			func(m *mocks.Service, r *repo.Repository) {
@@ -101,7 +101,7 @@ func (t *StorageTestSuite) TestBucket_Find() {
 				item.On("Open").Return(nil, fmt.Errorf("error"))
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
-			"Error opening file",
+			"Error opening downloadFile",
 		},
 		"Read Error": {
 			func(m *mocks.Service, r *repo.Repository) {
@@ -114,7 +114,7 @@ func (t *StorageTestSuite) TestBucket_Find() {
 				item.On("Open").Return(&mockIOReaderReadError{}, nil)
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
-			"Error reading file",
+			"Error reading downloadFile",
 		},
 	}
 
@@ -173,7 +173,6 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				// Local Backup
 				m.On("Bucket", domain.StorageLocal, "").Return(cont, nil).Once()
 				item.On("URL").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
-
 			},
 			false,
 			fileRemote,
@@ -204,7 +203,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
 			},
 			true,
-			"Error uploading file to storage provider",
+			"Error uploading downloadFile to storage provider",
 		},
 		"Mime Error": {
 			domain.Upload{
@@ -260,12 +259,12 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 func (t *StorageTestSuite) TestBucket_Backup_Error() {
 	defer t.Reset()
 
-	mock := func(m *mocks.Service, r *repo.Repository) {
+	m := func(m *mocks.Service, r *repo.Repository) {
 		m.On("Bucket", domain.StorageLocal, "").
 			Return(nil, fmt.Errorf("backup error"))
 	}
 
-	s := t.Setup(mock)
+	s := t.Setup(m)
 	s.backup(domain.StorageLocal, "", upload)
 	t.Contains(t.LogWriter.String(), "backup error")
 }
@@ -351,7 +350,7 @@ func (t *StorageTestSuite) TestBucket_Delete() {
 				c.On("RemoveItem", mock.Anything).Return(fmt.Errorf("error"))
 				mockDeleteBackups(m)
 			},
-			"Error deleting file from storage",
+			"Error deleting downloadFile from storage",
 		},
 		"Repo Remove Error": {
 			func(m *mocks.Service, r *repo.Repository) {

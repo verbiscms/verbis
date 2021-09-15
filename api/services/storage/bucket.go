@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
@@ -16,13 +16,13 @@ import (
 )
 
 // List satisfies the Bucket interface by accepting an url
-// and retrieving the file and byte contents of the file.
+// and retrieving the downloadFile and byte contents of the downloadFile.
 func (s *Storage) List(meta params.Params) (domain.Files, int, error) {
 	return s.filesRepo.List(meta)
 }
 
 // Find satisfies the Bucket interface by accepting an url
-// and retrieving the file and byte contents of the file.
+// and retrieving the downloadFile and byte contents of the downloadFile.
 func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 	const op = "Storage.Find"
 
@@ -39,8 +39,8 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 	return buf, file, nil
 }
 
-// getFileBytes retrieves the file's bytes with the given
-// input, returns an error if the file was not found
+// getFileBytes retrieves the downloadFile's bytes with the given
+// input, returns an error if the downloadFile was not found
 // or
 func (s *Storage) getFileBytes(file domain.File) ([]byte, error) {
 	const op = "Storage.GetFileBytes"
@@ -54,18 +54,18 @@ func (s *Storage) getFileBytes(file domain.File) ([]byte, error) {
 
 	item, err := bucket.Item(id)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the ID: " + id, Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining downloadFile with the ID: " + id, Operation: op, Err: err}
 	}
 
 	open, err := item.Open()
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error opening downloadFile", Operation: op, Err: err}
 	}
 	defer open.Close()
 
 	buf, err := ioutil.ReadAll(open)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error reading downloadFile", Operation: op, Err: err}
 	}
 
 	return buf, nil
@@ -132,9 +132,12 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 		return domain.File{}, err
 	}
 
+	// Seek the downloadFile back to the original bytes.
+	u.Contents.Seek(0, 0) //nolint
+
 	item, err := cont.Put(u.AbsPath(), u.Contents, u.Size, nil)
 	if err != nil {
-		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage provider", Operation: op, Err: err}
+		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading downloadFile to storage provider", Operation: op, Err: err}
 	}
 
 	mime, err := u.Mime()
@@ -171,9 +174,6 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 		Private:    false,
 	}
 
-	// Seek the file back to the original bytes.
-	u.Contents.Seek(0, 0)
-
 	if !createDB {
 		return f, nil
 	}
@@ -187,13 +187,13 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 }
 
 // Exists satisfies the Bucket interface by accepting name
-// and determining if a file exists by name.
+// and determining if a downloadFile exists by name.
 func (s *Storage) Exists(name string) bool {
 	return s.filesRepo.Exists(name)
 }
 
 // Delete satisfies the Bucket interface by accepting an ID
-// and deleting a file from the bucket and database.
+// and deleting a downloadFile from the bucket and database.
 func (s *Storage) Delete(id int) error {
 	file, err := s.deleteFile(true, id)
 	if err != nil {
@@ -218,7 +218,7 @@ func (s *Storage) deleteFile(database bool, id int) (domain.File, error) {
 
 	err = bucket.RemoveItem(file.FullPath(s.paths.Storage))
 	if err != nil {
-		return file, &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
+		return file, &errors.Error{Code: errors.INVALID, Message: "Error deleting downloadFile from storage", Operation: op, Err: err}
 	}
 
 	if !database {

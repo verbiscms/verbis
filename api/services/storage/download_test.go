@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
@@ -14,40 +14,44 @@ import (
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/mocks/services/storage/mocks"
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
-func (t *StorageTestSuite) TestStorage_Download() {
-	file := domain.File{
-		ID:         0,
-		UUID:       upload.UUID,
-		URL:        "test.txt",
-		Name:       "test.txt",
-		BucketID:   "test.txt",
-		Mime:       "text/plain; charset=utf-8",
-		SourceType: domain.MediaSourceType,
-		Provider:   domain.StorageLocal,
-	}
+var downloadFile = domain.File{
+	ID:         0,
+	UUID:       upload.UUID,
+	URL:        "test.txt",
+	Name:       "test.txt",
+	BucketID:   "test.txt",
+	Mime:       "text/plain; charset=utf-8",
+	SourceType: domain.MediaSourceType,
+	Provider:   domain.StorageLocal,
+}
 
+var mockDownloadSuccess = func(m *mocks.Service, r *repo.Repository) {
+	r.On("List", params.Params{LimitAll: true}).
+		Return(domain.Files{downloadFile}, 1, nil)
+	c := &mocks.StowContainer{}
+	m.On("BucketByFile", downloadFile).Return(c, nil)
+
+	item := &mocks.StowItem{}
+	item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
+	c.On("Item", mock.Anything).Return(item, nil)
+}
+
+func (t *StorageTestSuite) TestStorage_Download() {
 	tt := map[string]struct {
 		mock func(m *mocks.Service, r *repo.Repository)
 		err  bool
 		want interface{}
 	}{
 		"Success": {
-			func(m *mocks.Service, r *repo.Repository) {
-				r.On("List", params.Params{LimitAll: true}).
-					Return(domain.Files{file}, 1, nil)
-				c := &mocks.StowContainer{}
-				m.On("BucketByFile", file).Return(c, nil)
-
-				item := &mocks.StowItem{}
-				item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
-				c.On("Item", mock.Anything).Return(item, nil)
-			},
+			mockDownloadSuccess,
 			false,
 			"test",
 		},
@@ -62,8 +66,8 @@ func (t *StorageTestSuite) TestStorage_Download() {
 		"File Bytes Error": {
 			func(m *mocks.Service, r *repo.Repository) {
 				r.On("List", params.Params{LimitAll: true}).
-					Return(domain.Files{file}, 1, nil)
-				m.On("BucketByFile", file).
+					Return(domain.Files{downloadFile}, 1, nil)
+				m.On("BucketByFile", downloadFile).
 					Return(nil, &errors.Error{Message: "error"})
 			},
 			true,
@@ -87,14 +91,14 @@ func (t *StorageTestSuite) TestStorage_Download() {
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
 			true,
-			"Error creating zip file",
+			"Error creating zip downloadFile",
 		},
 		"Write Error": {
 			func(m *mocks.Service, r *repo.Repository) {
 				r.On("List", params.Params{LimitAll: true}).
-					Return(domain.Files{file}, 1, nil)
+					Return(domain.Files{downloadFile}, 1, nil)
 				c := &mocks.StowContainer{}
-				m.On("BucketByFile", file).Return(c, nil)
+				m.On("BucketByFile", downloadFile).Return(c, nil)
 
 				item := &mocks.StowItem{}
 				var buf []byte
@@ -102,7 +106,7 @@ func (t *StorageTestSuite) TestStorage_Download() {
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
 			true,
-			"Error writing zip file",
+			"Error writing zip downloadFile",
 		},
 	}
 
@@ -142,4 +146,29 @@ func (t *StorageTestSuite) TestStorage_Download() {
 			t.Equal(test.want, string(contents))
 		})
 	}
+}
+
+type mockZipWriter struct{}
+
+type mockIOWriterErr struct{}
+
+func (m *mockIOWriterErr) Write(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("write error")
+}
+
+func (m *mockZipWriter) Create(name string) (io.Writer, error) {
+	return &mockIOWriterErr{}, nil
+}
+
+func (t *StorageTestSuite) TestStorage_Download_WriteError() {
+	s := t.Setup(mockDownloadSuccess)
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	c := make(chan bool, 1)
+	c <- true
+	go s.addDownloadToZip(&mockZipWriter{}, downloadFile, c, &wg)
+	wg.Wait()
+
+	t.Contains(t.LogWriter.String(), "write error")
 }
