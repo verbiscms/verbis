@@ -149,7 +149,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				cont.On("ID").Return("bucket")
 				cont.On("Put", "uploads/2020/01/"+key+".txt", upload.Contents, upload.Size, mock.Anything).Return(item, nil)
 
-				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal, UploadRemote: true})
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageLocal, UploadRemote: false, RemoteBackup: true})
 				m.On("Bucket", domain.StorageLocal, "").Return(cont, nil)
 				r.On("Create", fileLocal).Return(fileLocal, nil)
 			},
@@ -166,9 +166,14 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				cont.On("Put", mock.Anything, upload.Contents, upload.Size, mock.Anything).Return(item, nil)
 				cont.On("ID").Return("bucket")
 
-				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, UploadRemote: true})
-				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
+				m.On("Config").Return(domain.StorageConfig{Provider: domain.StorageAWS, UploadRemote: true, LocalBackup: true})
+				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil).Once()
 				r.On("Create", fileRemote).Return(fileRemote, nil)
+
+				// Local Backup
+				m.On("Bucket", domain.StorageLocal, "").Return(cont, nil).Once()
+				item.On("URL").Return(&url.URL{Path: "/uploads/2020/01/test.txt"})
+
 			},
 			false,
 			fileRemote,
@@ -252,6 +257,19 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 	}
 }
 
+func (t *StorageTestSuite) TestBucket_Backup_Error() {
+	defer t.Reset()
+
+	mock := func(m *mocks.Service, r *repo.Repository) {
+		m.On("Bucket", domain.StorageLocal, "").
+			Return(nil, fmt.Errorf("backup error"))
+	}
+
+	s := t.Setup(mock)
+	s.backup(domain.StorageLocal, "", upload)
+	t.Contains(t.LogWriter.String(), "backup error")
+}
+
 func (t *StorageTestSuite) TestBucket_Exists() {
 	tt := map[string]struct {
 		input string
@@ -277,13 +295,10 @@ func (t *StorageTestSuite) TestBucket_Exists() {
 	for name, test := range tt {
 		t.Run(name, func() {
 			r := &repo.Repository{}
-
 			test.mock(r)
-
 			s := Storage{
 				filesRepo: r,
 			}
-
 			got := s.Exists(test.input)
 			t.Equal(test.want, got)
 		})

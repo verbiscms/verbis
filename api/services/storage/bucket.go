@@ -39,6 +39,9 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 	return buf, file, nil
 }
 
+// getFileBytes retrieves the file's bytes with the given
+// input, returns an error if the file was not found
+// or
 func (s *Storage) getFileBytes(file domain.File) ([]byte, error) {
 	const op = "Storage.GetFileBytes"
 
@@ -83,6 +86,8 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	// Obtain the configuration for the upload.
 	info := s.service.Config()
 
+	logger.Debug("Processing upload: " + u.Path)
+
 	if !info.UploadRemote {
 		info.Provider = domain.StorageLocal
 		info.Bucket = ""
@@ -102,14 +107,21 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		go s.backup(cfg.Provider, cfg.Bucket, u)
 	}
 
-	return s.upload(info.Provider, info.Bucket, u, true)
+	file, err := s.upload(info.Provider, info.Bucket, u, true)
+	if err == nil {
+		logger.Debug("Successfully processed upload: " + u.Path)
+	}
+
+	return file, err
 }
 
 func (s *Storage) backup(p domain.StorageProvider, b string, u domain.Upload) {
 	_, err := s.upload(p, b, u, false)
+	logger.Debug("Processing backup with storage provider: " + p.String() + " and filepath: " + u.Path)
 	if err != nil {
 		logger.WithError(err).Error()
 	}
+	logger.Debug("Successfully processed backup: " + u.Path)
 }
 
 func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, createDB bool) (domain.File, error) {
