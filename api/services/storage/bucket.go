@@ -105,13 +105,8 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 		logger.Debug("Successfully processed upload: " + u.Path)
 	}
 
-	mtx := sync.Mutex{}
-
 	// Spawn a routine for backing up the storage files.
 	go func() {
-		mtx.Lock()
-		defer mtx.Unlock()
-
 		// If the local backup is enabled and the current settings
 		// are remote, backup the upload to the local provider.
 		if info.LocalBackup && !info.Provider.IsLocal() {
@@ -151,8 +146,15 @@ type uploadCfg struct {
 	CreateDatabase bool
 }
 
+// mtx is used for the prevention of data races,
+// when uploading a file.
+var mtx = sync.Mutex{}
+
 func (s *Storage) upload(cfg *uploadCfg) (domain.File, error) {
 	const op = "Storage.Upload"
+
+	mtx.Lock()
+	defer mtx.Unlock()
 
 	cont, err := s.service.Bucket(cfg.Provider, cfg.Bucket)
 	if err != nil {
@@ -160,7 +162,7 @@ func (s *Storage) upload(cfg *uploadCfg) (domain.File, error) {
 	}
 
 	// Seek the downloadFile back to the original bytes.
-	cfg.Upload.Contents.Seek(0, 0) //nolint
+	defer cfg.Upload.Contents.Seek(0, 0) // nolint
 
 	item, err := cont.Put(cfg.Upload.AbsPath(), cfg.Upload.Contents, cfg.Upload.Size, nil)
 	if err != nil {
