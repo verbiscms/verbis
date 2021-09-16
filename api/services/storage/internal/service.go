@@ -3,12 +3,10 @@ package internal
 import (
 	"fmt"
 	"github.com/graymeta/stow"
-	"github.com/spf13/cast"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/environment"
 	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/store/options"
-	"strings"
 )
 
 // StorageServices define the methods needed to obtain
@@ -18,7 +16,7 @@ type StorageServices interface {
 	Provider(provider domain.StorageProvider) (stow.Location, error)
 	Bucket(provider domain.StorageProvider, bucket string) (stow.Container, error)
 	BucketByFile(file domain.File) (stow.Container, error)
-	Config() (domain.StorageProvider, string, error)
+	Config() domain.StorageConfig
 }
 
 // Service represents the implementation of
@@ -90,25 +88,19 @@ func (s *Service) BucketByFile(file domain.File) (stow.Container, error) {
 	return c, nil
 }
 
-// Config returns a domain.StorageProvider, a bucket or an
-// error if there was a problem obtaining the currently
-// set storage providers from the options table.
-func (s *Service) Config() (domain.StorageProvider, string, error) {
-	// TODO - cache here?
-	p, err := s.Options.Find("storage_provider")
-	if err != nil {
-		return "", "", err
+// Config returns a domain.StorageConfig, if there was no
+// provider set, domain.StorageLocal will be returned
+// as a provider
+func (s *Service) Config() domain.StorageConfig {
+	opts := s.Options.Struct()
+	if opts.StorageProvider == "" {
+		opts.StorageProvider = domain.StorageLocal
 	}
-
-	bucket, err := s.Options.Find("storage_bucket")
-	if err != nil {
-		return "", "", err
+	return domain.StorageConfig{
+		Provider:     opts.StorageProvider,
+		Bucket:       opts.StorageBucket,
+		UploadRemote: opts.StorageUploadRemote,
+		LocalBackup:  opts.StorageLocalBackup,
+		RemoteBackup: opts.StorageRemoteBackup,
 	}
-
-	provider := domain.StorageProvider(strings.ReplaceAll(cast.ToString(p), "\"", ""))
-	if provider == "" {
-		provider = domain.StorageLocal
-	}
-
-	return provider, strings.ReplaceAll(cast.ToString(bucket), "\"", ""), nil
 }

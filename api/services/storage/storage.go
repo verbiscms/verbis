@@ -16,6 +16,7 @@ import (
 	"github.com/verbiscms/verbis/api/store/files"
 	"github.com/verbiscms/verbis/api/store/options"
 	"os"
+	"io"
 )
 
 // Provider describes the main storage system for Verbis.
@@ -27,16 +28,25 @@ type Provider interface {
 	// information about the state of the storage.
 	// Which includes active provider and bucket,
 	// and environment state for each provider.
-	//
-	// Returns errors.INVALID if the options lookup failed.
-	Info(ctx context.Context) (Configuration, error)
-	// Save changes the current storage provider and bucket.
+	Info(ctx context.Context) Configuration
+	// Connect changes the current storage provider and bucket.
 	// It will be validated before the options table is
 	// updated.
 	//
 	// Returns errors.INVALID if validation failed.
 	// Returns errors.INTERNAL if there was a problem updating the options table.
-	Save(info domain.StorageChange) error
+	Connect(info domain.StorageConfig) error
+	// Disconnect changes the current storage provider to
+	// the local file system.
+	//
+	// Returns errors.INVALID if the provider is already local
+	// Returns errors.INTERNAL if there was a problem updating the options table.
+	Disconnect() error
+	// Download retrieves the entire storage library from the
+	// container as a zip file.
+	//
+	// Returns an error if the files could not be retrieved.
+	Download(w io.Writer) error
 	Migrator
 	Container
 	Bucket
@@ -112,7 +122,7 @@ type Migrator interface {
 	// from and to providers are the same.
 	//
 	// Returns errors.NOTFOUND if there were no files found with the from provider.
-	Migrate(ctx context.Context, from, to domain.StorageChange, delete bool) (int, error)
+	Migrate(ctx context.Context, server bool, delete bool) (int, error)
 }
 
 // Storage represents the implementation of a Verbis

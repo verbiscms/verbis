@@ -61,31 +61,17 @@ func (_m *Service) BucketByFile(file domain.File) (stow.Container, error) {
 }
 
 // Config provides a mock function with given fields:
-func (_m *Service) Config() (domain.StorageProvider, string, error) {
+func (_m *Service) Config() domain.StorageConfig {
 	ret := _m.Called()
 
-	var r0 domain.StorageProvider
-	if rf, ok := ret.Get(0).(func() domain.StorageProvider); ok {
+	var r0 domain.StorageConfig
+	if rf, ok := ret.Get(0).(func() domain.StorageConfig); ok {
 		r0 = rf()
 	} else {
-		r0 = ret.Get(0).(domain.StorageProvider)
+		r0 = ret.Get(0).(domain.StorageConfig)
 	}
 
-	var r1 string
-	if rf, ok := ret.Get(1).(func() string); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Get(1).(string)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func() error); ok {
-		r2 = rf()
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
+	return r0
 }
 
 // Provider provides a mock function with given fields: provider

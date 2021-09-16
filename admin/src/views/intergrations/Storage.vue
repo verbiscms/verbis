@@ -14,195 +14,263 @@
 					</header>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
-			<!-- Spinner -->
-			<div v-if="doingAxios" class="media-spinner spinner-container">
-				<div class="spinner spinner-large spinner-grey"></div>
-			</div>
-			<div v-else class="row">
-				<!-- =====================
-					Progress
-					===================== -->
-				<div class="col-12" v-if="config['is_migrating']">
-					<Progress :percent="config['migration']['progress']">
-						<slot>
-							<div class="storage-progress">
-								<h4>Migration in progress</h4>
-								<p>Processing {{ config['migration']['files_processed'] }}/{{ config['migration']['total'] }}</p>
-							</div>
-						</slot>
-					</Progress>
-				</div>
+			<div class="row" v-loading="doingAxios || saving">
 				<!-- =====================
 					Details
 					===================== -->
-				<div class="col-12 col-desk-5">
-					<!-- Configuration -->
+				<div class="col-12 col-desk-6">
+					<!-- =====================
+						Info
+						===================== -->
 					<div class="storage-config">
 						<h2 class="storage-title">Configuration:</h2>
-						<p>You are able to change storage providers and bucket's below. Each file is stored with it's own provider and bucket information.</p>
-						<!-- Provider Info -->
-						<div class="storage-config-cont">
-							<div>
-								<h4>Active Provider</h4>
-								<p>{{ config['active_provider'] }}</p>
+						<!-- Connected -->
+						<div v-if="config.connected">
+							<p>You are able to change storage providers and bucket's below. Each file is stored with it's own provider and bucket information.</p>
+							<!-- Active Provider -->
+							<el-row class="storage-config-item">
+								<el-col :span="8">
+									<el-link @click="showProviderModal = true">Change Provider</el-link>
+								</el-col>
+								<el-col :span="16">
+									<h4>Active Provider</h4>
+									<el-tag type="success" effect="plain" size="small">{{ info['provider'] }}</el-tag>
+								</el-col>
+							</el-row><!-- /Active Provider -->
+							<!-- Active Bucket -->
+							<el-row class="storage-config-item">
+								<el-col :span="8">
+									<el-link @click="showBucketModal = true">Change Bucket</el-link>
+								</el-col>
+								<el-col :span="16">
+									<h4>Active Bucket</h4>
+									<el-tag type="success" effect="plain" size="small">{{ info['bucket'] }}</el-tag>
+								</el-col>
+							</el-row><!-- /Active Bucket -->
+							<!-- Active Bucket -->
+							<el-row class="storage-config-item" align="center">
+								<el-col :span="8">
+									<el-button :loading="disconnecting" @click="disconnect">Disconnect</el-button>
+								</el-col>
+								<el-col :span="16">
+									<h4>Disconnect</h4>
+									<p>Removes the remote storage provider and defaults to the local file system.</p>
+								</el-col>
+							</el-row><!-- /Active Bucket -->
+						</div><!-- /Connected -->
+						<!-- Disconnected -->
+						<el-empty v-else>
+							<h4>Storage disconnected</h4>
+							<p>Click the button below to connect to a storage provider.</p>
+							<el-button type="primary" @click="showProviderModal = true">Connect</el-button>
+						</el-empty><!-- /Disconnected -->
+					</div><!-- /Info -->
+					<div v-if="config.connected">
+						<!-- =====================
+							Migration
+							===================== -->
+						<el-divider></el-divider>
+						<div class="storage-config">
+							<!-- Heading -->
+							<div class="storage-config-item">
+								<h2 class="storage-title">Migrate:</h2>
+							</div><!-- /Heading -->
+							<!-- Migrate To Server -->
+							<el-row class="storage-config-item">
+								<el-col :span="8">
+									<el-button @click="handleMigrateModal(true)" plain>Migrate to Server</el-button>
+								</el-col>
+								<el-col :span="16">
+									<h4>Migrate to Server</h4>
+									<p>Migrate all of the Verbis library to the remote provider, this will upload all files stored in the library. The provider must be connected before migrating.</p>
+								</el-col>
+							</el-row><!-- Migrate To Server -->
+							<!-- Migrate To Local -->
+							<el-row class="storage-config-item">
+								<el-col :span="8">
+									<el-button @click="handleMigrateModal(false)" plain>Migrate to Local</el-button>
+								</el-col>
+								<el-col :span="16">
+									<h4>Migrate to Local</h4>
+									<p>Migrate all of the Verbis library to the local file system, this will download all files stored in the library. The provider must be connected before migrating.</p>
+								</el-col>
+							</el-row><!-- Migrate To Server -->
+							<!-- Progress -->
+							<div v-if="config['is_migrating'] && config['migration']" class="storage-migration">
+								<h4>Migration in progress</h4>
+								<el-progress :text-inside="true" :stroke-width="20" :percentage="config.migration.progress"></el-progress>
+								<small>Processing {{ config['migration']['files_processed'] }}/{{ config['migration']['total'] }} files</small>
 							</div>
-							<span class="link" @click="showProviderModal = true">Change Provider</span>
-						</div><!-- /Provider Info -->
-						<!-- Bucket Info -->
-						<div class="storage-config-cont"  v-if="config['active_provider'] !== 'local'">
-							<div>
-								<h4>Active Bucket</h4>
-								<p>{{ config['active_bucket'] }}</p>
-							</div>
-							<span class="link" @click="showBucketModal = true">Change Bucket</span>
-						</div><!-- /Bucket Info -->
-					</div><!-- /Configuration -->
-					<!-- Migration -->
-					<div class="storage-config">
-						<h2 class="storage-title">Migrate:</h2>
-						<p>You can migrate all of the Verbis file library to a remote cloud provider or the local file system with the buttons below. The provider must be connected before migrating.</p>
-						<div class="storage-config-btn-cont">
-							<button class="btn" @click="handleMigrateModal(true)">Migrate to Server</button>
-							<button class="btn" @click="handleMigrateModal(false)">Migrate to Local</button>
-						</div>
-					</div><!-- /Migration -->
+						</div><!-- /Migration -->
+						<!-- =====================
+							Options
+							===================== -->
+						<el-divider></el-divider>
+						<div class="storage-config">
+							<!-- Heading -->
+							<div class="storage-config-item">
+								<h2 class="storage-title">Options:</h2>
+							</div><!-- /Heading -->
+							<!-- Upload -->
+							<el-row class="storage-config-item">
+								<el-col :span="8">
+									<el-switch v-model="info.upload_remote" @change="saveInfo"></el-switch>
+								</el-col>
+								<el-col :span="16">
+									<h4>Upload and Serve from Provider</h4>
+									<p>Files will automatically be uploaded to and served from the remote provider. If it is disabled, local file storage will be used for storing and serving.</p>
+								</el-col>
+							</el-row><!-- Upload -->
+							<!-- Keep Local Backup -->
+							<el-row class="storage-config-item">
+								<el-col :span="8">
+									<el-switch v-model="info.local_backup" @change="saveInfo"></el-switch>
+								</el-col>
+								<el-col :span="16">
+									<h4>Local backup</h4>
+									<p>Keeps a local backup of a file when it's uploaded if a remote provider is connected.</p>
+								</el-col>
+							</el-row><!-- /Keep Local Backup -->
+							<!-- Keep Server Backup -->
+							<el-row class="storage-config-item">
+								<el-col :span="8">
+									<el-switch v-model="info.remote_backup" @change="saveInfo"></el-switch>
+								</el-col>
+								<el-col :span="16">
+									<h4>Remote backup</h4>
+									<p>Keeps a remote backup of a file when it's uploaded if a remote provider is connected.</p>
+								</el-col>
+							</el-row><!-- /Keep Local Backup -->
+							<!-- Download -->
+							<el-row class="storage-config-item">
+								<el-col :span="8">
+									<el-button @click="download" :loading="downloading">Download</el-button>
+								</el-col>
+								<el-col :span="16">
+									<h4>Download Library</h4>
+									<p>By clicking download you are able to download the entire media library to your local machine. This will not include any items that are not stored in Verbis.</p>
+									<el-alert v-if="downloading" title="Downloading, do not refresh the page" type="warning" show-icon></el-alert>
+								</el-col>
+							</el-row><!-- /Download -->
+						</div><!-- /Options -->
+					</div>
 				</div>
 				<!-- =====================
 					Providers
 					===================== -->
-				<div class="col-12 col-desk-6 offset-desk-1">
+				<div class="col-12 col-desk-5 offset-desk-1">
 					<h2>Providers:</h2>
-					<div class="card card-small-box-shadow card-expand">
-						<!-- Local -->
-						<Collapse v-for="(provider, key) in filteredProviders()" :key="key" :show="false" class="collapse-border-bottom">
-							<template v-slot:header>
-								<div class="card-header">
-									<div class="storage-cont">
-										<figure class="storage-image">
-											<img :src="require('@/assets/images/' + getLogo(key))">
-										</figure>
-										<h4>{{ provider['name'] }}</h4>
-									</div>
-									<div v-if="provider['connected']">
-										<div class="badge badge-green">Connected</div>
-									</div>
-									<div v-else class="card-controls">
-										<i class="feather feather-chevron-down"></i>
-									</div>
-								</div><!-- /Card Header -->
-							</template>
-							<template v-slot:body v-if="!provider['connected']">
-								<div class="card-body">
-									<div v-if="!provider['environment_set']">
-										<p>In order to use {{ provider.name }} as a storage provider please add the following keys to the <code>.env</code> file or use <code>export VARIABLE=value</code> and proceed to restart Verbis.</p>
-										<div v-for="(envKey, index) in provider['environment_keys']" :key="index">
-											<code>{{ envKey }}</code>
-										</div>
-									</div>
-									<div v-if="provider['error'] && provider['environment_set']">
-										<p>There is an error connecting to {{ provider['name'] }}</p>
-										<p class="storage-error">{{ provider['error'] }}</p>
-									</div>
-								</div><!-- /Card Body -->
-							</template>
-						</Collapse><!-- /Title & description -->
-					</div><!-- /Card -->
+					<el-collapse v-model="activeProviders">
+						<el-collapse-item class="storage-provider" v-for="(provider, key) in config.providers" :key="key" :name="provider.name">
+							<!-- Header -->
+							<template #title>
+								<el-image class="storage-provider-image" :src="require('@/assets/images/' + getLogo(key))" fit="contain"></el-image>
+								<h4>{{ provider['name'] }}</h4>
+							</template><!-- /Header -->
+							<!-- Body -->
+							<div v-if="!provider['environment_set']">
+								<p>In order to use {{ provider.name }} as a storage provider please add the following keys to the <code>.env</code> file or use <code>export VARIABLE=value</code> and proceed to restart Verbis.</p>
+								<div v-for="(envKey, index) in provider['environment_keys']" :key="index">
+									<code>{{ envKey }}</code>
+								</div>
+							</div>
+							<div v-if="provider['error'] && provider['environment_set']">
+								<p>There is an error connecting to {{ provider['name'] }}</p>
+								<p class="storage-error">{{ provider['error'] }}</p>
+							</div>
+							<div v-if="provider.connected">
+								<el-tag	type="success">Connected</el-tag>
+							</div>
+						</el-collapse-item><!-- /Body -->
+					</el-collapse>
 				</div><!-- /Col -->
 			</div><!-- /Row -->
 		</div><!-- /Container -->
 		<!-- =====================
-			Migrate Modal
-			===================== -->
-		<Modal :show.sync="showMigrateModal">
-			<template slot="button">
-				<button class="btn" @click="doMigrate()">Migrate</button>
-			</template>
-			<template slot="text">
-				<div class="text-cont">
-					<h2 v-if="this.migrate['isRemote']">Migrate to Remote Provider</h2>
-					<h2 v-else>Migrate to Local Storage</h2>
-					<p class="t-left">Select a remote provider and bucket below to migrate too.</p>
-				</div>
-				<!-- Provider -->
-				<FormGroup label="Provider*" :error="errors['migrate_modal_provider']">
-					<div class="form-select-cont form-input">
-						<select class="form-select" id="user-role" v-model="migrate['provider']" @change="changeMigrateModal()">
-							<option value="" disabled selected>Select a Provider</option>
-							<option v-for="(provider, providerIndex) in filteredProviders()" :value="providerIndex" :key="providerIndex">{{ provider['name'] }}</option>
-						</select>
-					</div>
-				</FormGroup><!-- /Provider -->
-				<!-- Bucket -->
-				<FormGroup v-if="migrate['validProvider']" label="Bucket*" :error="errors['migrate_modal_bucket']">
-					<div class="form-select-cont form-input">
-						<select class="form-select" v-model="migrate['bucket']">
-							<option value="" disabled selected>Select a Bucket</option>
-							<option v-for="(bucket, bucketIndex) in buckets" :value="bucket['id']" :key="bucketIndex">{{ bucket['name'] }}</option>
-						</select>
-					</div>
-				</FormGroup><!-- /Bucket -->
-				<!-- Delete -->
-				<div class="migrate-delete">
-					<h6 class="margin">Delete original files?</h6>
-					<div class="toggle">
-						<input type="checkbox" class="toggle-switch" id="migration-delete" v-model="migrate['delete']" :true-value="true" :false-value="false" />
-						<label for="migration-delete"></label>
-					</div>
-				</div><!-- /Delete -->
-			</template>
-		</Modal>
-		<!-- =====================
 			Provider Modal
 			===================== -->
-		<Modal :show.sync="showProviderModal">
-			<template slot="button">
-				<button class="btn" @click="changeProvider()">Change Provider</button>
+		<el-dialog :visible.sync="showProviderModal" width="30%">
+			<!-- Header -->
+			<template #title>
+				<h2 class="mb-0">Provider</h2>
+				<p>Select a provider below to change the default storage offloading for Verbis.</p>
 			</template>
-			<template slot="text">
-				<div class="text-cont">
-					<h2>Provider</h2>
-					<p class="t-left">Select a provider below to change the default storage offloading for Verbis.</p>
-				</div>
+			<!-- Form -->
+			<el-form ref="provider-form" label-width="70px" label-position="left">
 				<!-- Provider -->
-				<FormGroup label="Provider*" :error="errors['provider_modal']">
-					<div class="form-select-cont form-input">
-						<select class="form-select" v-model="info['provider']" @change="errors = []">
-							<option value="" disabled selected>Select a Provider</option>
-							<option v-for="(provider, providerIndex) in config['providers']" :value="providerIndex" :key="providerIndex">{{ provider['name'] }}</option>
-						</select>
-					</div>
-				</FormGroup><!-- /Provider -->
+				<el-form-item label="Provider">
+					<el-select v-model="info.provider" placeholder="Select a provider" style="width: 100%;">
+						<el-option v-for="(provider, index) in config['providers']" :key="index" :label="provider.name" :value="index" :disabled="!provider.connected"></el-option>
+					</el-select>
+				</el-form-item>
+			</el-form>
+			<!-- Footer -->
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="showProviderModal = false">Cancel</el-button>
+					<el-button type="primary" @click="changeProvider">Change Provider</el-button>
+				</span>
 			</template>
-		</Modal>
+		</el-dialog>
 		<!-- =====================
 			Bucket Modal
 			===================== -->
-		<Modal :show.sync="showBucketModal">
-			<template slot="button">
-				<button class="btn" @click="saveInfo()">Change Bucket</button>
+		<el-dialog :visible.sync="showBucketModal" width="30%">
+			<!-- Header -->
+			<template #title>
+				<h2 class="mb-0">Bucket</h2>
+				<p>Select a bucket below to change the default storage offloading for Verbis.</p>
 			</template>
-			<template slot="text">
-				<div class="text-cont">
-					<h2>Bucket</h2>
-					<p class="t-left">Select a provider below to change the default storage offloading for Verbis.</p>
-				</div>
-				<!-- Select Bucket -->
-				<FormGroup label="Bucket*" :error="errors['bucket_modal']">
-					<div class="form-select-cont form-input">
-						<select class="form-select" v-model="info['bucket']">
-							<option value="" disabled selected>Select a Bucket</option>
-							<option v-for="(bucket, bucketIndex) in buckets" :value="bucket['id']" :key="bucketIndex">{{ bucket['name'] }}</option>
-						</select>
-					</div>
-				</FormGroup><!-- /Select Bucket -->
-				<FormGroup class="bucket" label="Create Bucket" :error="errors['create_bucket']">
-					<div class="bucket-cont">
-						<input class="form-input form-input-white" type="text" v-model="bucket['name']">
-						<button class="btn" @click="createBucket()" :class="{ 'btn-loading' : bucket['loading'] }">Create</button>
-					</div>
-				</FormGroup>
+			<!-- Form -->
+			<el-form ref="form" label-width="120px" label-position="left">
+				<!-- Bucket -->
+				<el-form-item label="Bucket">
+					<el-select v-model="info.bucket" placeholder="Select a bucket" no-match-text="No buckets found" style="width: 100%;">
+						<el-option v-for="(bucket, index) in buckets" :key="index" :label="bucket.name" :value="bucket.id"></el-option>
+					</el-select>
+				</el-form-item>
+				<!-- Create Bucket -->
+<!--				<el-form-item label="Create Bucket">-->
+<!--					&lt;!&ndash; TODO - Update to spacer Vue 3 &ndash;&gt;-->
+<!--					<div class="d-flex">-->
+<!--						<el-input v-model="bucket.name"></el-input>-->
+<!--						<el-button class="ml-1" @click="createBucket()" :loading="bucket.loading">Create</el-button>-->
+<!--					</div>-->
+<!--				</el-form-item>-->
+			</el-form>
+			<!-- Footer -->
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="showBucketModal = false">Cancel</el-button>
+					<el-button type="primary" @click="saveInfo()">Change Bucket</el-button>
+				</span>
 			</template>
-		</Modal>
+		</el-dialog>
+		<!-- =====================
+			Migrate Modal
+			===================== -->
+		<el-dialog :visible.sync="showMigrateModal" width="30%">
+			<!-- Header -->
+			<template #title>
+				<h2 v-if="migrate['isRemote']" class="mb-0">Migrate to {{ config.providers[info.provider].name }}</h2>
+				<h2 v-else class="mb-0">Migrate to Local Storage</h2>
+				<p class="t-left">Select a remote provider and bucket below to migrate too.</p>
+			</template>
+			<!-- Form -->
+			<el-form ref="migrate-form" :v-model="migrate" label-width="140px" label-position="left">
+				<!-- Delete Files -->
+				<el-form-item label="Delete originals?">
+					<el-switch v-model="migrate['delete']"></el-switch>
+				</el-form-item>
+			</el-form>
+			<!-- Footer -->
+			<template #footer>
+				<span class="dialog-footer">
+					<el-button @click="showMigrateModal = false">Cancel</el-button>
+					<el-button type="primary" @click="doMigrate()">Migrate</el-button>
+				</span>
+			</template>
+		</el-dialog>
 	</section>
 </template>
 
@@ -212,10 +280,6 @@
 <script>
 
 import Breadcrumbs from "../../components/misc/Breadcrumbs";
-import Collapse from "@/components/misc/Collapse";
-import FormGroup from "@/components/forms/FormGroup";
-import Modal from "@/components/modals/General";
-import Progress from "../../components/misc/Progress";
 
 const logos = {
 	google: "google-storage.png",
@@ -228,10 +292,6 @@ export default {
 	title: "Storage",
 	components: {
 		Breadcrumbs,
-		FormGroup,
-		Collapse,
-		Modal,
-		Progress,
 	},
 	data: () => ({
 		doingAxios: true,
@@ -241,37 +301,31 @@ export default {
 		showMigrateModal: false,
 		showBucketModal: false,
 		providerBtnLoading: false,
-		info: {
-			provider: "",
-			bucket: "",
-		},
+		info: {},
 		buckets: [],
-		errors: [],
+		activeProviders: [],
 		migrate: {
-			provider: "",
-			bucket: "",
 			delete: false,
-			validProvider: false,
 			isRemote: false,
 		},
 		bucket: {
 			name: "",
 			loading: false,
-		}
+		},
+		saving: false,
+		disconnecting: false,
+		backup: false,
+		downloading: false,
 	}),
 	mounted() {
 		this.getConfig();
-		//setInterval(this.getConfig, 3000);
 	},
 	watch: {
-		showProviderModal: function () {
-			this.errors = [];
-		},
 		showMigrateModal: function() {
 			this.migrate.provider = "";
 			this.migrate.bucket = "";
 			this.migrate.validProvider = false;
-		}
+		},
 	},
 	methods: {
 		/*
@@ -283,24 +337,23 @@ export default {
 			this.axios.get("/storage/config")
 				.then(res => {
 					this.config = res.data.data;
-					// this.info = {
-					// 	"provider": this.config['active_provider'],
-					// 	"bucket": this.config['active_bucket']
-					// };
 					this.doingAxios = false;
+					this.info = this.config.info;
+					this.listBuckets(this.info['provider']).then(res => this.buckets = res);
+
+
+					// this.config.is_migrating = true;
+					// this.config.migration = {
+					// 	total: 400,
+					// 	progress: 10,
+					// 	succeeded: 10,
+					// 	failed: 10,
+					// 	files_processed: 10,
+					// }
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
 				})
-		},
-		/*
-		 * filteredProviders()
-		 * Returns providers without local.
-		 */
-		filteredProviders() {
-			const providers =  Object.assign({}, this.config['providers']);
-			delete providers["local"];
-			return providers;
 		},
 		/*
 		 * changeProvider()
@@ -317,12 +370,6 @@ export default {
 				return;
 			}
 
-			const err = this.getProviderError(provider)
-			if (err) {
-				this.$set(this.errors, 'provider_modal', err);
-				return;
-			}
-
 			this.showProviderModal = false;
 
 			await this.listBuckets(this.info['provider']).then(res => this.buckets = res);
@@ -336,7 +383,7 @@ export default {
 		 * Sets the buckets with the given provider.
 		 */
 		listBuckets(provider) {
-			return this.axios.get("/storage/bucket/" + provider).then(res => this.buckets = res.data.data)
+			return this.axios.get("/storage/bucket/" + provider).then(res => this.buckets = res.data.data);
 		},
 		/*
 		 * changeMigrateModal()
@@ -344,16 +391,7 @@ export default {
 		 * changed in the migration modal.
 		 */
 		async changeMigrateModal() {
-			this.migrate['validProvider'] = false;
-			this.$delete(this.errors, 'migrate_modal_provider');
-
-			const err = this.getProviderError(this.migrate['provider'])
-			if (err) {
-				this.$set(this.errors, 'migrate_modal_provider', err);
-				return;
-			}
-
-			this.migrate['validProvider'] = true;
+			this.buckets = [];
 			await this.listBuckets(this.migrate['provider']);
 		},
 		/*
@@ -366,51 +404,23 @@ export default {
 			this.showMigrateModal = true;
 		},
 		/*
-		 * getProviderError()
-		 * Determines if the provider is connected and
-		 * has an error.
-		 */
-		getProviderError(provider) {
-			const cfg = this.config['providers'][provider];
-			if (cfg['error']) {
-				return cfg['error'];
-			}
-			return false;
-		},
-		/*
 		 * doMigrate()
 		 * Posts to the backend and runs the migration.
 		 */
 		doMigrate() {
-			let migration =  {
-				from: {
-					provider: this.migrate['provider'],
-					bucket: this.migrate['bucket'],
-				},
-				to: {
-					provider: "local"
-				},
-			};
-			if (this.migrate['isRemote']) {
-				migration = {
-					from: {
-						provider: "local"
-					},
-					to: {
-						provider: this.migrate['provider'],
-						bucket: this.migrate['bucket'],
-					},
-				}
+			let migration = {
+				to_server: this.migrate['isRemote'],
+				delete: this.migrate['delete'],
 			}
-			migration['delete'] = this.migrate['delete'];
 			this.axios.post("/storage/migrate", migration)
 				.then(res => {
-					this.$noty.success(res.data.message);
+					this.$message({message: res.data.message, type: "success"});
 					this.showMigrateModal = false;
 				})
 				.catch(err => {
 					if (err.response.status === 400) {
-						this.$noty.error(err.response.data.message);
+						this.showMigrateModal = false;
+						this.$message.error(err.response.data.message);
 						return;
 					}
 					this.helpers.handleResponse(err);
@@ -429,7 +439,6 @@ export default {
 
 			// Validation check
 			if (this.bucket['name'] === "") {
-				this.$set(this.errors, 'create_bucket', "Enter a bucket name");
 				setTimeout(() => {
 					this.$set(this.bucket, "loading", false)
 				}, this.timeoutDelay);
@@ -448,7 +457,7 @@ export default {
 			this.axios.post("/storage/bucket", postData)
 				.then(res => {
 					this.buckets.push(res.data.data);
-					this.$noty.success("Successfully created bucket: " + postData.bucket)
+					this.$message({message: "Successfully created bucket: " + postData.bucket, type: "success"})
 				})
 				.catch(err => {
 					if (err.response.status === 400) {
@@ -468,16 +477,62 @@ export default {
 		 * Changes the storage provider (info).
 		 */
 		saveInfo() {
+			this.saving = true;
 			this.axios.post("/storage", this.info)
 				.then(res => {
 					this.showProviderModal = false;
 					this.showBucketModal = false;
-					this.$noty.success(res.data.message);
+					this.$message({message: res.data.message, type: "success"});
 					this.getConfig();
 				})
 				.catch(err => {
 					this.helpers.handleResponse(err);
 				})
+				.finally(() => {
+					this.saving = false;
+				})
+		},
+		// THis needs to be in API.
+		disconnect() {
+			this.disconnecting = true;
+			this.axios.post("/storage/disconnect")
+				.catch(err => {
+					this.helpers.handleResponse(err);
+				})
+				.finally(() => {
+					this.disconnecting = false;
+					this.getConfig();
+				})
+		},
+		/**
+		 * Download's the entire media library and creates
+		 * a new blob to download.
+		 */
+		download() {
+			this.downloading = true;
+			this.axios.get("/storage/download",
+				{responseType: 'blob'}
+			).then(res => {
+				console.log(res);
+				let fileName = res.headers["x-filename"],
+					fileUrl = window.URL.createObjectURL(new Blob([res.data], {type: "application/zip"})),
+					fileLink = document.createElement("a");
+				fileLink.href = fileUrl;
+
+				if (!fileName) {
+					fileName = "verbis-library.zip"
+				}
+
+				fileLink.setAttribute("download", fileName);
+				document.body.appendChild(fileLink);
+				fileLink.click();
+			})
+			.catch(err => {
+				this.helpers.handleResponse(err);
+			})
+			.finally(() => {
+				this.downloading = false;
+			})
 		},
 		/*
 		 * getLogo()
@@ -496,99 +551,83 @@ export default {
 	===================== -->
 <style scoped lang="scss">
 
-	// Storage
+// Props
+// =========================================================================
+
+::v-deep {
+
+	.el-empty__description {
+		display: none !important;
+	}
+}
+
+// Storage
+// =========================================================================
+
+.storage {
+
+	// Props
 	// =========================================================================
 
-	.storage {
+	&-title {
+		margin-bottom: 4px;
+	}
 
-		&-config-cont {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			margin-bottom: 10px;
+	// Config
+	// =========================================================================
 
-			.link {
-				text-decoration: underline;
-				font-size: 14px;
-				cursor: pointer;
-				color: $secondary;
+	&-config {
+		margin-bottom: 2rem;
 
-				&:hover {
-					color: $primary;
-				}
-			}
-		}
+		&-item {
+			margin-bottom: 1.6rem;
 
-		&-config {
-			margin-bottom: 2rem;
-
-			&-btn-cont {
-				.btn:first-child {
-					margin-right: 10px;
-				}
-			}
-		}
-
-		&-title {
-			margin-bottom: 4px;
-		}
-
-		&-progress {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			margin-bottom: 2rem;
-
-			p {
+			p:last-child {
 				margin-bottom: 0;
 			}
 		}
+	}
 
-		&-error {
-			color: $orange;
-			font-weight: 500;
-			margin-bottom: 0;
-		}
+	// Provider
+	// =========================================================================
+
+	&-provider {
 
 		&-image {
+			width: 50px;
 			height: 50px;
-			width: 60px;
-			margin-right: 1rem;
+			margin-right: 10px;
+		}
 
-			img {
-				width: 100%;
-				height: 100%;
-				object-fit: contain;
+		::v-deep {
+
+			.el-collapse-item__header {
+				padding: 1rem;
+				height: 70px;
+			}
+
+			.el-collapse-item__content {
+				padding: 0 1rem 1rem 1rem;
 			}
 		}
 	}
 
-	// Bucket
+	// Migration
 	// =========================================================================
 
-	.bucket {
+	&-migration {
+		margin-top: 1.7rem;
 
-		&-cont {
-			display: flex;
-			align-items: center;
+		h4 {
+			margin-bottom: 8px;
 		}
 
-		.btn {
-			margin-left: 10px;
-			height: 50px;
-		}
-	}
-
-	// Migrate
-	// =========================================================================
-
-	.migrate {
-
-		&-delete {
-			display: flex;
-			justify-content: space-between;
+		small {
+			margin-top: 8px;
+			display: block;
+			text-align: right;
 		}
 	}
-
+}
 
 </style>

@@ -47,6 +47,7 @@ admin/dist/*
 !admin/dist/.gitkeep
 verbisexec
 verbisexec-linux
+verbisexec-arm
 verbisexec.old
 *blob.go
 CREDENTIALS.md

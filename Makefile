@@ -7,7 +7,11 @@ build:
 
 build-linux:
 	env GOOS=linux GOARCH=amd64 go build -o verbisexec-linux -ldflags="-X 'github.com/verbiscms/verbis/api.ProductionString=true' -X 'github.com/verbiscms/verbis/api/version.Version=$(VER)'"
-.PHONY: build
+.PHONY: build-linux
+
+build-arm:
+	env GOOS=darwin GOARCH=arm64 go build -o verbisexec-arm -ldflags="-X 'github.com/verbiscms/verbis/api.ProductionString=true' -X 'github.com/verbiscms/verbis/api/version.Version=$(VER)'"
+.PHONY: build-arm
 
 # Set Verbis up when cloned.
 setup:

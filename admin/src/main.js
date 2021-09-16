@@ -24,6 +24,7 @@ import VueNestable from 'vue-nestable'
 import { PrismEditor } from 'vue-prism-editor';
 import {globalMixin} from "@/util/global";
 import ElementUI from 'element-ui';
+import locale from 'element-ui/lib/locale/lang/en'
 import 'element-ui/lib/theme-chalk/index.css';
 
 require('./functions.js');
@@ -88,7 +89,7 @@ Vue.use(require('vue-moment'));
 Vue.use(OnLoad)
 
 // Element
-Vue.use(ElementUI);
+Vue.use(ElementUI, { locale });
 
 /**
  * Components

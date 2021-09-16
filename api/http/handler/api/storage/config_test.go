@@ -7,9 +7,7 @@ package storage
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
-	"github.com/verbiscms/verbis/api/errors"
 	mocks "github.com/verbiscms/verbis/api/mocks/services/storage"
-	storage2 "github.com/verbiscms/verbis/api/services/storage"
 	"net/http"
 )
 
@@ -26,14 +24,6 @@ func (t *StorageTestSuite) TestStorage_Config() {
 			"Successfully obtained configuration",
 			func(m *mocks.Provider) {
 				m.On("Info", mock.Anything).Return(storageConfig, nil)
-			},
-		},
-		"Internal Error": {
-			nil,
-			http.StatusInternalServerError,
-			"internal",
-			func(m *mocks.Provider) {
-				m.On("Info", mock.Anything).Return(storage2.Configuration{}, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},
 	}

@@ -5,11 +5,13 @@
 package storage
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/graymeta/stow/azure"
 	_ "github.com/graymeta/stow/google"
 	_ "github.com/graymeta/stow/s3"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/common/paths"
@@ -22,15 +24,15 @@ import (
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 	options "github.com/verbiscms/verbis/api/mocks/store/options"
 	"github.com/verbiscms/verbis/api/store/files"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
 
-// StorageTestSuite defines the helper used for field
+// StorageTestSuite defines the helper used for storage
 // testing.
 type StorageTestSuite struct {
 	suite.Suite
+	LogWriter bytes.Buffer
 }
 
 // TestStorage asserts testing has begun.
@@ -38,9 +40,17 @@ func TestStorage(t *testing.T) {
 	suite.Run(t, new(StorageTestSuite))
 }
 
-// BeforeTest discards
-func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
-	logger.SetOutput(ioutil.Discard)
+// SetupSuite assign the logger to a buffer.
+func (t *StorageTestSuite) SetupSuite() {
+	b := bytes.Buffer{}
+	t.LogWriter = b
+	logger.SetOutput(&t.LogWriter)
+	logger.SetLevel(logrus.TraceLevel)
+}
+
+// Reset the log writer.
+func (t *StorageTestSuite) Reset() {
+	t.LogWriter.Reset()
 }
 
 // Setup the suite with the mock functions.
