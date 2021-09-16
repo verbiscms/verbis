@@ -6,7 +6,6 @@ package storage
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/verbiscms/verbis/api/errors"
 	"github.com/verbiscms/verbis/api/http/handler/api"
 	"net/http"
 )
@@ -14,15 +13,6 @@ import (
 // Config
 //
 // Returns http.StatusOK if the configuration was successfully retrieved.
-// Returns http.StatusInternalServerError if there was an error obtaining the config.
 func (s *Storage) Config(ctx *gin.Context) {
-	const op = "StorageHandler.Config"
-
-	info, err := s.Storage.Info(ctx)
-	if err != nil {
-		api.Respond(ctx, http.StatusInternalServerError, errors.Message(err), err)
-		return
-	}
-
-	api.Respond(ctx, http.StatusOK, "Successfully obtained configuration", info)
+	api.Respond(ctx, http.StatusOK, "Successfully obtained configuration", s.Storage.Info(ctx))
 }

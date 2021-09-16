@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
@@ -39,23 +39,23 @@ type MigrationInfo struct {
 }
 
 // FailedMigrationFile represents an error when migrating.
-// It includes an error.Error as well as a file for
+// It includes an error.Error as well as a downloadFile for
 // debugging.
 type FailedMigrationFile struct {
 	Error *errors.Error `json:"error"`
-	File  domain.File   `json:"file"`
+	File  domain.File   `json:"downloadFile"`
 }
 
 const (
 	// migrateConcurrentAllowance is the amount of files that
 	// are allowed to be migrated concurrently.
-	migrateConcurrentAllowance = 1
+	migrateConcurrentAllowance = 10
 	// migrationKey is the key used in the cache used for
 	// retrieving migration information.
 	migrationKey = "storage_migration"
-	// migrationIsMigrating is the key used in the cache used for
+	// migrationIsMigratingKey is the key used in the cache used for
 	// determining if there is a migration taking place.
-	migrationIsMigrating = "storage_is_migrating"
+	migrationIsMigratingKey = "storage_is_migrating"
 )
 
 var (
@@ -80,41 +80,64 @@ func (m *MigrationInfo) fail(file domain.File, err error) {
 	logger.WithError(err).Error()
 }
 
-// succeed adds a succeeded file to the migration stack as
+// succeed adds a succeeded downloadFile to the migration stack as
 // well as adding one to the files processed.
 func (m *MigrationInfo) succeed(file domain.File) {
 	m.Succeeded++
 	m.FilesProcessed++
 	m.Progress = (m.FilesProcessed * 100) / m.Total
-	logger.Debug("Successfully migrated file: " + file.Name)
+	logger.Debug("Successfully migrated downloadFile: " + file.Name)
 }
 
 // migration is an entity used to help to process file
 // migrations.
 type migration struct {
 	file domain.File
-	from domain.StorageChange
-	to   domain.StorageChange
+	from migrationChange
+	to   migrationChange
 	wg   *sync.WaitGroup
 }
 
+type migrationChange struct {
+	Provider domain.StorageProvider
+	Bucket   string
+}
+
 // Migrate satisfies the Provider interface by accepting a
-// from and to StorageChange to migrate files to the
+// from and to StorageConfig to migrate files to the
 // remote provider or local storage.
-func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageChange, deleteFiles bool) (int, error) {
+func (s *Storage) Migrate(ctx context.Context, toServer, deleteFiles bool) (int, error) {
 	const op = "Storage.Migrate"
 
 	if s.isMigrating(ctx) {
 		return 0, &errors.Error{Code: errors.INVALID, Message: "Error migration is already in progress", Operation: op, Err: ErrAlreadyMigrating}
 	}
 
-	if from.Provider == to.Provider {
-		return 0, &errors.Error{Code: errors.INVALID, Message: "Error providers cannot be the same", Operation: op, Err: fmt.Errorf("providers are the same")}
-	}
+	cfg := s.service.Config()
 
-	err := s.validate(to)
+	err := s.validate(cfg)
 	if err != nil {
 		return 0, &errors.Error{Code: errors.INVALID, Message: "Validation failed", Operation: op, Err: err}
+	}
+
+	var (
+		from = migrationChange{
+			Provider: cfg.Provider,
+			Bucket:   cfg.Bucket,
+		}
+		to = migrationChange{
+			Provider: domain.StorageLocal,
+		}
+	)
+
+	if toServer {
+		from = migrationChange{
+			Provider: domain.StorageLocal,
+		}
+		to = migrationChange{
+			Provider: cfg.Provider,
+			Bucket:   cfg.Bucket,
+		}
 	}
 
 	filters := params.Filters{
@@ -132,7 +155,7 @@ func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageChange, de
 	}
 
 	if total == 0 {
-		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error no files found with provider: " + from.Provider.String(), Operation: op, Err: ErrNoFilesToMigrate}
+		return 0, &errors.Error{Code: errors.NOTFOUND, Message: "Error, no files found to migrate", Operation: op, Err: ErrNoFilesToMigrate}
 	}
 
 	logger.Debug(fmt.Sprintf("Starting storage migration with %d files being processed", total))
@@ -142,43 +165,47 @@ func (s *Storage) Migrate(ctx context.Context, from, to domain.StorageChange, de
 	return total, nil
 }
 
-// isMigrating retrieves the migrationIsMigrating key from the
+// isMigrating retrieves the migrationIsMigratingKey key from the
 // cache and returns true if the app is already migrating
 // files.
 func (s *Storage) isMigrating(ctx context.Context) bool {
-	err := s.cache.Get(ctx, migrationIsMigrating, nil)
-	return err == nil
+	var is bool
+	err := s.cache.Get(ctx, migrationIsMigratingKey, &is)
+	if err != nil {
+		return false
+	}
+	return is
 }
 
 // getMigration returns the current migration information in
 // the background.
-func (s *Storage) getMigration() (*MigrationInfo, error) {
-	const op = "Storage.GetMigration"
+func (s *Storage) getMigration(ctx context.Context) *MigrationInfo {
 	mi := &MigrationInfo{}
-	err := s.cache.Get(context.Background(), migrationKey, mi)
+	err := s.cache.Get(ctx, migrationKey, mi)
 	if err != nil {
-		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error getting migration", Operation: op, Err: err}
+		return nil
 	}
-	return mi, nil
+	return mi
 }
 
 // processMigration ranges over the given files and adds a
 // migration to the migrateTrackChan.
-func (s *Storage) processMigration(ctx context.Context, files domain.Files, from, to domain.StorageChange, deleteFiles bool) {
+func (s *Storage) processMigration(ctx context.Context, files domain.Files, from, to migrationChange, deleteFiles bool) {
 	mi := &MigrationInfo{
 		Total:      len(files),
 		MigratedAt: time.Now(),
 		mtx:        &sync.Mutex{},
 	}
 
-	s.cache.Set(ctx, migrationIsMigrating, true, cache.Options{Expiration: cache.RememberForever})
+	s.cache.Set(ctx, migrationIsMigratingKey, true, cache.Options{Expiration: cache.RememberForever})
 	s.cache.Set(ctx, migrationKey, mi, cache.Options{Expiration: cache.RememberForever})
 
-	var wg sync.WaitGroup
-
-	// migrateTrackChan is the channel used for sending and
-	// processing migrations.
-	var c = make(chan migration, migrateConcurrentAllowance)
+	var (
+		wg sync.WaitGroup
+		// migrateTrackChan is the channel used for sending and
+		// processing migrations.
+		c = make(chan migration, migrateConcurrentAllowance)
+	)
 
 	for _, file := range files {
 		wg.Add(1)
@@ -196,13 +223,13 @@ func (s *Storage) processMigration(ctx context.Context, files domain.Files, from
 	logger.Info(fmt.Sprintf("Storage: %d files migrated successfully", mi.Succeeded))
 	logger.Info(fmt.Sprintf("Storage: %d files encountered an error during migration", mi.Failed))
 
-	s.cache.Delete(context.Background(), migrationIsMigrating)
+	s.cache.Delete(context.Background(), migrationIsMigratingKey)
 	s.cache.Delete(context.Background(), migrationKey)
 }
 
 // migrateBackground processes the migration by finding the
 // original bytes, uploading to the new destination
-// and deleting the original file.
+// and deleting the original downloadFile.
 func (s *Storage) migrateBackground(ctx context.Context, channel chan migration, deleteFiles bool, info *MigrationInfo) {
 	m := <-channel
 
@@ -220,23 +247,30 @@ func (s *Storage) migrateBackground(ctx context.Context, channel chan migration,
 		return
 	}
 
+	reader := bytes.NewReader(buf)
+
 	u := domain.Upload{
 		UUID:       m.file.UUID,
 		Path:       m.file.URL,
-		Size:       m.file.FileSize,
-		Contents:   bytes.NewReader(buf),
+		Size:       reader.Size(),
+		Contents:   reader,
 		Private:    bool(m.file.Private),
 		SourceType: m.file.SourceType,
 	}
 
-	file, err := s.upload(m.to.Provider, m.to.Bucket, u, false)
+	file, err := s.upload(&uploadCfg{
+		Provider:       m.to.Provider,
+		Bucket:         m.to.Bucket,
+		Upload:         u,
+		CreateDatabase: false,
+	})
 	if err != nil {
 		info.fail(m.file, err)
 		return
 	}
 
 	if deleteFiles {
-		err = s.deleteFile(false, m.file.ID)
+		_, err := s.deleteFile(false, m.file.ID)
 		if err != nil {
 			info.fail(m.file, err)
 			return

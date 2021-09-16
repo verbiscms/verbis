@@ -123,8 +123,10 @@ func apiRoutes(d *deps.Deps, s *server.Server) {
 		operator.GET("/forms/:id", h.Forms.Find)
 
 		// Storage
-		operator.POST("/storage", h.Storage.Save)
 		operator.GET("/storage/config", h.Storage.Config)
+		operator.POST("/storage", h.Storage.Connect)
+		operator.POST("/storage/disconnect", h.Storage.Disconnect)
+		operator.GET("/storage/download", h.Storage.Download)
 		operator.POST("/storage/migrate", h.Storage.Migrate)
 		operator.POST("/storage/bucket", h.Storage.CreateBucket)
 		operator.GET("/storage/bucket/:name", h.Storage.ListBuckets)

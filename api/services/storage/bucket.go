@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
@@ -9,19 +9,21 @@ import (
 	vstrings "github.com/verbiscms/verbis/api/common/strings"
 	"github.com/verbiscms/verbis/api/domain"
 	"github.com/verbiscms/verbis/api/errors"
+	"github.com/verbiscms/verbis/api/logger"
 	"io/ioutil"
 	"path"
 	"strings"
+	"sync"
 )
 
 // List satisfies the Bucket interface by accepting an url
-// and retrieving the file and byte contents of the file.
+// and retrieving the downloadFile and byte contents of the downloadFile.
 func (s *Storage) List(meta params.Params) (domain.Files, int, error) {
 	return s.filesRepo.List(meta)
 }
 
 // Find satisfies the Bucket interface by accepting an url
-// and retrieving the file and byte contents of the file.
+// and retrieving the downloadFile and byte contents of the downloadFile.
 func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 	const op = "Storage.Find"
 
@@ -30,30 +32,44 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 		return nil, domain.File{}, err
 	}
 
-	bucket, err := s.service.BucketByFile(file)
+	buf, err := s.getFileBytes(file)
 	if err != nil {
 		return nil, domain.File{}, err
+	}
+
+	return buf, file, nil
+}
+
+// getFileBytes retrieves the downloadFile's bytes with the given
+// input, returns an error if the downloadFile was not found
+// or
+func (s *Storage) getFileBytes(file domain.File) ([]byte, error) {
+	const op = "Storage.GetFileBytes"
+
+	bucket, err := s.service.BucketByFile(file)
+	if err != nil {
+		return nil, err
 	}
 
 	id := file.FullPath(s.paths.Storage)
 
 	item, err := bucket.Item(id)
 	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining file with the ID: " + id, Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.NOTFOUND, Message: "Error obtaining downloadFile with the ID: " + id, Operation: op, Err: err}
 	}
 
 	open, err := item.Open()
 	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error opening file", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error opening downloadFile", Operation: op, Err: err}
 	}
 	defer open.Close()
 
 	buf, err := ioutil.ReadAll(open)
 	if err != nil {
-		return nil, domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error reading file", Operation: op, Err: err}
+		return nil, &errors.Error{Code: errors.INTERNAL, Message: "Error reading downloadFile", Operation: op, Err: err}
 	}
 
-	return buf, file, nil
+	return buf, nil
 }
 
 // Upload satisfies the Bucket interface by accepting a
@@ -62,33 +78,98 @@ func (s *Storage) Find(url string) ([]byte, domain.File, error) {
 func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	const op = "Storage.Upload"
 
+	// Check for any upload errors before processing.
 	err := u.Validate()
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Validation failed", Operation: op, Err: err}
 	}
 
-	provider, bucket, err := s.service.Config()
-	if err != nil {
-		return domain.File{}, err
+	// Obtain the configuration for the upload.
+	info := s.service.Config()
+
+	logger.Debug("Processing upload: " + u.Path)
+
+	if !info.UploadRemote {
+		info.Provider = domain.StorageLocal
+		info.Bucket = ""
 	}
 
-	return s.upload(provider, bucket, u, true)
+	// TODO: Data race detected here with backups!
+	file, err := s.upload(&uploadCfg{
+		Provider:       info.Provider,
+		Bucket:         info.Bucket,
+		Upload:         u,
+		CreateDatabase: true,
+	})
+	if err == nil {
+		logger.Debug("Successfully processed upload: " + u.Path)
+	}
+
+	// Spawn a routine for backing up the storage files.
+	go func() {
+		// If the local backup is enabled and the current settings
+		// are remote, backup the upload to the local provider.
+		if info.LocalBackup && !info.Provider.IsLocal() {
+			s.backup(domain.StorageLocal, "", u)
+		}
+
+		// If the server backup is enabled and the current settings
+		// are local, backup the upload to the remote provider.
+		if info.RemoteBackup && info.Provider.IsLocal() {
+			// Obtain the correct connected provider.
+			cfg := s.service.Config()
+			s.backup(cfg.Provider, cfg.Bucket, u)
+		}
+	}()
+
+	return file, err
 }
 
-func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, createDB bool) (domain.File, error) {
+func (s *Storage) backup(p domain.StorageProvider, b string, u domain.Upload) {
+	_, err := s.upload(&uploadCfg{
+		Provider:       p,
+		Bucket:         b,
+		Upload:         u,
+		CreateDatabase: false,
+	})
+	logger.Debug("Processing backup with storage provider: " + p.String() + " and filepath: " + u.Path)
+	if err != nil {
+		logger.WithError(err).Error()
+	}
+	logger.Debug("Successfully processed backup: " + u.Path)
+}
+
+type uploadCfg struct {
+	Provider       domain.StorageProvider
+	Bucket         string
+	Upload         domain.Upload
+	CreateDatabase bool
+}
+
+// mtx is used for the prevention of data races,
+// when uploading a file.
+var mtx = sync.Mutex{}
+
+func (s *Storage) upload(cfg *uploadCfg) (domain.File, error) {
 	const op = "Storage.Upload"
 
-	cont, err := s.service.Bucket(p, b)
+	mtx.Lock()
+	defer mtx.Unlock()
+
+	cont, err := s.service.Bucket(cfg.Provider, cfg.Bucket)
 	if err != nil {
 		return domain.File{}, err
 	}
 
-	item, err := cont.Put(u.AbsPath(), u.Contents, u.Size, nil)
+	// Seek the downloadFile back to the original bytes.
+	defer cfg.Upload.Contents.Seek(0, 0) // nolint
+
+	item, err := cont.Put(cfg.Upload.AbsPath(), cfg.Upload.Contents, cfg.Upload.Size, nil)
 	if err != nil {
-		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading file to storage provider", Operation: op, Err: err}
+		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading downloadFile to storage provider", Operation: op, Err: err}
 	}
 
-	mime, err := u.Mime()
+	mime, err := cfg.Upload.Mime()
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining mime type", Operation: op, Err: err}
 	}
@@ -102,27 +183,27 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 		region = ""
 	)
 
-	if p.IsLocal() {
+	if cfg.Provider.IsLocal() {
 		id = vstrings.TrimSlashes(strings.ReplaceAll(item.URL().Path, s.paths.Storage, ""))
 		bucket = ""
 		region = ""
 	}
 
 	f := domain.File{
-		UUID:       u.UUID,
-		URL:        "/" + vstrings.TrimSlashes(u.Path),
-		Name:       path.Base(u.Path),
+		UUID:       cfg.Upload.UUID,
+		URL:        "/" + vstrings.TrimSlashes(cfg.Upload.Path),
+		Name:       path.Base(cfg.Upload.Path),
 		BucketID:   id,
 		Mime:       mime,
-		SourceType: u.SourceType,
-		Provider:   p,
+		SourceType: cfg.Upload.SourceType,
+		Provider:   cfg.Provider,
 		Region:     region,
 		Bucket:     bucket,
-		FileSize:   u.Size,
+		FileSize:   cfg.Upload.Size,
 		Private:    false,
 	}
 
-	if !createDB {
+	if !cfg.CreateDatabase {
 		return f, nil
 	}
 
@@ -135,43 +216,72 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 }
 
 // Exists satisfies the Bucket interface by accepting name
-// and determining if a file exists by name.
+// and determining if a downloadFile exists by name.
 func (s *Storage) Exists(name string) bool {
 	return s.filesRepo.Exists(name)
 }
 
 // Delete satisfies the Bucket interface by accepting an ID
-// and deleting a file from the bucket and database.
+// and deleting a downloadFile from the bucket and database.
 func (s *Storage) Delete(id int) error {
-	return s.deleteFile(true, id)
+	file, err := s.deleteFile(true, id)
+	if err != nil {
+		return err
+	}
+	go s.deleteBackups(file)
+	return nil
 }
 
-func (s *Storage) deleteFile(database bool, id int) error {
+func (s *Storage) deleteFile(database bool, id int) (domain.File, error) {
 	const op = "Storage.Delete"
 
 	file, err := s.filesRepo.Find(id)
 	if err != nil {
-		return err
+		return domain.File{}, err
 	}
 
 	bucket, err := s.service.BucketByFile(file)
 	if err != nil {
-		return err
+		return file, err
 	}
 
 	err = bucket.RemoveItem(file.FullPath(s.paths.Storage))
 	if err != nil {
-		return &errors.Error{Code: errors.INVALID, Message: "Error deleting file from storage", Operation: op, Err: err}
+		return file, &errors.Error{Code: errors.INVALID, Message: "Error deleting downloadFile from storage", Operation: op, Err: err}
 	}
 
 	if !database {
-		return nil
+		return file, nil
 	}
 
 	err = s.filesRepo.Delete(file.ID)
 	if err != nil {
-		return err
+		return file, err
 	}
 
-	return nil
+	return file, nil
+}
+
+// deleteBackups deletes possible backup files from
+// the remote or local provider.
+func (s *Storage) deleteBackups(file domain.File) {
+	cfg := s.service.Config()
+
+	if file.IsLocal() {
+		file.Provider = cfg.Provider
+		file.Bucket = cfg.Bucket
+	} else {
+		file.Provider = domain.StorageLocal
+		file.Bucket = ""
+	}
+
+	bucket, err := s.service.BucketByFile(file)
+	if err != nil {
+		return
+	}
+
+	err = bucket.RemoveItem(file.FullPath(s.paths.Storage))
+	if err != nil {
+		return
+	}
 }

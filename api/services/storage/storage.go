@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
@@ -15,6 +15,7 @@ import (
 	"github.com/verbiscms/verbis/api/services/storage/internal"
 	"github.com/verbiscms/verbis/api/store/files"
 	"github.com/verbiscms/verbis/api/store/options"
+	"io"
 )
 
 // Provider describes the main storage system for Verbis.
@@ -26,16 +27,25 @@ type Provider interface {
 	// information about the state of the storage.
 	// Which includes active provider and bucket,
 	// and environment state for each provider.
-	//
-	// Returns errors.INVALID if the options lookup failed.
-	Info(ctx context.Context) (Configuration, error)
-	// Save changes the current storage provider and bucket.
+	Info(ctx context.Context) Configuration
+	// Connect changes the current storage provider and bucket.
 	// It will be validated before the options table is
 	// updated.
 	//
 	// Returns errors.INVALID if validation failed.
 	// Returns errors.INTERNAL if there was a problem updating the options table.
-	Save(info domain.StorageChange) error
+	Connect(info domain.StorageConfig) error
+	// Disconnect changes the current storage provider to
+	// the local downloadFile system.
+	//
+	// Returns errors.INVALID if the provider is already local
+	// Returns errors.INTERNAL if there was a problem updating the options table.
+	Disconnect() error
+	// Download retrieves the entire storage library from the
+	// container as a zip downloadFile.
+	//
+	// Returns an error if the files could not be retrieved.
+	Download(w io.Writer) error
 	Migrator
 	Container
 	Bucket
@@ -64,20 +74,20 @@ type Container interface {
 
 // Bucket describes the methods used for interacting with
 // the Verbis storage system. The client can be remote
-// or work with the local file system dependant on
+// or work with the local downloadFile system dependant on
 // what is set in the options table.
 type Bucket interface {
-	// Find looks up the file with the given URL and retrieves
-	// the appropriate bucket to obtain the file contents.
-	// It returns the byte value of the file as well as
+	// Find looks up the downloadFile with the given URL and retrieves
+	// the appropriate bucket to obtain the downloadFile contents.
+	// It returns the byte value of the downloadFile as well as
 	// the domain.File.
 	//
-	// Returns errors.INTERNAL if the file could not be opened or read.
-	// Returns errors.NOTFOUND if the file could not be retrieved from the bucket.
+	// Returns errors.INTERNAL if the downloadFile could not be opened or read.
+	// Returns errors.NOTFOUND if the downloadFile could not be retrieved from the bucket.
 	Find(url string) ([]byte, domain.File, error)
 	// Upload adds a domain.Upload to the database as well as
 	// the bucket that is currently set in the env. The
-	// file is seeked, the mime type is obtained and it
+	// downloadFile is seeked, the mime type is obtained and it
 	// is inserted into the database and uploaded to
 	// the bucket.
 	//
@@ -86,12 +96,12 @@ type Bucket interface {
 	// could not be obtained.
 	Upload(upload domain.Upload) (domain.File, error)
 	// Delete removes an item from the the bucket. It first retrieves
-	// the file by a lookup from the database, obtains the correct
-	// bucket, then removes the file from the storage provider.
-	// The file data will also be deleted from
+	// the downloadFile by a lookup from the database, obtains the correct
+	// bucket, then removes the downloadFile from the storage provider.
+	// The downloadFile data will also be deleted from
 	// the database.
 	//
-	// Returns errors.INVALID if the file could not be deleted from the bucket.
+	// Returns errors.INVALID if the downloadFile could not be deleted from the bucket.
 	Delete(id int) error
 	// Exists queries the database by the given name and
 	// returns true if there was a match.
@@ -111,7 +121,7 @@ type Migrator interface {
 	// from and to providers are the same.
 	//
 	// Returns errors.NOTFOUND if there were no files found with the from provider.
-	Migrate(ctx context.Context, from, to domain.StorageChange, delete bool) (int, error)
+	Migrate(ctx context.Context, server bool, delete bool) (int, error)
 }
 
 // Storage represents the implementation of a Verbis

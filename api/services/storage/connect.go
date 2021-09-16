@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
@@ -9,11 +9,11 @@ import (
 	"github.com/verbiscms/verbis/api/errors"
 )
 
-// Save satisfies the Provider interface by changing the
+// Connect satisfies the Provider interface by changing the
 // current storage providers by updating the options
 // table.
-func (s *Storage) Save(info domain.StorageChange) error {
-	const op = "Storage.Save"
+func (s *Storage) Connect(info domain.StorageConfig) error {
+	const op = "Storage.Connect"
 
 	err := s.validate(info)
 	if err != nil {
@@ -25,12 +25,13 @@ func (s *Storage) Save(info domain.StorageChange) error {
 		info.Bucket = ""
 	}
 
-	err = s.optionsRepo.Update("storage_provider", info.Provider)
-	if err != nil {
-		return err
-	}
-
-	err = s.optionsRepo.Update("storage_bucket", info.Bucket)
+	err = s.optionsRepo.Insert(domain.OptionsDBMap{
+		"storage_provider":      info.Provider,
+		"storage_bucket":        info.Bucket,
+		"storage_upload_remote": info.UploadRemote,
+		"storage_local_backup":  info.LocalBackup,
+		"storage_remote_backup": info.RemoteBackup,
+	})
 	if err != nil {
 		return err
 	}

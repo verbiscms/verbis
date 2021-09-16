@@ -1,15 +1,17 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/google/uuid"
 	_ "github.com/graymeta/stow/azure"
 	_ "github.com/graymeta/stow/google"
 	_ "github.com/graymeta/stow/s3"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/domain"
@@ -21,15 +23,15 @@ import (
 	repo "github.com/verbiscms/verbis/api/mocks/store/files"
 	options "github.com/verbiscms/verbis/api/mocks/store/options"
 	"github.com/verbiscms/verbis/api/store/files"
-	"io/ioutil"
 	"strings"
 	"testing"
 )
 
-// StorageTestSuite defines the helper used for field
+// StorageTestSuite defines the helper used for storage
 // testing.
 type StorageTestSuite struct {
 	suite.Suite
+	LogWriter bytes.Buffer
 }
 
 // TestStorage asserts testing has begun.
@@ -37,9 +39,17 @@ func TestStorage(t *testing.T) {
 	suite.Run(t, new(StorageTestSuite))
 }
 
-// BeforeTest discards
-func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
-	logger.SetOutput(ioutil.Discard)
+// SetupSuite assign the logger to a buffer.
+func (t *StorageTestSuite) SetupSuite() {
+	b := bytes.Buffer{}
+	t.LogWriter = b
+	logger.SetOutput(&t.LogWriter)
+	logger.SetLevel(logrus.TraceLevel)
+}
+
+// Reset the log writer.
+func (t *StorageTestSuite) Reset() {
+	t.LogWriter.Reset()
 }
 
 // Setup the suite with the mock functions.
@@ -82,9 +92,9 @@ func (t *StorageTestSuite) SetupOptions(mf func(m *mocks.Service, r *repo.Reposi
 }
 
 const (
-	// TestFileURL is the default file url used for
+	// TestFileURL is the default downloadFile url used for
 	// testing.
-	TestFileURL = "/file.txt"
+	TestFileURL = "/downloadFile.txt"
 	// TestBucket is the default storage bucket used
 	// for testing.
 	TestBucket = "verbis-bucket"
@@ -102,7 +112,7 @@ var (
 		Private:    false,
 		SourceType: domain.MediaSourceType,
 	}
-	// fileLocal is the default local file used for
+	// fileLocal is the default local downloadFile used for
 	// testing.
 	fileLocal = domain.File{
 		ID:         0,
@@ -118,7 +128,7 @@ var (
 		FileSize:   100,
 		Private:    false,
 	}
-	// fileRemote is the default remote file used for
+	// fileRemote is the default remote downloadFile used for
 	// testing.
 	fileRemote = domain.File{
 		ID:         0,

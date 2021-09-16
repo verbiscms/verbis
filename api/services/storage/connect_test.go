@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+// license that can be found in the LICENSE downloadFile.
 
 package storage
 
@@ -12,49 +12,51 @@ import (
 	options "github.com/verbiscms/verbis/api/mocks/store/options"
 )
 
-func (t *StorageTestSuite) TestStorage_Save() {
+func (t *StorageTestSuite) TestStorage_Connect() {
 	tt := map[string]struct {
-		input domain.StorageChange
+		input domain.StorageConfig
 		mock  func(m *mocks.Service, r *repo.Repository, o *options.Repository)
 		want  interface{}
 	}{
 		"Success": {
-			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
+			domain.StorageConfig{Provider: domain.StorageLocal, Bucket: TestBucket, LocalBackup: false},
 			func(m *mocks.Service, r *repo.Repository, o *options.Repository) {
 				mockValidateSuccess(m, r)
-				o.On("Update", "storage_provider", domain.StorageLocal).Return(nil)
-				o.On("Update", "storage_bucket", "").Return(nil)
+				o.On("Insert", domain.OptionsDBMap{
+					"storage_provider":      domain.StorageLocal,
+					"storage_bucket":        "",
+					"storage_upload_remote": false,
+					"storage_local_backup":  false,
+					"storage_remote_backup": false,
+				}).Return(nil)
 			},
 			nil,
 		},
 		"Validation Failed": {
-			domain.StorageChange{Provider: domain.StorageAWS},
+			domain.StorageConfig{Provider: domain.StorageAWS},
 			nil,
 			"Validation failed",
 		},
-		"Provider Error": {
-			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
+		"Error": {
+			domain.StorageConfig{Provider: domain.StorageLocal, Bucket: TestBucket, LocalBackup: false},
 			func(m *mocks.Service, r *repo.Repository, o *options.Repository) {
 				mockValidateSuccess(m, r)
-				o.On("Update", "storage_provider", domain.StorageLocal).Return(&errors.Error{Message: "provider error"})
+				o.On("Insert", domain.OptionsDBMap{
+					"storage_provider":      domain.StorageLocal,
+					"storage_bucket":        "",
+					"storage_upload_remote": false,
+					"storage_local_backup":  false,
+					"storage_remote_backup": false,
+				}).Return(&errors.Error{Message: "error"})
 			},
-			"provider error",
-		},
-		"Bucket Error": {
-			domain.StorageChange{Provider: domain.StorageLocal, Bucket: TestBucket},
-			func(m *mocks.Service, r *repo.Repository, o *options.Repository) {
-				mockValidateSuccess(m, r)
-				o.On("Update", "storage_provider", domain.StorageLocal).Return(nil)
-				o.On("Update", "storage_bucket", "").Return(&errors.Error{Message: "bucket error"})
-			},
-			"bucket error",
+			"error",
 		},
 	}
 
 	for name, test := range tt {
 		t.Run(name, func() {
 			s := t.SetupOptions(test.mock)
-			got := s.Save(test.input)
+			got := s.Connect(test.input)
 			if got != nil {
 				t.Contains(errors.Message(got), test.want)
 				return

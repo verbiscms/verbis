@@ -7,25 +7,17 @@ package storage
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/stretchr/testify/mock"
-	validation "github.com/verbiscms/verbis/api/common/vaidation"
 	"github.com/verbiscms/verbis/api/errors"
-	"github.com/verbiscms/verbis/api/http/handler/api"
-	mocks "github.com/verbiscms/verbis/api/mocks/services/storage"
+	"github.com/verbiscms/verbis/api/mocks/services/storage"
 	"net/http"
 )
 
-var migrate = migration{
-	From:   storageChange,
-	To:     storageChange,
-	Delete: false,
-}
-
-var migrateBadValidation = migration{
-	From: storageChangeBadValidation,
-	To:   storageChange,
-}
-
 func (t *StorageTestSuite) TestStorage_Migrate() {
+	var migrate = migration{
+		Server: true,
+		Delete: false,
+	}
+
 	tt := map[string]struct {
 		want    interface{}
 		status  int
@@ -39,15 +31,15 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"Successfully started migration, processing 5 files",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+				m.On("Migrate", mock.Anything, migrate.Server, migrate.Delete).
 					Return(5, nil)
 			},
 		},
-		"Validation Failed": {
-			api.ErrorJSON{Errors: validation.Errors{{Key: "provider", Message: "Provider is required.", Type: "required"}}},
+		"Validation failed": {
+			nil,
 			http.StatusBadRequest,
 			"Validation failed",
-			migrateBadValidation,
+			"test",
 			nil,
 		},
 		"Not Found": {
@@ -56,7 +48,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"not found",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+				m.On("Migrate", mock.Anything, migrate.Server, migrate.Delete).
 					Return(0, &errors.Error{Code: errors.NOTFOUND, Message: "not found"})
 			},
 		},
@@ -66,7 +58,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"invalid",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+				m.On("Migrate", mock.Anything, migrate.Server, migrate.Delete).
 					Return(0, &errors.Error{Code: errors.INVALID, Message: "invalid"})
 			},
 		},
@@ -76,7 +68,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"conflict",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+				m.On("Migrate", mock.Anything, migrate.Server, migrate.Delete).
 					Return(0, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
 			},
 		},
@@ -86,7 +78,7 @@ func (t *StorageTestSuite) TestStorage_Migrate() {
 			"internal",
 			migrate,
 			func(m *mocks.Provider) {
-				m.On("Migrate", mock.Anything, migrate.From, migrate.To, migrate.Delete).
+				m.On("Migrate", mock.Anything, migrate.Server, migrate.Delete).
 					Return(0, &errors.Error{Code: errors.INTERNAL, Message: "internal"})
 			},
 		},

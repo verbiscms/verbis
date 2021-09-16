@@ -123,7 +123,7 @@
 						</el-form>
 						<el-empty v-else-if="!doingAxios" :image-size="100">
 							<h4>No proxies available</h4>
-							<p>Click the button above to create a new proxy</p>
+							<p>Click the button above to create a new proxy.</p>
 						</el-empty>
 					</div>
 				</div><!-- /Col -->

@@ -16,7 +16,8 @@ import (
 )
 
 const (
-	// The header to be expected to be received from the API.
+	// JSONHeader is the header to be expected to be
+	// received from the API.
 	JSONHeader = "application/json; charset=utf-8"
 )
 
@@ -37,9 +38,31 @@ type RespondJSON struct {
 // HandlerSuite represents the suite of testing methods for controllers.
 type HandlerSuite struct {
 	suite.Suite
-	Recorder *httptest.ResponseRecorder
+	Recorder *ResponseRecorder
 	Context  *gin.Context
 	Engine   *gin.Engine
+}
+
+// ResponseRecorder expands the http.ResponseRecorder
+// to be a http.CloseNotifier.
+type ResponseRecorder struct {
+	*httptest.ResponseRecorder
+	closeChannel chan bool
+}
+
+func (r *ResponseRecorder) CloseNotify() <-chan bool {
+	return r.closeChannel
+}
+
+func (r *ResponseRecorder) closeClient() { //nolint
+	r.closeChannel <- true
+}
+
+func CreateTestResponseRecorder() *ResponseRecorder {
+	return &ResponseRecorder{
+		httptest.NewRecorder(),
+		make(chan bool, 1),
+	}
 }
 
 // NewHandlerSuite
@@ -49,7 +72,7 @@ type HandlerSuite struct {
 func NewHandlerSuite() HandlerSuite {
 	gin.SetMode(gin.TestMode)
 	gin.DefaultWriter = ioutil.Discard
-	rr := httptest.NewRecorder()
+	rr := CreateTestResponseRecorder()
 	ctx, engine := gin.CreateTestContext(rr)
 	return HandlerSuite{
 		Recorder: rr,
@@ -134,7 +157,7 @@ func (t *HandlerSuite) RequestAndServe(method, url, engineURL string, body inter
 // Sets up a new recorder, engine and context upon
 // test completion.
 func (t *HandlerSuite) Reset() {
-	rr := httptest.NewRecorder()
+	rr := CreateTestResponseRecorder()
 	ctx, engine := gin.CreateTestContext(rr)
 	t.Recorder = rr
 	t.Context = ctx
@@ -161,7 +184,7 @@ func (t *HandlerSuite) marshalInput(i interface{}) *bytes.Buffer {
 // marshalWant
 //
 // Marshal the test want, if the test want arg
-// is is nil, return an empty JSON object.
+// is nil, return an empty JSON object.
 func (t *HandlerSuite) marshalWant(i interface{}) string {
 	str, ok := i.(string)
 	if ok {
