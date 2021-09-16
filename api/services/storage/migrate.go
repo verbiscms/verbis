@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE downloadFile.
+// license that can be found in the LICENSE file.
 
 package storage
 
@@ -39,11 +39,11 @@ type MigrationInfo struct {
 }
 
 // FailedMigrationFile represents an error when migrating.
-// It includes an error.Error as well as a downloadFile for
+// It includes an error.Error as well as a file for
 // debugging.
 type FailedMigrationFile struct {
 	Error *errors.Error `json:"error"`
-	File  domain.File   `json:"downloadFile"`
+	File  domain.File   `json:"file"`
 }
 
 const (
@@ -80,13 +80,13 @@ func (m *MigrationInfo) fail(file domain.File, err error) {
 	logger.WithError(err).Error()
 }
 
-// succeed adds a succeeded downloadFile to the migration stack as
+// succeed adds a succeeded file to the migration stack as
 // well as adding one to the files processed.
 func (m *MigrationInfo) succeed(file domain.File) {
 	m.Succeeded++
 	m.FilesProcessed++
 	m.Progress = (m.FilesProcessed * 100) / m.Total
-	logger.Debug("Successfully migrated downloadFile: " + file.Name)
+	logger.Debug("Successfully migrated file: " + file.Name)
 }
 
 // migration is an entity used to help to process file
@@ -229,7 +229,7 @@ func (s *Storage) processMigration(ctx context.Context, files domain.Files, from
 
 // migrateBackground processes the migration by finding the
 // original bytes, uploading to the new destination
-// and deleting the original downloadFile.
+// and deleting the original file.
 func (s *Storage) migrateBackground(ctx context.Context, channel chan migration, deleteFiles bool, info *MigrationInfo) {
 	m := <-channel
 

@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE downloadFile.
+// license that can be found in the LICENSE file.
 
 package storage
 
@@ -22,7 +22,7 @@ import (
 	"sync"
 )
 
-var downloadFile = domain.File{
+var file = domain.File{
 	ID:         0,
 	UUID:       upload.UUID,
 	URL:        "test.txt",
@@ -35,9 +35,9 @@ var downloadFile = domain.File{
 
 var mockDownloadSuccess = func(m *mocks.Service, r *repo.Repository) {
 	r.On("List", params.Params{LimitAll: true}).
-		Return(domain.Files{downloadFile}, 1, nil)
+		Return(domain.Files{file}, 1, nil)
 	c := &mocks.StowContainer{}
-	m.On("BucketByFile", downloadFile).Return(c, nil)
+	m.On("BucketByFile", file).Return(c, nil)
 
 	item := &mocks.StowItem{}
 	item.On("Open").Return(ioutil.NopCloser(strings.NewReader("test")), nil)
@@ -66,8 +66,8 @@ func (t *StorageTestSuite) TestStorage_Download() {
 		"File Bytes Error": {
 			func(m *mocks.Service, r *repo.Repository) {
 				r.On("List", params.Params{LimitAll: true}).
-					Return(domain.Files{downloadFile}, 1, nil)
-				m.On("BucketByFile", downloadFile).
+					Return(domain.Files{file}, 1, nil)
+				m.On("BucketByFile", file).
 					Return(nil, &errors.Error{Message: "error"})
 			},
 			true,
@@ -91,14 +91,14 @@ func (t *StorageTestSuite) TestStorage_Download() {
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
 			true,
-			"Error creating zip downloadFile",
+			"Error creating zip file",
 		},
 		"Write Error": {
 			func(m *mocks.Service, r *repo.Repository) {
 				r.On("List", params.Params{LimitAll: true}).
-					Return(domain.Files{downloadFile}, 1, nil)
+					Return(domain.Files{file}, 1, nil)
 				c := &mocks.StowContainer{}
-				m.On("BucketByFile", downloadFile).Return(c, nil)
+				m.On("BucketByFile", file).Return(c, nil)
 
 				item := &mocks.StowItem{}
 				var buf []byte
@@ -106,7 +106,7 @@ func (t *StorageTestSuite) TestStorage_Download() {
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
 			true,
-			"Error writing zip downloadFile",
+			"Error writing zip file",
 		},
 	}
 
@@ -167,7 +167,7 @@ func (t *StorageTestSuite) TestStorage_Download_WriteError() {
 	wg.Add(1)
 	c := make(chan bool, 1)
 	c <- true
-	go s.addDownloadToZip(&mockZipWriter{}, downloadFile, c, &wg)
+	go s.addDownloadToZip(&mockZipWriter{}, file, c, &wg)
 	wg.Wait()
 
 	t.Contains(t.LogWriter.String(), "write error")

@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE downloadFile.
+// license that can be found in the LICENSE file.
 
 package storage
 
@@ -92,9 +92,9 @@ func (t *StorageTestSuite) SetupOptions(mf func(m *mocks.Service, r *repo.Reposi
 }
 
 const (
-	// TestFileURL is the default downloadFile url used for
+	// TestFileURL is the default file url used for
 	// testing.
-	TestFileURL = "/downloadFile.txt"
+	TestFileURL = "/file.txt"
 	// TestBucket is the default storage bucket used
 	// for testing.
 	TestBucket = "verbis-bucket"
@@ -112,7 +112,7 @@ var (
 		Private:    false,
 		SourceType: domain.MediaSourceType,
 	}
-	// fileLocal is the default local downloadFile used for
+	// fileLocal is the default local file used for
 	// testing.
 	fileLocal = domain.File{
 		ID:         0,
@@ -128,7 +128,7 @@ var (
 		FileSize:   100,
 		Private:    false,
 	}
-	// fileRemote is the default remote downloadFile used for
+	// fileRemote is the default remote file used for
 	// testing.
 	fileRemote = domain.File{
 		ID:         0,

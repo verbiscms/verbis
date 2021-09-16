@@ -1,6 +1,6 @@
 // Copyright 2020 The Verbis Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE downloadFile.
+// license that can be found in the LICENSE file.
 
 package storage
 
@@ -88,7 +88,7 @@ func (t *StorageTestSuite) TestBucket_Find() {
 				m.On("BucketByFile", domain.File{}).Return(c, nil)
 				c.On("Item", mock.Anything).Return(nil, fmt.Errorf("error"))
 			},
-			"Error obtaining downloadFile with the ID",
+			"Error obtaining file with the ID",
 		},
 		"Open Error": {
 			func(m *mocks.Service, r *repo.Repository) {
@@ -101,7 +101,7 @@ func (t *StorageTestSuite) TestBucket_Find() {
 				item.On("Open").Return(nil, fmt.Errorf("error"))
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
-			"Error opening downloadFile",
+			"Error opening file",
 		},
 		"Read Error": {
 			func(m *mocks.Service, r *repo.Repository) {
@@ -114,7 +114,7 @@ func (t *StorageTestSuite) TestBucket_Find() {
 				item.On("Open").Return(&mockIOReaderReadError{}, nil)
 				c.On("Item", mock.Anything).Return(item, nil)
 			},
-			"Error reading downloadFile",
+			"Error reading file",
 		},
 	}
 
@@ -203,7 +203,7 @@ func (t *StorageTestSuite) TestBucket_Upload() {
 				m.On("Bucket", domain.StorageAWS, "").Return(cont, nil)
 			},
 			true,
-			"Error uploading downloadFile to storage provider",
+			"Error uploading file to storage provider",
 		},
 		"Mime Error": {
 			domain.Upload{
@@ -350,7 +350,7 @@ func (t *StorageTestSuite) TestBucket_Delete() {
 				c.On("RemoveItem", mock.Anything).Return(fmt.Errorf("error"))
 				mockDeleteBackups(m)
 			},
-			"Error deleting downloadFile from storage",
+			"Error deleting file from storage",
 		},
 		"Repo Remove Error": {
 			func(m *mocks.Service, r *repo.Repository) {
