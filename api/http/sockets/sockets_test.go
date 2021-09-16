@@ -3,6 +3,7 @@ package sockets
 import (
 	"bytes"
 	"github.com/gorilla/websocket"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/suite"
 	"github.com/verbiscms/verbis/api/logger"
 	"net/http"
@@ -24,17 +25,12 @@ func TestSockets(t *testing.T) {
 	suite.Run(t, &SocketsTestSuite{})
 }
 
-// mtx is used to prevent the data race for
-// setting logger.
-var mtx = &sync.Mutex{}
-
-// BeforeTest assign the logger to a buffer.
-func (t *SocketsTestSuite) BeforeTest(suiteName, testName string) {
-	mtx.Lock()
-	defer mtx.Unlock()
+// SetupSuite assign the logger to a buffer.
+func (t *SocketsTestSuite) SetupSuite() {
 	b := bytes.Buffer{}
-	logger.SetOutput(&b)
 	t.LogWriter = b
+	logger.SetOutput(&t.LogWriter)
+	logger.SetLevel(logrus.TraceLevel)
 }
 
 // Reset the log writer.
