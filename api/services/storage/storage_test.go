@@ -39,8 +39,8 @@ func TestStorage(t *testing.T) {
 	suite.Run(t, new(StorageTestSuite))
 }
 
-// BeforeTest assign the logger to a buffer.
-func (t *StorageTestSuite) BeforeTest(suiteName, testName string) {
+// SetupSuite assign the logger to a buffer.
+func (t *StorageTestSuite) SetupSuite() {
 	b := bytes.Buffer{}
 	t.LogWriter = b
 	logger.SetOutput(&t.LogWriter)

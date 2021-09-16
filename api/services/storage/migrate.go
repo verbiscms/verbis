@@ -258,7 +258,12 @@ func (s *Storage) migrateBackground(ctx context.Context, channel chan migration,
 		SourceType: m.file.SourceType,
 	}
 
-	file, err := s.upload(m.to.Provider, m.to.Bucket, u, false)
+	file, err := s.upload(&uploadCfg{
+		Provider:       m.to.Provider,
+		Bucket:         m.to.Bucket,
+		Upload:         u,
+		CreateDatabase: false,
+	})
 	if err != nil {
 		info.fail(m.file, err)
 		return

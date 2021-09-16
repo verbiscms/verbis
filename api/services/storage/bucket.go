@@ -13,6 +13,7 @@ import (
 	"io/ioutil"
 	"path"
 	"strings"
+	"sync"
 )
 
 // List satisfies the Bucket interface by accepting an url
@@ -94,31 +95,48 @@ func (s *Storage) Upload(u domain.Upload) (domain.File, error) {
 	}
 
 	// TODO: Data race detected here with backups!
-
-	// If the local backup is enabled and the current settings
-	// are remote, backup the upload to the local provider.
-	if info.LocalBackup && !info.Provider.IsLocal() {
-		go s.backup(domain.StorageLocal, "", u)
-	}
-
-	// If the server backup is enabled and the current settings
-	// are local, backup the upload to the remote provider.
-	if info.RemoteBackup && info.Provider.IsLocal() {
-		// Obtain the correct connected provider.
-		cfg := s.service.Config()
-		go s.backup(cfg.Provider, cfg.Bucket, u)
-	}
-
-	file, err := s.upload(info.Provider, info.Bucket, u, true)
+	file, err := s.upload(&uploadCfg{
+		Provider:       info.Provider,
+		Bucket:         info.Bucket,
+		Upload:         u,
+		CreateDatabase: true,
+	})
 	if err == nil {
 		logger.Debug("Successfully processed upload: " + u.Path)
 	}
+
+	mtx := sync.Mutex{}
+
+	// Spawn a routine for backing up the storage files.
+	go func() {
+		mtx.Lock()
+		defer mtx.Unlock()
+
+		// If the local backup is enabled and the current settings
+		// are remote, backup the upload to the local provider.
+		if info.LocalBackup && !info.Provider.IsLocal() {
+			s.backup(domain.StorageLocal, "", u)
+		}
+
+		// If the server backup is enabled and the current settings
+		// are local, backup the upload to the remote provider.
+		if info.RemoteBackup && info.Provider.IsLocal() {
+			// Obtain the correct connected provider.
+			cfg := s.service.Config()
+			s.backup(cfg.Provider, cfg.Bucket, u)
+		}
+	}()
 
 	return file, err
 }
 
 func (s *Storage) backup(p domain.StorageProvider, b string, u domain.Upload) {
-	_, err := s.upload(p, b, u, false)
+	_, err := s.upload(&uploadCfg{
+		Provider:       p,
+		Bucket:         b,
+		Upload:         u,
+		CreateDatabase: false,
+	})
 	logger.Debug("Processing backup with storage provider: " + p.String() + " and filepath: " + u.Path)
 	if err != nil {
 		logger.WithError(err).Error()
@@ -126,23 +144,30 @@ func (s *Storage) backup(p domain.StorageProvider, b string, u domain.Upload) {
 	logger.Debug("Successfully processed backup: " + u.Path)
 }
 
-func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, createDB bool) (domain.File, error) {
+type uploadCfg struct {
+	Provider       domain.StorageProvider
+	Bucket         string
+	Upload         domain.Upload
+	CreateDatabase bool
+}
+
+func (s *Storage) upload(cfg *uploadCfg) (domain.File, error) {
 	const op = "Storage.Upload"
 
-	cont, err := s.service.Bucket(p, b)
+	cont, err := s.service.Bucket(cfg.Provider, cfg.Bucket)
 	if err != nil {
 		return domain.File{}, err
 	}
 
 	// Seek the downloadFile back to the original bytes.
-	u.Contents.Seek(0, 0) //nolint
+	cfg.Upload.Contents.Seek(0, 0) //nolint
 
-	item, err := cont.Put(u.AbsPath(), u.Contents, u.Size, nil)
+	item, err := cont.Put(cfg.Upload.AbsPath(), cfg.Upload.Contents, cfg.Upload.Size, nil)
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INVALID, Message: "Error uploading downloadFile to storage provider", Operation: op, Err: err}
 	}
 
-	mime, err := u.Mime()
+	mime, err := cfg.Upload.Mime()
 	if err != nil {
 		return domain.File{}, &errors.Error{Code: errors.INTERNAL, Message: "Error obtaining mime type", Operation: op, Err: err}
 	}
@@ -156,27 +181,27 @@ func (s *Storage) upload(p domain.StorageProvider, b string, u domain.Upload, cr
 		region = ""
 	)
 
-	if p.IsLocal() {
+	if cfg.Provider.IsLocal() {
 		id = vstrings.TrimSlashes(strings.ReplaceAll(item.URL().Path, s.paths.Storage, ""))
 		bucket = ""
 		region = ""
 	}
 
 	f := domain.File{
-		UUID:       u.UUID,
-		URL:        "/" + vstrings.TrimSlashes(u.Path),
-		Name:       path.Base(u.Path),
+		UUID:       cfg.Upload.UUID,
+		URL:        "/" + vstrings.TrimSlashes(cfg.Upload.Path),
+		Name:       path.Base(cfg.Upload.Path),
 		BucketID:   id,
 		Mime:       mime,
-		SourceType: u.SourceType,
-		Provider:   p,
+		SourceType: cfg.Upload.SourceType,
+		Provider:   cfg.Provider,
 		Region:     region,
 		Bucket:     bucket,
-		FileSize:   u.Size,
+		FileSize:   cfg.Upload.Size,
 		Private:    false,
 	}
 
-	if !createDB {
+	if !cfg.CreateDatabase {
 		return f, nil
 	}
 
