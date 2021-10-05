@@ -28,7 +28,7 @@ require (
 	github.com/graymeta/stow v0.2.7
 	github.com/hashicorp/go-version v1.3.0
 	github.com/jmoiron/sqlx v1.3.4
-	github.com/joho/godotenv v1.3.0
+	github.com/joho/godotenv v1.4.0
 	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/lib/pq v1.10.3
