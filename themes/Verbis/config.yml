@@ -171,8 +171,6 @@ editor:
             class: list
         ol:
             class: list list-ordered
-        link:
-            rel: noopener noreferrer nofollow
         palette: [
                 '#fad839',
                 '#ca1f26',

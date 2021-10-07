@@ -19,9 +19,16 @@ import (
 func (s *Store) Update(r domain.Redirect) (domain.Redirect, error) {
 	const op = "RedirectStore.Update"
 
-	err := s.validate(r)
+	oldRedirect, err := s.Find(r.ID)
 	if err != nil {
 		return domain.Redirect{}, err
+	}
+
+	if oldRedirect.From != r.From {
+		err := s.validate(r)
+		if err != nil {
+			return domain.Redirect{}, err
+		}
 	}
 
 	q := s.Builder().

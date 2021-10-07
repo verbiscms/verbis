@@ -64,6 +64,16 @@ func (t *RedirectsTestSuite) TestCategories_Update() {
 			},
 			"/redirects/123",
 		},
+		"Conflict": {
+			nil,
+			http.StatusBadRequest,
+			"conflict",
+			redirect,
+			func(m *mocks.Repository) {
+				m.On("Update", redirect).Return(domain.Redirect{}, &errors.Error{Code: errors.CONFLICT, Message: "conflict"})
+			},
+			"/redirects/123",
+		},
 		"Internal": {
 			nil,
 			http.StatusInternalServerError,

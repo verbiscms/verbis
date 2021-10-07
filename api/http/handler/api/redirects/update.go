@@ -36,7 +36,7 @@ func (r *Redirects) Update(ctx *gin.Context) {
 	redirect.ID = int(id)
 
 	updatedForm, err := r.Store.Redirects.Update(redirect)
-	if errors.Code(err) == errors.NOTFOUND {
+	if errors.Code(err) == errors.NOTFOUND || errors.Code(err) == errors.CONFLICT {
 		api.Respond(ctx, http.StatusBadRequest, errors.Message(err), err)
 		return
 	} else if err != nil {
