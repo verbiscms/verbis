@@ -139,7 +139,7 @@ export default {
 				.catch(err => {
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
-						this.$noty.error("Fix the errors before saving the category.");
+						this.$noty.error("Fix the errors before saving the redirect.");
 						return;
 					}
 					this.helpers.handleResponse(err);
@@ -156,7 +156,6 @@ export default {
 		 * Update existing redirect
 		 */
 		update() {
-			console.log(this.redirect);
 			this.axios.put('/redirects/' + this.redirect.id, this.redirect)
 				.then(res => {
 					console.log(res);
@@ -166,7 +165,7 @@ export default {
 				.catch(err => {
 					if (err.response.status === 400) {
 						this.validate(err.response.data.data.errors);
-						this.$noty.error("Fix the errors before saving the category.");
+						this.$noty.error(err.response.data.message);
 						return;
 					}
 					this.helpers.handleResponse(err);

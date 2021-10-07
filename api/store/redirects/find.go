@@ -36,7 +36,7 @@ func (s *Store) Find(id int) (domain.Redirect, error) {
 	return redirect, nil
 }
 
-// Find
+// FindByFrom
 //
 // Returns a redirect by searching with the given from path.
 // Returns errors.INTERNAL if there was an error executing the query.

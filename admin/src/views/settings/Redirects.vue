@@ -96,8 +96,8 @@
 											<!-- Checkbox -->
 											<td class="table-checkbox">
 												<div class="form-checkbox form-checkbox-dark">
-													<input type="checkbox" :id="redirect.uuid" :value="redirect.id" v-model="checked"/>
-													<label :for="redirect.uuid">
+													<input type="checkbox" :id="redirect.id" :value="redirect.id" v-model="checked"/>
+													<label :for="redirect.id">
 														<i class="fal fa-check"></i>
 													</label>
 												</div>

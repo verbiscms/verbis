@@ -25,13 +25,26 @@ func (t *RedirectsTestSuite) TestStore_Update() {
 		"Success": {
 			redirect,
 			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
+					AddRow(redirect.ID, redirect.From, redirect.To, redirect.Code)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WillReturnResult(sqlmock.NewResult(int64(redirect.ID), 1))
+			},
+		},
+		"Find Error": {
+			database.ErrQueryMessage,
+			func(m sqlmock.Sqlmock) {
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).
+					WillReturnError(fmt.Errorf("error"))
 			},
 		},
 		"Validation Failed": {
 			"Validation failed, the redirect from path already exists",
 			func(m sqlmock.Sqlmock) {
+				findRows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
+					AddRow(redirect.ID, "/new", redirect.To, redirect.Code)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(findRows)
 				rows := sqlmock.NewRows([]string{"id"}).
 					AddRow(true)
 				m.ExpectQuery(regexp.QuoteMeta(ExistsByFromQuery)).WillReturnRows(rows)
@@ -40,6 +53,9 @@ func (t *RedirectsTestSuite) TestStore_Update() {
 		"No Rows": {
 			"Error updating redirect with the from path",
 			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
+					AddRow(redirect.ID, redirect.From, redirect.To, redirect.Code)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WillReturnError(sql.ErrNoRows)
 			},
@@ -47,6 +63,9 @@ func (t *RedirectsTestSuite) TestStore_Update() {
 		"Internal Error": {
 			database.ErrQueryMessage,
 			func(m sqlmock.Sqlmock) {
+				rows := sqlmock.NewRows([]string{"id", "from_path", "to_path", "code"}).
+					AddRow(redirect.ID, redirect.From, redirect.To, redirect.Code)
+				m.ExpectQuery(regexp.QuoteMeta(FindQuery)).WillReturnRows(rows)
 				m.ExpectExec(regexp.QuoteMeta(UpdateQuery)).
 					WillReturnError(fmt.Errorf("error"))
 			},
