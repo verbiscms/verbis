@@ -23,7 +23,7 @@ require (
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0
-	github.com/gookit/color v1.4.2
+	github.com/gookit/color v1.5.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/graymeta/stow v0.2.7
 	github.com/hashicorp/go-version v1.3.0
