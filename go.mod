@@ -14,7 +14,7 @@ require (
 	github.com/frankban/quicktest v1.11.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.0
 	github.com/ghodss/yaml v1.0.0
-	github.com/gin-contrib/gzip v0.0.3
+	github.com/gin-contrib/gzip v0.0.5
 	github.com/gin-contrib/location v0.0.2
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/universal-translator v0.18.0
