@@ -33,7 +33,7 @@ require (
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/lib/pq v1.10.4
 	github.com/mailgun/mailgun-go/v4 v4.5.2 // indirect
-	github.com/manifoldco/promptui v0.8.0
+	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/mholt/archiver v3.1.1+incompatible // indirect
 	github.com/mouuff/go-rocket-update v1.5.2
