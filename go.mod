@@ -5,11 +5,12 @@ go 1.16
 require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/ainsleyclark/go-mail v1.0.3
+	github.com/aws/aws-sdk-go v1.27.0 // indirect
 	github.com/bradfitz/gomemcache v0.0.0-20190913173617-a41fca850d0b
 	github.com/briandowns/spinner v1.16.0
 	github.com/disintegration/imaging v1.6.2
 	github.com/dsnet/compress v0.0.1 // indirect
-	github.com/eko/gocache/v2 v2.1.0
+	github.com/eko/gocache/v2 v2.2.0
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/frankban/quicktest v1.11.0 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.0
@@ -29,7 +30,6 @@ require (
 	github.com/hashicorp/go-version v1.4.0
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
-	github.com/json-iterator/go v1.1.11 // indirect
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/lib/pq v1.10.4
 	github.com/mailgun/mailgun-go/v4 v4.5.2 // indirect
@@ -60,8 +60,7 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/net v0.0.0-20210520170846-37e1c6afe023
+	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20200526211855-cb27e3aa2013 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
