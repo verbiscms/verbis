@@ -32,7 +32,7 @@
         "imagemin-webpack-plugin": "^2.4.2",
         "laravel-mix": "^5.0.9",
         "laravel-mix-imagemin": "^1.0.3",
-        "node-sass": "^4.14.1",
+        "node-sass": "^7.0.0",
         "resolve-url-loader": "^2.3.2",
         "sass-lint": "^1.13.1",
         "sass-loader": "^8.0.2",
