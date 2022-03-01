@@ -25,7 +25,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0
 	github.com/gookit/color v1.5.0
-	github.com/gorilla/websocket v1.4.2
+	github.com/gorilla/websocket v1.5.0
 	github.com/graymeta/stow v0.2.7
 	github.com/hashicorp/go-version v1.4.0
 	github.com/jmoiron/sqlx v1.3.4
