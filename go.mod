@@ -19,7 +19,7 @@ require (
 	github.com/gin-contrib/location v0.0.2
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/universal-translator v0.18.0
-	github.com/go-playground/validator/v10 v10.10.0
+	github.com/go-playground/validator/v10 v10.10.1
 	github.com/go-redis/redis/v8 v8.11.4
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/golang/snappy v0.0.4 // indirect
@@ -58,9 +58,9 @@ require (
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/verbiscms/livereload v0.0.0-20210727102001-2b71dd40b572
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
-	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97
+	golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
 	golang.org/x/image v0.0.0-20210628002857-a66eb6448b8d // indirect
-	golang.org/x/net v0.0.0-20210525063256-abc453219eb5
+	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
