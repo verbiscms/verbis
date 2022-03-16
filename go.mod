@@ -52,7 +52,7 @@ require (
 	github.com/spf13/cast v1.4.1
 	github.com/spf13/cobra v1.1.1
 	github.com/stretchr/objx v0.2.0 // indirect
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	github.com/tdewolff/minify/v2 v2.10.0
 	github.com/ugorji/go v1.2.6 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
