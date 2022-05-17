@@ -31,7 +31,7 @@ require (
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/joho/godotenv v1.4.0
 	github.com/kyokomi/emoji v2.2.4+incompatible
-	github.com/lib/pq v1.10.4
+	github.com/lib/pq v1.10.6
 	github.com/mailgun/mailgun-go/v4 v4.5.2 // indirect
 	github.com/manifoldco/promptui v0.9.0
 	github.com/mattn/go-isatty v0.0.13 // indirect
