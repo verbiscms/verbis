@@ -45,7 +45,7 @@ require (
 	github.com/pierrec/lz4 v2.6.1+incompatible // indirect
 	github.com/pkg/errors v0.9.1
 	github.com/radovskyb/watcher v1.0.7
-	github.com/sanity-io/litter v1.5.2
+	github.com/sanity-io/litter v1.5.5
 	github.com/sendgrid/rest v2.6.4+incompatible // indirect
 	github.com/sendgrid/sendgrid-go v3.10.0+incompatible // indirect
 	github.com/sirupsen/logrus v1.8.1
